@@ -199,7 +199,6 @@ export async function getServiceRecord(recordId: string) {
       },
     });
 
-    if (!record) throw new Error("Service record not found");
     return record;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }] });
 }

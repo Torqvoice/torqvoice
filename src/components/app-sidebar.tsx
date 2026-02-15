@@ -5,7 +5,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut, useSession } from '@/lib/auth-client'
-import { useTheme } from '@/components/theme-provider'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
@@ -41,13 +40,11 @@ import {
   LayoutDashboard,
   Loader2,
   LogOut,
-  Moon,
   Package,
   Plus,
   Receipt,
   Settings,
   ShieldCheck,
-  Sun,
   Users,
 } from 'lucide-react'
 import { switchOrganization } from '@/features/team/Actions/switchOrganization'
@@ -86,12 +83,9 @@ export function AppSidebar({
   const pathname = usePathname()
   const router = useRouter()
   const { data: session } = useSession()
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
   const [showCreateOrg, setShowCreateOrg] = React.useState(false)
   const [newOrgName, setNewOrgName] = React.useState('')
   const [creatingOrg, setCreatingOrg] = React.useState(false)
-  React.useEffect(() => setMounted(true), [])
 
   const navItems = [
     ...baseNavItems.filter((item) => {
@@ -237,21 +231,6 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              size="sm"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="text-muted-foreground"
-              suppressHydrationWarning
-            >
-              {mounted && theme === 'dark' ? (
-                <Sun className="size-4" />
-              ) : (
-                <Moon className="size-4" />
-              )}
-              {mounted ? (theme === 'dark' ? 'Light Mode' : 'Dark Mode') : 'Toggle Theme'}
-            </SidebarMenuButton>
-          </SidebarMenuItem>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
