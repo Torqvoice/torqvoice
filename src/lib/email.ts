@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { db } from "./db";
 import { SYSTEM_SETTING_KEYS } from "@/features/admin/Schema/systemSettingsSchema";
 
@@ -11,6 +12,13 @@ export interface SendMailOptions {
     filename: string;
     content: Buffer;
   }[];
+}
+
+async function getEmailProvider(): Promise<"smtp" | "resend"> {
+  const setting = await db.systemSetting.findUnique({
+    where: { key: SYSTEM_SETTING_KEYS.EMAIL_PROVIDER },
+  });
+  return setting?.value === "resend" ? "resend" : "smtp";
 }
 
 async function getSmtpSettings() {
@@ -87,7 +95,7 @@ async function getTransporter() {
   });
 }
 
-export async function sendMail(options: SendMailOptions) {
+async function sendViaSmtp(options: SendMailOptions) {
   const transporter = await getTransporter();
   await transporter.sendMail({
     from: options.from,
@@ -99,4 +107,53 @@ export async function sendMail(options: SendMailOptions) {
       content: a.content,
     })),
   });
+}
+
+async function getResendSettings() {
+  const keys = [
+    SYSTEM_SETTING_KEYS.RESEND_API_KEY,
+    SYSTEM_SETTING_KEYS.RESEND_FROM_EMAIL,
+    SYSTEM_SETTING_KEYS.RESEND_FROM_NAME,
+  ];
+
+  const rows = await db.systemSetting.findMany({
+    where: { key: { in: keys } },
+  });
+
+  const map = new Map(rows.map((r) => [r.key, r.value]));
+  return map;
+}
+
+async function sendViaResend(options: SendMailOptions) {
+  const settings = await getResendSettings();
+  const apiKey = settings.get(SYSTEM_SETTING_KEYS.RESEND_API_KEY);
+
+  if (!apiKey) {
+    throw new Error(
+      "Resend is not configured. Add your Resend API key in Admin Settings.",
+    );
+  }
+
+  const resend = new Resend(apiKey);
+
+  await resend.emails.send({
+    from: options.from,
+    to: options.to,
+    subject: options.subject,
+    html: options.html,
+    attachments: options.attachments?.map((a) => ({
+      filename: a.filename,
+      content: a.content,
+    })),
+  });
+}
+
+export async function sendMail(options: SendMailOptions) {
+  const provider = await getEmailProvider();
+
+  if (provider === "resend") {
+    await sendViaResend(options);
+  } else {
+    await sendViaSmtp(options);
+  }
 }

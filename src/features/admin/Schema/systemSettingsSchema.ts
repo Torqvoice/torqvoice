@@ -4,6 +4,9 @@ export const SYSTEM_SETTING_KEYS = {
   // Registration
   REGISTRATION_DISABLED: "registration.disabled",
 
+  // Email Provider
+  EMAIL_PROVIDER: "email.provider",
+
   // SMTP
   SMTP_HOST: "smtp.host",
   SMTP_PORT: "smtp.port",
@@ -14,6 +17,11 @@ export const SYSTEM_SETTING_KEYS = {
   SMTP_FROM_NAME: "smtp.fromName",
   SMTP_REJECT_UNAUTHORIZED: "smtp.rejectUnauthorized",
   SMTP_REQUIRE_TLS: "smtp.requireTls",
+
+  // Resend
+  RESEND_API_KEY: "resend.apiKey",
+  RESEND_FROM_EMAIL: "resend.fromEmail",
+  RESEND_FROM_NAME: "resend.fromName",
 } as const;
 
 export type SystemSettingKey =

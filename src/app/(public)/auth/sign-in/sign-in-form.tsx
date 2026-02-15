@@ -76,6 +76,11 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
             required
             className="h-11 bg-background/50"
           />
+          <div className="flex justify-end">
+            <Link href="/auth/forgot-password" className="text-xs text-muted-foreground hover:underline">
+              Forgot password?
+            </Link>
+          </div>
         </div>
 
         <Button type="submit" className="h-11 w-full" disabled={loading}>
