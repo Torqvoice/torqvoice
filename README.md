@@ -1,7 +1,7 @@
 <br />
 <p align="center">
 	<a href="https://github.com/sinamics/torqvoice">
-		<img src="assets/logo/torqvoice_logo.png" alt="Torqvoice Logo" width="120" height="120">
+		<img src="assets/logo/torqvoice_app_logo_padding.png" alt="Torqvoice Logo" width="120" height="120">
 	</a>
 
    <p align="center">
