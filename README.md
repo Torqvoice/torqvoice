@@ -11,8 +11,6 @@
    	<a href="https://github.com/sinamics/torqvoice/issues/new?labels=bug&template=bug_template.yml&title=%5BBug%5D%3A+">Bug Report</a>
    	·
    	<a href="https://github.com/sinamics/torqvoice/issues/new?labels=enhancement&template=feature_request.yml&title=%5BFeature+Request%5D%3A+">Feature Request</a>
-   	·
-   	<a href="https://github.com/sinamics/torqvoice/discussions/new/choose">Ask a Question</a>
    </p>
 
    <div align="center">
