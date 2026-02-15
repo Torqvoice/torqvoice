@@ -1,0 +1,57 @@
+services:
+  app:
+    container_name: torqvoice
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    env_file:
+      - ../.env
+    command: sleep infinity
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL=postgresql://torqvoice:torqvoice@db:5432/torqvoice
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: torqvoice
+      POSTGRES_PASSWORD: torqvoice
+      POSTGRES_DB: torqvoice
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U torqvoice"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: torqvoice-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      PGPASS_FILE: /pgpass
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      - ./pgadmin4/servers.json:/pgadmin4/servers.json:ro
+      - ./pgpass:/pgpass:ro
+volumes:
+  postgres-data:
+  pgadmin-data:

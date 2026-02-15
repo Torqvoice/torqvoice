@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Torqvoice DB",
+      "Group": "Servers",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "torqvoice",
+      "Username": "torqvoice",
+      "SSLMode": "prefer"
+    }
+  }
+}

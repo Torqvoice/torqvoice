@@ -1,0 +1,430 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useGlassModal } from "@/components/glass-modal";
+import { createQuote, updateQuote } from "@/features/quotes/Actions/quoteActions";
+import type { QuotePartInput, QuoteLaborInput } from "@/features/quotes/Schema/quoteSchema";
+import { ArrowLeft, Loader2, Plus, Trash2 } from "lucide-react";
+import { formatCurrency, getCurrencySymbol } from "@/lib/format";
+
+interface CustomerOption {
+  id: string;
+  name: string;
+  email: string | null;
+  company: string | null;
+}
+
+interface VehicleOption {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  licensePlate: string | null;
+}
+
+interface InitialData {
+  id: string;
+  title: string;
+  description: string | null;
+  status: string;
+  validUntil: string | null;
+  customerId: string | null;
+  vehicleId: string | null;
+  notes: string | null;
+  partItems: QuotePartInput[];
+  laborItems: QuoteLaborInput[];
+  subtotal: number;
+  taxRate: number;
+  taxAmount: number;
+  discountType: string | null;
+  discountValue: number;
+  discountAmount: number;
+  totalAmount: number;
+}
+
+const emptyPart = (): QuotePartInput => ({
+  partNumber: "",
+  name: "",
+  quantity: 1,
+  unitPrice: 0,
+  total: 0,
+});
+
+const makeEmptyLabor = (defaultRate: number): QuoteLaborInput => ({
+  description: "",
+  hours: 0,
+  rate: defaultRate,
+  total: 0,
+});
+
+export function QuoteForm({
+  currencyCode = "USD",
+  defaultTaxRate = 0,
+  taxEnabled = true,
+  defaultLaborRate = 0,
+  quoteValidDays = 30,
+  customers = [],
+  vehicles = [],
+  initialData,
+}: {
+  currencyCode?: string;
+  defaultTaxRate?: number;
+  taxEnabled?: boolean;
+  defaultLaborRate?: number;
+  quoteValidDays?: number;
+  customers?: CustomerOption[];
+  vehicles?: VehicleOption[];
+  initialData?: InitialData;
+}) {
+  const cs = getCurrencySymbol(currencyCode);
+  const isEdit = !!initialData;
+  const router = useRouter();
+  const modal = useGlassModal();
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(initialData?.status || "draft");
+  const [customerId, setCustomerId] = useState(initialData?.customerId || "");
+  const [vehicleId, setVehicleId] = useState(initialData?.vehicleId || "");
+  const [partItems, setPartItems] = useState<QuotePartInput[]>(initialData?.partItems || []);
+  const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(initialData?.laborItems || []);
+  const [taxRate, setTaxRate] = useState(initialData?.taxRate ?? defaultTaxRate);
+  const [discountType, setDiscountType] = useState<string>(initialData?.discountType || "none");
+  const [discountValue, setDiscountValue] = useState(initialData?.discountValue ?? 0);
+
+  const [defaultValidDate] = useState(() =>
+    initialData?.validUntil
+      ? initialData.validUntil.split("T")[0]
+      : new Date(Date.now() + quoteValidDays * 86400000).toISOString().split("T")[0]
+  );
+
+  const partsSubtotal = partItems.reduce((sum, p) => sum + p.total, 0);
+  const laborSubtotal = laborItems.reduce((sum, l) => sum + l.total, 0);
+  const subtotal = partsSubtotal + laborSubtotal;
+  const discountAmount = discountType === "percentage"
+    ? subtotal * (discountValue / 100)
+    : discountType === "fixed"
+    ? Math.min(discountValue, subtotal)
+    : 0;
+  const taxAmount = (subtotal - discountAmount) * (taxRate / 100);
+  const totalAmount = subtotal - discountAmount + taxAmount;
+
+  const updatePart = useCallback((index: number, field: keyof QuotePartInput, value: string | number) => {
+    setPartItems((prev) => {
+      const updated = [...prev];
+      const part = { ...updated[index], [field]: value };
+      if (field === "quantity" || field === "unitPrice") {
+        part.total = Number(part.quantity) * Number(part.unitPrice);
+      }
+      updated[index] = part;
+      return updated;
+    });
+  }, []);
+
+  const updateLabor = useCallback((index: number, field: keyof QuoteLaborInput, value: string | number) => {
+    setLaborItems((prev) => {
+      const updated = [...prev];
+      const labor = { ...updated[index], [field]: value };
+      if (field === "hours" || field === "rate") {
+        labor.total = Number(labor.hours) * Number(labor.rate);
+      }
+      updated[index] = labor;
+      return updated;
+    });
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const payload = {
+      title: formData.get("title") as string,
+      description: (formData.get("description") as string) || undefined,
+      status,
+      validUntil: (formData.get("validUntil") as string) || undefined,
+      customerId: customerId || undefined,
+      vehicleId: vehicleId || undefined,
+      notes: (formData.get("notes") as string) || undefined,
+      partItems: partItems.filter((p) => p.name),
+      laborItems: laborItems.filter((l) => l.description),
+      subtotal,
+      taxRate,
+      taxAmount,
+      discountType: discountType === "none" ? undefined : discountType,
+      discountValue,
+      discountAmount,
+      totalAmount,
+    };
+
+    const result = isEdit
+      ? await updateQuote({ id: initialData.id, ...payload })
+      : await createQuote(payload);
+
+    if (result.success && result.data) {
+      toast.success(isEdit ? "Quote updated" : "Quote created");
+      router.push(`/quotes/${result.data.id}`);
+      router.refresh();
+    } else {
+      modal.open("error", "Error", result.error || `Failed to ${isEdit ? "update" : "create"} quote`);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <Link
+          href="/quotes"
+          className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Quotes
+        </Link>
+        <h1 className="text-2xl font-bold">{isEdit ? "Edit Quote" : "New Quote"}</h1>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Column 1: Basic Info */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Quote Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="title">Title *</Label>
+                <Input id="title" name="title" placeholder="Vehicle repair estimate" defaultValue={initialData?.title || ""} required />
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select value={status} onValueChange={setStatus}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="sent">Sent</SelectItem>
+                    <SelectItem value="accepted">Accepted</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="validUntil">Valid Until</Label>
+                <Input id="validUntil" name="validUntil" type="date" defaultValue={defaultValidDate} />
+              </div>
+              <div className="space-y-2">
+                <Label>Customer</Label>
+                <Select value={customerId || "none"} onValueChange={(v) => setCustomerId(v === "none" ? "" : v)}>
+                  <SelectTrigger><SelectValue placeholder="Select customer..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {customers.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}{c.company ? ` (${c.company})` : ""}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Vehicle</Label>
+                <Select value={vehicleId || "none"} onValueChange={(v) => setVehicleId(v === "none" ? "" : v)}>
+                  <SelectTrigger><SelectValue placeholder="Select vehicle..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {vehicles.map((v) => (
+                      <SelectItem key={v.id} value={v.id}>{v.year} {v.make} {v.model}{v.licensePlate ? ` (${v.licensePlate})` : ""}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Column 2: Notes */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Notes</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Textarea
+                name="description"
+                placeholder="Quote description..."
+                rows={6}
+                defaultValue={initialData?.description || ""}
+              />
+              <div className="space-y-2">
+                <Label className="text-base font-semibold">Internal Notes</Label>
+                <Textarea
+                  name="notes"
+                  placeholder="Internal notes (not shown to customer)..."
+                  rows={6}
+                  defaultValue={initialData?.notes || ""}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Column 3: Totals */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base">Totals</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Parts</span>
+                  <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Labor</span>
+                  <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="font-medium">{formatCurrency(subtotal, currencyCode)}</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground">Discount</span>
+                      <Select value={discountType} onValueChange={setDiscountType}>
+                        <SelectTrigger className="h-7 w-28 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          <SelectItem value="percentage">Percentage</SelectItem>
+                          <SelectItem value="fixed">Fixed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {discountType !== "none" && (
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={discountValue}
+                          onChange={(e) => setDiscountValue(Number(e.target.value))}
+                          className="h-7 w-20 text-right text-xs"
+                        />
+                      )}
+                      {discountType === "percentage" && <span className="text-muted-foreground">%</span>}
+                    </div>
+                    {discountAmount > 0 && (
+                      <span className="text-destructive">{formatCurrency(-discountAmount, currencyCode)}</span>
+                    )}
+                  </div>
+                </div>
+                {taxEnabled && (
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground">Tax</span>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.1"
+                        value={taxRate}
+                        onChange={(e) => setTaxRate(Number(e.target.value))}
+                        className="h-7 w-20 text-right text-xs"
+                      />
+                      <span className="text-muted-foreground">%</span>
+                    </div>
+                    <span>{formatCurrency(taxAmount, currencyCode)}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between border-t pt-3 text-lg font-bold">
+                  <span>Total</span>
+                  <span>{formatCurrency(totalAmount, currencyCode)}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Parts */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-base">Parts</CardTitle>
+            <Button type="button" variant="outline" size="sm" onClick={() => setPartItems([...partItems, emptyPart()])}>
+              <Plus className="mr-1 h-3.5 w-3.5" /> Add Part
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {partItems.length === 0 ? (
+              <p className="py-4 text-center text-sm text-muted-foreground">No parts added yet</p>
+            ) : (
+              <div className="space-y-3">
+                <div className="hidden grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
+                  <span>Part #</span><span>Name</span><span>Qty</span><span>Unit Price</span><span>Total</span><span />
+                </div>
+                {partItems.map((part, i) => (
+                  <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto]">
+                    <Input placeholder="Part #" value={part.partNumber ?? ""} onChange={(e) => updatePart(i, "partNumber", e.target.value)} />
+                    <Input placeholder="Name *" value={part.name} onChange={(e) => updatePart(i, "name", e.target.value)} />
+                    <Input type="number" min="0" step="1" value={part.quantity} onChange={(e) => updatePart(i, "quantity", Number(e.target.value))} />
+                    <Input type="number" min="0" step="0.01" value={part.unitPrice} onChange={(e) => updatePart(i, "unitPrice", Number(e.target.value))} />
+                    <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(part.total, currencyCode)}</div>
+                    <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setPartItems(partItems.filter((_, j) => j !== i))}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Labor */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-base">Labor</CardTitle>
+            <Button type="button" variant="outline" size="sm" onClick={() => setLaborItems([...laborItems, makeEmptyLabor(defaultLaborRate)])}>
+              <Plus className="mr-1 h-3.5 w-3.5" /> Add Labor
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {laborItems.length === 0 ? (
+              <p className="py-4 text-center text-sm text-muted-foreground">No labor added yet</p>
+            ) : (
+              <div className="space-y-3">
+                <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
+                  <span>Description</span><span>Hours</span><span>Rate ({cs}/hr)</span><span>Total</span><span />
+                </div>
+                {laborItems.map((labor, i) => (
+                  <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]">
+                    <Input placeholder="Description *" value={labor.description} onChange={(e) => updateLabor(i, "description", e.target.value)} className="col-span-2 sm:col-span-1" />
+                    <Input type="number" min="0" step="0.5" value={labor.hours} onChange={(e) => updateLabor(i, "hours", Number(e.target.value))} />
+                    <Input type="number" min="0" step="0.01" value={labor.rate} onChange={(e) => updateLabor(i, "rate", Number(e.target.value))} />
+                    <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(labor.total, currencyCode)}</div>
+                    <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setLaborItems(laborItems.filter((_, j) => j !== i))}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end gap-3 pb-8">
+          <Button type="button" variant="outline" asChild>
+            <Link href="/quotes">Cancel</Link>
+          </Button>
+          <Button type="submit" disabled={loading}>
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isEdit ? "Update Quote" : "Create Quote"}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}

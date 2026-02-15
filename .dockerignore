@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.gitignore
+.env*
+*.md
+.devcontainer
+plans
+public/uploads

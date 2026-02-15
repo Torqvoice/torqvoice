@@ -1,0 +1,558 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  isSuperAdmin  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions               Session[]
+  accounts               Account[]
+  vehicles               Vehicle[]
+  customers              Customer[]
+  settings               AppSetting[]
+  inventoryParts         InventoryPart[]
+  quotes                 Quote[]
+  customFieldDefinitions CustomFieldDefinition[]
+
+  @@map("users")
+}
+
+model AppSetting {
+  id    String @id @default(cuid())
+  key   String
+  value String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+  @@map("app_settings")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verifications")
+}
+
+model Vehicle {
+  id            String    @id @default(cuid())
+  make          String
+  model         String
+  year          Int
+  vin           String?
+  licensePlate  String?
+  color         String?
+  mileage       Int       @default(0)
+  fuelType      String?   @default("gasoline")
+  transmission  String?   @default("automatic")
+  engineSize    String?
+  purchaseDate  DateTime?
+  purchasePrice Float?
+  imageUrl      String?
+  isArchived    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  serviceRecords ServiceRecord[]
+  notes          Note[]
+  fuelLogs       FuelLog[]
+  reminders      Reminder[]
+  quotes         Quote[]
+
+  @@index([organizationId])
+  @@map("vehicles")
+}
+
+model ServiceRecord {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?
+  type            String   @default("maintenance")
+  status          String   @default("completed")
+  cost            Float    @default(0)
+  mileage         Int?
+  serviceDate     DateTime @default(now())
+  shopName        String?
+  techName        String?
+  parts           String?
+  laborHours      Float?
+  diagnosticNotes String?
+  invoiceNotes    String?
+  subtotal        Float    @default(0)
+  taxRate         Float    @default(0)
+  taxAmount       Float    @default(0)
+  totalAmount     Float    @default(0)
+  invoiceNumber   String?
+  discountType    String?
+  discountValue   Float    @default(0)
+  discountAmount  Float    @default(0)
+  publicToken     String?  @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  partItems   ServicePart[]
+  laborItems  ServiceLabor[]
+  attachments ServiceAttachment[]
+  payments    Payment[]
+
+  @@index([vehicleId])
+  @@map("service_records")
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("notes")
+}
+
+model FuelLog {
+  id             String   @id @default(cuid())
+  date           DateTime @default(now())
+  mileage        Int
+  gallons        Float
+  pricePerGallon Float
+  totalCost      Float
+  isFillUp       Boolean  @default(true)
+  station        String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("fuel_logs")
+}
+
+model Reminder {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  dueMileage  Int?
+  isCompleted Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("reminders")
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  company   String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  vehicles Vehicle[]
+  quotes   Quote[]
+
+  @@index([organizationId])
+  @@map("customers")
+}
+
+model Payment {
+  id         String   @id @default(cuid())
+  amount     Float
+  date       DateTime @default(now())
+  method     String   @default("other")
+  note       String?
+  provider   String?
+  externalId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  @@index([serviceRecordId])
+  @@map("payments")
+}
+
+model ServiceAttachment {
+  id               String   @id @default(cuid())
+  fileName         String
+  fileUrl          String
+  fileType         String
+  fileSize         Int
+  category         String   @default("diagnostic")
+  description      String?
+  includeInInvoice Boolean  @default(true)
+  createdAt        DateTime @default(now())
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  @@index([serviceRecordId])
+  @@map("service_attachments")
+}
+
+model ServicePart {
+  id         String  @id @default(cuid())
+  partNumber String?
+  name       String
+  quantity   Float   @default(1)
+  unitPrice  Float   @default(0)
+  total      Float   @default(0)
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  @@index([serviceRecordId])
+  @@map("service_parts")
+}
+
+model ServiceLabor {
+  id          String @id @default(cuid())
+  description String
+  hours       Float  @default(0)
+  rate        Float  @default(0)
+  total       Float  @default(0)
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  @@index([serviceRecordId])
+  @@map("service_labor")
+}
+
+model InventoryPart {
+  id            String   @id @default(cuid())
+  partNumber    String?
+  name          String
+  description   String?
+  category      String?
+  quantity      Int      @default(0)
+  minQuantity   Int      @default(0)
+  unitCost      Float    @default(0)
+  supplier      String?
+  supplierPhone String?
+  supplierEmail String?
+  supplierUrl   String?
+  imageUrl      String?
+  location      String?
+  isArchived    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("inventory_parts")
+}
+
+model Quote {
+  id             String    @id @default(cuid())
+  quoteNumber    String?
+  title          String
+  description    String?
+  status         String    @default("draft")
+  validUntil     DateTime?
+  subtotal       Float     @default(0)
+  taxRate        Float     @default(0)
+  taxAmount      Float     @default(0)
+  discountType   String?
+  discountValue  Float     @default(0)
+  discountAmount Float     @default(0)
+  totalAmount    Float     @default(0)
+  notes          String?
+  convertedToId  String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  partItems  QuotePart[]
+  laborItems QuoteLabor[]
+
+  @@index([organizationId])
+  @@map("quotes")
+}
+
+model QuotePart {
+  id         String  @id @default(cuid())
+  partNumber String?
+  name       String
+  quantity   Float   @default(1)
+  unitPrice  Float   @default(0)
+  total      Float   @default(0)
+
+  quoteId String
+  quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
+  @@map("quote_parts")
+}
+
+model QuoteLabor {
+  id          String @id @default(cuid())
+  description String
+  hours       Float  @default(0)
+  rate        Float  @default(0)
+  total       Float  @default(0)
+
+  quoteId String
+  quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
+  @@map("quote_labor")
+}
+
+model CustomFieldDefinition {
+  id         String   @id @default(cuid())
+  name       String
+  label      String
+  fieldType  String   @default("text")
+  options    String?
+  required   Boolean  @default(false)
+  entityType String
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  values CustomFieldValue[]
+
+  @@unique([organizationId, name, entityType])
+  @@index([organizationId])
+  @@map("custom_field_definitions")
+}
+
+model CustomFieldValue {
+  id         String @id @default(cuid())
+  value      String
+  entityId   String
+  entityType String
+
+  fieldId String
+  field   CustomFieldDefinition @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@unique([fieldId, entityId])
+  @@index([fieldId])
+  @@map("custom_field_values")
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members                OrganizationMember[]
+  roles                  Role[]
+  vehicles               Vehicle[]
+  customers              Customer[]
+  quotes                 Quote[]
+  inventoryParts         InventoryPart[]
+  customFieldDefinitions CustomFieldDefinition[]
+  settings               AppSetting[]
+  subscription           Subscription?
+
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id   String @id @default(cuid())
+  role String @default("member")
+
+  userId         String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  roleId     String?
+  customRole Role?   @relation(fields: [roleId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, organizationId])
+  @@map("organization_members")
+}
+
+model Role {
+  id        String   @id @default(cuid())
+  name      String
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  permissions Permission[]
+  members     OrganizationMember[]
+
+  @@unique([organizationId, name])
+  @@map("roles")
+}
+
+model Permission {
+  id      String @id @default(cuid())
+  action  String
+  subject String
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, action, subject])
+  @@index([roleId])
+  @@map("permissions")
+}
+
+model SystemSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+
+  @@map("system_settings")
+}
+
+// Stripe-ready models (implementation in follow-up)
+
+model SubscriptionPlan {
+  id            String   @id @default(cuid())
+  name          String
+  stripePriceId String?  @unique
+  price         Float    @default(0)
+  interval      String   @default("month") // "month" | "year"
+  maxMembers    Int      @default(1)
+  features      String? // JSON feature flags
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  subscriptions Subscription[]
+
+  @@map("subscription_plans")
+}
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  status               String    @default("active") // active | canceled | past_due | trialing
+  stripeSubscriptionId String?   @unique
+  stripeCustomerId     String?
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  planId String
+  plan   SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  @@map("subscriptions")
+}
