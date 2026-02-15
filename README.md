@@ -99,8 +99,6 @@ Open [http://localhost:3000](http://localhost:3000) and create your first accoun
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `BETTER_AUTH_SECRET` | Yes | Auth secret (`openssl rand -hex 32`) |
 | `NEXT_PUBLIC_APP_URL` | Yes | Application URL |
-| `RESEND_API_KEY` | No | [Resend](https://resend.com) API key for email |
-| `RESEND_FROM_EMAIL` | No | Verified sender email for Resend |
 
 ## License
 
