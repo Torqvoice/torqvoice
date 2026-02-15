@@ -31,6 +31,7 @@
     "nodemailer": "^8.0.1",
     "pdf-lib": "^1.17.1",
     "prisma": "^6.19.2",
+    "qrcode.react": "^4.2.0",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-day-picker": "^9.13.2",

@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
+import { twoFactor } from "better-auth/plugins/two-factor";
 import { db } from "./db";
 
 const baseURL = process.env.NEXT_PUBLIC_APP_URL;
@@ -53,6 +54,7 @@ export const auth = betterAuth({
     },
   },
   plugins: [
+    twoFactor({ issuer: "Torqvoice" }),
     nextCookies(), // Must be last plugin
   ],
 });

@@ -17,6 +17,8 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  twoFactorEnabled Boolean @default(false)
+
   sessions               Session[]
   accounts               Account[]
   vehicles               Vehicle[]
@@ -25,6 +27,7 @@ model User {
   inventoryParts         InventoryPart[]
   quotes                 Quote[]
   customFieldDefinitions CustomFieldDefinition[]
+  twoFactor              TwoFactor?
 
   @@map("users")
 }
@@ -90,6 +93,16 @@ model Verification {
   updatedAt  DateTime? @updatedAt
 
   @@map("verifications")
+}
+
+model TwoFactor {
+  id          String @id @default(cuid())
+  secret      String
+  backupCodes String
+  userId      String @unique
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("two_factor")
 }
 
 model Vehicle {
