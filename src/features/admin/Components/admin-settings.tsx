@@ -137,15 +137,15 @@ export function AdminSettings({
         </CardContent>
       </Card>
 
-      {/* Email Provider Selection */}
+      {/* Email Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Email Provider</CardTitle>
+          <CardTitle>Email Settings</CardTitle>
           <CardDescription>
             Choose how the platform sends emails (password resets, invoices, notifications)
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <div className="flex gap-2">
             <Button
               type="button"
@@ -164,217 +164,182 @@ export function AdminSettings({
               Resend
             </Button>
           </div>
+
+          {emailProvider === 'smtp' && (
+            <>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="smtp-host">SMTP Host</Label>
+                  <Input
+                    id="smtp-host"
+                    placeholder="smtp.example.com"
+                    value={smtpHost}
+                    onChange={(e) => setSmtpHost(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="smtp-port">SMTP Port</Label>
+                  <Input
+                    id="smtp-port"
+                    placeholder="587"
+                    value={smtpPort}
+                    onChange={(e) => setSmtpPort(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="smtp-user">Username</Label>
+                  <Input
+                    id="smtp-user"
+                    placeholder="user@example.com"
+                    value={smtpUser}
+                    onChange={(e) => setSmtpUser(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="smtp-pass">Password</Label>
+                  <Input
+                    id="smtp-pass"
+                    type="password"
+                    placeholder="••••••••"
+                    value={smtpPass}
+                    onChange={(e) => setSmtpPass(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="smtp-from-email">From Email</Label>
+                  <Input
+                    id="smtp-from-email"
+                    placeholder="noreply@example.com"
+                    value={smtpFromEmail}
+                    onChange={(e) => setSmtpFromEmail(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="smtp-from-name">From Name</Label>
+                  <Input
+                    id="smtp-from-name"
+                    placeholder="Torqvoice"
+                    value={smtpFromName}
+                    onChange={(e) => setSmtpFromName(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="smtp-secure">TLS Connection (Port 465)</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Enable for implicit TLS. Disable for STARTTLS (port 587/25).
+                    </p>
+                  </div>
+                  <Switch id="smtp-secure" checked={smtpSecure} onCheckedChange={setSmtpSecure} />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="smtp-reject-unauthorized">Verify TLS Certificates</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Disable to allow self-signed certificates (not recommended for production)
+                    </p>
+                  </div>
+                  <Switch
+                    id="smtp-reject-unauthorized"
+                    checked={smtpRejectUnauthorized}
+                    onCheckedChange={setSmtpRejectUnauthorized}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="smtp-require-tls">Require TLS Upgrade</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Force TLS upgrade on STARTTLS connections
+                    </p>
+                  </div>
+                  <Switch
+                    id="smtp-require-tls"
+                    checked={smtpRequireTls}
+                    onCheckedChange={setSmtpRequireTls}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {emailProvider === 'resend' && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="resend-api-key">API Key</Label>
+                <Input
+                  id="resend-api-key"
+                  type="password"
+                  placeholder="re_••••••••"
+                  value={resendApiKey}
+                  onChange={(e) => setResendApiKey(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Get your API key from{' '}
+                  <a
+                    href="https://resend.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    resend.com
+                  </a>
+                </p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="resend-from-email">From Email</Label>
+                  <Input
+                    id="resend-from-email"
+                    placeholder="noreply@yourdomain.com"
+                    value={resendFromEmail}
+                    onChange={(e) => setResendFromEmail(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="resend-from-name">From Name</Label>
+                  <Input
+                    id="resend-from-name"
+                    placeholder="Torqvoice"
+                    value={resendFromName}
+                    onChange={(e) => setResendFromName(e.target.value)}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          <div className="flex items-center gap-2 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleTestEmail}
+              disabled={isTestDisabled}
+            >
+              {isTesting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="mr-2 h-4 w-4" />
+              )}
+              Send Test Email
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Save settings first, then send a test email to your account
+            </p>
+          </div>
         </CardContent>
       </Card>
-
-      {/* SMTP Settings */}
-      {emailProvider === 'smtp' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>SMTP Email Settings</CardTitle>
-            <CardDescription>
-              Configure email delivery for the platform. These settings override environment
-              variables when set.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="smtp-host">SMTP Host</Label>
-                <Input
-                  id="smtp-host"
-                  placeholder="smtp.example.com"
-                  value={smtpHost}
-                  onChange={(e) => setSmtpHost(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="smtp-port">SMTP Port</Label>
-                <Input
-                  id="smtp-port"
-                  placeholder="587"
-                  value={smtpPort}
-                  onChange={(e) => setSmtpPort(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="smtp-user">Username</Label>
-                <Input
-                  id="smtp-user"
-                  placeholder="user@example.com"
-                  value={smtpUser}
-                  onChange={(e) => setSmtpUser(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="smtp-pass">Password</Label>
-                <Input
-                  id="smtp-pass"
-                  type="password"
-                  placeholder="••••••••"
-                  value={smtpPass}
-                  onChange={(e) => setSmtpPass(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="smtp-from-email">From Email</Label>
-                <Input
-                  id="smtp-from-email"
-                  placeholder="noreply@example.com"
-                  value={smtpFromEmail}
-                  onChange={(e) => setSmtpFromEmail(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="smtp-from-name">From Name</Label>
-                <Input
-                  id="smtp-from-name"
-                  placeholder="Torqvoice"
-                  value={smtpFromName}
-                  onChange={(e) => setSmtpFromName(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="smtp-secure">TLS Connection (Port 465)</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Enable for implicit TLS. Disable for STARTTLS (port 587/25).
-                  </p>
-                </div>
-                <Switch id="smtp-secure" checked={smtpSecure} onCheckedChange={setSmtpSecure} />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="smtp-reject-unauthorized">Verify TLS Certificates</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Disable to allow self-signed certificates (not recommended for production)
-                  </p>
-                </div>
-                <Switch
-                  id="smtp-reject-unauthorized"
-                  checked={smtpRejectUnauthorized}
-                  onCheckedChange={setSmtpRejectUnauthorized}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="smtp-require-tls">Require TLS Upgrade</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Force TLS upgrade on STARTTLS connections
-                  </p>
-                </div>
-                <Switch
-                  id="smtp-require-tls"
-                  checked={smtpRequireTls}
-                  onCheckedChange={setSmtpRequireTls}
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleTestEmail}
-                disabled={isTestDisabled}
-              >
-                {isTesting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Send className="mr-2 h-4 w-4" />
-                )}
-                Send Test Email
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                Save settings first, then send a test email to your account
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Resend Settings */}
-      {emailProvider === 'resend' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Resend Email Settings</CardTitle>
-            <CardDescription>
-              Configure email delivery using Resend. Get your API key from{' '}
-              <a
-                href="https://resend.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline"
-              >
-                resend.com
-              </a>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="resend-api-key">API Key</Label>
-              <Input
-                id="resend-api-key"
-                type="password"
-                placeholder="re_••••••••"
-                value={resendApiKey}
-                onChange={(e) => setResendApiKey(e.target.value)}
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="resend-from-email">From Email</Label>
-                <Input
-                  id="resend-from-email"
-                  placeholder="noreply@yourdomain.com"
-                  value={resendFromEmail}
-                  onChange={(e) => setResendFromEmail(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="resend-from-name">From Name</Label>
-                <Input
-                  id="resend-from-name"
-                  placeholder="Torqvoice"
-                  value={resendFromName}
-                  onChange={(e) => setResendFromName(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleTestEmail}
-                disabled={isTestDisabled}
-              >
-                {isTesting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Send className="mr-2 h-4 w-4" />
-                )}
-                Send Test Email
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                Save settings first, then send a test email to your account
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Save Button */}
       <div className="flex justify-end">
