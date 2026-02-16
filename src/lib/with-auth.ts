@@ -1,3 +1,4 @@
+import { ZodError } from "zod";
 import { getCachedSession, getCachedMembership } from "./cached-session";
 import { db } from "./db";
 import type { PermissionInput } from "./permissions";
@@ -66,6 +67,15 @@ export async function withAuth<T>(
     });
     return { success: true, data };
   } catch (error) {
+    if (error instanceof ZodError) {
+      const messages = error.issues.map((e) => {
+        const field = e.path.join(".");
+        return field ? `${field}: ${e.message}` : e.message;
+      });
+      const message = messages.join(". ");
+      console.error("[withAuth] Validation error:", message);
+      return { success: false, error: message };
+    }
     const message =
       error instanceof Error ? error.message : "An unexpected error occurred";
     console.error("[withAuth] Error:", message);

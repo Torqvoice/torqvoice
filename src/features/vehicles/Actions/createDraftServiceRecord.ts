@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 
-export async function createDraftServiceRecord(vehicleId: string) {
+export async function createDraftServiceRecord(vehicleId: string, serviceDate?: Date) {
   return withAuth(
     async ({ organizationId }) => {
       const vehicle = await db.vehicle.findFirst({
@@ -70,11 +70,11 @@ export async function createDraftServiceRecord(vehicleId: string) {
         data: {
           title: "New Service Record",
           type: "maintenance",
-          status: "in_progress",
+          status: "pending",
           vehicleId,
           shopName,
           invoiceNumber,
-          serviceDate: now,
+          serviceDate: serviceDate ?? now,
         },
       });
 
