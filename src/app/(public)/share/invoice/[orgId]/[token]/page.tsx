@@ -82,6 +82,8 @@ export default async function PublicInvoicePage({
             "invoice.showLogo",
             "invoice.showCompanyName",
             "payment.providersEnabled",
+            "workshop.dateFormat",
+            "workshop.timezone",
           ],
         },
       },
@@ -154,6 +156,8 @@ export default async function PublicInvoicePage({
       showLogo={showLogo}
       showCompanyName={showCompanyName}
       showTorqvoiceBranding={!features.brandingRemoved}
+      dateFormat={settingsMap["workshop.dateFormat"] || undefined}
+      timezone={settingsMap["workshop.timezone"] || undefined}
     />
   );
 }

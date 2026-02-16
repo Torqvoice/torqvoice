@@ -6,6 +6,7 @@ import { ConfirmProvider } from "@/components/confirm-dialog";
 import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { WhiteLabelCtaProvider } from "@/components/white-label-cta-context";
+import { DateSettingsProvider } from "@/components/date-settings-context";
 
 export default async function DashboardLayout({
   children,
@@ -21,6 +22,11 @@ export default async function DashboardLayout({
   const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved;
 
   return (
+    <DateSettingsProvider
+      dateFormat={data.dateFormat}
+      timeFormat={data.timeFormat}
+      timezone={data.timezone}
+    >
     <WhiteLabelCtaProvider show={showWhiteLabelCta}>
     <SidebarProvider
       style={
@@ -42,5 +48,6 @@ export default async function DashboardLayout({
       </ConfirmProvider>
     </SidebarProvider>
     </WhiteLabelCtaProvider>
+    </DateSettingsProvider>
   );
 }

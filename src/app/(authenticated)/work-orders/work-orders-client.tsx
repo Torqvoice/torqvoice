@@ -3,7 +3,7 @@
 import { useState, useCallback, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { useFormatDate } from "@/lib/use-format-date";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -124,6 +124,7 @@ export function WorkOrdersClient({
   statusFilter: string;
 }) {
   const router = useRouter();
+  const { formatDate } = useFormatDate();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -276,7 +277,7 @@ export function WorkOrdersClient({
                       {r.techName || "-"}
                     </TableCell>
                     <TableCell className="font-mono text-xs">
-                      {format(new Date(r.serviceDate), "MM/dd/yy")}
+                      {formatDate(new Date(r.serviceDate))}
                     </TableCell>
                     <TableCell className="text-right font-semibold">
                       {formatCurrency(displayTotal, currencyCode)}

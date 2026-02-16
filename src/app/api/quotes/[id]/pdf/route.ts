@@ -78,6 +78,8 @@ export async function GET(
       currencyCode: settingsMap["workshop.currencyCode"] || "USD",
       logoDataUri,
       torqvoiceLogoDataUri,
+      dateFormat: settingsMap["workshop.dateFormat"] || undefined,
+      timezone: settingsMap["workshop.timezone"] || undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const buffer = await renderToBuffer(element);

@@ -3,7 +3,7 @@
 import { useState, useCallback, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { format } from "date-fns";
+import { useFormatDate } from "@/lib/use-format-date";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -85,6 +85,7 @@ export default function BillingClient({
   statusFilter,
 }: BillingClientProps) {
   const router = useRouter();
+  const { formatDate } = useFormatDate();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -322,7 +323,7 @@ export default function BillingClient({
                       {record.vehicle.customer?.name || "—"}
                     </TableCell>
                     <TableCell>
-                      {format(new Date(record.serviceDate), "MMM d, yyyy")}
+                      {formatDate(new Date(record.serviceDate))}
                     </TableCell>
                     <TableCell className="text-right">
                       {fmt(record.totalAmount)}

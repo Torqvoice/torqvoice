@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer'
-import { formatCurrency, getCurrencySymbol } from '@/lib/format'
+import { formatCurrency, getCurrencySymbol, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 
 const amber = '#d97706'
 const amberLight = '#fef3c7'
@@ -141,26 +141,24 @@ export function QuotePDF({
   currencyCode = 'USD',
   logoDataUri,
   torqvoiceLogoDataUri,
+  dateFormat,
+  timezone,
 }: {
   data: QuoteData
   workshop?: WorkshopInfo
   currencyCode?: string
   logoDataUri?: string
   torqvoiceLogoDataUri?: string
+  dateFormat?: string
+  timezone?: string
 }) {
   const cs = getCurrencySymbol(currencyCode)
   const quoteNum = data.quoteNumber || 'QUOTE'
-  const createdDate = new Date(data.createdAt).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  const df = dateFormat || DEFAULT_DATE_FORMAT
+  const tz = timezone || undefined
+  const createdDate = formatDateForPdf(data.createdAt, df, tz)
   const validDate = data.validUntil
-    ? new Date(data.validUntil).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
+    ? formatDateForPdf(data.validUntil, df, tz)
     : null
   const shopName = workshop?.name || 'Torqvoice'
 
