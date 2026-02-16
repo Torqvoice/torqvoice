@@ -18,8 +18,47 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Torqvoice - Vehicle Service Manager',
-  description: 'Workshop vehicle service management. Track repairs, maintenance, and fuel logs.',
+  title: {
+    default: 'TorqVoice - Workshop Management Platform',
+    template: '%s | TorqVoice',
+  },
+  description:
+    'Self-hosted workshop management platform for automotive service businesses. Manage work orders, invoices, customers, inventory, and vehicle service history.',
+  keywords: [
+    'workshop management',
+    'automotive service',
+    'vehicle service',
+    'work orders',
+    'invoicing',
+    'inventory management',
+    'repair shop software',
+    'self-hosted',
+  ],
+  authors: [{ name: 'TorqVoice' }],
+  creator: 'TorqVoice',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    siteName: 'TorqVoice',
+    title: 'TorqVoice - Workshop Management Platform',
+    description:
+      'Self-hosted workshop management platform for automotive service businesses. Manage work orders, invoices, customers, inventory, and vehicle service history.',
+    images: [
+      {
+        url: '/images/torqvoice_opengraph.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'TorqVoice - Workshop Management Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TorqVoice - Workshop Management Platform',
+    description:
+      'Self-hosted workshop management platform for automotive service businesses. Manage work orders, invoices, customers, inventory, and vehicle service history.',
+    images: ['/images/torqvoice_opengraph.jpg'],
+  },
 }
 
 export default function RootLayout({
