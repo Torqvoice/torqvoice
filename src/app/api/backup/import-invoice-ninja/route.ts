@@ -548,7 +548,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   } finally {
     if (tmpDir) {
-      rm(tmpDir, { recursive: true, force: true }).catch(() => {});
+      rm(tmpDir, { recursive: true, force: true }).catch(() => { /* ignore cleanup errors */ });
     }
   }
 }

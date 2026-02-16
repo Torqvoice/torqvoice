@@ -16,7 +16,7 @@ function downloadCsv(
   rows: Record<string, unknown>[],
   keys: string[],
 ) {
-  const escape = (v: unknown) => {
+  const escapeCsv = (v: unknown) => {
     const s = String(v ?? "");
     return s.includes(",") || s.includes('"') || s.includes("\n")
       ? `"${s.replace(/"/g, '""')}"`
@@ -25,7 +25,7 @@ function downloadCsv(
 
   const lines = [
     headers.map(escape).join(","),
-    ...rows.map((r) => keys.map((k) => escape(r[k])).join(",")),
+    ...rows.map((r) => keys.map((k) => escapeCsv(r[k])).join(",")),
   ];
 
   const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });

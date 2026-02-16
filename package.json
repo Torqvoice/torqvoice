@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome lint .",
+    "lint:fix": "biome lint . --write",
     "format": "biome format . --write",
     "check": "biome check .",
     "check:fix": "biome check . --write"

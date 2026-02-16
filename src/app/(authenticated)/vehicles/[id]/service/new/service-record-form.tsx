@@ -37,9 +37,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { Switch } from '@/components/ui/switch'
 import {
-  Camera,
   Check,
   ChevronsUpDown,
   FileText,
@@ -50,8 +48,6 @@ import {
   Plus,
   Search,
   Trash2,
-  Upload,
-  X,
 } from 'lucide-react'
 import { formatCurrency, getCurrencySymbol } from '@/lib/format'
 
