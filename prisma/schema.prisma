@@ -133,11 +133,12 @@ model Vehicle {
   customerId String?
   customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
-  serviceRecords ServiceRecord[]
-  notes          Note[]
-  fuelLogs       FuelLog[]
-  reminders      Reminder[]
-  quotes         Quote[]
+  serviceRecords    ServiceRecord[]
+  notes             Note[]
+  fuelLogs          FuelLog[]
+  reminders         Reminder[]
+  quotes            Quote[]
+  recurringInvoices RecurringInvoice[]
 
   @@index([organizationId])
   @@map("vehicles")
@@ -586,4 +587,60 @@ model Subscription {
   plan   SubscriptionPlan @relation(fields: [planId], references: [id])
 
   @@map("subscriptions")
+}
+
+model RecurringInvoice {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  frequency     String    // "weekly" | "biweekly" | "monthly" | "quarterly" | "yearly"
+  nextRunDate   DateTime
+  endDate       DateTime?
+  isActive      Boolean   @default(true)
+  lastRunAt     DateTime?
+  runCount      Int       @default(0)
+
+  // Template fields (copied to ServiceRecord on generation)
+  type          String    @default("maintenance")
+  cost          Float     @default(0)
+  taxRate       Float     @default(0)
+  invoiceNotes  String?
+
+  vehicleId     String
+  vehicle       Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  templateParts RecurringPart[]
+  templateLabor RecurringLabor[]
+
+  @@index([vehicleId])
+  @@index([nextRunDate, isActive])
+  @@map("recurring_invoices")
+}
+
+model RecurringPart {
+  id                 String  @id @default(cuid())
+  name               String
+  partNumber         String?
+  quantity           Int     @default(1)
+  unitPrice          Float   @default(0)
+
+  recurringInvoiceId String
+  recurringInvoice   RecurringInvoice @relation(fields: [recurringInvoiceId], references: [id], onDelete: Cascade)
+
+  @@map("recurring_parts")
+}
+
+model RecurringLabor {
+  id                 String  @id @default(cuid())
+  description        String
+  hours              Float   @default(0)
+  rate               Float   @default(0)
+
+  recurringInvoiceId String
+  recurringInvoice   RecurringInvoice @relation(fields: [recurringInvoiceId], references: [id], onDelete: Cascade)
+
+  @@map("recurring_labor")
 }

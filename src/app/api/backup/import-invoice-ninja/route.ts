@@ -383,10 +383,6 @@ export async function POST(request: NextRequest) {
         const partItems = allItems.filter((li) => li.type_id === "1");
         const laborItems = allItems.filter((li) => li.type_id === "2");
 
-        console.log(
-          `[IN import] Invoice #${invoice.number}: ${allItems.length} items (${partItems.length} parts, ${laborItems.length} labor)`
-        );
-
         const amount = parseNum(invoice.amount);
         const discount = parseNum(invoice.discount);
 
@@ -473,10 +469,6 @@ export async function POST(request: NextRequest) {
           });
           laborCreated++;
         }
-
-        console.log(
-          `[IN import] Invoice #${invoice.number}: created record ${record.id}, ${partsCreated} parts, ${laborCreated} labor`
-        );
 
         // ── Copy attached documents ─────────────────────────────────
         const invoiceDocs = docsByInvoice.get(invoice.hashed_id) || [];

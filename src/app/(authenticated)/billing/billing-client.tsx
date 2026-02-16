@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useTransition } from "react";
+import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -175,6 +176,14 @@ export default function BillingClient({
 
   return (
     <div className="space-y-6">
+      {/* Navigation */}
+      <div className="flex items-center gap-3">
+        <Button variant="outline" size="sm" disabled>Billing History</Button>
+        <Link href="/billing/recurring">
+          <Button variant="outline" size="sm">Recurring</Button>
+        </Link>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid gap-3 md:grid-cols-3">
         <Card className="border-0 shadow-sm">

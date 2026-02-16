@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { getPaymentProvider, getEnabledProviders } from "@/lib/payment-providers";
+import { rateLimit } from "@/lib/rate-limit";
 
 const checkoutSchema = z.object({
   provider: z.enum(["stripe", "vipps"]),
@@ -12,6 +13,9 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ orgId: string; token: string }> },
 ) {
+  const limited = rateLimit(request, { limit: 10, windowMs: 60_000 });
+  if (limited) return limited;
+
   try {
     const { orgId, token } = await params;
 
