@@ -474,6 +474,7 @@ model Organization {
   customFieldDefinitions CustomFieldDefinition[]
   settings               AppSetting[]
   subscription           Subscription?
+  invitations            TeamInvitation[]
 
   @@map("organizations")
 }
@@ -529,6 +530,23 @@ model SystemSetting {
   value String
 
   @@map("system_settings")
+}
+
+model TeamInvitation {
+  id             String       @id @default(cuid())
+  email          String
+  role           String       @default("member")
+  token          String       @unique
+  status         String       @default("pending") // pending | accepted | cancelled
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedById    String
+
+  @@unique([email, organizationId])
+  @@index([token])
+  @@map("team_invitations")
 }
 
 // Stripe-ready models (implementation in follow-up)

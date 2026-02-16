@@ -24,12 +24,14 @@ import {
   updateMemberRole,
   removeMember,
 } from "@/features/team/Actions/teamActions";
+import { sendInvitation } from "@/features/team/Actions/sendInvitation";
+import { cancelInvitation } from "@/features/team/Actions/cancelInvitation";
 import { createRole } from "@/features/team/Actions/createRole";
 import { updateRole } from "@/features/team/Actions/updateRole";
 import { deleteRole } from "@/features/team/Actions/deleteRole";
 import { assignRole } from "@/features/team/Actions/assignRole";
 import { permissionGroups } from "@/lib/permissions";
-import { Crown, Loader2, Pencil, Plus, Shield, ShieldCheck, Trash2, User, Users } from "lucide-react";
+import { Crown, Loader2, Mail, Pencil, Plus, Shield, ShieldCheck, Trash2, User, Users, X } from "lucide-react";
 
 interface Member {
   id: string;
@@ -42,6 +44,14 @@ interface Organization {
   id: string;
   name: string;
   members: Member[];
+}
+
+interface PendingInvitation {
+  id: string;
+  email: string;
+  role: string;
+  createdAt: Date;
+  expiresAt: Date;
 }
 
 interface RoleData {
@@ -68,10 +78,12 @@ export function TeamSettings({
   organization,
   currentRole,
   roles = [],
+  pendingInvitations = [],
 }: {
   organization: Organization | null;
   currentRole: string | null;
   roles?: RoleData[];
+  pendingInvitations?: PendingInvitation[];
 }) {
   const router = useRouter();
   const modal = useGlassModal();
@@ -209,13 +221,55 @@ export function TeamSettings({
     setLoading(true);
     const result = await inviteMember({ email: inviteEmail, role: inviteRole });
     if (result.success) {
-      setInviteEmail("");
-      router.refresh();
-      modal.open("success", "Invited", `Member invited successfully.`);
+      const data = result.data as { invited: boolean; userNotFound?: boolean };
+      if (data.userNotFound) {
+        // User doesn't exist — ask to send invitation email
+        const emailToInvite = inviteEmail;
+        const roleToInvite = inviteRole;
+        setLoading(false);
+        const ok = await confirm({
+          title: "User Not Found",
+          description: `No account found for "${emailToInvite}". Send them an invitation email to sign up and join your team?`,
+          confirmLabel: "Send Invitation",
+        });
+        if (ok) {
+          setLoading(true);
+          const sendResult = await sendInvitation({ email: emailToInvite, role: roleToInvite });
+          if (sendResult.success) {
+            setInviteEmail("");
+            router.refresh();
+            modal.open("success", "Invitation Sent", `An invitation email has been sent to ${emailToInvite}.`);
+          } else {
+            modal.open("error", "Error", sendResult.error || "Failed to send invitation");
+          }
+          setLoading(false);
+        }
+      } else {
+        setInviteEmail("");
+        router.refresh();
+        modal.open("success", "Invited", `Member invited successfully.`);
+      }
     } else {
       modal.open("error", "Error", result.error || "Failed to invite member");
     }
     setLoading(false);
+  };
+
+  const handleCancelInvitation = async (invitation: PendingInvitation) => {
+    const ok = await confirm({
+      title: "Cancel Invitation",
+      description: `Cancel the invitation to ${invitation.email}? They will no longer be able to use this link to join.`,
+      confirmLabel: "Cancel Invitation",
+      destructive: true,
+    });
+    if (!ok) return;
+    const result = await cancelInvitation({ invitationId: invitation.id });
+    if (result.success) {
+      toast.success("Invitation cancelled");
+      router.refresh();
+    } else {
+      modal.open("error", "Error", result.error || "Failed to cancel invitation");
+    }
   };
 
   const handleRoleChange = async (memberId: string, role: string) => {
@@ -401,6 +455,53 @@ export function TeamSettings({
           )}
         </CardContent>
       </Card>
+
+      {/* Pending Invitations Card */}
+      {isAdmin && pendingInvitations.length > 0 && (
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Mail className="h-4 w-4" /> Pending Invitations
+              <Badge variant="outline" className="ml-2 text-xs">
+                {pendingInvitations.length}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {pendingInvitations.map((invitation) => (
+                <div
+                  key={invitation.id}
+                  className="flex items-center gap-3 rounded-lg border p-3"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-sm">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-sm">{invitation.email}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Invited as {invitation.role} &middot; Expires {new Date(invitation.expiresAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-600 border-yellow-500/20">
+                      Pending
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={() => handleCancelInvitation(invitation)}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Custom Roles Card */}
       {isAdmin && (
