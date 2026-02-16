@@ -18,6 +18,9 @@ export async function getOrganization() {
           include: {
             members: {
               orderBy: { role: "asc" },
+              include: {
+                customRole: { select: { id: true, name: true } },
+              },
             },
           },
         },
@@ -38,6 +41,7 @@ export async function getOrganization() {
       id: m.id,
       role: m.role,
       roleId: m.roleId,
+      customRoleName: m.customRole?.name || null,
       user: userMap.get(m.userId) || { id: m.userId, name: "Unknown", email: "" },
     }));
 
@@ -124,6 +128,7 @@ export async function inviteMember(input: unknown) {
         userId: invitedUser.id,
         organizationId,
         role: data.role,
+        roleId: data.roleId,
       },
     });
 

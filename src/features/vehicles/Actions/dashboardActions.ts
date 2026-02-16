@@ -5,7 +5,8 @@ import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 
 export async function getDashboardStats() {
-  return withAuth(async ({ organizationId }) => {
+  return withAuth(async ({ organizationId, role }) => {
+    const isAdmin = role === "owner" || role === "admin" || role === "super_admin";
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -77,6 +78,7 @@ export async function getDashboardStats() {
     ]);
 
     return {
+      isAdmin,
       activeJobs,
       pendingJobs,
       todayRevenue: todayCompletedRecords._sum.totalAmount || 0,

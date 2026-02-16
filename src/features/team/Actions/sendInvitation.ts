@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { sendInvitationSchema } from "../Schema/teamSchema";
-import { sendMail, getFromAddress } from "@/lib/email";
+import { sendOrgMail, getOrgFromAddress } from "@/lib/email";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
 
@@ -30,9 +30,25 @@ export async function sendInvitation(input: unknown) {
     });
     if (existing) throw new Error("An invitation has already been sent to this email");
 
+    // Remove any stale (cancelled/accepted/expired) invitations so the unique constraint doesn't block re-invites
+    await db.teamInvitation.deleteMany({
+      where: {
+        email: data.email,
+        organizationId,
+        status: { not: "pending" },
+      },
+    });
+
     // Create invitation with 7-day expiry
     const token = randomUUID();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    // Look up custom role name if roleId is provided
+    let customRoleName: string | undefined;
+    if (data.roleId) {
+      const customRole = await db.role.findUnique({ where: { id: data.roleId }, select: { name: true } });
+      customRoleName = customRole?.name;
+    }
 
     await db.teamInvitation.create({
       data: {
@@ -42,22 +58,25 @@ export async function sendInvitation(input: unknown) {
         expiresAt,
         organizationId,
         invitedById: userId,
+        roleId: data.roleId,
       },
     });
 
-    const from = await getFromAddress();
+    const from = await getOrgFromAddress(organizationId);
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const signupUrl = `${baseUrl}/auth/sign-up?invite=${token}`;
 
-    await sendMail({
+    const roleLabel = customRoleName || data.role;
+
+    await sendOrgMail(organizationId, {
       from,
       to: data.email,
       subject: `You've been invited to join ${membership.organization.name} on Torqvoice`,
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
           <h2>Team Invitation</h2>
-          <p>You've been invited to join <strong>${membership.organization.name}</strong> on Torqvoice as a <strong>${data.role}</strong>.</p>
+          <p>You've been invited to join <strong>${membership.organization.name}</strong> on Torqvoice as a <strong>${roleLabel}</strong>.</p>
           <p>Click the button below to create your account and join the team:</p>
           <div style="margin: 24px 0;">
             <a href="${signupUrl}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">

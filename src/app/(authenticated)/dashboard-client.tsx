@@ -46,6 +46,7 @@ interface ServiceItem {
 }
 
 interface DashboardStats {
+  isAdmin: boolean;
   activeJobs: number;
   pendingJobs: number;
   todayRevenue: number;
@@ -103,7 +104,7 @@ export function DashboardClient({
       </div>
 
       {/* Quick stats row */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className={`grid grid-cols-2 gap-3 ${stats.isAdmin ? "sm:grid-cols-4" : "sm:grid-cols-2"}`}>
         <Card className="border-0 shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 text-muted-foreground">
@@ -122,26 +123,30 @@ export function DashboardClient({
             <p className="mt-1 text-2xl font-bold">{stats.pendingJobs}</p>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <DollarSign className="h-4 w-4" />
-              <span className="text-xs font-medium">Today&apos;s Revenue</span>
-            </div>
-            <p className="mt-1 text-2xl font-bold">
-              {formatCurrency(stats.todayRevenue, currencyCode)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Users className="h-4 w-4" />
-              <span className="text-xs font-medium">Total Customers</span>
-            </div>
-            <p className="mt-1 text-2xl font-bold">{stats.totalCustomers}</p>
-          </CardContent>
-        </Card>
+        {stats.isAdmin && (
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <DollarSign className="h-4 w-4" />
+                <span className="text-xs font-medium">Today&apos;s Revenue</span>
+              </div>
+              <p className="mt-1 text-2xl font-bold">
+                {formatCurrency(stats.todayRevenue, currencyCode)}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+        {stats.isAdmin && (
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Users className="h-4 w-4" />
+                <span className="text-xs font-medium">Total Customers</span>
+              </div>
+              <p className="mt-1 text-2xl font-bold">{stats.totalCustomers}</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Upcoming Reminders */}
@@ -226,13 +231,13 @@ export function DashboardClient({
                 <TableHead>Vehicle</TableHead>
                 <TableHead className="hidden sm:table-cell">Customer</TableHead>
                 <TableHead>Title</TableHead>
-                <TableHead className="w-22.5 text-right">Total</TableHead>
+                {stats.isAdmin && <TableHead className="w-22.5 text-right">Total</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {stats.recentServices.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-20 text-center text-muted-foreground">
+                  <TableCell colSpan={stats.isAdmin ? 5 : 4} className="h-20 text-center text-muted-foreground">
                     No completed services yet
                   </TableCell>
                 </TableRow>
@@ -265,14 +270,16 @@ export function DashboardClient({
                         {s.vehicle.customer?.name || "-"}
                       </TableCell>
                       <TableCell className="font-medium">{s.title}</TableCell>
-                      <TableCell className="text-right font-semibold">
-                        <span className="inline-flex items-center gap-2">
-                          {navigatingId === s.id && (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
-                          )}
-                          {formatCurrency(displayTotal, currencyCode)}
-                        </span>
-                      </TableCell>
+                      {stats.isAdmin && (
+                        <TableCell className="text-right font-semibold">
+                          <span className="inline-flex items-center gap-2">
+                            {navigatingId === s.id && (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                            )}
+                            {formatCurrency(displayTotal, currencyCode)}
+                          </span>
+                        </TableCell>
+                      )}
                     </TableRow>
                   );
                 })

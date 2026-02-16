@@ -505,8 +505,9 @@ model Role {
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  permissions Permission[]
-  members     OrganizationMember[]
+  permissions     Permission[]
+  members         OrganizationMember[]
+  teamInvitations TeamInvitation[]
 
   @@unique([organizationId, name])
   @@map("roles")
@@ -544,6 +545,9 @@ model TeamInvitation {
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   invitedById    String
+
+  roleId         String?
+  customRole     Role?        @relation(fields: [roleId], references: [id], onDelete: SetNull)
 
   @@unique([email, organizationId])
   @@index([token])
