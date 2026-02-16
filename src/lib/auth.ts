@@ -16,46 +16,11 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
-      const { SYSTEM_SETTING_KEYS } = await import(
-        "@/features/admin/Schema/systemSettingsSchema"
-      );
+      const { sendMail, getFromAddress } = await import("@/lib/email");
+      const from = await getFromAddress();
 
-      // Determine provider and get from address
-      const providerSetting = await db.systemSetting.findUnique({
-        where: { key: SYSTEM_SETTING_KEYS.EMAIL_PROVIDER },
-      });
-      const provider =
-        providerSetting?.value === "resend" ? "resend" : "smtp";
-
-      let fromEmail: string;
-      let fromName: string;
-
-      if (provider === "resend") {
-        const emailSetting = await db.systemSetting.findUnique({
-          where: { key: SYSTEM_SETTING_KEYS.RESEND_FROM_EMAIL },
-        });
-        const nameSetting = await db.systemSetting.findUnique({
-          where: { key: SYSTEM_SETTING_KEYS.RESEND_FROM_NAME },
-        });
-        fromEmail = emailSetting?.value || "noreply@example.com";
-        fromName = nameSetting?.value || "Torqvoice";
-      } else {
-        const emailSetting = await db.systemSetting.findUnique({
-          where: { key: SYSTEM_SETTING_KEYS.SMTP_FROM_EMAIL },
-        });
-        const nameSetting = await db.systemSetting.findUnique({
-          where: { key: SYSTEM_SETTING_KEYS.SMTP_FROM_NAME },
-        });
-        fromEmail =
-          emailSetting?.value ||
-          process.env.SMTP_FROM_EMAIL ||
-          "noreply@example.com";
-        fromName = nameSetting?.value || "Torqvoice";
-      }
-
-      const { sendMail } = await import("@/lib/email");
       await sendMail({
-        from: `${fromName} <${fromEmail}>`,
+        from,
         to: user.email,
         subject: "Reset your Torqvoice password",
         html: `

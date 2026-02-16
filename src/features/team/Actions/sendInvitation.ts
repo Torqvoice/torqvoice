@@ -4,8 +4,7 @@ import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { sendInvitationSchema } from "../Schema/teamSchema";
-import { sendMail } from "@/lib/email";
-import { SYSTEM_SETTING_KEYS } from "@/features/admin/Schema/systemSettingsSchema";
+import { sendMail, getFromAddress } from "@/lib/email";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
 
@@ -46,43 +45,13 @@ export async function sendInvitation(input: unknown) {
       },
     });
 
-    // Resolve from address
-    const providerSetting = await db.systemSetting.findUnique({
-      where: { key: SYSTEM_SETTING_KEYS.EMAIL_PROVIDER },
-    });
-    const provider = providerSetting?.value === "resend" ? "resend" : "smtp";
-
-    let fromEmail: string;
-    let fromName: string;
-
-    if (provider === "resend") {
-      const emailSetting = await db.systemSetting.findUnique({
-        where: { key: SYSTEM_SETTING_KEYS.RESEND_FROM_EMAIL },
-      });
-      const nameSetting = await db.systemSetting.findUnique({
-        where: { key: SYSTEM_SETTING_KEYS.RESEND_FROM_NAME },
-      });
-      fromEmail = emailSetting?.value || "noreply@example.com";
-      fromName = nameSetting?.value || "Torqvoice";
-    } else {
-      const emailSetting = await db.systemSetting.findUnique({
-        where: { key: SYSTEM_SETTING_KEYS.SMTP_FROM_EMAIL },
-      });
-      const nameSetting = await db.systemSetting.findUnique({
-        where: { key: SYSTEM_SETTING_KEYS.SMTP_FROM_NAME },
-      });
-      fromEmail =
-        emailSetting?.value ||
-        process.env.SMTP_FROM_EMAIL ||
-        "noreply@example.com";
-      fromName = nameSetting?.value || "Torqvoice";
-    }
+    const from = await getFromAddress();
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const signupUrl = `${baseUrl}/auth/sign-up?invite=${token}`;
 
     await sendMail({
-      from: `${fromName} <${fromEmail}>`,
+      from,
       to: data.email,
       subject: `You've been invited to join ${membership.organization.name} on Torqvoice`,
       html: `

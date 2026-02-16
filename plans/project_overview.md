@@ -18,7 +18,8 @@ For submenus, use same layout as /settings were we have a child sidebar.
 
 Task List:
 
-- First user that register on application should automatically be super admin.
-- In the new super admin page, add new sidebar authentication and add option to disable new user registrations. also add other options that
-  you think is usefull for super admin for this type of applications.
-- Add email settings for super admin to set app wider email smtp setup with test mail function. this has to include all settings for smtp, tls starttls and so on. look online so we get all settings correct. 
+- Create email providers:
+  - Postmark
+  - Mailgun
+  - SendGrid
+  - Amazon SES
