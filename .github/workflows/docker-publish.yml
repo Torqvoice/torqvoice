@@ -5,6 +5,11 @@ on:
     # branches: [main]
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to set (e.g. v1.2.3). Leave empty to auto-detect."
+        required: false
+        default: ""
 
 env:
   REGISTRY: ghcr.io
@@ -34,7 +39,9 @@ jobs:
       - name: Determine version
         id: version
         run: |
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+          if [[ -n "${{ github.event.inputs.version }}" ]]; then
+            echo "value=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.ref_type }}" == "tag" ]]; then
             echo "value=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
           else
             TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "development")
