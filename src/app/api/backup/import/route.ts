@@ -65,15 +65,15 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
   }
 
   const allowedCategories = ["logos", "vehicles", "inventory", "services"];
-  const filesFolder = zip.folder("files");
-  if (!filesFolder) return;
 
   const fileEntries = Object.keys(zip.files).filter(
-    (name) => name.startsWith("files/") && !zip.files[name].dir
+    (name) => !zip.files[name].dir && (name.startsWith("files/") || name.startsWith("uploads/"))
   );
 
   for (const filePath of fileEntries) {
-    // filePath format: files/{category}/{filename}
+    // Supports both formats:
+    //   files/{category}/{filename}  (v2 backup)
+    //   uploads/{category}/{filename} (legacy backup)
     const parts = filePath.split("/");
     if (parts.length !== 3) continue;
 
@@ -98,13 +98,22 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
   }
 }
 
-/** Rewrite /api/files/OLD_ORG_ID/... URLs to use the importing org's ID */
+/** Rewrite file URLs to use the importing org's ID */
 function rewriteFileUrl(
   url: string | null | undefined,
   newOrgId: string
 ): string | null {
   if (!url) return null;
-  return url.replace(/^\/api\/files\/[^/]+\//, `/api/files/${newOrgId}/`);
+  // New format: /api/files/OLD_ORG_ID/category/filename
+  if (url.startsWith("/api/files/")) {
+    return url.replace(/^\/api\/files\/[^/]+\//, `/api/files/${newOrgId}/`);
+  }
+  // Legacy format: /uploads/category/filename → convert to new format
+  if (url.startsWith("/uploads/")) {
+    const relative = url.replace(/^\/uploads\//, "");
+    return `/api/files/${newOrgId}/${relative}`;
+  }
+  return url;
 }
 
 export async function POST(request: NextRequest) {
@@ -468,27 +477,21 @@ export async function POST(request: NextRequest) {
                 });
               }
 
-              // Service attachments (deduplicate by fileName)
+              // Service attachments
               const attachments = sr.attachments as
                 | Record<string, unknown>[]
                 | undefined;
               if (attachments?.length) {
-                const seenNames = new Set<string>();
-                const uniqueAttachments = attachments.filter((a) => {
-                  const name = a.fileName as string;
-                  if (seenNames.has(name)) return false;
-                  seenNames.add(name);
-                  return true;
-                });
                 await tx.serviceAttachment.createMany({
-                  data: uniqueAttachments.map((a) => ({
+                  data: attachments.map((a) => ({
                     id: a.id as string,
                     fileName: a.fileName as string,
                     fileUrl: rewriteFileUrl(a.fileUrl as string, ctx.organizationId) || (a.fileUrl as string),
                     fileType: a.fileType as string,
-                    fileSize: a.fileSize as number,
+                    fileSize: (a.fileSize as number) || 0,
                     category: (a.category as string) || "diagnostic",
                     description: (a.description as string) || null,
+                    includeInInvoice: a.includeInInvoice !== false,
                     createdAt: a.createdAt
                       ? new Date(a.createdAt as string)
                       : undefined,
