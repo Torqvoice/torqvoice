@@ -50,8 +50,10 @@ export async function withAuth<T>(
     if (!isSuperAdmin && options.requiredPermissions && options.requiredPermissions.length > 0) {
       const isOwnerOrAdmin = membership?.role === "owner" || membership?.role === "admin";
       const roleIsAdmin = membership?.customRole?.isAdmin === true;
+      // Members without a custom role have full access (no restrictions)
+      const hasNoCustomRole = !membership?.roleId;
 
-      if (!isOwnerOrAdmin && !roleIsAdmin) {
+      if (!isOwnerOrAdmin && !roleIsAdmin && !hasNoCustomRole) {
         const userPermissions = membership?.customRole?.permissions ?? [];
         if (!hasAllPermissions(userPermissions, options.requiredPermissions)) {
           return { success: false, error: "Insufficient permissions" };

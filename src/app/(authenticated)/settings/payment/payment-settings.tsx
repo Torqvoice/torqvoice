@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { setSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { Banknote, CreditCard, Loader2, Save, Copy, Check } from "lucide-react";
+import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
 export function PaymentSettings({ settings }: { settings: Record<string, string> }) {
   const router = useRouter();
@@ -78,6 +79,8 @@ export function PaymentSettings({ settings }: { settings: Record<string, string>
 
   return (
     <div className="space-y-6">
+      <ReadOnlyBanner />
+      <ReadOnlyWrapper>
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <Banknote className="h-5 w-5 text-muted-foreground" />
@@ -272,20 +275,22 @@ export function PaymentSettings({ settings }: { settings: Record<string, string>
             )}
           </div>
 
-          <Separator />
-
-          <div className="flex items-center gap-3">
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              Save Payment Settings
-            </Button>
-          </div>
+          <SaveButton>
+            <Separator />
+            <div className="flex items-center gap-3">
+              <Button onClick={handleSave} disabled={saving}>
+                {saving ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
+                Save Payment Settings
+              </Button>
+            </div>
+          </SaveButton>
         </CardContent>
       </Card>
+      </ReadOnlyWrapper>
     </div>
   );
 }

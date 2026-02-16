@@ -77,6 +77,8 @@ export function AppSidebar({
   activeOrgId,
   isSuperAdmin,
   features,
+  canAccessSettings = true,
+  canAccessReports = true,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   companyLogo?: string
@@ -84,6 +86,8 @@ export function AppSidebar({
   activeOrgId?: string
   isSuperAdmin?: boolean
   features?: PlanFeatures
+  canAccessSettings?: boolean
+  canAccessReports?: boolean
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -95,10 +99,10 @@ export function AppSidebar({
 
   const navItems = [
     ...baseNavItems.filter((item) => {
-      if (item.title === 'Reports' && features?.reports === false) return false
+      if (item.title === 'Reports' && (features?.reports === false || !canAccessReports)) return false
       return true
     }),
-    { title: 'Settings', url: '/settings', icon: Settings },
+    ...(canAccessSettings ? [{ title: 'Settings', url: '/settings', icon: Settings }] : []),
   ]
 
   const activeOrg = organizations.find((o) => o.id === activeOrgId) || organizations[0]
@@ -264,12 +268,14 @@ export function AppSidebar({
                 align="end"
                 sideOffset={4}
               >
-                <DropdownMenuItem asChild>
-                  <Link href="/settings">
-                    <Settings className="mr-2 size-4" />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
+                {canAccessSettings && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings">
+                      <Settings className="mr-2 size-4" />
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
                   {theme === 'dark' ? (
                     <Sun className="mr-2 size-4" />

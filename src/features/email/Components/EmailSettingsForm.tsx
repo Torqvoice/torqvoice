@@ -20,6 +20,7 @@ import {
   setEmailSettings,
   testOrgEmailConnection,
 } from "../Actions/emailSettingsActions";
+import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "@/app/(authenticated)/settings/read-only-guard";
 
 type EmailProviderType =
   | "smtp"
@@ -234,6 +235,8 @@ export function EmailSettingsForm({
 
   return (
     <div className="space-y-6">
+      <ReadOnlyBanner />
+      <ReadOnlyWrapper>
       <Card>
         <CardHeader>
           <CardTitle>Email Provider</CardTitle>
@@ -769,12 +772,15 @@ export function EmailSettingsForm({
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={isPending}>
-          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Settings
-        </Button>
-      </div>
+      <SaveButton>
+        <div className="flex justify-end">
+          <Button onClick={handleSave} disabled={isPending}>
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Settings
+          </Button>
+        </div>
+      </SaveButton>
+      </ReadOnlyWrapper>
     </div>
   );
 }

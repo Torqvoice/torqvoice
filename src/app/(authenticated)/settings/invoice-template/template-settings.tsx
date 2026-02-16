@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { setSetting } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { Loader2, Palette } from "lucide-react";
+import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
 interface TemplateValues {
   primaryColor: string;
@@ -65,6 +66,7 @@ export function TemplateSettings({
 
   return (
     <div className="space-y-6">
+      <ReadOnlyBanner />
       <div>
         <h2 className="text-lg font-semibold">Invoice Template</h2>
         <p className="text-sm text-muted-foreground">
@@ -72,6 +74,7 @@ export function TemplateSettings({
         </p>
       </div>
 
+      <ReadOnlyWrapper>
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Color Settings */}
         <Card className="border-0 shadow-sm">
@@ -286,12 +289,16 @@ export function TemplateSettings({
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={saving}>
-          {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Template Settings
-        </Button>
-      </div>
+      </ReadOnlyWrapper>
+
+      <SaveButton>
+        <div className="flex justify-end">
+          <Button onClick={handleSave} disabled={saving}>
+            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Template Settings
+          </Button>
+        </div>
+      </SaveButton>
     </div>
   );
 }

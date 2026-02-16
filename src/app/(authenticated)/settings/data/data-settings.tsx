@@ -20,6 +20,7 @@ import {
   Loader2,
   Upload,
 } from 'lucide-react'
+import { ReadOnlyBanner, ReadOnlyWrapper } from '../read-only-guard'
 
 interface ExportOptions {
   settings: boolean
@@ -232,6 +233,7 @@ export function DataSettings() {
 
   return (
     <div className="space-y-6">
+      <ReadOnlyBanner />
       <div>
         <h2 className="text-lg font-semibold">Data Management</h2>
         <p className="text-sm text-muted-foreground">
@@ -239,6 +241,7 @@ export function DataSettings() {
         </p>
       </div>
 
+      <ReadOnlyWrapper>
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Export Card */}
         <Card className="border-0 shadow-sm">
@@ -383,6 +386,7 @@ export function DataSettings() {
           </div>
         </CardContent>
       </Card>
+      </ReadOnlyWrapper>
 
       {/* LubeLog Import Dialog */}
       <Dialog open={lubelogOpen} onOpenChange={(open) => {

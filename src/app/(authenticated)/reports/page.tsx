@@ -5,6 +5,8 @@ import { UpgradePrompt } from "@/components/upgrade-prompt";
 import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures } from "@/lib/features";
 import { redirect } from "next/navigation";
+import { getCachedMembership } from "@/lib/cached-session";
+import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
 import ReportsClient from "./reports-client";
 
 export default async function ReportsPage() {
@@ -12,6 +14,21 @@ export default async function ReportsPage() {
 
   if (data.status === "unauthenticated") redirect("/auth/sign-in");
   if (data.status === "no-organization") redirect("/onboarding");
+
+  // Check if user has reports access
+  const isOwnerOrAdmin = data.role === "owner" || data.role === "admin" || data.role === "super_admin";
+  if (!isOwnerOrAdmin) {
+    const membership = await getCachedMembership(data.userId);
+    // Members without a custom role have full access; only restrict if a custom role is assigned
+    if (membership?.roleId) {
+      const userPermissions = membership?.customRole?.permissions ?? [];
+      const canReadReports = hasPermission(userPermissions, {
+        action: PermissionAction.READ,
+        subject: PermissionSubject.REPORTS,
+      });
+      if (!canReadReports) redirect("/");
+    }
+  }
 
   const features = await getFeatures(data.organizationId);
 
