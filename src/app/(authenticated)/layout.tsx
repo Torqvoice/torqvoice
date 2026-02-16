@@ -22,11 +22,6 @@ export default async function DashboardLayout({
   const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved;
 
   return (
-    <DateSettingsProvider
-      dateFormat={data.dateFormat}
-      timeFormat={data.timeFormat}
-      timezone={data.timezone}
-    >
     <WhiteLabelCtaProvider show={showWhiteLabelCta}>
     <SidebarProvider
       style={
@@ -35,6 +30,11 @@ export default async function DashboardLayout({
         } as React.CSSProperties
       }
     >
+      <DateSettingsProvider
+        dateFormat={data.dateFormat}
+        timeFormat={data.timeFormat}
+        timezone={data.timezone}
+      >
       <ConfirmProvider>
         <AppSidebar
           companyLogo={data.companyLogo}
@@ -46,8 +46,8 @@ export default async function DashboardLayout({
         <SidebarInset>{children}</SidebarInset>
         <SearchCommand />
       </ConfirmProvider>
+      </DateSettingsProvider>
     </SidebarProvider>
     </WhiteLabelCtaProvider>
-    </DateSettingsProvider>
   );
 }

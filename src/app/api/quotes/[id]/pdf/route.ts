@@ -86,7 +86,7 @@ export async function GET(
 
     const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`;
 
-    return new NextResponse(buffer.buffer as ArrayBuffer, {
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${quoteNum}.pdf"`,
