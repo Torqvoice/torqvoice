@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// biome-ignore lint/suspicious/noShadowRestrictedNames: Next.js error boundary convention
 export default function Error({
   error,
   reset,

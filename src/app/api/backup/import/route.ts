@@ -16,7 +16,6 @@ function isZipBuffer(buffer: ArrayBuffer): boolean {
 
 interface BackupData {
   version: number;
-  // biome-ignore lint: backup data shape is dynamic
   data: Record<string, any>;
 }
 

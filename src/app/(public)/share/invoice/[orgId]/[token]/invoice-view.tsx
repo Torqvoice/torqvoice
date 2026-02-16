@@ -13,7 +13,7 @@ import {
   Paperclip,
   X,
 } from 'lucide-react'
-import { formatCurrency, formatDate as fmtDate, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
 
 interface InvoiceRecord {
   id: string
