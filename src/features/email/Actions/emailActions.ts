@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { sendMail } from "@/lib/email";
+import { sendOrgMail, getOrgFromAddress } from "@/lib/email";
 import { withAuth } from "@/lib/with-auth";
 import { renderToBuffer } from "@react-pdf/renderer";
 import React from "react";
@@ -106,10 +106,10 @@ export async function sendQuoteEmail(input: {
     const pdfBuffer = await renderToBuffer(element);
     const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`;
 
-    const fromEmail = process.env.SMTP_FROM_EMAIL || settings["workshop.email"] || "noreply@localhost";
+    const from = await getOrgFromAddress(organizationId);
 
-    await sendMail({
-      from: `${fromName} <${fromEmail}>`,
+    await sendOrgMail(organizationId, {
+      from,
       to: recipientEmail,
       subject: `Quote ${quoteNum} - ${quote.title}`,
       html: `
@@ -196,10 +196,10 @@ export async function sendInvoiceEmail(input: {
       ? `${process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"}/share/invoice/${organizationId}/${record.publicToken}`
       : null;
 
-    const fromEmail = process.env.SMTP_FROM_EMAIL || settings["workshop.email"] || "noreply@localhost";
+    const from = await getOrgFromAddress(organizationId);
 
-    await sendMail({
-      from: `${fromName} <${fromEmail}>`,
+    await sendOrgMail(organizationId, {
+      from,
       to: recipientEmail,
       subject: `Invoice ${invoiceNum} - ${record.title}`,
       html: `

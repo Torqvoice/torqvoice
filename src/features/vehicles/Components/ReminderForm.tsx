@@ -16,7 +16,6 @@ import { useGlassModal } from "@/components/glass-modal";
 import { toast } from "sonner";
 import { createReminder, updateReminder } from "../Actions/reminderActions";
 import { Loader2 } from "lucide-react";
-import { format } from "date-fns";
 
 interface ReminderData {
   id: string;
@@ -48,7 +47,7 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
     if (open && reminder) {
       setTitle(reminder.title);
       setDescription(reminder.description || "");
-      setDueDate(reminder.dueDate ? format(new Date(reminder.dueDate), "yyyy-MM-dd") : "");
+      setDueDate(reminder.dueDate ? new Date(reminder.dueDate).toISOString().split("T")[0] : "");
       setDueMileage(reminder.dueMileage ? String(reminder.dueMileage) : "");
     } else if (open) {
       setTitle("");

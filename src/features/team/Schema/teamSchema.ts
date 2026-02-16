@@ -46,3 +46,16 @@ export const assignRoleSchema = z.object({
   memberId: z.string(),
   roleId: z.string().nullable(),
 });
+
+export const sendInvitationSchema = z.object({
+  email: z.string().email(),
+  role: z.enum(["admin", "member"]).default("member"),
+});
+
+export const cancelInvitationSchema = z.object({
+  invitationId: z.string(),
+});
+
+export const acceptInvitationSchema = z.object({
+  token: z.string(),
+});

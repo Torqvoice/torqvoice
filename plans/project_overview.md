@@ -18,7 +18,28 @@ For submenus, use same layout as /settings were we have a child sidebar.
 
 Task List:
 
-- First user that register on application should automatically be super admin.
-- In the new super admin page, add new sidebar authentication and add option to disable new user registrations. also add other options that
-  you think is usefull for super admin for this type of applications.
-- Add email settings for super admin to set app wider email smtp setup with test mail function. this has to include all settings for smtp, tls starttls and so on. look online so we get all settings correct. 
+  1. Recurring invoices
+
+  Common for fleet customers or maintenance contracts. Currently there's no way to schedule automatic invoice generation.
+
+  2. Billing page shows payment status but filters in memory
+
+  getBillingHistory fetches all records then filters by payment status in JS. Should be a database query for performance at scale.
+
+  3. No rate limiting on public invoice endpoints
+
+  /share/invoice/[orgId]/[token] is open to the internet with no rate limiting. Easy to add middleware.
+
+  4. Reports are basic
+
+  Only revenue by month and by service type. Missing: technician productivity, average job time, most common services, customer retention,
+  parts usage.
+
+  5. No calendar/scheduling view
+
+  Shops need to see upcoming appointments. A simple calendar view using existing service records + reminders would be very useful.
+
+  10. Console.log cleanup in API routes
+
+  Several API routes use console.log/console.error for error handling. Replace with a proper
+  logger or remove for production. Low effort, improves production hygiene.

@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Zap } from 'lucide-react'
 import { useShowWhiteLabelCta } from '@/components/white-label-cta-context'
+import { NewWorkOrderButton } from '@/components/new-work-order-button'
 
 const breadcrumbMap: Record<string, { parent?: string; parentHref?: string; label: string }> = {
   '/': { label: 'Dashboard' },
@@ -46,6 +47,7 @@ const breadcrumbMap: Record<string, { parent?: string; parentHref?: string; labe
   '/settings/currency': { parent: 'Settings', parentHref: '/settings', label: 'Currency' },
   '/settings/workshop': { parent: 'Settings', parentHref: '/settings', label: 'Workshop' },
   '/settings/appearance': { parent: 'Settings', parentHref: '/settings', label: 'Appearance' },
+  '/settings/email': { parent: 'Settings', parentHref: '/settings', label: 'Email' },
   '/settings/about': { parent: 'Settings', parentHref: '/settings', label: 'About' },
 }
 
@@ -104,14 +106,17 @@ export function PageHeader() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      {showWhiteLabelCta && (
-        <Button asChild variant="outline" size="sm" className="ml-auto">
-          <Link href="/settings/license">
-            <Zap className="mr-2 h-3 w-3" />
-            Purchase White-Label
-          </Link>
-        </Button>
-      )}
+      <div className="ml-auto flex items-center gap-2">
+        <NewWorkOrderButton />
+        {showWhiteLabelCta && (
+          <Button asChild variant="outline" size="sm">
+            <Link href="/settings/license">
+              <Zap className="mr-2 h-3 w-3" />
+              Purchase White-Label
+            </Link>
+          </Button>
+        )}
+      </div>
     </header>
   )
 }

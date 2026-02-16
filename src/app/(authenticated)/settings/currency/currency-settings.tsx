@@ -64,7 +64,6 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
   const [taxEnabled, setTaxEnabled] = useState(settings[SETTING_KEYS.TAX_ENABLED] !== "false");
   const [defaultTaxRate, setDefaultTaxRate] = useState(settings[SETTING_KEYS.DEFAULT_TAX_RATE] || "0");
   const [unitSystem, setUnitSystem] = useState(settings[SETTING_KEYS.UNIT_SYSTEM] || "imperial");
-
   const handleSave = async () => {
     setSaving(true);
     await setSettings({
@@ -75,7 +74,7 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
     });
     setSaving(false);
     router.refresh();
-    toast.success("Currency settings saved");
+    toast.success("Settings saved");
   };
 
   return (
@@ -188,7 +187,7 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}
-              Save Currency Settings
+              Save Settings
             </Button>
           </div>
         </CardContent>

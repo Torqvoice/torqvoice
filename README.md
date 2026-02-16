@@ -33,7 +33,7 @@ Create a `docker-compose.yml`:
 ```yaml
 services:
   app:
-    image: ghcr.io/sinamics/torqvoice:main
+    image: ghcr.io/sinamics/torqvoice:latest
     restart: unless-stopped
     ports:
       - "3000:3000"

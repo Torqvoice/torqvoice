@@ -78,13 +78,15 @@ export async function GET(
       currencyCode: settingsMap["workshop.currencyCode"] || "USD",
       logoDataUri,
       torqvoiceLogoDataUri,
+      dateFormat: settingsMap["workshop.dateFormat"] || undefined,
+      timezone: settingsMap["workshop.timezone"] || undefined,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const buffer = await renderToBuffer(element);
 
     const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`;
 
-    return new NextResponse(buffer.buffer as ArrayBuffer, {
+    return new NextResponse(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${quoteNum}.pdf"`,

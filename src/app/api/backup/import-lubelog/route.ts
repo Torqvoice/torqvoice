@@ -430,7 +430,7 @@ export async function POST(request: NextRequest) {
   } finally {
     // Clean up temp directory
     if (tmpDir) {
-      rm(tmpDir, { recursive: true, force: true }).catch(() => {});
+      rm(tmpDir, { recursive: true, force: true }).catch(() => { /* ignore cleanup errors */ });
     }
   }
 }

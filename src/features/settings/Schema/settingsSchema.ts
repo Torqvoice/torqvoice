@@ -45,6 +45,9 @@ export const SETTING_KEYS = {
   LICENSE_VALID: "license.valid",
   LICENSE_CHECKED_AT: "license.checkedAt",
   LICENSE_PLAN: "license.plan",
+  DATE_FORMAT: "workshop.dateFormat",
+  TIME_FORMAT: "workshop.timeFormat",
+  TIMEZONE: "workshop.timezone",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

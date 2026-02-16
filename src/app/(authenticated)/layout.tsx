@@ -6,6 +6,7 @@ import { ConfirmProvider } from "@/components/confirm-dialog";
 import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { WhiteLabelCtaProvider } from "@/components/white-label-cta-context";
+import { DateSettingsProvider } from "@/components/date-settings-context";
 
 export default async function DashboardLayout({
   children,
@@ -29,6 +30,11 @@ export default async function DashboardLayout({
         } as React.CSSProperties
       }
     >
+      <DateSettingsProvider
+        dateFormat={data.dateFormat}
+        timeFormat={data.timeFormat}
+        timezone={data.timezone}
+      >
       <ConfirmProvider>
         <AppSidebar
           companyLogo={data.companyLogo}
@@ -40,6 +46,7 @@ export default async function DashboardLayout({
         <SidebarInset>{children}</SidebarInset>
         <SearchCommand />
       </ConfirmProvider>
+      </DateSettingsProvider>
     </SidebarProvider>
     </WhiteLabelCtaProvider>
   );
