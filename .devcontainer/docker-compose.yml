@@ -13,6 +13,9 @@ services:
       - 3000:3000
     environment:
       - DATABASE_URL=postgresql://torqvoice:torqvoice@db:5432/torqvoice
+    networks:
+      - default
+      - torqvoice-shared
     depends_on:
       db:
         condition: service_healthy
@@ -55,3 +58,7 @@ services:
 volumes:
   postgres-data:
   pgadmin-data:
+
+networks:
+  torqvoice-shared:
+    external: true

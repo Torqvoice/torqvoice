@@ -22,6 +22,30 @@ export const SYSTEM_SETTING_KEYS = {
   RESEND_API_KEY: "resend.apiKey",
   RESEND_FROM_EMAIL: "resend.fromEmail",
   RESEND_FROM_NAME: "resend.fromName",
+
+  // Postmark
+  POSTMARK_API_KEY: "postmark.apiKey",
+  POSTMARK_FROM_EMAIL: "postmark.fromEmail",
+  POSTMARK_FROM_NAME: "postmark.fromName",
+
+  // Mailgun
+  MAILGUN_API_KEY: "mailgun.apiKey",
+  MAILGUN_DOMAIN: "mailgun.domain",
+  MAILGUN_REGION: "mailgun.region",
+  MAILGUN_FROM_EMAIL: "mailgun.fromEmail",
+  MAILGUN_FROM_NAME: "mailgun.fromName",
+
+  // SendGrid
+  SENDGRID_API_KEY: "sendgrid.apiKey",
+  SENDGRID_FROM_EMAIL: "sendgrid.fromEmail",
+  SENDGRID_FROM_NAME: "sendgrid.fromName",
+
+  // Amazon SES
+  SES_ACCESS_KEY_ID: "ses.accessKeyId",
+  SES_SECRET_ACCESS_KEY: "ses.secretAccessKey",
+  SES_REGION: "ses.region",
+  SES_FROM_EMAIL: "ses.fromEmail",
+  SES_FROM_NAME: "ses.fromName",
 } as const;
 
 export type SystemSettingKey =

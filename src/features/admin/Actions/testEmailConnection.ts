@@ -2,7 +2,7 @@
 
 import { withSuperAdmin } from "@/lib/with-super-admin";
 import { db } from "@/lib/db";
-import { sendMail } from "@/lib/email";
+import { sendMail, getFromAddress } from "@/lib/email";
 import { SYSTEM_SETTING_KEYS } from "../Schema/systemSettingsSchema";
 
 export async function testEmailConnection() {
@@ -16,36 +16,11 @@ export async function testEmailConnection() {
       throw new Error("Could not find your email address");
     }
 
-    // Determine provider
     const providerSetting = await db.systemSetting.findUnique({
       where: { key: SYSTEM_SETTING_KEYS.EMAIL_PROVIDER },
     });
-    const provider = providerSetting?.value === "resend" ? "resend" : "smtp";
-
-    // Get from address based on provider
-    let from: string;
-    if (provider === "resend") {
-      const fromSetting = await db.systemSetting.findUnique({
-        where: { key: SYSTEM_SETTING_KEYS.RESEND_FROM_EMAIL },
-      });
-      const fromName = await db.systemSetting.findUnique({
-        where: { key: SYSTEM_SETTING_KEYS.RESEND_FROM_NAME },
-      });
-      const fromEmail = fromSetting?.value || user.email;
-      const senderName = fromName?.value || "Torqvoice";
-      from = `${senderName} <${fromEmail}>`;
-    } else {
-      const fromSetting = await db.systemSetting.findUnique({
-        where: { key: SYSTEM_SETTING_KEYS.SMTP_FROM_EMAIL },
-      });
-      const fromName = await db.systemSetting.findUnique({
-        where: { key: SYSTEM_SETTING_KEYS.SMTP_FROM_NAME },
-      });
-      const fromEmail =
-        fromSetting?.value || process.env.SMTP_FROM_EMAIL || user.email;
-      const senderName = fromName?.value || "Torqvoice";
-      from = `${senderName} <${fromEmail}>`;
-    }
+    const provider = providerSetting?.value || "smtp";
+    const from = await getFromAddress();
 
     await sendMail({
       from,

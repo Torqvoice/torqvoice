@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [],
   },
-  allowedDevOrigins: ['10.0.0.217'],
+  allowedDevOrigins: ['10.0.0.217', '192.168.30.111'],
   experimental: {
     proxyClientMaxBodySize: '2gb',
   },

@@ -383,10 +383,6 @@ export async function POST(request: NextRequest) {
         const partItems = allItems.filter((li) => li.type_id === "1");
         const laborItems = allItems.filter((li) => li.type_id === "2");
 
-        console.log(
-          `[IN import] Invoice #${invoice.number}: ${allItems.length} items (${partItems.length} parts, ${laborItems.length} labor)`
-        );
-
         const amount = parseNum(invoice.amount);
         const discount = parseNum(invoice.discount);
 
@@ -474,10 +470,6 @@ export async function POST(request: NextRequest) {
           laborCreated++;
         }
 
-        console.log(
-          `[IN import] Invoice #${invoice.number}: created record ${record.id}, ${partsCreated} parts, ${laborCreated} labor`
-        );
-
         // ── Copy attached documents ─────────────────────────────────
         const invoiceDocs = docsByInvoice.get(invoice.hashed_id) || [];
         for (const doc of invoiceDocs) {
@@ -556,7 +548,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   } finally {
     if (tmpDir) {
-      rm(tmpDir, { recursive: true, force: true }).catch(() => {});
+      rm(tmpDir, { recursive: true, force: true }).catch(() => { /* ignore cleanup errors */ });
     }
   }
 }

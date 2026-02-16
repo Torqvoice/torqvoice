@@ -3,7 +3,7 @@
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import Link from "next/link";
-import { format } from "date-fns";
+import { useFormatDate } from "@/lib/use-format-date";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,6 +75,7 @@ export function ServiceRecordsTable({
   currencyCode = "USD",
 }: ServiceRecordsTableProps) {
   const router = useRouter();
+  const { formatDate } = useFormatDate();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -205,7 +206,7 @@ export function ServiceRecordsTable({
                     }}
                   >
                     <TableCell className="font-mono text-xs">
-                      {format(new Date(record.serviceDate), "MM/dd/yyyy")}
+                      {formatDate(new Date(record.serviceDate))}
                     </TableCell>
                     <TableCell className="max-w-0">
                       <div className="truncate">

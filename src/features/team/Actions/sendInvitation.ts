@@ -1,0 +1,80 @@
+"use server";
+
+import { randomUUID } from "crypto";
+import { db } from "@/lib/db";
+import { withAuth } from "@/lib/with-auth";
+import { sendInvitationSchema } from "../Schema/teamSchema";
+import { sendMail, getFromAddress } from "@/lib/email";
+import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { revalidatePath } from "next/cache";
+
+export async function sendInvitation(input: unknown) {
+  return withAuth(async ({ userId, organizationId }) => {
+    const data = sendInvitationSchema.parse(input);
+
+    // Verify caller is owner or admin
+    const membership = await db.organizationMember.findFirst({
+      where: { userId, organizationId },
+      include: { organization: true },
+    });
+    if (!membership) throw new Error("You don't belong to an organization");
+    if (membership.role === "member") throw new Error("Only owners and admins can invite members");
+
+    // Check for existing pending invitation
+    const existing = await db.teamInvitation.findFirst({
+      where: {
+        email: data.email,
+        organizationId,
+        status: "pending",
+      },
+    });
+    if (existing) throw new Error("An invitation has already been sent to this email");
+
+    // Create invitation with 7-day expiry
+    const token = randomUUID();
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    await db.teamInvitation.create({
+      data: {
+        email: data.email,
+        role: data.role,
+        token,
+        expiresAt,
+        organizationId,
+        invitedById: userId,
+      },
+    });
+
+    const from = await getFromAddress();
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const signupUrl = `${baseUrl}/auth/sign-up?invite=${token}`;
+
+    await sendMail({
+      from,
+      to: data.email,
+      subject: `You've been invited to join ${membership.organization.name} on Torqvoice`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+          <h2>Team Invitation</h2>
+          <p>You've been invited to join <strong>${membership.organization.name}</strong> on Torqvoice as a <strong>${data.role}</strong>.</p>
+          <p>Click the button below to create your account and join the team:</p>
+          <div style="margin: 24px 0;">
+            <a href="${signupUrl}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
+              Accept Invitation
+            </a>
+          </div>
+          <p style="color: #6b7280; font-size: 14px;">This invitation expires in 7 days.</p>
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
+          <p style="color: #6b7280; font-size: 12px;">
+            If the button doesn't work, copy and paste this URL into your browser:<br/>
+            <a href="${signupUrl}" style="color: #6b7280;">${signupUrl}</a>
+          </p>
+        </div>
+      `,
+    });
+
+    revalidatePath("/settings/team");
+    return { invited: true, pending: true };
+  }, { requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }] });
+}

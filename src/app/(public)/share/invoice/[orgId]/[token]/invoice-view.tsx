@@ -13,7 +13,7 @@ import {
   Paperclip,
   X,
 } from 'lucide-react'
-import { formatCurrency } from '@/lib/format'
+import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
 
 interface InvoiceRecord {
   id: string
@@ -102,6 +102,8 @@ export function InvoiceView({
   showLogo = true,
   showCompanyName = true,
   showTorqvoiceBranding,
+  dateFormat,
+  timezone,
 }: {
   record: InvoiceRecord
   workshop: { name: string; address: string; phone: string; email: string }
@@ -114,6 +116,8 @@ export function InvoiceView({
   showLogo?: boolean
   showCompanyName?: boolean
   showTorqvoiceBranding?: boolean
+  dateFormat?: string
+  timezone?: string
 }) {
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
   const [paymentAmount, setPaymentAmount] = useState('')
@@ -126,11 +130,9 @@ export function InvoiceView({
   const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
   const displayTotal = record.totalAmount > 0 ? record.totalAmount : record.cost
   const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
-  const serviceDate = new Date(record.serviceDate).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  const df = dateFormat || DEFAULT_DATE_FORMAT
+  const tz = timezone || undefined
+  const serviceDate = fmtDate(record.serviceDate, df, tz)
   const totalPaid = record.payments.reduce((sum, p) => sum + p.amount, 0)
   const balanceDue = displayTotal - totalPaid
   const shopName = workshop.name || record.shopName || 'Torqvoice'
@@ -664,13 +666,13 @@ export function InvoiceView({
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">Due Date</p>
                     <p className="font-medium">
-                      {new Date(
-                        new Date(record.serviceDate).getTime() + invoiceSettings.dueDays * 86400000
-                      ).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
+                      {fmtDate(
+                        new Date(
+                          new Date(record.serviceDate).getTime() + invoiceSettings.dueDays * 86400000
+                        ),
+                        df,
+                        tz,
+                      )}
                     </p>
                   </div>
                 )}

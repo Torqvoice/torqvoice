@@ -32,6 +32,7 @@ import { Button } from '@/components/ui/button'
 import {
   BarChart3,
   Building2,
+  CalendarDays,
   Car,
   Check,
   ChevronsUpDown,
@@ -40,22 +41,26 @@ import {
   LayoutDashboard,
   Loader2,
   LogOut,
+  Moon,
   Package,
   Plus,
   Receipt,
   Settings,
   ShieldCheck,
+  Sun,
   Users,
 } from 'lucide-react'
 import { switchOrganization } from '@/features/team/Actions/switchOrganization'
 import { createNewOrganization } from '@/features/team/Actions/createNewOrganization'
 import type { PlanFeatures } from '@/lib/features'
+import { useTheme } from '@/components/theme-provider'
 
 const baseNavItems = [
   { title: 'Dashboard', url: '/', icon: LayoutDashboard },
   { title: 'Vehicles', url: '/vehicles', icon: Car },
   { title: 'Customers', url: '/customers', icon: Users },
   { title: 'Work Orders', url: '/work-orders', icon: ClipboardList },
+  { title: 'Calendar', url: '/calendar', icon: CalendarDays },
   { title: 'Quotes', url: '/quotes', icon: FileText },
   { title: 'Billing', url: '/billing', icon: Receipt },
   { title: 'Inventory', url: '/inventory', icon: Package },
@@ -83,6 +88,7 @@ export function AppSidebar({
   const pathname = usePathname()
   const router = useRouter()
   const { data: session } = useSession()
+  const { theme, setTheme } = useTheme()
   const [showCreateOrg, setShowCreateOrg] = React.useState(false)
   const [newOrgName, setNewOrgName] = React.useState('')
   const [creatingOrg, setCreatingOrg] = React.useState(false)
@@ -263,6 +269,14 @@ export function AppSidebar({
                     <Settings className="mr-2 size-4" />
                     Settings
                   </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+                  {theme === 'dark' ? (
+                    <Sun className="mr-2 size-4" />
+                  ) : (
+                    <Moon className="mr-2 size-4" />
+                  )}
+                  {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>

@@ -2,6 +2,7 @@ import { getWorkOrders } from "@/features/vehicles/Actions/serviceActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
+import { getCustomersList } from "@/features/customers/Actions/customerActions";
 import { WorkOrdersClient } from "./work-orders-client";
 import { PageHeader } from "@/components/page-header";
 
@@ -16,7 +17,7 @@ export default async function WorkOrdersPage({
   }>;
 }) {
   const params = await searchParams;
-  const [result, settingsResult, vehiclesResult] = await Promise.all([
+  const [result, settingsResult, vehiclesResult, customersResult] = await Promise.all([
     getWorkOrders({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
@@ -25,6 +26,7 @@ export default async function WorkOrdersPage({
     }),
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
     getVehicles(),
+    getCustomersList(),
   ]);
 
   if (!result.success || !result.data) {
@@ -52,6 +54,9 @@ export default async function WorkOrdersPage({
         customer: v.customer,
       }))
     : [];
+  const customers = customersResult.success && customersResult.data
+    ? customersResult.data
+    : [];
 
   return (
     <>
@@ -60,6 +65,7 @@ export default async function WorkOrdersPage({
         <WorkOrdersClient
           data={result.data}
           vehicles={vehicles}
+          customers={customers}
           currencyCode={currencyCode}
           search={params.search || ""}
           statusFilter={params.status || "all"}

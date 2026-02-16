@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { format } from "date-fns";
+import { useFormatDate } from "@/lib/use-format-date";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -95,6 +95,7 @@ export function QuoteDetailClient({
 }) {
   const cs = getCurrencySymbol(currencyCode);
   const router = useRouter();
+  const { formatDate } = useFormatDate();
   const modal = useGlassModal();
   const confirm = useConfirm();
   const [downloading, setDownloading] = useState(false);
@@ -175,8 +176,8 @@ export function QuoteDetailClient({
               <h1 className="text-2xl font-bold">{quote.title}</h1>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              {quote.quoteNumber} · Created {format(new Date(quote.createdAt), "MMMM d, yyyy")}
-              {quote.validUntil && ` · Valid until ${format(new Date(quote.validUntil), "MMM d, yyyy")}`}
+              {quote.quoteNumber} · Created {formatDate(new Date(quote.createdAt))}
+              {quote.validUntil && ` · Valid until ${formatDate(new Date(quote.validUntil))}`}
             </p>
           </div>
           <div className="flex items-center gap-2">

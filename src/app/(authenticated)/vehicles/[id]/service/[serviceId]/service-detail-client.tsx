@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { format } from "date-fns";
+import { useFormatDate } from "@/lib/use-format-date";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -165,6 +165,7 @@ export function ServiceDetailClient({
   const cs = getCurrencySymbol(currencyCode);
   const distUnit = unitSystem === "metric" ? "km" : "mi";
   const router = useRouter();
+  const { formatDate } = useFormatDate();
   const modal = useGlassModal();
   const confirm = useConfirm();
   const [downloading, setDownloading] = useState(false);
@@ -371,7 +372,7 @@ export function ServiceDetailClient({
                 <h1 className="text-lg font-semibold leading-tight">{record.title}</h1>
               </div>
               <p className="text-xs text-muted-foreground">
-                {format(new Date(record.serviceDate), "MMMM d, yyyy")}
+                {formatDate(new Date(record.serviceDate))}
                 {record.shopName && ` · ${record.shopName}`}
                 {record.techName && ` · Tech: ${record.techName}`}
               </p>
@@ -976,7 +977,7 @@ export function ServiceDetailClient({
                 <tbody className="divide-y">
                   {record.payments.map((payment) => (
                     <tr key={payment.id}>
-                      <td className="py-2">{format(new Date(payment.date), "MMM d, yyyy")}</td>
+                      <td className="py-2">{formatDate(new Date(payment.date))}</td>
                       <td className="py-2 text-right font-medium">{formatCurrency(payment.amount, currencyCode)}</td>
                       <td className="py-2">
                         <Badge variant="outline" className="text-xs capitalize">

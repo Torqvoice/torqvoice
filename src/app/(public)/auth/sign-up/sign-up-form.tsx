@@ -9,8 +9,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useGlassModal } from '@/components/glass-modal'
 import { Gauge, Loader2 } from 'lucide-react'
+import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 
-export function SignUpForm() {
+export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -36,6 +37,17 @@ export function SignUpForm() {
             ? 'Registration is currently disabled. Please contact your administrator.'
             : message,
         )
+      } else if (inviteToken) {
+        // Accept the invitation and redirect to dashboard
+        const acceptResult = await acceptInvitation({ token: inviteToken })
+        if (acceptResult.success) {
+          router.push('/')
+          router.refresh()
+        } else {
+          modal.open('error', 'Invitation Error', acceptResult.error || 'Failed to accept invitation')
+          router.push('/onboarding')
+          router.refresh()
+        }
       } else {
         router.push('/onboarding')
         router.refresh()
@@ -64,7 +76,9 @@ export function SignUpForm() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Create an account</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Set up your workshop to manage customer vehicles
+            {inviteToken
+              ? 'Create your account to join the team'
+              : 'Set up your workshop to manage customer vehicles'}
           </p>
         </div>
 
@@ -111,7 +125,7 @@ export function SignUpForm() {
 
           <Button type="submit" className="h-11 w-full" disabled={loading}>
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            Create Account
+            {inviteToken ? 'Create Account & Join Team' : 'Create Account'}
           </Button>
         </form>
 
