@@ -226,7 +226,7 @@ export function AdminSettings({
         <CardHeader>
           <CardTitle>Email Settings</CardTitle>
           <CardDescription>
-            Choose how the platform sends emails (password resets, invoices, notifications)
+            Platform Email Provider — Used for system-level emails such as password resets and team invitations. This is also the default email provider for all organizations. Organizations can optionally configure their own email provider in Settings &gt; Email.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

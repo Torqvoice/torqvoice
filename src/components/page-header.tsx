@@ -47,6 +47,7 @@ const breadcrumbMap: Record<string, { parent?: string; parentHref?: string; labe
   '/settings/currency': { parent: 'Settings', parentHref: '/settings', label: 'Currency' },
   '/settings/workshop': { parent: 'Settings', parentHref: '/settings', label: 'Workshop' },
   '/settings/appearance': { parent: 'Settings', parentHref: '/settings', label: 'Appearance' },
+  '/settings/email': { parent: 'Settings', parentHref: '/settings', label: 'Email' },
   '/settings/about': { parent: 'Settings', parentHref: '/settings', label: 'About' },
 }
 
