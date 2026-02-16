@@ -28,6 +28,7 @@ model User {
   quotes                 Quote[]
   customFieldDefinitions CustomFieldDefinition[]
   twoFactor              TwoFactor?
+  organizationMembers    OrganizationMember[]
 
   @@map("users")
 }
@@ -485,6 +486,7 @@ model OrganizationMember {
   role String @default("member")
 
   userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 

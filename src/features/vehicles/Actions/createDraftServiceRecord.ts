@@ -6,14 +6,14 @@ import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 
 export async function createDraftServiceRecord(vehicleId: string, serviceDate?: Date) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       const vehicle = await db.vehicle.findFirst({
         where: { id: vehicleId, organizationId },
       });
       if (!vehicle) throw new Error("Vehicle not found");
 
       // Auto-populate shop name and invoice number
-      const [settings, org] = await Promise.all([
+      const [settings, org, currentUser] = await Promise.all([
         db.appSetting.findMany({
           where: {
             organizationId,
@@ -26,11 +26,16 @@ export async function createDraftServiceRecord(vehicleId: string, serviceDate?: 
           where: { id: organizationId },
           select: { name: true },
         }),
+        db.user.findUnique({
+          where: { id: userId },
+          select: { name: true },
+        }),
       ]);
       const settingsMap: Record<string, string> = {};
       for (const s of settings) settingsMap[s.key] = s.value;
 
       const shopName = org?.name || undefined;
+      const techName = currentUser?.name || undefined;
 
       // Resolve invoice prefix
       const rawPrefix = settingsMap["workshop.invoicePrefix"] || "{year}-";
@@ -73,6 +78,7 @@ export async function createDraftServiceRecord(vehicleId: string, serviceDate?: 
           status: "pending",
           vehicleId,
           shopName,
+          techName,
           invoiceNumber,
           serviceDate: serviceDate ?? now,
         },
