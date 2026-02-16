@@ -32,6 +32,7 @@ import { Button } from '@/components/ui/button'
 import {
   BarChart3,
   Building2,
+  CalendarDays,
   Car,
   Check,
   ChevronsUpDown,
@@ -56,6 +57,7 @@ const baseNavItems = [
   { title: 'Vehicles', url: '/vehicles', icon: Car },
   { title: 'Customers', url: '/customers', icon: Users },
   { title: 'Work Orders', url: '/work-orders', icon: ClipboardList },
+  { title: 'Calendar', url: '/calendar', icon: CalendarDays },
   { title: 'Quotes', url: '/quotes', icon: FileText },
   { title: 'Billing', url: '/billing', icon: Receipt },
   { title: 'Inventory', url: '/inventory', icon: Package },

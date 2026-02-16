@@ -7,11 +7,15 @@ import { readFile } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ orgId: string; token: string }> }
 ) {
+  const limited = rateLimit(_request, { limit: 20, windowMs: 60_000 });
+  if (limited) return limited;
+
   try {
     const { orgId, token } = await params;
 

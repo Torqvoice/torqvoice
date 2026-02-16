@@ -69,3 +69,77 @@ export interface InventoryReport {
   totalValue: number;
   lowStock: LowStockPart[];
 }
+
+// Enhanced report types
+
+export interface TechnicianMetrics {
+  techName: string;
+  jobCount: number;
+  totalRevenue: number;
+  avgRevenue: number;
+  totalLaborHours: number;
+  avgHours: number;
+}
+
+export interface TechnicianReport {
+  technicians: TechnicianMetrics[];
+  totalJobs: number;
+  totalRevenue: number;
+}
+
+export interface PartUsage {
+  name: string;
+  partNumber: string | null;
+  usageCount: number;
+  totalQuantity: number;
+  totalRevenue: number;
+}
+
+export interface PartsUsageReport {
+  parts: PartUsage[];
+  totalPartsRevenue: number;
+  totalPartsUsed: number;
+}
+
+export interface DayOfWeekDistribution {
+  day: string;
+  count: number;
+}
+
+export interface MonthlyTrend {
+  month: string;
+  count: number;
+  revenue: number;
+}
+
+export interface ServiceTypeAnalytics {
+  type: string;
+  count: number;
+  avgValue: number;
+  avgHours: number;
+}
+
+export interface JobAnalyticsReport {
+  avgJobValue: number;
+  totalJobs: number;
+  topServiceTypes: ServiceTypeAnalytics[];
+  dayOfWeek: DayOfWeekDistribution[];
+  monthlyTrend: MonthlyTrend[];
+}
+
+export interface RetentionCustomer {
+  id: string;
+  name: string;
+  company: string | null;
+  visitCount: number;
+  totalSpent: number;
+  avgTimeBetweenVisits: number | null;
+}
+
+export interface CustomerRetentionReport {
+  returningCustomers: number;
+  newCustomers: number;
+  totalActive: number;
+  avgTimeBetweenVisits: number | null;
+  topReturning: RetentionCustomer[];
+}
