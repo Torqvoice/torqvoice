@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useTransition, useMemo } from "react";
+import { useState, useCallback, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -16,12 +16,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -31,13 +25,13 @@ import { DataTablePagination } from "@/components/data-table-pagination";
 import { statusColors } from "@/lib/table-utils";
 import { updateServiceStatus } from "@/features/vehicles/Actions/serviceActions";
 import {
-  Car,
   ChevronDown,
   Loader2,
   Plus,
   Search,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
+import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
 
 interface WorkOrder {
   id: string;
@@ -66,6 +60,12 @@ interface VehicleOption {
   year: number;
   licensePlate: string | null;
   customer: { id: string; name: string; company: string | null } | null;
+}
+
+interface CustomerOption {
+  id: string;
+  name: string;
+  company: string | null;
 }
 
 interface PaginatedData {
@@ -111,12 +111,14 @@ const statusTransitions: Record<string, { label: string; target: string }[]> = {
 export function WorkOrdersClient({
   data,
   vehicles = [],
+  customers = [],
   currencyCode = "USD",
   search,
   statusFilter,
 }: {
   data: PaginatedData;
   vehicles?: VehicleOption[];
+  customers?: CustomerOption[];
   currencyCode?: string;
   search: string;
   statusFilter: string;
@@ -128,20 +130,6 @@ export function WorkOrdersClient({
   const [searchInput, setSearchInput] = useState(search);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
-  const [vehicleSearch, setVehicleSearch] = useState("");
-
-  const filteredVehicles = useMemo(() => {
-    if (!vehicleSearch) return vehicles;
-    const q = vehicleSearch.toLowerCase();
-    return vehicles.filter(
-      (v) =>
-        v.make.toLowerCase().includes(q) ||
-        v.model.toLowerCase().includes(q) ||
-        v.licensePlate?.toLowerCase().includes(q) ||
-        v.customer?.name.toLowerCase().includes(q) ||
-        String(v.year).includes(q)
-    );
-  }, [vehicles, vehicleSearch]);
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -335,58 +323,13 @@ export function WorkOrdersClient({
         onNavigate={navigate}
       />
 
-      {/* Vehicle picker dialog */}
-      <Dialog open={showPicker} onOpenChange={setShowPicker}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Select Vehicle</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search vehicles..."
-                value={vehicleSearch}
-                onChange={(e) => setVehicleSearch(e.target.value)}
-                className="pl-9"
-                autoFocus
-              />
-            </div>
-            <div className="max-h-[300px] overflow-y-auto">
-              {filteredVehicles.length === 0 ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">
-                  {vehicles.length === 0 ? "No vehicles found. Add a vehicle first." : "No vehicles match your search."}
-                </p>
-              ) : (
-                <div className="space-y-1">
-                  {filteredVehicles.map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-muted"
-                      onClick={() => {
-                        setShowPicker(false);
-                        setVehicleSearch("");
-                        router.push(`/vehicles/${v.id}/service/new`);
-                      }}
-                    >
-                      <Car className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium">
-                          {v.year} {v.make} {v.model}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {[v.licensePlate, v.customer?.name].filter(Boolean).join(" · ") || "No plate"}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <VehiclePickerDialog
+        open={showPicker}
+        onOpenChange={setShowPicker}
+        vehicles={vehicles}
+        customers={customers}
+        title="Select Vehicle"
+      />
     </div>
   );
 }
