@@ -20,6 +20,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Coins, Loader2, Ruler, Save } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
+import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
 const CURRENCIES = [
   { code: "USD", name: "US Dollar" },
@@ -79,6 +80,7 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
 
   return (
     <div className="space-y-6">
+      <ReadOnlyBanner />
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <Coins className="h-5 w-5 text-muted-foreground" />
@@ -89,6 +91,8 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
             Default currency and tax rate used across invoices and service records.
           </p>
 
+          <ReadOnlyWrapper>
+          <div className="space-y-6">
           <div className="space-y-2">
             <Label>Currency</Label>
             <Select value={currencyCode} onValueChange={setCurrencyCode}>
@@ -178,18 +182,22 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
             </div>
           </div>
 
-          <Separator />
-
-          <div className="flex items-center gap-3">
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              Save Settings
-            </Button>
           </div>
+          </ReadOnlyWrapper>
+
+          <SaveButton>
+            <Separator />
+            <div className="flex items-center gap-3">
+              <Button onClick={handleSave} disabled={saving}>
+                {saving ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
+                Save Settings
+              </Button>
+            </div>
+          </SaveButton>
         </CardContent>
       </Card>
     </div>

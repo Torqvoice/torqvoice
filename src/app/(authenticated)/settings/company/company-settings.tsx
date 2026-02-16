@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { Building2, ImageIcon, Loader2, Plus, Save, Trash2, Upload } from "lucide-react";
 import { createNewOrganization } from "@/features/team/Actions/createNewOrganization";
+import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
 export function CompanySettings({ settings, organizationName }: { settings: Record<string, string>; organizationName: string }) {
   const router = useRouter();
@@ -40,7 +41,7 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
 
   const handleSave = async () => {
     setSaving(true);
-    await Promise.all([
+    const [renameResult, settingsResult] = await Promise.all([
       renameOrganization({ name: workshopName }),
       setSettings({
         [SETTING_KEYS.WORKSHOP_ADDRESS]: workshopAddress,
@@ -50,6 +51,12 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
       }),
     ]);
     setSaving(false);
+
+    if (!renameResult.success || !settingsResult.success) {
+      toast.error(renameResult.error || settingsResult.error || "Failed to save settings");
+      return;
+    }
+
     router.refresh();
     toast.success("Company settings saved");
   };
@@ -99,6 +106,8 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
 
   return (
     <div className="space-y-4">
+      <ReadOnlyBanner />
+      <ReadOnlyWrapper>
       <Card className="border-0 shadow-sm">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -218,24 +227,26 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
             />
           </div>
 
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <Button size="sm" onClick={handleSave} disabled={saving}>
-              {saving ? (
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Save className="mr-1.5 h-3.5 w-3.5" />
-              )}
-              Save Company Details
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowCreateOrg(true)}>
-              <Plus className="mr-1.5 h-3.5 w-3.5" />
-              Add New Company
-            </Button>
-          </div>
+          <SaveButton>
+            <Separator />
+            <div className="flex items-center justify-between">
+              <Button size="sm" onClick={handleSave} disabled={saving}>
+                {saving ? (
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Save className="mr-1.5 h-3.5 w-3.5" />
+                )}
+                Save Company Details
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setShowCreateOrg(true)}>
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
+                Add New Company
+              </Button>
+            </div>
+          </SaveButton>
         </CardContent>
       </Card>
+      </ReadOnlyWrapper>
 
       <Dialog open={showCreateOrg} onOpenChange={setShowCreateOrg}>
         <DialogContent className="sm:max-w-md">
