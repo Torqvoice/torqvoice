@@ -1,7 +1,6 @@
 "use client";
 
 import { useSettingsPermission } from "./settings-permission-context";
-import { Badge } from "@/components/ui/badge";
 import { Lock } from "lucide-react";
 
 export function ReadOnlyBanner() {
