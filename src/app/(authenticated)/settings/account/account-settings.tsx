@@ -17,12 +17,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Check, Copy, KeyRound, Loader2, Save, Shield, ShieldOff, User } from 'lucide-react'
+import { AlertTriangle, Check, Copy, KeyRound, Loader2, Save, Shield, ShieldOff, Trash2, User } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { updateEmail } from '@/features/settings/Actions/accountActions'
+import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
+import { signOut } from '@/lib/auth-client'
+import { useRouter } from 'next/navigation'
 
 export function AccountSettings({ twoFactorEnabled: initialTwoFactorEnabled }: { twoFactorEnabled: boolean }) {
   const { data: session } = useSession()
+  const router = useRouter()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
 
@@ -50,6 +54,29 @@ export function AccountSettings({ twoFactorEnabled: initialTwoFactorEnabled }: {
   const [verifyCode, setVerifyCode] = useState('')
   const [verifying2FA, setVerifying2FA] = useState(false)
   const [copiedBackup, setCopiedBackup] = useState(false)
+
+  // Delete account state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [deleting, setDeleting] = useState(false)
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'delete me') return
+    setDeleting(true)
+    try {
+      const result = await deleteAccount()
+      if (result.success) {
+        await signOut()
+        router.push('/auth/sign-in')
+      } else {
+        toast.error(result.error || 'Failed to delete account')
+        setDeleting(false)
+      }
+    } catch {
+      toast.error('Failed to delete account')
+      setDeleting(false)
+    }
+  }
 
   const handleEnable2FA = async () => {
     if (!twoFactorPassword) {
@@ -510,6 +537,76 @@ export function AccountSettings({ twoFactorEnabled: initialTwoFactorEnabled }: {
               </DialogFooter>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Danger Zone */}
+      <Card className="border-destructive/30 shadow-sm">
+        <CardHeader className="flex flex-row items-center gap-3 pb-4">
+          <AlertTriangle className="h-5 w-5 text-destructive" />
+          <CardTitle className="text-lg text-destructive">Danger Zone</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="font-medium">Delete Account</p>
+              <p className="text-sm text-muted-foreground">
+                Permanently delete your account and all associated data including vehicles, service records,
+                work orders, invoices, customers, files, and payments. This action cannot be undone.
+              </p>
+            </div>
+            <Button
+              variant="destructive"
+              onClick={() => { setDeleteConfirmText(''); setDeleteDialogOpen(true) }}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete Account
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Delete Account Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">Delete Account</DialogTitle>
+            <DialogDescription>
+              This will permanently delete your account and all data associated with it. This action is
+              irreversible. All your vehicles, service records, work orders, quotes, customers, files,
+              and payment history will be permanently removed.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+              <p className="text-sm font-medium text-destructive">
+                Type <span className="font-mono font-bold">delete me</span> to confirm
+              </p>
+            </div>
+            <Input
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder="delete me"
+              autoComplete="off"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteAccount}
+              disabled={deleteConfirmText !== 'delete me' || deleting}
+            >
+              {deleting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              {deleting ? 'Deleting...' : 'Permanently Delete'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

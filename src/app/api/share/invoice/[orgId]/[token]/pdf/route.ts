@@ -147,7 +147,7 @@ export async function GET(
 
     const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`;
 
-    return new NextResponse(new Uint8Array(buffer), {
+    return new NextResponse(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${invoiceNum}.pdf"`,

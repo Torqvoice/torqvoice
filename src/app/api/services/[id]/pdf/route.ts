@@ -196,7 +196,7 @@ export async function GET(
     const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`;
 
     // Merge attached PDF diagnostic reports into the invoice
-    let finalBytes: Uint8Array;
+    let finalBuffer: ArrayBuffer;
     if (pdfAttachments.length > 0) {
       const mergedPdf = await PDFDocument.load(invoiceBuffer);
       for (const att of pdfAttachments) {
@@ -211,12 +211,12 @@ export async function GET(
         }
       }
       const saved = await mergedPdf.save();
-      finalBytes = new Uint8Array(saved);
+      finalBuffer = saved.buffer.slice(saved.byteOffset, saved.byteOffset + saved.byteLength) as ArrayBuffer;
     } else {
-      finalBytes = new Uint8Array(invoiceBuffer);
+      finalBuffer = invoiceBuffer.buffer.slice(invoiceBuffer.byteOffset, invoiceBuffer.byteOffset + invoiceBuffer.byteLength) as ArrayBuffer;
     }
 
-    return new NextResponse(finalBytes, {
+    return new NextResponse(finalBuffer, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${invoiceNum}.pdf"`,
