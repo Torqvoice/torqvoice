@@ -7,8 +7,8 @@ import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 
 export async function updateRole(input: unknown) {
-  return withAuth(async ({ organizationId, role }) => {
-    if (role !== "owner" && role !== "admin") {
+  return withAuth(async ({ organizationId, role, isSuperAdmin }) => {
+    if (!isSuperAdmin && role !== "owner" && role !== "admin") {
       throw new Error("Only owners and admins can update roles");
     }
 
