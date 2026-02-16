@@ -3,6 +3,8 @@ import { Separator } from '@/components/ui/separator'
 import { Info } from 'lucide-react'
 
 export default function AboutSettingsPage() {
+  const version = process.env.APP_VERSION || 'development'
+
   return (
     <div className="space-y-6">
       <Card className="border-0 shadow-sm">
@@ -19,7 +21,7 @@ export default function AboutSettingsPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Version</span>
-              <span className="text-sm font-medium">0.1.0</span>
+              <span className="text-sm font-medium">{version}</span>
             </div>
           </div>
         </CardContent>
