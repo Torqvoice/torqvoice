@@ -4,6 +4,8 @@ import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getInventoryPartsList } from "@/features/inventory/Actions/inventoryActions";
 import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
 import { ServiceRecordForm } from "../../new/service-record-form";
+import { db } from "@/lib/db";
+import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
 
 export default async function EditServicePage({
   params,
@@ -11,11 +13,12 @@ export default async function EditServicePage({
   params: Promise<{ id: string; serviceId: string }>;
 }) {
   const { id, serviceId } = await params;
-  const [result, settingsResult, inventoryResult, vehiclesResult] = await Promise.all([
+  const [result, settingsResult, inventoryResult, vehiclesResult, session] = await Promise.all([
     getServiceRecord(serviceId),
     getSettings([SETTING_KEYS.DEFAULT_TAX_RATE, SETTING_KEYS.TAX_ENABLED, SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.DEFAULT_LABOR_RATE]),
     getInventoryPartsList(),
     getVehicles(),
+    getCachedSession(),
   ]);
 
   if (!result.success || !result.data) {
@@ -74,6 +77,23 @@ export default async function EditServicePage({
 
   const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`;
 
+  // Fetch team members and current user name for technician dropdown
+  const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null;
+  const orgId = membership?.organizationId;
+  const [members, currentUser] = await Promise.all([
+    orgId
+      ? db.organizationMember.findMany({
+          where: { organizationId: orgId },
+          select: { id: true, user: { select: { name: true } } },
+        })
+      : Promise.resolve([]),
+    session?.user?.id
+      ? db.user.findUnique({ where: { id: session.user.id }, select: { name: true } })
+      : Promise.resolve(null),
+  ]);
+  const teamMembers = members.map((m) => ({ id: m.id, name: m.user.name }));
+  const currentUserName = currentUser?.name || "";
+
   return (
     <ServiceRecordForm
       vehicleId={id}
@@ -85,6 +105,8 @@ export default async function EditServicePage({
       initialData={initialData}
       inventoryParts={inventoryParts}
       vehicles={vehicles}
+      teamMembers={teamMembers}
+      currentUserName={currentUserName}
     />
   );
 }

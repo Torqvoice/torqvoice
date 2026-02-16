@@ -89,6 +89,11 @@ interface VehicleOption {
   label: string
 }
 
+interface TeamMemberOption {
+  id: string
+  name: string
+}
+
 interface ServiceRecordFormProps {
   vehicleId: string
   vehicleName: string
@@ -99,6 +104,8 @@ interface ServiceRecordFormProps {
   initialData?: InitialData
   inventoryParts?: InventoryPartOption[]
   vehicles?: VehicleOption[]
+  teamMembers?: TeamMemberOption[]
+  currentUserName?: string
 }
 
 const emptyPart = (): ServicePartInput => ({
@@ -126,6 +133,8 @@ export function ServiceRecordForm({
   initialData,
   inventoryParts = [],
   vehicles = [],
+  teamMembers = [],
+  currentUserName = '',
 }: ServiceRecordFormProps) {
   const cs = getCurrencySymbol(currencyCode)
   const isEdit = !!initialData
@@ -139,6 +148,8 @@ export function ServiceRecordForm({
     const v = vehicles.find((v) => v.id === selectedVehicleId)
     return v?.label || vehicleName
   }, [selectedVehicleId, vehicles, vehicleName, isEdit])
+  const [techName, setTechName] = useState(initialData?.techName || currentUserName)
+  const [techOpen, setTechOpen] = useState(false)
   const [type, setType] = useState(initialData?.type || 'maintenance')
   const [status, setStatus] = useState(initialData?.status || 'completed')
   const [partItems, setPartItems] = useState<ServicePartInput[]>(initialData?.partItems || [])
@@ -423,7 +434,7 @@ export function ServiceRecordForm({
       cost: totalAmount,
       mileage: Number(formData.get('mileage')) || undefined,
       serviceDate: (formData.get('serviceDate') as string) || new Date().toISOString(),
-      techName: (formData.get('techName') as string) || undefined,
+      techName: techName || undefined,
       diagnosticNotes: (formData.get('diagnosticNotes') as string) || undefined,
       invoiceNotes: (formData.get('invoiceNotes') as string) || undefined,
       ...(isEdit && { invoiceNumber: (formData.get('invoiceNumber') as string) || undefined }),
@@ -592,13 +603,65 @@ export function ServiceRecordForm({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="techName">Technician</Label>
-                <Input
-                  id="techName"
-                  name="techName"
-                  placeholder="Mike Johnson"
-                  defaultValue={initialData?.techName || ''}
-                />
+                <Label>Technician</Label>
+                <Popover open={techOpen} onOpenChange={setTechOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={techOpen}
+                      className="w-full justify-between font-normal"
+                    >
+                      {techName || <span className="text-muted-foreground">Select or type a name...</span>}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                    <Command>
+                      <CommandInput
+                        placeholder="Search or type name..."
+                        value={techName}
+                        onValueChange={setTechName}
+                      />
+                      <CommandList>
+                        <CommandEmpty>
+                          {techName ? (
+                            <button
+                              type="button"
+                              className="w-full px-2 py-1.5 text-sm text-left"
+                              onClick={() => setTechOpen(false)}
+                            >
+                              Use &quot;{techName}&quot;
+                            </button>
+                          ) : (
+                            'Type a name...'
+                          )}
+                        </CommandEmpty>
+                        {teamMembers.length > 0 && (
+                          <CommandGroup heading="Team Members">
+                            {teamMembers.map((member) => (
+                              <CommandItem
+                                key={member.id}
+                                value={member.name}
+                                onSelect={() => {
+                                  setTechName(member.name)
+                                  setTechOpen(false)
+                                }}
+                              >
+                                <Check
+                                  className={`mr-2 h-4 w-4 ${
+                                    techName === member.name ? 'opacity-100' : 'opacity-0'
+                                  }`}
+                                />
+                                {member.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        )}
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
               {isEdit && (
                 <div className="space-y-2">
