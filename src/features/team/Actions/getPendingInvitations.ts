@@ -17,8 +17,13 @@ export async function getPendingInvitations() {
         id: true,
         email: true,
         role: true,
+        roleId: true,
+        token: true,
         createdAt: true,
         expiresAt: true,
+        customRole: {
+          select: { name: true },
+        },
       },
     });
 

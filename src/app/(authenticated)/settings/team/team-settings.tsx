@@ -13,6 +13,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -31,12 +32,13 @@ import { updateRole } from "@/features/team/Actions/updateRole";
 import { deleteRole } from "@/features/team/Actions/deleteRole";
 import { assignRole } from "@/features/team/Actions/assignRole";
 import { permissionGroups } from "@/lib/permissions";
-import { Crown, Loader2, Mail, Pencil, Plus, Shield, ShieldCheck, Trash2, User, Users, X } from "lucide-react";
+import { Copy, Crown, Loader2, Mail, Pencil, Plus, Shield, ShieldCheck, Trash2, User, Users, X } from "lucide-react";
 
 interface Member {
   id: string;
   role: string;
   roleId: string | null;
+  customRoleName: string | null;
   user: { id: string; name: string; email: string };
 }
 
@@ -50,6 +52,9 @@ interface PendingInvitation {
   id: string;
   email: string;
   role: string;
+  roleId: string | null;
+  token: string;
+  customRole: { name: string } | null;
   createdAt: Date;
   expiresAt: Date;
 }
@@ -92,6 +97,7 @@ export function TeamSettings({
   const [orgName, setOrgName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<string>("member");
+  const [inviteRoleId, setInviteRoleId] = useState<string | null>(null);
 
   // Role form state
   const [showRoleForm, setShowRoleForm] = useState(false);
@@ -189,16 +195,28 @@ export function TeamSettings({
     }
   };
 
-  const handleAssignRole = async (memberId: string, roleId: string) => {
-    const result = await assignRole({
-      memberId,
-      roleId: roleId === "none" ? null : roleId,
-    });
+  const handleAssignRole = async (memberId: string, value: string) => {
+    let role: "admin" | "member";
+    let roleId: string | null;
+
+    if (value === "admin") {
+      role = "admin";
+      roleId = null;
+    } else if (value === "member") {
+      role = "member";
+      roleId = null;
+    } else {
+      // Custom role ID
+      role = "member";
+      roleId = value;
+    }
+
+    const result = await assignRole({ memberId, role, roleId });
     if (result.success) {
-      toast.success("Role assigned");
+      toast.success("Role updated");
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to assign role");
+      modal.open("error", "Error", result.error || "Failed to update role");
     }
   };
 
@@ -219,7 +237,7 @@ export function TeamSettings({
     e.preventDefault();
     if (!inviteEmail.trim()) return;
     setLoading(true);
-    const result = await inviteMember({ email: inviteEmail, role: inviteRole });
+    const result = await inviteMember({ email: inviteEmail, role: inviteRole, roleId: inviteRoleId || undefined });
     if (result.success) {
       const data = result.data as { invited: boolean; userNotFound?: boolean };
       if (data.userNotFound) {
@@ -234,7 +252,7 @@ export function TeamSettings({
         });
         if (ok) {
           setLoading(true);
-          const sendResult = await sendInvitation({ email: emailToInvite, role: roleToInvite });
+          const sendResult = await sendInvitation({ email: emailToInvite, role: roleToInvite, roleId: inviteRoleId || undefined });
           if (sendResult.success) {
             setInviteEmail("");
             router.refresh();
@@ -375,41 +393,32 @@ export function TeamSettings({
                 <div className="flex items-center gap-2">
                   {isOwner && member.role !== "owner" ? (
                     <Select
-                      value={member.role}
-                      onValueChange={(v) => handleRoleChange(member.id, v)}
+                      value={member.roleId || member.role}
+                      onValueChange={(v) => handleAssignRole(member.id, v)}
                     >
-                      <SelectTrigger className="h-8 w-28 text-xs">
+                      <SelectTrigger className="h-8 w-36 text-xs">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="admin">Admin</SelectItem>
                         <SelectItem value="member">Member</SelectItem>
+                        {roles.length > 0 && (
+                          <>
+                            <SelectSeparator />
+                            {roles.map((r) => (
+                              <SelectItem key={r.id} value={r.id}>
+                                {r.name}
+                              </SelectItem>
+                            ))}
+                          </>
+                        )}
                       </SelectContent>
                     </Select>
                   ) : (
                     <Badge variant="outline" className={`text-xs ${roleColors[member.role] || ""}`}>
                       {roleIcons[member.role]}
-                      <span className="ml-1 capitalize">{member.role}</span>
+                      <span className="ml-1 capitalize">{member.customRoleName || member.role}</span>
                     </Badge>
-                  )}
-                  {/* Custom role assignment */}
-                  {isAdmin && member.role !== "owner" && roles.length > 0 && (
-                    <Select
-                      value={member.roleId || "none"}
-                      onValueChange={(v) => handleAssignRole(member.id, v)}
-                    >
-                      <SelectTrigger className="h-8 w-36 text-xs">
-                        <SelectValue placeholder="Custom role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No custom role</SelectItem>
-                        {roles.map((r) => (
-                          <SelectItem key={r.id} value={r.id}>
-                            {r.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                   )}
                   {isAdmin && member.role !== "owner" && (
                     <Button
@@ -438,13 +447,35 @@ export function TeamSettings({
                   required
                 />
               </div>
-              <Select value={inviteRole} onValueChange={setInviteRole}>
-                <SelectTrigger className="w-28">
+              <Select
+                value={inviteRoleId ? `custom:${inviteRoleId}` : inviteRole}
+                onValueChange={(v) => {
+                  if (v.startsWith("custom:")) {
+                    const id = v.replace("custom:", "");
+                    setInviteRole("member");
+                    setInviteRoleId(id);
+                  } else {
+                    setInviteRole(v);
+                    setInviteRoleId(null);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-36">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="admin">Admin</SelectItem>
                   <SelectItem value="member">Member</SelectItem>
+                  {roles.length > 0 && (
+                    <>
+                      <SelectSeparator />
+                      {roles.map((r) => (
+                        <SelectItem key={r.id} value={`custom:${r.id}`}>
+                          {r.name}
+                        </SelectItem>
+                      ))}
+                    </>
+                  )}
                 </SelectContent>
               </Select>
               <Button type="submit" disabled={loading || !inviteEmail.trim()}>
@@ -480,13 +511,26 @@ export function TeamSettings({
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-sm">{invitation.email}</p>
                     <p className="text-xs text-muted-foreground">
-                      Invited as {invitation.role} &middot; Expires {new Date(invitation.expiresAt).toLocaleDateString()}
+                      Invited as {invitation.customRole?.name || invitation.role} &middot; Expires {new Date(invitation.expiresAt).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-600 border-yellow-500/20">
                       Pending
                     </Badge>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground"
+                      title="Copy invite link"
+                      onClick={() => {
+                        const url = `${window.location.origin}/auth/sign-up?invite=${invitation.token}`;
+                        navigator.clipboard.writeText(url);
+                        toast.success("Invite link copied to clipboard");
+                      }}
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"

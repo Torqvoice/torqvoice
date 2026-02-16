@@ -29,7 +29,10 @@ export async function assignRole(input: unknown) {
 
     await db.organizationMember.update({
       where: { id: data.memberId },
-      data: { roleId: data.roleId },
+      data: {
+        ...(data.role && { role: data.role }),
+        roleId: data.roleId,
+      },
     });
 
     revalidatePath("/settings/team");

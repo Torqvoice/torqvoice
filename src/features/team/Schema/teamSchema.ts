@@ -10,6 +10,7 @@ export const createOrganizationSchema = z.object({
 export const inviteMemberSchema = z.object({
   email: z.string().email(),
   role: z.enum(["admin", "member"]).default("member"),
+  roleId: z.string().optional(),
 });
 
 export const updateMemberRoleSchema = z.object({
@@ -44,12 +45,14 @@ export const updateRoleSchema = z.object({
 
 export const assignRoleSchema = z.object({
   memberId: z.string(),
+  role: z.enum(["admin", "member"]).optional(),
   roleId: z.string().nullable(),
 });
 
 export const sendInvitationSchema = z.object({
   email: z.string().email(),
   role: z.enum(["admin", "member"]).default("member"),
+  roleId: z.string().optional(),
 });
 
 export const cancelInvitationSchema = z.object({

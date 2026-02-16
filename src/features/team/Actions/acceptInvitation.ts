@@ -54,6 +54,7 @@ export async function acceptInvitation(input: unknown) {
           userId: session.user.id,
           organizationId: invitation.organizationId,
           role: invitation.role,
+          roleId: invitation.roleId,
         },
       }),
       db.teamInvitation.update({
