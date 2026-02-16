@@ -109,7 +109,7 @@ export async function inviteMember(input: unknown) {
     const invitedUser = await db.user.findFirst({
       where: { email: data.email },
     });
-    if (!invitedUser) throw new Error("No user found with that email. They must sign up first.");
+    if (!invitedUser) return { invited: false, userNotFound: true };
 
     // Check if already a member of this org
     const existingMembership = await db.organizationMember.findFirst({

@@ -99,7 +99,17 @@ export const auth = betterAuth({
             where: { key: "registration.disabled" },
           });
           if (setting?.value === "true") {
-            return false;
+            // Allow registration if there's a pending invitation for this email
+            const invitation = await db.teamInvitation.findFirst({
+              where: {
+                email: user.email,
+                status: "pending",
+                expiresAt: { gt: new Date() },
+              },
+            });
+            if (!invitation) {
+              return false;
+            }
           }
           return { data: user };
         },
