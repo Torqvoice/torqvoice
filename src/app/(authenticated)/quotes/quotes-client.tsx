@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { format } from "date-fns";
+import { useFormatDate } from "@/lib/use-format-date";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,6 +64,7 @@ export function QuotesClient({
   statusFilter: string;
 }) {
   const router = useRouter();
+  const { formatDate } = useFormatDate();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -181,7 +182,7 @@ export function QuotesClient({
                     </Badge>
                   </TableCell>
                   <TableCell className="font-mono text-xs">
-                    {format(new Date(q.createdAt), "MM/dd/yy")}
+                    {formatDate(new Date(q.createdAt))}
                   </TableCell>
                   <TableCell className="text-right font-semibold">
                     {formatCurrency(q.totalAmount, currencyCode)}

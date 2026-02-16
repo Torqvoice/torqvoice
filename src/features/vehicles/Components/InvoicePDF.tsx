@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer'
-import { formatCurrency, getCurrencySymbol } from '@/lib/format'
+import { formatCurrency, getCurrencySymbol, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 
 interface TemplateConfig {
   primaryColor?: string
@@ -191,6 +191,8 @@ interface InvoiceSettingsProps {
   dueDays?: number
   currencyCode?: string
   unitSystem?: string
+  dateFormat?: string
+  timezone?: string
 }
 
 interface PaymentSummary {
@@ -245,22 +247,17 @@ export function InvoicePDF({
   const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
   const displayTotal = data.totalAmount > 0 ? data.totalAmount : data.cost
   const invoiceNum = data.invoiceNumber || `INV-${data.id.slice(-8).toUpperCase()}`
-  const serviceDate = new Date(data.serviceDate).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  const df = invoiceSettings?.dateFormat || DEFAULT_DATE_FORMAT
+  const tz = invoiceSettings?.timezone || undefined
+  const serviceDate = formatDateForPdf(data.serviceDate, df, tz)
 
   const dueDays = invoiceSettings?.dueDays || 0
   const dueDate =
     dueDays > 0
-      ? new Date(new Date(data.serviceDate).getTime() + dueDays * 86400000).toLocaleDateString(
-          'en-US',
-          {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          }
+      ? formatDateForPdf(
+          new Date(new Date(data.serviceDate).getTime() + dueDays * 86400000),
+          df,
+          tz,
         )
       : null
 

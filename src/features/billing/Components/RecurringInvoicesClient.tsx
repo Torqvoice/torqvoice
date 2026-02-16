@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { format } from "date-fns";
+import { useFormatDate } from "@/lib/use-format-date";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -138,6 +138,7 @@ export default function RecurringInvoicesClient({
   currencyCode,
 }: RecurringInvoicesClientProps) {
   const router = useRouter();
+  const { formatDate } = useFormatDate();
   const [isPending, startTransition] = useTransition();
   const [showCreate, setShowCreate] = useState(false);
 
@@ -341,7 +342,7 @@ export default function RecurringInvoicesClient({
                       <TableCell className="text-sm">{inv.vehicle.customer?.name ?? "-"}</TableCell>
                       <TableCell className="text-sm">{FREQUENCY_LABELS[inv.frequency] ?? inv.frequency}</TableCell>
                       <TableCell className="text-sm">
-                        {format(new Date(inv.nextRunDate), "MMM d, yyyy")}
+                        {formatDate(new Date(inv.nextRunDate))}
                       </TableCell>
                       <TableCell className="text-right text-sm">{fmt(total)}</TableCell>
                       <TableCell>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { format } from "date-fns";
+import { useFormatDate } from "@/lib/use-format-date";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -79,6 +79,7 @@ export function DashboardClient({
   upcomingReminders?: ReminderItem[];
 }) {
   const router = useRouter();
+  const { formatDate } = useFormatDate();
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
 
   return (
@@ -200,7 +201,7 @@ export function DashboardClient({
                       )}
                       {r.dueDate && !isOverdue && !isDueSoon && (
                         <span className="text-xs text-muted-foreground">
-                          {format(new Date(r.dueDate), "MMM d")}
+                          {formatDate(new Date(r.dueDate))}
                         </span>
                       )}
                     </div>
@@ -248,7 +249,7 @@ export function DashboardClient({
                       }}
                     >
                       <TableCell className="font-mono text-xs">
-                        {format(new Date(s.serviceDate), "MM/dd/yy")}
+                        {formatDate(new Date(s.serviceDate))}
                       </TableCell>
                       <TableCell>
                         <div>

@@ -8,6 +8,7 @@ import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
 import { rateLimit } from "@/lib/rate-limit";
+import { formatDateForPdf } from "@/lib/format";
 
 export async function GET(
   _request: Request,
@@ -94,14 +95,19 @@ export async function GET(
       dueDays: Number(settingsMap["invoice.dueDays"]) || 0,
       currencyCode: settingsMap["workshop.currencyCode"] || "USD",
       unitSystem: settingsMap["workshop.unitSystem"] || "imperial",
+      dateFormat: settingsMap["workshop.dateFormat"] || undefined,
+      timezone: settingsMap["workshop.timezone"] || undefined,
     };
+
+    const pdfDateFormat = settingsMap["workshop.dateFormat"] || undefined;
+    const pdfTimezone = settingsMap["workshop.timezone"] || undefined;
 
     const paymentSummary = record.payments.length > 0
       ? {
           totalPaid: record.payments.reduce((sum: number, p: { amount: number }) => sum + p.amount, 0),
           payments: record.payments.map((p: { amount: number; date: Date; method: string }) => ({
             amount: p.amount,
-            date: new Date(p.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }),
+            date: formatDateForPdf(p.date, pdfDateFormat, pdfTimezone),
             method: p.method,
           })),
         }

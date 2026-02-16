@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { format } from 'date-fns'
+import { useFormatDate } from '@/lib/use-format-date'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -148,6 +148,7 @@ export function VehicleDetailClient({
 }) {
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
+  const { formatDate } = useFormatDate()
   const modal = useGlassModal()
   const [showEditForm, setShowEditForm] = useState(false)
   const [showNoteForm, setShowNoteForm] = useState(false)
@@ -332,7 +333,7 @@ export function VehicleDetailClient({
           {vehicle.purchaseDate && (
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <span className="text-xs">
-                Purchased {format(new Date(vehicle.purchaseDate), 'MMM yyyy')}
+                Purchased {formatDate(new Date(vehicle.purchaseDate))}
               </span>
             </div>
           )}
@@ -414,7 +415,7 @@ export function VehicleDetailClient({
                         <p className="truncate text-sm text-muted-foreground">{n.content}</p>
                       </TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">
-                        {format(new Date(n.createdAt), 'MMM d, yyyy')}
+                        {formatDate(new Date(n.createdAt))}
                       </TableCell>
                       <TableCell className="px-2">
                         <DropdownMenu>
@@ -541,7 +542,7 @@ export function VehicleDetailClient({
                             )}
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            {r.dueDate && `Due ${format(new Date(r.dueDate), 'MMM d, yyyy')}`}
+                            {r.dueDate && `Due ${formatDate(new Date(r.dueDate))}`}
                             {r.dueMileage &&
                               `${r.dueDate ? ' · ' : 'Due at '}${r.dueMileage.toLocaleString()} ${distUnit}`}
                           </p>

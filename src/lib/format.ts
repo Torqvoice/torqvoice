@@ -91,3 +91,143 @@ export function getCurrencySymbol(currencyCode: string = "USD"): string {
     return currencyCode;
   }
 }
+
+/**
+ * Convert a date to a specific timezone by shifting its local representation.
+ * Uses Intl.DateTimeFormat to get the date parts in the target timezone,
+ * then reconstructs a Date object whose local time matches those parts.
+ */
+function toTimezone(date: Date, timezone: string): Date {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).formatToParts(date);
+
+    const get = (type: Intl.DateTimeFormatPartTypes) =>
+      Number(parts.find((p) => p.type === type)?.value || 0);
+
+    return new Date(
+      get("year"),
+      get("month") - 1,
+      get("day"),
+      get("hour") === 24 ? 0 : get("hour"),
+      get("minute"),
+      get("second"),
+    );
+  } catch {
+    return date;
+  }
+}
+
+/**
+ * Default date format matching the most common existing pattern.
+ */
+export const DEFAULT_DATE_FORMAT = "MMM d, yyyy";
+export const DEFAULT_TIME_FORMAT = "12h" as const;
+
+/**
+ * Simple date-fns-style format function that handles common tokens.
+ * Tokens: yyyy, yy, MMMM, MMM, MM, dd, d, HH, hh, mm, ss, a
+ */
+function formatWithPattern(date: Date, pattern: string): string {
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+  ];
+  const monthsShort = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  ];
+
+  const y = date.getFullYear();
+  const M = date.getMonth();
+  const d = date.getDate();
+  const H = date.getHours();
+  const m = date.getMinutes();
+  const s = date.getSeconds();
+  const h12 = H % 12 || 12;
+  const ampm = H < 12 ? "AM" : "PM";
+
+  return pattern
+    .replace("yyyy", String(y))
+    .replace("yy", String(y).slice(-2))
+    .replace("MMMM", months[M])
+    .replace("MMM", monthsShort[M])
+    .replace("MM", String(M + 1).padStart(2, "0"))
+    .replace(/\bdd\b/, String(d).padStart(2, "0"))
+    .replace(/\bd\b/, String(d))
+    .replace("HH", String(H).padStart(2, "0"))
+    .replace("hh", String(h12).padStart(2, "0"))
+    .replace("mm", String(m).padStart(2, "0"))
+    .replace("ss", String(s).padStart(2, "0"))
+    .replace("a", ampm);
+}
+
+/**
+ * Format a date using the org date format and optional timezone.
+ */
+export function formatDate(
+  date: Date | string,
+  dateFormat: string = DEFAULT_DATE_FORMAT,
+  timezone?: string,
+): string {
+  let d = typeof date === "string" ? new Date(date) : date;
+  if (timezone) d = toTimezone(d, timezone);
+  return formatWithPattern(d, dateFormat);
+}
+
+/**
+ * Format a date and time using org settings.
+ */
+export function formatDateTime(
+  date: Date | string,
+  dateFormat: string = DEFAULT_DATE_FORMAT,
+  timeFormat: "12h" | "24h" = "12h",
+  timezone?: string,
+): string {
+  let d = typeof date === "string" ? new Date(date) : date;
+  if (timezone) d = toTimezone(d, timezone);
+  const datePart = formatWithPattern(d, dateFormat);
+  const timePart = timeFormat === "24h"
+    ? formatWithPattern(d, "HH:mm")
+    : formatWithPattern(d, "hh:mm a");
+  return `${datePart} ${timePart}`;
+}
+
+/**
+ * Format time only using org settings.
+ */
+export function formatTime(
+  date: Date | string,
+  timeFormat: "12h" | "24h" = "12h",
+  timezone?: string,
+): string {
+  let d = typeof date === "string" ? new Date(date) : date;
+  if (timezone) d = toTimezone(d, timezone);
+  return timeFormat === "24h"
+    ? formatWithPattern(d, "HH:mm")
+    : formatWithPattern(d, "hh:mm a");
+}
+
+/**
+ * Format a date for server-side PDF/invoice rendering (uses toLocaleDateString for full month names).
+ * Applies timezone if provided, otherwise UTC for server contexts.
+ */
+export function formatDateForPdf(
+  date: Date | string,
+  dateFormat: string = DEFAULT_DATE_FORMAT,
+  timezone?: string,
+): string {
+  let d = typeof date === "string" ? new Date(date) : date;
+  if (timezone) {
+    d = toTimezone(d, timezone);
+  }
+  return formatWithPattern(d, dateFormat);
+}
