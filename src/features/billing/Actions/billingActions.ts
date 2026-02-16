@@ -34,9 +34,9 @@ async function getBillingSummary(organizationId: string): Promise<BillingSummary
       SELECT
         sr."totalAmount" AS total,
         sr.cost,
-        COALESCE((SELECT SUM(p.amount) FROM "Payment" p WHERE p."serviceRecordId" = sr.id), 0) AS paid
-      FROM "ServiceRecord" sr
-      JOIN "Vehicle" v ON v.id = sr."vehicleId"
+        COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0) AS paid
+      FROM service_records sr
+      JOIN vehicles v ON v.id = sr."vehicleId"
       WHERE v."organizationId" = ${organizationId}
     ) sub
   `);
@@ -106,9 +106,9 @@ export async function getBillingHistory(params: {
           SELECT
             sr.id,
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
-            COALESCE((SELECT SUM(p.amount) FROM "Payment" p WHERE p."serviceRecordId" = sr.id), 0) AS paid_amount
-          FROM "ServiceRecord" sr
-          JOIN "Vehicle" v ON v.id = sr."vehicleId"
+            COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0) AS paid_amount
+          FROM service_records sr
+          JOIN vehicles v ON v.id = sr."vehicleId"
           WHERE v."organizationId" = ${organizationId}
           ${searchCondition}
         ) sub
@@ -158,7 +158,7 @@ export async function getBillingHistory(params: {
             sr."serviceDate",
             sr.status,
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
-            COALESCE((SELECT SUM(p.amount) FROM "Payment" p WHERE p."serviceRecordId" = sr.id), 0) AS paid_amount,
+            COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0) AS paid_amount,
             v.id AS vehicle_id,
             v.make AS vehicle_make,
             v.model AS vehicle_model,
@@ -166,9 +166,9 @@ export async function getBillingHistory(params: {
             v."licensePlate" AS vehicle_license_plate,
             c.id AS customer_id,
             c.name AS customer_name
-          FROM "ServiceRecord" sr
-          JOIN "Vehicle" v ON v.id = sr."vehicleId"
-          LEFT JOIN "Customer" c ON c.id = v."customerId"
+          FROM service_records sr
+          JOIN vehicles v ON v.id = sr."vehicleId"
+          LEFT JOIN customers c ON c.id = v."customerId"
           WHERE v."organizationId" = ${organizationId}
           ${searchCondition}
         ) sub
