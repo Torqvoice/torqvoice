@@ -15,6 +15,7 @@ import {
   Key,
   Layout,
   ListPlus,
+  Mail,
   Palette,
   UserCog,
   UsersRound,
@@ -88,6 +89,13 @@ const settingsNav: SettingsNavItem[] = [
     icon: ListPlus,
     description: "Define custom data fields",
     gate: "customFields",
+  },
+  {
+    title: "Email",
+    href: "/settings/email",
+    icon: Mail,
+    description: "Email provider & sending",
+    gate: "smtp",
   },
   {
     title: "Workshop",
