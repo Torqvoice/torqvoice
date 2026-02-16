@@ -7,7 +7,7 @@ export function toLocalDateStr(d: Date): string {
 }
 
 export function formatDateHeader(d: Date): string {
-  return d.toLocaleDateString(undefined, {
+  return d.toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",

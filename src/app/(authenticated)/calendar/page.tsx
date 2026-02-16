@@ -1,5 +1,6 @@
 import { getCalendarEvents } from "@/features/calendar/Actions/calendarActions";
 import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
+import { getCustomersList } from "@/features/customers/Actions/customerActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { PageHeader } from "@/components/page-header";
@@ -17,13 +18,14 @@ export default async function CalendarPage() {
   const start = new Date(now.getFullYear(), now.getMonth(), 1);
   const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-  const [eventsResult, settingsResult, vehiclesResult] = await Promise.all([
+  const [eventsResult, settingsResult, vehiclesResult, customersResult] = await Promise.all([
     getCalendarEvents({
       start: toLocalDateStr(start),
       end: toLocalDateStr(end),
     }),
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
     getVehicles(),
+    getCustomersList(),
   ]);
 
   const events = eventsResult.success && eventsResult.data ? eventsResult.data : [];
@@ -39,6 +41,9 @@ export default async function CalendarPage() {
         customer: v.customer,
       }))
     : [];
+  const customers = customersResult.success && customersResult.data
+    ? customersResult.data
+    : [];
 
   return (
     <>
@@ -51,6 +56,7 @@ export default async function CalendarPage() {
           initialDay={now.getDate()}
           todayStr={toLocalDateStr(now)}
           vehicles={vehicles}
+          customers={customers}
           currencyCode={currencyCode}
         />
       </div>

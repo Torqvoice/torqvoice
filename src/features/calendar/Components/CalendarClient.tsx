@@ -1,24 +1,14 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   ChevronLeft,
   ChevronRight,
   Loader2,
   Plus,
-  Car,
-  Search,
   Wrench,
   FileText,
   AlertTriangle,
@@ -28,6 +18,7 @@ import { CalendarEventList } from "./CalendarEventList";
 import { toLocalDateStr } from "./calendar-utils";
 import { getCalendarEvents } from "../Actions/calendarActions";
 import type { CalendarEvent } from "../Actions/calendarActions";
+import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
 
 interface Vehicle {
   id: string;
@@ -38,6 +29,12 @@ interface Vehicle {
   customer: { id: string; name: string; company: string | null } | null;
 }
 
+interface Customer {
+  id: string;
+  name: string;
+  company: string | null;
+}
+
 interface CalendarClientProps {
   initialEvents: CalendarEvent[];
   initialMonth: number;
@@ -45,6 +42,7 @@ interface CalendarClientProps {
   initialDay: number;
   todayStr: string; // YYYY-MM-DD computed on server to avoid hydration mismatch
   vehicles: Vehicle[];
+  customers: Customer[];
   currencyCode: string;
 }
 
@@ -89,10 +87,9 @@ export default function CalendarClient({
   initialDay,
   todayStr,
   vehicles,
+  customers,
   currencyCode,
 }: CalendarClientProps) {
-  const router = useRouter();
-
   const [month, setMonth] = useState(initialMonth);
   const [year, setYear] = useState(initialYear);
   const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
@@ -108,7 +105,6 @@ export default function CalendarClient({
 
   // Vehicle picker
   const [showPicker, setShowPicker] = useState(false);
-  const [vehicleSearch, setVehicleSearch] = useState("");
 
   const selectedDateStr = toLocalDateStr(selectedDate);
 
@@ -137,17 +133,6 @@ export default function CalendarClient({
   }, [events]);
 
   const days = getMonthDays(year, month);
-
-  const filteredVehicles = useMemo(() => {
-    if (!vehicleSearch.trim()) return vehicles;
-    const q = vehicleSearch.toLowerCase();
-    return vehicles.filter(
-      (v) =>
-        `${v.year} ${v.make} ${v.model}`.toLowerCase().includes(q) ||
-        v.licensePlate?.toLowerCase().includes(q) ||
-        v.customer?.name.toLowerCase().includes(q)
-    );
-  }, [vehicles, vehicleSearch]);
 
   const fetchEvents = useCallback(async (y: number, m: number) => {
     setLoading(true);
@@ -190,12 +175,6 @@ export default function CalendarClient({
     if (needsFetch) {
       fetchEvents(t.getFullYear(), t.getMonth());
     }
-  };
-
-  const handleCreateWorkOrder = (vehicleId: string) => {
-    setShowPicker(false);
-    setVehicleSearch("");
-    router.push(`/vehicles/${vehicleId}/service/new`);
   };
 
   return (
@@ -361,58 +340,13 @@ export default function CalendarClient({
         </div>
       </div>
 
-      {/* Vehicle picker dialog */}
-      <Dialog open={showPicker} onOpenChange={setShowPicker}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Select Vehicle for Work Order</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search vehicles..."
-                value={vehicleSearch}
-                onChange={(e) => setVehicleSearch(e.target.value)}
-                className="pl-9"
-                autoFocus
-              />
-            </div>
-            <div className="max-h-[300px] overflow-y-auto">
-              {filteredVehicles.length === 0 ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">
-                  {vehicles.length === 0
-                    ? "No vehicles found. Add a vehicle first."
-                    : "No vehicles match your search."}
-                </p>
-              ) : (
-                <div className="space-y-1">
-                  {filteredVehicles.map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-muted"
-                      onClick={() => handleCreateWorkOrder(v.id)}
-                    >
-                      <Car className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium">
-                          {v.year} {v.make} {v.model}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {[v.licensePlate, v.customer?.name]
-                            .filter(Boolean)
-                            .join(" · ") || "No plate"}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <VehiclePickerDialog
+        open={showPicker}
+        onOpenChange={setShowPicker}
+        vehicles={vehicles}
+        customers={customers}
+        title="Select Vehicle for Work Order"
+      />
     </div>
   );
 }
