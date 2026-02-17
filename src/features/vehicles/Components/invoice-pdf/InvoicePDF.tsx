@@ -1,6 +1,6 @@
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
-import { formatCurrency, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
-import { createStyles, gray, getFontBold, lightenColor } from './styles'
+import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { createStyles, gray, getFontBold } from './styles'
 import { Header } from './Header'
 import { InfoSection } from './InfoSection'
 import { PartsTable, LaborTable } from './Tables'
