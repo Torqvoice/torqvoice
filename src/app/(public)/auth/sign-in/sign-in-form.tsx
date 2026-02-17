@@ -97,6 +97,13 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
           </Link>
         </p>
       )}
+
+      <p className="mt-4 text-center text-xs text-muted-foreground">
+        By using this service you agree to our{' '}
+        <Link href="/terms" target="_blank" className="text-primary hover:underline">
+          Terms of Service
+        </Link>
+      </p>
     </div>
   )
 }

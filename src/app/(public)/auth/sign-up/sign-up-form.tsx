@@ -15,6 +15,7 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const modal = useGlassModal()
@@ -123,7 +124,24 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
             />
           </div>
 
-          <Button type="submit" className="h-11 w-full" disabled={loading}>
+          <div className="flex items-start gap-2">
+            <input
+              id="terms"
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              required
+              className="mt-1 h-4 w-4 rounded border-border accent-primary"
+            />
+            <Label htmlFor="terms" className="text-sm font-normal leading-snug text-muted-foreground">
+              I agree to the{' '}
+              <Link href="/terms" target="_blank" className="font-medium text-primary hover:underline">
+                Terms of Service
+              </Link>
+            </Label>
+          </div>
+
+          <Button type="submit" className="h-11 w-full" disabled={loading || !termsAccepted}>
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {inviteToken ? 'Create Account & Join Team' : 'Create Account'}
           </Button>
