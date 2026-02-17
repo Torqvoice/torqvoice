@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
-import { EditNav } from "./edit-nav";
-import { EditActions } from "./edit-actions";
+import { EditNav } from "@/features/vehicles/Components/service-edit/EditNav";
+import { EditActions } from "@/features/vehicles/Components/service-edit/EditActions";
 import { db } from "@/lib/db";
 import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
 import { redirect } from "next/navigation";
