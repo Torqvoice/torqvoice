@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useFormatDate } from "@/lib/use-format-date";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -416,20 +415,331 @@ export function ServiceDetailClient({
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-4">
-      <div className="space-y-6">
-      {/* Vehicle & Customer Info */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Card className="border-0 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Car className="h-4 w-4" />
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_340px]">
+        {/* Left column — work/financial data */}
+        <div className="space-y-3">
+          {/* Parts Table */}
+          {record.partItems.length > 0 && (
+            <div className="rounded-lg border p-3">
+              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
+                <Wrench className="h-3.5 w-3.5" />
+                Parts ({record.partItems.length})
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-xs text-muted-foreground">
+                      <th className="pb-1.5 font-medium">Part #</th>
+                      <th className="pb-1.5 font-medium">Name</th>
+                      <th className="pb-1.5 text-right font-medium">Qty</th>
+                      <th className="pb-1.5 text-right font-medium">Unit Price</th>
+                      <th className="pb-1.5 text-right font-medium">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {record.partItems.map((part) => (
+                      <tr key={part.id}>
+                        <td className="py-1.5 font-mono text-xs">
+                          {part.partNumber || "-"}
+                        </td>
+                        <td className="py-1.5">{part.name}</td>
+                        <td className="py-1.5 text-right">{part.quantity}</td>
+                        <td className="py-1.5 text-right">{formatCurrency(part.unitPrice, currencyCode)}</td>
+                        <td className="py-1.5 text-right font-medium">
+                          {formatCurrency(part.total, currencyCode)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t">
+                      <td colSpan={4} className="pt-1.5 text-right text-xs font-medium">
+                        Parts Subtotal
+                      </td>
+                      <td className="pt-1.5 text-right text-sm font-bold">
+                        {formatCurrency(partsSubtotal, currencyCode)}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Labor Table */}
+          {record.laborItems.length > 0 && (
+            <div className="rounded-lg border p-3">
+              <h3 className="mb-2 text-sm font-semibold">
+                Labor ({record.laborItems.length})
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-xs text-muted-foreground">
+                      <th className="pb-1.5 font-medium" style={{ width: "40%" }}>Description</th>
+                      <th className="pb-1.5 text-right font-medium">Hours</th>
+                      <th className="pb-1.5 text-right font-medium">Rate</th>
+                      <th className="pb-1.5 text-right font-medium">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {record.laborItems.map((labor) => (
+                      <tr key={labor.id}>
+                        <td className="py-1.5 whitespace-pre-wrap">{labor.description}</td>
+                        <td className="py-1.5 text-right">{labor.hours}</td>
+                        <td className="py-1.5 text-right">{formatCurrency(labor.rate, currencyCode)}/hr</td>
+                        <td className="py-1.5 text-right font-medium">
+                          {formatCurrency(labor.total, currencyCode)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t">
+                      <td colSpan={3} className="pt-1.5 text-right text-xs font-medium">
+                        Labor Subtotal
+                      </td>
+                      <td className="pt-1.5 text-right text-sm font-bold">
+                        {formatCurrency(laborSubtotal, currencyCode)}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Legacy parts/labor display for old records */}
+          {record.partItems.length === 0 && record.laborItems.length === 0 && (record.parts || record.laborHours) && (
+            <div className="rounded-lg border p-3">
+              <h3 className="mb-2 text-sm font-semibold">Service Details</h3>
+              <div className="space-y-1 text-sm">
+                {record.parts && (
+                  <div>
+                    <span className="font-medium text-muted-foreground">Parts: </span>
+                    {record.parts}
+                  </div>
+                )}
+                {record.laborHours && (
+                  <div>
+                    <span className="font-medium text-muted-foreground">Labor Hours: </span>
+                    {record.laborHours}h
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Invoice Summary */}
+          <div className="rounded-lg border p-3">
+            <h3 className="mb-2 text-sm font-semibold">Invoice Summary</h3>
+            <div className="space-y-1.5">
+              {record.partItems.length > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Parts</span>
+                  <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
+                </div>
+              )}
+              {record.laborItems.length > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Labor</span>
+                  <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
+                </div>
+              )}
+              {record.subtotal > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span>{formatCurrency(record.subtotal, currencyCode)}</span>
+                </div>
+              )}
+              {record.discountAmount > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    Discount{record.discountType === "percentage" ? ` (${record.discountValue}%)` : ""}
+                  </span>
+                  <span className="text-destructive">{formatCurrency(-record.discountAmount, currencyCode)}</span>
+                </div>
+              )}
+              {record.taxRate > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Tax ({record.taxRate}%)</span>
+                  <span>{formatCurrency(record.taxAmount, currencyCode)}</span>
+                </div>
+              )}
+              <Separator />
+              <div className="flex justify-between font-bold">
+                <span>Total</span>
+                <span>{formatCurrency(displayTotal, currencyCode)}</span>
+              </div>
+              {record.payments && record.payments.length > 0 && (
+                <>
+                  <div className="flex justify-between text-sm text-emerald-600">
+                    <span>Paid</span>
+                    <span>{formatCurrency(-totalPaid, currencyCode)}</span>
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between font-bold">
+                    <span>Balance Due</span>
+                    <span className={balanceDue <= 0 ? "text-emerald-600" : ""}>
+                      {balanceDue <= 0 ? "PAID" : formatCurrency(balanceDue, currencyCode)}
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Payments */}
+          <div className="rounded-lg border p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h3 className="flex items-center gap-2 text-sm font-semibold">
+                  <CreditCard className="h-3.5 w-3.5" />
+                  Payments
+                </h3>
+                <Badge
+                  variant="outline"
+                  className={`text-xs ${
+                    paymentStatus === "paid"
+                      ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                      : paymentStatus === "partial"
+                      ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                      : "bg-gray-500/10 text-gray-500 border-gray-500/20"
+                  }`}
+                >
+                  {paymentStatus === "paid" ? "Paid" : paymentStatus === "partial" ? "Partial" : "Unpaid"}
+                </Badge>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() => setShowPaymentForm(!showPaymentForm)}
+              >
+                <Plus className="mr-1 h-3 w-3" />
+                Record Payment
+              </Button>
+            </div>
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Total Paid</span>
+                <span className="font-medium">{formatCurrency(totalPaid, currencyCode)} / {formatCurrency(displayTotal, currencyCode)}</span>
+              </div>
+
+              {showPaymentForm && (
+                <form onSubmit={handleCreatePayment} className="space-y-3 rounded-lg border p-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="paymentAmount" className="text-xs">Amount</Label>
+                      <Input
+                        id="paymentAmount"
+                        name="paymentAmount"
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        defaultValue={balanceDue > 0 ? balanceDue.toFixed(2) : ""}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="paymentDate" className="text-xs">Date</Label>
+                      <Input
+                        id="paymentDate"
+                        name="paymentDate"
+                        type="date"
+                        defaultValue={new Date().toISOString().split("T")[0]}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Method</Label>
+                      <Select name="paymentMethod" defaultValue="other">
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cash">Cash</SelectItem>
+                          <SelectItem value="card">Card</SelectItem>
+                          <SelectItem value="transfer">Transfer</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="paymentNote" className="text-xs">Note</Label>
+                      <Input id="paymentNote" name="paymentNote" placeholder="Optional note" />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit" size="sm" disabled={paymentLoading}>
+                      {paymentLoading && <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />}
+                      Save Payment
+                    </Button>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setShowPaymentForm(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              )}
+
+              {record.payments && record.payments.length > 0 && (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b text-left text-xs text-muted-foreground">
+                        <th className="pb-1.5 font-medium">Date</th>
+                        <th className="pb-1.5 text-right font-medium">Amount</th>
+                        <th className="pb-1.5 font-medium">Method</th>
+                        <th className="pb-1.5 font-medium">Note</th>
+                        <th className="pb-1.5 w-8" />
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {record.payments.map((payment) => (
+                        <tr key={payment.id}>
+                          <td className="py-1.5">{formatDate(new Date(payment.date))}</td>
+                          <td className="py-1.5 text-right font-medium">{formatCurrency(payment.amount, currencyCode)}</td>
+                          <td className="py-1.5">
+                            <Badge variant="outline" className="text-xs capitalize">
+                              {payment.method}
+                            </Badge>
+                          </td>
+                          <td className="py-1.5 text-muted-foreground">{payment.note || "-"}</td>
+                          <td className="py-1.5">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                              disabled={deletingPayment === payment.id}
+                              onClick={() => handleDeletePayment(payment.id)}
+                            >
+                              {deletingPayment === payment.id ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-3 w-3" />
+                              )}
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right column — reference/context info */}
+        <div className="space-y-3">
+          {/* Vehicle Info */}
+          <div className="rounded-lg border p-3">
+            <h3 className="mb-1.5 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              <Car className="h-3.5 w-3.5" />
               Vehicle
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="font-semibold">{vehicleName}</p>
+            </h3>
+            <p className="text-sm font-semibold">{vehicleName}</p>
             {record.vehicle.licensePlate && (
-              <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+              <p className="font-mono text-xs text-muted-foreground">
                 {record.vehicle.licensePlate}
               </p>
             )}
@@ -439,96 +749,86 @@ export function ServiceDetailClient({
               </p>
             )}
             {record.mileage && (
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 Mileage at service: {record.mileage.toLocaleString()} {distUnit}
               </p>
             )}
-          </CardContent>
-        </Card>
+          </div>
 
-        {record.vehicle.customer && (
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="h-4 w-4" />
+          {/* Customer Info */}
+          {record.vehicle.customer && (
+            <div className="rounded-lg border p-3">
+              <h3 className="mb-1.5 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <Users className="h-3.5 w-3.5" />
                 Customer
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
               <Link
                 href={`/customers/${record.vehicle.customer.id}`}
-                className="font-semibold hover:underline"
+                className="text-sm font-semibold hover:underline"
               >
                 {record.vehicle.customer.name}
               </Link>
-              <div className="mt-1 space-y-0.5 text-sm text-muted-foreground">
+              <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
                 {record.vehicle.customer.company && (
                   <div className="flex items-center gap-1.5">
-                    <Building2 className="h-3 w-3" />
+                    <Building2 className="h-3 w-3 shrink-0" />
                     {record.vehicle.customer.company}
                   </div>
                 )}
                 {record.vehicle.customer.email && (
                   <div className="flex items-center gap-1.5">
-                    <Mail className="h-3 w-3" />
+                    <Mail className="h-3 w-3 shrink-0" />
                     {record.vehicle.customer.email}
                   </div>
                 )}
                 {record.vehicle.customer.phone && (
                   <div className="flex items-center gap-1.5">
-                    <Phone className="h-3 w-3" />
+                    <Phone className="h-3 w-3 shrink-0" />
                     {record.vehicle.customer.phone}
                   </div>
                 )}
                 {record.vehicle.customer.address && (
                   <div className="flex items-center gap-1.5">
-                    <MapPin className="h-3 w-3" />
+                    <MapPin className="h-3 w-3 shrink-0" />
                     {record.vehicle.customer.address}
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+            </div>
+          )}
 
-      {/* Invoice Notes */}
-      {record.invoiceNotes && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base">Invoice Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap text-sm">{record.invoiceNotes}</p>
-          </CardContent>
-        </Card>
-      )}
+          {/* Notes (invoice + diagnostic combined) */}
+          {(record.invoiceNotes || record.diagnosticNotes) && (
+            <div className="rounded-lg border p-3">
+              <h3 className="mb-2 text-sm font-semibold">Notes</h3>
+              <div className="space-y-2">
+                {record.invoiceNotes && (
+                  <div>
+                    <span className="text-xs font-medium text-muted-foreground">Invoice</span>
+                    <p className="whitespace-pre-wrap text-sm">{record.invoiceNotes}</p>
+                  </div>
+                )}
+                {record.invoiceNotes && record.diagnosticNotes && <Separator />}
+                {record.diagnosticNotes && (
+                  <div>
+                    <span className="text-xs font-medium text-muted-foreground">Diagnostic</span>
+                    <p className="whitespace-pre-wrap text-sm">{record.diagnosticNotes}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
-      {/* Diagnostic Notes */}
-      {record.diagnosticNotes && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base">Diagnostic Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap text-sm">{record.diagnosticNotes}</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Service Images */}
-      {imageAttachments.length > 0 && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Camera className="h-4 w-4" />
-              Service Images ({imageAttachments.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
-              {imageAttachments.map((attachment, idx) => (
-                  <div key={attachment.id} className="group overflow-hidden rounded-lg border">
+          {/* Service Images */}
+          {imageAttachments.length > 0 && (
+            <div className="rounded-lg border p-3">
+              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
+                <Camera className="h-3.5 w-3.5" />
+                Images ({imageAttachments.length})
+              </h3>
+              <div className="grid grid-cols-3 gap-2">
+                {imageAttachments.map((attachment, idx) => (
+                  <div key={attachment.id} className="group overflow-hidden rounded border">
                     <div className="relative">
                       <button
                         type="button"
@@ -541,141 +841,142 @@ export function ServiceDetailClient({
                           className="aspect-square w-full object-cover"
                         />
                       </button>
-                      <div className="absolute right-1 top-1 flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-                        <Button variant="secondary" size="icon" className="h-6 w-6" asChild>
+                      <div className="absolute right-0.5 top-0.5 flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                        <Button variant="secondary" size="icon" className="h-5 w-5" asChild>
                           <a href={attachment.fileUrl} download={attachment.fileName}>
-                            <Download className="h-3 w-3" />
+                            <Download className="h-2.5 w-2.5" />
                           </a>
                         </Button>
                         <Button
                           variant="secondary"
                           size="icon"
-                          className="h-6 w-6 hover:text-destructive"
+                          className="h-5 w-5 hover:text-destructive"
                           disabled={deletingAttachment === attachment.id}
                           onClick={() => handleDeleteAttachment(attachment.id)}
                         >
                           {deletingAttachment === attachment.id ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
+                            <Loader2 className="h-2.5 w-2.5 animate-spin" />
                           ) : (
-                            <Trash2 className="h-3 w-3" />
+                            <Trash2 className="h-2.5 w-2.5" />
                           )}
                         </Button>
                       </div>
                     </div>
-                    {attachment.description && (
-                      <p className="truncate px-1.5 py-1 text-xs text-muted-foreground">{attachment.description}</p>
-                    )}
                   </div>
                 ))}
+              </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Diagnostic Reports & Documents */}
-      {record.attachments && record.attachments.filter((a) => a.category === "diagnostic" || a.category === "document").length > 0 && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {record.attachments.filter((a) => a.category === "diagnostic").length > 0 && (
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="h-4 w-4" />
-                  Diagnostic Reports ({record.attachments.filter((a) => a.category === "diagnostic").length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {record.attachments
-                    .filter((a) => a.category === "diagnostic")
-                    .map((attachment) => (
-                      <div key={attachment.id} className="flex items-center gap-3 rounded-lg border p-2.5">
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded border bg-muted/50">
-                          {getFileIcon(attachment.fileType)}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium">{attachment.fileName}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {formatFileSize(attachment.fileSize)}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-0.5">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-                            <a href={attachment.fileUrl} download={attachment.fileName}>
-                              <Download className="h-3.5 w-3.5" />
-                            </a>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                            disabled={deletingAttachment === attachment.id}
-                            onClick={() => handleDeleteAttachment(attachment.id)}
-                          >
-                            {deletingAttachment === attachment.id ? (
-                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-3.5 w-3.5" />
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
           )}
 
-          {record.attachments.filter((a) => a.category === "document").length > 0 && (
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Paperclip className="h-4 w-4" />
-                  Documents ({record.attachments.filter((a) => a.category === "document").length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {record.attachments
-                    .filter((a) => a.category === "document")
-                    .map((attachment) => (
-                      <div key={attachment.id} className="flex items-center gap-3 rounded-lg border p-2.5">
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded border bg-muted/50">
-                          {getFileIcon(attachment.fileType)}
+          {/* Diagnostic Reports & Documents */}
+          {record.attachments && record.attachments.filter((a) => a.category === "diagnostic" || a.category === "document").length > 0 && (
+            <div className="space-y-3">
+              {record.attachments.filter((a) => a.category === "diagnostic").length > 0 && (
+                <div className="rounded-lg border p-3">
+                  <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
+                    <FileText className="h-3.5 w-3.5" />
+                    Diagnostic Reports ({record.attachments.filter((a) => a.category === "diagnostic").length})
+                  </h3>
+                  <div className="space-y-1.5">
+                    {record.attachments
+                      .filter((a) => a.category === "diagnostic")
+                      .map((attachment) => (
+                        <div key={attachment.id} className="flex items-center gap-2 rounded border p-2">
+                          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-muted/50">
+                            {getFileIcon(attachment.fileType)}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-xs font-medium">{attachment.fileName}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {formatFileSize(attachment.fileSize)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-0.5">
+                            <Button variant="ghost" size="icon" className="h-6 w-6" asChild>
+                              <a href={attachment.fileUrl} download={attachment.fileName}>
+                                <Download className="h-3 w-3" />
+                              </a>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                              disabled={deletingAttachment === attachment.id}
+                              onClick={() => handleDeleteAttachment(attachment.id)}
+                            >
+                              {deletingAttachment === attachment.id ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-3 w-3" />
+                              )}
+                            </Button>
+                          </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium">{attachment.fileName}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {formatFileSize(attachment.fileSize)}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-0.5">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-                            <a href={attachment.fileUrl} download={attachment.fileName}>
-                              <Download className="h-3.5 w-3.5" />
-                            </a>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                            disabled={deletingAttachment === attachment.id}
-                            onClick={() => handleDeleteAttachment(attachment.id)}
-                          >
-                            {deletingAttachment === attachment.id ? (
-                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-3.5 w-3.5" />
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              )}
+
+              {record.attachments.filter((a) => a.category === "document").length > 0 && (
+                <div className="rounded-lg border p-3">
+                  <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
+                    <Paperclip className="h-3.5 w-3.5" />
+                    Documents ({record.attachments.filter((a) => a.category === "document").length})
+                  </h3>
+                  <div className="space-y-1.5">
+                    {record.attachments
+                      .filter((a) => a.category === "document")
+                      .map((attachment) => (
+                        <div key={attachment.id} className="flex items-center gap-2 rounded border p-2">
+                          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-muted/50">
+                            {getFileIcon(attachment.fileType)}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-xs font-medium">{attachment.fileName}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {formatFileSize(attachment.fileSize)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-0.5">
+                            <Button variant="ghost" size="icon" className="h-6 w-6" asChild>
+                              <a href={attachment.fileUrl} download={attachment.fileName}>
+                                <Download className="h-3 w-3" />
+                              </a>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                              disabled={deletingAttachment === attachment.id}
+                              onClick={() => handleDeleteAttachment(attachment.id)}
+                            >
+                              {deletingAttachment === attachment.id ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-3 w-3" />
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Custom Fields */}
+          <CustomFieldsDisplay entityId={record.id} entityType="service_record" />
+
+          {/* Additional Notes */}
+          {record.description && (
+            <div className="rounded-lg border p-3">
+              <h3 className="mb-1 text-sm font-semibold">Additional Notes</h3>
+              <p className="whitespace-pre-wrap text-sm">{record.description}</p>
+            </div>
           )}
         </div>
-      )}
+      </div>
 
       {/* Image Carousel Modal */}
       {carouselIndex !== null && imageAttachments[carouselIndex] && (
@@ -685,7 +986,6 @@ export function ServiceDetailClient({
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          {/* Close button */}
           <button
             type="button"
             onClick={closeCarousel}
@@ -693,15 +993,11 @@ export function ServiceDetailClient({
           >
             <XIcon className="h-5 w-5" />
           </button>
-
-          {/* Counter */}
           {imageAttachments.length > 1 && (
             <div className="absolute top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm font-medium text-white sm:top-4">
               {carouselIndex + 1} / {imageAttachments.length}
             </div>
           )}
-
-          {/* Previous button */}
           {carouselIndex > 0 && (
             <button
               type="button"
@@ -711,8 +1007,6 @@ export function ServiceDetailClient({
               <ChevronLeft className="h-6 w-6" />
             </button>
           )}
-
-          {/* Next button */}
           {carouselIndex < imageAttachments.length - 1 && (
             <button
               type="button"
@@ -722,8 +1016,6 @@ export function ServiceDetailClient({
               <ChevronRight className="h-6 w-6" />
             </button>
           )}
-
-          {/* Image */}
           <div className="flex max-h-[85vh] max-w-[90vw] flex-col items-center" onClick={(e) => e.stopPropagation()}>
             <img
               src={imageAttachments[carouselIndex].fileUrl}
@@ -738,344 +1030,6 @@ export function ServiceDetailClient({
             )}
           </div>
         </div>
-      )}
-
-      {/* Parts Table */}
-      {record.partItems.length > 0 && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Wrench className="h-4 w-4" />
-              Parts ({record.partItems.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-left text-muted-foreground">
-                    <th className="pb-2 font-medium">Part #</th>
-                    <th className="pb-2 font-medium">Name</th>
-                    <th className="pb-2 text-right font-medium">Qty</th>
-                    <th className="pb-2 text-right font-medium">Unit Price</th>
-                    <th className="pb-2 text-right font-medium">Total</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {record.partItems.map((part) => (
-                    <tr key={part.id}>
-                      <td className="py-2 font-mono text-xs">
-                        {part.partNumber || "-"}
-                      </td>
-                      <td className="py-2">{part.name}</td>
-                      <td className="py-2 text-right">{part.quantity}</td>
-                      <td className="py-2 text-right">{formatCurrency(part.unitPrice, currencyCode)}</td>
-                      <td className="py-2 text-right font-medium">
-                        {formatCurrency(part.total, currencyCode)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t">
-                    <td colSpan={4} className="pt-2 text-right font-medium">
-                      Parts Subtotal
-                    </td>
-                    <td className="pt-2 text-right font-bold">
-                      {formatCurrency(partsSubtotal, currencyCode)}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Labor Table */}
-      {record.laborItems.length > 0 && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base">
-              Labor ({record.laborItems.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-left text-muted-foreground">
-                    <th className="pb-2 font-medium" style={{ width: "40%" }}>Description</th>
-                    <th className="pb-2 text-right font-medium">Hours</th>
-                    <th className="pb-2 text-right font-medium">Rate</th>
-                    <th className="pb-2 text-right font-medium">Total</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {record.laborItems.map((labor) => (
-                    <tr key={labor.id}>
-                      <td className="py-2 whitespace-pre-wrap">{labor.description}</td>
-                      <td className="py-2 text-right">{labor.hours}</td>
-                      <td className="py-2 text-right">{formatCurrency(labor.rate, currencyCode)}/hr</td>
-                      <td className="py-2 text-right font-medium">
-                        {formatCurrency(labor.total, currencyCode)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t">
-                    <td colSpan={3} className="pt-2 text-right font-medium">
-                      Labor Subtotal
-                    </td>
-                    <td className="pt-2 text-right font-bold">
-                      {formatCurrency(laborSubtotal, currencyCode)}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Legacy parts/labor display for old records */}
-      {record.partItems.length === 0 && record.laborItems.length === 0 && (record.parts || record.laborHours) && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base">Service Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            {record.parts && (
-              <div>
-                <span className="font-medium text-muted-foreground">Parts: </span>
-                {record.parts}
-              </div>
-            )}
-            {record.laborHours && (
-              <div>
-                <span className="font-medium text-muted-foreground">Labor Hours: </span>
-                {record.laborHours}h
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Totals */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base">Invoice Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {record.partItems.length > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Parts</span>
-                <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
-              </div>
-            )}
-            {record.laborItems.length > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Labor</span>
-                <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
-              </div>
-            )}
-            {record.subtotal > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span>{formatCurrency(record.subtotal, currencyCode)}</span>
-              </div>
-            )}
-            {record.discountAmount > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">
-                  Discount{record.discountType === "percentage" ? ` (${record.discountValue}%)` : ""}
-                </span>
-                <span className="text-destructive">{formatCurrency(-record.discountAmount, currencyCode)}</span>
-              </div>
-            )}
-            {record.taxRate > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Tax ({record.taxRate}%)</span>
-                <span>{formatCurrency(record.taxAmount, currencyCode)}</span>
-              </div>
-            )}
-            <Separator />
-            <div className="flex justify-between text-lg font-bold">
-              <span>Total</span>
-              <span>{formatCurrency(displayTotal, currencyCode)}</span>
-            </div>
-            {record.payments && record.payments.length > 0 && (
-              <>
-                <div className="flex justify-between text-sm text-emerald-600">
-                  <span>Paid</span>
-                  <span>{formatCurrency(-totalPaid, currencyCode)}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between text-lg font-bold">
-                  <span>Balance Due</span>
-                  <span className={balanceDue <= 0 ? "text-emerald-600" : ""}>
-                    {balanceDue <= 0 ? "PAID" : formatCurrency(balanceDue, currencyCode)}
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Payments */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div className="flex items-center gap-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <CreditCard className="h-4 w-4" />
-              Payments
-            </CardTitle>
-            <Badge
-              variant="outline"
-              className={
-                paymentStatus === "paid"
-                  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                  : paymentStatus === "partial"
-                  ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                  : "bg-gray-500/10 text-gray-500 border-gray-500/20"
-              }
-            >
-              {paymentStatus === "paid" ? "Paid" : paymentStatus === "partial" ? "Partial" : "Unpaid"}
-            </Badge>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowPaymentForm(!showPaymentForm)}
-          >
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            Record Payment
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Total Paid</span>
-            <span className="font-medium">{formatCurrency(totalPaid, currencyCode)} / {formatCurrency(displayTotal, currencyCode)}</span>
-          </div>
-
-          {showPaymentForm && (
-            <form onSubmit={handleCreatePayment} className="space-y-3 rounded-lg border p-4">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <Label htmlFor="paymentAmount" className="text-xs">Amount</Label>
-                  <Input
-                    id="paymentAmount"
-                    name="paymentAmount"
-                    type="number"
-                    step="0.01"
-                    min="0.01"
-                    defaultValue={balanceDue > 0 ? balanceDue.toFixed(2) : ""}
-                    required
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="paymentDate" className="text-xs">Date</Label>
-                  <Input
-                    id="paymentDate"
-                    name="paymentDate"
-                    type="date"
-                    defaultValue={new Date().toISOString().split("T")[0]}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Method</Label>
-                  <Select name="paymentMethod" defaultValue="other">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cash">Cash</SelectItem>
-                      <SelectItem value="card">Card</SelectItem>
-                      <SelectItem value="transfer">Transfer</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="paymentNote" className="text-xs">Note</Label>
-                  <Input id="paymentNote" name="paymentNote" placeholder="Optional note" />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button type="submit" size="sm" disabled={paymentLoading}>
-                  {paymentLoading && <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />}
-                  Save Payment
-                </Button>
-                <Button type="button" variant="ghost" size="sm" onClick={() => setShowPaymentForm(false)}>
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          )}
-
-          {record.payments && record.payments.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-left text-muted-foreground">
-                    <th className="pb-2 font-medium">Date</th>
-                    <th className="pb-2 text-right font-medium">Amount</th>
-                    <th className="pb-2 font-medium">Method</th>
-                    <th className="pb-2 font-medium">Note</th>
-                    <th className="pb-2 w-8" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {record.payments.map((payment) => (
-                    <tr key={payment.id}>
-                      <td className="py-2">{formatDate(new Date(payment.date))}</td>
-                      <td className="py-2 text-right font-medium">{formatCurrency(payment.amount, currencyCode)}</td>
-                      <td className="py-2">
-                        <Badge variant="outline" className="text-xs capitalize">
-                          {payment.method}
-                        </Badge>
-                      </td>
-                      <td className="py-2 text-muted-foreground">{payment.note || "-"}</td>
-                      <td className="py-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                          disabled={deletingPayment === payment.id}
-                          onClick={() => handleDeletePayment(payment.id)}
-                        >
-                          {deletingPayment === payment.id ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Custom Fields */}
-      <CustomFieldsDisplay entityId={record.id} entityType="service_record" />
-
-      {/* Additional Notes */}
-      {record.description && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base">Additional Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap text-sm">{record.description}</p>
-          </CardContent>
-        </Card>
       )}
 
       {/* Email Invoice Dialog */}
@@ -1128,7 +1082,6 @@ export function ServiceDetailClient({
           </div>
         </DialogContent>
       </Dialog>
-    </div>
     </div>
     </div>
   );
