@@ -7,32 +7,32 @@ import { signIn } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useGlassModal } from '@/components/glass-modal'
-import { Gauge, Loader2 } from 'lucide-react'
+import { Gauge, Loader2, XCircle } from 'lucide-react'
 
 function SignInFormInner({ registrationDisabled }: { registrationDisabled: boolean }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const modal = useGlassModal()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError('')
 
     try {
       const result = await signIn.email({ email, password })
       if (result.error) {
-        modal.open('error', 'Sign In Failed', result.error.message || 'Invalid credentials')
+        setError(result.error.message || 'Invalid email or password')
       } else {
         const redirect = searchParams.get('redirect') || '/'
         router.push(redirect)
         router.refresh()
       }
     } catch {
-      modal.open('error', 'Sign In Failed', 'An unexpected error occurred')
+      setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -50,6 +50,13 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
         <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
         <p className="mt-1 text-sm text-muted-foreground">Sign in to your workshop</p>
       </div>
+
+      {error && (
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+          <XCircle className="h-4 w-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">

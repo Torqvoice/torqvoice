@@ -7,8 +7,7 @@ import { signUp } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useGlassModal } from '@/components/glass-modal'
-import { Gauge, Loader2 } from 'lucide-react'
+import { Gauge, Loader2, XCircle } from 'lucide-react'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 
 export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
@@ -16,13 +15,14 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const modal = useGlassModal()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError('')
 
     try {
       const result = await signUp.email({ name, email, password })
@@ -31,21 +31,18 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
         const isDisabled =
           message.toLowerCase().includes('disabled') ||
           message.toLowerCase().includes('failed to create')
-        modal.open(
-          'error',
-          'Sign Up Failed',
+        setError(
           isDisabled
             ? 'Registration is currently disabled. Please contact your administrator.'
             : message,
         )
       } else if (inviteToken) {
-        // Accept the invitation and redirect to dashboard
         const acceptResult = await acceptInvitation({ token: inviteToken })
         if (acceptResult.success) {
           router.push('/')
           router.refresh()
         } else {
-          modal.open('error', 'Invitation Error', acceptResult.error || 'Failed to accept invitation')
+          setError(acceptResult.error || 'Failed to accept invitation')
           router.push('/onboarding')
           router.refresh()
         }
@@ -54,7 +51,7 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
         router.refresh()
       }
     } catch {
-      modal.open('error', 'Sign Up Failed', 'An unexpected error occurred')
+      setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -82,6 +79,13 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
               : 'Set up your workshop to manage customer vehicles'}
           </p>
         </div>
+
+        {error && (
+          <div className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+            <XCircle className="h-4 w-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
