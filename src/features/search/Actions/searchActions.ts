@@ -5,6 +5,24 @@ import { Prisma } from "@prisma/client";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 
+export async function getRecentCustomers() {
+  return withAuth(async ({ organizationId }) => {
+    const customers = await db.customer.findMany({
+      where: { organizationId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        company: true,
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 20,
+    });
+    return customers;
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.DASHBOARD }] });
+}
+
 export async function globalSearch(query: string) {
   return withAuth(async ({ organizationId }) => {
     if (!query || query.trim().length < 2) {
