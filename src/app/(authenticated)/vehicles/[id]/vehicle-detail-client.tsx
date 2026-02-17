@@ -25,6 +25,7 @@ import { toast } from 'sonner'
 import { deleteNote, toggleNotePin } from '@/features/vehicles/Actions/noteActions'
 import { toggleReminder, deleteReminder } from '@/features/vehicles/Actions/reminderActions'
 import { unarchiveVehicle } from '@/features/vehicles/Actions/unarchiveVehicle'
+import { deleteVehicle } from '@/features/vehicles/Actions/deleteVehicle'
 import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
 import { formatCurrency } from '@/lib/format'
 import {
@@ -51,8 +52,19 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 interface CustomerOption {
   id: string
@@ -165,6 +177,7 @@ export function VehicleDetailClient({
   const [reminderFilter, setReminderFilter] = useState<'active' | 'completed' | 'all'>('active')
   const [showImage, setShowImage] = useState(false)
   const [showArchiveDialog, setShowArchiveDialog] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const now = new Date()
   const sevenDaysFromNow = new Date(now)
@@ -232,6 +245,16 @@ export function VehicleDetailClient({
     }
   }
 
+  const handleDelete = async () => {
+    const result = await deleteVehicle(vehicle.id)
+    if (result.success) {
+      toast.success('Vehicle deleted')
+      router.push('/vehicles')
+    } else {
+      modal.open('error', 'Error', result.error || 'Failed to delete vehicle')
+    }
+  }
+
   return (
     <div className="space-y-4">
       {/* Archived banner */}
@@ -294,6 +317,14 @@ export function VehicleDetailClient({
                     Archive
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -662,6 +693,29 @@ export function VehicleDetailClient({
         vehicleId={vehicle.id}
         vehicleName={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
       />
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete vehicle?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete{' '}
+              <span className="font-semibold">
+                {vehicle.year} {vehicle.make} {vehicle.model}
+              </span>{' '}
+              and all associated service records, notes, and reminders. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Image lightbox */}
       {showImage && vehicle.imageUrl && (
