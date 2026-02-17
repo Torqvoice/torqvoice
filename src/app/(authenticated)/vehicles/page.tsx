@@ -7,9 +7,10 @@ import { PageHeader } from "@/components/page-header";
 export default async function VehiclesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; pageSize?: string; search?: string }>;
+  searchParams: Promise<{ page?: string; pageSize?: string; search?: string; archived?: string }>;
 }) {
   const params = await searchParams;
+  const isArchived = params.archived === "true";
   const cookieStore = await cookies();
   const viewCookie = cookieStore.get("torqvoice-vehicles-view")?.value;
   const initialView = viewCookie === "grid" ? "grid" : "table";
@@ -18,6 +19,7 @@ export default async function VehiclesPage({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
+      archived: isArchived,
     }),
     getCustomersList(),
   ]);
@@ -44,6 +46,8 @@ export default async function VehiclesPage({
           customers={customersResult.data ?? []}
           search={params.search || ""}
           initialView={initialView}
+          isArchived={isArchived}
+          archivedCount={result.data.archivedCount}
         />
       </div>
     </>

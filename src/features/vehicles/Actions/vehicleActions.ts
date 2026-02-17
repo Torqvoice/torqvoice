@@ -68,6 +68,7 @@ export async function getVehiclesPaginated(params: {
   page?: number;
   pageSize?: number;
   search?: string;
+  archived?: boolean;
 }) {
   return withAuth(async ({ organizationId }) => {
     const page = params.page || 1;
@@ -75,7 +76,7 @@ export async function getVehiclesPaginated(params: {
     const skip = (page - 1) * pageSize;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: any = { organizationId, isArchived: false };
+    const where: any = { organizationId, isArchived: params.archived ?? false };
 
     if (params.search) {
       where.OR = [
@@ -90,7 +91,7 @@ export async function getVehiclesPaginated(params: {
       }
     }
 
-    const [vehicles, total] = await Promise.all([
+    const [vehicles, total, archivedCount] = await Promise.all([
       db.vehicle.findMany({
         where,
         include: {
@@ -102,6 +103,7 @@ export async function getVehiclesPaginated(params: {
         take: pageSize,
       }),
       db.vehicle.count({ where }),
+      db.vehicle.count({ where: { organizationId, isArchived: true } }),
     ]);
 
     return {
@@ -110,6 +112,7 @@ export async function getVehiclesPaginated(params: {
       page,
       pageSize,
       totalPages: Math.ceil(total / pageSize),
+      archivedCount,
     };
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
 }
