@@ -158,7 +158,7 @@ export function InvoicePDF({
 
       {hasAttachments && imageAttachments.length > 0 && (
         <Page size="A4" style={styles.page}>
-          <Text style={styles.sectionTitle}>Diagnostic Report Images</Text>
+          <Text style={styles.sectionTitle}>Service Images</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
             {imageAttachments.map((img, i) => (
               <View key={i} style={{ width: '48%', marginBottom: 8 }}>
