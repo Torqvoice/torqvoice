@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CreditCard, Loader2, Plus, Trash2 } from "lucide-react";
+import { Check, CreditCard, Loader2, Plus, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { useFormatDate } from "@/lib/use-format-date";
 import { paymentStatusColors, paymentStatusLabels } from "./types";
@@ -70,10 +70,29 @@ export function PaymentsSection({
             {paymentStatusLabels[paymentStatus] || "Unpaid"}
           </Badge>
         </div>
-        <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setShowForm(!showForm)}>
-          <Plus className="mr-1 h-3 w-3" />
-          Record Payment
-        </Button>
+        <div className="flex items-center gap-2">
+          {paymentStatus !== "paid" && balanceDue > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={paymentLoading}
+              onClick={() => onCreatePayment({
+                amount: balanceDue,
+                date: new Date().toISOString(),
+                method: "other",
+                note: "Marked as paid",
+              })}
+            >
+              {paymentLoading ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3" />}
+              Mark as Paid
+            </Button>
+          )}
+          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setShowForm(!showForm)}>
+            <Plus className="mr-1 h-3 w-3" />
+            Record Payment
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-3">

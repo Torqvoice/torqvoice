@@ -35,7 +35,9 @@ export function ServiceSidebar({
           <Car className="h-3.5 w-3.5" />
           Vehicle
         </h3>
-        <p className="text-sm font-semibold">{vehicleName}</p>
+        <Link href={`/vehicles/${vehicle.id}`} className="text-sm font-semibold hover:underline">
+          {vehicleName}
+        </Link>
         {vehicle.licensePlate && (
           <p className="font-mono text-xs text-muted-foreground">{vehicle.licensePlate}</p>
         )}
