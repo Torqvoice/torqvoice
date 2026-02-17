@@ -229,11 +229,16 @@ export function InvoiceView({
     const sessionId = params.get('session_id')
     const reference = params.get('reference')
 
+    const paypalOrderId = params.get('paypal_order_id')
+
     if (sessionId) {
       verifyPayment('stripe', sessionId)
       window.history.replaceState({}, '', window.location.pathname)
     } else if (reference) {
       verifyPayment('vipps', reference)
+      window.history.replaceState({}, '', window.location.pathname)
+    } else if (paypalOrderId) {
+      verifyPayment('paypal', paypalOrderId)
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [verifyPayment])
@@ -424,6 +429,21 @@ export function InvoiceView({
                   )}
                   Pay {formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode)} with
                   Vipps
+                </button>
+              )}
+              {enabledProviders.includes('paypal') && (
+                <button
+                  onClick={() => handlePayment('paypal')}
+                  disabled={paymentLoading !== null}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#0070ba] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#005ea6] disabled:opacity-50 sm:flex-none"
+                >
+                  {paymentLoading === 'paypal' ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <span className="text-base font-black leading-none">P</span>
+                  )}
+                  Pay {formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode)} with
+                  PayPal
                 </button>
               )}
             </div>

@@ -31,6 +31,7 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
 
   const [stripeEnabled, setStripeEnabled] = useState(enabledList.includes("stripe"));
   const [vippsEnabled, setVippsEnabled] = useState(enabledList.includes("vipps"));
+  const [paypalEnabled, setPaypalEnabled] = useState(enabledList.includes("paypal"));
 
   // Stripe fields
   const [stripeSecretKey, setStripeSecretKey] = useState(settings[SETTING_KEYS.PAYMENT_STRIPE_SECRET_KEY] || "");
@@ -43,6 +44,11 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
   const [vippsSubscriptionKey, setVippsSubscriptionKey] = useState(settings[SETTING_KEYS.PAYMENT_VIPPS_SUBSCRIPTION_KEY] || "");
   const [vippsMsn, setVippsMsn] = useState(settings[SETTING_KEYS.PAYMENT_VIPPS_MSN] || "");
   const [vippsTestMode, setVippsTestMode] = useState(settings[SETTING_KEYS.PAYMENT_VIPPS_USE_TEST] === "true");
+
+  // PayPal fields
+  const [paypalClientId, setPaypalClientId] = useState(settings[SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_ID] || "");
+  const [paypalClientSecret, setPaypalClientSecret] = useState(settings[SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_SECRET] || "");
+  const [paypalSandbox, setPaypalSandbox] = useState(settings[SETTING_KEYS.PAYMENT_PAYPAL_USE_SANDBOX] === "true");
 
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   const [appUrl, setAppUrl] = useState("");
@@ -57,6 +63,7 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
     const providers: string[] = [];
     if (stripeEnabled) providers.push("stripe");
     if (vippsEnabled) providers.push("vipps");
+    if (paypalEnabled) providers.push("paypal");
 
     await setSettings({
       [SETTING_KEYS.INVOICE_BANK_ACCOUNT]: bankAccount,
@@ -72,6 +79,9 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
       [SETTING_KEYS.PAYMENT_VIPPS_SUBSCRIPTION_KEY]: vippsSubscriptionKey,
       [SETTING_KEYS.PAYMENT_VIPPS_MSN]: vippsMsn,
       [SETTING_KEYS.PAYMENT_VIPPS_USE_TEST]: vippsTestMode ? "true" : "false",
+      [SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_ID]: paypalClientId,
+      [SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_SECRET]: paypalClientSecret,
+      [SETTING_KEYS.PAYMENT_PAYPAL_USE_SANDBOX]: paypalSandbox ? "true" : "false",
     });
 
     setSaving(false);
@@ -334,6 +344,68 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
                     </p>
                   </div>
                 )}
+              </div>
+            )}
+          </div>
+
+          {/* PayPal */}
+          <div className="space-y-4 rounded-lg border p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-base font-semibold">PayPal</Label>
+                <p className="text-xs text-muted-foreground">Accept PayPal payments</p>
+              </div>
+              <Switch checked={paypalEnabled} onCheckedChange={setPaypalEnabled} />
+            </div>
+
+            {paypalEnabled && (
+              <div className="space-y-4 pt-2">
+                <div className="space-y-2">
+                  <Label htmlFor="paypalClientId">Client ID</Label>
+                  <Input
+                    id="paypalClientId"
+                    type="password"
+                    placeholder="PayPal Client ID"
+                    value={paypalClientId}
+                    onChange={(e) => setPaypalClientId(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="paypalClientSecret">Client Secret</Label>
+                  <Input
+                    id="paypalClientSecret"
+                    type="password"
+                    placeholder="PayPal Client Secret"
+                    value={paypalClientSecret}
+                    onChange={(e) => setPaypalClientSecret(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  <Switch checked={paypalSandbox} onCheckedChange={setPaypalSandbox} />
+                  <Label>Sandbox Mode</Label>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Webhook URL</Label>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 rounded bg-muted px-3 py-2 text-xs break-all">
+                      {appUrl}/api/webhooks/paypal
+                    </code>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => copyWebhookUrl(`${appUrl}/api/webhooks/paypal`)}
+                    >
+                      {copiedUrl === `${appUrl}/api/webhooks/paypal` ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Add this URL in your PayPal Developer Dashboard under Webhooks. Subscribe to <code className="text-xs">PAYMENT.CAPTURE.COMPLETED</code>.
+                  </p>
+                </div>
               </div>
             )}
           </div>
