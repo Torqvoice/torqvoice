@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { Gauge } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Terms of Service | Torqvoice",
@@ -13,8 +13,14 @@ export default function TermsOfServicePage() {
       <div className="rounded-xl border bg-background p-6 shadow-sm sm:p-8">
         {/* Header */}
         <div className="border-b pb-6">
-          <div className="flex items-center gap-2">
-            <Gauge className="h-6 w-6 text-primary" />
+          <div className="flex items-center gap-3">
+            <Image
+              src="/torqvoice_app_logo.png"
+              alt="Torqvoice"
+              width={32}
+              height={32}
+              className="object-contain"
+            />
             <span className="text-lg font-bold tracking-wider uppercase">
               Torqvoice
             </span>

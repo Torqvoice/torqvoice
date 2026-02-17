@@ -7,28 +7,28 @@ import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useGlassModal } from '@/components/glass-modal'
-import { Gauge, Loader2 } from 'lucide-react'
+import { Gauge, Loader2, XCircle } from 'lucide-react'
 
 function ResetPasswordInner() {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const searchParams = useSearchParams()
-  const modal = useGlassModal()
   const token = searchParams.get('token') || ''
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
 
     if (newPassword !== confirmPassword) {
-      modal.open('error', 'Passwords do not match', 'Please ensure both passwords are the same.')
+      setError('Passwords do not match.')
       return
     }
 
     if (newPassword.length < 8) {
-      modal.open('error', 'Password too short', 'Password must be at least 8 characters long.')
+      setError('Password must be at least 8 characters long.')
       return
     }
 
@@ -41,16 +41,12 @@ function ResetPasswordInner() {
       })
 
       if (result.error) {
-        modal.open(
-          'error',
-          'Reset Failed',
-          result.error.message || 'Could not reset password. The link may have expired.'
-        )
+        setError(result.error.message || 'Could not reset password. The link may have expired.')
       } else {
         setSuccess(true)
       }
     } catch {
-      modal.open('error', 'Reset Failed', 'An unexpected error occurred. Please try again.')
+      setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -85,40 +81,49 @@ function ResetPasswordInner() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="new-password">New Password</Label>
-        <Input
-          id="new-password"
-          type="password"
-          placeholder="Enter new password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
-          minLength={8}
-          className="h-11 bg-background/50"
-        />
-      </div>
+    <>
+      {error && (
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+          <XCircle className="h-4 w-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
-      <div className="space-y-2">
-        <Label htmlFor="confirm-password">Confirm Password</Label>
-        <Input
-          id="confirm-password"
-          type="password"
-          placeholder="Confirm new password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          minLength={8}
-          className="h-11 bg-background/50"
-        />
-      </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="new-password">New Password</Label>
+          <Input
+            id="new-password"
+            type="password"
+            placeholder="Enter new password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+            minLength={8}
+            className="h-11 bg-background/50"
+          />
+        </div>
 
-      <Button type="submit" className="h-11 w-full" disabled={loading}>
-        {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-        Reset Password
-      </Button>
-    </form>
+        <div className="space-y-2">
+          <Label htmlFor="confirm-password">Confirm Password</Label>
+          <Input
+            id="confirm-password"
+            type="password"
+            placeholder="Confirm new password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            minLength={8}
+            className="h-11 bg-background/50"
+          />
+        </div>
+
+        <Button type="submit" className="h-11 w-full" disabled={loading}>
+          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          Reset Password
+        </Button>
+      </form>
+    </>
   )
 }
 

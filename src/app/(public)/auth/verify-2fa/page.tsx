@@ -7,21 +7,21 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import { useGlassModal } from '@/components/glass-modal'
-import { Gauge, Loader2, Shield } from 'lucide-react'
+import { Gauge, Loader2, Shield, XCircle } from 'lucide-react'
 
 export default function VerifyTwoFactorPage() {
   const [code, setCode] = useState('')
   const [useBackupCode, setUseBackupCode] = useState(false)
   const [trustDevice, setTrustDevice] = useState(false)
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const modal = useGlassModal()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!code.trim()) return
     setLoading(true)
+    setError('')
 
     try {
       const result = useBackupCode
@@ -29,13 +29,13 @@ export default function VerifyTwoFactorPage() {
         : await authClient.twoFactor.verifyTotp({ code, trustDevice })
 
       if (result.error) {
-        modal.open('error', 'Verification Failed', result.error.message || 'Invalid code')
+        setError(result.error.message || 'Invalid code')
       } else {
         router.push('/')
         router.refresh()
       }
     } catch {
-      modal.open('error', 'Verification Failed', 'An unexpected error occurred')
+      setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -66,6 +66,13 @@ export default function VerifyTwoFactorPage() {
               : 'Enter the 6-digit code from your authenticator app'}
           </p>
         </div>
+
+        {error && (
+          <div className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+            <XCircle className="h-4 w-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -107,6 +114,7 @@ export default function VerifyTwoFactorPage() {
             onClick={() => {
               setUseBackupCode(!useBackupCode)
               setCode('')
+              setError('')
             }}
             className="text-sm font-medium text-primary hover:underline"
           >
