@@ -14,9 +14,27 @@ import {
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
-import { Zap } from 'lucide-react'
+import { Search, Zap } from 'lucide-react'
 import { useShowWhiteLabelCta } from '@/components/white-label-cta-context'
 import { NewWorkOrderButton } from '@/components/new-work-order-button'
+
+function SearchTrigger() {
+  return (
+    <button
+      type="button"
+      className="hidden h-8 w-56 cursor-pointer items-center gap-2 rounded-md border bg-muted/50 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted sm:flex"
+      onClick={() => {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))
+      }}
+    >
+      <Search className="h-3.5 w-3.5" />
+      <span className="flex-1 text-left">Search...</span>
+      <kbd className="rounded border bg-background px-1.5 py-0.5 text-[10px] font-medium">
+        Ctrl+K
+      </kbd>
+    </button>
+  )
+}
 
 type BreadcrumbSegment = { label: string; href?: string }
 
@@ -137,6 +155,7 @@ export function PageHeader() {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="ml-auto flex items-center gap-2">
+        <SearchTrigger />
         <NewWorkOrderButton />
         {showWhiteLabelCta && (
           <Button asChild variant="outline" size="sm">
