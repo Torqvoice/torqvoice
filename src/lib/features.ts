@@ -7,6 +7,7 @@ export type PlanFeatures = {
   maxCustomers: number
   maxUsers: number
   templates: number
+  customTemplates: boolean
   reports: boolean
   smtp: boolean
   api: boolean
@@ -21,6 +22,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxCustomers: 5,
     maxUsers: 1,
     templates: 2,
+    customTemplates: false,
     reports: true,
     smtp: false,
     api: false,
@@ -33,6 +35,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxCustomers: 999999,
     maxUsers: 5,
     templates: 999999,
+    customTemplates: true,
     reports: true,
     smtp: true,
     api: true,
@@ -45,6 +48,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxCustomers: 999999,
     maxUsers: 50,
     templates: 999999,
+    customTemplates: true,
     reports: true,
     smtp: true,
     api: true,
@@ -57,6 +61,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxCustomers: 999999,
     maxUsers: 999999,
     templates: 999999,
+    customTemplates: true,
     reports: true,
     smtp: true,
     api: true,

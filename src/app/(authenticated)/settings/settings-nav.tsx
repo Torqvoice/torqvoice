@@ -69,6 +69,7 @@ const settingsNav: SettingsNavItem[] = [
     href: "/settings/invoice-template",
     icon: Layout,
     description: "Invoice styling & colors",
+    gate: "customTemplates",
   },
   {
     title: "Payment",
