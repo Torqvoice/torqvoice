@@ -17,7 +17,8 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  twoFactorEnabled Boolean @default(false)
+  twoFactorEnabled Boolean   @default(false)
+  termsAcceptedAt  DateTime?
 
   sessions               Session[]
   accounts               Account[]

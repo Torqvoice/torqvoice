@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
-const publicPaths = ["/auth/sign-in", "/auth/sign-up", "/api/auth", "/api/share", "/api/webhooks", "/invoice", "/share"];
+const publicPaths = ["/auth/sign-in", "/auth/sign-up", "/api/auth", "/api/share", "/api/webhooks", "/invoice", "/share", "/terms"];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

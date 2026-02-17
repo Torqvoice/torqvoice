@@ -84,7 +84,12 @@ export const auth = betterAuth({
           if (count === 1) {
             await db.user.update({
               where: { id: user.id },
-              data: { isSuperAdmin: true },
+              data: { isSuperAdmin: true, termsAcceptedAt: new Date() },
+            });
+          } else {
+            await db.user.update({
+              where: { id: user.id },
+              data: { termsAcceptedAt: new Date() },
             });
           }
         },
