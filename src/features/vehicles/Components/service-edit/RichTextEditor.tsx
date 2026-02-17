@@ -43,7 +43,7 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
     },
     editorProps: {
       attributes: {
-        class: 'tiptap-content min-h-[120px] px-3 py-2 text-sm outline-none',
+        class: 'tiptap-content px-3 py-2 text-sm outline-none h-full',
       },
     },
   })
@@ -51,8 +51,8 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
   if (!editor) return null
 
   return (
-    <div className="overflow-hidden rounded-md border border-input bg-background">
-      <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/30 px-1 py-1">
+    <div className="overflow-hidden rounded-md border border-input bg-background flex flex-col resize-y" style={{ minHeight: 180 }}>
+      <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/30 px-1 py-1 shrink-0">
         <ToolbarButton
           active={editor.isActive('bold')}
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -133,7 +133,9 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
           <Redo className="h-3.5 w-3.5" />
         </ToolbarButton>
       </div>
-      <EditorContent editor={editor} />
+      <div className="flex-1 overflow-y-auto">
+        <EditorContent editor={editor} className="h-full [&>.tiptap]:h-full" />
+      </div>
     </div>
   )
 }

@@ -104,13 +104,6 @@ export function InvoicePDF({
         <PartsTable data={data} currencyCode={cc} styles={styles} />
         <LaborTable data={data} currencyCode={cc} styles={styles} />
 
-        {data.invoiceNotes && (
-          <View style={styles.notesSection}>
-            <Text style={styles.notesLabel}>Notes</Text>
-            <Text style={styles.notesText}>{data.invoiceNotes}</Text>
-          </View>
-        )}
-
         <Totals
           data={data}
           currencyCode={cc}
@@ -142,7 +135,7 @@ export function InvoicePDF({
         )}
 
         <Notes
-          invoiceNotes={null}
+          invoiceNotes={data.invoiceNotes}
           diagnosticNotes={data.diagnosticNotes}
           invoiceSettings={invoiceSettings}
           otherAttachments={otherAttachments}

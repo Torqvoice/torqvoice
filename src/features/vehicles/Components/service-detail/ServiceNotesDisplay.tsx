@@ -2,6 +2,7 @@
 
 import { FileText, Globe, Lock } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
+import { sanitizeHtml } from '@/lib/sanitize-html'
 
 interface ServiceNotesDisplayProps {
   invoiceNotes: string | null
@@ -34,7 +35,7 @@ export function ServiceNotesDisplay({
             </span>
             <div
               className="notes-content text-sm"
-              dangerouslySetInnerHTML={{ __html: invoiceNotes! }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(invoiceNotes!) }}
             />
           </div>
         )}
@@ -48,7 +49,7 @@ export function ServiceNotesDisplay({
             {diagnosticNotes && (
               <div
                 className="notes-content text-sm"
-                dangerouslySetInnerHTML={{ __html: diagnosticNotes }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(diagnosticNotes) }}
               />
             )}
             {description && !diagnosticNotes && (
