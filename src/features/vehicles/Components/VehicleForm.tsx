@@ -35,8 +35,9 @@ import {
 import { toast } from "sonner";
 import { useGlassModal } from "@/components/glass-modal";
 import { createVehicle, updateVehicle } from "../Actions/vehicleActions";
-import { Camera, Check, ChevronsUpDown, Loader2, X } from "lucide-react";
+import { Camera, Check, ChevronsUpDown, Loader2, Plus, X } from "lucide-react";
 import { compressImage } from "@/lib/compress-image";
+import { CustomerForm } from "@/features/customers/Components/CustomerForm";
 import type { CreateVehicleInput } from "../Schema/vehicleSchema";
 
 interface VehicleFormProps {
@@ -70,6 +71,8 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
     vehicle?.customerId || "none"
   );
   const [customerOpen, setCustomerOpen] = useState(false);
+  const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [localCustomers, setLocalCustomers] = useState(customers || []);
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Sync state when vehicle prop changes (e.g. opening edit for a different vehicle)
@@ -81,10 +84,10 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
 
   const selectedCustomerLabel = useMemo(() => {
     if (!selectedCustomerId || selectedCustomerId === "none") return "No customer";
-    const c = customers?.find((c) => c.id === selectedCustomerId);
+    const c = localCustomers.find((c) => c.id === selectedCustomerId);
     if (!c) return "No customer";
     return c.name + (c.company ? ` (${c.company})` : "");
-  }, [selectedCustomerId, customers]);
+  }, [selectedCustomerId, localCustomers]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -174,6 +177,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
   };
 
   return (
+  <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
@@ -229,60 +233,71 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
           </div>
 
           {/* Customer selector */}
-          {customers && customers.length > 0 && (
-            <div className="space-y-2">
-              <Label>Customer</Label>
-              <Popover open={customerOpen} onOpenChange={setCustomerOpen} modal={true}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={customerOpen}
-                    className="w-full justify-between font-normal"
-                  >
-                    <span className="truncate">{selectedCustomerLabel}</span>
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                  <Command>
-                    <CommandInput placeholder="Search customers..." />
-                    <CommandList className="max-h-60 overflow-y-auto">
-                      <CommandEmpty>No customer found.</CommandEmpty>
-                      <CommandGroup>
-                        <CommandItem
-                          value="no-customer"
-                          onSelect={() => {
-                            setSelectedCustomerId("none");
-                            setCustomerOpen(false);
-                          }}
-                        >
-                          <Check className={`mr-2 h-4 w-4 ${selectedCustomerId === "none" ? "opacity-100" : "opacity-0"}`} />
-                          No customer
-                        </CommandItem>
-                        {customers.map((c) => {
-                          const label = c.name + (c.company ? ` (${c.company})` : "");
-                          return (
-                            <CommandItem
-                              key={c.id}
-                              value={label}
-                              onSelect={() => {
-                                setSelectedCustomerId(c.id);
-                                setCustomerOpen(false);
-                              }}
-                            >
-                              <Check className={`mr-2 h-4 w-4 ${selectedCustomerId === c.id ? "opacity-100" : "opacity-0"}`} />
-                              {label}
-                            </CommandItem>
-                          );
-                        })}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label>Customer</Label>
+            <Popover open={customerOpen} onOpenChange={setCustomerOpen} modal={true}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={customerOpen}
+                  className="w-full justify-between font-normal"
+                >
+                  <span className="truncate">{selectedCustomerLabel}</span>
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="Search customers..." />
+                  <CommandList className="max-h-60 overflow-y-auto">
+                    <CommandEmpty>No customer found.</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem
+                        value="no-customer"
+                        onSelect={() => {
+                          setSelectedCustomerId("none");
+                          setCustomerOpen(false);
+                        }}
+                      >
+                        <Check className={`mr-2 h-4 w-4 ${selectedCustomerId === "none" ? "opacity-100" : "opacity-0"}`} />
+                        No customer
+                      </CommandItem>
+                      {localCustomers.map((c) => {
+                        const label = c.name + (c.company ? ` (${c.company})` : "");
+                        return (
+                          <CommandItem
+                            key={c.id}
+                            value={label}
+                            onSelect={() => {
+                              setSelectedCustomerId(c.id);
+                              setCustomerOpen(false);
+                            }}
+                          >
+                            <Check className={`mr-2 h-4 w-4 ${selectedCustomerId === c.id ? "opacity-100" : "opacity-0"}`} />
+                            {label}
+                          </CommandItem>
+                        );
+                      })}
+                    </CommandGroup>
+                  </CommandList>
+                  <div className="border-t p-1">
+                    <button
+                      type="button"
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
+                      onClick={() => {
+                        setCustomerOpen(false);
+                        setShowCustomerForm(true);
+                      }}
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Customer
+                    </button>
+                  </div>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -424,5 +439,15 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
         </form>
       </DialogContent>
     </Dialog>
+
+    <CustomerForm
+      open={showCustomerForm}
+      onOpenChange={setShowCustomerForm}
+      onCreated={(created) => {
+        setLocalCustomers((prev) => [...prev, created]);
+        setSelectedCustomerId(created.id);
+      }}
+    />
+  </>
   );
 }
