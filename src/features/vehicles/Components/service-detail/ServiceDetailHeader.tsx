@@ -39,13 +39,13 @@ export function ServiceDetailHeader({
 }: ServiceDetailHeaderProps) {
   return (
     <div className="shrink-0 border-b bg-background px-4 pt-2 pb-2">
-      <div className="grid grid-cols-[1fr_auto] items-center gap-4">
+      <div className="flex min-w-0 items-center gap-4">
         <Link
           href={`/vehicles/${vehicleId}`}
-          className="flex items-center gap-3 overflow-hidden text-foreground transition-colors hover:text-muted-foreground"
+          className="flex min-w-0 flex-1 items-center gap-3 text-foreground transition-colors hover:text-muted-foreground"
         >
           <ArrowLeft className="h-4 w-4 shrink-0" />
-          <div className="overflow-hidden">
+          <div className="min-w-0">
             <div className="flex items-center gap-2">
               <Badge
                 variant="outline"
@@ -65,7 +65,7 @@ export function ServiceDetailHeader({
             </p>
           </div>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Button variant="outline" size="sm" asChild>
             <Link href={`/vehicles/${vehicleId}/service/${recordId}/edit`}>
               <Pencil className="mr-1 h-3.5 w-3.5" />

@@ -29,12 +29,12 @@ function AttachmentRow({
   deleting: boolean;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded border p-2">
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-muted/50">
+    <div className="grid grid-cols-[2rem_1fr_auto] items-center gap-2 rounded border p-2">
+      <div className="flex h-8 w-8 items-center justify-center rounded bg-muted/50">
         {getFileIcon(attachment.fileType)}
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-xs font-medium">{attachment.fileName}</p>
+      <div className="overflow-hidden">
+        <p className="truncate text-xs font-medium" title={attachment.fileName}>{attachment.fileName}</p>
         <p className="text-xs text-muted-foreground">{formatFileSize(attachment.fileSize)}</p>
       </div>
       <div className="flex items-center gap-0.5">
@@ -124,7 +124,7 @@ export function ServiceAttachments({
       )}
 
       {diagnostics.length > 0 && (
-        <div className="rounded-lg border p-3">
+        <div className="min-w-0 overflow-hidden rounded-lg border p-3">
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
             <FileText className="h-3.5 w-3.5" />
             Diagnostic Reports ({diagnostics.length})
@@ -143,7 +143,7 @@ export function ServiceAttachments({
       )}
 
       {documents.length > 0 && (
-        <div className="rounded-lg border p-3">
+        <div className="min-w-0 overflow-hidden rounded-lg border p-3">
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
             <Paperclip className="h-3.5 w-3.5" />
             Documents ({documents.length})
