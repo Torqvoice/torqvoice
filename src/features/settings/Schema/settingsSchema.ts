@@ -41,6 +41,8 @@ export const SETTING_KEYS = {
   PAYMENT_VIPPS_SUBSCRIPTION_KEY: "payment.vipps.subscriptionKey",
   PAYMENT_VIPPS_MSN: "payment.vipps.merchantSerialNumber",
   PAYMENT_VIPPS_USE_TEST: "payment.vipps.useTestMode",
+  PAYMENT_TERMS_OF_SALE: "payment.termsOfSale",
+  PAYMENT_TERMS_OF_SALE_URL: "payment.termsOfSaleUrl",
   LICENSE_KEY: "license.key",
   LICENSE_VALID: "license.valid",
   LICENSE_CHECKED_AT: "license.checkedAt",
