@@ -88,17 +88,6 @@ export function PageHeader() {
     else if (/^\/quotes\/[^/]+$/.test(pathname)) {
       segments = [{ label: 'Quotes', href: '/quotes' }, { label: 'Quote Details' }]
     }
-    // /vehicles/[id]/service/[serviceId]/edit
-    else if (/^\/vehicles\/[^/]+\/service\/[^/]+\/edit$/.test(pathname)) {
-      const parts = pathname.split('/')
-      const vehicleId = parts[2]
-      const serviceId = parts[4]
-      segments = [
-        { label: 'Vehicles', href: '/vehicles' },
-        { label: 'Service Details', href: `/vehicles/${vehicleId}/service/${serviceId}` },
-        { label: 'Edit' },
-      ]
-    }
     // /vehicles/[id]/service/new
     else if (/^\/vehicles\/[^/]+\/service\/new$/.test(pathname)) {
       const vehicleId = pathname.split('/')[2]

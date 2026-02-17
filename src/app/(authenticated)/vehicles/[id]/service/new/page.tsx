@@ -10,7 +10,7 @@ export default async function NewServicePage({
   const result = await createDraftServiceRecord(id);
 
   if (result.success && result.data?.id) {
-    redirect(`/vehicles/${id}/service/${result.data.id}/edit`);
+    redirect(`/vehicles/${id}/service/${result.data.id}`);
   }
 
   return (
