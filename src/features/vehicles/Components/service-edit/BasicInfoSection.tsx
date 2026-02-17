@@ -122,6 +122,7 @@ export function BasicInfoSection({
           name="title"
           placeholder="Oil Change"
           defaultValue={initialData.title}
+          maxLength={100}
           required
         />
       </div>
