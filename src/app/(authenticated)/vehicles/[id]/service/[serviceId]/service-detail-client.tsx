@@ -572,55 +572,109 @@ export function ServiceDetailClient({
         </Card>
       )}
 
-      {/* Diagnostic Reports */}
-      {record.attachments && record.attachments.filter((a) => a.category !== "image").length > 0 && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Paperclip className="h-4 w-4" />
-              Diagnostic Reports ({record.attachments.filter((a) => a.category !== "image").length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {record.attachments
-                .filter((a) => a.category !== "image")
-                .map((attachment) => (
-                  <div key={attachment.id} className="flex items-center gap-3 rounded-lg border p-3">
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded border bg-muted/50">
-                      {getFileIcon(attachment.fileType)}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{attachment.fileName}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatFileSize(attachment.fileSize)}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                        <a href={attachment.fileUrl} download={attachment.fileName}>
-                          <Download className="h-4 w-4" />
-                        </a>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                        disabled={deletingAttachment === attachment.id}
-                        onClick={() => handleDeleteAttachment(attachment.id)}
-                      >
-                        {deletingAttachment === attachment.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Diagnostic Reports & Documents */}
+      {record.attachments && record.attachments.filter((a) => a.category === "diagnostic" || a.category === "document").length > 0 && (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {record.attachments.filter((a) => a.category === "diagnostic").length > 0 && (
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <FileText className="h-4 w-4" />
+                  Diagnostic Reports ({record.attachments.filter((a) => a.category === "diagnostic").length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {record.attachments
+                    .filter((a) => a.category === "diagnostic")
+                    .map((attachment) => (
+                      <div key={attachment.id} className="flex items-center gap-3 rounded-lg border p-2.5">
+                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded border bg-muted/50">
+                          {getFileIcon(attachment.fileType)}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium">{attachment.fileName}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatFileSize(attachment.fileSize)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-0.5">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                            <a href={attachment.fileUrl} download={attachment.fileName}>
+                              <Download className="h-3.5 w-3.5" />
+                            </a>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            disabled={deletingAttachment === attachment.id}
+                            onClick={() => handleDeleteAttachment(attachment.id)}
+                          >
+                            {deletingAttachment === attachment.id ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {record.attachments.filter((a) => a.category === "document").length > 0 && (
+            <Card className="border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Paperclip className="h-4 w-4" />
+                  Documents ({record.attachments.filter((a) => a.category === "document").length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {record.attachments
+                    .filter((a) => a.category === "document")
+                    .map((attachment) => (
+                      <div key={attachment.id} className="flex items-center gap-3 rounded-lg border p-2.5">
+                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded border bg-muted/50">
+                          {getFileIcon(attachment.fileType)}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium">{attachment.fileName}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatFileSize(attachment.fileSize)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-0.5">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                            <a href={attachment.fileUrl} download={attachment.fileName}>
+                              <Download className="h-3.5 w-3.5" />
+                            </a>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            disabled={deletingAttachment === attachment.id}
+                            onClick={() => handleDeleteAttachment(attachment.id)}
+                          >
+                            {deletingAttachment === attachment.id ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-3.5 w-3.5" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       )}
 
       {/* Image Carousel Modal */}
