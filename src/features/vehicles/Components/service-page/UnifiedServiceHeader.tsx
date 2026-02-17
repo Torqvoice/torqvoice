@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { ButtonGroup } from '@/components/ui/button-group'
 import { cn } from '@/lib/utils'
 import {
   ArrowLeft,
@@ -93,31 +94,33 @@ export function UnifiedServiceHeader({
               Save
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={onDownloadPDF} disabled={downloading}>
-            {downloading ? (
-              <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Download className="mr-1 h-3.5 w-3.5" />
-            )}
-            PDF
-          </Button>
-          <Button variant="outline" size="sm" onClick={onShowEmail}>
-            <Mail className="mr-1 h-3.5 w-3.5" />
-            Email
-          </Button>
-          <Button variant="outline" size="sm" onClick={onShowShare}>
-            <Globe className="mr-1 h-3.5 w-3.5" />
-            Share
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-destructive hover:bg-destructive/10"
-            onClick={onDelete}
-          >
-            <Trash2 className="mr-1 h-3.5 w-3.5" />
-            Delete
-          </Button>
+          <ButtonGroup>
+            <Button variant="outline" size="sm" onClick={onDownloadPDF} disabled={downloading}>
+              {downloading ? (
+                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Download className="mr-1 h-3.5 w-3.5" />
+              )}
+              PDF
+            </Button>
+            <Button variant="outline" size="sm" onClick={onShowEmail}>
+              <Mail className="mr-1 h-3.5 w-3.5" />
+              Email
+            </Button>
+            <Button variant="outline" size="sm" onClick={onShowShare}>
+              <Globe className="mr-1 h-3.5 w-3.5" />
+              Share
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-destructive hover:bg-destructive/10"
+              onClick={onDelete}
+            >
+              <Trash2 className="mr-1 h-3.5 w-3.5" />
+              Delete
+            </Button>
+          </ButtonGroup>
         </div>
       </div>
       <nav className="flex gap-1 border-b">
