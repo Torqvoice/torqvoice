@@ -466,6 +466,11 @@ export function ServicePageClient({
         paymentStatus={paymentStatus}
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        tabCounts={{
+          images: imageAttachmentsForManager.length,
+          video: videoAttachments.length,
+          documents: documentAttachments.length,
+        }}
         downloading={downloading}
         saving={loading}
         onDownloadPDF={handleDownloadPDF}

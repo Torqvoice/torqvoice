@@ -18,6 +18,12 @@ import { statusColors, paymentStatusColors, paymentStatusLabels } from '../servi
 
 export type ServiceTab = 'details' | 'images' | 'video' | 'documents'
 
+export interface TabCounts {
+  images: number
+  video: number
+  documents: number
+}
+
 interface UnifiedServiceHeaderProps {
   vehicleId: string
   vehicleName: string
@@ -26,6 +32,7 @@ interface UnifiedServiceHeaderProps {
   paymentStatus: string
   activeTab: ServiceTab
   onTabChange: (tab: ServiceTab) => void
+  tabCounts: TabCounts
   downloading: boolean
   saving: boolean
   onDownloadPDF: () => void
@@ -49,6 +56,7 @@ export function UnifiedServiceHeader({
   paymentStatus,
   activeTab,
   onTabChange,
+  tabCounts,
   downloading,
   saving,
   onDownloadPDF,
@@ -137,6 +145,9 @@ export function UnifiedServiceHeader({
             )}
           >
             {tab.label}
+            {tab.value !== 'details' && tabCounts[tab.value] > 0 && (
+              <span className="ml-1 text-xs text-muted-foreground">({tabCounts[tab.value]})</span>
+            )}
           </button>
         ))}
       </nav>
