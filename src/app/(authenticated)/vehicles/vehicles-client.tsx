@@ -27,7 +27,12 @@ import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
 import { deleteVehicle } from '@/features/vehicles/Actions/vehicleActions'
+import { unarchiveVehicle } from '@/features/vehicles/Actions/unarchiveVehicle'
+import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
+import { toast } from 'sonner'
 import {
+  Archive,
+  ArchiveRestore,
   Gauge,
   LayoutGrid,
   List,
@@ -70,6 +75,7 @@ interface PaginatedData {
   page: number
   pageSize: number
   totalPages: number
+  archivedCount: number
 }
 
 const VIEW_COOKIE = 'torqvoice-vehicles-view'
@@ -79,11 +85,15 @@ export function VehiclesClient({
   customers,
   search,
   initialView = 'table',
+  isArchived = false,
+  archivedCount = 0,
 }: {
   data: PaginatedData
   customers: CustomerOption[]
   search: string
   initialView?: 'table' | 'grid'
+  isArchived?: boolean
+  archivedCount?: number
 }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -93,6 +103,7 @@ export function VehiclesClient({
   const [showForm, setShowForm] = useState(false)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
   const [view, setView] = useState<'table' | 'grid'>(initialView)
+  const [archiveTarget, setArchiveTarget] = useState<{ id: string; name: string } | null>(null)
   const modal = useGlassModal()
   const confirm = useConfirm()
 
@@ -145,11 +156,49 @@ export function VehiclesClient({
     }
   }
 
+  const handleUnarchive = async (id: string, name: string) => {
+    const ok = await confirm({
+      title: 'Unarchive Vehicle',
+      description: `Restore ${name} to the active vehicles list?`,
+      confirmLabel: 'Unarchive',
+    })
+    if (!ok) return
+    const result = await unarchiveVehicle(id)
+    if (result.success) {
+      toast.success('Vehicle unarchived')
+      router.refresh()
+    } else {
+      modal.open('error', 'Error', result.error || 'Failed to unarchive vehicle')
+    }
+  }
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-1 items-center gap-2">
+          <div className="flex gap-1 rounded-lg border p-1">
+            <button
+              onClick={() => router.push('/vehicles')}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                !isArchived
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Active
+            </button>
+            <button
+              onClick={() => router.push('/vehicles?archived=true')}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                isArchived
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Archived{archivedCount > 0 ? ` (${archivedCount})` : ''}
+            </button>
+          </div>
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -180,16 +229,18 @@ export function VehiclesClient({
               <LayoutGrid className="h-4 w-4" />
             </Button>
           </div>
-          <Button size="sm" onClick={() => setShowForm(true)}>
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            Add Vehicle
-          </Button>
+          {!isArchived && (
+            <Button size="sm" onClick={() => setShowForm(true)}>
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              Add Vehicle
+            </Button>
+          )}
         </div>
       </div>
 
       {data.vehicles.length === 0 ? (
         <div className="flex h-32 items-center justify-center rounded-lg border text-muted-foreground">
-          {search ? 'No vehicles match your search.' : 'No vehicles yet.'}
+          {search ? 'No vehicles match your search.' : isArchived ? 'No archived vehicles.' : 'No vehicles yet.'}
         </div>
       ) : view === 'table' ? (
         /* Table view */
@@ -233,16 +284,39 @@ export function VehiclesClient({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setEditVehicle(v)
-                            setShowForm(true)
-                          }}
-                        >
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
+                        {!isArchived && (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setEditVehicle(v)
+                              setShowForm(true)
+                            }}
+                          >
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit
+                          </DropdownMenuItem>
+                        )}
+                        {isArchived ? (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)
+                            }}
+                          >
+                            <ArchiveRestore className="mr-2 h-4 w-4" />
+                            Unarchive
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
+                            }}
+                          >
+                            <Archive className="mr-2 h-4 w-4" />
+                            Archive
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem
                           className="text-destructive"
                           onClick={(e) => {
@@ -309,16 +383,39 @@ export function VehiclesClient({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.preventDefault()
-                            setEditVehicle(v)
-                            setShowForm(true)
-                          }}
-                        >
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
+                        {!isArchived && (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.preventDefault()
+                              setEditVehicle(v)
+                              setShowForm(true)
+                            }}
+                          >
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit
+                          </DropdownMenuItem>
+                        )}
+                        {isArchived ? (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.preventDefault()
+                              handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)
+                            }}
+                          >
+                            <ArchiveRestore className="mr-2 h-4 w-4" />
+                            Unarchive
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.preventDefault()
+                              setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
+                            }}
+                          >
+                            <Archive className="mr-2 h-4 w-4" />
+                            Archive
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem
                           className="text-destructive"
                           onClick={(e) => {
@@ -368,6 +465,15 @@ export function VehiclesClient({
         }}
         vehicle={editVehicle ?? undefined}
         customers={customers}
+      />
+
+      <ArchiveVehicleDialog
+        open={!!archiveTarget}
+        onOpenChange={(open) => {
+          if (!open) setArchiveTarget(null)
+        }}
+        vehicleId={archiveTarget?.id ?? ''}
+        vehicleName={archiveTarget?.name ?? ''}
       />
     </div>
   )

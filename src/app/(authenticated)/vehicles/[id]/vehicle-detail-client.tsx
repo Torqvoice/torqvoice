@@ -24,9 +24,13 @@ import { ServiceRecordsTable } from './service-records-table'
 import { toast } from 'sonner'
 import { deleteNote, toggleNotePin } from '@/features/vehicles/Actions/noteActions'
 import { toggleReminder, deleteReminder } from '@/features/vehicles/Actions/reminderActions'
+import { unarchiveVehicle } from '@/features/vehicles/Actions/unarchiveVehicle'
+import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
 import { formatCurrency } from '@/lib/format'
 import {
   AlertTriangle,
+  Archive,
+  ArchiveRestore,
   ArrowLeft,
   Bell,
   Car,
@@ -93,6 +97,8 @@ interface VehicleDetail {
   purchaseDate: Date | null
   purchasePrice: number | null
   imageUrl: string | null
+  isArchived: boolean
+  archiveReason: string | null
   customerId: string | null
   customer: {
     id: string
@@ -158,6 +164,7 @@ export function VehicleDetailClient({
   >()
   const [reminderFilter, setReminderFilter] = useState<'active' | 'completed' | 'all'>('active')
   const [showImage, setShowImage] = useState(false)
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false)
 
   const now = new Date()
   const sevenDaysFromNow = new Date(now)
@@ -215,8 +222,35 @@ export function VehicleDetailClient({
     }
   }
 
+  const handleUnarchive = async () => {
+    const result = await unarchiveVehicle(vehicle.id)
+    if (result.success) {
+      toast.success('Vehicle unarchived')
+      router.refresh()
+    } else {
+      modal.open('error', 'Error', result.error || 'Failed to unarchive')
+    }
+  }
+
   return (
     <div className="space-y-4">
+      {/* Archived banner */}
+      {vehicle.isArchived && (
+        <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+          <div className="flex items-center gap-2 text-sm">
+            <Archive className="h-4 w-4 text-amber-600" />
+            <span className="font-medium text-amber-600">This vehicle is archived</span>
+            {vehicle.archiveReason && (
+              <span className="text-muted-foreground">&mdash; {vehicle.archiveReason}</span>
+            )}
+          </div>
+          <Button size="sm" variant="outline" onClick={handleUnarchive}>
+            <ArchiveRestore className="mr-1 h-3.5 w-3.5" />
+            Unarchive
+          </Button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -228,16 +262,40 @@ export function VehicleDetailClient({
             Back to vehicles
           </Link>
           <div className="flex items-center gap-2">
-            <Button size="sm" asChild>
-              <Link href={`/vehicles/${vehicle.id}/service/new`}>
-                <Plus className="mr-1 h-3.5 w-3.5" />
-                New Work Order
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowEditForm(true)}>
-              <Pencil className="mr-1 h-3.5 w-3.5" />
-              Edit Vehicle
-            </Button>
+            {!vehicle.isArchived && (
+              <>
+                <Button size="sm" asChild>
+                  <Link href={`/vehicles/${vehicle.id}/service/new`}>
+                    <Plus className="mr-1 h-3.5 w-3.5" />
+                    New Work Order
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setShowEditForm(true)}>
+                  <Pencil className="mr-1 h-3.5 w-3.5" />
+                  Edit Vehicle
+                </Button>
+              </>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {vehicle.isArchived ? (
+                  <DropdownMenuItem onClick={handleUnarchive}>
+                    <ArchiveRestore className="mr-2 h-4 w-4" />
+                    Unarchive
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={() => setShowArchiveDialog(true)}>
+                    <Archive className="mr-2 h-4 w-4" />
+                    Archive
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -597,6 +655,12 @@ export function VehicleDetailClient({
         open={showReminderForm}
         onOpenChange={setShowReminderForm}
         reminder={editingReminder}
+      />
+      <ArchiveVehicleDialog
+        open={showArchiveDialog}
+        onOpenChange={setShowArchiveDialog}
+        vehicleId={vehicle.id}
+        vehicleName={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
       />
 
       {/* Image lightbox */}
