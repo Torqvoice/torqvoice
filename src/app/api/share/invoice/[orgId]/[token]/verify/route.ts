@@ -5,7 +5,7 @@ import { getPaymentProvider, getEnabledProviders } from "@/lib/payment-providers
 import { rateLimit } from "@/lib/rate-limit";
 
 const verifySchema = z.object({
-  provider: z.enum(["stripe", "vipps"]),
+  provider: z.enum(["stripe", "vipps", "paypal"]),
   externalId: z.string().min(1),
 });
 

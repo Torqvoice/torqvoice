@@ -2,6 +2,7 @@ import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import type { PaymentProvider } from "./types";
 import { StripeProvider } from "./stripe";
 import { VippsProvider } from "./vipps";
+import { PayPalProvider } from "./paypal";
 
 export type { PaymentProvider, CheckoutRequest, CheckoutResult, VerifyResult } from "./types";
 
@@ -31,6 +32,18 @@ export function getPaymentProvider(
         subscriptionKey,
         merchantSerialNumber: msn,
         useTestMode: settings[SETTING_KEYS.PAYMENT_VIPPS_USE_TEST] === "true",
+      });
+    }
+    case "paypal": {
+      const clientId = settings[SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_ID];
+      const clientSecret = settings[SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_SECRET];
+      if (!clientId || !clientSecret) {
+        throw new Error("PayPal credentials not fully configured");
+      }
+      return new PayPalProvider({
+        clientId,
+        clientSecret,
+        useSandbox: settings[SETTING_KEYS.PAYMENT_PAYPAL_USE_SANDBOX] === "true",
       });
     }
     default:
