@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { useGlassModal } from "@/components/glass-modal";
 import { createInventoryPart, updateInventoryPart } from "../Actions/inventoryActions";
 import { ExternalLink, ImageIcon, Loader2, Upload, X } from "lucide-react";
+import { compressImage } from "@/lib/compress-image";
 
 interface InventoryPartFormProps {
   open: boolean;
@@ -64,8 +65,9 @@ export function InventoryPartForm({ open, onOpenChange, part }: InventoryPartFor
     setUploading(true);
     const toastId = toast.loading("Uploading image...");
     try {
+      const compressed = await compressImage(file);
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", compressed);
       const res = await fetch("/api/upload/inventory", {
         method: "POST",
         body: formData,

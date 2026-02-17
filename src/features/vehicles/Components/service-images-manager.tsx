@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Camera, Image as ImageIcon, Loader2, X } from "lucide-react";
+import { compressImage } from "@/lib/compress-image";
 import { addServiceAttachment } from "@/features/vehicles/Actions/addServiceAttachment";
 import { updateServiceAttachment } from "@/features/vehicles/Actions/updateServiceAttachment";
 import { deleteServiceAttachment } from "@/features/vehicles/Actions/serviceActions";
@@ -34,53 +35,6 @@ export function ServiceImagesManager({
   const [images, setImages] = useState<Attachment[]>(initialImages);
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const compressImage = useCallback(
-    (file: File, maxWidth = 1920, quality = 0.8): Promise<File> => {
-      return new Promise((resolve) => {
-        if (!file.type.startsWith("image/") || file.size < 500 * 1024) {
-          resolve(file);
-          return;
-        }
-        const img = new window.Image();
-        img.onload = () => {
-          let { width, height } = img;
-          if (width > maxWidth) {
-            height = Math.round(height * (maxWidth / width));
-            width = maxWidth;
-          }
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          if (!ctx) {
-            resolve(file);
-            return;
-          }
-          ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob(
-            (blob) => {
-              if (!blob || blob.size >= file.size) {
-                resolve(file);
-                return;
-              }
-              const compressed = new File(
-                [blob],
-                file.name.replace(/\.\w+$/, ".jpg"),
-                { type: "image/jpeg" }
-              );
-              resolve(compressed);
-            },
-            "image/jpeg",
-            quality
-          );
-        };
-        img.onerror = () => resolve(file);
-        img.src = URL.createObjectURL(file);
-      });
-    },
-    []
-  );
 
   const handleUpload = useCallback(
     async (files: FileList | File[]) => {
@@ -143,7 +97,7 @@ export function ServiceImagesManager({
       }
       setUploading(false);
     },
-    [compressImage, serviceRecordId]
+    [serviceRecordId]
   );
 
   const handleDrop = useCallback(
