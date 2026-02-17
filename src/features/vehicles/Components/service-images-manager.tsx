@@ -41,7 +41,16 @@ export function ServiceImagesManager({
 
   const handleUpload = useCallback(
     async (files: FileList | File[]) => {
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
       let fileArr = Array.from(files);
+      const rejected = fileArr.filter((f) => !allowedTypes.includes(f.type));
+      if (rejected.length > 0) {
+        toast.error(
+          `Only JPG, PNG, and WebP images are allowed. ${rejected.map((f) => f.name).join(", ")} skipped.`
+        );
+        fileArr = fileArr.filter((f) => allowedTypes.includes(f.type));
+        if (fileArr.length === 0) return;
+      }
       if (maxImages !== undefined) {
         const remaining = maxImages - images.length;
         if (remaining <= 0) {
