@@ -452,6 +452,26 @@ export async function updateServiceStatus(recordId: string, status: string) {
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }] });
 }
 
+export async function toggleManuallyPaid(recordId: string) {
+  return withAuth(async ({ organizationId }) => {
+    const record = await db.serviceRecord.findFirst({
+      where: { id: recordId, vehicle: { organizationId } },
+    });
+    if (!record) throw new Error("Record not found");
+
+    await db.serviceRecord.update({
+      where: { id: recordId },
+      data: { manuallyPaid: !record.manuallyPaid },
+    });
+
+    revalidatePath("/");
+    revalidatePath("/services");
+    revalidatePath(`/vehicles/${record.vehicleId}`);
+    revalidatePath(`/vehicles/${record.vehicleId}/service/${recordId}`);
+    return { success: true, manuallyPaid: !record.manuallyPaid };
+  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }] });
+}
+
 export async function getWorkOrders(params: {
   page?: number;
   pageSize?: number;

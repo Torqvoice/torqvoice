@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Check, CreditCard, Loader2, Plus, Trash2 } from "lucide-react";
+import { Check, CreditCard, Loader2, Plus, Trash2, X } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { useFormatDate } from "@/lib/use-format-date";
 import { paymentStatusColors, paymentStatusLabels } from "./types";
@@ -21,12 +21,14 @@ import type { Payment } from "./types";
 interface PaymentsSectionProps {
   payments: Payment[];
   paymentStatus: string;
+  manuallyPaid: boolean;
   totalPaid: number;
   displayTotal: number;
   balanceDue: number;
   currencyCode: string;
   onCreatePayment: (data: { amount: number; date: string; method: string; note?: string }) => Promise<boolean>;
   onDeletePayment: (id: string) => void;
+  onTogglePaid: () => void;
   paymentLoading: boolean;
   deletingPayment: string | null;
 }
@@ -34,12 +36,14 @@ interface PaymentsSectionProps {
 export function PaymentsSection({
   payments,
   paymentStatus,
+  manuallyPaid,
   totalPaid,
   displayTotal,
   balanceDue,
   currencyCode,
   onCreatePayment,
   onDeletePayment,
+  onTogglePaid,
   paymentLoading,
   deletingPayment,
 }: PaymentsSectionProps) {
@@ -71,23 +75,22 @@ export function PaymentsSection({
           </Badge>
         </div>
         <div className="flex items-center gap-2">
-          {paymentStatus !== "paid" && balanceDue > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 text-xs"
-              disabled={paymentLoading}
-              onClick={() => onCreatePayment({
-                amount: balanceDue,
-                date: new Date().toISOString(),
-                method: "other",
-                note: "Marked as paid",
-              })}
-            >
-              {paymentLoading ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3" />}
-              Mark as Paid
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 text-xs"
+            disabled={paymentLoading}
+            onClick={onTogglePaid}
+          >
+            {paymentLoading ? (
+              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+            ) : manuallyPaid ? (
+              <X className="mr-1 h-3 w-3" />
+            ) : (
+              <Check className="mr-1 h-3 w-3" />
+            )}
+            {manuallyPaid ? "Mark as Unpaid" : "Mark as Paid"}
+          </Button>
           <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setShowForm(!showForm)}>
             <Plus className="mr-1 h-3 w-3" />
             Record Payment

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { toast } from "sonner";
-import { deleteServiceRecord, deleteServiceAttachment } from "@/features/vehicles/Actions/serviceActions";
+import { deleteServiceRecord, deleteServiceAttachment, toggleManuallyPaid } from "@/features/vehicles/Actions/serviceActions";
 import { createPayment, deletePayment } from "@/features/payments/Actions/paymentActions";
 import { sendInvoiceEmail } from "@/features/email/Actions/emailActions";
 import { SendEmailDialog } from "@/features/email/Components/SendEmailDialog";
@@ -55,7 +55,7 @@ export function ServiceDetailClient({
   const displayTotal = record.totalAmount > 0 ? record.totalAmount : record.cost;
   const totalPaid = record.payments?.reduce((sum, p) => sum + p.amount, 0) || 0;
   const balanceDue = displayTotal - totalPaid;
-  const paymentStatus = totalPaid === 0 ? "unpaid" : balanceDue <= 0 ? "paid" : "partial";
+  const paymentStatus = record.manuallyPaid ? "paid" : totalPaid === 0 ? "unpaid" : balanceDue <= 0 ? "paid" : "partial";
   const imageAttachments = record.attachments?.filter((a) => a.category === "image") || [];
   const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`;
 
@@ -111,6 +111,18 @@ export function ServiceDetailClient({
     return false;
   };
 
+  const handleTogglePaid = async () => {
+    setPaymentLoading(true);
+    const result = await toggleManuallyPaid(record.id);
+    setPaymentLoading(false);
+    if (result.success) {
+      toast.success(result.data?.manuallyPaid ? "Marked as paid" : "Marked as unpaid");
+      router.refresh();
+    } else {
+      modal.open("error", "Error", result.error || "Failed to update payment status");
+    }
+  };
+
   const handleDeletePayment = async (id: string) => {
     const ok = await confirm({
       title: "Delete Payment",
@@ -158,10 +170,11 @@ export function ServiceDetailClient({
             />
             <PaymentsSection
               payments={record.payments || []} paymentStatus={paymentStatus}
+              manuallyPaid={record.manuallyPaid}
               totalPaid={totalPaid} displayTotal={displayTotal} balanceDue={balanceDue}
               currencyCode={currencyCode} onCreatePayment={handleCreatePayment}
-              onDeletePayment={handleDeletePayment} paymentLoading={paymentLoading}
-              deletingPayment={deletingPayment}
+              onDeletePayment={handleDeletePayment} onTogglePaid={handleTogglePaid}
+              paymentLoading={paymentLoading} deletingPayment={deletingPayment}
             />
             <ServiceNotesDisplay
               invoiceNotes={record.invoiceNotes}

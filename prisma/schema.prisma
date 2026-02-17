@@ -170,6 +170,7 @@ model ServiceRecord {
   discountType    String?
   discountValue   Float    @default(0)
   discountAmount  Float    @default(0)
+  manuallyPaid    Boolean  @default(false)
   publicToken     String?  @unique
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -550,8 +551,8 @@ model TeamInvitation {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   invitedById    String
 
-  roleId         String?
-  customRole     Role?        @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  roleId     String?
+  customRole Role?   @relation(fields: [roleId], references: [id], onDelete: SetNull)
 
   @@unique([email, organizationId])
   @@index([token])
@@ -598,27 +599,27 @@ model Subscription {
 }
 
 model RecurringInvoice {
-  id            String    @id @default(cuid())
-  title         String
-  description   String?
-  frequency     String    // "weekly" | "biweekly" | "monthly" | "quarterly" | "yearly"
-  nextRunDate   DateTime
-  endDate       DateTime?
-  isActive      Boolean   @default(true)
-  lastRunAt     DateTime?
-  runCount      Int       @default(0)
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  frequency   String // "weekly" | "biweekly" | "monthly" | "quarterly" | "yearly"
+  nextRunDate DateTime
+  endDate     DateTime?
+  isActive    Boolean   @default(true)
+  lastRunAt   DateTime?
+  runCount    Int       @default(0)
 
   // Template fields (copied to ServiceRecord on generation)
-  type          String    @default("maintenance")
-  cost          Float     @default(0)
-  taxRate       Float     @default(0)
-  invoiceNotes  String?
+  type         String  @default("maintenance")
+  cost         Float   @default(0)
+  taxRate      Float   @default(0)
+  invoiceNotes String?
 
-  vehicleId     String
-  vehicle       Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   templateParts RecurringPart[]
   templateLabor RecurringLabor[]
@@ -629,11 +630,11 @@ model RecurringInvoice {
 }
 
 model RecurringPart {
-  id                 String  @id @default(cuid())
-  name               String
-  partNumber         String?
-  quantity           Int     @default(1)
-  unitPrice          Float   @default(0)
+  id         String  @id @default(cuid())
+  name       String
+  partNumber String?
+  quantity   Int     @default(1)
+  unitPrice  Float   @default(0)
 
   recurringInvoiceId String
   recurringInvoice   RecurringInvoice @relation(fields: [recurringInvoiceId], references: [id], onDelete: Cascade)
@@ -642,10 +643,10 @@ model RecurringPart {
 }
 
 model RecurringLabor {
-  id                 String  @id @default(cuid())
-  description        String
-  hours              Float   @default(0)
-  rate               Float   @default(0)
+  id          String @id @default(cuid())
+  description String
+  hours       Float  @default(0)
+  rate        Float  @default(0)
 
   recurringInvoiceId String
   recurringInvoice   RecurringInvoice @relation(fields: [recurringInvoiceId], references: [id], onDelete: Cascade)
