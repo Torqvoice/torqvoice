@@ -86,22 +86,22 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
     return PLAN_FEATURES[planName] ?? PLAN_FEATURES.free
   }
 
-  // Self-hosted mode — license is per-org in AppSetting
+  // Self-hosted mode — all features unlocked, license only controls branding
   const settings = await db.appSetting.findMany({
     where: {
       organizationId,
-      key: { in: ['license.valid', 'license.plan'] },
+      key: { in: ['license.valid'] },
     },
   })
 
   const map = new Map(settings.map((s) => [s.key, s.value]))
-  const isValid = map.get('license.valid') === 'true'
+  const hasLicense = map.get('license.valid') === 'true'
 
-  if (isValid) {
-    return PLAN_FEATURES['white-label']
+  return {
+    ...PLAN_FEATURES['white-label'],
+    brandingRemoved: hasLicense,
+    customPlatformName: hasLicense,
   }
-
-  return PLAN_FEATURES.free
 })
 
 export class FeatureGatedError extends Error {
