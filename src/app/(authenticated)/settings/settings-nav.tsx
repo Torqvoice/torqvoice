@@ -134,7 +134,6 @@ export function SettingsNav({ features, isCloud }: { features?: PlanFeatures; is
   const pathname = usePathname();
 
   const visibleItems = settingsNav.filter((item) => {
-    if (item.gate && features && !features[item.gate]) return false;
     if (item.cloudOnly && !isCloud) return false;
     if (item.selfHostedOnly && isCloud) return false;
     return true;
@@ -144,6 +143,7 @@ export function SettingsNav({ features, isCloud }: { features?: PlanFeatures; is
     <nav className="flex flex-col gap-1">
       {visibleItems.map((item) => {
         const isActive = pathname === item.href;
+        const isLocked = !!(item.gate && features && !features[item.gate]);
         return (
           <Link
             key={item.href}
@@ -152,12 +152,21 @@ export function SettingsNav({ features, isCloud }: { features?: PlanFeatures; is
               "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
               isActive
                 ? "bg-primary/10 text-primary font-medium"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                : isLocked
+                  ? "text-muted-foreground/50 hover:bg-muted/50 hover:text-muted-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
             <item.icon className="h-4 w-4 shrink-0" />
-            <div className="min-w-0">
-              <p className={cn("truncate", isActive && "font-medium")}>{item.title}</p>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <p className={cn("truncate", isActive && "font-medium")}>{item.title}</p>
+                {isLocked && (
+                  <span className="shrink-0 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
+                    PRO
+                  </span>
+                )}
+              </div>
               <p className="hidden truncate text-xs text-muted-foreground lg:block">
                 {item.description}
               </p>

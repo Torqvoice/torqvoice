@@ -1,8 +1,9 @@
-import { redirect } from "next/navigation";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { getLayoutData } from "@/lib/get-layout-data";
-import { getFeatures } from "@/lib/features";
+import { getFeatures, isCloudMode } from "@/lib/features";
 import { PaymentSettings } from "./payment-settings";
+import { FeatureLockedMessage } from "../feature-locked-message";
+import { redirect } from "next/navigation";
 
 export default async function PaymentSettingsPage() {
   const data = await getLayoutData();
@@ -13,7 +14,13 @@ export default async function PaymentSettingsPage() {
   const features = await getFeatures(data.organizationId);
 
   if (!features.payments) {
-    redirect("/settings");
+    return (
+      <FeatureLockedMessage
+        feature="Payment Settings"
+        description="Configure payment providers, terms, and online payment options for your invoices."
+        isCloud={isCloudMode()}
+      />
+    );
   }
 
   const result = await getSettings();
