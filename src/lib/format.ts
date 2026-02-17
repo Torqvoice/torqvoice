@@ -155,11 +155,16 @@ function formatWithPattern(date: Date, pattern: string): string {
   const h12 = H % 12 || 12;
   const ampm = H < 12 ? "AM" : "PM";
 
+  // Use placeholders for month names to avoid collisions with later replacements
+  // (e.g. "a" in "May" being replaced by the AM/PM token)
+  const MONTH_LONG = "\x01";
+  const MONTH_SHORT = "\x02";
+
   return pattern
     .replace("yyyy", String(y))
     .replace("yy", String(y).slice(-2))
-    .replace("MMMM", months[M])
-    .replace("MMM", monthsShort[M])
+    .replace("MMMM", MONTH_LONG)
+    .replace("MMM", MONTH_SHORT)
     .replace("MM", String(M + 1).padStart(2, "0"))
     .replace(/\bdd\b/, String(d).padStart(2, "0"))
     .replace(/\bd\b/, String(d))
@@ -167,7 +172,9 @@ function formatWithPattern(date: Date, pattern: string): string {
     .replace("hh", String(h12).padStart(2, "0"))
     .replace("mm", String(m).padStart(2, "0"))
     .replace("ss", String(s).padStart(2, "0"))
-    .replace("a", ampm);
+    .replace("a", ampm)
+    .replace(MONTH_LONG, months[M])
+    .replace(MONTH_SHORT, monthsShort[M]);
 }
 
 /**
