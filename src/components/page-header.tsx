@@ -1,5 +1,6 @@
 'use client'
 
+import { Fragment } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -17,38 +18,35 @@ import { Zap } from 'lucide-react'
 import { useShowWhiteLabelCta } from '@/components/white-label-cta-context'
 import { NewWorkOrderButton } from '@/components/new-work-order-button'
 
-const breadcrumbMap: Record<string, { parent?: string; parentHref?: string; label: string }> = {
-  '/': { label: 'Dashboard' },
-  '/vehicles': { parent: 'Vehicles', parentHref: '/vehicles', label: 'All Vehicles' },
-  '/customers': { parent: 'Customers', parentHref: '/customers', label: 'All Customers' },
-  '/work-orders': { parent: 'Work Orders', parentHref: '/work-orders', label: 'All Work Orders' },
-  '/quotes': { parent: 'Quotes', parentHref: '/quotes', label: 'All Quotes' },
-  '/quotes/new': { parent: 'Quotes', parentHref: '/quotes', label: 'New Quote' },
-  '/billing': { parent: 'Billing', parentHref: '/billing', label: 'Billing History' },
-  '/inventory': { parent: 'Inventory', parentHref: '/inventory', label: 'All Parts' },
-  '/reports': { parent: 'Reports', parentHref: '/reports', label: 'Reports' },
-  '/admin': { label: 'Admin Overview' },
-  '/admin/users': { parent: 'Admin', parentHref: '/admin', label: 'Users' },
-  '/admin/organizations': { parent: 'Admin', parentHref: '/admin', label: 'Organizations' },
+type BreadcrumbSegment = { label: string; href?: string }
 
-  '/admin/settings': { parent: 'Admin', parentHref: '/admin', label: 'Settings' },
-  '/settings': { label: 'Settings' },
-  '/settings/company': { parent: 'Settings', parentHref: '/settings', label: 'Company' },
-  '/settings/account': { parent: 'Settings', parentHref: '/settings', label: 'Account' },
-  '/settings/custom-fields': {
-    parent: 'Settings',
-    parentHref: '/settings',
-    label: 'Custom Fields',
-  },
-  '/settings/invoice-template': { parent: 'Settings', parentHref: '/settings', label: 'Templates' },
-  '/settings/team': { parent: 'Settings', parentHref: '/settings', label: 'Team' },
-  '/settings/invoice': { parent: 'Settings', parentHref: '/settings', label: 'Invoice' },
-  '/settings/payment': { parent: 'Settings', parentHref: '/settings', label: 'Payment' },
-  '/settings/currency': { parent: 'Settings', parentHref: '/settings', label: 'Currency' },
-  '/settings/workshop': { parent: 'Settings', parentHref: '/settings', label: 'Workshop' },
-  '/settings/appearance': { parent: 'Settings', parentHref: '/settings', label: 'Appearance' },
-  '/settings/email': { parent: 'Settings', parentHref: '/settings', label: 'Email' },
-  '/settings/about': { parent: 'Settings', parentHref: '/settings', label: 'About' },
+const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
+  '/': [{ label: 'Dashboard' }],
+  '/vehicles': [{ label: 'Vehicles', href: '/vehicles' }, { label: 'All Vehicles' }],
+  '/customers': [{ label: 'Customers', href: '/customers' }, { label: 'All Customers' }],
+  '/work-orders': [{ label: 'Work Orders', href: '/work-orders' }, { label: 'All Work Orders' }],
+  '/quotes': [{ label: 'Quotes', href: '/quotes' }, { label: 'All Quotes' }],
+  '/quotes/new': [{ label: 'Quotes', href: '/quotes' }, { label: 'New Quote' }],
+  '/billing': [{ label: 'Billing', href: '/billing' }, { label: 'Billing History' }],
+  '/inventory': [{ label: 'Inventory', href: '/inventory' }, { label: 'All Parts' }],
+  '/reports': [{ label: 'Reports', href: '/reports' }, { label: 'Reports' }],
+  '/admin': [{ label: 'Admin Overview' }],
+  '/admin/users': [{ label: 'Admin', href: '/admin' }, { label: 'Users' }],
+  '/admin/organizations': [{ label: 'Admin', href: '/admin' }, { label: 'Organizations' }],
+  '/admin/settings': [{ label: 'Admin', href: '/admin' }, { label: 'Settings' }],
+  '/settings': [{ label: 'Settings' }],
+  '/settings/company': [{ label: 'Settings', href: '/settings' }, { label: 'Company' }],
+  '/settings/account': [{ label: 'Settings', href: '/settings' }, { label: 'Account' }],
+  '/settings/custom-fields': [{ label: 'Settings', href: '/settings' }, { label: 'Custom Fields' }],
+  '/settings/invoice-template': [{ label: 'Settings', href: '/settings' }, { label: 'Templates' }],
+  '/settings/team': [{ label: 'Settings', href: '/settings' }, { label: 'Team' }],
+  '/settings/invoice': [{ label: 'Settings', href: '/settings' }, { label: 'Invoice' }],
+  '/settings/payment': [{ label: 'Settings', href: '/settings' }, { label: 'Payment' }],
+  '/settings/currency': [{ label: 'Settings', href: '/settings' }, { label: 'Currency' }],
+  '/settings/workshop': [{ label: 'Settings', href: '/settings' }, { label: 'Workshop' }],
+  '/settings/appearance': [{ label: 'Settings', href: '/settings' }, { label: 'Appearance' }],
+  '/settings/email': [{ label: 'Settings', href: '/settings' }, { label: 'Email' }],
+  '/settings/about': [{ label: 'Settings', href: '/settings' }, { label: 'About' }],
 }
 
 export function PageHeader() {
@@ -56,34 +54,55 @@ export function PageHeader() {
   const showWhiteLabelCta = useShowWhiteLabelCta()
 
   // Match exact route first
-  let crumb = breadcrumbMap[pathname]
+  let segments = breadcrumbMap[pathname]
 
-  if (!crumb) {
+  if (!segments) {
     // /quotes/[id]/edit
     if (/^\/quotes\/[^/]+\/edit$/.test(pathname)) {
-      crumb = { parent: 'Quotes', parentHref: '/quotes', label: 'Edit Quote' }
+      const quoteId = pathname.split('/')[2]
+      segments = [
+        { label: 'Quotes', href: '/quotes' },
+        { label: 'Quote Details', href: `/quotes/${quoteId}` },
+        { label: 'Edit' },
+      ]
     }
     // /quotes/[id]
     else if (/^\/quotes\/[^/]+$/.test(pathname)) {
-      crumb = { parent: 'Quotes', parentHref: '/quotes', label: 'Quote Details' }
+      segments = [{ label: 'Quotes', href: '/quotes' }, { label: 'Quote Details' }]
+    }
+    // /vehicles/[id]/service/[serviceId]/edit
+    else if (/^\/vehicles\/[^/]+\/service\/[^/]+\/edit$/.test(pathname)) {
+      const parts = pathname.split('/')
+      const vehicleId = parts[2]
+      const serviceId = parts[4]
+      segments = [
+        { label: 'Vehicles', href: '/vehicles' },
+        { label: 'Service Details', href: `/vehicles/${vehicleId}/service/${serviceId}` },
+        { label: 'Edit' },
+      ]
     }
     // /vehicles/[id]/service/new
     else if (/^\/vehicles\/[^/]+\/service\/new$/.test(pathname)) {
-      crumb = { parent: 'Vehicles', parentHref: '/vehicles', label: 'New Service Record' }
+      const vehicleId = pathname.split('/')[2]
+      segments = [
+        { label: 'Vehicles', href: '/vehicles' },
+        { label: 'Vehicle Details', href: `/vehicles/${vehicleId}` },
+        { label: 'New Service Record' },
+      ]
     }
     // /vehicles/[id]/service/[serviceId]
     else if (/^\/vehicles\/[^/]+\/service\/[^/]+$/.test(pathname)) {
-      crumb = { parent: 'Vehicles', parentHref: '/vehicles', label: 'Service Details' }
+      segments = [{ label: 'Vehicles', href: '/vehicles' }, { label: 'Service Details' }]
     }
     // /vehicles/[id]
     else if (pathname.startsWith('/vehicles/')) {
-      crumb = { parent: 'Vehicles', parentHref: '/vehicles', label: 'Vehicle Details' }
+      segments = [{ label: 'Vehicles', href: '/vehicles' }, { label: 'Vehicle Details' }]
     }
     // /customers/[id]
     else if (pathname.startsWith('/customers/')) {
-      crumb = { parent: 'Customers', parentHref: '/customers', label: 'Customer Details' }
+      segments = [{ label: 'Customers', href: '/customers' }, { label: 'Customer Details' }]
     } else {
-      crumb = { label: 'Home' }
+      segments = [{ label: 'Home' }]
     }
   }
 
@@ -93,17 +112,28 @@ export function PageHeader() {
       <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
       <Breadcrumb>
         <BreadcrumbList>
-          {crumb.parent && crumb.parentHref && (
-            <>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href={crumb.parentHref}>{crumb.parent}</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-            </>
-          )}
-          <BreadcrumbItem>
-            <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-          </BreadcrumbItem>
+          {segments.map((segment, i) => {
+            const isLast = i === segments.length - 1
+            if (isLast) {
+              return (
+                <BreadcrumbItem key={i}>
+                  <BreadcrumbPage>{segment.label}</BreadcrumbPage>
+                </BreadcrumbItem>
+              )
+            }
+            return (
+              <Fragment key={i}>
+                <BreadcrumbItem className="hidden md:block">
+                  {segment.href ? (
+                    <BreadcrumbLink href={segment.href}>{segment.label}</BreadcrumbLink>
+                  ) : (
+                    <BreadcrumbPage>{segment.label}</BreadcrumbPage>
+                  )}
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+              </Fragment>
+            )
+          })}
         </BreadcrumbList>
       </Breadcrumb>
       <div className="ml-auto flex items-center gap-2">
