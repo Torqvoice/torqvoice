@@ -76,6 +76,11 @@ export function isCloudMode(): boolean {
   return process.env.TORQVOICE_MODE === 'cloud'
 }
 
+// Grace period (in ms) after currentPeriodEnd before we cut off features.
+// Gives Stripe time to process renewals and deliver webhooks, and the daily
+// cron time to sync. 3 days covers Stripe's initial retry window.
+const SUBSCRIPTION_GRACE_MS = 3 * 24 * 60 * 60 * 1000
+
 export const getFeatures = cache(async (organizationId: string): Promise<PlanFeatures> => {
   if (isCloudMode()) {
     const subscription = await db.subscription.findUnique({
@@ -83,8 +88,22 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
       include: { plan: true },
     })
 
-    if (!subscription || subscription.status !== 'active') {
+    if (!subscription) {
       return PLAN_FEATURES.free
+    }
+
+    // Only active and trialing subscriptions grant premium features
+    if (subscription.status !== 'active' && subscription.status !== 'trialing') {
+      return PLAN_FEATURES.free
+    }
+
+    // Defense-in-depth: if the billing period has ended and grace has elapsed,
+    // treat as expired even if status hasn't been updated yet (missed webhook).
+    if (subscription.currentPeriodEnd) {
+      const graceDeadline = new Date(subscription.currentPeriodEnd.getTime() + SUBSCRIPTION_GRACE_MS)
+      if (new Date() > graceDeadline) {
+        return PLAN_FEATURES.free
+      }
     }
 
     const planName = subscription.plan.name.toLowerCase() as Plan
