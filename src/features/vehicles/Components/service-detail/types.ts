@@ -39,6 +39,7 @@ export interface ServiceDetail {
   discountType: string | null;
   discountValue: number;
   discountAmount: number;
+  manuallyPaid: boolean;
   publicToken: string | null;
   partItems: PartItem[];
   laborItems: LaborItem[];
