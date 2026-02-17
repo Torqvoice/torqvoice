@@ -163,7 +163,7 @@ export function ServiceVideoManager({
                 : "Drop videos here or click to browse"}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              MP4, WebM, MOV — max 20MB each
+              MP4, WebM, MOV — max 10MB each
             </p>
             <input
               ref={inputRef}

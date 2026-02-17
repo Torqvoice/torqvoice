@@ -31,6 +31,8 @@ interface Attachment {
 interface ServiceDocumentsManagerProps {
   serviceRecordId: string;
   initialDocuments: Attachment[];
+  maxDiagnostics?: number;
+  maxDocuments?: number;
 }
 
 function formatFileSize(bytes: number) {
@@ -50,6 +52,8 @@ function getFileIcon(type: string) {
 export function ServiceDocumentsManager({
   serviceRecordId,
   initialDocuments,
+  maxDiagnostics,
+  maxDocuments,
 }: ServiceDocumentsManagerProps) {
   const [files, setFiles] = useState<Attachment[]>(initialDocuments);
   const [uploadingReports, setUploadingReports] = useState(false);
@@ -59,16 +63,32 @@ export function ServiceDocumentsManager({
 
   const diagnosticReports = files.filter((f) => f.category === "diagnostic");
   const documents = files.filter((f) => f.category === "document");
+  const diagnosticsAtLimit = maxDiagnostics !== undefined && diagnosticReports.length >= maxDiagnostics;
+  const documentsAtLimit = maxDocuments !== undefined && documents.length >= maxDocuments;
 
   const handleUpload = useCallback(
     async (
       fileList: FileList | File[],
       category: "diagnostic" | "document"
     ) => {
+      const maxLimit = category === "diagnostic" ? maxDiagnostics : maxDocuments;
+      const currentItems = category === "diagnostic" ? diagnosticReports : documents;
+      let fileArr = Array.from(fileList);
+      if (maxLimit !== undefined) {
+        const remaining = maxLimit - currentItems.length;
+        if (remaining <= 0) {
+          const label = category === "diagnostic" ? "Diagnostic report" : "Document";
+          toast.error(`${label} limit reached (${currentItems.length}/${maxLimit}). Upgrade your plan for more.`);
+          return;
+        }
+        if (fileArr.length > remaining) {
+          fileArr = fileArr.slice(0, remaining);
+          toast.warning(`Only uploading ${remaining} file${remaining > 1 ? "s" : ""} to stay within limit.`);
+        }
+      }
       const setUploading =
         category === "diagnostic" ? setUploadingReports : setUploadingDocuments;
       setUploading(true);
-      const fileArr = Array.from(fileList);
       const toastId = toast.loading(
         `Uploading ${fileArr.length} file${fileArr.length > 1 ? "s" : ""}...`
       );
@@ -123,7 +143,7 @@ export function ServiceDocumentsManager({
       }
       setUploading(false);
     },
-    [serviceRecordId]
+    [serviceRecordId, maxDiagnostics, maxDocuments, diagnosticReports, documents]
   );
 
   const handleDelete = useCallback(async (attachmentId: string) => {
@@ -208,42 +228,58 @@ export function ServiceDocumentsManager({
           <CardTitle className="flex items-center gap-2 text-base">
             <FileText className="h-4 w-4" />
             Diagnostic Reports
+            {maxDiagnostics !== undefined && (
+              <span className="ml-auto text-xs font-normal text-muted-foreground">
+                {diagnosticReports.length} / {maxDiagnostics}
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div
-            onDrop={(e) => {
-              e.preventDefault();
-              if (e.dataTransfer.files.length > 0)
-                handleUpload(e.dataTransfer.files, "diagnostic");
-            }}
-            onDragOver={(e) => e.preventDefault()}
-            onClick={() => reportInputRef.current?.click()}
-            className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
-          >
-            <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />
-            <p className="text-sm font-medium">
-              {uploadingReports
-                ? "Uploading..."
-                : "Drop files here or click to browse"}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              PDF, CSV, TXT — max 10MB each
-            </p>
-            <input
-              ref={reportInputRef}
-              type="file"
-              multiple
-              accept=".pdf,.csv,.txt"
-              className="hidden"
-              onChange={(e) => {
-                if (e.target.files && e.target.files.length > 0) {
-                  handleUpload(e.target.files, "diagnostic");
-                  e.target.value = "";
-                }
+          {diagnosticsAtLimit ? (
+            <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
+              <p className="text-sm font-medium text-muted-foreground">
+                Diagnostic report limit reached ({diagnosticReports.length}/{maxDiagnostics})
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Upgrade your plan to upload more.
+              </p>
+            </div>
+          ) : (
+            <div
+              onDrop={(e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length > 0)
+                  handleUpload(e.dataTransfer.files, "diagnostic");
               }}
-            />
-          </div>
+              onDragOver={(e) => e.preventDefault()}
+              onClick={() => reportInputRef.current?.click()}
+              className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
+            >
+              <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />
+              <p className="text-sm font-medium">
+                {uploadingReports
+                  ? "Uploading..."
+                  : "Drop files here or click to browse"}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                PDF, CSV, TXT — max 10MB each
+              </p>
+              <input
+                ref={reportInputRef}
+                type="file"
+                multiple
+                accept=".pdf,.csv,.txt"
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    handleUpload(e.target.files, "diagnostic");
+                    e.target.value = "";
+                  }
+                }}
+              />
+            </div>
+          )}
 
           {uploadingReports && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -262,42 +298,58 @@ export function ServiceDocumentsManager({
           <CardTitle className="flex items-center gap-2 text-base">
             <Paperclip className="h-4 w-4" />
             Documents
+            {maxDocuments !== undefined && (
+              <span className="ml-auto text-xs font-normal text-muted-foreground">
+                {documents.length} / {maxDocuments}
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div
-            onDrop={(e) => {
-              e.preventDefault();
-              if (e.dataTransfer.files.length > 0)
-                handleUpload(e.dataTransfer.files, "document");
-            }}
-            onDragOver={(e) => e.preventDefault()}
-            onClick={() => documentInputRef.current?.click()}
-            className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
-          >
-            <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />
-            <p className="text-sm font-medium">
-              {uploadingDocuments
-                ? "Uploading..."
-                : "Drop files here or click to browse"}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              PDF, DOCX, XLSX, CSV, TXT — max 10MB each
-            </p>
-            <input
-              ref={documentInputRef}
-              type="file"
-              multiple
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt"
-              className="hidden"
-              onChange={(e) => {
-                if (e.target.files && e.target.files.length > 0) {
-                  handleUpload(e.target.files, "document");
-                  e.target.value = "";
-                }
+          {documentsAtLimit ? (
+            <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
+              <p className="text-sm font-medium text-muted-foreground">
+                Document limit reached ({documents.length}/{maxDocuments})
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Upgrade your plan to upload more.
+              </p>
+            </div>
+          ) : (
+            <div
+              onDrop={(e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length > 0)
+                  handleUpload(e.dataTransfer.files, "document");
               }}
-            />
-          </div>
+              onDragOver={(e) => e.preventDefault()}
+              onClick={() => documentInputRef.current?.click()}
+              className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
+            >
+              <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />
+              <p className="text-sm font-medium">
+                {uploadingDocuments
+                  ? "Uploading..."
+                  : "Drop files here or click to browse"}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                PDF, DOCX, XLSX, CSV, TXT — max 10MB each
+              </p>
+              <input
+                ref={documentInputRef}
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt"
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    handleUpload(e.target.files, "document");
+                    e.target.value = "";
+                  }
+                }}
+              />
+            </div>
+          )}
 
           {uploadingDocuments && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">

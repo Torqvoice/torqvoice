@@ -15,6 +15,9 @@ export type PlanFeatures = {
   customFields: boolean
   brandingRemoved: boolean
   customPlatformName: boolean
+  maxImagesPerService: number
+  maxDiagnosticsPerService: number
+  maxDocumentsPerService: number
 }
 
 export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
@@ -30,6 +33,9 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     customFields: false,
     brandingRemoved: false,
     customPlatformName: false,
+    maxImagesPerService: 5,
+    maxDiagnosticsPerService: 5,
+    maxDocumentsPerService: 5,
   },
   pro: {
     maxCustomers: 999999,
@@ -43,6 +49,9 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     customFields: true,
     brandingRemoved: true,
     customPlatformName: true,
+    maxImagesPerService: 30,
+    maxDiagnosticsPerService: 30,
+    maxDocumentsPerService: 30,
   },
   enterprise: {
     maxCustomers: 999999,
@@ -56,6 +65,9 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     customFields: true,
     brandingRemoved: true,
     customPlatformName: true,
+    maxImagesPerService: 100,
+    maxDiagnosticsPerService: 100,
+    maxDocumentsPerService: 100,
   },
   'white-label': {
     maxCustomers: 999999,
@@ -69,6 +81,9 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     customFields: true,
     brandingRemoved: true,
     customPlatformName: true,
+    maxImagesPerService: 999999,
+    maxDiagnosticsPerService: 999999,
+    maxDocumentsPerService: 999999,
   },
 }
 
