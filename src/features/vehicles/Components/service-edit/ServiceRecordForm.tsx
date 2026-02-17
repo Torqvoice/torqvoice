@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
@@ -43,6 +43,18 @@ export function ServiceRecordForm({
   const [discountType, setDiscountType] = useState<string>(initialData.discountType || 'none')
   const [discountValue, setDiscountValue] = useState(initialData.discountValue ?? 0)
   const [showInventoryPicker, setShowInventoryPicker] = useState(false)
+  const notesRef = useRef({
+    invoiceNotes: initialData.invoiceNotes || '',
+    diagnosticNotes: initialData.diagnosticNotes || '',
+    description: initialData.description || '',
+  })
+
+  const handleNotesChange = useCallback(
+    (field: 'invoiceNotes' | 'diagnosticNotes' | 'description', value: string) => {
+      notesRef.current[field] = value
+    },
+    []
+  )
 
   const partsSubtotal = partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotal = laborItems.reduce((sum, l) => sum + l.total, 0)
@@ -95,15 +107,15 @@ export function ServiceRecordForm({
       id: initialData.id,
       vehicleId: selectedVehicleId,
       title: formData.get('title') as string,
-      description: (formData.get('description') as string) || undefined,
+      description: notesRef.current.description || undefined,
       type,
       status,
       cost: totalAmount,
       mileage: Number(formData.get('mileage')) || undefined,
       serviceDate: (formData.get('serviceDate') as string) || new Date().toISOString(),
       techName: techName || undefined,
-      diagnosticNotes: (formData.get('diagnosticNotes') as string) || undefined,
-      invoiceNotes: (formData.get('invoiceNotes') as string) || undefined,
+      diagnosticNotes: notesRef.current.diagnosticNotes || undefined,
+      invoiceNotes: notesRef.current.invoiceNotes || undefined,
       invoiceNumber: (formData.get('invoiceNumber') as string) || undefined,
       partItems: partItems.filter((p) => p.name),
       laborItems: laborItems.filter((l) => l.description),
@@ -151,6 +163,7 @@ export function ServiceRecordForm({
         currencyCode={currencyCode}
         defaultLaborRate={defaultLaborRate}
       />
+      <NotesSection initialData={initialData} onNotesChange={handleNotesChange} />
     </div>
   )
 
@@ -191,7 +204,6 @@ export function ServiceRecordForm({
         totalAmount={totalAmount}
         currencyCode={currencyCode}
       />
-      <NotesSection initialData={initialData} />
     </div>
   )
 

@@ -175,3 +175,81 @@
     linear-gradient(90deg, oklch(0.22 0.015 70 / 0.3) 1px, transparent 1px);
   background-size: 40px 40px;
 }
+
+/* Tiptap editor styles */
+.tiptap-content {
+  &:focus {
+    outline: none;
+  }
+  > * + * {
+    margin-top: 0.5em;
+  }
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+  ol {
+    list-style: decimal;
+    padding-left: 1.25rem;
+  }
+  li {
+    margin-top: 0.15em;
+  }
+  blockquote {
+    border-left: 3px solid var(--border);
+    padding-left: 0.75rem;
+    color: var(--muted-foreground);
+    font-style: italic;
+  }
+  p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: var(--muted-foreground);
+    pointer-events: none;
+    height: 0;
+  }
+}
+
+/* Notes display (rendered HTML) */
+.notes-content {
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+  ol {
+    list-style: decimal;
+    padding-left: 1.25rem;
+  }
+  li {
+    margin-top: 0.15em;
+  }
+  blockquote {
+    border-left: 3px solid var(--border);
+    padding-left: 0.75rem;
+    color: var(--muted-foreground);
+    font-style: italic;
+  }
+  > * + * {
+    margin-top: 0.5em;
+  }
+}

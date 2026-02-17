@@ -18,6 +18,7 @@ import { InvoiceSummary } from "./InvoiceSummary";
 import { PaymentsSection } from "./PaymentsSection";
 import { ServiceSidebar } from "./ServiceSidebar";
 import { ServiceAttachments } from "./ServiceAttachments";
+import { ServiceNotesDisplay } from "./ServiceNotesDisplay";
 import { ImageCarousel } from "./ImageCarousel";
 import { ShareDialog } from "./ShareDialog";
 import { ServiceDetailContent } from "./ServiceDetailContent";
@@ -162,14 +163,18 @@ export function ServiceDetailClient({
               onDeletePayment={handleDeletePayment} paymentLoading={paymentLoading}
               deletingPayment={deletingPayment}
             />
+            <ServiceNotesDisplay
+              invoiceNotes={record.invoiceNotes}
+              diagnosticNotes={record.diagnosticNotes}
+              description={record.description}
+            />
           </>
         }
         rightColumn={
           <>
             <ServiceSidebar
               recordId={record.id} vehicle={record.vehicle} vehicleName={vehicleName}
-              distUnit={distUnit} mileage={record.mileage} invoiceNotes={record.invoiceNotes}
-              diagnosticNotes={record.diagnosticNotes} description={record.description}
+              distUnit={distUnit} mileage={record.mileage}
             />
             <ServiceAttachments
               attachments={record.attachments || []} imageAttachments={imageAttachments}
