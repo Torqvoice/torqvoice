@@ -35,7 +35,7 @@ export default async function ServiceDetailPage({
   const unitSystem = (settings[SETTING_KEYS.UNIT_SYSTEM] || "imperial") as "metric" | "imperial";
 
   return (
-    <div className="flex h-svh flex-col">
+    <div className="flex h-svh flex-col overflow-hidden">
       <PageHeader />
       <ServiceDetailClient record={result.data} vehicleId={id} organizationId={authContext?.organizationId || ""} currencyCode={currencyCode} unitSystem={unitSystem} />
     </div>
