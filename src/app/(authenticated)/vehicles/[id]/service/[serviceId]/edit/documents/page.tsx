@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
 import { redirect } from "next/navigation";
 import { ServiceDocumentsManager } from "@/features/vehicles/Components/service-documents-manager";
+import { getFeatures } from "@/lib/features";
 
 export default async function EditServiceDocumentsPage({
   params,
@@ -15,19 +16,22 @@ export default async function EditServiceDocumentsPage({
   const membership = await getCachedMembership(session.user.id);
   if (!membership) redirect("/sign-in");
 
-  const record = await db.serviceRecord.findFirst({
-    where: {
-      id: serviceId,
-      vehicle: { id, organizationId: membership.organizationId },
-    },
-    select: {
-      id: true,
-      attachments: {
-        where: { category: { in: ["document", "diagnostic"] } },
-        orderBy: { createdAt: "asc" },
+  const [record, features] = await Promise.all([
+    db.serviceRecord.findFirst({
+      where: {
+        id: serviceId,
+        vehicle: { id, organizationId: membership.organizationId },
       },
-    },
-  });
+      select: {
+        id: true,
+        attachments: {
+          where: { category: { in: ["document", "diagnostic"] } },
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    }),
+    getFeatures(membership.organizationId),
+  ]);
 
   if (!record) {
     return (
@@ -41,6 +45,8 @@ export default async function EditServiceDocumentsPage({
     <ServiceDocumentsManager
       serviceRecordId={record.id}
       initialDocuments={record.attachments}
+      maxDiagnostics={features.maxDiagnosticsPerService}
+      maxDocuments={features.maxDocumentsPerService}
     />
   );
 }

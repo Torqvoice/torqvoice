@@ -16,7 +16,7 @@ const ALLOWED_TYPES = [
   "video/quicktime",
 ];
 
-const MAX_SIZE = 20 * 1024 * 1024; // 20MB
+const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function POST(request: NextRequest) {
   const ctx = await getAuthContext();
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 
   if (file.size > MAX_SIZE) {
     return NextResponse.json(
-      { error: "File size must be under 20MB" },
+      { error: "File size must be under 10MB" },
       { status: 400 }
     );
   }

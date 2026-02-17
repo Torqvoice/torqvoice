@@ -26,20 +26,34 @@ interface Attachment {
 interface ServiceImagesManagerProps {
   serviceRecordId: string;
   initialImages: Attachment[];
+  maxImages?: number;
 }
 
 export function ServiceImagesManager({
   serviceRecordId,
   initialImages,
+  maxImages,
 }: ServiceImagesManagerProps) {
   const [images, setImages] = useState<Attachment[]>(initialImages);
+  const atLimit = maxImages !== undefined && images.length >= maxImages;
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = useCallback(
     async (files: FileList | File[]) => {
+      let fileArr = Array.from(files);
+      if (maxImages !== undefined) {
+        const remaining = maxImages - images.length;
+        if (remaining <= 0) {
+          toast.error(`Image limit reached (${images.length}/${maxImages}). Upgrade your plan for more.`);
+          return;
+        }
+        if (fileArr.length > remaining) {
+          fileArr = fileArr.slice(0, remaining);
+          toast.warning(`Only uploading ${remaining} image${remaining > 1 ? "s" : ""} to stay within limit.`);
+        }
+      }
       setUploading(true);
-      const fileArr = Array.from(files);
       const toastId = toast.loading(
         `Uploading ${fileArr.length} image${fileArr.length > 1 ? "s" : ""}...`
       );
@@ -97,7 +111,7 @@ export function ServiceImagesManager({
       }
       setUploading(false);
     },
-    [serviceRecordId]
+    [serviceRecordId, maxImages, images.length]
   );
 
   const handleDrop = useCallback(
@@ -169,36 +183,52 @@ export function ServiceImagesManager({
         <CardTitle className="flex items-center gap-2 text-base">
           <Camera className="h-4 w-4" />
           Service Images
+          {maxImages !== undefined && (
+            <span className="ml-auto text-xs font-normal text-muted-foreground">
+              {images.length} / {maxImages}
+            </span>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div
-          onDrop={handleDrop}
-          onDragOver={(e) => e.preventDefault()}
-          onClick={() => inputRef.current?.click()}
-          className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
-        >
-          <ImageIcon className="mb-2 h-8 w-8 text-muted-foreground/50" />
-          <p className="text-sm font-medium">
-            {uploading ? "Uploading..." : "Drop images here or click to browse"}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            JPG, PNG, WebP — max 10MB each
-          </p>
-          <input
-            ref={inputRef}
-            type="file"
-            multiple
-            accept=".jpg,.jpeg,.png,.webp"
-            className="hidden"
-            onChange={(e) => {
-              if (e.target.files && e.target.files.length > 0) {
-                handleUpload(e.target.files);
-                e.target.value = "";
-              }
-            }}
-          />
-        </div>
+        {atLimit ? (
+          <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
+            <p className="text-sm font-medium text-muted-foreground">
+              Image limit reached ({images.length}/{maxImages})
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Upgrade your plan to upload more images.
+            </p>
+          </div>
+        ) : (
+          <div
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+            onClick={() => inputRef.current?.click()}
+            className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
+          >
+            <ImageIcon className="mb-2 h-8 w-8 text-muted-foreground/50" />
+            <p className="text-sm font-medium">
+              {uploading ? "Uploading..." : "Drop images here or click to browse"}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              JPG, PNG, WebP — max 10MB each
+            </p>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              accept=".jpg,.jpeg,.png,.webp"
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                  handleUpload(e.target.files);
+                  e.target.value = "";
+                }
+              }}
+            />
+          </div>
+        )}
 
         {uploading && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
