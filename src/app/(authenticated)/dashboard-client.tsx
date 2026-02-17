@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useFormatDate } from "@/lib/use-format-date";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -22,7 +21,6 @@ import {
   Clock,
   DollarSign,
   Loader2,
-  Search,
   Users,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
@@ -85,24 +83,6 @@ export function DashboardClient({
 
   return (
     <div className="space-y-6">
-      {/* Search bar */}
-      <div
-        className="relative cursor-pointer"
-        onClick={() => {
-          document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
-        }}
-      >
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          readOnly
-          placeholder="Search by name, plate, phone, VIN, invoice..."
-          className="pl-10 cursor-pointer"
-        />
-        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 rounded border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-          Ctrl+K
-        </kbd>
-      </div>
-
       {/* Quick stats row */}
       <div className={`grid grid-cols-2 gap-3 ${stats.isAdmin ? "sm:grid-cols-4" : "sm:grid-cols-2"}`}>
         <Card className="border-0 shadow-sm">
