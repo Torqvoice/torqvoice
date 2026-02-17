@@ -49,7 +49,7 @@ export default async function EditServiceLayout({
         </div>
         <EditNav vehicleId={id} serviceId={serviceId} />
       </div>
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
         {children}
       </div>
     </div>
