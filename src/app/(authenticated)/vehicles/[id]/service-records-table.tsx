@@ -49,7 +49,7 @@ interface ServiceRecordRow {
   totalAmount: number;
   invoiceNumber: string | null;
   _count: { partItems: number; laborItems: number; attachments: number };
-  laborItems: { description: string }[];
+  laborItems?: { description: string }[];
 }
 
 interface ServiceRecordsTableProps {
