@@ -14,6 +14,7 @@ import {
   X,
 } from 'lucide-react'
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { sanitizeHtml } from '@/lib/sanitize-html'
 
 interface InvoiceRecord {
   id: string
@@ -810,17 +811,19 @@ export function InvoiceView({
         {record.invoiceNotes && (
           <div className="mt-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
             <p className="mb-1 text-xs font-bold uppercase text-amber-600">Notes</p>
-            <p className="whitespace-pre-wrap text-sm text-gray-600 dark:text-gray-400">
-              {record.invoiceNotes}
-            </p>
+            <div
+              className="notes-content text-sm text-gray-600 dark:text-gray-400"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.invoiceNotes) }}
+            />
           </div>
         )}
         {record.diagnosticNotes && (
           <div className="mt-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
             <p className="mb-1 text-xs font-bold uppercase text-amber-600">Diagnostic Notes</p>
-            <p className="whitespace-pre-wrap text-sm text-gray-600 dark:text-gray-400">
-              {record.diagnosticNotes}
-            </p>
+            <div
+              className="notes-content text-sm text-gray-600 dark:text-gray-400"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.diagnosticNotes) }}
+            />
           </div>
         )}
         {invoiceSettings?.footerNote && (
