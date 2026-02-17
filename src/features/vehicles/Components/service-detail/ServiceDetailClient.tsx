@@ -124,7 +124,7 @@ export function ServiceDetailClient({
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
       <ServiceDetailHeader
         vehicleId={vehicleId} recordId={record.id} title={record.title}
         status={record.status} serviceDate={formatDate(new Date(record.serviceDate))}
