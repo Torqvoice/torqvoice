@@ -20,8 +20,15 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { Check, ChevronsUpDown } from 'lucide-react'
+import Link from 'next/link'
+import { Check, ChevronsUpDown, ExternalLink } from 'lucide-react'
 import type { InitialData, VehicleOption, TeamMemberOption } from './form-types'
+
+interface CustomerInfo {
+  id: string
+  name: string
+  company: string | null
+}
 
 interface BasicInfoSectionProps {
   initialData: InitialData
@@ -41,6 +48,7 @@ interface BasicInfoSectionProps {
   techOpen: boolean
   setTechOpen: (open: boolean) => void
   teamMembers: TeamMemberOption[]
+  customer?: CustomerInfo | null
 }
 
 export function BasicInfoSection({
@@ -60,6 +68,7 @@ export function BasicInfoSection({
   techOpen,
   setTechOpen,
   teamMembers,
+  customer,
 }: BasicInfoSectionProps) {
   const selectedVehicleLabel = useMemo(() => {
     if (vehicles.length === 0) return vehicleName
@@ -73,7 +82,16 @@ export function BasicInfoSection({
 
       {vehicles.length > 0 && (
         <div className="space-y-1">
-          <Label className="text-xs">Vehicle</Label>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs">Vehicle</Label>
+            <Link
+              href={`/vehicles/${selectedVehicleId}`}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Open
+              <ExternalLink className="h-3 w-3" />
+            </Link>
+          </div>
           <Popover open={vehicleOpen} onOpenChange={setVehicleOpen} modal={true}>
             <PopoverTrigger asChild>
               <Button
@@ -112,6 +130,30 @@ export function BasicInfoSection({
               </Command>
             </PopoverContent>
           </Popover>
+        </div>
+      )}
+
+      {customer && (
+        <div className="flex items-center justify-between rounded-md border px-3 py-2">
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">Customer</p>
+            <Link
+              href={`/customers/${customer.id}`}
+              className="text-sm font-medium hover:underline"
+            >
+              {customer.name}
+            </Link>
+            {customer.company && (
+              <p className="text-xs text-muted-foreground">{customer.company}</p>
+            )}
+          </div>
+          <Link
+            href={`/customers/${customer.id}`}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Open
+            <ExternalLink className="h-3 w-3" />
+          </Link>
         </div>
       )}
 

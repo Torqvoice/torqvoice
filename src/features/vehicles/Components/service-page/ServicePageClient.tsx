@@ -16,7 +16,6 @@ import type { InitialData, InventoryPartOption, VehicleOption, TeamMemberOption 
 import { ServiceDetailContent } from '../service-detail/ServiceDetailContent'
 import { InvoiceSummary } from '../service-detail/InvoiceSummary'
 import { PaymentsSection } from '../service-detail/PaymentsSection'
-import { ServiceSidebar } from '../service-detail/ServiceSidebar'
 import { ServiceAttachments } from '../service-detail/ServiceAttachments'
 import { ImageCarousel } from '../service-detail/ImageCarousel'
 import { ShareDialog } from '../service-detail/ShareDialog'
@@ -422,6 +421,7 @@ export function ServicePageClient({
         techOpen={techOpen}
         setTechOpen={setTechOpen}
         teamMembers={teamMembers}
+        customer={record.vehicle.customer}
       />
       <TotalsSection
         partsSubtotal={partsSubtotal}
@@ -438,13 +438,6 @@ export function ServicePageClient({
         taxAmount={taxAmount}
         totalAmount={totalAmount}
         currencyCode={currencyCode}
-      />
-      <ServiceSidebar
-        recordId={record.id}
-        vehicle={record.vehicle}
-        vehicleName={vehicleName}
-        distUnit={distUnit}
-        mileage={record.mileage}
       />
       <ServiceAttachments
         attachments={record.attachments || []}
