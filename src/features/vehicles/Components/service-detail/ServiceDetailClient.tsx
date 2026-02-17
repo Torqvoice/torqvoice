@@ -20,6 +20,7 @@ import { ServiceSidebar } from "./ServiceSidebar";
 import { ServiceAttachments } from "./ServiceAttachments";
 import { ImageCarousel } from "./ImageCarousel";
 import { ShareDialog } from "./ShareDialog";
+import { ServiceDetailContent } from "./ServiceDetailContent";
 
 export function ServiceDetailClient({
   record,
@@ -132,9 +133,9 @@ export function ServiceDetailClient({
         downloading={downloading} onDownloadPDF={handleDownloadPDF} onDelete={handleDelete}
         onShowEmail={() => setShowEmailDialog(true)} onShowShare={() => setShowShareDialog(true)}
       />
-      <div className="flex-1 overflow-y-auto p-4">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_340px]">
-          <div className="space-y-3">
+      <ServiceDetailContent
+        leftColumn={
+          <>
             <PartsTable parts={record.partItems} partsSubtotal={partsSubtotal} currencyCode={currencyCode} />
             <LaborTable laborItems={record.laborItems} laborSubtotal={laborSubtotal} currencyCode={currencyCode} />
             {record.partItems.length === 0 && record.laborItems.length === 0 && (record.parts || record.laborHours) && (
@@ -161,8 +162,10 @@ export function ServiceDetailClient({
               onDeletePayment={handleDeletePayment} paymentLoading={paymentLoading}
               deletingPayment={deletingPayment}
             />
-          </div>
-          <div className="space-y-3">
+          </>
+        }
+        rightColumn={
+          <>
             <ServiceSidebar
               recordId={record.id} vehicle={record.vehicle} vehicleName={vehicleName}
               distUnit={distUnit} mileage={record.mileage} invoiceNotes={record.invoiceNotes}
@@ -173,9 +176,9 @@ export function ServiceDetailClient({
               onImageClick={setCarouselIndex} onDeleteAttachment={handleDeleteAttachment}
               deletingAttachment={deletingAttachment}
             />
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
       <ImageCarousel
         images={imageAttachments} currentIndex={carouselIndex}
         onClose={() => setCarouselIndex(null)} onChangeIndex={setCarouselIndex}
