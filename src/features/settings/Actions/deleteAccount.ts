@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { unlink, rm } from "fs/promises";
 import path from "path";
+import Stripe from "stripe";
 
 export async function deleteAccount() {
   return withAuth(async ({ userId, organizationId }) => {
@@ -45,6 +46,21 @@ export async function deleteAccount() {
       });
       for (const v of vehicles) {
         if (v.imageUrl) filePaths.push(resolveUploadPath(v.imageUrl));
+      }
+
+      // Cancel Stripe subscription before deleting org data
+      const subscription = await db.subscription.findUnique({
+        where: { organizationId },
+        select: { stripeSubscriptionId: true },
+      });
+
+      if (subscription?.stripeSubscriptionId && process.env.STRIPE_SECRET_KEY) {
+        try {
+          const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+          await stripe.subscriptions.cancel(subscription.stripeSubscriptionId);
+        } catch {
+          // Subscription may already be canceled on Stripe's side
+        }
       }
 
       // Delete membership first (not auto-cascaded from user deletion)
