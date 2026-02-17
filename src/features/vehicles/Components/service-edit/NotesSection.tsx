@@ -1,48 +1,76 @@
 'use client'
 
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { useState } from 'react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { FileText } from 'lucide-react'
+import { RichTextEditor } from './RichTextEditor'
 import type { InitialData } from './form-types'
 
 interface NotesSectionProps {
   initialData: InitialData
+  onNotesChange: (field: 'invoiceNotes' | 'diagnosticNotes' | 'description', value: string) => void
 }
 
-export function NotesSection({ initialData }: NotesSectionProps) {
+export function NotesSection({ initialData, onNotesChange }: NotesSectionProps) {
+  const [noteType, setNoteType] = useState<'public' | 'internal'>('public')
+  const [publicNotes, setPublicNotes] = useState(initialData.invoiceNotes || '')
+  const [internalNotes, setInternalNotes] = useState(initialData.diagnosticNotes || '')
+
+  const handlePublicChange = (html: string) => {
+    setPublicNotes(html)
+    onNotesChange('invoiceNotes', html)
+  }
+
+  const handleInternalChange = (html: string) => {
+    setInternalNotes(html)
+    onNotesChange('diagnosticNotes', html)
+  }
+
   return (
     <div className="rounded-lg border p-3 space-y-3">
-      <h3 className="text-sm font-semibold">Notes</h3>
-
-      <div className="space-y-1">
-        <Label className="text-xs">Diagnostic Notes</Label>
-        <Textarea
-          name="diagnosticNotes"
-          placeholder="Diagnostic findings, observations, recommendations..."
-          rows={3}
-          defaultValue={initialData.diagnosticNotes}
-        />
+      <div className="flex items-center justify-between">
+        <h3 className="flex items-center gap-2 text-sm font-semibold">
+          <FileText className="h-3.5 w-3.5" />
+          Notes
+        </h3>
+        <Select value={noteType} onValueChange={(v) => setNoteType(v as 'public' | 'internal')}>
+          <SelectTrigger className="h-7 w-[120px] text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="public">Public</SelectItem>
+            <SelectItem value="internal">Internal</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <div className="space-y-1">
-        <Label className="text-xs">Invoice Notes</Label>
-        <Textarea
-          name="invoiceNotes"
-          placeholder="Notes for the customer..."
-          rows={2}
-          defaultValue={initialData.invoiceNotes}
-        />
-        <p className="text-xs text-muted-foreground">Shown on the invoice</p>
-      </div>
+      {noteType === 'public' && (
+        <div className="space-y-1">
+          <RichTextEditor
+            content={publicNotes}
+            onChange={handlePublicChange}
+            placeholder="Notes visible on the invoice..."
+          />
+          <p className="text-xs text-muted-foreground">Shown on the invoice and shared documents</p>
+        </div>
+      )}
 
-      <div className="space-y-1">
-        <Label className="text-xs">Internal Notes</Label>
-        <Textarea
-          name="description"
-          placeholder="Internal notes (not shown on invoice)..."
-          rows={2}
-          defaultValue={initialData.description}
-        />
-      </div>
+      {noteType === 'internal' && (
+        <div className="space-y-1">
+          <RichTextEditor
+            content={internalNotes}
+            onChange={handleInternalChange}
+            placeholder="Internal notes (not shown on invoice)..."
+          />
+          <p className="text-xs text-muted-foreground">Only visible to your team</p>
+        </div>
+      )}
     </div>
   )
 }

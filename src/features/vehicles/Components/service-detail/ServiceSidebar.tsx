@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
 import { Building2, Car, Mail, MapPin, Phone, Users } from "lucide-react";
 import { CustomFieldsDisplay } from "@/features/custom-fields/Components/CustomFieldsDisplay";
 import type { Vehicle } from "./types";
@@ -12,9 +11,6 @@ interface ServiceSidebarProps {
   vehicleName: string;
   distUnit: string;
   mileage: number | null;
-  invoiceNotes: string | null;
-  diagnosticNotes: string | null;
-  description: string | null;
 }
 
 export function ServiceSidebar({
@@ -23,9 +19,6 @@ export function ServiceSidebar({
   vehicleName,
   distUnit,
   mileage,
-  invoiceNotes,
-  diagnosticNotes,
-  description,
 }: ServiceSidebarProps) {
   return (
     <>
@@ -93,38 +86,8 @@ export function ServiceSidebar({
         </div>
       )}
 
-      {/* Notes (invoice + diagnostic combined) */}
-      {(invoiceNotes || diagnosticNotes) && (
-        <div className="rounded-lg border p-3">
-          <h3 className="mb-2 text-sm font-semibold">Notes</h3>
-          <div className="space-y-2">
-            {invoiceNotes && (
-              <div>
-                <span className="text-xs font-medium text-muted-foreground">Invoice</span>
-                <p className="whitespace-pre-wrap text-sm">{invoiceNotes}</p>
-              </div>
-            )}
-            {invoiceNotes && diagnosticNotes && <Separator />}
-            {diagnosticNotes && (
-              <div>
-                <span className="text-xs font-medium text-muted-foreground">Diagnostic</span>
-                <p className="whitespace-pre-wrap text-sm">{diagnosticNotes}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Custom Fields */}
       <CustomFieldsDisplay entityId={recordId} entityType="service_record" />
-
-      {/* Additional Notes */}
-      {description && (
-        <div className="rounded-lg border p-3">
-          <h3 className="mb-1 text-sm font-semibold">Additional Notes</h3>
-          <p className="whitespace-pre-wrap text-sm">{description}</p>
-        </div>
-      )}
     </>
   );
 }
