@@ -68,6 +68,7 @@ export async function getServiceRecordsPaginated(
         where,
         include: {
           _count: { select: { partItems: true, laborItems: true, attachments: true } },
+          laborItems: { take: 1, select: { description: true } },
         },
         orderBy: { serviceDate: "desc" },
         skip,
