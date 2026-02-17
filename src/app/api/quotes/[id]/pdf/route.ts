@@ -67,6 +67,14 @@ export async function GET(
       torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri();
     }
 
+    const template = {
+      primaryColor: settingsMap["invoice.primaryColor"] || "#d97706",
+      fontFamily: settingsMap["invoice.fontFamily"] || "Helvetica",
+      showLogo: settingsMap["invoice.showLogo"] !== "false",
+      showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",
+      headerStyle: settingsMap["invoice.headerStyle"] || "standard",
+    };
+
     const element = React.createElement(QuotePDF, {
       data: quote,
       workshop: {
@@ -80,6 +88,7 @@ export async function GET(
       torqvoiceLogoDataUri,
       dateFormat: settingsMap["workshop.dateFormat"] || undefined,
       timezone: settingsMap["workshop.timezone"] || undefined,
+      template,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const buffer = await renderToBuffer(element);

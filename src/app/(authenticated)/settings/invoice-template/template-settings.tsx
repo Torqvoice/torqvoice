@@ -15,7 +15,8 @@ import {
 import { toast } from "sonner";
 import { setSetting } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { Loader2, Palette } from "lucide-react";
+import { templatePresets } from "@/features/settings/Schema/templatePresets";
+import { Check, Loader2, Palette } from "lucide-react";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
 interface TemplateValues {
@@ -41,6 +42,104 @@ const colorPresets = [
   { name: "Indigo", value: "#4f46e5" },
 ];
 
+function PreviewHeader({
+  values,
+  headerStyle,
+  fontFamily,
+}: {
+  values: TemplateValues;
+  headerStyle: string;
+  fontFamily: string;
+}) {
+  const style = { fontFamily: fontMap[fontFamily] || "sans-serif" };
+
+  if (headerStyle === "compact") {
+    return (
+      <div style={style}>
+        <div
+          className="flex items-center justify-between"
+          style={{ borderBottom: "1px solid #e5e7eb", paddingBottom: 8 }}
+        >
+          <div className="flex items-center gap-2">
+            <div
+              className="flex h-8 w-8 items-center justify-center rounded text-[10px] font-bold text-white"
+              style={{ backgroundColor: values.primaryColor }}
+            >
+              L
+            </div>
+            <div>
+              <p className="text-sm font-bold" style={{ color: values.primaryColor }}>
+                Your Workshop Name
+              </p>
+              <p className="text-[9px] text-gray-500">123 Main Street, City</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-sm font-bold">INVOICE</p>
+            <p className="text-[9px] text-gray-500">INV-1001</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (headerStyle === "modern") {
+    return (
+      <div style={style}>
+        <div
+          className="rounded-md p-4 text-center text-white"
+          style={{ backgroundColor: values.primaryColor }}
+        >
+          <p className="text-lg font-bold">Your Workshop Name</p>
+          <p className="text-[9px] opacity-80">123 Main Street, City</p>
+          <div className="mt-1 flex justify-center gap-3 text-[8px] opacity-70">
+            <span>Tel: (555) 123-4567</span>
+            <span>shop@example.com</span>
+          </div>
+        </div>
+        <div className="mt-2 flex items-center justify-between">
+          <p className="text-sm font-bold">INVOICE</p>
+          <div className="flex gap-3 text-[9px] text-gray-500">
+            <span>INV-1001</span>
+            <span>Jan 15, 2026</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Standard
+  return (
+    <div style={style}>
+      <div
+        className="flex items-start justify-between"
+        style={{ borderBottom: `3px solid ${values.primaryColor}`, paddingBottom: 12 }}
+      >
+        <div>
+          <div
+            className="mb-1 flex h-8 w-8 items-center justify-center rounded text-[10px] font-bold text-white"
+            style={{ backgroundColor: values.primaryColor }}
+          >
+            Logo
+          </div>
+          <p className="text-sm font-bold" style={{ color: values.primaryColor }}>
+            Your Workshop Name
+          </p>
+          <p className="text-[9px] text-gray-500">123 Main Street, City</p>
+          <p className="text-[9px] text-gray-500">Tel: (555) 123-4567</p>
+        </div>
+        <div className="text-right">
+          <p className="text-lg font-bold tracking-tight" style={{ color: values.primaryColor }}>
+            INVOICE
+          </p>
+          <p className="text-[9px] text-gray-500">INV-1001</p>
+          <p className="text-[9px] text-gray-500">Jan 15, 2026</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function TemplateSettings({
   initialValues,
 }: {
@@ -64,17 +163,120 @@ export function TemplateSettings({
     setSaving(false);
   };
 
+  const applyPreset = (presetId: string) => {
+    const preset = templatePresets.find((p) => p.id === presetId);
+    if (preset) {
+      setValues({
+        primaryColor: preset.primaryColor,
+        fontFamily: preset.fontFamily,
+        headerStyle: preset.headerStyle,
+      });
+    }
+  };
+
+  const currentPresetId = templatePresets.find(
+    (p) =>
+      p.primaryColor === values.primaryColor &&
+      p.fontFamily === values.fontFamily &&
+      p.headerStyle === values.headerStyle
+  )?.id;
+
   return (
     <div className="space-y-6">
       <ReadOnlyBanner />
       <div>
         <h2 className="text-lg font-semibold">Invoice Template</h2>
         <p className="text-sm text-muted-foreground">
-          Customize the appearance of your PDF invoices and quotes.
+          Choose a template preset or customize the appearance of your PDF invoices and quotes.
         </p>
       </div>
 
       <ReadOnlyWrapper>
+
+      {/* Template Gallery */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-base">Template Presets</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {templatePresets.map((preset) => {
+              const isSelected = currentPresetId === preset.id;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => applyPreset(preset.id)}
+                  className={`group relative rounded-lg border-2 p-3 text-left transition-all hover:shadow-md ${
+                    isSelected
+                      ? "border-primary shadow-sm"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  {isSelected && (
+                    <div className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                      <Check className="h-3 w-3" />
+                    </div>
+                  )}
+
+                  {/* Mini preview */}
+                  <div className="mb-2 overflow-hidden rounded border bg-white p-2">
+                    <div
+                      className="mb-1"
+                      style={
+                        preset.headerStyle === "modern"
+                          ? {
+                              backgroundColor: preset.primaryColor,
+                              borderRadius: 2,
+                              padding: "3px 4px",
+                            }
+                          : preset.headerStyle === "compact"
+                            ? {
+                                borderBottom: `1px solid #e5e7eb`,
+                                paddingBottom: 2,
+                              }
+                            : {
+                                borderBottom: `2px solid ${preset.primaryColor}`,
+                                paddingBottom: 2,
+                              }
+                      }
+                    >
+                      <div
+                        className="text-[6px] font-bold"
+                        style={{
+                          color:
+                            preset.headerStyle === "modern"
+                              ? "white"
+                              : preset.primaryColor,
+                          fontFamily: fontMap[preset.fontFamily] || "sans-serif",
+                        }}
+                      >
+                        Workshop
+                      </div>
+                    </div>
+                    <div className="space-y-0.5">
+                      <div className="h-1 w-3/4 rounded-full bg-gray-200" />
+                      <div className="h-1 w-1/2 rounded-full bg-gray-200" />
+                      <div
+                        className="mt-1 h-1.5 w-full rounded-sm"
+                        style={{ backgroundColor: `${preset.primaryColor}20` }}
+                      />
+                      <div className="h-1 w-full rounded-full bg-gray-100" />
+                      <div className="h-1 w-full rounded-full bg-gray-100" />
+                    </div>
+                  </div>
+
+                  <p className="text-xs font-medium">{preset.name}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">
+                    {preset.description}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Color Settings */}
         <Card className="border-0 shadow-sm">
@@ -113,13 +315,6 @@ export function TemplateSettings({
                   {preset.name}
                 </button>
               ))}
-            </div>
-            <div className="rounded-lg border p-4">
-              <p className="text-xs text-muted-foreground mb-2">Preview</p>
-              <div className="flex items-center gap-3" style={{ borderBottom: `3px solid ${values.primaryColor}`, paddingBottom: 8 }}>
-                <span className="text-lg font-bold" style={{ color: values.primaryColor }}>Workshop Name</span>
-                <span className="ml-auto font-bold">INVOICE</span>
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -174,35 +369,14 @@ export function TemplateSettings({
             className="mx-auto max-w-[600px] rounded-lg border bg-white p-8 text-black"
             style={{ fontFamily: fontMap[values.fontFamily] || "sans-serif" }}
           >
-            {/* Header */}
-            <div
-              className="mb-6 flex items-start justify-between"
-              style={{ borderBottom: `3px solid ${values.primaryColor}`, paddingBottom: 16 }}
-            >
-              <div>
-                <div
-                  className="mb-2 flex h-10 w-10 items-center justify-center rounded text-sm font-bold text-white"
-                  style={{ backgroundColor: values.primaryColor }}
-                >
-                  Logo
-                </div>
-                <p className="text-lg font-bold" style={{ color: values.primaryColor }}>
-                  Your Workshop Name
-                </p>
-                <p className="text-xs text-gray-500">123 Main Street, City, State 12345</p>
-                <p className="text-xs text-gray-500">Phone: (555) 123-4567</p>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold tracking-tight" style={{ color: values.primaryColor }}>
-                  INVOICE
-                </p>
-                <p className="text-xs text-gray-500">INV-1001</p>
-                <p className="text-xs text-gray-500">Date: Jan 15, 2026</p>
-              </div>
-            </div>
+            <PreviewHeader
+              values={values}
+              headerStyle={values.headerStyle}
+              fontFamily={values.fontFamily}
+            />
 
             {/* Bill To / Vehicle */}
-            <div className="mb-6 grid grid-cols-2 gap-6">
+            <div className="my-4 grid grid-cols-2 gap-4">
               <div>
                 <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider" style={{ color: values.primaryColor }}>
                   Bill To
@@ -222,11 +396,11 @@ export function TemplateSettings({
             {/* Parts Table */}
             <table className="mb-1 w-full text-xs">
               <thead>
-                <tr style={{ backgroundColor: values.primaryColor }}>
-                  <th className="px-2 py-1.5 text-left font-medium text-white">Part</th>
-                  <th className="px-2 py-1.5 text-center font-medium text-white">Qty</th>
-                  <th className="px-2 py-1.5 text-right font-medium text-white">Price</th>
-                  <th className="px-2 py-1.5 text-right font-medium text-white">Total</th>
+                <tr style={{ backgroundColor: `${values.primaryColor}15` }}>
+                  <th className="px-2 py-1.5 text-left font-medium">Part</th>
+                  <th className="px-2 py-1.5 text-center font-medium">Qty</th>
+                  <th className="px-2 py-1.5 text-right font-medium">Price</th>
+                  <th className="px-2 py-1.5 text-right font-medium">Total</th>
                 </tr>
               </thead>
               <tbody>

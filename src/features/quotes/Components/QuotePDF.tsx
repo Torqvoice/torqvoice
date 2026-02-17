@@ -1,94 +1,7 @@
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer'
-import { formatCurrency, getCurrencySymbol, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
-
-const amber = '#d97706'
-const amberLight = '#fef3c7'
-const gray = '#6b7280'
-const grayLight = '#f3f4f6'
-const dark = '#111827'
-
-const styles = StyleSheet.create({
-  page: { padding: 40, fontSize: 10, fontFamily: 'Helvetica', color: dark },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 30,
-    paddingBottom: 15,
-    borderBottomWidth: 3,
-    borderBottomColor: amber,
-  },
-  brandName: { fontSize: 22, fontFamily: 'Helvetica-Bold', color: amber },
-  brandSub: { fontSize: 9, color: gray, marginTop: 2 },
-  brandContact: { fontSize: 8, color: gray, marginTop: 1 },
-  invoiceTitle: { fontSize: 18, fontFamily: 'Helvetica-Bold', textAlign: 'right' as const },
-  invoiceNumber: { fontSize: 9, color: gray, textAlign: 'right' as const, marginTop: 4 },
-  infoRow: { flexDirection: 'row', gap: 20, marginBottom: 20 },
-  infoBox: { flex: 1, padding: 12, backgroundColor: grayLight, borderRadius: 4 },
-  infoLabel: {
-    fontSize: 8,
-    fontFamily: 'Helvetica-Bold',
-    color: amber,
-    textTransform: 'uppercase' as const,
-    marginBottom: 6,
-  },
-  infoText: { fontSize: 10, marginBottom: 2 },
-  infoTextBold: { fontSize: 10, fontFamily: 'Helvetica-Bold', marginBottom: 2 },
-  infoTextSmall: { fontSize: 9, color: gray, marginBottom: 2 },
-  sectionTitle: {
-    fontSize: 12,
-    fontFamily: 'Helvetica-Bold',
-    marginBottom: 8,
-    marginTop: 16,
-    color: dark,
-  },
-  table: { marginBottom: 4 },
-  tableHeader: {
-    flexDirection: 'row',
-    backgroundColor: amberLight,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderRadius: 2,
-  },
-  tableRow: {
-    flexDirection: 'row',
-    paddingVertical: 5,
-    paddingHorizontal: 8,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#e5e7eb',
-  },
-  tableCell: { fontSize: 9 },
-  tableCellBold: { fontSize: 9, fontFamily: 'Helvetica-Bold' },
-  tableHeaderCell: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: '#92400e' },
-  totalsBox: { marginTop: 16, marginLeft: 'auto', width: 220 },
-  totalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 },
-  totalLabel: { fontSize: 10, color: gray },
-  totalValue: { fontSize: 10 },
-  totalDivider: { borderTopWidth: 1, borderTopColor: amber, marginVertical: 4 },
-  grandTotalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
-  grandTotalLabel: { fontSize: 14, fontFamily: 'Helvetica-Bold' },
-  grandTotalValue: { fontSize: 14, fontFamily: 'Helvetica-Bold', color: amber },
-  notesSection: { marginTop: 20, padding: 12, backgroundColor: grayLight, borderRadius: 4 },
-  notesLabel: {
-    fontSize: 8,
-    fontFamily: 'Helvetica-Bold',
-    color: amber,
-    textTransform: 'uppercase' as const,
-    marginBottom: 4,
-  },
-  notesText: { fontSize: 9, color: gray, lineHeight: 1.5 },
-  footer: {
-    position: 'absolute' as const,
-    bottom: 30,
-    left: 40,
-    right: 40,
-    textAlign: 'center' as const,
-    fontSize: 8,
-    color: gray,
-    paddingTop: 8,
-    borderTopWidth: 0.5,
-    borderTopColor: '#e5e7eb',
-  },
-})
+import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
+import { formatCurrency, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { createStyles, gray, getFontBold } from '@/features/vehicles/Components/invoice-pdf/styles'
+import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 
 interface QuoteData {
   quoteNumber: string | null
@@ -143,6 +56,7 @@ export function QuotePDF({
   torqvoiceLogoDataUri,
   dateFormat,
   timezone,
+  template,
 }: {
   data: QuoteData
   workshop?: WorkshopInfo
@@ -151,46 +65,208 @@ export function QuotePDF({
   torqvoiceLogoDataUri?: string
   dateFormat?: string
   timezone?: string
+  template?: TemplateConfig
 }) {
-  const cs = getCurrencySymbol(currencyCode)
+  const primaryColor = template?.primaryColor || '#d97706'
+  const fontFamily = template?.fontFamily || 'Helvetica'
+  const headerStyle = template?.headerStyle || 'standard'
+  const showLogo = template?.showLogo !== false
+  const showCompanyName = template?.showCompanyName !== false
+  const styles = createStyles(primaryColor, fontFamily)
+  const fontBold = getFontBold(fontFamily)
+
   const quoteNum = data.quoteNumber || 'QUOTE'
   const df = dateFormat || DEFAULT_DATE_FORMAT
   const tz = timezone || undefined
   const createdDate = formatDateForPdf(data.createdAt, df, tz)
-  const validDate = data.validUntil
-    ? formatDateForPdf(data.validUntil, df, tz)
-    : null
+  const validDate = data.validUntil ? formatDateForPdf(data.validUntil, df, tz) : null
   const shopName = workshop?.name || 'Torqvoice'
+
+  const renderCompactHeader = () => (
+    <View style={{ marginBottom: 20 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingBottom: 10,
+          borderBottomWidth: 1,
+          borderBottomColor: '#e5e7eb',
+        }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {showLogo && logoDataUri && (
+            <Image
+              src={logoDataUri}
+              style={{ maxWidth: 40, maxHeight: 40, borderRadius: 4, objectFit: 'contain' }}
+            />
+          )}
+          {showCompanyName && (
+            <View>
+              <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
+                {shopName}
+              </Text>
+              {workshop?.address && (
+                <Text style={{ fontSize: 8, color: gray }}>{workshop.address}</Text>
+              )}
+            </View>
+          )}
+        </View>
+        <View style={{ alignItems: 'flex-end' }}>
+          <Text style={{ fontSize: 14, fontFamily: fontBold, color: primaryColor }}>QUOTE</Text>
+          <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{quoteNum}</Text>
+          <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
+          {validDate && <Text style={{ fontSize: 9, color: gray }}>Valid until: {validDate}</Text>}
+        </View>
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginTop: 6,
+          paddingHorizontal: 2,
+        }}
+      >
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          {workshop?.phone && (
+            <Text style={{ fontSize: 8, color: gray }}>Tel: {workshop.phone}</Text>
+          )}
+          {workshop?.email && (
+            <Text style={{ fontSize: 8, color: gray }}>{workshop.email}</Text>
+          )}
+        </View>
+        {torqvoiceLogoDataUri && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+            <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
+            <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+          </View>
+        )}
+      </View>
+    </View>
+  )
+
+  const renderModernHeader = () => (
+    <View style={{ marginBottom: 24 }}>
+      <View
+        style={{
+          backgroundColor: primaryColor,
+          padding: 20,
+          borderRadius: 4,
+          marginHorizontal: -10,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 12,
+          }}
+        >
+          {showLogo && logoDataUri && (
+            <Image
+              src={logoDataUri}
+              style={{ maxWidth: 50, maxHeight: 50, borderRadius: 4, objectFit: 'contain' }}
+            />
+          )}
+          <View style={{ alignItems: 'center' }}>
+            {showCompanyName && (
+              <Text style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
+                {shopName}
+              </Text>
+            )}
+            {workshop?.address && (
+              <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
+                {workshop.address}
+              </Text>
+            )}
+            <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
+              {workshop?.phone && (
+                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
+                  Tel: {workshop.phone}
+                </Text>
+              )}
+              {workshop?.email && (
+                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
+                  {workshop.email}
+                </Text>
+              )}
+            </View>
+          </View>
+        </View>
+        {torqvoiceLogoDataUri && (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 3,
+              marginTop: 8,
+            }}
+          >
+            <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
+            <Text style={{ fontSize: 7, fontFamily: fontBold, color: 'rgba(255,255,255,0.7)' }}>
+              Torqvoice
+            </Text>
+          </View>
+        )}
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: 12,
+          paddingBottom: 8,
+        }}
+      >
+        <Text style={{ fontSize: 18, fontFamily: fontBold, color: primaryColor }}>QUOTE</Text>
+        <View style={{ flexDirection: 'row', gap: 16 }}>
+          <Text style={{ fontSize: 9, color: gray }}>{quoteNum}</Text>
+          <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
+          {validDate && <Text style={{ fontSize: 9, color: gray }}>Valid until: {validDate}</Text>}
+        </View>
+      </View>
+    </View>
+  )
+
+  const renderStandardHeader = () => (
+    <View style={styles.header}>
+      <View>
+        {showLogo && logoDataUri && (
+          <Image
+            src={logoDataUri}
+            style={{ width: 60, height: 60, marginBottom: 6, borderRadius: 4 }}
+          />
+        )}
+        {showCompanyName && <Text style={styles.brandName}>{shopName}</Text>}
+        {workshop?.address && <Text style={styles.brandSub}>{workshop.address}</Text>}
+        {workshop?.phone && <Text style={styles.brandContact}>Tel: {workshop.phone}</Text>}
+        {workshop?.email && <Text style={styles.brandContact}>{workshop.email}</Text>}
+      </View>
+      <View>
+        {torqvoiceLogoDataUri && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginBottom: 6 }}>
+            <Image src={torqvoiceLogoDataUri} style={{ width: 16, height: 16 }} />
+            <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+          </View>
+        )}
+        <Text style={{ ...styles.invoiceTitle, color: primaryColor }}>QUOTE</Text>
+        <Text style={styles.invoiceNumber}>{quoteNum}</Text>
+        <Text style={styles.invoiceNumber}>{createdDate}</Text>
+        {validDate && <Text style={styles.invoiceNumber}>Valid until: {validDate}</Text>}
+      </View>
+    </View>
+  )
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <View>
-            {logoDataUri && (
-              <Image
-                src={logoDataUri}
-                style={{ width: 60, height: 60, marginBottom: 6, borderRadius: 4 }}
-              />
-            )}
-            <Text style={styles.brandName}>{shopName}</Text>
-            {workshop?.address && <Text style={styles.brandSub}>{workshop.address}</Text>}
-            {workshop?.phone && <Text style={styles.brandContact}>Tel: {workshop.phone}</Text>}
-            {workshop?.email && <Text style={styles.brandContact}>{workshop.email}</Text>}
-          </View>
-          <View>
-            {torqvoiceLogoDataUri && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginBottom: 6 }}>
-                <Image src={torqvoiceLogoDataUri} style={{ width: 16, height: 16 }} />
-                <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: gray }}>Torqvoice</Text>
-              </View>
-            )}
-            <Text style={{ ...styles.invoiceTitle, color: '#2563eb' }}>QUOTE</Text>
-            <Text style={styles.invoiceNumber}>{quoteNum}</Text>
-            <Text style={styles.invoiceNumber}>{createdDate}</Text>
-            {validDate && <Text style={styles.invoiceNumber}>Valid until: {validDate}</Text>}
-          </View>
-        </View>
+        {headerStyle === 'compact'
+          ? renderCompactHeader()
+          : headerStyle === 'modern'
+            ? renderModernHeader()
+            : renderStandardHeader()}
 
         <View style={styles.infoRow}>
           {data.customer && (
@@ -333,12 +409,11 @@ export function QuotePDF({
           </View>
         </View>
 
-        {/* Torqvoice branding near totals */}
         {torqvoiceLogoDataUri && (
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginTop: 6 }}>
             <Text style={{ fontSize: 7, color: gray }}>Powered by</Text>
             <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-            <Text style={{ fontSize: 7, color: gray, fontFamily: 'Helvetica-Bold' }}>Torqvoice</Text>
+            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
           </View>
         )}
 
@@ -362,7 +437,7 @@ export function QuotePDF({
             </Text>
             <Text style={{ fontSize: 7, color: gray }}>Powered by</Text>
             <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
-            <Text style={{ fontSize: 7, color: gray, fontFamily: 'Helvetica-Bold' }}>Torqvoice</Text>
+            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
           </View>
         ) : (
           <Text style={styles.footer}>

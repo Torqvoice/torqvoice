@@ -26,6 +26,11 @@ async function getWorkshopSettings(organizationId: string) {
             "workshop.currencyCode",
             "workshop.emailFromName",
             "workshop.emailEnabled",
+            "invoice.primaryColor",
+            "invoice.fontFamily",
+            "invoice.showLogo",
+            "invoice.showCompanyName",
+            "invoice.headerStyle",
           ],
         },
       },
@@ -91,6 +96,14 @@ export async function sendQuoteEmail(input: {
     const currencyCode = settings["workshop.currencyCode"] || "USD";
     const fromName = settings["workshop.emailFromName"] || settings["workshop.name"] || "Workshop";
 
+    const template = {
+      primaryColor: settings["invoice.primaryColor"] || "#d97706",
+      fontFamily: settings["invoice.fontFamily"] || "Helvetica",
+      showLogo: settings["invoice.showLogo"] !== "false",
+      showCompanyName: settings["invoice.showCompanyName"] !== "false",
+      headerStyle: settings["invoice.headerStyle"] || "standard",
+    };
+
     // Generate PDF
     const element = React.createElement(QuotePDF, {
       data: quote,
@@ -102,6 +115,7 @@ export async function sendQuoteEmail(input: {
       },
       currencyCode,
       logoDataUri,
+      template,
     }) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
     const pdfBuffer = await renderToBuffer(element);
     const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`;
@@ -176,6 +190,14 @@ export async function sendInvoiceEmail(input: {
     const currencyCode = settings["workshop.currencyCode"] || "USD";
     const fromName = settings["workshop.emailFromName"] || settings["workshop.name"] || "Workshop";
 
+    const invoiceTemplate = {
+      primaryColor: settings["invoice.primaryColor"] || "#d97706",
+      fontFamily: settings["invoice.fontFamily"] || "Helvetica",
+      showLogo: settings["invoice.showLogo"] !== "false",
+      showCompanyName: settings["invoice.showCompanyName"] !== "false",
+      headerStyle: settings["invoice.headerStyle"] || "standard",
+    };
+
     // Generate PDF
     const element = React.createElement(InvoicePDF, {
       data: record,
@@ -187,6 +209,7 @@ export async function sendInvoiceEmail(input: {
       },
       invoiceSettings: { currencyCode },
       logoDataUri,
+      template: invoiceTemplate,
     }) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
     const pdfBuffer = await renderToBuffer(element);
     const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`;
