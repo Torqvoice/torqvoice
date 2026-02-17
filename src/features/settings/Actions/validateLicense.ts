@@ -16,6 +16,7 @@ export async function validateLicense(licenseKey: string) {
 
       let valid = false;
       let plan = "free";
+      let expiresAt = "";
 
       try {
         const response = await fetch(
@@ -34,6 +35,9 @@ export async function validateLicense(licenseKey: string) {
           if (valid && data.plan) {
             plan = data.plan;
           }
+          if (data.expiresAt) {
+            expiresAt = data.expiresAt;
+          }
         }
       } catch {
         // API unreachable — fall back to cached result
@@ -41,7 +45,11 @@ export async function validateLicense(licenseKey: string) {
           where: {
             organizationId: ctx.organizationId,
             key: {
-              in: [SETTING_KEYS.LICENSE_VALID, SETTING_KEYS.LICENSE_PLAN],
+              in: [
+                SETTING_KEYS.LICENSE_VALID,
+                SETTING_KEYS.LICENSE_PLAN,
+                SETTING_KEYS.LICENSE_EXPIRES_AT,
+              ],
             },
           },
           select: { key: true, value: true },
@@ -52,6 +60,9 @@ export async function validateLicense(licenseKey: string) {
           }
           if (setting.key === SETTING_KEYS.LICENSE_PLAN) {
             plan = setting.value;
+          }
+          if (setting.key === SETTING_KEYS.LICENSE_EXPIRES_AT) {
+            expiresAt = setting.value;
           }
         }
       }
@@ -119,6 +130,25 @@ export async function validateLicense(licenseKey: string) {
             value: plan,
           },
         }),
+        ...(expiresAt
+          ? [
+              db.appSetting.upsert({
+                where: {
+                  organizationId_key: {
+                    organizationId: ctx.organizationId,
+                    key: SETTING_KEYS.LICENSE_EXPIRES_AT,
+                  },
+                },
+                update: { value: expiresAt },
+                create: {
+                  userId: ctx.userId,
+                  organizationId: ctx.organizationId,
+                  key: SETTING_KEYS.LICENSE_EXPIRES_AT,
+                  value: expiresAt,
+                },
+              }),
+            ]
+          : []),
       ]);
 
       revalidatePath("/settings");

@@ -47,6 +47,7 @@ export const SETTING_KEYS = {
   LICENSE_VALID: "license.valid",
   LICENSE_CHECKED_AT: "license.checkedAt",
   LICENSE_PLAN: "license.plan",
+  LICENSE_EXPIRES_AT: "license.expiresAt",
   DATE_FORMAT: "workshop.dateFormat",
   TIME_FORMAT: "workshop.timeFormat",
   TIMEZONE: "workshop.timezone",
