@@ -36,6 +36,7 @@ import { toast } from "sonner";
 import { useGlassModal } from "@/components/glass-modal";
 import { createVehicle, updateVehicle } from "../Actions/vehicleActions";
 import { Camera, Check, ChevronsUpDown, Loader2, X } from "lucide-react";
+import { compressImage } from "@/lib/compress-image";
 import type { CreateVehicleInput } from "../Schema/vehicleSchema";
 
 interface VehicleFormProps {
@@ -108,8 +109,9 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
     if (!imageFile) return preview ?? undefined;
 
     const toastId = toast.loading("Uploading image...");
+    const compressed = await compressImage(imageFile);
     const formData = new FormData();
-    formData.append("file", imageFile);
+    formData.append("file", compressed);
 
     const res = await fetch("/api/upload", { method: "POST", body: formData });
     if (!res.ok) {

@@ -37,12 +37,12 @@ export default async function EditServiceLayout({
         <div className="mb-2 flex items-center justify-between">
           <Link
             href={`/vehicles/${id}/service/${serviceId}`}
-            className="flex items-center gap-3 text-foreground transition-colors hover:text-muted-foreground"
+            className="flex min-w-0 items-center gap-3 text-foreground transition-colors hover:text-muted-foreground"
           >
             <ArrowLeft className="h-4 w-4 shrink-0" />
-            <div>
-              <h1 className="text-lg font-semibold leading-tight">Edit Service Record</h1>
-              <p className="text-xs text-muted-foreground">{vehicleName}</p>
+            <div className="min-w-0">
+              <h1 className="truncate text-lg font-semibold leading-tight">Edit Service Record</h1>
+              <p className="truncate text-xs text-muted-foreground">{vehicleName}</p>
             </div>
           </Link>
           <EditActions serviceRecordId={serviceId} />
