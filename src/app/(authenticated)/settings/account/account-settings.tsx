@@ -17,14 +17,29 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Checkbox } from '@/components/ui/checkbox'
 import { AlertTriangle, Check, Copy, KeyRound, Loader2, Save, Shield, ShieldOff, Trash2, User } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { updateEmail } from '@/features/settings/Actions/accountActions'
 import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
+import { deleteContent } from '@/features/settings/Actions/deleteContent'
 import { signOut } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
 
-export function AccountSettings({ twoFactorEnabled: initialTwoFactorEnabled }: { twoFactorEnabled: boolean }) {
+interface ContentCounts {
+  vehicles: number
+  customers: number
+  quotes: number
+  inventory: number
+}
+
+export function AccountSettings({
+  twoFactorEnabled: initialTwoFactorEnabled,
+  contentCounts,
+}: {
+  twoFactorEnabled: boolean
+  contentCounts: ContentCounts
+}) {
   const { data: session } = useSession()
   const router = useRouter()
   const [name, setName] = useState('')
@@ -60,6 +75,17 @@ export function AccountSettings({ twoFactorEnabled: initialTwoFactorEnabled }: {
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
   const [deleting, setDeleting] = useState(false)
 
+  // Delete content state
+  const [contentDialogOpen, setContentDialogOpen] = useState(false)
+  const [contentConfirmText, setContentConfirmText] = useState('')
+  const [deletingContent, setDeletingContent] = useState(false)
+  const [contentSelections, setContentSelections] = useState({
+    vehicles: false,
+    customers: false,
+    quotes: false,
+    inventory: false,
+  })
+
   const handleDeleteAccount = async () => {
     if (deleteConfirmText !== 'delete me') return
     setDeleting(true)
@@ -76,6 +102,29 @@ export function AccountSettings({ twoFactorEnabled: initialTwoFactorEnabled }: {
       toast.error('Failed to delete account')
       setDeleting(false)
     }
+  }
+
+  const selectedContentCount = Object.values(contentSelections).filter(Boolean).length
+
+  const handleDeleteContent = async () => {
+    if (contentConfirmText !== 'delete my data') return
+    if (selectedContentCount === 0) return
+    setDeletingContent(true)
+    try {
+      const result = await deleteContent(contentSelections)
+      if (result.success) {
+        toast.success('Selected content has been permanently deleted')
+        setContentDialogOpen(false)
+        setContentConfirmText('')
+        setContentSelections({ vehicles: false, customers: false, quotes: false, inventory: false })
+        router.refresh()
+      } else {
+        toast.error(result.error || 'Failed to delete content')
+      }
+    } catch {
+      toast.error('Failed to delete content')
+    }
+    setDeletingContent(false)
   }
 
   const handleEnable2FA = async () => {
@@ -546,7 +595,33 @@ export function AccountSettings({ twoFactorEnabled: initialTwoFactorEnabled }: {
           <AlertTriangle className="h-5 w-5 text-destructive" />
           <CardTitle className="text-lg text-destructive">Danger Zone</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
+          {/* Delete Content */}
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="font-medium">Delete Content</p>
+              <p className="text-sm text-muted-foreground">
+                Selectively delete organization data such as vehicles, customers, quotes, or inventory.
+                Your account and settings will remain intact.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => {
+                setContentConfirmText('')
+                setContentSelections({ vehicles: false, customers: false, quotes: false, inventory: false })
+                setContentDialogOpen(true)
+              }}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete Content
+            </Button>
+          </div>
+
+          <Separator />
+
+          {/* Delete Account */}
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="font-medium">Delete Account</p>
@@ -605,6 +680,112 @@ export function AccountSettings({ twoFactorEnabled: initialTwoFactorEnabled }: {
                 <Trash2 className="mr-2 h-4 w-4" />
               )}
               {deleting ? 'Deleting...' : 'Permanently Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Content Confirmation Dialog */}
+      <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">Delete Content</DialogTitle>
+            <DialogDescription>
+              Select the content you want to permanently delete. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-3">
+              {([
+                {
+                  key: 'vehicles' as const,
+                  label: 'Vehicles',
+                  count: contentCounts.vehicles,
+                  description: 'All vehicles and their service records, notes, reminders, fuel logs, and recurring invoices',
+                },
+                {
+                  key: 'customers' as const,
+                  label: 'Customers',
+                  count: contentCounts.customers,
+                  description: 'All customer records. Vehicles linked to deleted customers will be unlinked.',
+                },
+                {
+                  key: 'quotes' as const,
+                  label: 'Quotes',
+                  count: contentCounts.quotes,
+                  description: 'All quotes and their line items',
+                },
+                {
+                  key: 'inventory' as const,
+                  label: 'Inventory',
+                  count: contentCounts.inventory,
+                  description: 'All inventory parts and their images',
+                },
+              ]).map((item) => (
+                <label
+                  key={item.key}
+                  className={`flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
+                    contentSelections[item.key]
+                      ? 'border-destructive/50 bg-destructive/5'
+                      : 'hover:bg-muted/50'
+                  } ${item.count === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <Checkbox
+                    checked={contentSelections[item.key]}
+                    disabled={item.count === 0}
+                    onCheckedChange={(checked) =>
+                      setContentSelections((prev) => ({ ...prev, [item.key]: checked === true }))
+                    }
+                    className="mt-0.5"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{item.label}</span>
+                      <span className="text-xs text-muted-foreground font-mono">
+                        {item.count}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
+                  </div>
+                </label>
+              ))}
+            </div>
+
+            {selectedContentCount > 0 && (
+              <>
+                <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+                  <p className="text-sm font-medium text-destructive">
+                    Type <span className="font-mono font-bold">delete my data</span> to confirm
+                  </p>
+                </div>
+                <Input
+                  value={contentConfirmText}
+                  onChange={(e) => setContentConfirmText(e.target.value)}
+                  placeholder="delete my data"
+                  autoComplete="off"
+                />
+              </>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setContentDialogOpen(false)} disabled={deletingContent}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteContent}
+              disabled={
+                selectedContentCount === 0 ||
+                contentConfirmText !== 'delete my data' ||
+                deletingContent
+              }
+            >
+              {deletingContent ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              {deletingContent ? 'Deleting...' : `Delete ${selectedContentCount} selected`}
             </Button>
           </DialogFooter>
         </DialogContent>
