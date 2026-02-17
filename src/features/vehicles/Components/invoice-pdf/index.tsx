@@ -1,4 +1,4 @@
-export { InvoicePDF } from './invoice-pdf'
+export { InvoicePDF } from './InvoicePDF'
 export type {
   TemplateConfig,
   InvoiceData,
@@ -7,4 +7,4 @@ export type {
   PaymentSummary,
   ImageAttachment,
   OtherAttachment,
-} from './invoice-pdf'
+} from './types'
