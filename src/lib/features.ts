@@ -95,12 +95,14 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
   const settings = await db.appSetting.findMany({
     where: {
       organizationId,
-      key: { in: ['license.valid'] },
+      key: { in: ['license.valid', 'license.expiresAt'] },
     },
   })
 
   const map = new Map(settings.map((s) => [s.key, s.value]))
-  const hasLicense = map.get('license.valid') === 'true'
+  const isValid = map.get('license.valid') === 'true'
+  const expiresAt = map.get('license.expiresAt')
+  const hasLicense = isValid && (!expiresAt || new Date(expiresAt) > new Date())
 
   return {
     ...PLAN_FEATURES['white-label'],
