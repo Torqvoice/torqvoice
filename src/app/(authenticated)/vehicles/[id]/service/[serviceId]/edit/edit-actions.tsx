@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useGlassModal } from "@/components/glass-modal";
+import { toast } from "sonner";
 import { Download, Loader2, Save } from "lucide-react";
 
 interface EditActionsProps {
@@ -12,6 +14,8 @@ interface EditActionsProps {
 export function EditActions({ serviceRecordId }: EditActionsProps) {
   const [downloading, setDownloading] = useState(false);
   const modal = useGlassModal();
+  const pathname = usePathname();
+  const isDetailsTab = pathname.endsWith("/edit");
 
   const handleDownloadPDF = async () => {
     setDownloading(true);
@@ -35,10 +39,17 @@ export function EditActions({ serviceRecordId }: EditActionsProps) {
 
   return (
     <div className="flex items-center gap-2">
-      <Button type="submit" form="service-record-form" size="sm">
-        <Save className="mr-1 h-3.5 w-3.5" />
-        Update
-      </Button>
+      {isDetailsTab ? (
+        <Button type="submit" form="service-record-form" size="sm">
+          <Save className="mr-1 h-3.5 w-3.5" />
+          Update
+        </Button>
+      ) : (
+        <Button size="sm" onClick={() => toast.success("All changes saved")}>
+          <Save className="mr-1 h-3.5 w-3.5" />
+          Done
+        </Button>
+      )}
       <Button
         type="button"
         variant="outline"
