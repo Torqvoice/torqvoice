@@ -3,7 +3,7 @@ import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getInventoryPartsList } from "@/features/inventory/Actions/inventoryActions";
 import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
-import { ServiceRecordForm } from "../../new/service-record-form";
+import { ServiceRecordForm } from "@/features/vehicles/Components/service-edit/ServiceRecordForm";
 import { db } from "@/lib/db";
 import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
 
