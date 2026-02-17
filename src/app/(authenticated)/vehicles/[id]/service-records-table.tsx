@@ -49,6 +49,7 @@ interface ServiceRecordRow {
   totalAmount: number;
   invoiceNumber: string | null;
   _count: { partItems: number; laborItems: number; attachments: number };
+  laborItems: { description: string }[];
 }
 
 interface ServiceRecordsTableProps {
@@ -217,9 +218,9 @@ export function ServiceRecordsTable({
                           </span>
                         )}
                       </div>
-                      {record.description && (
+                      {record.laborItems?.[0]?.description && (
                         <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                          {record.description}
+                          {record.laborItems[0].description.slice(0, 100)}
                         </p>
                       )}
                     </TableCell>
