@@ -2,7 +2,7 @@ import { getServiceRecord } from "@/features/vehicles/Actions/serviceActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getAuthContext } from "@/lib/get-auth-context";
-import { ServiceDetailClient } from "./service-detail-client";
+import { ServiceDetailClient } from "@/features/vehicles/Components/service-detail/ServiceDetailClient";
 import { PageHeader } from "@/components/page-header";
 
 export default async function ServiceDetailPage({
