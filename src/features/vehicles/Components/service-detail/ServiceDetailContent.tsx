@@ -27,7 +27,7 @@ export function ServiceDetailContent({ leftColumn, rightColumn }: ServiceDetailC
 
   if (!isLarge) {
     return (
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto overscroll-contain p-4">
         <div className="space-y-3 pb-40">
           {leftColumn}
           {rightColumn}
@@ -39,13 +39,13 @@ export function ServiceDetailContent({ leftColumn, rightColumn }: ServiceDetailC
   return (
     <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
       <ResizablePanel defaultSize={75} minSize={40}>
-        <div className="h-full overflow-y-auto p-4 pr-2">
+        <div className="h-full overflow-y-auto overscroll-contain p-4 pr-2">
           <div className="space-y-3 pb-40">{leftColumn}</div>
         </div>
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={25} minSize={15}>
-        <div className="h-full overflow-y-auto p-4 pl-2">
+        <div className="h-full overflow-y-auto overscroll-contain p-4 pl-2">
           <div className="space-y-3 pb-40">{rightColumn}</div>
         </div>
       </ResizablePanel>

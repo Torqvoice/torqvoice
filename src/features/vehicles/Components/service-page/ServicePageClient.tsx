@@ -457,7 +457,7 @@ export function ServicePageClient({
   )
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <UnifiedServiceHeader
         vehicleId={vehicleId}
         vehicleName={vehicleName}
@@ -481,7 +481,7 @@ export function ServicePageClient({
       )}
 
       {activeTab === 'images' && (
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
           <ServiceImagesManager
             serviceRecordId={record.id}
             initialImages={imageAttachmentsForManager}
@@ -491,7 +491,7 @@ export function ServicePageClient({
       )}
 
       {activeTab === 'video' && (
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
           <ServiceVideoManager
             serviceRecordId={record.id}
             initialVideos={videoAttachments}
@@ -500,7 +500,7 @@ export function ServicePageClient({
       )}
 
       {activeTab === 'documents' && (
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
           <ServiceDocumentsManager
             serviceRecordId={record.id}
             initialDocuments={documentAttachments}
