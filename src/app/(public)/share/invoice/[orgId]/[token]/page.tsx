@@ -82,6 +82,8 @@ export default async function PublicInvoicePage({
             "invoice.showLogo",
             "invoice.showCompanyName",
             "payment.providersEnabled",
+            "payment.termsOfSale",
+            "payment.termsOfSaleUrl",
             "workshop.dateFormat",
             "workshop.timezone",
           ],
@@ -143,6 +145,9 @@ export default async function PublicInvoicePage({
       })),
   };
 
+  const termsOfSaleUrl = settingsMap["payment.termsOfSaleUrl"]
+    || (settingsMap["payment.termsOfSale"] ? `/share/terms/${orgId}` : undefined);
+
   return (
     <InvoiceView
       record={publicRecord}
@@ -158,6 +163,7 @@ export default async function PublicInvoicePage({
       showTorqvoiceBranding={!features.brandingRemoved}
       dateFormat={settingsMap["workshop.dateFormat"] || undefined}
       timezone={settingsMap["workshop.timezone"] || undefined}
+      termsOfSaleUrl={termsOfSaleUrl}
     />
   );
 }

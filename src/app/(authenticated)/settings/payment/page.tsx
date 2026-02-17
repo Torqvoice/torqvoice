@@ -26,5 +26,5 @@ export default async function PaymentSettingsPage() {
   const result = await getSettings();
   const settings = result.success && result.data ? result.data : {};
 
-  return <PaymentSettings settings={settings} />;
+  return <PaymentSettings settings={settings} orgId={data.organizationId} />;
 }

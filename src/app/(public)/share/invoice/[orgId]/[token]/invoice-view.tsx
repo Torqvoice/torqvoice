@@ -104,6 +104,7 @@ export function InvoiceView({
   showTorqvoiceBranding,
   dateFormat,
   timezone,
+  termsOfSaleUrl,
 }: {
   record: InvoiceRecord
   workshop: { name: string; address: string; phone: string; email: string }
@@ -118,6 +119,7 @@ export function InvoiceView({
   showTorqvoiceBranding?: boolean
   dateFormat?: string
   timezone?: string
+  termsOfSaleUrl?: string
 }) {
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
   const [paymentAmount, setPaymentAmount] = useState('')
@@ -810,24 +812,36 @@ export function InvoiceView({
         )}
       </div>
 
-      {showTorqvoiceBranding ? (
-        <div className="mt-4 flex items-center justify-center gap-1.5">
-          <span className="text-xs text-gray-400">Powered by</span>
-          <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
+      <div className="mt-4 flex flex-col items-center gap-1">
+        {showTorqvoiceBranding ? (
+          <div className="flex items-center justify-center gap-1.5">
+            <span className="text-xs text-gray-400">Powered by</span>
+            <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
+            <a
+              href="https://torqvoice.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-semibold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            >
+              Torqvoice
+            </a>
+          </div>
+        ) : (
+          <p className="text-center text-xs text-gray-400">
+            {shopName}
+          </p>
+        )}
+        {termsOfSaleUrl && (
           <a
-            href="https://torqvoice.com"
+            href={termsOfSaleUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-semibold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            className="text-xs text-gray-400 hover:text-gray-600"
           >
-            Torqvoice
+            Terms of Sale
           </a>
-        </div>
-      ) : (
-        <p className="mt-4 text-center text-xs text-gray-400">
-          {shopName}
-        </p>
-      )}
+        )}
+      </div>
 
       {/* Image Carousel Modal */}
       {carouselIndex !== null && imageAttachments[carouselIndex] && (

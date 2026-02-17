@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
@@ -14,13 +15,15 @@ import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { Banknote, CreditCard, Loader2, Save, Copy, Check } from "lucide-react";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
-export function PaymentSettings({ settings }: { settings: Record<string, string> }) {
+export function PaymentSettings({ settings, orgId }: { settings: Record<string, string>; orgId: string }) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
 
   // Existing fields
   const [bankAccount, setBankAccount] = useState(settings[SETTING_KEYS.INVOICE_BANK_ACCOUNT] || "");
   const [paymentTerms, setPaymentTerms] = useState(settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] || "");
+  const [termsOfSale, setTermsOfSale] = useState(settings[SETTING_KEYS.PAYMENT_TERMS_OF_SALE] || "");
+  const [termsOfSaleUrl, setTermsOfSaleUrl] = useState(settings[SETTING_KEYS.PAYMENT_TERMS_OF_SALE_URL] || "");
 
   // Online payment providers
   const enabledRaw = settings[SETTING_KEYS.PAYMENT_PROVIDERS_ENABLED] || "";
@@ -42,8 +45,11 @@ export function PaymentSettings({ settings }: { settings: Record<string, string>
   const [vippsTestMode, setVippsTestMode] = useState(settings[SETTING_KEYS.PAYMENT_VIPPS_USE_TEST] === "true");
 
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
+  const [appUrl, setAppUrl] = useState("");
 
-  const appUrl = typeof window !== "undefined" ? window.location.origin : "";
+  useEffect(() => {
+    setAppUrl(window.location.origin);
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);
@@ -55,6 +61,8 @@ export function PaymentSettings({ settings }: { settings: Record<string, string>
     await setSettings({
       [SETTING_KEYS.INVOICE_BANK_ACCOUNT]: bankAccount,
       [SETTING_KEYS.INVOICE_PAYMENT_TERMS]: paymentTerms,
+      [SETTING_KEYS.PAYMENT_TERMS_OF_SALE]: termsOfSale,
+      [SETTING_KEYS.PAYMENT_TERMS_OF_SALE_URL]: termsOfSaleUrl,
       [SETTING_KEYS.PAYMENT_PROVIDERS_ENABLED]: providers.join(","),
       [SETTING_KEYS.PAYMENT_STRIPE_SECRET_KEY]: stripeSecretKey,
       [SETTING_KEYS.PAYMENT_STRIPE_PUBLISHABLE_KEY]: stripePublishableKey,
@@ -271,6 +279,61 @@ export function PaymentSettings({ settings }: { settings: Record<string, string>
                     </Button>
                   </div>
                 </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <Label htmlFor="termsOfSale">Terms of Sale (Salgsvilkår)</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Required by Vipps. Customers can view these from the invoice page.
+                  </p>
+                  <Textarea
+                    id="termsOfSale"
+                    rows={10}
+                    placeholder={"1. Parties\n2. Payment\n3. Delivery\n4. Right of withdrawal\n5. Returns\n6. Complaints\n7. Disputes"}
+                    value={termsOfSale}
+                    onChange={(e) => setTermsOfSale(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="termsOfSaleUrl">External Terms URL (optional)</Label>
+                  <Input
+                    id="termsOfSaleUrl"
+                    type="url"
+                    placeholder="https://example.com/salgsvilkar"
+                    value={termsOfSaleUrl}
+                    onChange={(e) => setTermsOfSaleUrl(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Link to an external page with your terms. If set, the invoice will link here instead of the built-in terms page.
+                  </p>
+                </div>
+
+                {!termsOfSaleUrl && termsOfSale && (
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Public Terms URL</Label>
+                    <div className="flex items-center gap-2">
+                      <code className="flex-1 rounded bg-muted px-3 py-2 text-xs break-all">
+                        {appUrl}/share/terms/{orgId}
+                      </code>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => copyWebhookUrl(`${appUrl}/share/terms/${orgId}`)}
+                      >
+                        {copiedUrl === `${appUrl}/share/terms/${orgId}` ? (
+                          <Check className="h-3.5 w-3.5" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Share this URL with Vipps or link it from your website.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
