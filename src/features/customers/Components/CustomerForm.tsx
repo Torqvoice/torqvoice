@@ -29,9 +29,10 @@ interface CustomerFormProps {
     company?: string | null;
     notes?: string | null;
   };
+  onCreated?: (customer: { id: string; name: string; company: string | null }) => void;
 }
 
-export function CustomerForm({ open, onOpenChange, customer }: CustomerFormProps) {
+export function CustomerForm({ open, onOpenChange, customer, onCreated }: CustomerFormProps) {
   const router = useRouter();
   const modal = useGlassModal();
   const [loading, setLoading] = useState(false);
@@ -57,6 +58,10 @@ export function CustomerForm({ open, onOpenChange, customer }: CustomerFormProps
     if (result.success) {
       toast.success(customer ? "Customer updated" : "Customer created");
       onOpenChange(false);
+      if (!customer && result.data && onCreated) {
+        const created = result.data as { id: string; name: string; company: string | null };
+        onCreated({ id: created.id, name: created.name, company: created.company ?? null });
+      }
       router.refresh();
     } else {
       modal.open("error", "Error", result.error || "Failed to save customer");
