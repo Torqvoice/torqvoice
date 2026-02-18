@@ -178,14 +178,22 @@ export async function getBillingHistory(params: {
       `);
 
       return {
-        records: rows.map((r) => ({
+        records: rows.map((r) => {
+          const effectiveTotal = Number(r.effective_total);
+          const paidAmount = Number(r.paid_amount);
+          const paymentStatus = paidAmount >= effectiveTotal && effectiveTotal > 0
+            ? "paid"
+            : paidAmount > 0
+              ? "partial"
+              : "unpaid";
+          return {
           id: r.id,
           title: r.title || "",
           invoiceNumber: r.invoiceNumber,
           serviceDate: r.serviceDate,
-          totalAmount: Number(r.effective_total),
-          totalPaid: Number(r.paid_amount),
-          status: r.status,
+          totalAmount: effectiveTotal,
+          totalPaid: paidAmount,
+          status: paymentStatus,
           vehicle: {
             id: r.vehicle_id,
             make: r.vehicle_make || "",
@@ -194,7 +202,8 @@ export async function getBillingHistory(params: {
             licensePlate: r.vehicle_license_plate,
             customer: r.customer_id ? { id: r.customer_id, name: r.customer_name || "" } : null,
           },
-        })),
+        };
+        }),
         total,
         page,
         pageSize,
@@ -228,16 +237,25 @@ export async function getBillingHistory(params: {
     ]);
 
     return {
-      records: records.map((r) => ({
+      records: records.map((r) => {
+        const totalAmount = r.totalAmount > 0 ? r.totalAmount : r.cost;
+        const totalPaid = r.payments.reduce((s, p) => s + p.amount, 0);
+        const paymentStatus = totalPaid >= totalAmount && totalAmount > 0
+          ? "paid"
+          : totalPaid > 0
+            ? "partial"
+            : "unpaid";
+        return {
         id: r.id,
         title: r.title,
         invoiceNumber: r.invoiceNumber,
         serviceDate: r.serviceDate,
-        totalAmount: r.totalAmount > 0 ? r.totalAmount : r.cost,
-        totalPaid: r.payments.reduce((s, p) => s + p.amount, 0),
-        status: r.status,
+        totalAmount,
+        totalPaid,
+        status: paymentStatus,
         vehicle: r.vehicle,
-      })),
+      };
+      }),
       total,
       page,
       pageSize,
