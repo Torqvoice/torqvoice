@@ -147,7 +147,8 @@ export function ServicePageClient({
   const [showEmailDialog, setShowEmailDialog] = useState(false)
 
   const displayTotal = totalAmount > 0 ? totalAmount : record.cost
-  const totalPaid = record.payments?.reduce((sum, p) => sum + p.amount, 0) || 0
+  const paidFromPayments = record.payments?.reduce((sum, p) => sum + p.amount, 0) || 0
+  const totalPaid = record.manuallyPaid ? displayTotal : paidFromPayments
   const balanceDue = displayTotal - totalPaid
   const paymentStatus = record.manuallyPaid
     ? 'paid'

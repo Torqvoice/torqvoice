@@ -34,7 +34,10 @@ async function getBillingSummary(organizationId: string): Promise<BillingSummary
       SELECT
         sr."totalAmount" AS total,
         sr.cost,
-        COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0) AS paid
+        CASE WHEN sr."manuallyPaid" = true
+          THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
+          ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
+        END AS paid
       FROM service_records sr
       JOIN vehicles v ON v.id = sr."vehicleId"
       WHERE v."organizationId" = ${organizationId}
@@ -106,7 +109,10 @@ export async function getBillingHistory(params: {
           SELECT
             sr.id,
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
-            COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0) AS paid_amount
+            CASE WHEN sr."manuallyPaid" = true
+              THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
+              ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
+            END AS paid_amount
           FROM service_records sr
           JOIN vehicles v ON v.id = sr."vehicleId"
           WHERE v."organizationId" = ${organizationId}
@@ -158,7 +164,10 @@ export async function getBillingHistory(params: {
             sr."serviceDate",
             sr.status,
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
-            COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0) AS paid_amount,
+            CASE WHEN sr."manuallyPaid" = true
+              THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
+              ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
+            END AS paid_amount,
             v.id AS vehicle_id,
             v.make AS vehicle_make,
             v.model AS vehicle_model,
@@ -228,16 +237,20 @@ export async function getBillingHistory(params: {
     ]);
 
     return {
-      records: records.map((r) => ({
-        id: r.id,
-        title: r.title,
-        invoiceNumber: r.invoiceNumber,
-        serviceDate: r.serviceDate,
-        totalAmount: r.totalAmount > 0 ? r.totalAmount : r.cost,
-        totalPaid: r.payments.reduce((s, p) => s + p.amount, 0),
-        status: r.status,
-        vehicle: r.vehicle,
-      })),
+      records: records.map((r) => {
+        const effectiveTotal = r.totalAmount > 0 ? r.totalAmount : r.cost;
+        const totalPaid = r.manuallyPaid ? effectiveTotal : r.payments.reduce((s, p) => s + p.amount, 0);
+        return {
+          id: r.id,
+          title: r.title,
+          invoiceNumber: r.invoiceNumber,
+          serviceDate: r.serviceDate,
+          totalAmount: effectiveTotal,
+          totalPaid,
+          status: r.status,
+          vehicle: r.vehicle,
+        };
+      }),
       total,
       page,
       pageSize,
