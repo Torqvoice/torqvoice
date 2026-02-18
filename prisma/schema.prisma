@@ -372,6 +372,7 @@ model Quote {
   discountAmount Float     @default(0)
   totalAmount    Float     @default(0)
   notes          String?
+  publicToken    String?
   convertedToId  String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt

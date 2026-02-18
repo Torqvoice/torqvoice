@@ -24,7 +24,7 @@ export default async function NewQuotePage() {
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <QuoteForm
           currencyCode={currencyCode}
           defaultTaxRate={defaultTaxRate}
@@ -37,12 +37,14 @@ export default async function NewQuotePage() {
             email: c.email,
             company: c.company,
           }))}
-          vehicles={vehicles.map((v: { id: string; make: string; model: string; year: number; licensePlate: string | null }) => ({
+          vehicles={vehicles.map((v: { id: string; make: string; model: string; year: number; licensePlate: string | null; customer: { id: string; name: string; company: string | null } | null }) => ({
             id: v.id,
             make: v.make,
             model: v.model,
             year: v.year,
             licensePlate: v.licensePlate,
+            customerId: v.customer?.id || null,
+            customerName: v.customer?.name || null,
           }))}
         />
       </div>
