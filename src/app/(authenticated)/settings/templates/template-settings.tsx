@@ -18,12 +18,15 @@ import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { templatePresets } from "@/features/settings/Schema/templatePresets";
 import { Check, Loader2, Palette } from "lucide-react";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
+import { cn } from "@/lib/utils";
 
 interface TemplateValues {
   primaryColor: string;
   fontFamily: string;
   headerStyle: string;
 }
+
+type TabType = "invoice" | "quotation";
 
 const fontMap: Record<string, string> = {
   Helvetica: "Helvetica, Arial, sans-serif",
@@ -46,12 +49,15 @@ function PreviewHeader({
   values,
   headerStyle,
   fontFamily,
+  documentLabel,
 }: {
   values: TemplateValues;
   headerStyle: string;
   fontFamily: string;
+  documentLabel: string;
 }) {
   const style = { fontFamily: fontMap[fontFamily] || "sans-serif" };
+  const docNumber = documentLabel === "QUOTE" ? "QT-1001" : "INV-1001";
 
   if (headerStyle === "compact") {
     return (
@@ -75,8 +81,8 @@ function PreviewHeader({
             </div>
           </div>
           <div className="text-right">
-            <p className="text-sm font-bold">INVOICE</p>
-            <p className="text-[9px] text-gray-500">INV-1001</p>
+            <p className="text-sm font-bold">{documentLabel}</p>
+            <p className="text-[9px] text-gray-500">{docNumber}</p>
           </div>
         </div>
       </div>
@@ -98,9 +104,9 @@ function PreviewHeader({
           </div>
         </div>
         <div className="mt-2 flex items-center justify-between">
-          <p className="text-sm font-bold">INVOICE</p>
+          <p className="text-sm font-bold">{documentLabel}</p>
           <div className="flex gap-3 text-[9px] text-gray-500">
-            <span>INV-1001</span>
+            <span>{docNumber}</span>
             <span>Jan 15, 2026</span>
           </div>
         </div>
@@ -130,9 +136,9 @@ function PreviewHeader({
         </div>
         <div className="text-right">
           <p className="text-lg font-bold tracking-tight" style={{ color: values.primaryColor }}>
-            INVOICE
+            {documentLabel}
           </p>
-          <p className="text-[9px] text-gray-500">INV-1001</p>
+          <p className="text-[9px] text-gray-500">{docNumber}</p>
           <p className="text-[9px] text-gray-500">Jan 15, 2026</p>
         </div>
       </div>
@@ -140,28 +146,23 @@ function PreviewHeader({
   );
 }
 
-export function TemplateSettings({
-  initialValues,
+function TemplateTab({
+  values,
+  setValues,
+  documentLabel,
+  billToLabel,
 }: {
-  initialValues: TemplateValues;
+  values: TemplateValues;
+  setValues: (v: TemplateValues) => void;
+  documentLabel: string;
+  billToLabel: string;
 }) {
-  const [saving, setSaving] = useState(false);
-  const [values, setValues] = useState(initialValues);
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      await Promise.all([
-        setSetting(SETTING_KEYS.INVOICE_PRIMARY_COLOR, values.primaryColor),
-        setSetting(SETTING_KEYS.INVOICE_FONT_FAMILY, values.fontFamily),
-        setSetting(SETTING_KEYS.INVOICE_HEADER_STYLE, values.headerStyle),
-      ]);
-      toast.success("Template settings saved");
-    } catch {
-      toast.error("Failed to save settings");
-    }
-    setSaving(false);
-  };
+  const currentPresetId = templatePresets.find(
+    (p) =>
+      p.primaryColor === values.primaryColor &&
+      p.fontFamily === values.fontFamily &&
+      p.headerStyle === values.headerStyle
+  )?.id;
 
   const applyPreset = (presetId: string) => {
     const preset = templatePresets.find((p) => p.id === presetId);
@@ -174,25 +175,8 @@ export function TemplateSettings({
     }
   };
 
-  const currentPresetId = templatePresets.find(
-    (p) =>
-      p.primaryColor === values.primaryColor &&
-      p.fontFamily === values.fontFamily &&
-      p.headerStyle === values.headerStyle
-  )?.id;
-
   return (
-    <div className="space-y-6">
-      <ReadOnlyBanner />
-      <div>
-        <h2 className="text-lg font-semibold">Invoice Template</h2>
-        <p className="text-sm text-muted-foreground">
-          Choose a template preset or customize the appearance of your PDF invoices and quotes.
-        </p>
-      </div>
-
-      <ReadOnlyWrapper>
-
+    <>
       {/* Template Gallery */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
@@ -354,15 +338,14 @@ export function TemplateSettings({
                 </SelectContent>
               </Select>
             </div>
-
           </CardContent>
         </Card>
       </div>
 
-      {/* Invoice Preview */}
+      {/* Preview */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">Invoice Preview</CardTitle>
+          <CardTitle className="text-base">{documentLabel} Preview</CardTitle>
         </CardHeader>
         <CardContent>
           <div
@@ -373,13 +356,14 @@ export function TemplateSettings({
               values={values}
               headerStyle={values.headerStyle}
               fontFamily={values.fontFamily}
+              documentLabel={documentLabel === "Quotation" ? "QUOTE" : "INVOICE"}
             />
 
             {/* Bill To / Vehicle */}
             <div className="my-4 grid grid-cols-2 gap-4">
               <div>
                 <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider" style={{ color: values.primaryColor }}>
-                  Bill To
+                  {billToLabel}
                 </p>
                 <p className="text-sm font-medium">John Smith</p>
                 <p className="text-xs text-gray-500">john@example.com</p>
@@ -462,14 +446,106 @@ export function TemplateSettings({
           </div>
         </CardContent>
       </Card>
+    </>
+  );
+}
 
+export function TemplateSettings({
+  initialInvoiceValues,
+  initialQuoteValues,
+}: {
+  initialInvoiceValues: TemplateValues;
+  initialQuoteValues: TemplateValues;
+}) {
+  const [tab, setTab] = useState<TabType>("invoice");
+  const [saving, setSaving] = useState(false);
+  const [invoiceValues, setInvoiceValues] = useState(initialInvoiceValues);
+  const [quoteValues, setQuoteValues] = useState(initialQuoteValues);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      if (tab === "invoice") {
+        await Promise.all([
+          setSetting(SETTING_KEYS.INVOICE_PRIMARY_COLOR, invoiceValues.primaryColor),
+          setSetting(SETTING_KEYS.INVOICE_FONT_FAMILY, invoiceValues.fontFamily),
+          setSetting(SETTING_KEYS.INVOICE_HEADER_STYLE, invoiceValues.headerStyle),
+        ]);
+      } else {
+        await Promise.all([
+          setSetting(SETTING_KEYS.QUOTE_PRIMARY_COLOR, quoteValues.primaryColor),
+          setSetting(SETTING_KEYS.QUOTE_FONT_FAMILY, quoteValues.fontFamily),
+          setSetting(SETTING_KEYS.QUOTE_HEADER_STYLE, quoteValues.headerStyle),
+        ]);
+      }
+      toast.success(`${tab === "invoice" ? "Invoice" : "Quotation"} template settings saved`);
+    } catch {
+      toast.error("Failed to save settings");
+    }
+    setSaving(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      <ReadOnlyBanner />
+      <div>
+        <h2 className="text-lg font-semibold">Templates</h2>
+        <p className="text-sm text-muted-foreground">
+          Customize the appearance of your PDF invoices and quotes.
+        </p>
+      </div>
+
+      {/* Tab Buttons */}
+      <div className="flex gap-1 rounded-lg border bg-muted p-1">
+        <button
+          type="button"
+          onClick={() => setTab("invoice")}
+          className={cn(
+            "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
+            tab === "invoice"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          Invoice
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("quotation")}
+          className={cn(
+            "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
+            tab === "quotation"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          Quotation
+        </button>
+      </div>
+
+      <ReadOnlyWrapper>
+        {tab === "invoice" ? (
+          <TemplateTab
+            values={invoiceValues}
+            setValues={setInvoiceValues}
+            documentLabel="Invoice"
+            billToLabel="Bill To"
+          />
+        ) : (
+          <TemplateTab
+            values={quoteValues}
+            setValues={setQuoteValues}
+            documentLabel="Quotation"
+            billToLabel="Prepared For"
+          />
+        )}
       </ReadOnlyWrapper>
 
       <SaveButton>
         <div className="flex justify-end">
           <Button onClick={handleSave} disabled={saving}>
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Template Settings
+            Save {tab === "invoice" ? "Invoice" : "Quotation"} Template
           </Button>
         </div>
       </SaveButton>

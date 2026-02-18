@@ -54,6 +54,9 @@ export const SETTING_KEYS = {
   DATE_FORMAT: "workshop.dateFormat",
   TIME_FORMAT: "workshop.timeFormat",
   TIMEZONE: "workshop.timezone",
+  QUOTE_PRIMARY_COLOR: "quote.primaryColor",
+  QUOTE_FONT_FAMILY: "quote.fontFamily",
+  QUOTE_HEADER_STYLE: "quote.headerStyle",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

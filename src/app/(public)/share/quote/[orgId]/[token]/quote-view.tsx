@@ -69,6 +69,8 @@ export function QuoteView({
   showTorqvoiceBranding,
   dateFormat,
   timezone,
+  primaryColor = "#d97706",
+  headerStyle = "standard",
 }: {
   quote: QuoteRecord;
   workshop: { name: string; address: string; phone: string; email: string };
@@ -79,6 +81,8 @@ export function QuoteView({
   showTorqvoiceBranding?: boolean;
   dateFormat?: string;
   timezone?: string;
+  primaryColor?: string;
+  headerStyle?: string;
 }) {
   const [downloading, setDownloading] = useState(false);
 
@@ -114,7 +118,8 @@ export function QuoteView({
         <button
           onClick={handleDownloadPDF}
           disabled={downloading}
-          className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          style={{ backgroundColor: primaryColor }}
         >
           {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
           Download PDF
@@ -123,16 +128,14 @@ export function QuoteView({
 
       <div className="rounded-xl border bg-white p-6 shadow-sm sm:p-8 dark:bg-gray-900">
         {/* Header */}
-        <div className="flex flex-col gap-4 border-b-2 border-amber-500 pb-6 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-4 border-b-2 pb-6 sm:flex-row sm:items-start sm:justify-between" style={{ borderColor: primaryColor }}>
           <div>
-            {logoUrl && (
-              <img
-                src={logoUrl}
-                alt={shopName}
-                className="mb-2 max-h-16 max-w-[180px] object-contain object-left"
-              />
-            )}
-            <h2 className="text-xl font-bold text-amber-600 sm:text-2xl">{shopName}</h2>
+            <img
+              src={logoUrl || "/torqvoice_app_logo.png"}
+              alt={shopName}
+              className="mb-2 max-h-16 max-w-[180px] object-contain object-left"
+            />
+            <h2 className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2>
             {workshop.address && <p className="mt-1 text-sm text-gray-500">{workshop.address}</p>}
             {workshop.phone && <p className="text-sm text-gray-500">Tel: {workshop.phone}</p>}
             {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
@@ -166,7 +169,7 @@ export function QuoteView({
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {quote.customer && (
             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-              <p className="mb-1 text-xs font-bold uppercase text-amber-600">Prepared For</p>
+              <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Prepared For</p>
               <p className="font-semibold">{quote.customer.name}</p>
               {quote.customer.company && <p className="text-sm">{quote.customer.company}</p>}
               {quote.customer.address && <p className="text-sm text-gray-500">{quote.customer.address}</p>}
@@ -176,14 +179,14 @@ export function QuoteView({
           )}
           {quote.vehicle && (
             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-              <p className="mb-1 text-xs font-bold uppercase text-amber-600">Vehicle</p>
+              <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Vehicle</p>
               <p className="font-semibold">{quote.vehicle.year} {quote.vehicle.make} {quote.vehicle.model}</p>
               {quote.vehicle.vin && <p className="text-sm text-gray-500">VIN: {quote.vehicle.vin}</p>}
               {quote.vehicle.licensePlate && <p className="text-sm text-gray-500">Plate: {quote.vehicle.licensePlate}</p>}
             </div>
           )}
           <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase text-amber-600">Quote Details</p>
+            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Quote Details</p>
             <p className="font-semibold">{quote.title}</p>
           </div>
         </div>
@@ -191,7 +194,7 @@ export function QuoteView({
         {/* Description */}
         {quote.description && (
           <div className="mt-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase text-amber-600">Description</p>
+            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Description</p>
             <div
               className="notes-content text-sm text-gray-600 dark:text-gray-400"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(quote.description) }}
@@ -206,7 +209,7 @@ export function QuoteView({
             <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
               <table className="w-full min-w-125 text-sm">
                 <thead>
-                  <tr className="border-b bg-amber-50 text-left dark:bg-amber-900/20">
+                  <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
                     <th className="p-2 font-medium">Part #</th>
                     <th className="p-2 font-medium">Description</th>
                     <th className="p-2 text-right font-medium">Qty</th>
@@ -237,7 +240,7 @@ export function QuoteView({
             <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
               <table className="w-full min-w-112.5 text-sm">
                 <thead>
-                  <tr className="border-b bg-amber-50 text-left dark:bg-amber-900/20">
+                  <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
                     <th className="p-2 font-medium">Description</th>
                     <th className="p-2 text-right font-medium">Hours</th>
                     <th className="p-2 text-right font-medium">Rate</th>
@@ -281,10 +284,10 @@ export function QuoteView({
               <span>{formatCurrency(quote.taxAmount, currencyCode)}</span>
             </div>
           )}
-          <div className="border-t border-amber-500 pt-2">
+          <div className="border-t pt-2" style={{ borderColor: primaryColor }}>
             <div className="flex justify-between text-lg font-bold">
               <span>Total</span>
-              <span className="text-amber-600">{formatCurrency(quote.totalAmount, currencyCode)}</span>
+              <span style={{ color: primaryColor }}>{formatCurrency(quote.totalAmount, currencyCode)}</span>
             </div>
           </div>
         </div>

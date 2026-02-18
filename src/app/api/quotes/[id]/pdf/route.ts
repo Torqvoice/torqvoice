@@ -68,11 +68,11 @@ export async function GET(
     }
 
     const template = {
-      primaryColor: settingsMap["invoice.primaryColor"] || "#d97706",
-      fontFamily: settingsMap["invoice.fontFamily"] || "Helvetica",
+      primaryColor: settingsMap["quote.primaryColor"] || settingsMap["invoice.primaryColor"] || "#d97706",
+      fontFamily: settingsMap["quote.fontFamily"] || settingsMap["invoice.fontFamily"] || "Helvetica",
       showLogo: settingsMap["invoice.showLogo"] !== "false",
       showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",
-      headerStyle: settingsMap["invoice.headerStyle"] || "standard",
+      headerStyle: settingsMap["quote.headerStyle"] || settingsMap["invoice.headerStyle"] || "standard",
     };
 
     const element = React.createElement(QuotePDF, {

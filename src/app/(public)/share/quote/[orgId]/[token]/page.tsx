@@ -60,6 +60,10 @@ export default async function PublicQuotePage({
             "workshop.currencyCode",
             "workshop.dateFormat",
             "workshop.timezone",
+            "quote.primaryColor",
+            "quote.headerStyle",
+            "invoice.primaryColor",
+            "invoice.headerStyle",
           ],
         },
       },
@@ -92,6 +96,9 @@ export default async function PublicQuotePage({
     else logoUrl = rawLogoUrl;
   }
 
+  const primaryColor = settingsMap["quote.primaryColor"] || settingsMap["invoice.primaryColor"] || "#d97706";
+  const headerStyle = settingsMap["quote.headerStyle"] || settingsMap["invoice.headerStyle"] || "standard";
+
   return (
     <QuoteView
       quote={quote}
@@ -103,6 +110,8 @@ export default async function PublicQuotePage({
       showTorqvoiceBranding={!features.brandingRemoved}
       dateFormat={settingsMap["workshop.dateFormat"] || undefined}
       timezone={settingsMap["workshop.timezone"] || undefined}
+      primaryColor={primaryColor}
+      headerStyle={headerStyle}
     />
   );
 }
