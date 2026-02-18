@@ -27,13 +27,14 @@ async function getBillingSummary(organizationId: string): Promise<BillingSummary
     SELECT
       COALESCE(SUM(CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END), 0) AS total_revenue,
       COALESCE(SUM(sub.paid), 0) AS total_paid,
-      COUNT(*) FILTER (WHERE sub.paid >= (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END) AND (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END) > 0) AS paid_count,
-      COUNT(*) FILTER (WHERE sub.paid > 0 AND sub.paid < (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END)) AS partial_count,
-      COUNT(*) FILTER (WHERE sub.paid = 0) AS unpaid_count
+      COUNT(*) FILTER (WHERE sub."manuallyPaid" = true OR (sub.paid >= (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END) AND (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END) > 0)) AS paid_count,
+      COUNT(*) FILTER (WHERE sub."manuallyPaid" = false AND sub.paid > 0 AND sub.paid < (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END)) AS partial_count,
+      COUNT(*) FILTER (WHERE sub."manuallyPaid" = false AND sub.paid = 0) AS unpaid_count
     FROM (
       SELECT
         sr."totalAmount" AS total,
         sr.cost,
+        sr."manuallyPaid",
         COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0) AS paid
       FROM service_records sr
       JOIN vehicles v ON v.id = sr."vehicleId"
@@ -94,17 +95,18 @@ export async function getBillingHistory(params: {
 
       let statusCondition: Prisma.Sql;
       if (params.status === "paid") {
-        statusCondition = Prisma.sql`AND paid_amount >= effective_total AND effective_total > 0`;
+        statusCondition = Prisma.sql`AND (manually_paid = true OR (paid_amount >= effective_total AND effective_total > 0))`;
       } else if (params.status === "partial") {
-        statusCondition = Prisma.sql`AND paid_amount > 0 AND paid_amount < effective_total`;
+        statusCondition = Prisma.sql`AND manually_paid = false AND paid_amount > 0 AND paid_amount < effective_total`;
       } else {
-        statusCondition = Prisma.sql`AND paid_amount = 0`;
+        statusCondition = Prisma.sql`AND manually_paid = false AND paid_amount = 0`;
       }
 
       const countRows = await db.$queryRaw<{ cnt: bigint }[]>(Prisma.sql`
         SELECT COUNT(*) AS cnt FROM (
           SELECT
             sr.id,
+            sr."manuallyPaid" AS manually_paid,
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
             COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0) AS paid_amount
           FROM service_records sr
@@ -125,7 +127,7 @@ export async function getBillingHistory(params: {
           serviceDate: Date;
           effective_total: number;
           paid_amount: number;
-          status: string;
+          manually_paid: boolean;
           vehicle_id: string;
           vehicle_make: string | null;
           vehicle_model: string | null;
@@ -142,7 +144,7 @@ export async function getBillingHistory(params: {
           sub."serviceDate",
           sub.effective_total,
           sub.paid_amount,
-          sub.status,
+          sub.manually_paid,
           sub.vehicle_id,
           sub.vehicle_make,
           sub.vehicle_model,
@@ -156,7 +158,7 @@ export async function getBillingHistory(params: {
             sr.title,
             sr."invoiceNumber",
             sr."serviceDate",
-            sr.status,
+            sr."manuallyPaid" AS manually_paid,
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
             COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0) AS paid_amount,
             v.id AS vehicle_id,
@@ -181,7 +183,8 @@ export async function getBillingHistory(params: {
         records: rows.map((r) => {
           const effectiveTotal = Number(r.effective_total);
           const paidAmount = Number(r.paid_amount);
-          const paymentStatus = paidAmount >= effectiveTotal && effectiveTotal > 0
+          const manuallyPaid = r.manually_paid;
+          const paymentStatus = manuallyPaid || (paidAmount >= effectiveTotal && effectiveTotal > 0)
             ? "paid"
             : paidAmount > 0
               ? "partial"
@@ -240,7 +243,7 @@ export async function getBillingHistory(params: {
       records: records.map((r) => {
         const totalAmount = r.totalAmount > 0 ? r.totalAmount : r.cost;
         const totalPaid = r.payments.reduce((s, p) => s + p.amount, 0);
-        const paymentStatus = totalPaid >= totalAmount && totalAmount > 0
+        const paymentStatus = r.manuallyPaid || (totalPaid >= totalAmount && totalAmount > 0)
           ? "paid"
           : totalPaid > 0
             ? "partial"
