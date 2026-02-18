@@ -27,13 +27,14 @@ async function getBillingSummary(organizationId: string): Promise<BillingSummary
     SELECT
       COALESCE(SUM(CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END), 0) AS total_revenue,
       COALESCE(SUM(sub.paid), 0) AS total_paid,
-      COUNT(*) FILTER (WHERE sub.paid >= (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END) AND (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END) > 0) AS paid_count,
-      COUNT(*) FILTER (WHERE sub.paid > 0 AND sub.paid < (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END)) AS partial_count,
-      COUNT(*) FILTER (WHERE sub.paid = 0) AS unpaid_count
+      COUNT(*) FILTER (WHERE sub."manuallyPaid" = true OR (sub.paid >= (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END) AND (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END) > 0)) AS paid_count,
+      COUNT(*) FILTER (WHERE sub."manuallyPaid" = false AND sub.paid > 0 AND sub.paid < (CASE WHEN sub.total > 0 THEN sub.total ELSE sub.cost END)) AS partial_count,
+      COUNT(*) FILTER (WHERE sub."manuallyPaid" = false AND sub.paid = 0) AS unpaid_count
     FROM (
       SELECT
         sr."totalAmount" AS total,
         sr.cost,
+        sr."manuallyPaid",
         CASE WHEN sr."manuallyPaid" = true
           THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
           ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
@@ -97,17 +98,18 @@ export async function getBillingHistory(params: {
 
       let statusCondition: Prisma.Sql;
       if (params.status === "paid") {
-        statusCondition = Prisma.sql`AND paid_amount >= effective_total AND effective_total > 0`;
+        statusCondition = Prisma.sql`AND (manually_paid = true OR (paid_amount >= effective_total AND effective_total > 0))`;
       } else if (params.status === "partial") {
-        statusCondition = Prisma.sql`AND paid_amount > 0 AND paid_amount < effective_total`;
+        statusCondition = Prisma.sql`AND manually_paid = false AND paid_amount > 0 AND paid_amount < effective_total`;
       } else {
-        statusCondition = Prisma.sql`AND paid_amount = 0`;
+        statusCondition = Prisma.sql`AND manually_paid = false AND paid_amount = 0`;
       }
 
       const countRows = await db.$queryRaw<{ cnt: bigint }[]>(Prisma.sql`
         SELECT COUNT(*) AS cnt FROM (
           SELECT
             sr.id,
+            sr."manuallyPaid" AS manually_paid,
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
             CASE WHEN sr."manuallyPaid" = true
               THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
@@ -131,7 +133,7 @@ export async function getBillingHistory(params: {
           serviceDate: Date;
           effective_total: number;
           paid_amount: number;
-          status: string;
+          manually_paid: boolean;
           vehicle_id: string;
           vehicle_make: string | null;
           vehicle_model: string | null;
@@ -148,7 +150,7 @@ export async function getBillingHistory(params: {
           sub."serviceDate",
           sub.effective_total,
           sub.paid_amount,
-          sub.status,
+          sub.manually_paid,
           sub.vehicle_id,
           sub.vehicle_make,
           sub.vehicle_model,
@@ -162,7 +164,7 @@ export async function getBillingHistory(params: {
             sr.title,
             sr."invoiceNumber",
             sr."serviceDate",
-            sr.status,
+            sr."manuallyPaid" AS manually_paid,
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
             CASE WHEN sr."manuallyPaid" = true
               THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
@@ -187,14 +189,23 @@ export async function getBillingHistory(params: {
       `);
 
       return {
-        records: rows.map((r) => ({
+        records: rows.map((r) => {
+          const effectiveTotal = Number(r.effective_total);
+          const paidAmount = Number(r.paid_amount);
+          const manuallyPaid = r.manually_paid;
+          const paymentStatus = manuallyPaid || (paidAmount >= effectiveTotal && effectiveTotal > 0)
+            ? "paid"
+            : paidAmount > 0
+              ? "partial"
+              : "unpaid";
+          return {
           id: r.id,
           title: r.title || "",
           invoiceNumber: r.invoiceNumber,
           serviceDate: r.serviceDate,
-          totalAmount: Number(r.effective_total),
-          totalPaid: Number(r.paid_amount),
-          status: r.status,
+          totalAmount: effectiveTotal,
+          totalPaid: paidAmount,
+          status: paymentStatus,
           vehicle: {
             id: r.vehicle_id,
             make: r.vehicle_make || "",
@@ -203,7 +214,8 @@ export async function getBillingHistory(params: {
             licensePlate: r.vehicle_license_plate,
             customer: r.customer_id ? { id: r.customer_id, name: r.customer_name || "" } : null,
           },
-        })),
+        };
+        }),
         total,
         page,
         pageSize,
@@ -239,7 +251,13 @@ export async function getBillingHistory(params: {
     return {
       records: records.map((r) => {
         const effectiveTotal = r.totalAmount > 0 ? r.totalAmount : r.cost;
-        const totalPaid = r.manuallyPaid ? effectiveTotal : r.payments.reduce((s, p) => s + p.amount, 0);
+        const paidFromPayments = r.payments.reduce((s, p) => s + p.amount, 0);
+        const totalPaid = r.manuallyPaid ? effectiveTotal : paidFromPayments;
+        const paymentStatus = r.manuallyPaid || (totalPaid >= effectiveTotal && effectiveTotal > 0)
+          ? "paid"
+          : totalPaid > 0
+            ? "partial"
+            : "unpaid";
         return {
           id: r.id,
           title: r.title,
@@ -247,7 +265,7 @@ export async function getBillingHistory(params: {
           serviceDate: r.serviceDate,
           totalAmount: effectiveTotal,
           totalPaid,
-          status: r.status,
+          status: paymentStatus,
           vehicle: r.vehicle,
         };
       }),

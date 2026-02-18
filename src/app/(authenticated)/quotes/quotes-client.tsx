@@ -143,13 +143,13 @@ export function QuotesClient({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Quote #</TableHead>
+              <TableHead className="w-25">Quote #</TableHead>
               <TableHead>Title</TableHead>
               <TableHead className="hidden md:table-cell">Customer</TableHead>
               <TableHead className="hidden lg:table-cell">Vehicle</TableHead>
-              <TableHead className="w-[110px]">Status</TableHead>
-              <TableHead className="w-[90px]">Date</TableHead>
-              <TableHead className="w-[90px] text-right">Total</TableHead>
+              <TableHead className="w-27.5">Status</TableHead>
+              <TableHead className="w-22.5">Date</TableHead>
+              <TableHead className="w-22.5 text-right">Total</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

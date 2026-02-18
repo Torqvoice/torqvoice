@@ -81,6 +81,8 @@ export default async function PublicInvoicePage({
             "invoice.dueDays",
             "invoice.showLogo",
             "invoice.showCompanyName",
+            "invoice.primaryColor",
+            "invoice.headerStyle",
             "payment.providersEnabled",
             "payment.termsOfSale",
             "payment.termsOfSaleUrl",
@@ -164,6 +166,8 @@ export default async function PublicInvoicePage({
       dateFormat={settingsMap["workshop.dateFormat"] || undefined}
       timezone={settingsMap["workshop.timezone"] || undefined}
       termsOfSaleUrl={termsOfSaleUrl}
+      primaryColor={settingsMap["invoice.primaryColor"] || "#d97706"}
+      headerStyle={settingsMap["invoice.headerStyle"] || "standard"}
     />
   );
 }
