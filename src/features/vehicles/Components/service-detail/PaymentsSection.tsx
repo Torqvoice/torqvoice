@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,18 +48,26 @@ export function PaymentsSection({
   deletingPayment,
 }: PaymentsSectionProps) {
   const [showForm, setShowForm] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("other");
   const { formatDate } = useFormatDate();
+  const formRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  const handleSubmit = async () => {
+    if (!formRef.current) return;
+    const amount = formRef.current.querySelector<HTMLInputElement>('[name="paymentAmount"]');
+    const date = formRef.current.querySelector<HTMLInputElement>('[name="paymentDate"]');
+    const note = formRef.current.querySelector<HTMLInputElement>('[name="paymentNote"]');
+    if (!amount?.value || Number(amount.value) <= 0) return;
     const success = await onCreatePayment({
-      amount: Number(formData.get("paymentAmount")),
-      date: (formData.get("paymentDate") as string) || new Date().toISOString(),
-      method: formData.get("paymentMethod") as string,
-      note: (formData.get("paymentNote") as string) || undefined,
+      amount: Number(amount.value),
+      date: date?.value || new Date().toISOString(),
+      method: paymentMethod,
+      note: note?.value || undefined,
     });
-    if (success) setShowForm(false);
+    if (success) {
+      setShowForm(false);
+      setPaymentMethod("other");
+    }
   };
 
   return (
@@ -76,6 +84,7 @@ export function PaymentsSection({
         </div>
         <div className="flex items-center gap-2">
           <Button
+            type="button"
             variant="outline"
             size="sm"
             className="h-7 text-xs"
@@ -91,7 +100,7 @@ export function PaymentsSection({
             )}
             {manuallyPaid ? "Mark as Unpaid" : "Mark as Paid"}
           </Button>
-          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setShowForm(!showForm)}>
+          <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => setShowForm(!showForm)}>
             <Plus className="mr-1 h-3 w-3" />
             Record Payment
           </Button>
@@ -107,7 +116,7 @@ export function PaymentsSection({
         </div>
 
         {showForm && (
-          <form onSubmit={handleSubmit} className="space-y-3 rounded-lg border p-3">
+          <div ref={formRef} className="space-y-3 rounded-lg border p-3">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1">
                 <Label htmlFor="paymentAmount" className="text-xs">Amount</Label>
@@ -125,7 +134,7 @@ export function PaymentsSection({
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Method</Label>
-                <Select name="paymentMethod" defaultValue="other">
+                <Select value={paymentMethod} onValueChange={setPaymentMethod}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="cash">Cash</SelectItem>
@@ -141,7 +150,7 @@ export function PaymentsSection({
               </div>
             </div>
             <div className="flex gap-2">
-              <Button type="submit" size="sm" disabled={paymentLoading}>
+              <Button type="button" size="sm" disabled={paymentLoading} onClick={handleSubmit}>
                 {paymentLoading && <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />}
                 Save Payment
               </Button>
@@ -149,7 +158,7 @@ export function PaymentsSection({
                 Cancel
               </Button>
             </div>
-          </form>
+          </div>
         )}
 
         {payments.length > 0 && (
@@ -175,6 +184,7 @@ export function PaymentsSection({
                     <td className="py-1.5 text-muted-foreground">{payment.note || "-"}</td>
                     <td className="py-1.5">
                       <Button
+                        type="button"
                         variant="ghost" size="icon"
                         className="h-6 w-6 text-muted-foreground hover:text-destructive"
                         disabled={deletingPayment === payment.id}
