@@ -59,7 +59,7 @@ const SEARCHABLE_SETTINGS = [
   { label: "Account", description: "Account, profile, password", href: "/settings/account", keywords: ["account", "profile", "password", "email", "2fa"] },
   { label: "Team", description: "Team members and roles", href: "/settings/team", keywords: ["team", "members", "roles", "invite"] },
   { label: "Invoice", description: "Invoice layout and prefix", href: "/settings/invoice", keywords: ["invoice", "layout", "prefix", "footer", "due"] },
-  { label: "Templates", description: "Invoice template styling", href: "/settings/invoice-template", keywords: ["template", "styling", "colors", "font", "header"] },
+  { label: "Templates", description: "Invoice & quote template styling", href: "/settings/templates", keywords: ["template", "styling", "colors", "font", "header", "quote"] },
   { label: "Payment", description: "Payment and bank settings", href: "/settings/payment", keywords: ["payment", "bank", "vipps", "stripe", "terms"] },
   { label: "Currency", description: "Currency, tax, and VAT", href: "/settings/currency", keywords: ["currency", "tax", "vat", "unit"] },
   { label: "Custom Fields", description: "Custom fields configuration", href: "/settings/custom-fields", keywords: ["custom fields", "fields"] },

@@ -56,7 +56,7 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/settings/company': [{ label: 'Settings', href: '/settings' }, { label: 'Company' }],
   '/settings/account': [{ label: 'Settings', href: '/settings' }, { label: 'Account' }],
   '/settings/custom-fields': [{ label: 'Settings', href: '/settings' }, { label: 'Custom Fields' }],
-  '/settings/invoice-template': [{ label: 'Settings', href: '/settings' }, { label: 'Templates' }],
+  '/settings/templates': [{ label: 'Settings', href: '/settings' }, { label: 'Templates' }],
   '/settings/team': [{ label: 'Settings', href: '/settings' }, { label: 'Team' }],
   '/settings/invoice': [{ label: 'Settings', href: '/settings' }, { label: 'Invoice' }],
   '/settings/payment': [{ label: 'Settings', href: '/settings' }, { label: 'Payment' }],

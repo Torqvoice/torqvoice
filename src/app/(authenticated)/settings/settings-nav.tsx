@@ -66,9 +66,9 @@ const settingsNav: SettingsNavItem[] = [
   },
   {
     title: "Templates",
-    href: "/settings/invoice-template",
+    href: "/settings/templates",
     icon: Layout,
-    description: "Invoice styling & colors",
+    description: "Invoice & quote styling",
     gate: "customTemplates",
   },
   {
