@@ -128,42 +128,111 @@ export function QuoteView({
 
       <div className="rounded-xl border bg-white p-6 shadow-sm sm:p-8 dark:bg-gray-900">
         {/* Header */}
-        <div className="flex flex-col gap-4 border-b-2 pb-6 sm:flex-row sm:items-start sm:justify-between" style={{ borderColor: primaryColor }}>
-          <div>
-            <img
-              src={logoUrl || "/torqvoice_app_logo.png"}
-              alt={shopName}
-              className="mb-2 max-h-16 max-w-[180px] object-contain object-left"
-            />
-            <h2 className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2>
-            {workshop.address && <p className="mt-1 text-sm text-gray-500">{workshop.address}</p>}
-            {workshop.phone && <p className="text-sm text-gray-500">Tel: {workshop.phone}</p>}
-            {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
-          </div>
-          <div className="sm:text-right">
-            {showTorqvoiceBranding && (
-              <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 dark:bg-gray-800">
-                <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
-                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+        {headerStyle === "modern" ? (
+          <>
+            <div className="rounded-lg p-6 text-center text-white" style={{ backgroundColor: primaryColor }}>
+              <img
+                src={logoUrl || "/torqvoice_app_logo.png"}
+                alt={shopName}
+                className="mx-auto mb-2 max-h-16 max-w-[180px] object-contain"
+              />
+              <h2 className="text-xl font-bold sm:text-2xl">{shopName}</h2>
+              {workshop.address && <p className="mt-1 text-sm opacity-80">{workshop.address}</p>}
+              <div className="mt-1 flex flex-wrap justify-center gap-3 text-sm opacity-70">
+                {workshop.phone && <span>Tel: {workshop.phone}</span>}
+                {workshop.email && <span>{workshop.email}</span>}
               </div>
-            )}
-            <h3 className="text-xl font-bold">QUOTE</h3>
-            <p className="mt-1 text-sm text-gray-500">{quoteNum}</p>
-            <p className="text-sm text-gray-500">{createdDate}</p>
-            {validUntilDate && (
-              <p className="text-sm text-gray-500">Valid until: {validUntilDate}</p>
-            )}
-            <span className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
-              quote.status === "accepted"
-                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                : quote.status === "rejected"
-                ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-            }`}>
-              {statusLabels[quote.status] || quote.status}
-            </span>
+            </div>
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <h3 className="text-xl font-bold">QUOTE</h3>
+                <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+                  quote.status === "accepted"
+                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                    : quote.status === "rejected"
+                    ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                    : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                }`}>
+                  {statusLabels[quote.status] || quote.status}
+                </span>
+              </div>
+              <div className="flex gap-3 text-sm text-gray-500">
+                <span>{quoteNum}</span>
+                <span>{createdDate}</span>
+                {validUntilDate && <span>Valid until: {validUntilDate}</span>}
+              </div>
+            </div>
+          </>
+        ) : headerStyle === "compact" ? (
+          <div className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "#e5e7eb" }}>
+            <div className="flex items-center gap-3">
+              <img
+                src={logoUrl || "/torqvoice_app_logo.png"}
+                alt={shopName}
+                className="h-12 w-12 rounded object-contain"
+              />
+              <div>
+                <h2 className="text-lg font-bold" style={{ color: primaryColor }}>{shopName}</h2>
+                {workshop.address && <p className="text-sm text-gray-500">{workshop.address}</p>}
+              </div>
+            </div>
+            <div className="sm:text-right">
+              <h3 className="text-lg font-bold">QUOTE</h3>
+              <p className="text-sm text-gray-500">{quoteNum}</p>
+              <p className="text-sm text-gray-500">{createdDate}</p>
+              {validUntilDate && (
+                <p className="text-sm text-gray-500">Valid until: {validUntilDate}</p>
+              )}
+              <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+                quote.status === "accepted"
+                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                  : quote.status === "rejected"
+                  ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                  : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+              }`}>
+                {statusLabels[quote.status] || quote.status}
+              </span>
+            </div>
           </div>
-        </div>
+        ) : (
+          /* Standard */
+          <div className="flex flex-col gap-4 border-b-2 pb-6 sm:flex-row sm:items-start sm:justify-between" style={{ borderColor: primaryColor }}>
+            <div>
+              <img
+                src={logoUrl || "/torqvoice_app_logo.png"}
+                alt={shopName}
+                className="mb-2 max-h-16 max-w-[180px] object-contain object-left"
+              />
+              <h2 className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2>
+              {workshop.address && <p className="mt-1 text-sm text-gray-500">{workshop.address}</p>}
+              {workshop.phone && <p className="text-sm text-gray-500">Tel: {workshop.phone}</p>}
+              {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
+            </div>
+            <div className="sm:text-right">
+              {showTorqvoiceBranding && (
+                <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 dark:bg-gray-800">
+                  <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
+                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+                </div>
+              )}
+              <h3 className="text-xl font-bold" style={{ color: primaryColor }}>QUOTE</h3>
+              <p className="mt-1 text-sm text-gray-500">{quoteNum}</p>
+              <p className="text-sm text-gray-500">{createdDate}</p>
+              {validUntilDate && (
+                <p className="text-sm text-gray-500">Valid until: {validUntilDate}</p>
+              )}
+              <span className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+                quote.status === "accepted"
+                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                  : quote.status === "rejected"
+                  ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                  : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+              }`}>
+                {statusLabels[quote.status] || quote.status}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Info Boxes */}
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
