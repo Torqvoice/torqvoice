@@ -41,17 +41,29 @@ export async function GET(
     return NextResponse.json({ error: "Invalid filename" }, { status: 400 });
   }
 
-  // Validate token and get org
-  const record = await db.serviceRecord.findUnique({
+  // Validate token and get org (check both invoice and quote tokens)
+  let orgId: string | undefined;
+
+  const serviceRecord = await db.serviceRecord.findUnique({
     where: { publicToken: token },
     select: { vehicle: { select: { organizationId: true } } },
   });
 
-  if (!record || !record.vehicle.organizationId) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (serviceRecord?.vehicle.organizationId) {
+    orgId = serviceRecord.vehicle.organizationId;
+  } else {
+    const quote = await db.quote.findFirst({
+      where: { publicToken: token },
+      select: { organizationId: true },
+    });
+    if (quote?.organizationId) {
+      orgId = quote.organizationId;
+    }
   }
 
-  const orgId = record.vehicle.organizationId;
+  if (!orgId) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   const filePath = path.join(process.cwd(), "data", "uploads", orgId, category, filename);
 
   try {
