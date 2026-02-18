@@ -23,6 +23,7 @@ export async function getRevenueReport(params: {
         totalAmount: true,
         cost: true,
         type: true,
+        manuallyPaid: true,
         payments: { select: { amount: true } },
       },
       orderBy: { serviceDate: "asc" },
@@ -39,7 +40,7 @@ export async function getRevenueReport(params: {
 
     for (const r of records) {
       const total = r.totalAmount > 0 ? r.totalAmount : r.cost;
-      const paid = r.payments.reduce((s, p) => s + p.amount, 0);
+      const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0);
       const month = `${r.serviceDate.getFullYear()}-${String(r.serviceDate.getMonth() + 1).padStart(2, "0")}`;
 
       if (!monthly[month]) monthly[month] = { revenue: 0, collected: 0, count: 0 };

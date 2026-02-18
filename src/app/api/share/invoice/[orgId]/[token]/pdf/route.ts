@@ -102,9 +102,13 @@ export async function GET(
     const pdfDateFormat = settingsMap["workshop.dateFormat"] || undefined;
     const pdfTimezone = settingsMap["workshop.timezone"] || undefined;
 
-    const paymentSummary = record.payments.length > 0
+    const paidFromPayments = record.payments.reduce((sum: number, p: { amount: number }) => sum + p.amount, 0);
+    const effectiveTotal = record.totalAmount > 0 ? record.totalAmount : record.cost;
+    const totalPaidForPdf = record.manuallyPaid ? effectiveTotal : paidFromPayments;
+
+    const paymentSummary = record.payments.length > 0 || record.manuallyPaid
       ? {
-          totalPaid: record.payments.reduce((sum: number, p: { amount: number }) => sum + p.amount, 0),
+          totalPaid: totalPaidForPdf,
           payments: record.payments.map((p: { amount: number; date: Date; method: string }) => ({
             amount: p.amount,
             date: formatDateForPdf(p.date, pdfDateFormat, pdfTimezone),

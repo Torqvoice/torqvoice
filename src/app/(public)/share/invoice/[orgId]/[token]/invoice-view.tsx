@@ -34,6 +34,7 @@ interface InvoiceRecord {
   totalAmount: number
   cost: number
   invoiceNumber: string | null
+  manuallyPaid: boolean
   discountType: string | null
   discountValue: number
   discountAmount: number
@@ -136,7 +137,8 @@ export function InvoiceView({
   const df = dateFormat || DEFAULT_DATE_FORMAT
   const tz = timezone || undefined
   const serviceDate = fmtDate(record.serviceDate, df, tz)
-  const totalPaid = record.payments.reduce((sum, p) => sum + p.amount, 0)
+  const paidFromPayments = record.payments.reduce((sum, p) => sum + p.amount, 0)
+  const totalPaid = record.manuallyPaid ? displayTotal : paidFromPayments
   const balanceDue = displayTotal - totalPaid
   const shopName = workshop.name || record.shopName || 'Torqvoice'
 

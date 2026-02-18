@@ -47,7 +47,8 @@ export async function POST(
     // Calculate balance due
     const displayTotal =
       record.totalAmount > 0 ? record.totalAmount : record.cost;
-    const totalPaid = record.payments.reduce((sum, p) => sum + p.amount, 0);
+    const paidFromPayments = record.payments.reduce((sum, p) => sum + p.amount, 0);
+    const totalPaid = record.manuallyPaid ? displayTotal : paidFromPayments;
     const balanceDue = displayTotal - totalPaid;
 
     if (balanceDue <= 0) {
