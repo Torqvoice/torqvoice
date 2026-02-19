@@ -30,12 +30,22 @@ import { DataTablePagination } from "@/components/data-table-pagination";
 import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { InventoryPartForm } from "@/features/inventory/Components/InventoryPartForm";
-import { deleteInventoryPart } from "@/features/inventory/Actions/inventoryActions";
+import { deleteInventoryPart, applyMarkupToAll } from "@/features/inventory/Actions/inventoryActions";
+import { setSetting } from "@/features/settings/Actions/settingsActions";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import {
+  Dialog as MarkupDialog,
+  DialogContent as MarkupDialogContent,
+  DialogHeader as MarkupDialogHeader,
+  DialogTitle as MarkupDialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   ExternalLink,
   Loader2,
   MoreVertical,
   Pencil,
+  Percent,
   Plus,
   Search,
   Trash2,
@@ -51,6 +61,7 @@ interface InventoryPart {
   quantity: number;
   minQuantity: number;
   unitCost: number;
+  sellPrice: number;
   supplier: string | null;
   supplierPhone: string | null;
   supplierEmail: string | null;
@@ -73,12 +84,14 @@ export function InventoryClient({
   category,
   categories,
   currencyCode = "USD",
+  markupMultiplier: initialMarkup = 1.0,
 }: {
   data: PaginatedData;
   search: string;
   category: string;
   categories: string[];
   currencyCode?: string;
+  markupMultiplier?: number;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -87,6 +100,9 @@ export function InventoryClient({
   const [searchInput, setSearchInput] = useState(search);
   const [showForm, setShowForm] = useState(false);
   const [editPart, setEditPart] = useState<InventoryPart | null>(null);
+  const [showMarkup, setShowMarkup] = useState(false);
+  const [markupValue, setMarkupValue] = useState(String(initialMarkup));
+  const [applyingMarkup, setApplyingMarkup] = useState(false);
   const modal = useGlassModal();
   const confirm = useConfirm();
 
@@ -134,6 +150,31 @@ export function InventoryClient({
     }
   };
 
+  const handleApplyMarkup = async () => {
+    const multiplier = Number(markupValue);
+    if (!multiplier || multiplier <= 0) {
+      modal.open("error", "Error", "Multiplier must be greater than 0");
+      return;
+    }
+    setApplyingMarkup(true);
+    try {
+      const [result] = await Promise.all([
+        applyMarkupToAll({ multiplier }),
+        setSetting(SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER, String(multiplier)),
+      ]);
+      if (result.success) {
+        setShowMarkup(false);
+        router.refresh();
+      } else {
+        modal.open("error", "Error", result.error || "Failed to apply markup");
+      }
+    } catch {
+      modal.open("error", "Error", "Failed to apply markup");
+    } finally {
+      setApplyingMarkup(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
@@ -166,10 +207,16 @@ export function InventoryClient({
           </Select>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <Button size="sm" onClick={() => setShowForm(true)}>
-          <Plus className="mr-1 h-3.5 w-3.5" />
-          Add Part
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => setShowMarkup(true)}>
+            <Percent className="mr-1 h-3.5 w-3.5" />
+            Apply Markup
+          </Button>
+          <Button size="sm" onClick={() => setShowForm(true)}>
+            <Plus className="mr-1 h-3.5 w-3.5" />
+            Add Part
+          </Button>
+        </div>
       </div>
 
       {/* Table */}
@@ -182,6 +229,7 @@ export function InventoryClient({
               <TableHead className="hidden sm:table-cell">Category</TableHead>
               <TableHead>In Stock</TableHead>
               <TableHead className="text-right">Unit Cost</TableHead>
+              <TableHead className="text-right">Sell Price</TableHead>
               <TableHead className="hidden md:table-cell">Supplier</TableHead>
               <TableHead className="hidden lg:table-cell">Location</TableHead>
               <TableHead className="w-[50px]" />
@@ -190,7 +238,7 @@ export function InventoryClient({
           <TableBody>
             {data.parts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={9} className="h-32 text-center text-muted-foreground">
                   {search || category ? "No parts match your search." : "No parts in inventory yet."}
                 </TableCell>
               </TableRow>
@@ -240,6 +288,24 @@ export function InventoryClient({
                     </TableCell>
                     <TableCell className="text-right">
                       {formatCurrency(part.unitCost, currencyCode)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {(() => {
+                        const effective = part.sellPrice > 0 ? part.sellPrice : part.unitCost;
+                        const margin = effective > 0 && part.unitCost > 0 && effective !== part.unitCost
+                          ? Math.round(((effective - part.unitCost) / part.unitCost) * 100)
+                          : null;
+                        return (
+                          <div>
+                            {formatCurrency(effective, currencyCode)}
+                            {margin !== null && (
+                              <span className="block text-[10px] text-muted-foreground">
+                                {margin}%
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className="hidden md:table-cell text-muted-foreground">
                       <span className="inline-flex items-center gap-1">
@@ -310,7 +376,43 @@ export function InventoryClient({
           if (!open) setEditPart(null);
         }}
         part={editPart ?? undefined}
+        markupMultiplier={initialMarkup}
       />
+
+      {/* Bulk Markup Dialog */}
+      <MarkupDialog open={showMarkup} onOpenChange={setShowMarkup}>
+        <MarkupDialogContent className="sm:max-w-sm">
+          <MarkupDialogHeader>
+            <MarkupDialogTitle>Apply Markup to All Parts</MarkupDialogTitle>
+          </MarkupDialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="markupMultiplier">Markup Multiplier</Label>
+              <Input
+                id="markupMultiplier"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={markupValue}
+                onChange={(e) => setMarkupValue(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                This will set sell price = cost x {markupValue || "?"} for all {data.total} parts.
+                {Number(markupValue) > 1 && ` (${Math.round((Number(markupValue) - 1) * 100)}% markup)`}
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setShowMarkup(false)}>
+                Cancel
+              </Button>
+              <Button size="sm" onClick={handleApplyMarkup} disabled={applyingMarkup}>
+                {applyingMarkup && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Apply
+              </Button>
+            </div>
+          </div>
+        </MarkupDialogContent>
+      </MarkupDialog>
     </div>
   );
 }

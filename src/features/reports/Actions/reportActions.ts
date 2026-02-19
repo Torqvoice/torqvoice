@@ -438,17 +438,20 @@ export async function getInventoryReport() {
         partNumber: true,
         quantity: true,
         unitCost: true,
+        sellPrice: true,
         minQuantity: true,
       },
       orderBy: { name: "asc" },
     });
 
     let totalValue = 0;
+    let totalSellValue = 0;
     let totalItems = 0;
     const lowStock: typeof parts = [];
 
     for (const p of parts) {
       totalValue += (p.unitCost || 0) * p.quantity;
+      totalSellValue += (p.sellPrice > 0 ? p.sellPrice : p.unitCost || 0) * p.quantity;
       totalItems += p.quantity;
       if (p.minQuantity && p.quantity <= p.minQuantity) {
         lowStock.push(p);
@@ -459,7 +462,65 @@ export async function getInventoryReport() {
       totalParts: parts.length,
       totalItems,
       totalValue,
+      totalSellValue,
       lowStock,
+    };
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] });
+}
+
+export async function getTaxReport(params: {
+  startDate?: string;
+  endDate?: string;
+}) {
+  return withAuth(async ({ organizationId }) => {
+    const start = params.startDate ? new Date(params.startDate) : new Date(new Date().getFullYear(), 0, 1);
+    const end = params.endDate ? new Date(params.endDate) : new Date();
+    end.setHours(23, 59, 59, 999);
+
+    const records = await db.serviceRecord.findMany({
+      where: {
+        vehicle: { organizationId },
+        serviceDate: { gte: start, lte: end },
+      },
+      select: {
+        serviceDate: true,
+        subtotal: true,
+        taxRate: true,
+        taxAmount: true,
+        totalAmount: true,
+      },
+      orderBy: { serviceDate: "asc" },
+    });
+
+    const monthly: Record<string, { taxCollected: number; invoiceCount: number; taxableAmount: number }> = {};
+    const byRate: Record<number, { taxCollected: number; invoiceCount: number }> = {};
+    let totalTaxCollected = 0;
+    let totalTaxableAmount = 0;
+    let totalInvoices = 0;
+
+    for (const r of records) {
+      if (r.taxAmount <= 0) continue;
+
+      const month = `${r.serviceDate.getFullYear()}-${String(r.serviceDate.getMonth() + 1).padStart(2, "0")}`;
+
+      if (!monthly[month]) monthly[month] = { taxCollected: 0, invoiceCount: 0, taxableAmount: 0 };
+      monthly[month].taxCollected += r.taxAmount;
+      monthly[month].invoiceCount += 1;
+      monthly[month].taxableAmount += r.subtotal;
+
+      if (!byRate[r.taxRate]) byRate[r.taxRate] = { taxCollected: 0, invoiceCount: 0 };
+      byRate[r.taxRate].taxCollected += r.taxAmount;
+      byRate[r.taxRate].invoiceCount += 1;
+
+      totalTaxCollected += r.taxAmount;
+      totalTaxableAmount += r.subtotal;
+      totalInvoices += 1;
+    }
+
+    return {
+      monthly: Object.entries(monthly).map(([month, data]) => ({ month, ...data })),
+      byRate: Object.entries(byRate).map(([rate, data]) => ({ taxRate: Number(rate), ...data })),
+      summary: { totalTaxCollected, totalTaxableAmount, totalInvoices },
     };
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] });
 }

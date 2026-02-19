@@ -63,12 +63,13 @@ export function InventoryPickerDialog({
               type="button"
               className="w-full text-left rounded-md p-2.5 hover:bg-accent transition-colors"
               onClick={() => {
+                const price = ip.sellPrice > 0 ? ip.sellPrice : ip.unitCost;
                 onSelectPart({
                   partNumber: ip.partNumber || '',
                   name: ip.name,
                   quantity: 1,
-                  unitPrice: ip.unitCost,
-                  total: ip.unitCost,
+                  unitPrice: price,
+                  total: price,
                   inventoryPartId: ip.id,
                 })
                 onOpenChange(false)
@@ -87,7 +88,14 @@ export function InventoryPickerDialog({
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
                 {ip.category && <span>{ip.category}</span>}
-                <span>{formatCurrency(ip.unitCost, currencyCode)}</span>
+                {ip.sellPrice > 0 ? (
+                  <>
+                    <span className="font-medium text-foreground">{formatCurrency(ip.sellPrice, currencyCode)}</span>
+                    <span className="line-through">{formatCurrency(ip.unitCost, currencyCode)}</span>
+                  </>
+                ) : (
+                  <span>{formatCurrency(ip.unitCost, currencyCode)}</span>
+                )}
               </div>
             </button>
           ))}

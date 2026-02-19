@@ -18,7 +18,7 @@ export default async function InventoryPage({
       category: params.category,
     }),
     getInventoryCategories(),
-    getSettings([SETTING_KEYS.CURRENCY_CODE]),
+    getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]),
   ]);
 
   if (!result.success || !result.data) {
@@ -37,6 +37,7 @@ export default async function InventoryPage({
   const categories = categoriesResult.success && categoriesResult.data ? categoriesResult.data : [];
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {};
   const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || "USD";
+  const markupMultiplier = Number(settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]) || 1.0;
 
   return (
     <>
@@ -48,6 +49,7 @@ export default async function InventoryPage({
           category={params.category || ""}
           categories={categories}
           currencyCode={currencyCode}
+          markupMultiplier={markupMultiplier}
         />
       </div>
     </>

@@ -66,7 +66,7 @@ export function LicenseSettings({
             </CardDescription>
           </div>
           {!licenseValid && (
-            <Button asChild variant="outline" size="sm" className="shrink-0">
+            <Button asChild variant="default" size="sm" className="shrink-0">
               <a
                 href={`${process.env.NEXT_PUBLIC_TORQVOICE_COM_URL || 'https://torqvoice.com'}/subscriptions/white-label`}
                 target="_blank"

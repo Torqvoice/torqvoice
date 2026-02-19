@@ -21,6 +21,7 @@ import { compressImage } from "@/lib/compress-image";
 interface InventoryPartFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  markupMultiplier?: number;
   part?: {
     id: string;
     partNumber: string | null;
@@ -30,6 +31,7 @@ interface InventoryPartFormProps {
     quantity: number;
     minQuantity: number;
     unitCost: number;
+    sellPrice: number;
     supplier: string | null;
     supplierPhone: string | null;
     supplierEmail: string | null;
@@ -39,7 +41,7 @@ interface InventoryPartFormProps {
   };
 }
 
-export function InventoryPartForm({ open, onOpenChange, part }: InventoryPartFormProps) {
+export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }: InventoryPartFormProps) {
   const router = useRouter();
   const modal = useGlassModal();
   const [loading, setLoading] = useState(false);
@@ -176,6 +178,7 @@ export function InventoryPartForm({ open, onOpenChange, part }: InventoryPartFor
       quantity: Number(formData.get("quantity")) || 0,
       minQuantity: Number(formData.get("minQuantity")) || 0,
       unitCost: Number(formData.get("unitCost")) || 0,
+      sellPrice: Number(formData.get("sellPrice")) || 0,
       supplier: (formData.get("supplier") as string) || undefined,
       supplierPhone: (formData.get("supplierPhone") as string) || undefined,
       supplierEmail: (formData.get("supplierEmail") as string) || undefined,
@@ -380,7 +383,7 @@ export function InventoryPartForm({ open, onOpenChange, part }: InventoryPartFor
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-4 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="quantity">Quantity</Label>
                   <Input
@@ -393,7 +396,7 @@ export function InventoryPartForm({ open, onOpenChange, part }: InventoryPartFor
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="minQuantity">Min Quantity</Label>
+                  <Label htmlFor="minQuantity">Min Qty</Label>
                   <Input
                     id="minQuantity"
                     name="minQuantity"
@@ -412,6 +415,25 @@ export function InventoryPartForm({ open, onOpenChange, part }: InventoryPartFor
                     min="0"
                     step="0.01"
                     defaultValue={part?.unitCost ?? 0}
+                    onChange={(e) => {
+                      if (!markupMultiplier || markupMultiplier <= 0) return;
+                      const cost = Number(e.target.value) || 0;
+                      const sellPriceInput = document.getElementById("sellPrice") as HTMLInputElement | null;
+                      if (sellPriceInput && (!sellPriceInput.value || Number(sellPriceInput.value) === 0)) {
+                        sellPriceInput.value = String(Math.round(cost * markupMultiplier * 100) / 100);
+                      }
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="sellPrice">Sell Price</Label>
+                  <Input
+                    id="sellPrice"
+                    name="sellPrice"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    defaultValue={part?.sellPrice ?? 0}
                   />
                 </div>
               </div>

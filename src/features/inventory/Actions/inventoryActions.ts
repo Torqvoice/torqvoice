@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { createInventoryPartSchema, updateInventoryPartSchema, adjustStockSchema } from "../Schema/inventorySchema";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
+import { z } from "zod";
 import { unlink } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
@@ -189,10 +190,38 @@ export async function getInventoryPartsList() {
         partNumber: true,
         name: true,
         unitCost: true,
+        sellPrice: true,
         quantity: true,
         category: true,
       },
       orderBy: { name: "asc" },
     });
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INVENTORY }] });
+}
+
+const applyMarkupSchema = z.object({
+  multiplier: z.number().positive("Multiplier must be greater than 0"),
+});
+
+export async function applyMarkupToAll(input: unknown) {
+  return withAuth(async ({ userId, organizationId }) => {
+    const { multiplier } = applyMarkupSchema.parse(input);
+
+    const parts = await db.inventoryPart.findMany({
+      where: { organizationId, isArchived: false },
+      select: { id: true, unitCost: true },
+    });
+
+    await db.$transaction(
+      parts.map((p) =>
+        db.inventoryPart.update({
+          where: { id: p.id },
+          data: { sellPrice: Math.round(p.unitCost * multiplier * 100) / 100 },
+        })
+      )
+    );
+
+    revalidatePath("/inventory");
+    return { updated: parts.length };
+  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }] });
 }
