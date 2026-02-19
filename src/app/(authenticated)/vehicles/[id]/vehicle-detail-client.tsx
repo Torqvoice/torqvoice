@@ -46,6 +46,7 @@ import {
   Plus,
   StickyNote,
   Trash2,
+  TrendingUp,
   Wrench,
 } from 'lucide-react'
 import {
@@ -155,6 +156,7 @@ export function VehicleDetailClient({
   serviceType,
   currencyCode = 'USD',
   unitSystem = 'imperial',
+  predictionData,
 }: {
   vehicle: VehicleDetail
   customers: CustomerOption[]
@@ -163,6 +165,14 @@ export function VehicleDetailClient({
   serviceType: string
   currencyCode?: string
   unitSystem?: 'metric' | 'imperial'
+  predictionData?: {
+    predictedMileage: number
+    avgPerDay: number
+    lastServiceMileage: number
+    serviceInterval: number
+    mileageSinceLastService: number
+    status: 'overdue' | 'approaching' | 'ok'
+  } | null
 }) {
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
@@ -408,6 +418,25 @@ export function VehicleDetailClient({
             </span>
             <span className="text-xs">{distUnit}</span>
           </div>
+          {predictionData && (
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <TrendingUp className="h-3.5 w-3.5" />
+              <span className="font-semibold text-foreground">
+                ~{predictionData.predictedMileage.toLocaleString()}
+              </span>
+              <span className="text-xs">{distUnit} est.</span>
+              {predictionData.status === 'overdue' && (
+                <Badge variant="destructive" className="text-[10px] ml-1">
+                  Service Overdue
+                </Badge>
+              )}
+              {predictionData.status === 'approaching' && (
+                <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px] ml-1">
+                  Service Soon
+                </Badge>
+              )}
+            </div>
+          )}
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Wrench className="h-3.5 w-3.5" />
             <span className="font-semibold text-foreground">{vehicle._count.serviceRecords}</span>

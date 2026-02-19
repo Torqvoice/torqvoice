@@ -11,6 +11,7 @@ import {
   CreditCard,
   Database,
   FileText,
+  Gauge,
   Info,
   Key,
   Layout,
@@ -103,6 +104,12 @@ const settingsNav: SettingsNavItem[] = [
     href: "/settings/workshop",
     icon: Wrench,
     description: "Technician & labor defaults",
+  },
+  {
+    title: "Maintenance",
+    href: "/settings/maintenance",
+    icon: Gauge,
+    description: "Predicted service intervals",
   },
   {
     title: "Appearance",

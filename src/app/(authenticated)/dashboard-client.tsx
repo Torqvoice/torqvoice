@@ -20,6 +20,7 @@ import {
   ClipboardList,
   Clock,
   DollarSign,
+  Gauge,
   Loader2,
   Users,
 } from "lucide-react";
@@ -68,15 +69,33 @@ interface ReminderItem {
   };
 }
 
+interface VehicleDueForService {
+  vehicleId: string;
+  make: string;
+  model: string;
+  year: number;
+  licensePlate: string | null;
+  predictedMileage: number;
+  lastServiceMileage: number;
+  mileageSinceLastService: number;
+  serviceInterval: number;
+  status: "overdue" | "approaching";
+}
+
 export function DashboardClient({
   stats,
   currencyCode = "USD",
   upcomingReminders = [],
+  vehiclesDueForService = [],
+  unitSystem = "imperial",
 }: {
   stats: DashboardStats;
   currencyCode?: string;
   upcomingReminders?: ReminderItem[];
+  vehiclesDueForService?: VehicleDueForService[];
+  unitSystem?: "metric" | "imperial";
 }) {
+  const distUnit = unitSystem === "metric" ? "km" : "mi";
   const router = useRouter();
   const { formatDate } = useFormatDate();
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
@@ -128,6 +147,63 @@ export function DashboardClient({
           </Card>
         )}
       </div>
+
+      {/* Vehicles Due for Service */}
+      {vehiclesDueForService.length > 0 && (
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Gauge className="h-4 w-4" />
+              Vehicles Due for Service
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y">
+              {vehiclesDueForService.map((v) => (
+                <div
+                  key={v.vehicleId}
+                  className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => router.push(`/vehicles/${v.vehicleId}`)}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                      v.status === "overdue" ? "bg-red-500/10" : "bg-amber-500/10"
+                    }`}>
+                      {v.status === "overdue" ? (
+                        <AlertTriangle className="h-4 w-4 text-red-500" />
+                      ) : (
+                        <Clock className="h-4 w-4 text-amber-500" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm truncate">
+                        {v.year} {v.make} {v.model}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {v.licensePlate && `${v.licensePlate} · `}
+                        Est. {v.predictedMileage.toLocaleString()} {distUnit}
+                        {" · "}
+                        {v.mileageSinceLastService.toLocaleString()} {distUnit} since last service
+                      </p>
+                    </div>
+                  </div>
+                  <div className="shrink-0 ml-3">
+                    {v.status === "overdue" ? (
+                      <Badge variant="destructive" className="text-[10px]">
+                        Overdue
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px]">
+                        Approaching
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Upcoming Reminders */}
       {upcomingReminders.length > 0 && (

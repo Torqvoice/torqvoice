@@ -10,7 +10,14 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { setSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { Loader2, Save, Wrench } from "lucide-react";
+import { Loader2, Ruler, Save, Wrench } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
 export function WorkshopSettings({ settings }: { settings: Record<string, string> }) {
@@ -26,6 +33,9 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
   const [workingHours, setWorkingHours] = useState(
     settings[SETTING_KEYS.WORKING_HOURS] || ""
   );
+  const [unitSystem, setUnitSystem] = useState(
+    settings[SETTING_KEYS.UNIT_SYSTEM] || "imperial"
+  );
 
   const handleSave = async () => {
     setSaving(true);
@@ -33,6 +43,7 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
       [SETTING_KEYS.DEFAULT_TECHNICIAN]: defaultTechnician,
       [SETTING_KEYS.DEFAULT_LABOR_RATE]: defaultLaborRate,
       [SETTING_KEYS.WORKING_HOURS]: workingHours,
+      [SETTING_KEYS.UNIT_SYSTEM]: unitSystem,
     });
     setSaving(false);
     router.refresh();
@@ -83,6 +94,45 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
               value={workingHours}
               onChange={(e) => setWorkingHours(e.target.value)}
             />
+          </div>
+
+          <Separator />
+
+          <div className="space-y-4">
+            <div className="flex flex-row items-center gap-3">
+              <Ruler className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-lg font-semibold">Units</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Choose between metric (km, liters) and imperial (miles, gallons) units.
+            </p>
+
+            <div className="space-y-2">
+              <Label htmlFor="unitSystem">Unit System</Label>
+              <Select value={unitSystem} onValueChange={setUnitSystem}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="metric">Metric (km, liters)</SelectItem>
+                  <SelectItem value="imperial">Imperial (miles, gallons)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="rounded-lg border p-3 text-sm text-muted-foreground">
+              {unitSystem === "metric" ? (
+                <div className="space-y-1">
+                  <p>Distance: <span className="font-medium text-foreground">kilometers (km)</span></p>
+                  <p>Volume: <span className="font-medium text-foreground">liters (L)</span></p>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  <p>Distance: <span className="font-medium text-foreground">miles (mi)</span></p>
+                  <p>Volume: <span className="font-medium text-foreground">gallons (gal)</span></p>
+                </div>
+              )}
+            </div>
           </div>
 
           <SaveButton>
