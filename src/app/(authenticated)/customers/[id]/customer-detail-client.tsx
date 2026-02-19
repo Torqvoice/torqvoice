@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -17,9 +19,12 @@ import {
   Car,
   Mail,
   MapPin,
+  Pencil,
   Phone,
   Users,
 } from "lucide-react";
+import { CustomerForm } from "@/features/customers/Components/CustomerForm";
+import { toast } from "sonner";
 
 interface CustomerDetail {
   id: string;
@@ -42,6 +47,9 @@ interface CustomerDetail {
 
 export function CustomerDetailClient({ customer, unitSystem = "imperial" }: { customer: CustomerDetail; unitSystem?: "metric" | "imperial" }) {
   const router = useRouter();
+  const [showEditForm, setShowEditForm] = useState(false);
+
+  const hasContactInfo = customer.email || customer.phone || customer.address || customer.company || customer.notes;
 
   return (
     <div className="space-y-6">
@@ -59,53 +67,62 @@ export function CustomerDetailClient({ customer, unitSystem = "imperial" }: { cu
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
             <Users className="h-7 w-7 text-primary" />
           </div>
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold">{customer.name}</h1>
-            {customer.company && (
-              <p className="mt-0.5 text-sm text-muted-foreground">
-                {customer.company}
+            {hasContactInfo && (
+              <div className="mt-1.5 flex flex-wrap gap-x-5 gap-y-1.5 text-sm">
+                {customer.company && (
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <Building2 className="h-3.5 w-3.5" />
+                    <span>{customer.company}</span>
+                  </div>
+                )}
+                {customer.email && (
+                  <button
+                    type="button"
+                    className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(customer.email!);
+                      toast.success("Email copied to clipboard");
+                    }}
+                  >
+                    <Mail className="h-3.5 w-3.5" />
+                    <span>{customer.email}</span>
+                  </button>
+                )}
+                {customer.phone && (
+                  <button
+                    type="button"
+                    className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(customer.phone!);
+                      toast.success("Phone number copied to clipboard");
+                    }}
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                    <span>{customer.phone}</span>
+                  </button>
+                )}
+                {customer.address && (
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <MapPin className="h-3.5 w-3.5" />
+                    <span>{customer.address}</span>
+                  </div>
+                )}
+              </div>
+            )}
+            {customer.notes && (
+              <p className="mt-2 text-sm text-muted-foreground whitespace-pre-wrap">
+                {customer.notes}
               </p>
             )}
           </div>
+          <Button variant="outline" size="sm" onClick={() => setShowEditForm(true)}>
+            <Pencil className="mr-1 h-3.5 w-3.5" />
+            Edit Customer
+          </Button>
         </div>
       </div>
-
-      {/* Contact Info */}
-      <Card className="border-0 shadow-sm">
-        <CardContent className="p-5">
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            {customer.email && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Mail className="h-4 w-4" />
-                <span>{customer.email}</span>
-              </div>
-            )}
-            {customer.phone && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Phone className="h-4 w-4" />
-                <span>{customer.phone}</span>
-              </div>
-            )}
-            {customer.address && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>{customer.address}</span>
-              </div>
-            )}
-            {customer.company && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Building2 className="h-4 w-4" />
-                <span>{customer.company}</span>
-              </div>
-            )}
-          </div>
-          {customer.notes && (
-            <p className="mt-3 text-sm text-muted-foreground whitespace-pre-wrap border-t pt-3">
-              {customer.notes}
-            </p>
-          )}
-        </CardContent>
-      </Card>
 
       {/* Vehicles */}
       <div>
@@ -157,6 +174,11 @@ export function CustomerDetailClient({ customer, unitSystem = "imperial" }: { cu
           </div>
         )}
       </div>
+      <CustomerForm
+        open={showEditForm}
+        onOpenChange={setShowEditForm}
+        customer={customer}
+      />
     </div>
   );
 }
