@@ -122,9 +122,11 @@ model Vehicle {
   purchaseDate  DateTime?
   purchasePrice Float?
   imageUrl      String?
-  isArchived    Boolean   @default(false)
-  archiveReason String?
-  createdAt     DateTime  @default(now())
+  isArchived             Boolean   @default(false)
+  archiveReason          String?
+  maintenanceDismissed   Boolean   @default(false)
+  maintenanceDismissedAt DateTime?
+  createdAt              DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   userId String

@@ -67,30 +67,37 @@ export default async function VehicleDetailPage({
     lastServiceMileage: number;
     serviceInterval: number;
     mileageSinceLastService: number;
-    status: "overdue" | "approaching" | "ok";
+    status: "overdue" | "approaching" | "ok" | null;
+    maintenanceDismissed: boolean;
+    confidencePercent: number;
   } | null = null;
 
-  if (maintenanceEnabled) {
-    const predResult = await getVehiclePredictedMileage(id);
-    if (predResult.success && predResult.data) {
-      const p = predResult.data;
-      const mileageSinceLastService = p.predictedMileage - p.lastServiceMileage;
+  const predResult = await getVehiclePredictedMileage(id);
+  if (predResult.success && predResult.data) {
+    const p = predResult.data;
+    const mileageSinceLastService = p.predictedMileage - p.lastServiceMileage;
+
+    let status: "overdue" | "approaching" | "ok" | null = null;
+    if (maintenanceEnabled) {
       const approachingThreshold = parseInt(maintenanceSettings[SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD] || "1000", 10);
-      let status: "overdue" | "approaching" | "ok" = "ok";
+      status = "ok";
       if (mileageSinceLastService >= serviceInterval) {
         status = "overdue";
       } else if (mileageSinceLastService >= serviceInterval - approachingThreshold) {
         status = "approaching";
       }
-      predictionData = {
-        predictedMileage: p.predictedMileage,
-        avgPerDay: p.avgPerDay,
-        lastServiceMileage: p.lastServiceMileage,
-        serviceInterval,
-        mileageSinceLastService,
-        status,
-      };
     }
+
+    predictionData = {
+      predictedMileage: p.predictedMileage,
+      avgPerDay: p.avgPerDay,
+      lastServiceMileage: p.lastServiceMileage,
+      serviceInterval,
+      mileageSinceLastService,
+      status,
+      maintenanceDismissed: result.data.maintenanceDismissed,
+      confidencePercent: p.confidencePercent,
+    };
   }
 
   return (

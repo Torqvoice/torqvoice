@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useFormatDate } from "@/lib/use-format-date";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -23,8 +24,10 @@ import {
   Gauge,
   Loader2,
   Users,
+  X,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
+import { dismissMaintenance } from "@/features/vehicles/Actions/dismissMaintenance";
 
 interface ServiceItem {
   id: string;
@@ -80,6 +83,7 @@ interface VehicleDueForService {
   mileageSinceLastService: number;
   serviceInterval: number;
   status: "overdue" | "approaching";
+  confidencePercent: number;
 }
 
 export function DashboardClient({
@@ -99,6 +103,16 @@ export function DashboardClient({
   const router = useRouter();
   const { formatDate } = useFormatDate();
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
+  const [dismissingId, setDismissingId] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  const handleDismiss = (vehicleId: string) => {
+    setDismissingId(vehicleId);
+    startTransition(async () => {
+      await dismissMaintenance(vehicleId);
+      setDismissingId(null);
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -151,11 +165,14 @@ export function DashboardClient({
       {/* Vehicles Due for Service */}
       {vehiclesDueForService.length > 0 && (
         <Card className="border-0 shadow-sm">
-          <CardHeader className="pb-3">
+          <CardHeader className="pb-1">
             <CardTitle className="flex items-center gap-2 text-base">
               <Gauge className="h-4 w-4" />
-              Vehicles Due for Service
+              Predicted Maintenance Due
             </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Based on service history and estimated daily mileage
+            </p>
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y">
@@ -184,10 +201,12 @@ export function DashboardClient({
                         Est. {v.predictedMileage.toLocaleString()} {distUnit}
                         {" · "}
                         {v.mileageSinceLastService.toLocaleString()} {distUnit} since last service
+                        {" · "}
+                        {v.confidencePercent}% certainty
                       </p>
                     </div>
                   </div>
-                  <div className="shrink-0 ml-3">
+                  <div className="shrink-0 ml-3 flex items-center gap-1.5">
                     {v.status === "overdue" ? (
                       <Badge variant="destructive" className="text-[10px]">
                         Overdue
@@ -197,6 +216,22 @@ export function DashboardClient({
                         Approaching
                       </Badge>
                     )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                      disabled={dismissingId === v.vehicleId}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDismiss(v.vehicleId);
+                      }}
+                    >
+                      {dismissingId === v.vehicleId ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <X className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
                   </div>
                 </div>
               ))}

@@ -321,13 +321,18 @@ export async function createServiceRecord(input: unknown) {
       revalidatePath("/inventory");
     }
 
-    // Update vehicle mileage if service mileage is higher
+    // Update vehicle mileage if service mileage is higher, and reset maintenance dismissed
+    const vehicleUpdate: { mileage?: number; maintenanceDismissed: boolean; maintenanceDismissedAt: null } = {
+      maintenanceDismissed: false,
+      maintenanceDismissedAt: null,
+    };
     if (data.mileage && data.mileage > vehicle.mileage) {
-      await db.vehicle.update({
-        where: { id: vehicle.id },
-        data: { mileage: data.mileage },
-      });
+      vehicleUpdate.mileage = data.mileage;
     }
+    await db.vehicle.update({
+      where: { id: vehicle.id },
+      data: vehicleUpdate,
+    });
 
     revalidatePath("/");
     revalidatePath(`/vehicles/${data.vehicleId}`);
