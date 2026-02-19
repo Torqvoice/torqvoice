@@ -7,16 +7,16 @@
 SSH_SOCK="/tmp/ssh-agent-vscode.sock"
 
 # --- Copy SSH keys from host ---
+NODE_SSH="/home/node/.ssh"
 if [ -d "/tmp/host-ssh" ]; then
-    sudo cp -r /tmp/host-ssh /tmp/ssh-copy
-    sudo chown -R node:node /tmp/ssh-copy
-    mkdir -p ~/.ssh
-    cp /tmp/ssh-copy/* ~/.ssh/ 2>/dev/null
-    chmod 700 ~/.ssh
-    chmod 600 ~/.ssh/id_* 2>/dev/null
-    chmod 644 ~/.ssh/*.pub ~/.ssh/known_hosts ~/.ssh/config 2>/dev/null
-    rm -rf /tmp/ssh-copy
-    echo "✓ SSH keys copied"
+    mkdir -p "$NODE_SSH"
+    cp /tmp/host-ssh/* "$NODE_SSH/"
+    chmod 700 "$NODE_SSH"
+    chmod 600 "$NODE_SSH"/id_* 2>/dev/null
+    chmod 644 "$NODE_SSH"/*.pub "$NODE_SSH"/known_hosts "$NODE_SSH"/config 2>/dev/null
+    echo "✓ SSH keys copied to $NODE_SSH"
+else
+    echo "✗ /tmp/host-ssh not found — SSH mount missing"
 fi
 
 # --- Start ssh-agent with fixed socket ---
