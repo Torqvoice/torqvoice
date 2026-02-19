@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Coins, Loader2, Ruler, Save } from "lucide-react";
+import { Coins, Loader2, Save } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
@@ -64,14 +64,12 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
   const [currencyCode, setCurrencyCode] = useState(settings[SETTING_KEYS.CURRENCY_CODE] || "USD");
   const [taxEnabled, setTaxEnabled] = useState(settings[SETTING_KEYS.TAX_ENABLED] !== "false");
   const [defaultTaxRate, setDefaultTaxRate] = useState(settings[SETTING_KEYS.DEFAULT_TAX_RATE] || "0");
-  const [unitSystem, setUnitSystem] = useState(settings[SETTING_KEYS.UNIT_SYSTEM] || "imperial");
   const handleSave = async () => {
     setSaving(true);
     await setSettings({
       [SETTING_KEYS.CURRENCY_CODE]: currencyCode,
       [SETTING_KEYS.TAX_ENABLED]: String(taxEnabled),
       [SETTING_KEYS.DEFAULT_TAX_RATE]: taxEnabled ? defaultTaxRate : "0",
-      [SETTING_KEYS.UNIT_SYSTEM]: unitSystem,
     });
     setSaving(false);
     router.refresh();
@@ -142,45 +140,6 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
               </p>
             </div>
           )}
-
-          <Separator />
-
-          <div className="space-y-4">
-            <div className="flex flex-row items-center gap-3">
-              <Ruler className="h-5 w-5 text-muted-foreground" />
-              <h3 className="text-lg font-semibold">Units</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Choose between metric (km, liters) and imperial (miles, gallons) units.
-            </p>
-
-            <div className="space-y-2">
-              <Label htmlFor="unitSystem">Unit System</Label>
-              <Select value={unitSystem} onValueChange={setUnitSystem}>
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="metric">Metric (km, liters)</SelectItem>
-                  <SelectItem value="imperial">Imperial (miles, gallons)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="rounded-lg border p-3 text-sm text-muted-foreground">
-              {unitSystem === "metric" ? (
-                <div className="space-y-1">
-                  <p>Distance: <span className="font-medium text-foreground">kilometers (km)</span></p>
-                  <p>Volume: <span className="font-medium text-foreground">liters (L)</span></p>
-                </div>
-              ) : (
-                <div className="space-y-1">
-                  <p>Distance: <span className="font-medium text-foreground">miles (mi)</span></p>
-                  <p>Volume: <span className="font-medium text-foreground">gallons (gal)</span></p>
-                </div>
-              )}
-            </div>
-          </div>
 
           </div>
           </ReadOnlyWrapper>

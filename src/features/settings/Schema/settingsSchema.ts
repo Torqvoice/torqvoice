@@ -57,6 +57,9 @@ export const SETTING_KEYS = {
   QUOTE_PRIMARY_COLOR: "quote.primaryColor",
   QUOTE_FONT_FAMILY: "quote.fontFamily",
   QUOTE_HEADER_STYLE: "quote.headerStyle",
+  PREDICTED_MAINTENANCE_ENABLED: "maintenance.enabled",
+  MAINTENANCE_SERVICE_INTERVAL: "maintenance.serviceInterval",
+  MAINTENANCE_APPROACHING_THRESHOLD: "maintenance.approachingThreshold",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

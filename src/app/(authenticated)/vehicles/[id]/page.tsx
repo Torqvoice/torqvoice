@@ -3,6 +3,7 @@ import { getServiceRecordsPaginated } from "@/features/vehicles/Actions/serviceA
 import { getCustomersList } from "@/features/customers/Actions/customerActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { getVehiclePredictedMileage } from "@/features/vehicles/Actions/predictedMaintenanceActions";
 import { VehicleDetailClient } from "./vehicle-detail-client";
 import { PageHeader } from "@/components/page-header";
 
@@ -21,11 +22,16 @@ export default async function VehicleDetailPage({
   const search = typeof sp.search === "string" ? sp.search : "";
   const type = typeof sp.type === "string" ? sp.type : "all";
 
-  const [result, customersResult, serviceResult, settingsResult] = await Promise.all([
+  const [result, customersResult, serviceResult, settingsResult, maintenanceSettingsResult] = await Promise.all([
     getVehicle(id),
     getCustomersList(),
     getServiceRecordsPaginated(id, { page, pageSize, search, type }),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
+    getSettings([
+      SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED,
+      SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL,
+      SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD,
+    ]),
   ]);
 
   if (!result.success || !result.data) {
@@ -49,6 +55,44 @@ export default async function VehicleDetailPage({
   const currencyCode = currencySettings[SETTING_KEYS.CURRENCY_CODE] || "USD";
   const unitSystem = (currencySettings[SETTING_KEYS.UNIT_SYSTEM] || "imperial") as "metric" | "imperial";
 
+  const maintenanceSettings = maintenanceSettingsResult.success && maintenanceSettingsResult.data
+    ? maintenanceSettingsResult.data
+    : {};
+  const maintenanceEnabled = maintenanceSettings[SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED] === "true";
+  const serviceInterval = parseInt(maintenanceSettings[SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL] || "15000", 10);
+
+  let predictionData: {
+    predictedMileage: number;
+    avgPerDay: number;
+    lastServiceMileage: number;
+    serviceInterval: number;
+    mileageSinceLastService: number;
+    status: "overdue" | "approaching" | "ok";
+  } | null = null;
+
+  if (maintenanceEnabled) {
+    const predResult = await getVehiclePredictedMileage(id);
+    if (predResult.success && predResult.data) {
+      const p = predResult.data;
+      const mileageSinceLastService = p.predictedMileage - p.lastServiceMileage;
+      const approachingThreshold = parseInt(maintenanceSettings[SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD] || "1000", 10);
+      let status: "overdue" | "approaching" | "ok" = "ok";
+      if (mileageSinceLastService >= serviceInterval) {
+        status = "overdue";
+      } else if (mileageSinceLastService >= serviceInterval - approachingThreshold) {
+        status = "approaching";
+      }
+      predictionData = {
+        predictedMileage: p.predictedMileage,
+        avgPerDay: p.avgPerDay,
+        lastServiceMileage: p.lastServiceMileage,
+        serviceInterval,
+        mileageSinceLastService,
+        status,
+      };
+    }
+  }
+
   return (
     <>
       <PageHeader />
@@ -61,6 +105,7 @@ export default async function VehicleDetailPage({
           serviceType={type}
           currencyCode={currencyCode}
           unitSystem={unitSystem}
+          predictionData={predictionData}
         />
       </div>
     </>
