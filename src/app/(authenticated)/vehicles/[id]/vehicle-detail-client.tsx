@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -26,6 +26,7 @@ import { deleteNote, toggleNotePin } from '@/features/vehicles/Actions/noteActio
 import { toggleReminder, deleteReminder } from '@/features/vehicles/Actions/reminderActions'
 import { unarchiveVehicle } from '@/features/vehicles/Actions/unarchiveVehicle'
 import { deleteVehicle } from '@/features/vehicles/Actions/deleteVehicle'
+import { dismissMaintenance, undismissMaintenance } from '@/features/vehicles/Actions/dismissMaintenance'
 import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
 import { formatCurrency } from '@/lib/format'
 import {
@@ -38,7 +39,9 @@ import {
   CheckCircle2,
   Clock,
   DollarSign,
+  EyeOff,
   Gauge,
+  Loader2,
   MoreVertical,
   Pencil,
   Pin,
@@ -47,7 +50,9 @@ import {
   StickyNote,
   Trash2,
   TrendingUp,
+  Undo2,
   Wrench,
+  X,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -171,7 +176,9 @@ export function VehicleDetailClient({
     lastServiceMileage: number
     serviceInterval: number
     mileageSinceLastService: number
-    status: 'overdue' | 'approaching' | 'ok'
+    status: 'overdue' | 'approaching' | 'ok' | null
+    maintenanceDismissed: boolean
+    confidencePercent: number
   } | null
 }) {
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
@@ -188,6 +195,19 @@ export function VehicleDetailClient({
   const [showImage, setShowImage] = useState(false)
   const [showArchiveDialog, setShowArchiveDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [isDismissPending, startDismissTransition] = useTransition()
+
+  const handleDismissMaintenance = () => {
+    startDismissTransition(async () => {
+      await dismissMaintenance(vehicle.id)
+    })
+  }
+
+  const handleUndismissMaintenance = () => {
+    startDismissTransition(async () => {
+      await undismissMaintenance(vehicle.id)
+    })
+  }
 
   const now = new Date()
   const sevenDaysFromNow = new Date(now)
@@ -421,19 +441,79 @@ export function VehicleDetailClient({
           {predictionData && (
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <TrendingUp className="h-3.5 w-3.5" />
+              <span className="text-xs">
+                {unitSystem === 'metric' ? 'Predicted Km' : 'Predicted Mileage'}
+              </span>
               <span className="font-semibold text-foreground">
                 ~{predictionData.predictedMileage.toLocaleString()}
               </span>
-              <span className="text-xs">{distUnit} est.</span>
-              {predictionData.status === 'overdue' && (
-                <Badge variant="destructive" className="text-[10px] ml-1">
-                  Service Overdue
-                </Badge>
-              )}
-              {predictionData.status === 'approaching' && (
-                <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px] ml-1">
-                  Service Soon
-                </Badge>
+              <span className="text-[10px] text-muted-foreground/70">({predictionData.confidencePercent}%)</span>
+              {predictionData.status && predictionData.maintenanceDismissed ? (
+                <>
+                  <Badge variant="outline" className="text-[10px] ml-1 text-muted-foreground">
+                    <EyeOff className="mr-0.5 h-3 w-3" />
+                    Dismissed
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-5 px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
+                    disabled={isDismissPending}
+                    onClick={handleUndismissMaintenance}
+                  >
+                    {isDismissPending ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <>
+                        <Undo2 className="mr-0.5 h-3 w-3" />
+                        Undo
+                      </>
+                    )}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {predictionData.status === 'overdue' && (
+                    <>
+                      <Badge variant="destructive" className="text-[10px] ml-1">
+                        Service Overdue
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 text-muted-foreground hover:text-foreground ml-0.5"
+                        disabled={isDismissPending}
+                        onClick={handleDismissMaintenance}
+                      >
+                        {isDismissPending ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <X className="h-3 w-3" />
+                        )}
+                      </Button>
+                    </>
+                  )}
+                  {predictionData.status === 'approaching' && (
+                    <>
+                      <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px] ml-1">
+                        Service Soon
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 text-muted-foreground hover:text-foreground ml-0.5"
+                        disabled={isDismissPending}
+                        onClick={handleDismissMaintenance}
+                      >
+                        {isDismissPending ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <X className="h-3 w-3" />
+                        )}
+                      </Button>
+                    </>
+                  )}
+                </>
               )}
             </div>
           )}

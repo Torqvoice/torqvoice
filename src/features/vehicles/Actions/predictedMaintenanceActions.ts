@@ -11,6 +11,7 @@ export type PredictedMileage = {
   lastServiceDate: Date;
   lastServiceMileage: number;
   confidence: number;
+  confidencePercent: number;
 };
 
 export type VehicleDueForService = {
@@ -24,7 +25,14 @@ export type VehicleDueForService = {
   mileageSinceLastService: number;
   serviceInterval: number;
   status: "overdue" | "approaching";
+  confidencePercent: number;
 };
+
+function calculateConfidencePercent(dataPoints: number, totalDays: number): number {
+  const pointScore = Math.min(50, 15 * Math.log2(dataPoints));
+  const timeScore = Math.min(30, (totalDays / 365) * 30);
+  return Math.min(95, Math.round(15 + pointScore + timeScore));
+}
 
 export async function getVehiclePredictedMileage(vehicleId: string) {
   return withAuth(async ({ organizationId }) => {
@@ -73,6 +81,7 @@ export async function getVehiclePredictedMileage(vehicleId: string) {
       lastServiceDate: latest.date,
       lastServiceMileage: latest.mileage,
       confidence: dataPoints.length,
+      confidencePercent: calculateConfidencePercent(dataPoints.length, totalDays),
     } satisfies PredictedMileage;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
 }
@@ -113,7 +122,7 @@ export async function getVehiclesDueForService() {
 
     // Get all non-archived vehicles with their service records that have mileage
     const vehicles = await db.vehicle.findMany({
-      where: { organizationId, isArchived: false },
+      where: { organizationId, isArchived: false, maintenanceDismissed: false },
       select: {
         id: true,
         make: true,
@@ -182,6 +191,7 @@ export async function getVehiclesDueForService() {
           mileageSinceLastService,
           serviceInterval,
           status,
+          confidencePercent: calculateConfidencePercent(records.length, totalDays),
         });
       }
     }
