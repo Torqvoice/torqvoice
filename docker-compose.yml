@@ -1,7 +1,7 @@
 services:
   app:
     container_name: torqvoice
-    image: ghcr.io/sinamics/torqvoice:main
+    image: ghcr.io/torqvoice/torqvoice:latest
     restart: unless-stopped
     ports:
       - "3000:3000"
