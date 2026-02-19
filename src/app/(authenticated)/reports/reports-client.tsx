@@ -32,6 +32,7 @@ import {
   Cog,
   CalendarDays,
   UserCheck,
+  Receipt,
 } from "lucide-react";
 import {
   getRevenueReport,
@@ -42,6 +43,7 @@ import {
   getPartsUsageReport,
   getJobAnalyticsReport,
   getCustomerRetentionReport,
+  getTaxReport,
 } from "@/features/reports/Actions/reportActions";
 import { formatCurrency } from "@/lib/format";
 import type {
@@ -53,6 +55,7 @@ import type {
   PartsUsageReport,
   JobAnalyticsReport,
   CustomerRetentionReport,
+  TaxReport,
 } from "@/features/reports/Schema/reportTypes";
 import { RevenueBarChart, RevenueTypeDonut } from "@/features/reports/Components/RevenueCharts";
 import { ServiceStatusChart, ServiceTypeDonut } from "@/features/reports/Components/ServiceCharts";
@@ -61,6 +64,7 @@ import { TechnicianBarChart } from "@/features/reports/Components/TechnicianChar
 import { PartsDonut } from "@/features/reports/Components/PartsCharts";
 import { DayOfWeekChart, ServiceTypeAnalyticsDonut, MonthlyTrendChart } from "@/features/reports/Components/JobAnalyticsCharts";
 import { RetentionBarChart } from "@/features/reports/Components/RetentionCharts";
+import { TaxBarChart } from "@/features/reports/Components/TaxCharts";
 import {
   exportRevenueCsv,
   exportServicesCsv,
@@ -70,9 +74,10 @@ import {
   exportPartsCsv,
   exportJobAnalyticsCsv,
   exportRetentionCsv,
+  exportTaxCsv,
 } from "@/features/reports/Components/csv-export";
 
-type ReportTab = "revenue" | "services" | "customers" | "inventory" | "technicians" | "parts" | "job-analytics" | "retention";
+type ReportTab = "revenue" | "services" | "customers" | "inventory" | "technicians" | "parts" | "job-analytics" | "retention" | "tax";
 
 interface ReportsClientProps {
   currencyCode: string;
@@ -96,6 +101,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
   const [partsData, setPartsData] = useState<PartsUsageReport | null>(null);
   const [jobAnalyticsData, setJobAnalyticsData] = useState<JobAnalyticsReport | null>(null);
   const [retentionData, setRetentionData] = useState<CustomerRetentionReport | null>(null);
+  const [taxData, setTaxData] = useState<TaxReport | null>(null);
 
   const fmtCurrency = useCallback(
     (value: number) => formatCurrency(value, currencyCode),
@@ -148,6 +154,11 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             if (result.success && result.data) setRetentionData(result.data);
             break;
           }
+          case "tax": {
+            const result = await getTaxReport(dateParams);
+            if (result.success && result.data) setTaxData(result.data);
+            break;
+          }
         }
       } catch (error) {
         console.error("Failed to fetch report:", error);
@@ -175,6 +186,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
       parts: partsData,
       "job-analytics": jobAnalyticsData,
       retention: retentionData,
+      tax: taxData,
     };
     if (!dataMap[tab]) {
       fetchReport(tab);
@@ -211,6 +223,9 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
       case "retention":
         if (retentionData) exportRetentionCsv(retentionData, currencyCode);
         break;
+      case "tax":
+        if (taxData) exportTaxCsv(taxData, currencyCode);
+        break;
     }
   };
 
@@ -223,6 +238,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
     parts: partsData,
     "job-analytics": jobAnalyticsData,
     retention: retentionData,
+    tax: taxData,
   };
   const hasData = !!dataMap[activeTab];
 
@@ -264,6 +280,10 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
           <TabsTrigger value="retention" className="gap-1.5">
             <UserCheck className="h-4 w-4" />
             Retention
+          </TabsTrigger>
+          <TabsTrigger value="tax" className="gap-1.5">
+            <Receipt className="h-4 w-4" />
+            Tax
           </TabsTrigger>
         </TabsList>
 
@@ -545,7 +565,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
       <TabsContent value="inventory">
         {!loading && inventoryData && (
           <div className="space-y-4">
-            <div className="grid gap-3 grid-cols-3">
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-5">
               <Card className="border-0 shadow-sm">
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
@@ -574,9 +594,35 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <DollarSign className="h-4 w-4 text-amber-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Value</p>
+                    <p className="text-xs text-muted-foreground">Cost Value</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(inventoryData.totalValue)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-sm">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
+                    <DollarSign className="h-4 w-4 text-violet-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">Sell Value</p>
+                    <p className="text-lg font-semibold truncate">
+                      {fmtCurrency(inventoryData.totalSellValue)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-sm">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
+                    <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">Potential Margin</p>
+                    <p className="text-lg font-semibold truncate">
+                      {fmtCurrency(inventoryData.totalSellValue - inventoryData.totalValue)}
                     </p>
                   </div>
                 </CardContent>
@@ -972,6 +1018,129 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
           </div>
         )}
         {!loading && !retentionData && <EmptyState />}
+      </TabsContent>
+
+      {/* Tax Tab */}
+      <TabsContent value="tax">
+        {!loading && taxData && (
+          <div className="space-y-4">
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+              <Card className="border-0 shadow-sm">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
+                    <Receipt className="h-4 w-4 text-amber-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">Total Tax Collected</p>
+                    <p className="text-lg font-semibold truncate">
+                      {fmtCurrency(taxData.summary.totalTaxCollected)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-sm">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
+                    <DollarSign className="h-4 w-4 text-blue-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">Taxable Revenue</p>
+                    <p className="text-lg font-semibold truncate">
+                      {fmtCurrency(taxData.summary.totalTaxableAmount)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-sm">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
+                    <BarChart3 className="h-4 w-4 text-violet-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">Invoices with Tax</p>
+                    <p className="text-lg font-semibold">{taxData.summary.totalInvoices}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {taxData.monthly.length > 0 && (
+              <Card className="border-0 shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Monthly Tax Collected</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <TaxBarChart data={taxData.monthly} formatCurrency={fmtCurrency} />
+                </CardContent>
+              </Card>
+            )}
+
+            {taxData.byRate.length > 0 && (
+              <Card className="border-0 shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Tax by Rate</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Tax Rate</TableHead>
+                        <TableHead className="text-right">Tax Collected</TableHead>
+                        <TableHead className="text-right">Invoices</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {taxData.byRate.map((row) => (
+                        <TableRow key={row.taxRate}>
+                          <TableCell className="text-sm font-medium">{row.taxRate}%</TableCell>
+                          <TableCell className="text-right text-sm">
+                            {fmtCurrency(row.taxCollected)}
+                          </TableCell>
+                          <TableCell className="text-right text-sm">{row.invoiceCount}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+
+            {taxData.monthly.length > 0 && (
+              <Card className="border-0 shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Monthly Breakdown</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Month</TableHead>
+                        <TableHead className="text-right">Tax Collected</TableHead>
+                        <TableHead className="text-right">Taxable Amount</TableHead>
+                        <TableHead className="text-right">Invoices</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {taxData.monthly.map((row) => (
+                        <TableRow key={row.month}>
+                          <TableCell className="text-sm">{row.month}</TableCell>
+                          <TableCell className="text-right text-sm">
+                            {fmtCurrency(row.taxCollected)}
+                          </TableCell>
+                          <TableCell className="text-right text-sm">
+                            {fmtCurrency(row.taxableAmount)}
+                          </TableCell>
+                          <TableCell className="text-right text-sm">{row.invoiceCount}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+        {!loading && !taxData && <EmptyState />}
       </TabsContent>
     </Tabs>
   );

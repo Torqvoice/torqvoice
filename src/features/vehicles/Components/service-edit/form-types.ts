@@ -9,6 +9,7 @@ export interface InventoryPartOption {
   partNumber: string | null
   name: string
   unitCost: number
+  sellPrice: number
   quantity: number
   category: string | null
 }

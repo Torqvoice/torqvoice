@@ -339,6 +339,7 @@ model InventoryPart {
   quantity      Int      @default(0)
   minQuantity   Int      @default(0)
   unitCost      Float    @default(0)
+  sellPrice     Float    @default(0)
   supplier      String?
   supplierPhone String?
   supplierEmail String?

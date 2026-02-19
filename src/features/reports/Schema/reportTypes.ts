@@ -60,6 +60,7 @@ export interface LowStockPart {
   partNumber: string | null;
   quantity: number;
   unitCost: number | null;
+  sellPrice: number | null;
   minQuantity: number | null;
 }
 
@@ -67,6 +68,7 @@ export interface InventoryReport {
   totalParts: number;
   totalItems: number;
   totalValue: number;
+  totalSellValue: number;
   lowStock: LowStockPart[];
 }
 
@@ -142,4 +144,27 @@ export interface CustomerRetentionReport {
   totalActive: number;
   avgTimeBetweenVisits: number | null;
   topReturning: RetentionCustomer[];
+}
+
+export interface MonthlyTax {
+  month: string;
+  taxCollected: number;
+  invoiceCount: number;
+  taxableAmount: number;
+}
+
+export interface TaxByRate {
+  taxRate: number;
+  taxCollected: number;
+  invoiceCount: number;
+}
+
+export interface TaxReport {
+  monthly: MonthlyTax[];
+  byRate: TaxByRate[];
+  summary: {
+    totalTaxCollected: number;
+    totalTaxableAmount: number;
+    totalInvoices: number;
+  };
 }

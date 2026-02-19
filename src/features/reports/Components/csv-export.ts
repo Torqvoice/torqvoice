@@ -7,6 +7,7 @@ import type {
   PartsUsageReport,
   JobAnalyticsReport,
   CustomerRetentionReport,
+  TaxReport,
 } from "../Schema/reportTypes";
 import { formatCurrency } from "@/lib/format";
 
@@ -164,5 +165,21 @@ export function exportRetentionCsv(data: CustomerRetentionReport, currencyCode: 
     ["Customer", "Company", "Visits", "Total Spent", "Avg Days Between Visits"],
     rows,
     ["name", "company", "visitCount", "totalSpent", "avgDaysBetweenVisits"],
+  );
+}
+
+export function exportTaxCsv(data: TaxReport, currencyCode: string) {
+  const fmt = (n: number) => formatCurrency(n, currencyCode);
+  const rows = data.monthly.map((m) => ({
+    month: m.month,
+    taxCollected: fmt(m.taxCollected),
+    taxableAmount: fmt(m.taxableAmount),
+    invoiceCount: m.invoiceCount,
+  }));
+  downloadCsv(
+    "tax-report.csv",
+    ["Month", "Tax Collected", "Taxable Amount", "Invoice Count"],
+    rows,
+    ["month", "taxCollected", "taxableAmount", "invoiceCount"],
   );
 }

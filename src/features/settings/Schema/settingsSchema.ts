@@ -60,6 +60,7 @@ export const SETTING_KEYS = {
   PREDICTED_MAINTENANCE_ENABLED: "maintenance.enabled",
   MAINTENANCE_SERVICE_INTERVAL: "maintenance.serviceInterval",
   MAINTENANCE_APPROACHING_THRESHOLD: "maintenance.approachingThreshold",
+  INVENTORY_MARKUP_MULTIPLIER: "inventory.markupMultiplier",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];
