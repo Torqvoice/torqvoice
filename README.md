@@ -5,7 +5,7 @@
 	</a>
 
    <p align="center">
-   	Torqvoice — modern workshop and service management.
+   	Torqvoice, modern workshop and service management.
    	<br />
    	<br />
    	<a href="https://github.com/sinamics/torqvoice/issues/new?labels=bug&template=bug_template.yml&title=%5BBug%5D%3A+">Bug Report</a>
@@ -24,7 +24,7 @@
 </p>
 <br />
 
-Torqvoice is a self-hosted workshop management platform built for automotive service businesses. It replaces scattered tools with a single place to manage customers, vehicles, service records, quotes, invoicing, inventory, and billing — all with a clean modern UI.
+Torqvoice is a self-hosted workshop management platform built for automotive service businesses. It replaces scattered tools with a single place to manage customers, vehicles, service records, quotes, invoicing, inventory, billing all with a clean modern UI.
 
 ## Deploy with Docker Compose
 
