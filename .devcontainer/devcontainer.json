@@ -8,18 +8,43 @@
     5432,
     8080
   ],
-  "postCreateCommand": "npm install && npx prisma generate && npx prisma db push",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/tmp/host-ssh,type=bind,readonly"
+  ],
+  "postCreateCommand": "git config --global --add safe.directory /workspace && bash .devcontainer/setup-ssh.sh",
+  "remoteEnv": {
+    "SSH_AUTH_SOCK": "/tmp/ssh-agent-vscode.sock"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
-        "dbaeumer.vscode-eslint",
         "bradlc.vscode-tailwindcss",
+        "biomejs.biome",
+        "ms-vscode.vscode-typescript-next",
         "Prisma.prisma",
-        "esbenp.prettier-vscode"
+        "ms-vscode.vscode-json",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.path-intellisense",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "GitHub.copilot-labs",
+        "bruceyuhb.hsl-preview"
       ],
       "settings": {
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "quickfix.biome": "explicit",
+          "source.organizeImports.biome": "explicit"
+        }
       }
     }
-  }
+  },
+  "remoteUser": "node"
 }
