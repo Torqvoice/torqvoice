@@ -33,6 +33,11 @@ export default async function PublicInspectionPage({
       },
       template: { select: { name: true } },
       items: { orderBy: { sortOrder: "asc" } },
+      quotes: {
+        where: { publicToken: { not: null } },
+        select: { publicToken: true },
+        take: 1,
+      },
     },
   });
 
@@ -103,6 +108,11 @@ export default async function PublicInspectionPage({
     })),
   };
 
+  const linkedQuote = inspection.quotes?.[0];
+  const quoteShareUrl = linkedQuote?.publicToken
+    ? `/share/quote/${orgId}/${linkedQuote.publicToken}`
+    : undefined;
+
   return (
     <InspectionView
       inspection={publicInspection}
@@ -115,6 +125,7 @@ export default async function PublicInspectionPage({
       publicToken={token}
       orgId={orgId}
       hasExistingQuoteRequest={!!existingRequest}
+      quoteShareUrl={quoteShareUrl}
     />
   );
 }

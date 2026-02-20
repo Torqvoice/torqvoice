@@ -11,7 +11,11 @@ import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Check, ChevronsUpDown, Loader2, Settings } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 import { toast } from "sonner";
 import { createInspection } from "../Actions/inspectionActions";
 import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
@@ -50,6 +54,7 @@ export function NewInspectionDialog({
   const [vehicleId, setVehicleId] = useState(preselectedVehicleId || "");
   const [templateId, setTemplateId] = useState(defaultTemplate?.id || "");
   const [mileage, setMileage] = useState("");
+  const [vehiclePopoverOpen, setVehiclePopoverOpen] = useState(false);
 
   useEffect(() => {
     if (open && vehicles.length === 0) {
@@ -111,24 +116,67 @@ export function NewInspectionDialog({
                 Loading vehicles...
               </div>
             ) : (
-              <Select value={vehicleId} onValueChange={setVehicleId} required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select vehicle" />
-                </SelectTrigger>
-                <SelectContent>
-                  {vehicles.map((v) => (
-                    <SelectItem key={v.id} value={v.id}>
-                      {v.year} {v.make} {v.model}
-                      {v.licensePlate ? ` (${v.licensePlate})` : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={vehiclePopoverOpen} onOpenChange={setVehiclePopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={vehiclePopoverOpen}
+                    className="w-full justify-between font-normal"
+                  >
+                    {vehicleId
+                      ? (() => {
+                          const v = vehicles.find((v) => v.id === vehicleId);
+                          return v
+                            ? `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ""}`
+                            : "Select vehicle";
+                        })()
+                      : "Select vehicle"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search vehicles..." />
+                    <CommandList>
+                      <CommandEmpty>No vehicles found.</CommandEmpty>
+                      <CommandGroup>
+                        {vehicles.map((v) => {
+                          const label = `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ""}`;
+                          return (
+                            <CommandItem
+                              key={v.id}
+                              value={label}
+                              onSelect={() => {
+                                setVehicleId(v.id);
+                                setVehiclePopoverOpen(false);
+                              }}
+                            >
+                              <Check className={cn("mr-2 h-4 w-4", vehicleId === v.id ? "opacity-100" : "opacity-0")} />
+                              {label}
+                            </CommandItem>
+                          );
+                        })}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label>Template</Label>
+            <div className="flex items-center justify-between">
+              <Label>Template</Label>
+              <Link
+                href="/settings/templates?tab=inspection"
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                onClick={() => onOpenChange(false)}
+              >
+                <Settings className="h-3 w-3" />
+                Manage templates
+              </Link>
+            </div>
             <Select value={templateId} onValueChange={setTemplateId} required>
               <SelectTrigger>
                 <SelectValue placeholder="Select template" />

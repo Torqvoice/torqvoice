@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { notify } from "@/lib/notify";
 import { z } from "zod";
 
 const createQuoteRequestSchema = z.object({
@@ -22,6 +23,7 @@ export async function createQuoteRequest(input: unknown) {
   // Verify the inspection exists and the token matches
   const inspection = await db.inspection.findFirst({
     where: { id: data.inspectionId, publicToken: data.publicToken },
+    include: { vehicle: { select: { customer: { select: { name: true } } } } },
   });
   if (!inspection) {
     return { success: false, error: "Inspection not found" };
@@ -42,6 +44,17 @@ export async function createQuoteRequest(input: unknown) {
       message: data.message,
       organizationId: inspection.organizationId,
     },
+  });
+
+  const customerName = inspection.vehicle?.customer?.name || "A customer";
+  notify({
+    organizationId: inspection.organizationId,
+    type: "inspection_quote_request",
+    title: "Quote Requested from Inspection",
+    message: `${customerName} requested a quote for ${data.selectedItemIds.length} item(s) from an inspection`,
+    entityType: "inspection",
+    entityId: inspection.id,
+    entityUrl: `/inspections/${inspection.id}`,
   });
 
   return { success: true };

@@ -769,3 +769,20 @@ model InspectionQuoteRequest {
   @@index([inspectionId])
   @@map("inspection_quote_requests")
 }
+
+model Notification {
+  id             String   @id @default(cuid())
+  type           String
+  title          String
+  message        String
+  entityType     String
+  entityId       String
+  entityUrl      String
+  read           Boolean  @default(false)
+  organizationId String
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([organizationId, read])
+  @@map("notifications")
+}
