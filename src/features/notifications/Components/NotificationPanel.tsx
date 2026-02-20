@@ -116,11 +116,13 @@ export function NotificationPanel() {
               {notifications.map((n) => {
                 const Icon = entityIcons[n.entityType] || Bell;
                 return (
-                  <button
+                  <div
                     key={n.id}
-                    type="button"
-                    className="flex w-full gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50"
+                    role="button"
+                    tabIndex={0}
+                    className="flex w-full cursor-pointer gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50"
                     onClick={() => handleClickNotification(n.id, n.entityUrl, n.read)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleClickNotification(n.id, n.entityUrl, n.read); }}
                   >
                     <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
                       <Icon className="h-4 w-4 text-muted-foreground" />
@@ -172,7 +174,7 @@ export function NotificationPanel() {
                         </>
                       )}
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>

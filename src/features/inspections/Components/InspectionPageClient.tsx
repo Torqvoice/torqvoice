@@ -56,7 +56,7 @@ interface InspectionData {
   };
   template: { id: string; name: string };
   items: InspectionItem[];
-  quotes: { id: string; quoteNumber: string | null; status: string }[];
+  quotes: { id: string; quoteNumber: string | null; status: string; createdAt: Date; user: { name: string } }[];
   quoteRequests: { id: string; message: string | null; selectedItemIds: string[]; createdAt: Date }[];
 }
 
@@ -601,8 +601,29 @@ export function InspectionPageClient({
         </div>
       </div>
 
-      {/* Pending quote request banner */}
-      {pendingQuoteRequest && (
+      {/* Quote created banner */}
+      {inspection.quotes.length > 0 ? (
+        <Card className="border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/20">
+          <CardContent className="flex items-center gap-3 py-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/15">
+              <FileText className="h-4 w-4 text-emerald-600" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+                Quote created by {inspection.quotes[0].user.name} on {formatDate(new Date(inspection.quotes[0].createdAt))}
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="shrink-0 border-emerald-500/30 text-emerald-900 hover:bg-emerald-100 dark:text-emerald-200 dark:hover:bg-emerald-900/30"
+              onClick={() => router.push(`/quotes/${inspection.quotes[0].id}`)}
+            >
+              View Quote
+            </Button>
+          </CardContent>
+        </Card>
+      ) : pendingQuoteRequest ? (
         <Card className="border-amber-500/30 bg-amber-50 dark:bg-amber-950/20">
           <CardContent className="flex items-start gap-3 py-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-500/15">
@@ -631,7 +652,7 @@ export function InspectionPageClient({
             </div>
           </CardContent>
         </Card>
-      )}
+      ) : null}
 
       {/* Inspection sections */}
       <div className="space-y-4">
