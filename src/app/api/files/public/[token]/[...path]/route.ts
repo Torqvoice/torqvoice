@@ -58,6 +58,14 @@ export async function GET(
     });
     if (quote?.organizationId) {
       orgId = quote.organizationId;
+    } else {
+      const inspection = await db.inspection.findFirst({
+        where: { publicToken: token },
+        select: { organizationId: true },
+      });
+      if (inspection?.organizationId) {
+        orgId = inspection.organizationId;
+      }
     }
   }
 

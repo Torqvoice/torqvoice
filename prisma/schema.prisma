@@ -108,26 +108,26 @@ model TwoFactor {
 }
 
 model Vehicle {
-  id            String    @id @default(cuid())
-  make          String
-  model         String
-  year          Int
-  vin           String?
-  licensePlate  String?
-  color         String?
-  mileage       Int       @default(0)
-  fuelType      String?   @default("gasoline")
-  transmission  String?   @default("automatic")
-  engineSize    String?
-  purchaseDate  DateTime?
-  purchasePrice Float?
-  imageUrl      String?
+  id                     String    @id @default(cuid())
+  make                   String
+  model                  String
+  year                   Int
+  vin                    String?
+  licensePlate           String?
+  color                  String?
+  mileage                Int       @default(0)
+  fuelType               String?   @default("gasoline")
+  transmission           String?   @default("automatic")
+  engineSize             String?
+  purchaseDate           DateTime?
+  purchasePrice          Float?
+  imageUrl               String?
   isArchived             Boolean   @default(false)
   archiveReason          String?
   maintenanceDismissed   Boolean   @default(false)
   maintenanceDismissedAt DateTime?
   createdAt              DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  updatedAt              DateTime  @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -144,6 +144,7 @@ model Vehicle {
   reminders         Reminder[]
   quotes            Quote[]
   recurringInvoices RecurringInvoice[]
+  inspections       Inspection[]
 
   @@index([organizationId])
   @@map("vehicles")
@@ -484,6 +485,7 @@ model Organization {
   settings               AppSetting[]
   subscription           Subscription?
   invitations            TeamInvitation[]
+  inspectionTemplates    InspectionTemplate[]
 
   @@map("organizations")
 }
@@ -656,4 +658,91 @@ model RecurringLabor {
   recurringInvoice   RecurringInvoice @relation(fields: [recurringInvoiceId], references: [id], onDelete: Cascade)
 
   @@map("recurring_labor")
+}
+
+model InspectionTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  sections    InspectionTemplateSection[]
+  inspections Inspection[]
+
+  @@index([organizationId])
+  @@map("inspection_templates")
+}
+
+model InspectionTemplateSection {
+  id        String @id @default(cuid())
+  name      String
+  sortOrder Int    @default(0)
+
+  templateId String
+  template   InspectionTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  items InspectionTemplateItem[]
+
+  @@index([templateId])
+  @@map("inspection_template_sections")
+}
+
+model InspectionTemplateItem {
+  id        String @id @default(cuid())
+  name      String
+  sortOrder Int    @default(0)
+
+  sectionId String
+  section   InspectionTemplateSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId])
+  @@map("inspection_template_items")
+}
+
+model Inspection {
+  id          String    @id @default(cuid())
+  status      String    @default("in_progress")
+  mileage     Int?
+  notes       String?
+  publicToken String?   @unique
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  templateId String
+  template   InspectionTemplate @relation(fields: [templateId], references: [id])
+
+  technicianId String
+
+  organizationId String
+
+  items InspectionItem[]
+
+  @@index([vehicleId])
+  @@index([organizationId])
+  @@map("inspections")
+}
+
+model InspectionItem {
+  id        String  @id @default(cuid())
+  name      String
+  section   String
+  sortOrder Int     @default(0)
+  condition String  @default("not_inspected")
+  notes     String?
+  imageUrl  String?
+
+  inspectionId String
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@index([inspectionId])
+  @@map("inspection_items")
 }
