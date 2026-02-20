@@ -1,7 +1,11 @@
 "use client";
 
+import { useState, useCallback, useEffect, useRef } from "react";
 import { formatDate as fmtDate, DEFAULT_DATE_FORMAT } from "@/lib/format";
-import { Check, X, AlertTriangle, ClipboardCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Check, CheckCircle2, Download, FileText, X, AlertTriangle, ClipboardCheck, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { QuoteRequestDialog } from "@/features/inspections/Components/QuoteRequestDialog";
+import { toast } from "sonner";
 
 interface InspectionItem {
   id: string;
@@ -68,6 +72,9 @@ export function InspectionView({
   showTorqvoiceBranding,
   dateFormat,
   timezone,
+  publicToken,
+  orgId,
+  hasExistingQuoteRequest,
 }: {
   inspection: InspectionRecord;
   workshop: { name: string; address: string; phone: string; email: string };
@@ -76,18 +83,107 @@ export function InspectionView({
   showTorqvoiceBranding: boolean;
   dateFormat?: string;
   timezone?: string;
+  publicToken: string;
+  orgId: string;
+  hasExistingQuoteRequest: boolean;
 }) {
   const fmt = dateFormat || DEFAULT_DATE_FORMAT;
   const tz = timezone || "America/New_York";
   const formatDate = (d: Date) => fmtDate(new Date(d), fmt, tz);
 
-  // Only show items that have been inspected (not "not_inspected")
-  const inspectedItems = inspection.items.filter((i) => i.condition !== "not_inspected");
+  const [showQuoteDialog, setShowQuoteDialog] = useState(false);
+  const [quoteRequested, setQuoteRequested] = useState(hasExistingQuoteRequest);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
 
-  // Group items by section
+  const handleCancelQuoteRequest = async () => {
+    setIsCancelling(true);
+    try {
+      const res = await fetch("/api/public/inspection-quote-request", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inspectionId: inspection.id, publicToken }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Quote request cancelled");
+        setQuoteRequested(false);
+      } else {
+        toast.error(data.error || "Failed to cancel request");
+      }
+    } catch {
+      toast.error("Failed to cancel request");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
+  // Collect all image URLs across all inspected items for the carousel
+  const allImages: { url: string; itemName: string }[] = [];
+  for (const item of inspection.items) {
+    if (item.condition === "not_inspected") continue;
+    for (const url of item.imageUrls) {
+      if (!/\.(mp4|webm|mov)$/i.test(url)) {
+        allImages.push({ url, itemName: item.name });
+      }
+    }
+  }
+
+  const openCarousel = (globalIndex: number) => setCarouselIndex(globalIndex);
+  const closeCarousel = () => setCarouselIndex(null);
+  const prevImage = useCallback(
+    () => setCarouselIndex((i) => (i !== null && i > 0 ? i - 1 : i)),
+    []
+  );
+  const nextImage = useCallback(
+    () => setCarouselIndex((i) => (i !== null && i < allImages.length - 1 ? i + 1 : i)),
+    [allImages.length]
+  );
+
+  // Keyboard navigation for carousel
+  useEffect(() => {
+    if (carouselIndex === null) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeCarousel();
+      else if (e.key === "ArrowLeft") prevImage();
+      else if (e.key === "ArrowRight") nextImage();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [carouselIndex, prevImage, nextImage]);
+
+  // Touch swipe for carousel
+  const touchStartX = useRef<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) prevImage();
+      else nextImage();
+    }
+    touchStartX.current = null;
+  };
+
+  const hasIssues = inspection.items.some(
+    (i) => i.condition === "fail" || i.condition === "attention"
+  );
+
+  // Only show items that have been inspected (not "not_inspected"), sorted by sortOrder
+  const inspectedItems = inspection.items
+    .filter((i) => i.condition !== "not_inspected")
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+
+  // Group items by section preserving sort order
+  const sectionOrder: string[] = [];
   const sections: Record<string, InspectionItem[]> = {};
   for (const item of inspectedItems) {
-    if (!sections[item.section]) sections[item.section] = [];
+    if (!sections[item.section]) {
+      sections[item.section] = [];
+      sectionOrder.push(item.section);
+    }
     sections[item.section].push(item);
   }
 
@@ -100,7 +196,7 @@ export function InspectionView({
     <div className="mx-auto max-w-3xl p-4 sm:p-8">
       {/* Header with shop branding */}
       <div className="mb-8 rounded-xl border p-6" style={{ borderTopColor: primaryColor, borderTopWidth: "4px" }}>
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             {logoUrl && (
               <img src={logoUrl} alt={workshop.name} className="mb-3 h-12 object-contain" />
@@ -116,8 +212,8 @@ export function InspectionView({
               <p className="text-sm text-gray-500">{workshop.email}</p>
             )}
           </div>
-          <div className="flex items-center gap-2 text-right">
-            <ClipboardCheck className="h-6 w-6" style={{ color: primaryColor }} />
+          <div className="flex items-center gap-2 sm:text-right">
+            <ClipboardCheck className="hidden h-6 w-6 sm:block" style={{ color: primaryColor }} />
             <div>
               <p className="text-lg font-bold">Vehicle Inspection</p>
               <p className="text-sm text-gray-500">{formatDate(inspection.createdAt)}</p>
@@ -158,24 +254,26 @@ export function InspectionView({
       </div>
 
       {/* Summary bar */}
-      <div className="mb-6 flex items-center gap-4 rounded-lg border p-4">
-        <div className="text-sm text-gray-500">
-          <span className="font-semibold text-gray-900">{totalItems}</span> items inspected
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="h-3 w-3 rounded-full bg-emerald-500" />
-          <span className="text-sm font-medium">{passCount} Pass</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="h-3 w-3 rounded-full bg-red-500" />
-          <span className="text-sm font-medium">{failCount} Fail</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="h-3 w-3 rounded-full bg-amber-500" />
-          <span className="text-sm font-medium">{attentionCount} Attention</span>
+      <div className="mb-6 rounded-lg border p-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+          <div className="text-sm text-gray-500">
+            <span className="font-semibold text-gray-900">{totalItems}</span> inspected
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="h-3 w-3 rounded-full bg-emerald-500" />
+            <span className="text-sm font-medium">{passCount} Pass</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="h-3 w-3 rounded-full bg-red-500" />
+            <span className="text-sm font-medium">{failCount} Fail</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="h-3 w-3 rounded-full bg-amber-500" />
+            <span className="text-sm font-medium">{attentionCount} Attention</span>
+          </div>
         </div>
         {/* Progress bar */}
-        <div className="ml-auto flex h-3 w-32 overflow-hidden rounded-full bg-gray-200">
+        <div className="mt-3 flex h-3 w-full overflow-hidden rounded-full bg-gray-200">
           {totalItems > 0 && (
             <>
               <div className="bg-emerald-500" style={{ width: `${(passCount / totalItems) * 100}%` }} />
@@ -186,15 +284,54 @@ export function InspectionView({
         </div>
       </div>
 
+      {/* Action buttons */}
+      <div className="mb-6 flex flex-wrap gap-3">
+        {hasIssues && (
+          quoteRequested ? (
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={handleCancelQuoteRequest}
+              disabled={isCancelling}
+            >
+              {isCancelling ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              )}
+              Quote Requested
+              <span className="text-muted-foreground">— Cancel</span>
+            </Button>
+          ) : (
+            <Button
+              onClick={() => setShowQuoteDialog(true)}
+              style={{ backgroundColor: primaryColor }}
+              className="gap-2 text-white hover:opacity-90"
+            >
+              <FileText className="h-4 w-4" />
+              Request a Quote
+            </Button>
+          )
+        )}
+        <Button
+          variant="outline"
+          className="gap-2"
+          onClick={() => window.open(`/api/share/inspection/${orgId}/${publicToken}/pdf`, "_blank")}
+        >
+          <Download className="h-4 w-4" />
+          Download PDF
+        </Button>
+      </div>
+
       {/* Inspection sections */}
       <div className="space-y-6">
-        {Object.entries(sections).map(([sectionName, items]) => (
+        {sectionOrder.map((sectionName) => (
           <div key={sectionName} className="rounded-lg border overflow-hidden">
             <div className="border-b px-4 py-3" style={{ backgroundColor: `${primaryColor}10` }}>
               <h3 className="font-semibold">{sectionName}</h3>
             </div>
             <div className="divide-y">
-              {items.map((item) => {
+              {sections[sectionName].map((item) => {
                 const config = conditionConfig[item.condition] || conditionConfig.not_inspected;
                 return (
                   <div key={item.id} className="px-4 py-3">
@@ -212,23 +349,35 @@ export function InspectionView({
                     )}
                     {item.imageUrls && item.imageUrls.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {item.imageUrls.map((url, idx) => (
-                          /\.(mp4|webm|mov)$/i.test(url) ? (
-                            <video
+                        {item.imageUrls.map((url, idx) => {
+                          if (/\.(mp4|webm|mov)$/i.test(url)) {
+                            return (
+                              <video
+                                key={idx}
+                                src={url}
+                                controls
+                                className="h-48 max-w-sm rounded-lg border"
+                              />
+                            );
+                          }
+                          const imageIdx = allImages.findIndex(
+                            (img) => img.url === url && img.itemName === item.name
+                          );
+                          return (
+                            <button
                               key={idx}
-                              src={url}
-                              controls
-                              className="h-48 max-w-sm rounded-lg border"
-                            />
-                          ) : (
-                            <img
-                              key={idx}
-                              src={url}
-                              alt={`${item.name} ${idx + 1}`}
-                              className="h-32 rounded-lg object-cover border"
-                            />
-                          )
-                        ))}
+                              type="button"
+                              onClick={() => openCarousel(imageIdx >= 0 ? imageIdx : 0)}
+                              className="group overflow-hidden rounded-lg border"
+                            >
+                              <img
+                                src={url}
+                                alt={`${item.name} ${idx + 1}`}
+                                className="h-32 rounded-lg object-cover transition-transform group-hover:scale-105"
+                              />
+                            </button>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -248,11 +397,93 @@ export function InspectionView({
       )}
 
       {showTorqvoiceBranding && (
-        <div className="mt-8 text-center">
-          <p className="text-xs text-gray-400">
-            Powered by TorqVoice
-          </p>
+        <div className="mt-8 flex items-center justify-center gap-1.5">
+          <span className="text-xs text-gray-400">Powered by</span>
+          <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
+          <a
+            href="https://torqvoice.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-semibold text-gray-500 hover:text-gray-700"
+          >
+            Torqvoice
+          </a>
         </div>
+      )}
+
+      {/* Image Carousel Modal */}
+      {carouselIndex !== null && allImages[carouselIndex] && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <button
+            type="button"
+            onClick={closeCarousel}
+            className="absolute top-3 right-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 sm:top-4 sm:right-4"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          {allImages.length > 1 && (
+            <div className="absolute top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm font-medium text-white sm:top-4">
+              {carouselIndex + 1} / {allImages.length}
+            </div>
+          )}
+
+          {carouselIndex > 0 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                prevImage();
+              }}
+              className="absolute left-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 sm:left-4 sm:h-12 sm:w-12"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+          )}
+
+          {carouselIndex < allImages.length - 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                nextImage();
+              }}
+              className="absolute right-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 sm:right-4 sm:h-12 sm:w-12"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          )}
+
+          <div
+            className="flex max-h-[85vh] max-w-[90vw] flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={allImages[carouselIndex].url}
+              alt={allImages[carouselIndex].itemName}
+              className="max-h-[80vh] max-w-full rounded-lg object-contain"
+              draggable={false}
+            />
+            <p className="mt-2 max-w-md text-center text-sm text-white/80">
+              {allImages[carouselIndex].itemName}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {hasIssues && !quoteRequested && (
+        <QuoteRequestDialog
+          open={showQuoteDialog}
+          onOpenChange={setShowQuoteDialog}
+          items={inspection.items}
+          inspectionId={inspection.id}
+          publicToken={publicToken}
+          onSuccess={() => setQuoteRequested(true)}
+        />
       )}
     </div>
   );

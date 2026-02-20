@@ -57,10 +57,23 @@ CREATE TABLE "inspection_items" (
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
     "condition" TEXT NOT NULL DEFAULT 'not_inspected',
     "notes" TEXT,
-    "imageUrl" TEXT,
+    "imageUrls" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "inspectionId" TEXT NOT NULL,
 
     CONSTRAINT "inspection_items_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "inspection_quote_requests" (
+    "id" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "message" TEXT,
+    "selectedItemIds" TEXT[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "inspectionId" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+
+    CONSTRAINT "inspection_quote_requests_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -84,6 +97,12 @@ CREATE INDEX "inspections_organizationId_idx" ON "inspections"("organizationId")
 -- CreateIndex
 CREATE INDEX "inspection_items_inspectionId_idx" ON "inspection_items"("inspectionId");
 
+-- CreateIndex
+CREATE INDEX "inspection_quote_requests_organizationId_idx" ON "inspection_quote_requests"("organizationId");
+
+-- CreateIndex
+CREATE INDEX "inspection_quote_requests_inspectionId_idx" ON "inspection_quote_requests"("inspectionId");
+
 -- AddForeignKey
 ALTER TABLE "inspection_templates" ADD CONSTRAINT "inspection_templates_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -101,3 +120,6 @@ ALTER TABLE "inspections" ADD CONSTRAINT "inspections_templateId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "inspection_items" ADD CONSTRAINT "inspection_items_inspectionId_fkey" FOREIGN KEY ("inspectionId") REFERENCES "inspections"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "inspection_quote_requests" ADD CONSTRAINT "inspection_quote_requests_inspectionId_fkey" FOREIGN KEY ("inspectionId") REFERENCES "inspections"("id") ON DELETE CASCADE ON UPDATE CASCADE;

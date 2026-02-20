@@ -92,6 +92,13 @@ function useIsLargeScreen() {
   return isLarge;
 }
 
+interface PrefillData {
+  title?: string;
+  vehicleId?: string;
+  customerId?: string;
+  laborItems?: QuoteLaborInput[];
+}
+
 export function QuoteForm({
   currencyCode = "USD",
   defaultTaxRate = 0,
@@ -101,6 +108,7 @@ export function QuoteForm({
   customers = [],
   vehicles = [],
   initialData,
+  prefill,
 }: {
   currencyCode?: string;
   defaultTaxRate?: number;
@@ -110,6 +118,7 @@ export function QuoteForm({
   customers?: CustomerOption[];
   vehicles?: VehicleOption[];
   initialData?: InitialData;
+  prefill?: PrefillData;
 }) {
   const cs = getCurrencySymbol(currencyCode);
   const isEdit = !!initialData;
@@ -118,10 +127,10 @@ export function QuoteForm({
   const isLarge = useIsLargeScreen();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(initialData?.status || "draft");
-  const [customerId, setCustomerId] = useState(initialData?.customerId || "");
-  const [vehicleId, setVehicleId] = useState(initialData?.vehicleId || "");
+  const [customerId, setCustomerId] = useState(initialData?.customerId || prefill?.customerId || "");
+  const [vehicleId, setVehicleId] = useState(initialData?.vehicleId || prefill?.vehicleId || "");
   const [partItems, setPartItems] = useState<QuotePartInput[]>(initialData?.partItems || []);
-  const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(initialData?.laborItems || []);
+  const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(initialData?.laborItems || prefill?.laborItems || []);
   const [taxRate, setTaxRate] = useState(initialData?.taxRate ?? defaultTaxRate);
   const [discountType, setDiscountType] = useState<string>(initialData?.discountType || "none");
   const [discountValue, setDiscountValue] = useState(initialData?.discountValue ?? 0);
@@ -430,7 +439,7 @@ export function QuoteForm({
         <h3 className="text-sm font-semibold">Quote Details</h3>
         <div className="space-y-1">
           <Label htmlFor="title" className="text-xs">Title *</Label>
-          <Input id="title" name="title" placeholder="Vehicle repair estimate" defaultValue={initialData?.title || ""} required />
+          <Input id="title" name="title" placeholder="Vehicle repair estimate" defaultValue={initialData?.title || prefill?.title || ""} required />
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">

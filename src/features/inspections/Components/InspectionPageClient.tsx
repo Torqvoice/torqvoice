@@ -16,7 +16,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  ArrowLeft, Camera, Check, CheckCircle2, ClipboardCheck, Loader2,
+  ArrowLeft, Camera, Check, CheckCircle2, ClipboardCheck, Download, FileText, Loader2,
   MoreVertical, Share2, Trash2, X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -125,21 +125,21 @@ function InspectionItemRow({
   const [notes, setNotes] = useState(item.notes || "");
   const [imageUrls, setImageUrls] = useState<string[]>(item.imageUrls || []);
   const [showNotes, setShowNotes] = useState(!!item.notes);
+  const [notesRequired, setNotesRequired] = useState(false);
+  const [showClearNotesDialog, setShowClearNotesDialog] = useState(false);
   const [isSaving, startSaving] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const notesRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleConditionChange = (newCondition: Condition) => {
-    if (isCompleted) return;
-    setCondition(newCondition);
+  const saveItem = (cond: Condition, n: string) => {
     startSaving(async () => {
       const result = await updateInspectionItem(item.id, {
-        condition: newCondition,
-        notes: notes || undefined,
+        condition: cond,
+        notes: n || undefined,
         imageUrls,
       });
       if (!result.success) {
-        setCondition(item.condition as Condition);
         toast.error("Failed to update item");
       } else {
         toast.success("Saved");
@@ -147,8 +147,61 @@ function InspectionItemRow({
     });
   };
 
+  const handleConditionChange = (newCondition: Condition) => {
+    if (isCompleted) return;
+
+    // Toggle off: clicking the same condition resets to not_inspected
+    if (condition === newCondition) {
+      if ((newCondition === "attention" || newCondition === "fail") && notes.trim()) {
+        setShowClearNotesDialog(true);
+        return;
+      }
+      setCondition("not_inspected");
+      setNotesRequired(false);
+      setShowNotes(false);
+      setNotes("");
+      saveItem("not_inspected", "");
+      return;
+    }
+
+    setCondition(newCondition);
+
+    // Attention/fail require notes — show notes field and wait for input
+    if (newCondition === "attention" || newCondition === "fail") {
+      setShowNotes(true);
+      setNotesRequired(true);
+      if (notes.trim()) {
+        // Notes already exist, save immediately
+        setNotesRequired(false);
+        saveItem(newCondition, notes);
+      } else {
+        // Focus the notes field so the tech can type right away
+        setTimeout(() => notesRef.current?.focus(), 50);
+      }
+      return;
+    }
+
+    // Pass: save immediately, no notes required
+    setNotesRequired(false);
+    saveItem(newCondition, notes);
+  };
+
   const handleNotesBlur = () => {
-    if (notes === (item.notes || "") || isCompleted) return;
+    if (isCompleted) return;
+
+    // If notes were required (attention/fail selected without notes)
+    if (notesRequired) {
+      if (notes.trim()) {
+        setNotesRequired(false);
+        saveItem(condition, notes);
+      } else {
+        toast.error("Notes are required for this status");
+      }
+      return;
+    }
+
+    // Normal notes update
+    if (notes === (item.notes || "")) return;
     startSaving(async () => {
       const result = await updateInspectionItem(item.id, {
         condition,
@@ -277,14 +330,20 @@ function InspectionItemRow({
       </div>
 
       {showNotes && (
-        <Textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          onBlur={handleNotesBlur}
-          placeholder="Add notes..."
-          className="text-sm min-h-[60px]"
-          disabled={isCompleted}
-        />
+        <div className="space-y-1">
+          <Textarea
+            ref={notesRef}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            onBlur={handleNotesBlur}
+            placeholder={notesRequired ? "Notes required for this status..." : "Add notes..."}
+            className={`text-sm min-h-[60px] ${notesRequired ? "border-red-400 focus-visible:ring-red-400" : ""}`}
+            disabled={isCompleted}
+          />
+          {notesRequired && (
+            <p className="text-xs text-red-500">Notes are required for attention/fail items</p>
+          )}
+        </div>
       )}
 
       {imageUrls.length > 0 && (
@@ -317,6 +376,33 @@ function InspectionItemRow({
           ))}
         </div>
       )}
+
+      <AlertDialog open={showClearNotesDialog} onOpenChange={setShowClearNotesDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove status?</AlertDialogTitle>
+            <AlertDialogDescription>
+              The notes for this item will be removed. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                setCondition("not_inspected");
+                setNotesRequired(false);
+                setShowNotes(false);
+                setNotes("");
+                setShowClearNotesDialog(false);
+                saveItem("not_inspected", "");
+              }}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -335,10 +421,15 @@ export function InspectionPageClient({
 
   const isCompleted = inspection.status === "completed";
 
-  // Group items by section
+  // Sort items by sortOrder first, then group by section preserving order
+  const sortedItems = [...inspection.items].sort((a, b) => a.sortOrder - b.sortOrder);
+  const sectionOrder: string[] = [];
   const sections: Record<string, InspectionItem[]> = {};
-  for (const item of inspection.items) {
-    if (!sections[item.section]) sections[item.section] = [];
+  for (const item of sortedItems) {
+    if (!sections[item.section]) {
+      sections[item.section] = [];
+      sectionOrder.push(item.section);
+    }
     sections[item.section].push(item);
   }
 
@@ -347,6 +438,7 @@ export function InspectionPageClient({
   const passCount = inspection.items.filter((i) => i.condition === "pass").length;
   const failCount = inspection.items.filter((i) => i.condition === "fail").length;
   const attentionCount = inspection.items.filter((i) => i.condition === "attention").length;
+  const hasIssueItems = failCount > 0 || attentionCount > 0;
 
   const handleComplete = () => {
     startTransition(async () => {
@@ -392,6 +484,16 @@ export function InspectionPageClient({
                 Complete Inspection
               </Button>
             )}
+            {hasIssueItems && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push(`/quotes/new?fromInspection=${inspection.id}`)}
+              >
+                <FileText className="mr-1 h-3.5 w-3.5" />
+                Create Quote
+              </Button>
+            )}
             <Button variant="outline" size="sm" onClick={() => setShowShareDialog(true)}>
               <Share2 className="mr-1 h-3.5 w-3.5" />
               Share
@@ -403,6 +505,12 @@ export function InspectionPageClient({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => window.open(`/api/inspections/${inspection.id}/pdf`, "_blank")}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download PDF
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="text-destructive"
@@ -483,7 +591,8 @@ export function InspectionPageClient({
 
       {/* Inspection sections */}
       <div className="space-y-4">
-        {Object.entries(sections).map(([sectionName, items]) => {
+        {sectionOrder.map((sectionName) => {
+          const items = sections[sectionName];
           const sectionPass = items.filter((i) => i.condition === "pass").length;
           const sectionTotal = items.length;
           return (
