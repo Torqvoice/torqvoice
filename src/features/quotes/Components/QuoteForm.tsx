@@ -23,7 +23,7 @@ import { useGlassModal } from "@/components/glass-modal";
 import { createQuote, updateQuote } from "@/features/quotes/Actions/quoteActions";
 import type { QuotePartInput, QuoteLaborInput } from "@/features/quotes/Schema/quoteSchema";
 import { RichTextEditor } from "@/features/vehicles/Components/service-edit/RichTextEditor";
-import { ArrowLeft, Car, FileText, Loader2, Plus, Save, Trash2, Users, X } from "lucide-react";
+import { ArrowLeft, Car, ClipboardCheck, FileText, Loader2, Plus, Save, Trash2, Users, X } from "lucide-react";
 import { formatCurrency, getCurrencySymbol } from "@/lib/format";
 
 interface CustomerOption {
@@ -461,6 +461,15 @@ export function QuoteForm({
             <Input id="validUntil" name="validUntil" type="date" defaultValue={defaultValidDate} />
           </div>
         </div>
+        {prefill?.inspectionId && (
+          <Link
+            href={`/inspections/${prefill.inspectionId}`}
+            className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ClipboardCheck className="h-3.5 w-3.5 shrink-0" />
+            <span>View linked inspection</span>
+          </Link>
+        )}
       </div>
 
       {/* Totals */}
