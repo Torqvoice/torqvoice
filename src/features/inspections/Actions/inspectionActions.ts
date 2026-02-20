@@ -83,7 +83,18 @@ export async function getInspection(id: string) {
         },
         template: { select: { id: true, name: true } },
         items: { orderBy: { sortOrder: "asc" } },
-        quotes: { select: { id: true, quoteNumber: true, status: true } },
+        quotes: {
+          select: {
+            id: true, quoteNumber: true, status: true, createdAt: true,
+            user: { select: { name: true } },
+          },
+        },
+        quoteRequests: {
+          where: { status: "pending" },
+          select: { id: true, message: true, selectedItemIds: true, createdAt: true },
+          orderBy: { createdAt: "desc" as const },
+          take: 1,
+        },
       },
     });
     if (!inspection) throw new Error("Inspection not found");

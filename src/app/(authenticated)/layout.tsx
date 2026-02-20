@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SearchCommand } from "@/features/search/Components/SearchCommand";
+import { NotificationInitializer } from "@/features/notifications/Components/NotificationInitializer";
 import { ConfirmProvider } from "@/components/confirm-dialog";
 import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
@@ -69,9 +70,11 @@ export default async function DashboardLayout({
           features={features}
           canAccessSettings={canAccessSettings}
           canAccessReports={canAccessReports}
+          isAdminOrOwner={isOwnerOrAdmin}
         />
         <SidebarInset>{children}</SidebarInset>
         <SearchCommand />
+        {isOwnerOrAdmin && <NotificationInitializer />}
       </ConfirmProvider>
       </DateSettingsProvider>
     </SidebarProvider>

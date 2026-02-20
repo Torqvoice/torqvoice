@@ -55,6 +55,7 @@ import { switchOrganization } from '@/features/team/Actions/switchOrganization'
 import { createNewOrganization } from '@/features/team/Actions/createNewOrganization'
 import type { PlanFeatures } from '@/lib/features'
 import { useTheme } from '@/components/theme-provider'
+import { NotificationBell, NotificationPanel } from '@/features/notifications/Components/NotificationPanel'
 
 const baseNavItems = [
   { title: 'Dashboard', url: '/', icon: LayoutDashboard },
@@ -81,6 +82,7 @@ export function AppSidebar({
   features,
   canAccessSettings = true,
   canAccessReports = true,
+  isAdminOrOwner = false,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   companyLogo?: string
@@ -90,6 +92,7 @@ export function AppSidebar({
   features?: PlanFeatures
   canAccessSettings?: boolean
   canAccessReports?: boolean
+  isAdminOrOwner?: boolean
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -144,7 +147,7 @@ export function AppSidebar({
     <Sidebar variant="floating" {...props}>
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="flex items-center gap-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
@@ -196,6 +199,7 @@ export function AppSidebar({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            {isAdminOrOwner && <NotificationBell />}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -296,6 +300,8 @@ export function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
+      {isAdminOrOwner && <NotificationPanel />}
 
       <Dialog open={showCreateOrg} onOpenChange={setShowCreateOrg}>
         <DialogContent className="sm:max-w-md">
