@@ -56,6 +56,7 @@ interface InspectionData {
   };
   template: { id: string; name: string };
   items: InspectionItem[];
+  quotes: { id: string; quoteNumber: string | null; status: string }[];
 }
 
 const conditionConfig: Record<Condition, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
@@ -484,7 +485,16 @@ export function InspectionPageClient({
                 Complete Inspection
               </Button>
             )}
-            {hasIssueItems && (
+            {inspection.quotes.length > 0 ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push(`/quotes/${inspection.quotes[0].id}`)}
+              >
+                <FileText className="mr-1 h-3.5 w-3.5" />
+                View Quote
+              </Button>
+            ) : hasIssueItems ? (
               <Button
                 variant="outline"
                 size="sm"
@@ -493,7 +503,7 @@ export function InspectionPageClient({
                 <FileText className="mr-1 h-3.5 w-3.5" />
                 Create Quote
               </Button>
-            )}
+            ) : null}
             <Button variant="outline" size="sm" onClick={() => setShowShareDialog(true)}>
               <Share2 className="mr-1 h-3.5 w-3.5" />
               Share

@@ -393,6 +393,9 @@ model Quote {
   vehicleId String?
   vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
 
+  inspectionId String?
+  inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+
   partItems  QuotePart[]
   laborItems QuoteLabor[]
 
@@ -726,6 +729,7 @@ model Inspection {
 
   items         InspectionItem[]
   quoteRequests InspectionQuoteRequest[]
+  quotes        Quote[]
 
   @@index([vehicleId])
   @@index([organizationId])

@@ -8,7 +8,7 @@ import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 
 export async function getTemplates() {
   return withAuth(async ({ organizationId }) => {
-    const templates = await db.inspectionTemplate.findMany({
+    let templates = await db.inspectionTemplate.findMany({
       where: { organizationId },
       include: {
         sections: {
@@ -18,6 +18,22 @@ export async function getTemplates() {
       },
       orderBy: { createdAt: "desc" },
     });
+
+    // Auto-seed default template for new organizations
+    if (templates.length === 0) {
+      await seedDefaultTemplateForOrg(organizationId);
+      templates = await db.inspectionTemplate.findMany({
+        where: { organizationId },
+        include: {
+          sections: {
+            include: { items: true },
+            orderBy: { sortOrder: "asc" },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    }
+
     return templates;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INSPECTIONS }] });
 }
@@ -158,110 +174,115 @@ export async function deleteTemplate(id: string) {
   }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INSPECTIONS }] });
 }
 
+async function seedDefaultTemplateForOrg(organizationId: string) {
+  const count = await db.inspectionTemplate.count({ where: { organizationId } });
+  if (count > 0) return null;
+
+  const template = await db.inspectionTemplate.create({
+    data: {
+      name: "Standard Multi-Point Inspection",
+      description: "Comprehensive vehicle inspection covering all major systems",
+      isDefault: true,
+      organizationId,
+      sections: {
+        create: [
+          {
+            name: "Exterior",
+            sortOrder: 0,
+            items: {
+              create: [
+                { name: "Body condition", sortOrder: 0 },
+                { name: "Paint", sortOrder: 1 },
+                { name: "Lights", sortOrder: 2 },
+                { name: "Windshield", sortOrder: 3 },
+                { name: "Wipers", sortOrder: 4 },
+                { name: "Tires", sortOrder: 5 },
+                { name: "Wheels", sortOrder: 6 },
+              ],
+            },
+          },
+          {
+            name: "Under Hood",
+            sortOrder: 1,
+            items: {
+              create: [
+                { name: "Engine oil", sortOrder: 0 },
+                { name: "Coolant", sortOrder: 1 },
+                { name: "Brake fluid", sortOrder: 2 },
+                { name: "Power steering", sortOrder: 3 },
+                { name: "Battery", sortOrder: 4 },
+                { name: "Belts", sortOrder: 5 },
+                { name: "Hoses", sortOrder: 6 },
+                { name: "Air filter", sortOrder: 7 },
+              ],
+            },
+          },
+          {
+            name: "Under Vehicle",
+            sortOrder: 2,
+            items: {
+              create: [
+                { name: "Exhaust", sortOrder: 0 },
+                { name: "Suspension", sortOrder: 1 },
+                { name: "CV joints", sortOrder: 2 },
+                { name: "Brake lines", sortOrder: 3 },
+              ],
+            },
+          },
+          {
+            name: "Interior",
+            sortOrder: 3,
+            items: {
+              create: [
+                { name: "Dash lights", sortOrder: 0 },
+                { name: "Horn", sortOrder: 1 },
+                { name: "A/C", sortOrder: 2 },
+                { name: "Heater", sortOrder: 3 },
+                { name: "Seat belts", sortOrder: 4 },
+              ],
+            },
+          },
+          {
+            name: "Brakes",
+            sortOrder: 4,
+            items: {
+              create: [
+                { name: "Front pads", sortOrder: 0 },
+                { name: "Rear pads", sortOrder: 1 },
+                { name: "Rotors", sortOrder: 2 },
+                { name: "Brake lines", sortOrder: 3 },
+              ],
+            },
+          },
+          {
+            name: "Tires",
+            sortOrder: 5,
+            items: {
+              create: [
+                { name: "Tread depth (LF)", sortOrder: 0 },
+                { name: "Tread depth (RF)", sortOrder: 1 },
+                { name: "Tread depth (LR)", sortOrder: 2 },
+                { name: "Tread depth (RR)", sortOrder: 3 },
+                { name: "Tire pressure", sortOrder: 4 },
+                { name: "Spare tire", sortOrder: 5 },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    include: {
+      sections: { include: { items: true } },
+    },
+  });
+
+  revalidatePath("/settings/inspections");
+  return template;
+}
+
 export async function seedDefaultTemplate() {
   return withAuth(async ({ organizationId }) => {
-    const count = await db.inspectionTemplate.count({ where: { organizationId } });
-    if (count > 0) return null;
-
-    const template = await db.inspectionTemplate.create({
-      data: {
-        name: "Standard Multi-Point Inspection",
-        description: "Comprehensive vehicle inspection covering all major systems",
-        isDefault: true,
-        organizationId,
-        sections: {
-          create: [
-            {
-              name: "Exterior",
-              sortOrder: 0,
-              items: {
-                create: [
-                  { name: "Body condition", sortOrder: 0 },
-                  { name: "Paint", sortOrder: 1 },
-                  { name: "Lights", sortOrder: 2 },
-                  { name: "Windshield", sortOrder: 3 },
-                  { name: "Wipers", sortOrder: 4 },
-                  { name: "Tires", sortOrder: 5 },
-                  { name: "Wheels", sortOrder: 6 },
-                ],
-              },
-            },
-            {
-              name: "Under Hood",
-              sortOrder: 1,
-              items: {
-                create: [
-                  { name: "Engine oil", sortOrder: 0 },
-                  { name: "Coolant", sortOrder: 1 },
-                  { name: "Brake fluid", sortOrder: 2 },
-                  { name: "Power steering", sortOrder: 3 },
-                  { name: "Battery", sortOrder: 4 },
-                  { name: "Belts", sortOrder: 5 },
-                  { name: "Hoses", sortOrder: 6 },
-                  { name: "Air filter", sortOrder: 7 },
-                ],
-              },
-            },
-            {
-              name: "Under Vehicle",
-              sortOrder: 2,
-              items: {
-                create: [
-                  { name: "Exhaust", sortOrder: 0 },
-                  { name: "Suspension", sortOrder: 1 },
-                  { name: "CV joints", sortOrder: 2 },
-                  { name: "Brake lines", sortOrder: 3 },
-                ],
-              },
-            },
-            {
-              name: "Interior",
-              sortOrder: 3,
-              items: {
-                create: [
-                  { name: "Dash lights", sortOrder: 0 },
-                  { name: "Horn", sortOrder: 1 },
-                  { name: "A/C", sortOrder: 2 },
-                  { name: "Heater", sortOrder: 3 },
-                  { name: "Seat belts", sortOrder: 4 },
-                ],
-              },
-            },
-            {
-              name: "Brakes",
-              sortOrder: 4,
-              items: {
-                create: [
-                  { name: "Front pads", sortOrder: 0 },
-                  { name: "Rear pads", sortOrder: 1 },
-                  { name: "Rotors", sortOrder: 2 },
-                  { name: "Brake lines", sortOrder: 3 },
-                ],
-              },
-            },
-            {
-              name: "Tires",
-              sortOrder: 5,
-              items: {
-                create: [
-                  { name: "Tread depth (LF)", sortOrder: 0 },
-                  { name: "Tread depth (RF)", sortOrder: 1 },
-                  { name: "Tread depth (LR)", sortOrder: 2 },
-                  { name: "Tread depth (RR)", sortOrder: 3 },
-                  { name: "Tire pressure", sortOrder: 4 },
-                  { name: "Spare tire", sortOrder: 5 },
-                ],
-              },
-            },
-          ],
-        },
-      },
-      include: {
-        sections: { include: { items: true } },
-      },
-    });
-
-    revalidatePath("/settings/inspections");
-    return template;
+    return seedDefaultTemplateForOrg(organizationId);
   }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }] });
 }
+
