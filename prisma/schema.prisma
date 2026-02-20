@@ -732,13 +732,13 @@ model Inspection {
 }
 
 model InspectionItem {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
   section   String
-  sortOrder Int     @default(0)
-  condition String  @default("not_inspected")
+  sortOrder Int      @default(0)
+  condition String   @default("not_inspected")
   notes     String?
-  imageUrl  String?
+  imageUrls String[] @default([])
 
   inspectionId String
   inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)

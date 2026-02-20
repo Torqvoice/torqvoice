@@ -32,7 +32,7 @@ interface InspectionItem {
   sortOrder: number;
   condition: string;
   notes: string | null;
-  imageUrl: string | null;
+  imageUrls: string[];
 }
 
 interface InspectionData {
@@ -123,7 +123,7 @@ function InspectionItemRow({
 }) {
   const [condition, setCondition] = useState(item.condition as Condition);
   const [notes, setNotes] = useState(item.notes || "");
-  const [imageUrl, setImageUrl] = useState(item.imageUrl || "");
+  const [imageUrls, setImageUrls] = useState<string[]>(item.imageUrls || []);
   const [showNotes, setShowNotes] = useState(!!item.notes);
   const [isSaving, startSaving] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
@@ -136,7 +136,7 @@ function InspectionItemRow({
       const result = await updateInspectionItem(item.id, {
         condition: newCondition,
         notes: notes || undefined,
-        imageUrl: imageUrl || undefined,
+        imageUrls,
       });
       if (!result.success) {
         setCondition(item.condition as Condition);
@@ -153,7 +153,7 @@ function InspectionItemRow({
       const result = await updateInspectionItem(item.id, {
         condition,
         notes: notes || undefined,
-        imageUrl: imageUrl || undefined,
+        imageUrls,
       });
       if (result.success) {
         toast.success("Notes saved");
@@ -164,35 +164,63 @@ function InspectionItemRow({
   };
 
   const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || isCompleted) return;
+    const files = e.target.files;
+    if (!files || files.length === 0 || isCompleted) return;
 
     setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
+    const newUrls: string[] = [];
 
     try {
-      const res = await fetch("/api/upload/service-files", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.url) {
-        setImageUrl(data.url);
+      for (const file of Array.from(files)) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await fetch("/api/upload/service-files", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        if (data.url) {
+          newUrls.push(data.url);
+        } else {
+          toast.error(data.error || `Upload failed for ${file.name}`);
+        }
+      }
+
+      if (newUrls.length > 0) {
+        const updated = [...imageUrls, ...newUrls];
+        setImageUrls(updated);
         await updateInspectionItem(item.id, {
           condition,
           notes: notes || undefined,
-          imageUrl: data.url,
+          imageUrls: updated,
         });
-        toast.success("File uploaded");
-      } else {
-        toast.error(data.error || "Upload failed");
+        toast.success(`${newUrls.length} file${newUrls.length > 1 ? "s" : ""} uploaded`);
       }
     } catch {
       toast.error("Upload failed");
     } finally {
       setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    if (isCompleted) return;
+    const updated = imageUrls.filter((_, i) => i !== index);
+    setImageUrls(updated);
+    startSaving(async () => {
+      const result = await updateInspectionItem(item.id, {
+        condition,
+        notes: notes || undefined,
+        imageUrls: updated,
+      });
+      if (result.success) {
+        toast.success("File removed");
+      } else {
+        toast.error("Failed to remove file");
+      }
+    });
   };
 
   const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url);
@@ -241,6 +269,7 @@ function InspectionItemRow({
             ref={fileInputRef}
             type="file"
             accept="image/*,video/mp4,video/webm,video/quicktime"
+            multiple
             className="hidden"
             onChange={handleMediaUpload}
           />
@@ -258,21 +287,34 @@ function InspectionItemRow({
         />
       )}
 
-      {imageUrl && (
-        <div className="mt-2">
-          {isVideo(imageUrl) ? (
-            <video
-              src={imageUrl}
-              controls
-              className="h-32 max-w-xs rounded-lg border"
-            />
-          ) : (
-            <img
-              src={imageUrl}
-              alt={item.name}
-              className="h-20 w-20 rounded-lg object-cover border"
-            />
-          )}
+      {imageUrls.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {imageUrls.map((url, idx) => (
+            <div key={idx} className="relative group">
+              {isVideo(url) ? (
+                <video
+                  src={url}
+                  controls
+                  className="h-32 max-w-xs rounded-lg border"
+                />
+              ) : (
+                <img
+                  src={url}
+                  alt={`${item.name} ${idx + 1}`}
+                  className="h-20 w-20 rounded-lg object-cover border"
+                />
+              )}
+              {!isCompleted && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveFile(idx)}
+                  className="absolute -right-1.5 -top-1.5 hidden group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>

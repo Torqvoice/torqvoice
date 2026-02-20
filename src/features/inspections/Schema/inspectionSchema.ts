@@ -9,7 +9,7 @@ export const createInspectionSchema = z.object({
 export const updateInspectionItemSchema = z.object({
   condition: z.enum(["pass", "fail", "attention", "not_inspected"]).default("not_inspected"),
   notes: z.string().optional(),
-  imageUrl: z.string().optional(),
+  imageUrls: z.array(z.string()).optional(),
 });
 
 export type CreateInspectionInput = z.infer<typeof createInspectionSchema>;
