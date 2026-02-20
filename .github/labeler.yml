@@ -1,39 +1,12 @@
-feature:
-  - changed-files:
-      - any-glob-to-any-file:
-          - src/features/**
-          - src/app/**
-
-bug:
+torqvoice:
   - changed-files:
       - any-glob-to-any-file:
           - src/**
-
-dependencies:
-  - changed-files:
-      - any-glob-to-any-file:
-          - package.json
-          - package-lock.json
-
-database:
-  - changed-files:
-      - any-glob-to-any-file:
           - prisma/**
-
-docker:
-  - changed-files:
-      - any-glob-to-any-file:
-          - Dockerfile
-          - docker-compose*.yml
-          - .devcontainer/**
+          - package.json
 
 documentation:
   - changed-files:
       - any-glob-to-any-file:
           - '*.md'
           - docs/**
-
-ci:
-  - changed-files:
-      - any-glob-to-any-file:
-          - .github/**

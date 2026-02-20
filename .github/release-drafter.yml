@@ -1,30 +1,12 @@
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 categories:
-  - title: '🚀 Features'
+  - title: '🚀 Changes'
     labels:
-      - 'feature'
-      - 'enhancement'
-  - title: '🐛 Bug Fixes'
-    labels:
-      - 'fix'
-      - 'bugfix'
-      - 'bug'
-  - title: '🗄️ Database'
-    labels:
-      - 'database'
-  - title: '🐳 Docker'
-    labels:
-      - 'docker'
-  - title: '📦 Dependencies'
-    labels:
-      - 'dependencies'
+      - 'torqvoice'
   - title: '📝 Documentation'
     labels:
       - 'documentation'
-  - title: '⚙️ CI/CD'
-    labels:
-      - 'ci'
 change-template: '- $TITLE (#$NUMBER)'
 change-title-escapes: '\<*_&'
 exclude-contributors:
@@ -35,14 +17,10 @@ version-resolver:
       - 'major'
   minor:
     labels:
-      - 'feature'
-      - 'enhancement'
+      - 'torqvoice'
   patch:
     labels:
-      - 'bug'
-      - 'bugfix'
-      - 'fix'
-      - 'dependencies'
+      - 'documentation'
   default: patch
 template: |
   ## Release Notes
