@@ -29,19 +29,16 @@ export function useNotificationWebSocket() {
 
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const url = `${protocol}//${window.location.host}/api/ws`;
-      console.log("[WS] Connecting to", url);
       const ws = new WebSocket(url);
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log("[WS] Connected");
         useNotificationStore.getState().setConnected(true);
       };
 
       ws.onmessage = (event) => {
         try {
           const msg = JSON.parse(event.data);
-          console.log("[WS] Message:", msg.type);
           if (msg.type === "notification") {
             useNotificationStore.getState().addNotification(msg.data);
             toast(msg.data.title, {
@@ -59,8 +56,7 @@ export function useNotificationWebSocket() {
         }
       };
 
-      ws.onclose = (e) => {
-        console.log("[WS] Closed:", e.code, e.reason);
+      ws.onclose = () => {
         useNotificationStore.getState().setConnected(false);
         wsRef.current = null;
         if (mountedRef.current) {
@@ -69,7 +65,6 @@ export function useNotificationWebSocket() {
       };
 
       ws.onerror = () => {
-        console.log("[WS] Error — closing");
         ws.close();
       };
     }
