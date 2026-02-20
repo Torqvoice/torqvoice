@@ -18,7 +18,7 @@ export const quoteLaborSchema = z.object({
 export const createQuoteSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  status: z.enum(["draft", "sent", "accepted", "rejected", "expired", "converted"]).default("draft"),
+  status: z.enum(["draft", "sent", "accepted", "rejected", "expired", "converted", "changes_requested"]).default("draft"),
   validUntil: z.string().optional(),
   customerId: z.string().optional(),
   vehicleId: z.string().optional(),

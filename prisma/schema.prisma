@@ -377,6 +377,7 @@ model Quote {
   totalAmount    Float     @default(0)
   notes          String?
   publicToken    String?
+  customerMessage String?
   convertedToId  String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
