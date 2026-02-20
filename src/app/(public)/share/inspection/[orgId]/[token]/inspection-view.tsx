@@ -75,6 +75,7 @@ export function InspectionView({
   publicToken,
   orgId,
   hasExistingQuoteRequest,
+  quoteShareUrl,
 }: {
   inspection: InspectionRecord;
   workshop: { name: string; address: string; phone: string; email: string };
@@ -86,6 +87,7 @@ export function InspectionView({
   publicToken: string;
   orgId: string;
   hasExistingQuoteRequest: boolean;
+  quoteShareUrl?: string;
 }) {
   const fmt = dateFormat || DEFAULT_DATE_FORMAT;
   const tz = timezone || "America/New_York";
@@ -283,6 +285,31 @@ export function InspectionView({
           )}
         </div>
       </div>
+
+      {/* Quote available banner */}
+      {quoteShareUrl && (
+        <div className="mb-6 flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+            <FileText className="h-4 w-4 text-emerald-600" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-emerald-900">
+              A quote has been prepared for this inspection
+            </p>
+            <p className="mt-0.5 text-xs text-emerald-700/70">
+              Review the quote to see pricing and approve the recommended work.
+            </p>
+          </div>
+          <a
+            href={quoteShareUrl}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90"
+            style={{ backgroundColor: primaryColor }}
+          >
+            <FileText className="h-4 w-4" />
+            View Quote
+          </a>
+        </div>
+      )}
 
       {/* Action buttons */}
       <div className="mb-6 flex flex-wrap gap-3">

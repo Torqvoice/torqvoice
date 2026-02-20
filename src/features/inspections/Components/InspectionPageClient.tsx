@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   ArrowLeft, Camera, Check, CheckCircle2, ClipboardCheck, Download, FileText, Loader2,
-  MoreVertical, Share2, Trash2, X,
+  MessageSquareText, MoreVertical, Share2, Trash2, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { updateInspectionItem, completeInspection, deleteInspection } from "../Actions/inspectionActions";
@@ -57,6 +57,7 @@ interface InspectionData {
   template: { id: string; name: string };
   items: InspectionItem[];
   quotes: { id: string; quoteNumber: string | null; status: string }[];
+  quoteRequests: { id: string; message: string | null; selectedItemIds: string[]; createdAt: Date }[];
 }
 
 const conditionConfig: Record<Condition, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
@@ -440,6 +441,7 @@ export function InspectionPageClient({
   const failCount = inspection.items.filter((i) => i.condition === "fail").length;
   const attentionCount = inspection.items.filter((i) => i.condition === "attention").length;
   const hasIssueItems = failCount > 0 || attentionCount > 0;
+  const pendingQuoteRequest = inspection.quoteRequests?.[0] ?? null;
 
   const handleComplete = () => {
     startTransition(async () => {
@@ -598,6 +600,38 @@ export function InspectionPageClient({
           </div>
         </div>
       </div>
+
+      {/* Pending quote request banner */}
+      {pendingQuoteRequest && (
+        <Card className="border-amber-500/30 bg-amber-50 dark:bg-amber-950/20">
+          <CardContent className="flex items-start gap-3 py-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-500/15">
+              <MessageSquareText className="h-4 w-4 text-amber-600" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
+                Customer requested a quote for {pendingQuoteRequest.selectedItemIds.length} item(s)
+              </p>
+              {pendingQuoteRequest.message && (
+                <p className="mt-0.5 text-sm text-amber-800/80 dark:text-amber-300/70">
+                  &ldquo;{pendingQuoteRequest.message}&rdquo;
+                </p>
+              )}
+              <div className="mt-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-amber-500/30 text-amber-900 hover:bg-amber-100 dark:text-amber-200 dark:hover:bg-amber-900/30"
+                  onClick={() => router.push(`/quotes/new?fromInspection=${inspection.id}`)}
+                >
+                  <FileText className="mr-1 h-3.5 w-3.5" />
+                  Create Quote
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Inspection sections */}
       <div className="space-y-4">

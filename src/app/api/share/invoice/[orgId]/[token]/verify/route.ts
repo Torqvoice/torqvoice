@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { getPaymentProvider, getEnabledProviders } from "@/lib/payment-providers";
 import { rateLimit } from "@/lib/rate-limit";
+import { notify } from "@/lib/notify";
 
 const verifySchema = z.object({
   provider: z.enum(["stripe", "vipps", "paypal"]),
@@ -22,7 +23,7 @@ export async function POST(
     const record = await db.serviceRecord.findUnique({
       where: { publicToken: token },
       include: {
-        vehicle: { select: { organizationId: true } },
+        vehicle: { select: { id: true, organizationId: true, customer: { select: { name: true } } } },
       },
     });
 
@@ -77,6 +78,16 @@ export async function POST(
           externalId,
           serviceRecordId: record.id,
         },
+      });
+
+      notify({
+        organizationId: orgId,
+        type: "invoice_payment",
+        title: "Invoice Payment Received",
+        message: `${record.vehicle.customer?.name || "A customer"} paid ${result.amount.toFixed(2)} for invoice ${record.invoiceNumber || record.title}`,
+        entityType: "invoice",
+        entityId: record.id,
+        entityUrl: `/vehicles/${record.vehicle.id}?tab=service&record=${record.id}`,
       });
     }
 

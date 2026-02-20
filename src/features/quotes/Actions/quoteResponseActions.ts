@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { notify } from "@/lib/notify";
 import { z } from "zod";
 
 const respondToQuoteSchema = z.object({
@@ -22,6 +23,7 @@ export async function respondToQuote(input: unknown) {
   // Verify the quote exists and the token matches
   const quote = await db.quote.findFirst({
     where: { id: data.quoteId, publicToken: data.publicToken },
+    include: { customer: { select: { name: true } } },
   });
   if (!quote) {
     return { success: false, error: "Quote not found" };
@@ -39,6 +41,20 @@ export async function respondToQuote(input: unknown) {
       customerMessage: data.message || null,
     },
   });
+
+  if (quote.organizationId) {
+    const customerName = quote.customer?.name || "A customer";
+    const actionLabel = data.action === "accepted" ? "accepted" : "requested changes on";
+    notify({
+      organizationId: quote.organizationId,
+      type: "quote_response",
+      title: `Quote ${data.action === "accepted" ? "Accepted" : "Changes Requested"}`,
+      message: `${customerName} ${actionLabel} quote ${quote.quoteNumber || quote.title}`,
+      entityType: "quote",
+      entityId: quote.id,
+      entityUrl: `/quotes/${quote.id}`,
+    });
+  }
 
   return { success: true };
 }
