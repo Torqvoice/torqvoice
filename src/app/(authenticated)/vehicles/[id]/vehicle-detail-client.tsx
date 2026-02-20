@@ -37,6 +37,7 @@ import {
   Bell,
   Car,
   CheckCircle2,
+  ClipboardCheck,
   Clock,
   DollarSign,
   EyeOff,
@@ -54,6 +55,7 @@ import {
   Wrench,
   X,
 } from 'lucide-react'
+import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -162,6 +164,8 @@ export function VehicleDetailClient({
   currencyCode = 'USD',
   unitSystem = 'imperial',
   predictionData,
+  inspections,
+  inspectionTemplates,
 }: {
   vehicle: VehicleDetail
   customers: CustomerOption[]
@@ -180,6 +184,15 @@ export function VehicleDetailClient({
     maintenanceDismissed: boolean
     confidencePercent: number
   } | null
+  inspections?: {
+    id: string
+    status: string
+    createdAt: Date
+    completedAt: Date | null
+    template: { id: string; name: string }
+    items: { id: string; condition: string }[]
+  }[]
+  inspectionTemplates?: { id: string; name: string; isDefault: boolean }[]
 }) {
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
@@ -195,6 +208,7 @@ export function VehicleDetailClient({
   const [showImage, setShowImage] = useState(false)
   const [showArchiveDialog, setShowArchiveDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showNewInspection, setShowNewInspection] = useState(false)
   const [isDismissPending, startDismissTransition] = useTransition()
 
   const handleDismissMaintenance = () => {
@@ -540,10 +554,14 @@ export function VehicleDetailClient({
 
       {/* Tabs */}
       <Tabs defaultValue="services" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="services" className="gap-1.5">
             <Wrench className="h-3.5 w-3.5" />
             Services
+          </TabsTrigger>
+          <TabsTrigger value="inspections" className="gap-1.5">
+            <ClipboardCheck className="h-3.5 w-3.5" />
+            Inspections
           </TabsTrigger>
           <TabsTrigger value="notes" className="gap-1.5">
             <StickyNote className="h-3.5 w-3.5" />
@@ -573,6 +591,80 @@ export function VehicleDetailClient({
             type={serviceType}
             currencyCode={currencyCode}
           />
+        </TabsContent>
+
+        {/* Inspections Tab */}
+        <TabsContent value="inspections" className="space-y-4">
+          <div className="flex justify-end">
+            <Button size="sm" onClick={() => setShowNewInspection(true)}>
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              New Inspection
+            </Button>
+          </div>
+
+          {(!inspections || inspections.length === 0) ? (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col items-center py-12">
+                <ClipboardCheck className="mb-3 h-10 w-10 text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">No inspections yet</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="rounded-lg border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Template</TableHead>
+                    <TableHead className="w-32">Progress</TableHead>
+                    <TableHead className="w-28">Status</TableHead>
+                    <TableHead className="w-24">Date</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {inspections.map((insp) => {
+                    const total = insp.items.length
+                    const inspected = insp.items.filter((i) => i.condition !== 'not_inspected').length
+                    const passCount = insp.items.filter((i) => i.condition === 'pass').length
+                    const failCount = insp.items.filter((i) => i.condition === 'fail').length
+                    return (
+                      <TableRow
+                        key={insp.id}
+                        className="cursor-pointer"
+                        onClick={() => router.push(`/inspections/${insp.id}`)}
+                      >
+                        <TableCell className="font-medium">{insp.template.name}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1.5">
+                            <div className="flex h-2 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                              {total > 0 && (
+                                <>
+                                  <div className="bg-emerald-500" style={{ width: `${(passCount / total) * 100}%` }} />
+                                  <div className="bg-red-500" style={{ width: `${(failCount / total) * 100}%` }} />
+                                  <div className="bg-amber-500" style={{ width: `${((inspected - passCount - failCount) / total) * 100}%` }} />
+                                </>
+                              )}
+                            </div>
+                            <span className="text-xs text-muted-foreground">{inspected}/{total}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={`text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
+                          >
+                            {insp.status === 'completed' ? 'Completed' : 'In Progress'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-mono text-xs text-muted-foreground">
+                          {formatDate(new Date(insp.createdAt))}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </TabsContent>
 
         {/* Notes Tab */}
@@ -795,6 +887,12 @@ export function VehicleDetailClient({
         open={showReminderForm}
         onOpenChange={setShowReminderForm}
         reminder={editingReminder}
+      />
+      <NewInspectionDialog
+        open={showNewInspection}
+        onOpenChange={setShowNewInspection}
+        templates={inspectionTemplates || []}
+        preselectedVehicleId={vehicle.id}
       />
       <ArchiveVehicleDialog
         open={showArchiveDialog}

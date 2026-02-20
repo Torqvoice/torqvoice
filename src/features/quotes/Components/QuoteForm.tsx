@@ -23,7 +23,7 @@ import { useGlassModal } from "@/components/glass-modal";
 import { createQuote, updateQuote } from "@/features/quotes/Actions/quoteActions";
 import type { QuotePartInput, QuoteLaborInput } from "@/features/quotes/Schema/quoteSchema";
 import { RichTextEditor } from "@/features/vehicles/Components/service-edit/RichTextEditor";
-import { ArrowLeft, Car, FileText, Loader2, Plus, Save, Trash2, Users, X } from "lucide-react";
+import { ArrowLeft, Car, ClipboardCheck, FileText, Loader2, Plus, Save, Trash2, Users, X } from "lucide-react";
 import { formatCurrency, getCurrencySymbol } from "@/lib/format";
 
 interface CustomerOption {
@@ -92,6 +92,14 @@ function useIsLargeScreen() {
   return isLarge;
 }
 
+interface PrefillData {
+  title?: string;
+  vehicleId?: string;
+  customerId?: string;
+  inspectionId?: string;
+  laborItems?: QuoteLaborInput[];
+}
+
 export function QuoteForm({
   currencyCode = "USD",
   defaultTaxRate = 0,
@@ -101,6 +109,7 @@ export function QuoteForm({
   customers = [],
   vehicles = [],
   initialData,
+  prefill,
 }: {
   currencyCode?: string;
   defaultTaxRate?: number;
@@ -110,6 +119,7 @@ export function QuoteForm({
   customers?: CustomerOption[];
   vehicles?: VehicleOption[];
   initialData?: InitialData;
+  prefill?: PrefillData;
 }) {
   const cs = getCurrencySymbol(currencyCode);
   const isEdit = !!initialData;
@@ -118,10 +128,10 @@ export function QuoteForm({
   const isLarge = useIsLargeScreen();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(initialData?.status || "draft");
-  const [customerId, setCustomerId] = useState(initialData?.customerId || "");
-  const [vehicleId, setVehicleId] = useState(initialData?.vehicleId || "");
+  const [customerId, setCustomerId] = useState(initialData?.customerId || prefill?.customerId || "");
+  const [vehicleId, setVehicleId] = useState(initialData?.vehicleId || prefill?.vehicleId || "");
   const [partItems, setPartItems] = useState<QuotePartInput[]>(initialData?.partItems || []);
-  const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(initialData?.laborItems || []);
+  const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(initialData?.laborItems || prefill?.laborItems || []);
   const [taxRate, setTaxRate] = useState(initialData?.taxRate ?? defaultTaxRate);
   const [discountType, setDiscountType] = useState<string>(initialData?.discountType || "none");
   const [discountValue, setDiscountValue] = useState(initialData?.discountValue ?? 0);
@@ -197,6 +207,7 @@ export function QuoteForm({
       customerId: customerId || undefined,
       vehicleId: vehicleId || undefined,
       notes: notes || undefined,
+      inspectionId: prefill?.inspectionId || undefined,
       partItems: partItems.filter((p) => p.name),
       laborItems: laborItems.filter((l) => l.description),
       subtotal,
@@ -430,7 +441,7 @@ export function QuoteForm({
         <h3 className="text-sm font-semibold">Quote Details</h3>
         <div className="space-y-1">
           <Label htmlFor="title" className="text-xs">Title *</Label>
-          <Input id="title" name="title" placeholder="Vehicle repair estimate" defaultValue={initialData?.title || ""} required />
+          <Input id="title" name="title" placeholder="Vehicle repair estimate" defaultValue={initialData?.title || prefill?.title || ""} required />
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
@@ -450,6 +461,15 @@ export function QuoteForm({
             <Input id="validUntil" name="validUntil" type="date" defaultValue={defaultValidDate} />
           </div>
         </div>
+        {prefill?.inspectionId && (
+          <Link
+            href={`/inspections/${prefill.inspectionId}`}
+            className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ClipboardCheck className="h-3.5 w-3.5 shrink-0" />
+            <span>View linked inspection</span>
+          </Link>
+        )}
       </div>
 
       {/* Totals */}

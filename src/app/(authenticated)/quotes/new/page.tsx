@@ -4,8 +4,15 @@ import { PageHeader } from "@/components/page-header";
 import { QuoteForm } from "@/features/quotes/Components/QuoteForm";
 import { getCustomers } from "@/features/customers/Actions/customerActions";
 import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
+import { getInspection } from "@/features/inspections/Actions/inspectionActions";
 
-export default async function NewQuotePage() {
+export default async function NewQuotePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ fromInspection?: string }>;
+}) {
+  const params = await searchParams;
+
   const [settingsResult, customersResult, vehiclesResult] = await Promise.all([
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.DEFAULT_TAX_RATE, SETTING_KEYS.TAX_ENABLED, SETTING_KEYS.DEFAULT_LABOR_RATE, SETTING_KEYS.QUOTE_VALID_DAYS]),
     getCustomers(),
@@ -20,6 +27,31 @@ export default async function NewQuotePage() {
   const quoteValidDays = Number(settings[SETTING_KEYS.QUOTE_VALID_DAYS]) || 30;
   const customers = customersResult.success && customersResult.data ? customersResult.data : [];
   const vehicles = vehiclesResult.success && vehiclesResult.data ? vehiclesResult.data : [];
+
+  // Build prefill data from inspection if provided
+  let prefill: { title?: string; vehicleId?: string; customerId?: string; inspectionId?: string; laborItems?: { description: string; hours: number; rate: number; total: number }[] } | undefined;
+
+  if (params.fromInspection) {
+    const inspResult = await getInspection(params.fromInspection);
+    if (inspResult.success && inspResult.data) {
+      const insp = inspResult.data;
+      const issueItems = insp.items.filter(
+        (i: { condition: string }) => i.condition === "fail" || i.condition === "attention"
+      );
+      prefill = {
+        title: `Inspection Repairs — ${insp.vehicle.year} ${insp.vehicle.make} ${insp.vehicle.model}`,
+        vehicleId: insp.vehicle.id,
+        customerId: insp.vehicle.customer?.id || undefined,
+        inspectionId: insp.id,
+        laborItems: issueItems.map((item: { name: string; section: string; notes: string | null }) => ({
+          description: `${item.section}: ${item.name}${item.notes ? ` — ${item.notes}` : ""}`,
+          hours: 0,
+          rate: defaultLaborRate,
+          total: 0,
+        })),
+      };
+    }
+  }
 
   return (
     <>
@@ -46,6 +78,7 @@ export default async function NewQuotePage() {
             customerId: v.customer?.id || null,
             customerName: v.customer?.name || null,
           }))}
+          prefill={prefill}
         />
       </div>
     </>

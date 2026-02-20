@@ -32,6 +32,7 @@ export const createQuoteSchema = z.object({
   discountAmount: z.coerce.number().min(0).default(0),
   totalAmount: z.coerce.number().min(0).default(0),
   notes: z.string().optional(),
+  inspectionId: z.string().optional(),
 });
 
 export const updateQuoteSchema = createQuoteSchema.partial().extend({
