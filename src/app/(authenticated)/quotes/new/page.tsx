@@ -29,7 +29,7 @@ export default async function NewQuotePage({
   const vehicles = vehiclesResult.success && vehiclesResult.data ? vehiclesResult.data : [];
 
   // Build prefill data from inspection if provided
-  let prefill: { title?: string; vehicleId?: string; customerId?: string; laborItems?: { description: string; hours: number; rate: number; total: number }[] } | undefined;
+  let prefill: { title?: string; vehicleId?: string; customerId?: string; inspectionId?: string; laborItems?: { description: string; hours: number; rate: number; total: number }[] } | undefined;
 
   if (params.fromInspection) {
     const inspResult = await getInspection(params.fromInspection);
@@ -42,6 +42,7 @@ export default async function NewQuotePage({
         title: `Inspection Repairs — ${insp.vehicle.year} ${insp.vehicle.make} ${insp.vehicle.model}`,
         vehicleId: insp.vehicle.id,
         customerId: insp.vehicle.customer?.id || undefined,
+        inspectionId: insp.id,
         laborItems: issueItems.map((item: { name: string; section: string; notes: string | null }) => ({
           description: `${item.section}: ${item.name}${item.notes ? ` — ${item.notes}` : ""}`,
           hours: 0,

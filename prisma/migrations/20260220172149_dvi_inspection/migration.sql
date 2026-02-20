@@ -1,3 +1,6 @@
+-- AlterTable
+ALTER TABLE "quotes" ADD COLUMN     "inspectionId" TEXT;
+
 -- CreateTable
 CREATE TABLE "inspection_templates" (
     "id" TEXT NOT NULL,
@@ -102,6 +105,9 @@ CREATE INDEX "inspection_quote_requests_organizationId_idx" ON "inspection_quote
 
 -- CreateIndex
 CREATE INDEX "inspection_quote_requests_inspectionId_idx" ON "inspection_quote_requests"("inspectionId");
+
+-- AddForeignKey
+ALTER TABLE "quotes" ADD CONSTRAINT "quotes_inspectionId_fkey" FOREIGN KEY ("inspectionId") REFERENCES "inspections"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "inspection_templates" ADD CONSTRAINT "inspection_templates_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -96,6 +96,7 @@ interface PrefillData {
   title?: string;
   vehicleId?: string;
   customerId?: string;
+  inspectionId?: string;
   laborItems?: QuoteLaborInput[];
 }
 
@@ -206,6 +207,7 @@ export function QuoteForm({
       customerId: customerId || undefined,
       vehicleId: vehicleId || undefined,
       notes: notes || undefined,
+      inspectionId: prefill?.inspectionId || undefined,
       partItems: partItems.filter((p) => p.name),
       laborItems: laborItems.filter((l) => l.description),
       subtotal,

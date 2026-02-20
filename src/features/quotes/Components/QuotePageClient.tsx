@@ -39,6 +39,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Car,
+  ClipboardCheck,
   Download,
   FileText,
   Globe,
@@ -95,6 +96,7 @@ interface QuoteRecord {
   notes: string | null;
   publicToken: string | null;
   convertedToId: string | null;
+  inspectionId: string | null;
   createdAt: Date;
   partItems: { id: string; partNumber: string | null; name: string; quantity: number; unitPrice: number; total: number }[];
   laborItems: { id: string; description: string; hours: number; rate: number; total: number }[];
@@ -480,6 +482,15 @@ export function QuotePageClient({
             <Input id="validUntil" name="validUntil" type="date" defaultValue={defaultValidDate} />
           </div>
         </div>
+        {quote.inspectionId && (
+          <Link
+            href={`/inspections/${quote.inspectionId}`}
+            className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ClipboardCheck className="h-3.5 w-3.5 shrink-0" />
+            <span>View linked inspection</span>
+          </Link>
+        )}
       </div>
 
       {/* Totals */}
