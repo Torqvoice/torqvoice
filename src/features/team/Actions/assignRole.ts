@@ -11,8 +11,6 @@ export async function assignRole(input: unknown) {
     if (!isAdmin) {
       throw new Error("Only owners and admins can assign roles");
     }
-    if (!organizationId) throw new Error("No organization found");
-
     const data = assignRoleSchema.parse(input);
 
     const member = await db.organizationMember.findFirst({

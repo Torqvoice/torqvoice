@@ -16,7 +16,7 @@ export const getCachedMembership = cache(async (userId: string) => {
     role: true,
     roleId: true,
     customRole: {
-      include: { permissions: { select: { action: true, subject: true } } },
+      select: { isAdmin: true, permissions: { select: { action: true, subject: true } } },
     },
   } as const;
 

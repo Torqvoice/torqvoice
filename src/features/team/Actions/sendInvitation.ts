@@ -10,7 +10,6 @@ import { revalidatePath } from "next/cache";
 
 export async function sendInvitation(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
-    if (!organizationId) throw new Error("No organization found");
     const data = sendInvitationSchema.parse(input);
 
     // Fetch membership for organization name (authorization is handled by withAuth's requiredPermissions)

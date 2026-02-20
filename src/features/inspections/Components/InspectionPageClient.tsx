@@ -35,7 +35,7 @@ interface InspectionItem {
   imageUrls: string[];
 }
 
-interface InspectionData {
+export interface InspectionData {
   id: string;
   status: string;
   mileage: number | null;

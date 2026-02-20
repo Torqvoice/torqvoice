@@ -8,7 +8,6 @@ import { revalidatePath } from "next/cache";
 
 export async function cancelInvitation(input: unknown) {
   return withAuth(async ({ userId, organizationId, isAdmin }) => {
-    if (!organizationId) throw new Error("No organization found");
     const data = cancelInvitationSchema.parse(input);
 
     // Verify caller belongs to an organization

@@ -12,7 +12,7 @@ export type ActionResult<T = unknown> = {
 
 export type AuthContext = {
   userId: string;
-  organizationId: string | null;
+  organizationId: string;
   role: string;
   isSuperAdmin: boolean;
   isAdmin: boolean;
@@ -42,8 +42,7 @@ export async function withAuth<T>(
 
     const membership = await getCachedMembership(session.user.id);
 
-    // Super admins can bypass the organization requirement
-    if (!membership && !isSuperAdmin) {
+    if (!membership?.organizationId) {
       return { success: false, error: "No organization found" };
     }
 
@@ -65,7 +64,7 @@ export async function withAuth<T>(
 
     const data = await action({
       userId: session.user.id,
-      organizationId: membership?.organizationId ?? null,
+      organizationId: membership.organizationId,
       role: isSuperAdmin ? "super_admin" : (membership?.role ?? "member"),
       isSuperAdmin,
       isAdmin: isSuperAdmin || isOwnerOrAdmin || roleIsAdmin,

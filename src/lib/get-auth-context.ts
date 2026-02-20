@@ -28,15 +28,19 @@ export async function getAuthContextDetailed(): Promise<AuthContextResult> {
 
   const isSuperAdmin = user?.isSuperAdmin ?? false;
 
-  if (!membership && !isSuperAdmin) return { status: "no-organization" };
+  if (!membership?.organizationId) return { status: "no-organization" };
+
+  const isOwnerOrAdmin = membership.role === "owner" || membership.role === "admin";
+  const roleIsAdmin = membership.customRole?.isAdmin === true;
 
   return {
     status: "ok",
     context: {
       userId: session.user.id,
-      organizationId: membership?.organizationId ?? null,
-      role: isSuperAdmin ? "super_admin" : (membership?.role ?? "member"),
+      organizationId: membership.organizationId,
+      role: isSuperAdmin ? "super_admin" : (membership.role ?? "member"),
       isSuperAdmin,
+      isAdmin: isSuperAdmin || isOwnerOrAdmin || roleIsAdmin,
     },
   };
 }
