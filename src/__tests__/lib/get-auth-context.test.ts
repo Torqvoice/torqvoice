@@ -56,6 +56,7 @@ describe("getAuthContext", () => {
       organizationId: "org-1",
       role: "member",
       isSuperAdmin: false,
+      isAdmin: false,
     });
   });
 });
@@ -85,23 +86,16 @@ describe("getAuthContextDetailed", () => {
         organizationId: "org-1",
         role: "member",
         isSuperAdmin: false,
+        isAdmin: false,
       },
     });
   });
 
-  it("super admin with no membership returns ok with role=super_admin and organizationId=null", async () => {
+  it("super admin with no membership returns no-organization", async () => {
     mockGetCachedSession.mockResolvedValue(SESSION as any);
     mockGetCachedMembership.mockResolvedValue(null);
     mockFindUnique.mockResolvedValue({ isSuperAdmin: true } as any);
     const result = await getAuthContextDetailed();
-    expect(result).toEqual({
-      status: "ok",
-      context: {
-        userId: "user-1",
-        organizationId: null,
-        role: "super_admin",
-        isSuperAdmin: true,
-      },
-    });
+    expect(result).toEqual({ status: "no-organization" });
   });
 });

@@ -51,14 +51,12 @@ describe("withAuth", () => {
     expect(result).toEqual({ success: false, error: "No organization found" });
   });
 
-  it("super admin with no membership bypasses org requirement and organizationId is null", async () => {
+  it("super admin with no membership returns No organization found", async () => {
     mockGetCachedSession.mockResolvedValue(SESSION as any);
     mockFindUnique.mockResolvedValue({ isSuperAdmin: true } as any);
     mockGetCachedMembership.mockResolvedValue(null);
     const result = await withAuth(async (ctx) => ctx);
-    expect(result.success).toBe(true);
-    expect((result.data as any).organizationId).toBeNull();
-    expect((result.data as any).isSuperAdmin).toBe(true);
+    expect(result).toEqual({ success: false, error: "No organization found" });
   });
 
   it("regular member with no required permissions — action runs", async () => {
@@ -138,15 +136,16 @@ describe("withAuth", () => {
     expect(result).toEqual({ success: false, error: "Insufficient permissions" });
   });
 
-  it("super admin bypasses all permission checks", async () => {
+  it("super admin with membership bypasses all permission checks", async () => {
     mockGetCachedSession.mockResolvedValue(SESSION as any);
     mockFindUnique.mockResolvedValue({ isSuperAdmin: true } as any);
-    mockGetCachedMembership.mockResolvedValue(null);
+    mockGetCachedMembership.mockResolvedValue(MEMBERSHIP as any);
     const result = await withAuth(async (ctx) => ctx, {
       requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }],
     });
     expect(result.success).toBe(true);
     expect((result.data as any).isSuperAdmin).toBe(true);
+    expect((result.data as any).organizationId).toBe("org-1");
   });
 
   it("action throwing ZodError returns formatted field errors", async () => {
