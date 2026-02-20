@@ -509,7 +509,9 @@ export function TemplateSettings({
       <div>
         <h2 className="text-lg font-semibold">Templates</h2>
         <p className="text-sm text-muted-foreground">
-          Customize the appearance of your PDF invoices and quotes.
+          {tab === "inspections"
+            ? "Manage inspection checklists and multi-point templates."
+            : "Customize the appearance of your PDF invoices and quotes."}
         </p>
       </div>
 

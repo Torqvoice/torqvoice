@@ -40,7 +40,7 @@ export default async function PublicInspectionPage({
     notFound();
   }
 
-  const [settings, org, features] = await Promise.all([
+  const [settings, org, features, existingRequest] = await Promise.all([
     db.appSetting.findMany({
       where: {
         organizationId: orgId,
@@ -63,6 +63,10 @@ export default async function PublicInspectionPage({
       select: { name: true },
     }),
     getFeatures(orgId),
+    db.inspectionQuoteRequest.findFirst({
+      where: { inspectionId: inspection.id, status: "pending" },
+      select: { id: true },
+    }),
   ]);
 
   const settingsMap: Record<string, string> = {};
@@ -86,15 +90,31 @@ export default async function PublicInspectionPage({
 
   const primaryColor = settingsMap["invoice.primaryColor"] || "#d97706";
 
+  // Rewrite image URLs on inspection items for public access
+  const publicInspection = {
+    ...inspection,
+    items: inspection.items.map((item) => ({
+      ...item,
+      imageUrls: item.imageUrls.map((url) => {
+        const match = url.match(/^\/api\/files\/[^/]+\/(.+)$/);
+        if (match) return `/api/files/public/${token}/${match[1]}`;
+        return url;
+      }),
+    })),
+  };
+
   return (
     <InspectionView
-      inspection={inspection}
+      inspection={publicInspection}
       workshop={workshop}
       logoUrl={logoUrl}
       primaryColor={primaryColor}
       showTorqvoiceBranding={!features.brandingRemoved}
       dateFormat={settingsMap["workshop.dateFormat"] || undefined}
       timezone={settingsMap["workshop.timezone"] || undefined}
+      publicToken={token}
+      orgId={orgId}
+      hasExistingQuoteRequest={!!existingRequest}
     />
   );
 }

@@ -724,7 +724,8 @@ model Inspection {
 
   organizationId String
 
-  items InspectionItem[]
+  items         InspectionItem[]
+  quoteRequests InspectionQuoteRequest[]
 
   @@index([vehicleId])
   @@index([organizationId])
@@ -745,4 +746,21 @@ model InspectionItem {
 
   @@index([inspectionId])
   @@map("inspection_items")
+}
+
+model InspectionQuoteRequest {
+  id              String   @id @default(cuid())
+  status          String   @default("pending")
+  message         String?
+  selectedItemIds String[]
+  createdAt       DateTime @default(now())
+
+  inspectionId String
+  inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  organizationId String
+
+  @@index([organizationId])
+  @@index([inspectionId])
+  @@map("inspection_quote_requests")
 }

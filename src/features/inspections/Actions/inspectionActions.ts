@@ -137,12 +137,13 @@ export async function createInspection(input: unknown) {
         },
       });
 
-      // Copy template items into inspection items
-      const items = template.sections.flatMap((section) =>
+      // Copy template items into inspection items with globally unique sortOrder
+      // so sections always appear in a stable order when sorted by sortOrder
+      const items = template.sections.flatMap((section, sIdx) =>
         section.items.map((item) => ({
           name: item.name,
           section: section.name,
-          sortOrder: item.sortOrder,
+          sortOrder: sIdx * 1000 + item.sortOrder,
           inspectionId: created.id,
         }))
       );
@@ -178,7 +179,6 @@ export async function updateInspectionItem(itemId: string, input: unknown) {
       },
     });
 
-    revalidatePath(`/inspections/${item.inspectionId}`);
     return updated;
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INSPECTIONS }] });
 }
