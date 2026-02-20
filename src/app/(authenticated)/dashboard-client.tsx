@@ -18,9 +18,12 @@ import { statusColors } from "@/lib/table-utils";
 import {
   AlertTriangle,
   Bell,
+  Check,
+  ClipboardCheck,
   ClipboardList,
   Clock,
   DollarSign,
+  FileText,
   Gauge,
   Loader2,
   Users,
@@ -28,6 +31,7 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { dismissMaintenance } from "@/features/vehicles/Actions/dismissMaintenance";
+import { updateQuoteRequestStatus } from "@/features/inspections/Actions/quoteRequestActions";
 
 interface ServiceItem {
   id: string;
@@ -86,18 +90,59 @@ interface VehicleDueForService {
   confidencePercent: number;
 }
 
+interface DashboardInspection {
+  id: string;
+  status: string;
+  createdAt: Date;
+  vehicle: {
+    id: string;
+    make: string;
+    model: string;
+    year: number;
+    licensePlate: string | null;
+  };
+  template: { id: string; name: string };
+  items: { id: string; condition: string }[];
+}
+
+interface DashboardQuoteRequest {
+  id: string;
+  status: string;
+  message: string | null;
+  selectedItemIds: string[];
+  createdAt: Date;
+  inspection: {
+    id: string;
+    vehicle: {
+      id: string;
+      make: string;
+      model: string;
+      year: number;
+      licensePlate: string | null;
+      customer: { name: string } | null;
+    };
+    items: { id: string; name: string; section: string; condition: string; notes: string | null }[];
+  };
+}
+
 export function DashboardClient({
   stats,
   currencyCode = "USD",
   upcomingReminders = [],
   vehiclesDueForService = [],
   unitSystem = "imperial",
+  inProgressInspections = [],
+  completedInspections = [],
+  quoteRequests = [],
 }: {
   stats: DashboardStats;
   currencyCode?: string;
   upcomingReminders?: ReminderItem[];
   vehiclesDueForService?: VehicleDueForService[];
   unitSystem?: "metric" | "imperial";
+  inProgressInspections?: DashboardInspection[];
+  completedInspections?: DashboardInspection[];
+  quoteRequests?: DashboardQuoteRequest[];
 }) {
   const distUnit = unitSystem === "metric" ? "km" : "mi";
   const router = useRouter();
@@ -300,6 +345,184 @@ export function DashboardClient({
                           {formatDate(new Date(r.dueDate))}
                         </span>
                       )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Inspections */}
+      {(inProgressInspections.length > 0 || completedInspections.length > 0) && (
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <ClipboardCheck className="h-4 w-4" />
+              Inspections
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y">
+              {inProgressInspections.map((insp) => {
+                const total = insp.items.length;
+                const pass = insp.items.filter((i) => i.condition === "pass").length;
+                const fail = insp.items.filter((i) => i.condition === "fail").length;
+                const attention = insp.items.filter((i) => i.condition === "attention").length;
+                const inspected = pass + fail + attention;
+
+                return (
+                  <div
+                    key={insp.id}
+                    className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => router.push(`/inspections/${insp.id}`)}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/10">
+                        <ClipboardCheck className="h-4 w-4 text-blue-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">
+                          {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {insp.vehicle.licensePlate && `${insp.vehicle.licensePlate} · `}
+                          {insp.template.name} · {inspected}/{total} items
+                        </p>
+                      </div>
+                    </div>
+                    <div className="shrink-0 ml-3 flex items-center gap-2">
+                      {total > 0 && (
+                        <div className="hidden sm:flex h-2 w-20 overflow-hidden rounded-full bg-gray-200">
+                          <div className="bg-emerald-500" style={{ width: `${(pass / total) * 100}%` }} />
+                          <div className="bg-red-500" style={{ width: `${(fail / total) * 100}%` }} />
+                          <div className="bg-amber-500" style={{ width: `${(attention / total) * 100}%` }} />
+                        </div>
+                      )}
+                      <Badge className="bg-blue-500/15 text-blue-600 border-blue-500/20 text-[10px]">
+                        In Progress
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })}
+              {completedInspections.map((insp) => {
+                const total = insp.items.length;
+                const pass = insp.items.filter((i) => i.condition === "pass").length;
+                const fail = insp.items.filter((i) => i.condition === "fail").length;
+                const attention = insp.items.filter((i) => i.condition === "attention").length;
+
+                return (
+                  <div
+                    key={insp.id}
+                    className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => router.push(`/inspections/${insp.id}`)}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10">
+                        <Check className="h-4 w-4 text-emerald-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">
+                          {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {insp.vehicle.licensePlate && `${insp.vehicle.licensePlate} · `}
+                          {insp.template.name} · {formatDate(new Date(insp.createdAt))}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="shrink-0 ml-3 flex items-center gap-2">
+                      {total > 0 && (
+                        <div className="hidden sm:flex h-2 w-20 overflow-hidden rounded-full bg-gray-200">
+                          <div className="bg-emerald-500" style={{ width: `${(pass / total) * 100}%` }} />
+                          <div className="bg-red-500" style={{ width: `${(fail / total) * 100}%` }} />
+                          <div className="bg-amber-500" style={{ width: `${(attention / total) * 100}%` }} />
+                        </div>
+                      )}
+                      <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/20 text-[10px]">
+                        Completed
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Quote Requests */}
+      {quoteRequests.length > 0 && (
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <FileText className="h-4 w-4" />
+              Quote Requests
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Customers requesting quotes from shared inspections
+            </p>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y">
+              {quoteRequests.map((req) => {
+                const selectedItems = req.inspection.items.filter((i) =>
+                  req.selectedItemIds.includes(i.id)
+                );
+                return (
+                  <div
+                    key={req.id}
+                    className="flex items-center justify-between px-5 py-3"
+                  >
+                    <div
+                      className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
+                      onClick={() => router.push(`/inspections/${req.inspection.id}`)}
+                    >
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                        <FileText className="h-4 w-4 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">
+                          {req.inspection.vehicle.year} {req.inspection.vehicle.make} {req.inspection.vehicle.model}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {req.inspection.vehicle.customer?.name && `${req.inspection.vehicle.customer.name} · `}
+                          {selectedItems.length} item{selectedItems.length !== 1 ? "s" : ""} requested
+                          {req.message && ` · "${req.message}"`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="shrink-0 ml-3 flex items-center gap-1.5">
+                      <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">
+                        Pending
+                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={() => {
+                          startTransition(async () => {
+                            await updateQuoteRequestStatus(req.id, "quoted");
+                          });
+                          router.push(`/quotes/new?fromInspection=${req.inspection.id}`);
+                        }}
+                      >
+                        Create Quote
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                        onClick={() => {
+                          startTransition(async () => {
+                            await updateQuoteRequestStatus(req.id, "dismissed");
+                          });
+                        }}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
                   </div>
                 );

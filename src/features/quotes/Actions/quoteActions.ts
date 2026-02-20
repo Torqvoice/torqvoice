@@ -81,6 +81,9 @@ export async function getQuote(quoteId: string) {
         vehicle: {
           select: { id: true, make: true, model: true, year: true, vin: true, licensePlate: true, mileage: true },
         },
+        inspection: {
+          select: { id: true },
+        },
       },
     });
     if (!quote) throw new Error("Quote not found");

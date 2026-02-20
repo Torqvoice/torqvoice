@@ -69,7 +69,7 @@ const settingsNav: SettingsNavItem[] = [
     title: "Templates",
     href: "/settings/templates",
     icon: Layout,
-    description: "Invoice & quote styling",
+    description: "Invoice, quote & inspection templates",
     gate: "customTemplates",
   },
   {

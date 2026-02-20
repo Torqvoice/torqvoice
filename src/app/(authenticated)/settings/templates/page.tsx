@@ -5,6 +5,7 @@ import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { FeatureLockedMessage } from "../feature-locked-message";
 import { redirect } from "next/navigation";
+import { getTemplates, seedDefaultTemplate } from "@/features/inspections/Actions/templateActions";
 
 export default async function TemplatePage() {
   const data = await getLayoutData();
@@ -24,16 +25,25 @@ export default async function TemplatePage() {
     );
   }
 
-  const result = await getSettings([
-    SETTING_KEYS.INVOICE_PRIMARY_COLOR,
-    SETTING_KEYS.INVOICE_FONT_FAMILY,
-    SETTING_KEYS.INVOICE_HEADER_STYLE,
-    SETTING_KEYS.QUOTE_PRIMARY_COLOR,
-    SETTING_KEYS.QUOTE_FONT_FAMILY,
-    SETTING_KEYS.QUOTE_HEADER_STYLE,
+  // Auto-seed default inspection template if none exist
+  await seedDefaultTemplate();
+
+  const [result, inspectionTemplatesResult] = await Promise.all([
+    getSettings([
+      SETTING_KEYS.INVOICE_PRIMARY_COLOR,
+      SETTING_KEYS.INVOICE_FONT_FAMILY,
+      SETTING_KEYS.INVOICE_HEADER_STYLE,
+      SETTING_KEYS.QUOTE_PRIMARY_COLOR,
+      SETTING_KEYS.QUOTE_FONT_FAMILY,
+      SETTING_KEYS.QUOTE_HEADER_STYLE,
+    ]),
+    getTemplates(),
   ]);
 
   const settings = result.success && result.data ? result.data : {};
+  const inspectionTemplates = inspectionTemplatesResult.success && inspectionTemplatesResult.data
+    ? inspectionTemplatesResult.data
+    : [];
 
   return (
     <TemplateSettings
@@ -47,6 +57,7 @@ export default async function TemplatePage() {
         fontFamily: settings[SETTING_KEYS.QUOTE_FONT_FAMILY] || "Helvetica",
         headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || "standard",
       }}
+      inspectionTemplates={inspectionTemplates}
     />
   );
 }
