@@ -12,13 +12,12 @@ export async function sendInvitation(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const data = sendInvitationSchema.parse(input);
 
-    // Verify caller is owner or admin
+    // Fetch membership for organization name (authorization is handled by withAuth's requiredPermissions)
     const membership = await db.organizationMember.findFirst({
       where: { userId, organizationId },
       include: { organization: true },
     });
     if (!membership) throw new Error("You don't belong to an organization");
-    if (membership.role === "member") throw new Error("Only owners and admins can invite members");
 
     // Check for existing pending invitation
     const existing = await db.teamInvitation.findFirst({
@@ -43,14 +42,15 @@ export async function sendInvitation(input: unknown) {
     const token = randomUUID();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-    // Look up custom role name if roleId is provided
+    // Validate and look up custom role name if roleId is provided
     let customRoleName: string | undefined;
     if (data.roleId) {
-      const customRole = await db.role.findUnique({ where: { id: data.roleId }, select: { name: true } });
-      customRoleName = customRole?.name;
+      const customRole = await db.role.findFirst({ where: { id: data.roleId, organizationId }, select: { name: true } });
+      if (!customRole) throw new Error("Role not found");
+      customRoleName = customRole.name;
     }
 
-    await db.teamInvitation.create({
+    const invitation = await db.teamInvitation.create({
       data: {
         email: data.email,
         role: data.role,
@@ -69,29 +69,35 @@ export async function sendInvitation(input: unknown) {
 
     const roleLabel = customRoleName || data.role;
 
-    await sendOrgMail(organizationId, {
-      from,
-      to: data.email,
-      subject: `You've been invited to join ${membership.organization.name} on Torqvoice`,
-      html: `
-        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-          <h2>Team Invitation</h2>
-          <p>You've been invited to join <strong>${membership.organization.name}</strong> on Torqvoice as a <strong>${roleLabel}</strong>.</p>
-          <p>Click the button below to create your account and join the team:</p>
-          <div style="margin: 24px 0;">
-            <a href="${signupUrl}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
-              Accept Invitation
-            </a>
+    try {
+      await sendOrgMail(organizationId, {
+        from,
+        to: data.email,
+        subject: `You've been invited to join ${membership.organization.name} on Torqvoice`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+            <h2>Team Invitation</h2>
+            <p>You've been invited to join <strong>${membership.organization.name}</strong> on Torqvoice as a <strong>${roleLabel}</strong>.</p>
+            <p>Click the button below to create your account and join the team:</p>
+            <div style="margin: 24px 0;">
+              <a href="${signupUrl}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
+                Accept Invitation
+              </a>
+            </div>
+            <p style="color: #6b7280; font-size: 14px;">This invitation expires in 7 days.</p>
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
+            <p style="color: #6b7280; font-size: 12px;">
+              If the button doesn't work, copy and paste this URL into your browser:<br/>
+              <a href="${signupUrl}" style="color: #6b7280;">${signupUrl}</a>
+            </p>
           </div>
-          <p style="color: #6b7280; font-size: 14px;">This invitation expires in 7 days.</p>
-          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-          <p style="color: #6b7280; font-size: 12px;">
-            If the button doesn't work, copy and paste this URL into your browser:<br/>
-            <a href="${signupUrl}" style="color: #6b7280;">${signupUrl}</a>
-          </p>
-        </div>
-      `,
-    });
+        `,
+      });
+    } catch (emailError) {
+      // Roll back the invitation record so the admin can retry
+      await db.teamInvitation.delete({ where: { id: invitation.id } });
+      throw new Error("Failed to send invitation email. Please try again.");
+    }
 
     revalidatePath("/settings/team");
     return { invited: true, pending: true };

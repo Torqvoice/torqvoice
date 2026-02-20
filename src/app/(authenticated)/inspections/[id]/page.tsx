@@ -1,5 +1,5 @@
 import { getInspection } from "@/features/inspections/Actions/inspectionActions";
-import { InspectionPageClient } from "@/features/inspections/Components/InspectionPageClient";
+import { InspectionPageClient, type InspectionData } from "@/features/inspections/Components/InspectionPageClient";
 import { PageHeader } from "@/components/page-header";
 
 export default async function InspectionDetailPage({
@@ -28,7 +28,7 @@ export default async function InspectionDetailPage({
     <>
       <PageHeader />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <InspectionPageClient inspection={result.data} />
+        <InspectionPageClient inspection={result.data as InspectionData} />
       </div>
     </>
   );

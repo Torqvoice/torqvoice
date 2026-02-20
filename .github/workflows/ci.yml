@@ -22,4 +22,6 @@ jobs:
 
       - run: npx prisma generate
 
+      - run: npm test
+
       - run: npm run build

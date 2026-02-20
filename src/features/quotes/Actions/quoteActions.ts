@@ -203,8 +203,8 @@ export async function updateQuoteStatus(quoteId: string, status: string) {
     });
     if (!quote) throw new Error("Quote not found");
 
-    await db.quote.update({
-      where: { id: quoteId },
+    await db.quote.updateMany({
+      where: { id: quoteId, organizationId },
       data: { status },
     });
 
@@ -221,7 +221,7 @@ export async function deleteQuote(quoteId: string) {
     });
     if (!quote) throw new Error("Quote not found");
 
-    await db.quote.delete({ where: { id: quoteId } });
+    await db.quote.deleteMany({ where: { id: quoteId, organizationId } });
     revalidatePath("/quotes");
   }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.QUOTES }] });
 }
@@ -313,8 +313,8 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
       }
 
       // Mark quote as converted
-      await tx.quote.update({
-        where: { id: quoteId },
+      await tx.quote.updateMany({
+        where: { id: quoteId, organizationId },
         data: { status: "converted", convertedToId: created.id },
       });
 

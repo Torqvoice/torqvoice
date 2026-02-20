@@ -162,6 +162,7 @@ export async function updateVehicle(input: unknown) {
         customerId: data.customerId !== undefined ? (data.customerId || null) : undefined,
       },
     });
+    if (vehicle.count === 0) throw new Error("Vehicle not found");
     revalidatePath("/");
     revalidatePath("/vehicles");
     revalidatePath(`/vehicles/${id}`);
@@ -181,6 +182,7 @@ export async function deleteVehicle(vehicleId: string) {
         },
       },
     });
+    if (!vehicle) throw new Error("Vehicle not found");
 
     await db.vehicle.deleteMany({ where: { id: vehicleId, organizationId } });
 

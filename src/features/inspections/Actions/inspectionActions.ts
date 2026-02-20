@@ -202,8 +202,8 @@ export async function completeInspection(id: string) {
     });
     if (!inspection) throw new Error("Inspection not found");
 
-    await db.inspection.update({
-      where: { id },
+    await db.inspection.updateMany({
+      where: { id, organizationId },
       data: { status: "completed", completedAt: new Date() },
     });
 
@@ -221,7 +221,7 @@ export async function deleteInspection(id: string) {
     });
     if (!inspection) throw new Error("Inspection not found");
 
-    await db.inspection.delete({ where: { id } });
+    await db.inspection.deleteMany({ where: { id, organizationId } });
     revalidatePath("/inspections");
     revalidatePath(`/vehicles/${inspection.vehicleId}`);
   }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INSPECTIONS }] });
