@@ -64,13 +64,14 @@ export async function createCustomer(input: unknown) {
 export async function updateCustomer(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const { id, ...data } = updateCustomerSchema.parse(input);
-    await db.customer.updateMany({
+    const result = await db.customer.updateMany({
       where: { id, organizationId },
       data: {
         ...data,
         email: data.email || null,
       },
     });
+    if (result.count === 0) throw new Error("Customer not found");
     revalidatePath("/customers");
     revalidatePath(`/customers/${id}`);
     return { id };
@@ -79,7 +80,8 @@ export async function updateCustomer(input: unknown) {
 
 export async function deleteCustomer(customerId: string) {
   return withAuth(async ({ userId, organizationId }) => {
-    await db.customer.deleteMany({ where: { id: customerId, organizationId } });
+    const result = await db.customer.deleteMany({ where: { id: customerId, organizationId } });
+    if (result.count === 0) throw new Error("Customer not found");
     revalidatePath("/customers");
   }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS }] });
 }

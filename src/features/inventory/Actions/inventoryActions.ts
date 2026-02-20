@@ -160,8 +160,8 @@ export async function adjustInventoryStock(input: unknown) {
     const newQuantity = part.quantity + adjustment;
     if (newQuantity < 0) throw new Error("Insufficient stock");
 
-    await db.inventoryPart.update({
-      where: { id },
+    await db.inventoryPart.updateMany({
+      where: { id, organizationId },
       data: { quantity: newQuantity },
     });
     revalidatePath("/inventory");
@@ -214,8 +214,8 @@ export async function applyMarkupToAll(input: unknown) {
 
     await db.$transaction(
       parts.map((p) =>
-        db.inventoryPart.update({
-          where: { id: p.id },
+        db.inventoryPart.updateMany({
+          where: { id: p.id, organizationId },
           data: { sellPrice: Math.round(p.unitCost * multiplier * 100) / 100 },
         })
       )
