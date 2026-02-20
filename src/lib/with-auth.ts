@@ -15,6 +15,7 @@ export type AuthContext = {
   organizationId: string | null;
   role: string;
   isSuperAdmin: boolean;
+  isAdmin: boolean;
 };
 
 type WithAuthOptions = {
@@ -46,10 +47,11 @@ export async function withAuth<T>(
       return { success: false, error: "No organization found" };
     }
 
+    const isOwnerOrAdmin = membership?.role === "owner" || membership?.role === "admin";
+    const roleIsAdmin = membership?.customRole?.isAdmin === true;
+
     // Check permissions if required (super admins bypass all permission checks)
     if (!isSuperAdmin && options.requiredPermissions && options.requiredPermissions.length > 0) {
-      const isOwnerOrAdmin = membership?.role === "owner" || membership?.role === "admin";
-      const roleIsAdmin = membership?.customRole?.isAdmin === true;
       // Members without a custom role have full access (no restrictions)
       const hasNoCustomRole = !membership?.roleId;
 
@@ -66,6 +68,7 @@ export async function withAuth<T>(
       organizationId: membership?.organizationId ?? null,
       role: isSuperAdmin ? "super_admin" : (membership?.role ?? "member"),
       isSuperAdmin,
+      isAdmin: isSuperAdmin || isOwnerOrAdmin || roleIsAdmin,
     });
     return { success: true, data };
   } catch (error) {

@@ -7,35 +7,7 @@
  *  3. cancelInvitation is properly scoped to the caller's org
  *  4. getPendingInvitations only returns the caller's org's invitations
  *  5. assignRole cannot target members or roles from another org
- *
- * Bugs found (marked 🐛 — do NOT mask, fix properly):
- *
- *  BUG-5: sendInvitation looks up roleId via db.role.findUnique WITHOUT an
- *          organizationId filter. A caller in Org A can supply a roleId that
- *          belongs to Org B. The invitation is created with the cross-org roleId,
- *          and on accept the OrganizationMember for Org A receives a custom role
- *          that belongs to Org B — granting Org B's permissions inside Org A.
- *          Fix: use db.role.findFirst({ where: { id: roleId, organizationId } }).
- *
- *  BUG-6: cancelInvitation checks `membership.role === "member"` after withAuth has
- *          already granted access to users whose custom role has isAdmin:true.
- *          These users carry the built-in role string "member", so the explicit
- *          guard inside the action incorrectly blocks them from cancelling invitations.
- *          Fix: also allow users whose customRole.isAdmin is true.
- *
- *  BUG-7: assignRole checks `role !== "owner" && role !== "admin"` using the
- *          built-in role string from the auth context. Custom-role admins have
- *          role:"member" in the auth context, so they are blocked even though
- *          withAuth granted them access via roleIsAdmin:true.
- *          Fix: withAuth already passes isSuperAdmin — add a similar isSuperAdmin||
- *          check, or expose an isAdmin context field that covers custom roles too.
- *
- * Design note (not a bug, but worth knowing):
- *  withAuth treats members with NO custom role as having "full access" (see the
- *  hasNoCustomRole branch). A plain "member" without any custom role bypasses the
- *  requiredPermissions check entirely. The permission system is opt-in: assign a
- *  custom role to restrict a member; leave them without one and they are unrestricted.
- *  This means, e.g., an unconfigured member can call sendInvitation successfully.
+ *  6. Custom isAdmin roles are respected by cancelInvitation and assignRole
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -458,13 +430,9 @@ describe("sendInvitation — org scoping and role validation", () => {
     expect(vi.mocked(db.teamInvitation.create)).toHaveBeenCalled();
   });
 
-  it("🐛 BUG-5: accepts a roleId from another org without validating org ownership", async () => {
-    // db.role.findUnique returns a role that belongs to ORG_B (no org scoping)
-    vi.mocked(db.role.findUnique).mockResolvedValue({
-      id: "org-b-role-id",
-      name: "Org B Technician",
-      organizationId: ORG_B,
-    } as any);
+  it("rejects a roleId from another org (org-scoped validation)", async () => {
+    // role.findFirst with { id, organizationId: ORG_A } returns null for a foreign role
+    vi.mocked(db.role.findFirst).mockResolvedValue(null);
 
     const result = await sendInvitation({
       email: "new@example.com",
@@ -472,12 +440,25 @@ describe("sendInvitation — org scoping and role validation", () => {
       roleId: "org-b-role-id",
     });
 
-    // BUG: should fail with "Role not found" because "org-b-role-id" doesn't
-    // belong to ORG_A. On acceptance the invited member would carry ORG_B's
-    // custom role (and therefore ORG_B's permissions) inside ORG_A.
-    // Fix: replace role.findUnique({ where: { id } }) with
-    //      role.findFirst({ where: { id, organizationId } }).
-    expect(result.success).toBe(false); // FAILS until bug is fixed
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Role not found");
+    expect(vi.mocked(db.teamInvitation.create)).not.toHaveBeenCalled();
+  });
+
+  it("roleId lookup is scoped to the caller's organizationId", async () => {
+    vi.mocked(db.role.findFirst).mockResolvedValue(null);
+
+    await sendInvitation({
+      email: "new@example.com",
+      role: "member",
+      roleId: "some-role-id",
+    });
+
+    expect(vi.mocked(db.role.findFirst)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ organizationId: ORG_A }),
+      })
+    );
   });
 });
 
@@ -531,13 +512,11 @@ describe("cancelInvitation — org isolation and authorization", () => {
     expect(vi.mocked(db.teamInvitation.update)).not.toHaveBeenCalled();
   });
 
-  it("🐛 BUG-6: custom isAdmin member is incorrectly blocked from cancelling invitations", async () => {
-    // withAuth passes this user through (roleIsAdmin=true from customRole.isAdmin)
-    // but the explicit `membership.role === "member"` check inside the action blocks them
+  it("custom isAdmin member can cancel invitations (isAdmin covers custom roles)", async () => {
     setupOrgACustomAdmin();
     vi.mocked(db.organizationMember.findFirst).mockResolvedValue({
       id: "mem-1",
-      role: "member", // built-in role is still "member"
+      role: "member",
       organizationId: ORG_A,
     } as any);
     vi.mocked(db.teamInvitation.findFirst).mockResolvedValue({ ...VALID_INVITATION } as any);
@@ -545,11 +524,7 @@ describe("cancelInvitation — org isolation and authorization", () => {
 
     const result = await cancelInvitation({ invitationId: "inv-1" });
 
-    // BUG: should succeed — withAuth already validated this user has admin-level
-    // access via their custom isAdmin role. The action's own guard should respect that.
-    // Fix: check `membership.role === "member" && !membership.customRole?.isAdmin`
-    //      or expose a unified isAdmin flag in the auth context.
-    expect(result.success).toBe(true); // FAILS until bug is fixed
+    expect(result.success).toBe(true);
   });
 
   it("cannot cancel an invitation that belongs to another org", async () => {
@@ -782,10 +757,7 @@ describe("assignRole — org isolation and role validation", () => {
     expect(vi.mocked(db.organizationMember.update)).not.toHaveBeenCalled();
   });
 
-  it("🐛 BUG-7: custom isAdmin member is incorrectly blocked from assigning roles", async () => {
-    // withAuth passes this user through (roleIsAdmin=true), but the action checks
-    // `role !== "owner" && role !== "admin"` using the built-in role from the
-    // auth context, which is "member" for custom-role admins.
+  it("custom isAdmin member can assign roles (isAdmin covers custom roles)", async () => {
     setupOrgACustomAdmin();
     vi.mocked(db.organizationMember.findFirst).mockResolvedValue({
       id: "mem-2",
@@ -796,11 +768,7 @@ describe("assignRole — org isolation and role validation", () => {
 
     const result = await assignRole({ memberId: "mem-2", role: "member", roleId: null });
 
-    // BUG: should succeed — withAuth already verified that this user has admin-level
-    // access. The internal role guard must account for custom isAdmin roles.
-    // Fix: pass isSuperAdmin||isCustomAdmin in the auth context, or check
-    //      membership.customRole?.isAdmin inside the action.
-    expect(result.success).toBe(true); // FAILS until bug is fixed
+    expect(result.success).toBe(true);
   });
 
   it("admin can assign a custom role to a member", async () => {

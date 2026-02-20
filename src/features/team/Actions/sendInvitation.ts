@@ -10,6 +10,7 @@ import { revalidatePath } from "next/cache";
 
 export async function sendInvitation(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
+    if (!organizationId) throw new Error("No organization found");
     const data = sendInvitationSchema.parse(input);
 
     // Fetch membership for organization name (authorization is handled by withAuth's requiredPermissions)
@@ -42,11 +43,12 @@ export async function sendInvitation(input: unknown) {
     const token = randomUUID();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-    // Look up custom role name if roleId is provided
+    // Validate and look up custom role name if roleId is provided
     let customRoleName: string | undefined;
     if (data.roleId) {
-      const customRole = await db.role.findUnique({ where: { id: data.roleId }, select: { name: true } });
-      customRoleName = customRole?.name;
+      const customRole = await db.role.findFirst({ where: { id: data.roleId, organizationId }, select: { name: true } });
+      if (!customRole) throw new Error("Role not found");
+      customRoleName = customRole.name;
     }
 
     const invitation = await db.teamInvitation.create({
