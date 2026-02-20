@@ -4,6 +4,8 @@ import { getCustomersList } from "@/features/customers/Actions/customerActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getVehiclePredictedMileage } from "@/features/vehicles/Actions/predictedMaintenanceActions";
+import { getVehicleInspections } from "@/features/inspections/Actions/inspectionActions";
+import { getTemplates } from "@/features/inspections/Actions/templateActions";
 import { VehicleDetailClient } from "./vehicle-detail-client";
 import { PageHeader } from "@/components/page-header";
 
@@ -22,7 +24,7 @@ export default async function VehicleDetailPage({
   const search = typeof sp.search === "string" ? sp.search : "";
   const type = typeof sp.type === "string" ? sp.type : "all";
 
-  const [result, customersResult, serviceResult, settingsResult, maintenanceSettingsResult] = await Promise.all([
+  const [result, customersResult, serviceResult, settingsResult, maintenanceSettingsResult, inspectionsResult, templatesResult] = await Promise.all([
     getVehicle(id),
     getCustomersList(),
     getServiceRecordsPaginated(id, { page, pageSize, search, type }),
@@ -32,6 +34,8 @@ export default async function VehicleDetailPage({
       SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL,
       SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD,
     ]),
+    getVehicleInspections(id),
+    getTemplates(),
   ]);
 
   if (!result.success || !result.data) {
@@ -113,6 +117,8 @@ export default async function VehicleDetailPage({
           currencyCode={currencyCode}
           unitSystem={unitSystem}
           predictionData={predictionData}
+          inspections={inspectionsResult.success && inspectionsResult.data ? inspectionsResult.data : []}
+          inspectionTemplates={templatesResult.success && templatesResult.data ? templatesResult.data : []}
         />
       </div>
     </>

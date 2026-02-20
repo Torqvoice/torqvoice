@@ -19,6 +19,7 @@ import { templatePresets } from "@/features/settings/Schema/templatePresets";
 import { Check, Loader2, Palette } from "lucide-react";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 import { cn } from "@/lib/utils";
+import { TemplateListClient } from "@/features/inspections/Components/TemplateListClient";
 
 interface TemplateValues {
   primaryColor: string;
@@ -26,7 +27,7 @@ interface TemplateValues {
   headerStyle: string;
 }
 
-type TabType = "invoice" | "quotation";
+type TabType = "invoice" | "quotation" | "inspections";
 
 const fontMap: Record<string, string> = {
   Helvetica: "Helvetica, Arial, sans-serif",
@@ -450,12 +451,29 @@ function TemplateTab({
   );
 }
 
+interface InspectionTemplateSection {
+  id: string;
+  name: string;
+  sortOrder: number;
+  items: { id: string; name: string; sortOrder: number }[];
+}
+
+interface InspectionTemplate {
+  id: string;
+  name: string;
+  description: string | null;
+  isDefault: boolean;
+  sections: InspectionTemplateSection[];
+}
+
 export function TemplateSettings({
   initialInvoiceValues,
   initialQuoteValues,
+  inspectionTemplates = [],
 }: {
   initialInvoiceValues: TemplateValues;
   initialQuoteValues: TemplateValues;
+  inspectionTemplates?: InspectionTemplate[];
 }) {
   const [tab, setTab] = useState<TabType>("invoice");
   const [saving, setSaving] = useState(false);
@@ -521,34 +539,52 @@ export function TemplateSettings({
         >
           Quotation
         </button>
+        <button
+          type="button"
+          onClick={() => setTab("inspections")}
+          className={cn(
+            "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
+            tab === "inspections"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          Inspections
+        </button>
       </div>
 
-      <ReadOnlyWrapper>
-        {tab === "invoice" ? (
-          <TemplateTab
-            values={invoiceValues}
-            setValues={setInvoiceValues}
-            documentLabel="Invoice"
-            billToLabel="Bill To"
-          />
-        ) : (
-          <TemplateTab
-            values={quoteValues}
-            setValues={setQuoteValues}
-            documentLabel="Quotation"
-            billToLabel="Prepared For"
-          />
-        )}
-      </ReadOnlyWrapper>
+      {tab === "inspections" ? (
+        <TemplateListClient templates={inspectionTemplates} />
+      ) : (
+        <>
+          <ReadOnlyWrapper>
+            {tab === "invoice" ? (
+              <TemplateTab
+                values={invoiceValues}
+                setValues={setInvoiceValues}
+                documentLabel="Invoice"
+                billToLabel="Bill To"
+              />
+            ) : (
+              <TemplateTab
+                values={quoteValues}
+                setValues={setQuoteValues}
+                documentLabel="Quotation"
+                billToLabel="Prepared For"
+              />
+            )}
+          </ReadOnlyWrapper>
 
-      <SaveButton>
-        <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={saving}>
-            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save {tab === "invoice" ? "Invoice" : "Quotation"} Template
-          </Button>
-        </div>
-      </SaveButton>
+          <SaveButton>
+            <div className="flex justify-end">
+              <Button onClick={handleSave} disabled={saving}>
+                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save {tab === "invoice" ? "Invoice" : "Quotation"} Template
+              </Button>
+            </div>
+          </SaveButton>
+        </>
+      )}
     </div>
   );
 }
