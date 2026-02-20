@@ -4,11 +4,12 @@ import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getVehiclesDueForService } from "@/features/vehicles/Actions/predictedMaintenanceActions";
 import { getInspectionsPaginated } from "@/features/inspections/Actions/inspectionActions";
 import { getQuoteRequests } from "@/features/inspections/Actions/quoteRequestActions";
+import { getQuoteResponses } from "@/features/quotes/Actions/quoteResponseActions";
 import { DashboardClient } from "./dashboard-client";
 import { PageHeader } from "@/components/page-header";
 
 export default async function DashboardPage() {
-  const [result, settingsResult, remindersResult, maintenanceResult, inProgressResult, completedResult, quoteRequestsResult] = await Promise.all([
+  const [result, settingsResult, remindersResult, maintenanceResult, inProgressResult, completedResult, quoteRequestsResult, quoteResponsesResult] = await Promise.all([
     getDashboardStats(),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
     getUpcomingReminders(),
@@ -16,6 +17,7 @@ export default async function DashboardPage() {
     getInspectionsPaginated({ status: "in_progress", pageSize: 5 }),
     getInspectionsPaginated({ status: "completed", pageSize: 5 }),
     getQuoteRequests(),
+    getQuoteResponses(),
   ]);
 
   if (!result.success || !result.data) {
@@ -48,6 +50,7 @@ export default async function DashboardPage() {
           inProgressInspections={inProgressResult.success && inProgressResult.data ? inProgressResult.data.records : []}
           completedInspections={completedResult.success && completedResult.data ? completedResult.data.records : []}
           quoteRequests={quoteRequestsResult.success && quoteRequestsResult.data ? quoteRequestsResult.data : []}
+          quoteResponses={quoteResponsesResult.success && quoteResponsesResult.data ? quoteResponsesResult.data : []}
         />
       </div>
     </>

@@ -17,6 +17,7 @@ import {
 import { statusColors } from "@/lib/table-utils";
 import {
   AlertTriangle,
+  ArrowRight,
   Bell,
   Check,
   ClipboardCheck,
@@ -32,6 +33,8 @@ import {
 import { formatCurrency } from "@/lib/format";
 import { dismissMaintenance } from "@/features/vehicles/Actions/dismissMaintenance";
 import { updateQuoteRequestStatus } from "@/features/inspections/Actions/quoteRequestActions";
+import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
+import { convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
 
 interface ServiceItem {
   id: string;
@@ -125,6 +128,19 @@ interface DashboardQuoteRequest {
   };
 }
 
+interface DashboardQuoteResponse {
+  id: string;
+  title: string;
+  quoteNumber: string | null;
+  status: string;
+  customerMessage: string | null;
+  totalAmount: number;
+  updatedAt: Date;
+  vehicleId: string | null;
+  customer: { name: string } | null;
+  vehicle: { id: string; make: string; model: string; year: number } | null;
+}
+
 export function DashboardClient({
   stats,
   currencyCode = "USD",
@@ -134,6 +150,7 @@ export function DashboardClient({
   inProgressInspections = [],
   completedInspections = [],
   quoteRequests = [],
+  quoteResponses = [],
 }: {
   stats: DashboardStats;
   currencyCode?: string;
@@ -143,6 +160,7 @@ export function DashboardClient({
   inProgressInspections?: DashboardInspection[];
   completedInspections?: DashboardInspection[];
   quoteRequests?: DashboardQuoteRequest[];
+  quoteResponses?: DashboardQuoteResponse[];
 }) {
   const distUnit = unitSystem === "metric" ? "km" : "mi";
   const router = useRouter();
@@ -527,6 +545,106 @@ export function DashboardClient({
                   </div>
                 );
               })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Customer Quote Responses */}
+      {quoteResponses.length > 0 && (
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <FileText className="h-4 w-4" />
+              Customer Quote Responses
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Quotes that customers have accepted or requested changes on
+            </p>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y">
+              {quoteResponses.map((resp) => (
+                <div
+                  key={resp.id}
+                  className="flex items-center justify-between px-5 py-3"
+                >
+                  <div
+                    className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
+                    onClick={() => router.push(`/quotes/${resp.id}`)}
+                  >
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                      resp.status === "accepted" ? "bg-emerald-500/10" : "bg-orange-500/10"
+                    }`}>
+                      {resp.status === "accepted" ? (
+                        <Check className="h-4 w-4 text-emerald-500" />
+                      ) : (
+                        <FileText className="h-4 w-4 text-orange-500" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm truncate">
+                        {resp.title}
+                        {resp.quoteNumber && <span className="ml-1.5 text-muted-foreground font-normal">({resp.quoteNumber})</span>}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {resp.customer?.name && `${resp.customer.name} · `}
+                        {resp.status === "accepted" ? "Accepted" : "Changes requested"}
+                        {resp.customerMessage && ` · "${resp.customerMessage}"`}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="shrink-0 ml-3 flex items-center gap-1.5">
+                    {resp.status === "accepted" ? (
+                      <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px]">
+                        Accepted
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-orange-500/10 text-orange-600 border-orange-500/20 text-[10px]">
+                        Changes Requested
+                      </Badge>
+                    )}
+                    {resp.status === "accepted" && resp.vehicleId && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={() => {
+                          startTransition(async () => {
+                            const result = await convertQuoteToServiceRecord(resp.id, resp.vehicleId!);
+                            if (result.success && result.data) {
+                              router.push(`/vehicles/${resp.vehicleId}/service/${result.data.id}`);
+                            }
+                          });
+                        }}
+                      >
+                        <ArrowRight className="mr-1 h-3 w-3" />
+                        Convert to Work Order
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={() => router.push(`/quotes/${resp.id}`)}
+                    >
+                      View Quote
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                      onClick={() => {
+                        startTransition(async () => {
+                          await acknowledgeQuoteResponse(resp.id);
+                        });
+                      }}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

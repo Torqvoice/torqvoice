@@ -30,6 +30,7 @@ import {
 import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { updateQuote, deleteQuote, convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
+import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
 import { sendQuoteEmail } from "@/features/email/Actions/emailActions";
 import { SendEmailDialog } from "@/features/email/Components/SendEmailDialog";
 import { QuoteShareDialog } from "@/features/quotes/Components/QuoteShareDialog";
@@ -39,12 +40,14 @@ import {
   ArrowLeft,
   ArrowRight,
   Car,
+  Check,
   ClipboardCheck,
   Download,
   FileText,
   Globe,
   Loader2,
   Mail,
+  MessageSquare,
   Plus,
   Save,
   Trash2,
@@ -60,6 +63,7 @@ const statusColors: Record<string, string> = {
   rejected: "bg-red-500/10 text-red-500 border-red-500/20",
   expired: "bg-amber-500/10 text-amber-600 border-amber-500/20",
   converted: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+  changes_requested: "bg-orange-500/10 text-orange-600 border-orange-500/20",
 };
 
 interface CustomerOption {
@@ -94,10 +98,12 @@ interface QuoteRecord {
   discountAmount: number;
   totalAmount: number;
   notes: string | null;
+  customerMessage: string | null;
   publicToken: string | null;
   convertedToId: string | null;
   inspectionId: string | null;
   createdAt: Date;
+  updatedAt: Date;
   partItems: { id: string; partNumber: string | null; name: string; quantity: number; unitPrice: number; total: number }[];
   laborItems: { id: string; description: string; hours: number; rate: number; total: number }[];
   customer: { id: string; name: string; email: string | null; phone: string | null; address: string | null; company: string | null } | null;
@@ -310,6 +316,19 @@ export function QuotePageClient({
     setConverting(false);
   };
 
+  const [resolving, setResolving] = useState(false);
+
+  const handleResolveResponse = async () => {
+    setResolving(true);
+    const result = await acknowledgeQuoteResponse(quote.id);
+    if (result.success) {
+      setStatus("draft");
+      toast.success("Customer response resolved");
+      router.refresh();
+    }
+    setResolving(false);
+  };
+
   // --- Left column: Parts, Labor, Notes ---
   const leftColumn = (
     <div className="space-y-3">
@@ -409,6 +428,15 @@ export function QuotePageClient({
   // --- Right column: Vehicle & Customer, Quote Details, Totals ---
   const rightColumn = (
     <div className="space-y-3">
+      {/* Convert to Work Order */}
+      {quote.status !== "converted" && (
+        <div className="rounded-lg border p-3">
+          <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => setShowConvertDialog(true)}>
+            <ArrowRight className="mr-1 h-3.5 w-3.5" /> Convert to Work Order
+          </Button>
+        </div>
+      )}
+
       {/* Vehicle & Customer */}
       <div className="rounded-lg border p-3 space-y-3">
         <div className="space-y-1">
@@ -493,6 +521,46 @@ export function QuotePageClient({
         )}
       </div>
 
+      {/* Customer Response */}
+      {quote.customerMessage && (status === "changes_requested" || status === "accepted") && (
+        <div className={`rounded-lg border p-3 space-y-2 ${
+          status === "changes_requested"
+            ? "border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-900/20"
+            : "border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20"
+        }`}>
+          <div className="flex items-center justify-between">
+            <h3 className={`flex items-center gap-1.5 text-sm font-semibold ${
+              status === "changes_requested" ? "text-orange-700 dark:text-orange-400" : "text-emerald-700 dark:text-emerald-400"
+            }`}>
+              <MessageSquare className="h-3.5 w-3.5" />
+              {status === "changes_requested" ? "Changes Requested" : "Quote Accepted"}
+            </h3>
+            <span className={`text-[10px] ${
+              status === "changes_requested" ? "text-orange-500 dark:text-orange-500" : "text-emerald-500 dark:text-emerald-500"
+            }`}>
+              {new Date(quote.updatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}{" "}
+              {new Date(quote.updatedAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
+            </span>
+          </div>
+          <p className={`text-sm ${
+            status === "changes_requested" ? "text-orange-600 dark:text-orange-400" : "text-emerald-600 dark:text-emerald-400"
+          }`}>
+            &ldquo;{quote.customerMessage}&rdquo;
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-full"
+            disabled={resolving}
+            onClick={handleResolveResponse}
+          >
+            {resolving ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Check className="mr-1 h-3.5 w-3.5" />}
+            Mark as Resolved
+          </Button>
+        </div>
+      )}
+
       {/* Totals */}
       <div className="rounded-lg border p-3 space-y-2">
         <h3 className="text-sm font-semibold">Totals</h3>
@@ -532,14 +600,6 @@ export function QuotePageClient({
         </div>
       </div>
 
-      {/* Convert to Work Order */}
-      {quote.status !== "converted" && (
-        <div className="rounded-lg border p-3">
-          <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => setShowConvertDialog(true)}>
-            <ArrowRight className="mr-1 h-3.5 w-3.5" /> Convert to Work Order
-          </Button>
-        </div>
-      )}
     </div>
   );
 
