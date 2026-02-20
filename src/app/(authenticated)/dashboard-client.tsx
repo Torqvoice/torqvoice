@@ -18,6 +18,8 @@ import { statusColors } from "@/lib/table-utils";
 import {
   AlertTriangle,
   Bell,
+  Check,
+  ClipboardCheck,
   ClipboardList,
   Clock,
   DollarSign,
@@ -86,18 +88,37 @@ interface VehicleDueForService {
   confidencePercent: number;
 }
 
+interface DashboardInspection {
+  id: string;
+  status: string;
+  createdAt: Date;
+  vehicle: {
+    id: string;
+    make: string;
+    model: string;
+    year: number;
+    licensePlate: string | null;
+  };
+  template: { id: string; name: string };
+  items: { id: string; condition: string }[];
+}
+
 export function DashboardClient({
   stats,
   currencyCode = "USD",
   upcomingReminders = [],
   vehiclesDueForService = [],
   unitSystem = "imperial",
+  inProgressInspections = [],
+  completedInspections = [],
 }: {
   stats: DashboardStats;
   currencyCode?: string;
   upcomingReminders?: ReminderItem[];
   vehiclesDueForService?: VehicleDueForService[];
   unitSystem?: "metric" | "imperial";
+  inProgressInspections?: DashboardInspection[];
+  completedInspections?: DashboardInspection[];
 }) {
   const distUnit = unitSystem === "metric" ? "km" : "mi";
   const router = useRouter();
@@ -300,6 +321,105 @@ export function DashboardClient({
                           {formatDate(new Date(r.dueDate))}
                         </span>
                       )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Inspections */}
+      {(inProgressInspections.length > 0 || completedInspections.length > 0) && (
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <ClipboardCheck className="h-4 w-4" />
+              Inspections
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y">
+              {inProgressInspections.map((insp) => {
+                const total = insp.items.length;
+                const pass = insp.items.filter((i) => i.condition === "pass").length;
+                const fail = insp.items.filter((i) => i.condition === "fail").length;
+                const attention = insp.items.filter((i) => i.condition === "attention").length;
+                const inspected = pass + fail + attention;
+
+                return (
+                  <div
+                    key={insp.id}
+                    className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => router.push(`/inspections/${insp.id}`)}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/10">
+                        <ClipboardCheck className="h-4 w-4 text-blue-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">
+                          {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {insp.vehicle.licensePlate && `${insp.vehicle.licensePlate} · `}
+                          {insp.template.name} · {inspected}/{total} items
+                        </p>
+                      </div>
+                    </div>
+                    <div className="shrink-0 ml-3 flex items-center gap-2">
+                      {total > 0 && (
+                        <div className="hidden sm:flex h-2 w-20 overflow-hidden rounded-full bg-gray-200">
+                          <div className="bg-emerald-500" style={{ width: `${(pass / total) * 100}%` }} />
+                          <div className="bg-red-500" style={{ width: `${(fail / total) * 100}%` }} />
+                          <div className="bg-amber-500" style={{ width: `${(attention / total) * 100}%` }} />
+                        </div>
+                      )}
+                      <Badge className="bg-blue-500/15 text-blue-600 border-blue-500/20 text-[10px]">
+                        In Progress
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })}
+              {completedInspections.map((insp) => {
+                const total = insp.items.length;
+                const pass = insp.items.filter((i) => i.condition === "pass").length;
+                const fail = insp.items.filter((i) => i.condition === "fail").length;
+                const attention = insp.items.filter((i) => i.condition === "attention").length;
+
+                return (
+                  <div
+                    key={insp.id}
+                    className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => router.push(`/inspections/${insp.id}`)}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10">
+                        <Check className="h-4 w-4 text-emerald-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">
+                          {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {insp.vehicle.licensePlate && `${insp.vehicle.licensePlate} · `}
+                          {insp.template.name} · {formatDate(new Date(insp.createdAt))}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="shrink-0 ml-3 flex items-center gap-2">
+                      {total > 0 && (
+                        <div className="hidden sm:flex h-2 w-20 overflow-hidden rounded-full bg-gray-200">
+                          <div className="bg-emerald-500" style={{ width: `${(pass / total) * 100}%` }} />
+                          <div className="bg-red-500" style={{ width: `${(fail / total) * 100}%` }} />
+                          <div className="bg-amber-500" style={{ width: `${(attention / total) * 100}%` }} />
+                        </div>
+                      )}
+                      <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/20 text-[10px]">
+                        Completed
+                      </Badge>
                     </div>
                   </div>
                 );

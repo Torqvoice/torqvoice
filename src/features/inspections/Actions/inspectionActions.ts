@@ -174,7 +174,7 @@ export async function updateInspectionItem(itemId: string, input: unknown) {
       data: {
         condition: data.condition,
         notes: data.notes,
-        imageUrl: data.imageUrl,
+        imageUrls: data.imageUrls,
       },
     });
 

@@ -10,7 +10,7 @@ interface InspectionItem {
   sortOrder: number;
   condition: string;
   notes: string | null;
-  imageUrl: string | null;
+  imageUrls: string[];
 }
 
 interface InspectionRecord {
@@ -81,17 +81,20 @@ export function InspectionView({
   const tz = timezone || "America/New_York";
   const formatDate = (d: Date) => fmtDate(new Date(d), fmt, tz);
 
+  // Only show items that have been inspected (not "not_inspected")
+  const inspectedItems = inspection.items.filter((i) => i.condition !== "not_inspected");
+
   // Group items by section
   const sections: Record<string, InspectionItem[]> = {};
-  for (const item of inspection.items) {
+  for (const item of inspectedItems) {
     if (!sections[item.section]) sections[item.section] = [];
     sections[item.section].push(item);
   }
 
-  const totalItems = inspection.items.length;
-  const passCount = inspection.items.filter((i) => i.condition === "pass").length;
-  const failCount = inspection.items.filter((i) => i.condition === "fail").length;
-  const attentionCount = inspection.items.filter((i) => i.condition === "attention").length;
+  const totalItems = inspectedItems.length;
+  const passCount = inspectedItems.filter((i) => i.condition === "pass").length;
+  const failCount = inspectedItems.filter((i) => i.condition === "fail").length;
+  const attentionCount = inspectedItems.filter((i) => i.condition === "attention").length;
 
   return (
     <div className="mx-auto max-w-3xl p-4 sm:p-8">
@@ -207,21 +210,25 @@ export function InspectionView({
                     {item.notes && (
                       <p className="mt-1 text-sm text-gray-500">{item.notes}</p>
                     )}
-                    {item.imageUrl && (
-                      <div className="mt-2">
-                        {/\.(mp4|webm|mov)$/i.test(item.imageUrl) ? (
-                          <video
-                            src={item.imageUrl}
-                            controls
-                            className="h-48 max-w-sm rounded-lg border"
-                          />
-                        ) : (
-                          <img
-                            src={item.imageUrl}
-                            alt={item.name}
-                            className="h-32 rounded-lg object-cover border"
-                          />
-                        )}
+                    {item.imageUrls && item.imageUrls.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {item.imageUrls.map((url, idx) => (
+                          /\.(mp4|webm|mov)$/i.test(url) ? (
+                            <video
+                              key={idx}
+                              src={url}
+                              controls
+                              className="h-48 max-w-sm rounded-lg border"
+                            />
+                          ) : (
+                            <img
+                              key={idx}
+                              src={url}
+                              alt={`${item.name} ${idx + 1}`}
+                              className="h-32 rounded-lg object-cover border"
+                            />
+                          )
+                        ))}
                       </div>
                     )}
                   </div>

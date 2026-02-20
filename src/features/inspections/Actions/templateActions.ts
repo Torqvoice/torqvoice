@@ -145,14 +145,16 @@ export async function deleteTemplate(id: string) {
     });
     if (!template) throw new Error("Template not found");
 
-    await db.$transaction(async (tx) => {
-      // Delete inspections that reference this template (and their items via cascade)
-      await tx.inspection.deleteMany({ where: { templateId: id } });
-      await tx.inspectionTemplate.delete({ where: { id } });
-    });
+    const inspectionCount = await db.inspection.count({ where: { templateId: id } });
+    if (inspectionCount > 0) {
+      throw new Error(
+        `This template has ${inspectionCount} inspection${inspectionCount === 1 ? "" : "s"}. Delete the inspections first before removing the template.`
+      );
+    }
+
+    await db.inspectionTemplate.delete({ where: { id } });
 
     revalidatePath("/settings/templates");
-    revalidatePath("/inspections");
   }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INSPECTIONS }] });
 }
 
