@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, Loader2 } from "lucide-react";
+import { Check, Download, Loader2, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from "@/lib/format";
 import { sanitizeHtml } from "@/lib/sanitize-html";
@@ -57,6 +57,7 @@ const statusLabels: Record<string, string> = {
   rejected: "Rejected",
   expired: "Expired",
   converted: "Converted",
+  changes_requested: "Changes Requested",
 };
 
 export function QuoteView({
@@ -85,6 +86,10 @@ export function QuoteView({
   headerStyle?: string;
 }) {
   const [downloading, setDownloading] = useState(false);
+  const [status, setStatus] = useState(quote.status);
+  const [submitting, setSubmitting] = useState(false);
+  const [showChangesForm, setShowChangesForm] = useState(false);
+  const [changeMessage, setChangeMessage] = useState("");
 
   const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`;
   const df = dateFormat || DEFAULT_DATE_FORMAT;
@@ -110,6 +115,28 @@ export function QuoteView({
     }
     setDownloading(false);
   };
+
+  const handleQuoteResponse = async (action: "accepted" | "changes_requested", message?: string) => {
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/public/quote-response", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quoteId: quote.id, publicToken: token, action, message }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus(action);
+        setShowChangesForm(false);
+        setChangeMessage("");
+      }
+    } catch {
+      // silent
+    }
+    setSubmitting(false);
+  };
+
+  const canRespond = status === "draft" || status === "sent";
 
   return (
     <div className="mx-auto max-w-3xl p-4 sm:p-8">
@@ -147,13 +174,15 @@ export function QuoteView({
               <div className="flex items-center gap-3">
                 <h3 className="text-xl font-bold">QUOTE</h3>
                 <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
-                  quote.status === "accepted"
+                  status === "accepted"
                     ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                    : quote.status === "rejected"
+                    : status === "rejected"
                     ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                    : status === "changes_requested"
+                    ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
                     : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                 }`}>
-                  {statusLabels[quote.status] || quote.status}
+                  {statusLabels[status] || status}
                 </span>
               </div>
               <div className="flex gap-3 text-sm text-gray-500">
@@ -184,13 +213,15 @@ export function QuoteView({
                 <p className="text-sm text-gray-500">Valid until: {validUntilDate}</p>
               )}
               <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
-                quote.status === "accepted"
+                status === "accepted"
                   ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                  : quote.status === "rejected"
+                  : status === "rejected"
                   ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                  : status === "changes_requested"
+                  ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
                   : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
               }`}>
-                {statusLabels[quote.status] || quote.status}
+                {statusLabels[status] || status}
               </span>
             </div>
           </div>
@@ -222,13 +253,15 @@ export function QuoteView({
                 <p className="text-sm text-gray-500">Valid until: {validUntilDate}</p>
               )}
               <span className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
-                quote.status === "accepted"
+                status === "accepted"
                   ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                  : quote.status === "rejected"
+                  : status === "rejected"
                   ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                  : status === "changes_requested"
+                  ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
                   : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
               }`}>
-                {statusLabels[quote.status] || quote.status}
+                {statusLabels[status] || status}
               </span>
             </div>
           </div>
@@ -360,6 +393,86 @@ export function QuoteView({
             </div>
           </div>
         </div>
+
+        {/* Customer Actions */}
+        {canRespond && !showChangesForm && (
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <button
+              onClick={() => setShowChangesForm(true)}
+              disabled={submitting}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+            >
+              <MessageSquare className="h-4 w-4" />
+              Request Changes
+            </button>
+            <button
+              onClick={() => handleQuoteResponse("accepted")}
+              disabled={submitting}
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+              style={{ backgroundColor: primaryColor }}
+            >
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+              Accept Quote
+            </button>
+          </div>
+        )}
+
+        {canRespond && showChangesForm && (
+          <div className="mt-8 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              What changes would you like?
+            </label>
+            <textarea
+              value={changeMessage}
+              onChange={(e) => setChangeMessage(e.target.value)}
+              rows={3}
+              className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+              placeholder="Describe the changes you'd like..."
+            />
+            <div className="mt-3 flex gap-3 justify-end">
+              <button
+                onClick={() => { setShowChangesForm(false); setChangeMessage(""); }}
+                disabled={submitting}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleQuoteResponse("changes_requested", changeMessage)}
+                disabled={submitting || !changeMessage.trim()}
+                className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                style={{ backgroundColor: primaryColor }}
+              >
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
+                Submit Request
+              </button>
+            </div>
+          </div>
+        )}
+
+        {status === "accepted" && (
+          <div className="mt-8 rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
+            <div className="flex items-center gap-2">
+              <Check className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              <p className="font-medium text-emerald-700 dark:text-emerald-400">Quote Accepted</p>
+            </div>
+            <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-500">
+              Thank you! This quote has been accepted. The workshop will be in touch shortly.
+            </p>
+          </div>
+        )}
+
+        {status === "changes_requested" && (
+          <div className="mt-8 rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-800 dark:bg-orange-900/20">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+              <p className="font-medium text-orange-700 dark:text-orange-400">Changes Requested</p>
+            </div>
+            <p className="mt-1 text-sm text-orange-600 dark:text-orange-500">
+              Your change request has been submitted. The workshop will review and get back to you.
+            </p>
+          </div>
+        )}
 
         {/* Torqvoice branding near totals */}
         {showTorqvoiceBranding && (

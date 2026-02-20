@@ -29,14 +29,14 @@ export default async function QuoteDetailPage({
 
   if (!result.success || !result.data) {
     return (
-      <>
+      <div className="flex h-svh flex-col overflow-hidden">
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-muted-foreground">
             {result.error || "Quote not found"}
           </p>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -60,7 +60,7 @@ export default async function QuoteDetailPage({
   const organizationId = authContext?.organizationId || "";
 
   return (
-    <>
+    <div className="flex h-svh flex-col overflow-hidden">
       <PageHeader />
       <QuotePageClient
         quote={result.data}
@@ -105,6 +105,6 @@ export default async function QuoteDetailPage({
           })
         )}
       />
-    </>
+    </div>
   );
 }
