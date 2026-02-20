@@ -1,15 +1,15 @@
 "use server";
 
-import { headers, cookies } from "next/headers";
-import { auth } from "@/lib/auth";
+import { cookies } from "next/headers";
 import { db } from "@/lib/db";
+import { getCachedSession } from "@/lib/cached-session";
 import { acceptInvitationSchema } from "../Schema/teamSchema";
 
 export async function acceptInvitation(input: unknown) {
   try {
     const data = acceptInvitationSchema.parse(input);
 
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = await getCachedSession();
     if (!session?.user?.id) {
       return { success: false, error: "You must be signed in to accept an invitation" };
     }

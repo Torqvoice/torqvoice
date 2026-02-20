@@ -34,7 +34,7 @@ export async function getAuthContextDetailed(): Promise<AuthContextResult> {
     status: "ok",
     context: {
       userId: session.user.id,
-      organizationId: membership?.organizationId ?? "",
+      organizationId: membership?.organizationId ?? null,
       role: isSuperAdmin ? "super_admin" : (membership?.role ?? "member"),
       isSuperAdmin,
     },

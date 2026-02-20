@@ -12,7 +12,7 @@ export type ActionResult<T = unknown> = {
 
 export type AuthContext = {
   userId: string;
-  organizationId: string;
+  organizationId: string | null;
   role: string;
   isSuperAdmin: boolean;
 };
@@ -63,7 +63,7 @@ export async function withAuth<T>(
 
     const data = await action({
       userId: session.user.id,
-      organizationId: membership?.organizationId ?? "",
+      organizationId: membership?.organizationId ?? null,
       role: isSuperAdmin ? "super_admin" : (membership?.role ?? "member"),
       isSuperAdmin,
     });
