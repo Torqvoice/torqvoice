@@ -29,6 +29,7 @@ import {
   FileText,
   Gauge,
   Loader2,
+  BellRing,
   MessageSquare,
   SlidersHorizontal,
   Users,
@@ -159,6 +160,18 @@ interface SmsThread {
   };
 }
 
+interface DashboardNotification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  entityType: string;
+  entityId: string;
+  entityUrl: string;
+  read: boolean;
+  createdAt: string | Date;
+}
+
 export function DashboardClient({
   stats,
   currencyCode = "USD",
@@ -171,6 +184,7 @@ export function DashboardClient({
   quoteResponses = [],
   smsThreads = [],
   smsEnabled = false,
+  notifications = [],
 }: {
   stats: DashboardStats;
   currencyCode?: string;
@@ -183,6 +197,7 @@ export function DashboardClient({
   quoteResponses?: DashboardQuoteResponse[];
   smsThreads?: SmsThread[];
   smsEnabled?: boolean;
+  notifications?: DashboardNotification[];
 }) {
   const distUnit = unitSystem === "metric" ? "km" : "mi";
   const router = useRouter();
@@ -275,7 +290,7 @@ export function DashboardClient({
           <PopoverContent align="end" className="w-56 p-3">
             <p className="text-sm font-medium mb-2">Show cards</p>
             <div className="space-y-2">
-              {DASHBOARD_CARDS.filter((c) => c.id !== "sms" || smsEnabled).map((card) => (
+              {DASHBOARD_CARDS.filter((c) => smsEnabled ? c.id !== "notifications" : c.id !== "sms").map((card) => (
                 <label key={card.id} className="flex items-center justify-between gap-2 cursor-pointer">
                   <span className="text-sm">{card.label}</span>
                   <Switch
@@ -481,6 +496,44 @@ export function DashboardClient({
                     </div>
                     <span className="shrink-0 ml-3 text-xs text-muted-foreground">
                       {formatRelativeTime(thread.lastMessage.createdAt)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Recent Notifications (shown when SMS is not configured) */}
+        {isVisible("notifications") && !smsEnabled && notifications.length > 0 && (
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <BellRing className="h-4 w-4" />
+                  Recent Notifications
+                </CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="divide-y">
+                {notifications.slice(0, 5).map((n) => (
+                  <div
+                    key={n.id}
+                    className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => router.push(n.entityUrl)}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${n.read ? "bg-muted" : "bg-primary/10"}`}>
+                        <BellRing className={`h-4 w-4 ${n.read ? "text-muted-foreground" : "text-primary"}`} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">{n.title}</p>
+                        <p className="text-xs text-muted-foreground truncate">{n.message}</p>
+                      </div>
+                    </div>
+                    <span className="shrink-0 ml-3 text-xs text-muted-foreground">
+                      {formatRelativeTime(n.createdAt)}
                     </span>
                   </div>
                 ))}

@@ -8,6 +8,7 @@ import { getQuoteResponses } from "@/features/quotes/Actions/quoteResponseAction
 import { getAuthContext } from "@/lib/get-auth-context";
 import { getFeatures } from "@/lib/features";
 import { getRecentSmsThreads } from "@/features/sms/Actions/smsActions";
+import { getNotifications } from "@/features/notifications/Actions/notificationActions";
 import { DashboardClient } from "./dashboard-client";
 import { PageHeader } from "@/components/page-header";
 
@@ -16,7 +17,7 @@ export default async function DashboardPage() {
   const features = auth ? await getFeatures(auth.organizationId) : null;
   const smsEnabled = features?.sms ?? false;
 
-  const [result, settingsResult, remindersResult, maintenanceResult, inProgressResult, completedResult, quoteRequestsResult, quoteResponsesResult, smsResult] = await Promise.all([
+  const [result, settingsResult, remindersResult, maintenanceResult, inProgressResult, completedResult, quoteRequestsResult, quoteResponsesResult, smsResult, notificationsResult] = await Promise.all([
     getDashboardStats(),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
     getUpcomingReminders(),
@@ -26,6 +27,7 @@ export default async function DashboardPage() {
     getQuoteRequests(),
     getQuoteResponses(),
     smsEnabled ? getRecentSmsThreads(0, 5) : Promise.resolve(null),
+    getNotifications(),
   ]);
 
   if (!result.success || !result.data) {
@@ -45,6 +47,7 @@ export default async function DashboardPage() {
   const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || "USD";
   const unitSystem = (settings[SETTING_KEYS.UNIT_SYSTEM] || "imperial") as "metric" | "imperial";
   const smsThreads = smsResult && smsResult.success && smsResult.data ? smsResult.data.threads : [];
+  const notifications = notificationsResult.success && notificationsResult.data ? notificationsResult.data.notifications : [];
 
   return (
     <>
@@ -62,6 +65,7 @@ export default async function DashboardPage() {
           quoteResponses={quoteResponsesResult.success && quoteResponsesResult.data ? quoteResponsesResult.data : []}
           smsThreads={smsThreads}
           smsEnabled={smsEnabled}
+          notifications={notifications}
         />
       </div>
     </>

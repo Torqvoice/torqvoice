@@ -9,6 +9,7 @@ export const DASHBOARD_CARDS = [
   { id: "quoteRequests", label: "Quote Requests" },
   { id: "quoteResponses", label: "Quote Responses" },
   { id: "sms", label: "Recent Messages" },
+  { id: "notifications", label: "Recent Notifications" },
   { id: "recentCompleted", label: "Recent Completed" },
   { id: "activeJobs", label: "Active Jobs" },
 ] as const;
