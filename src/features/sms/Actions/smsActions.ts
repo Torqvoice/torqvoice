@@ -161,10 +161,10 @@ export async function deleteConversation(customerId: string) {
   );
 }
 
-export async function getRecentSmsThreads() {
+export async function getRecentSmsThreads(offset: number = 0, limit: number = 50) {
   return withAuth(
     async ({ organizationId }) => {
-      // Get latest message per customer using a raw query approach via Prisma
+      // Fetch one extra to detect if there are more
       const customers = await db.customer.findMany({
         where: {
           organizationId,
@@ -189,11 +189,15 @@ export async function getRecentSmsThreads() {
         orderBy: {
           smsMessages: { _count: "desc" },
         },
-        take: 50,
+        skip: offset,
+        take: limit + 1,
       });
 
-      return customers
-        .filter((c) => c.smsMessages.length > 0)
+      const filtered = customers.filter((c) => c.smsMessages.length > 0);
+      const hasMore = filtered.length > limit;
+      const items = hasMore ? filtered.slice(0, limit) : filtered;
+
+      const threads = items
         .map((c) => ({
           customerId: c.id,
           customerName: c.name,
@@ -205,6 +209,8 @@ export async function getRecentSmsThreads() {
             new Date(b.lastMessage.createdAt).getTime() -
             new Date(a.lastMessage.createdAt).getTime(),
         );
+
+      return { threads, hasMore };
     },
     {
       requiredPermissions: [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Loader2, MessageSquare, MoreVertical, Phone, Trash2, User } from "lucide-react";
+import { ChevronDown, Loader2, MessageSquare, MoreVertical, Phone, Trash2, User } from "lucide-react";
 import { toast } from "sonner";
 import { getConversation, getRecentSmsThreads, deleteConversation } from "../Actions/smsActions";
 import { SmsConversation } from "./SmsConversation";
@@ -48,12 +48,17 @@ interface Message {
   toNumber: string;
 }
 
+const THREADS_PAGE_SIZE = 50;
+
 export function MessagesPageClient({
   initialThreads,
+  initialHasMore = false,
 }: {
   initialThreads: SmsThread[];
+  initialHasMore?: boolean;
 }) {
   const [threads, setThreads] = useState<SmsThread[]>(initialThreads);
+  const [hasMore, setHasMore] = useState(initialHasMore);
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [conversation, setConversation] = useState<{
     messages: Message[];
@@ -62,6 +67,7 @@ export function MessagesPageClient({
     customerPhone: string | null;
   } | null>(null);
   const [loadingConversation, setLoadingConversation] = useState(false);
+  const [isLoadingMore, startLoadMore] = useTransition();
   const [deleteThreadTarget, setDeleteThreadTarget] = useState<SmsThread | null>(null);
   const [isDeletingThread, setIsDeletingThread] = useState(false);
 
@@ -88,13 +94,24 @@ export function MessagesPageClient({
     loadConversation(customerId);
   };
 
+  const handleLoadMore = () => {
+    startLoadMore(async () => {
+      const result = await getRecentSmsThreads(threads.length, THREADS_PAGE_SIZE);
+      if (result.success && result.data) {
+        setThreads((prev) => [...prev, ...result.data!.threads]);
+        setHasMore(result.data.hasMore);
+      }
+    });
+  };
+
   // Re-fetch threads when inbound SMS arrives
   const refreshThreads = useCallback(async () => {
-    const result = await getRecentSmsThreads();
+    const result = await getRecentSmsThreads(0, threads.length || THREADS_PAGE_SIZE);
     if (result.success && result.data) {
-      setThreads(result.data);
+      setThreads(result.data.threads);
+      setHasMore(result.data.hasMore);
     }
-  }, []);
+  }, [threads.length]);
 
   const handleDeleteConversation = async () => {
     if (!deleteThreadTarget) return;
@@ -149,8 +166,6 @@ export function MessagesPageClient({
     return d.toLocaleDateString([], { month: "short", day: "numeric" });
   };
 
-  const selectedThread = threads.find((t) => t.customerId === selectedCustomerId);
-
   return (
     <div className="flex h-[calc(100vh-8rem)] rounded-lg border overflow-hidden bg-background">
       {/* Thread list */}
@@ -167,43 +182,63 @@ export function MessagesPageClient({
               </p>
             </div>
           ) : (
-            threads.map((thread) => {
-              const isSelected = selectedCustomerId === thread.customerId;
-              return (
-                <button
-                  key={thread.customerId}
-                  type="button"
-                  onClick={() => handleSelectThread(thread.customerId)}
-                  className={cn(
-                    "w-full text-left px-4 py-3 border-b transition-colors hover:bg-muted/50",
-                    isSelected && "bg-muted",
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
-                      isSelected ? "bg-primary text-primary-foreground" : "bg-muted",
-                    )}>
-                      <User className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <span className="font-medium text-sm truncate">
-                          {thread.customerName}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground shrink-0">
-                          {formatRelativeTime(thread.lastMessage.createdAt)}
-                        </span>
+            <>
+              {threads.map((thread) => {
+                const isSelected = selectedCustomerId === thread.customerId;
+                return (
+                  <button
+                    key={thread.customerId}
+                    type="button"
+                    onClick={() => handleSelectThread(thread.customerId)}
+                    className={cn(
+                      "w-full text-left px-4 py-3 border-b transition-colors hover:bg-muted/50",
+                      isSelected && "bg-muted",
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+                        isSelected ? "bg-primary text-primary-foreground" : "bg-muted",
+                      )}>
+                        <User className="h-4 w-4" />
                       </div>
-                      <p className="text-xs text-muted-foreground truncate mt-0.5">
-                        {thread.lastMessage.direction === "outbound" ? "You: " : ""}
-                        {thread.lastMessage.body}
-                      </p>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="font-medium text-sm truncate">
+                            {thread.customerName}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground shrink-0">
+                            {formatRelativeTime(thread.lastMessage.createdAt)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate mt-0.5">
+                          {thread.lastMessage.direction === "outbound" ? "You: " : ""}
+                          {thread.lastMessage.body}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </button>
-              );
-            })
+                  </button>
+                );
+              })}
+              {hasMore && (
+                <div className="p-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={handleLoadMore}
+                    disabled={isLoadingMore}
+                  >
+                    {isLoadingMore ? (
+                      <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <ChevronDown className="mr-2 h-3.5 w-3.5" />
+                    )}
+                    Load more
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
