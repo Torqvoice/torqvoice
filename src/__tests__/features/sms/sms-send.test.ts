@@ -44,7 +44,6 @@ vi.stubGlobal("fetch", mockFetch);
 import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
 import { db } from "@/lib/db";
 import { sendSmsToCustomer } from "@/features/sms/Actions/smsActions";
-import { sendOrgSms } from "@/lib/sms";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
