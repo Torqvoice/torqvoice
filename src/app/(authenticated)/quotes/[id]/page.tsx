@@ -4,6 +4,7 @@ import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getCustomers } from "@/features/customers/Actions/customerActions";
 import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
 import { getAuthContext } from "@/lib/get-auth-context";
+import { getFeatures } from "@/lib/features";
 import { PageHeader } from "@/components/page-header";
 import { QuotePageClient } from "@/features/quotes/Components/QuotePageClient";
 
@@ -26,6 +27,10 @@ export default async function QuoteDetailPage({
       getVehicles(),
       getAuthContext(),
     ]);
+
+  const features = authContext?.organizationId
+    ? await getFeatures(authContext.organizationId)
+    : null;
 
   if (!result.success || !result.data) {
     return (
@@ -69,6 +74,8 @@ export default async function QuoteDetailPage({
         defaultTaxRate={defaultTaxRate}
         taxEnabled={taxEnabled}
         defaultLaborRate={defaultLaborRate}
+        smsEnabled={features?.sms ?? false}
+        emailEnabled={features?.smtp ?? false}
         customers={customers.map(
           (c: {
             id: string;

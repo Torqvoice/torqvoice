@@ -13,6 +13,7 @@ export type PlanFeatures = {
   api: boolean
   payments: boolean
   customFields: boolean
+  sms: boolean
   brandingRemoved: boolean
   customPlatformName: boolean
   maxImagesPerService: number
@@ -31,6 +32,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     api: false,
     payments: false,
     customFields: false,
+    sms: false,
     brandingRemoved: false,
     customPlatformName: false,
     maxImagesPerService: 5,
@@ -47,6 +49,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     api: true,
     payments: true,
     customFields: true,
+    sms: true,
     brandingRemoved: true,
     customPlatformName: true,
     maxImagesPerService: 30,
@@ -63,6 +66,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     api: true,
     payments: true,
     customFields: true,
+    sms: true,
     brandingRemoved: true,
     customPlatformName: true,
     maxImagesPerService: 100,
@@ -79,6 +83,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     api: true,
     payments: true,
     customFields: true,
+    sms: true,
     brandingRemoved: true,
     customPlatformName: true,
     maxImagesPerService: 999999,

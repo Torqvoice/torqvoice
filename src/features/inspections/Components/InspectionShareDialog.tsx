@@ -7,12 +7,34 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, Copy, Link2, Loader2, Unlink } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Check, Copy, Link2, Loader2, Mail, MessageSquare, Unlink } from "lucide-react";
 import { toast } from "sonner";
 import {
   generateInspectionPublicLink,
   revokeInspectionPublicLink,
 } from "../Actions/inspectionShareActions";
+import { sendSmsToCustomer, getSmsTemplates } from "@/features/sms/Actions/smsActions";
+import { sendInspectionEmail } from "@/features/email/Actions/emailActions";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from "@/lib/sms-templates";
+
+interface InspectionShareDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  inspectionId: string;
+  organizationId: string;
+  publicToken: string | null;
+  customer?: {
+    id: string;
+    name: string;
+    email: string | null;
+    phone: string | null;
+  } | null;
+  smsEnabled?: boolean;
+  emailEnabled?: boolean;
+}
 
 export function InspectionShareDialog({
   open,
@@ -20,17 +42,20 @@ export function InspectionShareDialog({
   inspectionId,
   organizationId,
   publicToken,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  inspectionId: string;
-  organizationId: string;
-  publicToken: string | null;
-}) {
+  customer,
+  smsEnabled = false,
+  emailEnabled = false,
+}: InspectionShareDialogProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
   const [token, setToken] = useState(publicToken);
+  const [notifySms, setNotifySms] = useState(false);
+  const [notifyEmail, setNotifyEmail] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  const hasPhone = !!customer?.phone;
+  const hasEmail = !!customer?.email;
 
   const shareUrl = token
     ? `${typeof window !== "undefined" ? window.location.origin : ""}/share/inspection/${organizationId}/${token}`
@@ -70,6 +95,53 @@ export function InspectionShareDialog({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleNotify = async () => {
+    if (!shareUrl || !customer) return;
+    setSending(true);
+
+    const results: string[] = [];
+
+    if (notifySms && hasPhone) {
+      const tplResult = await getSmsTemplates();
+      const tplData = tplResult.success && tplResult.data ? tplResult.data : null;
+      const tpl = tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY]
+        || SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY];
+      const body = interpolateSmsTemplate(tpl || "", {
+        share_link: shareUrl,
+        customer_name: customer.name,
+        company_name: tplData?.companyName || "",
+        current_user: tplData?.currentUser || "",
+      });
+      const res = await sendSmsToCustomer({
+        customerId: customer.id,
+        body,
+        relatedEntityType: "inspection",
+        relatedEntityId: inspectionId,
+      });
+      if (res.success) results.push("SMS sent");
+      else toast.error(res.error || "Failed to send SMS");
+    }
+
+    if (notifyEmail && hasEmail) {
+      const res = await sendInspectionEmail({
+        inspectionId,
+        recipientEmail: customer.email!,
+        message: `Your vehicle inspection report is ready. View it here: ${shareUrl}`,
+      });
+      if (res.success) results.push("Email sent");
+      else toast.error(res.error || "Failed to send email");
+    }
+
+    if (results.length > 0) {
+      toast.success(results.join(" & "));
+      setNotifySms(false);
+      setNotifyEmail(false);
+    }
+    setSending(false);
+  };
+
+  const canNotify = shareUrl && customer && (notifySms || notifyEmail);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -93,6 +165,58 @@ export function InspectionShareDialog({
                   )}
                 </Button>
               </div>
+
+              {/* Notify customer */}
+              {customer && (smsEnabled || emailEnabled) && (
+                <div className="space-y-3 rounded-lg border p-3">
+                  <p className="text-sm font-medium">Notify {customer.name}</p>
+                  <div className="space-y-2">
+                    {smsEnabled && (
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="notify-sms-inspection"
+                          checked={notifySms}
+                          onCheckedChange={(v) => setNotifySms(v === true)}
+                          disabled={!hasPhone}
+                        />
+                        <Label
+                          htmlFor="notify-sms-inspection"
+                          className={`flex items-center gap-1.5 text-sm ${!hasPhone ? "text-muted-foreground/50" : ""}`}
+                        >
+                          <MessageSquare className="h-3.5 w-3.5" />
+                          SMS
+                          {!hasPhone && <span className="text-xs">(no phone on file)</span>}
+                        </Label>
+                      </div>
+                    )}
+                    {emailEnabled && (
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="notify-email-inspection"
+                          checked={notifyEmail}
+                          onCheckedChange={(v) => setNotifyEmail(v === true)}
+                          disabled={!hasEmail}
+                        />
+                        <Label
+                          htmlFor="notify-email-inspection"
+                          className={`flex items-center gap-1.5 text-sm ${!hasEmail ? "text-muted-foreground/50" : ""}`}
+                        >
+                          <Mail className="h-3.5 w-3.5" />
+                          Email
+                          {!hasEmail && <span className="text-xs">(no email on file)</span>}
+                        </Label>
+                      </div>
+                    )}
+                  </div>
+                  {canNotify && (
+                    <Button size="sm" onClick={handleNotify} disabled={sending} className="w-full">
+                      {sending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                      Send Notification
+                    </Button>
+                  )}
+                </div>
+              )}
+
               <Button
                 variant="outline"
                 className="w-full text-destructive"

@@ -261,8 +261,9 @@ model Customer {
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  vehicles Vehicle[]
-  quotes   Quote[]
+  vehicles    Vehicle[]
+  quotes      Quote[]
+  smsMessages SmsMessage[]
 
   @@index([organizationId])
   @@map("customers")
@@ -364,25 +365,25 @@ model InventoryPart {
 }
 
 model Quote {
-  id             String    @id @default(cuid())
-  quoteNumber    String?
-  title          String
-  description    String?
-  status         String    @default("draft")
-  validUntil     DateTime?
-  subtotal       Float     @default(0)
-  taxRate        Float     @default(0)
-  taxAmount      Float     @default(0)
-  discountType   String?
-  discountValue  Float     @default(0)
-  discountAmount Float     @default(0)
-  totalAmount    Float     @default(0)
-  notes          String?
-  publicToken    String?
+  id              String    @id @default(cuid())
+  quoteNumber     String?
+  title           String
+  description     String?
+  status          String    @default("draft")
+  validUntil      DateTime?
+  subtotal        Float     @default(0)
+  taxRate         Float     @default(0)
+  taxAmount       Float     @default(0)
+  discountType    String?
+  discountValue   Float     @default(0)
+  discountAmount  Float     @default(0)
+  totalAmount     Float     @default(0)
+  notes           String?
+  publicToken     String?
   customerMessage String?
-  convertedToId  String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  convertedToId   String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -492,6 +493,7 @@ model Organization {
   subscription           Subscription?
   invitations            TeamInvitation[]
   inspectionTemplates    InspectionTemplate[]
+  smsMessages            SmsMessage[]
 
   @@map("organizations")
 }
@@ -787,4 +789,30 @@ model Notification {
   @@index([organizationId, createdAt(sort: Desc)])
   @@index([organizationId, read])
   @@map("notifications")
+}
+
+model SmsMessage {
+  id                String   @id @default(cuid())
+  direction         String // "inbound" | "outbound"
+  fromNumber        String
+  toNumber          String
+  body              String
+  status            String   @default("queued") // queued | sent | delivered | failed | received
+  providerMsgId     String?
+  errorMessage      String?
+  relatedEntityType String?
+  relatedEntityId   String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, customerId, createdAt(sort: Desc)])
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([toNumber, organizationId])
+  @@map("sms_messages")
 }

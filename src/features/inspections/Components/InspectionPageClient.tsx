@@ -411,8 +411,12 @@ function InspectionItemRow({
 
 export function InspectionPageClient({
   inspection,
+  smsEnabled = false,
+  emailEnabled = false,
 }: {
   inspection: InspectionData;
+  smsEnabled?: boolean;
+  emailEnabled?: boolean;
 }) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -449,6 +453,7 @@ export function InspectionPageClient({
       if (result.success) {
         toast.success("Inspection completed");
         setShowCompleteDialog(false);
+        setShowShareDialog(true);
         router.refresh();
       } else {
         toast.error(result.error || "Failed to complete inspection");
@@ -739,6 +744,9 @@ export function InspectionPageClient({
         inspectionId={inspection.id}
         organizationId={inspection.organizationId}
         publicToken={inspection.publicToken}
+        customer={inspection.vehicle.customer}
+        smsEnabled={smsEnabled}
+        emailEnabled={emailEnabled}
       />
     </div>
   );

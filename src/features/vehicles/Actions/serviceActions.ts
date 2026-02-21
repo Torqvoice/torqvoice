@@ -519,7 +519,7 @@ export async function getWorkOrders(params: {
               model: true,
               year: true,
               licensePlate: true,
-              customer: { select: { id: true, name: true } },
+              customer: { select: { id: true, name: true, email: true, phone: true } },
             },
           },
         },

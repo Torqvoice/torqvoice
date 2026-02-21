@@ -167,6 +167,8 @@ export default async function ServiceDetailPage({
         maxImagesPerService={features?.maxImagesPerService ?? 999999}
         maxDiagnosticsPerService={features?.maxDiagnosticsPerService ?? 999999}
         maxDocumentsPerService={features?.maxDocumentsPerService ?? 999999}
+        smsEnabled={features?.sms ?? false}
+        emailEnabled={features?.smtp ?? false}
       />
     </div>
   );

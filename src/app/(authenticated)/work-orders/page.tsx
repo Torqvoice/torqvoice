@@ -3,6 +3,8 @@ import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
 import { getCustomersList } from "@/features/customers/Actions/customerActions";
+import { getAuthContext } from "@/lib/get-auth-context";
+import { getFeatures } from "@/lib/features";
 import { WorkOrdersClient } from "./work-orders-client";
 import { PageHeader } from "@/components/page-header";
 
@@ -17,7 +19,7 @@ export default async function WorkOrdersPage({
   }>;
 }) {
   const params = await searchParams;
-  const [result, settingsResult, vehiclesResult, customersResult] = await Promise.all([
+  const [result, settingsResult, vehiclesResult, customersResult, authCtx] = await Promise.all([
     getWorkOrders({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
@@ -27,7 +29,10 @@ export default async function WorkOrdersPage({
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
     getVehicles(),
     getCustomersList(),
+    getAuthContext(),
   ]);
+
+  const features = authCtx ? await getFeatures(authCtx.organizationId) : null;
 
   if (!result.success || !result.data) {
     return (
@@ -69,6 +74,8 @@ export default async function WorkOrdersPage({
           currencyCode={currencyCode}
           search={params.search || ""}
           statusFilter={params.status || "all"}
+          smsEnabled={features?.sms ?? false}
+          emailEnabled={features?.smtp ?? false}
         />
       </div>
     </>

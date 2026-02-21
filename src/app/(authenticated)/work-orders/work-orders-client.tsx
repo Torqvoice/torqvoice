@@ -32,6 +32,10 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
+import { NotifyCustomerDialog } from "@/components/notify-customer-dialog";
+import { getSmsTemplates } from "@/features/sms/Actions/smsActions";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from "@/lib/sms-templates";
 
 interface WorkOrder {
   id: string;
@@ -49,7 +53,7 @@ interface WorkOrder {
     model: string;
     year: number;
     licensePlate: string | null;
-    customer: { id: string; name: string } | null;
+    customer: { id: string; name: string; email: string | null; phone: string | null } | null;
   };
 }
 
@@ -87,6 +91,13 @@ const statusTabs = [
   { key: "completed", label: "Completed" },
 ];
 
+const statusTemplateKeys: Record<string, string> = {
+  "in-progress": SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
+  "waiting-parts": SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
+  "ready": SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
+  "completed": SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
+};
+
 const statusTransitions: Record<string, { label: string; target: string }[]> = {
   pending: [
     { label: "Start Work", target: "in-progress" },
@@ -115,6 +126,8 @@ export function WorkOrdersClient({
   currencyCode = "USD",
   search,
   statusFilter,
+  smsEnabled = false,
+  emailEnabled = false,
 }: {
   data: PaginatedData;
   vehicles?: VehicleOption[];
@@ -122,6 +135,8 @@ export function WorkOrdersClient({
   currencyCode?: string;
   search: string;
   statusFilter: string;
+  smsEnabled?: boolean;
+  emailEnabled?: boolean;
 }) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -131,6 +146,10 @@ export function WorkOrdersClient({
   const [searchInput, setSearchInput] = useState(search);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
+  const [showNotifyDialog, setShowNotifyDialog] = useState(false);
+  const [notifyCustomer, setNotifyCustomer] = useState<{ id: string; name: string; email: string | null; phone: string | null } | null>(null);
+  const [notifyMessage, setNotifyMessage] = useState("");
+  const [notifyStatus, setNotifyStatus] = useState("");
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -160,10 +179,28 @@ export function WorkOrdersClient({
     [navigate, searchInput]
   );
 
-  const handleStatusChange = async (recordId: string, newStatus: string) => {
-    await updateServiceStatus(recordId, newStatus);
+  const handleStatusChange = async (workOrder: WorkOrder, newStatus: string) => {
+    await updateServiceStatus(workOrder.id, newStatus);
     toast.success("Status updated");
     router.refresh();
+
+    const templateKey = statusTemplateKeys[newStatus];
+    if (workOrder.vehicle.customer && templateKey) {
+      const tplResult = await getSmsTemplates();
+      const tplData = tplResult.success && tplResult.data ? tplResult.data : null;
+      const tpl = tplData?.templates[templateKey] || SMS_TEMPLATE_DEFAULTS[templateKey] || "";
+      const vehicle = `${workOrder.vehicle.year} ${workOrder.vehicle.make} ${workOrder.vehicle.model}`;
+      const message = interpolateSmsTemplate(tpl, {
+        customer_name: workOrder.vehicle.customer.name,
+        vehicle,
+        company_name: tplData?.companyName || "",
+        current_user: tplData?.currentUser || "",
+      });
+      setNotifyCustomer(workOrder.vehicle.customer);
+      setNotifyMessage(message);
+      setNotifyStatus(newStatus);
+      setShowNotifyDialog(true);
+    }
   };
 
   return (
@@ -298,7 +335,7 @@ export function WorkOrdersClient({
                                 key={t.target}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleStatusChange(r.id, t.target);
+                                  handleStatusChange(r, t.target);
                                 }}
                               >
                                 {t.label}
@@ -331,6 +368,19 @@ export function WorkOrdersClient({
         customers={customers}
         title="Select Vehicle"
       />
+
+      {notifyCustomer && (
+        <NotifyCustomerDialog
+          open={showNotifyDialog}
+          onOpenChange={setShowNotifyDialog}
+          customer={notifyCustomer}
+          defaultMessage={notifyMessage}
+          emailSubject={`Vehicle Status Update: ${notifyStatus}`}
+          smsEnabled={smsEnabled}
+          emailEnabled={emailEnabled}
+          relatedEntityType="work-order"
+        />
+      )}
     </div>
   );
 }

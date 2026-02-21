@@ -19,6 +19,11 @@ import { PaymentsSection } from '../service-detail/PaymentsSection'
 import { ServiceAttachments } from '../service-detail/ServiceAttachments'
 import { ImageCarousel } from '../service-detail/ImageCarousel'
 import { ShareDialog } from '../service-detail/ShareDialog'
+import { NotifyCustomerDialog } from '@/components/notify-customer-dialog'
+import { formatCurrency } from '@/lib/format'
+import { getSmsTemplates } from '@/features/sms/Actions/smsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
 
 import { BasicInfoSection } from '../service-edit/BasicInfoSection'
 import { PartsEditor } from '../service-edit/PartsEditor'
@@ -66,6 +71,8 @@ export interface ServicePageClientProps {
   maxImagesPerService: number
   maxDiagnosticsPerService: number
   maxDocumentsPerService: number
+  smsEnabled?: boolean
+  emailEnabled?: boolean
 }
 
 export function ServicePageClient({
@@ -88,6 +95,8 @@ export function ServicePageClient({
   maxImagesPerService,
   maxDiagnosticsPerService,
   maxDocumentsPerService,
+  smsEnabled = false,
+  emailEnabled = false,
 }: ServicePageClientProps) {
   const router = useRouter()
   const modal = useGlassModal()
@@ -145,6 +154,8 @@ export function ServicePageClient({
   const [deletingPayment, setDeletingPayment] = useState<string | null>(null)
   const [showShareDialog, setShowShareDialog] = useState(false)
   const [showEmailDialog, setShowEmailDialog] = useState(false)
+  const [showPaymentNotifyDialog, setShowPaymentNotifyDialog] = useState(false)
+  const [paymentNotifyMessage, setPaymentNotifyMessage] = useState('')
 
   const displayTotal = totalAmount > 0 ? totalAmount : record.cost
   const paidFromPayments = record.payments?.reduce((sum, p) => sum + p.amount, 0) || 0
@@ -308,6 +319,22 @@ export function ServicePageClient({
     if (result.success) {
       toast.success('Payment recorded')
       router.refresh()
+      if (record.vehicle.customer) {
+        const invoiceNum = record.invoiceNumber || `#${record.id.slice(-8).toUpperCase()}`
+        const tplResult = await getSmsTemplates()
+        const tplData = tplResult.success && tplResult.data ? tplResult.data : null
+        const tpl = tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] || SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] || ''
+        setPaymentNotifyMessage(
+          interpolateSmsTemplate(tpl, {
+            amount: formatCurrency(data.amount, currencyCode),
+            invoice_number: invoiceNum,
+            customer_name: record.vehicle.customer.name,
+            company_name: tplData?.companyName || '',
+            current_user: tplData?.currentUser || '',
+          })
+        )
+        setShowPaymentNotifyDialog(true)
+      }
       return true
     }
     modal.open('error', 'Error', result.error || 'Failed to record payment')
@@ -321,6 +348,22 @@ export function ServicePageClient({
     if (result.success) {
       toast.success(result.data?.manuallyPaid ? 'Marked as paid' : 'Marked as unpaid')
       router.refresh()
+      if (result.data?.manuallyPaid && record.vehicle.customer) {
+        const invoiceNum = record.invoiceNumber || `#${record.id.slice(-8).toUpperCase()}`
+        const tplResult = await getSmsTemplates()
+        const tplData = tplResult.success && tplResult.data ? tplResult.data : null
+        const tpl = tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] || SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] || ''
+        setPaymentNotifyMessage(
+          interpolateSmsTemplate(tpl, {
+            amount: '',
+            invoice_number: invoiceNum,
+            customer_name: record.vehicle.customer.name,
+            company_name: tplData?.companyName || '',
+            current_user: tplData?.currentUser || '',
+          })
+        )
+        setShowPaymentNotifyDialog(true)
+      }
     } else {
       modal.open('error', 'Error', result.error || 'Failed to update payment status')
     }
@@ -540,7 +583,24 @@ export function ServicePageClient({
         recordId={record.id}
         organizationId={organizationId}
         initialToken={record.publicToken}
+        customer={record.vehicle.customer}
+        smsEnabled={smsEnabled}
+        emailEnabled={emailEnabled}
       />
+
+      {record.vehicle.customer && (
+        <NotifyCustomerDialog
+          open={showPaymentNotifyDialog}
+          onOpenChange={setShowPaymentNotifyDialog}
+          customer={record.vehicle.customer}
+          defaultMessage={paymentNotifyMessage}
+          emailSubject="Payment Confirmation"
+          smsEnabled={smsEnabled}
+          emailEnabled={emailEnabled}
+          relatedEntityType="service-record"
+          relatedEntityId={record.id}
+        />
+      )}
     </div>
   )
 }
