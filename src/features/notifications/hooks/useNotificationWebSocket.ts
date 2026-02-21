@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useNotificationStore } from "../store/notificationStore";
-import { getNotifications } from "../Actions/notificationActions";
+import { getNotifications, markNotificationRead } from "../Actions/notificationActions";
+import { getActiveSmsCustomerId } from "@/features/sms/activeSmsView";
 
 export function useNotificationWebSocket() {
   const wsRef = useRef<WebSocket | null>(null);
@@ -40,13 +41,33 @@ export function useNotificationWebSocket() {
         try {
           const msg = JSON.parse(event.data);
           if (msg.type === "notification") {
-            useNotificationStore.getState().addNotification(msg.data);
-            toast(msg.data.title, {
-              description: msg.data.message,
+            const data = msg.data;
+
+            // If user is already viewing SMS for this customer, auto-read and skip toast
+            const activeSmsCid = getActiveSmsCustomerId();
+            if (
+              activeSmsCid &&
+              data.type === "sms_inbound" &&
+              data.entityUrl === `/customers/${activeSmsCid}?tab=messages`
+            ) {
+              // Still add it to the store but immediately mark as read
+              const added = { ...data, read: true };
+              useNotificationStore.getState().addNotification(added);
+              // Decrement the unread count that addNotification just bumped
+              useNotificationStore.setState((s) => ({
+                unreadCount: Math.max(0, s.unreadCount - 1),
+              }));
+              markNotificationRead(data.id);
+              return;
+            }
+
+            useNotificationStore.getState().addNotification(data);
+            toast(data.title, {
+              description: data.message,
               action: {
                 label: "View",
                 onClick: () => {
-                  window.location.href = msg.data.entityUrl;
+                  window.location.href = data.entityUrl;
                 },
               },
             });

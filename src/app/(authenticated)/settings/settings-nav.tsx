@@ -17,6 +17,7 @@ import {
   Layout,
   ListPlus,
   Mail,
+  MessageSquare,
   Palette,
   UserCog,
   UsersRound,
@@ -98,6 +99,13 @@ const settingsNav: SettingsNavItem[] = [
     icon: Mail,
     description: "Email provider & sending",
     gate: "smtp",
+  },
+  {
+    title: "SMS",
+    href: "/settings/sms",
+    icon: MessageSquare,
+    description: "SMS provider & messaging",
+    gate: "sms",
   },
   {
     title: "Workshop",

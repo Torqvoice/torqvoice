@@ -148,6 +148,8 @@ export function QuotePageClient({
   defaultLaborRate = 0,
   customers = [],
   vehicles = [],
+  smsEnabled = false,
+  emailEnabled = false,
 }: {
   quote: QuoteRecord;
   organizationId: string;
@@ -157,6 +159,8 @@ export function QuotePageClient({
   defaultLaborRate?: number;
   customers?: CustomerOption[];
   vehicles?: VehicleOption[];
+  smsEnabled?: boolean;
+  emailEnabled?: boolean;
 }) {
   const cs = getCurrencySymbol(currencyCode);
   const router = useRouter();
@@ -694,6 +698,9 @@ export function QuotePageClient({
         quoteId={quote.id}
         organizationId={organizationId}
         initialToken={quote.publicToken}
+        customer={quote.customer}
+        smsEnabled={smsEnabled}
+        emailEnabled={emailEnabled}
       />
 
       <Dialog open={showConvertDialog} onOpenChange={setShowConvertDialog}>

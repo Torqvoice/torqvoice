@@ -1,0 +1,173 @@
+"use server";
+
+import { db } from "@/lib/db";
+import { withAuth } from "@/lib/with-auth";
+import { sendOrgSms, getOrgSmsPhoneNumber } from "@/lib/sms";
+import { requireFeature } from "@/lib/features";
+import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+
+export async function sendSmsToCustomer(input: {
+  customerId: string;
+  body: string;
+  relatedEntityType?: string;
+  relatedEntityId?: string;
+}) {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireFeature(organizationId, "sms");
+
+      const customer = await db.customer.findFirst({
+        where: { id: input.customerId, organizationId },
+        select: { id: true, phone: true, name: true },
+      });
+
+      if (!customer) throw new Error("Customer not found");
+      if (!customer.phone) throw new Error("Customer has no phone number");
+
+      const fromNumber = await getOrgSmsPhoneNumber(organizationId);
+      if (!fromNumber) throw new Error("SMS phone number is not configured");
+
+      // Create the message record first
+      const message = await db.smsMessage.create({
+        data: {
+          direction: "outbound",
+          fromNumber,
+          toNumber: customer.phone,
+          body: input.body,
+          status: "queued",
+          organizationId,
+          customerId: customer.id,
+          relatedEntityType: input.relatedEntityType,
+          relatedEntityId: input.relatedEntityId,
+        },
+      });
+
+      try {
+        const result = await sendOrgSms(organizationId, {
+          to: customer.phone,
+          body: input.body,
+        });
+
+        await db.smsMessage.update({
+          where: { id: message.id },
+          data: {
+            status: "sent",
+            providerMsgId: result.providerMsgId,
+          },
+        });
+
+        return { id: message.id, status: "sent" as const };
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+
+        await db.smsMessage.update({
+          where: { id: message.id },
+          data: { status: "failed", errorMessage },
+        });
+
+        throw new Error(`Failed to send SMS: ${errorMessage}`);
+      }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.CUSTOMERS },
+      ],
+    },
+  );
+}
+
+export async function getConversation(
+  customerId: string,
+  cursor?: string,
+  limit: number = 50,
+) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const messages = await db.smsMessage.findMany({
+        where: {
+          organizationId,
+          customerId,
+        },
+        orderBy: { createdAt: "desc" },
+        take: limit + 1,
+        ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+        select: {
+          id: true,
+          direction: true,
+          body: true,
+          status: true,
+          createdAt: true,
+          fromNumber: true,
+          toNumber: true,
+        },
+      });
+
+      const hasMore = messages.length > limit;
+      const items = hasMore ? messages.slice(0, limit) : messages;
+
+      return {
+        messages: items.reverse(),
+        nextCursor: hasMore ? items[items.length - 1]?.id : null,
+      };
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    },
+  );
+}
+
+export async function getRecentSmsThreads() {
+  return withAuth(
+    async ({ organizationId }) => {
+      // Get latest message per customer using a raw query approach via Prisma
+      const customers = await db.customer.findMany({
+        where: {
+          organizationId,
+          smsMessages: { some: {} },
+        },
+        select: {
+          id: true,
+          name: true,
+          phone: true,
+          smsMessages: {
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: {
+              id: true,
+              body: true,
+              direction: true,
+              status: true,
+              createdAt: true,
+            },
+          },
+        },
+        orderBy: {
+          smsMessages: { _count: "desc" },
+        },
+        take: 50,
+      });
+
+      return customers
+        .filter((c) => c.smsMessages.length > 0)
+        .map((c) => ({
+          customerId: c.id,
+          customerName: c.name,
+          customerPhone: c.phone,
+          lastMessage: c.smsMessages[0],
+        }))
+        .sort(
+          (a, b) =>
+            new Date(b.lastMessage.createdAt).getTime() -
+            new Date(a.lastMessage.createdAt).getTime(),
+        );
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    },
+  );
+}

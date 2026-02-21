@@ -411,8 +411,12 @@ function InspectionItemRow({
 
 export function InspectionPageClient({
   inspection,
+  smsEnabled = false,
+  emailEnabled = false,
 }: {
   inspection: InspectionData;
+  smsEnabled?: boolean;
+  emailEnabled?: boolean;
 }) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -739,6 +743,9 @@ export function InspectionPageClient({
         inspectionId={inspection.id}
         organizationId={inspection.organizationId}
         publicToken={inspection.publicToken}
+        customer={inspection.vehicle.customer}
+        smsEnabled={smsEnabled}
+        emailEnabled={emailEnabled}
       />
     </div>
   );

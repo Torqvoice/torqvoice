@@ -66,6 +66,8 @@ export interface ServicePageClientProps {
   maxImagesPerService: number
   maxDiagnosticsPerService: number
   maxDocumentsPerService: number
+  smsEnabled?: boolean
+  emailEnabled?: boolean
 }
 
 export function ServicePageClient({
@@ -88,6 +90,8 @@ export function ServicePageClient({
   maxImagesPerService,
   maxDiagnosticsPerService,
   maxDocumentsPerService,
+  smsEnabled = false,
+  emailEnabled = false,
 }: ServicePageClientProps) {
   const router = useRouter()
   const modal = useGlassModal()
@@ -540,6 +544,9 @@ export function ServicePageClient({
         recordId={record.id}
         organizationId={organizationId}
         initialToken={record.publicToken}
+        customer={record.vehicle.customer}
+        smsEnabled={smsEnabled}
+        emailEnabled={emailEnabled}
       />
     </div>
   )
