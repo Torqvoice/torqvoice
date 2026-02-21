@@ -61,6 +61,13 @@ export const SETTING_KEYS = {
   MAINTENANCE_SERVICE_INTERVAL: "maintenance.serviceInterval",
   MAINTENANCE_APPROACHING_THRESHOLD: "maintenance.approachingThreshold",
   INVENTORY_MARKUP_MULTIPLIER: "inventory.markupMultiplier",
+  SMS_TEMPLATE_INVOICE_READY: "sms.template.invoiceReady",
+  SMS_TEMPLATE_INSPECTION_READY: "sms.template.inspectionReady",
+  SMS_TEMPLATE_STATUS_IN_PROGRESS: "sms.template.statusInProgress",
+  SMS_TEMPLATE_STATUS_WAITING_PARTS: "sms.template.statusWaitingParts",
+  SMS_TEMPLATE_STATUS_READY: "sms.template.statusReady",
+  SMS_TEMPLATE_STATUS_COMPLETED: "sms.template.statusCompleted",
+  SMS_TEMPLATE_PAYMENT_RECEIVED: "sms.template.paymentReceived",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

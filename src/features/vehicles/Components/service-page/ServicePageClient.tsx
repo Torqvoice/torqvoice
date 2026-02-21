@@ -21,6 +21,9 @@ import { ImageCarousel } from '../service-detail/ImageCarousel'
 import { ShareDialog } from '../service-detail/ShareDialog'
 import { NotifyCustomerDialog } from '@/components/notify-customer-dialog'
 import { formatCurrency } from '@/lib/format'
+import { getSmsTemplates } from '@/features/sms/Actions/smsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
 
 import { BasicInfoSection } from '../service-edit/BasicInfoSection'
 import { PartsEditor } from '../service-edit/PartsEditor'
@@ -318,8 +321,17 @@ export function ServicePageClient({
       router.refresh()
       if (record.vehicle.customer) {
         const invoiceNum = record.invoiceNumber || `#${record.id.slice(-8).toUpperCase()}`
+        const tplResult = await getSmsTemplates()
+        const tplData = tplResult.success && tplResult.data ? tplResult.data : null
+        const tpl = tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] || SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] || ''
         setPaymentNotifyMessage(
-          `Payment of ${formatCurrency(data.amount, currencyCode)} received for invoice ${invoiceNum}. Thank you!`
+          interpolateSmsTemplate(tpl, {
+            amount: formatCurrency(data.amount, currencyCode),
+            invoice_number: invoiceNum,
+            customer_name: record.vehicle.customer.name,
+            company_name: tplData?.companyName || '',
+            current_user: tplData?.currentUser || '',
+          })
         )
         setShowPaymentNotifyDialog(true)
       }
@@ -338,8 +350,17 @@ export function ServicePageClient({
       router.refresh()
       if (result.data?.manuallyPaid && record.vehicle.customer) {
         const invoiceNum = record.invoiceNumber || `#${record.id.slice(-8).toUpperCase()}`
+        const tplResult = await getSmsTemplates()
+        const tplData = tplResult.success && tplResult.data ? tplResult.data : null
+        const tpl = tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] || SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] || ''
         setPaymentNotifyMessage(
-          `Payment received for invoice ${invoiceNum}. Thank you!`
+          interpolateSmsTemplate(tpl, {
+            amount: '',
+            invoice_number: invoiceNum,
+            customer_name: record.vehicle.customer.name,
+            company_name: tplData?.companyName || '',
+            current_user: tplData?.currentUser || '',
+          })
         )
         setShowPaymentNotifyDialog(true)
       }

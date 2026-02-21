@@ -15,8 +15,10 @@ import {
   generateInspectionPublicLink,
   revokeInspectionPublicLink,
 } from "../Actions/inspectionShareActions";
-import { sendSmsToCustomer } from "@/features/sms/Actions/smsActions";
+import { sendSmsToCustomer, getSmsTemplates } from "@/features/sms/Actions/smsActions";
 import { sendInspectionEmail } from "@/features/email/Actions/emailActions";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from "@/lib/sms-templates";
 
 interface InspectionShareDialogProps {
   open: boolean;
@@ -100,9 +102,19 @@ export function InspectionShareDialog({
     const results: string[] = [];
 
     if (notifySms && hasPhone) {
+      const tplResult = await getSmsTemplates();
+      const tplData = tplResult.success && tplResult.data ? tplResult.data : null;
+      const tpl = tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY]
+        || SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY];
+      const body = interpolateSmsTemplate(tpl || "", {
+        share_link: shareUrl,
+        customer_name: customer.name,
+        company_name: tplData?.companyName || "",
+        current_user: tplData?.currentUser || "",
+      });
       const res = await sendSmsToCustomer({
         customerId: customer.id,
-        body: `Your vehicle inspection report is ready. View it here: ${shareUrl}`,
+        body,
         relatedEntityType: "inspection",
         relatedEntityId: inspectionId,
       });

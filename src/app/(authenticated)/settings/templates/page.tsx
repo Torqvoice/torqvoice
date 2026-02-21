@@ -6,6 +6,7 @@ import { getFeatures, isCloudMode } from "@/lib/features";
 import { FeatureLockedMessage } from "../feature-locked-message";
 import { redirect } from "next/navigation";
 import { getTemplates, seedDefaultTemplate } from "@/features/inspections/Actions/templateActions";
+import { SMS_TEMPLATE_DEFAULTS } from "@/lib/sms-templates";
 
 export default async function TemplatePage() {
   const data = await getLayoutData();
@@ -36,6 +37,13 @@ export default async function TemplatePage() {
       SETTING_KEYS.QUOTE_PRIMARY_COLOR,
       SETTING_KEYS.QUOTE_FONT_FAMILY,
       SETTING_KEYS.QUOTE_HEADER_STYLE,
+      SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
+      SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
+      SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
+      SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
+      SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
+      SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
+      SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
     ]),
     getTemplates(),
   ]);
@@ -44,6 +52,20 @@ export default async function TemplatePage() {
   const inspectionTemplates = inspectionTemplatesResult.success && inspectionTemplatesResult.data
     ? inspectionTemplatesResult.data
     : [];
+
+  const smsTemplates: Record<string, string> = {};
+  const smsKeys = [
+    SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
+    SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
+    SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
+    SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
+    SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
+    SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
+    SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
+  ] as const;
+  for (const key of smsKeys) {
+    smsTemplates[key] = settings[key] || SMS_TEMPLATE_DEFAULTS[key] || "";
+  }
 
   return (
     <TemplateSettings
@@ -58,6 +80,8 @@ export default async function TemplatePage() {
         headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || "standard",
       }}
       inspectionTemplates={inspectionTemplates}
+      smsEnabled={features.sms ?? false}
+      initialSmsTemplates={smsTemplates}
     />
   );
 }

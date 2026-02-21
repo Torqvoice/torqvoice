@@ -16,10 +16,12 @@ import { toast } from "sonner";
 import { setSetting } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { templatePresets } from "@/features/settings/Schema/templatePresets";
-import { Check, Loader2, Palette } from "lucide-react";
+import { Check, Loader2, Palette, MessageSquare, RotateCcw } from "lucide-react";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 import { cn } from "@/lib/utils";
 import { TemplateListClient } from "@/features/inspections/Components/TemplateListClient";
+import { Textarea } from "@/components/ui/textarea";
+import { SMS_TEMPLATE_DEFAULTS } from "@/lib/sms-templates";
 
 interface TemplateValues {
   primaryColor: string;
@@ -27,7 +29,7 @@ interface TemplateValues {
   headerStyle: string;
 }
 
-type TabType = "invoice" | "quotation" | "inspections";
+type TabType = "invoice" | "quotation" | "inspections" | "sms";
 
 const fontMap: Record<string, string> = {
   Helvetica: "Helvetica, Arial, sans-serif",
@@ -451,6 +453,125 @@ function TemplateTab({
   );
 }
 
+const smsTemplateFields = [
+  {
+    key: SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
+    label: "Invoice Ready",
+    description: "Sent when sharing an invoice with a customer.",
+    variables: ["{share_link}", "{company_name}", "{customer_name}", "{current_user}"],
+  },
+  {
+    key: SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
+    label: "Inspection Ready",
+    description: "Sent when sharing an inspection report with a customer.",
+    variables: ["{share_link}", "{company_name}", "{customer_name}", "{current_user}"],
+  },
+  {
+    key: SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
+    label: "Status: In Progress",
+    description: "Sent when a work order status changes to In Progress.",
+    variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
+  },
+  {
+    key: SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
+    label: "Status: Waiting for Parts",
+    description: "Sent when a work order status changes to Waiting for Parts.",
+    variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
+  },
+  {
+    key: SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
+    label: "Status: Ready for Pickup",
+    description: "Sent when a work order status changes to Ready.",
+    variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
+  },
+  {
+    key: SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
+    label: "Status: Completed",
+    description: "Sent when a work order status changes to Completed.",
+    variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
+  },
+  {
+    key: SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
+    label: "Payment Received",
+    description: "Sent when a payment is recorded for an invoice.",
+    variables: ["{amount}", "{invoice_number}", "{company_name}", "{customer_name}", "{current_user}"],
+  },
+];
+
+function SmsTemplateTab({
+  values,
+  setValues,
+}: {
+  values: Record<string, string>;
+  setValues: (v: Record<string, string>) => void;
+}) {
+  const handleReset = (key: string) => {
+    const defaultVal = SMS_TEMPLATE_DEFAULTS[key] || "";
+    setValues({ ...values, [key]: defaultVal });
+  };
+
+  return (
+    <div className="space-y-4">
+      <Card className="border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <MessageSquare className="h-4 w-4" /> SMS Message Templates
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Customize the text messages sent to customers. Use variables like{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-xs">{"{company_name}"}</code> to
+            insert dynamic values.
+          </p>
+          <div className="space-y-6">
+            {smsTemplateFields.map((field) => (
+              <div key={field.key} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">{field.label}</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-xs text-muted-foreground"
+                    onClick={() => handleReset(field.key)}
+                  >
+                    <RotateCcw className="mr-1 h-3 w-3" />
+                    Reset
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">{field.description}</p>
+                <Textarea
+                  value={values[field.key] || ""}
+                  onChange={(e) => setValues({ ...values, [field.key]: e.target.value })}
+                  rows={2}
+                  className="resize-none font-mono text-sm"
+                />
+                <div className="flex flex-wrap gap-1">
+                  {field.variables.map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(v);
+                        toast.success(`Copied ${v}`);
+                      }}
+                      className="cursor-pointer rounded bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground"
+                      title={`Click to copy ${v}`}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 interface InspectionTemplateSection {
   id: string;
   name: string;
@@ -470,15 +591,20 @@ export function TemplateSettings({
   initialInvoiceValues,
   initialQuoteValues,
   inspectionTemplates = [],
+  smsEnabled = false,
+  initialSmsTemplates = {},
 }: {
   initialInvoiceValues: TemplateValues;
   initialQuoteValues: TemplateValues;
   inspectionTemplates?: InspectionTemplate[];
+  smsEnabled?: boolean;
+  initialSmsTemplates?: Record<string, string>;
 }) {
   const [tab, setTab] = useState<TabType>("invoice");
   const [saving, setSaving] = useState(false);
   const [invoiceValues, setInvoiceValues] = useState(initialInvoiceValues);
   const [quoteValues, setQuoteValues] = useState(initialQuoteValues);
+  const [smsValues, setSmsValues] = useState<Record<string, string>>(initialSmsTemplates);
 
   const handleSave = async () => {
     setSaving(true);
@@ -489,14 +615,22 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.INVOICE_FONT_FAMILY, invoiceValues.fontFamily),
           setSetting(SETTING_KEYS.INVOICE_HEADER_STYLE, invoiceValues.headerStyle),
         ]);
-      } else {
+        toast.success("Invoice template settings saved");
+      } else if (tab === "quotation") {
         await Promise.all([
           setSetting(SETTING_KEYS.QUOTE_PRIMARY_COLOR, quoteValues.primaryColor),
           setSetting(SETTING_KEYS.QUOTE_FONT_FAMILY, quoteValues.fontFamily),
           setSetting(SETTING_KEYS.QUOTE_HEADER_STYLE, quoteValues.headerStyle),
         ]);
+        toast.success("Quotation template settings saved");
+      } else if (tab === "sms") {
+        await Promise.all(
+          Object.entries(smsValues).map(([key, value]) =>
+            setSetting(key as Parameters<typeof setSetting>[0], value),
+          ),
+        );
+        toast.success("SMS template settings saved");
       }
-      toast.success(`${tab === "invoice" ? "Invoice" : "Quotation"} template settings saved`);
     } catch {
       toast.error("Failed to save settings");
     }
@@ -511,7 +645,9 @@ export function TemplateSettings({
         <p className="text-sm text-muted-foreground">
           {tab === "inspections"
             ? "Manage inspection checklists and multi-point templates."
-            : "Customize the appearance of your PDF invoices and quotes."}
+            : tab === "sms"
+              ? "Customize the SMS messages sent to customers."
+              : "Customize the appearance of your PDF invoices and quotes."}
         </p>
       </div>
 
@@ -553,10 +689,38 @@ export function TemplateSettings({
         >
           Inspections
         </button>
+        {smsEnabled && (
+          <button
+            type="button"
+            onClick={() => setTab("sms")}
+            className={cn(
+              "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
+              tab === "sms"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            SMS
+          </button>
+        )}
       </div>
 
       {tab === "inspections" ? (
         <TemplateListClient templates={inspectionTemplates} />
+      ) : tab === "sms" ? (
+        <>
+          <ReadOnlyWrapper>
+            <SmsTemplateTab values={smsValues} setValues={setSmsValues} />
+          </ReadOnlyWrapper>
+          <SaveButton>
+            <div className="flex justify-end">
+              <Button onClick={handleSave} disabled={saving}>
+                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save SMS Templates
+              </Button>
+            </div>
+          </SaveButton>
+        </>
       ) : (
         <>
           <ReadOnlyWrapper>

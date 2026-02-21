@@ -33,6 +33,9 @@ import {
 import { formatCurrency } from "@/lib/format";
 import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
 import { NotifyCustomerDialog } from "@/components/notify-customer-dialog";
+import { getSmsTemplates } from "@/features/sms/Actions/smsActions";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from "@/lib/sms-templates";
 
 interface WorkOrder {
   id: string;
@@ -88,11 +91,11 @@ const statusTabs = [
   { key: "completed", label: "Completed" },
 ];
 
-const statusMessageTemplates: Record<string, string> = {
-  "in-progress": "Work has started on your vehicle. We'll keep you updated.",
-  "waiting-parts": "Your vehicle is waiting for parts. We'll notify you when work resumes.",
-  "ready": "Your vehicle is ready for pickup!",
-  "completed": "Your service is complete. Thank you for your business!",
+const statusTemplateKeys: Record<string, string> = {
+  "in-progress": SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
+  "waiting-parts": SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
+  "ready": SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
+  "completed": SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
 };
 
 const statusTransitions: Record<string, { label: string; target: string }[]> = {
@@ -181,10 +184,20 @@ export function WorkOrdersClient({
     toast.success("Status updated");
     router.refresh();
 
-    const template = statusMessageTemplates[newStatus];
-    if (workOrder.vehicle.customer && template) {
+    const templateKey = statusTemplateKeys[newStatus];
+    if (workOrder.vehicle.customer && templateKey) {
+      const tplResult = await getSmsTemplates();
+      const tplData = tplResult.success && tplResult.data ? tplResult.data : null;
+      const tpl = tplData?.templates[templateKey] || SMS_TEMPLATE_DEFAULTS[templateKey] || "";
+      const vehicle = `${workOrder.vehicle.year} ${workOrder.vehicle.make} ${workOrder.vehicle.model}`;
+      const message = interpolateSmsTemplate(tpl, {
+        customer_name: workOrder.vehicle.customer.name,
+        vehicle,
+        company_name: tplData?.companyName || "",
+        current_user: tplData?.currentUser || "",
+      });
       setNotifyCustomer(workOrder.vehicle.customer);
-      setNotifyMessage(template);
+      setNotifyMessage(message);
       setNotifyStatus(newStatus);
       setShowNotifyDialog(true);
     }

@@ -5,6 +5,8 @@ import { withAuth } from "@/lib/with-auth";
 import { sendOrgSms, getOrgSmsPhoneNumber } from "@/lib/sms";
 import { requireFeature } from "@/lib/features";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { SMS_TEMPLATE_DEFAULTS } from "@/lib/sms-templates";
 
 export async function sendSmsToCustomer(input: {
   customerId: string;
@@ -156,6 +158,51 @@ export async function deleteConversation(customerId: string) {
     {
       requiredPermissions: [
         { action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS },
+      ],
+    },
+  );
+}
+
+export async function getSmsTemplates() {
+  return withAuth(
+    async ({ organizationId, userId }) => {
+      const smsKeys = [
+        SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
+        SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
+        SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
+        SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
+        SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
+        SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
+        SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
+      ];
+      const [settings, org, user] = await Promise.all([
+        db.appSetting.findMany({
+          where: { organizationId, key: { in: smsKeys } },
+        }),
+        db.organization.findUnique({
+          where: { id: organizationId },
+          select: { name: true },
+        }),
+        db.user.findUnique({
+          where: { id: userId },
+          select: { name: true },
+        }),
+      ]);
+
+      const templates: Record<string, string> = {};
+      for (const key of smsKeys) {
+        const found = settings.find((s) => s.key === key);
+        templates[key] = found?.value || SMS_TEMPLATE_DEFAULTS[key] || "";
+      }
+      return {
+        templates,
+        companyName: org?.name || "",
+        currentUser: user?.name || "",
+      };
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
       ],
     },
   );
