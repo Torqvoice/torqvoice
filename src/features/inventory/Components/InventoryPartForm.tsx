@@ -70,7 +70,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
       const compressed = await compressImage(file);
       const formData = new FormData();
       formData.append("file", compressed);
-      const res = await fetch("/api/upload/inventory", {
+      const res = await fetch("/api/protected/upload/inventory", {
         method: "POST",
         body: formData,
       });
@@ -120,7 +120,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
 
     setFetching(true);
     try {
-      const res = await fetch("/api/fetch-metadata", {
+      const res = await fetch("/api/protected/fetch-metadata", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: targetUrl }),

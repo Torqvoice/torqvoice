@@ -289,7 +289,7 @@ export function QuotePageClient({
   const handleDownloadPDF = async () => {
     setDownloading(true);
     try {
-      const res = await fetch(`/api/quotes/${quote.id}/pdf`);
+      const res = await fetch(`/api/protected/quotes/${quote.id}/pdf`);
       if (!res.ok) throw new Error("Failed to generate PDF");
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);

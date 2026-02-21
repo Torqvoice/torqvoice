@@ -271,7 +271,7 @@ export function ServicePageClient({
   const handleDownloadPDF = async () => {
     setDownloading(true)
     try {
-      const res = await fetch(`/api/services/${record.id}/pdf`)
+      const res = await fetch(`/api/protected/services/${record.id}/pdf`)
       if (!res.ok) throw new Error('Failed')
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)

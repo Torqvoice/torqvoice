@@ -99,7 +99,7 @@ export function ServiceDocumentsManager({
         formData.append("file", file);
 
         try {
-          const res = await fetch("/api/upload/service-files", {
+          const res = await fetch("/api/protected/upload/service-files", {
             method: "POST",
             body: formData,
           });

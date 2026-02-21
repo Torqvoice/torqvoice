@@ -490,7 +490,7 @@ export async function POST(request: NextRequest) {
           const targetPath = path.join(targetDir, filename);
           await writeFile(targetPath, fileData);
 
-          const fileUrl = `/api/files/${organizationId}/services/${filename}`;
+          const fileUrl = `/api/protected/files/${organizationId}/services/${filename}`;
           const isImage = /\.(jpg|jpeg|png|webp)$/i.test(doc.name);
 
           await tx.serviceAttachment.create({

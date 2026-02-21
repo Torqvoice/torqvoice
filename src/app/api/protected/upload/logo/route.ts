@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     await writeFile(path.join(uploadDir, fileName), buffer);
 
-    const url = `/api/files/${ctx.organizationId}/logos/${fileName}`;
+    const url = `/api/protected/files/${ctx.organizationId}/logos/${fileName}`;
 
     // Delete old logo file if one exists
     const oldLogo = await db.appSetting.findFirst({

@@ -302,7 +302,7 @@ export async function POST(request: NextRequest) {
       }
 
       await writeFile(targetPath, fileData);
-      const fileUrl = `/api/files/${organizationId}/${category}/${filename}`;
+      const fileUrl = `/api/protected/files/${organizationId}/${category}/${filename}`;
       return { fileUrl, fileSize: fileData.length };
     }
 

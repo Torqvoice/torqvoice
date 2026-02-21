@@ -86,7 +86,7 @@ export function DataSettings() {
   const handleExport = async () => {
     setExporting(true)
     try {
-      const res = await fetch('/api/backup/export', {
+      const res = await fetch('/api/protected/backup/export', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ include: options }),
@@ -123,7 +123,7 @@ export function DataSettings() {
 
       if (isZip) {
         const buffer = await selectedFile.arrayBuffer()
-        res = await fetch('/api/backup/import', {
+        res = await fetch('/api/protected/backup/import', {
           method: 'POST',
           headers: { 'Content-Type': 'application/zip' },
           body: buffer,
@@ -131,7 +131,7 @@ export function DataSettings() {
       } else {
         const text = await selectedFile.text()
         const json = JSON.parse(text)
-        res = await fetch('/api/backup/import', {
+        res = await fetch('/api/protected/backup/import', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(json),
@@ -165,7 +165,7 @@ export function DataSettings() {
     setImportingLubelog(true)
     try {
       const buffer = await lubelogFile.arrayBuffer()
-      const res = await fetch('/api/backup/import-lubelog', {
+      const res = await fetch('/api/protected/backup/import-lubelog', {
         method: 'POST',
         headers: { 'Content-Type': 'application/zip' },
         body: buffer,
@@ -204,7 +204,7 @@ export function DataSettings() {
     setImportingInvoiceNinja(true)
     try {
       const buffer = await invoiceNinjaFile.arrayBuffer()
-      const res = await fetch('/api/backup/import-invoice-ninja', {
+      const res = await fetch('/api/protected/backup/import-invoice-ninja', {
         method: 'POST',
         headers: { 'Content-Type': 'application/zip' },
         body: buffer,

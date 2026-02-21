@@ -104,14 +104,18 @@ function rewriteFileUrl(
   newOrgId: string
 ): string | null {
   if (!url) return null;
-  // New format: /api/files/OLD_ORG_ID/category/filename
+  // New format: /api/protected/files/OLD_ORG_ID/category/filename
+  if (url.startsWith("/api/protected/files/")) {
+    return url.replace(/^\/api\/protected\/files\/[^/]+\//, `/api/protected/files/${newOrgId}/`);
+  }
+  // Old format (pre-restructure): /api/files/OLD_ORG_ID/category/filename
   if (url.startsWith("/api/files/")) {
-    return url.replace(/^\/api\/files\/[^/]+\//, `/api/files/${newOrgId}/`);
+    return url.replace(/^\/api\/files\/[^/]+\//, `/api/protected/files/${newOrgId}/`);
   }
   // Legacy format: /uploads/category/filename → convert to new format
   if (url.startsWith("/uploads/")) {
     const relative = url.replace(/^\/uploads\//, "");
-    return `/api/files/${newOrgId}/${relative}`;
+    return `/api/protected/files/${newOrgId}/${relative}`;
   }
   return url;
 }
@@ -179,7 +183,7 @@ export async function POST(request: NextRequest) {
             (s: Record<string, unknown>) => {
               let value = s.value as string;
               // Rewrite file URLs in settings (e.g. logo paths)
-              if (value?.startsWith("/api/files/")) {
+              if (value?.startsWith("/api/protected/files/") || value?.startsWith("/api/files/")) {
                 value = rewriteFileUrl(value, ctx.organizationId) || value;
               }
               return {
