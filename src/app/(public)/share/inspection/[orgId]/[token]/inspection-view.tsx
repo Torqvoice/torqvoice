@@ -101,7 +101,7 @@ export function InspectionView({
   const handleCancelQuoteRequest = async () => {
     setIsCancelling(true);
     try {
-      const res = await fetch("/api/public/inspection-quote-request", {
+      const res = await fetch("/api/v1/forms/inspection-quote-request", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ inspectionId: inspection.id, publicToken }),
@@ -343,7 +343,7 @@ export function InspectionView({
         <Button
           variant="outline"
           className="gap-2"
-          onClick={() => window.open(`/api/share/inspection/${orgId}/${publicToken}/pdf`, "_blank")}
+          onClick={() => window.open(`/api/v1/share/inspection/${orgId}/${publicToken}/pdf`, "_blank")}
         >
           <Download className="h-4 w-4" />
           Download PDF

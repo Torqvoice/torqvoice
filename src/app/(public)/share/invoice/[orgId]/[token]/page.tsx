@@ -4,10 +4,10 @@ import { InvoiceView } from "./invoice-view";
 import { getFeatures } from "@/lib/features";
 import type { Metadata } from "next";
 
-/** Rewrites /api/files/[orgId]/[category]/[filename] to /api/files/public/[token]/[category]/[filename] */
+/** Rewrites /api/files/[orgId]/[category]/[filename] to /api/v1/files/[token]/[category]/[filename] */
 function toPublicFileUrl(fileUrl: string, token: string): string {
   const match = fileUrl.match(/^\/api\/files\/[^/]+\/(.+)$/);
-  if (match) return `/api/files/public/${token}/${match[1]}`;
+  if (match) return `/api/v1/files/${token}/${match[1]}`;
   // Legacy URLs pass through as-is
   return fileUrl;
 }
