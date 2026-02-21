@@ -71,7 +71,7 @@ export async function POST(request: Request) {
       entityType: "sms_message",
       entityId: message.id,
       entityUrl: customer
-        ? `/customers/${customer.id}?tab=messages`
+        ? `/messages?customerId=${customer.id}`
         : "/settings/sms",
     });
 

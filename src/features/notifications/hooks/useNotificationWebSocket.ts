@@ -48,7 +48,7 @@ export function useNotificationWebSocket() {
             if (
               activeSmsCid &&
               data.type === "sms_inbound" &&
-              data.entityUrl === `/customers/${activeSmsCid}?tab=messages`
+              data.entityUrl === `/messages?customerId=${activeSmsCid}`
             ) {
               // Still add it to the store but immediately mark as read
               const added = { ...data, read: true };
@@ -62,8 +62,10 @@ export function useNotificationWebSocket() {
             }
 
             useNotificationStore.getState().addNotification(data);
+            const isSms = data.type === "sms_inbound";
             toast(data.title, {
               description: data.message,
+              ...(isSms && { duration: 5 * 60 * 1000 }),
               action: {
                 label: "View",
                 onClick: () => {
