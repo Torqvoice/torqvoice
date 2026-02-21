@@ -223,7 +223,7 @@ describe("QuoteView", () => {
   });
 
   describe("Accept Quote interaction", () => {
-    it("calls /api/v1/forms/quote-response with action=accepted", async () => {
+    it("calls /api/public/forms/quote-response with action=accepted", async () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ success: true }),
@@ -233,7 +233,7 @@ describe("QuoteView", () => {
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
-          "/api/v1/forms/quote-response",
+          "/api/public/forms/quote-response",
           expect.objectContaining({ method: "POST" })
         );
         const body = JSON.parse(mockFetch.mock.calls[0][1].body);
@@ -340,7 +340,7 @@ describe("QuoteView", () => {
       await userEvent.click(screen.getByRole("button", { name: /download pdf/i }));
 
       await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith("/api/v1/share/quote/org-1/tok-abc/pdf");
+        expect(mockFetch).toHaveBeenCalledWith("/api/public/share/quote/org-1/tok-abc/pdf");
       });
     });
 

@@ -92,7 +92,7 @@ export default async function PublicQuotePage({
   let logoUrl = "";
   if (rawLogoUrl) {
     const match = rawLogoUrl.match(/^\/api\/files\/[^/]+\/(.+)$/);
-    if (match) logoUrl = `/api/v1/files/${token}/${match[1]}`;
+    if (match) logoUrl = `/api/public/files/${token}/${match[1]}`;
     else logoUrl = rawLogoUrl;
   }
 

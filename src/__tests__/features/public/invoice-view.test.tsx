@@ -265,7 +265,7 @@ describe("InvoiceView", () => {
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
-          "/api/v1/share/invoice/org-1/tok-xyz/checkout",
+          "/api/public/share/invoice/org-1/tok-xyz/checkout",
           expect.objectContaining({ method: "POST" })
         );
         const body = JSON.parse(mockFetch.mock.calls[0][1].body);
@@ -304,7 +304,7 @@ describe("InvoiceView", () => {
         expect(screen.getByText(/payment received/i)).toBeInTheDocument();
       });
       expect(mockFetch).toHaveBeenCalledWith(
-        "/api/v1/share/invoice/org-1/tok-xyz/verify",
+        "/api/public/share/invoice/org-1/tok-xyz/verify",
         expect.objectContaining({
           method: "POST",
           body: expect.stringContaining('"provider":"stripe"'),
@@ -349,7 +349,7 @@ describe("InvoiceView", () => {
     const IMAGE_ATTACHMENT = {
       id: "att-1",
       fileName: "service-photo.jpg",
-      fileUrl: "/api/v1/files/tok-xyz/services/service-photo.jpg",
+      fileUrl: "/api/public/files/tok-xyz/services/service-photo.jpg",
       fileType: "image/jpeg",
       fileSize: 50000,
       category: "services",
@@ -408,7 +408,7 @@ describe("InvoiceView", () => {
       const pdfAttachment = {
         id: "att-pdf",
         fileName: "diagnostic.pdf",
-        fileUrl: "/api/v1/files/tok-xyz/services/diagnostic.pdf",
+        fileUrl: "/api/public/files/tok-xyz/services/diagnostic.pdf",
         fileType: "application/pdf",
         fileSize: 20000,
         category: "services",
@@ -433,7 +433,7 @@ describe("InvoiceView", () => {
       await userEvent.click(screen.getByRole("button", { name: /download pdf/i }));
 
       await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith("/api/v1/share/invoice/org-1/tok-xyz/pdf");
+        expect(mockFetch).toHaveBeenCalledWith("/api/public/share/invoice/org-1/tok-xyz/pdf");
       });
     });
   });

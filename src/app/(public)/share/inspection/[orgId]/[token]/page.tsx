@@ -89,7 +89,7 @@ export default async function PublicInspectionPage({
   let logoUrl = "";
   if (rawLogoUrl) {
     const match = rawLogoUrl.match(/^\/api\/files\/[^/]+\/(.+)$/);
-    if (match) logoUrl = `/api/v1/files/${token}/${match[1]}`;
+    if (match) logoUrl = `/api/public/files/${token}/${match[1]}`;
     else logoUrl = rawLogoUrl;
   }
 
@@ -102,7 +102,7 @@ export default async function PublicInspectionPage({
       ...item,
       imageUrls: item.imageUrls.map((url) => {
         const match = url.match(/^\/api\/files\/[^/]+\/(.+)$/);
-        if (match) return `/api/v1/files/${token}/${match[1]}`;
+        if (match) return `/api/public/files/${token}/${match[1]}`;
         return url;
       }),
     })),

@@ -275,7 +275,7 @@ describe("InspectionView", () => {
   });
 
   describe("cancel quote request", () => {
-    it("calls DELETE /api/v1/forms/inspection-quote-request with correct body", async () => {
+    it("calls DELETE /api/public/forms/inspection-quote-request with correct body", async () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ success: true }),
@@ -285,7 +285,7 @@ describe("InspectionView", () => {
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
-          "/api/v1/forms/inspection-quote-request",
+          "/api/public/forms/inspection-quote-request",
           expect.objectContaining({ method: "DELETE" })
         );
         const body = JSON.parse(mockFetch.mock.calls[0][1].body);
@@ -339,7 +339,7 @@ describe("InspectionView", () => {
       render(<InspectionView {...DEFAULT_PROPS} />);
       await userEvent.click(screen.getByRole("button", { name: /download pdf/i }));
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        "/api/v1/share/inspection/org-1/pub-tok-insp/pdf",
+        "/api/public/share/inspection/org-1/pub-tok-insp/pdf",
         "_blank"
       );
     });
@@ -368,7 +368,7 @@ describe("InspectionView", () => {
     const IMG_ITEM = {
       ...PASS_ITEM,
       name: "Oil Level",
-      imageUrls: ["/api/v1/files/tok/services/photo1.jpg"],
+      imageUrls: ["/api/public/files/tok/services/photo1.jpg"],
     };
 
     it("renders inspection image thumbnails", () => {

@@ -9,7 +9,7 @@ const isProduction = baseURL?.startsWith("https://");
 
 export const auth = betterAuth({
   baseURL,
-  basePath: "/api/v1/auth",
+  basePath: "/api/public/auth",
   trustedOrigins: baseURL ? [baseURL] : [],
   database: prismaAdapter(db, {
     provider: "postgresql",

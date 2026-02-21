@@ -211,7 +211,7 @@ export function InvoiceView({
     async (provider: string, externalId: string) => {
       setVerifying(true)
       try {
-        const res = await fetch(`/api/v1/share/invoice/${orgId}/${token}/verify`, {
+        const res = await fetch(`/api/public/share/invoice/${orgId}/${token}/verify`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ provider, externalId }),
@@ -251,7 +251,7 @@ export function InvoiceView({
   }, [verifyPayment])
 
   const handleDownloadPDF = async () => {
-    const res = await fetch(`/api/v1/share/invoice/${orgId}/${token}/pdf`)
+    const res = await fetch(`/api/public/share/invoice/${orgId}/${token}/pdf`)
     if (!res.ok) return
     const blob = await res.blob()
     const url = URL.createObjectURL(blob)
@@ -276,7 +276,7 @@ export function InvoiceView({
 
     setPaymentLoading(provider)
     try {
-      const res = await fetch(`/api/v1/share/invoice/${orgId}/${token}/checkout`, {
+      const res = await fetch(`/api/public/share/invoice/${orgId}/${token}/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider, amount }),

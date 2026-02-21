@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        disallow: ["/share/invoice/", "/api/v1/share/invoice/"],
+        disallow: ["/share/invoice/", "/api/public/share/invoice/"],
       },
     ],
   };
