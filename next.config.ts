@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
   experimental: {
     proxyClientMaxBodySize: '2gb',
   },
+  async rewrites() {
+    return [
+      // Old /api/files/ URLs stored in the DB before the protected/ restructure
+      {
+        source: '/api/files/:path*',
+        destination: '/api/protected/files/:path*',
+      },
+    ]
+  },
 }
 
 export default nextConfig
