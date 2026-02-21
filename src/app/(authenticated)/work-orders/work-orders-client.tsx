@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
+import { NotifyCustomerDialog } from "@/components/notify-customer-dialog";
 
 interface WorkOrder {
   id: string;
@@ -49,7 +50,7 @@ interface WorkOrder {
     model: string;
     year: number;
     licensePlate: string | null;
-    customer: { id: string; name: string } | null;
+    customer: { id: string; name: string; email: string | null; phone: string | null } | null;
   };
 }
 
@@ -87,6 +88,13 @@ const statusTabs = [
   { key: "completed", label: "Completed" },
 ];
 
+const statusMessageTemplates: Record<string, string> = {
+  "in-progress": "Work has started on your vehicle. We'll keep you updated.",
+  "waiting-parts": "Your vehicle is waiting for parts. We'll notify you when work resumes.",
+  "ready": "Your vehicle is ready for pickup!",
+  "completed": "Your service is complete. Thank you for your business!",
+};
+
 const statusTransitions: Record<string, { label: string; target: string }[]> = {
   pending: [
     { label: "Start Work", target: "in-progress" },
@@ -115,6 +123,8 @@ export function WorkOrdersClient({
   currencyCode = "USD",
   search,
   statusFilter,
+  smsEnabled = false,
+  emailEnabled = false,
 }: {
   data: PaginatedData;
   vehicles?: VehicleOption[];
@@ -122,6 +132,8 @@ export function WorkOrdersClient({
   currencyCode?: string;
   search: string;
   statusFilter: string;
+  smsEnabled?: boolean;
+  emailEnabled?: boolean;
 }) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -131,6 +143,10 @@ export function WorkOrdersClient({
   const [searchInput, setSearchInput] = useState(search);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
+  const [showNotifyDialog, setShowNotifyDialog] = useState(false);
+  const [notifyCustomer, setNotifyCustomer] = useState<{ id: string; name: string; email: string | null; phone: string | null } | null>(null);
+  const [notifyMessage, setNotifyMessage] = useState("");
+  const [notifyStatus, setNotifyStatus] = useState("");
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -160,10 +176,18 @@ export function WorkOrdersClient({
     [navigate, searchInput]
   );
 
-  const handleStatusChange = async (recordId: string, newStatus: string) => {
-    await updateServiceStatus(recordId, newStatus);
+  const handleStatusChange = async (workOrder: WorkOrder, newStatus: string) => {
+    await updateServiceStatus(workOrder.id, newStatus);
     toast.success("Status updated");
     router.refresh();
+
+    const template = statusMessageTemplates[newStatus];
+    if (workOrder.vehicle.customer && template) {
+      setNotifyCustomer(workOrder.vehicle.customer);
+      setNotifyMessage(template);
+      setNotifyStatus(newStatus);
+      setShowNotifyDialog(true);
+    }
   };
 
   return (
@@ -298,7 +322,7 @@ export function WorkOrdersClient({
                                 key={t.target}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleStatusChange(r.id, t.target);
+                                  handleStatusChange(r, t.target);
                                 }}
                               >
                                 {t.label}
@@ -331,6 +355,19 @@ export function WorkOrdersClient({
         customers={customers}
         title="Select Vehicle"
       />
+
+      {notifyCustomer && (
+        <NotifyCustomerDialog
+          open={showNotifyDialog}
+          onOpenChange={setShowNotifyDialog}
+          customer={notifyCustomer}
+          defaultMessage={notifyMessage}
+          emailSubject={`Vehicle Status Update: ${notifyStatus}`}
+          smsEnabled={smsEnabled}
+          emailEnabled={emailEnabled}
+          relatedEntityType="work-order"
+        />
+      )}
     </div>
   );
 }

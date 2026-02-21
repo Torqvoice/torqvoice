@@ -39,6 +39,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   FileText,
+  MessageSquare,
   LayoutDashboard,
   Loader2,
   LogOut,
@@ -62,6 +63,7 @@ const baseNavItems = [
   { title: 'Vehicles', url: '/vehicles', icon: Car },
   { title: 'Customers', url: '/customers', icon: Users },
   { title: 'Work Orders', url: '/work-orders', icon: ClipboardList },
+  { title: 'Messages', url: '/messages', icon: MessageSquare },
   { title: 'Inspections', url: '/inspections', icon: ClipboardCheck },
   { title: 'Calendar', url: '/calendar', icon: CalendarDays },
   { title: 'Quotes', url: '/quotes', icon: FileText },
@@ -105,6 +107,7 @@ export function AppSidebar({
   const navItems = [
     ...baseNavItems.filter((item) => {
       if (item.title === 'Reports' && (features?.reports === false || !canAccessReports)) return false
+      if (item.title === 'Messages' && features?.sms === false) return false
       return true
     }),
     ...(canAccessSettings ? [{ title: 'Settings', url: '/settings', icon: Settings }] : []),

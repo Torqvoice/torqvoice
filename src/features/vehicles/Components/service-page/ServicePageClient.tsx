@@ -19,6 +19,8 @@ import { PaymentsSection } from '../service-detail/PaymentsSection'
 import { ServiceAttachments } from '../service-detail/ServiceAttachments'
 import { ImageCarousel } from '../service-detail/ImageCarousel'
 import { ShareDialog } from '../service-detail/ShareDialog'
+import { NotifyCustomerDialog } from '@/components/notify-customer-dialog'
+import { formatCurrency } from '@/lib/format'
 
 import { BasicInfoSection } from '../service-edit/BasicInfoSection'
 import { PartsEditor } from '../service-edit/PartsEditor'
@@ -149,6 +151,8 @@ export function ServicePageClient({
   const [deletingPayment, setDeletingPayment] = useState<string | null>(null)
   const [showShareDialog, setShowShareDialog] = useState(false)
   const [showEmailDialog, setShowEmailDialog] = useState(false)
+  const [showPaymentNotifyDialog, setShowPaymentNotifyDialog] = useState(false)
+  const [paymentNotifyMessage, setPaymentNotifyMessage] = useState('')
 
   const displayTotal = totalAmount > 0 ? totalAmount : record.cost
   const paidFromPayments = record.payments?.reduce((sum, p) => sum + p.amount, 0) || 0
@@ -312,6 +316,13 @@ export function ServicePageClient({
     if (result.success) {
       toast.success('Payment recorded')
       router.refresh()
+      if (record.vehicle.customer) {
+        const invoiceNum = record.invoiceNumber || `#${record.id.slice(-8).toUpperCase()}`
+        setPaymentNotifyMessage(
+          `Payment of ${formatCurrency(data.amount, currencyCode)} received for invoice ${invoiceNum}. Thank you!`
+        )
+        setShowPaymentNotifyDialog(true)
+      }
       return true
     }
     modal.open('error', 'Error', result.error || 'Failed to record payment')
@@ -325,6 +336,13 @@ export function ServicePageClient({
     if (result.success) {
       toast.success(result.data?.manuallyPaid ? 'Marked as paid' : 'Marked as unpaid')
       router.refresh()
+      if (result.data?.manuallyPaid && record.vehicle.customer) {
+        const invoiceNum = record.invoiceNumber || `#${record.id.slice(-8).toUpperCase()}`
+        setPaymentNotifyMessage(
+          `Payment received for invoice ${invoiceNum}. Thank you!`
+        )
+        setShowPaymentNotifyDialog(true)
+      }
     } else {
       modal.open('error', 'Error', result.error || 'Failed to update payment status')
     }
@@ -548,6 +566,20 @@ export function ServicePageClient({
         smsEnabled={smsEnabled}
         emailEnabled={emailEnabled}
       />
+
+      {record.vehicle.customer && (
+        <NotifyCustomerDialog
+          open={showPaymentNotifyDialog}
+          onOpenChange={setShowPaymentNotifyDialog}
+          customer={record.vehicle.customer}
+          defaultMessage={paymentNotifyMessage}
+          emailSubject="Payment Confirmation"
+          smsEnabled={smsEnabled}
+          emailEnabled={emailEnabled}
+          relatedEntityType="service-record"
+          relatedEntityId={record.id}
+        />
+      )}
     </div>
   )
 }

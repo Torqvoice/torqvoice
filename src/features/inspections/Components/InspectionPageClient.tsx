@@ -453,6 +453,7 @@ export function InspectionPageClient({
       if (result.success) {
         toast.success("Inspection completed");
         setShowCompleteDialog(false);
+        setShowShareDialog(true);
         router.refresh();
       } else {
         toast.error(result.error || "Failed to complete inspection");

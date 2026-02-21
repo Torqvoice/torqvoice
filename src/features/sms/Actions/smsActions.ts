@@ -119,6 +119,48 @@ export async function getConversation(
   );
 }
 
+export async function deleteSmsMessage(messageId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const message = await db.smsMessage.findFirst({
+        where: { id: messageId, organizationId },
+      });
+      if (!message) throw new Error("Message not found");
+
+      await db.smsMessage.delete({ where: { id: messageId } });
+      return { deleted: true };
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS },
+      ],
+    },
+  );
+}
+
+export async function deleteConversation(customerId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const customer = await db.customer.findFirst({
+        where: { id: customerId, organizationId },
+        select: { id: true },
+      });
+      if (!customer) throw new Error("Customer not found");
+
+      const { count } = await db.smsMessage.deleteMany({
+        where: { organizationId, customerId },
+      });
+
+      return { deleted: count };
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS },
+      ],
+    },
+  );
+}
+
 export async function getRecentSmsThreads() {
   return withAuth(
     async ({ organizationId }) => {

@@ -16,6 +16,7 @@ import {
   revokeInspectionPublicLink,
 } from "../Actions/inspectionShareActions";
 import { sendSmsToCustomer } from "@/features/sms/Actions/smsActions";
+import { sendInspectionEmail } from "@/features/email/Actions/emailActions";
 
 interface InspectionShareDialogProps {
   open: boolean;
@@ -48,6 +49,7 @@ export function InspectionShareDialog({
   const [copied, setCopied] = useState(false);
   const [token, setToken] = useState(publicToken);
   const [notifySms, setNotifySms] = useState(false);
+  const [notifyEmail, setNotifyEmail] = useState(false);
   const [sending, setSending] = useState(false);
 
   const hasPhone = !!customer?.phone;
@@ -108,14 +110,25 @@ export function InspectionShareDialog({
       else toast.error(res.error || "Failed to send SMS");
     }
 
+    if (notifyEmail && hasEmail) {
+      const res = await sendInspectionEmail({
+        inspectionId,
+        recipientEmail: customer.email!,
+        message: `Your vehicle inspection report is ready. View it here: ${shareUrl}`,
+      });
+      if (res.success) results.push("Email sent");
+      else toast.error(res.error || "Failed to send email");
+    }
+
     if (results.length > 0) {
       toast.success(results.join(" & "));
       setNotifySms(false);
+      setNotifyEmail(false);
     }
     setSending(false);
   };
 
-  const canNotify = shareUrl && customer && notifySms;
+  const canNotify = shareUrl && customer && (notifySms || notifyEmail);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -142,7 +155,7 @@ export function InspectionShareDialog({
               </div>
 
               {/* Notify customer */}
-              {customer && smsEnabled && (
+              {customer && (smsEnabled || emailEnabled) && (
                 <div className="space-y-3 rounded-lg border p-3">
                   <p className="text-sm font-medium">Notify {customer.name}</p>
                   <div className="space-y-2">
@@ -161,6 +174,24 @@ export function InspectionShareDialog({
                           <MessageSquare className="h-3.5 w-3.5" />
                           SMS
                           {!hasPhone && <span className="text-xs">(no phone on file)</span>}
+                        </Label>
+                      </div>
+                    )}
+                    {emailEnabled && (
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="notify-email-inspection"
+                          checked={notifyEmail}
+                          onCheckedChange={(v) => setNotifyEmail(v === true)}
+                          disabled={!hasEmail}
+                        />
+                        <Label
+                          htmlFor="notify-email-inspection"
+                          className={`flex items-center gap-1.5 text-sm ${!hasEmail ? "text-muted-foreground/50" : ""}`}
+                        >
+                          <Mail className="h-3.5 w-3.5" />
+                          Email
+                          {!hasEmail && <span className="text-xs">(no email on file)</span>}
                         </Label>
                       </div>
                     )}
