@@ -115,14 +115,18 @@ async function sendViaVonage(
     throw new Error("Vonage is not configured. Add your API Key and Secret.");
   }
 
+  // Vonage REST API expects digits only (no '+' prefix)
+  const vonageTo = to.replace(/^\+/, "");
+  const vonageFrom = from.replace(/^\+/, "");
+
   const res = await fetch("https://rest.nexmo.com/sms/json", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       api_key: apiKey,
       api_secret: apiSecret,
-      from,
-      to,
+      from: vonageFrom,
+      to: vonageTo,
       text: body,
     }),
   });
@@ -180,6 +184,14 @@ async function sendViaTelnyx(
   return { id: data.data.id };
 }
 
+// ─── Validation ─────────────────────────────────────────────────────────────
+
+const E164_REGEX = /^\+[1-9]\d{6,14}$/;
+
+export function isValidE164(phone: string): boolean {
+  return E164_REGEX.test(phone);
+}
+
 // ─── Main dispatch ───────────────────────────────────────────────────────────
 
 export interface SendSmsResult {
@@ -190,6 +202,12 @@ export async function sendOrgSms(
   organizationId: string,
   options: SendSmsOptions,
 ): Promise<SendSmsResult> {
+  if (!isValidE164(options.to)) {
+    throw new Error(
+      "Invalid phone number format. Must be E.164 format (e.g. +15551234567).",
+    );
+  }
+
   const provider = await getOrgSmsProvider(organizationId);
   if (!provider) {
     throw new Error("SMS is not configured. Set up an SMS provider in Settings.");
