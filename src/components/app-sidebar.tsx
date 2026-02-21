@@ -58,20 +58,6 @@ import type { PlanFeatures } from '@/lib/features'
 import { useTheme } from '@/components/theme-provider'
 import { NotificationBell, NotificationPanel } from '@/features/notifications/Components/NotificationPanel'
 
-const baseNavItems = [
-  { title: 'Dashboard', url: '/', icon: LayoutDashboard },
-  { title: 'Vehicles', url: '/vehicles', icon: Car },
-  { title: 'Customers', url: '/customers', icon: Users },
-  { title: 'Work Orders', url: '/work-orders', icon: ClipboardList },
-  { title: 'Messages', url: '/messages', icon: MessageSquare },
-  { title: 'Inspections', url: '/inspections', icon: ClipboardCheck },
-  { title: 'Calendar', url: '/calendar', icon: CalendarDays },
-  { title: 'Quotes', url: '/quotes', icon: FileText },
-  { title: 'Billing', url: '/billing', icon: Receipt },
-  { title: 'Inventory', url: '/inventory', icon: Package },
-  { title: 'Reports', url: '/reports', icon: BarChart3 },
-]
-
 const adminNavItems = [{ title: 'Admin Panel', url: '/admin', icon: ShieldCheck }]
 
 type OrgInfo = { id: string; name: string; role: string }
@@ -104,14 +90,41 @@ export function AppSidebar({
   const [newOrgName, setNewOrgName] = React.useState('')
   const [creatingOrg, setCreatingOrg] = React.useState(false)
 
-  const navItems = [
-    ...baseNavItems.filter((item) => {
-      if (item.title === 'Reports' && (features?.reports === false || !canAccessReports)) return false
-      if (item.title === 'Messages' && features?.sms === false) return false
-      return true
-    }),
-    ...(canAccessSettings ? [{ title: 'Settings', url: '/settings', icon: Settings }] : []),
+  const showReports = features?.reports !== false && canAccessReports
+
+  const clientItems = [
+    { title: 'Customers', url: '/customers', icon: Users },
+    { title: 'Messages', url: '/messages', icon: MessageSquare },
   ]
+
+  const workshopItems = [
+    { title: 'Vehicles', url: '/vehicles', icon: Car },
+    { title: 'Work Orders', url: '/work-orders', icon: ClipboardList },
+    { title: 'Inspections', url: '/inspections', icon: ClipboardCheck },
+    { title: 'Calendar', url: '/calendar', icon: CalendarDays },
+  ]
+
+  const businessItems = [
+    { title: 'Quotes', url: '/quotes', icon: FileText },
+    { title: 'Billing', url: '/billing', icon: Receipt },
+    { title: 'Inventory', url: '/inventory', icon: Package },
+    ...(showReports ? [{ title: 'Reports', url: '/reports', icon: BarChart3 }] : []),
+  ]
+
+  const renderNavGroup = (items: { title: string; url: string; icon: React.ComponentType<{ className?: string }> }[]) =>
+    items.map((item) => {
+      const isActive = pathname === item.url || (item.url !== '/' && pathname.startsWith(item.url))
+      return (
+        <SidebarMenuItem key={item.title}>
+          <SidebarMenuButton asChild isActive={isActive}>
+            <Link href={item.url} className="font-medium">
+              <item.icon className="size-4" />
+              {item.title}
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      )
+    })
 
   const activeOrg = organizations.find((o) => o.id === activeOrgId) || organizations[0]
 
@@ -145,6 +158,8 @@ export function AppSidebar({
     await signOut()
     router.push('/auth/sign-in')
   }
+
+  const dashboardActive = pathname === '/'
 
   return (
     <Sidebar variant="floating" {...props}>
@@ -207,25 +222,60 @@ export function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        {/* Dashboard */}
         <SidebarGroup>
           <SidebarMenu className="gap-2">
-            {navItems.map((item) => {
-              const isActive =
-                pathname === item.url || (item.url !== '/' && pathname.startsWith(item.url))
-
-              return (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive}>
-                    <Link href={item.url} className="font-medium">
-                      <item.icon className="size-4" />
-                      {item.title}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )
-            })}
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={dashboardActive}>
+                <Link href="/" className="font-medium">
+                  <LayoutDashboard className="size-4" />
+                  Dashboard
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
+
+        {/* Clients */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Clients</SidebarGroupLabel>
+          <SidebarMenu className="gap-2">
+            {renderNavGroup(clientItems)}
+          </SidebarMenu>
+        </SidebarGroup>
+
+        {/* Workshop */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Workshop</SidebarGroupLabel>
+          <SidebarMenu className="gap-2">
+            {renderNavGroup(workshopItems)}
+          </SidebarMenu>
+        </SidebarGroup>
+
+        {/* Business */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Business</SidebarGroupLabel>
+          <SidebarMenu className="gap-2">
+            {renderNavGroup(businessItems)}
+          </SidebarMenu>
+        </SidebarGroup>
+
+        {/* Settings */}
+        {canAccessSettings && (
+          <SidebarGroup>
+            <SidebarMenu className="gap-2">
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/settings')}>
+                  <Link href="/settings" className="font-medium">
+                    <Settings className="size-4" />
+                    Settings
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
+
         {isSuperAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>Super Admin</SidebarGroupLabel>
