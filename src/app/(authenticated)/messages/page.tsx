@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { redirect } from "next/navigation";
@@ -54,7 +55,9 @@ export default async function MessagesPage() {
     <>
       <PageHeader />
       <div className="flex flex-1 flex-col p-4 pt-0">
-        <MessagesPageClient initialThreads={threads} initialHasMore={hasMore} />
+        <Suspense>
+          <MessagesPageClient initialThreads={threads} initialHasMore={hasMore} />
+        </Suspense>
       </div>
     </>
   );

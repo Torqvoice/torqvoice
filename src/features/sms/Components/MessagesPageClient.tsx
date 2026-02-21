@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useTransition } from "react";
+import { useState, useEffect, useCallback, useTransition, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,9 +58,13 @@ export function MessagesPageClient({
   initialThreads: SmsThread[];
   initialHasMore?: boolean;
 }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [threads, setThreads] = useState<SmsThread[]>(initialThreads);
   const [hasMore, setHasMore] = useState(initialHasMore);
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(
+    searchParams.get("customerId"),
+  );
   const [conversation, setConversation] = useState<{
     messages: Message[];
     nextCursor: string | null;
@@ -89,9 +94,23 @@ export function MessagesPageClient({
     setLoadingConversation(false);
   }, [threads]);
 
+  // Load conversation from URL param on mount
+  const initialLoadDone = useRef(false);
+  useEffect(() => {
+    if (initialLoadDone.current) return;
+    initialLoadDone.current = true;
+    const convId = searchParams.get("customerId");
+    if (convId) {
+      loadConversation(convId);
+    }
+  }, [searchParams, loadConversation]);
+
   const handleSelectThread = (customerId: string) => {
     setSelectedCustomerId(customerId);
     loadConversation(customerId);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("customerId", customerId);
+    router.replace(`?${params.toString()}`, { scroll: false });
   };
 
   const handleLoadMore = () => {
@@ -123,6 +142,9 @@ export function MessagesPageClient({
       if (selectedCustomerId === deleteThreadTarget.customerId) {
         setSelectedCustomerId(null);
         setConversation(null);
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete("customerId");
+        router.replace(`?${params.toString()}`, { scroll: false });
       }
     } else {
       toast.error(result.error || "Failed to delete conversation");

@@ -59,6 +59,7 @@ export function SmsConversation({
   }, []);
   const [isSending, startSend] = useTransition();
   const [isLoadingMore, startLoadMore] = useTransition();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,8 +67,22 @@ export function SmsConversation({
     return () => setActiveSmsCustomerId(null);
   }, [customerId]);
 
+  const initialScrollDone = useRef(false);
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = scrollAreaRef.current;
+    if (!el) return;
+
+    if (!initialScrollDone.current) {
+      initialScrollDone.current = true;
+      // Wait for layout to settle before scrolling to bottom
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.scrollTop = el.scrollHeight;
+        });
+      });
+    } else {
+      el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    }
   }, [messages.length]);
 
   // Refetch conversation when a matching inbound SMS notification arrives via WS
@@ -98,7 +113,7 @@ export function SmsConversation({
       const latest = notifications[0];
       if (
         latest?.type === "sms_inbound" &&
-        latest.entityUrl === `/customers/${customerId}?tab=messages`
+        latest.entityUrl === `/messages?customerId=${customerId}`
       ) {
         refreshConversation();
       }
@@ -181,7 +196,7 @@ export function SmsConversation({
   return (
     <div className={cn("flex flex-col h-[500px]", className)}>
       {/* Messages area — scrollable, fills available space */}
-      <div className="min-h-0 flex-1 overflow-y-auto p-4 space-y-3">
+      <div ref={scrollAreaRef} className="min-h-0 flex-1 overflow-y-auto p-4 space-y-3">
         {nextCursor && (
           <div className="flex justify-center">
             <Button
