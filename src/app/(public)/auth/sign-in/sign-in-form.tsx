@@ -25,7 +25,11 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
     try {
       const result = await signIn.email({ email, password })
       if (result.error) {
-        setError(result.error.message || 'Invalid email or password')
+        if (result.error.status === 429) {
+          setError('Too many attempts, try again later.')
+        } else {
+          setError(result.error.message || 'Invalid email or password')
+        }
       } else {
         const redirect = searchParams.get('redirect') || '/'
         router.push(redirect)
