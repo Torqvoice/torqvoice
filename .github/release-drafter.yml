@@ -1,11 +1,9 @@
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 categories:
-  - title: '🚀 Changes'
+  - title: ''
     labels:
       - 'torqvoice'
-  - title: '📝 Documentation'
-    labels:
       - 'documentation'
 change-template: '- $TITLE (#$NUMBER)'
 change-title-escapes: '\<*_&'
