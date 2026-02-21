@@ -17,9 +17,10 @@ version-resolver:
       - 'major'
   minor:
     labels:
-      - 'torqvoice'
+      - 'minor'
   patch:
     labels:
+      - 'torqvoice'
       - 'documentation'
   default: patch
 template: |
