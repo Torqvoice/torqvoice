@@ -10,6 +10,7 @@ import { WhiteLabelCtaProvider } from "@/components/white-label-cta-context";
 import { DateSettingsProvider } from "@/components/date-settings-context";
 import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { OnlineTracker } from "@/components/online-tracker";
 
 export default async function DashboardLayout({
   children,
@@ -75,6 +76,7 @@ export default async function DashboardLayout({
         <SidebarInset>{children}</SidebarInset>
         <SearchCommand />
         {isOwnerOrAdmin && <NotificationInitializer />}
+        <OnlineTracker />
       </ConfirmProvider>
       </DateSettingsProvider>
     </SidebarProvider>

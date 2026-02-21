@@ -32,8 +32,21 @@ type UserRow = {
   email: string;
   isSuperAdmin: boolean;
   createdAt: string;
+  lastSeen: string | null;
   organizationCount: number;
 };
+
+function OnlineDot({ lastSeen }: { lastSeen: string | null }) {
+  if (!lastSeen) return null;
+  const isOnline = Date.now() - new Date(lastSeen).getTime() < 5 * 60 * 1000;
+  if (!isOnline) return null;
+  return (
+    <span className="relative flex h-2 w-2" title="Online">
+      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+      <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+    </span>
+  );
+}
 
 type PaginatedData = {
   users: UserRow[];
@@ -156,13 +169,14 @@ export function AdminUsers({
               <TableHead>Role</TableHead>
               <TableHead className="text-center">Orgs</TableHead>
               <TableHead>Created</TableHead>
+              <TableHead>Last Seen</TableHead>
               <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.users.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
                   {search ? "No users match your search." : "No users found."}
                 </TableCell>
               </TableRow>
@@ -184,6 +198,18 @@ export function AdminUsers({
                   <TableCell className="text-center">{user.organizationCount}</TableCell>
                   <TableCell>
                     {new Date(user.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    {user.lastSeen && Date.now() - new Date(user.lastSeen).getTime() < 5 * 60 * 1000 ? (
+                      <span className="flex items-center gap-1.5">
+                        <OnlineDot lastSeen={user.lastSeen} />
+                        <span className="text-sm text-green-600 dark:text-green-400">Online</span>
+                      </span>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">
+                        {user.lastSeen ? new Date(user.lastSeen).toLocaleString() : "—"}
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>

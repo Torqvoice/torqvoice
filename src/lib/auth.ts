@@ -56,6 +56,16 @@ export const auth = betterAuth({
     useSecureCookies: isProduction,
   },
   databaseHooks: {
+    session: {
+      create: {
+        after: async (session) => {
+          await db.user.update({
+            where: { id: session.userId },
+            data: { lastLogin: new Date() },
+          });
+        },
+      },
+    },
     user: {
       create: {
         before: async (user) => {

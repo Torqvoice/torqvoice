@@ -19,6 +19,8 @@ model User {
 
   twoFactorEnabled Boolean   @default(false)
   termsAcceptedAt  DateTime?
+  lastLogin        DateTime?
+  lastSeen         DateTime?
 
   sessions               Session[]
   accounts               Account[]
