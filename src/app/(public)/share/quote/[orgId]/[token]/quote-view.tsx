@@ -101,7 +101,7 @@ export function QuoteView({
   const handleDownloadPDF = async () => {
     setDownloading(true);
     try {
-      const res = await fetch(`/api/share/quote/${orgId}/${token}/pdf`);
+      const res = await fetch(`/api/public/share/quote/${orgId}/${token}/pdf`);
       if (!res.ok) throw new Error("Failed");
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -119,7 +119,7 @@ export function QuoteView({
   const handleQuoteResponse = async (action: "accepted" | "changes_requested", message?: string) => {
     setSubmitting(true);
     try {
-      const res = await fetch("/api/public/quote-response", {
+      const res = await fetch("/api/public/forms/quote-response", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quoteId: quote.id, publicToken: token, action, message }),

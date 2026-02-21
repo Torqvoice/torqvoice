@@ -30,7 +30,7 @@ export function SubscriptionSettings({
   const handleCheckout = async (selectedPlan: "pro" | "enterprise") => {
     setCheckoutLoading(selectedPlan);
     try {
-      const res = await fetch("/api/subscription/checkout", {
+      const res = await fetch("/api/protected/subscription/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan: selectedPlan }),

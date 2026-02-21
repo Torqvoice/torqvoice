@@ -230,7 +230,7 @@ function InspectionItemRow({
         const formData = new FormData();
         formData.append("file", file);
 
-        const res = await fetch("/api/upload/service-files", {
+        const res = await fetch("/api/protected/upload/service-files", {
           method: "POST",
           body: formData,
         });
@@ -523,7 +523,7 @@ export function InspectionPageClient({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  onClick={() => window.open(`/api/inspections/${inspection.id}/pdf`, "_blank")}
+                  onClick={() => window.open(`/api/protected/inspections/${inspection.id}/pdf`, "_blank")}
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Download PDF

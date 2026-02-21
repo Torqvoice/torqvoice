@@ -12,7 +12,7 @@ import { resolveUploadPath } from "@/lib/resolve-upload-path";
 export async function deleteUploadedFile(fileUrl: string) {
   return withAuth(async ({ organizationId }) => {
     // Only allow deleting files that belong to this org
-    if (!fileUrl.startsWith(`/api/files/${organizationId}/`)) {
+    if (!fileUrl.startsWith(`/api/protected/files/${organizationId}/`)) {
       throw new Error("Forbidden");
     }
 

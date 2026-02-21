@@ -68,7 +68,7 @@ export function QuoteRequestDialog({
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/public/inspection-quote-request", {
+      const res = await fetch("/api/public/forms/inspection-quote-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

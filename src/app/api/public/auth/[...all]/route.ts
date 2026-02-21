@@ -8,11 +8,11 @@ const { POST: authPOST, GET } = toNextJsHandler(auth);
 // Better-auth registers sub-paths like /sign-in/email, /sign-up/email,
 // /two-factor/verify-totp, etc., so we match by prefix.
 const strictPrefixes: { prefix: string; limit: number; windowMs: number }[] = [
-  { prefix: "/api/auth/sign-in", limit: 10, windowMs: 60_000 },
-  { prefix: "/api/auth/two-factor/verify", limit: 10, windowMs: 60_000 },
-  { prefix: "/api/auth/sign-up", limit: 5, windowMs: 60_000 },
-  { prefix: "/api/auth/request-password-reset", limit: 5, windowMs: 60_000 },
-  { prefix: "/api/auth/reset-password", limit: 5, windowMs: 60_000 },
+  { prefix: "/api/public/auth/sign-in", limit: 10, windowMs: 60_000 },
+  { prefix: "/api/public/auth/two-factor/verify", limit: 10, windowMs: 60_000 },
+  { prefix: "/api/public/auth/sign-up", limit: 5, windowMs: 60_000 },
+  { prefix: "/api/public/auth/request-password-reset", limit: 5, windowMs: 60_000 },
+  { prefix: "/api/public/auth/reset-password", limit: 5, windowMs: 60_000 },
 ];
 
 const defaultConfig = { limit: 30, windowMs: 60_000 };

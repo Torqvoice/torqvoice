@@ -67,7 +67,7 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await fetch("/api/upload/logo", { method: "POST", body: formData });
+      const res = await fetch("/api/protected/upload/logo", { method: "POST", body: formData });
       if (!res.ok) {
         const err = await res.json();
         toast.error(err.error || "Failed to upload logo", { id: toastId });

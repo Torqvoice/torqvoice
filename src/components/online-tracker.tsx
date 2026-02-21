@@ -5,7 +5,7 @@ export function OnlineTracker() {
   useEffect(() => {
     const ping = () => {
       if (document.visibilityState === "visible") {
-        fetch("/api/ping", { method: "POST" });
+        fetch("/api/protected/ping", { method: "POST" });
       }
     };
 

@@ -116,7 +116,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
     const formData = new FormData();
     formData.append("file", compressed);
 
-    const res = await fetch("/api/upload", { method: "POST", body: formData });
+    const res = await fetch("/api/protected/upload", { method: "POST", body: formData });
     if (!res.ok) {
       const err = await res.json();
       toast.error(err.error || "Upload failed", { id: toastId });
