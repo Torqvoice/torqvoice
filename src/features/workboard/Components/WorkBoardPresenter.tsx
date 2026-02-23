@@ -8,6 +8,9 @@ import { useWorkBoardWebSocket } from '../hooks/useWorkBoardWebSocket'
 import type { BoardAssignmentWithJob } from '../Actions/boardActions'
 import { getBoardAssignments } from '../Actions/boardActions'
 import { getTechnicians } from '../Actions/technicianActions'
+import { PresenterDayView } from './PresenterDayView'
+
+type ViewMode = 'week' | 'day'
 
 function toLocalDateString(d: Date): string {
   const y = d.getFullYear()
@@ -47,6 +50,15 @@ function formatWeekRange(weekStart: string): string {
   end.setDate(end.getDate() + 6)
   const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
   return `${start.toLocaleDateString(undefined, opts)} – ${end.toLocaleDateString(undefined, opts)}`
+}
+
+function formatDayDate(dateStr: string): string {
+  const d = new Date(dateStr + 'T12:00:00')
+  return d.toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  })
 }
 
 function LiveClock() {
@@ -114,6 +126,19 @@ export function WorkBoardPresenter({
   initialWeekStart: string
 }) {
   const store = useWorkBoardStore()
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('presenter-view-mode')
+      if (saved === 'day' || saved === 'week') return saved
+    }
+    return 'week'
+  })
+  const [selectedDate, setSelectedDate] = useState(() => toLocalDateString(new Date()))
+
+  const handleSetViewMode = (mode: ViewMode) => {
+    setViewMode(mode)
+    localStorage.setItem('presenter-view-mode', mode)
+  }
 
   // Initialize store from server data
   useEffect(() => {
@@ -143,23 +168,52 @@ export function WorkBoardPresenter({
     [store]
   )
 
-  const handlePrevWeek = () => {
-    const d = new Date(weekStart + 'T12:00:00')
-    d.setDate(d.getDate() - 7)
-    loadWeekData(toLocalDateString(d))
+  // Ensure the selected day's week data is loaded
+  const ensureWeekLoaded = useCallback(
+    (dateStr: string) => {
+      const monday = getMonday(new Date(dateStr + 'T12:00:00'))
+      if (monday !== weekStart) {
+        loadWeekData(monday)
+      }
+    },
+    [weekStart, loadWeekData]
+  )
+
+  const handlePrev = () => {
+    if (viewMode === 'week') {
+      const d = new Date(weekStart + 'T12:00:00')
+      d.setDate(d.getDate() - 7)
+      loadWeekData(toLocalDateString(d))
+    } else {
+      const d = new Date(selectedDate + 'T12:00:00')
+      d.setDate(d.getDate() - 1)
+      const newDate = toLocalDateString(d)
+      setSelectedDate(newDate)
+      ensureWeekLoaded(newDate)
+    }
   }
 
-  const handleNextWeek = () => {
-    const d = new Date(weekStart + 'T12:00:00')
-    d.setDate(d.getDate() + 7)
-    loadWeekData(toLocalDateString(d))
+  const handleNext = () => {
+    if (viewMode === 'week') {
+      const d = new Date(weekStart + 'T12:00:00')
+      d.setDate(d.getDate() + 7)
+      loadWeekData(toLocalDateString(d))
+    } else {
+      const d = new Date(selectedDate + 'T12:00:00')
+      d.setDate(d.getDate() + 1)
+      const newDate = toLocalDateString(d)
+      setSelectedDate(newDate)
+      ensureWeekLoaded(newDate)
+    }
   }
 
   const handleToday = () => {
+    const todayStr = toLocalDateString(new Date())
+    setSelectedDate(todayStr)
     loadWeekData(getMonday(new Date()))
   }
 
-  // Auto-advance to current week at midnight
+  // Auto-advance at midnight
   useEffect(() => {
     function msUntilMidnight() {
       const now = new Date()
@@ -172,45 +226,78 @@ export function WorkBoardPresenter({
 
     function scheduleAdvance() {
       timeout = setTimeout(() => {
-        const newMonday = getMonday(new Date())
+        const now = new Date()
+        const newMonday = getMonday(now)
+        setSelectedDate(toLocalDateString(now))
         loadWeekData(newMonday)
-        // Schedule the next midnight advance
         scheduleAdvance()
-      }, msUntilMidnight() + 500) // +500ms buffer past midnight
+      }, msUntilMidnight() + 500)
     }
 
     scheduleAdvance()
     return () => clearTimeout(timeout)
   }, [loadWeekData])
 
+  const dateLabel =
+    viewMode === 'week' ? formatWeekRange(weekStart) : formatDayDate(selectedDate)
+
   return (
     <div className="flex h-screen flex-col bg-background">
       {/* Header bar */}
       <header className="flex shrink-0 items-center justify-between border-b px-4 py-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <h1 className="text-lg font-bold">Work Board</h1>
-          <span className="text-sm text-muted-foreground">{formatWeekRange(weekStart)}</span>
+          <span className="text-sm text-muted-foreground">{dateLabel}</span>
         </div>
         <div className="flex items-center gap-3">
+          {/* View mode toggle */}
+          <div className="flex rounded-md border">
+            <Button
+              variant={viewMode === 'day' ? 'default' : 'ghost'}
+              size="sm"
+              className="rounded-r-none"
+              onClick={() => handleSetViewMode('day')}
+            >
+              Day
+            </Button>
+            <Button
+              variant={viewMode === 'week' ? 'default' : 'ghost'}
+              size="sm"
+              className="rounded-l-none"
+              onClick={() => handleSetViewMode('week')}
+            >
+              Week
+            </Button>
+          </div>
+
+          {/* Navigation */}
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={handlePrevWeek}>
+            <Button variant="ghost" size="icon" onClick={handlePrev}>
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <Button variant="outline" size="sm" onClick={handleToday}>
               Today
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleNextWeek}>
+            <Button variant="ghost" size="icon" onClick={handleNext}>
               <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
+
+          {/* Status */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             {store.isConnected ? (
-              <span className="flex items-center gap-1.5 text-green-600" title="Board is receiving live updates">
+              <span
+                className="flex items-center gap-1.5 text-green-600"
+                title="Board is receiving live updates"
+              >
                 <Wifi className="h-4 w-4" />
                 <span className="text-xs">Live</span>
               </span>
             ) : (
-              <span className="flex items-center gap-1.5 text-red-500 animate-pulse" title="Check WebSocket connection — ensure you are logged in as an admin or owner">
+              <span
+                className="flex items-center gap-1.5 animate-pulse text-red-500"
+                title="Check WebSocket connection — ensure you are logged in as an admin or owner"
+              >
                 <WifiOff className="h-4 w-4" />
                 <span className="text-xs">Live updates disconnected</span>
               </span>
@@ -220,77 +307,80 @@ export function WorkBoardPresenter({
         </div>
       </header>
 
-      {/* Grid */}
-      <div className="flex-1 overflow-auto">
-        <div
-          className="grid h-full min-w-225"
-          style={{
-            gridTemplateColumns: '160px repeat(7, 1fr)',
-            gridTemplateRows: `auto ${store.technicians.length > 0 ? `repeat(${store.technicians.length}, 1fr)` : '1fr'}`,
-          }}
-        >
-          {/* Day header row */}
-          <div className="border-b p-2" />
-          {days.map((day, i) => {
-            const isToday = day === today
-            return (
-              <div
-                key={day}
-                className={`border-b border-l p-2 text-center text-sm font-semibold ${
-                  isToday ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
-                }`}
-              >
-                {formatDayHeader(day, i)}
-              </div>
-            )
-          })}
-
-          {/* Technician rows */}
-          {store.technicians.map((tech) => {
-            const techAssignments = store.assignments.filter((a) => a.technicianId === tech.id)
-            return (
-              <div key={tech.id} className="contents">
-                {/* Tech name cell */}
-                <div className="flex items-center gap-2 border-b p-2">
-                  <div
-                    className="h-3 w-3 shrink-0 rounded-full"
-                    style={{ backgroundColor: tech.color }}
-                  />
-                  <span className="truncate text-sm font-semibold">{tech.name}</span>
+      {/* Content */}
+      {viewMode === 'day' ? (
+        <PresenterDayView
+          date={selectedDate}
+          technicians={store.technicians}
+          assignments={store.assignments}
+        />
+      ) : (
+        <div className="flex-1 overflow-auto">
+          <div
+            className="grid h-full min-w-225"
+            style={{
+              gridTemplateColumns: '160px repeat(7, 1fr)',
+              gridTemplateRows: `auto ${store.technicians.length > 0 ? `repeat(${store.technicians.length}, 1fr)` : '1fr'}`,
+            }}
+          >
+            {/* Day header row */}
+            <div className="border-b p-2" />
+            {days.map((day, i) => {
+              const isToday = day === today
+              return (
+                <div
+                  key={day}
+                  className={`border-b border-l p-2 text-center text-sm font-semibold ${
+                    isToday ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
+                  }`}
+                >
+                  {formatDayHeader(day, i)}
                 </div>
-                {/* Day cells */}
-                {days.map((day) => {
-                  const cellAssignments = techAssignments
-                    .filter((a) => a.date === day)
-                    .sort((a, b) => a.sortOrder - b.sortOrder)
-                  const isToday = day === today
-                  return (
-                    <div
-                      key={`${tech.id}-${day}`}
-                      className={`space-y-1 overflow-y-auto border-b border-l p-1.5 ${
-                        isToday ? 'bg-primary/5' : ''
-                      }`}
-                    >
-                      {cellAssignments.map((assignment) => (
-                        <PresenterJobCard key={assignment.id} assignment={assignment} />
-                      ))}
-                    </div>
-                  )
-                })}
-              </div>
-            )
-          })}
+              )
+            })}
 
-          {/* Empty state */}
-          {store.technicians.length === 0 && (
-            <>
+            {/* Technician rows */}
+            {store.technicians.map((tech) => {
+              const techAssignments = store.assignments.filter((a) => a.technicianId === tech.id)
+              return (
+                <div key={tech.id} className="contents">
+                  <div className="flex items-center gap-2 border-b p-2">
+                    <div
+                      className="h-3 w-3 shrink-0 rounded-full"
+                      style={{ backgroundColor: tech.color }}
+                    />
+                    <span className="truncate text-sm font-semibold">{tech.name}</span>
+                  </div>
+                  {days.map((day) => {
+                    const cellAssignments = techAssignments
+                      .filter((a) => a.date === day)
+                      .sort((a, b) => a.sortOrder - b.sortOrder)
+                    const isToday = day === today
+                    return (
+                      <div
+                        key={`${tech.id}-${day}`}
+                        className={`space-y-1 overflow-y-auto border-b border-l p-1.5 ${
+                          isToday ? 'bg-primary/5' : ''
+                        }`}
+                      >
+                        {cellAssignments.map((assignment) => (
+                          <PresenterJobCard key={assignment.id} assignment={assignment} />
+                        ))}
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })}
+
+            {store.technicians.length === 0 && (
               <div className="col-span-8 flex items-center justify-center p-10">
                 <p className="text-lg text-muted-foreground">No technicians configured</p>
               </div>
-            </>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
