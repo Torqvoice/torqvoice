@@ -8,8 +8,7 @@ const STATUS_COLUMNS = [
   { key: 'pending', label: 'Pending', color: 'bg-yellow-500' },
   { key: 'in-progress', label: 'In Progress', color: 'bg-orange-500' },
   { key: 'waiting-parts', label: 'Waiting Parts', color: 'bg-red-500' },
-  { key: 'ready', label: 'Ready', color: 'bg-green-500' },
-  { key: 'completed', label: 'Completed', color: 'bg-blue-500' },
+  { key: 'completed', label: 'Completed', color: 'bg-emerald-500' },
 ] as const
 
 function getAssignmentStatus(a: BoardAssignmentWithJob): string {

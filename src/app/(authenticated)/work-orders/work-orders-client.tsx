@@ -87,14 +87,12 @@ const statusTabs = [
   { key: "pending", label: "Pending" },
   { key: "in-progress", label: "In Progress" },
   { key: "waiting-parts", label: "Waiting Parts" },
-  { key: "ready", label: "Ready" },
   { key: "completed", label: "Completed" },
 ];
 
 const statusTemplateKeys: Record<string, string> = {
   "in-progress": SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
   "waiting-parts": SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
-  "ready": SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
   "completed": SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
 };
 
@@ -104,14 +102,10 @@ const statusTransitions: Record<string, { label: string; target: string }[]> = {
   ],
   "in-progress": [
     { label: "Waiting Parts", target: "waiting-parts" },
-    { label: "Mark Ready", target: "ready" },
     { label: "Complete", target: "completed" },
   ],
   "waiting-parts": [
     { label: "Resume Work", target: "in-progress" },
-    { label: "Mark Ready", target: "ready" },
-  ],
-  ready: [
     { label: "Complete", target: "completed" },
   ],
   completed: [

@@ -223,7 +223,6 @@ export function BasicInfoSection({
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="in-progress">In Progress</SelectItem>
               <SelectItem value="waiting-parts">Waiting Parts</SelectItem>
-              <SelectItem value="ready">Ready</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
             </SelectContent>
           </Select>

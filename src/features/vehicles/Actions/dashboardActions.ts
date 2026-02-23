@@ -38,7 +38,7 @@ export async function getDashboardStats() {
       db.serviceRecord.findMany({
         where: {
           vehicle: { organizationId },
-          status: { in: ["pending", "in-progress", "waiting-parts", "ready"] },
+          status: { in: ["pending", "in-progress", "waiting-parts"] },
         },
         include: {
           vehicle: {
