@@ -1,10 +1,5 @@
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
-categories:
-  - title: 'Changes'
-    labels:
-      - 'torqvoice'
-      - 'documentation'
 change-template: '- $TITLE (#$NUMBER)'
 change-title-escapes: '\<*_&'
 exclude-contributors:
