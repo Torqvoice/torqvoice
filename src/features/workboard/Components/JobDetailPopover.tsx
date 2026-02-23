@@ -36,7 +36,7 @@ export function JobDetailPopover({
 
   const detailUrl = isServiceRecord
     ? `/vehicles/${vehicle?.id}/service/${assignment.serviceRecordId}`
-    : `/inspections`;
+    : `/inspections/${assignment.inspectionId}`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
