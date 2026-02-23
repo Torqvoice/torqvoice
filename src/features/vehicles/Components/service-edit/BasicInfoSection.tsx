@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -23,6 +23,11 @@ import {
 import Link from 'next/link'
 import { Check, ChevronsUpDown, ExternalLink } from 'lucide-react'
 import type { InitialData, VehicleOption, TeamMemberOption } from './form-types'
+
+export interface BoardTechnicianOption {
+  id: string
+  name: string
+}
 
 interface CustomerInfo {
   id: string
@@ -48,6 +53,7 @@ interface BasicInfoSectionProps {
   techOpen: boolean
   setTechOpen: (open: boolean) => void
   teamMembers: TeamMemberOption[]
+  boardTechnicians?: BoardTechnicianOption[]
   customer?: CustomerInfo | null
 }
 
@@ -68,6 +74,7 @@ export function BasicInfoSection({
   techOpen,
   setTechOpen,
   teamMembers,
+  boardTechnicians = [],
   customer,
 }: BasicInfoSectionProps) {
   const selectedVehicleLabel = useMemo(() => {
@@ -223,65 +230,14 @@ export function BasicInfoSection({
         </div>
       </div>
 
-      <div className="space-y-1">
-        <Label className="text-xs">Technician</Label>
-        <Popover open={techOpen} onOpenChange={setTechOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={techOpen}
-              className="w-full justify-between font-normal"
-            >
-              {techName || <span className="text-muted-foreground">Select or type a name...</span>}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-            <Command>
-              <CommandInput
-                placeholder="Search or type name..."
-                value={techName}
-                onValueChange={setTechName}
-              />
-              <CommandList>
-                <CommandEmpty>
-                  {techName ? (
-                    <button
-                      type="button"
-                      className="w-full px-2 py-1.5 text-sm text-left"
-                      onClick={() => setTechOpen(false)}
-                    >
-                      Use &quot;{techName}&quot;
-                    </button>
-                  ) : (
-                    'Type a name...'
-                  )}
-                </CommandEmpty>
-                {teamMembers.length > 0 && (
-                  <CommandGroup heading="Team Members">
-                    {teamMembers.map((member) => (
-                      <CommandItem
-                        key={member.id}
-                        value={member.name}
-                        onSelect={() => {
-                          setTechName(member.name)
-                          setTechOpen(false)
-                        }}
-                      >
-                        <Check
-                          className={`mr-2 h-4 w-4 ${techName === member.name ? 'opacity-100' : 'opacity-0'}`}
-                        />
-                        {member.name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                )}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-      </div>
+      <TechnicianPicker
+        techName={techName}
+        setTechName={setTechName}
+        techOpen={techOpen}
+        setTechOpen={setTechOpen}
+        boardTechnicians={boardTechnicians}
+        teamMembers={teamMembers}
+      />
 
       <div className="space-y-1">
         <Label htmlFor="invoiceNumber" className="text-xs">Invoice Number</Label>
@@ -292,6 +248,114 @@ export function BasicInfoSection({
           defaultValue={initialData.invoiceNumber || ''}
         />
       </div>
+    </div>
+  )
+}
+
+function TechnicianPicker({
+  techName,
+  setTechName,
+  techOpen,
+  setTechOpen,
+  boardTechnicians,
+  teamMembers,
+}: {
+  techName: string
+  setTechName: (name: string) => void
+  techOpen: boolean
+  setTechOpen: (open: boolean) => void
+  boardTechnicians: BoardTechnicianOption[]
+  teamMembers: TeamMemberOption[]
+}) {
+  const [search, setSearch] = useState('')
+
+  return (
+    <div className="space-y-1">
+      <Label className="text-xs">Technician</Label>
+      <Popover
+        open={techOpen}
+        onOpenChange={(open) => {
+          setTechOpen(open)
+          if (open) setSearch('')
+        }}
+      >
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={techOpen}
+            className="w-full justify-between font-normal"
+          >
+            {techName || <span className="text-muted-foreground">Select or type a name...</span>}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+          <Command>
+            <CommandInput
+              placeholder="Search or type name..."
+              value={search}
+              onValueChange={setSearch}
+            />
+            <CommandList>
+              <CommandEmpty>
+                {search ? (
+                  <button
+                    type="button"
+                    className="w-full px-2 py-1.5 text-sm text-left"
+                    onClick={() => {
+                      setTechName(search)
+                      setTechOpen(false)
+                    }}
+                  >
+                    Use &quot;{search}&quot;
+                  </button>
+                ) : (
+                  'Type a name...'
+                )}
+              </CommandEmpty>
+              {boardTechnicians.length > 0 && (
+                <CommandGroup heading="Board Technicians">
+                  {boardTechnicians.map((tech) => (
+                    <CommandItem
+                      key={tech.id}
+                      value={tech.name}
+                      onSelect={() => {
+                        setTechName(tech.name)
+                        setTechOpen(false)
+                      }}
+                    >
+                      <Check
+                        className={`mr-2 h-4 w-4 ${techName === tech.name ? 'opacity-100' : 'opacity-0'}`}
+                      />
+                      {tech.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+              {teamMembers.length > 0 && (
+                <CommandGroup heading="Team Members">
+                  {teamMembers.map((member) => (
+                    <CommandItem
+                      key={member.id}
+                      value={member.name}
+                      onSelect={() => {
+                        setTechName(member.name)
+                        setTechOpen(false)
+                      }}
+                    >
+                      <Check
+                        className={`mr-2 h-4 w-4 ${techName === member.name ? 'opacity-100' : 'opacity-0'}`}
+                      />
+                      {member.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </div>
   )
 }

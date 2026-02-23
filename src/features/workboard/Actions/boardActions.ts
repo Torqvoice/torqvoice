@@ -141,7 +141,7 @@ export async function getUnassignedJobs() {
         db.serviceRecord.findMany({
           where: {
             vehicle: { organizationId },
-            status: { in: ["pending", "in_progress", "waiting_parts", "scheduled"] },
+            status: { in: ["pending", "in-progress", "waiting-parts", "scheduled"] },
             id: { notIn: assignedServiceRecordIds },
           },
           select: {
@@ -246,6 +246,14 @@ export async function createBoardAssignment(input: unknown) {
         },
       });
 
+      // Sync techName on the linked service record
+      if (assignment.serviceRecordId) {
+        await db.serviceRecord.update({
+          where: { id: assignment.serviceRecordId },
+          data: { techName: tech.name },
+        });
+      }
+
       notificationBus.emit("workboard", {
         type: "assignment_created",
         organizationId,
@@ -325,6 +333,14 @@ export async function moveAssignment(input: unknown) {
         },
       });
 
+      // Sync techName on the linked service record
+      if (updated.serviceRecordId) {
+        await db.serviceRecord.update({
+          where: { id: updated.serviceRecordId },
+          data: { techName: updated.technician.name },
+        });
+      }
+
       notificationBus.emit("workboard", {
         type: "assignment_moved",
         organizationId,
@@ -371,6 +387,14 @@ export async function removeAssignment(input: unknown) {
         where: { id: data.id, organizationId },
       });
       if (!assignment) throw new Error("Assignment not found");
+
+      // Clear techName on the linked service record
+      if (assignment.serviceRecordId) {
+        await db.serviceRecord.update({
+          where: { id: assignment.serviceRecordId },
+          data: { techName: null },
+        });
+      }
 
       await db.boardAssignment.delete({ where: { id: data.id } });
 

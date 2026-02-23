@@ -72,6 +72,40 @@ export function useWorkBoardWebSocket() {
                 });
               });
               break;
+
+            case "job_status_changed": {
+              const { serviceRecordId, inspectionId, status, serviceRecord } = data;
+              const activeStatuses = ["pending", "in-progress", "waiting-parts", "scheduled"];
+
+              // Update the status on matching assignments in-place
+              const updated = store.assignments.map((a) => {
+                if (serviceRecordId && a.serviceRecordId === serviceRecordId && a.serviceRecord) {
+                  return { ...a, serviceRecord: { ...a.serviceRecord, status } };
+                }
+                if (inspectionId && a.inspectionId === inspectionId && a.inspection) {
+                  return { ...a, inspection: { ...a.inspection, status } };
+                }
+                return a;
+              });
+              store.setAssignments(updated);
+
+              // Add/remove from unassigned pool for service records
+              if (serviceRecordId && serviceRecord) {
+                const isAssigned = store.assignments.some(
+                  (a) => a.serviceRecordId === serviceRecordId,
+                );
+                const isAlreadyUnassigned = store.unassignedServiceRecords.some(
+                  (sr) => sr.id === serviceRecordId,
+                );
+
+                if (activeStatuses.includes(status) && !isAssigned && !isAlreadyUnassigned) {
+                  store.addToUnassigned(serviceRecord, "serviceRecord");
+                } else if (!activeStatuses.includes(status)) {
+                  store.removeFromUnassigned(serviceRecordId, "serviceRecord");
+                }
+              }
+              break;
+            }
           }
         } catch {
           // ignore malformed messages

@@ -9,8 +9,9 @@ import type { BoardAssignmentWithJob } from '../Actions/boardActions'
 import { getBoardAssignments } from '../Actions/boardActions'
 import { getTechnicians } from '../Actions/technicianActions'
 import { PresenterDayView } from './PresenterDayView'
+import { PresenterKanbanView } from './PresenterKanbanView'
 
-type ViewMode = 'week' | 'day'
+type ViewMode = 'week' | 'day' | 'status'
 
 function toLocalDateString(d: Date): string {
   const y = d.getFullYear()
@@ -129,7 +130,7 @@ export function WorkBoardPresenter({
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('presenter-view-mode')
-      if (saved === 'day' || saved === 'week') return saved
+      if (saved === 'day' || saved === 'week' || saved === 'status') return saved
     }
     return 'week'
   })
@@ -255,15 +256,23 @@ export function WorkBoardPresenter({
             <Button
               variant={viewMode === 'day' ? 'default' : 'ghost'}
               size="sm"
-              className="rounded-r-none"
+              className="rounded-none rounded-l-md"
               onClick={() => handleSetViewMode('day')}
             >
               Day
             </Button>
             <Button
+              variant={viewMode === 'status' ? 'default' : 'ghost'}
+              size="sm"
+              className="rounded-none border-x"
+              onClick={() => handleSetViewMode('status')}
+            >
+              Status
+            </Button>
+            <Button
               variant={viewMode === 'week' ? 'default' : 'ghost'}
               size="sm"
-              className="rounded-l-none"
+              className="rounded-none rounded-r-md"
               onClick={() => handleSetViewMode('week')}
             >
               Week
@@ -310,6 +319,12 @@ export function WorkBoardPresenter({
       {/* Content */}
       {viewMode === 'day' ? (
         <PresenterDayView
+          date={selectedDate}
+          technicians={store.technicians}
+          assignments={store.assignments}
+        />
+      ) : viewMode === 'status' ? (
+        <PresenterKanbanView
           date={selectedDate}
           technicians={store.technicians}
           assignments={store.assignments}

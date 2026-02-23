@@ -3,6 +3,7 @@ import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getInventoryPartsList } from "@/features/inventory/Actions/inventoryActions";
 import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
+import { getTechnicians } from "@/features/workboard/Actions/technicianActions";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { getFeatures } from "@/lib/features";
 import { db } from "@/lib/db";
@@ -17,7 +18,7 @@ export default async function ServiceDetailPage({
 }) {
   const { id, serviceId } = await params;
 
-  const [result, settingsResult, inventoryResult, vehiclesResult, authContext, session] =
+  const [result, settingsResult, inventoryResult, vehiclesResult, techniciansResult, authContext, session] =
     await Promise.all([
       getServiceRecord(serviceId),
       getSettings([
@@ -29,6 +30,7 @@ export default async function ServiceDetailPage({
       ]),
       getInventoryPartsList(),
       getVehicles(),
+      getTechnicians(),
       getAuthContext(),
       getCachedSession(),
     ]);
@@ -67,6 +69,9 @@ export default async function ServiceDetailPage({
     id: v.id,
     label: `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ""}`,
   }));
+  const boardTechnicians = (
+    techniciansResult.success && techniciansResult.data ? techniciansResult.data : []
+  ).map((t) => ({ id: t.id, name: t.name }));
   const organizationId = authContext?.organizationId || "";
 
   // Fetch team members and features
@@ -160,6 +165,7 @@ export default async function ServiceDetailPage({
         inventoryParts={inventoryParts}
         vehicles={vehicles}
         teamMembers={teamMembers}
+        boardTechnicians={boardTechnicians}
         currentUserName={currentUserName}
         imageAttachmentsForManager={imageAttachmentsForManager}
         videoAttachments={videoAttachments}
