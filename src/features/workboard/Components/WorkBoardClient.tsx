@@ -363,6 +363,10 @@ export function WorkBoardClient({
                   days={days}
                   assignments={store.assignments}
                   onCardClick={handleCardClick}
+                  onTechClick={(t) => {
+                    setEditingTech(t);
+                    setTechDialogOpen(true);
+                  }}
                 />
               ))}
             </div>

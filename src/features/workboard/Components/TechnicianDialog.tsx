@@ -18,8 +18,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { createTechnician, updateTechnician, getOrgMembers } from "../Actions/technicianActions";
+import { createTechnician, updateTechnician, deleteTechnician, getOrgMembers } from "../Actions/technicianActions";
 import { useWorkBoardStore, type Technician } from "../store/workboardStore";
+import { useConfirm } from "@/components/confirm-dialog";
 
 const PRESET_COLORS = [
   "#3b82f6",
@@ -50,7 +51,9 @@ export function TechnicianDialog({
   const [memberId, setMemberId] = useState<string>("");
   const [members, setMembers] = useState<OrgMember[]>([]);
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const addTechnician = useWorkBoardStore((s) => s.addTechnician);
+  const confirm = useConfirm();
 
   useEffect(() => {
     if (open) {
@@ -164,18 +167,48 @@ export function TechnicianDialog({
             </Select>
           </div>
 
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading || !name.trim()}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {technician ? "Save" : "Add Technician"}
-            </Button>
+          <div className="flex justify-between gap-2">
+            {technician ? (
+              <Button
+                type="button"
+                variant="destructive"
+                disabled={deleting || loading}
+                onClick={async () => {
+                  const ok = await confirm({
+                    title: "Delete Technician",
+                    description: `Remove "${technician.name}" from the work board? Their existing assignments will also be removed.`,
+                    confirmLabel: "Delete",
+                    destructive: true,
+                  });
+                  if (!ok) return;
+                  setDeleting(true);
+                  const res = await deleteTechnician(technician.id);
+                  if (res.success) {
+                    useWorkBoardStore.getState().removeTechnician(technician.id);
+                    onOpenChange(false);
+                  }
+                  setDeleting(false);
+                }}
+              >
+                {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Delete
+              </Button>
+            ) : (
+              <div />
+            )}
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={loading || !name.trim()}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {technician ? "Save" : "Add Technician"}
+              </Button>
+            </div>
           </div>
         </form>
       </DialogContent>

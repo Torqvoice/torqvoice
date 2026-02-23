@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Calendar, Monitor } from "lucide-react";
 
 function formatWeekRange(weekStart: string) {
   const start = new Date(weekStart + "T12:00:00");
@@ -49,10 +50,18 @@ export function WorkBoardToolbar({
           </Button>
         </div>
       </div>
-      <Button size="sm" onClick={onAddTech}>
-        <Plus className="mr-1.5 h-3.5 w-3.5" />
-        Add Technician
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/work-board/presenter" target="_blank">
+            <Monitor className="mr-1.5 h-3.5 w-3.5" />
+            Presenter
+          </Link>
+        </Button>
+        <Button size="sm" onClick={onAddTech}>
+          <Plus className="mr-1.5 h-3.5 w-3.5" />
+          Add Technician
+        </Button>
+      </div>
     </div>
   );
 }

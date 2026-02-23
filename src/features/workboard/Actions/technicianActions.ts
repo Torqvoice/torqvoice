@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
+import { notificationBus } from "@/lib/notification-bus";
 import {
   createTechnicianSchema,
   updateTechnicianSchema,
@@ -46,6 +47,12 @@ export async function createTechnician(input: unknown) {
         },
       });
 
+      notificationBus.emit("workboard", {
+        type: "technician_created",
+        organizationId,
+        technician,
+      });
+
       revalidatePath("/work-board");
       return technician;
     },
@@ -68,6 +75,12 @@ export async function updateTechnician(input: unknown) {
         data: updates,
       });
 
+      notificationBus.emit("workboard", {
+        type: "technician_updated",
+        organizationId,
+        technicianId: id,
+      });
+
       revalidatePath("/work-board");
       return technician;
     },
@@ -85,6 +98,12 @@ export async function deleteTechnician(id: string) {
       await db.technician.deleteMany({
         where: { id, organizationId },
       });
+      notificationBus.emit("workboard", {
+        type: "technician_removed",
+        organizationId,
+        technicianId: id,
+      });
+
       revalidatePath("/work-board");
       return { success: true };
     },

@@ -56,6 +56,22 @@ export function useWorkBoardWebSocket() {
             case "assignment_removed":
               store.removeAssignment(data.assignmentId);
               break;
+
+            case "technician_created":
+              store.addTechnician(data.technician);
+              break;
+
+            case "technician_updated":
+            case "technician_removed":
+              // Reload full technician list for updates/removals
+              import("../Actions/technicianActions").then(({ getTechnicians }) => {
+                getTechnicians().then((res) => {
+                  if (res.success && res.data) {
+                    store.setTechnicians(res.data as Parameters<typeof store.setTechnicians>[0]);
+                  }
+                });
+              });
+              break;
           }
         } catch {
           // ignore malformed messages

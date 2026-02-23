@@ -9,16 +9,22 @@ export function TechnicianRow({
   days,
   assignments,
   onCardClick,
+  onTechClick,
 }: {
   technician: Technician;
   days: string[];
   assignments: BoardAssignmentWithJob[];
   onCardClick: (assignment: BoardAssignmentWithJob) => void;
+  onTechClick?: (technician: Technician) => void;
 }) {
   return (
     <div className="grid grid-cols-[140px_repeat(7,1fr)] gap-1">
       {/* Tech name column */}
-      <div className="flex items-start gap-2 rounded-md bg-muted/50 p-2">
+      <button
+        type="button"
+        className="flex items-start gap-2 rounded-md bg-muted/50 p-2 text-left transition-colors hover:bg-muted"
+        onClick={() => onTechClick?.(technician)}
+      >
         <div
           className="mt-0.5 h-3 w-3 shrink-0 rounded-full"
           style={{ backgroundColor: technician.color }}
@@ -26,7 +32,7 @@ export function TechnicianRow({
         <span className="text-sm font-medium leading-tight">
           {technician.name}
         </span>
-      </div>
+      </button>
 
       {/* Day cells */}
       {days.map((day) => {
