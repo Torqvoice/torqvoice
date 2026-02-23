@@ -18,6 +18,7 @@ export enum PermissionSubject {
   INSPECTIONS = "inspections",
   REPORTS = "reports",
   SETTINGS = "settings",
+  WORK_BOARD = "work_board",
 }
 
 export type PermissionInput = {
@@ -127,6 +128,16 @@ export const permissionGroups: PermissionGroup[] = [
     subject: PermissionSubject.REPORTS,
     permissions: [
       { action: PermissionAction.READ, label: "View" },
+    ],
+  },
+  {
+    name: "Work Board",
+    subject: PermissionSubject.WORK_BOARD,
+    permissions: [
+      { action: PermissionAction.CREATE, label: "Create" },
+      { action: PermissionAction.READ, label: "View" },
+      { action: PermissionAction.UPDATE, label: "Edit" },
+      { action: PermissionAction.DELETE, label: "Delete" },
     ],
   },
   {

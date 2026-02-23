@@ -183,10 +183,11 @@ model ServiceRecord {
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
-  partItems   ServicePart[]
-  laborItems  ServiceLabor[]
-  attachments ServiceAttachment[]
-  payments    Payment[]
+  partItems        ServicePart[]
+  laborItems       ServiceLabor[]
+  attachments      ServiceAttachment[]
+  payments         Payment[]
+  boardAssignments BoardAssignment[]
 
   @@index([vehicleId])
   @@map("service_records")
@@ -494,6 +495,7 @@ model Organization {
   invitations            TeamInvitation[]
   inspectionTemplates    InspectionTemplate[]
   smsMessages            SmsMessage[]
+  technicians            Technician[]
 
   @@map("organizations")
 }
@@ -732,9 +734,10 @@ model Inspection {
 
   organizationId String
 
-  items         InspectionItem[]
-  quoteRequests InspectionQuoteRequest[]
-  quotes        Quote[]
+  items            InspectionItem[]
+  quoteRequests    InspectionQuoteRequest[]
+  quotes           Quote[]
+  boardAssignments BoardAssignment[]
 
   @@index([vehicleId])
   @@index([organizationId])
@@ -815,4 +818,52 @@ model SmsMessage {
   @@index([organizationId, createdAt(sort: Desc)])
   @@index([toNumber, organizationId])
   @@map("sms_messages")
+}
+
+model Technician {
+  id        String  @id @default(cuid())
+  name      String
+  color     String  @default("#3b82f6")
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  memberId String?
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  assignments BoardAssignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("technicians")
+}
+
+model BoardAssignment {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  sortOrder Int      @default(0)
+  notes     String?
+
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+
+  serviceRecordId String?
+  serviceRecord   ServiceRecord? @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  inspectionId String?
+  inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  organizationId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([serviceRecordId, date])
+  @@unique([inspectionId, date])
+  @@index([organizationId, date])
+  @@index([technicianId, date])
+  @@map("board_assignments")
 }

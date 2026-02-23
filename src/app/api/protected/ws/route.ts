@@ -32,6 +32,19 @@ notificationBus.on("notification", (notification: { organizationId: string }) =>
   }
 });
 
+// Work board events — broadcasts board updates to matching org clients
+notificationBus.on("workboard", (event: { organizationId: string }) => {
+  const payload = JSON.stringify({ type: "workboard", data: event });
+  for (const client of clients) {
+    if (
+      client.organizationId === event.organizationId &&
+      client.readyState === 1 // OPEN
+    ) {
+      client.send(payload);
+    }
+  }
+});
+
 /**
  * Resolve the session token from the Next.js cookie store.
  * better-auth uses chunked cookies for large tokens (.0, .1, …)

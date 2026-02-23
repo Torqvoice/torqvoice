@@ -48,6 +48,7 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/billing': [{ label: 'Billing', href: '/billing' }, { label: 'Billing History' }],
   '/inventory': [{ label: 'Inventory', href: '/inventory' }, { label: 'All Parts' }],
   '/reports': [{ label: 'Reports', href: '/reports' }, { label: 'Reports' }],
+  '/work-board': [{ label: 'Work Board' }],
   '/admin': [{ label: 'Admin Overview' }],
   '/admin/users': [{ label: 'Admin', href: '/admin' }, { label: 'Users' }],
   '/admin/organizations': [{ label: 'Admin', href: '/admin' }, { label: 'Organizations' }],
