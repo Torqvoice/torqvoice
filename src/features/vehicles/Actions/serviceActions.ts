@@ -450,59 +450,73 @@ export async function updateServiceRecord(input: unknown) {
       });
     }
 
-    // Sync board assignment when techName changes
-    if (recordData.techName !== undefined && recordData.techName !== existing.techName) {
+    // Sync board assignment when techName or serviceDate changes
+    const techChanged = recordData.techName !== undefined && recordData.techName !== existing.techName;
+    const dateChanged = recordData.serviceDate !== undefined && recordData.serviceDate !== existing.serviceDate.toISOString().split("T")[0];
+
+    if (techChanged || dateChanged) {
       const boardAssignment = await db.boardAssignment.findFirst({
         where: { serviceRecordId: id, organizationId },
       });
       if (boardAssignment) {
-        if (recordData.techName) {
-          // Find a matching technician by name
+        // Build update payload
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const updateData: any = {};
+
+        if (dateChanged && recordData.serviceDate) {
+          updateData.date = new Date(recordData.serviceDate);
+        }
+
+        if (techChanged && recordData.techName) {
           const matchingTech = await db.technician.findFirst({
             where: { organizationId, name: recordData.techName, isActive: true },
           });
           if (matchingTech) {
-            const updated = await db.boardAssignment.update({
-              where: { id: boardAssignment.id },
-              data: { technicianId: matchingTech.id },
-              include: {
-                technician: true,
-                serviceRecord: {
-                  select: {
-                    id: true, title: true, status: true,
-                    vehicle: {
-                      select: { id: true, make: true, model: true, year: true, licensePlate: true },
-                    },
-                  },
-                },
-                inspection: {
-                  select: {
-                    id: true, status: true,
-                    vehicle: {
-                      select: { id: true, make: true, model: true, year: true, licensePlate: true },
-                    },
-                    template: { select: { name: true } },
-                  },
-                },
-              },
-            });
-            notificationBus.emit("workboard", {
-              type: "assignment_moved",
-              organizationId,
-              assignment: {
-                ...updated,
-                date: updated.date.toISOString().split("T")[0],
-                createdAt: updated.createdAt.toISOString(),
-                updatedAt: updated.updatedAt.toISOString(),
-                technician: {
-                  ...updated.technician,
-                  createdAt: updated.technician.createdAt.toISOString(),
-                  updatedAt: updated.technician.updatedAt.toISOString(),
-                },
-              },
-            });
-            revalidatePath("/work-board");
+            updateData.technicianId = matchingTech.id;
           }
+        }
+
+        if (Object.keys(updateData).length > 0) {
+          const updated = await db.boardAssignment.update({
+            where: { id: boardAssignment.id },
+            data: updateData,
+            include: {
+              technician: true,
+              serviceRecord: {
+                select: {
+                  id: true, title: true, status: true,
+                  vehicle: {
+                    select: { id: true, make: true, model: true, year: true, licensePlate: true },
+                  },
+                },
+              },
+              inspection: {
+                select: {
+                  id: true, status: true,
+                  vehicle: {
+                    select: { id: true, make: true, model: true, year: true, licensePlate: true },
+                  },
+                  template: { select: { name: true } },
+                },
+              },
+            },
+          });
+          notificationBus.emit("workboard", {
+            type: "assignment_moved",
+            organizationId,
+            assignment: {
+              ...updated,
+              date: updated.date.toISOString().split("T")[0],
+              createdAt: updated.createdAt.toISOString(),
+              updatedAt: updated.updatedAt.toISOString(),
+              technician: {
+                ...updated.technician,
+                createdAt: updated.technician.createdAt.toISOString(),
+                updatedAt: updated.technician.updatedAt.toISOString(),
+              },
+            },
+          });
+          revalidatePath("/work-board");
         }
       }
     }

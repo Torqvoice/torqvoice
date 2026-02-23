@@ -246,11 +246,11 @@ export async function createBoardAssignment(input: unknown) {
         },
       });
 
-      // Sync techName on the linked service record
+      // Sync service record: techName + serviceDate from board
       if (assignment.serviceRecordId) {
         await db.serviceRecord.update({
           where: { id: assignment.serviceRecordId },
-          data: { techName: tech.name },
+          data: { techName: tech.name, serviceDate: new Date(data.date) },
         });
       }
 
@@ -333,11 +333,11 @@ export async function moveAssignment(input: unknown) {
         },
       });
 
-      // Sync techName on the linked service record
+      // Sync service record: techName + serviceDate from board
       if (updated.serviceRecordId) {
         await db.serviceRecord.update({
           where: { id: updated.serviceRecordId },
-          data: { techName: updated.technician.name },
+          data: { techName: updated.technician.name, serviceDate: new Date(data.date) },
         });
       }
 
