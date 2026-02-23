@@ -38,6 +38,7 @@ import {
   ChevronsUpDown,
   ClipboardCheck,
   ClipboardList,
+  Columns3,
   FileText,
   MessageSquare,
   LayoutDashboard,
@@ -102,6 +103,7 @@ export function AppSidebar({
     { title: 'Work Orders', url: '/work-orders', icon: ClipboardList },
     { title: 'Inspections', url: '/inspections', icon: ClipboardCheck },
     { title: 'Calendar', url: '/calendar', icon: CalendarDays },
+    { title: 'Work Board', url: '/work-board', icon: Columns3 },
   ]
 
   const businessItems = [

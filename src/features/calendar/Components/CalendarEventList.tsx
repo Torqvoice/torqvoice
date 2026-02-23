@@ -31,7 +31,6 @@ function getStatusBadge(event: CalendarEvent) {
       case "completed": return <Badge variant="outline" className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0">Completed</Badge>;
       case "in_progress": case "in-progress": return <Badge variant="outline" className="text-blue-600 border-blue-300 text-[10px] px-1.5 py-0">In Progress</Badge>;
       case "waiting-parts": return <Badge variant="outline" className="text-orange-600 border-orange-300 text-[10px] px-1.5 py-0">Waiting Parts</Badge>;
-      case "ready": return <Badge variant="outline" className="text-cyan-600 border-cyan-300 text-[10px] px-1.5 py-0">Ready</Badge>;
       default: return <Badge variant="outline" className="text-amber-600 border-amber-300 text-[10px] px-1.5 py-0">Pending</Badge>;
     }
   }

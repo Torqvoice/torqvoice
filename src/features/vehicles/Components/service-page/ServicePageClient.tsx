@@ -12,6 +12,7 @@ import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
 import type { ServicePartInput, ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { ServiceDetail } from '../service-detail/types'
 import type { InitialData, InventoryPartOption, VehicleOption, TeamMemberOption } from '../service-edit/form-types'
+import type { BoardTechnicianOption } from '../service-edit/BasicInfoSection'
 
 import { ServiceDetailContent } from '../service-detail/ServiceDetailContent'
 import { InvoiceSummary } from '../service-detail/InvoiceSummary'
@@ -63,6 +64,7 @@ export interface ServicePageClientProps {
   inventoryParts: InventoryPartOption[]
   vehicles: VehicleOption[]
   teamMembers: TeamMemberOption[]
+  boardTechnicians?: BoardTechnicianOption[]
   currentUserName: string
   // Media data
   imageAttachmentsForManager: Attachment[]
@@ -88,6 +90,7 @@ export function ServicePageClient({
   inventoryParts,
   vehicles,
   teamMembers,
+  boardTechnicians = [],
   currentUserName,
   imageAttachmentsForManager,
   videoAttachments,
@@ -465,6 +468,7 @@ export function ServicePageClient({
         techOpen={techOpen}
         setTechOpen={setTechOpen}
         teamMembers={teamMembers}
+        boardTechnicians={boardTechnicians}
         customer={record.vehicle.customer}
       />
       <TotalsSection

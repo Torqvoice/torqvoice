@@ -8,6 +8,7 @@ import { unlink } from "fs/promises";
 import { randomUUID } from "crypto";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
+import { notificationBus } from "@/lib/notification-bus";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 
 export async function getServiceRecords(vehicleId: string) {
@@ -346,7 +347,10 @@ export async function updateServiceRecord(input: unknown) {
     const data = updateServiceSchema.parse(input);
     const existing = await db.serviceRecord.findFirst({
       where: { id: data.id, vehicle: { organizationId } },
-      include: { attachments: { select: { fileUrl: true, category: true } } },
+      include: {
+        attachments: { select: { fileUrl: true, category: true } },
+        vehicle: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
+      },
     });
     if (!existing) throw new Error("Service record not found");
 
@@ -430,6 +434,93 @@ export async function updateServiceRecord(input: unknown) {
       }
     }
 
+    // Notify workboard if status changed
+    if (record.status !== existing.status) {
+      notificationBus.emit("workboard", {
+        type: "job_status_changed",
+        organizationId,
+        serviceRecordId: id,
+        status: record.status,
+        serviceRecord: {
+          id: existing.id,
+          title: record.title || existing.title,
+          status: record.status,
+          vehicle: existing.vehicle,
+        },
+      });
+    }
+
+    // Sync board assignment when techName or serviceDate changes
+    const techChanged = recordData.techName !== undefined && recordData.techName !== existing.techName;
+    const dateChanged = recordData.serviceDate !== undefined && recordData.serviceDate !== existing.serviceDate.toISOString().split("T")[0];
+
+    if (techChanged || dateChanged) {
+      const boardAssignment = await db.boardAssignment.findFirst({
+        where: { serviceRecordId: id, organizationId },
+      });
+      if (boardAssignment) {
+        // Build update payload
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const updateData: any = {};
+
+        if (dateChanged && recordData.serviceDate) {
+          updateData.date = new Date(recordData.serviceDate);
+        }
+
+        if (techChanged && recordData.techName) {
+          const matchingTech = await db.technician.findFirst({
+            where: { organizationId, name: recordData.techName, isActive: true },
+          });
+          if (matchingTech) {
+            updateData.technicianId = matchingTech.id;
+          }
+        }
+
+        if (Object.keys(updateData).length > 0) {
+          const updated = await db.boardAssignment.update({
+            where: { id: boardAssignment.id },
+            data: updateData,
+            include: {
+              technician: true,
+              serviceRecord: {
+                select: {
+                  id: true, title: true, status: true,
+                  vehicle: {
+                    select: { id: true, make: true, model: true, year: true, licensePlate: true },
+                  },
+                },
+              },
+              inspection: {
+                select: {
+                  id: true, status: true,
+                  vehicle: {
+                    select: { id: true, make: true, model: true, year: true, licensePlate: true },
+                  },
+                  template: { select: { name: true } },
+                },
+              },
+            },
+          });
+          notificationBus.emit("workboard", {
+            type: "assignment_moved",
+            organizationId,
+            assignment: {
+              ...updated,
+              date: updated.date.toISOString().split("T")[0],
+              createdAt: updated.createdAt.toISOString(),
+              updatedAt: updated.updatedAt.toISOString(),
+              technician: {
+                ...updated.technician,
+                createdAt: updated.technician.createdAt.toISOString(),
+                updatedAt: updated.technician.updatedAt.toISOString(),
+              },
+            },
+          });
+          revalidatePath("/work-board");
+        }
+      }
+    }
+
     revalidatePath("/");
     revalidatePath(`/vehicles/${existing.vehicleId}`);
     revalidatePath(`/vehicles/${existing.vehicleId}/service/${id}`);
@@ -442,12 +533,30 @@ export async function updateServiceStatus(recordId: string, status: string) {
   return withAuth(async ({ organizationId }) => {
     const record = await db.serviceRecord.findFirst({
       where: { id: recordId, vehicle: { organizationId } },
+      include: {
+        vehicle: {
+          select: { id: true, make: true, model: true, year: true, licensePlate: true },
+        },
+      },
     });
     if (!record) throw new Error("Record not found");
 
     await db.serviceRecord.update({
       where: { id: recordId },
       data: { status },
+    });
+
+    notificationBus.emit("workboard", {
+      type: "job_status_changed",
+      organizationId,
+      serviceRecordId: recordId,
+      status,
+      serviceRecord: {
+        id: record.id,
+        title: record.title,
+        status,
+        vehicle: record.vehicle,
+      },
     });
 
     revalidatePath("/");

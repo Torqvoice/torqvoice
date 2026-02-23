@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { createInspectionSchema, updateInspectionItemSchema } from "../Schema/inspectionSchema";
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { notificationBus } from "@/lib/notification-bus";
 
 export async function getInspectionsPaginated(params: {
   page?: number;
@@ -205,6 +206,13 @@ export async function completeInspection(id: string) {
     await db.inspection.updateMany({
       where: { id, organizationId },
       data: { status: "completed", completedAt: new Date() },
+    });
+
+    notificationBus.emit("workboard", {
+      type: "job_status_changed",
+      organizationId,
+      inspectionId: id,
+      status: "completed",
     });
 
     revalidatePath("/inspections");
