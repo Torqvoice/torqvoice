@@ -24,7 +24,7 @@ export async function getCustomerSession(): Promise<CustomerSessionData | null> 
 
   if (new Date() > session.expiresAt) {
     // Clean up expired session
-    await db.customerSession.delete({ where: { id: session.id } }).catch(() => {});
+    await db.customerSession.delete({ where: { id: session.id } }).catch(() => { /* ignore */ });
     return null;
   }
 

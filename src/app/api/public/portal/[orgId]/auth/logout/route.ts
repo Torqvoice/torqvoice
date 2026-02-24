@@ -14,7 +14,7 @@ export async function POST(
   if (token) {
     await db.customerSession
       .delete({ where: { token } })
-      .catch(() => {});
+      .catch(() => { /* session may already be deleted */ });
   }
 
   cookieStore.delete({

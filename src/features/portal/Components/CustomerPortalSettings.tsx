@@ -17,7 +17,6 @@ import {
 import { Copy, Check, Globe, Loader2 } from "lucide-react";
 import {
   ReadOnlyBanner,
-  SaveButton,
   ReadOnlyWrapper,
 } from "@/app/(authenticated)/settings/read-only-guard";
 import { setSetting } from "@/features/settings/Actions/settingsActions";
