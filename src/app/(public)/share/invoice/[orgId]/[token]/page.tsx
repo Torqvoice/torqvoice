@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { InvoiceView } from "./invoice-view";
 import { getFeatures } from "@/lib/features";
+import { resolvePortalOrg } from "@/lib/portal-slug";
 import type { Metadata } from "next";
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
@@ -23,7 +24,11 @@ export default async function PublicInvoicePage({
 }: {
   params: Promise<{ orgId: string; token: string }>;
 }) {
-  const { orgId, token } = await params;
+  const { orgId: orgParam, token } = await params;
+
+  // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
+  const resolvedOrg = await resolvePortalOrg(orgParam);
+  const orgId = resolvedOrg?.id ?? orgParam;
 
   const record = await db.serviceRecord.findUnique({
     where: { publicToken: token },
@@ -88,6 +93,7 @@ export default async function PublicInvoicePage({
             "payment.termsOfSaleUrl",
             "workshop.dateFormat",
             "workshop.timezone",
+            "portal.enabled",
           ],
         },
       },
@@ -95,7 +101,7 @@ export default async function PublicInvoicePage({
     record.vehicle.organizationId
       ? db.organization.findUnique({
           where: { id: record.vehicle.organizationId },
-          select: { name: true },
+          select: { name: true, portalSlug: true },
         })
       : null,
     getFeatures(orgId),
@@ -150,6 +156,14 @@ export default async function PublicInvoicePage({
   const termsOfSaleUrl = settingsMap["payment.termsOfSaleUrl"]
     || (settingsMap["payment.termsOfSale"] ? `/share/terms/${orgId}` : undefined);
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+  const portalSlug = org?.portalSlug;
+  const portalEnabled = settingsMap["portal.enabled"] === "true";
+  const portalUrl = portalEnabled
+    ? `${appUrl}/portal/${portalSlug || orgId}`
+    : undefined;
+
   return (
     <InvoiceView
       record={publicRecord}
@@ -168,6 +182,7 @@ export default async function PublicInvoicePage({
       termsOfSaleUrl={termsOfSaleUrl}
       primaryColor={settingsMap["invoice.primaryColor"] || "#d97706"}
       headerStyle={settingsMap["invoice.headerStyle"] || "standard"}
+      portalUrl={portalUrl}
     />
   );
 }

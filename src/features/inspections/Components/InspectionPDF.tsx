@@ -55,6 +55,7 @@ export function InspectionPDF({
   dateFormat,
   timezone,
   template,
+  portalUrl,
 }: {
   data: InspectionData
   workshop?: WorkshopInfo
@@ -63,6 +64,7 @@ export function InspectionPDF({
   dateFormat?: string
   timezone?: string
   template?: TemplateConfig
+  portalUrl?: string
 }) {
   const primaryColor = template?.primaryColor || '#d97706'
   const fontFamily = template?.fontFamily || 'Helvetica'
@@ -426,6 +428,15 @@ export function InspectionPDF({
             </View>
           </View>
         ))}
+
+        {/* Portal URL */}
+        {portalUrl && (
+          <View style={{ marginTop: 8 }}>
+            <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
+              View your portal: {portalUrl}
+            </Text>
+          </View>
+        )}
 
         {/* Footer */}
         {torqvoiceLogoDataUri ? (

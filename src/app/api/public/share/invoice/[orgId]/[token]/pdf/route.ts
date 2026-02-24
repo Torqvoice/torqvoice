@@ -9,6 +9,7 @@ import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
 import { rateLimit } from "@/lib/rate-limit";
 import { formatDateForPdf } from "@/lib/format";
+import { resolvePortalOrg } from "@/lib/portal-slug";
 
 export async function GET(
   _request: Request,
@@ -18,7 +19,11 @@ export async function GET(
   if (limited) return limited;
 
   try {
-    const { orgId, token } = await params;
+    const { orgId: orgParam, token } = await params;
+
+    // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
+    const resolvedOrg = await resolvePortalOrg(orgParam);
+    const orgId = resolvedOrg?.id ?? orgParam;
 
     const record = await db.serviceRecord.findUnique({
       where: { publicToken: token },
@@ -61,7 +66,7 @@ export async function GET(
       record.vehicle.organizationId
         ? db.organization.findUnique({
             where: { id: record.vehicle.organizationId },
-            select: { name: true },
+            select: { name: true, portalSlug: true },
           })
         : null,
     ]);
@@ -132,6 +137,14 @@ export async function GET(
       torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri();
     }
 
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL
+      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+    const portalSlug = org?.portalSlug;
+    const portalEnabled = settingsMap["portal.enabled"] === "true";
+    const portalUrl = portalEnabled
+      ? `${appUrl}/portal/${portalSlug || orgId}`
+      : undefined;
+
     const element = React.createElement(InvoicePDF, {
       data: record,
       workshop: {
@@ -145,6 +158,7 @@ export async function GET(
       logoDataUri,
       template,
       torqvoiceLogoDataUri,
+      portalUrl,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const buffer = await renderToBuffer(element);

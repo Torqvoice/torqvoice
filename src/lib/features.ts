@@ -19,6 +19,7 @@ export type PlanFeatures = {
   maxImagesPerService: number
   maxDiagnosticsPerService: number
   maxDocumentsPerService: number
+  customerPortal: boolean
 }
 
 export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
@@ -38,6 +39,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxImagesPerService: 5,
     maxDiagnosticsPerService: 5,
     maxDocumentsPerService: 5,
+    customerPortal: false,
   },
   pro: {
     maxCustomers: 999999,
@@ -55,6 +57,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxImagesPerService: 30,
     maxDiagnosticsPerService: 30,
     maxDocumentsPerService: 30,
+    customerPortal: true,
   },
   enterprise: {
     maxCustomers: 999999,
@@ -72,6 +75,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxImagesPerService: 100,
     maxDiagnosticsPerService: 100,
     maxDocumentsPerService: 100,
+    customerPortal: true,
   },
   'white-label': {
     maxCustomers: 999999,
@@ -89,6 +93,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxImagesPerService: 999999,
     maxDiagnosticsPerService: 999999,
     maxDocumentsPerService: 999999,
+    customerPortal: true,
   },
 }
 

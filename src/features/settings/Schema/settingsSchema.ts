@@ -68,6 +68,7 @@ export const SETTING_KEYS = {
   SMS_TEMPLATE_STATUS_READY: "sms.template.statusReady",
   SMS_TEMPLATE_STATUS_COMPLETED: "sms.template.statusCompleted",
   SMS_TEMPLATE_PAYMENT_RECEIVED: "sms.template.paymentReceived",
+  PORTAL_ENABLED: "portal.enabled",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

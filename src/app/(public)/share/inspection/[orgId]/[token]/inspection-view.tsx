@@ -76,6 +76,7 @@ export function InspectionView({
   orgId,
   hasExistingQuoteRequest,
   quoteShareUrl,
+  portalUrl,
 }: {
   inspection: InspectionRecord;
   workshop: { name: string; address: string; phone: string; email: string };
@@ -88,6 +89,7 @@ export function InspectionView({
   orgId: string;
   hasExistingQuoteRequest: boolean;
   quoteShareUrl?: string;
+  portalUrl?: string;
 }) {
   const fmt = dateFormat || DEFAULT_DATE_FORMAT;
   const tz = timezone || "America/New_York";
@@ -420,6 +422,17 @@ export function InspectionView({
         <div className="mt-6 rounded-lg border p-4">
           <h3 className="mb-2 text-xs font-semibold uppercase text-gray-400">Notes</h3>
           <p className="text-sm text-gray-600 whitespace-pre-wrap">{inspection.notes}</p>
+        </div>
+      )}
+
+      {portalUrl && (
+        <div className="mt-3 border-t pt-3 text-center">
+          <p className="text-xs text-muted-foreground">
+            View your vehicles, invoices, and more at your{" "}
+            <a href={portalUrl} className="font-medium text-primary hover:underline">
+              customer portal
+            </a>
+          </p>
         </div>
       )}
 

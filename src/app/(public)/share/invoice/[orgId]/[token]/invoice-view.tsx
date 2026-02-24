@@ -109,6 +109,7 @@ export function InvoiceView({
   termsOfSaleUrl,
   primaryColor = '#d97706',
   headerStyle = 'standard',
+  portalUrl,
 }: {
   record: InvoiceRecord
   workshop: { name: string; address: string; phone: string; email: string }
@@ -126,6 +127,7 @@ export function InvoiceView({
   termsOfSaleUrl?: string
   primaryColor?: string
   headerStyle?: string
+  portalUrl?: string
 }) {
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
   const [paymentAmount, setPaymentAmount] = useState('')
@@ -895,6 +897,17 @@ export function InvoiceView({
           </div>
         )}
       </div>
+
+      {portalUrl && (
+        <div className="mt-3 border-t pt-3 text-center">
+          <p className="text-xs text-muted-foreground">
+            View your vehicles, invoices, and more at your{" "}
+            <a href={portalUrl} className="font-medium text-primary hover:underline">
+              customer portal
+            </a>
+          </p>
+        </div>
+      )}
 
       <div className="mt-4 flex flex-col items-center gap-1">
         {showTorqvoiceBranding ? (

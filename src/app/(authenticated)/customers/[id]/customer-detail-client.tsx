@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,16 +18,37 @@ import {
   ArrowLeft,
   Building2,
   Car,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  Loader2,
   Mail,
   MapPin,
   MessageSquare,
   Pencil,
   Phone,
+  Plus,
   Users,
+  Wrench,
+  X,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import { SmsConversation } from "@/features/sms/Components/SmsConversation";
 import { CustomerForm } from "@/features/customers/Components/CustomerForm";
+import { updateServiceRequest, createWorkOrderFromRequest } from "@/features/customers/Actions/customerActions";
+import { SendSmsDialog } from "@/features/sms/Components/SendSmsDialog";
 import { toast } from "sonner";
+
+interface ServiceRequestItem {
+  id: string;
+  description: string;
+  preferredDate: Date | null;
+  status: string;
+  adminNotes: string | null;
+  createdAt: Date;
+  vehicle: { id: string; make: string; model: string; year: number };
+}
 
 interface CustomerDetail {
   id: string;
@@ -46,6 +67,7 @@ interface CustomerDetail {
     licensePlate: string | null;
     _count: { serviceRecords: number };
   }[];
+  serviceRequests?: ServiceRequestItem[];
 }
 
 interface SmsMessage {
@@ -76,9 +98,14 @@ export function CustomerDetailClient({
   const [showEditForm, setShowEditForm] = useState(false);
 
   const tabParam = searchParams.get("tab");
-  const activeTab = tabParam === "messages" && smsEnabled ? "messages" : "vehicles";
+  const activeTab =
+    tabParam === "messages" && smsEnabled
+      ? "messages"
+      : tabParam === "requests"
+        ? "requests"
+        : "vehicles";
 
-  const setActiveTab = (tab: "vehicles" | "messages") => {
+  const setActiveTab = (tab: "vehicles" | "messages" | "requests") => {
     const params = new URLSearchParams(searchParams.toString());
     if (tab === "vehicles") {
       params.delete("tab");
@@ -195,6 +222,21 @@ export function CustomerDetailClient({
               Messages
             </button>
           )}
+          {(customer.serviceRequests?.length ?? 0) > 0 && (
+            <button
+              type="button"
+              onClick={() => setActiveTab("requests")}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors",
+                activeTab === "requests"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <Wrench className="h-4 w-4" />
+              Requests ({customer.serviceRequests!.length})
+            </button>
+          )}
         </div>
 
         {activeTab === "vehicles" && (
@@ -258,6 +300,21 @@ export function CustomerDetailClient({
             </CardContent>
           </Card>
         )}
+
+        {activeTab === "requests" && customer.serviceRequests && (
+          <div className="space-y-3">
+            {customer.serviceRequests.map((req) => (
+              <ServiceRequestCard
+                key={req.id}
+                request={req}
+                smsEnabled={smsEnabled}
+                customerPhone={customer.phone}
+                customerName={customer.name}
+                customerId={customer.id}
+              />
+            ))}
+          </div>
+        )}
       </div>
       <CustomerForm
         open={showEditForm}
@@ -265,5 +322,202 @@ export function CustomerDetailClient({
         customer={customer}
       />
     </div>
+  );
+}
+
+const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "outline"; icon: React.ReactNode }> = {
+  pending: { label: "New", variant: "secondary", icon: <Clock className="h-3 w-3" /> },
+  converted: { label: "Work Order Created", variant: "default", icon: <CheckCircle2 className="h-3 w-3" /> },
+  dismissed: { label: "Dismissed", variant: "outline", icon: <X className="h-3 w-3" /> },
+};
+
+function getWorkOrderId(adminNotes: string | null): string | null {
+  if (!adminNotes) return null;
+  const match = adminNotes.match(/Work Order: (\S+)/);
+  return match ? match[1] : null;
+}
+
+function ServiceRequestCard({
+  request,
+  smsEnabled,
+  customerPhone,
+  customerName,
+  customerId,
+}: {
+  request: ServiceRequestItem;
+  smsEnabled: boolean;
+  customerPhone: string | null;
+  customerName: string;
+  customerId: string;
+}) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [notes, setNotes] = useState(request.adminNotes ?? "");
+  const [showNotes, setShowNotes] = useState(false);
+  const [showSmsDialog, setShowSmsDialog] = useState(false);
+
+  const config = statusConfig[request.status] ?? statusConfig.pending;
+  const workOrderId = getWorkOrderId(request.adminNotes);
+
+  const handleCreateWorkOrder = () => {
+    startTransition(async () => {
+      const result = await createWorkOrderFromRequest(request.id);
+      if (result.success && result.data) {
+        toast.success("Work order created");
+        router.push(`/vehicles/${result.data.vehicleId}/service/${result.data.serviceRecordId}`);
+      } else {
+        toast.error(result.error ?? "Failed to create work order");
+      }
+    });
+  };
+
+  const handleDismiss = () => {
+    startTransition(async () => {
+      const result = await updateServiceRequest(request.id, {
+        status: "dismissed",
+        adminNotes: notes || undefined,
+      });
+      if (result.success) {
+        toast.success("Request dismissed");
+        router.refresh();
+      } else {
+        toast.error(result.error ?? "Failed to dismiss request");
+      }
+    });
+  };
+
+  const handleSaveNotes = () => {
+    startTransition(async () => {
+      const result = await updateServiceRequest(request.id, {
+        adminNotes: notes || undefined,
+      });
+      if (result.success) {
+        toast.success("Notes saved");
+        router.refresh();
+      } else {
+        toast.error(result.error ?? "Failed to save notes");
+      }
+    });
+  };
+
+  const canSms = smsEnabled && !!customerPhone;
+
+  return (
+    <>
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium">
+                  {request.vehicle.year} {request.vehicle.make} {request.vehicle.model}
+                </p>
+                <Badge variant={config.variant} className="gap-1">
+                  {config.icon}
+                  {config.label}
+                </Badge>
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">
+                {request.description}
+              </p>
+              <div className="mt-2 flex gap-3 text-xs text-muted-foreground">
+                <span>Submitted {new Date(request.createdAt).toLocaleDateString()}</span>
+                {request.preferredDate && (
+                  <span>Preferred: {new Date(request.preferredDate).toLocaleDateString()}</span>
+                )}
+              </div>
+              {request.adminNotes && !showNotes && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  <span className="font-medium">Staff notes:</span> {request.adminNotes}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t pt-3">
+            {request.status === "pending" && (
+              <>
+                <Button
+                  size="sm"
+                  onClick={handleCreateWorkOrder}
+                  disabled={isPending}
+                >
+                  {isPending ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Plus className="mr-1 h-3 w-3" />}
+                  Create Work Order
+                </Button>
+                {canSms && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowSmsDialog(true)}
+                    disabled={isPending}
+                  >
+                    <MessageSquare className="mr-1 h-3 w-3" />
+                    Contact Customer
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleDismiss}
+                  disabled={isPending}
+                >
+                  <X className="mr-1 h-3 w-3" />
+                  Dismiss
+                </Button>
+              </>
+            )}
+            {request.status === "converted" && workOrderId && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => router.push(`/vehicles/${request.vehicle.id}/service/${workOrderId}`)}
+              >
+                <ExternalLink className="mr-1 h-3 w-3" />
+                View Work Order
+              </Button>
+            )}
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setShowNotes(!showNotes)}
+            >
+              <Pencil className="mr-1 h-3 w-3" />
+              {showNotes ? "Hide Notes" : "Notes"}
+            </Button>
+          </div>
+
+          {showNotes && (
+            <div className="mt-3 space-y-2">
+              <Textarea
+                placeholder="Add internal notes..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={2}
+              />
+              <Button size="sm" onClick={handleSaveNotes} disabled={isPending}>
+                {isPending && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                Save Notes
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {canSms && (
+        <SendSmsDialog
+          open={showSmsDialog}
+          onOpenChange={setShowSmsDialog}
+          customerId={customerId}
+          customerName={customerName}
+          customerPhone={customerPhone!}
+          entityLabel="Service Request Message"
+          defaultMessage={`Hi ${customerName}, regarding your service request for your ${request.vehicle.year} ${request.vehicle.make} ${request.vehicle.model}: `}
+          relatedEntityType="service_request"
+          relatedEntityId={request.id}
+        />
+      )}
+    </>
   );
 }

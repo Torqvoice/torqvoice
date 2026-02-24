@@ -7,13 +7,18 @@ import { readFile } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
+import { resolvePortalOrg } from "@/lib/portal-slug";
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ orgId: string; token: string }> }
 ) {
   try {
-    const { orgId, token } = await params;
+    const { orgId: orgParam, token } = await params;
+
+    // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
+    const resolvedOrg = await resolvePortalOrg(orgParam);
+    const orgId = resolvedOrg?.id ?? orgParam;
 
     const inspection = await db.inspection.findFirst({
       where: { publicToken: token, organizationId: orgId },
@@ -38,7 +43,7 @@ export async function GET(
       db.appSetting.findMany({ where: { organizationId: orgId } }),
       db.organization.findUnique({
         where: { id: orgId },
-        select: { name: true },
+        select: { name: true, portalSlug: true },
       }),
     ]);
 
@@ -80,6 +85,14 @@ export async function GET(
       headerStyle: settingsMap["invoice.headerStyle"] || "standard",
     };
 
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL
+      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+    const portalSlug = org?.portalSlug;
+    const portalEnabled = settingsMap["portal.enabled"] === "true";
+    const portalUrl = portalEnabled
+      ? `${appUrl}/portal/${portalSlug || orgId}`
+      : undefined;
+
     const element = React.createElement(InspectionPDF, {
       data: inspection,
       workshop: {
@@ -93,6 +106,7 @@ export async function GET(
       dateFormat: settingsMap["workshop.dateFormat"] || undefined,
       timezone: settingsMap["workshop.timezone"] || undefined,
       template,
+      portalUrl,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const buffer = await renderToBuffer(element);

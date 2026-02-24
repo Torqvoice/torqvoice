@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { InspectionView } from "./inspection-view";
 import { getFeatures } from "@/lib/features";
+import { resolvePortalOrg } from "@/lib/portal-slug";
 import type { Metadata } from "next";
 
 export const revalidate = 60;
@@ -15,7 +16,11 @@ export default async function PublicInspectionPage({
 }: {
   params: Promise<{ orgId: string; token: string }>;
 }) {
-  const { orgId, token } = await params;
+  const { orgId: orgParam, token } = await params;
+
+  // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
+  const resolvedOrg = await resolvePortalOrg(orgParam);
+  const orgId = resolvedOrg?.id ?? orgParam;
 
   const inspection = await db.inspection.findFirst({
     where: { publicToken: token, organizationId: orgId },
@@ -59,13 +64,14 @@ export default async function PublicInspectionPage({
             "workshop.dateFormat",
             "workshop.timezone",
             "invoice.primaryColor",
+            "portal.enabled",
           ],
         },
       },
     }),
     db.organization.findUnique({
       where: { id: orgId },
-      select: { name: true },
+      select: { name: true, portalSlug: true },
     }),
     getFeatures(orgId),
     db.inspectionQuoteRequest.findFirst({
@@ -94,6 +100,14 @@ export default async function PublicInspectionPage({
   }
 
   const primaryColor = settingsMap["invoice.primaryColor"] || "#d97706";
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+  const portalSlug = org?.portalSlug;
+  const portalEnabled = settingsMap["portal.enabled"] === "true";
+  const portalUrl = portalEnabled
+    ? `${appUrl}/portal/${portalSlug || orgId}`
+    : undefined;
 
   // Rewrite image URLs on inspection items for public access
   const publicInspection = {
@@ -126,6 +140,7 @@ export default async function PublicInspectionPage({
       orgId={orgId}
       hasExistingQuoteRequest={!!existingRequest}
       quoteShareUrl={quoteShareUrl}
+      portalUrl={portalUrl}
     />
   );
 }
