@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useTransition, useCallback } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Card, CardContent } from '@/components/ui/card'
@@ -16,11 +16,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { useGlassModal } from '@/components/glass-modal'
 import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
 import { NoteForm } from '@/features/vehicles/Components/NoteForm'
 import { ReminderForm } from '@/features/vehicles/Components/ReminderForm'
 import { ServiceRecordsTable } from './service-records-table'
+import { NotesTable } from './notes-table'
 import { toast } from 'sonner'
 import { deleteNote, toggleNotePin } from '@/features/vehicles/Actions/noteActions'
 import { toggleReminder, deleteReminder } from '@/features/vehicles/Actions/reminderActions'
@@ -46,7 +53,6 @@ import {
   MoreVertical,
   Pencil,
   Pin,
-  PinOff,
   Plus,
   StickyNote,
   Trash2,
@@ -102,6 +108,20 @@ interface PaginatedServices {
   totalPages: number
 }
 
+interface PaginatedNotes {
+  records: {
+    id: string
+    title: string
+    content: string
+    isPinned: boolean
+    createdAt: Date
+  }[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
 interface VehicleDetail {
   id: string
   make: string
@@ -132,13 +152,6 @@ interface VehicleDetail {
     cost: number
     totalAmount: number
   }[]
-  notes: {
-    id: string
-    title: string
-    content: string
-    isPinned: boolean
-    createdAt: Date
-  }[]
   reminders: {
     id: string
     title: string
@@ -159,6 +172,7 @@ export function VehicleDetailClient({
   vehicle,
   customers,
   paginatedServices,
+  paginatedNotes,
   serviceSearch,
   serviceType,
   currencyCode = 'USD',
@@ -170,6 +184,7 @@ export function VehicleDetailClient({
   vehicle: VehicleDetail
   customers: CustomerOption[]
   paginatedServices: PaginatedServices
+  paginatedNotes: PaginatedNotes
   serviceSearch: string
   serviceType: string
   currencyCode?: string
@@ -196,16 +211,36 @@ export function VehicleDetailClient({
 }) {
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { formatDate } = useFormatDate()
+
+  const validTabs = ['services', 'inspections', 'notes', 'reminders'] as const
+  const tabParam = searchParams.get('tab')
+  const activeTab = validTabs.includes(tabParam as (typeof validTabs)[number])
+    ? (tabParam as string)
+    : 'services'
+
+  const handleTabChange = useCallback((value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (value === 'services') {
+      params.delete('tab')
+    } else {
+      params.set('tab', value)
+    }
+    const query = params.toString()
+    router.replace(`/vehicles/${vehicle.id}${query ? `?${query}` : ''}`, { scroll: false })
+  }, [searchParams, router, vehicle.id])
   const modal = useGlassModal()
   const [showEditForm, setShowEditForm] = useState(false)
   const [showNoteForm, setShowNoteForm] = useState(false)
+  const [editingNote, setEditingNote] = useState<PaginatedNotes['records'][number] | undefined>()
   const [showReminderForm, setShowReminderForm] = useState(false)
   const [editingReminder, setEditingReminder] = useState<
     VehicleDetail['reminders'][number] | undefined
   >()
   const [reminderFilter, setReminderFilter] = useState<'active' | 'completed' | 'all'>('active')
   const [showImage, setShowImage] = useState(false)
+  const [selectedNote, setSelectedNote] = useState<PaginatedNotes['records'][number] | null>(null)
   const [showArchiveDialog, setShowArchiveDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showNewInspection, setShowNewInspection] = useState(false)
@@ -553,7 +588,7 @@ export function VehicleDetailClient({
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="services" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="services" className="gap-1.5">
             <Wrench className="h-3.5 w-3.5" />
@@ -668,77 +703,19 @@ export function VehicleDetailClient({
         </TabsContent>
 
         {/* Notes Tab */}
-        <TabsContent value="notes" className="space-y-4">
-          <div className="flex justify-end">
-            <Button size="sm" onClick={() => setShowNoteForm(true)}>
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              Add Note
-            </Button>
-          </div>
-
-          <div className="rounded-lg border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-7.5"></TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead className="hidden sm:table-cell">Content</TableHead>
-                  <TableHead className="w-30">Date</TableHead>
-                  <TableHead className="w-12.5"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {vehicle.notes.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                      No notes yet.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  vehicle.notes.map((n) => (
-                    <TableRow key={n.id}>
-                      <TableCell className="w-[30px] px-2">
-                        {n.isPinned && <Pin className="h-3.5 w-3.5 text-primary" />}
-                      </TableCell>
-                      <TableCell className="font-medium">{n.title}</TableCell>
-                      <TableCell className="hidden max-w-0 sm:table-cell">
-                        <p className="truncate text-sm text-muted-foreground">{n.content}</p>
-                      </TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">
-                        {formatDate(new Date(n.createdAt))}
-                      </TableCell>
-                      <TableCell className="px-2">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7">
-                              <MoreVertical className="h-3.5 w-3.5" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleTogglePin(n.id)}>
-                              {n.isPinned ? (
-                                <PinOff className="mr-2 h-4 w-4" />
-                              ) : (
-                                <Pin className="mr-2 h-4 w-4" />
-                              )}
-                              {n.isPinned ? 'Unpin' : 'Pin'}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => handleDeleteNote(n.id)}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+        <TabsContent value="notes">
+          <NotesTable
+            vehicleId={vehicle.id}
+            records={paginatedNotes.records}
+            total={paginatedNotes.total}
+            page={paginatedNotes.page}
+            pageSize={paginatedNotes.pageSize}
+            totalPages={paginatedNotes.totalPages}
+            onSelectNote={setSelectedNote}
+            onAddNote={() => { setEditingNote(undefined); setShowNoteForm(true); }}
+            onTogglePin={handleTogglePin}
+            onDeleteNote={handleDeleteNote}
+          />
         </TabsContent>
 
         {/* Reminders Tab */}
@@ -881,7 +858,40 @@ export function VehicleDetailClient({
         vehicle={vehicle}
         customers={customers}
       />
-      <NoteForm vehicleId={vehicle.id} open={showNoteForm} onOpenChange={setShowNoteForm} />
+      <NoteForm vehicleId={vehicle.id} open={showNoteForm} onOpenChange={setShowNoteForm} note={editingNote} />
+      <Dialog open={!!selectedNote} onOpenChange={(open) => { if (!open) setSelectedNote(null) }}>
+        <DialogContent className="sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {selectedNote?.isPinned && <Pin className="h-4 w-4 text-primary" />}
+              {selectedNote?.title}
+            </DialogTitle>
+            <p className="text-xs text-muted-foreground">
+              {selectedNote?.createdAt && formatDate(new Date(selectedNote.createdAt))}
+            </p>
+          </DialogHeader>
+          <div
+            className="notes-content max-h-[60vh] overflow-y-auto text-sm break-all"
+            dangerouslySetInnerHTML={{ __html: selectedNote?.content ?? "" }}
+          />
+          <div className="flex justify-end pt-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                if (selectedNote) {
+                  setEditingNote(selectedNote)
+                  setSelectedNote(null)
+                  setShowNoteForm(true)
+                }
+              }}
+            >
+              <Pencil className="mr-1 h-3.5 w-3.5" />
+              Edit
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       <ReminderForm
         vehicleId={vehicle.id}
         open={showReminderForm}

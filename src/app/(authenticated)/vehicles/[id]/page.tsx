@@ -1,5 +1,6 @@
 import { getVehicle } from "@/features/vehicles/Actions/vehicleActions";
 import { getServiceRecordsPaginated } from "@/features/vehicles/Actions/serviceActions";
+import { getNotesPaginated } from "@/features/vehicles/Actions/noteActions";
 import { getCustomersList } from "@/features/customers/Actions/customerActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
@@ -24,10 +25,14 @@ export default async function VehicleDetailPage({
   const search = typeof sp.search === "string" ? sp.search : "";
   const type = typeof sp.type === "string" ? sp.type : "all";
 
-  const [result, customersResult, serviceResult, settingsResult, maintenanceSettingsResult, inspectionsResult, templatesResult] = await Promise.all([
+  const notesPage = Number(sp.notesPage) || 1;
+  const notesPageSize = Number(sp.notesPageSize) || 10;
+
+  const [result, customersResult, serviceResult, notesResult, settingsResult, maintenanceSettingsResult, inspectionsResult, templatesResult] = await Promise.all([
     getVehicle(id),
     getCustomersList(),
     getServiceRecordsPaginated(id, { page, pageSize, search, type }),
+    getNotesPaginated(id, { page: notesPage, pageSize: notesPageSize }),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
     getSettings([
       SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED,
@@ -53,6 +58,10 @@ export default async function VehicleDetailPage({
 
   const paginatedServices = serviceResult.success && serviceResult.data
     ? serviceResult.data
+    : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
+
+  const paginatedNotes = notesResult.success && notesResult.data
+    ? notesResult.data
     : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
   const currencySettings = settingsResult.success && settingsResult.data ? settingsResult.data : {};
@@ -112,6 +121,7 @@ export default async function VehicleDetailPage({
           vehicle={result.data}
           customers={customersResult.data ?? []}
           paginatedServices={paginatedServices}
+          paginatedNotes={paginatedNotes}
           serviceSearch={search}
           serviceType={type}
           currencyCode={currencyCode}
