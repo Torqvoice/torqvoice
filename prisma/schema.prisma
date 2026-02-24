@@ -147,6 +147,7 @@ model Vehicle {
   quotes            Quote[]
   recurringInvoices RecurringInvoice[]
   inspections       Inspection[]
+  serviceRequests   ServiceRequest[]
 
   @@index([organizationId])
   @@map("vehicles")
@@ -262,9 +263,11 @@ model Customer {
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  vehicles    Vehicle[]
-  quotes      Quote[]
-  smsMessages SmsMessage[]
+  vehicles         Vehicle[]
+  quotes           Quote[]
+  smsMessages      SmsMessage[]
+  customerSessions CustomerSession[]
+  serviceRequests  ServiceRequest[]
 
   @@index([organizationId])
   @@map("customers")
@@ -478,10 +481,11 @@ model CustomFieldValue {
 }
 
 model Organization {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  name       String
+  portalSlug String?  @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   members                OrganizationMember[]
   roles                  Role[]
@@ -866,4 +870,52 @@ model BoardAssignment {
   @@index([organizationId, date])
   @@index([technicianId, date])
   @@map("board_assignments")
+}
+
+model CustomerSession {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  customerId     String
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  organizationId String
+
+  @@index([token])
+  @@index([customerId, organizationId])
+  @@map("customer_sessions")
+}
+
+model CustomerMagicLink {
+  id             String    @id @default(cuid())
+  token          String    @unique
+  email          String
+  organizationId String
+  expiresAt      DateTime
+  usedAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([token])
+  @@map("customer_magic_links")
+}
+
+model ServiceRequest {
+  id            String    @id @default(cuid())
+  description   String
+  preferredDate DateTime?
+  status        String    @default("pending")
+  adminNotes    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  customerId     String
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  vehicleId      String
+  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  organizationId String
+
+  @@index([organizationId, status])
+  @@index([customerId])
+  @@map("service_requests")
 }

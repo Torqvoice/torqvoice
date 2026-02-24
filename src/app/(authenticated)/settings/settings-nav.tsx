@@ -12,6 +12,7 @@ import {
   Database,
   FileText,
   Gauge,
+  Globe,
   Info,
   Key,
   Layout,
@@ -106,6 +107,13 @@ const settingsNav: SettingsNavItem[] = [
     icon: MessageSquare,
     description: "SMS provider & messaging",
     gate: "sms",
+  },
+  {
+    title: "Customer Portal",
+    href: "/settings/customer-portal",
+    icon: Globe,
+    description: "Customer self-service portal",
+    gate: "customerPortal",
   },
   {
     title: "Workshop",
