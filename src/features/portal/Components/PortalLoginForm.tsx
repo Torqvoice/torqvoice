@@ -17,10 +17,12 @@ export function PortalLoginForm({
   orgId,
   orgName,
   orgLogo,
+  error,
 }: {
   orgId: string;
   orgName: string;
   orgLogo?: string | null;
+  error?: string;
 }) {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
@@ -61,6 +63,11 @@ export function PortalLoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-center text-sm text-destructive">
+              {error}
+            </div>
+          )}
           {sent ? (
             <div className="text-center">
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">

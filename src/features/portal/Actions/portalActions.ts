@@ -321,7 +321,7 @@ export async function createServiceRequest(input: {
       message: `${customerName} requested service for ${vehicleName}: ${input.description.slice(0, 100)}`,
       entityType: "service_request",
       entityId: serviceRequest.id,
-      entityUrl: `/customers/${customerId}`,
+      entityUrl: `/customers/${customerId}?tab=requests`,
     });
 
     return serviceRequest;

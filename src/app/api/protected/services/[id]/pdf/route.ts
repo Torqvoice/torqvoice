@@ -58,7 +58,7 @@ export async function GET(
       }),
       db.organization.findUnique({
         where: { id: ctx.organizationId },
-        select: { name: true },
+        select: { name: true, portalSlug: true },
       }),
     ]);
 
@@ -177,6 +177,14 @@ export async function GET(
       torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri();
     }
 
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL
+      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+    const portalSlug = org?.portalSlug;
+    const portalEnabled = settingsMap["portal.enabled"] === "true";
+    const portalUrl = portalEnabled
+      ? `${appUrl}/portal/${portalSlug || ctx.organizationId}`
+      : undefined;
+
     const element = React.createElement(InvoicePDF, {
       data: record,
       workshop: {
@@ -193,6 +201,7 @@ export async function GET(
       logoDataUri,
       template,
       torqvoiceLogoDataUri,
+      portalUrl,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const invoiceBuffer = await renderToBuffer(element);

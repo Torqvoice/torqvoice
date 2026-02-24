@@ -12,6 +12,7 @@ interface FooterProps {
   fontFamily: string
   torqvoiceLogoDataUri?: string
   paymentTerms?: string
+  portalUrl?: string
   styles: Record<string, Style>
 }
 
@@ -21,12 +22,21 @@ export function Footer({
   invoiceSettings,
   fontFamily,
   torqvoiceLogoDataUri,
+  portalUrl,
   styles,
 }: FooterProps) {
   const fontBold = getFontBold(fontFamily)
 
   return (
     <>
+      {portalUrl && (
+        <View style={{ marginTop: 8 }}>
+          <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
+            View your portal: {portalUrl}
+          </Text>
+        </View>
+      )}
+
       {invoiceSettings?.paymentTerms && (
         <View style={{ marginTop: 8 }}>
           <Text style={{ fontSize: 9, color: gray }}>

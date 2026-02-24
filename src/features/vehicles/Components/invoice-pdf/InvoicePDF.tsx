@@ -28,6 +28,7 @@ export function InvoicePDF({
   logoDataUri,
   template,
   torqvoiceLogoDataUri,
+  portalUrl,
 }: {
   data: InvoiceData
   workshop?: WorkshopInfo
@@ -39,6 +40,7 @@ export function InvoicePDF({
   logoDataUri?: string
   template?: TemplateConfig
   torqvoiceLogoDataUri?: string
+  portalUrl?: string
 }) {
   const primaryColor = template?.primaryColor || '#d97706'
   const fontFamily = template?.fontFamily || 'Helvetica'
@@ -152,6 +154,7 @@ export function InvoicePDF({
           primaryColor={primaryColor}
           fontFamily={fontFamily}
           torqvoiceLogoDataUri={torqvoiceLogoDataUri}
+          portalUrl={portalUrl}
           styles={styles}
         />
       </Page>

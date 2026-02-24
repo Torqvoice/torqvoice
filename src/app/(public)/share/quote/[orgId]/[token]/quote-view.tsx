@@ -72,6 +72,7 @@ export function QuoteView({
   timezone,
   primaryColor = "#d97706",
   headerStyle = "standard",
+  portalUrl,
 }: {
   quote: QuoteRecord;
   workshop: { name: string; address: string; phone: string; email: string };
@@ -84,6 +85,7 @@ export function QuoteView({
   timezone?: string;
   primaryColor?: string;
   headerStyle?: string;
+  portalUrl?: string;
 }) {
   const [downloading, setDownloading] = useState(false);
   const [status, setStatus] = useState(quote.status);
@@ -483,6 +485,17 @@ export function QuoteView({
           </div>
         )}
       </div>
+
+      {portalUrl && (
+        <div className="mt-3 border-t pt-3 text-center">
+          <p className="text-xs text-muted-foreground">
+            View your vehicles, invoices, and more at your{" "}
+            <a href={portalUrl} className="font-medium text-primary hover:underline">
+              customer portal
+            </a>
+          </p>
+        </div>
+      )}
 
       <div className="mt-4 flex items-center justify-center gap-1.5">
         {showTorqvoiceBranding ? (

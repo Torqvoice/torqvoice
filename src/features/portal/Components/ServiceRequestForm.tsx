@@ -67,7 +67,9 @@ export function ServiceRequestForm({
 
       if (result.success) {
         toast.success("Service request submitted");
-        router.push(`/portal/${orgId}/dashboard`);
+        setDescription("");
+        setPreferredDate("");
+        setVehicleId("");
         router.refresh();
       } else {
         toast.error(result.error ?? "Failed to submit request");

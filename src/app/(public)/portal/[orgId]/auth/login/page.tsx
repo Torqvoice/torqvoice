@@ -7,10 +7,13 @@ import { resolvePortalOrg } from "@/lib/portal-slug";
 
 export default async function PortalLoginPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ orgId: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
   const { orgId: orgParam } = await params;
+  const { error: authError } = await searchParams;
 
   // Resolve slug or id to real org
   const org = await resolvePortalOrg(orgParam);
@@ -74,6 +77,7 @@ export default async function PortalLoginPage({
       orgId={orgParam}
       orgName={org.name}
       orgLogo={logoSetting?.value}
+      error={authError}
     />
   );
 }

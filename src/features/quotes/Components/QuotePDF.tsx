@@ -57,6 +57,7 @@ export function QuotePDF({
   dateFormat,
   timezone,
   template,
+  portalUrl,
 }: {
   data: QuoteData
   workshop?: WorkshopInfo
@@ -66,6 +67,7 @@ export function QuotePDF({
   dateFormat?: string
   timezone?: string
   template?: TemplateConfig
+  portalUrl?: string
 }) {
   const primaryColor = template?.primaryColor || '#d97706'
   const fontFamily = template?.fontFamily || 'Helvetica'
@@ -421,6 +423,14 @@ export function QuotePDF({
           <View style={styles.notesSection}>
             <Text style={styles.notesLabel}>Description</Text>
             <Text style={styles.notesText}>{data.description}</Text>
+          </View>
+        )}
+
+        {portalUrl && (
+          <View style={{ marginTop: 8 }}>
+            <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
+              View your portal: {portalUrl}
+            </Text>
           </View>
         )}
 

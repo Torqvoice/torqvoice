@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { getPaymentProvider, getEnabledProviders } from "@/lib/payment-providers";
 import { rateLimit } from "@/lib/rate-limit";
 import { notify } from "@/lib/notify";
+import { resolvePortalOrg } from "@/lib/portal-slug";
 
 const verifySchema = z.object({
   provider: z.enum(["stripe", "vipps", "paypal"]),
@@ -18,7 +19,11 @@ export async function POST(
   if (limited) return limited;
 
   try {
-    const { orgId, token } = await params;
+    const { orgId: orgParam, token } = await params;
+
+    // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
+    const resolvedOrg = await resolvePortalOrg(orgParam);
+    const orgId = resolvedOrg?.id ?? orgParam;
 
     const record = await db.serviceRecord.findUnique({
       where: { publicToken: token },
