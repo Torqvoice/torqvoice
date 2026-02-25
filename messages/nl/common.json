@@ -1,0 +1,23 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Inloggen",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "submit": "Verzenden",
+    "back": "Terug",
+    "confirm": "Bevestigen"
+  },
+  "form": {
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "emailPlaceholder": "you@example.com"
+  },
+  "errors": {
+    "unexpected": "Er is een onverwachte fout opgetreden. Probeer het opnieuw."
+  },
+  "terms": {
+    "termsOfService": "Algemene voorwaarden"
+  }
+}

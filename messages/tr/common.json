@@ -1,0 +1,23 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Giriş Yap",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "submit": "Gönder",
+    "back": "Geri",
+    "confirm": "Onayla"
+  },
+  "form": {
+    "email": "E-posta",
+    "password": "Şifre",
+    "emailPlaceholder": "you@example.com"
+  },
+  "errors": {
+    "unexpected": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin."
+  },
+  "terms": {
+    "termsOfService": "Kullanım Koşulları"
+  }
+}

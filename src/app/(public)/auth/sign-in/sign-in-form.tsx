@@ -3,6 +3,7 @@
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { signIn } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,6 +11,8 @@ import { Label } from '@/components/ui/label'
 import { Gauge, Loader2, XCircle } from 'lucide-react'
 
 function SignInFormInner({ registrationDisabled }: { registrationDisabled: boolean }) {
+  const t = useTranslations('auth.signIn')
+  const tc = useTranslations('common')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -26,9 +29,9 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
       const result = await signIn.email({ email, password })
       if (result.error) {
         if (result.error.status === 429) {
-          setError('Too many attempts, try again later.')
+          setError(t('errors.tooManyAttempts'))
         } else {
-          setError(result.error.message || 'Invalid email or password')
+          setError(result.error.message || t('errors.invalidCredentials'))
         }
       } else {
         const redirect = searchParams.get('redirect') || '/'
@@ -36,7 +39,7 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
         router.refresh()
       }
     } catch {
-      setError('An unexpected error occurred. Please try again.')
+      setError(tc('errors.unexpected'))
     } finally {
       setLoading(false)
     }
@@ -48,11 +51,11 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
         <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
           <Gauge className="h-5 w-5 text-primary" />
           <span className="gradient-text text-sm font-bold tracking-wider uppercase">
-            Torqvoice
+            {tc('brandName')}
           </span>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Sign in to your workshop</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
       </div>
 
       {error && (
@@ -64,11 +67,11 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{tc('form.email')}</Label>
           <Input
             id="email"
             type="email"
-            placeholder="you@example.com"
+            placeholder={tc('form.emailPlaceholder')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -77,11 +80,11 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{tc('form.password')}</Label>
           <Input
             id="password"
             type="password"
-            placeholder="Enter your password"
+            placeholder={t('passwordPlaceholder')}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -89,30 +92,30 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
           />
           <div className="flex justify-end">
             <Link href="/auth/forgot-password" className="text-xs text-muted-foreground hover:underline">
-              Forgot password?
+              {t('forgotPassword')}
             </Link>
           </div>
         </div>
 
         <Button type="submit" className="h-11 w-full" disabled={loading}>
           {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Sign In
+          {tc('buttons.signIn')}
         </Button>
       </form>
 
       {!registrationDisabled && (
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{' '}
+          {t('noAccount')}{' '}
           <Link href="/auth/sign-up" className="font-medium text-primary hover:underline">
-            Create one
+            {t('createOne')}
           </Link>
         </p>
       )}
 
       <p className="mt-4 text-center text-xs text-muted-foreground">
-        By using this service you agree to our{' '}
+        {t('termsAgreement')}{' '}
         <Link href="/terms" target="_blank" className="text-primary hover:underline">
-          Terms of Service
+          {tc('terms.termsOfService')}
         </Link>
       </p>
     </div>

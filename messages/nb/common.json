@@ -1,0 +1,23 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Logg inn",
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "delete": "Slett",
+    "submit": "Send inn",
+    "back": "Tilbake",
+    "confirm": "Bekreft"
+  },
+  "form": {
+    "email": "E-post",
+    "password": "Passord",
+    "emailPlaceholder": "you@example.com"
+  },
+  "errors": {
+    "unexpected": "En uventet feil oppstod. Vennligst prøv igjen."
+  },
+  "terms": {
+    "termsOfService": "Vilkår for bruk"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Zaloguj się",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "submit": "Wyślij",
+    "back": "Wstecz",
+    "confirm": "Potwierdź"
+  },
+  "form": {
+    "email": "E-mail",
+    "password": "Hasło",
+    "emailPlaceholder": "you@example.com"
+  },
+  "errors": {
+    "unexpected": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie."
+  },
+  "terms": {
+    "termsOfService": "Regulamin"
+  }
+}
