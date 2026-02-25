@@ -12,7 +12,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
@@ -40,6 +45,7 @@ import {
   ClipboardList,
   Columns3,
   FileText,
+  Globe,
   MessageSquare,
   LayoutDashboard,
   Loader2,
@@ -53,7 +59,10 @@ import {
   Sun,
   Users,
 } from 'lucide-react'
+import { useLocale } from 'next-intl'
 import { switchOrganization } from '@/features/team/Actions/switchOrganization'
+import { setLocale } from '@/i18n/actions'
+import { locales, localeNames } from '@/i18n/config'
 import { createNewOrganization } from '@/features/team/Actions/createNewOrganization'
 import type { PlanFeatures } from '@/lib/features'
 import { useTheme } from '@/components/theme-provider'
@@ -87,6 +96,7 @@ export function AppSidebar({
   const router = useRouter()
   const { data: session } = useSession()
   const { theme, setTheme } = useTheme()
+  const currentLocale = useLocale()
   const [showCreateOrg, setShowCreateOrg] = React.useState(false)
   const [newOrgName, setNewOrgName] = React.useState('')
   const [creatingOrg, setCreatingOrg] = React.useState(false)
@@ -345,6 +355,27 @@ export function AppSidebar({
                   )}
                   {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
                 </DropdownMenuItem>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <Globe className="mr-2 size-4" />
+                    {localeNames[currentLocale as keyof typeof localeNames] ?? currentLocale}
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuRadioGroup
+                      value={currentLocale}
+                      onValueChange={async (value) => {
+                        await setLocale(value)
+                        router.refresh()
+                      }}
+                    >
+                      {locales.map((loc) => (
+                        <DropdownMenuRadioItem key={loc} value={loc}>
+                          {localeNames[loc]}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 size-4" />
