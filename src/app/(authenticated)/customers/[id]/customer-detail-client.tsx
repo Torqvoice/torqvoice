@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -93,6 +94,8 @@ export function CustomerDetailClient({
   smsMessages?: SmsMessage[];
   smsNextCursor?: string | null;
 }) {
+  const t = useTranslations("customers.detail");
+  const ts = useTranslations("customers.serviceRequests");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showEditForm, setShowEditForm] = useState(false);
@@ -127,7 +130,7 @@ export function CustomerDetailClient({
           className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to customers
+          {t("backToCustomers")}
         </Link>
 
         <div className="flex items-start gap-4">
@@ -150,7 +153,7 @@ export function CustomerDetailClient({
                     className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                     onClick={() => {
                       navigator.clipboard.writeText(customer.email!);
-                      toast.success("Email copied to clipboard");
+                      toast.success(t("emailCopied"));
                     }}
                   >
                     <Mail className="h-3.5 w-3.5" />
@@ -163,7 +166,7 @@ export function CustomerDetailClient({
                     className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                     onClick={() => {
                       navigator.clipboard.writeText(customer.phone!);
-                      toast.success("Phone number copied to clipboard");
+                      toast.success(t("phoneCopied"));
                     }}
                   >
                     <Phone className="h-3.5 w-3.5" />
@@ -186,7 +189,7 @@ export function CustomerDetailClient({
           </div>
           <Button variant="outline" size="sm" onClick={() => setShowEditForm(true)}>
             <Pencil className="mr-1 h-3.5 w-3.5" />
-            Edit Customer
+            {t("editCustomer")}
           </Button>
         </div>
       </div>
@@ -205,7 +208,7 @@ export function CustomerDetailClient({
             )}
           >
             <Car className="h-4 w-4" />
-            Vehicles ({customer.vehicles.length})
+            {t("tabs.vehicles", { count: customer.vehicles.length })}
           </button>
           {smsEnabled && (
             <button
@@ -219,7 +222,7 @@ export function CustomerDetailClient({
               )}
             >
               <MessageSquare className="h-4 w-4" />
-              Messages
+              {t("tabs.messages")}
             </button>
           )}
           {(customer.serviceRequests?.length ?? 0) > 0 && (
@@ -234,7 +237,7 @@ export function CustomerDetailClient({
               )}
             >
               <Wrench className="h-4 w-4" />
-              Requests ({customer.serviceRequests!.length})
+              {t("tabs.requests", { count: customer.serviceRequests!.length })}
             </button>
           )}
         </div>
@@ -246,7 +249,7 @@ export function CustomerDetailClient({
                 <CardContent className="flex flex-col items-center py-12">
                   <Car className="mb-3 h-10 w-10 text-muted-foreground/40" />
                   <p className="text-sm text-muted-foreground">
-                    No vehicles assigned to this customer
+                    {t("noVehicles")}
                   </p>
                 </CardContent>
               </Card>
@@ -255,10 +258,10 @@ export function CustomerDetailClient({
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[120px]">Plate</TableHead>
-                      <TableHead>Vehicle</TableHead>
-                      <TableHead className="hidden sm:table-cell w-[100px] text-right">Mileage</TableHead>
-                      <TableHead className="w-[80px] text-center">Services</TableHead>
+                      <TableHead className="w-[120px]">{t("vehicleTable.plate")}</TableHead>
+                      <TableHead>{t("vehicleTable.vehicle")}</TableHead>
+                      <TableHead className="hidden sm:table-cell w-[100px] text-right">{t("vehicleTable.mileage")}</TableHead>
+                      <TableHead className="w-[80px] text-center">{t("vehicleTable.services")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -325,18 +328,6 @@ export function CustomerDetailClient({
   );
 }
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "outline"; icon: React.ReactNode }> = {
-  pending: { label: "New", variant: "secondary", icon: <Clock className="h-3 w-3" /> },
-  converted: { label: "Work Order Created", variant: "default", icon: <CheckCircle2 className="h-3 w-3" /> },
-  dismissed: { label: "Dismissed", variant: "outline", icon: <X className="h-3 w-3" /> },
-};
-
-function getWorkOrderId(adminNotes: string | null): string | null {
-  if (!adminNotes) return null;
-  const match = adminNotes.match(/Work Order: (\S+)/);
-  return match ? match[1] : null;
-}
-
 function ServiceRequestCard({
   request,
   smsEnabled,
@@ -350,23 +341,35 @@ function ServiceRequestCard({
   customerName: string;
   customerId: string;
 }) {
+  const t = useTranslations("customers.serviceRequests");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [notes, setNotes] = useState(request.adminNotes ?? "");
   const [showNotes, setShowNotes] = useState(false);
   const [showSmsDialog, setShowSmsDialog] = useState(false);
 
+  const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "outline"; icon: React.ReactNode }> = {
+    pending: { label: t("statusNew"), variant: "secondary", icon: <Clock className="h-3 w-3" /> },
+    converted: { label: t("statusConverted"), variant: "default", icon: <CheckCircle2 className="h-3 w-3" /> },
+    dismissed: { label: t("statusDismissed"), variant: "outline", icon: <X className="h-3 w-3" /> },
+  };
+
   const config = statusConfig[request.status] ?? statusConfig.pending;
-  const workOrderId = getWorkOrderId(request.adminNotes);
+
+  const workOrderId = (() => {
+    if (!request.adminNotes) return null;
+    const match = request.adminNotes.match(/Work Order: (\S+)/);
+    return match ? match[1] : null;
+  })();
 
   const handleCreateWorkOrder = () => {
     startTransition(async () => {
       const result = await createWorkOrderFromRequest(request.id);
       if (result.success && result.data) {
-        toast.success("Work order created");
+        toast.success(t("workOrderCreated"));
         router.push(`/vehicles/${result.data.vehicleId}/service/${result.data.serviceRecordId}`);
       } else {
-        toast.error(result.error ?? "Failed to create work order");
+        toast.error(result.error ?? t("workOrderError"));
       }
     });
   };
@@ -378,10 +381,10 @@ function ServiceRequestCard({
         adminNotes: notes || undefined,
       });
       if (result.success) {
-        toast.success("Request dismissed");
+        toast.success(t("requestDismissed"));
         router.refresh();
       } else {
-        toast.error(result.error ?? "Failed to dismiss request");
+        toast.error(result.error ?? t("dismissError"));
       }
     });
   };
@@ -392,15 +395,16 @@ function ServiceRequestCard({
         adminNotes: notes || undefined,
       });
       if (result.success) {
-        toast.success("Notes saved");
+        toast.success(t("notesSaved"));
         router.refresh();
       } else {
-        toast.error(result.error ?? "Failed to save notes");
+        toast.error(result.error ?? t("notesSaveError"));
       }
     });
   };
 
   const canSms = smsEnabled && !!customerPhone;
+  const vehicleDisplay = `${request.vehicle.year} ${request.vehicle.make} ${request.vehicle.model}`;
 
   return (
     <>
@@ -410,7 +414,7 @@ function ServiceRequestCard({
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-medium">
-                  {request.vehicle.year} {request.vehicle.make} {request.vehicle.model}
+                  {vehicleDisplay}
                 </p>
                 <Badge variant={config.variant} className="gap-1">
                   {config.icon}
@@ -421,14 +425,14 @@ function ServiceRequestCard({
                 {request.description}
               </p>
               <div className="mt-2 flex gap-3 text-xs text-muted-foreground">
-                <span>Submitted {new Date(request.createdAt).toLocaleDateString()}</span>
+                <span>{t("submitted", { date: new Date(request.createdAt).toLocaleDateString() })}</span>
                 {request.preferredDate && (
-                  <span>Preferred: {new Date(request.preferredDate).toLocaleDateString()}</span>
+                  <span>{t("preferred", { date: new Date(request.preferredDate).toLocaleDateString() })}</span>
                 )}
               </div>
               {request.adminNotes && !showNotes && (
                 <p className="mt-2 text-xs text-muted-foreground">
-                  <span className="font-medium">Staff notes:</span> {request.adminNotes}
+                  <span className="font-medium">{t("staffNotes")}</span> {request.adminNotes}
                 </p>
               )}
             </div>
@@ -444,7 +448,7 @@ function ServiceRequestCard({
                   disabled={isPending}
                 >
                   {isPending ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Plus className="mr-1 h-3 w-3" />}
-                  Create Work Order
+                  {t("createWorkOrder")}
                 </Button>
                 {canSms && (
                   <Button
@@ -454,7 +458,7 @@ function ServiceRequestCard({
                     disabled={isPending}
                   >
                     <MessageSquare className="mr-1 h-3 w-3" />
-                    Contact Customer
+                    {t("contactCustomer")}
                   </Button>
                 )}
                 <Button
@@ -464,7 +468,7 @@ function ServiceRequestCard({
                   disabled={isPending}
                 >
                   <X className="mr-1 h-3 w-3" />
-                  Dismiss
+                  {t("dismiss")}
                 </Button>
               </>
             )}
@@ -475,7 +479,7 @@ function ServiceRequestCard({
                 onClick={() => router.push(`/vehicles/${request.vehicle.id}/service/${workOrderId}`)}
               >
                 <ExternalLink className="mr-1 h-3 w-3" />
-                View Work Order
+                {t("viewWorkOrder")}
               </Button>
             )}
             <Button
@@ -484,21 +488,21 @@ function ServiceRequestCard({
               onClick={() => setShowNotes(!showNotes)}
             >
               <Pencil className="mr-1 h-3 w-3" />
-              {showNotes ? "Hide Notes" : "Notes"}
+              {showNotes ? t("hideNotes") : t("notes")}
             </Button>
           </div>
 
           {showNotes && (
             <div className="mt-3 space-y-2">
               <Textarea
-                placeholder="Add internal notes..."
+                placeholder={t("notesPlaceholder")}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
               />
               <Button size="sm" onClick={handleSaveNotes} disabled={isPending}>
                 {isPending && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
-                Save Notes
+                {t("saveNotes")}
               </Button>
             </div>
           )}
@@ -512,8 +516,8 @@ function ServiceRequestCard({
           customerId={customerId}
           customerName={customerName}
           customerPhone={customerPhone!}
-          entityLabel="Service Request Message"
-          defaultMessage={`Hi ${customerName}, regarding your service request for your ${request.vehicle.year} ${request.vehicle.make} ${request.vehicle.model}: `}
+          entityLabel={t("smsLabel")}
+          defaultMessage={t("smsDefault", { name: customerName, vehicle: vehicleDisplay })}
           relatedEntityType="service_request"
           relatedEntityId={request.id}
         />

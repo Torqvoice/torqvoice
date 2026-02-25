@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { getDashboardStats, getUpcomingReminders } from "@/features/vehicles/Actions/dashboardActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
@@ -31,12 +32,13 @@ export default async function DashboardPage() {
   ]);
 
   if (!result.success || !result.data) {
+    const t = await getTranslations("dashboard");
     return (
       <>
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-muted-foreground">
-            {result.error || "Failed to load dashboard"}
+            {result.error || t("error")}
           </p>
         </div>
       </>

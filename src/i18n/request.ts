@@ -11,12 +11,18 @@ export default getRequestConfig(async () => {
 
   const common = (await import(`../../messages/${locale}/common.json`)).default
   const auth = (await import(`../../messages/${locale}/auth.json`)).default
+  const dashboard = (await import(`../../messages/${locale}/dashboard.json`)).default
+  const navigation = (await import(`../../messages/${locale}/navigation.json`)).default
+  const customers = (await import(`../../messages/${locale}/customers.json`)).default
 
   return {
     locale,
     messages: {
       common,
       auth,
+      dashboard,
+      navigation,
+      customers,
     },
   }
 })

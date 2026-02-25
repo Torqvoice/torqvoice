@@ -1,0 +1,89 @@
+{
+  "stats": {
+    "activeJobs": "Trabalhos Ativos",
+    "pending": "Pendentes",
+    "todaysRevenue": "Receita de Hoje",
+    "totalCustomers": "Total de Clientes"
+  },
+  "customize": "Personalizar",
+  "showCards": "Mostrar cartões",
+  "cards": {
+    "maintenance": "Manutenção Prevista",
+    "reminders": "Lembretes Próximos",
+    "inspections": "Inspeções",
+    "quoteRequests": "Solicitações de Orçamento",
+    "quoteResponses": "Respostas de Orçamento",
+    "sms": "Mensagens Recentes",
+    "notifications": "Notificações Recentes",
+    "recentCompleted": "Concluídos Recentemente",
+    "activeJobs": "Trabalhos Ativos"
+  },
+  "maintenance": {
+    "title": "Manutenção Prevista",
+    "description": "Com base no histórico de serviços e quilometragem diária estimada",
+    "overdue": "Atrasado",
+    "approaching": "Próximo",
+    "estimated": "Est. {mileage} {unit}",
+    "sinceLastService": "{mileage} {unit} desde o último serviço",
+    "certainty": "{percent}% de certeza"
+  },
+  "reminders": {
+    "title": "Lembretes Próximos",
+    "overdue": "Atrasado",
+    "dueSoon": "Vence em Breve"
+  },
+  "messages": {
+    "title": "Mensagens Recentes",
+    "viewAll": "Ver Todas",
+    "you": "Você: "
+  },
+  "notifications": {
+    "title": "Notificações Recentes"
+  },
+  "inspections": {
+    "title": "Inspeções",
+    "inProgress": "Em Andamento",
+    "completed": "Concluído",
+    "itemCount": "{inspected}/{total} itens"
+  },
+  "quoteRequests": {
+    "title": "Solicitações de Orçamento",
+    "description": "Clientes solicitando orçamentos a partir de inspeções compartilhadas",
+    "pending": "Pendente",
+    "createQuote": "Criar Orçamento",
+    "itemsRequested": "{count, plural, one {# item solicitado} other {# itens solicitados}}"
+  },
+  "quoteResponses": {
+    "title": "Respostas de Orçamento dos Clientes",
+    "description": "Orçamentos que os clientes aceitaram ou solicitaram alterações",
+    "accepted": "Aceito",
+    "changesRequested": "Alterações Solicitadas",
+    "convertToWorkOrder": "Converter em Ordem de Serviço",
+    "viewQuote": "Ver Orçamento"
+  },
+  "recentCompleted": {
+    "title": "Concluídos Recentemente",
+    "date": "Data",
+    "vehicle": "Veículo",
+    "customer": "Cliente",
+    "serviceTitle": "Título",
+    "total": "Total",
+    "empty": "Nenhum serviço concluído ainda"
+  },
+  "activeJobsTable": {
+    "title": "Trabalhos Ativos",
+    "vehicle": "Veículo",
+    "customer": "Cliente",
+    "serviceTitle": "Título",
+    "status": "Status",
+    "tech": "Técnico",
+    "empty": "Nenhum trabalho ativo"
+  },
+  "relativeTime": {
+    "now": "agora",
+    "minutes": "{count}m",
+    "hours": "{count}h",
+    "days": "{count}d"
+  },
+  "error": "Falha ao carregar o painel"
+}

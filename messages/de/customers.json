@@ -1,0 +1,76 @@
+{
+  "list": {
+    "addCustomer": "Kunde hinzufügen",
+    "searchPlaceholder": "Kunden suchen...",
+    "table": {
+      "name": "Name",
+      "company": "Unternehmen",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "vehicles": "Fahrzeuge"
+    },
+    "emptySearch": "Keine Kunden entsprechen Ihrer Suche.",
+    "empty": "Noch keine Kunden vorhanden.",
+    "deleteTitle": "Kunde löschen",
+    "deleteDescription": "{name} löschen? Die zugehörigen Fahrzeuge werden dabei entknüpft.",
+    "deleteError": "Kunde konnte nicht gelöscht werden",
+    "error": "Kunden konnten nicht geladen werden"
+  },
+  "detail": {
+    "backToCustomers": "Zurück zur Kundenliste",
+    "editCustomer": "Kunde bearbeiten",
+    "notFound": "Kunde nicht gefunden",
+    "emailCopied": "E-Mail in die Zwischenablage kopiert",
+    "phoneCopied": "Telefonnummer in die Zwischenablage kopiert",
+    "tabs": {
+      "vehicles": "Fahrzeuge ({count})",
+      "messages": "Nachrichten",
+      "requests": "Anfragen ({count})"
+    },
+    "vehicleTable": {
+      "plate": "Kennzeichen",
+      "vehicle": "Fahrzeug",
+      "mileage": "Kilometerstand",
+      "services": "Wartungen"
+    },
+    "noVehicles": "Diesem Kunden sind keine Fahrzeuge zugewiesen"
+  },
+  "form": {
+    "addTitle": "Neuen Kunden anlegen",
+    "editTitle": "Kunde bearbeiten",
+    "nameRequired": "Name *",
+    "namePlaceholder": "Max Mustermann",
+    "emailPlaceholder": "max@beispiel.de",
+    "phonePlaceholder": "+49 151 12345678",
+    "companyPlaceholder": "Firmenname",
+    "addressPlaceholder": "Musterstraße 1, 12345 Musterstadt",
+    "notesPlaceholder": "Weitere Anmerkungen...",
+    "customerUpdated": "Kunde aktualisiert",
+    "customerCreated": "Kunde angelegt",
+    "saveError": "Kunde konnte nicht gespeichert werden"
+  },
+  "serviceRequests": {
+    "statusNew": "Neu",
+    "statusConverted": "Arbeitsauftrag erstellt",
+    "statusDismissed": "Abgelehnt",
+    "createWorkOrder": "Arbeitsauftrag erstellen",
+    "contactCustomer": "Kunde kontaktieren",
+    "dismiss": "Ablehnen",
+    "viewWorkOrder": "Arbeitsauftrag anzeigen",
+    "notes": "Notizen",
+    "hideNotes": "Notizen ausblenden",
+    "staffNotes": "Mitarbeiternotizen:",
+    "notesPlaceholder": "Interne Notizen hinzufügen...",
+    "saveNotes": "Notizen speichern",
+    "submitted": "Eingereicht am {date}",
+    "preferred": "Gewünscht: {date}",
+    "workOrderCreated": "Arbeitsauftrag erstellt",
+    "workOrderError": "Arbeitsauftrag konnte nicht erstellt werden",
+    "requestDismissed": "Anfrage abgelehnt",
+    "dismissError": "Anfrage konnte nicht abgelehnt werden",
+    "notesSaved": "Notizen gespeichert",
+    "notesSaveError": "Notizen konnten nicht gespeichert werden",
+    "smsLabel": "Serviceanfrage-Nachricht",
+    "smsDefault": "Hallo {name}, bezüglich Ihrer Serviceanfrage für Ihr Fahrzeug {vehicle}: "
+  }
+}

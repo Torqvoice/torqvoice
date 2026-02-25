@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Plus, Loader2 } from "lucide-react";
 import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
@@ -23,6 +24,7 @@ interface CustomerOption {
 }
 
 export function NewWorkOrderButton() {
+  const t = useTranslations("navigation");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
@@ -66,7 +68,7 @@ export function NewWorkOrderButton() {
         ) : (
           <Plus className="mr-1 h-3.5 w-3.5" />
         )}
-        New Work Order
+        {t("newWorkOrder")}
       </Button>
       <VehiclePickerDialog
         open={open}

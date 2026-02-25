@@ -2,17 +2,19 @@
 
 import { useState, useCallback } from "react";
 
-export const DASHBOARD_CARDS = [
-  { id: "maintenance", label: "Predicted Maintenance" },
-  { id: "reminders", label: "Upcoming Reminders" },
-  { id: "inspections", label: "Inspections" },
-  { id: "quoteRequests", label: "Quote Requests" },
-  { id: "quoteResponses", label: "Quote Responses" },
-  { id: "sms", label: "Recent Messages" },
-  { id: "notifications", label: "Recent Notifications" },
-  { id: "recentCompleted", label: "Recent Completed" },
-  { id: "activeJobs", label: "Active Jobs" },
+export const DASHBOARD_CARD_IDS = [
+  "maintenance",
+  "reminders",
+  "inspections",
+  "quoteRequests",
+  "quoteResponses",
+  "sms",
+  "notifications",
+  "recentCompleted",
+  "activeJobs",
 ] as const;
+
+export type DashboardCardId = (typeof DASHBOARD_CARD_IDS)[number];
 
 const STORAGE_KEY = "torqvoice-dashboard-hidden";
 

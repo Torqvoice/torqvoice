@@ -1,0 +1,89 @@
+{
+  "stats": {
+    "activeJobs": "Aktive Aufträge",
+    "pending": "Ausstehend",
+    "todaysRevenue": "Heutiger Umsatz",
+    "totalCustomers": "Kunden gesamt"
+  },
+  "customize": "Anpassen",
+  "showCards": "Karten anzeigen",
+  "cards": {
+    "maintenance": "Voraussichtliche Wartung",
+    "reminders": "Anstehende Erinnerungen",
+    "inspections": "Inspektionen",
+    "quoteRequests": "Angebotsanfragen",
+    "quoteResponses": "Angebotsantworten",
+    "sms": "Letzte Nachrichten",
+    "notifications": "Letzte Benachrichtigungen",
+    "recentCompleted": "Kürzlich abgeschlossen",
+    "activeJobs": "Aktive Aufträge"
+  },
+  "maintenance": {
+    "title": "Voraussichtlich fällige Wartung",
+    "description": "Basierend auf der Servicehistorie und der geschätzten täglichen Fahrleistung",
+    "overdue": "Überfällig",
+    "approaching": "Bevorstehend",
+    "estimated": "Gesch. {mileage} {unit}",
+    "sinceLastService": "{mileage} {unit} seit letztem Service",
+    "certainty": "{percent}% Sicherheit"
+  },
+  "reminders": {
+    "title": "Anstehende Erinnerungen",
+    "overdue": "Überfällig",
+    "dueSoon": "Bald fällig"
+  },
+  "messages": {
+    "title": "Letzte Nachrichten",
+    "viewAll": "Alle anzeigen",
+    "you": "Sie: "
+  },
+  "notifications": {
+    "title": "Letzte Benachrichtigungen"
+  },
+  "inspections": {
+    "title": "Inspektionen",
+    "inProgress": "In Bearbeitung",
+    "completed": "Abgeschlossen",
+    "itemCount": "{inspected}/{total} Positionen"
+  },
+  "quoteRequests": {
+    "title": "Angebotsanfragen",
+    "description": "Kunden, die Angebote aus geteilten Inspektionen anfordern",
+    "pending": "Ausstehend",
+    "createQuote": "Angebot erstellen",
+    "itemsRequested": "{count, plural, one {# Position angefragt} other {# Positionen angefragt}}"
+  },
+  "quoteResponses": {
+    "title": "Angebotsantworten der Kunden",
+    "description": "Angebote, die von Kunden angenommen oder bei denen Änderungen gewünscht wurden",
+    "accepted": "Angenommen",
+    "changesRequested": "Änderungen gewünscht",
+    "convertToWorkOrder": "In Arbeitsauftrag umwandeln",
+    "viewQuote": "Angebot anzeigen"
+  },
+  "recentCompleted": {
+    "title": "Kürzlich abgeschlossen",
+    "date": "Datum",
+    "vehicle": "Fahrzeug",
+    "customer": "Kunde",
+    "serviceTitle": "Bezeichnung",
+    "total": "Gesamt",
+    "empty": "Noch keine abgeschlossenen Services"
+  },
+  "activeJobsTable": {
+    "title": "Aktive Aufträge",
+    "vehicle": "Fahrzeug",
+    "customer": "Kunde",
+    "serviceTitle": "Bezeichnung",
+    "status": "Status",
+    "tech": "Techniker",
+    "empty": "Keine aktiven Aufträge"
+  },
+  "relativeTime": {
+    "now": "jetzt",
+    "minutes": "{count}m",
+    "hours": "{count}h",
+    "days": "{count}T"
+  },
+  "error": "Dashboard konnte nicht geladen werden"
+}

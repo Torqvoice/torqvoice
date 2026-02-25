@@ -1,0 +1,89 @@
+{
+  "stats": {
+    "activeJobs": "Aktywne zlecenia",
+    "pending": "Oczekujące",
+    "todaysRevenue": "Dzisiejszy przychód",
+    "totalCustomers": "Łączna liczba klientów"
+  },
+  "customize": "Dostosuj",
+  "showCards": "Pokaż karty",
+  "cards": {
+    "maintenance": "Przewidywana konserwacja",
+    "reminders": "Nadchodzące przypomnienia",
+    "inspections": "Przeglądy",
+    "quoteRequests": "Zapytania o wycenę",
+    "quoteResponses": "Odpowiedzi na wyceny",
+    "sms": "Ostatnie wiadomości",
+    "notifications": "Ostatnie powiadomienia",
+    "recentCompleted": "Ostatnio ukończone",
+    "activeJobs": "Aktywne zlecenia"
+  },
+  "maintenance": {
+    "title": "Przewidywany termin konserwacji",
+    "description": "Na podstawie historii serwisowej i szacowanego dziennego przebiegu",
+    "overdue": "Zaległy",
+    "approaching": "Zbliżający się",
+    "estimated": "Szac. {mileage} {unit}",
+    "sinceLastService": "{mileage} {unit} od ostatniego serwisu",
+    "certainty": "{percent}% pewności"
+  },
+  "reminders": {
+    "title": "Nadchodzące przypomnienia",
+    "overdue": "Zaległe",
+    "dueSoon": "Wkrótce"
+  },
+  "messages": {
+    "title": "Ostatnie wiadomości",
+    "viewAll": "Pokaż wszystkie",
+    "you": "Ty: "
+  },
+  "notifications": {
+    "title": "Ostatnie powiadomienia"
+  },
+  "inspections": {
+    "title": "Przeglądy",
+    "inProgress": "W trakcie",
+    "completed": "Ukończone",
+    "itemCount": "{inspected}/{total} pozycji"
+  },
+  "quoteRequests": {
+    "title": "Zapytania o wycenę",
+    "description": "Klienci wnioskujący o wycenę z udostępnionych przeglądów",
+    "pending": "Oczekujące",
+    "createQuote": "Utwórz wycenę",
+    "itemsRequested": "{count, plural, one {# pozycja zgłoszona} few {# pozycje zgłoszone} many {# pozycji zgłoszonych} other {# pozycji zgłoszonych}}"
+  },
+  "quoteResponses": {
+    "title": "Odpowiedzi klientów na wyceny",
+    "description": "Wyceny zaakceptowane przez klientów lub ze zgłoszonymi zmianami",
+    "accepted": "Zaakceptowane",
+    "changesRequested": "Zgłoszono zmiany",
+    "convertToWorkOrder": "Przekształć w zlecenie",
+    "viewQuote": "Pokaż wycenę"
+  },
+  "recentCompleted": {
+    "title": "Ostatnio ukończone",
+    "date": "Data",
+    "vehicle": "Pojazd",
+    "customer": "Klient",
+    "serviceTitle": "Tytuł",
+    "total": "Suma",
+    "empty": "Brak ukończonych usług"
+  },
+  "activeJobsTable": {
+    "title": "Aktywne zlecenia",
+    "vehicle": "Pojazd",
+    "customer": "Klient",
+    "serviceTitle": "Tytuł",
+    "status": "Status",
+    "tech": "Technik",
+    "empty": "Brak aktywnych zleceń"
+  },
+  "relativeTime": {
+    "now": "teraz",
+    "minutes": "{count}m",
+    "hours": "{count}godz.",
+    "days": "{count}d"
+  },
+  "error": "Nie udało się załadować pulpitu"
+}

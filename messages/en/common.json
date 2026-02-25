@@ -3,19 +3,28 @@
   "buttons": {
     "signIn": "Sign In",
     "save": "Save",
+    "saveChanges": "Save Changes",
     "cancel": "Cancel",
     "delete": "Delete",
     "submit": "Submit",
     "back": "Back",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "add": "Add"
   },
   "form": {
     "email": "Email",
     "password": "Password",
-    "emailPlaceholder": "you@example.com"
+    "emailPlaceholder": "you@example.com",
+    "name": "Name",
+    "phone": "Phone",
+    "company": "Company",
+    "address": "Address",
+    "notes": "Notes"
   },
   "errors": {
-    "unexpected": "An unexpected error occurred. Please try again."
+    "unexpected": "An unexpected error occurred. Please try again.",
+    "error": "Error"
   },
   "terms": {
     "termsOfService": "Terms of Service"

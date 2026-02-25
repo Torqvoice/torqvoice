@@ -1,0 +1,76 @@
+{
+  "list": {
+    "addCustomer": "Klant toevoegen",
+    "searchPlaceholder": "Klanten zoeken...",
+    "table": {
+      "name": "Naam",
+      "company": "Bedrijf",
+      "phone": "Telefoon",
+      "email": "E-mail",
+      "vehicles": "Voertuigen"
+    },
+    "emptySearch": "Geen klanten gevonden voor uw zoekopdracht.",
+    "empty": "Nog geen klanten.",
+    "deleteTitle": "Klant verwijderen",
+    "deleteDescription": "{name} verwijderen? Hun voertuigen worden ontkoppeld.",
+    "deleteError": "Verwijderen van klant mislukt",
+    "error": "Laden van klanten mislukt"
+  },
+  "detail": {
+    "backToCustomers": "Terug naar klanten",
+    "editCustomer": "Klant bewerken",
+    "notFound": "Klant niet gevonden",
+    "emailCopied": "E-mailadres gekopieerd naar klembord",
+    "phoneCopied": "Telefoonnummer gekopieerd naar klembord",
+    "tabs": {
+      "vehicles": "Voertuigen ({count})",
+      "messages": "Berichten",
+      "requests": "Aanvragen ({count})"
+    },
+    "vehicleTable": {
+      "plate": "Kenteken",
+      "vehicle": "Voertuig",
+      "mileage": "Kilometerstand",
+      "services": "Services"
+    },
+    "noVehicles": "Geen voertuigen gekoppeld aan deze klant"
+  },
+  "form": {
+    "addTitle": "Nieuwe klant toevoegen",
+    "editTitle": "Klant bewerken",
+    "nameRequired": "Naam *",
+    "namePlaceholder": "Jan de Vries",
+    "emailPlaceholder": "jan@voorbeeld.nl",
+    "phonePlaceholder": "06 12345678",
+    "companyPlaceholder": "Bedrijfsnaam",
+    "addressPlaceholder": "Hoofdstraat 1, 1000 AA Amsterdam",
+    "notesPlaceholder": "Aanvullende opmerkingen...",
+    "customerUpdated": "Klant bijgewerkt",
+    "customerCreated": "Klant aangemaakt",
+    "saveError": "Opslaan van klant mislukt"
+  },
+  "serviceRequests": {
+    "statusNew": "Nieuw",
+    "statusConverted": "Werkorder aangemaakt",
+    "statusDismissed": "Afgewezen",
+    "createWorkOrder": "Werkorder aanmaken",
+    "contactCustomer": "Klant contacteren",
+    "dismiss": "Afwijzen",
+    "viewWorkOrder": "Werkorder bekijken",
+    "notes": "Opmerkingen",
+    "hideNotes": "Opmerkingen verbergen",
+    "staffNotes": "Personeelsopmerkingen:",
+    "notesPlaceholder": "Interne opmerkingen toevoegen...",
+    "saveNotes": "Opmerkingen opslaan",
+    "submitted": "Ingediend {date}",
+    "preferred": "Voorkeur: {date}",
+    "workOrderCreated": "Werkorder aangemaakt",
+    "workOrderError": "Aanmaken van werkorder mislukt",
+    "requestDismissed": "Aanvraag afgewezen",
+    "dismissError": "Afwijzen van aanvraag mislukt",
+    "notesSaved": "Opmerkingen opgeslagen",
+    "notesSaveError": "Opslaan van opmerkingen mislukt",
+    "smsLabel": "Serviceaanvraag bericht",
+    "smsDefault": "Hallo {name}, betreffende uw serviceaanvraag voor uw {vehicle}: "
+  }
+}

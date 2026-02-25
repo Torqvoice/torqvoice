@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useFormatDate } from "@/lib/use-format-date";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,7 +41,7 @@ import { dismissMaintenance } from "@/features/vehicles/Actions/dismissMaintenan
 import { updateQuoteRequestStatus } from "@/features/inspections/Actions/quoteRequestActions";
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
 import { convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
-import { useDashboardVisibility, DASHBOARD_CARDS } from "@/hooks/use-dashboard-visibility";
+import { useDashboardVisibility, DASHBOARD_CARD_IDS } from "@/hooks/use-dashboard-visibility";
 
 interface ServiceItem {
   id: string;
@@ -199,6 +200,7 @@ export function DashboardClient({
   smsEnabled?: boolean;
   notifications?: DashboardNotification[];
 }) {
+  const t = useTranslations("dashboard");
   const distUnit = unitSystem === "metric" ? "km" : "mi";
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -215,10 +217,10 @@ export function DashboardClient({
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return "now";
-    if (diffMins < 60) return `${diffMins}m`;
-    if (diffHours < 24) return `${diffHours}h`;
-    if (diffDays < 7) return `${diffDays}d`;
+    if (diffMins < 1) return t("relativeTime.now");
+    if (diffMins < 60) return t("relativeTime.minutes", { count: diffMins });
+    if (diffHours < 24) return t("relativeTime.hours", { count: diffHours });
+    if (diffDays < 7) return t("relativeTime.days", { count: diffDays });
     return d.toLocaleDateString([], { month: "short", day: "numeric" });
   };
 
@@ -238,7 +240,7 @@ export function DashboardClient({
           <CardContent className="p-4">
             <div className="flex items-center gap-2 text-muted-foreground">
               <ClipboardList className="h-4 w-4" />
-              <span className="text-xs font-medium">Active Jobs</span>
+              <span className="text-xs font-medium">{t("stats.activeJobs")}</span>
             </div>
             <p className="mt-1 text-2xl font-bold">{stats.activeJobs}</p>
           </CardContent>
@@ -247,7 +249,7 @@ export function DashboardClient({
           <CardContent className="p-4">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Clock className="h-4 w-4" />
-              <span className="text-xs font-medium">Pending</span>
+              <span className="text-xs font-medium">{t("stats.pending")}</span>
             </div>
             <p className="mt-1 text-2xl font-bold">{stats.pendingJobs}</p>
           </CardContent>
@@ -257,7 +259,7 @@ export function DashboardClient({
             <CardContent className="p-4">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <DollarSign className="h-4 w-4" />
-                <span className="text-xs font-medium">Today&apos;s Revenue</span>
+                <span className="text-xs font-medium">{t("stats.todaysRevenue")}</span>
               </div>
               <p className="mt-1 text-2xl font-bold">
                 {formatCurrency(stats.todayRevenue, currencyCode)}
@@ -270,7 +272,7 @@ export function DashboardClient({
             <CardContent className="p-4">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Users className="h-4 w-4" />
-                <span className="text-xs font-medium">Total Customers</span>
+                <span className="text-xs font-medium">{t("stats.totalCustomers")}</span>
               </div>
               <p className="mt-1 text-2xl font-bold">{stats.totalCustomers}</p>
             </CardContent>
@@ -284,19 +286,19 @@ export function DashboardClient({
           <PopoverTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
               <SlidersHorizontal className="h-3.5 w-3.5" />
-              Customize
+              {t("customize")}
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-56 p-3">
-            <p className="text-sm font-medium mb-2">Show cards</p>
+            <p className="text-sm font-medium mb-2">{t("showCards")}</p>
             <div className="space-y-2">
-              {DASHBOARD_CARDS.filter((c) => smsEnabled ? c.id !== "notifications" : c.id !== "sms").map((card) => (
-                <label key={card.id} className="flex items-center justify-between gap-2 cursor-pointer">
-                  <span className="text-sm">{card.label}</span>
+              {DASHBOARD_CARD_IDS.filter((id) => smsEnabled ? id !== "notifications" : id !== "sms").map((id) => (
+                <label key={id} className="flex items-center justify-between gap-2 cursor-pointer">
+                  <span className="text-sm">{t(`cards.${id}`)}</span>
                   <Switch
                     size="sm"
-                    checked={isVisible(card.id)}
-                    onCheckedChange={() => toggleCard(card.id)}
+                    checked={isVisible(id)}
+                    onCheckedChange={() => toggleCard(id)}
                   />
                 </label>
               ))}
@@ -313,10 +315,10 @@ export function DashboardClient({
             <CardHeader className="pb-1">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Gauge className="h-4 w-4" />
-                Predicted Maintenance Due
+                {t("maintenance.title")}
               </CardTitle>
               <p className="text-xs text-muted-foreground">
-                Based on service history and estimated daily mileage
+                {t("maintenance.description")}
               </p>
             </CardHeader>
             <CardContent className="p-0">
@@ -343,22 +345,22 @@ export function DashboardClient({
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
                           {v.licensePlate && `${v.licensePlate} · `}
-                          Est. {v.predictedMileage.toLocaleString()} {distUnit}
+                          {t("maintenance.estimated", { mileage: v.predictedMileage.toLocaleString(), unit: distUnit })}
                           {" · "}
-                          {v.mileageSinceLastService.toLocaleString()} {distUnit} since last service
+                          {t("maintenance.sinceLastService", { mileage: v.mileageSinceLastService.toLocaleString(), unit: distUnit })}
                           {" · "}
-                          {v.confidencePercent}% certainty
+                          {t("maintenance.certainty", { percent: v.confidencePercent })}
                         </p>
                       </div>
                     </div>
                     <div className="shrink-0 ml-3 flex items-center gap-1.5">
                       {v.status === "overdue" ? (
                         <Badge variant="destructive" className="text-[10px]">
-                          Overdue
+                          {t("maintenance.overdue")}
                         </Badge>
                       ) : (
                         <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px]">
-                          Approaching
+                          {t("maintenance.approaching")}
                         </Badge>
                       )}
                       <Button
@@ -391,7 +393,7 @@ export function DashboardClient({
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Bell className="h-4 w-4" />
-                Upcoming Reminders
+                {t("reminders.title")}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
@@ -432,12 +434,12 @@ export function DashboardClient({
                       <div className="shrink-0 ml-3">
                         {isOverdue && (
                           <Badge variant="destructive" className="text-[10px]">
-                            Overdue
+                            {t("reminders.overdue")}
                           </Badge>
                         )}
                         {isDueSoon && (
                           <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px]">
-                            Due Soon
+                            {t("reminders.dueSoon")}
                           </Badge>
                         )}
                         {r.dueDate && !isOverdue && !isDueSoon && (
@@ -461,7 +463,7 @@ export function DashboardClient({
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <MessageSquare className="h-4 w-4" />
-                  Recent Messages
+                  {t("messages.title")}
                 </CardTitle>
                 <Button
                   variant="ghost"
@@ -469,7 +471,7 @@ export function DashboardClient({
                   className="h-7 text-xs gap-1"
                   onClick={() => router.push("/messages")}
                 >
-                  View All
+                  {t("messages.viewAll")}
                   <ArrowRight className="h-3 w-3" />
                 </Button>
               </div>
@@ -489,7 +491,7 @@ export function DashboardClient({
                       <div className="min-w-0">
                         <p className="font-medium text-sm truncate">{thread.customerName}</p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {thread.lastMessage.direction === "outbound" ? "You: " : ""}
+                          {thread.lastMessage.direction === "outbound" ? t("messages.you") : ""}
                           {thread.lastMessage.body}
                         </p>
                       </div>
@@ -511,7 +513,7 @@ export function DashboardClient({
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <BellRing className="h-4 w-4" />
-                  Recent Notifications
+                  {t("notifications.title")}
                 </CardTitle>
               </div>
             </CardHeader>
@@ -548,7 +550,7 @@ export function DashboardClient({
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <ClipboardCheck className="h-4 w-4" />
-                Inspections
+                {t("inspections.title")}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
@@ -576,7 +578,7 @@ export function DashboardClient({
                           </p>
                           <p className="text-xs text-muted-foreground truncate">
                             {insp.vehicle.licensePlate && `${insp.vehicle.licensePlate} · `}
-                            {insp.template.name} · {inspected}/{total} items
+                            {insp.template.name} · {t("inspections.itemCount", { inspected, total })}
                           </p>
                         </div>
                       </div>
@@ -589,7 +591,7 @@ export function DashboardClient({
                           </div>
                         )}
                         <Badge className="bg-blue-500/15 text-blue-600 border-blue-500/20 text-[10px]">
-                          In Progress
+                          {t("inspections.inProgress")}
                         </Badge>
                       </div>
                     </div>
@@ -630,7 +632,7 @@ export function DashboardClient({
                           </div>
                         )}
                         <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/20 text-[10px]">
-                          Completed
+                          {t("inspections.completed")}
                         </Badge>
                       </div>
                     </div>
@@ -647,10 +649,10 @@ export function DashboardClient({
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <FileText className="h-4 w-4" />
-                Quote Requests
+                {t("quoteRequests.title")}
               </CardTitle>
               <p className="text-xs text-muted-foreground">
-                Customers requesting quotes from shared inspections
+                {t("quoteRequests.description")}
               </p>
             </CardHeader>
             <CardContent className="p-0">
@@ -677,14 +679,14 @@ export function DashboardClient({
                           </p>
                           <p className="text-xs text-muted-foreground truncate">
                             {req.inspection.vehicle.customer?.name && `${req.inspection.vehicle.customer.name} · `}
-                            {selectedItems.length} item{selectedItems.length !== 1 ? "s" : ""} requested
+                            {t("quoteRequests.itemsRequested", { count: selectedItems.length })}
                             {req.message && ` · "${req.message}"`}
                           </p>
                         </div>
                       </div>
                       <div className="shrink-0 ml-3 flex items-center gap-1.5">
                         <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">
-                          Pending
+                          {t("quoteRequests.pending")}
                         </Badge>
                         <Button
                           variant="outline"
@@ -697,7 +699,7 @@ export function DashboardClient({
                             router.push(`/quotes/new?fromInspection=${req.inspection.id}`);
                           }}
                         >
-                          Create Quote
+                          {t("quoteRequests.createQuote")}
                         </Button>
                         <Button
                           variant="ghost"
@@ -726,10 +728,10 @@ export function DashboardClient({
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <FileText className="h-4 w-4" />
-                Customer Quote Responses
+                {t("quoteResponses.title")}
               </CardTitle>
               <p className="text-xs text-muted-foreground">
-                Quotes that customers have accepted or requested changes on
+                {t("quoteResponses.description")}
               </p>
             </CardHeader>
             <CardContent className="p-0">
@@ -759,7 +761,7 @@ export function DashboardClient({
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
                           {resp.customer?.name && `${resp.customer.name} · `}
-                          {resp.status === "accepted" ? "Accepted" : "Changes requested"}
+                          {resp.status === "accepted" ? t("quoteResponses.accepted") : t("quoteResponses.changesRequested")}
                           {resp.customerMessage && ` · "${resp.customerMessage}"`}
                         </p>
                       </div>
@@ -767,11 +769,11 @@ export function DashboardClient({
                     <div className="shrink-0 ml-3 flex items-center gap-1.5">
                       {resp.status === "accepted" ? (
                         <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px]">
-                          Accepted
+                          {t("quoteResponses.accepted")}
                         </Badge>
                       ) : (
                         <Badge className="bg-orange-500/10 text-orange-600 border-orange-500/20 text-[10px]">
-                          Changes Requested
+                          {t("quoteResponses.changesRequested")}
                         </Badge>
                       )}
                       {resp.status === "accepted" && resp.vehicleId && (
@@ -789,7 +791,7 @@ export function DashboardClient({
                           }}
                         >
                           <ArrowRight className="mr-1 h-3 w-3" />
-                          Convert to Work Order
+                          {t("quoteResponses.convertToWorkOrder")}
                         </Button>
                       )}
                       <Button
@@ -798,7 +800,7 @@ export function DashboardClient({
                         className="h-7 text-xs"
                         onClick={() => router.push(`/quotes/${resp.id}`)}
                       >
-                        View Quote
+                        {t("quoteResponses.viewQuote")}
                       </Button>
                       <Button
                         variant="ghost"
@@ -824,24 +826,24 @@ export function DashboardClient({
         {isVisible("recentCompleted") && (
           <Card className="border-0 shadow-sm lg:col-span-2">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">Recent Completed</CardTitle>
+              <CardTitle className="text-base">{t("recentCompleted.title")}</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-22.5">Date</TableHead>
-                    <TableHead>Vehicle</TableHead>
-                    <TableHead className="hidden sm:table-cell">Customer</TableHead>
-                    <TableHead>Title</TableHead>
-                    {stats.isAdmin && <TableHead className="w-22.5 text-right">Total</TableHead>}
+                    <TableHead className="w-22.5">{t("recentCompleted.date")}</TableHead>
+                    <TableHead>{t("recentCompleted.vehicle")}</TableHead>
+                    <TableHead className="hidden sm:table-cell">{t("recentCompleted.customer")}</TableHead>
+                    <TableHead>{t("recentCompleted.serviceTitle")}</TableHead>
+                    {stats.isAdmin && <TableHead className="w-22.5 text-right">{t("recentCompleted.total")}</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {stats.recentServices.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={stats.isAdmin ? 5 : 4} className="h-20 text-center text-muted-foreground">
-                        No completed services yet
+                        {t("recentCompleted.empty")}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -897,24 +899,24 @@ export function DashboardClient({
         {isVisible("activeJobs") && (
           <Card className="border-0 shadow-sm lg:col-span-2">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">Active Jobs</CardTitle>
+              <CardTitle className="text-base">{t("activeJobsTable.title")}</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Vehicle</TableHead>
-                    <TableHead className="hidden sm:table-cell">Customer</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead className="w-27.5">Status</TableHead>
-                    <TableHead className="hidden md:table-cell">Tech</TableHead>
+                    <TableHead>{t("activeJobsTable.vehicle")}</TableHead>
+                    <TableHead className="hidden sm:table-cell">{t("activeJobsTable.customer")}</TableHead>
+                    <TableHead>{t("activeJobsTable.serviceTitle")}</TableHead>
+                    <TableHead className="w-27.5">{t("activeJobsTable.status")}</TableHead>
+                    <TableHead className="hidden md:table-cell">{t("activeJobsTable.tech")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {stats.todaysServices.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className="h-20 text-center text-muted-foreground">
-                        No active jobs
+                        {t("activeJobsTable.empty")}
                       </TableCell>
                     </TableRow>
                   ) : (

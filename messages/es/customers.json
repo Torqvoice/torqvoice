@@ -1,0 +1,76 @@
+{
+  "list": {
+    "addCustomer": "Agregar Cliente",
+    "searchPlaceholder": "Buscar clientes...",
+    "table": {
+      "name": "Nombre",
+      "company": "Empresa",
+      "phone": "Teléfono",
+      "email": "Correo electrónico",
+      "vehicles": "Vehículos"
+    },
+    "emptySearch": "Ningún cliente coincide con tu búsqueda.",
+    "empty": "Aún no hay clientes.",
+    "deleteTitle": "Eliminar Cliente",
+    "deleteDescription": "¿Eliminar a {name}? Esto desvinculará sus vehículos.",
+    "deleteError": "Error al eliminar el cliente",
+    "error": "Error al cargar los clientes"
+  },
+  "detail": {
+    "backToCustomers": "Volver a clientes",
+    "editCustomer": "Editar Cliente",
+    "notFound": "Cliente no encontrado",
+    "emailCopied": "Correo electrónico copiado al portapapeles",
+    "phoneCopied": "Número de teléfono copiado al portapapeles",
+    "tabs": {
+      "vehicles": "Vehículos ({count})",
+      "messages": "Mensajes",
+      "requests": "Solicitudes ({count})"
+    },
+    "vehicleTable": {
+      "plate": "Placa",
+      "vehicle": "Vehículo",
+      "mileage": "Kilometraje",
+      "services": "Servicios"
+    },
+    "noVehicles": "No hay vehículos asignados a este cliente"
+  },
+  "form": {
+    "addTitle": "Agregar Nuevo Cliente",
+    "editTitle": "Editar Cliente",
+    "nameRequired": "Nombre *",
+    "namePlaceholder": "Juan García",
+    "emailPlaceholder": "juan@ejemplo.com",
+    "phonePlaceholder": "(55) 1234-5678",
+    "companyPlaceholder": "Nombre de la empresa",
+    "addressPlaceholder": "Calle Principal 123, Ciudad, Estado",
+    "notesPlaceholder": "Notas adicionales...",
+    "customerUpdated": "Cliente actualizado",
+    "customerCreated": "Cliente creado",
+    "saveError": "Error al guardar el cliente"
+  },
+  "serviceRequests": {
+    "statusNew": "Nuevo",
+    "statusConverted": "Orden de Trabajo Creada",
+    "statusDismissed": "Descartado",
+    "createWorkOrder": "Crear Orden de Trabajo",
+    "contactCustomer": "Contactar Cliente",
+    "dismiss": "Descartar",
+    "viewWorkOrder": "Ver Orden de Trabajo",
+    "notes": "Notas",
+    "hideNotes": "Ocultar Notas",
+    "staffNotes": "Notas del personal:",
+    "notesPlaceholder": "Agregar notas internas...",
+    "saveNotes": "Guardar Notas",
+    "submitted": "Enviado {date}",
+    "preferred": "Preferido: {date}",
+    "workOrderCreated": "Orden de trabajo creada",
+    "workOrderError": "Error al crear la orden de trabajo",
+    "requestDismissed": "Solicitud descartada",
+    "dismissError": "Error al descartar la solicitud",
+    "notesSaved": "Notas guardadas",
+    "notesSaveError": "Error al guardar las notas",
+    "smsLabel": "Mensaje de Solicitud de Servicio",
+    "smsDefault": "Hola {name}, sobre tu solicitud de servicio para tu {vehicle}: "
+  }
+}
