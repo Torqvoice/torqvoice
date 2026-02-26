@@ -458,10 +458,10 @@ export function QuotePageClient({
         {selectedVehicle && (
           <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
             <Car className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-            <div className="min-w-0 flex-1 text-sm">
+            <Link href={`/vehicles/${selectedVehicle.id}`} target="_blank" className="min-w-0 flex-1 text-sm hover:underline">
               <span className="font-medium">{selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}</span>
               {selectedVehicle.licensePlate && <span className="ml-1.5 text-muted-foreground">{selectedVehicle.licensePlate}</span>}
-            </div>
+            </Link>
             <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => setVehicleId("")}><X className="h-3 w-3" /></Button>
           </div>
         )}
@@ -480,10 +480,10 @@ export function QuotePageClient({
         {selectedCustomer && (
           <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
             <Users className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-            <div className="min-w-0 flex-1 text-sm">
+            <Link href={`/customers/${selectedCustomer.id}`} target="_blank" className="min-w-0 flex-1 text-sm hover:underline">
               <span className="font-medium">{selectedCustomer.name}</span>
               {selectedCustomer.company && <span className="ml-1.5 text-muted-foreground">{selectedCustomer.company}</span>}
-            </div>
+            </Link>
             <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => setCustomerId("")}><X className="h-3 w-3" /></Button>
           </div>
         )}
