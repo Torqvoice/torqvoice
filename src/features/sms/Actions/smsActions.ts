@@ -168,6 +168,7 @@ export async function getSmsTemplates() {
     async ({ organizationId, userId }) => {
       const smsKeys = [
         SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
+        SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY,
         SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
         SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
         SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,

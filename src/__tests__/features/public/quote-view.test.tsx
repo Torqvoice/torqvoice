@@ -3,10 +3,15 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 vi.mock("lucide-react", () => ({
+  Camera: () => <span data-testid="icon-camera" />,
   Check: () => <span data-testid="icon-check" />,
+  ChevronLeft: () => <span data-testid="icon-chevron-left" />,
+  ChevronRight: () => <span data-testid="icon-chevron-right" />,
   Download: () => <span data-testid="icon-download" />,
+  FileText: () => <span data-testid="icon-file-text" />,
   Loader2: () => <span data-testid="icon-loader" />,
   MessageSquare: () => <span data-testid="icon-message" />,
+  X: () => <span data-testid="icon-x" />,
 }));
 
 import { QuoteView } from "@/app/(public)/share/quote/[orgId]/[token]/quote-view";
@@ -119,7 +124,8 @@ describe("QuoteView", () => {
         },
       };
       render(<QuoteView {...props} />);
-      expect(screen.getByText("Parts")).toBeInTheDocument();
+      // "Parts" appears in both the table header and the totals row
+      expect(screen.getAllByText("Parts").length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText("Oil Filter")).toBeInTheDocument();
       expect(screen.getByText("P-001")).toBeInTheDocument();
     });
@@ -138,7 +144,8 @@ describe("QuoteView", () => {
         },
       };
       render(<QuoteView {...props} />);
-      expect(screen.getByText("Labor")).toBeInTheDocument();
+      // "Labor" appears in both the table header and the totals row
+      expect(screen.getAllByText("Labor").length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText("Labor - Oil Change")).toBeInTheDocument();
     });
 

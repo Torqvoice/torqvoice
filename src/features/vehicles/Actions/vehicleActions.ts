@@ -158,6 +158,12 @@ export async function updateVehicle(input: unknown) {
       where: { id, organizationId },
       data: {
         ...data,
+        vin: data.vin !== undefined ? (data.vin || null) : undefined,
+        licensePlate: data.licensePlate !== undefined ? (data.licensePlate || null) : undefined,
+        color: data.color !== undefined ? (data.color || null) : undefined,
+        fuelType: data.fuelType !== undefined ? (data.fuelType || null) : undefined,
+        transmission: data.transmission !== undefined ? (data.transmission || null) : undefined,
+        engineSize: data.engineSize !== undefined ? (data.engineSize || null) : undefined,
         purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : undefined,
         customerId: data.customerId !== undefined ? (data.customerId || null) : undefined,
       },

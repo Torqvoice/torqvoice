@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { QuotePDF } from "@/features/quotes/Components/QuotePDF";
 import React from "react";
 import { readFile } from "fs/promises";
+import { PDFDocument } from "pdf-lib";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
@@ -25,6 +26,7 @@ export async function GET(
       include: {
         partItems: true,
         laborItems: true,
+        attachments: true,
         customer: {
           select: { name: true, email: true, phone: true, address: true, company: true },
         },
@@ -70,6 +72,47 @@ export async function GET(
       }
     }
 
+    // Process attachments for PDF
+    const imageAttachments: { fileName: string; dataUri: string; description?: string }[] = [];
+    const otherAttachments: { fileName: string; fileType: string }[] = [];
+    const pdfAttachments: { fileName: string; buffer: Buffer }[] = [];
+
+    const seenNames = new Set<string>();
+    const uniqueAttachments = (quote.attachments || [])
+      .filter((att) => att.includeInInvoice !== false)
+      .filter((att) => {
+        if (seenNames.has(att.fileName)) return false;
+        seenNames.add(att.fileName);
+        return true;
+      });
+
+    for (const att of uniqueAttachments) {
+      if (att.fileType.startsWith("image/")) {
+        try {
+          const filePath = resolveUploadPath(att.fileUrl);
+          const buffer = await readFile(filePath);
+          const base64 = buffer.toString("base64");
+          imageAttachments.push({
+            fileName: att.fileName,
+            dataUri: `data:${att.fileType};base64,${base64}`,
+            description: att.description || undefined,
+          });
+        } catch {
+          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType });
+        }
+      } else if (att.fileType === "application/pdf") {
+        try {
+          const filePath = resolveUploadPath(att.fileUrl);
+          const buffer = await readFile(filePath);
+          pdfAttachments.push({ fileName: att.fileName, buffer });
+        } catch {
+          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType });
+        }
+      } else {
+        otherAttachments.push({ fileName: att.fileName, fileType: att.fileType });
+      }
+    }
+
     const features = await getFeatures(orgId);
     let torqvoiceLogoDataUri: string | undefined;
     if (!features.brandingRemoved) {
@@ -107,25 +150,43 @@ export async function GET(
       timezone: settingsMap["workshop.timezone"] || undefined,
       template,
       portalUrl,
+      imageAttachments,
+      otherAttachments,
+      pdfAttachmentNames: pdfAttachments.map((a) => a.fileName),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
-    const buffer = await renderToBuffer(element);
+    const quoteBuffer = await renderToBuffer(element);
 
     const quoteNum =
       quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`;
 
-    return new NextResponse(
-      buffer.buffer.slice(
-        buffer.byteOffset,
-        buffer.byteOffset + buffer.byteLength
-      ) as ArrayBuffer,
-      {
-        headers: {
-          "Content-Type": "application/pdf",
-          "Content-Disposition": `attachment; filename="${quoteNum}.pdf"`,
-        },
+    // Merge attached PDFs into the quote PDF
+    let finalBuffer: ArrayBuffer;
+    if (pdfAttachments.length > 0) {
+      const mergedPdf = await PDFDocument.load(quoteBuffer);
+      for (const att of pdfAttachments) {
+        try {
+          const attachedPdf = await PDFDocument.load(att.buffer);
+          const pages = await mergedPdf.copyPages(attachedPdf, attachedPdf.getPageIndices());
+          for (const page of pages) {
+            mergedPdf.addPage(page);
+          }
+        } catch {
+          // Skip corrupted/unreadable PDFs silently
+        }
       }
-    );
+      const saved = await mergedPdf.save();
+      finalBuffer = saved.buffer.slice(saved.byteOffset, saved.byteOffset + saved.byteLength) as ArrayBuffer;
+    } else {
+      finalBuffer = quoteBuffer.buffer.slice(quoteBuffer.byteOffset, quoteBuffer.byteOffset + quoteBuffer.byteLength) as ArrayBuffer;
+    }
+
+    return new NextResponse(finalBuffer, {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="${quoteNum}.pdf"`,
+      },
+    });
   } catch (error) {
     console.error("[Public Quote PDF] Error:", error);
     return NextResponse.json(

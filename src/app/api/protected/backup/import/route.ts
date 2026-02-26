@@ -64,7 +64,7 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
     // Directory may not exist
   }
 
-  const allowedCategories = ["logos", "vehicles", "inventory", "services"];
+  const allowedCategories = ["logos", "vehicles", "inventory", "services", "quotes"];
 
   const fileEntries = Object.keys(zip.files).filter(
     (name) => !zip.files[name].dir && (name.startsWith("files/") || name.startsWith("uploads/"))

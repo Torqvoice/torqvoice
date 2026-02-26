@@ -79,7 +79,7 @@ export function TotalsSection({
                 min="0"
                 step="0.01"
                 value={discountValue}
-                onChange={(e) => setDiscountValue(Number(e.target.value))}
+                onChange={(e) => setDiscountValue(e.target.value === "" ? 0 : Number(e.target.value))}
                 className="h-7 w-20 text-right text-xs"
               />
             )}
@@ -103,7 +103,7 @@ export function TotalsSection({
                 min="0"
                 step="0.1"
                 value={taxRate}
-                onChange={(e) => setTaxRate(Number(e.target.value))}
+                onChange={(e) => setTaxRate(e.target.value === "" ? 0 : Number(e.target.value))}
                 className="h-7 w-20 text-right text-xs"
               />
               <span className="text-muted-foreground">%</span>

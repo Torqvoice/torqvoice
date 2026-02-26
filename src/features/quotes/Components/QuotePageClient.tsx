@@ -36,9 +36,12 @@ import { SendEmailDialog } from "@/features/email/Components/SendEmailDialog";
 import { QuoteShareDialog } from "@/features/quotes/Components/QuoteShareDialog";
 import { RichTextEditor } from "@/features/vehicles/Components/service-edit/RichTextEditor";
 import type { QuotePartInput, QuoteLaborInput } from "@/features/quotes/Schema/quoteSchema";
+import { QuoteImagesManager } from "@/features/quotes/Components/QuoteImagesManager";
+import { QuoteDocumentsManager } from "@/features/quotes/Components/QuoteDocumentsManager";
 import {
   ArrowLeft,
   ArrowRight,
+  Camera,
   Car,
   Check,
   ClipboardCheck,
@@ -48,6 +51,7 @@ import {
   Loader2,
   Mail,
   MessageSquare,
+  Paperclip,
   Plus,
   Save,
   Trash2,
@@ -82,6 +86,19 @@ interface VehicleOption {
   customerId: string | null;
   customerName: string | null;
 }
+
+interface QuoteAttachment {
+  id: string;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  category: string;
+  description: string | null;
+  includeInInvoice: boolean;
+}
+
+type TabType = "details" | "images" | "documents";
 
 interface QuoteRecord {
   id: string;
@@ -150,6 +167,10 @@ export function QuotePageClient({
   vehicles = [],
   smsEnabled = false,
   emailEnabled = false,
+  imageAttachments = [],
+  documentAttachments = [],
+  maxImages,
+  maxDocuments,
 }: {
   quote: QuoteRecord;
   organizationId: string;
@@ -161,12 +182,19 @@ export function QuotePageClient({
   vehicles?: VehicleOption[];
   smsEnabled?: boolean;
   emailEnabled?: boolean;
+  imageAttachments?: QuoteAttachment[];
+  documentAttachments?: QuoteAttachment[];
+  maxImages?: number;
+  maxDocuments?: number;
 }) {
   const cs = getCurrencySymbol(currencyCode);
   const router = useRouter();
   const modal = useGlassModal();
   const confirm = useConfirm();
   const isLarge = useIsLargeScreen();
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState<TabType>("details");
 
   // Form state
   const [saving, setSaving] = useState(false);
@@ -353,8 +381,8 @@ export function QuotePageClient({
               <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto]">
                 <Input placeholder="Part #" value={part.partNumber ?? ""} onChange={(e) => updatePart(i, "partNumber", e.target.value)} />
                 <Input placeholder="Name *" value={part.name} onChange={(e) => updatePart(i, "name", e.target.value)} />
-                <Input type="number" min="0" step="1" value={part.quantity} onChange={(e) => updatePart(i, "quantity", Number(e.target.value))} />
-                <Input type="number" min="0" step="0.01" value={part.unitPrice} onChange={(e) => updatePart(i, "unitPrice", Number(e.target.value))} />
+                <Input type="number" min="0" step="1" value={part.quantity} onChange={(e) => updatePart(i, "quantity", e.target.value)} />
+                <Input type="number" min="0" step="0.01" value={part.unitPrice} onChange={(e) => updatePart(i, "unitPrice", e.target.value)} />
                 <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(part.total, currencyCode)}</div>
                 <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setPartItems(partItems.filter((_, j) => j !== i))}><Trash2 className="h-4 w-4" /></Button>
               </div>
@@ -384,8 +412,8 @@ export function QuotePageClient({
             {laborItems.map((labor, i) => (
               <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]">
                 <Input placeholder="Description *" value={labor.description} onChange={(e) => updateLabor(i, "description", e.target.value)} className="col-span-2 sm:col-span-1" />
-                <Input type="number" min="0" step="0.5" value={labor.hours} onChange={(e) => updateLabor(i, "hours", Number(e.target.value))} />
-                <Input type="number" min="0" step="0.01" value={labor.rate} onChange={(e) => updateLabor(i, "rate", Number(e.target.value))} />
+                <Input type="number" min="0" step="0.1" value={labor.hours} onChange={(e) => updateLabor(i, "hours", e.target.value)} />
+                <Input type="number" min="0" step="0.01" value={labor.rate} onChange={(e) => updateLabor(i, "rate", e.target.value)} />
                 <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(labor.total, currencyCode)}</div>
                 <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setLaborItems(laborItems.filter((_, j) => j !== i))}><Trash2 className="h-4 w-4" /></Button>
               </div>
@@ -458,10 +486,10 @@ export function QuotePageClient({
         {selectedVehicle && (
           <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
             <Car className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-            <div className="min-w-0 flex-1 text-sm">
+            <Link href={`/vehicles/${selectedVehicle.id}`} target="_blank" className="min-w-0 flex-1 text-sm hover:underline">
               <span className="font-medium">{selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}</span>
               {selectedVehicle.licensePlate && <span className="ml-1.5 text-muted-foreground">{selectedVehicle.licensePlate}</span>}
-            </div>
+            </Link>
             <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => setVehicleId("")}><X className="h-3 w-3" /></Button>
           </div>
         )}
@@ -480,10 +508,10 @@ export function QuotePageClient({
         {selectedCustomer && (
           <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
             <Users className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-            <div className="min-w-0 flex-1 text-sm">
+            <Link href={`/customers/${selectedCustomer.id}`} target="_blank" className="min-w-0 flex-1 text-sm hover:underline">
               <span className="font-medium">{selectedCustomer.name}</span>
               {selectedCustomer.company && <span className="ml-1.5 text-muted-foreground">{selectedCustomer.company}</span>}
-            </div>
+            </Link>
             <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => setCustomerId("")}><X className="h-3 w-3" /></Button>
           </div>
         )}
@@ -584,7 +612,7 @@ export function QuotePageClient({
                 </SelectContent>
               </Select>
               {discountType !== "none" && (
-                <Input type="number" min="0" step="0.01" value={discountValue} onChange={(e) => setDiscountValue(Number(e.target.value))} className="h-7 w-20 text-right text-xs" />
+                <Input type="number" min="0" step="0.01" value={discountValue} onChange={(e) => setDiscountValue(e.target.value === "" ? 0 : Number(e.target.value))} className="h-7 w-20 text-right text-xs" />
               )}
               {discountType === "percentage" && <span className="text-muted-foreground">%</span>}
             </div>
@@ -594,7 +622,7 @@ export function QuotePageClient({
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">Tax</span>
-                <Input type="number" min="0" step="0.1" value={taxRate} onChange={(e) => setTaxRate(Number(e.target.value))} className="h-7 w-20 text-right text-xs" />
+                <Input type="number" min="0" step="0.1" value={taxRate} onChange={(e) => setTaxRate(e.target.value === "" ? 0 : Number(e.target.value))} className="h-7 w-20 text-right text-xs" />
                 <span className="text-muted-foreground">%</span>
               </div>
               <span>{formatCurrency(taxAmount, currencyCode)}</span>
@@ -657,31 +685,82 @@ export function QuotePageClient({
         </div>
       </div>
 
-      {/* Form */}
-      <form id="quote-form" onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        {isLarge ? (
-          <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
-            <ResizablePanel defaultSize={75} minSize={40}>
-              <div className="h-full overflow-y-auto overscroll-contain p-4 pr-2">
-                <div className="space-y-3 pb-40">{leftColumn}</div>
+      {/* Tabs */}
+      <div className="shrink-0 border-b bg-background px-4">
+        <div className="flex gap-1">
+          {([
+            { key: "details" as TabType, label: "Details", icon: FileText },
+            { key: "images" as TabType, label: "Images", icon: Camera },
+            { key: "documents" as TabType, label: "Documents", icon: Paperclip },
+          ]).map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setActiveTab(key)}
+              className={`flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+                activeTab === key
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === "details" && (
+        <form id="quote-form" onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          {isLarge ? (
+            <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
+              <ResizablePanel defaultSize={75} minSize={40}>
+                <div className="h-full overflow-y-auto overscroll-contain p-4 pr-2">
+                  <div className="space-y-3 pb-40">{leftColumn}</div>
+                </div>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={25} minSize={15}>
+                <div className="h-full overflow-y-auto overscroll-contain p-4 pl-2">
+                  <div className="space-y-3 pb-40">{rightColumn}</div>
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          ) : (
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+              <div className="space-y-3 pb-40">
+                {leftColumn}
+                {rightColumn}
               </div>
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={25} minSize={15}>
-              <div className="h-full overflow-y-auto overscroll-contain p-4 pl-2">
-                <div className="space-y-3 pb-40">{rightColumn}</div>
-              </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        ) : (
-          <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-            <div className="space-y-3 pb-40">
-              {leftColumn}
-              {rightColumn}
             </div>
+          )}
+        </form>
+      )}
+
+      {activeTab === "images" && (
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+          <div className="mx-auto max-w-4xl pb-40">
+            <QuoteImagesManager
+              quoteId={quote.id}
+              initialImages={imageAttachments}
+              maxImages={maxImages}
+            />
           </div>
-        )}
-      </form>
+        </div>
+      )}
+
+      {activeTab === "documents" && (
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+          <div className="mx-auto max-w-4xl pb-40">
+            <QuoteDocumentsManager
+              quoteId={quote.id}
+              initialDocuments={documentAttachments}
+              maxDocuments={maxDocuments}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Dialogs */}
       <SendEmailDialog

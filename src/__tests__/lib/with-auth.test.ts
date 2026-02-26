@@ -154,7 +154,7 @@ describe("withAuth", () => {
     mockGetCachedMembership.mockResolvedValue(MEMBERSHIP as any);
 
     const zodErr = new ZodError([
-      { code: "too_small", path: ["email"], message: "Required", minimum: 1, type: "string", inclusive: true },
+      { code: "too_small", path: ["email"], message: "Required", minimum: 1, origin: "string", inclusive: true },
     ]);
     const result = await withAuth(async () => { throw zodErr; });
     expect(result.success).toBe(false);

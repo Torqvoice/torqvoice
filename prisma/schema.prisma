@@ -404,11 +404,30 @@ model Quote {
   inspectionId String?
   inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
 
-  partItems  QuotePart[]
-  laborItems QuoteLabor[]
+  partItems   QuotePart[]
+  laborItems  QuoteLabor[]
+  attachments QuoteAttachment[]
 
   @@index([organizationId])
   @@map("quotes")
+}
+
+model QuoteAttachment {
+  id               String   @id @default(cuid())
+  fileName         String
+  fileUrl          String
+  fileType         String
+  fileSize         Int
+  category         String   @default("image")
+  description      String?
+  includeInInvoice Boolean  @default(true)
+  createdAt        DateTime @default(now())
+
+  quoteId String
+  quote   Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
+  @@map("quote_attachments")
 }
 
 model QuotePart {

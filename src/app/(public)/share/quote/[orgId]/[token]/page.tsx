@@ -27,6 +27,7 @@ export default async function PublicQuotePage({
     include: {
       partItems: true,
       laborItems: true,
+      attachments: true,
       customer: {
         select: {
           name: true,
@@ -102,6 +103,26 @@ export default async function PublicQuotePage({
     else logoUrl = rawLogoUrl;
   }
 
+  // Rewrite attachment URLs for public access
+  const imageAttachments = (quote.attachments || [])
+    .filter((a) => a.category === "image")
+    .map((a) => ({
+      ...a,
+      fileUrl: a.fileUrl.replace(
+        /^\/api\/protected\/files\/[^/]+\//,
+        `/api/public/files/${token}/`
+      ),
+    }));
+  const documentAttachments = (quote.attachments || [])
+    .filter((a) => a.category === "document")
+    .map((a) => ({
+      ...a,
+      fileUrl: a.fileUrl.replace(
+        /^\/api\/protected\/files\/[^/]+\//,
+        `/api/public/files/${token}/`
+      ),
+    }));
+
   const primaryColor = settingsMap["quote.primaryColor"] || settingsMap["invoice.primaryColor"] || "#d97706";
   const headerStyle = settingsMap["quote.headerStyle"] || settingsMap["invoice.headerStyle"] || "standard";
 
@@ -127,6 +148,8 @@ export default async function PublicQuotePage({
       primaryColor={primaryColor}
       headerStyle={headerStyle}
       portalUrl={portalUrl}
+      imageAttachments={imageAttachments}
+      documentAttachments={documentAttachments}
     />
   );
 }
