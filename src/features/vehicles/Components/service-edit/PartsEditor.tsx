@@ -81,15 +81,15 @@ export function PartsEditor({
                 type="number"
                 min="0"
                 step="0.01"
-                value={part.quantity || ""}
-                onChange={(e) => updatePart(i, 'quantity', e.target.value === "" ? "" : Number(e.target.value))}
+                value={part.quantity}
+                onChange={(e) => updatePart(i, 'quantity', e.target.value)}
               />
               <Input
                 type="number"
                 min="0"
                 step="0.01"
-                value={part.unitPrice || ""}
-                onChange={(e) => updatePart(i, 'unitPrice', e.target.value === "" ? "" : Number(e.target.value))}
+                value={part.unitPrice}
+                onChange={(e) => updatePart(i, 'unitPrice', e.target.value)}
               />
               <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
                 {formatCurrency(part.total, currencyCode)}
