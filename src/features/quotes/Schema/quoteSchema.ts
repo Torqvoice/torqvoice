@@ -15,6 +15,16 @@ export const quoteLaborSchema = z.object({
   total: z.coerce.number().min(0).default(0),
 });
 
+export const quoteAttachmentSchema = z.object({
+  fileName: z.string(),
+  fileUrl: z.string(),
+  fileType: z.string(),
+  fileSize: z.number(),
+  category: z.enum(["image", "document"]).default("image"),
+  description: z.string().optional(),
+  includeInInvoice: z.boolean().default(true),
+});
+
 export const createQuoteSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
@@ -39,6 +49,7 @@ export const updateQuoteSchema = createQuoteSchema.partial().extend({
   id: z.string(),
 });
 
+export type QuoteAttachmentInput = z.infer<typeof quoteAttachmentSchema>;
 export type QuotePartInput = z.infer<typeof quotePartSchema>;
 export type QuoteLaborInput = z.infer<typeof quoteLaborSchema>;
 export type CreateQuoteInput = z.infer<typeof createQuoteSchema>;

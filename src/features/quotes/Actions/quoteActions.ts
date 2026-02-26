@@ -6,6 +6,8 @@ import { createQuoteSchema, updateQuoteSchema } from "../Schema/quoteSchema";
 import { revalidatePath } from "next/cache";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { copyFile, mkdir } from "fs/promises";
+import path from "path";
 
 export async function getQuotesPaginated(params: {
   page?: number;
@@ -75,6 +77,7 @@ export async function getQuote(quoteId: string) {
       include: {
         partItems: true,
         laborItems: true,
+        attachments: true,
         customer: {
           select: { id: true, name: true, email: true, phone: true, address: true, company: true },
         },
@@ -230,7 +233,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
   return withAuth(async ({ userId, organizationId }) => {
     const quote = await db.quote.findFirst({
       where: { id: quoteId, organizationId },
-      include: { partItems: true, laborItems: true },
+      include: { partItems: true, laborItems: true, attachments: true },
     });
     if (!quote) throw new Error("Quote not found");
 
@@ -310,6 +313,39 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             serviceRecordId: created.id,
           })),
         });
+      }
+
+      // Copy attachments from quote to service record
+      if (quote.attachments.length > 0) {
+        const quotesDir = path.join(process.cwd(), "data", "uploads", organizationId, "quotes");
+        const servicesDir = path.join(process.cwd(), "data", "uploads", organizationId, "services");
+        await mkdir(servicesDir, { recursive: true });
+
+        for (const att of quote.attachments) {
+          try {
+            // Extract filename from URL and build paths
+            const filename = att.fileUrl.split("/").pop()!;
+            const srcPath = path.join(quotesDir, filename);
+            const destPath = path.join(servicesDir, filename);
+            await copyFile(srcPath, destPath);
+
+            const newUrl = att.fileUrl.replace("/quotes/", "/services/");
+            await tx.serviceAttachment.create({
+              data: {
+                fileName: att.fileName,
+                fileUrl: newUrl,
+                fileType: att.fileType,
+                fileSize: att.fileSize,
+                category: att.category === "document" ? "document" : "image",
+                description: att.description,
+                includeInInvoice: att.includeInInvoice,
+                serviceRecordId: created.id,
+              },
+            });
+          } catch (err) {
+            console.warn(`[convertQuote] Failed to copy attachment "${att.fileName}":`, err);
+          }
+        }
       }
 
       // Mark quote as converted

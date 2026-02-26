@@ -36,9 +36,12 @@ import { SendEmailDialog } from "@/features/email/Components/SendEmailDialog";
 import { QuoteShareDialog } from "@/features/quotes/Components/QuoteShareDialog";
 import { RichTextEditor } from "@/features/vehicles/Components/service-edit/RichTextEditor";
 import type { QuotePartInput, QuoteLaborInput } from "@/features/quotes/Schema/quoteSchema";
+import { QuoteImagesManager } from "@/features/quotes/Components/QuoteImagesManager";
+import { QuoteDocumentsManager } from "@/features/quotes/Components/QuoteDocumentsManager";
 import {
   ArrowLeft,
   ArrowRight,
+  Camera,
   Car,
   Check,
   ClipboardCheck,
@@ -48,6 +51,7 @@ import {
   Loader2,
   Mail,
   MessageSquare,
+  Paperclip,
   Plus,
   Save,
   Trash2,
@@ -82,6 +86,19 @@ interface VehicleOption {
   customerId: string | null;
   customerName: string | null;
 }
+
+interface QuoteAttachment {
+  id: string;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  category: string;
+  description: string | null;
+  includeInInvoice: boolean;
+}
+
+type TabType = "details" | "images" | "documents";
 
 interface QuoteRecord {
   id: string;
@@ -150,6 +167,10 @@ export function QuotePageClient({
   vehicles = [],
   smsEnabled = false,
   emailEnabled = false,
+  imageAttachments = [],
+  documentAttachments = [],
+  maxImages,
+  maxDocuments,
 }: {
   quote: QuoteRecord;
   organizationId: string;
@@ -161,12 +182,19 @@ export function QuotePageClient({
   vehicles?: VehicleOption[];
   smsEnabled?: boolean;
   emailEnabled?: boolean;
+  imageAttachments?: QuoteAttachment[];
+  documentAttachments?: QuoteAttachment[];
+  maxImages?: number;
+  maxDocuments?: number;
 }) {
   const cs = getCurrencySymbol(currencyCode);
   const router = useRouter();
   const modal = useGlassModal();
   const confirm = useConfirm();
   const isLarge = useIsLargeScreen();
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState<TabType>("details");
 
   // Form state
   const [saving, setSaving] = useState(false);
@@ -657,31 +685,82 @@ export function QuotePageClient({
         </div>
       </div>
 
-      {/* Form */}
-      <form id="quote-form" onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        {isLarge ? (
-          <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
-            <ResizablePanel defaultSize={75} minSize={40}>
-              <div className="h-full overflow-y-auto overscroll-contain p-4 pr-2">
-                <div className="space-y-3 pb-40">{leftColumn}</div>
+      {/* Tabs */}
+      <div className="shrink-0 border-b bg-background px-4">
+        <div className="flex gap-1">
+          {([
+            { key: "details" as TabType, label: "Details", icon: FileText },
+            { key: "images" as TabType, label: "Images", icon: Camera },
+            { key: "documents" as TabType, label: "Documents", icon: Paperclip },
+          ]).map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setActiveTab(key)}
+              className={`flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+                activeTab === key
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === "details" && (
+        <form id="quote-form" onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          {isLarge ? (
+            <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
+              <ResizablePanel defaultSize={75} minSize={40}>
+                <div className="h-full overflow-y-auto overscroll-contain p-4 pr-2">
+                  <div className="space-y-3 pb-40">{leftColumn}</div>
+                </div>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={25} minSize={15}>
+                <div className="h-full overflow-y-auto overscroll-contain p-4 pl-2">
+                  <div className="space-y-3 pb-40">{rightColumn}</div>
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          ) : (
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+              <div className="space-y-3 pb-40">
+                {leftColumn}
+                {rightColumn}
               </div>
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={25} minSize={15}>
-              <div className="h-full overflow-y-auto overscroll-contain p-4 pl-2">
-                <div className="space-y-3 pb-40">{rightColumn}</div>
-              </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        ) : (
-          <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-            <div className="space-y-3 pb-40">
-              {leftColumn}
-              {rightColumn}
             </div>
+          )}
+        </form>
+      )}
+
+      {activeTab === "images" && (
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+          <div className="mx-auto max-w-4xl pb-40">
+            <QuoteImagesManager
+              quoteId={quote.id}
+              initialImages={imageAttachments}
+              maxImages={maxImages}
+            />
           </div>
-        )}
-      </form>
+        </div>
+      )}
+
+      {activeTab === "documents" && (
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+          <div className="mx-auto max-w-4xl pb-40">
+            <QuoteDocumentsManager
+              quoteId={quote.id}
+              initialDocuments={documentAttachments}
+              maxDocuments={maxDocuments}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Dialogs */}
       <SendEmailDialog

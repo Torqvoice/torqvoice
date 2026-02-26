@@ -48,6 +48,17 @@ interface WorkshopInfo {
   email: string
 }
 
+interface ImageAttachmentPDF {
+  fileName: string
+  dataUri: string
+  description?: string
+}
+
+interface OtherAttachmentPDF {
+  fileName: string
+  fileType: string
+}
+
 export function QuotePDF({
   data,
   workshop,
@@ -58,6 +69,9 @@ export function QuotePDF({
   timezone,
   template,
   portalUrl,
+  imageAttachments = [],
+  otherAttachments = [],
+  pdfAttachmentNames = [],
 }: {
   data: QuoteData
   workshop?: WorkshopInfo
@@ -68,6 +82,9 @@ export function QuotePDF({
   timezone?: string
   template?: TemplateConfig
   portalUrl?: string
+  imageAttachments?: ImageAttachmentPDF[]
+  otherAttachments?: OtherAttachmentPDF[]
+  pdfAttachmentNames?: string[]
 }) {
   const primaryColor = template?.primaryColor || '#d97706'
   const fontFamily = template?.fontFamily || 'Helvetica'
@@ -434,6 +451,23 @@ export function QuotePDF({
           </View>
         )}
 
+        {/* Document attachment names */}
+        {(otherAttachments.length > 0 || pdfAttachmentNames.length > 0) && (
+          <View style={{ marginTop: 10 }}>
+            <Text style={styles.sectionTitle}>Attached Documents</Text>
+            {otherAttachments.map((att, i) => (
+              <Text key={`other-${i}`} style={{ fontSize: 9, color: gray, marginBottom: 2 }}>
+                {att.fileName}
+              </Text>
+            ))}
+            {pdfAttachmentNames.map((name, i) => (
+              <Text key={`pdf-${i}`} style={{ fontSize: 9, color: gray, marginBottom: 2 }}>
+                {name} (attached)
+              </Text>
+            ))}
+          </View>
+        )}
+
         {torqvoiceLogoDataUri ? (
           <View style={{
             ...styles.footer,
@@ -455,6 +489,35 @@ export function QuotePDF({
           </Text>
         )}
       </Page>
+
+      {imageAttachments.length > 0 && (
+        <Page size="A4" style={styles.page}>
+          <Text style={styles.sectionTitle}>Quote Images</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+            {imageAttachments.map((img, i) => (
+              <View key={i} style={{ width: '48%', marginBottom: 8 }}>
+                <Image
+                  src={img.dataUri}
+                  style={{
+                    maxHeight: 250,
+                    borderRadius: 4,
+                    objectFit: 'contain',
+                    objectPosition: 'left',
+                  }}
+                />
+                {img.description ? (
+                  <Text style={{ fontSize: 8, color: gray, marginTop: 2 }}>{img.description}</Text>
+                ) : (
+                  <Text style={{ fontSize: 8, color: gray, marginTop: 2 }}>{img.fileName}</Text>
+                )}
+              </View>
+            ))}
+          </View>
+          <Text style={styles.footer}>
+            {quoteNum} · {shopName}
+          </Text>
+        </Page>
+      )}
     </Document>
   )
 }

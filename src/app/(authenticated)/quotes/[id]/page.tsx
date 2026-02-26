@@ -64,12 +64,25 @@ export default async function QuoteDetailPage({
       : [];
   const organizationId = authContext?.organizationId || "";
 
+  // Separate attachments by category
+  const allAttachments = result.data.attachments || [];
+  const imageAttachments = allAttachments.filter(
+    (a: { category: string }) => a.category === "image"
+  );
+  const documentAttachments = allAttachments.filter(
+    (a: { category: string }) => a.category === "document"
+  );
+
   return (
     <div className="flex h-svh flex-col overflow-hidden">
       <PageHeader />
       <QuotePageClient
         quote={result.data}
         organizationId={organizationId}
+        imageAttachments={imageAttachments}
+        documentAttachments={documentAttachments}
+        maxImages={features?.maxImagesPerService}
+        maxDocuments={features?.maxDocumentsPerService}
         currencyCode={currencyCode}
         defaultTaxRate={defaultTaxRate}
         taxEnabled={taxEnabled}

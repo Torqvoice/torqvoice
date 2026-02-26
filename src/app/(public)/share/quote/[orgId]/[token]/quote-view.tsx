@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Download, Loader2, MessageSquare } from "lucide-react";
+import { Check, Download, FileText, Loader2, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from "@/lib/format";
 import { sanitizeHtml } from "@/lib/sanitize-html";
@@ -50,6 +50,17 @@ interface QuoteRecord {
   } | null;
 }
 
+interface QuoteAttachmentView {
+  id: string;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  category: string;
+  description: string | null;
+  includeInInvoice: boolean;
+}
+
 const statusLabels: Record<string, string> = {
   draft: "Draft",
   sent: "Sent",
@@ -73,6 +84,8 @@ export function QuoteView({
   primaryColor = "#d97706",
   headerStyle = "standard",
   portalUrl,
+  imageAttachments = [],
+  documentAttachments = [],
 }: {
   quote: QuoteRecord;
   workshop: { name: string; address: string; phone: string; email: string };
@@ -86,6 +99,8 @@ export function QuoteView({
   primaryColor?: string;
   headerStyle?: string;
   portalUrl?: string;
+  imageAttachments?: QuoteAttachmentView[];
+  documentAttachments?: QuoteAttachmentView[];
 }) {
   const [downloading, setDownloading] = useState(false);
   const [status, setStatus] = useState(quote.status);
@@ -395,6 +410,49 @@ export function QuoteView({
             </div>
           </div>
         </div>
+
+        {/* Image Attachments */}
+        {imageAttachments.length > 0 && (
+          <div className="mt-6">
+            <h4 className="mb-3 font-semibold">Images</h4>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {imageAttachments.map((att) => (
+                <div key={att.id} className="overflow-hidden rounded-lg border">
+                  <img
+                    src={att.fileUrl}
+                    alt={att.description || att.fileName}
+                    className="aspect-square w-full object-cover"
+                  />
+                  {att.description && (
+                    <p className="p-2 text-xs text-gray-500">{att.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Document Attachments */}
+        {documentAttachments.length > 0 && (
+          <div className="mt-6">
+            <h4 className="mb-3 font-semibold">Documents</h4>
+            <div className="space-y-2">
+              {documentAttachments.map((att) => (
+                <a
+                  key={att.id}
+                  href={att.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-md border p-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+                >
+                  <FileText className="h-4 w-4 shrink-0 text-red-500" />
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium">{att.fileName}</span>
+                  <Download className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Customer Actions */}
         {canRespond && !showChangesForm && (
