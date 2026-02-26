@@ -397,6 +397,22 @@ export function QuotePDF({
         )}
 
         <View style={styles.totalsBox}>
+          {data.laborItems.length > 0 && (
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>Labor</Text>
+              <Text style={styles.totalValue}>
+                {formatCurrency(data.laborItems.reduce((sum, l) => sum + l.total, 0), currencyCode)}
+              </Text>
+            </View>
+          )}
+          {data.partItems.length > 0 && (
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>Parts</Text>
+              <Text style={styles.totalValue}>
+                {formatCurrency(data.partItems.reduce((sum, p) => sum + p.total, 0), currencyCode)}
+              </Text>
+            </View>
+          )}
           {data.subtotal > 0 && (
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Subtotal</Text>

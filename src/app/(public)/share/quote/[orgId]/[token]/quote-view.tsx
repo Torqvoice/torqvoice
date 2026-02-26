@@ -383,6 +383,18 @@ export function QuoteView({
 
         {/* Totals */}
         <div className="mt-6 ml-auto max-w-xs space-y-2">
+          {quote.laborItems.length > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">Labor</span>
+              <span>{formatCurrency(quote.laborItems.reduce((sum, l) => sum + l.total, 0), currencyCode)}</span>
+            </div>
+          )}
+          {quote.partItems.length > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">Parts</span>
+              <span>{formatCurrency(quote.partItems.reduce((sum, p) => sum + p.total, 0), currencyCode)}</span>
+            </div>
+          )}
           {quote.subtotal > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Subtotal</span>
