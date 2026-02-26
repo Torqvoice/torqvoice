@@ -375,6 +375,12 @@ export async function updateServiceRecord(input: unknown) {
         where: { id },
         data: {
           ...recordData,
+          description: recordData.description !== undefined ? (recordData.description || null) : undefined,
+          techName: recordData.techName !== undefined ? (recordData.techName || null) : undefined,
+          diagnosticNotes: recordData.diagnosticNotes !== undefined ? (recordData.diagnosticNotes || null) : undefined,
+          invoiceNotes: recordData.invoiceNotes !== undefined ? (recordData.invoiceNotes || null) : undefined,
+          invoiceNumber: recordData.invoiceNumber !== undefined ? (recordData.invoiceNumber || null) : undefined,
+          mileage: recordData.mileage !== undefined ? (recordData.mileage ?? null) : undefined,
           serviceDate: recordData.serviceDate ? new Date(recordData.serviceDate) : undefined,
         },
       });
