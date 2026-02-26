@@ -301,7 +301,7 @@ export function QuoteForm({
             {laborItems.map((labor, i) => (
               <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]">
                 <Input placeholder="Description *" value={labor.description} onChange={(e) => updateLabor(i, "description", e.target.value)} className="col-span-2 sm:col-span-1" />
-                <Input type="number" min="0" step="0.5" value={labor.hours} onChange={(e) => updateLabor(i, "hours", Number(e.target.value))} />
+                <Input type="number" min="0" step="0.1" value={labor.hours} onChange={(e) => updateLabor(i, "hours", Number(e.target.value))} />
                 <Input type="number" min="0" step="0.01" value={labor.rate} onChange={(e) => updateLabor(i, "rate", Number(e.target.value))} />
                 <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(labor.total, currencyCode)}</div>
                 <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setLaborItems(laborItems.filter((_, j) => j !== i))}>
