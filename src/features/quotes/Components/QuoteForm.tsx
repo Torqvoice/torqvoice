@@ -253,8 +253,8 @@ export function QuoteForm({
               <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto]">
                 <Input placeholder="Part #" value={part.partNumber ?? ""} onChange={(e) => updatePart(i, "partNumber", e.target.value)} />
                 <Input placeholder="Name *" value={part.name} onChange={(e) => updatePart(i, "name", e.target.value)} />
-                <Input type="number" min="0" step="1" value={part.quantity} onChange={(e) => updatePart(i, "quantity", Number(e.target.value))} />
-                <Input type="number" min="0" step="0.01" value={part.unitPrice} onChange={(e) => updatePart(i, "unitPrice", Number(e.target.value))} />
+                <Input type="number" min="0" step="1" value={part.quantity || ""} onChange={(e) => updatePart(i, "quantity", e.target.value === "" ? "" : Number(e.target.value))} />
+                <Input type="number" min="0" step="0.01" value={part.unitPrice || ""} onChange={(e) => updatePart(i, "unitPrice", e.target.value === "" ? "" : Number(e.target.value))} />
                 <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(part.total, currencyCode)}</div>
                 <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setPartItems(partItems.filter((_, j) => j !== i))}>
                   <Trash2 className="h-4 w-4" />
@@ -301,8 +301,8 @@ export function QuoteForm({
             {laborItems.map((labor, i) => (
               <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]">
                 <Input placeholder="Description *" value={labor.description} onChange={(e) => updateLabor(i, "description", e.target.value)} className="col-span-2 sm:col-span-1" />
-                <Input type="number" min="0" step="0.1" value={labor.hours} onChange={(e) => updateLabor(i, "hours", Number(e.target.value))} />
-                <Input type="number" min="0" step="0.01" value={labor.rate} onChange={(e) => updateLabor(i, "rate", Number(e.target.value))} />
+                <Input type="number" min="0" step="0.1" value={labor.hours || ""} onChange={(e) => updateLabor(i, "hours", e.target.value === "" ? "" : Number(e.target.value))} />
+                <Input type="number" min="0" step="0.01" value={labor.rate || ""} onChange={(e) => updateLabor(i, "rate", e.target.value === "" ? "" : Number(e.target.value))} />
                 <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(labor.total, currencyCode)}</div>
                 <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setLaborItems(laborItems.filter((_, j) => j !== i))}>
                   <Trash2 className="h-4 w-4" />
@@ -502,8 +502,8 @@ export function QuoteForm({
               {discountType !== "none" && (
                 <Input
                   type="number" min="0" step="0.01"
-                  value={discountValue}
-                  onChange={(e) => setDiscountValue(Number(e.target.value))}
+                  value={discountValue || ""}
+                  onChange={(e) => setDiscountValue(e.target.value === "" ? 0 : Number(e.target.value))}
                   className="h-7 w-20 text-right text-xs"
                 />
               )}
@@ -519,8 +519,8 @@ export function QuoteForm({
                 <span className="text-muted-foreground">Tax</span>
                 <Input
                   type="number" min="0" step="0.1"
-                  value={taxRate}
-                  onChange={(e) => setTaxRate(Number(e.target.value))}
+                  value={taxRate || ""}
+                  onChange={(e) => setTaxRate(e.target.value === "" ? 0 : Number(e.target.value))}
                   className="h-7 w-20 text-right text-xs"
                 />
                 <span className="text-muted-foreground">%</span>

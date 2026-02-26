@@ -67,15 +67,15 @@ export function LaborEditor({
                 type="number"
                 min="0"
                 step="any"
-                value={labor.hours}
-                onChange={(e) => updateLabor(i, 'hours', Number(e.target.value))}
+                value={labor.hours || ""}
+                onChange={(e) => updateLabor(i, 'hours', e.target.value === "" ? "" : Number(e.target.value))}
               />
               <Input
                 type="number"
                 min="0"
                 step="0.01"
-                value={labor.rate}
-                onChange={(e) => updateLabor(i, 'rate', Number(e.target.value))}
+                value={labor.rate || ""}
+                onChange={(e) => updateLabor(i, 'rate', e.target.value === "" ? "" : Number(e.target.value))}
               />
               <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
                 {formatCurrency(labor.total, currencyCode)}
