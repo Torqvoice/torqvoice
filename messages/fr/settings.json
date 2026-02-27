@@ -151,7 +151,30 @@
     "deleteContentConfirmPrompt": "Tapez <bold>delete my data</bold> pour confirmer",
     "deleteSelected": "Supprimer {count} selectionnes",
     "contentDeleted": "Le contenu selectionne a ete definitivement supprime",
-    "failedDeleteContent": "Echec de la suppression du contenu"
+    "failedDeleteContent": "Echec de la suppression du contenu",
+    "passkey": {
+      "title": "Passkeys",
+      "description": "Connectez-vous avec la biométrie ou une clé de sécurité au lieu d'un mot de passe.",
+      "noPasskeys": "Aucune passkey enregistrée.",
+      "unnamed": "Passkey sans nom",
+      "singleDevice": "Cet appareil uniquement",
+      "multiDevice": "Synchronisé entre appareils",
+      "register": "Enregistrer une Passkey",
+      "registering": "Enregistrement...",
+      "registerSuccess": "Passkey enregistrée avec succès",
+      "registerFailed": "Échec de l'enregistrement de la passkey",
+      "delete": "Supprimer",
+      "deleteSuccess": "Passkey supprimée",
+      "deleteFailed": "Échec de la suppression de la passkey",
+      "rename": "Renommer la Passkey",
+      "renameFailed": "Échec du renommage de la passkey",
+      "nameLabel": "Nom",
+      "namePlaceholder": "ex. MacBook Pro, iPhone",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "confirmDeleteTitle": "Supprimer la Passkey",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette passkey ? Vous ne pourrez plus vous connecter avec."
+    }
   },
   "team": {
     "title": "Equipe",

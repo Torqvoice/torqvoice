@@ -151,7 +151,30 @@
     "deleteContentConfirmPrompt": "Skriv <bold>delete my data</bold> for a bekrefte",
     "deleteSelected": "Slett {count} valgte",
     "contentDeleted": "Valgt innhold har blitt permanent slettet",
-    "failedDeleteContent": "Kunne ikke slette innhold"
+    "failedDeleteContent": "Kunne ikke slette innhold",
+    "passkey": {
+      "title": "Passkeys",
+      "description": "Logg inn med biometri eller en sikkerhetsnøkkel i stedet for passord.",
+      "noPasskeys": "Ingen passkeys registrert ennå.",
+      "unnamed": "Navnløs passkey",
+      "singleDevice": "Kun denne enheten",
+      "multiDevice": "Synkronisert på tvers av enheter",
+      "register": "Registrer Passkey",
+      "registering": "Registrerer...",
+      "registerSuccess": "Passkey registrert",
+      "registerFailed": "Kunne ikke registrere passkey",
+      "delete": "Slett",
+      "deleteSuccess": "Passkey slettet",
+      "deleteFailed": "Kunne ikke slette passkey",
+      "rename": "Gi nytt navn til Passkey",
+      "renameFailed": "Kunne ikke gi nytt navn til passkey",
+      "nameLabel": "Navn",
+      "namePlaceholder": "f.eks. MacBook Pro, iPhone",
+      "cancel": "Avbryt",
+      "save": "Lagre",
+      "confirmDeleteTitle": "Slett Passkey",
+      "confirmDelete": "Er du sikker på at du vil slette denne passkeyen? Du kan ikke logge inn med den lenger."
+    }
   },
   "team": {
     "title": "Team",

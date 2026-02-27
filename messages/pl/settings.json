@@ -151,7 +151,30 @@
     "deleteContentConfirmPrompt": "Wpisz <bold>delete my data</bold> aby potwierdzic",
     "deleteSelected": "Usun {count} wybranych",
     "contentDeleted": "Wybrana zawartosc zostala trwale usunieta",
-    "failedDeleteContent": "Nie udalo sie usunac zawartosci"
+    "failedDeleteContent": "Nie udalo sie usunac zawartosci",
+    "passkey": {
+      "title": "Passkeys",
+      "description": "Loguj się za pomocą biometrii lub klucza bezpieczeństwa zamiast hasła.",
+      "noPasskeys": "Nie zarejestrowano jeszcze żadnych passkeys.",
+      "unnamed": "Passkey bez nazwy",
+      "singleDevice": "Tylko to urządzenie",
+      "multiDevice": "Zsynchronizowany między urządzeniami",
+      "register": "Zarejestruj Passkey",
+      "registering": "Rejestrowanie...",
+      "registerSuccess": "Passkey zarejestrowany pomyślnie",
+      "registerFailed": "Nie udało się zarejestrować passkey",
+      "delete": "Usuń",
+      "deleteSuccess": "Passkey usunięty",
+      "deleteFailed": "Nie udało się usunąć passkey",
+      "rename": "Zmień nazwę Passkey",
+      "renameFailed": "Nie udało się zmienić nazwy passkey",
+      "nameLabel": "Nazwa",
+      "namePlaceholder": "np. MacBook Pro, iPhone",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "confirmDeleteTitle": "Usuń Passkey",
+      "confirmDelete": "Czy na pewno chcesz usunąć ten passkey? Nie będziesz mógł się nim logować."
+    }
   },
   "team": {
     "title": "Zespol",

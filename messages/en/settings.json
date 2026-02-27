@@ -151,7 +151,30 @@
     "deleteContentConfirmPrompt": "Type <bold>delete my data</bold> to confirm",
     "deleteSelected": "Delete {count} selected",
     "contentDeleted": "Selected content has been permanently deleted",
-    "failedDeleteContent": "Failed to delete content"
+    "failedDeleteContent": "Failed to delete content",
+    "passkey": {
+      "title": "Passkeys",
+      "description": "Sign in with biometrics or a security key instead of a password.",
+      "noPasskeys": "No passkeys registered yet.",
+      "unnamed": "Unnamed passkey",
+      "singleDevice": "This device only",
+      "multiDevice": "Synced across devices",
+      "register": "Register Passkey",
+      "registering": "Registering...",
+      "registerSuccess": "Passkey registered successfully",
+      "registerFailed": "Failed to register passkey",
+      "delete": "Delete",
+      "deleteSuccess": "Passkey deleted",
+      "deleteFailed": "Failed to delete passkey",
+      "rename": "Rename Passkey",
+      "renameFailed": "Failed to rename passkey",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. MacBook Pro, iPhone",
+      "cancel": "Cancel",
+      "save": "Save",
+      "confirmDeleteTitle": "Delete Passkey",
+      "confirmDelete": "Are you sure you want to delete this passkey? You won't be able to sign in with it anymore."
+    }
   },
   "team": {
     "title": "Team",

@@ -151,7 +151,30 @@
     "deleteContentConfirmPrompt": "Digita <bold>delete my data</bold> per confermare",
     "deleteSelected": "Elimina {count} selezionati",
     "contentDeleted": "I contenuti selezionati sono stati eliminati permanentemente",
-    "failedDeleteContent": "Eliminazione contenuti non riuscita"
+    "failedDeleteContent": "Eliminazione contenuti non riuscita",
+    "passkey": {
+      "title": "Passkey",
+      "description": "Accedi con la biometria o una chiave di sicurezza invece della password.",
+      "noPasskeys": "Nessuna passkey registrata.",
+      "unnamed": "Passkey senza nome",
+      "singleDevice": "Solo questo dispositivo",
+      "multiDevice": "Sincronizzato tra dispositivi",
+      "register": "Registra Passkey",
+      "registering": "Registrazione...",
+      "registerSuccess": "Passkey registrata con successo",
+      "registerFailed": "Registrazione passkey fallita",
+      "delete": "Elimina",
+      "deleteSuccess": "Passkey eliminata",
+      "deleteFailed": "Eliminazione passkey fallita",
+      "rename": "Rinomina Passkey",
+      "renameFailed": "Rinomina passkey fallita",
+      "nameLabel": "Nome",
+      "namePlaceholder": "es. MacBook Pro, iPhone",
+      "cancel": "Annulla",
+      "save": "Salva",
+      "confirmDeleteTitle": "Elimina Passkey",
+      "confirmDelete": "Sei sicuro di voler eliminare questa passkey? Non potrai più accedere con essa."
+    }
   },
   "team": {
     "title": "Team",

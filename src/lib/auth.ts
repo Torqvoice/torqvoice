@@ -1,3 +1,4 @@
+import { passkey } from "@better-auth/passkey";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
@@ -109,6 +110,11 @@ export const auth = betterAuth({
   },
   plugins: [
     twoFactor({ issuer: "Torqvoice" }),
+    passkey({
+      rpID: baseURL ? new URL(baseURL).hostname : "localhost",
+      rpName: "Torqvoice",
+      origin: baseURL || "http://localhost:3000",
+    }),
     nextCookies(), // Must be last plugin
   ],
 });

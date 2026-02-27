@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Checkbox } from '@/components/ui/checkbox'
 import { AlertTriangle, Check, Copy, KeyRound, Loader2, Save, Shield, ShieldOff, Trash2, User } from 'lucide-react'
+import { PasskeySettings } from '@/features/settings/Components/passkey-settings'
 import { QRCodeSVG } from 'qrcode.react'
 import { updateEmail } from '@/features/settings/Actions/accountActions'
 import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
@@ -588,6 +589,9 @@ export function AccountSettings({
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Passkeys */}
+      <PasskeySettings />
 
       {/* Danger Zone */}
       <Card className="border-destructive/30 shadow-sm">

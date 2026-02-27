@@ -151,7 +151,30 @@
     "deleteContentConfirmPrompt": "Onaylamak için <bold>delete my data</bold> yazın",
     "deleteSelected": "{count} seçili sil",
     "contentDeleted": "Seçilen içerik kalıcı olarak silindi",
-    "failedDeleteContent": "İçerik silinemedi"
+    "failedDeleteContent": "İçerik silinemedi",
+    "passkey": {
+      "title": "Passkey'ler",
+      "description": "Parola yerine biyometri veya güvenlik anahtarı ile giriş yapın.",
+      "noPasskeys": "Henüz kayıtlı passkey yok.",
+      "unnamed": "İsimsiz passkey",
+      "singleDevice": "Yalnızca bu cihaz",
+      "multiDevice": "Cihazlar arası senkronize",
+      "register": "Passkey Kaydet",
+      "registering": "Kaydediliyor...",
+      "registerSuccess": "Passkey başarıyla kaydedildi",
+      "registerFailed": "Passkey kaydedilemedi",
+      "delete": "Sil",
+      "deleteSuccess": "Passkey silindi",
+      "deleteFailed": "Passkey silinemedi",
+      "rename": "Passkey'i Yeniden Adlandır",
+      "renameFailed": "Passkey yeniden adlandırılamadı",
+      "nameLabel": "Ad",
+      "namePlaceholder": "ör. MacBook Pro, iPhone",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "confirmDeleteTitle": "Passkey'i Sil",
+      "confirmDelete": "Bu passkey'i silmek istediğinizden emin misiniz? Artık bununla giriş yapamayacaksınız."
+    }
   },
   "team": {
     "title": "Ekip",
