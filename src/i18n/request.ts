@@ -62,6 +62,7 @@ export default getRequestConfig(async () => {
   const admin = (await import(`../../messages/${locale}/admin.json`)).default
   const notifications = (await import(`../../messages/${locale}/notifications.json`)).default
   const quotes = (await import(`../../messages/${locale}/quotes.json`)).default
+  const billing = (await import(`../../messages/${locale}/billing.json`)).default
 
   return {
     locale,
@@ -86,6 +87,7 @@ export default getRequestConfig(async () => {
       admin,
       notifications,
       quotes,
+      billing,
     },
   }
 })

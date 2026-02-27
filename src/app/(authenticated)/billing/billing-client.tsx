@@ -3,6 +3,7 @@
 import { useState, useCallback, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useFormatDate } from "@/lib/use-format-date";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,10 +73,10 @@ interface BillingClientProps {
 }
 
 const STATUS_TABS = [
-  { label: "All", value: "all" },
-  { label: "Paid", value: "paid" },
-  { label: "Partial", value: "partial" },
-  { label: "Unpaid", value: "unpaid" },
+  { titleKey: "history.statusAll", value: "all" },
+  { titleKey: "history.statusPaid", value: "paid" },
+  { titleKey: "history.statusPartial", value: "partial" },
+  { titleKey: "history.statusUnpaid", value: "unpaid" },
 ] as const;
 
 export default function BillingClient({
@@ -85,6 +86,7 @@ export default function BillingClient({
   statusFilter,
 }: BillingClientProps) {
   const router = useRouter();
+  const t = useTranslations("billing");
   const { formatDate } = useFormatDate();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -152,11 +154,11 @@ export default function BillingClient({
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
       case "paid":
-        return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Paid</Badge>;
+        return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">{t("history.statusPaid")}</Badge>;
       case "partial":
-        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Partial</Badge>;
+        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">{t("history.statusPartial")}</Badge>;
       case "unpaid":
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Unpaid</Badge>;
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">{t("history.statusUnpaid")}</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -179,9 +181,9 @@ export default function BillingClient({
     <div className="space-y-6">
       {/* Navigation */}
       <div className="flex items-center gap-3">
-        <Button variant="outline" size="sm" disabled>Billing History</Button>
+        <Button variant="outline" size="sm" disabled>{t("history.title")}</Button>
         <Link href="/billing/recurring">
-          <Button variant="outline" size="sm">Recurring</Button>
+          <Button variant="outline" size="sm">{t("history.recurring")}</Button>
         </Link>
       </div>
 
@@ -193,7 +195,7 @@ export default function BillingClient({
               <DollarSign className="h-4 w-4 text-blue-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">Total Revenue</p>
+              <p className="text-xs text-muted-foreground">{t("history.totalRevenue")}</p>
               <p className="text-lg font-bold leading-tight">
                 {fmt(data.summary.totalRevenue)}
               </p>
@@ -207,7 +209,7 @@ export default function BillingClient({
               <TrendingUp className="h-4 w-4 text-emerald-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">Collected</p>
+              <p className="text-xs text-muted-foreground">{t("history.collected")}</p>
               <p className="text-lg font-bold leading-tight">
                 {fmt(data.summary.totalPaid)}
               </p>
@@ -221,7 +223,7 @@ export default function BillingClient({
               <AlertCircle className="h-4 w-4 text-red-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">Outstanding</p>
+              <p className="text-xs text-muted-foreground">{t("history.outstanding")}</p>
               <p className="text-lg font-bold leading-tight">
                 {fmt(data.summary.outstanding)}
               </p>
@@ -246,7 +248,7 @@ export default function BillingClient({
               onClick={() => handleStatusChange(tab.value)}
               disabled={isPending}
             >
-              {tab.label}
+              {t(tab.titleKey)}
               {tab.value === "paid" && (
                 <span className="ml-1 text-xs">({data.summary.paidCount})</span>
               )}
@@ -264,7 +266,7 @@ export default function BillingClient({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search invoices..."
+              placeholder={t("history.searchPlaceholder")}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               className="pl-9 w-[250px]"
@@ -274,7 +276,7 @@ export default function BillingClient({
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              "Search"
+              t("history.search")
             )}
           </Button>
         </form>
@@ -285,21 +287,21 @@ export default function BillingClient({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Invoice #</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Vehicle</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="text-right">Total</TableHead>
-              <TableHead className="text-right">Paid</TableHead>
-              <TableHead className="text-right">Balance</TableHead>
+              <TableHead>{t("history.columnInvoice")}</TableHead>
+              <TableHead>{t("history.columnTitle")}</TableHead>
+              <TableHead>{t("history.columnVehicle")}</TableHead>
+              <TableHead>{t("history.columnCustomer")}</TableHead>
+              <TableHead>{t("history.columnDate")}</TableHead>
+              <TableHead className="text-right">{t("history.columnTotal")}</TableHead>
+              <TableHead className="text-right">{t("history.columnPaid")}</TableHead>
+              <TableHead className="text-right">{t("history.columnBalance")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="h-24 text-center">
-                  No billing records found.
+                  {t("history.noRecords")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -312,7 +314,7 @@ export default function BillingClient({
                     onClick={() => handleRowClick(record)}
                   >
                     <TableCell className="font-medium">
-                      {record.invoiceNumber || "—"}
+                      {record.invoiceNumber || "\u2014"}
                     </TableCell>
                     <TableCell>{record.title}</TableCell>
                     <TableCell>
@@ -320,7 +322,7 @@ export default function BillingClient({
                       {record.vehicle.model}
                     </TableCell>
                     <TableCell>
-                      {record.vehicle.customer?.name || "—"}
+                      {record.vehicle.customer?.name || "\u2014"}
                     </TableCell>
                     <TableCell>
                       {formatDate(new Date(record.serviceDate))}
