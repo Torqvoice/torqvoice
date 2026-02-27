@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useFormatDate } from "@/lib/use-format-date";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,13 +36,13 @@ interface PaginatedData {
 }
 
 const statusTabs = [
-  { key: "all", label: "All" },
-  { key: "draft", label: "Draft" },
-  { key: "sent", label: "Sent" },
-  { key: "accepted", label: "Accepted" },
-  { key: "rejected", label: "Rejected" },
-  { key: "converted", label: "Converted" },
-];
+  { key: "all", titleKey: "list.statusAll" },
+  { key: "draft", titleKey: "list.statusDraft" },
+  { key: "sent", titleKey: "list.statusSent" },
+  { key: "accepted", titleKey: "list.statusAccepted" },
+  { key: "rejected", titleKey: "list.statusRejected" },
+  { key: "converted", titleKey: "list.statusConverted" },
+] as const;
 
 const statusColors: Record<string, string> = {
   draft: "bg-gray-500/10 text-gray-500 border-gray-500/20",
@@ -69,6 +70,7 @@ export function QuotesClient({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [searchInput, setSearchInput] = useState(search);
+  const t = useTranslations("quotes");
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -109,7 +111,7 @@ export function QuotesClient({
               size="sm"
               onClick={() => navigate({ status: tab.key === "all" ? undefined : tab.key })}
             >
-              {tab.label}
+              {t(tab.titleKey)}
               {count !== undefined && (
                 <Badge variant="secondary" className="ml-1.5 h-5 min-w-5 px-1 text-xs">
                   {count}
@@ -125,7 +127,7 @@ export function QuotesClient({
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search quotes..."
+              placeholder={t("list.searchPlaceholder")}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="pl-9"
@@ -135,7 +137,7 @@ export function QuotesClient({
         </div>
         <Button size="sm" onClick={() => router.push("/quotes/new")}>
           <Plus className="mr-1 h-3.5 w-3.5" />
-          New Quote
+          {t("list.newQuote")}
         </Button>
       </div>
 
@@ -143,20 +145,20 @@ export function QuotesClient({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-25">Quote #</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead className="hidden md:table-cell">Customer</TableHead>
-              <TableHead className="hidden lg:table-cell">Vehicle</TableHead>
-              <TableHead className="w-27.5">Status</TableHead>
-              <TableHead className="w-22.5">Date</TableHead>
-              <TableHead className="w-22.5 text-right">Total</TableHead>
+              <TableHead className="w-25">{t("list.columnQuoteNumber")}</TableHead>
+              <TableHead>{t("list.columnTitle")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("list.columnCustomer")}</TableHead>
+              <TableHead className="hidden lg:table-cell">{t("list.columnVehicle")}</TableHead>
+              <TableHead className="w-27.5">{t("list.columnStatus")}</TableHead>
+              <TableHead className="w-22.5">{t("list.columnDate")}</TableHead>
+              <TableHead className="w-22.5 text-right">{t("list.columnTotal")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                  No quotes found.
+                  {t("list.noQuotes")}
                 </TableCell>
               </TableRow>
             ) : (

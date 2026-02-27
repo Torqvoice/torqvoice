@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -38,6 +39,7 @@ export function QuoteImagesManager({
   const atLimit = maxImages !== undefined && images.length >= maxImages;
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations("quotes");
 
   const handleUpload = useCallback(
     async (files: FileList | File[]) => {
@@ -46,7 +48,7 @@ export function QuoteImagesManager({
       const rejected = fileArr.filter((f) => !allowedTypes.includes(f.type));
       if (rejected.length > 0) {
         toast.error(
-          `Only JPG, PNG, and WebP images are allowed. ${rejected.map((f) => f.name).join(", ")} skipped.`
+          t("images.onlyAllowed", { names: rejected.map((f) => f.name).join(", ") })
         );
         fileArr = fileArr.filter((f) => allowedTypes.includes(f.type));
         if (fileArr.length === 0) return;
@@ -54,17 +56,17 @@ export function QuoteImagesManager({
       if (maxImages !== undefined) {
         const remaining = maxImages - images.length;
         if (remaining <= 0) {
-          toast.error(`Image limit reached (${images.length}/${maxImages}). Upgrade your plan for more.`);
+          toast.error(t("images.limitReached", { count: images.length, max: maxImages }));
           return;
         }
         if (fileArr.length > remaining) {
           fileArr = fileArr.slice(0, remaining);
-          toast.warning(`Only uploading ${remaining} image${remaining > 1 ? "s" : ""} to stay within limit.`);
+          toast.warning(t("images.onlyUploading", { count: remaining }));
         }
       }
       setUploading(true);
       const toastId = toast.loading(
-        `Uploading ${fileArr.length} image${fileArr.length > 1 ? "s" : ""}...`
+        t("images.uploadingCount", { count: fileArr.length })
       );
       let successCount = 0;
 
@@ -112,15 +114,15 @@ export function QuoteImagesManager({
 
       if (successCount > 0) {
         toast.success(
-          `${successCount} image${successCount > 1 ? "s" : ""} uploaded`,
+          t("images.uploadedCount", { count: successCount }),
           { id: toastId }
         );
       } else {
-        toast.error("Upload failed", { id: toastId });
+        toast.error(t("images.uploadFailed"), { id: toastId });
       }
       setUploading(false);
     },
-    [quoteId, maxImages, images.length]
+    [quoteId, maxImages, images.length, t]
   );
 
   const handleDrop = useCallback(
@@ -137,11 +139,11 @@ export function QuoteImagesManager({
     const result = await deleteQuoteAttachment(attachmentId);
     if (result.success) {
       setImages((prev) => prev.filter((img) => img.id !== attachmentId));
-      toast.success("Image deleted");
+      toast.success(t("images.deleted"));
     } else {
-      toast.error(result.error || "Failed to delete image");
+      toast.error(result.error || t("images.failedDelete"));
     }
-  }, []);
+  }, [t]);
 
   const handleToggleInvoice = useCallback(
     async (attachmentId: string, checked: boolean) => {
@@ -162,10 +164,10 @@ export function QuoteImagesManager({
               : img
           )
         );
-        toast.error(result.error || "Failed to update");
+        toast.error(result.error || t("images.failedUpdate"));
       }
     },
-    []
+    [t]
   );
 
   const handleDescriptionChange = useCallback(
@@ -191,7 +193,7 @@ export function QuoteImagesManager({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Camera className="h-4 w-4" />
-          Quote Images
+          {t("images.title")}
           {maxImages !== undefined && (
             <span className="ml-auto text-xs font-normal text-muted-foreground">
               {images.length} / {maxImages}
@@ -203,10 +205,10 @@ export function QuoteImagesManager({
         {atLimit ? (
           <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
             <p className="text-sm font-medium text-muted-foreground">
-              Image limit reached ({images.length}/{maxImages})
+              {t("images.limitReached", { count: images.length, max: maxImages })}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Upgrade your plan to upload more images.
+              {t("images.upgradePrompt")}
             </p>
           </div>
         ) : (
@@ -218,10 +220,10 @@ export function QuoteImagesManager({
           >
             <ImageIcon className="mb-2 h-8 w-8 text-muted-foreground/50" />
             <p className="text-sm font-medium">
-              {uploading ? "Uploading..." : "Drop images here or click to browse"}
+              {uploading ? t("images.uploading") : t("images.dropzone")}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              JPG, PNG, WebP — max 10MB each
+              {t("images.formats")}
             </p>
             <input
               ref={inputRef}
@@ -242,7 +244,7 @@ export function QuoteImagesManager({
         {uploading && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Uploading images...
+            {t("images.uploadingImages")}
           </div>
         )}
 
@@ -268,7 +270,7 @@ export function QuoteImagesManager({
                 </div>
                 <div className="space-y-1 p-1.5">
                   <Input
-                    placeholder="Description..."
+                    placeholder={t("images.description")}
                     value={file.description || ""}
                     onChange={(e) =>
                       handleDescriptionChange(file.id, e.target.value)
@@ -286,7 +288,7 @@ export function QuoteImagesManager({
                       }
                       className="scale-75"
                     />
-                    PDF
+                    {t("images.pdf")}
                   </label>
                 </div>
               </div>

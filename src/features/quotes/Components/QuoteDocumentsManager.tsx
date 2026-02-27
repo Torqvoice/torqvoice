@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -57,6 +58,7 @@ export function QuoteDocumentsManager({
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const atLimit = maxDocuments !== undefined && files.length >= maxDocuments;
+  const t = useTranslations("quotes");
 
   const handleUpload = useCallback(
     async (fileList: FileList | File[]) => {
@@ -64,17 +66,17 @@ export function QuoteDocumentsManager({
       if (maxDocuments !== undefined) {
         const remaining = maxDocuments - files.length;
         if (remaining <= 0) {
-          toast.error(`Document limit reached (${files.length}/${maxDocuments}). Upgrade your plan for more.`);
+          toast.error(t("documents.limitReached", { count: files.length, max: maxDocuments }));
           return;
         }
         if (fileArr.length > remaining) {
           fileArr = fileArr.slice(0, remaining);
-          toast.warning(`Only uploading ${remaining} file${remaining > 1 ? "s" : ""} to stay within limit.`);
+          toast.warning(t("documents.onlyUploading", { count: remaining }));
         }
       }
       setUploading(true);
       const toastId = toast.loading(
-        `Uploading ${fileArr.length} file${fileArr.length > 1 ? "s" : ""}...`
+        t("documents.uploadingCount", { count: fileArr.length })
       );
       let successCount = 0;
 
@@ -119,26 +121,26 @@ export function QuoteDocumentsManager({
 
       if (successCount > 0) {
         toast.success(
-          `${successCount} file${successCount > 1 ? "s" : ""} uploaded`,
+          t("documents.uploadedCount", { count: successCount }),
           { id: toastId }
         );
       } else {
-        toast.error("Upload failed", { id: toastId });
+        toast.error(t("documents.uploadFailed"), { id: toastId });
       }
       setUploading(false);
     },
-    [quoteId, maxDocuments, files.length]
+    [quoteId, maxDocuments, files.length, t]
   );
 
   const handleDelete = useCallback(async (attachmentId: string) => {
     const result = await deleteQuoteAttachment(attachmentId);
     if (result.success) {
       setFiles((prev) => prev.filter((f) => f.id !== attachmentId));
-      toast.success("File deleted");
+      toast.success(t("documents.deleted"));
     } else {
-      toast.error(result.error || "Failed to delete file");
+      toast.error(result.error || t("documents.failedDelete"));
     }
-  }, []);
+  }, [t]);
 
   const handleToggleInvoice = useCallback(
     async (attachmentId: string, checked: boolean) => {
@@ -159,10 +161,10 @@ export function QuoteDocumentsManager({
               : f
           )
         );
-        toast.error(result.error || "Failed to update");
+        toast.error(result.error || t("documents.failedUpdate"));
       }
     },
-    []
+    [t]
   );
 
   return (
@@ -170,7 +172,7 @@ export function QuoteDocumentsManager({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Paperclip className="h-4 w-4" />
-          Documents
+          {t("documents.title")}
           {maxDocuments !== undefined && (
             <span className="ml-auto text-xs font-normal text-muted-foreground">
               {files.length} / {maxDocuments}
@@ -182,10 +184,10 @@ export function QuoteDocumentsManager({
         {atLimit ? (
           <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
             <p className="text-sm font-medium text-muted-foreground">
-              Document limit reached ({files.length}/{maxDocuments})
+              {t("documents.limitReached", { count: files.length, max: maxDocuments })}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Upgrade your plan to upload more.
+              {t("documents.upgradePrompt")}
             </p>
           </div>
         ) : (
@@ -202,11 +204,11 @@ export function QuoteDocumentsManager({
             <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />
             <p className="text-sm font-medium">
               {uploading
-                ? "Uploading..."
-                : "Drop files here or click to browse"}
+                ? t("documents.uploading")
+                : t("documents.dropzone")}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              PDF, CSV, TXT — max 10MB each
+              {t("documents.formats")}
             </p>
             <input
               ref={inputRef}
@@ -227,7 +229,7 @@ export function QuoteDocumentsManager({
         {uploading && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Uploading documents...
+            {t("documents.uploadingDocuments")}
           </div>
         )}
 
@@ -253,7 +255,7 @@ export function QuoteDocumentsManager({
                     }
                     className="scale-75"
                   />
-                  PDF
+                  {t("documents.pdf")}
                 </label>
                 <Button
                   type="button"
