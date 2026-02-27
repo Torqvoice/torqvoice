@@ -1,0 +1,183 @@
+{
+  "page": {
+    "notFound": "Servicerecord niet gevonden",
+    "updated": "Servicerecord bijgewerkt",
+    "failedUpdate": "Servicerecord bijwerken mislukt",
+    "deleteTitle": "Servicerecord verwijderen",
+    "deleteDescription": "Dit zal dit servicerecord permanent verwijderen en alle bijbehorende gegevens. Dit kan niet ongedaan worden gemaakt.",
+    "deleted": "Servicerecord verwijderd",
+    "failedDelete": "Verwijderen mislukt"
+  },
+  "header": {
+    "tabs": {
+      "details": "Details",
+      "images": "Afbeeldingen",
+      "video": "Video",
+      "documents": "Documenten"
+    },
+    "save": "Opslaan",
+    "pdf": "PDF",
+    "email": "E-mail",
+    "share": "Delen",
+    "delete": "Verwijderen",
+    "unpaid": "Onbetaald"
+  },
+  "basicInfo": {
+    "title": "Basisinformatie",
+    "vehicle": "Voertuig",
+    "open": "Open",
+    "customer": "Klant",
+    "titleLabel": "Titel *",
+    "titlePlaceholder": "Olievervanging",
+    "date": "Datum",
+    "type": "Type",
+    "mileage": "Kilometerstand",
+    "status": "Status",
+    "technician": "Technicus",
+    "invoiceNumber": "Factuurnummer",
+    "typeOptions": {
+      "maintenance": "Onderhoud",
+      "repair": "Reparatie",
+      "upgrade": "Upgrade",
+      "inspection": "Inspectie"
+    },
+    "statusOptions": {
+      "pending": "In afwachting",
+      "in_progress": "In uitvoering",
+      "waiting_parts": "Wacht op onderdelen",
+      "completed": "Voltooid"
+    },
+    "searchVehicles": "Voertuigen zoeken...",
+    "noVehicleFound": "Geen voertuig gevonden.",
+    "techPicker": {
+      "placeholder": "Selecteer of typ een naam...",
+      "searchPlaceholder": "Zoeken of naam typen...",
+      "useCustom": "Gebruik \"{search}\"",
+      "typePrompt": "Typ een naam...",
+      "boardTechnicians": "Werkbordtechnici",
+      "teamMembers": "Teamleden"
+    }
+  },
+  "parts": {
+    "title": "Onderdelen",
+    "fromInventory": "Uit voorraad",
+    "addPart": "Onderdeel toevoegen",
+    "partNumber": "Onderdeel #",
+    "name": "Naam",
+    "qty": "Hoeveelheid",
+    "unitPrice": "Eenheidsprijs",
+    "total": "Totaal",
+    "namePlaceholder": "Naam *",
+    "subtotal": "Onderdelen totaal: {amount}",
+    "inventoryTitle": "Onderdeel uit voorraad selecteren",
+    "searchInventory": "Voorraad zoeken...",
+    "inStock": "{quantity} in voorraad",
+    "noInventory": "Geen voorraadarticelen gevonden."
+  },
+  "labor": {
+    "title": "Arbeidskosten",
+    "addLabor": "Arbeid toevoegen",
+    "description": "Beschrijving",
+    "hours": "Uren",
+    "rate": "Tarief ({currency}/uur)",
+    "total": "Totaal",
+    "descriptionPlaceholder": "Beschrijving *",
+    "subtotal": "Arbeidskosten totaal: {amount}"
+  },
+  "totals": {
+    "title": "Totalen",
+    "parts": "Onderdelen",
+    "labor": "Arbeidskosten",
+    "subtotal": "Subtotaal",
+    "discount": "Korting",
+    "discountNone": "Geen",
+    "discountPercentage": "Percentage",
+    "discountFixed": "Vast",
+    "tax": "Belasting",
+    "total": "Totaal"
+  },
+  "notes": {
+    "title": "Opmerkingen",
+    "public": "Openbaar",
+    "internal": "Intern",
+    "publicPlaceholder": "Opmerkingen zichtbaar op de factuur...",
+    "internalPlaceholder": "Interne opmerkingen (niet weergegeven op de factuur)...",
+    "publicHelper": "Weergegeven op de factuur en gedeelde documenten",
+    "internalHelper": "Alleen zichtbaar voor uw team"
+  },
+  "invoice": {
+    "title": "Factuursamenvatting",
+    "parts": "Onderdelen",
+    "labor": "Arbeidskosten",
+    "subtotal": "Subtotaal",
+    "discount": "Korting",
+    "tax": "Belasting ({rate}%)",
+    "total": "Totaal",
+    "paid": "Betaald",
+    "balanceDue": "Verschuldigd bedrag",
+    "paidBadge": "BETAALD",
+    "entityLabel": "Factuur",
+    "emailSubject": "Betalingsbevestiging"
+  },
+  "payments": {
+    "title": "Betalingen",
+    "markUnpaid": "Markeren als onbetaald",
+    "markPaid": "Markeren als betaald",
+    "recordPayment": "Betaling registreren",
+    "totalPaid": "Totaal betaald",
+    "amount": "Bedrag",
+    "date": "Datum",
+    "method": "Methode",
+    "note": "Opmerking",
+    "notePlaceholder": "Optionele opmerking",
+    "savePayment": "Betaling opslaan",
+    "methodOptions": {
+      "cash": "Contant",
+      "card": "Kaart",
+      "transfer": "Overboeking",
+      "other": "Overig"
+    },
+    "recorded": "Betaling geregistreerd",
+    "markedPaid": "Markering als betaald",
+    "markedUnpaid": "Markering als onbetaald",
+    "deleted": "Betaling verwijderd",
+    "failedRecord": "Betaling registreren mislukt",
+    "failedStatus": "Betalingsstatus bijwerken mislukt",
+    "failedDelete": "Betaling verwijderen mislukt",
+    "deleteTitle": "Betaling verwijderen",
+    "deleteDescription": "Dit zal deze betalingsrecord verwijderen.",
+    "failedPdf": "PDF-factuur genereren mislukt"
+  },
+  "attachments": {
+    "deleteTitle": "Bijlage verwijderen",
+    "deleteDescription": "Dit zal deze bijlage permanent verwijderen. Dit kan niet ongedaan worden gemaakt.",
+    "deleted": "Bijlage verwijderd",
+    "failedDelete": "Verwijderen mislukt",
+    "images": "Afbeeldingen ({count})",
+    "videos": "Video's ({count})",
+    "diagnostics": "Diagnostische verslagen ({count})",
+    "documents": "Documenten ({count})"
+  },
+  "share": {
+    "title": "Factuur delen",
+    "description": "Genereer een openbare koppeling waarmee iedereen deze factuur kan bekijken en downloaden zonder in te loggen.",
+    "notifyTitle": "Stuur bericht naar {name}",
+    "email": "E-mail",
+    "noEmail": "(geen e-mailadres op bestand)",
+    "sms": "SMS",
+    "noPhone": "(geen telefoonnummer op bestand)",
+    "sendNotification": "Melding verzenden",
+    "revokeLink": "Koppeling intrekken",
+    "generateLink": "Openbare koppeling genereren",
+    "emailSent": "E-mail verzonden",
+    "failedEmail": "E-mail verzenden mislukt",
+    "smsSent": "SMS verzonden",
+    "failedSms": "SMS verzenden mislukt"
+  },
+  "sidebar": {
+    "vehicle": "Voertuig",
+    "customer": "Klant",
+    "vin": "VIN: {vin}",
+    "mileageAtService": "Kilometerstand bij service: {mileage} {unit}"
+  }
+}

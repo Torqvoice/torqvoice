@@ -1,0 +1,67 @@
+{
+  "page": {
+    "error": "Arbeitsboard konnte nicht geladen werden"
+  },
+  "toolbar": {
+    "today": "Heute",
+    "presenter": "Präsentator",
+    "addTechnician": "Techniker hinzufügen"
+  },
+  "board": {
+    "days": {
+      "mon": "Mo",
+      "tue": "Di",
+      "wed": "Mi",
+      "thu": "Do",
+      "fri": "Fr",
+      "sat": "Sa",
+      "sun": "So"
+    },
+    "noTechnicians": "Noch keine Techniker",
+    "noTechniciansDescription": "Fügen Sie einen Techniker hinzu, um mit der Planung von Arbeiten im Board zu beginnen.",
+    "failedMove": "Zuweisung konnte nicht verschoben werden",
+    "failedAssign": "Auftrag konnte nicht zugewiesen werden",
+    "failedRemove": "Zuweisung konnte nicht entfernt werden"
+  },
+  "unassigned": {
+    "title": "Nicht zugewiesene Aufträge ({count})",
+    "searchPlaceholder": "Aufträge durchsuchen...",
+    "empty": "Keine nicht zugewiesenen Aufträge"
+  },
+  "technician": {
+    "editTitle": "Techniker bearbeiten",
+    "addTitle": "Techniker hinzufügen",
+    "name": "Name",
+    "namePlaceholder": "z.B. Max Mustermann",
+    "color": "Farbe",
+    "linkMember": "Mit Organisationsmitglied verlinken (optional)",
+    "standalone": "Unabhängiger Techniker",
+    "deleteTitle": "Techniker löschen",
+    "deleteDescription": "\"{name}\" von der Arbeitsplatine entfernen? Ihre bestehenden Zuweisungen werden ebenfalls entfernt.",
+    "addTechnician": "Techniker hinzufügen"
+  },
+  "jobDetail": {
+    "viewDetails": "Details anzeigen",
+    "remove": "Entfernen",
+    "date": "Datum: {date}"
+  },
+  "presenter": {
+    "title": "Arbeitsboard",
+    "day": "Tag",
+    "status": "Status",
+    "week": "Woche",
+    "today": "Heute",
+    "live": "Live",
+    "disconnected": "Live-Updates unterbrochen",
+    "noTechnicians": "Keine Techniker konfiguriert",
+    "noJobsToday": "Keine Aufträge heute",
+    "job": "{count} Auftrag",
+    "jobs": "{count} Aufträge",
+    "statusLabels": {
+      "pending": "Ausstehend",
+      "inProgress": "In Bearbeitung",
+      "waitingParts": "Warten auf Teile",
+      "completed": "Abgeschlossen"
+    }
+  }
+}

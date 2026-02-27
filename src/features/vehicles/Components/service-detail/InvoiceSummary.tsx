@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/lib/format";
 
@@ -38,58 +39,59 @@ export function InvoiceSummary({
   hasPayments,
   currencyCode,
 }: InvoiceSummaryProps) {
+  const t = useTranslations("service.invoice");
   return (
     <div className="rounded-lg border p-3">
-      <h3 className="mb-2 text-sm font-semibold">Invoice Summary</h3>
+      <h3 className="mb-2 text-sm font-semibold">{t("title")}</h3>
       <div className="space-y-1.5">
         {hasPartItems && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Parts</span>
+            <span className="text-muted-foreground">{t("parts")}</span>
             <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
           </div>
         )}
         {hasLaborItems && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Labor</span>
+            <span className="text-muted-foreground">{t("labor")}</span>
             <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
           </div>
         )}
         {subtotal > 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Subtotal</span>
+            <span className="text-muted-foreground">{t("subtotal")}</span>
             <span>{formatCurrency(subtotal, currencyCode)}</span>
           </div>
         )}
         {discountAmount > 0 && (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">
-              Discount{discountType === "percentage" ? ` (${discountValue}%)` : ""}
+              {t("discount")}{discountType === "percentage" ? ` (${discountValue}%)` : ""}
             </span>
             <span className="text-destructive">{formatCurrency(-discountAmount, currencyCode)}</span>
           </div>
         )}
         {taxRate > 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Tax ({taxRate}%)</span>
+            <span className="text-muted-foreground">{t("tax", { rate: taxRate })}</span>
             <span>{formatCurrency(taxAmount, currencyCode)}</span>
           </div>
         )}
         <Separator />
         <div className="flex justify-between font-bold">
-          <span>Total</span>
+          <span>{t("total")}</span>
           <span>{formatCurrency(displayTotal, currencyCode)}</span>
         </div>
         {hasPayments && (
           <>
             <div className="flex justify-between text-sm text-emerald-600">
-              <span>Paid</span>
+              <span>{t("paid")}</span>
               <span>{formatCurrency(-totalPaid, currencyCode)}</span>
             </div>
             <Separator />
             <div className="flex justify-between font-bold">
-              <span>Balance Due</span>
+              <span>{t("balanceDue")}</span>
               <span className={balanceDue <= 0 ? "text-emerald-600" : ""}>
-                {balanceDue <= 0 ? "PAID" : formatCurrency(balanceDue, currencyCode)}
+                {balanceDue <= 0 ? t("paidBadge") : formatCurrency(balanceDue, currencyCode)}
               </span>
             </div>
           </>

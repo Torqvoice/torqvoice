@@ -3,12 +3,13 @@
 import { Wrench, ClipboardCheck } from 'lucide-react'
 import type { Technician } from '../store/workboardStore'
 import type { BoardAssignmentWithJob } from '../Actions/boardActions'
+import { useTranslations } from 'next-intl'
 
 const STATUS_COLUMNS = [
-  { key: 'pending', label: 'Pending', color: 'bg-yellow-500' },
-  { key: 'in-progress', label: 'In Progress', color: 'bg-orange-500' },
-  { key: 'waiting-parts', label: 'Waiting Parts', color: 'bg-red-500' },
-  { key: 'completed', label: 'Completed', color: 'bg-emerald-500' },
+  { key: 'pending', i18nKey: 'pending', color: 'bg-yellow-500' },
+  { key: 'in-progress', i18nKey: 'inProgress', color: 'bg-orange-500' },
+  { key: 'waiting-parts', i18nKey: 'waitingParts', color: 'bg-red-500' },
+  { key: 'completed', i18nKey: 'completed', color: 'bg-emerald-500' },
 ] as const
 
 function getAssignmentStatus(a: BoardAssignmentWithJob): string {
@@ -55,12 +56,13 @@ export function PresenterKanbanView({
   technicians: Technician[]
   assignments: BoardAssignmentWithJob[]
 }) {
+  const t = useTranslations('workBoard.presenter')
   const dayAssignments = assignments.filter((a) => a.date === date)
 
   if (technicians.length === 0) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-lg text-muted-foreground">No technicians configured</p>
+        <p className="text-lg text-muted-foreground">{t('noTechnicians')}</p>
       </div>
     )
   }
@@ -81,7 +83,7 @@ export function PresenterKanbanView({
           return (
             <div key={col.key} className="flex items-center justify-center gap-2 border-b border-l p-2">
               <div className={`h-2.5 w-2.5 rounded-full ${col.color}`} />
-              <span className="text-sm font-semibold">{col.label}</span>
+              <span className="text-sm font-semibold">{t(`statusLabels.${col.i18nKey}`)}</span>
               <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">{count}</span>
             </div>
           )
@@ -101,7 +103,7 @@ export function PresenterKanbanView({
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{tech.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {techJobs.length} {techJobs.length === 1 ? 'job' : 'jobs'}
+                    {techJobs.length === 1 ? t('job', { count: techJobs.length }) : t('jobs', { count: techJobs.length })}
                   </p>
                 </div>
               </div>

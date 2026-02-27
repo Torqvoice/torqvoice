@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { getWorkOrders } from "@/features/vehicles/Actions/serviceActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
@@ -40,7 +41,7 @@ export default async function WorkOrdersPage({
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-muted-foreground">
-            {result.error || "Failed to load work orders"}
+            {result.error || (await getTranslations("workOrders.page"))("error")}
           </p>
         </div>
       </>

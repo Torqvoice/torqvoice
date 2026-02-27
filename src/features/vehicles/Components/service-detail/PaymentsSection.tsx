@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,8 @@ export function PaymentsSection({
   paymentLoading,
   deletingPayment,
 }: PaymentsSectionProps) {
+  const t = useTranslations("service.payments");
+  const tc = useTranslations("common.buttons");
   const [showForm, setShowForm] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("other");
   const { formatDate } = useFormatDate();
@@ -76,7 +79,7 @@ export function PaymentsSection({
         <div className="flex items-center gap-2">
           <h3 className="flex items-center gap-2 text-sm font-semibold">
             <CreditCard className="h-3.5 w-3.5" />
-            Payments
+            {t("title")}
           </h3>
           <Badge variant="outline" className={`text-xs ${paymentStatusColors[paymentStatus] || ""}`}>
             {paymentStatusLabels[paymentStatus] || "Unpaid"}
@@ -98,18 +101,18 @@ export function PaymentsSection({
             ) : (
               <Check className="mr-1 h-3 w-3" />
             )}
-            {manuallyPaid ? "Mark as Unpaid" : "Mark as Paid"}
+            {manuallyPaid ? t("markUnpaid") : t("markPaid")}
           </Button>
           <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => setShowForm(!showForm)}>
             <Plus className="mr-1 h-3 w-3" />
-            Record Payment
+            {t("recordPayment")}
           </Button>
         </div>
       </div>
 
       <div className="space-y-3">
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Total Paid</span>
+          <span className="text-muted-foreground">{t("totalPaid")}</span>
           <span className="font-medium">
             {formatCurrency(totalPaid, currencyCode)} / {formatCurrency(displayTotal, currencyCode)}
           </span>
@@ -119,43 +122,43 @@ export function PaymentsSection({
           <div ref={formRef} className="space-y-3 rounded-lg border p-3">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1">
-                <Label htmlFor="paymentAmount" className="text-xs">Amount</Label>
+                <Label htmlFor="paymentAmount" className="text-xs">{t("amount")}</Label>
                 <Input
                   id="paymentAmount" name="paymentAmount" type="number"
                   step="0.01" min="0.01" defaultValue={balanceDue > 0 ? balanceDue.toFixed(2) : ""} required
                 />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="paymentDate" className="text-xs">Date</Label>
+                <Label htmlFor="paymentDate" className="text-xs">{t("date")}</Label>
                 <Input
                   id="paymentDate" name="paymentDate" type="date"
                   defaultValue={new Date().toISOString().split("T")[0]}
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Method</Label>
+                <Label className="text-xs">{t("method")}</Label>
                 <Select value={paymentMethod} onValueChange={setPaymentMethod}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="cash">Cash</SelectItem>
-                    <SelectItem value="card">Card</SelectItem>
-                    <SelectItem value="transfer">Transfer</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="cash">{t("methodOptions.cash")}</SelectItem>
+                    <SelectItem value="card">{t("methodOptions.card")}</SelectItem>
+                    <SelectItem value="transfer">{t("methodOptions.transfer")}</SelectItem>
+                    <SelectItem value="other">{t("methodOptions.other")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1">
-                <Label htmlFor="paymentNote" className="text-xs">Note</Label>
-                <Input id="paymentNote" name="paymentNote" placeholder="Optional note" />
+                <Label htmlFor="paymentNote" className="text-xs">{t("note")}</Label>
+                <Input id="paymentNote" name="paymentNote" placeholder={t("notePlaceholder")} />
               </div>
             </div>
             <div className="flex gap-2">
               <Button type="button" size="sm" disabled={paymentLoading} onClick={handleSubmit}>
                 {paymentLoading && <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />}
-                Save Payment
+                {t("savePayment")}
               </Button>
               <Button type="button" variant="ghost" size="sm" onClick={() => setShowForm(false)}>
-                Cancel
+                {tc("cancel")}
               </Button>
             </div>
           </div>
@@ -166,10 +169,10 @@ export function PaymentsSection({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-xs text-muted-foreground">
-                  <th className="pb-1.5 font-medium">Date</th>
-                  <th className="pb-1.5 text-right font-medium">Amount</th>
-                  <th className="pb-1.5 font-medium">Method</th>
-                  <th className="pb-1.5 font-medium">Note</th>
+                  <th className="pb-1.5 font-medium">{t("date")}</th>
+                  <th className="pb-1.5 text-right font-medium">{t("amount")}</th>
+                  <th className="pb-1.5 font-medium">{t("method")}</th>
+                  <th className="pb-1.5 font-medium">{t("note")}</th>
                   <th className="pb-1.5 w-8" />
                 </tr>
               </thead>

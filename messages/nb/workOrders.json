@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "Kunne ikke laste arbeidsordrer"
+  },
+  "list": {
+    "searchPlaceholder": "Søk i arbeidsordrer...",
+    "newWorkOrder": "Ny arbeidsordre",
+    "selectVehicle": "Velg kjøretøy",
+    "empty": "Ingen arbeidsordrer funnet.",
+    "statusUpdated": "Status oppdatert",
+    "statusTabs": {
+      "all": "Alle",
+      "active": "Aktive",
+      "pending": "Avventende",
+      "inProgress": "Pågår",
+      "waitingParts": "Venter på deler",
+      "completed": "Fullført"
+    },
+    "statusActions": {
+      "startWork": "Start arbeid",
+      "waitingParts": "Venter på deler",
+      "complete": "Fullfør",
+      "resumeWork": "Gjenoppta arbeid",
+      "reopen": "Åpne igjen"
+    },
+    "table": {
+      "invoice": "Faktura#",
+      "vehicle": "Kjøretøy",
+      "customer": "Kunde",
+      "title": "Tittel",
+      "status": "Status",
+      "tech": "Tekniker",
+      "date": "Dato",
+      "total": "Total"
+    },
+    "emailSubject": "Kjøretøystatus oppdatert: {status}"
+  },
+  "vehiclePicker": {
+    "title": "Velg kjøretøy for arbeidsordre",
+    "searchPlaceholder": "Søk kjøretøyer...",
+    "empty": "Ingen kjøretøyer funnet.",
+    "emptySearch": "Ingen kjøretøyer samsvarer med søket ditt.",
+    "addNewVehicle": "Legg til nytt kjøretøy",
+    "noPlate": "Ingen registreringsskilt",
+    "make": "Merke *",
+    "model": "Modell *",
+    "year": "År *",
+    "licensePlate": "Registreringsskilt",
+    "customer": "Kunde",
+    "selectCustomer": "Velg en kunde (valgfritt)",
+    "createNewCustomer": "Opprett ny kunde",
+    "newCustomer": "Ny kunde",
+    "customerName": "Navn *",
+    "customerNamePlaceholder": "Kundenavn",
+    "phone": "Telefon",
+    "phonePlaceholder": "Telefonnummer",
+    "creating": "Oppretter...",
+    "createAndContinue": "Opprett og fortsett",
+    "invalidYear": "Vennligst skriv inn et gyldig år",
+    "customerNameRequired": "Kundenavn er påkrevd",
+    "failedCreateCustomer": "Kunne ikke opprette kunde",
+    "failedCreateVehicle": "Kunne ikke opprette kjøretøy",
+    "somethingWentWrong": "Noe gikk galt"
+  },
+  "notify": {
+    "title": "Varsle {name}",
+    "description": "Send en varsling til kunden om denne oppdateringen.",
+    "sms": "SMS",
+    "email": "E-post",
+    "noPhone": "(ingen telefon på arkiv)",
+    "noEmail": "(ingen e-post på arkiv)",
+    "notAvailable": "(ikke tilgjengelig)",
+    "skip": "Hopp over",
+    "send": "Send",
+    "smsSent": "SMS sendt",
+    "emailSent": "E-post sendt",
+    "failedSms": "Kunne ikke sende SMS",
+    "failedEmail": "Kunne ikke sende e-post"
+  }
+}

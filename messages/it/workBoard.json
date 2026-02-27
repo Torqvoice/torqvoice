@@ -1,0 +1,67 @@
+{
+  "page": {
+    "error": "Impossibile caricare la lavagna di lavoro"
+  },
+  "toolbar": {
+    "today": "Oggi",
+    "presenter": "Presentatore",
+    "addTechnician": "Aggiungi Tecnico"
+  },
+  "board": {
+    "days": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Gio",
+      "fri": "Ven",
+      "sat": "Sab",
+      "sun": "Dom"
+    },
+    "noTechnicians": "Nessun Tecnico Ancora",
+    "noTechniciansDescription": "Aggiungi un tecnico per iniziare a programmare il lavoro sulla lavagna.",
+    "failedMove": "Impossibile spostare l'incarico",
+    "failedAssign": "Impossibile assegnare il lavoro",
+    "failedRemove": "Impossibile rimuovere l'incarico"
+  },
+  "unassigned": {
+    "title": "Lavori Non Assegnati ({count})",
+    "searchPlaceholder": "Cerca lavori...",
+    "empty": "Nessun lavoro non assegnato"
+  },
+  "technician": {
+    "editTitle": "Modifica Tecnico",
+    "addTitle": "Aggiungi Tecnico",
+    "name": "Nome",
+    "namePlaceholder": "es. Giovanni Rossi",
+    "color": "Colore",
+    "linkMember": "Collega a Membro Organizzazione (facoltativo)",
+    "standalone": "Tecnico indipendente",
+    "deleteTitle": "Elimina Tecnico",
+    "deleteDescription": "Rimuovere \"{name}\" dalla lavagna di lavoro? Anche i loro incarichi esistenti verranno rimossi.",
+    "addTechnician": "Aggiungi Tecnico"
+  },
+  "jobDetail": {
+    "viewDetails": "Visualizza Dettagli",
+    "remove": "Rimuovi",
+    "date": "Data: {date}"
+  },
+  "presenter": {
+    "title": "Lavagna di Lavoro",
+    "day": "Giorno",
+    "status": "Stato",
+    "week": "Settimana",
+    "today": "Oggi",
+    "live": "Dal Vivo",
+    "disconnected": "Aggiornamenti dal vivo disconnessi",
+    "noTechnicians": "Nessun tecnico configurato",
+    "noJobsToday": "Nessun lavoro oggi",
+    "job": "{count} lavoro",
+    "jobs": "{count} lavori",
+    "statusLabels": {
+      "pending": "In Sospeso",
+      "inProgress": "In Corso",
+      "waitingParts": "In Attesa di Pezzi",
+      "completed": "Completato"
+    }
+  }
+}

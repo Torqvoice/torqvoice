@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/page-header";
 import { getTechnicians } from "@/features/workboard/Actions/technicianActions";
 import { getBoardAssignments, getUnassignedJobs } from "@/features/workboard/Actions/boardActions";
@@ -29,7 +30,7 @@ export default async function WorkBoardPage() {
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-muted-foreground">
-            {techResult.error || "Failed to load work board"}
+            {techResult.error || (await getTranslations("workBoard.page"))("error")}
           </p>
         </div>
       </>

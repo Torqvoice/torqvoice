@@ -29,6 +29,7 @@ import {
 import { createVehicle } from "@/features/vehicles/Actions/vehicleActions";
 import { createCustomer } from "@/features/customers/Actions/customerActions";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface Vehicle {
   id: string;
@@ -58,9 +59,12 @@ export function VehiclePickerDialog({
   onOpenChange,
   vehicles,
   customers,
-  title = "Select Vehicle for Work Order",
+  title,
 }: VehiclePickerDialogProps) {
   const router = useRouter();
+  const t = useTranslations("workOrders.vehiclePicker");
+  const tc = useTranslations("common.buttons");
+  const displayTitle = title || t("title");
 
   const [vehicleSearch, setVehicleSearch] = useState("");
   const [pickerStep, setPickerStep] = useState<"select" | "create">("select");
@@ -115,11 +119,11 @@ export function VehiclePickerDialog({
     if (!newMake.trim() || !newModel.trim() || !newYear.trim()) return;
     const yearNum = parseInt(newYear, 10);
     if (isNaN(yearNum) || yearNum < 1900 || yearNum > new Date().getFullYear() + 2) {
-      toast.error("Please enter a valid year");
+      toast.error(t("invalidYear"));
       return;
     }
     if (showNewCustomer && !newCustomerName.trim()) {
-      toast.error("Customer name is required");
+      toast.error(t("customerNameRequired"));
       return;
     }
 
@@ -133,7 +137,7 @@ export function VehiclePickerDialog({
           phone: newCustomerPhone.trim() || undefined,
         });
         if (!customerResult.success || !customerResult.data) {
-          toast.error(customerResult.error || "Failed to create customer");
+          toast.error(customerResult.error || t("failedCreateCustomer"));
           setCreating(false);
           return;
         }
@@ -148,14 +152,14 @@ export function VehiclePickerDialog({
         customerId,
       });
       if (!vehicleResult.success || !vehicleResult.data) {
-        toast.error(vehicleResult.error || "Failed to create vehicle");
+        toast.error(vehicleResult.error || t("failedCreateVehicle"));
         setCreating(false);
         return;
       }
 
       handleSelect(vehicleResult.data.id);
     } catch {
-      toast.error("Something went wrong");
+      toast.error(t("somethingWentWrong"));
       setCreating(false);
     }
   };
@@ -166,13 +170,13 @@ export function VehiclePickerDialog({
         {pickerStep === "select" ? (
           <>
             <DialogHeader>
-              <DialogTitle>{title}</DialogTitle>
+              <DialogTitle>{displayTitle}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search vehicles..."
+                  placeholder={t("searchPlaceholder")}
                   value={vehicleSearch}
                   onChange={(e) => setVehicleSearch(e.target.value)}
                   className="pl-9"
@@ -184,15 +188,15 @@ export function VehiclePickerDialog({
                   <div className="py-6 text-center space-y-3">
                     <p className="text-sm text-muted-foreground">
                       {vehicles.length === 0
-                        ? "No vehicles found."
-                        : "No vehicles match your search."}
+                        ? t("empty")
+                        : t("emptySearch")}
                     </p>
                     <Button
                       variant="outline"
                       onClick={() => setPickerStep("create")}
                     >
                       <Plus className="h-4 w-4 mr-1" />
-                      Add New Vehicle
+                      {t("addNewVehicle")}
                     </Button>
                   </div>
                 ) : (
@@ -212,7 +216,7 @@ export function VehiclePickerDialog({
                           <p className="text-xs text-muted-foreground">
                             {[v.licensePlate, v.customer?.name]
                               .filter(Boolean)
-                              .join(" · ") || "No plate"}
+                              .join(" · ") || t("noPlate")}
                           </p>
                         </div>
                       </button>
@@ -242,13 +246,13 @@ export function VehiclePickerDialog({
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
-                <DialogTitle>Add New Vehicle</DialogTitle>
+                <DialogTitle>{t("addNewVehicle")}</DialogTitle>
               </div>
             </DialogHeader>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="new-make">Make *</Label>
+                  <Label htmlFor="new-make">{t("make")}</Label>
                   <Input
                     id="new-make"
                     placeholder="e.g. Toyota"
@@ -258,7 +262,7 @@ export function VehiclePickerDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="new-model">Model *</Label>
+                  <Label htmlFor="new-model">{t("model")}</Label>
                   <Input
                     id="new-model"
                     placeholder="e.g. Camry"
@@ -269,7 +273,7 @@ export function VehiclePickerDialog({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="new-year">Year *</Label>
+                  <Label htmlFor="new-year">{t("year")}</Label>
                   <Input
                     id="new-year"
                     type="number"
@@ -279,7 +283,7 @@ export function VehiclePickerDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="new-plate">License Plate</Label>
+                  <Label htmlFor="new-plate">{t("licensePlate")}</Label>
                   <Input
                     id="new-plate"
                     placeholder="e.g. ABC-1234"
@@ -289,7 +293,7 @@ export function VehiclePickerDialog({
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label>Customer</Label>
+                <Label>{t("customer")}</Label>
                 {!showNewCustomer ? (
                   <Select
                     value={selectedCustomerId}
@@ -303,13 +307,13 @@ export function VehiclePickerDialog({
                     }}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a customer (optional)" />
+                      <SelectValue placeholder={t("selectCustomer")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="__new__">
                         <span className="flex items-center gap-1.5">
                           <UserPlus className="h-3.5 w-3.5" />
-                          Create new customer
+                          {t("createNewCustomer")}
                         </span>
                       </SelectItem>
                       {customers.map((c) => (
@@ -322,7 +326,7 @@ export function VehiclePickerDialog({
                 ) : (
                   <div className="space-y-3 rounded-md border p-3">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium">New Customer</p>
+                      <p className="text-sm font-medium">{t("newCustomer")}</p>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -333,24 +337,24 @@ export function VehiclePickerDialog({
                           setNewCustomerPhone("");
                         }}
                       >
-                        Cancel
+                        {tc("cancel")}
                       </Button>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <Label htmlFor="new-customer-name">Name *</Label>
+                        <Label htmlFor="new-customer-name">{t("customerName")}</Label>
                         <Input
                           id="new-customer-name"
-                          placeholder="Customer name"
+                          placeholder={t("customerNamePlaceholder")}
                           value={newCustomerName}
                           onChange={(e) => setNewCustomerName(e.target.value)}
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="new-customer-phone">Phone</Label>
+                        <Label htmlFor="new-customer-phone">{t("phone")}</Label>
                         <Input
                           id="new-customer-phone"
-                          placeholder="Phone number"
+                          placeholder={t("phonePlaceholder")}
                           value={newCustomerPhone}
                           onChange={(e) => setNewCustomerPhone(e.target.value)}
                         />
@@ -367,10 +371,10 @@ export function VehiclePickerDialog({
                 {creating ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                    Creating...
+                    {t("creating")}
                   </>
                 ) : (
-                  "Create & Continue"
+                  t("createAndContinue")
                 )}
               </Button>
             </div>

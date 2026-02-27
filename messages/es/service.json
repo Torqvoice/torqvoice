@@ -1,0 +1,183 @@
+{
+  "page": {
+    "notFound": "Registro de servicio no encontrado",
+    "updated": "Registro de servicio actualizado",
+    "failedUpdate": "Error al actualizar registro de servicio",
+    "deleteTitle": "Eliminar Registro de Servicio",
+    "deleteDescription": "Esto eliminará permanentemente este registro de servicio y todos los datos asociados. Esto no se puede deshacer.",
+    "deleted": "Registro de servicio eliminado",
+    "failedDelete": "Error al eliminar"
+  },
+  "header": {
+    "tabs": {
+      "details": "Detalles",
+      "images": "Imágenes",
+      "video": "Video",
+      "documents": "Documentos"
+    },
+    "save": "Guardar",
+    "pdf": "PDF",
+    "email": "Correo Electrónico",
+    "share": "Compartir",
+    "delete": "Eliminar",
+    "unpaid": "Sin Pagar"
+  },
+  "basicInfo": {
+    "title": "Información Básica",
+    "vehicle": "Vehículo",
+    "open": "Abierto",
+    "customer": "Cliente",
+    "titleLabel": "Título *",
+    "titlePlaceholder": "Cambio de Aceite",
+    "date": "Fecha",
+    "type": "Tipo",
+    "mileage": "Millaje",
+    "status": "Estado",
+    "technician": "Técnico",
+    "invoiceNumber": "Número de Factura",
+    "typeOptions": {
+      "maintenance": "Mantenimiento",
+      "repair": "Reparación",
+      "upgrade": "Mejora",
+      "inspection": "Inspección"
+    },
+    "statusOptions": {
+      "pending": "Pendiente",
+      "in_progress": "En Progreso",
+      "waiting_parts": "Esperando Piezas",
+      "completed": "Completado"
+    },
+    "searchVehicles": "Buscar vehículos...",
+    "noVehicleFound": "Vehículo no encontrado.",
+    "techPicker": {
+      "placeholder": "Seleccionar o escribir un nombre...",
+      "searchPlaceholder": "Buscar o escribir nombre...",
+      "useCustom": "Usar \"{search}\"",
+      "typePrompt": "Escriba un nombre...",
+      "boardTechnicians": "Técnicos del Tablero",
+      "teamMembers": "Miembros del Equipo"
+    }
+  },
+  "parts": {
+    "title": "Piezas",
+    "fromInventory": "Del Inventario",
+    "addPart": "Agregar Pieza",
+    "partNumber": "N° de Pieza",
+    "name": "Nombre",
+    "qty": "Cantidad",
+    "unitPrice": "Precio Unitario",
+    "total": "Total",
+    "namePlaceholder": "Nombre *",
+    "subtotal": "Subtotal de Piezas: {amount}",
+    "inventoryTitle": "Seleccionar Pieza del Inventario",
+    "searchInventory": "Buscar en inventario...",
+    "inStock": "{quantity} en stock",
+    "noInventory": "No se encontraron piezas de inventario."
+  },
+  "labor": {
+    "title": "Mano de Obra",
+    "addLabor": "Agregar Mano de Obra",
+    "description": "Descripción",
+    "hours": "Horas",
+    "rate": "Tarifa ({currency}/hr)",
+    "total": "Total",
+    "descriptionPlaceholder": "Descripción *",
+    "subtotal": "Subtotal de Mano de Obra: {amount}"
+  },
+  "totals": {
+    "title": "Totales",
+    "parts": "Piezas",
+    "labor": "Mano de Obra",
+    "subtotal": "Subtotal",
+    "discount": "Descuento",
+    "discountNone": "Ninguno",
+    "discountPercentage": "Porcentaje",
+    "discountFixed": "Fijo",
+    "tax": "Impuesto",
+    "total": "Total"
+  },
+  "notes": {
+    "title": "Notas",
+    "public": "Público",
+    "internal": "Interno",
+    "publicPlaceholder": "Notas visibles en la factura...",
+    "internalPlaceholder": "Notas internas (no mostradas en la factura)...",
+    "publicHelper": "Se muestra en la factura y documentos compartidos",
+    "internalHelper": "Solo visible para su equipo"
+  },
+  "invoice": {
+    "title": "Resumen de Factura",
+    "parts": "Piezas",
+    "labor": "Mano de Obra",
+    "subtotal": "Subtotal",
+    "discount": "Descuento",
+    "tax": "Impuesto ({rate}%)",
+    "total": "Total",
+    "paid": "Pagado",
+    "balanceDue": "Saldo Pendiente",
+    "paidBadge": "PAGADO",
+    "entityLabel": "Factura",
+    "emailSubject": "Confirmación de Pago"
+  },
+  "payments": {
+    "title": "Pagos",
+    "markUnpaid": "Marcar como Sin Pagar",
+    "markPaid": "Marcar como Pagado",
+    "recordPayment": "Registrar Pago",
+    "totalPaid": "Total Pagado",
+    "amount": "Cantidad",
+    "date": "Fecha",
+    "method": "Método",
+    "note": "Nota",
+    "notePlaceholder": "Nota opcional",
+    "savePayment": "Guardar Pago",
+    "methodOptions": {
+      "cash": "Efectivo",
+      "card": "Tarjeta",
+      "transfer": "Transferencia",
+      "other": "Otro"
+    },
+    "recorded": "Pago registrado",
+    "markedPaid": "Marcado como pagado",
+    "markedUnpaid": "Marcado como sin pagar",
+    "deleted": "Pago eliminado",
+    "failedRecord": "Error al registrar pago",
+    "failedStatus": "Error al actualizar estado del pago",
+    "failedDelete": "Error al eliminar pago",
+    "deleteTitle": "Eliminar Pago",
+    "deleteDescription": "Esto eliminará este registro de pago.",
+    "failedPdf": "Error al generar factura en PDF"
+  },
+  "attachments": {
+    "deleteTitle": "Eliminar Archivo",
+    "deleteDescription": "Esto eliminará permanentemente este archivo. Esto no se puede deshacer.",
+    "deleted": "Archivo eliminado",
+    "failedDelete": "Error al eliminar",
+    "images": "Imágenes ({count})",
+    "videos": "Videos ({count})",
+    "diagnostics": "Reportes de Diagnóstico ({count})",
+    "documents": "Documentos ({count})"
+  },
+  "share": {
+    "title": "Compartir Factura",
+    "description": "Genere un enlace público que permita a cualquiera ver y descargar esta factura sin iniciar sesión.",
+    "notifyTitle": "Notificar a {name}",
+    "email": "Correo Electrónico",
+    "noEmail": "(sin correo electrónico registrado)",
+    "sms": "SMS",
+    "noPhone": "(sin teléfono registrado)",
+    "sendNotification": "Enviar Notificación",
+    "revokeLink": "Revocar Enlace",
+    "generateLink": "Generar Enlace Público",
+    "emailSent": "Correo electrónico enviado",
+    "failedEmail": "Error al enviar correo electrónico",
+    "smsSent": "SMS enviado",
+    "failedSms": "Error al enviar SMS"
+  },
+  "sidebar": {
+    "vehicle": "Vehículo",
+    "customer": "Cliente",
+    "vin": "VIN: {vin}",
+    "mileageAtService": "Millaje en el servicio: {mileage} {unit}"
+  }
+}

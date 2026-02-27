@@ -49,6 +49,9 @@ export default getRequestConfig(async () => {
   const customers = (await import(`../../messages/${locale}/customers.json`)).default
   const messages = (await import(`../../messages/${locale}/messages.json`)).default
   const vehicles = (await import(`../../messages/${locale}/vehicles.json`)).default
+  const workOrders = (await import(`../../messages/${locale}/workOrders.json`)).default
+  const workBoard = (await import(`../../messages/${locale}/workBoard.json`)).default
+  const service = (await import(`../../messages/${locale}/service.json`)).default
 
   return {
     locale,
@@ -60,6 +63,9 @@ export default getRequestConfig(async () => {
       customers,
       messages,
       vehicles,
+      workOrders,
+      workBoard,
+      service,
     },
   }
 })

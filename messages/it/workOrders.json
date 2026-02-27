@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "Impossibile caricare gli ordini di lavoro"
+  },
+  "list": {
+    "searchPlaceholder": "Cerca ordini di lavoro...",
+    "newWorkOrder": "Nuovo Ordine di Lavoro",
+    "selectVehicle": "Seleziona Veicolo",
+    "empty": "Nessun ordine di lavoro trovato.",
+    "statusUpdated": "Stato aggiornato",
+    "statusTabs": {
+      "all": "Tutti",
+      "active": "Attivi",
+      "pending": "In Sospeso",
+      "inProgress": "In Corso",
+      "waitingParts": "In Attesa di Pezzi",
+      "completed": "Completato"
+    },
+    "statusActions": {
+      "startWork": "Inizia Lavoro",
+      "waitingParts": "In Attesa di Pezzi",
+      "complete": "Completa",
+      "resumeWork": "Riprendi Lavoro",
+      "reopen": "Riapri"
+    },
+    "table": {
+      "invoice": "Fattura#",
+      "vehicle": "Veicolo",
+      "customer": "Cliente",
+      "title": "Titolo",
+      "status": "Stato",
+      "tech": "Tecnico",
+      "date": "Data",
+      "total": "Totale"
+    },
+    "emailSubject": "Aggiornamento Stato Veicolo: {status}"
+  },
+  "vehiclePicker": {
+    "title": "Seleziona Veicolo per Ordine di Lavoro",
+    "searchPlaceholder": "Cerca veicoli...",
+    "empty": "Nessun veicolo trovato.",
+    "emptySearch": "Nessun veicolo corrisponde alla tua ricerca.",
+    "addNewVehicle": "Aggiungi Nuovo Veicolo",
+    "noPlate": "Nessuna targa",
+    "make": "Marca *",
+    "model": "Modello *",
+    "year": "Anno *",
+    "licensePlate": "Targa",
+    "customer": "Cliente",
+    "selectCustomer": "Seleziona un cliente (facoltativo)",
+    "createNewCustomer": "Crea nuovo cliente",
+    "newCustomer": "Nuovo Cliente",
+    "customerName": "Nome *",
+    "customerNamePlaceholder": "Nome cliente",
+    "phone": "Telefono",
+    "phonePlaceholder": "Numero di telefono",
+    "creating": "Creazione in corso...",
+    "createAndContinue": "Crea e Continua",
+    "invalidYear": "Inserisci un anno valido",
+    "customerNameRequired": "Il nome del cliente è obbligatorio",
+    "failedCreateCustomer": "Impossibile creare il cliente",
+    "failedCreateVehicle": "Impossibile creare il veicolo",
+    "somethingWentWrong": "Qualcosa è andato storto"
+  },
+  "notify": {
+    "title": "Notifica {name}",
+    "description": "Invia una notifica al cliente riguardante questo aggiornamento.",
+    "sms": "SMS",
+    "email": "Email",
+    "noPhone": "(nessun telefono in archivio)",
+    "noEmail": "(nessun email in archivio)",
+    "notAvailable": "(non disponibile)",
+    "skip": "Salta",
+    "send": "Invia",
+    "smsSent": "SMS inviato",
+    "emailSent": "Email inviata",
+    "failedSms": "Impossibile inviare SMS",
+    "failedEmail": "Impossibile inviare email"
+  }
+}

@@ -1,0 +1,183 @@
+{
+  "page": {
+    "notFound": "Registro di servizio non trovato",
+    "updated": "Registro di servizio aggiornato",
+    "failedUpdate": "Impossibile aggiornare il registro di servizio",
+    "deleteTitle": "Elimina Registro di Servizio",
+    "deleteDescription": "Questo eliminerà permanentemente questo registro di servizio e tutti i dati associati. Non può essere annullato.",
+    "deleted": "Registro di servizio eliminato",
+    "failedDelete": "Impossibile eliminare"
+  },
+  "header": {
+    "tabs": {
+      "details": "Dettagli",
+      "images": "Immagini",
+      "video": "Video",
+      "documents": "Documenti"
+    },
+    "save": "Salva",
+    "pdf": "PDF",
+    "email": "Email",
+    "share": "Condividi",
+    "delete": "Elimina",
+    "unpaid": "Non Pagato"
+  },
+  "basicInfo": {
+    "title": "Informazioni di Base",
+    "vehicle": "Veicolo",
+    "open": "Apri",
+    "customer": "Cliente",
+    "titleLabel": "Titolo *",
+    "titlePlaceholder": "Cambio Olio",
+    "date": "Data",
+    "type": "Tipo",
+    "mileage": "Chilometraggio",
+    "status": "Stato",
+    "technician": "Tecnico",
+    "invoiceNumber": "Numero Fattura",
+    "typeOptions": {
+      "maintenance": "Manutenzione",
+      "repair": "Riparazione",
+      "upgrade": "Aggiornamento",
+      "inspection": "Ispezione"
+    },
+    "statusOptions": {
+      "pending": "In Sospeso",
+      "in_progress": "In Corso",
+      "waiting_parts": "In Attesa di Pezzi",
+      "completed": "Completato"
+    },
+    "searchVehicles": "Cerca veicoli...",
+    "noVehicleFound": "Nessun veicolo trovato.",
+    "techPicker": {
+      "placeholder": "Seleziona o digita un nome...",
+      "searchPlaceholder": "Cerca o digita nome...",
+      "useCustom": "Usa \"{search}\"",
+      "typePrompt": "Digita un nome...",
+      "boardTechnicians": "Tecnici della Lavagna",
+      "teamMembers": "Membri del Team"
+    }
+  },
+  "parts": {
+    "title": "Pezzi",
+    "fromInventory": "Da Inventario",
+    "addPart": "Aggiungi Pezzo",
+    "partNumber": "Numero Pezzo",
+    "name": "Nome",
+    "qty": "Qty",
+    "unitPrice": "Prezzo Unitario",
+    "total": "Totale",
+    "namePlaceholder": "Nome *",
+    "subtotal": "Subtotale Pezzi: {amount}",
+    "inventoryTitle": "Seleziona Pezzo da Inventario",
+    "searchInventory": "Cerca inventario...",
+    "inStock": "{quantity} in magazzino",
+    "noInventory": "Nessun pezzo inventario trovato."
+  },
+  "labor": {
+    "title": "Manodopera",
+    "addLabor": "Aggiungi Manodopera",
+    "description": "Descrizione",
+    "hours": "Ore",
+    "rate": "Tariffa ({currency}/h)",
+    "total": "Totale",
+    "descriptionPlaceholder": "Descrizione *",
+    "subtotal": "Subtotale Manodopera: {amount}"
+  },
+  "totals": {
+    "title": "Totali",
+    "parts": "Pezzi",
+    "labor": "Manodopera",
+    "subtotal": "Subtotale",
+    "discount": "Sconto",
+    "discountNone": "Nessuno",
+    "discountPercentage": "Percentuale",
+    "discountFixed": "Fisso",
+    "tax": "Imposta",
+    "total": "Totale"
+  },
+  "notes": {
+    "title": "Note",
+    "public": "Pubblico",
+    "internal": "Interno",
+    "publicPlaceholder": "Note visibili sulla fattura...",
+    "internalPlaceholder": "Note interne (non mostrate sulla fattura)...",
+    "publicHelper": "Mostrato sulla fattura e nei documenti condivisi",
+    "internalHelper": "Visibile solo al tuo team"
+  },
+  "invoice": {
+    "title": "Riepilogo Fattura",
+    "parts": "Pezzi",
+    "labor": "Manodopera",
+    "subtotal": "Subtotale",
+    "discount": "Sconto",
+    "tax": "Imposta ({rate}%)",
+    "total": "Totale",
+    "paid": "Pagato",
+    "balanceDue": "Importo Dovuto",
+    "paidBadge": "PAGATO",
+    "entityLabel": "Fattura",
+    "emailSubject": "Conferma Pagamento"
+  },
+  "payments": {
+    "title": "Pagamenti",
+    "markUnpaid": "Contrassegna come Non Pagato",
+    "markPaid": "Contrassegna come Pagato",
+    "recordPayment": "Registra Pagamento",
+    "totalPaid": "Totale Pagato",
+    "amount": "Importo",
+    "date": "Data",
+    "method": "Metodo",
+    "note": "Nota",
+    "notePlaceholder": "Nota facoltativa",
+    "savePayment": "Salva Pagamento",
+    "methodOptions": {
+      "cash": "Contanti",
+      "card": "Carta",
+      "transfer": "Trasferimento",
+      "other": "Altro"
+    },
+    "recorded": "Pagamento registrato",
+    "markedPaid": "Contrassegnato come pagato",
+    "markedUnpaid": "Contrassegnato come non pagato",
+    "deleted": "Pagamento eliminato",
+    "failedRecord": "Impossibile registrare il pagamento",
+    "failedStatus": "Impossibile aggiornare lo stato del pagamento",
+    "failedDelete": "Impossibile eliminare il pagamento",
+    "deleteTitle": "Elimina Pagamento",
+    "deleteDescription": "Questo rimuoverà questo record di pagamento.",
+    "failedPdf": "Impossibile generare PDF fattura"
+  },
+  "attachments": {
+    "deleteTitle": "Elimina Allegato",
+    "deleteDescription": "Questo eliminerà permanentemente questo allegato. Non può essere annullato.",
+    "deleted": "Allegato eliminato",
+    "failedDelete": "Impossibile eliminare",
+    "images": "Immagini ({count})",
+    "videos": "Video ({count})",
+    "diagnostics": "Rapporti Diagnostici ({count})",
+    "documents": "Documenti ({count})"
+  },
+  "share": {
+    "title": "Condividi Fattura",
+    "description": "Genera un collegamento pubblico che consente a chiunque di visualizzare e scaricare questa fattura senza accedere.",
+    "notifyTitle": "Notifica {name}",
+    "email": "Email",
+    "noEmail": "(nessun email in archivio)",
+    "sms": "SMS",
+    "noPhone": "(nessun telefono in archivio)",
+    "sendNotification": "Invia Notifica",
+    "revokeLink": "Revoca Collegamento",
+    "generateLink": "Genera Collegamento Pubblico",
+    "emailSent": "Email inviata",
+    "failedEmail": "Impossibile inviare email",
+    "smsSent": "SMS inviato",
+    "failedSms": "Impossibile inviare SMS"
+  },
+  "sidebar": {
+    "vehicle": "Veicolo",
+    "customer": "Cliente",
+    "vin": "VIN: {vin}",
+    "mileageAtService": "Chilometraggio al servizio: {mileage} {unit}"
+  }
+}

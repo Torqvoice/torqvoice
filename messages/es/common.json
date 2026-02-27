@@ -7,15 +7,24 @@
     "delete": "Eliminar",
     "submit": "Enviar",
     "back": "Volver",
-    "confirm": "Confirmar"
+    "confirm": "Confirmar",
+    "saveChanges": "Guardar cambios",
+    "edit": "Editar",
+    "add": "Agregar"
   },
   "form": {
     "email": "Correo electronico",
     "password": "Contrasena",
-    "emailPlaceholder": "you@example.com"
+    "emailPlaceholder": "you@example.com",
+    "name": "Nombre",
+    "phone": "Teléfono",
+    "company": "Empresa",
+    "address": "Dirección",
+    "notes": "Notas"
   },
   "errors": {
-    "unexpected": "Ha ocurrido un error inesperado. Por favor, intentelo de nuevo."
+    "unexpected": "Ha ocurrido un error inesperado. Por favor, intentelo de nuevo.",
+    "error": "Error"
   },
   "terms": {
     "termsOfService": "Terminos de servicio"

@@ -1,0 +1,183 @@
+{
+  "page": {
+    "notFound": "Servis kaydı bulunamadı",
+    "updated": "Servis kaydı güncellendi",
+    "failedUpdate": "Servis kaydı güncellenemedi",
+    "deleteTitle": "Servis Kaydını Sil",
+    "deleteDescription": "Bu, bu servis kaydını ve ilişkili tüm verileri kalıcı olarak silecektir. Bu işlem geri alınamaz.",
+    "deleted": "Servis kaydı silindi",
+    "failedDelete": "Silinemedi"
+  },
+  "header": {
+    "tabs": {
+      "details": "Ayrıntılar",
+      "images": "Resimler",
+      "video": "Video",
+      "documents": "Belgeler"
+    },
+    "save": "Kaydet",
+    "pdf": "PDF",
+    "email": "E-posta",
+    "share": "Paylaş",
+    "delete": "Sil",
+    "unpaid": "Ödenmedi"
+  },
+  "basicInfo": {
+    "title": "Temel Bilgiler",
+    "vehicle": "Araç",
+    "open": "Aç",
+    "customer": "Müşteri",
+    "titleLabel": "Başlık *",
+    "titlePlaceholder": "Yağ Değişimi",
+    "date": "Tarih",
+    "type": "Tür",
+    "mileage": "Kilometre",
+    "status": "Durum",
+    "technician": "Teknisyen",
+    "invoiceNumber": "Fatura Numarası",
+    "typeOptions": {
+      "maintenance": "Bakım",
+      "repair": "Onarım",
+      "upgrade": "Yükseltme",
+      "inspection": "Muayene"
+    },
+    "statusOptions": {
+      "pending": "Beklemede",
+      "in_progress": "Devam Ediyor",
+      "waiting_parts": "Parça Bekleniyor",
+      "completed": "Tamamlandı"
+    },
+    "searchVehicles": "Araç ara...",
+    "noVehicleFound": "Araç bulunamadı.",
+    "techPicker": {
+      "placeholder": "Seç veya adını yazın...",
+      "searchPlaceholder": "Ara veya adını yazın...",
+      "useCustom": "\"{search}\" kullan",
+      "typePrompt": "Adını yazın...",
+      "boardTechnicians": "Pano Teknisyenleri",
+      "teamMembers": "Takım Üyeleri"
+    }
+  },
+  "parts": {
+    "title": "Parçalar",
+    "fromInventory": "Stoktan",
+    "addPart": "Parça Ekle",
+    "partNumber": "Parça #",
+    "name": "Ad",
+    "qty": "Mik.",
+    "unitPrice": "Birim Fiyatı",
+    "total": "Toplam",
+    "namePlaceholder": "Ad *",
+    "subtotal": "Parçalar Ara Toplamı: {amount}",
+    "inventoryTitle": "Stoktan Parça Seç",
+    "searchInventory": "Stokte ara...",
+    "inStock": "{quantity} stokta",
+    "noInventory": "Stok parçası bulunamadı."
+  },
+  "labor": {
+    "title": "İşçilik",
+    "addLabor": "İşçilik Ekle",
+    "description": "Açıklama",
+    "hours": "Saat",
+    "rate": "Ücret ({currency}/sa)",
+    "total": "Toplam",
+    "descriptionPlaceholder": "Açıklama *",
+    "subtotal": "İşçilik Ara Toplamı: {amount}"
+  },
+  "totals": {
+    "title": "Toplamlar",
+    "parts": "Parçalar",
+    "labor": "İşçilik",
+    "subtotal": "Ara Toplam",
+    "discount": "İndirim",
+    "discountNone": "Yok",
+    "discountPercentage": "Yüzde",
+    "discountFixed": "Sabit",
+    "tax": "Vergi",
+    "total": "Toplam"
+  },
+  "notes": {
+    "title": "Notlar",
+    "public": "Genel",
+    "internal": "İç",
+    "publicPlaceholder": "Faturada görünür notlar...",
+    "internalPlaceholder": "İç notlar (faturada gösterilmez)...",
+    "publicHelper": "Faturada gösterilir ve paylaşılan belgelerde yer alır",
+    "internalHelper": "Yalnızca takımınız tarafından görülebilir"
+  },
+  "invoice": {
+    "title": "Fatura Özeti",
+    "parts": "Parçalar",
+    "labor": "İşçilik",
+    "subtotal": "Ara Toplam",
+    "discount": "İndirim",
+    "tax": "Vergi ({rate}%)",
+    "total": "Toplam",
+    "paid": "Ödendi",
+    "balanceDue": "Kalan Bakiye",
+    "paidBadge": "ÖDENDİ",
+    "entityLabel": "Fatura",
+    "emailSubject": "Ödeme Onayı"
+  },
+  "payments": {
+    "title": "Ödemeler",
+    "markUnpaid": "Ödenmedi Olarak İşaretle",
+    "markPaid": "Ödendi Olarak İşaretle",
+    "recordPayment": "Ödeme Kaydet",
+    "totalPaid": "Toplam Ödenen",
+    "amount": "Miktar",
+    "date": "Tarih",
+    "method": "Yöntem",
+    "note": "Not",
+    "notePlaceholder": "İsteğe bağlı not",
+    "savePayment": "Ödemeyi Kaydet",
+    "methodOptions": {
+      "cash": "Nakit",
+      "card": "Kart",
+      "transfer": "Transfer",
+      "other": "Diğer"
+    },
+    "recorded": "Ödeme kaydedildi",
+    "markedPaid": "Ödendi olarak işaretlendi",
+    "markedUnpaid": "Ödenmedi olarak işaretlendi",
+    "deleted": "Ödeme silindi",
+    "failedRecord": "Ödeme kaydedilemedi",
+    "failedStatus": "Ödeme durumu güncellenemedi",
+    "failedDelete": "Ödeme silinemedi",
+    "deleteTitle": "Ödemeyi Sil",
+    "deleteDescription": "Bu, bu ödeme kaydını kaldıracaktır.",
+    "failedPdf": "PDF fatura oluşturulamadı"
+  },
+  "attachments": {
+    "deleteTitle": "Eki Sil",
+    "deleteDescription": "Bu, bu eki kalıcı olarak silecektir. Bu işlem geri alınamaz.",
+    "deleted": "Ek silindi",
+    "failedDelete": "Silinemedi",
+    "images": "Resimler ({count})",
+    "videos": "Videolar ({count})",
+    "diagnostics": "Tanı Raporları ({count})",
+    "documents": "Belgeler ({count})"
+  },
+  "share": {
+    "title": "Faturayı Paylaş",
+    "description": "Herkesin oturum açmadan bu faturayı görüntülemesine ve indirmesine izin veren herkese açık bir bağlantı oluştur.",
+    "notifyTitle": "{name} Bilgilendir",
+    "email": "E-posta",
+    "noEmail": "(dosyada e-posta yok)",
+    "sms": "SMS",
+    "noPhone": "(dosyada telefon yok)",
+    "sendNotification": "Bildirim Gönder",
+    "revokeLink": "Bağlantıyı İptal Et",
+    "generateLink": "Herkese Açık Bağlantı Oluştur",
+    "emailSent": "E-posta gönderildi",
+    "failedEmail": "E-posta gönderilemedi",
+    "smsSent": "SMS gönderildi",
+    "failedSms": "SMS gönderilemedi"
+  },
+  "sidebar": {
+    "vehicle": "Araç",
+    "customer": "Müşteri",
+    "vin": "VIN: {vin}",
+    "mileageAtService": "Servis sırasındaki kilometre: {mileage} {unit}"
+  }
+}

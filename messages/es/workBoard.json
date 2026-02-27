@@ -1,0 +1,67 @@
+{
+  "page": {
+    "error": "Error al cargar el tablero de trabajo"
+  },
+  "toolbar": {
+    "today": "Hoy",
+    "presenter": "Presentador",
+    "addTechnician": "Agregar Técnico"
+  },
+  "board": {
+    "days": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mié",
+      "thu": "Jue",
+      "fri": "Vie",
+      "sat": "Sáb",
+      "sun": "Dom"
+    },
+    "noTechnicians": "Sin Técnicos Aún",
+    "noTechniciansDescription": "Agregue un técnico para comenzar a programar trabajo en el tablero.",
+    "failedMove": "Error al mover asignación",
+    "failedAssign": "Error al asignar trabajo",
+    "failedRemove": "Error al eliminar asignación"
+  },
+  "unassigned": {
+    "title": "Trabajos Sin Asignar ({count})",
+    "searchPlaceholder": "Buscar trabajos...",
+    "empty": "No hay trabajos sin asignar"
+  },
+  "technician": {
+    "editTitle": "Editar Técnico",
+    "addTitle": "Agregar Técnico",
+    "name": "Nombre",
+    "namePlaceholder": "p.ej. Juan García",
+    "color": "Color",
+    "linkMember": "Vincular a Miembro de la Organización (opcional)",
+    "standalone": "Técnico independiente",
+    "deleteTitle": "Eliminar Técnico",
+    "deleteDescription": "¿Desea eliminar a \"{name}\" del tablero de trabajo? Sus asignaciones existentes también se eliminarán.",
+    "addTechnician": "Agregar Técnico"
+  },
+  "jobDetail": {
+    "viewDetails": "Ver Detalles",
+    "remove": "Eliminar",
+    "date": "Fecha: {date}"
+  },
+  "presenter": {
+    "title": "Tablero de Trabajo",
+    "day": "Día",
+    "status": "Estado",
+    "week": "Semana",
+    "today": "Hoy",
+    "live": "En Vivo",
+    "disconnected": "Actualizaciones en vivo desconectadas",
+    "noTechnicians": "Sin técnicos configurados",
+    "noJobsToday": "Sin trabajos hoy",
+    "job": "{count} trabajo",
+    "jobs": "{count} trabajos",
+    "statusLabels": {
+      "pending": "Pendiente",
+      "inProgress": "En Progreso",
+      "waitingParts": "Esperando Piezas",
+      "completed": "Completado"
+    }
+  }
+}

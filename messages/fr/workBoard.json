@@ -1,0 +1,67 @@
+{
+  "page": {
+    "error": "Impossible de charger le tableau de bord des travaux"
+  },
+  "toolbar": {
+    "today": "Aujourd'hui",
+    "presenter": "Présentateur",
+    "addTechnician": "Ajouter un Technicien"
+  },
+  "board": {
+    "days": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven",
+      "sat": "Sam",
+      "sun": "Dim"
+    },
+    "noTechnicians": "Aucun Technicien Encore",
+    "noTechniciansDescription": "Ajoutez un technicien pour commencer à programmer le travail sur le tableau.",
+    "failedMove": "Impossible de déplacer l'assignation",
+    "failedAssign": "Impossible d'assigner le travail",
+    "failedRemove": "Impossible de supprimer l'assignation"
+  },
+  "unassigned": {
+    "title": "Travaux Non Assignés ({count})",
+    "searchPlaceholder": "Rechercher des travaux...",
+    "empty": "Aucun travail non assigné"
+  },
+  "technician": {
+    "editTitle": "Modifier le Technicien",
+    "addTitle": "Ajouter un Technicien",
+    "name": "Nom",
+    "namePlaceholder": "par ex. Jean Dupont",
+    "color": "Couleur",
+    "linkMember": "Lier à un Membre de l'Organisation (optionnel)",
+    "standalone": "Technicien autonome",
+    "deleteTitle": "Supprimer le Technicien",
+    "deleteDescription": "Supprimer \"{name}\" du tableau de bord des travaux? Ses assignations existantes seront également supprimées.",
+    "addTechnician": "Ajouter un Technicien"
+  },
+  "jobDetail": {
+    "viewDetails": "Voir les Détails",
+    "remove": "Supprimer",
+    "date": "Date: {date}"
+  },
+  "presenter": {
+    "title": "Tableau de Bord des Travaux",
+    "day": "Jour",
+    "status": "Statut",
+    "week": "Semaine",
+    "today": "Aujourd'hui",
+    "live": "En Direct",
+    "disconnected": "Mises à jour en direct déconnectées",
+    "noTechnicians": "Aucun technicien configuré",
+    "noJobsToday": "Aucun travail aujourd'hui",
+    "job": "{count} travail",
+    "jobs": "{count} travaux",
+    "statusLabels": {
+      "pending": "En Attente",
+      "inProgress": "En Cours",
+      "waitingParts": "En Attente de Pièces",
+      "completed": "Complété"
+    }
+  }
+}

@@ -10,6 +10,7 @@ import { getBoardAssignments } from '../Actions/boardActions'
 import { getTechnicians } from '../Actions/technicianActions'
 import { PresenterDayView } from './PresenterDayView'
 import { PresenterKanbanView } from './PresenterKanbanView'
+import { useTranslations, useLocale } from 'next-intl'
 
 type ViewMode = 'week' | 'day' | 'status'
 
@@ -38,24 +39,19 @@ function getWeekDays(weekStart: string): string[] {
   return days
 }
 
-const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
-function formatDayHeader(dateStr: string, index: number) {
-  const d = new Date(dateStr + 'T12:00:00')
-  return `${DAY_LABELS[index]} ${d.getDate()}/${d.getMonth() + 1}`
-}
-
-function formatWeekRange(weekStart: string): string {
+function formatWeekRange(weekStart: string, locale?: string): string {
   const start = new Date(weekStart + 'T12:00:00')
   const end = new Date(start)
   end.setDate(end.getDate() + 6)
   const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
-  return `${start.toLocaleDateString(undefined, opts)} – ${end.toLocaleDateString(undefined, opts)}`
+  return `${start.toLocaleDateString(locale, opts)} – ${end.toLocaleDateString(locale, opts)}`
 }
 
-function formatDayDate(dateStr: string): string {
+function formatDayDate(dateStr: string, locale?: string): string {
   const d = new Date(dateStr + 'T12:00:00')
-  return d.toLocaleDateString(undefined, {
+  return d.toLocaleDateString(locale, {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -127,6 +123,9 @@ export function WorkBoardPresenter({
   initialWeekStart: string
 }) {
   const store = useWorkBoardStore()
+  const t = useTranslations('workBoard.presenter')
+  const tb = useTranslations('workBoard.board')
+  const locale = useLocale()
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('presenter-view-mode')
@@ -240,14 +239,14 @@ export function WorkBoardPresenter({
   }, [loadWeekData])
 
   const dateLabel =
-    viewMode === 'week' ? formatWeekRange(weekStart) : formatDayDate(selectedDate)
+    viewMode === 'week' ? formatWeekRange(weekStart, locale) : formatDayDate(selectedDate, locale)
 
   return (
     <div className="flex h-screen flex-col bg-background">
       {/* Header bar */}
       <header className="flex shrink-0 items-center justify-between border-b px-4 py-2">
         <div className="flex items-center gap-3">
-          <h1 className="text-lg font-bold">Work Board</h1>
+          <h1 className="text-lg font-bold">{t('title')}</h1>
           <span className="text-sm text-muted-foreground">{dateLabel}</span>
         </div>
         <div className="flex items-center gap-3">
@@ -259,7 +258,7 @@ export function WorkBoardPresenter({
               className="rounded-none rounded-l-md"
               onClick={() => handleSetViewMode('day')}
             >
-              Day
+              {t('day')}
             </Button>
             <Button
               variant={viewMode === 'status' ? 'default' : 'ghost'}
@@ -267,7 +266,7 @@ export function WorkBoardPresenter({
               className="rounded-none border-x"
               onClick={() => handleSetViewMode('status')}
             >
-              Status
+              {t('status')}
             </Button>
             <Button
               variant={viewMode === 'week' ? 'default' : 'ghost'}
@@ -275,7 +274,7 @@ export function WorkBoardPresenter({
               className="rounded-none rounded-r-md"
               onClick={() => handleSetViewMode('week')}
             >
-              Week
+              {t('week')}
             </Button>
           </div>
 
@@ -285,7 +284,7 @@ export function WorkBoardPresenter({
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <Button variant="outline" size="sm" onClick={handleToday}>
-              Today
+              {t('today')}
             </Button>
             <Button variant="ghost" size="icon" onClick={handleNext}>
               <ChevronRight className="h-5 w-5" />
@@ -297,18 +296,18 @@ export function WorkBoardPresenter({
             {store.isConnected ? (
               <span
                 className="flex items-center gap-1.5 text-green-600"
-                title="Board is receiving live updates"
+                title={t('live')}
               >
                 <Wifi className="h-4 w-4" />
-                <span className="text-xs">Live</span>
+                <span className="text-xs">{t('live')}</span>
               </span>
             ) : (
               <span
                 className="flex items-center gap-1.5 animate-pulse text-red-500"
-                title="Check WebSocket connection — ensure you are logged in as an admin or owner"
+                title={t('disconnected')}
               >
                 <WifiOff className="h-4 w-4" />
-                <span className="text-xs">Live updates disconnected</span>
+                <span className="text-xs">{t('disconnected')}</span>
               </span>
             )}
             <LiveClock />
@@ -342,6 +341,8 @@ export function WorkBoardPresenter({
             <div className="border-b p-2" />
             {days.map((day, i) => {
               const isToday = day === today
+              const d = new Date(day + 'T12:00:00')
+              const dayLabel = `${tb(`days.${DAY_KEYS[i]}`)} ${d.getDate()}/${d.getMonth() + 1}`
               return (
                 <div
                   key={day}
@@ -349,7 +350,7 @@ export function WorkBoardPresenter({
                     isToday ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
                   }`}
                 >
-                  {formatDayHeader(day, i)}
+                  {dayLabel}
                 </div>
               )
             })}
@@ -390,7 +391,7 @@ export function WorkBoardPresenter({
 
             {store.technicians.length === 0 && (
               <div className="col-span-8 flex items-center justify-center p-10">
-                <p className="text-lg text-muted-foreground">No technicians configured</p>
+                <p className="text-lg text-muted-foreground">{t('noTechnicians')}</p>
               </div>
             )}
           </div>

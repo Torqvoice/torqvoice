@@ -7,15 +7,24 @@
     "delete": "Löschen",
     "submit": "Absenden",
     "back": "Zurück",
-    "confirm": "Bestätigen"
+    "confirm": "Bestätigen",
+    "saveChanges": "Änderungen speichern",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen"
   },
   "form": {
     "email": "E-Mail",
     "password": "Passwort",
-    "emailPlaceholder": "you@example.com"
+    "emailPlaceholder": "you@example.com",
+    "name": "Name",
+    "phone": "Telefon",
+    "company": "Firma",
+    "address": "Adresse",
+    "notes": "Notizen"
   },
   "errors": {
-    "unexpected": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+    "unexpected": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "error": "Fehler"
   },
   "terms": {
     "termsOfService": "Nutzungsbedingungen"

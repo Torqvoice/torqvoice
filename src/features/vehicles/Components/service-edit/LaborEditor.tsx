@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Plus, Trash2 } from 'lucide-react'
 import { formatCurrency, getCurrencySymbol } from '@/lib/format'
+import { useTranslations } from 'next-intl'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import { makeEmptyLabor } from './form-types'
 
@@ -25,12 +26,13 @@ export function LaborEditor({
   currencyCode,
   defaultLaborRate,
 }: LaborEditorProps) {
+  const t = useTranslations('service.labor')
   const cs = getCurrencySymbol(currencyCode)
 
   return (
     <div className="rounded-lg border p-3 space-y-2">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">Labor</h3>
+        <h3 className="text-sm font-semibold">{t('title')}</h3>
         <Button
           type="button"
           variant="outline"
@@ -38,17 +40,17 @@ export function LaborEditor({
           onClick={() => setLaborItems((prev) => [...prev, makeEmptyLabor(defaultLaborRate)])}
         >
           <Plus className="mr-1 h-3.5 w-3.5" />
-          Add Labor
+          {t('addLabor')}
         </Button>
       </div>
 
       {laborItems.length > 0 && (
         <>
           <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
-            <span>Description</span>
-            <span>Hours</span>
-            <span>Rate ({cs}/hr)</span>
-            <span>Total</span>
+            <span>{t('description')}</span>
+            <span>{t('hours')}</span>
+            <span>{t('rate', { currency: cs })}</span>
+            <span>{t('total')}</span>
             <span />
           </div>
           {laborItems.map((labor, i) => (
@@ -57,7 +59,7 @@ export function LaborEditor({
               className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]"
             >
               <Textarea
-                placeholder="Description *"
+                placeholder={t('descriptionPlaceholder')}
                 value={labor.description}
                 onChange={(e) => updateLabor(i, 'description', e.target.value)}
                 rows={1}
@@ -100,7 +102,7 @@ export function LaborEditor({
           </button>
           <div className="flex justify-end pt-1 text-sm">
             <span className="font-medium">
-              Labor Subtotal: {formatCurrency(laborSubtotal, currencyCode)}
+              {t('subtotal', { amount: formatCurrency(laborSubtotal, currencyCode) })}
             </span>
           </div>
         </>
@@ -113,7 +115,7 @@ export function LaborEditor({
           onClick={() => setLaborItems((prev) => [...prev, makeEmptyLabor(defaultLaborRate)])}
         >
           <Plus className="mr-1 h-4 w-4" />
-          <span className="text-sm">Add Labor</span>
+          <span className="text-sm">{t('addLabor')}</span>
         </button>
       )}
     </div>

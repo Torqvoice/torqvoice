@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
   Camera,
@@ -78,6 +79,7 @@ export function ServiceAttachments({
   onDeleteAttachment,
   deletingAttachment,
 }: ServiceAttachmentsProps) {
+  const t = useTranslations('service.attachments')
   const diagnostics = attachments.filter((a) => a.category === 'diagnostic')
   const documents = attachments.filter((a) => a.category === 'document')
   const videos = attachments.filter((a) => a.category === 'video')
@@ -89,7 +91,7 @@ export function ServiceAttachments({
         <div className="rounded-lg border p-3">
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
             <Camera className="h-3.5 w-3.5" />
-            Images ({imageAttachments.length})
+            {t('images', { count: imageAttachments.length })}
           </h3>
           <div className="grid grid-cols-3 gap-2">
             {imageAttachments.map((attachment, idx) => (
@@ -137,7 +139,7 @@ export function ServiceAttachments({
         <div className="min-w-0 overflow-hidden rounded-lg border p-3">
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
             <Video className="h-3.5 w-3.5" />
-            Videos ({videos.length})
+            {t('videos', { count: videos.length })}
           </h3>
           <div className="space-y-1.5">
             {videos.map((a) => (
@@ -192,7 +194,7 @@ export function ServiceAttachments({
         <div className="min-w-0 overflow-hidden rounded-lg border p-3">
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
             <FileText className="h-3.5 w-3.5" />
-            Diagnostic Reports ({diagnostics.length})
+            {t('diagnostics', { count: diagnostics.length })}
           </h3>
           <div className="space-y-1.5">
             {diagnostics.map((a) => (
@@ -211,7 +213,7 @@ export function ServiceAttachments({
         <div className="min-w-0 overflow-hidden rounded-lg border p-3">
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
             <Paperclip className="h-3.5 w-3.5" />
-            Documents ({documents.length})
+            {t('documents', { count: documents.length })}
           </h3>
           <div className="space-y-1.5">
             {documents.map((a) => (

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Building2, Car, Mail, MapPin, Phone, Users } from "lucide-react";
 import { CustomFieldsDisplay } from "@/features/custom-fields/Components/CustomFieldsDisplay";
 import type { Vehicle } from "./types";
@@ -20,13 +21,14 @@ export function ServiceSidebar({
   distUnit,
   mileage,
 }: ServiceSidebarProps) {
+  const t = useTranslations("service.sidebar");
   return (
     <>
       {/* Vehicle Info */}
       <div className="rounded-lg border p-3">
         <h3 className="mb-1.5 flex items-center gap-2 text-xs font-medium text-muted-foreground">
           <Car className="h-3.5 w-3.5" />
-          Vehicle
+          {t("vehicle")}
         </h3>
         <Link href={`/vehicles/${vehicle.id}`} className="text-sm font-semibold hover:underline">
           {vehicleName}
@@ -35,11 +37,11 @@ export function ServiceSidebar({
           <p className="font-mono text-xs text-muted-foreground">{vehicle.licensePlate}</p>
         )}
         {vehicle.vin && (
-          <p className="font-mono text-xs text-muted-foreground">VIN: {vehicle.vin}</p>
+          <p className="font-mono text-xs text-muted-foreground">{t("vin", { vin: vehicle.vin })}</p>
         )}
         {mileage && (
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Mileage at service: {mileage.toLocaleString()} {distUnit}
+            {t("mileageAtService", { mileage: mileage.toLocaleString(), unit: distUnit })}
           </p>
         )}
       </div>
@@ -49,7 +51,7 @@ export function ServiceSidebar({
         <div className="rounded-lg border p-3">
           <h3 className="mb-1.5 flex items-center gap-2 text-xs font-medium text-muted-foreground">
             <Users className="h-3.5 w-3.5" />
-            Customer
+            {t("customer")}
           </h3>
           <Link
             href={`/customers/${vehicle.customer.id}`}

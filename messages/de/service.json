@@ -1,0 +1,183 @@
+{
+  "page": {
+    "notFound": "Serviceeintrag nicht gefunden",
+    "updated": "Serviceeintrag aktualisiert",
+    "failedUpdate": "Serviceeintrag konnte nicht aktualisiert werden",
+    "deleteTitle": "Serviceeintrag löschen",
+    "deleteDescription": "Dies löscht diesen Serviceeintrag und alle zugehörigen Daten dauerhaft. Dies kann nicht rückgängig gemacht werden.",
+    "deleted": "Serviceeintrag gelöscht",
+    "failedDelete": "Löschen fehlgeschlagen"
+  },
+  "header": {
+    "tabs": {
+      "details": "Details",
+      "images": "Bilder",
+      "video": "Video",
+      "documents": "Dokumente"
+    },
+    "save": "Speichern",
+    "pdf": "PDF",
+    "email": "E-Mail",
+    "share": "Teilen",
+    "delete": "Löschen",
+    "unpaid": "Unbezahlt"
+  },
+  "basicInfo": {
+    "title": "Grundlegende Informationen",
+    "vehicle": "Fahrzeug",
+    "open": "Öffnen",
+    "customer": "Kunde",
+    "titleLabel": "Titel *",
+    "titlePlaceholder": "Ölwechsel",
+    "date": "Datum",
+    "type": "Typ",
+    "mileage": "Kilometerstand",
+    "status": "Status",
+    "technician": "Techniker",
+    "invoiceNumber": "Rechnungsnummer",
+    "typeOptions": {
+      "maintenance": "Wartung",
+      "repair": "Reparatur",
+      "upgrade": "Verbesserung",
+      "inspection": "Überprüfung"
+    },
+    "statusOptions": {
+      "pending": "Ausstehend",
+      "in_progress": "In Bearbeitung",
+      "waiting_parts": "Warten auf Teile",
+      "completed": "Abgeschlossen"
+    },
+    "searchVehicles": "Fahrzeuge durchsuchen...",
+    "noVehicleFound": "Kein Fahrzeug gefunden.",
+    "techPicker": {
+      "placeholder": "Wählen oder geben Sie einen Namen ein...",
+      "searchPlaceholder": "Durchsuchen oder Namen eingeben...",
+      "useCustom": "\"{search}\" verwenden",
+      "typePrompt": "Geben Sie einen Namen ein...",
+      "boardTechnicians": "Board-Techniker",
+      "teamMembers": "Teamitglieder"
+    }
+  },
+  "parts": {
+    "title": "Teile",
+    "fromInventory": "Aus Bestand",
+    "addPart": "Teil hinzufügen",
+    "partNumber": "Teil #",
+    "name": "Name",
+    "qty": "Menge",
+    "unitPrice": "Stückpreis",
+    "total": "Gesamt",
+    "namePlaceholder": "Name *",
+    "subtotal": "Teilesumme: {amount}",
+    "inventoryTitle": "Teil aus Bestand auswählen",
+    "searchInventory": "Bestand durchsuchen...",
+    "inStock": "{quantity} auf Lager",
+    "noInventory": "Keine Bestandteile gefunden."
+  },
+  "labor": {
+    "title": "Arbeit",
+    "addLabor": "Arbeit hinzufügen",
+    "description": "Beschreibung",
+    "hours": "Stunden",
+    "rate": "Satz ({currency}/Std.)",
+    "total": "Gesamt",
+    "descriptionPlaceholder": "Beschreibung *",
+    "subtotal": "Arbeitssumme: {amount}"
+  },
+  "totals": {
+    "title": "Summen",
+    "parts": "Teile",
+    "labor": "Arbeit",
+    "subtotal": "Zwischensumme",
+    "discount": "Rabatt",
+    "discountNone": "Keine",
+    "discountPercentage": "Prozentsatz",
+    "discountFixed": "Festbetrag",
+    "tax": "Steuern",
+    "total": "Gesamt"
+  },
+  "notes": {
+    "title": "Notizen",
+    "public": "Öffentlich",
+    "internal": "Intern",
+    "publicPlaceholder": "Notizen sichtbar auf der Rechnung...",
+    "internalPlaceholder": "Interne Notizen (nicht auf Rechnung angezeigt)...",
+    "publicHelper": "Auf der Rechnung und in gemeinsamen Dokumenten angezeigt",
+    "internalHelper": "Nur für Ihr Team sichtbar"
+  },
+  "invoice": {
+    "title": "Rechnungszusammenfassung",
+    "parts": "Teile",
+    "labor": "Arbeit",
+    "subtotal": "Zwischensumme",
+    "discount": "Rabatt",
+    "tax": "Steuern ({rate}%)",
+    "total": "Gesamt",
+    "paid": "Bezahlt",
+    "balanceDue": "Ausstehend",
+    "paidBadge": "BEZAHLT",
+    "entityLabel": "Rechnung",
+    "emailSubject": "Zahlungsbestätigung"
+  },
+  "payments": {
+    "title": "Zahlungen",
+    "markUnpaid": "Als unbezahlt kennzeichnen",
+    "markPaid": "Als bezahlt kennzeichnen",
+    "recordPayment": "Zahlung aufzeichnen",
+    "totalPaid": "Insgesamt bezahlt",
+    "amount": "Betrag",
+    "date": "Datum",
+    "method": "Methode",
+    "note": "Notiz",
+    "notePlaceholder": "Optionale Notiz",
+    "savePayment": "Zahlung speichern",
+    "methodOptions": {
+      "cash": "Bargeld",
+      "card": "Karte",
+      "transfer": "Überweisung",
+      "other": "Sonstige"
+    },
+    "recorded": "Zahlung aufgezeichnet",
+    "markedPaid": "Als bezahlt gekennzeichnet",
+    "markedUnpaid": "Als unbezahlt gekennzeichnet",
+    "deleted": "Zahlung gelöscht",
+    "failedRecord": "Zahlung konnte nicht aufgezeichnet werden",
+    "failedStatus": "Zahlungsstatus konnte nicht aktualisiert werden",
+    "failedDelete": "Zahlung konnte nicht gelöscht werden",
+    "deleteTitle": "Zahlung löschen",
+    "deleteDescription": "Dies entfernt diesen Zahlungseintrag.",
+    "failedPdf": "PDF-Rechnung konnte nicht erstellt werden"
+  },
+  "attachments": {
+    "deleteTitle": "Anlage löschen",
+    "deleteDescription": "Dies löscht diese Anlage dauerhaft. Dies kann nicht rückgängig gemacht werden.",
+    "deleted": "Anlage gelöscht",
+    "failedDelete": "Löschen fehlgeschlagen",
+    "images": "Bilder ({count})",
+    "videos": "Videos ({count})",
+    "diagnostics": "Diagnoseberichte ({count})",
+    "documents": "Dokumente ({count})"
+  },
+  "share": {
+    "title": "Rechnung teilen",
+    "description": "Generieren Sie einen öffentlichen Link, der es jedem ermöglicht, diese Rechnung anzusehen und herunterzuladen, ohne sich anzumelden.",
+    "notifyTitle": "{name} benachrichtigen",
+    "email": "E-Mail",
+    "noEmail": "(keine E-Mail vorhanden)",
+    "sms": "SMS",
+    "noPhone": "(keine Telefonnummer vorhanden)",
+    "sendNotification": "Benachrichtigung senden",
+    "revokeLink": "Link widerrufen",
+    "generateLink": "Öffentlichen Link generieren",
+    "emailSent": "E-Mail gesendet",
+    "failedEmail": "E-Mail konnte nicht gesendet werden",
+    "smsSent": "SMS gesendet",
+    "failedSms": "SMS konnte nicht gesendet werden"
+  },
+  "sidebar": {
+    "vehicle": "Fahrzeug",
+    "customer": "Kunde",
+    "vin": "FIN: {vin}",
+    "mileageAtService": "Kilometerstand bei Service: {mileage} {unit}"
+  }
+}

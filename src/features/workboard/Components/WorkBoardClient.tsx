@@ -21,6 +21,7 @@ import { JobDetailPopover } from "./JobDetailPopover";
 import { BoardJobCard } from "./BoardJobCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Users, Wrench, ClipboardCheck } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 
 function toLocalDateString(d: Date): string {
   const y = d.getFullYear();
@@ -47,12 +48,7 @@ function getWeekDays(weekStart: string): string[] {
   return days;
 }
 
-const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-function formatDayHeader(dateStr: string, index: number) {
-  const d = new Date(dateStr + "T12:00:00");
-  return `${DAY_LABELS[index]} ${d.getDate()}`;
-}
+const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
 function UnassignedJobOverlayCard({
   job,
@@ -65,7 +61,7 @@ function UnassignedJobOverlayCard({
   const vehicle = job.vehicle as { year: number; make: string; model: string; licensePlate: string | null } | undefined;
   const title = isServiceRecord
     ? (job.title as string)
-    : ((job.template as { name: string })?.name ?? "Inspection");
+    : ((job.template as { name: string })?.name ?? "");
 
   return (
     <div className="flex items-start gap-1 rounded-md border bg-card p-1.5 text-xs shadow-md">
@@ -101,6 +97,8 @@ export function WorkBoardClient({
   initialWeekStart: string;
 }) {
   const store = useWorkBoardStore();
+  const t = useTranslations("workBoard.board");
+  const locale = useLocale();
 
   // Initialize store from server data
   useEffect(() => {
@@ -217,7 +215,7 @@ export function WorkBoardClient({
       });
 
       if (!res.success) {
-        toast.error("Failed to move assignment", { description: res.error });
+        toast.error(t("failedMove"), { description: res.error });
         // Revert
         store.optimisticMove(
           assignment.id,
@@ -248,7 +246,7 @@ export function WorkBoardClient({
 
       const res = await createBoardAssignment(input);
       if (!res.success) {
-        toast.error("Failed to assign job", { description: res.error });
+        toast.error(t("failedAssign"), { description: res.error });
         // Revert
         store.addToUnassigned(job, jobType);
       } else if (res.data) {
@@ -266,7 +264,7 @@ export function WorkBoardClient({
 
     const res = await removeAssignment({ id: assignment.id });
     if (!res.success) {
-      toast.error("Failed to remove assignment", { description: res.error });
+      toast.error(t("failedRemove"), { description: res.error });
       // Re-add on failure
       store.addAssignment(assignment);
     } else {
@@ -299,9 +297,9 @@ export function WorkBoardClient({
         <div className="flex flex-1 flex-col items-center justify-center gap-4 py-20">
           <Users className="h-12 w-12 text-muted-foreground/40" />
           <div className="text-center">
-            <h3 className="text-lg font-medium">No Technicians Yet</h3>
+            <h3 className="text-lg font-medium">{t("noTechnicians")}</h3>
             <p className="text-sm text-muted-foreground">
-              Add a technician to start scheduling work on the board.
+              {t("noTechniciansDescription")}
             </p>
           </div>
         </div>
@@ -340,6 +338,8 @@ export function WorkBoardClient({
                 <div />
                 {days.map((day, i) => {
                   const isToday = day === toLocalDateString(new Date());
+                  const d = new Date(day + "T12:00:00");
+                  const dayLabel = `${t(`days.${DAY_KEYS[i]}`)} ${d.getDate()}`;
                   return (
                     <div
                       key={day}
@@ -349,7 +349,7 @@ export function WorkBoardClient({
                           : "text-muted-foreground"
                       }`}
                     >
-                      {formatDayHeader(day, i)}
+                      {dayLabel}
                     </div>
                   );
                 })}

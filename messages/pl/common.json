@@ -7,15 +7,24 @@
     "delete": "Usuń",
     "submit": "Wyślij",
     "back": "Wstecz",
-    "confirm": "Potwierdź"
+    "confirm": "Potwierdź",
+    "saveChanges": "Zapisz zmiany",
+    "edit": "Edytuj",
+    "add": "Dodaj"
   },
   "form": {
     "email": "E-mail",
     "password": "Hasło",
-    "emailPlaceholder": "you@example.com"
+    "emailPlaceholder": "you@example.com",
+    "name": "Nazwa",
+    "phone": "Telefon",
+    "company": "Firma",
+    "address": "Adres",
+    "notes": "Notatki"
   },
   "errors": {
-    "unexpected": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie."
+    "unexpected": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+    "error": "Błąd"
   },
   "terms": {
     "termsOfService": "Regulamin"

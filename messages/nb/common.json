@@ -3,19 +3,28 @@
   "buttons": {
     "signIn": "Logg inn",
     "save": "Lagre",
+    "saveChanges": "Lagre endringer",
     "cancel": "Avbryt",
     "delete": "Slett",
     "submit": "Send inn",
     "back": "Tilbake",
-    "confirm": "Bekreft"
+    "confirm": "Bekreft",
+    "edit": "Rediger",
+    "add": "Legg til"
   },
   "form": {
     "email": "E-post",
     "password": "Passord",
-    "emailPlaceholder": "you@example.com"
+    "emailPlaceholder": "you@example.com",
+    "name": "Navn",
+    "phone": "Telefon",
+    "company": "Firma",
+    "address": "Adresse",
+    "notes": "Notater"
   },
   "errors": {
-    "unexpected": "En uventet feil oppstod. Vennligst prøv igjen."
+    "unexpected": "En uventet feil oppstod. Vennligst prøv igjen.",
+    "error": "Feil"
   },
   "terms": {
     "termsOfService": "Vilkår for bruk"

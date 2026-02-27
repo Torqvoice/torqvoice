@@ -1,0 +1,183 @@
+{
+  "page": {
+    "notFound": "Servicepost ikke funnet",
+    "updated": "Servicepost oppdatert",
+    "failedUpdate": "Kunne ikke oppdatere servicepost",
+    "deleteTitle": "Slett servicepost",
+    "deleteDescription": "Dette vil permanent slette denne servicepotten og all tilknyttet data. Dette kan ikke angres.",
+    "deleted": "Servicepost slettet",
+    "failedDelete": "Kunne ikke slette"
+  },
+  "header": {
+    "tabs": {
+      "details": "Detaljer",
+      "images": "Bilder",
+      "video": "Video",
+      "documents": "Dokumenter"
+    },
+    "save": "Lagre",
+    "pdf": "PDF",
+    "email": "E-post",
+    "share": "Del",
+    "delete": "Slett",
+    "unpaid": "Ubetalt"
+  },
+  "basicInfo": {
+    "title": "Grunnleggende informasjon",
+    "vehicle": "Kjøretøy",
+    "open": "Åpen",
+    "customer": "Kunde",
+    "titleLabel": "Tittel *",
+    "titlePlaceholder": "Oljeskift",
+    "date": "Dato",
+    "type": "Type",
+    "mileage": "Kilometerstand",
+    "status": "Status",
+    "technician": "Tekniker",
+    "invoiceNumber": "Fakturanummer",
+    "typeOptions": {
+      "maintenance": "Vedlikehold",
+      "repair": "Reparasjon",
+      "upgrade": "Oppgradering",
+      "inspection": "Inspeksjon"
+    },
+    "statusOptions": {
+      "pending": "Avventende",
+      "in_progress": "Pågår",
+      "waiting_parts": "Venter på deler",
+      "completed": "Fullført"
+    },
+    "searchVehicles": "Søk kjøretøyer...",
+    "noVehicleFound": "Ingen kjøretøy funnet.",
+    "techPicker": {
+      "placeholder": "Velg eller skriv navn...",
+      "searchPlaceholder": "Søk eller skriv navn...",
+      "useCustom": "Bruk \"{search}\"",
+      "typePrompt": "Skriv navn...",
+      "boardTechnicians": "Tavleteknikere",
+      "teamMembers": "Lagmedlemmer"
+    }
+  },
+  "parts": {
+    "title": "Deler",
+    "fromInventory": "Fra beholdning",
+    "addPart": "Legg til del",
+    "partNumber": "Del #",
+    "name": "Navn",
+    "qty": "Antall",
+    "unitPrice": "Enhetspris",
+    "total": "Total",
+    "namePlaceholder": "Navn *",
+    "subtotal": "Deler delsum: {amount}",
+    "inventoryTitle": "Velg del fra beholdning",
+    "searchInventory": "Søk beholdning...",
+    "inStock": "{quantity} på lager",
+    "noInventory": "Ingen beholdningsdeler funnet."
+  },
+  "labor": {
+    "title": "Arbeidskraft",
+    "addLabor": "Legg til arbeidskraft",
+    "description": "Beskrivelse",
+    "hours": "Timer",
+    "rate": "Sats ({currency}/time)",
+    "total": "Total",
+    "descriptionPlaceholder": "Beskrivelse *",
+    "subtotal": "Arbeidskraft delsum: {amount}"
+  },
+  "totals": {
+    "title": "Totalt",
+    "parts": "Deler",
+    "labor": "Arbeidskraft",
+    "subtotal": "Delsum",
+    "discount": "Rabatt",
+    "discountNone": "Ingen",
+    "discountPercentage": "Prosent",
+    "discountFixed": "Fast",
+    "tax": "Skatt",
+    "total": "Total"
+  },
+  "notes": {
+    "title": "Notater",
+    "public": "Offentlig",
+    "internal": "Intern",
+    "publicPlaceholder": "Notater synlig på fakturaen...",
+    "internalPlaceholder": "Interne notater (vises ikke på fakturaen)...",
+    "publicHelper": "Vist på fakturaen og delte dokumenter",
+    "internalHelper": "Bare synlig for ditt lag"
+  },
+  "invoice": {
+    "title": "Fakturaoversikt",
+    "parts": "Deler",
+    "labor": "Arbeidskraft",
+    "subtotal": "Delsum",
+    "discount": "Rabatt",
+    "tax": "Skatt ({rate}%)",
+    "total": "Total",
+    "paid": "Betalt",
+    "balanceDue": "Skyld beløp",
+    "paidBadge": "BETALT",
+    "entityLabel": "Faktura",
+    "emailSubject": "Betalingsbekreftelse"
+  },
+  "payments": {
+    "title": "Betalinger",
+    "markUnpaid": "Merk som ubetalt",
+    "markPaid": "Merk som betalt",
+    "recordPayment": "Registrer betaling",
+    "totalPaid": "Totalt betalt",
+    "amount": "Beløp",
+    "date": "Dato",
+    "method": "Metode",
+    "note": "Notat",
+    "notePlaceholder": "Valgfritt notat",
+    "savePayment": "Lagre betaling",
+    "methodOptions": {
+      "cash": "Kontant",
+      "card": "Kort",
+      "transfer": "Overføring",
+      "other": "Annet"
+    },
+    "recorded": "Betaling registrert",
+    "markedPaid": "Merket som betalt",
+    "markedUnpaid": "Merket som ubetalt",
+    "deleted": "Betaling slettet",
+    "failedRecord": "Kunne ikke registrere betaling",
+    "failedStatus": "Kunne ikke oppdatere betalingsstatus",
+    "failedDelete": "Kunne ikke slette betaling",
+    "deleteTitle": "Slett betaling",
+    "deleteDescription": "Dette vil fjerne denne betalingsregistreringen.",
+    "failedPdf": "Kunne ikke generere PDF-faktura"
+  },
+  "attachments": {
+    "deleteTitle": "Slett vedlegg",
+    "deleteDescription": "Dette vil permanent slette dette vedlegget. Dette kan ikke angres.",
+    "deleted": "Vedlegg slettet",
+    "failedDelete": "Kunne ikke slette",
+    "images": "Bilder ({count})",
+    "videos": "Videoer ({count})",
+    "diagnostics": "Diagnostikkrapporter ({count})",
+    "documents": "Dokumenter ({count})"
+  },
+  "share": {
+    "title": "Del faktura",
+    "description": "Generer en offentlig lenke som lar hvem som helst se og laste ned denne fakturaen uten å logge inn.",
+    "notifyTitle": "Varsle {name}",
+    "email": "E-post",
+    "noEmail": "(ingen e-post på arkiv)",
+    "sms": "SMS",
+    "noPhone": "(ingen telefon på arkiv)",
+    "sendNotification": "Send varsling",
+    "revokeLink": "Tilbakekall lenke",
+    "generateLink": "Generer offentlig lenke",
+    "emailSent": "E-post sendt",
+    "failedEmail": "Kunne ikke sende e-post",
+    "smsSent": "SMS sendt",
+    "failedSms": "Kunne ikke sende SMS"
+  },
+  "sidebar": {
+    "vehicle": "Kjøretøy",
+    "customer": "Kunde",
+    "vin": "VIN: {vin}",
+    "mileageAtService": "Kilometerstand ved service: {mileage} {unit}"
+  }
+}

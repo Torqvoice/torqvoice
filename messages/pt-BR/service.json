@@ -1,0 +1,183 @@
+{
+  "page": {
+    "notFound": "Registro de serviço não encontrado",
+    "updated": "Registro de serviço atualizado",
+    "failedUpdate": "Falha ao atualizar registro de serviço",
+    "deleteTitle": "Deletar Registro de Serviço",
+    "deleteDescription": "Isto vai deletar permanentemente este registro de serviço e todos os dados associados. Isto não pode ser desfeito.",
+    "deleted": "Registro de serviço deletado",
+    "failedDelete": "Falha ao deletar"
+  },
+  "header": {
+    "tabs": {
+      "details": "Detalhes",
+      "images": "Imagens",
+      "video": "Vídeo",
+      "documents": "Documentos"
+    },
+    "save": "Salvar",
+    "pdf": "PDF",
+    "email": "Email",
+    "share": "Compartilhar",
+    "delete": "Deletar",
+    "unpaid": "Não Pago"
+  },
+  "basicInfo": {
+    "title": "Informações Básicas",
+    "vehicle": "Veículo",
+    "open": "Abrir",
+    "customer": "Cliente",
+    "titleLabel": "Título *",
+    "titlePlaceholder": "Troca de Óleo",
+    "date": "Data",
+    "type": "Tipo",
+    "mileage": "Quilometragem",
+    "status": "Status",
+    "technician": "Técnico",
+    "invoiceNumber": "Número da Fatura",
+    "typeOptions": {
+      "maintenance": "Manutenção",
+      "repair": "Reparo",
+      "upgrade": "Atualização",
+      "inspection": "Inspeção"
+    },
+    "statusOptions": {
+      "pending": "Pendente",
+      "in_progress": "Em Progresso",
+      "waiting_parts": "Aguardando Peças",
+      "completed": "Concluído"
+    },
+    "searchVehicles": "Pesquisar veículos...",
+    "noVehicleFound": "Nenhum veículo encontrado.",
+    "techPicker": {
+      "placeholder": "Selecionar ou digitar um nome...",
+      "searchPlaceholder": "Pesquisar ou digitar nome...",
+      "useCustom": "Usar \"{search}\"",
+      "typePrompt": "Digite um nome...",
+      "boardTechnicians": "Técnicos do Quadro",
+      "teamMembers": "Membros do Time"
+    }
+  },
+  "parts": {
+    "title": "Peças",
+    "fromInventory": "Do Inventário",
+    "addPart": "Adicionar Peça",
+    "partNumber": "Nº da Peça",
+    "name": "Nome",
+    "qty": "Qtd",
+    "unitPrice": "Preço Unitário",
+    "total": "Total",
+    "namePlaceholder": "Nome *",
+    "subtotal": "Subtotal de Peças: {amount}",
+    "inventoryTitle": "Selecionar Peça do Inventário",
+    "searchInventory": "Pesquisar inventário...",
+    "inStock": "{quantity} em estoque",
+    "noInventory": "Nenhuma peça de inventário encontrada."
+  },
+  "labor": {
+    "title": "Mão de Obra",
+    "addLabor": "Adicionar Mão de Obra",
+    "description": "Descrição",
+    "hours": "Horas",
+    "rate": "Taxa ({currency}/h)",
+    "total": "Total",
+    "descriptionPlaceholder": "Descrição *",
+    "subtotal": "Subtotal de Mão de Obra: {amount}"
+  },
+  "totals": {
+    "title": "Totais",
+    "parts": "Peças",
+    "labor": "Mão de Obra",
+    "subtotal": "Subtotal",
+    "discount": "Desconto",
+    "discountNone": "Nenhum",
+    "discountPercentage": "Percentual",
+    "discountFixed": "Fixo",
+    "tax": "Imposto",
+    "total": "Total"
+  },
+  "notes": {
+    "title": "Notas",
+    "public": "Público",
+    "internal": "Interno",
+    "publicPlaceholder": "Notas visíveis na fatura...",
+    "internalPlaceholder": "Notas internas (não mostradas na fatura)...",
+    "publicHelper": "Mostrado na fatura e documentos compartilhados",
+    "internalHelper": "Visível apenas para seu time"
+  },
+  "invoice": {
+    "title": "Resumo da Fatura",
+    "parts": "Peças",
+    "labor": "Mão de Obra",
+    "subtotal": "Subtotal",
+    "discount": "Desconto",
+    "tax": "Imposto ({rate}%)",
+    "total": "Total",
+    "paid": "Pago",
+    "balanceDue": "Saldo Devedor",
+    "paidBadge": "PAGO",
+    "entityLabel": "Fatura",
+    "emailSubject": "Confirmação de Pagamento"
+  },
+  "payments": {
+    "title": "Pagamentos",
+    "markUnpaid": "Marcar como Não Pago",
+    "markPaid": "Marcar como Pago",
+    "recordPayment": "Registrar Pagamento",
+    "totalPaid": "Total Pago",
+    "amount": "Valor",
+    "date": "Data",
+    "method": "Método",
+    "note": "Nota",
+    "notePlaceholder": "Nota opcional",
+    "savePayment": "Salvar Pagamento",
+    "methodOptions": {
+      "cash": "Dinheiro",
+      "card": "Cartão",
+      "transfer": "Transferência",
+      "other": "Outro"
+    },
+    "recorded": "Pagamento registrado",
+    "markedPaid": "Marcado como pago",
+    "markedUnpaid": "Marcado como não pago",
+    "deleted": "Pagamento deletado",
+    "failedRecord": "Falha ao registrar pagamento",
+    "failedStatus": "Falha ao atualizar status do pagamento",
+    "failedDelete": "Falha ao deletar pagamento",
+    "deleteTitle": "Deletar Pagamento",
+    "deleteDescription": "Isto vai remover este registro de pagamento.",
+    "failedPdf": "Falha ao gerar PDF da fatura"
+  },
+  "attachments": {
+    "deleteTitle": "Deletar Anexo",
+    "deleteDescription": "Isto vai deletar permanentemente este anexo. Isto não pode ser desfeito.",
+    "deleted": "Anexo deletado",
+    "failedDelete": "Falha ao deletar",
+    "images": "Imagens ({count})",
+    "videos": "Vídeos ({count})",
+    "diagnostics": "Relatórios de Diagnóstico ({count})",
+    "documents": "Documentos ({count})"
+  },
+  "share": {
+    "title": "Compartilhar Fatura",
+    "description": "Gere um link público que permita qualquer pessoa visualizar e baixar esta fatura sem fazer login.",
+    "notifyTitle": "Notificar {name}",
+    "email": "Email",
+    "noEmail": "(sem email registrado)",
+    "sms": "SMS",
+    "noPhone": "(sem telefone registrado)",
+    "sendNotification": "Enviar Notificação",
+    "revokeLink": "Revogar Link",
+    "generateLink": "Gerar Link Público",
+    "emailSent": "Email enviado",
+    "failedEmail": "Falha ao enviar email",
+    "smsSent": "SMS enviado",
+    "failedSms": "Falha ao enviar SMS"
+  },
+  "sidebar": {
+    "vehicle": "Veículo",
+    "customer": "Cliente",
+    "vin": "VIN: {vin}",
+    "mileageAtService": "Quilometragem no serviço: {mileage} {unit}"
+  }
+}

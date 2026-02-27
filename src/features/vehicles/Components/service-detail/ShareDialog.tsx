@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -45,6 +46,7 @@ export function ShareDialog({
   smsEnabled = false,
   emailEnabled = false,
 }: ShareDialogProps) {
+  const t = useTranslations("service.share");
   const [publicToken, setPublicToken] = useState<string | null>(initialToken);
   const [generatingLink, setGeneratingLink] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -90,8 +92,8 @@ export function ShareDialog({
         serviceRecordId: recordId,
         recipientEmail: customer.email!,
       });
-      if (res.success) results.push("Email sent");
-      else toast.error(res.error || "Failed to send email");
+      if (res.success) results.push(t("emailSent"));
+      else toast.error(res.error || t("failedEmail"));
     }
 
     if (notifySms && hasPhone) {
@@ -111,8 +113,8 @@ export function ShareDialog({
         relatedEntityType: "invoice",
         relatedEntityId: recordId,
       });
-      if (res.success) results.push("SMS sent");
-      else toast.error(res.error || "Failed to send SMS");
+      if (res.success) results.push(t("smsSent"));
+      else toast.error(res.error || t("failedSms"));
     }
 
     if (results.length > 0) {
@@ -131,12 +133,12 @@ export function ShareDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Link2 className="h-5 w-5" />
-            Share Invoice
+            {t("title")}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Generate a public link that allows anyone to view and download this invoice without signing in.
+            {t("description")}
           </p>
           {publicUrl ? (
             <>
@@ -150,7 +152,7 @@ export function ShareDialog({
               {/* Notify customer */}
               {customer && (emailEnabled || smsEnabled) && (
                 <div className="space-y-3 rounded-lg border p-3">
-                  <p className="text-sm font-medium">Notify {customer.name}</p>
+                  <p className="text-sm font-medium">{t("notifyTitle", { name: customer.name })}</p>
                   <div className="space-y-2">
                     {emailEnabled && (
                       <div className="flex items-center gap-2">
@@ -165,8 +167,8 @@ export function ShareDialog({
                           className={`flex items-center gap-1.5 text-sm ${!hasEmail ? "text-muted-foreground/50" : ""}`}
                         >
                           <Mail className="h-3.5 w-3.5" />
-                          Email
-                          {!hasEmail && <span className="text-xs">(no email on file)</span>}
+                          {t("email")}
+                          {!hasEmail && <span className="text-xs">{t("noEmail")}</span>}
                         </Label>
                       </div>
                     )}
@@ -183,8 +185,8 @@ export function ShareDialog({
                           className={`flex items-center gap-1.5 text-sm ${!hasPhone ? "text-muted-foreground/50" : ""}`}
                         >
                           <MessageSquare className="h-3.5 w-3.5" />
-                          SMS
-                          {!hasPhone && <span className="text-xs">(no phone on file)</span>}
+                          {t("sms")}
+                          {!hasPhone && <span className="text-xs">{t("noPhone")}</span>}
                         </Label>
                       </div>
                     )}
@@ -192,7 +194,7 @@ export function ShareDialog({
                   {canNotify && (
                     <Button size="sm" onClick={handleNotify} disabled={sending} className="w-full">
                       {sending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
-                      Send Notification
+                      {t("sendNotification")}
                     </Button>
                   )}
                 </div>
@@ -204,13 +206,13 @@ export function ShareDialog({
                 className="text-destructive hover:text-destructive"
                 onClick={handleRevoke}
               >
-                Revoke Link
+                {t("revokeLink")}
               </Button>
             </>
           ) : (
             <Button onClick={handleGenerate} disabled={generatingLink}>
               {generatingLink && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Generate Public Link
+              {t("generateLink")}
             </Button>
           )}
         </div>

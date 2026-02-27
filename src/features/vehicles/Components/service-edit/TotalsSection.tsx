@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -43,34 +44,35 @@ export function TotalsSection({
   totalAmount,
   currencyCode,
 }: TotalsSectionProps) {
+  const t = useTranslations('service.totals')
   return (
     <div className="rounded-lg border p-3 space-y-2">
-      <h3 className="text-sm font-semibold">Totals</h3>
+      <h3 className="text-sm font-semibold">{t('title')}</h3>
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Parts</span>
+          <span className="text-muted-foreground">{t('parts')}</span>
           <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Labor</span>
+          <span className="text-muted-foreground">{t('labor')}</span>
           <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Subtotal</span>
+          <span className="text-muted-foreground">{t('subtotal')}</span>
           <span className="font-medium">{formatCurrency(subtotal, currencyCode)}</span>
         </div>
 
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Discount</span>
+            <span className="text-muted-foreground">{t('discount')}</span>
             <Select value={discountType} onValueChange={setDiscountType}>
               <SelectTrigger className="h-7 w-28 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">None</SelectItem>
-                <SelectItem value="percentage">Percentage</SelectItem>
-                <SelectItem value="fixed">Fixed</SelectItem>
+                <SelectItem value="none">{t('discountNone')}</SelectItem>
+                <SelectItem value="percentage">{t('discountPercentage')}</SelectItem>
+                <SelectItem value="fixed">{t('discountFixed')}</SelectItem>
               </SelectContent>
             </Select>
             {discountType !== 'none' && (
@@ -97,7 +99,7 @@ export function TotalsSection({
         {taxEnabled && (
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">Tax</span>
+              <span className="text-muted-foreground">{t('tax')}</span>
               <Input
                 type="number"
                 min="0"
@@ -113,7 +115,7 @@ export function TotalsSection({
         )}
 
         <div className="flex items-center justify-between border-t pt-2 text-lg font-bold">
-          <span>Total</span>
+          <span>{t('total')}</span>
           <span>{formatCurrency(totalAmount, currencyCode)}</span>
         </div>
       </div>

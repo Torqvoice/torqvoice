@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "Error al cargar órdenes de trabajo"
+  },
+  "list": {
+    "searchPlaceholder": "Buscar órdenes de trabajo...",
+    "newWorkOrder": "Nueva Orden de Trabajo",
+    "selectVehicle": "Seleccionar Vehículo",
+    "empty": "No se encontraron órdenes de trabajo.",
+    "statusUpdated": "Estado actualizado",
+    "statusTabs": {
+      "all": "Todas",
+      "active": "Activas",
+      "pending": "Pendientes",
+      "inProgress": "En Progreso",
+      "waitingParts": "Esperando Piezas",
+      "completed": "Completadas"
+    },
+    "statusActions": {
+      "startWork": "Comenzar Trabajo",
+      "waitingParts": "Esperando Piezas",
+      "complete": "Completar",
+      "resumeWork": "Reanudar Trabajo",
+      "reopen": "Reabierto"
+    },
+    "table": {
+      "invoice": "Factura#",
+      "vehicle": "Vehículo",
+      "customer": "Cliente",
+      "title": "Título",
+      "status": "Estado",
+      "tech": "Técnico",
+      "date": "Fecha",
+      "total": "Total"
+    },
+    "emailSubject": "Actualización de Estado del Vehículo: {status}"
+  },
+  "vehiclePicker": {
+    "title": "Seleccionar Vehículo para Orden de Trabajo",
+    "searchPlaceholder": "Buscar vehículos...",
+    "empty": "No se encontraron vehículos.",
+    "emptySearch": "Ningún vehículo coincide con su búsqueda.",
+    "addNewVehicle": "Agregar Nuevo Vehículo",
+    "noPlate": "Sin placa",
+    "make": "Marca *",
+    "model": "Modelo *",
+    "year": "Año *",
+    "licensePlate": "Placa de Licencia",
+    "customer": "Cliente",
+    "selectCustomer": "Seleccionar un cliente (opcional)",
+    "createNewCustomer": "Crear nuevo cliente",
+    "newCustomer": "Nuevo Cliente",
+    "customerName": "Nombre *",
+    "customerNamePlaceholder": "Nombre del cliente",
+    "phone": "Teléfono",
+    "phonePlaceholder": "Número de teléfono",
+    "creating": "Creando...",
+    "createAndContinue": "Crear y Continuar",
+    "invalidYear": "Por favor ingrese un año válido",
+    "customerNameRequired": "El nombre del cliente es requerido",
+    "failedCreateCustomer": "Error al crear cliente",
+    "failedCreateVehicle": "Error al crear vehículo",
+    "somethingWentWrong": "Algo salió mal"
+  },
+  "notify": {
+    "title": "Notificar a {name}",
+    "description": "Enviar una notificación al cliente sobre esta actualización.",
+    "sms": "SMS",
+    "email": "Correo Electrónico",
+    "noPhone": "(sin teléfono registrado)",
+    "noEmail": "(sin correo electrónico registrado)",
+    "notAvailable": "(no disponible)",
+    "skip": "Omitir",
+    "send": "Enviar",
+    "smsSent": "SMS enviado",
+    "emailSent": "Correo electrónico enviado",
+    "failedSms": "Error al enviar SMS",
+    "failedEmail": "Error al enviar correo electrónico"
+  }
+}
