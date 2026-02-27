@@ -32,6 +32,7 @@ import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { updateQuote, deleteQuote, convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
+import { revokeQuotePublicLink } from "@/features/quotes/Actions/quoteShareActions";
 import { sendQuoteEmail } from "@/features/email/Actions/emailActions";
 import { SendEmailDialog } from "@/features/email/Components/SendEmailDialog";
 import { QuoteShareDialog } from "@/features/quotes/Components/QuoteShareDialog";
@@ -59,6 +60,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { SharedLinkCard } from "@/components/shared-link-card";
 import { formatCurrency, getCurrencySymbol } from "@/lib/format";
 
 const statusColors: Record<string, string> = {
@@ -118,6 +120,9 @@ interface QuoteRecord {
   notes: string | null;
   customerMessage: string | null;
   publicToken: string | null;
+  sharedAt: Date | null;
+  viewCount: number;
+  lastViewedAt: Date | null;
   convertedToId: string | null;
   inspectionId: string | null;
   createdAt: Date;
@@ -469,6 +474,22 @@ export function QuotePageClient({
             <ArrowRight className="mr-1 h-3.5 w-3.5" /> {t("page.convertToWorkOrder")}
           </Button>
         </div>
+      )}
+
+      {/* Shared Link */}
+      {quote.publicToken && (
+        <SharedLinkCard
+          publicToken={quote.publicToken}
+          organizationId={organizationId}
+          type="quote"
+          sharedAt={quote.sharedAt}
+          viewCount={quote.viewCount}
+          lastViewedAt={quote.lastViewedAt}
+          onRevoke={async () => {
+            await revokeQuotePublicLink(quote.id);
+            router.refresh();
+          }}
+        />
       )}
 
       {/* Vehicle & Customer */}

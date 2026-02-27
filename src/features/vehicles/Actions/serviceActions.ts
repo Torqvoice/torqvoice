@@ -725,7 +725,7 @@ export async function generatePublicLink(serviceRecordId: string) {
     const token = randomUUID();
     await db.serviceRecord.update({
       where: { id: serviceRecordId },
-      data: { publicToken: token },
+      data: { publicToken: token, sharedAt: new Date() },
     });
 
     revalidatePath(`/vehicles/${record.vehicleId}/service/${serviceRecordId}`);
@@ -742,7 +742,7 @@ export async function revokePublicLink(serviceRecordId: string) {
 
     await db.serviceRecord.update({
       where: { id: serviceRecordId },
-      data: { publicToken: null },
+      data: { publicToken: null, sharedAt: null, viewCount: 0, lastViewedAt: null },
     });
 
     revalidatePath(`/vehicles/${record.vehicleId}/service/${serviceRecordId}`);

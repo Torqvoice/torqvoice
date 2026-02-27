@@ -89,6 +89,17 @@
     "publicHelper": "Affiché sur le document du devis",
     "internalHelper": "Visible uniquement par votre équipe"
   },
+  "sidebar": {
+    "sharedLink": {
+      "title": "Lien partagé",
+      "sharedOn": "Partagé le {date}",
+      "notViewed": "Pas encore consulté",
+      "viewedTimes": "Consulté {count, plural, one {# fois} other {# fois}}",
+      "lastViewed": "Dernier {date}",
+      "copyLink": "Copier le lien",
+      "linkCopied": "Lien copié"
+    }
+  },
   "details": {
     "title": "Détails du devis",
     "titleLabel": "Titre *",

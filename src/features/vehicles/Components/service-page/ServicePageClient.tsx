@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
-import { updateServiceRecord, deleteServiceRecord, deleteServiceAttachment, toggleManuallyPaid } from '@/features/vehicles/Actions/serviceActions'
+import { updateServiceRecord, deleteServiceRecord, deleteServiceAttachment, toggleManuallyPaid, revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 import { createPayment, deletePayment } from '@/features/payments/Actions/paymentActions'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
@@ -38,6 +38,7 @@ import { ServiceVideoManager } from '../service-video-manager'
 import { ServiceDocumentsManager } from '../service-documents-manager'
 
 import { UnifiedServiceHeader, type ServiceTab } from './UnifiedServiceHeader'
+import { SharedLinkCard } from '@/components/shared-link-card'
 import { useTranslations } from 'next-intl'
 
 interface Attachment {
@@ -452,6 +453,20 @@ export function ServicePageClient({
 
   const detailsRightColumn = (
     <div className="space-y-3">
+      {record.publicToken && (
+        <SharedLinkCard
+          publicToken={record.publicToken}
+          organizationId={organizationId}
+          type="invoice"
+          sharedAt={record.sharedAt}
+          viewCount={record.viewCount}
+          lastViewedAt={record.lastViewedAt}
+          onRevoke={async () => {
+            await revokePublicLink(record.id)
+            router.refresh()
+          }}
+        />
+      )}
       <BasicInfoSection
         initialData={initialData}
         vehicleId={vehicleId}

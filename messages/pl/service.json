@@ -178,7 +178,16 @@
     "vehicle": "Pojazd",
     "customer": "Klient",
     "vin": "VIN: {vin}",
-    "mileageAtService": "Przebieg w chwili serwisu: {mileage} {unit}"
+    "mileageAtService": "Przebieg w chwili serwisu: {mileage} {unit}",
+    "sharedLink": {
+      "title": "Udostępniony link",
+      "sharedOn": "Udostępniono {date}",
+      "notViewed": "Jeszcze nie wyświetlono",
+      "viewedTimes": "Wyświetlono {count, plural, one {# raz} other {# razy}}",
+      "lastViewed": "Ostatnio {date}",
+      "copyLink": "Kopiuj link",
+      "linkCopied": "Link skopiowany"
+    }
   },
   "images": {
     "title": "Zdjęcia Serwisu",

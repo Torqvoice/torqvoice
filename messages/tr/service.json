@@ -178,7 +178,16 @@
     "vehicle": "Araç",
     "customer": "Müşteri",
     "vin": "VIN: {vin}",
-    "mileageAtService": "Servis sırasındaki kilometre: {mileage} {unit}"
+    "mileageAtService": "Servis sırasındaki kilometre: {mileage} {unit}",
+    "sharedLink": {
+      "title": "Paylaşılan bağlantı",
+      "sharedOn": "{date} tarihinde paylaşıldı",
+      "notViewed": "Henüz görüntülenmedi",
+      "viewedTimes": "{count, plural, one {# kez} other {# kez}} görüntülendi",
+      "lastViewed": "Son {date}",
+      "copyLink": "Bağlantıyı kopyala",
+      "linkCopied": "Bağlantı kopyalandı"
+    }
   },
   "images": {
     "title": "Servis Resimleri",

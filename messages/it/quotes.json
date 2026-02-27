@@ -89,6 +89,17 @@
     "publicHelper": "Mostrato sul documento del preventivo",
     "internalHelper": "Visibile solo al tuo team"
   },
+  "sidebar": {
+    "sharedLink": {
+      "title": "Link condiviso",
+      "sharedOn": "Condiviso il {date}",
+      "notViewed": "Non ancora visualizzato",
+      "viewedTimes": "Visualizzato {count, plural, one {# volta} other {# volte}}",
+      "lastViewed": "Ultimo {date}",
+      "copyLink": "Copia link",
+      "linkCopied": "Link copiato"
+    }
+  },
   "details": {
     "title": "Dettagli del preventivo",
     "titleLabel": "Titolo *",

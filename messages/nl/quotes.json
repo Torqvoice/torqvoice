@@ -89,6 +89,17 @@
     "publicHelper": "Wordt getoond op het offertedocument",
     "internalHelper": "Alleen zichtbaar voor uw team"
   },
+  "sidebar": {
+    "sharedLink": {
+      "title": "Gedeelde link",
+      "sharedOn": "Gedeeld op {date}",
+      "notViewed": "Nog niet bekeken",
+      "viewedTimes": "{count, plural, one {# keer} other {# keer}} bekeken",
+      "lastViewed": "Laatst {date}",
+      "copyLink": "Link kopiëren",
+      "linkCopied": "Link gekopieerd"
+    }
+  },
   "details": {
     "title": "Offertedetails",
     "titleLabel": "Titel *",

@@ -89,6 +89,17 @@
     "publicHelper": "Wyświetlane na dokumencie wyceny",
     "internalHelper": "Widoczne tylko dla Twojego zespołu"
   },
+  "sidebar": {
+    "sharedLink": {
+      "title": "Udostępniony link",
+      "sharedOn": "Udostępniono {date}",
+      "notViewed": "Jeszcze nie wyświetlono",
+      "viewedTimes": "Wyświetlono {count, plural, one {# raz} other {# razy}}",
+      "lastViewed": "Ostatnio {date}",
+      "copyLink": "Kopiuj link",
+      "linkCopied": "Link skopiowany"
+    }
+  },
   "details": {
     "title": "Szczegóły wyceny",
     "titleLabel": "Tytuł *",

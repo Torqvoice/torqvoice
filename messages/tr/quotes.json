@@ -89,6 +89,17 @@
     "publicHelper": "Teklif belgesinde gösterilir",
     "internalHelper": "Yalnızca ekibiniz tarafından görülebilir"
   },
+  "sidebar": {
+    "sharedLink": {
+      "title": "Paylaşılan bağlantı",
+      "sharedOn": "{date} tarihinde paylaşıldı",
+      "notViewed": "Henüz görüntülenmedi",
+      "viewedTimes": "{count, plural, one {# kez} other {# kez}} görüntülendi",
+      "lastViewed": "Son {date}",
+      "copyLink": "Bağlantıyı kopyala",
+      "linkCopied": "Bağlantı kopyalandı"
+    }
+  },
   "details": {
     "title": "Teklif Detayları",
     "titleLabel": "Başlık *",

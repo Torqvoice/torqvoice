@@ -196,9 +196,12 @@ model ServiceRecord {
   discountValue   Float    @default(0)
   discountAmount  Float    @default(0)
   manuallyPaid    Boolean  @default(false)
-  publicToken     String?  @unique
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  publicToken     String?   @unique
+  sharedAt        DateTime?
+  viewCount       Int       @default(0)
+  lastViewedAt    DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
@@ -403,6 +406,9 @@ model Quote {
   totalAmount     Float     @default(0)
   notes           String?
   publicToken     String?
+  sharedAt        DateTime?
+  viewCount       Int       @default(0)
+  lastViewedAt    DateTime?
   customerMessage String?
   convertedToId   String?
   createdAt       DateTime  @default(now())

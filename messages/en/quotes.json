@@ -89,6 +89,17 @@
     "publicHelper": "Shown on the quote document",
     "internalHelper": "Only visible to your team"
   },
+  "sidebar": {
+    "sharedLink": {
+      "title": "Shared Link",
+      "sharedOn": "Shared on {date}",
+      "notViewed": "Not viewed yet",
+      "viewedTimes": "Viewed {count, plural, one {# time} other {# times}}",
+      "lastViewed": "Last {date}",
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied"
+    }
+  },
   "details": {
     "title": "Quote Details",
     "titleLabel": "Title *",

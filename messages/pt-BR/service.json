@@ -178,7 +178,16 @@
     "vehicle": "Veículo",
     "customer": "Cliente",
     "vin": "VIN: {vin}",
-    "mileageAtService": "Quilometragem no serviço: {mileage} {unit}"
+    "mileageAtService": "Quilometragem no serviço: {mileage} {unit}",
+    "sharedLink": {
+      "title": "Link compartilhado",
+      "sharedOn": "Compartilhado em {date}",
+      "notViewed": "Ainda não visualizado",
+      "viewedTimes": "Visualizado {count, plural, one {# vez} other {# vezes}}",
+      "lastViewed": "Último {date}",
+      "copyLink": "Copiar link",
+      "linkCopied": "Link copiado"
+    }
   },
   "images": {
     "title": "Imagens do Serviço",

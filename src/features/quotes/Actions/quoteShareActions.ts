@@ -16,7 +16,7 @@ export async function generateQuotePublicLink(quoteId: string) {
     const token = randomUUID();
     await db.quote.update({
       where: { id: quoteId },
-      data: { publicToken: token },
+      data: { publicToken: token, sharedAt: new Date() },
     });
 
     revalidatePath(`/quotes/${quoteId}`);
@@ -33,7 +33,7 @@ export async function revokeQuotePublicLink(quoteId: string) {
 
     await db.quote.update({
       where: { id: quoteId },
-      data: { publicToken: null },
+      data: { publicToken: null, sharedAt: null, viewCount: 0, lastViewedAt: null },
     });
 
     revalidatePath(`/quotes/${quoteId}`);

@@ -178,7 +178,16 @@
     "vehicle": "Voertuig",
     "customer": "Klant",
     "vin": "VIN: {vin}",
-    "mileageAtService": "Kilometerstand bij service: {mileage} {unit}"
+    "mileageAtService": "Kilometerstand bij service: {mileage} {unit}",
+    "sharedLink": {
+      "title": "Gedeelde link",
+      "sharedOn": "Gedeeld op {date}",
+      "notViewed": "Nog niet bekeken",
+      "viewedTimes": "{count, plural, one {# keer} other {# keer}} bekeken",
+      "lastViewed": "Laatst {date}",
+      "copyLink": "Link kopiëren",
+      "linkCopied": "Link gekopieerd"
+    }
   },
   "images": {
     "title": "Service-afbeeldingen",

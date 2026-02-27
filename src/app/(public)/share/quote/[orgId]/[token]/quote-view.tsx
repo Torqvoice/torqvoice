@@ -113,6 +113,15 @@ export function QuoteView({
   const [changeMessage, setChangeMessage] = useState("");
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
 
+  // Track view on mount
+  useEffect(() => {
+    fetch('/api/public/track-view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'quote', token }),
+    }).catch(() => {});
+  }, [token]);
+
   const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`;
   const df = dateFormat || DEFAULT_DATE_FORMAT;
   const tz = timezone || undefined;
