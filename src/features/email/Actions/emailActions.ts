@@ -148,8 +148,8 @@ export async function sendQuoteEmail(input: {
       ],
     });
 
-    // Update quote status to "sent" if still draft
-    if (quote.status === "draft") {
+    // Update quote status to "sent" (skip if already accepted or converted)
+    if (quote.status !== "accepted" && quote.status !== "converted") {
       await db.quote.update({
         where: { id: quoteId },
         data: { status: "sent" },
