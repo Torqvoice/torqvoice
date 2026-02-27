@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +45,7 @@ interface InventoryPartFormProps {
 export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }: InventoryPartFormProps) {
   const router = useRouter();
   const modal = useGlassModal();
+  const t = useTranslations('inventory');
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -56,16 +58,16 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
   const uploadFile = useCallback(async (file: File) => {
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Only JPEG, PNG, WebP, and AVIF images are allowed");
+      toast.error(t('form.imageTypeError'));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be under 5MB");
+      toast.error(t('form.imageSizeError'));
       return;
     }
 
     setUploading(true);
-    const toastId = toast.loading("Uploading image...");
+    const toastId = toast.loading(t('form.imageUploading'));
     try {
       const compressed = await compressImage(file);
       const formData = new FormData();
@@ -76,14 +78,14 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        toast.error(data.error || "Could not upload image", { id: toastId });
+        toast.error(data.error || t('form.imageUploadFailed'), { id: toastId });
         return;
       }
       const { url } = await res.json();
       setImageUrl(url);
-      toast.success("Image uploaded", { id: toastId });
+      toast.success(t('form.imageUploaded'), { id: toastId });
     } catch {
-      toast.error("Could not upload image", { id: toastId });
+      toast.error(t('form.imageUploadFailed'), { id: toastId });
     } finally {
       setUploading(false);
     }
@@ -128,7 +130,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        modal.open("error", "Fetch Failed", data.error || "Could not fetch metadata from URL");
+        modal.open("error", t('form.fetchFailed'), data.error || t('form.fetchError'));
         return;
       }
 
@@ -159,7 +161,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
         setImageUrl(metadata.imageUrl);
       }
     } catch {
-      modal.open("error", "Fetch Failed", "Could not fetch metadata from URL");
+      modal.open("error", t('form.fetchFailed'), t('form.fetchError'));
     } finally {
       setFetching(false);
     }
@@ -195,7 +197,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
       onOpenChange(false);
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to save part");
+      modal.open("error", t('errors.error'), result.error || t('errors.saveFailed'));
     }
 
     setLoading(false);
@@ -214,19 +216,19 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>
-            {part ? "Edit Part" : "Add New Part"}
+            {part ? t('form.editPart') : t('form.addNewPart')}
           </DialogTitle>
         </DialogHeader>
 
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
           {/* Supplier Link */}
           <div className="space-y-2">
-            <Label htmlFor="supplierUrl">Supplier Link</Label>
+            <Label htmlFor="supplierUrl">{t('form.supplierLink')}</Label>
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Input
                   id="supplierUrl"
-                  placeholder="https://supplier.com/product/..."
+                  placeholder={t('form.supplierLinkPlaceholder')}
                   value={supplierUrl}
                   onChange={(e) => setSupplierUrl(e.target.value)}
                 />
@@ -253,7 +255,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
                 {fetching ? (
                   <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
                 ) : null}
-                Fetch
+                {t('form.fetch')}
               </Button>
             </div>
           </div>
@@ -262,7 +264,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
           <div className="flex gap-5">
             {/* Image area */}
             <div className="flex-shrink-0 w-44">
-              <Label className="mb-2 block">Image</Label>
+              <Label className="mb-2 block">{t('form.image')}</Label>
               <div
                 className={`relative h-44 w-44 overflow-hidden rounded-lg border-2 border-dashed bg-muted transition-colors ${
                   dragOver ? "border-primary bg-primary/5" : "border-muted-foreground/25"
@@ -297,7 +299,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
                     ) : (
                       <>
                         <ImageIcon className="h-8 w-8" />
-                        <span className="text-xs">Drop image or click</span>
+                        <span className="text-xs">{t('form.dropOrClick')}</span>
                       </>
                     )}
                   </button>
@@ -320,7 +322,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <Upload className="mr-1 h-3 w-3" />
-                    Replace
+                    {t('form.replace')}
                   </Button>
                 ) : (
                   <Button
@@ -332,7 +334,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
                     disabled={uploading}
                   >
                     <Upload className="mr-1 h-3 w-3" />
-                    Upload
+                    {t('form.upload')}
                   </Button>
                 )}
               </div>
@@ -342,20 +344,20 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
             <div className="flex-1 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="partNumber">Part Number</Label>
+                  <Label htmlFor="partNumber">{t('form.partNumber')}</Label>
                   <Input
                     id="partNumber"
                     name="partNumber"
-                    placeholder="BRK-001"
+                    placeholder={t('form.partNumberPlaceholder')}
                     defaultValue={part?.partNumber ?? ""}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="name">Name *</Label>
+                  <Label htmlFor="name">{t('form.nameLabel')}</Label>
                   <Input
                     id="name"
                     name="name"
-                    placeholder="Brake Pad Set"
+                    placeholder={t('form.namePlaceholder')}
                     defaultValue={part?.name}
                     required
                   />
@@ -364,20 +366,20 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="category">{t('form.category')}</Label>
                   <Input
                     id="category"
                     name="category"
-                    placeholder="Brakes"
+                    placeholder={t('form.categoryPlaceholder')}
                     defaultValue={part?.category ?? ""}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
+                  <Label htmlFor="location">{t('form.location')}</Label>
                   <Input
                     id="location"
                     name="location"
-                    placeholder="Shelf A-3"
+                    placeholder={t('form.locationPlaceholder')}
                     defaultValue={part?.location ?? ""}
                   />
                 </div>
@@ -385,7 +387,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
 
               <div className="grid grid-cols-4 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="quantity">Quantity</Label>
+                  <Label htmlFor="quantity">{t('form.quantity')}</Label>
                   <Input
                     id="quantity"
                     name="quantity"
@@ -396,7 +398,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="minQuantity">Min Qty</Label>
+                  <Label htmlFor="minQuantity">{t('form.minQty')}</Label>
                   <Input
                     id="minQuantity"
                     name="minQuantity"
@@ -407,7 +409,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="unitCost">Unit Cost</Label>
+                  <Label htmlFor="unitCost">{t('form.unitCost')}</Label>
                   <Input
                     id="unitCost"
                     name="unitCost"
@@ -426,7 +428,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="sellPrice">Sell Price</Label>
+                  <Label htmlFor="sellPrice">{t('form.sellPrice')}</Label>
                   <Input
                     id="sellPrice"
                     name="sellPrice"
@@ -442,41 +444,41 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
 
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="supplier">Supplier</Label>
+              <Label htmlFor="supplier">{t('form.supplier')}</Label>
               <Input
                 id="supplier"
                 name="supplier"
-                placeholder="AutoParts Inc."
+                placeholder={t('form.supplierPlaceholder')}
                 defaultValue={part?.supplier ?? ""}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="supplierPhone">Supplier Phone</Label>
+              <Label htmlFor="supplierPhone">{t('form.supplierPhone')}</Label>
               <Input
                 id="supplierPhone"
                 name="supplierPhone"
-                placeholder="(555) 123-4567"
+                placeholder={t('form.supplierPhonePlaceholder')}
                 defaultValue={part?.supplierPhone ?? ""}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="supplierEmail">Supplier Email</Label>
+              <Label htmlFor="supplierEmail">{t('form.supplierEmail')}</Label>
               <Input
                 id="supplierEmail"
                 name="supplierEmail"
                 type="email"
-                placeholder="orders@autoparts.com"
+                placeholder={t('form.supplierEmailPlaceholder')}
                 defaultValue={part?.supplierEmail ?? ""}
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('form.description')}</Label>
             <Textarea
               id="description"
               name="description"
-              placeholder="Part description..."
+              placeholder={t('form.descriptionPlaceholder')}
               rows={3}
               defaultValue={part?.description ?? ""}
             />
@@ -488,11 +490,11 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t('form.cancel')}
             </Button>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {part ? "Save Changes" : "Add Part"}
+              {part ? t('form.saveChanges') : t('form.addPart')}
             </Button>
           </div>
         </form>

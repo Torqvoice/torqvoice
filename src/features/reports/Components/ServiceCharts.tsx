@@ -28,9 +28,10 @@ const CHART_COLORS = [
 
 interface ServiceStatusChartProps {
   data: ServiceByStatus[];
+  labels?: { count: string };
 }
 
-export function ServiceStatusChart({ data }: ServiceStatusChartProps) {
+export function ServiceStatusChart({ data, labels }: ServiceStatusChartProps) {
   if (data.length === 0) return null;
 
   return (
@@ -57,7 +58,7 @@ export function ServiceStatusChart({ data }: ServiceStatusChartProps) {
             color: "hsl(var(--popover-foreground))",
           }}
         />
-        <Bar dataKey="count" name="Count" fill="#3b82f6" radius={[0, 4, 4, 0]} />
+        <Bar dataKey="count" name={labels?.count ?? "Count"} fill="#3b82f6" radius={[0, 4, 4, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

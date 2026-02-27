@@ -1,0 +1,61 @@
+{
+  "weekdays": {
+    "sun": "Ndz",
+    "mon": "Pon",
+    "tue": "Wt",
+    "wed": "\u015ar",
+    "thu": "Czw",
+    "fri": "Pt",
+    "sat": "Sob"
+  },
+  "months": {
+    "january": "Stycze\u0144",
+    "february": "Luty",
+    "march": "Marzec",
+    "april": "Kwiecie\u0144",
+    "may": "Maj",
+    "june": "Czerwiec",
+    "july": "Lipiec",
+    "august": "Sierpie\u0144",
+    "september": "Wrzesie\u0144",
+    "october": "Pa\u017adziernik",
+    "november": "Listopad",
+    "december": "Grudzie\u0144"
+  },
+  "stats": {
+    "services": "Us\u0142ugi",
+    "overdue": "Zaleg\u0142e",
+    "pendingQuotes": "Oczekuj\u0105ce wyceny",
+    "revenue": "Przych\u00f3d"
+  },
+  "today": "Dzi\u015b",
+  "workOrder": "Zlecenie",
+  "filters": {
+    "services": "Us\u0142ugi",
+    "reminders": "Przypomnienia",
+    "quotes": "Wyceny"
+  },
+  "selectVehicle": "Wybierz pojazd do zlecenia",
+  "more": "+ {count} wi\u0119cej",
+  "events": {
+    "status": {
+      "completed": "Uko\u0144czono",
+      "inProgress": "W trakcie",
+      "waitingParts": "Oczekiwanie na cz\u0119\u015bci",
+      "pending": "Oczekuj\u0105ce",
+      "sent": "Wys\u0142ano",
+      "approved": "Zatwierdzone",
+      "draft": "Szkic",
+      "done": "Gotowe",
+      "overdue": "Zaleg\u0142e",
+      "upcoming": "Nadchodz\u0105ce"
+    },
+    "type": {
+      "service": "Us\u0142uga",
+      "reminder": "Przypomnienie",
+      "quote": "Wycena"
+    },
+    "noEvents": "Brak wydarze\u0144",
+    "selectDay": "Wybierz dzie\u0144 z wydarzeniami lub utw\u00f3rz nowe zlecenie."
+  }
+}

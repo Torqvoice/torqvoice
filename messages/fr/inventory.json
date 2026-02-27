@@ -1,0 +1,87 @@
+{
+  "searchPlaceholder": "Rechercher des pièces...",
+  "categoryPlaceholder": "Catégorie",
+  "allCategories": "Toutes les catégories",
+  "applyMarkup": "Appliquer la marge",
+  "addPart": "Ajouter une pièce",
+  "table": {
+    "partNumber": "N° pièce",
+    "name": "Nom",
+    "category": "Catégorie",
+    "inStock": "En stock",
+    "unitCost": "Coût unitaire",
+    "sellPrice": "Prix de vente",
+    "supplier": "Fournisseur",
+    "location": "Emplacement",
+    "low": "Bas"
+  },
+  "empty": {
+    "noMatch": "Aucune pièce ne correspond à votre recherche.",
+    "noParts": "Aucune pièce dans l'inventaire pour l'instant."
+  },
+  "actions": {
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  },
+  "deletePart": {
+    "title": "Supprimer la pièce",
+    "description": "Supprimer \"{name}\" de l'inventaire ? Cette action est irréversible.",
+    "confirm": "Supprimer"
+  },
+  "markup": {
+    "title": "Appliquer la marge à toutes les pièces",
+    "multiplierLabel": "Multiplicateur de marge",
+    "description": "Le prix de vente sera défini à coût x {multiplier} pour les {count} pièces.",
+    "percentage": "({percent}% de marge)",
+    "cancel": "Annuler",
+    "apply": "Appliquer"
+  },
+  "errors": {
+    "multiplierPositive": "Le multiplicateur doit être supérieur à 0",
+    "deleteFailed": "Impossible de supprimer la pièce",
+    "applyFailed": "Impossible d'appliquer la marge",
+    "saveFailed": "Impossible d'enregistrer la pièce",
+    "error": "Erreur"
+  },
+  "form": {
+    "editPart": "Modifier la pièce",
+    "addNewPart": "Ajouter une nouvelle pièce",
+    "supplierLink": "Lien fournisseur",
+    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "fetch": "Récupérer",
+    "fetchFailed": "Échec de la récupération",
+    "fetchError": "Impossible de récupérer les métadonnées de l'URL",
+    "image": "Image",
+    "dropOrClick": "Déposez une image ou cliquez",
+    "replace": "Remplacer",
+    "upload": "Télécharger",
+    "imageUploading": "Téléchargement de l'image...",
+    "imageUploaded": "Image téléchargée",
+    "imageUploadFailed": "Impossible de télécharger l'image",
+    "imageTypeError": "Seules les images JPEG, PNG, WebP et AVIF sont autorisées",
+    "imageSizeError": "L'image doit faire moins de 5 Mo",
+    "partNumber": "Numéro de pièce",
+    "partNumberPlaceholder": "BRK-001",
+    "nameLabel": "Nom *",
+    "namePlaceholder": "Jeu de plaquettes de frein",
+    "category": "Catégorie",
+    "categoryPlaceholder": "Freins",
+    "location": "Emplacement",
+    "locationPlaceholder": "Étagère A-3",
+    "quantity": "Quantité",
+    "minQty": "Qté min.",
+    "unitCost": "Coût unitaire",
+    "sellPrice": "Prix de vente",
+    "supplier": "Fournisseur",
+    "supplierPlaceholder": "AutoParts SARL",
+    "supplierPhone": "Téléphone fournisseur",
+    "supplierPhonePlaceholder": "(555) 123-4567",
+    "supplierEmail": "E-mail fournisseur",
+    "supplierEmailPlaceholder": "orders@autoparts.com",
+    "description": "Description",
+    "descriptionPlaceholder": "Description de la pièce...",
+    "cancel": "Annuler",
+    "saveChanges": "Enregistrer les modifications",
+    "addPart": "Ajouter une pièce"
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -96,6 +97,7 @@ export function InventoryClient({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const t = useTranslations('inventory');
   const [isPending, startTransition] = useTransition();
   const [searchInput, setSearchInput] = useState(search);
   const [showForm, setShowForm] = useState(false);
@@ -136,9 +138,9 @@ export function InventoryClient({
 
   const handleDelete = async (id: string, name: string) => {
     const ok = await confirm({
-      title: "Delete Part",
-      description: `Delete "${name}" from inventory? This cannot be undone.`,
-      confirmLabel: "Delete",
+      title: t('deletePart.title'),
+      description: t('deletePart.description', { name }),
+      confirmLabel: t('deletePart.confirm'),
       destructive: true,
     });
     if (!ok) return;
@@ -146,14 +148,14 @@ export function InventoryClient({
     if (result.success) {
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to delete part");
+      modal.open("error", t('errors.error'), result.error || t('errors.deleteFailed'));
     }
   };
 
   const handleApplyMarkup = async () => {
     const multiplier = Number(markupValue);
     if (!multiplier || multiplier <= 0) {
-      modal.open("error", "Error", "Multiplier must be greater than 0");
+      modal.open("error", t('errors.error'), t('errors.multiplierPositive'));
       return;
     }
     setApplyingMarkup(true);
@@ -166,10 +168,10 @@ export function InventoryClient({
         setShowMarkup(false);
         router.refresh();
       } else {
-        modal.open("error", "Error", result.error || "Failed to apply markup");
+        modal.open("error", t('errors.error'), result.error || t('errors.applyFailed'));
       }
     } catch {
-      modal.open("error", "Error", "Failed to apply markup");
+      modal.open("error", t('errors.error'), t('errors.applyFailed'));
     } finally {
       setApplyingMarkup(false);
     }
@@ -183,7 +185,7 @@ export function InventoryClient({
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search parts..."
+              placeholder={t('searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="pl-9"
@@ -194,10 +196,10 @@ export function InventoryClient({
             onValueChange={(v) => navigate({ category: v === "all" ? undefined : v })}
           >
             <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder={t('categoryPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="all">{t('allCategories')}</SelectItem>
               {categories.map((cat) => (
                 <SelectItem key={cat} value={cat}>
                   {cat}
@@ -210,11 +212,11 @@ export function InventoryClient({
         <div className="flex items-center gap-2">
           <Button size="sm" variant="outline" onClick={() => setShowMarkup(true)}>
             <Percent className="mr-1 h-3.5 w-3.5" />
-            Apply Markup
+            {t('applyMarkup')}
           </Button>
           <Button size="sm" onClick={() => setShowForm(true)}>
             <Plus className="mr-1 h-3.5 w-3.5" />
-            Add Part
+            {t('addPart')}
           </Button>
         </div>
       </div>
@@ -224,14 +226,14 @@ export function InventoryClient({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Part #</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden sm:table-cell">Category</TableHead>
-              <TableHead>In Stock</TableHead>
-              <TableHead className="text-right">Unit Cost</TableHead>
-              <TableHead className="text-right">Sell Price</TableHead>
-              <TableHead className="hidden md:table-cell">Supplier</TableHead>
-              <TableHead className="hidden lg:table-cell">Location</TableHead>
+              <TableHead>{t('table.partNumber')}</TableHead>
+              <TableHead>{t('table.name')}</TableHead>
+              <TableHead className="hidden sm:table-cell">{t('table.category')}</TableHead>
+              <TableHead>{t('table.inStock')}</TableHead>
+              <TableHead className="text-right">{t('table.unitCost')}</TableHead>
+              <TableHead className="text-right">{t('table.sellPrice')}</TableHead>
+              <TableHead className="hidden md:table-cell">{t('table.supplier')}</TableHead>
+              <TableHead className="hidden lg:table-cell">{t('table.location')}</TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>
@@ -239,7 +241,7 @@ export function InventoryClient({
             {data.parts.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={9} className="h-32 text-center text-muted-foreground">
-                  {search || category ? "No parts match your search." : "No parts in inventory yet."}
+                  {search || category ? t('empty.noMatch') : t('empty.noParts')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -281,7 +283,7 @@ export function InventoryClient({
                         <span>{part.quantity}</span>
                         {isLow && (
                           <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
-                            Low
+                            {t('table.low')}
                           </Badge>
                         )}
                       </div>
@@ -341,14 +343,14 @@ export function InventoryClient({
                             }}
                           >
                             <Pencil className="mr-2 h-4 w-4" />
-                            Edit
+                            {t('actions.edit')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive"
                             onClick={() => handleDelete(part.id, part.name)}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
+                            {t('actions.delete')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -383,11 +385,11 @@ export function InventoryClient({
       <MarkupDialog open={showMarkup} onOpenChange={setShowMarkup}>
         <MarkupDialogContent className="sm:max-w-sm">
           <MarkupDialogHeader>
-            <MarkupDialogTitle>Apply Markup to All Parts</MarkupDialogTitle>
+            <MarkupDialogTitle>{t('markup.title')}</MarkupDialogTitle>
           </MarkupDialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="markupMultiplier">Markup Multiplier</Label>
+              <Label htmlFor="markupMultiplier">{t('markup.multiplierLabel')}</Label>
               <Input
                 id="markupMultiplier"
                 type="number"
@@ -397,17 +399,17 @@ export function InventoryClient({
                 onChange={(e) => setMarkupValue(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                This will set sell price = cost x {markupValue || "?"} for all {data.total} parts.
-                {Number(markupValue) > 1 && ` (${Math.round((Number(markupValue) - 1) * 100)}% markup)`}
+                {t('markup.description', { multiplier: markupValue || "?", count: data.total })}
+                {Number(markupValue) > 1 && ` ${t('markup.percentage', { percent: Math.round((Number(markupValue) - 1) * 100) })}`}
               </p>
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={() => setShowMarkup(false)}>
-                Cancel
+                {t('markup.cancel')}
               </Button>
               <Button size="sm" onClick={handleApplyMarkup} disabled={applyingMarkup}>
                 {applyingMarkup && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Apply
+                {t('markup.apply')}
               </Button>
             </div>
           </div>

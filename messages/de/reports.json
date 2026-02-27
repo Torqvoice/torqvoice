@@ -1,0 +1,199 @@
+{
+  "title": "Berichte & Analysen",
+  "tabs": {
+    "revenue": "Umsatz",
+    "services": "Dienstleistungen",
+    "customers": "Kunden",
+    "inventory": "Lagerbestand",
+    "technicians": "Techniker",
+    "parts": "Teile",
+    "jobAnalytics": "Auftragsanalyse",
+    "retention": "Kundenbindung",
+    "tax": "Steuer"
+  },
+  "dateRange": {
+    "to": "bis"
+  },
+  "actions": {
+    "refresh": "Aktualisieren",
+    "csv": "CSV"
+  },
+  "revenue": {
+    "revenue": "Umsatz",
+    "collected": "Eingezogen",
+    "outstanding": "Ausstehend",
+    "services": "Dienstleistungen",
+    "monthlyRevenue": "Monatlicher Umsatz",
+    "revenueByType": "Umsatz nach Typ",
+    "monthlyBreakdown": "Monatliche Aufschlüsselung",
+    "tableHeaders": {
+      "month": "Monat",
+      "revenue": "Umsatz",
+      "collected": "Eingezogen",
+      "count": "Anzahl"
+    }
+  },
+  "services": {
+    "totalServices": "Gesamtleistungen",
+    "byStatus": "Nach Status",
+    "byType": "Nach Typ"
+  },
+  "customers": {
+    "total": "Gesamt",
+    "active": "Aktiv",
+    "topCustomersBySpend": "Top-Kunden nach Ausgaben",
+    "topCustomers": "Top-Kunden",
+    "tableHeaders": {
+      "name": "Name",
+      "company": "Unternehmen",
+      "services": "Dienstleistungen",
+      "totalSpent": "Gesamtausgaben"
+    }
+  },
+  "inventory": {
+    "parts": "Teile",
+    "items": "Artikel",
+    "costValue": "Kostenwert",
+    "sellValue": "Verkaufswert",
+    "potentialMargin": "Potenzielle Marge",
+    "lowStock": "Niedriger Bestand",
+    "tableHeaders": {
+      "name": "Name",
+      "partNumber": "Teilenr.",
+      "qty": "Menge",
+      "minQty": "Min. Menge"
+    }
+  },
+  "technicians": {
+    "totalJobs": "Aufträge gesamt",
+    "totalRevenue": "Gesamtumsatz",
+    "revenueByTechnician": "Umsatz nach Techniker",
+    "technicianBreakdown": "Techniker-Aufschlüsselung",
+    "tableHeaders": {
+      "technician": "Techniker",
+      "jobs": "Aufträge",
+      "revenue": "Umsatz",
+      "avgRevenue": "Ø Umsatz",
+      "totalHours": "Gesamtstunden",
+      "avgHours": "Ø Stunden"
+    }
+  },
+  "parts": {
+    "partsUsed": "Verwendete Teile",
+    "partsRevenue": "Teileumsatz",
+    "topPartsByUsage": "Top-Teile nach Verwendung",
+    "partsUsage": "Teileverwendung",
+    "tableHeaders": {
+      "partName": "Teilename",
+      "partNumber": "Teilenr.",
+      "usageCount": "Verwendungsanzahl",
+      "totalQty": "Gesamtmenge",
+      "revenue": "Umsatz"
+    }
+  },
+  "jobAnalytics": {
+    "totalJobs": "Aufträge gesamt",
+    "avgJobValue": "Ø Auftragswert",
+    "jobsByDayOfWeek": "Aufträge nach Wochentag",
+    "serviceTypes": "Dienstleistungstypen",
+    "monthlyTrend": "Monatlicher Trend",
+    "serviceTypeBreakdown": "Dienstleistungstyp-Aufschlüsselung",
+    "tableHeaders": {
+      "type": "Typ",
+      "count": "Anzahl",
+      "avgValue": "Ø Wert",
+      "avgHours": "Ø Stunden"
+    }
+  },
+  "retention": {
+    "returning": "Wiederkehrend",
+    "new": "Neu",
+    "totalActive": "Gesamt aktiv",
+    "avgDaysBetween": "Ø Tage dazwischen",
+    "topReturningCustomers": "Top wiederkehrende Kunden",
+    "returningCustomers": "Wiederkehrende Kunden",
+    "tableHeaders": {
+      "customer": "Kunde",
+      "company": "Unternehmen",
+      "visits": "Besuche",
+      "totalSpent": "Gesamtausgaben",
+      "avgDaysBetween": "Ø Tage dazwischen"
+    }
+  },
+  "tax": {
+    "totalTaxCollected": "Gesamtsteuer eingezogen",
+    "taxableRevenue": "Steuerpflichtiger Umsatz",
+    "invoicesWithTax": "Rechnungen mit Steuer",
+    "monthlyTaxCollected": "Monatlich eingezogene Steuer",
+    "taxByRate": "Steuer nach Satz",
+    "monthlyBreakdown": "Monatliche Aufschlüsselung",
+    "tableHeaders": {
+      "taxRate": "Steuersatz",
+      "taxCollected": "Eingezogene Steuer",
+      "invoices": "Rechnungen",
+      "month": "Monat",
+      "taxableAmount": "Steuerpflichtiger Betrag"
+    }
+  },
+  "charts": {
+    "revenue": "Umsatz",
+    "collected": "Eingezogen",
+    "count": "Anzahl",
+    "totalSpent": "Gesamtausgaben",
+    "jobs": "Aufträge",
+    "visits": "Besuche",
+    "taxCollected": "Eingezogene Steuer"
+  },
+  "days": {
+    "sunday": "Sonntag",
+    "monday": "Montag",
+    "tuesday": "Dienstag",
+    "wednesday": "Mittwoch",
+    "thursday": "Donnerstag",
+    "friday": "Freitag",
+    "saturday": "Samstag"
+  },
+  "daysShort": {
+    "sun": "So",
+    "mon": "Mo",
+    "tue": "Di",
+    "wed": "Mi",
+    "thu": "Do",
+    "fri": "Fr",
+    "sat": "Sa"
+  },
+  "csvHeaders": {
+    "month": "Monat",
+    "revenue": "Umsatz",
+    "collected": "Eingezogen",
+    "count": "Anzahl",
+    "category": "Kategorie",
+    "label": "Bezeichnung",
+    "name": "Name",
+    "company": "Unternehmen",
+    "services": "Dienstleistungen",
+    "totalSpent": "Gesamtausgaben",
+    "partNumber": "Teilenr.",
+    "quantity": "Menge",
+    "minQuantity": "Min. Menge",
+    "unitCost": "Stückkosten",
+    "technician": "Techniker",
+    "jobs": "Aufträge",
+    "totalRevenue": "Gesamtumsatz",
+    "avgRevenue": "Ø Umsatz",
+    "totalHours": "Gesamtstunden",
+    "avgHours": "Ø Stunden",
+    "partName": "Teilename",
+    "usageCount": "Verwendungsanzahl",
+    "totalQty": "Gesamtmenge",
+    "serviceType": "Dienstleistungstyp",
+    "avgValue": "Ø Wert",
+    "customer": "Kunde",
+    "visits": "Besuche",
+    "avgDaysBetweenVisits": "Ø Tage zwischen Besuchen",
+    "taxCollected": "Eingezogene Steuer",
+    "taxableAmount": "Steuerpflichtiger Betrag",
+    "invoiceCount": "Rechnungsanzahl"
+  },
+  "empty": "Noch keine Daten geladen. Klicken Sie auf Aktualisieren, um den Bericht zu laden."
+}

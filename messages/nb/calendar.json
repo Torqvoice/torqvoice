@@ -1,0 +1,61 @@
+{
+  "weekdays": {
+    "sun": "S\u00f8n",
+    "mon": "Man",
+    "tue": "Tir",
+    "wed": "Ons",
+    "thu": "Tor",
+    "fri": "Fre",
+    "sat": "L\u00f8r"
+  },
+  "months": {
+    "january": "Januar",
+    "february": "Februar",
+    "march": "Mars",
+    "april": "April",
+    "may": "Mai",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "August",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "Desember"
+  },
+  "stats": {
+    "services": "Tjenester",
+    "overdue": "Forfalt",
+    "pendingQuotes": "Ventende tilbud",
+    "revenue": "Inntekt"
+  },
+  "today": "I dag",
+  "workOrder": "Arbeidsordre",
+  "filters": {
+    "services": "Tjenester",
+    "reminders": "P\u00e5minnelser",
+    "quotes": "Tilbud"
+  },
+  "selectVehicle": "Velg kj\u00f8ret\u00f8y for arbeidsordre",
+  "more": "+ {count} flere",
+  "events": {
+    "status": {
+      "completed": "Fullf\u00f8rt",
+      "inProgress": "P\u00e5g\u00e5r",
+      "waitingParts": "Venter p\u00e5 deler",
+      "pending": "Ventende",
+      "sent": "Sendt",
+      "approved": "Godkjent",
+      "draft": "Utkast",
+      "done": "Ferdig",
+      "overdue": "Forfalt",
+      "upcoming": "Kommende"
+    },
+    "type": {
+      "service": "Tjeneste",
+      "reminder": "P\u00e5minnelse",
+      "quote": "Tilbud"
+    },
+    "noEvents": "Ingen hendelser",
+    "selectDay": "Velg en dag med hendelser eller opprett en ny arbeidsordre."
+  }
+}

@@ -6,6 +6,7 @@ import { getFeatures, isCloudMode } from "@/lib/features";
 import { redirect } from "next/navigation";
 import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { getTranslations } from "next-intl/server";
 
 export default async function SettingsLayout({
   children,
@@ -42,6 +43,7 @@ export default async function SettingsLayout({
   }
 
   const features = await getFeatures(data.organizationId);
+  const t = await getTranslations("settings");
 
   return (
     <SettingsPermissionProvider canEdit={canEditSettings}>
@@ -49,9 +51,9 @@ export default async function SettingsLayout({
         <PageHeader />
         <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
           <div className="shrink-0">
-            <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
             <p className="mt-1 text-muted-foreground">
-              Manage your workshop, invoices, and preferences
+              {t("subtitle")}
             </p>
           </div>
           <div className="flex min-h-0 flex-1 flex-col gap-6 md:flex-row">

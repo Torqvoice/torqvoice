@@ -38,7 +38,11 @@ function downloadCsv(
   URL.revokeObjectURL(url);
 }
 
-export function exportRevenueCsv(data: RevenueReport, currencyCode: string) {
+export function exportRevenueCsv(
+  data: RevenueReport,
+  currencyCode: string,
+  headers: [string, string, string, string] = ["Month", "Revenue", "Collected", "Count"],
+) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const rows = data.monthly.map((m) => ({
     month: m.month,
@@ -46,28 +50,25 @@ export function exportRevenueCsv(data: RevenueReport, currencyCode: string) {
     collected: fmt(m.collected),
     count: m.count,
   }));
-  downloadCsv(
-    "revenue-report.csv",
-    ["Month", "Revenue", "Collected", "Count"],
-    rows,
-    ["month", "revenue", "collected", "count"],
-  );
+  downloadCsv("revenue-report.csv", headers, rows, ["month", "revenue", "collected", "count"]);
 }
 
-export function exportServicesCsv(data: ServiceReport) {
+export function exportServicesCsv(
+  data: ServiceReport,
+  headers: [string, string, string] = ["Category", "Label", "Count"],
+) {
   const rows = [
     ...data.byStatus.map((s) => ({ category: "Status", label: s.status, count: s.count })),
     ...data.byType.map((t) => ({ category: "Type", label: t.type, count: t.count })),
   ];
-  downloadCsv(
-    "services-report.csv",
-    ["Category", "Label", "Count"],
-    rows,
-    ["category", "label", "count"],
-  );
+  downloadCsv("services-report.csv", headers, rows, ["category", "label", "count"]);
 }
 
-export function exportCustomersCsv(data: CustomerReport, currencyCode: string) {
+export function exportCustomersCsv(
+  data: CustomerReport,
+  currencyCode: string,
+  headers: [string, string, string, string] = ["Name", "Company", "Services", "Total Spent"],
+) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const rows = data.topCustomers.map((c) => ({
     name: c.name,
@@ -75,15 +76,14 @@ export function exportCustomersCsv(data: CustomerReport, currencyCode: string) {
     serviceCount: c.serviceCount,
     totalSpent: fmt(c.totalSpent),
   }));
-  downloadCsv(
-    "customers-report.csv",
-    ["Name", "Company", "Services", "Total Spent"],
-    rows,
-    ["name", "company", "serviceCount", "totalSpent"],
-  );
+  downloadCsv("customers-report.csv", headers, rows, ["name", "company", "serviceCount", "totalSpent"]);
 }
 
-export function exportInventoryCsv(data: InventoryReport, currencyCode: string) {
+export function exportInventoryCsv(
+  data: InventoryReport,
+  currencyCode: string,
+  headers: [string, string, string, string, string] = ["Name", "Part #", "Quantity", "Min Quantity", "Unit Cost"],
+) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const rows = data.lowStock.map((p) => ({
     name: p.name,
@@ -92,15 +92,14 @@ export function exportInventoryCsv(data: InventoryReport, currencyCode: string) 
     minQuantity: p.minQuantity ?? "",
     unitCost: p.unitCost != null ? fmt(p.unitCost) : "",
   }));
-  downloadCsv(
-    "inventory-report.csv",
-    ["Name", "Part #", "Quantity", "Min Quantity", "Unit Cost"],
-    rows,
-    ["name", "partNumber", "quantity", "minQuantity", "unitCost"],
-  );
+  downloadCsv("inventory-report.csv", headers, rows, ["name", "partNumber", "quantity", "minQuantity", "unitCost"]);
 }
 
-export function exportTechniciansCsv(data: TechnicianReport, currencyCode: string) {
+export function exportTechniciansCsv(
+  data: TechnicianReport,
+  currencyCode: string,
+  headers: [string, string, string, string, string, string] = ["Technician", "Jobs", "Total Revenue", "Avg Revenue", "Total Hours", "Avg Hours"],
+) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const rows = data.technicians.map((t) => ({
     techName: t.techName,
@@ -110,15 +109,14 @@ export function exportTechniciansCsv(data: TechnicianReport, currencyCode: strin
     totalHours: t.totalLaborHours.toFixed(1),
     avgHours: t.avgHours.toFixed(1),
   }));
-  downloadCsv(
-    "technicians-report.csv",
-    ["Technician", "Jobs", "Total Revenue", "Avg Revenue", "Total Hours", "Avg Hours"],
-    rows,
-    ["techName", "jobCount", "totalRevenue", "avgRevenue", "totalHours", "avgHours"],
-  );
+  downloadCsv("technicians-report.csv", headers, rows, ["techName", "jobCount", "totalRevenue", "avgRevenue", "totalHours", "avgHours"]);
 }
 
-export function exportPartsCsv(data: PartsUsageReport, currencyCode: string) {
+export function exportPartsCsv(
+  data: PartsUsageReport,
+  currencyCode: string,
+  headers: [string, string, string, string, string] = ["Part Name", "Part #", "Usage Count", "Total Qty", "Total Revenue"],
+) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const rows = data.parts.map((p) => ({
     name: p.name,
@@ -127,15 +125,14 @@ export function exportPartsCsv(data: PartsUsageReport, currencyCode: string) {
     totalQuantity: p.totalQuantity,
     totalRevenue: fmt(p.totalRevenue),
   }));
-  downloadCsv(
-    "parts-usage-report.csv",
-    ["Part Name", "Part #", "Usage Count", "Total Qty", "Total Revenue"],
-    rows,
-    ["name", "partNumber", "usageCount", "totalQuantity", "totalRevenue"],
-  );
+  downloadCsv("parts-usage-report.csv", headers, rows, ["name", "partNumber", "usageCount", "totalQuantity", "totalRevenue"]);
 }
 
-export function exportJobAnalyticsCsv(data: JobAnalyticsReport, currencyCode: string) {
+export function exportJobAnalyticsCsv(
+  data: JobAnalyticsReport,
+  currencyCode: string,
+  headers: [string, string, string, string] = ["Service Type", "Count", "Avg Value", "Avg Hours"],
+) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const rows = data.topServiceTypes.map((t) => ({
     type: t.type,
@@ -143,15 +140,14 @@ export function exportJobAnalyticsCsv(data: JobAnalyticsReport, currencyCode: st
     avgValue: fmt(t.avgValue),
     avgHours: t.avgHours.toFixed(1),
   }));
-  downloadCsv(
-    "job-analytics-report.csv",
-    ["Service Type", "Count", "Avg Value", "Avg Hours"],
-    rows,
-    ["type", "count", "avgValue", "avgHours"],
-  );
+  downloadCsv("job-analytics-report.csv", headers, rows, ["type", "count", "avgValue", "avgHours"]);
 }
 
-export function exportRetentionCsv(data: CustomerRetentionReport, currencyCode: string) {
+export function exportRetentionCsv(
+  data: CustomerRetentionReport,
+  currencyCode: string,
+  headers: [string, string, string, string, string] = ["Customer", "Company", "Visits", "Total Spent", "Avg Days Between Visits"],
+) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const rows = data.topReturning.map((c) => ({
     name: c.name,
@@ -160,15 +156,14 @@ export function exportRetentionCsv(data: CustomerRetentionReport, currencyCode: 
     totalSpent: fmt(c.totalSpent),
     avgDaysBetweenVisits: c.avgTimeBetweenVisits ?? "",
   }));
-  downloadCsv(
-    "retention-report.csv",
-    ["Customer", "Company", "Visits", "Total Spent", "Avg Days Between Visits"],
-    rows,
-    ["name", "company", "visitCount", "totalSpent", "avgDaysBetweenVisits"],
-  );
+  downloadCsv("retention-report.csv", headers, rows, ["name", "company", "visitCount", "totalSpent", "avgDaysBetweenVisits"]);
 }
 
-export function exportTaxCsv(data: TaxReport, currencyCode: string) {
+export function exportTaxCsv(
+  data: TaxReport,
+  currencyCode: string,
+  headers: [string, string, string, string] = ["Month", "Tax Collected", "Taxable Amount", "Invoice Count"],
+) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const rows = data.monthly.map((m) => ({
     month: m.month,
@@ -176,10 +171,5 @@ export function exportTaxCsv(data: TaxReport, currencyCode: string) {
     taxableAmount: fmt(m.taxableAmount),
     invoiceCount: m.invoiceCount,
   }));
-  downloadCsv(
-    "tax-report.csv",
-    ["Month", "Tax Collected", "Taxable Amount", "Invoice Count"],
-    rows,
-    ["month", "taxCollected", "taxableAmount", "invoiceCount"],
-  );
+  downloadCsv("tax-report.csv", headers, rows, ["month", "taxCollected", "taxableAmount", "invoiceCount"]);
 }

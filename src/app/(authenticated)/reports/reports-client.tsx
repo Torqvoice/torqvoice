@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -84,6 +85,7 @@ interface ReportsClientProps {
 }
 
 export default function ReportsClient({ currencyCode }: ReportsClientProps) {
+  const t = useTranslations("reports");
   const currentYear = new Date().getFullYear();
   const defaultStart = `${currentYear}-01-01`;
   const defaultEnd = new Date().toISOString().split("T")[0];
@@ -198,33 +200,34 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
   };
 
   const handleExport = () => {
+    const h = (key: string) => t(`csvHeaders.${key}`);
     switch (activeTab) {
       case "revenue":
-        if (revenueData) exportRevenueCsv(revenueData, currencyCode);
+        if (revenueData) exportRevenueCsv(revenueData, currencyCode, [h("month"), h("revenue"), h("collected"), h("count")]);
         break;
       case "services":
-        if (serviceData) exportServicesCsv(serviceData);
+        if (serviceData) exportServicesCsv(serviceData, [h("category"), h("label"), h("count")]);
         break;
       case "customers":
-        if (customerData) exportCustomersCsv(customerData, currencyCode);
+        if (customerData) exportCustomersCsv(customerData, currencyCode, [h("name"), h("company"), h("services"), h("totalSpent")]);
         break;
       case "inventory":
-        if (inventoryData) exportInventoryCsv(inventoryData, currencyCode);
+        if (inventoryData) exportInventoryCsv(inventoryData, currencyCode, [h("name"), h("partNumber"), h("quantity"), h("minQuantity"), h("unitCost")]);
         break;
       case "technicians":
-        if (technicianData) exportTechniciansCsv(technicianData, currencyCode);
+        if (technicianData) exportTechniciansCsv(technicianData, currencyCode, [h("technician"), h("jobs"), h("totalRevenue"), h("avgRevenue"), h("totalHours"), h("avgHours")]);
         break;
       case "parts":
-        if (partsData) exportPartsCsv(partsData, currencyCode);
+        if (partsData) exportPartsCsv(partsData, currencyCode, [h("partName"), h("partNumber"), h("usageCount"), h("totalQty"), h("totalRevenue")]);
         break;
       case "job-analytics":
-        if (jobAnalyticsData) exportJobAnalyticsCsv(jobAnalyticsData, currencyCode);
+        if (jobAnalyticsData) exportJobAnalyticsCsv(jobAnalyticsData, currencyCode, [h("serviceType"), h("count"), h("avgValue"), h("avgHours")]);
         break;
       case "retention":
-        if (retentionData) exportRetentionCsv(retentionData, currencyCode);
+        if (retentionData) exportRetentionCsv(retentionData, currencyCode, [h("customer"), h("company"), h("visits"), h("totalSpent"), h("avgDaysBetweenVisits")]);
         break;
       case "tax":
-        if (taxData) exportTaxCsv(taxData, currencyCode);
+        if (taxData) exportTaxCsv(taxData, currencyCode, [h("month"), h("taxCollected"), h("taxableAmount"), h("invoiceCount")]);
         break;
     }
   };
@@ -251,39 +254,39 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="revenue" className="gap-1.5">
             <DollarSign className="h-4 w-4" />
-            Revenue
+            {t("tabs.revenue")}
           </TabsTrigger>
           <TabsTrigger value="services" className="gap-1.5">
             <BarChart3 className="h-4 w-4" />
-            Services
+            {t("tabs.services")}
           </TabsTrigger>
           <TabsTrigger value="customers" className="gap-1.5">
             <Users className="h-4 w-4" />
-            Customers
+            {t("tabs.customers")}
           </TabsTrigger>
           <TabsTrigger value="inventory" className="gap-1.5">
             <Package className="h-4 w-4" />
-            Inventory
+            {t("tabs.inventory")}
           </TabsTrigger>
           <TabsTrigger value="technicians" className="gap-1.5">
             <Wrench className="h-4 w-4" />
-            Technicians
+            {t("tabs.technicians")}
           </TabsTrigger>
           <TabsTrigger value="parts" className="gap-1.5">
             <Cog className="h-4 w-4" />
-            Parts
+            {t("tabs.parts")}
           </TabsTrigger>
           <TabsTrigger value="job-analytics" className="gap-1.5">
             <CalendarDays className="h-4 w-4" />
-            Job Analytics
+            {t("tabs.jobAnalytics")}
           </TabsTrigger>
           <TabsTrigger value="retention" className="gap-1.5">
             <UserCheck className="h-4 w-4" />
-            Retention
+            {t("tabs.retention")}
           </TabsTrigger>
           <TabsTrigger value="tax" className="gap-1.5">
             <Receipt className="h-4 w-4" />
-            Tax
+            {t("tabs.tax")}
           </TabsTrigger>
         </TabsList>
 
@@ -296,7 +299,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                 onChange={(e) => setStartDate(e.target.value)}
                 className="h-8 w-36 text-sm"
               />
-              <span className="text-muted-foreground text-sm">to</span>
+              <span className="text-muted-foreground text-sm">{t("dateRange.to")}</span>
               <Input
                 type="date"
                 value={endDate}
@@ -306,12 +309,12 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             </>
           )}
           <Button size="sm" variant="outline" onClick={handleRefresh} disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Refresh"}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("actions.refresh")}
           </Button>
           {hasData && (
             <Button size="sm" variant="outline" onClick={handleExport}>
               <Download className="mr-1.5 h-3.5 w-3.5" />
-              CSV
+              {t("actions.csv")}
             </Button>
           )}
         </div>
@@ -336,7 +339,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <DollarSign className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Revenue</p>
+                    <p className="text-xs text-muted-foreground">{t("revenue.revenue")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(revenueData.summary.totalRevenue)}
                     </p>
@@ -349,7 +352,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <TrendingUp className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Collected</p>
+                    <p className="text-xs text-muted-foreground">{t("revenue.collected")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(revenueData.summary.totalCollected)}
                     </p>
@@ -362,7 +365,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <AlertTriangle className="h-4 w-4 text-amber-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Outstanding</p>
+                    <p className="text-xs text-muted-foreground">{t("revenue.outstanding")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(revenueData.summary.outstanding)}
                     </p>
@@ -375,7 +378,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <BarChart3 className="h-4 w-4 text-violet-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Services</p>
+                    <p className="text-xs text-muted-foreground">{t("revenue.services")}</p>
                     <p className="text-lg font-semibold">
                       {revenueData.summary.totalCount}
                     </p>
@@ -388,15 +391,19 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             <div className="grid gap-4 lg:grid-cols-5">
               <Card className="border-0 shadow-sm lg:col-span-3">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("revenue.monthlyRevenue")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <RevenueBarChart data={revenueData.monthly} formatCurrency={fmtCurrency} />
+                  <RevenueBarChart
+                    data={revenueData.monthly}
+                    formatCurrency={fmtCurrency}
+                    labels={{ revenue: t("charts.revenue"), collected: t("charts.collected") }}
+                  />
                 </CardContent>
               </Card>
               <Card className="border-0 shadow-sm lg:col-span-2">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Revenue by Type</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("revenue.revenueByType")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <RevenueTypeDonut data={revenueData.byType} formatCurrency={fmtCurrency} />
@@ -408,16 +415,16 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             {revenueData.monthly.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Monthly Breakdown</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("revenue.monthlyBreakdown")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Month</TableHead>
-                        <TableHead className="text-right">Revenue</TableHead>
-                        <TableHead className="text-right">Collected</TableHead>
-                        <TableHead className="text-right">Count</TableHead>
+                        <TableHead>{t("revenue.tableHeaders.month")}</TableHead>
+                        <TableHead className="text-right">{t("revenue.tableHeaders.revenue")}</TableHead>
+                        <TableHead className="text-right">{t("revenue.tableHeaders.collected")}</TableHead>
+                        <TableHead className="text-right">{t("revenue.tableHeaders.count")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -440,7 +447,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             )}
           </div>
         )}
-        {!loading && !revenueData && <EmptyState />}
+        {!loading && !revenueData && <EmptyState message={t("empty")} />}
       </TabsContent>
 
       {/* Services Tab */}
@@ -454,7 +461,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <BarChart3 className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Total Services</p>
+                    <p className="text-xs text-muted-foreground">{t("services.totalServices")}</p>
                     <p className="text-lg font-semibold">{serviceData.totalServices}</p>
                   </div>
                 </CardContent>
@@ -464,17 +471,17 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
               {serviceData.byStatus.length > 0 && (
                 <Card className="border-0 shadow-sm">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">By Status</CardTitle>
+                    <CardTitle className="text-sm font-medium">{t("services.byStatus")}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ServiceStatusChart data={serviceData.byStatus} />
+                    <ServiceStatusChart data={serviceData.byStatus} labels={{ count: t("charts.count") }} />
                   </CardContent>
                 </Card>
               )}
               {serviceData.byType.length > 0 && (
                 <Card className="border-0 shadow-sm">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">By Type</CardTitle>
+                    <CardTitle className="text-sm font-medium">{t("services.byType")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ServiceTypeDonut data={serviceData.byType} />
@@ -484,7 +491,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             </div>
           </div>
         )}
-        {!loading && !serviceData && <EmptyState />}
+        {!loading && !serviceData && <EmptyState message={t("empty")} />}
       </TabsContent>
 
       {/* Customers Tab */}
@@ -498,7 +505,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <Users className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Total</p>
+                    <p className="text-xs text-muted-foreground">{t("customers.total")}</p>
                     <p className="text-lg font-semibold">{customerData.totalCustomers}</p>
                   </div>
                 </CardContent>
@@ -509,7 +516,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <Users className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Active</p>
+                    <p className="text-xs text-muted-foreground">{t("customers.active")}</p>
                     <p className="text-lg font-semibold">{customerData.activeCustomers}</p>
                   </div>
                 </CardContent>
@@ -518,26 +525,30 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             {customerData.topCustomers.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Top Customers by Spend</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("customers.topCustomersBySpend")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <TopCustomersChart data={customerData.topCustomers} formatCurrency={fmtCurrency} />
+                  <TopCustomersChart
+                    data={customerData.topCustomers}
+                    formatCurrency={fmtCurrency}
+                    labels={{ totalSpent: t("charts.totalSpent") }}
+                  />
                 </CardContent>
               </Card>
             )}
             {customerData.topCustomers.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Top Customers</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("customers.topCustomers")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Company</TableHead>
-                        <TableHead className="text-right">Services</TableHead>
-                        <TableHead className="text-right">Total Spent</TableHead>
+                        <TableHead>{t("customers.tableHeaders.name")}</TableHead>
+                        <TableHead>{t("customers.tableHeaders.company")}</TableHead>
+                        <TableHead className="text-right">{t("customers.tableHeaders.services")}</TableHead>
+                        <TableHead className="text-right">{t("customers.tableHeaders.totalSpent")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -558,7 +569,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             )}
           </div>
         )}
-        {!loading && !customerData && <EmptyState />}
+        {!loading && !customerData && <EmptyState message={t("empty")} />}
       </TabsContent>
 
       {/* Inventory Tab */}
@@ -572,7 +583,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <Package className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Parts</p>
+                    <p className="text-xs text-muted-foreground">{t("inventory.parts")}</p>
                     <p className="text-lg font-semibold">{inventoryData.totalParts}</p>
                   </div>
                 </CardContent>
@@ -583,7 +594,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <Package className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Items</p>
+                    <p className="text-xs text-muted-foreground">{t("inventory.items")}</p>
                     <p className="text-lg font-semibold">{inventoryData.totalItems}</p>
                   </div>
                 </CardContent>
@@ -594,7 +605,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <DollarSign className="h-4 w-4 text-amber-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Cost Value</p>
+                    <p className="text-xs text-muted-foreground">{t("inventory.costValue")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(inventoryData.totalValue)}
                     </p>
@@ -607,7 +618,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <DollarSign className="h-4 w-4 text-violet-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Sell Value</p>
+                    <p className="text-xs text-muted-foreground">{t("inventory.sellValue")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(inventoryData.totalSellValue)}
                     </p>
@@ -620,7 +631,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <TrendingUp className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Potential Margin</p>
+                    <p className="text-xs text-muted-foreground">{t("inventory.potentialMargin")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(inventoryData.totalSellValue - inventoryData.totalValue)}
                     </p>
@@ -631,16 +642,16 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             {inventoryData.lowStock.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("inventory.lowStock")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Part #</TableHead>
-                        <TableHead className="text-right">Qty</TableHead>
-                        <TableHead className="text-right">Min Qty</TableHead>
+                        <TableHead>{t("inventory.tableHeaders.name")}</TableHead>
+                        <TableHead>{t("inventory.tableHeaders.partNumber")}</TableHead>
+                        <TableHead className="text-right">{t("inventory.tableHeaders.qty")}</TableHead>
+                        <TableHead className="text-right">{t("inventory.tableHeaders.minQty")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -671,7 +682,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             )}
           </div>
         )}
-        {!loading && !inventoryData && <EmptyState />}
+        {!loading && !inventoryData && <EmptyState message={t("empty")} />}
       </TabsContent>
 
       {/* Technicians Tab */}
@@ -685,7 +696,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <Wrench className="h-4 w-4 text-violet-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Total Jobs</p>
+                    <p className="text-xs text-muted-foreground">{t("technicians.totalJobs")}</p>
                     <p className="text-lg font-semibold">{technicianData.totalJobs}</p>
                   </div>
                 </CardContent>
@@ -696,7 +707,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <DollarSign className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Total Revenue</p>
+                    <p className="text-xs text-muted-foreground">{t("technicians.totalRevenue")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(technicianData.totalRevenue)}
                     </p>
@@ -707,28 +718,32 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             {technicianData.technicians.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Revenue by Technician</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("technicians.revenueByTechnician")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <TechnicianBarChart data={technicianData.technicians} formatCurrency={fmtCurrency} />
+                  <TechnicianBarChart
+                    data={technicianData.technicians}
+                    formatCurrency={fmtCurrency}
+                    labels={{ revenue: t("charts.revenue") }}
+                  />
                 </CardContent>
               </Card>
             )}
             {technicianData.technicians.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Technician Breakdown</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("technicians.technicianBreakdown")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Technician</TableHead>
-                        <TableHead className="text-right">Jobs</TableHead>
-                        <TableHead className="text-right">Revenue</TableHead>
-                        <TableHead className="text-right">Avg Revenue</TableHead>
-                        <TableHead className="text-right">Total Hours</TableHead>
-                        <TableHead className="text-right">Avg Hours</TableHead>
+                        <TableHead>{t("technicians.tableHeaders.technician")}</TableHead>
+                        <TableHead className="text-right">{t("technicians.tableHeaders.jobs")}</TableHead>
+                        <TableHead className="text-right">{t("technicians.tableHeaders.revenue")}</TableHead>
+                        <TableHead className="text-right">{t("technicians.tableHeaders.avgRevenue")}</TableHead>
+                        <TableHead className="text-right">{t("technicians.tableHeaders.totalHours")}</TableHead>
+                        <TableHead className="text-right">{t("technicians.tableHeaders.avgHours")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -749,7 +764,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             )}
           </div>
         )}
-        {!loading && !technicianData && <EmptyState />}
+        {!loading && !technicianData && <EmptyState message={t("empty")} />}
       </TabsContent>
 
       {/* Parts Tab */}
@@ -763,7 +778,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <Cog className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Parts Used</p>
+                    <p className="text-xs text-muted-foreground">{t("parts.partsUsed")}</p>
                     <p className="text-lg font-semibold">{partsData.totalPartsUsed}</p>
                   </div>
                 </CardContent>
@@ -774,7 +789,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <DollarSign className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Parts Revenue</p>
+                    <p className="text-xs text-muted-foreground">{t("parts.partsRevenue")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(partsData.totalPartsRevenue)}
                     </p>
@@ -785,7 +800,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             {partsData.parts.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Top Parts by Usage</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("parts.topPartsByUsage")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <PartsDonut data={partsData.parts} />
@@ -795,17 +810,17 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             {partsData.parts.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Parts Usage</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("parts.partsUsage")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Part Name</TableHead>
-                        <TableHead>Part #</TableHead>
-                        <TableHead className="text-right">Usage Count</TableHead>
-                        <TableHead className="text-right">Total Qty</TableHead>
-                        <TableHead className="text-right">Revenue</TableHead>
+                        <TableHead>{t("parts.tableHeaders.partName")}</TableHead>
+                        <TableHead>{t("parts.tableHeaders.partNumber")}</TableHead>
+                        <TableHead className="text-right">{t("parts.tableHeaders.usageCount")}</TableHead>
+                        <TableHead className="text-right">{t("parts.tableHeaders.totalQty")}</TableHead>
+                        <TableHead className="text-right">{t("parts.tableHeaders.revenue")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -825,7 +840,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             )}
           </div>
         )}
-        {!loading && !partsData && <EmptyState />}
+        {!loading && !partsData && <EmptyState message={t("empty")} />}
       </TabsContent>
 
       {/* Job Analytics Tab */}
@@ -839,7 +854,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <BarChart3 className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Total Jobs</p>
+                    <p className="text-xs text-muted-foreground">{t("jobAnalytics.totalJobs")}</p>
                     <p className="text-lg font-semibold">{jobAnalyticsData.totalJobs}</p>
                   </div>
                 </CardContent>
@@ -850,7 +865,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <DollarSign className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Avg Job Value</p>
+                    <p className="text-xs text-muted-foreground">{t("jobAnalytics.avgJobValue")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(jobAnalyticsData.avgJobValue)}
                     </p>
@@ -861,16 +876,16 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             <div className="grid gap-4 lg:grid-cols-2">
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Jobs by Day of Week</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("jobAnalytics.jobsByDayOfWeek")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <DayOfWeekChart data={jobAnalyticsData.dayOfWeek} />
+                  <DayOfWeekChart data={jobAnalyticsData.dayOfWeek} labels={{ jobs: t("charts.jobs") }} />
                 </CardContent>
               </Card>
               {jobAnalyticsData.topServiceTypes.length > 0 && (
                 <Card className="border-0 shadow-sm">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">Service Types</CardTitle>
+                    <CardTitle className="text-sm font-medium">{t("jobAnalytics.serviceTypes")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ServiceTypeAnalyticsDonut data={jobAnalyticsData.topServiceTypes} />
@@ -881,26 +896,30 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             {jobAnalyticsData.monthlyTrend.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Monthly Trend</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("jobAnalytics.monthlyTrend")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <MonthlyTrendChart data={jobAnalyticsData.monthlyTrend} formatCurrency={fmtCurrency} />
+                  <MonthlyTrendChart
+                    data={jobAnalyticsData.monthlyTrend}
+                    formatCurrency={fmtCurrency}
+                    labels={{ jobs: t("charts.jobs"), revenue: t("charts.revenue") }}
+                  />
                 </CardContent>
               </Card>
             )}
             {jobAnalyticsData.topServiceTypes.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Service Type Breakdown</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("jobAnalytics.serviceTypeBreakdown")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Type</TableHead>
-                        <TableHead className="text-right">Count</TableHead>
-                        <TableHead className="text-right">Avg Value</TableHead>
-                        <TableHead className="text-right">Avg Hours</TableHead>
+                        <TableHead>{t("jobAnalytics.tableHeaders.type")}</TableHead>
+                        <TableHead className="text-right">{t("jobAnalytics.tableHeaders.count")}</TableHead>
+                        <TableHead className="text-right">{t("jobAnalytics.tableHeaders.avgValue")}</TableHead>
+                        <TableHead className="text-right">{t("jobAnalytics.tableHeaders.avgHours")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -919,7 +938,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             )}
           </div>
         )}
-        {!loading && !jobAnalyticsData && <EmptyState />}
+        {!loading && !jobAnalyticsData && <EmptyState message={t("empty")} />}
       </TabsContent>
 
       {/* Retention Tab */}
@@ -933,7 +952,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <UserCheck className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Returning</p>
+                    <p className="text-xs text-muted-foreground">{t("retention.returning")}</p>
                     <p className="text-lg font-semibold">{retentionData.returningCustomers}</p>
                   </div>
                 </CardContent>
@@ -944,7 +963,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <Users className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">New</p>
+                    <p className="text-xs text-muted-foreground">{t("retention.new")}</p>
                     <p className="text-lg font-semibold">{retentionData.newCustomers}</p>
                   </div>
                 </CardContent>
@@ -955,7 +974,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <Users className="h-4 w-4 text-violet-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Total Active</p>
+                    <p className="text-xs text-muted-foreground">{t("retention.totalActive")}</p>
                     <p className="text-lg font-semibold">{retentionData.totalActive}</p>
                   </div>
                 </CardContent>
@@ -966,7 +985,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <CalendarDays className="h-4 w-4 text-amber-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Avg Days Between</p>
+                    <p className="text-xs text-muted-foreground">{t("retention.avgDaysBetween")}</p>
                     <p className="text-lg font-semibold">
                       {retentionData.avgTimeBetweenVisits ?? "-"}
                     </p>
@@ -977,27 +996,31 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             {retentionData.topReturning.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Top Returning Customers</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("retention.topReturningCustomers")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <RetentionBarChart data={retentionData.topReturning} formatCurrency={fmtCurrency} />
+                  <RetentionBarChart
+                    data={retentionData.topReturning}
+                    formatCurrency={fmtCurrency}
+                    labels={{ visits: t("charts.visits"), totalSpent: t("charts.totalSpent") }}
+                  />
                 </CardContent>
               </Card>
             )}
             {retentionData.topReturning.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Returning Customers</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("retention.returningCustomers")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Company</TableHead>
-                        <TableHead className="text-right">Visits</TableHead>
-                        <TableHead className="text-right">Total Spent</TableHead>
-                        <TableHead className="text-right">Avg Days Between</TableHead>
+                        <TableHead>{t("retention.tableHeaders.customer")}</TableHead>
+                        <TableHead>{t("retention.tableHeaders.company")}</TableHead>
+                        <TableHead className="text-right">{t("retention.tableHeaders.visits")}</TableHead>
+                        <TableHead className="text-right">{t("retention.tableHeaders.totalSpent")}</TableHead>
+                        <TableHead className="text-right">{t("retention.tableHeaders.avgDaysBetween")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1017,7 +1040,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             )}
           </div>
         )}
-        {!loading && !retentionData && <EmptyState />}
+        {!loading && !retentionData && <EmptyState message={t("empty")} />}
       </TabsContent>
 
       {/* Tax Tab */}
@@ -1031,7 +1054,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <Receipt className="h-4 w-4 text-amber-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Total Tax Collected</p>
+                    <p className="text-xs text-muted-foreground">{t("tax.totalTaxCollected")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(taxData.summary.totalTaxCollected)}
                     </p>
@@ -1044,7 +1067,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <DollarSign className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Taxable Revenue</p>
+                    <p className="text-xs text-muted-foreground">{t("tax.taxableRevenue")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(taxData.summary.totalTaxableAmount)}
                     </p>
@@ -1057,7 +1080,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <BarChart3 className="h-4 w-4 text-violet-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">Invoices with Tax</p>
+                    <p className="text-xs text-muted-foreground">{t("tax.invoicesWithTax")}</p>
                     <p className="text-lg font-semibold">{taxData.summary.totalInvoices}</p>
                   </div>
                 </CardContent>
@@ -1067,10 +1090,14 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             {taxData.monthly.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Monthly Tax Collected</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("tax.monthlyTaxCollected")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <TaxBarChart data={taxData.monthly} formatCurrency={fmtCurrency} />
+                  <TaxBarChart
+                    data={taxData.monthly}
+                    formatCurrency={fmtCurrency}
+                    labels={{ taxCollected: t("charts.taxCollected") }}
+                  />
                 </CardContent>
               </Card>
             )}
@@ -1078,15 +1105,15 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             {taxData.byRate.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Tax by Rate</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("tax.taxByRate")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Tax Rate</TableHead>
-                        <TableHead className="text-right">Tax Collected</TableHead>
-                        <TableHead className="text-right">Invoices</TableHead>
+                        <TableHead>{t("tax.tableHeaders.taxRate")}</TableHead>
+                        <TableHead className="text-right">{t("tax.tableHeaders.taxCollected")}</TableHead>
+                        <TableHead className="text-right">{t("tax.tableHeaders.invoices")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1108,16 +1135,16 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             {taxData.monthly.length > 0 && (
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Monthly Breakdown</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t("tax.monthlyBreakdown")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Month</TableHead>
-                        <TableHead className="text-right">Tax Collected</TableHead>
-                        <TableHead className="text-right">Taxable Amount</TableHead>
-                        <TableHead className="text-right">Invoices</TableHead>
+                        <TableHead>{t("tax.tableHeaders.month")}</TableHead>
+                        <TableHead className="text-right">{t("tax.tableHeaders.taxCollected")}</TableHead>
+                        <TableHead className="text-right">{t("tax.tableHeaders.taxableAmount")}</TableHead>
+                        <TableHead className="text-right">{t("tax.tableHeaders.invoices")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1140,19 +1167,19 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             )}
           </div>
         )}
-        {!loading && !taxData && <EmptyState />}
+        {!loading && !taxData && <EmptyState message={t("empty")} />}
       </TabsContent>
     </Tabs>
   );
 }
 
-function EmptyState() {
+function EmptyState({ message }: { message: string }) {
   return (
     <Card className="border-0 shadow-sm">
       <CardContent className="flex flex-col items-center justify-center py-12">
         <BarChart3 className="h-12 w-12 text-muted-foreground mb-4" />
         <p className="text-muted-foreground">
-          No data loaded yet. Click Refresh to load the report.
+          {message}
         </p>
       </CardContent>
     </Card>

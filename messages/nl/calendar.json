@@ -1,0 +1,61 @@
+{
+  "weekdays": {
+    "sun": "Zo",
+    "mon": "Ma",
+    "tue": "Di",
+    "wed": "Wo",
+    "thu": "Do",
+    "fri": "Vr",
+    "sat": "Za"
+  },
+  "months": {
+    "january": "Januari",
+    "february": "Februari",
+    "march": "Maart",
+    "april": "April",
+    "may": "Mei",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "Augustus",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "December"
+  },
+  "stats": {
+    "services": "Diensten",
+    "overdue": "Achterstallig",
+    "pendingQuotes": "Openstaande offertes",
+    "revenue": "Omzet"
+  },
+  "today": "Vandaag",
+  "workOrder": "Werkorder",
+  "filters": {
+    "services": "Diensten",
+    "reminders": "Herinneringen",
+    "quotes": "Offertes"
+  },
+  "selectVehicle": "Selecteer voertuig voor werkorder",
+  "more": "+ {count} meer",
+  "events": {
+    "status": {
+      "completed": "Voltooid",
+      "inProgress": "In uitvoering",
+      "waitingParts": "Wacht op onderdelen",
+      "pending": "In afwachting",
+      "sent": "Verzonden",
+      "approved": "Goedgekeurd",
+      "draft": "Concept",
+      "done": "Klaar",
+      "overdue": "Achterstallig",
+      "upcoming": "Aanstaand"
+    },
+    "type": {
+      "service": "Dienst",
+      "reminder": "Herinnering",
+      "quote": "Offerte"
+    },
+    "noEvents": "Geen evenementen",
+    "selectDay": "Selecteer een dag met evenementen of maak een nieuwe werkorder aan."
+  }
+}

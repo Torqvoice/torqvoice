@@ -1,0 +1,199 @@
+{
+  "title": "Rapporten & Analyses",
+  "tabs": {
+    "revenue": "Omzet",
+    "services": "Diensten",
+    "customers": "Klanten",
+    "inventory": "Voorraad",
+    "technicians": "Technici",
+    "parts": "Onderdelen",
+    "jobAnalytics": "Opdrachtanalyse",
+    "retention": "Klantbehoud",
+    "tax": "Belasting"
+  },
+  "dateRange": {
+    "to": "tot"
+  },
+  "actions": {
+    "refresh": "Vernieuwen",
+    "csv": "CSV"
+  },
+  "revenue": {
+    "revenue": "Omzet",
+    "collected": "Geïnd",
+    "outstanding": "Openstaand",
+    "services": "Diensten",
+    "monthlyRevenue": "Maandelijkse Omzet",
+    "revenueByType": "Omzet per Type",
+    "monthlyBreakdown": "Maandelijks Overzicht",
+    "tableHeaders": {
+      "month": "Maand",
+      "revenue": "Omzet",
+      "collected": "Geïnd",
+      "count": "Aantal"
+    }
+  },
+  "services": {
+    "totalServices": "Totaal Diensten",
+    "byStatus": "Per Status",
+    "byType": "Per Type"
+  },
+  "customers": {
+    "total": "Totaal",
+    "active": "Actief",
+    "topCustomersBySpend": "Topklanten op Uitgaven",
+    "topCustomers": "Topklanten",
+    "tableHeaders": {
+      "name": "Naam",
+      "company": "Bedrijf",
+      "services": "Diensten",
+      "totalSpent": "Totaal Besteed"
+    }
+  },
+  "inventory": {
+    "parts": "Onderdelen",
+    "items": "Artikelen",
+    "costValue": "Kostprijs",
+    "sellValue": "Verkoopwaarde",
+    "potentialMargin": "Potentiële Marge",
+    "lowStock": "Lage Voorraad",
+    "tableHeaders": {
+      "name": "Naam",
+      "partNumber": "Onderdeelnr.",
+      "qty": "Aant.",
+      "minQty": "Min. Aant."
+    }
+  },
+  "technicians": {
+    "totalJobs": "Totaal Opdrachten",
+    "totalRevenue": "Totale Omzet",
+    "revenueByTechnician": "Omzet per Technicus",
+    "technicianBreakdown": "Technicus Overzicht",
+    "tableHeaders": {
+      "technician": "Technicus",
+      "jobs": "Opdrachten",
+      "revenue": "Omzet",
+      "avgRevenue": "Gem. Omzet",
+      "totalHours": "Totale Uren",
+      "avgHours": "Gem. Uren"
+    }
+  },
+  "parts": {
+    "partsUsed": "Gebruikte Onderdelen",
+    "partsRevenue": "Onderdelen Omzet",
+    "topPartsByUsage": "Meest Gebruikte Onderdelen",
+    "partsUsage": "Onderdelengebruik",
+    "tableHeaders": {
+      "partName": "Onderdeelnaam",
+      "partNumber": "Onderdeelnr.",
+      "usageCount": "Gebruiksaantal",
+      "totalQty": "Totaal Aant.",
+      "revenue": "Omzet"
+    }
+  },
+  "jobAnalytics": {
+    "totalJobs": "Totaal Opdrachten",
+    "avgJobValue": "Gem. Opdrachtwaarde",
+    "jobsByDayOfWeek": "Opdrachten per Weekdag",
+    "serviceTypes": "Diensttypen",
+    "monthlyTrend": "Maandelijkse Trend",
+    "serviceTypeBreakdown": "Diensttype Overzicht",
+    "tableHeaders": {
+      "type": "Type",
+      "count": "Aantal",
+      "avgValue": "Gem. Waarde",
+      "avgHours": "Gem. Uren"
+    }
+  },
+  "retention": {
+    "returning": "Terugkerend",
+    "new": "Nieuw",
+    "totalActive": "Totaal Actief",
+    "avgDaysBetween": "Gem. Dagen Tussen",
+    "topReturningCustomers": "Top Terugkerende Klanten",
+    "returningCustomers": "Terugkerende Klanten",
+    "tableHeaders": {
+      "customer": "Klant",
+      "company": "Bedrijf",
+      "visits": "Bezoeken",
+      "totalSpent": "Totaal Besteed",
+      "avgDaysBetween": "Gem. Dagen Tussen"
+    }
+  },
+  "tax": {
+    "totalTaxCollected": "Totaal Belasting Geïnd",
+    "taxableRevenue": "Belastbare Omzet",
+    "invoicesWithTax": "Facturen met Belasting",
+    "monthlyTaxCollected": "Maandelijks Geïnde Belasting",
+    "taxByRate": "Belasting per Tarief",
+    "monthlyBreakdown": "Maandelijks Overzicht",
+    "tableHeaders": {
+      "taxRate": "Belastingtarief",
+      "taxCollected": "Geïnde Belasting",
+      "invoices": "Facturen",
+      "month": "Maand",
+      "taxableAmount": "Belastbaar Bedrag"
+    }
+  },
+  "charts": {
+    "revenue": "Omzet",
+    "collected": "Geïnd",
+    "count": "Aantal",
+    "totalSpent": "Totaal Besteed",
+    "jobs": "Opdrachten",
+    "visits": "Bezoeken",
+    "taxCollected": "Geïnde Belasting"
+  },
+  "days": {
+    "sunday": "Zondag",
+    "monday": "Maandag",
+    "tuesday": "Dinsdag",
+    "wednesday": "Woensdag",
+    "thursday": "Donderdag",
+    "friday": "Vrijdag",
+    "saturday": "Zaterdag"
+  },
+  "daysShort": {
+    "sun": "Zo",
+    "mon": "Ma",
+    "tue": "Di",
+    "wed": "Wo",
+    "thu": "Do",
+    "fri": "Vr",
+    "sat": "Za"
+  },
+  "csvHeaders": {
+    "month": "Maand",
+    "revenue": "Omzet",
+    "collected": "Geïnd",
+    "count": "Aantal",
+    "category": "Categorie",
+    "label": "Label",
+    "name": "Naam",
+    "company": "Bedrijf",
+    "services": "Diensten",
+    "totalSpent": "Totaal Besteed",
+    "partNumber": "Onderdeelnr.",
+    "quantity": "Aantal",
+    "minQuantity": "Min. Aantal",
+    "unitCost": "Eenheidsprijs",
+    "technician": "Technicus",
+    "jobs": "Opdrachten",
+    "totalRevenue": "Totale Omzet",
+    "avgRevenue": "Gem. Omzet",
+    "totalHours": "Totale Uren",
+    "avgHours": "Gem. Uren",
+    "partName": "Onderdeelnaam",
+    "usageCount": "Gebruiksaantal",
+    "totalQty": "Totaal Aant.",
+    "serviceType": "Diensttype",
+    "avgValue": "Gem. Waarde",
+    "customer": "Klant",
+    "visits": "Bezoeken",
+    "avgDaysBetweenVisits": "Gem. Dagen Tussen Bezoeken",
+    "taxCollected": "Geïnde Belasting",
+    "taxableAmount": "Belastbaar Bedrag",
+    "invoiceCount": "Aantal Facturen"
+  },
+  "empty": "Nog geen gegevens geladen. Klik op Vernieuwen om het rapport te laden."
+}

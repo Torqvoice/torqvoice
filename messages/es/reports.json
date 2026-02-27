@@ -1,0 +1,199 @@
+{
+  "title": "Informes y Análisis",
+  "tabs": {
+    "revenue": "Ingresos",
+    "services": "Servicios",
+    "customers": "Clientes",
+    "inventory": "Inventario",
+    "technicians": "Técnicos",
+    "parts": "Piezas",
+    "jobAnalytics": "Análisis de Trabajos",
+    "retention": "Retención",
+    "tax": "Impuestos"
+  },
+  "dateRange": {
+    "to": "a"
+  },
+  "actions": {
+    "refresh": "Actualizar",
+    "csv": "CSV"
+  },
+  "revenue": {
+    "revenue": "Ingresos",
+    "collected": "Cobrado",
+    "outstanding": "Pendiente",
+    "services": "Servicios",
+    "monthlyRevenue": "Ingresos Mensuales",
+    "revenueByType": "Ingresos por Tipo",
+    "monthlyBreakdown": "Desglose Mensual",
+    "tableHeaders": {
+      "month": "Mes",
+      "revenue": "Ingresos",
+      "collected": "Cobrado",
+      "count": "Cantidad"
+    }
+  },
+  "services": {
+    "totalServices": "Total de Servicios",
+    "byStatus": "Por Estado",
+    "byType": "Por Tipo"
+  },
+  "customers": {
+    "total": "Total",
+    "active": "Activos",
+    "topCustomersBySpend": "Principales Clientes por Gasto",
+    "topCustomers": "Principales Clientes",
+    "tableHeaders": {
+      "name": "Nombre",
+      "company": "Empresa",
+      "services": "Servicios",
+      "totalSpent": "Gasto Total"
+    }
+  },
+  "inventory": {
+    "parts": "Piezas",
+    "items": "Artículos",
+    "costValue": "Valor de Costo",
+    "sellValue": "Valor de Venta",
+    "potentialMargin": "Margen Potencial",
+    "lowStock": "Stock Bajo",
+    "tableHeaders": {
+      "name": "Nombre",
+      "partNumber": "N.º Pieza",
+      "qty": "Cant.",
+      "minQty": "Cant. Mín."
+    }
+  },
+  "technicians": {
+    "totalJobs": "Total de Trabajos",
+    "totalRevenue": "Ingresos Totales",
+    "revenueByTechnician": "Ingresos por Técnico",
+    "technicianBreakdown": "Desglose por Técnico",
+    "tableHeaders": {
+      "technician": "Técnico",
+      "jobs": "Trabajos",
+      "revenue": "Ingresos",
+      "avgRevenue": "Ingreso Prom.",
+      "totalHours": "Horas Totales",
+      "avgHours": "Horas Prom."
+    }
+  },
+  "parts": {
+    "partsUsed": "Piezas Utilizadas",
+    "partsRevenue": "Ingresos por Piezas",
+    "topPartsByUsage": "Piezas Más Utilizadas",
+    "partsUsage": "Uso de Piezas",
+    "tableHeaders": {
+      "partName": "Nombre de Pieza",
+      "partNumber": "N.º Pieza",
+      "usageCount": "Veces Utilizada",
+      "totalQty": "Cant. Total",
+      "revenue": "Ingresos"
+    }
+  },
+  "jobAnalytics": {
+    "totalJobs": "Total de Trabajos",
+    "avgJobValue": "Valor Prom. de Trabajo",
+    "jobsByDayOfWeek": "Trabajos por Día de la Semana",
+    "serviceTypes": "Tipos de Servicio",
+    "monthlyTrend": "Tendencia Mensual",
+    "serviceTypeBreakdown": "Desglose por Tipo de Servicio",
+    "tableHeaders": {
+      "type": "Tipo",
+      "count": "Cantidad",
+      "avgValue": "Valor Prom.",
+      "avgHours": "Horas Prom."
+    }
+  },
+  "retention": {
+    "returning": "Recurrentes",
+    "new": "Nuevos",
+    "totalActive": "Total Activos",
+    "avgDaysBetween": "Prom. Días Entre",
+    "topReturningCustomers": "Principales Clientes Recurrentes",
+    "returningCustomers": "Clientes Recurrentes",
+    "tableHeaders": {
+      "customer": "Cliente",
+      "company": "Empresa",
+      "visits": "Visitas",
+      "totalSpent": "Gasto Total",
+      "avgDaysBetween": "Prom. Días Entre"
+    }
+  },
+  "tax": {
+    "totalTaxCollected": "Impuesto Total Recaudado",
+    "taxableRevenue": "Ingresos Gravables",
+    "invoicesWithTax": "Facturas con Impuesto",
+    "monthlyTaxCollected": "Impuesto Mensual Recaudado",
+    "taxByRate": "Impuesto por Tasa",
+    "monthlyBreakdown": "Desglose Mensual",
+    "tableHeaders": {
+      "taxRate": "Tasa de Impuesto",
+      "taxCollected": "Impuesto Recaudado",
+      "invoices": "Facturas",
+      "month": "Mes",
+      "taxableAmount": "Monto Gravable"
+    }
+  },
+  "charts": {
+    "revenue": "Ingresos",
+    "collected": "Cobrado",
+    "count": "Cantidad",
+    "totalSpent": "Gasto Total",
+    "jobs": "Trabajos",
+    "visits": "Visitas",
+    "taxCollected": "Impuesto Recaudado"
+  },
+  "days": {
+    "sunday": "Domingo",
+    "monday": "Lunes",
+    "tuesday": "Martes",
+    "wednesday": "Miércoles",
+    "thursday": "Jueves",
+    "friday": "Viernes",
+    "saturday": "Sábado"
+  },
+  "daysShort": {
+    "sun": "Dom",
+    "mon": "Lun",
+    "tue": "Mar",
+    "wed": "Mié",
+    "thu": "Jue",
+    "fri": "Vie",
+    "sat": "Sáb"
+  },
+  "csvHeaders": {
+    "month": "Mes",
+    "revenue": "Ingresos",
+    "collected": "Cobrado",
+    "count": "Cantidad",
+    "category": "Categoría",
+    "label": "Etiqueta",
+    "name": "Nombre",
+    "company": "Empresa",
+    "services": "Servicios",
+    "totalSpent": "Gasto Total",
+    "partNumber": "N.º Pieza",
+    "quantity": "Cantidad",
+    "minQuantity": "Cantidad Mínima",
+    "unitCost": "Costo Unitario",
+    "technician": "Técnico",
+    "jobs": "Trabajos",
+    "totalRevenue": "Ingresos Totales",
+    "avgRevenue": "Ingreso Prom.",
+    "totalHours": "Horas Totales",
+    "avgHours": "Horas Prom.",
+    "partName": "Nombre de Pieza",
+    "usageCount": "Veces Utilizada",
+    "totalQty": "Cant. Total",
+    "serviceType": "Tipo de Servicio",
+    "avgValue": "Valor Prom.",
+    "customer": "Cliente",
+    "visits": "Visitas",
+    "avgDaysBetweenVisits": "Prom. Días Entre Visitas",
+    "taxCollected": "Impuesto Recaudado",
+    "taxableAmount": "Monto Gravable",
+    "invoiceCount": "Cant. de Facturas"
+  },
+  "empty": "Aún no se han cargado datos. Haga clic en Actualizar para cargar el informe."
+}

@@ -1,0 +1,87 @@
+{
+  "searchPlaceholder": "Buscar piezas...",
+  "categoryPlaceholder": "Categoría",
+  "allCategories": "Todas las categorías",
+  "applyMarkup": "Aplicar margen",
+  "addPart": "Añadir pieza",
+  "table": {
+    "partNumber": "N.º pieza",
+    "name": "Nombre",
+    "category": "Categoría",
+    "inStock": "En stock",
+    "unitCost": "Coste unitario",
+    "sellPrice": "Precio de venta",
+    "supplier": "Proveedor",
+    "location": "Ubicación",
+    "low": "Bajo"
+  },
+  "empty": {
+    "noMatch": "Ninguna pieza coincide con su búsqueda.",
+    "noParts": "Aún no hay piezas en el inventario."
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Eliminar"
+  },
+  "deletePart": {
+    "title": "Eliminar pieza",
+    "description": "¿Eliminar \"{name}\" del inventario? Esta acción no se puede deshacer.",
+    "confirm": "Eliminar"
+  },
+  "markup": {
+    "title": "Aplicar margen a todas las piezas",
+    "multiplierLabel": "Multiplicador de margen",
+    "description": "Esto establecerá el precio de venta = coste x {multiplier} para las {count} piezas.",
+    "percentage": "({percent}% de margen)",
+    "cancel": "Cancelar",
+    "apply": "Aplicar"
+  },
+  "errors": {
+    "multiplierPositive": "El multiplicador debe ser mayor que 0",
+    "deleteFailed": "No se pudo eliminar la pieza",
+    "applyFailed": "No se pudo aplicar el margen",
+    "saveFailed": "No se pudo guardar la pieza",
+    "error": "Error"
+  },
+  "form": {
+    "editPart": "Editar pieza",
+    "addNewPart": "Añadir nueva pieza",
+    "supplierLink": "Enlace del proveedor",
+    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "fetch": "Obtener",
+    "fetchFailed": "Error al obtener",
+    "fetchError": "No se pudieron obtener los metadatos de la URL",
+    "image": "Imagen",
+    "dropOrClick": "Arrastre una imagen o haga clic",
+    "replace": "Reemplazar",
+    "upload": "Subir",
+    "imageUploading": "Subiendo imagen...",
+    "imageUploaded": "Imagen subida",
+    "imageUploadFailed": "No se pudo subir la imagen",
+    "imageTypeError": "Solo se permiten imágenes JPEG, PNG, WebP y AVIF",
+    "imageSizeError": "La imagen debe ser menor de 5 MB",
+    "partNumber": "Número de pieza",
+    "partNumberPlaceholder": "BRK-001",
+    "nameLabel": "Nombre *",
+    "namePlaceholder": "Juego de pastillas de freno",
+    "category": "Categoría",
+    "categoryPlaceholder": "Frenos",
+    "location": "Ubicación",
+    "locationPlaceholder": "Estante A-3",
+    "quantity": "Cantidad",
+    "minQty": "Cant. mín.",
+    "unitCost": "Coste unitario",
+    "sellPrice": "Precio de venta",
+    "supplier": "Proveedor",
+    "supplierPlaceholder": "AutoParts S.L.",
+    "supplierPhone": "Teléfono del proveedor",
+    "supplierPhonePlaceholder": "(555) 123-4567",
+    "supplierEmail": "Correo del proveedor",
+    "supplierEmailPlaceholder": "orders@autoparts.com",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Descripción de la pieza...",
+    "cancel": "Cancelar",
+    "saveChanges": "Guardar cambios",
+    "addPart": "Añadir pieza"
+  }
+}

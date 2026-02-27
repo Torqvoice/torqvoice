@@ -1,0 +1,61 @@
+{
+  "weekdays": {
+    "sun": "So",
+    "mon": "Mo",
+    "tue": "Di",
+    "wed": "Mi",
+    "thu": "Do",
+    "fri": "Fr",
+    "sat": "Sa"
+  },
+  "months": {
+    "january": "Januar",
+    "february": "Februar",
+    "march": "M\u00e4rz",
+    "april": "April",
+    "may": "Mai",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "August",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "Dezember"
+  },
+  "stats": {
+    "services": "Auftr\u00e4ge",
+    "overdue": "\u00dcberf\u00e4llig",
+    "pendingQuotes": "Offene Angebote",
+    "revenue": "Umsatz"
+  },
+  "today": "Heute",
+  "workOrder": "Arbeitsauftrag",
+  "filters": {
+    "services": "Auftr\u00e4ge",
+    "reminders": "Erinnerungen",
+    "quotes": "Angebote"
+  },
+  "selectVehicle": "Fahrzeug f\u00fcr Arbeitsauftrag ausw\u00e4hlen",
+  "more": "+ {count} weitere",
+  "events": {
+    "status": {
+      "completed": "Abgeschlossen",
+      "inProgress": "In Bearbeitung",
+      "waitingParts": "Warte auf Teile",
+      "pending": "Ausstehend",
+      "sent": "Gesendet",
+      "approved": "Genehmigt",
+      "draft": "Entwurf",
+      "done": "Erledigt",
+      "overdue": "\u00dcberf\u00e4llig",
+      "upcoming": "Bevorstehend"
+    },
+    "type": {
+      "service": "Service",
+      "reminder": "Erinnerung",
+      "quote": "Angebot"
+    },
+    "noEvents": "Keine Ereignisse",
+    "selectDay": "W\u00e4hlen Sie einen Tag mit Ereignissen oder erstellen Sie einen neuen Arbeitsauftrag."
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "weekdays": {
+    "sun": "Dom",
+    "mon": "Seg",
+    "tue": "Ter",
+    "wed": "Qua",
+    "thu": "Qui",
+    "fri": "Sex",
+    "sat": "S\u00e1b"
+  },
+  "months": {
+    "january": "Janeiro",
+    "february": "Fevereiro",
+    "march": "Mar\u00e7o",
+    "april": "Abril",
+    "may": "Maio",
+    "june": "Junho",
+    "july": "Julho",
+    "august": "Agosto",
+    "september": "Setembro",
+    "october": "Outubro",
+    "november": "Novembro",
+    "december": "Dezembro"
+  },
+  "stats": {
+    "services": "Servi\u00e7os",
+    "overdue": "Atrasados",
+    "pendingQuotes": "Or\u00e7amentos pendentes",
+    "revenue": "Receita"
+  },
+  "today": "Hoje",
+  "workOrder": "Ordem de servi\u00e7o",
+  "filters": {
+    "services": "Servi\u00e7os",
+    "reminders": "Lembretes",
+    "quotes": "Or\u00e7amentos"
+  },
+  "selectVehicle": "Selecionar ve\u00edculo para ordem de servi\u00e7o",
+  "more": "+ {count} mais",
+  "events": {
+    "status": {
+      "completed": "Conclu\u00eddo",
+      "inProgress": "Em andamento",
+      "waitingParts": "Aguardando pe\u00e7as",
+      "pending": "Pendente",
+      "sent": "Enviado",
+      "approved": "Aprovado",
+      "draft": "Rascunho",
+      "done": "Feito",
+      "overdue": "Atrasado",
+      "upcoming": "Pr\u00f3ximo"
+    },
+    "type": {
+      "service": "Servi\u00e7o",
+      "reminder": "Lembrete",
+      "quote": "Or\u00e7amento"
+    },
+    "noEvents": "Sem eventos",
+    "selectDay": "Selecione um dia com eventos ou crie uma nova ordem de servi\u00e7o."
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "title": "Raporlar ve Analizler",
+  "tabs": {
+    "revenue": "Gelir",
+    "services": "Hizmetler",
+    "customers": "Müşteriler",
+    "inventory": "Envanter",
+    "technicians": "Teknisyenler",
+    "parts": "Parçalar",
+    "jobAnalytics": "İş Analizi",
+    "retention": "Müşteri Sadakati",
+    "tax": "Vergi"
+  },
+  "dateRange": {
+    "to": "-"
+  },
+  "actions": {
+    "refresh": "Yenile",
+    "csv": "CSV"
+  },
+  "revenue": {
+    "revenue": "Gelir",
+    "collected": "Tahsil Edilen",
+    "outstanding": "Bekleyen",
+    "services": "Hizmetler",
+    "monthlyRevenue": "Aylık Gelir",
+    "revenueByType": "Türe Göre Gelir",
+    "monthlyBreakdown": "Aylık Döküm",
+    "tableHeaders": {
+      "month": "Ay",
+      "revenue": "Gelir",
+      "collected": "Tahsil Edilen",
+      "count": "Adet"
+    }
+  },
+  "services": {
+    "totalServices": "Toplam Hizmetler",
+    "byStatus": "Duruma Göre",
+    "byType": "Türe Göre"
+  },
+  "customers": {
+    "total": "Toplam",
+    "active": "Aktif",
+    "topCustomersBySpend": "Harcamaya Göre En İyi Müşteriler",
+    "topCustomers": "En İyi Müşteriler",
+    "tableHeaders": {
+      "name": "Ad",
+      "company": "Şirket",
+      "services": "Hizmetler",
+      "totalSpent": "Toplam Harcama"
+    }
+  },
+  "inventory": {
+    "parts": "Parçalar",
+    "items": "Öğeler",
+    "costValue": "Maliyet Değeri",
+    "sellValue": "Satış Değeri",
+    "potentialMargin": "Potansiyel Kar Marjı",
+    "lowStock": "Düşük Stok",
+    "tableHeaders": {
+      "name": "Ad",
+      "partNumber": "Parça No",
+      "qty": "Adet",
+      "minQty": "Min. Adet"
+    }
+  },
+  "technicians": {
+    "totalJobs": "Toplam İşler",
+    "totalRevenue": "Toplam Gelir",
+    "revenueByTechnician": "Teknisyene Göre Gelir",
+    "technicianBreakdown": "Teknisyen Dökümü",
+    "tableHeaders": {
+      "technician": "Teknisyen",
+      "jobs": "İşler",
+      "revenue": "Gelir",
+      "avgRevenue": "Ort. Gelir",
+      "totalHours": "Toplam Saat",
+      "avgHours": "Ort. Saat"
+    }
+  },
+  "parts": {
+    "partsUsed": "Kullanılan Parçalar",
+    "partsRevenue": "Parça Geliri",
+    "topPartsByUsage": "Kullanıma Göre En Çok Parçalar",
+    "partsUsage": "Parça Kullanımı",
+    "tableHeaders": {
+      "partName": "Parça Adı",
+      "partNumber": "Parça No",
+      "usageCount": "Kullanım Sayısı",
+      "totalQty": "Toplam Adet",
+      "revenue": "Gelir"
+    }
+  },
+  "jobAnalytics": {
+    "totalJobs": "Toplam İşler",
+    "avgJobValue": "Ort. İş Değeri",
+    "jobsByDayOfWeek": "Haftanın Gününe Göre İşler",
+    "serviceTypes": "Hizmet Türleri",
+    "monthlyTrend": "Aylık Trend",
+    "serviceTypeBreakdown": "Hizmet Türü Dökümü",
+    "tableHeaders": {
+      "type": "Tür",
+      "count": "Adet",
+      "avgValue": "Ort. Değer",
+      "avgHours": "Ort. Saat"
+    }
+  },
+  "retention": {
+    "returning": "Tekrar Gelen",
+    "new": "Yeni",
+    "totalActive": "Toplam Aktif",
+    "avgDaysBetween": "Ort. Gün Aralığı",
+    "topReturningCustomers": "En Çok Gelen Müşteriler",
+    "returningCustomers": "Tekrar Gelen Müşteriler",
+    "tableHeaders": {
+      "customer": "Müşteri",
+      "company": "Şirket",
+      "visits": "Ziyaretler",
+      "totalSpent": "Toplam Harcama",
+      "avgDaysBetween": "Ort. Gün Aralığı"
+    }
+  },
+  "tax": {
+    "totalTaxCollected": "Toplam Vergi Tahsilatı",
+    "taxableRevenue": "Vergilendirilebilir Gelir",
+    "invoicesWithTax": "Vergili Faturalar",
+    "monthlyTaxCollected": "Aylık Vergi Tahsilatı",
+    "taxByRate": "Orana Göre Vergi",
+    "monthlyBreakdown": "Aylık Döküm",
+    "tableHeaders": {
+      "taxRate": "Vergi Oranı",
+      "taxCollected": "Tahsil Edilen Vergi",
+      "invoices": "Faturalar",
+      "month": "Ay",
+      "taxableAmount": "Vergilendirilebilir Tutar"
+    }
+  },
+  "charts": {
+    "revenue": "Gelir",
+    "collected": "Tahsil Edilen",
+    "count": "Adet",
+    "totalSpent": "Toplam Harcama",
+    "jobs": "İşler",
+    "visits": "Ziyaretler",
+    "taxCollected": "Tahsil Edilen Vergi"
+  },
+  "days": {
+    "sunday": "Pazar",
+    "monday": "Pazartesi",
+    "tuesday": "Salı",
+    "wednesday": "Çarşamba",
+    "thursday": "Perşembe",
+    "friday": "Cuma",
+    "saturday": "Cumartesi"
+  },
+  "daysShort": {
+    "sun": "Paz",
+    "mon": "Pzt",
+    "tue": "Sal",
+    "wed": "Çar",
+    "thu": "Per",
+    "fri": "Cum",
+    "sat": "Cmt"
+  },
+  "csvHeaders": {
+    "month": "Ay",
+    "revenue": "Gelir",
+    "collected": "Tahsil Edilen",
+    "count": "Adet",
+    "category": "Kategori",
+    "label": "Etiket",
+    "name": "Ad",
+    "company": "Şirket",
+    "services": "Hizmetler",
+    "totalSpent": "Toplam Harcama",
+    "partNumber": "Parça No",
+    "quantity": "Miktar",
+    "minQuantity": "Min. Miktar",
+    "unitCost": "Birim Maliyet",
+    "technician": "Teknisyen",
+    "jobs": "İşler",
+    "totalRevenue": "Toplam Gelir",
+    "avgRevenue": "Ort. Gelir",
+    "totalHours": "Toplam Saat",
+    "avgHours": "Ort. Saat",
+    "partName": "Parça Adı",
+    "usageCount": "Kullanım Sayısı",
+    "totalQty": "Toplam Adet",
+    "serviceType": "Hizmet Türü",
+    "avgValue": "Ort. Değer",
+    "customer": "Müşteri",
+    "visits": "Ziyaretler",
+    "avgDaysBetweenVisits": "Ort. Ziyaret Arası Gün",
+    "taxCollected": "Tahsil Edilen Vergi",
+    "taxableAmount": "Vergilendirilebilir Tutar",
+    "invoiceCount": "Fatura Sayısı"
+  },
+  "empty": "Henüz veri yüklenmedi. Raporu yüklemek için Yenile'ye tıklayın."
+}

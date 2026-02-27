@@ -1,0 +1,87 @@
+{
+  "searchPlaceholder": "Cerca ricambi...",
+  "categoryPlaceholder": "Categoria",
+  "allCategories": "Tutte le categorie",
+  "applyMarkup": "Applica ricarico",
+  "addPart": "Aggiungi ricambio",
+  "table": {
+    "partNumber": "N. ricambio",
+    "name": "Nome",
+    "category": "Categoria",
+    "inStock": "Disponibile",
+    "unitCost": "Costo unitario",
+    "sellPrice": "Prezzo di vendita",
+    "supplier": "Fornitore",
+    "location": "Posizione",
+    "low": "Basso"
+  },
+  "empty": {
+    "noMatch": "Nessun ricambio corrisponde alla ricerca.",
+    "noParts": "Nessun ricambio in inventario."
+  },
+  "actions": {
+    "edit": "Modifica",
+    "delete": "Elimina"
+  },
+  "deletePart": {
+    "title": "Elimina ricambio",
+    "description": "Eliminare \"{name}\" dall'inventario? Questa azione non può essere annullata.",
+    "confirm": "Elimina"
+  },
+  "markup": {
+    "title": "Applica ricarico a tutti i ricambi",
+    "multiplierLabel": "Moltiplicatore di ricarico",
+    "description": "Il prezzo di vendita sarà impostato a costo x {multiplier} per tutti i {count} ricambi.",
+    "percentage": "({percent}% di ricarico)",
+    "cancel": "Annulla",
+    "apply": "Applica"
+  },
+  "errors": {
+    "multiplierPositive": "Il moltiplicatore deve essere maggiore di 0",
+    "deleteFailed": "Impossibile eliminare il ricambio",
+    "applyFailed": "Impossibile applicare il ricarico",
+    "saveFailed": "Impossibile salvare il ricambio",
+    "error": "Errore"
+  },
+  "form": {
+    "editPart": "Modifica ricambio",
+    "addNewPart": "Aggiungi nuovo ricambio",
+    "supplierLink": "Link fornitore",
+    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "fetch": "Recupera",
+    "fetchFailed": "Recupero non riuscito",
+    "fetchError": "Impossibile recuperare i metadati dall'URL",
+    "image": "Immagine",
+    "dropOrClick": "Trascina un'immagine o clicca",
+    "replace": "Sostituisci",
+    "upload": "Carica",
+    "imageUploading": "Caricamento immagine...",
+    "imageUploaded": "Immagine caricata",
+    "imageUploadFailed": "Impossibile caricare l'immagine",
+    "imageTypeError": "Sono consentite solo immagini JPEG, PNG, WebP e AVIF",
+    "imageSizeError": "L'immagine deve essere inferiore a 5 MB",
+    "partNumber": "Numero ricambio",
+    "partNumberPlaceholder": "BRK-001",
+    "nameLabel": "Nome *",
+    "namePlaceholder": "Kit pastiglie freno",
+    "category": "Categoria",
+    "categoryPlaceholder": "Freni",
+    "location": "Posizione",
+    "locationPlaceholder": "Scaffale A-3",
+    "quantity": "Quantità",
+    "minQty": "Qtà min.",
+    "unitCost": "Costo unitario",
+    "sellPrice": "Prezzo di vendita",
+    "supplier": "Fornitore",
+    "supplierPlaceholder": "AutoParts S.r.l.",
+    "supplierPhone": "Telefono fornitore",
+    "supplierPhonePlaceholder": "(555) 123-4567",
+    "supplierEmail": "E-mail fornitore",
+    "supplierEmailPlaceholder": "orders@autoparts.com",
+    "description": "Descrizione",
+    "descriptionPlaceholder": "Descrizione del ricambio...",
+    "cancel": "Annulla",
+    "saveChanges": "Salva modifiche",
+    "addPart": "Aggiungi ricambio"
+  }
+}

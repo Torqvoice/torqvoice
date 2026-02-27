@@ -1,0 +1,87 @@
+{
+  "searchPlaceholder": "Søk etter deler...",
+  "categoryPlaceholder": "Kategori",
+  "allCategories": "Alle kategorier",
+  "applyMarkup": "Bruk påslag",
+  "addPart": "Legg til del",
+  "table": {
+    "partNumber": "Delenr.",
+    "name": "Navn",
+    "category": "Kategori",
+    "inStock": "På lager",
+    "unitCost": "Enhetskostnad",
+    "sellPrice": "Salgspris",
+    "supplier": "Leverandør",
+    "location": "Plassering",
+    "low": "Lav"
+  },
+  "empty": {
+    "noMatch": "Ingen deler samsvarer med søket ditt.",
+    "noParts": "Ingen deler i lageret ennå."
+  },
+  "actions": {
+    "edit": "Rediger",
+    "delete": "Slett"
+  },
+  "deletePart": {
+    "title": "Slett del",
+    "description": "Slette \"{name}\" fra lageret? Dette kan ikke angres.",
+    "confirm": "Slett"
+  },
+  "markup": {
+    "title": "Bruk påslag på alle deler",
+    "multiplierLabel": "Påslagsmultiplikator",
+    "description": "Dette setter salgspris = kostnad x {multiplier} for alle {count} deler.",
+    "percentage": "({percent}% påslag)",
+    "cancel": "Avbryt",
+    "apply": "Bruk"
+  },
+  "errors": {
+    "multiplierPositive": "Multiplikatoren må være større enn 0",
+    "deleteFailed": "Kunne ikke slette delen",
+    "applyFailed": "Kunne ikke bruke påslaget",
+    "saveFailed": "Kunne ikke lagre delen",
+    "error": "Feil"
+  },
+  "form": {
+    "editPart": "Rediger del",
+    "addNewPart": "Legg til ny del",
+    "supplierLink": "Leverandørlenke",
+    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "fetch": "Hent",
+    "fetchFailed": "Henting mislyktes",
+    "fetchError": "Kunne ikke hente metadata fra URL",
+    "image": "Bilde",
+    "dropOrClick": "Slipp bilde eller klikk",
+    "replace": "Erstatt",
+    "upload": "Last opp",
+    "imageUploading": "Laster opp bilde...",
+    "imageUploaded": "Bilde lastet opp",
+    "imageUploadFailed": "Kunne ikke laste opp bildet",
+    "imageTypeError": "Bare JPEG-, PNG-, WebP- og AVIF-bilder er tillatt",
+    "imageSizeError": "Bildet må være under 5 MB",
+    "partNumber": "Delenummer",
+    "partNumberPlaceholder": "BRK-001",
+    "nameLabel": "Navn *",
+    "namePlaceholder": "Bremseklosssett",
+    "category": "Kategori",
+    "categoryPlaceholder": "Bremser",
+    "location": "Plassering",
+    "locationPlaceholder": "Hylle A-3",
+    "quantity": "Antall",
+    "minQty": "Min. antall",
+    "unitCost": "Enhetskostnad",
+    "sellPrice": "Salgspris",
+    "supplier": "Leverandør",
+    "supplierPlaceholder": "AutoParts AS",
+    "supplierPhone": "Leverandørtelefon",
+    "supplierPhonePlaceholder": "(555) 123-4567",
+    "supplierEmail": "Leverandør-e-post",
+    "supplierEmailPlaceholder": "orders@autoparts.com",
+    "description": "Beskrivelse",
+    "descriptionPlaceholder": "Delbeskrivelse...",
+    "cancel": "Avbryt",
+    "saveChanges": "Lagre endringer",
+    "addPart": "Legg til del"
+  }
+}

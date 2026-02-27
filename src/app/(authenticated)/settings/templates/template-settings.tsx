@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,14 +39,14 @@ const fontMap: Record<string, string> = {
 };
 
 const colorPresets = [
-  { name: "Amber", value: "#d97706" },
-  { name: "Blue", value: "#2563eb" },
-  { name: "Emerald", value: "#059669" },
-  { name: "Red", value: "#dc2626" },
-  { name: "Purple", value: "#7c3aed" },
-  { name: "Slate", value: "#475569" },
-  { name: "Rose", value: "#e11d48" },
-  { name: "Indigo", value: "#4f46e5" },
+  { key: "amber", value: "#d97706" },
+  { key: "blue", value: "#2563eb" },
+  { key: "emerald", value: "#059669" },
+  { key: "red", value: "#dc2626" },
+  { key: "purple", value: "#7c3aed" },
+  { key: "slate", value: "#475569" },
+  { key: "rose", value: "#e11d48" },
+  { key: "indigo", value: "#4f46e5" },
 ];
 
 function PreviewHeader({
@@ -160,6 +161,7 @@ function TemplateTab({
   documentLabel: string;
   billToLabel: string;
 }) {
+  const t = useTranslations('settings');
   const currentPresetId = templatePresets.find(
     (p) =>
       p.primaryColor === values.primaryColor &&
@@ -183,7 +185,7 @@ function TemplateTab({
       {/* Template Gallery */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">Template Presets</CardTitle>
+          <CardTitle className="text-base">{t('templates.presets')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
@@ -269,7 +271,7 @@ function TemplateTab({
         <Card className="border-0 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Palette className="h-4 w-4" /> Primary Color
+              <Palette className="h-4 w-4" /> {t('templates.primaryColor')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -299,7 +301,7 @@ function TemplateTab({
                     className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: preset.value }}
                   />
-                  {preset.name}
+                  {t('templates.colorPresets.' + preset.key)}
                 </button>
               ))}
             </div>
@@ -309,35 +311,35 @@ function TemplateTab({
         {/* Font & Layout Settings */}
         <Card className="border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-base">Font & Layout</CardTitle>
+            <CardTitle className="text-base">{t('templates.fontAndLayout')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Font Family</Label>
+              <Label>{t('templates.fontFamily')}</Label>
               <Select
                 value={values.fontFamily}
                 onValueChange={(v) => setValues({ ...values, fontFamily: v })}
               >
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Helvetica">Helvetica (Default)</SelectItem>
-                  <SelectItem value="Times-Roman">Times Roman</SelectItem>
-                  <SelectItem value="Courier">Courier</SelectItem>
+                  <SelectItem value="Helvetica">{t('templates.helveticaDefault')}</SelectItem>
+                  <SelectItem value="Times-Roman">{t('templates.timesRoman')}</SelectItem>
+                  <SelectItem value="Courier">{t('templates.courier')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>Header Style</Label>
+              <Label>{t('templates.headerStyle')}</Label>
               <Select
                 value={values.headerStyle}
                 onValueChange={(v) => setValues({ ...values, headerStyle: v })}
               >
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="standard">Standard</SelectItem>
-                  <SelectItem value="compact">Compact</SelectItem>
-                  <SelectItem value="modern">Modern</SelectItem>
+                  <SelectItem value="standard">{t('templates.standard')}</SelectItem>
+                  <SelectItem value="compact">{t('templates.compact')}</SelectItem>
+                  <SelectItem value="modern">{t('templates.modern')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -348,7 +350,7 @@ function TemplateTab({
       {/* Preview */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">{documentLabel} Preview</CardTitle>
+          <CardTitle className="text-base">{t('templates.preview', { name: documentLabel })}</CardTitle>
         </CardHeader>
         <CardContent>
           <div
@@ -359,7 +361,7 @@ function TemplateTab({
               values={values}
               headerStyle={values.headerStyle}
               fontFamily={values.fontFamily}
-              documentLabel={documentLabel === "Quotation" ? "QUOTE" : "INVOICE"}
+              documentLabel={documentLabel === t('templates.tabs.quotation') ? "QUOTE" : "INVOICE"}
             />
 
             {/* Bill To / Vehicle */}
@@ -373,7 +375,7 @@ function TemplateTab({
               </div>
               <div>
                 <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider" style={{ color: values.primaryColor }}>
-                  Vehicle
+                  {t('templates.vehicle')}
                 </p>
                 <p className="text-sm font-medium">2022 Toyota Camry</p>
                 <p className="text-xs text-gray-500">VIN: 1HGBH41...XMN</p>
@@ -384,10 +386,10 @@ function TemplateTab({
             <table className="mb-1 w-full text-xs">
               <thead>
                 <tr style={{ backgroundColor: `${values.primaryColor}15` }}>
-                  <th className="px-2 py-1.5 text-left font-medium">Part</th>
-                  <th className="px-2 py-1.5 text-center font-medium">Qty</th>
-                  <th className="px-2 py-1.5 text-right font-medium">Price</th>
-                  <th className="px-2 py-1.5 text-right font-medium">Total</th>
+                  <th className="px-2 py-1.5 text-left font-medium">{t('templates.part')}</th>
+                  <th className="px-2 py-1.5 text-center font-medium">{t('templates.qty')}</th>
+                  <th className="px-2 py-1.5 text-right font-medium">{t('templates.price')}</th>
+                  <th className="px-2 py-1.5 text-right font-medium">{t('templates.total')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -410,10 +412,10 @@ function TemplateTab({
             <table className="mb-4 w-full text-xs">
               <thead>
                 <tr style={{ backgroundColor: `${values.primaryColor}20` }}>
-                  <th className="px-2 py-1.5 text-left font-medium">Labor</th>
-                  <th className="px-2 py-1.5 text-center font-medium">Hours</th>
-                  <th className="px-2 py-1.5 text-right font-medium">Rate</th>
-                  <th className="px-2 py-1.5 text-right font-medium">Total</th>
+                  <th className="px-2 py-1.5 text-left font-medium">{t('templates.labor')}</th>
+                  <th className="px-2 py-1.5 text-center font-medium">{t('templates.hours')}</th>
+                  <th className="px-2 py-1.5 text-right font-medium">{t('templates.rate')}</th>
+                  <th className="px-2 py-1.5 text-right font-medium">{t('templates.total')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -430,18 +432,18 @@ function TemplateTab({
             <div className="flex justify-end">
               <div className="w-48 space-y-1 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Subtotal</span>
+                  <span className="text-gray-500">{t('templates.subtotal')}</span>
                   <span>$229.50</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Tax (8%)</span>
+                  <span className="text-gray-500">{t('templates.tax', { rate: '8' })}</span>
                   <span>$18.36</span>
                 </div>
                 <div
                   className="flex justify-between border-t-2 pt-1 text-sm font-bold"
                   style={{ borderColor: values.primaryColor, color: values.primaryColor }}
                 >
-                  <span>Total</span>
+                  <span>{t('templates.total')}</span>
                   <span>$247.86</span>
                 </div>
               </div>
@@ -456,50 +458,50 @@ function TemplateTab({
 const smsTemplateFields = [
   {
     key: SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
-    label: "Invoice Ready",
-    description: "Sent when sharing an invoice with a customer.",
+    labelKey: "invoiceReady",
+    descriptionKey: "invoiceReadyDescription",
     variables: ["{share_link}", "{company_name}", "{customer_name}", "{current_user}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY,
-    label: "Quote Ready",
-    description: "Sent when sharing a quote with a customer.",
+    labelKey: "quoteReady",
+    descriptionKey: "quoteReadyDescription",
     variables: ["{share_link}", "{company_name}", "{customer_name}", "{current_user}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
-    label: "Inspection Ready",
-    description: "Sent when sharing an inspection report with a customer.",
+    labelKey: "inspectionReady",
+    descriptionKey: "inspectionReadyDescription",
     variables: ["{share_link}", "{company_name}", "{customer_name}", "{current_user}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
-    label: "Status: In Progress",
-    description: "Sent when a work order status changes to In Progress.",
+    labelKey: "statusInProgress",
+    descriptionKey: "statusInProgressDescription",
     variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
-    label: "Status: Waiting for Parts",
-    description: "Sent when a work order status changes to Waiting for Parts.",
+    labelKey: "statusWaitingParts",
+    descriptionKey: "statusWaitingPartsDescription",
     variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
-    label: "Status: Ready for Pickup",
-    description: "Sent when a work order status changes to Ready.",
+    labelKey: "statusReady",
+    descriptionKey: "statusReadyDescription",
     variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
-    label: "Status: Completed",
-    description: "Sent when a work order status changes to Completed.",
+    labelKey: "statusCompleted",
+    descriptionKey: "statusCompletedDescription",
     variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
-    label: "Payment Received",
-    description: "Sent when a payment is recorded for an invoice.",
+    labelKey: "paymentReceived",
+    descriptionKey: "paymentReceivedDescription",
     variables: ["{amount}", "{invoice_number}", "{company_name}", "{customer_name}", "{current_user}"],
   },
 ];
@@ -511,6 +513,7 @@ function SmsTemplateTab({
   values: Record<string, string>;
   setValues: (v: Record<string, string>) => void;
 }) {
+  const t = useTranslations('settings');
   const handleReset = (key: string) => {
     const defaultVal = SMS_TEMPLATE_DEFAULTS[key] || "";
     setValues({ ...values, [key]: defaultVal });
@@ -521,20 +524,20 @@ function SmsTemplateTab({
       <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <MessageSquare className="h-4 w-4" /> SMS Message Templates
+            <MessageSquare className="h-4 w-4" /> {t('templates.smsTemplates')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="mb-4 text-sm text-muted-foreground">
-            Customize the text messages sent to customers. Use variables like{" "}
-            <code className="rounded bg-muted px-1 py-0.5 text-xs">{"{company_name}"}</code> to
-            insert dynamic values.
+            {t.rich('templates.smsTemplatesDescription', {
+              code: (chunks) => <code className="rounded bg-muted px-1 py-0.5 text-xs">{chunks}</code>,
+            })}
           </p>
           <div className="space-y-6">
             {smsTemplateFields.map((field) => (
               <div key={field.key} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium">{field.label}</Label>
+                  <Label className="text-sm font-medium">{t('templates.' + field.labelKey)}</Label>
                   <Button
                     type="button"
                     variant="ghost"
@@ -543,10 +546,10 @@ function SmsTemplateTab({
                     onClick={() => handleReset(field.key)}
                   >
                     <RotateCcw className="mr-1 h-3 w-3" />
-                    Reset
+                    {t('templates.reset')}
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">{field.description}</p>
+                <p className="text-xs text-muted-foreground">{t('templates.' + field.descriptionKey)}</p>
                 <Textarea
                   value={values[field.key] || ""}
                   onChange={(e) => setValues({ ...values, [field.key]: e.target.value })}
@@ -606,6 +609,7 @@ export function TemplateSettings({
   smsEnabled?: boolean;
   initialSmsTemplates?: Record<string, string>;
 }) {
+  const t = useTranslations('settings');
   const [tab, setTab] = useState<TabType>("invoice");
   const [saving, setSaving] = useState(false);
   const [invoiceValues, setInvoiceValues] = useState(initialInvoiceValues);
@@ -621,24 +625,24 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.INVOICE_FONT_FAMILY, invoiceValues.fontFamily),
           setSetting(SETTING_KEYS.INVOICE_HEADER_STYLE, invoiceValues.headerStyle),
         ]);
-        toast.success("Invoice template settings saved");
+        toast.success(t('templates.invoiceTemplateSaved'));
       } else if (tab === "quotation") {
         await Promise.all([
           setSetting(SETTING_KEYS.QUOTE_PRIMARY_COLOR, quoteValues.primaryColor),
           setSetting(SETTING_KEYS.QUOTE_FONT_FAMILY, quoteValues.fontFamily),
           setSetting(SETTING_KEYS.QUOTE_HEADER_STYLE, quoteValues.headerStyle),
         ]);
-        toast.success("Quotation template settings saved");
+        toast.success(t('templates.quotationTemplateSaved'));
       } else if (tab === "sms") {
         await Promise.all(
           Object.entries(smsValues).map(([key, value]) =>
             setSetting(key as Parameters<typeof setSetting>[0], value),
           ),
         );
-        toast.success("SMS template settings saved");
+        toast.success(t('templates.smsTemplateSaved'));
       }
     } catch {
-      toast.error("Failed to save settings");
+      toast.error(t('templates.failedSave'));
     }
     setSaving(false);
   };
@@ -647,13 +651,13 @@ export function TemplateSettings({
     <div className="space-y-6">
       <ReadOnlyBanner />
       <div>
-        <h2 className="text-lg font-semibold">Templates</h2>
+        <h2 className="text-lg font-semibold">{t('templates.title')}</h2>
         <p className="text-sm text-muted-foreground">
           {tab === "inspections"
-            ? "Manage inspection checklists and multi-point templates."
+            ? t('templates.inspectionsDescription')
             : tab === "sms"
-              ? "Customize the SMS messages sent to customers."
-              : "Customize the appearance of your PDF invoices and quotes."}
+              ? t('templates.smsDescription')
+              : t('templates.invoiceDescription')}
         </p>
       </div>
 
@@ -669,7 +673,7 @@ export function TemplateSettings({
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          Invoice
+          {t('templates.tabs.invoice')}
         </button>
         <button
           type="button"
@@ -681,7 +685,7 @@ export function TemplateSettings({
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          Quotation
+          {t('templates.tabs.quotation')}
         </button>
         <button
           type="button"
@@ -693,7 +697,7 @@ export function TemplateSettings({
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          Inspections
+          {t('templates.tabs.inspections')}
         </button>
         {smsEnabled && (
           <button
@@ -706,7 +710,7 @@ export function TemplateSettings({
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            SMS
+            {t('templates.tabs.sms')}
           </button>
         )}
       </div>
@@ -722,7 +726,7 @@ export function TemplateSettings({
             <div className="flex justify-end">
               <Button onClick={handleSave} disabled={saving}>
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save SMS Templates
+                {t('templates.saveSmsTemplates')}
               </Button>
             </div>
           </SaveButton>
@@ -734,15 +738,15 @@ export function TemplateSettings({
               <TemplateTab
                 values={invoiceValues}
                 setValues={setInvoiceValues}
-                documentLabel="Invoice"
-                billToLabel="Bill To"
+                documentLabel={t('templates.tabs.invoice')}
+                billToLabel={t('templates.billTo')}
               />
             ) : (
               <TemplateTab
                 values={quoteValues}
                 setValues={setQuoteValues}
-                documentLabel="Quotation"
-                billToLabel="Prepared For"
+                documentLabel={t('templates.tabs.quotation')}
+                billToLabel={t('templates.preparedFor')}
               />
             )}
           </ReadOnlyWrapper>
@@ -751,7 +755,7 @@ export function TemplateSettings({
             <div className="flex justify-end">
               <Button onClick={handleSave} disabled={saving}>
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save {tab === "invoice" ? "Invoice" : "Quotation"} Template
+                {t(tab === "invoice" ? 'templates.saveInvoiceTemplate' : 'templates.saveQuotationTemplate')}
               </Button>
             </div>
           </SaveButton>

@@ -1,0 +1,199 @@
+{
+  "title": "Report e Analisi",
+  "tabs": {
+    "revenue": "Ricavi",
+    "services": "Servizi",
+    "customers": "Clienti",
+    "inventory": "Inventario",
+    "technicians": "Tecnici",
+    "parts": "Ricambi",
+    "jobAnalytics": "Analisi Lavori",
+    "retention": "Fidelizzazione",
+    "tax": "Tasse"
+  },
+  "dateRange": {
+    "to": "a"
+  },
+  "actions": {
+    "refresh": "Aggiorna",
+    "csv": "CSV"
+  },
+  "revenue": {
+    "revenue": "Ricavi",
+    "collected": "Incassato",
+    "outstanding": "In sospeso",
+    "services": "Servizi",
+    "monthlyRevenue": "Ricavi Mensili",
+    "revenueByType": "Ricavi per Tipo",
+    "monthlyBreakdown": "Riepilogo Mensile",
+    "tableHeaders": {
+      "month": "Mese",
+      "revenue": "Ricavi",
+      "collected": "Incassato",
+      "count": "Conteggio"
+    }
+  },
+  "services": {
+    "totalServices": "Totale Servizi",
+    "byStatus": "Per Stato",
+    "byType": "Per Tipo"
+  },
+  "customers": {
+    "total": "Totale",
+    "active": "Attivi",
+    "topCustomersBySpend": "Migliori Clienti per Spesa",
+    "topCustomers": "Migliori Clienti",
+    "tableHeaders": {
+      "name": "Nome",
+      "company": "Azienda",
+      "services": "Servizi",
+      "totalSpent": "Totale Speso"
+    }
+  },
+  "inventory": {
+    "parts": "Ricambi",
+    "items": "Articoli",
+    "costValue": "Valore Costo",
+    "sellValue": "Valore Vendita",
+    "potentialMargin": "Margine Potenziale",
+    "lowStock": "Scorte Basse",
+    "tableHeaders": {
+      "name": "Nome",
+      "partNumber": "N. Ricambio",
+      "qty": "Qtà",
+      "minQty": "Qtà Min."
+    }
+  },
+  "technicians": {
+    "totalJobs": "Totale Lavori",
+    "totalRevenue": "Ricavi Totali",
+    "revenueByTechnician": "Ricavi per Tecnico",
+    "technicianBreakdown": "Riepilogo Tecnici",
+    "tableHeaders": {
+      "technician": "Tecnico",
+      "jobs": "Lavori",
+      "revenue": "Ricavi",
+      "avgRevenue": "Ricavo Medio",
+      "totalHours": "Ore Totali",
+      "avgHours": "Ore Medie"
+    }
+  },
+  "parts": {
+    "partsUsed": "Ricambi Utilizzati",
+    "partsRevenue": "Ricavi Ricambi",
+    "topPartsByUsage": "Ricambi Più Utilizzati",
+    "partsUsage": "Utilizzo Ricambi",
+    "tableHeaders": {
+      "partName": "Nome Ricambio",
+      "partNumber": "N. Ricambio",
+      "usageCount": "Utilizzi",
+      "totalQty": "Qtà Totale",
+      "revenue": "Ricavi"
+    }
+  },
+  "jobAnalytics": {
+    "totalJobs": "Totale Lavori",
+    "avgJobValue": "Valore Medio Lavoro",
+    "jobsByDayOfWeek": "Lavori per Giorno della Settimana",
+    "serviceTypes": "Tipi di Servizio",
+    "monthlyTrend": "Trend Mensile",
+    "serviceTypeBreakdown": "Riepilogo Tipi di Servizio",
+    "tableHeaders": {
+      "type": "Tipo",
+      "count": "Conteggio",
+      "avgValue": "Valore Medio",
+      "avgHours": "Ore Medie"
+    }
+  },
+  "retention": {
+    "returning": "Ricorrenti",
+    "new": "Nuovi",
+    "totalActive": "Totale Attivi",
+    "avgDaysBetween": "Media Giorni Tra",
+    "topReturningCustomers": "Migliori Clienti Ricorrenti",
+    "returningCustomers": "Clienti Ricorrenti",
+    "tableHeaders": {
+      "customer": "Cliente",
+      "company": "Azienda",
+      "visits": "Visite",
+      "totalSpent": "Totale Speso",
+      "avgDaysBetween": "Media Giorni Tra"
+    }
+  },
+  "tax": {
+    "totalTaxCollected": "Totale Tasse Riscosse",
+    "taxableRevenue": "Ricavi Tassabili",
+    "invoicesWithTax": "Fatture con Tassa",
+    "monthlyTaxCollected": "Tasse Mensili Riscosse",
+    "taxByRate": "Tassa per Aliquota",
+    "monthlyBreakdown": "Riepilogo Mensile",
+    "tableHeaders": {
+      "taxRate": "Aliquota Fiscale",
+      "taxCollected": "Tassa Riscossa",
+      "invoices": "Fatture",
+      "month": "Mese",
+      "taxableAmount": "Importo Tassabile"
+    }
+  },
+  "charts": {
+    "revenue": "Ricavi",
+    "collected": "Incassato",
+    "count": "Conteggio",
+    "totalSpent": "Totale Speso",
+    "jobs": "Lavori",
+    "visits": "Visite",
+    "taxCollected": "Tassa Riscossa"
+  },
+  "days": {
+    "sunday": "Domenica",
+    "monday": "Lunedì",
+    "tuesday": "Martedì",
+    "wednesday": "Mercoledì",
+    "thursday": "Giovedì",
+    "friday": "Venerdì",
+    "saturday": "Sabato"
+  },
+  "daysShort": {
+    "sun": "Dom",
+    "mon": "Lun",
+    "tue": "Mar",
+    "wed": "Mer",
+    "thu": "Gio",
+    "fri": "Ven",
+    "sat": "Sab"
+  },
+  "csvHeaders": {
+    "month": "Mese",
+    "revenue": "Ricavi",
+    "collected": "Incassato",
+    "count": "Conteggio",
+    "category": "Categoria",
+    "label": "Etichetta",
+    "name": "Nome",
+    "company": "Azienda",
+    "services": "Servizi",
+    "totalSpent": "Totale Speso",
+    "partNumber": "N. Ricambio",
+    "quantity": "Quantità",
+    "minQuantity": "Quantità Minima",
+    "unitCost": "Costo Unitario",
+    "technician": "Tecnico",
+    "jobs": "Lavori",
+    "totalRevenue": "Ricavi Totali",
+    "avgRevenue": "Ricavo Medio",
+    "totalHours": "Ore Totali",
+    "avgHours": "Ore Medie",
+    "partName": "Nome Ricambio",
+    "usageCount": "Utilizzi",
+    "totalQty": "Qtà Totale",
+    "serviceType": "Tipo di Servizio",
+    "avgValue": "Valore Medio",
+    "customer": "Cliente",
+    "visits": "Visite",
+    "avgDaysBetweenVisits": "Media Giorni Tra Visite",
+    "taxCollected": "Tassa Riscossa",
+    "taxableAmount": "Importo Tassabile",
+    "invoiceCount": "Numero Fatture"
+  },
+  "empty": "Nessun dato caricato. Clicca su Aggiorna per caricare il report."
+}

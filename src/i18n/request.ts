@@ -55,6 +55,10 @@ export default getRequestConfig(async () => {
   const share = (await import(`../../messages/${locale}/share.json`)).default
   const pdf = (await import(`../../messages/${locale}/pdf.json`)).default
   const portal = (await import(`../../messages/${locale}/portal.json`)).default
+  const calendar = (await import(`../../messages/${locale}/calendar.json`)).default
+  const inventory = (await import(`../../messages/${locale}/inventory.json`)).default
+  const reports = (await import(`../../messages/${locale}/reports.json`)).default
+  const settings = (await import(`../../messages/${locale}/settings.json`)).default
 
   return {
     locale,
@@ -72,6 +76,10 @@ export default getRequestConfig(async () => {
       share,
       pdf,
       portal,
+      calendar,
+      inventory,
+      reports,
+      settings,
     },
   }
 })

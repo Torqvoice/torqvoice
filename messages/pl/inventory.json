@@ -1,0 +1,87 @@
+{
+  "searchPlaceholder": "Szukaj części...",
+  "categoryPlaceholder": "Kategoria",
+  "allCategories": "Wszystkie kategorie",
+  "applyMarkup": "Zastosuj marżę",
+  "addPart": "Dodaj część",
+  "table": {
+    "partNumber": "Nr części",
+    "name": "Nazwa",
+    "category": "Kategoria",
+    "inStock": "Na stanie",
+    "unitCost": "Koszt jedn.",
+    "sellPrice": "Cena sprzedaży",
+    "supplier": "Dostawca",
+    "location": "Lokalizacja",
+    "low": "Niski"
+  },
+  "empty": {
+    "noMatch": "Żadne części nie pasują do wyszukiwania.",
+    "noParts": "Brak części w magazynie."
+  },
+  "actions": {
+    "edit": "Edytuj",
+    "delete": "Usuń"
+  },
+  "deletePart": {
+    "title": "Usuń część",
+    "description": "Usunąć \"{name}\" z magazynu? Tej operacji nie można cofnąć.",
+    "confirm": "Usuń"
+  },
+  "markup": {
+    "title": "Zastosuj marżę do wszystkich części",
+    "multiplierLabel": "Mnożnik marży",
+    "description": "Cena sprzedaży zostanie ustawiona na koszt x {multiplier} dla wszystkich {count} części.",
+    "percentage": "({percent}% marży)",
+    "cancel": "Anuluj",
+    "apply": "Zastosuj"
+  },
+  "errors": {
+    "multiplierPositive": "Mnożnik musi być większy niż 0",
+    "deleteFailed": "Nie udało się usunąć części",
+    "applyFailed": "Nie udało się zastosować marży",
+    "saveFailed": "Nie udało się zapisać części",
+    "error": "Błąd"
+  },
+  "form": {
+    "editPart": "Edytuj część",
+    "addNewPart": "Dodaj nową część",
+    "supplierLink": "Link do dostawcy",
+    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "fetch": "Pobierz",
+    "fetchFailed": "Pobieranie nie powiodło się",
+    "fetchError": "Nie udało się pobrać metadanych z adresu URL",
+    "image": "Zdjęcie",
+    "dropOrClick": "Upuść zdjęcie lub kliknij",
+    "replace": "Zamień",
+    "upload": "Prześlij",
+    "imageUploading": "Przesyłanie zdjęcia...",
+    "imageUploaded": "Zdjęcie przesłane",
+    "imageUploadFailed": "Nie udało się przesłać zdjęcia",
+    "imageTypeError": "Dozwolone są tylko obrazy JPEG, PNG, WebP i AVIF",
+    "imageSizeError": "Zdjęcie musi mieć mniej niż 5 MB",
+    "partNumber": "Numer części",
+    "partNumberPlaceholder": "BRK-001",
+    "nameLabel": "Nazwa *",
+    "namePlaceholder": "Klocki hamulcowe",
+    "category": "Kategoria",
+    "categoryPlaceholder": "Hamulce",
+    "location": "Lokalizacja",
+    "locationPlaceholder": "Półka A-3",
+    "quantity": "Ilość",
+    "minQty": "Min. ilość",
+    "unitCost": "Koszt jedn.",
+    "sellPrice": "Cena sprzedaży",
+    "supplier": "Dostawca",
+    "supplierPlaceholder": "AutoParts Sp. z o.o.",
+    "supplierPhone": "Telefon dostawcy",
+    "supplierPhonePlaceholder": "(555) 123-4567",
+    "supplierEmail": "E-mail dostawcy",
+    "supplierEmailPlaceholder": "orders@autoparts.com",
+    "description": "Opis",
+    "descriptionPlaceholder": "Opis części...",
+    "cancel": "Anuluj",
+    "saveChanges": "Zapisz zmiany",
+    "addPart": "Dodaj część"
+  }
+}

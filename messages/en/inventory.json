@@ -1,0 +1,87 @@
+{
+  "searchPlaceholder": "Search parts...",
+  "categoryPlaceholder": "Category",
+  "allCategories": "All Categories",
+  "applyMarkup": "Apply Markup",
+  "addPart": "Add Part",
+  "table": {
+    "partNumber": "Part #",
+    "name": "Name",
+    "category": "Category",
+    "inStock": "In Stock",
+    "unitCost": "Unit Cost",
+    "sellPrice": "Sell Price",
+    "supplier": "Supplier",
+    "location": "Location",
+    "low": "Low"
+  },
+  "empty": {
+    "noMatch": "No parts match your search.",
+    "noParts": "No parts in inventory yet."
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "deletePart": {
+    "title": "Delete Part",
+    "description": "Delete \"{name}\" from inventory? This cannot be undone.",
+    "confirm": "Delete"
+  },
+  "markup": {
+    "title": "Apply Markup to All Parts",
+    "multiplierLabel": "Markup Multiplier",
+    "description": "This will set sell price = cost x {multiplier} for all {count} parts.",
+    "percentage": "({percent}% markup)",
+    "cancel": "Cancel",
+    "apply": "Apply"
+  },
+  "errors": {
+    "multiplierPositive": "Multiplier must be greater than 0",
+    "deleteFailed": "Failed to delete part",
+    "applyFailed": "Failed to apply markup",
+    "saveFailed": "Failed to save part",
+    "error": "Error"
+  },
+  "form": {
+    "editPart": "Edit Part",
+    "addNewPart": "Add New Part",
+    "supplierLink": "Supplier Link",
+    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "fetch": "Fetch",
+    "fetchFailed": "Fetch Failed",
+    "fetchError": "Could not fetch metadata from URL",
+    "image": "Image",
+    "dropOrClick": "Drop image or click",
+    "replace": "Replace",
+    "upload": "Upload",
+    "imageUploading": "Uploading image...",
+    "imageUploaded": "Image uploaded",
+    "imageUploadFailed": "Could not upload image",
+    "imageTypeError": "Only JPEG, PNG, WebP, and AVIF images are allowed",
+    "imageSizeError": "Image must be under 5MB",
+    "partNumber": "Part Number",
+    "partNumberPlaceholder": "BRK-001",
+    "nameLabel": "Name *",
+    "namePlaceholder": "Brake Pad Set",
+    "category": "Category",
+    "categoryPlaceholder": "Brakes",
+    "location": "Location",
+    "locationPlaceholder": "Shelf A-3",
+    "quantity": "Quantity",
+    "minQty": "Min Qty",
+    "unitCost": "Unit Cost",
+    "sellPrice": "Sell Price",
+    "supplier": "Supplier",
+    "supplierPlaceholder": "AutoParts Inc.",
+    "supplierPhone": "Supplier Phone",
+    "supplierPhonePlaceholder": "(555) 123-4567",
+    "supplierEmail": "Supplier Email",
+    "supplierEmailPlaceholder": "orders@autoparts.com",
+    "description": "Description",
+    "descriptionPlaceholder": "Part description...",
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes",
+    "addPart": "Add Part"
+  }
+}

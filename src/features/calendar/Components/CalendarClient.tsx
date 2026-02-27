@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -74,12 +75,6 @@ function getMonthDays(year: number, month: number) {
   return days;
 }
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
-
 export default function CalendarClient({
   initialEvents,
   initialMonth,
@@ -90,6 +85,10 @@ export default function CalendarClient({
   customers,
   currencyCode,
 }: CalendarClientProps) {
+  const t = useTranslations('calendar');
+  const WEEKDAYS = [t('weekdays.sun'), t('weekdays.mon'), t('weekdays.tue'), t('weekdays.wed'), t('weekdays.thu'), t('weekdays.fri'), t('weekdays.sat')];
+  const MONTH_NAMES = [t('months.january'), t('months.february'), t('months.march'), t('months.april'), t('months.may'), t('months.june'), t('months.july'), t('months.august'), t('months.september'), t('months.october'), t('months.november'), t('months.december')];
+
   const [month, setMonth] = useState(initialMonth);
   const [year, setYear] = useState(initialYear);
   const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
@@ -167,13 +166,13 @@ export default function CalendarClient({
   };
 
   const goToToday = () => {
-    const t = new Date();
-    const needsFetch = t.getMonth() !== month || t.getFullYear() !== year;
-    setMonth(t.getMonth());
-    setYear(t.getFullYear());
-    setSelectedDate(t);
+    const now = new Date();
+    const needsFetch = now.getMonth() !== month || now.getFullYear() !== year;
+    setMonth(now.getMonth());
+    setYear(now.getFullYear());
+    setSelectedDate(now);
     if (needsFetch) {
-      fetchEvents(t.getFullYear(), t.getMonth());
+      fetchEvents(now.getFullYear(), now.getMonth());
     }
   };
 
@@ -188,7 +187,7 @@ export default function CalendarClient({
             </div>
             <div>
               <p className="text-2xl font-bold leading-none">{stats.serviceCount}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Services</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.services')}</p>
             </div>
           </CardContent>
         </Card>
@@ -199,7 +198,7 @@ export default function CalendarClient({
             </div>
             <div>
               <p className="text-2xl font-bold leading-none">{stats.overdueReminders}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Overdue</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.overdue')}</p>
             </div>
           </CardContent>
         </Card>
@@ -210,7 +209,7 @@ export default function CalendarClient({
             </div>
             <div>
               <p className="text-2xl font-bold leading-none">{stats.pendingQuotes}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Pending Quotes</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.pendingQuotes')}</p>
             </div>
           </CardContent>
         </Card>
@@ -228,7 +227,7 @@ export default function CalendarClient({
                     }).format(stats.totalRevenue)
                   : "0"}
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5">Revenue</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.revenue')}</p>
             </div>
           </CardContent>
         </Card>
@@ -255,14 +254,14 @@ export default function CalendarClient({
                 </div>
                 <div className="flex items-center gap-2">
                   <Button size="sm" variant="outline" onClick={goToToday}>
-                    Today
+                    {t('today')}
                   </Button>
                   <Button
                     size="sm"
                     onClick={() => setShowPicker(true)}
                   >
                     <Plus className="h-4 w-4 mr-1" />
-                    Work Order
+                    {t('workOrder')}
                   </Button>
                 </div>
               </div>
@@ -275,7 +274,7 @@ export default function CalendarClient({
                     onCheckedChange={(v) => setShowServices(!!v)}
                   />
                   <div className="h-2 w-2 rounded-full bg-blue-500" />
-                  <span className="text-muted-foreground">Services</span>
+                  <span className="text-muted-foreground">{t('filters.services')}</span>
                 </label>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <Checkbox
@@ -283,7 +282,7 @@ export default function CalendarClient({
                     onCheckedChange={(v) => setShowReminders(!!v)}
                   />
                   <div className="h-2 w-2 rounded-full bg-amber-500" />
-                  <span className="text-muted-foreground">Reminders</span>
+                  <span className="text-muted-foreground">{t('filters.reminders')}</span>
                 </label>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <Checkbox
@@ -291,7 +290,7 @@ export default function CalendarClient({
                     onCheckedChange={(v) => setShowQuotes(!!v)}
                   />
                   <div className="h-2 w-2 rounded-full bg-violet-500" />
-                  <span className="text-muted-foreground">Quotes</span>
+                  <span className="text-muted-foreground">{t('filters.quotes')}</span>
                 </label>
               </div>
 
@@ -345,7 +344,7 @@ export default function CalendarClient({
         onOpenChange={setShowPicker}
         vehicles={vehicles}
         customers={customers}
-        title="Select Vehicle for Work Order"
+        title={t('selectVehicle')}
       />
     </div>
   );

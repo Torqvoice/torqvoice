@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import type { PlanFeatures } from "@/lib/features";
 import {
@@ -26,166 +27,68 @@ import {
 } from "lucide-react";
 
 type SettingsNavItem = {
-  title: string;
+  key: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  description: string;
   gate?: keyof PlanFeatures;
   cloudOnly?: boolean;
   selfHostedOnly?: boolean;
 };
 
 type SettingsCategory = {
-  label: string;
+  key: string;
   items: SettingsNavItem[];
 };
 
 const settingsCategories: SettingsCategory[] = [
   {
-    label: "General",
+    key: "general",
     items: [
-      {
-        title: "Company",
-        href: "/settings/company",
-        icon: Building2,
-        description: "Business details & branding",
-      },
-      {
-        title: "Subscription",
-        href: "/settings/subscription",
-        icon: CreditCard,
-        description: "Plan & billing",
-        cloudOnly: true,
-      },
-      {
-        title: "Account",
-        href: "/settings/account",
-        icon: UserCog,
-        description: "Name, email & password",
-      },
-      {
-        title: "Team",
-        href: "/settings/team",
-        icon: UsersRound,
-        description: "Members & roles",
-      },
+      { key: "company", href: "/settings/company", icon: Building2 },
+      { key: "subscription", href: "/settings/subscription", icon: CreditCard, cloudOnly: true },
+      { key: "account", href: "/settings/account", icon: UserCog },
+      { key: "team", href: "/settings/team", icon: UsersRound },
     ],
   },
   {
-    label: "Billing & Documents",
+    key: "billing",
     items: [
-      {
-        title: "Invoice",
-        href: "/settings/invoice",
-        icon: FileText,
-        description: "Invoice layout & fields",
-      },
-      {
-        title: "Templates",
-        href: "/settings/templates",
-        icon: Layout,
-        description: "Invoice, quote & inspection templates",
-        gate: "customTemplates",
-      },
-      {
-        title: "Payment",
-        href: "/settings/payment",
-        icon: Banknote,
-        description: "Payment terms & accounts",
-        gate: "payments",
-      },
-      {
-        title: "Currency",
-        href: "/settings/currency",
-        icon: Coins,
-        description: "Currency & tax defaults",
-      },
-      {
-        title: "Custom Fields",
-        href: "/settings/custom-fields",
-        icon: ListPlus,
-        description: "Define custom data fields",
-        gate: "customFields",
-      },
+      { key: "invoice", href: "/settings/invoice", icon: FileText },
+      { key: "templates", href: "/settings/templates", icon: Layout, gate: "customTemplates" },
+      { key: "payment", href: "/settings/payment", icon: Banknote, gate: "payments" },
+      { key: "currency", href: "/settings/currency", icon: Coins },
+      { key: "customFields", href: "/settings/custom-fields", icon: ListPlus, gate: "customFields" },
     ],
   },
   {
-    label: "Communications",
+    key: "communications",
     items: [
-      {
-        title: "Email",
-        href: "/settings/email",
-        icon: Mail,
-        description: "Email provider & sending",
-        gate: "smtp",
-      },
-      {
-        title: "SMS",
-        href: "/settings/sms",
-        icon: MessageSquare,
-        description: "SMS provider & messaging",
-        gate: "sms",
-      },
-      {
-        title: "Customer Portal",
-        href: "/settings/customer-portal",
-        icon: Globe,
-        description: "Customer self-service portal",
-        gate: "customerPortal",
-      },
+      { key: "email", href: "/settings/email", icon: Mail, gate: "smtp" },
+      { key: "sms", href: "/settings/sms", icon: MessageSquare, gate: "sms" },
+      { key: "customerPortal", href: "/settings/customer-portal", icon: Globe, gate: "customerPortal" },
     ],
   },
   {
-    label: "Workshop",
+    key: "workshop",
     items: [
-      {
-        title: "Workshop",
-        href: "/settings/workshop",
-        icon: Wrench,
-        description: "Technician & labor defaults",
-      },
-      {
-        title: "Maintenance",
-        href: "/settings/maintenance",
-        icon: Gauge,
-        description: "Predicted service intervals",
-      },
+      { key: "workshop", href: "/settings/workshop", icon: Wrench },
+      { key: "maintenance", href: "/settings/maintenance", icon: Gauge },
     ],
   },
   {
-    label: "System",
+    key: "system",
     items: [
-      {
-        title: "Appearance",
-        href: "/settings/appearance",
-        icon: Palette,
-        description: "Theme & display",
-      },
-      {
-        title: "Data",
-        href: "/settings/data",
-        icon: Database,
-        description: "Export & import backup",
-      },
-      {
-        title: "License",
-        href: "/settings/license",
-        icon: Key,
-        description: "White-label license",
-        selfHostedOnly: true,
-      },
-      {
-        title: "About",
-        href: "/settings/about",
-        icon: Info,
-        description: "Version & info",
-      },
+      { key: "appearance", href: "/settings/appearance", icon: Palette },
+      { key: "data", href: "/settings/data", icon: Database },
+      { key: "license", href: "/settings/license", icon: Key, selfHostedOnly: true },
+      { key: "about", href: "/settings/about", icon: Info },
     ],
   },
 ];
 
 export function SettingsNav({ features, isCloud }: { features?: PlanFeatures; isCloud?: boolean }) {
   const pathname = usePathname();
+  const t = useTranslations("settings");
 
   const filterItem = (item: SettingsNavItem) => {
     if (item.cloudOnly && !isCloud) return false;
@@ -199,9 +102,9 @@ export function SettingsNav({ features, isCloud }: { features?: PlanFeatures; is
         const visibleItems = category.items.filter(filterItem);
         if (visibleItems.length === 0) return null;
         return (
-          <div key={category.label}>
+          <div key={category.key}>
             <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
-              {category.label}
+              {t(`nav.categories.${category.key}`)}
             </p>
             <div className="flex flex-col gap-0.5">
               {visibleItems.map((item) => {
@@ -223,15 +126,17 @@ export function SettingsNav({ features, isCloud }: { features?: PlanFeatures; is
                     <item.icon className="h-4 w-4 shrink-0" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <p className={cn("truncate", isActive && "font-medium")}>{item.title}</p>
+                        <p className={cn("truncate", isActive && "font-medium")}>
+                          {t(`nav.items.${item.key}.title`)}
+                        </p>
                         {isLocked && (
                           <span className="shrink-0 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
-                            PRO
+                            {t("nav.pro")}
                           </span>
                         )}
                       </div>
                       <p className="hidden truncate text-xs text-muted-foreground lg:block">
-                        {item.description}
+                        {t(`nav.items.${item.key}.description`)}
                       </p>
                     </div>
                   </Link>

@@ -1,0 +1,199 @@
+{
+  "title": "Rapporter og Analyser",
+  "tabs": {
+    "revenue": "Inntekter",
+    "services": "Tjenester",
+    "customers": "Kunder",
+    "inventory": "Lagerbeholdning",
+    "technicians": "Teknikere",
+    "parts": "Deler",
+    "jobAnalytics": "Jobbanalyse",
+    "retention": "Kundelojalitet",
+    "tax": "Skatt"
+  },
+  "dateRange": {
+    "to": "til"
+  },
+  "actions": {
+    "refresh": "Oppdater",
+    "csv": "CSV"
+  },
+  "revenue": {
+    "revenue": "Inntekter",
+    "collected": "Innkrevd",
+    "outstanding": "Utestående",
+    "services": "Tjenester",
+    "monthlyRevenue": "Månedlige Inntekter",
+    "revenueByType": "Inntekter etter Type",
+    "monthlyBreakdown": "Månedlig Oversikt",
+    "tableHeaders": {
+      "month": "Måned",
+      "revenue": "Inntekter",
+      "collected": "Innkrevd",
+      "count": "Antall"
+    }
+  },
+  "services": {
+    "totalServices": "Totalt Tjenester",
+    "byStatus": "Etter Status",
+    "byType": "Etter Type"
+  },
+  "customers": {
+    "total": "Totalt",
+    "active": "Aktive",
+    "topCustomersBySpend": "Toppkunder etter Forbruk",
+    "topCustomers": "Toppkunder",
+    "tableHeaders": {
+      "name": "Navn",
+      "company": "Firma",
+      "services": "Tjenester",
+      "totalSpent": "Totalt Brukt"
+    }
+  },
+  "inventory": {
+    "parts": "Deler",
+    "items": "Artikler",
+    "costValue": "Kostverdi",
+    "sellValue": "Salgsverdi",
+    "potentialMargin": "Potensiell Margin",
+    "lowStock": "Lavt Lager",
+    "tableHeaders": {
+      "name": "Navn",
+      "partNumber": "Delenr.",
+      "qty": "Ant.",
+      "minQty": "Min. Ant."
+    }
+  },
+  "technicians": {
+    "totalJobs": "Totalt Jobber",
+    "totalRevenue": "Totale Inntekter",
+    "revenueByTechnician": "Inntekter per Tekniker",
+    "technicianBreakdown": "Tekniker-oversikt",
+    "tableHeaders": {
+      "technician": "Tekniker",
+      "jobs": "Jobber",
+      "revenue": "Inntekter",
+      "avgRevenue": "Gj.sn. Inntekt",
+      "totalHours": "Totale Timer",
+      "avgHours": "Gj.sn. Timer"
+    }
+  },
+  "parts": {
+    "partsUsed": "Deler Brukt",
+    "partsRevenue": "Deleinntekter",
+    "topPartsByUsage": "Mest Brukte Deler",
+    "partsUsage": "Deleforbruk",
+    "tableHeaders": {
+      "partName": "Delenavn",
+      "partNumber": "Delenr.",
+      "usageCount": "Bruksantall",
+      "totalQty": "Total Ant.",
+      "revenue": "Inntekter"
+    }
+  },
+  "jobAnalytics": {
+    "totalJobs": "Totalt Jobber",
+    "avgJobValue": "Gj.sn. Jobbverdi",
+    "jobsByDayOfWeek": "Jobber per Ukedag",
+    "serviceTypes": "Tjenestetyper",
+    "monthlyTrend": "Månedlig Trend",
+    "serviceTypeBreakdown": "Tjenestetype-oversikt",
+    "tableHeaders": {
+      "type": "Type",
+      "count": "Antall",
+      "avgValue": "Gj.sn. Verdi",
+      "avgHours": "Gj.sn. Timer"
+    }
+  },
+  "retention": {
+    "returning": "Gjentakende",
+    "new": "Nye",
+    "totalActive": "Totalt Aktive",
+    "avgDaysBetween": "Gj.sn. Dager Mellom",
+    "topReturningCustomers": "Topp Gjentakende Kunder",
+    "returningCustomers": "Gjentakende Kunder",
+    "tableHeaders": {
+      "customer": "Kunde",
+      "company": "Firma",
+      "visits": "Besøk",
+      "totalSpent": "Totalt Brukt",
+      "avgDaysBetween": "Gj.sn. Dager Mellom"
+    }
+  },
+  "tax": {
+    "totalTaxCollected": "Total Skatt Innkrevd",
+    "taxableRevenue": "Skattepliktig Inntekt",
+    "invoicesWithTax": "Fakturaer med Skatt",
+    "monthlyTaxCollected": "Månedlig Skatt Innkrevd",
+    "taxByRate": "Skatt etter Sats",
+    "monthlyBreakdown": "Månedlig Oversikt",
+    "tableHeaders": {
+      "taxRate": "Skattesats",
+      "taxCollected": "Skatt Innkrevd",
+      "invoices": "Fakturaer",
+      "month": "Måned",
+      "taxableAmount": "Skattepliktig Beløp"
+    }
+  },
+  "charts": {
+    "revenue": "Inntekter",
+    "collected": "Innkrevd",
+    "count": "Antall",
+    "totalSpent": "Totalt Brukt",
+    "jobs": "Jobber",
+    "visits": "Besøk",
+    "taxCollected": "Skatt Innkrevd"
+  },
+  "days": {
+    "sunday": "Søndag",
+    "monday": "Mandag",
+    "tuesday": "Tirsdag",
+    "wednesday": "Onsdag",
+    "thursday": "Torsdag",
+    "friday": "Fredag",
+    "saturday": "Lørdag"
+  },
+  "daysShort": {
+    "sun": "Søn",
+    "mon": "Man",
+    "tue": "Tir",
+    "wed": "Ons",
+    "thu": "Tor",
+    "fri": "Fre",
+    "sat": "Lør"
+  },
+  "csvHeaders": {
+    "month": "Måned",
+    "revenue": "Inntekter",
+    "collected": "Innkrevd",
+    "count": "Antall",
+    "category": "Kategori",
+    "label": "Etikett",
+    "name": "Navn",
+    "company": "Firma",
+    "services": "Tjenester",
+    "totalSpent": "Totalt Brukt",
+    "partNumber": "Delenr.",
+    "quantity": "Antall",
+    "minQuantity": "Min. Antall",
+    "unitCost": "Enhetskostnad",
+    "technician": "Tekniker",
+    "jobs": "Jobber",
+    "totalRevenue": "Totale Inntekter",
+    "avgRevenue": "Gj.sn. Inntekt",
+    "totalHours": "Totale Timer",
+    "avgHours": "Gj.sn. Timer",
+    "partName": "Delenavn",
+    "usageCount": "Bruksantall",
+    "totalQty": "Total Ant.",
+    "serviceType": "Tjenestetype",
+    "avgValue": "Gj.sn. Verdi",
+    "customer": "Kunde",
+    "visits": "Besøk",
+    "avgDaysBetweenVisits": "Gj.sn. Dager Mellom Besøk",
+    "taxCollected": "Skatt Innkrevd",
+    "taxableAmount": "Skattepliktig Beløp",
+    "invoiceCount": "Antall Fakturaer"
+  },
+  "empty": "Ingen data lastet ennå. Klikk Oppdater for å laste rapporten."
+}

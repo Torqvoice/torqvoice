@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { toLocalDateStr } from "./calendar-utils";
 import type { CalendarEvent } from "../Actions/calendarActions";
 
@@ -33,6 +34,7 @@ interface CalendarDayCellProps {
 }
 
 export function CalendarDayCell({ date, events, isCurrentMonth, isToday, isSelected, onClick }: CalendarDayCellProps) {
+  const t = useTranslations('calendar');
   const dateStr = toLocalDateStr(date);
   const dayEvents = events.filter((e) => e.date === dateStr);
   const serviceCount = dayEvents.filter((e) => e.type === "service").length;
@@ -71,7 +73,7 @@ export function CalendarDayCell({ date, events, isCurrentMonth, isToday, isSelec
             </div>
           ))}
           {dayEvents.length > 2 && (
-            <span className="hidden sm:block text-[9px] text-muted-foreground px-1">+{dayEvents.length - 2} more</span>
+            <span className="hidden sm:block text-[9px] text-muted-foreground px-1">{t('more', { count: dayEvents.length - 2 })}</span>
           )}
           {/* Mobile: show dots */}
           <div className="flex sm:hidden gap-0.5 justify-center flex-wrap">

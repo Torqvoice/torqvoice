@@ -1,0 +1,87 @@
+{
+  "searchPlaceholder": "Teile suchen...",
+  "categoryPlaceholder": "Kategorie",
+  "allCategories": "Alle Kategorien",
+  "applyMarkup": "Aufschlag anwenden",
+  "addPart": "Teil hinzufügen",
+  "table": {
+    "partNumber": "Teilenr.",
+    "name": "Name",
+    "category": "Kategorie",
+    "inStock": "Auf Lager",
+    "unitCost": "Stückkosten",
+    "sellPrice": "Verkaufspreis",
+    "supplier": "Lieferant",
+    "location": "Lagerort",
+    "low": "Niedrig"
+  },
+  "empty": {
+    "noMatch": "Keine Teile entsprechen Ihrer Suche.",
+    "noParts": "Noch keine Teile im Lager."
+  },
+  "actions": {
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
+  },
+  "deletePart": {
+    "title": "Teil löschen",
+    "description": "\"{name}\" aus dem Lager löschen? Dies kann nicht rückgängig gemacht werden.",
+    "confirm": "Löschen"
+  },
+  "markup": {
+    "title": "Aufschlag auf alle Teile anwenden",
+    "multiplierLabel": "Aufschlagsfaktor",
+    "description": "Der Verkaufspreis wird auf Kosten x {multiplier} für alle {count} Teile gesetzt.",
+    "percentage": "({percent}% Aufschlag)",
+    "cancel": "Abbrechen",
+    "apply": "Anwenden"
+  },
+  "errors": {
+    "multiplierPositive": "Der Multiplikator muss größer als 0 sein",
+    "deleteFailed": "Teil konnte nicht gelöscht werden",
+    "applyFailed": "Aufschlag konnte nicht angewendet werden",
+    "saveFailed": "Teil konnte nicht gespeichert werden",
+    "error": "Fehler"
+  },
+  "form": {
+    "editPart": "Teil bearbeiten",
+    "addNewPart": "Neues Teil hinzufügen",
+    "supplierLink": "Lieferantenlink",
+    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "fetch": "Abrufen",
+    "fetchFailed": "Abruf fehlgeschlagen",
+    "fetchError": "Metadaten konnten nicht von der URL abgerufen werden",
+    "image": "Bild",
+    "dropOrClick": "Bild ablegen oder klicken",
+    "replace": "Ersetzen",
+    "upload": "Hochladen",
+    "imageUploading": "Bild wird hochgeladen...",
+    "imageUploaded": "Bild hochgeladen",
+    "imageUploadFailed": "Bild konnte nicht hochgeladen werden",
+    "imageTypeError": "Nur JPEG-, PNG-, WebP- und AVIF-Bilder sind erlaubt",
+    "imageSizeError": "Das Bild darf maximal 5 MB groß sein",
+    "partNumber": "Teilenummer",
+    "partNumberPlaceholder": "BRK-001",
+    "nameLabel": "Name *",
+    "namePlaceholder": "Bremsbelagsatz",
+    "category": "Kategorie",
+    "categoryPlaceholder": "Bremsen",
+    "location": "Lagerort",
+    "locationPlaceholder": "Regal A-3",
+    "quantity": "Menge",
+    "minQty": "Mindestmenge",
+    "unitCost": "Stückkosten",
+    "sellPrice": "Verkaufspreis",
+    "supplier": "Lieferant",
+    "supplierPlaceholder": "AutoParts GmbH",
+    "supplierPhone": "Lieferanten-Telefon",
+    "supplierPhonePlaceholder": "(555) 123-4567",
+    "supplierEmail": "Lieferanten-E-Mail",
+    "supplierEmailPlaceholder": "orders@autoparts.com",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Teilebeschreibung...",
+    "cancel": "Abbrechen",
+    "saveChanges": "Änderungen speichern",
+    "addPart": "Teil hinzufügen"
+  }
+}

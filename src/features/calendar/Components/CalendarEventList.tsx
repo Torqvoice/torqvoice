@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { formatDateHeader } from "./calendar-utils";
 import { formatCurrency } from "@/lib/format";
@@ -25,34 +26,34 @@ function getStatusColor(event: CalendarEvent) {
   }
 }
 
-function getStatusBadge(event: CalendarEvent) {
+function getStatusBadge(event: CalendarEvent, t: (key: string) => string) {
   if (event.type === "service") {
     switch (event.status) {
-      case "completed": return <Badge variant="outline" className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0">Completed</Badge>;
-      case "in_progress": case "in-progress": return <Badge variant="outline" className="text-blue-600 border-blue-300 text-[10px] px-1.5 py-0">In Progress</Badge>;
-      case "waiting-parts": return <Badge variant="outline" className="text-orange-600 border-orange-300 text-[10px] px-1.5 py-0">Waiting Parts</Badge>;
-      default: return <Badge variant="outline" className="text-amber-600 border-amber-300 text-[10px] px-1.5 py-0">Pending</Badge>;
+      case "completed": return <Badge variant="outline" className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0">{t('events.status.completed')}</Badge>;
+      case "in_progress": case "in-progress": return <Badge variant="outline" className="text-blue-600 border-blue-300 text-[10px] px-1.5 py-0">{t('events.status.inProgress')}</Badge>;
+      case "waiting-parts": return <Badge variant="outline" className="text-orange-600 border-orange-300 text-[10px] px-1.5 py-0">{t('events.status.waitingParts')}</Badge>;
+      default: return <Badge variant="outline" className="text-amber-600 border-amber-300 text-[10px] px-1.5 py-0">{t('events.status.pending')}</Badge>;
     }
   }
   if (event.type === "quote") {
     switch (event.status) {
-      case "sent": return <Badge variant="outline" className="text-violet-600 border-violet-300 text-[10px] px-1.5 py-0">Sent</Badge>;
-      case "approved": return <Badge variant="outline" className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0">Approved</Badge>;
-      default: return <Badge variant="outline" className="text-violet-600 border-violet-300 text-[10px] px-1.5 py-0">Draft</Badge>;
+      case "sent": return <Badge variant="outline" className="text-violet-600 border-violet-300 text-[10px] px-1.5 py-0">{t('events.status.sent')}</Badge>;
+      case "approved": return <Badge variant="outline" className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0">{t('events.status.approved')}</Badge>;
+      default: return <Badge variant="outline" className="text-violet-600 border-violet-300 text-[10px] px-1.5 py-0">{t('events.status.draft')}</Badge>;
     }
   }
   switch (event.status) {
-    case "completed": return <Badge variant="outline" className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0">Done</Badge>;
-    case "overdue": return <Badge variant="destructive" className="text-[10px] px-1.5 py-0">Overdue</Badge>;
-    default: return <Badge variant="outline" className="text-[10px] px-1.5 py-0">Upcoming</Badge>;
+    case "completed": return <Badge variant="outline" className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0">{t('events.status.done')}</Badge>;
+    case "overdue": return <Badge variant="destructive" className="text-[10px] px-1.5 py-0">{t('events.status.overdue')}</Badge>;
+    default: return <Badge variant="outline" className="text-[10px] px-1.5 py-0">{t('events.status.upcoming')}</Badge>;
   }
 }
 
-function getTypeBadge(type: CalendarEvent["type"]) {
+function getTypeBadge(type: CalendarEvent["type"], t: (key: string) => string) {
   switch (type) {
-    case "service": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-blue-500/10 text-blue-700 dark:text-blue-400">Service</Badge>;
-    case "reminder": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-amber-500/10 text-amber-700 dark:text-amber-400">Reminder</Badge>;
-    case "quote": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-violet-500/10 text-violet-700 dark:text-violet-400">Quote</Badge>;
+    case "service": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-blue-500/10 text-blue-700 dark:text-blue-400">{t('events.type.service')}</Badge>;
+    case "reminder": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-amber-500/10 text-amber-700 dark:text-amber-400">{t('events.type.reminder')}</Badge>;
+    case "quote": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-violet-500/10 text-violet-700 dark:text-violet-400">{t('events.type.quote')}</Badge>;
   }
 }
 
@@ -69,6 +70,7 @@ interface CalendarEventListProps {
 }
 
 export function CalendarEventList({ events, dateStr, selectedDate, currencyCode }: CalendarEventListProps) {
+  const t = useTranslations('calendar');
   const dayEvents = events.filter((e) => e.date === dateStr);
 
   return (
@@ -79,9 +81,9 @@ export function CalendarEventList({ events, dateStr, selectedDate, currencyCode 
 
       {dayEvents.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-sm text-muted-foreground mb-1">No events</p>
+          <p className="text-sm text-muted-foreground mb-1">{t('events.noEvents')}</p>
           <p className="text-xs text-muted-foreground">
-            Select a day with events or create a new work order.
+            {t('events.selectDay')}
           </p>
         </div>
       ) : (
@@ -96,7 +98,7 @@ export function CalendarEventList({ events, dateStr, selectedDate, currencyCode 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <p className="text-sm font-medium truncate">{event.title}</p>
-                  {getStatusBadge(event)}
+                  {getStatusBadge(event, t)}
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
                   <p className="text-xs text-muted-foreground truncate">{event.vehicleLabel}</p>
@@ -108,7 +110,7 @@ export function CalendarEventList({ events, dateStr, selectedDate, currencyCode 
                   <p className="text-xs text-muted-foreground">{event.customerName}</p>
                 )}
                 <div className="flex items-center gap-2 mt-1">
-                  {getTypeBadge(event.type)}
+                  {getTypeBadge(event.type, t)}
                   {event.invoiceNumber && (
                     <span className="text-[10px] text-muted-foreground">#{event.invoiceNumber}</span>
                   )}
