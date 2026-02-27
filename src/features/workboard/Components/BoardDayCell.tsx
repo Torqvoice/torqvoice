@@ -30,7 +30,7 @@ export function BoardDayCell({
     <div
       ref={setNodeRef}
       className={cn(
-        "flex min-h-[80px] flex-col gap-1 rounded-md border p-1 transition-colors",
+        "flex min-h-[80px] flex-col gap-1 overflow-hidden rounded-md border p-1 transition-colors",
         isOver && "border-primary bg-primary/5",
         isToday && "border-primary/30 bg-primary/5",
       )}

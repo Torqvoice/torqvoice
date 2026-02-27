@@ -332,28 +332,31 @@ export function WorkBoardClient({
         <div className="flex flex-1 gap-4 overflow-hidden">
           {/* Main grid */}
           <ScrollArea className="flex-1">
-            <div className="min-w-[900px] space-y-1">
+            <div
+              className="min-w-[900px] grid gap-1"
+              style={{
+                gridTemplateColumns: `140px ${days.map((d) => (d === toLocalDateString(new Date()) ? "minmax(0,2fr)" : "minmax(0,1fr)")).join(" ")}`,
+              }}
+            >
               {/* Day headers */}
-              <div className="grid grid-cols-[140px_repeat(7,1fr)] gap-1">
-                <div />
-                {days.map((day, i) => {
-                  const isToday = day === toLocalDateString(new Date());
-                  const d = new Date(day + "T12:00:00");
-                  const dayLabel = `${t(`days.${DAY_KEYS[i]}`)} ${d.getDate()}`;
-                  return (
-                    <div
-                      key={day}
-                      className={`rounded-md px-2 py-1 text-center text-xs font-medium ${
-                        isToday
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {dayLabel}
-                    </div>
-                  );
-                })}
-              </div>
+              <div />
+              {days.map((day, i) => {
+                const isToday = day === toLocalDateString(new Date());
+                const d = new Date(day + "T12:00:00");
+                const dayLabel = `${t(`days.${DAY_KEYS[i]}`)} ${d.getDate()}`;
+                return (
+                  <div
+                    key={day}
+                    className={`rounded-md px-2 py-1 text-center text-xs font-medium ${
+                      isToday
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {dayLabel}
+                  </div>
+                );
+              })}
 
               {/* Technician rows */}
               {store.technicians.map((tech) => (
