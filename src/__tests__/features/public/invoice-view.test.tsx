@@ -89,7 +89,7 @@ beforeEach(() => {
   vi.resetAllMocks();
   URL.createObjectURL = vi.fn().mockReturnValue("blob:mock-url");
   URL.revokeObjectURL = vi.fn();
-  mockFetch = vi.fn();
+  mockFetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ success: true }) });
   vi.stubGlobal("fetch", mockFetch);
   // Default: no payment params in URL
   vi.stubGlobal("location", {
@@ -268,7 +268,8 @@ describe("InvoiceView", () => {
           "/api/public/share/invoice/org-1/tok-xyz/checkout",
           expect.objectContaining({ method: "POST" })
         );
-        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+        const call = mockFetch.mock.calls.find((c: unknown[]) => c[0] === "/api/public/share/invoice/org-1/tok-xyz/checkout");
+        const body = JSON.parse(call[1].body);
         expect(body.provider).toBe("stripe");
         expect(body.amount).toBe(200);
       });
@@ -326,7 +327,9 @@ describe("InvoiceView", () => {
       render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={["vipps"]} />);
 
       await waitFor(() => {
-        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+        const call = mockFetch.mock.calls.find((c: unknown[]) => c[0] === "/api/public/share/invoice/org-1/tok-xyz/verify");
+        expect(call).toBeTruthy();
+        const body = JSON.parse(call[1].body);
         expect(body.provider).toBe("vipps");
         expect(body.externalId).toBe("vipps-ref-456");
       });
