@@ -461,6 +461,12 @@ const smsTemplateFields = [
     variables: ["{share_link}", "{company_name}", "{customer_name}", "{current_user}"],
   },
   {
+    key: SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY,
+    label: "Quote Ready",
+    description: "Sent when sharing a quote with a customer.",
+    variables: ["{share_link}", "{company_name}", "{customer_name}", "{current_user}"],
+  },
+  {
     key: SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
     label: "Inspection Ready",
     description: "Sent when sharing an inspection report with a customer.",

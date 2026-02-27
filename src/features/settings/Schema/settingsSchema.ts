@@ -62,6 +62,7 @@ export const SETTING_KEYS = {
   MAINTENANCE_APPROACHING_THRESHOLD: "maintenance.approachingThreshold",
   INVENTORY_MARKUP_MULTIPLIER: "inventory.markupMultiplier",
   SMS_TEMPLATE_INVOICE_READY: "sms.template.invoiceReady",
+  SMS_TEMPLATE_QUOTE_READY: "sms.template.quoteReady",
   SMS_TEMPLATE_INSPECTION_READY: "sms.template.inspectionReady",
   SMS_TEMPLATE_STATUS_IN_PROGRESS: "sms.template.statusInProgress",
   SMS_TEMPLATE_STATUS_WAITING_PARTS: "sms.template.statusWaitingParts",

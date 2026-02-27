@@ -15,7 +15,9 @@ import { Check, Copy, Link2, Loader2, Mail, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { generateQuotePublicLink, revokeQuotePublicLink } from "@/features/quotes/Actions/quoteShareActions";
 import { sendQuoteEmail } from "@/features/email/Actions/emailActions";
-import { sendSmsToCustomer } from "@/features/sms/Actions/smsActions";
+import { sendSmsToCustomer, getSmsTemplates } from "@/features/sms/Actions/smsActions";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from "@/lib/sms-templates";
 
 interface QuoteShareDialogProps {
   open: boolean;
@@ -93,9 +95,19 @@ export function QuoteShareDialog({
     }
 
     if (notifySms && hasPhone) {
+      const tplResult = await getSmsTemplates();
+      const tplData = tplResult.success && tplResult.data ? tplResult.data : null;
+      const tpl = tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY]
+        || SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY];
+      const body = interpolateSmsTemplate(tpl || "", {
+        share_link: publicUrl,
+        customer_name: customer.name,
+        company_name: tplData?.companyName || "",
+        current_user: tplData?.currentUser || "",
+      });
       const res = await sendSmsToCustomer({
         customerId: customer.id,
-        body: `Your quote is ready for review. View it here: ${publicUrl}`,
+        body,
         relatedEntityType: "quote",
         relatedEntityId: quoteId,
       });

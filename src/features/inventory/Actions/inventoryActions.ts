@@ -116,7 +116,17 @@ export async function updateInventoryPart(input: unknown) {
 
     const result = await db.inventoryPart.updateMany({
       where: { id, organizationId },
-      data: updateData,
+      data: {
+        ...updateData,
+        partNumber: updateData.partNumber !== undefined ? (updateData.partNumber || null) : undefined,
+        description: updateData.description !== undefined ? (updateData.description || null) : undefined,
+        category: updateData.category !== undefined ? (updateData.category || null) : undefined,
+        supplier: updateData.supplier !== undefined ? (updateData.supplier || null) : undefined,
+        supplierPhone: updateData.supplierPhone !== undefined ? (updateData.supplierPhone || null) : undefined,
+        supplierEmail: updateData.supplierEmail !== undefined ? (updateData.supplierEmail || null) : undefined,
+        supplierUrl: updateData.supplierUrl !== undefined ? (updateData.supplierUrl || null) : undefined,
+        location: updateData.location !== undefined ? (updateData.location || null) : undefined,
+      },
     });
     if (result.count === 0) throw new Error("Part not found");
     revalidatePath("/inventory");

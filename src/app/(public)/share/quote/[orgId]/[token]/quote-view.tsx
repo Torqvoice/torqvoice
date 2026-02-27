@@ -1,7 +1,7 @@
 "use client";
 
-import { Check, Download, Loader2, MessageSquare } from "lucide-react";
-import { useState } from "react";
+import { Camera, Check, ChevronLeft, ChevronRight, Download, FileText, Loader2, MessageSquare, X } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from "@/lib/format";
 import { sanitizeHtml } from "@/lib/sanitize-html";
 
@@ -50,6 +50,17 @@ interface QuoteRecord {
   } | null;
 }
 
+interface QuoteAttachmentView {
+  id: string;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  category: string;
+  description: string | null;
+  includeInInvoice: boolean;
+}
+
 const statusLabels: Record<string, string> = {
   draft: "Draft",
   sent: "Sent",
@@ -73,6 +84,8 @@ export function QuoteView({
   primaryColor = "#d97706",
   headerStyle = "standard",
   portalUrl,
+  imageAttachments = [],
+  documentAttachments = [],
 }: {
   quote: QuoteRecord;
   workshop: { name: string; address: string; phone: string; email: string };
@@ -86,12 +99,15 @@ export function QuoteView({
   primaryColor?: string;
   headerStyle?: string;
   portalUrl?: string;
+  imageAttachments?: QuoteAttachmentView[];
+  documentAttachments?: QuoteAttachmentView[];
 }) {
   const [downloading, setDownloading] = useState(false);
   const [status, setStatus] = useState(quote.status);
   const [submitting, setSubmitting] = useState(false);
   const [showChangesForm, setShowChangesForm] = useState(false);
   const [changeMessage, setChangeMessage] = useState("");
+  const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
 
   const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`;
   const df = dateFormat || DEFAULT_DATE_FORMAT;
@@ -99,6 +115,43 @@ export function QuoteView({
   const createdDate = fmtDate(quote.createdAt, df, tz);
   const validUntilDate = quote.validUntil ? fmtDate(quote.validUntil, df, tz) : null;
   const shopName = workshop.name || "Torqvoice";
+
+  // Image carousel
+  const openCarousel = (index: number) => setCarouselIndex(index);
+  const closeCarousel = () => setCarouselIndex(null);
+  const prevImage = useCallback(
+    () => setCarouselIndex((i) => (i !== null && i > 0 ? i - 1 : i)),
+    []
+  );
+  const nextImage = useCallback(
+    () => setCarouselIndex((i) => (i !== null && i < imageAttachments.length - 1 ? i + 1 : i)),
+    [imageAttachments.length]
+  );
+
+  useEffect(() => {
+    if (carouselIndex === null) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeCarousel();
+      else if (e.key === "ArrowLeft") prevImage();
+      else if (e.key === "ArrowRight") nextImage();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [carouselIndex, prevImage, nextImage]);
+
+  const touchStartX = useRef<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) prevImage();
+      else nextImage();
+    }
+    touchStartX.current = null;
+  };
 
   const handleDownloadPDF = async () => {
     setDownloading(true);
@@ -368,6 +421,18 @@ export function QuoteView({
 
         {/* Totals */}
         <div className="mt-6 ml-auto max-w-xs space-y-2">
+          {quote.laborItems.length > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">Labor</span>
+              <span>{formatCurrency(quote.laborItems.reduce((sum, l) => sum + l.total, 0), currencyCode)}</span>
+            </div>
+          )}
+          {quote.partItems.length > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">Parts</span>
+              <span>{formatCurrency(quote.partItems.reduce((sum, p) => sum + p.total, 0), currencyCode)}</span>
+            </div>
+          )}
           {quote.subtotal > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Subtotal</span>
@@ -395,6 +460,57 @@ export function QuoteView({
             </div>
           </div>
         </div>
+
+        {/* Image Attachments */}
+        {imageAttachments.length > 0 && (
+          <div className="mt-6">
+            <h4 className="mb-3 flex items-center gap-2 font-semibold">
+              <Camera className="h-4 w-4" />
+              Images ({imageAttachments.length})
+            </h4>
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+              {imageAttachments.map((att, idx) => (
+                <button
+                  key={att.id}
+                  type="button"
+                  onClick={() => openCarousel(idx)}
+                  className="group flex flex-col overflow-hidden rounded-lg border"
+                >
+                  <img
+                    src={att.fileUrl}
+                    alt={att.description || att.fileName}
+                    className="aspect-square w-full object-cover transition-transform group-hover:scale-105"
+                  />
+                  <p className="truncate px-1.5 py-1 text-xs text-gray-500">
+                    {att.description || "\u00A0"}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Document Attachments */}
+        {documentAttachments.length > 0 && (
+          <div className="mt-6">
+            <h4 className="mb-3 font-semibold">Documents</h4>
+            <div className="space-y-2">
+              {documentAttachments.map((att) => (
+                <a
+                  key={att.id}
+                  href={att.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-md border p-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+                >
+                  <FileText className="h-4 w-4 shrink-0 text-red-500" />
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium">{att.fileName}</span>
+                  <Download className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Customer Actions */}
         {canRespond && !showChangesForm && (
@@ -515,6 +631,66 @@ export function QuoteView({
           <p className="text-center text-xs text-gray-400">{shopName}</p>
         )}
       </div>
+
+      {/* Image Carousel Modal */}
+      {carouselIndex !== null && imageAttachments[carouselIndex] && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <button
+            type="button"
+            onClick={closeCarousel}
+            className="absolute top-3 right-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 sm:top-4 sm:right-4"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          {imageAttachments.length > 1 && (
+            <div className="absolute top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm font-medium text-white sm:top-4">
+              {carouselIndex + 1} / {imageAttachments.length}
+            </div>
+          )}
+
+          {carouselIndex > 0 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+              className="absolute left-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 sm:left-4 sm:h-12 sm:w-12"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+          )}
+
+          {carouselIndex < imageAttachments.length - 1 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+              className="absolute right-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 sm:right-4 sm:h-12 sm:w-12"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          )}
+
+          <div
+            className="flex max-h-[85vh] max-w-[90vw] flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={imageAttachments[carouselIndex].fileUrl}
+              alt={imageAttachments[carouselIndex].description || imageAttachments[carouselIndex].fileName}
+              className="max-h-[80vh] max-w-full rounded-lg object-contain"
+              draggable={false}
+            />
+            {imageAttachments[carouselIndex].description && (
+              <p className="mt-2 max-w-md text-center text-sm text-white/80">
+                {imageAttachments[carouselIndex].description}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

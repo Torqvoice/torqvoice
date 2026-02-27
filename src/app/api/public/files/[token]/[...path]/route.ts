@@ -31,7 +31,7 @@ export async function GET(
 
   const [category, filename] = segments;
 
-  const allowedCategories = ["vehicles", "inventory", "services", "logos"];
+  const allowedCategories = ["vehicles", "inventory", "services", "logos", "quotes"];
   if (!allowedCategories.includes(category)) {
     return NextResponse.json({ error: "Invalid category" }, { status: 400 });
   }

@@ -76,6 +76,9 @@ export async function updateCustomer(input: unknown) {
       data: {
         ...data,
         email: data.email || null,
+        company: data.company || null,
+        phone: data.phone || null,
+        address: data.address || null,
       },
     });
     if (result.count === 0) throw new Error("Customer not found");

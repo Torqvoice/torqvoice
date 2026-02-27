@@ -38,7 +38,9 @@ export async function updateReminder(input: unknown) {
       where: { id },
       data: {
         ...data,
+        description: data.description !== undefined ? (data.description || null) : undefined,
         dueDate: data.dueDate !== undefined ? (data.dueDate ? new Date(data.dueDate) : null) : undefined,
+        dueMileage: data.dueMileage !== undefined ? (data.dueMileage ?? null) : undefined,
       },
     });
     revalidatePath(`/vehicles/${reminder.vehicleId}`);
