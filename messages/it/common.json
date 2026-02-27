@@ -28,5 +28,16 @@
   },
   "terms": {
     "termsOfService": "Termini di servizio"
+  },
+  "errorPage": {
+    "title": "Qualcosa è andato storto",
+    "description": "Il motore si è spento inaspettatamente. I nostri meccanici sono stati avvisati e stanno lavorando alla riparazione.",
+    "tryAgain": "Riprova",
+    "backToDashboard": "Torna alla dashboard"
+  },
+  "notFoundPage": {
+    "title": "Pagina non trovata",
+    "description": "Sembra che questo pezzo sia ancora in officina. La pagina che stai cercando non esiste o è stata spostata.",
+    "backToDashboard": "Torna alla dashboard"
   }
 }

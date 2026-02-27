@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -12,6 +13,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("common");
+
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -29,15 +32,15 @@ export default function Error({
         </div>
 
         <p className="mb-2 font-mono text-6xl font-bold tracking-tighter text-destructive">500</p>
-        <h1 className="text-xl font-semibold tracking-tight">Something Went Wrong</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("errorPage.title")}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          The engine stalled unexpectedly. Our mechanics have been notified and are working on it.
+          {t("errorPage.description")}
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Button onClick={reset}>Try Again</Button>
+          <Button onClick={reset}>{t("errorPage.tryAgain")}</Button>
           <Button variant="outline" asChild>
-            <a href="/">Back to Dashboard</a>
+            <a href="/">{t("errorPage.backToDashboard")}</a>
           </Button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -34,6 +35,7 @@ export function ServiceImagesManager({
   initialImages,
   maxImages,
 }: ServiceImagesManagerProps) {
+  const t = useTranslations("service");
   const [images, setImages] = useState<Attachment[]>(initialImages);
   const atLimit = maxImages !== undefined && images.length >= maxImages;
   const [uploading, setUploading] = useState(false);
@@ -46,7 +48,7 @@ export function ServiceImagesManager({
       const rejected = fileArr.filter((f) => !allowedTypes.includes(f.type));
       if (rejected.length > 0) {
         toast.error(
-          `Only JPG, PNG, and WebP images are allowed. ${rejected.map((f) => f.name).join(", ")} skipped.`
+          t("images.onlyAllowed", { names: rejected.map((f) => f.name).join(", ") })
         );
         fileArr = fileArr.filter((f) => allowedTypes.includes(f.type));
         if (fileArr.length === 0) return;
@@ -54,18 +56,16 @@ export function ServiceImagesManager({
       if (maxImages !== undefined) {
         const remaining = maxImages - images.length;
         if (remaining <= 0) {
-          toast.error(`Image limit reached (${images.length}/${maxImages}). Upgrade your plan for more.`);
+          toast.error(t("images.limitReached", { count: images.length, max: maxImages }));
           return;
         }
         if (fileArr.length > remaining) {
           fileArr = fileArr.slice(0, remaining);
-          toast.warning(`Only uploading ${remaining} image${remaining > 1 ? "s" : ""} to stay within limit.`);
+          toast.warning(t("images.onlyUploading", { count: remaining }));
         }
       }
       setUploading(true);
-      const toastId = toast.loading(
-        `Uploading ${fileArr.length} image${fileArr.length > 1 ? "s" : ""}...`
-      );
+      const toastId = toast.loading(t("images.uploadingCount", { count: fileArr.length }));
       let successCount = 0;
 
       for (let file of fileArr) {
@@ -111,16 +111,13 @@ export function ServiceImagesManager({
       }
 
       if (successCount > 0) {
-        toast.success(
-          `${successCount} image${successCount > 1 ? "s" : ""} uploaded`,
-          { id: toastId }
-        );
+        toast.success(t("images.uploadedCount", { count: successCount }), { id: toastId });
       } else {
-        toast.error("Upload failed", { id: toastId });
+        toast.error(t("images.uploadFailed"), { id: toastId });
       }
       setUploading(false);
     },
-    [serviceRecordId, maxImages, images.length]
+    [serviceRecordId, maxImages, images.length, t]
   );
 
   const handleDrop = useCallback(
@@ -137,11 +134,11 @@ export function ServiceImagesManager({
     const result = await deleteServiceAttachment(attachmentId);
     if (result.success) {
       setImages((prev) => prev.filter((img) => img.id !== attachmentId));
-      toast.success("Image deleted");
+      toast.success(t("images.deleted"));
     } else {
-      toast.error(result.error || "Failed to delete image");
+      toast.error(result.error || t("images.failedDelete"));
     }
-  }, []);
+  }, [t]);
 
   const handleToggleInvoice = useCallback(
     async (attachmentId: string, checked: boolean) => {
@@ -162,10 +159,10 @@ export function ServiceImagesManager({
               : img
           )
         );
-        toast.error(result.error || "Failed to update");
+        toast.error(result.error || t("images.failedUpdate"));
       }
     },
-    []
+    [t]
   );
 
   const handleDescriptionChange = useCallback(
@@ -191,7 +188,7 @@ export function ServiceImagesManager({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Camera className="h-4 w-4" />
-          Service Images
+          {t("images.title")}
           {maxImages !== undefined && (
             <span className="ml-auto text-xs font-normal text-muted-foreground">
               {images.length} / {maxImages}
@@ -203,10 +200,10 @@ export function ServiceImagesManager({
         {atLimit ? (
           <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
             <p className="text-sm font-medium text-muted-foreground">
-              Image limit reached ({images.length}/{maxImages})
+              {t("images.limitReached", { count: images.length, max: maxImages })}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Upgrade your plan to upload more images.
+              {t("images.upgradePrompt")}
             </p>
           </div>
         ) : (
@@ -218,10 +215,10 @@ export function ServiceImagesManager({
           >
             <ImageIcon className="mb-2 h-8 w-8 text-muted-foreground/50" />
             <p className="text-sm font-medium">
-              {uploading ? "Uploading..." : "Drop images here or click to browse"}
+              {uploading ? t("images.uploading") : t("images.dropzone")}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              JPG, PNG, WebP — max 10MB each
+              {t("images.formats")}
             </p>
             <input
               ref={inputRef}
@@ -242,7 +239,7 @@ export function ServiceImagesManager({
         {uploading && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Uploading images...
+            {t("images.uploadingImages")}
           </div>
         )}
 
@@ -268,7 +265,7 @@ export function ServiceImagesManager({
                 </div>
                 <div className="space-y-1 p-1.5">
                   <Input
-                    placeholder="Description..."
+                    placeholder={t("images.description")}
                     value={file.description || ""}
                     onChange={(e) =>
                       handleDescriptionChange(file.id, e.target.value)
@@ -286,7 +283,7 @@ export function ServiceImagesManager({
                       }
                       className="scale-75"
                     />
-                    Invoice
+                    {t("images.invoice")}
                   </label>
                 </div>
               </div>

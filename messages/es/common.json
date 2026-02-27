@@ -28,5 +28,16 @@
   },
   "terms": {
     "termsOfService": "Terminos de servicio"
+  },
+  "errorPage": {
+    "title": "Algo salió mal",
+    "description": "El motor se caló inesperadamente. Nuestros mecánicos han sido notificados y están trabajando en ello.",
+    "tryAgain": "Intentar de nuevo",
+    "backToDashboard": "Volver al panel"
+  },
+  "notFoundPage": {
+    "title": "Página no encontrada",
+    "description": "Parece que esta pieza aún está en el taller. La página que buscas no existe o ha sido movida.",
+    "backToDashboard": "Volver al panel"
   }
 }

@@ -28,5 +28,16 @@
   },
   "terms": {
     "termsOfService": "Kullanım Koşulları"
+  },
+  "errorPage": {
+    "title": "Bir Şeyler Ters Gitti",
+    "description": "Motor beklenmedik bir şekilde durdu. Teknisyenlerimiz bilgilendirildi ve üzerinde çalışıyorlar.",
+    "tryAgain": "Tekrar Dene",
+    "backToDashboard": "Panele Dön"
+  },
+  "notFoundPage": {
+    "title": "Sayfa Bulunamadı",
+    "description": "Bu parça hâlâ atölyede gibi görünüyor. Aradığınız sayfa mevcut değil veya taşınmış olabilir.",
+    "backToDashboard": "Panele Dön"
   }
 }

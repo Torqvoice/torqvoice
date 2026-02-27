@@ -28,5 +28,16 @@
   },
   "terms": {
     "termsOfService": "Terms of Service"
+  },
+  "errorPage": {
+    "title": "Something Went Wrong",
+    "description": "The engine stalled unexpectedly. Our mechanics have been notified and are working on it.",
+    "tryAgain": "Try Again",
+    "backToDashboard": "Back to Dashboard"
+  },
+  "notFoundPage": {
+    "title": "Page Not Found",
+    "description": "Looks like this part is still in the shop. The page you're looking for doesn't exist or has been moved.",
+    "backToDashboard": "Back to Dashboard"
   }
 }

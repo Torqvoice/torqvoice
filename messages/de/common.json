@@ -28,5 +28,16 @@
   },
   "terms": {
     "termsOfService": "Nutzungsbedingungen"
+  },
+  "errorPage": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Der Motor ist unerwartet abgewürgt. Unsere Mechaniker wurden benachrichtigt und arbeiten bereits daran.",
+    "tryAgain": "Erneut versuchen",
+    "backToDashboard": "Zurück zum Dashboard"
+  },
+  "notFoundPage": {
+    "title": "Seite nicht gefunden",
+    "description": "Sieht aus, als wäre dieses Teil noch in der Werkstatt. Die Seite, die Sie suchen, existiert nicht oder wurde verschoben.",
+    "backToDashboard": "Zurück zum Dashboard"
   }
 }

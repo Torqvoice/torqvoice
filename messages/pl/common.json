@@ -28,5 +28,16 @@
   },
   "terms": {
     "termsOfService": "Regulamin"
+  },
+  "errorPage": {
+    "title": "Coś poszło nie tak",
+    "description": "Silnik niespodziewanie zgasł. Nasi mechanicy zostali powiadomieni i pracują nad naprawą.",
+    "tryAgain": "Spróbuj ponownie",
+    "backToDashboard": "Wróć do panelu"
+  },
+  "notFoundPage": {
+    "title": "Nie znaleziono strony",
+    "description": "Wygląda na to, że ta część jest jeszcze w warsztacie. Strona, której szukasz, nie istnieje lub została przeniesiona.",
+    "backToDashboard": "Wróć do panelu"
   }
 }
