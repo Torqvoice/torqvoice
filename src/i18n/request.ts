@@ -52,6 +52,9 @@ export default getRequestConfig(async () => {
   const workOrders = (await import(`../../messages/${locale}/workOrders.json`)).default
   const workBoard = (await import(`../../messages/${locale}/workBoard.json`)).default
   const service = (await import(`../../messages/${locale}/service.json`)).default
+  const share = (await import(`../../messages/${locale}/share.json`)).default
+  const pdf = (await import(`../../messages/${locale}/pdf.json`)).default
+  const portal = (await import(`../../messages/${locale}/portal.json`)).default
 
   return {
     locale,
@@ -66,6 +69,9 @@ export default getRequestConfig(async () => {
       workOrders,
       workBoard,
       service,
+      share,
+      pdf,
+      portal,
     },
   }
 })

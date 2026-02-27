@@ -3,6 +3,7 @@ import { getPortalVehicles } from "@/features/portal/Actions/portalActions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Car } from "lucide-react";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export default async function PortalVehiclesPage({
   params,
@@ -10,12 +11,13 @@ export default async function PortalVehiclesPage({
   params: Promise<{ orgId: string }>;
 }) {
   const { orgId } = await params;
+  const t = await getTranslations('portal.vehicles');
   const result = await getPortalVehicles();
 
   if (!result.success || !result.data) {
     return (
       <PortalShell orgId={orgId}>
-        <p className="text-muted-foreground">Failed to load vehicles.</p>
+        <p className="text-muted-foreground">{t('failedToLoad')}</p>
       </PortalShell>
     );
   }
@@ -26,15 +28,15 @@ export default async function PortalVehiclesPage({
     <PortalShell orgId={orgId}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Vehicles</h1>
-          <p className="text-muted-foreground">Your registered vehicles.</p>
+          <h1 className="text-2xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('description')}</p>
         </div>
 
         {vehicles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Car className="h-12 w-12 text-muted-foreground/30" />
             <p className="mt-4 text-muted-foreground">
-              No vehicles found.
+              {t('noVehicles')}
             </p>
           </div>
         ) : (
@@ -70,10 +72,8 @@ export default async function PortalVehiclesPage({
                           </p>
                         )}
                         <p className="mt-1 text-xs text-muted-foreground">
-                          {v._count.serviceRecords} service
-                          {v._count.serviceRecords !== 1 ? "s" : ""} &middot;{" "}
-                          {v._count.inspections} inspection
-                          {v._count.inspections !== 1 ? "s" : ""}
+                          {t('serviceCount', { count: v._count.serviceRecords })} &middot;{" "}
+                          {t('inspectionCount', { count: v._count.inspections })}
                         </p>
                       </div>
                     </div>

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { ClipboardCheck } from "lucide-react";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export default async function PortalInspectionsPage({
   params,
@@ -18,12 +19,13 @@ export default async function PortalInspectionsPage({
   params: Promise<{ orgId: string }>;
 }) {
   const { orgId } = await params;
+  const t = await getTranslations('portal.inspections');
   const result = await getPortalInspections();
 
   if (!result.success || !result.data) {
     return (
       <PortalShell orgId={orgId}>
-        <p className="text-muted-foreground">Failed to load inspections.</p>
+        <p className="text-muted-foreground">{t('failedToLoad')}</p>
       </PortalShell>
     );
   }
@@ -34,9 +36,9 @@ export default async function PortalInspectionsPage({
     <PortalShell orgId={orgId}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Inspections</h1>
+          <h1 className="text-2xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Vehicle inspection reports.
+            {t('description')}
           </p>
         </div>
 
@@ -44,7 +46,7 @@ export default async function PortalInspectionsPage({
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <ClipboardCheck className="h-12 w-12 text-muted-foreground/30" />
             <p className="mt-4 text-muted-foreground">
-              No inspections yet.
+              {t('noInspections')}
             </p>
           </div>
         ) : (
@@ -52,11 +54,11 @@ export default async function PortalInspectionsPage({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Vehicle</TableHead>
-                  <TableHead>Template</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Summary</TableHead>
+                  <TableHead>{t('vehicle')}</TableHead>
+                  <TableHead>{t('template')}</TableHead>
+                  <TableHead>{t('status')}</TableHead>
+                  <TableHead>{t('date')}</TableHead>
+                  <TableHead>{t('summary')}</TableHead>
                   <TableHead />
                 </TableRow>
               </TableHeader>
@@ -99,17 +101,17 @@ export default async function PortalInspectionsPage({
                         <div className="flex gap-2 text-xs">
                           {conditions.good && (
                             <span className="text-green-600">
-                              {conditions.good} good
+                              {t('good', { count: conditions.good })}
                             </span>
                           )}
                           {conditions.fair && (
                             <span className="text-yellow-600">
-                              {conditions.fair} fair
+                              {t('fair', { count: conditions.fair })}
                             </span>
                           )}
                           {conditions.poor && (
                             <span className="text-red-600">
-                              {conditions.poor} poor
+                              {t('poor', { count: conditions.poor })}
                             </span>
                           )}
                         </div>
@@ -120,7 +122,7 @@ export default async function PortalInspectionsPage({
                             href={`/share/inspection/${orgId}/${insp.publicToken}`}
                             className="text-sm text-primary hover:underline"
                           >
-                            View
+                            {t('view')}
                           </Link>
                         )}
                       </TableCell>

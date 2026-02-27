@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,7 @@ export function PortalLoginForm({
   orgLogo?: string | null;
   error?: string;
 }) {
+  const t = useTranslations("portal.login");
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -59,7 +61,7 @@ export function PortalLoginForm({
           </div>
           <CardTitle>{orgName}</CardTitle>
           <CardDescription>
-            Sign in to your customer portal
+            {t("signInTitle")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -73,10 +75,9 @@ export function PortalLoginForm({
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
                 <Mail className="h-6 w-6 text-green-600" />
               </div>
-              <h3 className="text-lg font-semibold">Check your email</h3>
+              <h3 className="text-lg font-semibold">{t("checkEmail")}</h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                If an account exists for that email, we&apos;ve sent a sign-in
-                link. The link expires in 15 minutes.
+                {t("checkEmailDescription")}
               </p>
               <Button
                 variant="ghost"
@@ -86,17 +87,17 @@ export function PortalLoginForm({
                   setEmail("");
                 }}
               >
-                Try a different email
+                {t("tryDifferentEmail")}
               </Button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email">{t("emailLabel")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder={t("emailPlaceholder")}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -107,7 +108,7 @@ export function PortalLoginForm({
                 {isPending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Send sign-in link
+                {t("sendLink")}
               </Button>
             </form>
           )}

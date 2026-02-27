@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { FileText } from "lucide-react";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export default async function PortalInvoicesPage({
   params,
@@ -18,12 +19,13 @@ export default async function PortalInvoicesPage({
   params: Promise<{ orgId: string }>;
 }) {
   const { orgId } = await params;
+  const t = await getTranslations('portal.invoices');
   const result = await getPortalInvoices();
 
   if (!result.success || !result.data) {
     return (
       <PortalShell orgId={orgId}>
-        <p className="text-muted-foreground">Failed to load invoices.</p>
+        <p className="text-muted-foreground">{t('failedToLoad')}</p>
       </PortalShell>
     );
   }
@@ -31,36 +33,36 @@ export default async function PortalInvoicesPage({
   const invoices = result.data;
 
   function getPaymentStatus(inv: (typeof invoices)[number]) {
-    if (inv.manuallyPaid) return "paid";
+    if (inv.manuallyPaid) return "paid" as const;
     const paid = inv.payments.reduce((sum, p) => sum + p.amount, 0);
-    if (paid >= inv.totalAmount) return "paid";
-    if (paid > 0) return "partial";
-    return "unpaid";
+    if (paid >= inv.totalAmount) return "paid" as const;
+    if (paid > 0) return "partial" as const;
+    return "unpaid" as const;
   }
 
   return (
     <PortalShell orgId={orgId}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Invoices</h1>
-          <p className="text-muted-foreground">All your service invoices.</p>
+          <h1 className="text-2xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('description')}</p>
         </div>
 
         {invoices.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <FileText className="h-12 w-12 text-muted-foreground/30" />
-            <p className="mt-4 text-muted-foreground">No invoices yet.</p>
+            <p className="mt-4 text-muted-foreground">{t('noInvoices')}</p>
           </div>
         ) : (
           <div className="rounded-lg border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Invoice</TableHead>
-                  <TableHead>Vehicle</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Payment</TableHead>
+                  <TableHead>{t('invoice')}</TableHead>
+                  <TableHead>{t('vehicle')}</TableHead>
+                  <TableHead>{t('date')}</TableHead>
+                  <TableHead>{t('amount')}</TableHead>
+                  <TableHead>{t('payment')}</TableHead>
                   <TableHead />
                 </TableRow>
               </TableHeader>
@@ -91,7 +93,7 @@ export default async function PortalInvoicesPage({
                                 : "outline"
                           }
                         >
-                          {payStatus}
+                          {t(payStatus)}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -100,7 +102,7 @@ export default async function PortalInvoicesPage({
                             href={`/share/invoice/${orgId}/${inv.publicToken}`}
                             className="text-sm text-primary hover:underline"
                           >
-                            View
+                            {t('view')}
                           </Link>
                         )}
                       </TableCell>

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { FileQuestion } from "lucide-react";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export default async function PortalQuotesPage({
   params,
@@ -18,12 +19,13 @@ export default async function PortalQuotesPage({
   params: Promise<{ orgId: string }>;
 }) {
   const { orgId } = await params;
+  const t = await getTranslations('portal.quotes');
   const result = await getPortalQuotes();
 
   if (!result.success || !result.data) {
     return (
       <PortalShell orgId={orgId}>
-        <p className="text-muted-foreground">Failed to load quotes.</p>
+        <p className="text-muted-foreground">{t('failedToLoad')}</p>
       </PortalShell>
     );
   }
@@ -34,27 +36,27 @@ export default async function PortalQuotesPage({
     <PortalShell orgId={orgId}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Quotes</h1>
+          <h1 className="text-2xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Quotes and estimates for your vehicles.
+            {t('description')}
           </p>
         </div>
 
         {quotes.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <FileQuestion className="h-12 w-12 text-muted-foreground/30" />
-            <p className="mt-4 text-muted-foreground">No quotes yet.</p>
+            <p className="mt-4 text-muted-foreground">{t('noQuotes')}</p>
           </div>
         ) : (
           <div className="rounded-lg border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Quote</TableHead>
-                  <TableHead>Vehicle</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Valid Until</TableHead>
+                  <TableHead>{t('quote')}</TableHead>
+                  <TableHead>{t('vehicle')}</TableHead>
+                  <TableHead>{t('status')}</TableHead>
+                  <TableHead>{t('amount')}</TableHead>
+                  <TableHead>{t('validUntil')}</TableHead>
                   <TableHead />
                 </TableRow>
               </TableHeader>
@@ -92,7 +94,7 @@ export default async function PortalQuotesPage({
                           href={`/share/quote/${orgId}/${q.publicToken}`}
                           className="text-sm text-primary hover:underline"
                         >
-                          View
+                          {t('view')}
                         </Link>
                       )}
                     </TableCell>

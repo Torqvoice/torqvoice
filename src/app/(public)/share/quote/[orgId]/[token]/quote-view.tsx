@@ -2,6 +2,7 @@
 
 import { Camera, Check, ChevronLeft, ChevronRight, Download, FileText, Loader2, MessageSquare, X } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from "@/lib/format";
 import { sanitizeHtml } from "@/lib/sanitize-html";
 
@@ -61,16 +62,6 @@ interface QuoteAttachmentView {
   includeInInvoice: boolean;
 }
 
-const statusLabels: Record<string, string> = {
-  draft: "Draft",
-  sent: "Sent",
-  accepted: "Accepted",
-  rejected: "Rejected",
-  expired: "Expired",
-  converted: "Converted",
-  changes_requested: "Changes Requested",
-};
-
 export function QuoteView({
   quote,
   workshop,
@@ -102,6 +93,19 @@ export function QuoteView({
   imageAttachments?: QuoteAttachmentView[];
   documentAttachments?: QuoteAttachmentView[];
 }) {
+  const t = useTranslations('share.quote');
+  const tc = useTranslations('share.common');
+
+  const statusLabels: Record<string, string> = {
+    draft: t('status.draft'),
+    sent: t('status.sent'),
+    accepted: t('status.accepted'),
+    rejected: t('status.rejected'),
+    expired: t('status.expired'),
+    converted: t('status.converted'),
+    changes_requested: t('status.changes_requested'),
+  };
+
   const [downloading, setDownloading] = useState(false);
   const [status, setStatus] = useState(quote.status);
   const [submitting, setSubmitting] = useState(false);
@@ -196,7 +200,7 @@ export function QuoteView({
   return (
     <div className="mx-auto max-w-3xl p-4 sm:p-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Quote</h1>
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
         <button
           onClick={handleDownloadPDF}
           disabled={downloading}
@@ -204,7 +208,7 @@ export function QuoteView({
           style={{ backgroundColor: primaryColor }}
         >
           {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-          Download PDF
+          {t('downloadPdf')}
         </button>
       </div>
 
@@ -221,13 +225,13 @@ export function QuoteView({
               <h2 className="text-xl font-bold sm:text-2xl">{shopName}</h2>
               {workshop.address && <p className="mt-1 text-sm opacity-80">{workshop.address}</p>}
               <div className="mt-1 flex flex-wrap justify-center gap-3 text-sm opacity-70">
-                {workshop.phone && <span>Tel: {workshop.phone}</span>}
+                {workshop.phone && <span>{t('tel', { phone: workshop.phone })}</span>}
                 {workshop.email && <span>{workshop.email}</span>}
               </div>
             </div>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
-                <h3 className="text-xl font-bold">QUOTE</h3>
+                <h3 className="text-xl font-bold">{t('title').toUpperCase()}</h3>
                 <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
                   status === "accepted"
                     ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
@@ -243,7 +247,7 @@ export function QuoteView({
               <div className="flex gap-3 text-sm text-gray-500">
                 <span>{quoteNum}</span>
                 <span>{createdDate}</span>
-                {validUntilDate && <span>Valid until: {validUntilDate}</span>}
+                {validUntilDate && <span>{t('validUntil', { date: validUntilDate })}</span>}
               </div>
             </div>
           </>
@@ -261,11 +265,11 @@ export function QuoteView({
               </div>
             </div>
             <div className="sm:text-right">
-              <h3 className="text-lg font-bold">QUOTE</h3>
+              <h3 className="text-lg font-bold">{t('title').toUpperCase()}</h3>
               <p className="text-sm text-gray-500">{quoteNum}</p>
               <p className="text-sm text-gray-500">{createdDate}</p>
               {validUntilDate && (
-                <p className="text-sm text-gray-500">Valid until: {validUntilDate}</p>
+                <p className="text-sm text-gray-500">{t('validUntil', { date: validUntilDate })}</p>
               )}
               <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
                 status === "accepted"
@@ -291,7 +295,7 @@ export function QuoteView({
               />
               <h2 className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2>
               {workshop.address && <p className="mt-1 text-sm text-gray-500">{workshop.address}</p>}
-              {workshop.phone && <p className="text-sm text-gray-500">Tel: {workshop.phone}</p>}
+              {workshop.phone && <p className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p>}
               {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
             </div>
             <div className="sm:text-right">
@@ -301,11 +305,11 @@ export function QuoteView({
                   <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
                 </div>
               )}
-              <h3 className="text-xl font-bold" style={{ color: primaryColor }}>QUOTE</h3>
+              <h3 className="text-xl font-bold" style={{ color: primaryColor }}>{t('title').toUpperCase()}</h3>
               <p className="mt-1 text-sm text-gray-500">{quoteNum}</p>
               <p className="text-sm text-gray-500">{createdDate}</p>
               {validUntilDate && (
-                <p className="text-sm text-gray-500">Valid until: {validUntilDate}</p>
+                <p className="text-sm text-gray-500">{t('validUntil', { date: validUntilDate })}</p>
               )}
               <span className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
                 status === "accepted"
@@ -326,7 +330,7 @@ export function QuoteView({
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {quote.customer && (
             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-              <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Prepared For</p>
+              <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('preparedFor')}</p>
               <p className="font-semibold">{quote.customer.name}</p>
               {quote.customer.company && <p className="text-sm">{quote.customer.company}</p>}
               {quote.customer.address && <p className="text-sm text-gray-500">{quote.customer.address}</p>}
@@ -336,14 +340,14 @@ export function QuoteView({
           )}
           {quote.vehicle && (
             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-              <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Vehicle</p>
+              <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('vehicle')}</p>
               <p className="font-semibold">{quote.vehicle.year} {quote.vehicle.make} {quote.vehicle.model}</p>
-              {quote.vehicle.vin && <p className="text-sm text-gray-500">VIN: {quote.vehicle.vin}</p>}
-              {quote.vehicle.licensePlate && <p className="text-sm text-gray-500">Plate: {quote.vehicle.licensePlate}</p>}
+              {quote.vehicle.vin && <p className="text-sm text-gray-500">{t('vin', { vin: quote.vehicle.vin })}</p>}
+              {quote.vehicle.licensePlate && <p className="text-sm text-gray-500">{t('plate', { plate: quote.vehicle.licensePlate })}</p>}
             </div>
           )}
           <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Quote Details</p>
+            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('quoteDetails')}</p>
             <p className="font-semibold">{quote.title}</p>
           </div>
         </div>
@@ -351,7 +355,7 @@ export function QuoteView({
         {/* Description */}
         {quote.description && (
           <div className="mt-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Description</p>
+            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('description')}</p>
             <div
               className="notes-content text-sm text-gray-600 dark:text-gray-400"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(quote.description) }}
@@ -362,16 +366,16 @@ export function QuoteView({
         {/* Parts */}
         {quote.partItems.length > 0 && (
           <div className="mt-6">
-            <h4 className="mb-3 font-semibold">Parts</h4>
+            <h4 className="mb-3 font-semibold">{t('parts')}</h4>
             <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
               <table className="w-full min-w-125 text-sm">
                 <thead>
                   <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
-                    <th className="p-2 font-medium">Part #</th>
-                    <th className="p-2 font-medium">Description</th>
-                    <th className="p-2 text-right font-medium">Qty</th>
-                    <th className="p-2 text-right font-medium">Unit Price</th>
-                    <th className="p-2 text-right font-medium">Total</th>
+                    <th className="p-2 font-medium">{t('partNumber')}</th>
+                    <th className="p-2 font-medium">{t('partDescription')}</th>
+                    <th className="p-2 text-right font-medium">{t('qty')}</th>
+                    <th className="p-2 text-right font-medium">{t('unitPrice')}</th>
+                    <th className="p-2 text-right font-medium">{t('total')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -393,15 +397,15 @@ export function QuoteView({
         {/* Labor */}
         {quote.laborItems.length > 0 && (
           <div className="mt-6">
-            <h4 className="mb-3 font-semibold">Labor</h4>
+            <h4 className="mb-3 font-semibold">{t('labor')}</h4>
             <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
               <table className="w-full min-w-112.5 text-sm">
                 <thead>
                   <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
-                    <th className="p-2 font-medium">Description</th>
-                    <th className="p-2 text-right font-medium">Hours</th>
-                    <th className="p-2 text-right font-medium">Rate</th>
-                    <th className="p-2 text-right font-medium">Total</th>
+                    <th className="p-2 font-medium">{t('laborDescription')}</th>
+                    <th className="p-2 text-right font-medium">{t('hours')}</th>
+                    <th className="p-2 text-right font-medium">{t('rate')}</th>
+                    <th className="p-2 text-right font-medium">{t('total')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -409,7 +413,7 @@ export function QuoteView({
                     <tr key={i}>
                       <td className="p-2">{l.description}</td>
                       <td className="p-2 text-right">{l.hours}</td>
-                      <td className="p-2 text-right">{formatCurrency(l.rate, currencyCode)}/hr</td>
+                      <td className="p-2 text-right">{t('ratePerHour', { rate: formatCurrency(l.rate, currencyCode) })}</td>
                       <td className="p-2 text-right font-medium">{formatCurrency(l.total, currencyCode)}</td>
                     </tr>
                   ))}
@@ -423,39 +427,39 @@ export function QuoteView({
         <div className="mt-6 ml-auto max-w-xs space-y-2">
           {quote.laborItems.length > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Labor</span>
+              <span className="text-gray-500">{t('labor')}</span>
               <span>{formatCurrency(quote.laborItems.reduce((sum, l) => sum + l.total, 0), currencyCode)}</span>
             </div>
           )}
           {quote.partItems.length > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Parts</span>
+              <span className="text-gray-500">{t('parts')}</span>
               <span>{formatCurrency(quote.partItems.reduce((sum, p) => sum + p.total, 0), currencyCode)}</span>
             </div>
           )}
           {quote.subtotal > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Subtotal</span>
+              <span className="text-gray-500">{t('subtotal')}</span>
               <span>{formatCurrency(quote.subtotal, currencyCode)}</span>
             </div>
           )}
           {quote.discountAmount > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">
-                Discount{quote.discountType === "percentage" ? ` (${quote.discountValue}%)` : ""}
+                {quote.discountType === "percentage" ? t('discountPercent', { percent: quote.discountValue }) : t('discount')}
               </span>
               <span className="text-red-500">{formatCurrency(-quote.discountAmount, currencyCode)}</span>
             </div>
           )}
           {quote.taxRate > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Tax ({quote.taxRate}%)</span>
+              <span className="text-gray-500">{t('tax', { rate: quote.taxRate })}</span>
               <span>{formatCurrency(quote.taxAmount, currencyCode)}</span>
             </div>
           )}
           <div className="border-t pt-2" style={{ borderColor: primaryColor }}>
             <div className="flex justify-between text-lg font-bold">
-              <span>Total</span>
+              <span>{t('total')}</span>
               <span style={{ color: primaryColor }}>{formatCurrency(quote.totalAmount, currencyCode)}</span>
             </div>
           </div>
@@ -466,7 +470,7 @@ export function QuoteView({
           <div className="mt-6">
             <h4 className="mb-3 flex items-center gap-2 font-semibold">
               <Camera className="h-4 w-4" />
-              Images ({imageAttachments.length})
+              {t('images', { count: imageAttachments.length })}
             </h4>
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
               {imageAttachments.map((att, idx) => (
@@ -493,7 +497,7 @@ export function QuoteView({
         {/* Document Attachments */}
         {documentAttachments.length > 0 && (
           <div className="mt-6">
-            <h4 className="mb-3 font-semibold">Documents</h4>
+            <h4 className="mb-3 font-semibold">{t('documents')}</h4>
             <div className="space-y-2">
               {documentAttachments.map((att) => (
                 <a
@@ -521,7 +525,7 @@ export function QuoteView({
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
             >
               <MessageSquare className="h-4 w-4" />
-              Request Changes
+              {t('requestChanges')}
             </button>
             <button
               onClick={() => handleQuoteResponse("accepted")}
@@ -530,7 +534,7 @@ export function QuoteView({
               style={{ backgroundColor: primaryColor }}
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-              Accept Quote
+              {t('acceptQuote')}
             </button>
           </div>
         )}
@@ -538,14 +542,14 @@ export function QuoteView({
         {canRespond && showChangesForm && (
           <div className="mt-8 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
             <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              What changes would you like?
+              {t('whatChanges')}
             </label>
             <textarea
               value={changeMessage}
               onChange={(e) => setChangeMessage(e.target.value)}
               rows={3}
               className="w-full rounded-lg border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
-              placeholder="Describe the changes you'd like..."
+              placeholder={t('changePlaceholder')}
             />
             <div className="mt-3 flex gap-3 justify-end">
               <button
@@ -553,7 +557,7 @@ export function QuoteView({
                 disabled={submitting}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={() => handleQuoteResponse("changes_requested", changeMessage)}
@@ -562,7 +566,7 @@ export function QuoteView({
                 style={{ backgroundColor: primaryColor }}
               >
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
-                Submit Request
+                {t('submitRequest')}
               </button>
             </div>
           </div>
@@ -572,10 +576,10 @@ export function QuoteView({
           <div className="mt-8 rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
             <div className="flex items-center gap-2">
               <Check className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-              <p className="font-medium text-emerald-700 dark:text-emerald-400">Quote Accepted</p>
+              <p className="font-medium text-emerald-700 dark:text-emerald-400">{t('quoteAccepted')}</p>
             </div>
             <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-500">
-              Thank you! This quote has been accepted. The workshop will be in touch shortly.
+              {t('quoteAcceptedMessage')}
             </p>
           </div>
         )}
@@ -584,10 +588,10 @@ export function QuoteView({
           <div className="mt-8 rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-800 dark:bg-orange-900/20">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-              <p className="font-medium text-orange-700 dark:text-orange-400">Changes Requested</p>
+              <p className="font-medium text-orange-700 dark:text-orange-400">{t('changesRequested')}</p>
             </div>
             <p className="mt-1 text-sm text-orange-600 dark:text-orange-500">
-              Your change request has been submitted. The workshop will review and get back to you.
+              {t('changesRequestedMessage')}
             </p>
           </div>
         )}
@@ -595,7 +599,7 @@ export function QuoteView({
         {/* Torqvoice branding near totals */}
         {showTorqvoiceBranding && (
           <div className="mt-3 flex items-center justify-end gap-1.5">
-            <span className="text-xs text-gray-400">Powered by</span>
+            <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
             <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-3.5 w-3.5" />
             <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
           </div>
@@ -605,9 +609,9 @@ export function QuoteView({
       {portalUrl && (
         <div className="mt-3 border-t pt-3 text-center">
           <p className="text-xs text-muted-foreground">
-            View your vehicles, invoices, and more at your{" "}
+            {tc('portalMessage')}{" "}
             <a href={portalUrl} className="font-medium text-primary hover:underline">
-              customer portal
+              {tc('customerPortal')}
             </a>
           </p>
         </div>
@@ -616,7 +620,7 @@ export function QuoteView({
       <div className="mt-4 flex items-center justify-center gap-1.5">
         {showTorqvoiceBranding ? (
           <>
-            <span className="text-xs text-gray-400">Powered by</span>
+            <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
             <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
             <a
               href="https://torqvoice.com"

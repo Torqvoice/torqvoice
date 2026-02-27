@@ -3,27 +3,35 @@ import { formatCurrency } from '@/lib/format'
 import type { InvoiceData } from './types'
 import type { Style } from '@react-pdf/types'
 
+function fillTemplate(template: string, values: Record<string, string>): string {
+  return Object.entries(values).reduce(
+    (str, [key, val]) => str.replace(`{${key}}`, val),
+    template
+  )
+}
+
 interface TablesProps {
   data: InvoiceData
   currencyCode: string
   styles: Record<string, Style>
+  labels: Record<string, string>
 }
 
-export function PartsTable({ data, currencyCode, styles }: TablesProps) {
+export function PartsTable({ data, currencyCode, styles, labels }: TablesProps) {
   if (data.partItems.length === 0) return null
 
   return (
     <View>
-      <Text style={styles.sectionTitle}>Parts</Text>
+      <Text style={styles.sectionTitle}>{labels.parts || 'Parts'}</Text>
       <View style={styles.table}>
         <View style={styles.tableHeader}>
-          <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>Part #</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>Description</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '12%', textAlign: 'right' }}>Qty</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>{labels.partNumber || 'Part #'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>{labels.description || 'Description'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '12%', textAlign: 'right' }}>{labels.qty || 'Qty'}</Text>
           <Text style={{ ...styles.tableHeaderCell, width: '18%', textAlign: 'right' }}>
-            Unit Price
+            {labels.unitPrice || 'Unit Price'}
           </Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>Total</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>{labels.total || 'Total'}</Text>
         </View>
         {data.partItems.map((part, i) => (
           <View key={i} style={styles.tableRow}>
@@ -45,18 +53,18 @@ export function PartsTable({ data, currencyCode, styles }: TablesProps) {
   )
 }
 
-export function LaborTable({ data, currencyCode, styles }: TablesProps) {
+export function LaborTable({ data, currencyCode, styles, labels }: TablesProps) {
   if (data.laborItems.length === 0) return null
 
   return (
     <View>
-      <Text style={styles.sectionTitle}>Labor</Text>
+      <Text style={styles.sectionTitle}>{labels.labor || 'Labor'}</Text>
       <View style={styles.table}>
         <View style={styles.tableHeader}>
-          <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>Description</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '15%', textAlign: 'right' }}>Hours</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>Rate</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>Total</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.description || 'Description'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '15%', textAlign: 'right' }}>{labels.hours || 'Hours'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>{labels.rate || 'Rate'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>{labels.total || 'Total'}</Text>
         </View>
         {data.laborItems.map((labor, i) => (
           <View key={i} style={styles.tableRow}>
@@ -65,7 +73,7 @@ export function LaborTable({ data, currencyCode, styles }: TablesProps) {
               {labor.hours}
             </Text>
             <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right' }}>
-              {formatCurrency(labor.rate, currencyCode)}/hr
+              {labels.ratePerHour ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(labor.rate, currencyCode) }) : `${formatCurrency(labor.rate, currencyCode)}/hr`}
             </Text>
             <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
               {formatCurrency(labor.total, currencyCode)}

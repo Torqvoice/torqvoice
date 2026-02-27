@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Car, FileText, FileQuestion, Wrench } from "lucide-react";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export default async function PortalDashboardPage({
   params,
@@ -17,12 +18,13 @@ export default async function PortalDashboardPage({
   params: Promise<{ orgId: string }>;
 }) {
   const { orgId } = await params;
+  const t = await getTranslations('portal.dashboard');
   const result = await getPortalDashboard();
 
   if (!result.success || !result.data) {
     return (
       <PortalShell orgId={orgId}>
-        <p className="text-muted-foreground">Failed to load dashboard.</p>
+        <p className="text-muted-foreground">{t('failedToLoad')}</p>
       </PortalShell>
     );
   }
@@ -34,10 +36,10 @@ export default async function PortalDashboardPage({
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold">
-            Welcome, {d.customer?.name ?? "Customer"}
+            {t('welcome', { name: d.customer?.name ?? "Customer" })}
           </h1>
           <p className="text-muted-foreground">
-            Here&apos;s an overview of your account.
+            {t('overview')}
           </p>
         </div>
 
@@ -45,7 +47,7 @@ export default async function PortalDashboardPage({
         <div className="grid gap-4 sm:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardDescription>Vehicles</CardDescription>
+              <CardDescription>{t('vehicles')}</CardDescription>
               <Car className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -54,7 +56,7 @@ export default async function PortalDashboardPage({
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardDescription>Open Invoices</CardDescription>
+              <CardDescription>{t('openInvoices')}</CardDescription>
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -63,7 +65,7 @@ export default async function PortalDashboardPage({
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardDescription>Pending Quotes</CardDescription>
+              <CardDescription>{t('pendingQuotes')}</CardDescription>
               <FileQuestion className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -76,18 +78,18 @@ export default async function PortalDashboardPage({
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Recent Invoices</CardTitle>
+              <CardTitle className="text-base">{t('recentInvoices')}</CardTitle>
               <Link
                 href={`/portal/${orgId}/invoices`}
                 className="text-sm text-primary hover:underline"
               >
-                View all
+                {t('viewAll')}
               </Link>
             </div>
           </CardHeader>
           <CardContent>
             {d.recentInvoices.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No invoices yet.</p>
+              <p className="text-sm text-muted-foreground">{t('noInvoicesYet')}</p>
             ) : (
               <div className="space-y-3">
                 {d.recentInvoices.map((inv) => (
@@ -113,7 +115,7 @@ export default async function PortalDashboardPage({
                           href={`/share/invoice/${orgId}/${inv.publicToken}`}
                           className="text-xs text-primary hover:underline"
                         >
-                          View
+                          {t('view')}
                         </Link>
                       )}
                     </div>
@@ -128,18 +130,18 @@ export default async function PortalDashboardPage({
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Recent Quotes</CardTitle>
+              <CardTitle className="text-base">{t('recentQuotes')}</CardTitle>
               <Link
                 href={`/portal/${orgId}/quotes`}
                 className="text-sm text-primary hover:underline"
               >
-                View all
+                {t('viewAll')}
               </Link>
             </div>
           </CardHeader>
           <CardContent>
             {d.recentQuotes.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No quotes yet.</p>
+              <p className="text-sm text-muted-foreground">{t('noQuotesYet')}</p>
             ) : (
               <div className="space-y-3">
                 {d.recentQuotes.map((q) => (
@@ -162,7 +164,7 @@ export default async function PortalDashboardPage({
                           href={`/share/quote/${orgId}/${q.publicToken}`}
                           className="text-xs text-primary hover:underline"
                         >
-                          View
+                          {t('view')}
                         </Link>
                       )}
                     </div>
@@ -179,13 +181,13 @@ export default async function PortalDashboardPage({
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">
-                  Pending Service Requests
+                  {t('pendingServiceRequests')}
                 </CardTitle>
                 <Link
                   href={`/portal/${orgId}/request-service`}
                   className="text-sm text-primary hover:underline"
                 >
-                  New request
+                  {t('newRequest')}
                 </Link>
               </div>
             </CardHeader>
@@ -207,7 +209,7 @@ export default async function PortalDashboardPage({
                     </div>
                     <Badge variant="secondary">
                       <Wrench className="mr-1 h-3 w-3" />
-                      Pending
+                      {t('pending')}
                     </Badge>
                   </div>
                 ))}

@@ -3,6 +3,13 @@ import type { InvoiceSettingsProps } from './types'
 import { gray, getFontBold } from './styles'
 import type { Style } from '@react-pdf/types'
 
+function fillTemplate(template: string, values: Record<string, string>): string {
+  return Object.entries(values).reduce(
+    (str, [key, val]) => str.replace(`{${key}}`, val),
+    template
+  )
+}
+
 interface FooterProps {
   shopDisplayName: string
   serviceDate: string
@@ -14,6 +21,7 @@ interface FooterProps {
   paymentTerms?: string
   portalUrl?: string
   styles: Record<string, Style>
+  labels: Record<string, string>
 }
 
 export function Footer({
@@ -24,6 +32,7 @@ export function Footer({
   torqvoiceLogoDataUri,
   portalUrl,
   styles,
+  labels,
 }: FooterProps) {
   const fontBold = getFontBold(fontFamily)
 
@@ -32,7 +41,7 @@ export function Footer({
       {portalUrl && (
         <View style={{ marginTop: 8 }}>
           <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
-            View your portal: {portalUrl}
+            {labels.viewPortal ? fillTemplate(labels.viewPortal, { url: portalUrl }) : `View your portal: ${portalUrl}`}
           </Text>
         </View>
       )}
@@ -40,7 +49,7 @@ export function Footer({
       {invoiceSettings?.paymentTerms && (
         <View style={{ marginTop: 8 }}>
           <Text style={{ fontSize: 9, color: gray }}>
-            Payment Terms: {invoiceSettings.paymentTerms}
+            {labels.paymentTerms ? fillTemplate(labels.paymentTerms, { terms: invoiceSettings.paymentTerms }) : `Payment Terms: ${invoiceSettings.paymentTerms}`}
           </Text>
         </View>
       )}
@@ -58,7 +67,7 @@ export function Footer({
           {invoiceSettings?.footerNote ? (
             <Text style={{ fontSize: 8, color: gray }}>{invoiceSettings.footerNote} · </Text>
           ) : null}
-          <Text style={{ fontSize: 7, color: gray }}>Powered by</Text>
+          <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
           <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
           <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
         </View>

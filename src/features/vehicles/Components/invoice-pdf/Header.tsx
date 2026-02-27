@@ -3,6 +3,13 @@ import type { WorkshopInfo, InvoiceSettingsProps } from './types'
 import { gray, getFontBold } from './styles'
 import type { Style } from '@react-pdf/types'
 
+function fillTemplate(template: string, values: Record<string, string>): string {
+  return Object.entries(values).reduce(
+    (str, [key, val]) => str.replace(`{${key}}`, val),
+    template
+  )
+}
+
 interface HeaderProps {
   headerStyle: string
   primaryColor: string
@@ -18,6 +25,7 @@ interface HeaderProps {
   serviceDate: string
   dueDate: string | null
   styles: Record<string, Style>
+  labels: Record<string, string>
 }
 
 export function Header({
@@ -35,6 +43,7 @@ export function Header({
   serviceDate,
   dueDate,
   styles,
+  labels,
 }: HeaderProps) {
   const fontBold = getFontBold(fontFamily)
 
@@ -70,10 +79,10 @@ export function Header({
             )}
           </View>
           <View style={{ alignItems: 'flex-end' }}>
-            <Text style={{ fontSize: 14, fontFamily: fontBold }}>INVOICE</Text>
+            <Text style={{ fontSize: 14, fontFamily: fontBold }}>{labels.title || 'INVOICE'}</Text>
             <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{invoiceNum}</Text>
             <Text style={{ fontSize: 9, color: gray }}>{serviceDate}</Text>
-            {dueDate && <Text style={{ fontSize: 9, color: gray }}>Due: {dueDate}</Text>}
+            {dueDate && <Text style={{ fontSize: 9, color: gray }}>{labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}</Text>}
           </View>
         </View>
         <View
@@ -86,13 +95,13 @@ export function Header({
         >
           <View style={{ flexDirection: 'row', gap: 12 }}>
             {workshop?.phone && (
-              <Text style={{ fontSize: 8, color: gray }}>Tel: {workshop.phone}</Text>
+              <Text style={{ fontSize: 8, color: gray }}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>
             )}
             {workshop?.email && (
               <Text style={{ fontSize: 8, color: gray }}>{workshop.email}</Text>
             )}
             {invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber && (
-              <Text style={{ fontSize: 8, color: gray }}>Org: {invoiceSettings.orgNumber}</Text>
+              <Text style={{ fontSize: 8, color: gray }}>{labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}</Text>
             )}
           </View>
           {torqvoiceLogoDataUri && (
@@ -150,7 +159,7 @@ export function Header({
               <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
                 {workshop?.phone && (
                   <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                    Tel: {workshop.phone}
+                    {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
                   </Text>
                 )}
                 {workshop?.email && (
@@ -160,7 +169,7 @@ export function Header({
                 )}
                 {invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber && (
                   <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                    Org: {invoiceSettings.orgNumber}
+                    {labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}
                   </Text>
                 )}
               </View>
@@ -192,11 +201,11 @@ export function Header({
             paddingBottom: 8,
           }}
         >
-          <Text style={{ fontSize: 18, fontFamily: fontBold }}>INVOICE</Text>
+          <Text style={{ fontSize: 18, fontFamily: fontBold }}>{labels.title || 'INVOICE'}</Text>
           <View style={{ flexDirection: 'row', gap: 16 }}>
             <Text style={{ fontSize: 9, color: gray }}>{invoiceNum}</Text>
             <Text style={{ fontSize: 9, color: gray }}>{serviceDate}</Text>
-            {dueDate && <Text style={{ fontSize: 9, color: gray }}>Due: {dueDate}</Text>}
+            {dueDate && <Text style={{ fontSize: 9, color: gray }}>{labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}</Text>}
           </View>
         </View>
       </View>
@@ -224,12 +233,12 @@ export function Header({
         {workshop?.address ? (
           <Text style={styles.brandSub}>{workshop.address}</Text>
         ) : (
-          <Text style={styles.brandSub}>Professional Workshop Management</Text>
+          <Text style={styles.brandSub}>{labels.professionalWorkshop || 'Professional Workshop Management'}</Text>
         )}
-        {workshop?.phone && <Text style={styles.brandContact}>Tel: {workshop.phone}</Text>}
+        {workshop?.phone && <Text style={styles.brandContact}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>}
         {workshop?.email && <Text style={styles.brandContact}>{workshop.email}</Text>}
         {invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber && (
-          <Text style={styles.brandContact}>Org: {invoiceSettings.orgNumber}</Text>
+          <Text style={styles.brandContact}>{labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}</Text>
         )}
         {torqvoiceLogoDataUri && (
           <View
@@ -247,10 +256,10 @@ export function Header({
         )}
       </View>
       <View>
-        <Text style={styles.invoiceTitle}>INVOICE</Text>
+        <Text style={styles.invoiceTitle}>{labels.title || 'INVOICE'}</Text>
         <Text style={styles.invoiceNumber}>{invoiceNum}</Text>
         <Text style={styles.invoiceNumber}>{serviceDate}</Text>
-        {dueDate && <Text style={styles.invoiceNumber}>Due: {dueDate}</Text>}
+        {dueDate && <Text style={styles.invoiceNumber}>{labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}</Text>}
       </View>
     </View>
   )

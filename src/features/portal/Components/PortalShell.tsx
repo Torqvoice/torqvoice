@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { getCustomerSession } from "@/lib/customer-session";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { resolvePortalOrg } from "@/lib/portal-slug";
+import { getTranslations } from "next-intl/server";
 import { PortalHeader } from "./PortalHeader";
 import { PortalNav } from "./PortalNav";
 
@@ -13,6 +14,8 @@ export async function PortalShell({
   orgId: string;
   children: React.ReactNode;
 }) {
+  const t = await getTranslations('portal.shell');
+
   // Resolve slug or id to real org
   const org = await resolvePortalOrg(orgParam);
 
@@ -20,9 +23,9 @@ export async function PortalShell({
     return (
       <div className="flex min-h-svh items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Not Found</h1>
+          <h1 className="text-2xl font-bold">{t('notFound')}</h1>
           <p className="mt-2 text-muted-foreground">
-            This portal does not exist.
+            {t('portalNotExist')}
           </p>
         </div>
       </div>
@@ -45,9 +48,9 @@ export async function PortalShell({
     return (
       <div className="flex min-h-svh items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Portal Not Available</h1>
+          <h1 className="text-2xl font-bold">{t('portalNotAvailable')}</h1>
           <p className="mt-2 text-muted-foreground">
-            The customer portal is not enabled for this organization.
+            {t('portalNotEnabled')}
           </p>
         </div>
       </div>

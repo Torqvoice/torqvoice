@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -38,6 +39,7 @@ export function QuoteRequestDialog({
   publicToken: string;
   onSuccess: () => void;
 }) {
+  const t = useTranslations('share.quoteRequest');
   const issueItems = items.filter((i) => i.condition === "fail" || i.condition === "attention");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(issueItems.map((i) => i.id)));
   const [message, setMessage] = useState("");
@@ -62,7 +64,7 @@ export function QuoteRequestDialog({
 
   const handleSubmit = async () => {
     if (selectedIds.size === 0) {
-      toast.error("Select at least one item");
+      toast.error(t('selectAtLeastOne'));
       return;
     }
 
@@ -80,14 +82,14 @@ export function QuoteRequestDialog({
       });
       const data = await res.json();
       if (data.success) {
-        toast.success("Quote request submitted!");
+        toast.success(t('submitSuccess'));
         onOpenChange(false);
         onSuccess();
       } else {
-        toast.error(data.error || "Failed to submit request");
+        toast.error(data.error || t('submitError'));
       }
     } catch {
-      toast.error("Failed to submit request");
+      toast.error(t('submitError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -104,9 +106,9 @@ export function QuoteRequestDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Request a Quote</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
-            Select the items you&apos;d like a repair quote for.
+            {t('description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -117,10 +119,10 @@ export function QuoteRequestDialog({
               onClick={toggleAll}
               className="text-xs text-primary hover:underline"
             >
-              {selectedIds.size === issueItems.length ? "Deselect all" : "Select all"}
+              {selectedIds.size === issueItems.length ? t('deselectAll') : t('selectAll')}
             </button>
             <span className="text-xs text-muted-foreground">
-              {selectedIds.size} of {issueItems.length} selected
+              {t('selectedCount', { selected: selectedIds.size, total: issueItems.length })}
             </span>
           </div>
 
@@ -145,11 +147,11 @@ export function QuoteRequestDialog({
                         <span className="text-sm font-medium">{item.name}</span>
                         {item.condition === "fail" ? (
                           <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-red-600 bg-red-100 rounded-full px-1.5 py-0.5">
-                            <X className="h-2.5 w-2.5" /> Fail
+                            <X className="h-2.5 w-2.5" /> {t('fail')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-amber-600 bg-amber-100 rounded-full px-1.5 py-0.5">
-                            <AlertTriangle className="h-2.5 w-2.5" /> Attention
+                            <AlertTriangle className="h-2.5 w-2.5" /> {t('attention')}
                           </span>
                         )}
                       </div>
@@ -165,12 +167,12 @@ export function QuoteRequestDialog({
 
           <div className="space-y-2">
             <label className="text-sm font-medium">
-              Message <span className="text-muted-foreground font-normal">(optional)</span>
+              {t('message')} <span className="text-muted-foreground font-normal">{t('messageOptional')}</span>
             </label>
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Any additional details or questions..."
+              placeholder={t('messagePlaceholder')}
               className="min-h-[80px]"
             />
           </div>
@@ -178,11 +180,11 @@ export function QuoteRequestDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
-            Cancel
+            {t('cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting || selectedIds.size === 0}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Submit Request
+            {t('submitRequest')}
           </Button>
         </DialogFooter>
       </DialogContent>
