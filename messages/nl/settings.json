@@ -124,7 +124,30 @@
     "deleteContentConfirmPrompt": "Typ <bold>delete my data</bold> om te bevestigen",
     "deleteSelected": "{count} geselecteerde verwijderen",
     "contentDeleted": "Geselecteerde inhoud is permanent verwijderd",
-    "failedDeleteContent": "Inhoud verwijderen mislukt"
+    "failedDeleteContent": "Inhoud verwijderen mislukt",
+    "passkey": {
+      "title": "Passkeys",
+      "description": "Log in met biometrie of een beveiligingssleutel in plaats van een wachtwoord.",
+      "noPasskeys": "Nog geen passkeys geregistreerd.",
+      "unnamed": "Naamloze passkey",
+      "singleDevice": "Alleen dit apparaat",
+      "multiDevice": "Gesynchroniseerd tussen apparaten",
+      "register": "Passkey registreren",
+      "registering": "Registreren...",
+      "registerSuccess": "Passkey succesvol geregistreerd",
+      "registerFailed": "Passkey registreren mislukt",
+      "delete": "Verwijderen",
+      "deleteSuccess": "Passkey verwijderd",
+      "deleteFailed": "Passkey verwijderen mislukt",
+      "rename": "Passkey hernoemen",
+      "renameFailed": "Passkey hernoemen mislukt",
+      "nameLabel": "Naam",
+      "namePlaceholder": "bijv. MacBook Pro, iPhone",
+      "cancel": "Annuleren",
+      "save": "Opslaan",
+      "confirmDeleteTitle": "Passkey verwijderen",
+      "confirmDelete": "Weet u zeker dat u deze passkey wilt verwijderen? U kunt er niet meer mee inloggen."
+    }
   },
   "team": {
     "title": "Team",

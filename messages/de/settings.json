@@ -151,7 +151,30 @@
     "deleteContentConfirmPrompt": "Geben Sie <bold>delete my data</bold> zur Bestatigung ein",
     "deleteSelected": "{count} ausgewahlte loschen",
     "contentDeleted": "Ausgewahlte Inhalte wurden dauerhaft geloscht",
-    "failedDeleteContent": "Inhalte konnten nicht geloscht werden"
+    "failedDeleteContent": "Inhalte konnten nicht geloscht werden",
+    "passkey": {
+      "title": "Passkeys",
+      "description": "Melden Sie sich mit Biometrie oder einem Sicherheitsschlüssel anstelle eines Passworts an.",
+      "noPasskeys": "Noch keine Passkeys registriert.",
+      "unnamed": "Unbenannter Passkey",
+      "singleDevice": "Nur dieses Gerät",
+      "multiDevice": "Geräteübergreifend synchronisiert",
+      "register": "Passkey registrieren",
+      "registering": "Registriere...",
+      "registerSuccess": "Passkey erfolgreich registriert",
+      "registerFailed": "Passkey konnte nicht registriert werden",
+      "delete": "Löschen",
+      "deleteSuccess": "Passkey gelöscht",
+      "deleteFailed": "Passkey konnte nicht gelöscht werden",
+      "rename": "Passkey umbenennen",
+      "renameFailed": "Passkey konnte nicht umbenannt werden",
+      "nameLabel": "Name",
+      "namePlaceholder": "z.B. MacBook Pro, iPhone",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "confirmDeleteTitle": "Passkey löschen",
+      "confirmDelete": "Möchten Sie diesen Passkey wirklich löschen? Sie können sich damit nicht mehr anmelden."
+    }
   },
   "team": {
     "title": "Team",

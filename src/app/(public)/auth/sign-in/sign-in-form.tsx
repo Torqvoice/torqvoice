@@ -4,11 +4,12 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { signIn } from '@/lib/auth-client'
+import { signIn, authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Gauge, Loader2, XCircle } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { Fingerprint, Gauge, Loader2, XCircle } from 'lucide-react'
 
 function SignInFormInner({ registrationDisabled }: { registrationDisabled: boolean }) {
   const t = useTranslations('auth.signIn')
@@ -17,6 +18,7 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [passkeyLoading, setPasskeyLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -42,6 +44,25 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
       setError(tc('errors.unexpected'))
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handlePasskeySignIn = async () => {
+    setPasskeyLoading(true)
+    setError('')
+    try {
+      const result = await authClient.signIn.passkey()
+      if (result?.error) {
+        setError(result.error.message || t('errors.passkeyFailed'))
+      } else {
+        const redirect = searchParams.get('redirect') || '/'
+        router.push(redirect)
+        router.refresh()
+      }
+    } catch {
+      setError(t('errors.passkeyFailed'))
+    } finally {
+      setPasskeyLoading(false)
     }
   }
 
@@ -75,6 +96,7 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            autoComplete="username webauthn"
             className="h-11 bg-background/50"
           />
         </div>
@@ -102,6 +124,30 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
           {tc('buttons.signIn')}
         </Button>
       </form>
+
+      <div className="relative my-4">
+        <div className="absolute inset-0 flex items-center">
+          <Separator className="w-full" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background/50 px-2 text-muted-foreground">{t('or')}</span>
+        </div>
+      </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        className="h-11 w-full"
+        disabled={passkeyLoading}
+        onClick={handlePasskeySignIn}
+      >
+        {passkeyLoading ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <Fingerprint className="mr-2 h-4 w-4" />
+        )}
+        {t('passkey')}
+      </Button>
 
       {!registrationDisabled && (
         <p className="mt-6 text-center text-sm text-muted-foreground">

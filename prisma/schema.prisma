@@ -31,6 +31,7 @@ model User {
   quotes                 Quote[]
   customFieldDefinitions CustomFieldDefinition[]
   twoFactor              TwoFactor?
+  passkeys               Passkey[]
   organizationMembers    OrganizationMember[]
 
   @@map("users")
@@ -90,7 +91,7 @@ model Account {
 
 model Verification {
   id         String    @id @default(cuid())
-  identifier String
+  identifier String   @unique
   value      String
   expiresAt  DateTime
   createdAt  DateTime? @default(now())
@@ -107,6 +108,24 @@ model TwoFactor {
   user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("two_factor")
+}
+
+model Passkey {
+  id           String   @id @default(cuid())
+  name         String?
+  publicKey    String
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialID String   @unique
+  counter      Int
+  deviceType   String
+  backedUp     Boolean
+  transports   String?
+  aaguid       String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@map("passkeys")
 }
 
 model Vehicle {

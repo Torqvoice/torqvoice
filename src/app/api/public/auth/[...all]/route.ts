@@ -13,6 +13,7 @@ const strictPrefixes: { prefix: string; limit: number; windowMs: number }[] = [
   { prefix: "/api/public/auth/sign-up", limit: 5, windowMs: 60_000 },
   { prefix: "/api/public/auth/request-password-reset", limit: 5, windowMs: 60_000 },
   { prefix: "/api/public/auth/reset-password", limit: 5, windowMs: 60_000 },
+  { prefix: "/api/public/auth/passkey", limit: 10, windowMs: 60_000 },
 ];
 
 const defaultConfig = { limit: 30, windowMs: 60_000 };
