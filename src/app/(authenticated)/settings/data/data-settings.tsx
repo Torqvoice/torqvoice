@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -20,26 +21,14 @@ interface ExportOptions {
   files: boolean
 }
 
-const OPTION_LABELS: { key: keyof ExportOptions; label: string; description: string }[] = [
-  {
-    key: 'settings',
-    label: 'Settings',
-    description: 'Workshop info, invoice config, payment providers',
-  },
-  { key: 'customers', label: 'Customers', description: 'Customer records and contact info' },
-  {
-    key: 'vehicles',
-    label: 'Vehicles & Service Records',
-    description: 'Vehicles, notes, fuel logs, reminders, service records',
-  },
-  { key: 'quotes', label: 'Quotes', description: 'Quotes with parts and labor' },
-  { key: 'inventory', label: 'Inventory', description: 'Inventory parts and stock levels' },
-  {
-    key: 'customFields',
-    label: 'Custom Fields',
-    description: 'Custom field definitions and values',
-  },
-  { key: 'files', label: 'Uploaded Files', description: 'Images, service attachments, logo' },
+const OPTION_META: { key: keyof ExportOptions; labelKey: string; descKey: string }[] = [
+  { key: 'settings', labelKey: 'optSettings', descKey: 'optSettingsDesc' },
+  { key: 'customers', labelKey: 'optCustomers', descKey: 'optCustomersDesc' },
+  { key: 'vehicles', labelKey: 'optVehicles', descKey: 'optVehiclesDesc' },
+  { key: 'quotes', labelKey: 'optQuotes', descKey: 'optQuotesDesc' },
+  { key: 'inventory', labelKey: 'optInventory', descKey: 'optInventoryDesc' },
+  { key: 'customFields', labelKey: 'optCustomFields', descKey: 'optCustomFieldsDesc' },
+  { key: 'files', labelKey: 'optFiles', descKey: 'optFilesDesc' },
 ]
 
 const ALL_TRUE: ExportOptions = {
@@ -53,6 +42,7 @@ const ALL_TRUE: ExportOptions = {
 }
 
 export function DataSettings() {
+  const t = useTranslations('settings')
   const modal = useGlassModal()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [exporting, setExporting] = useState(false)
@@ -105,9 +95,9 @@ export function DataSettings() {
       a.click()
       a.remove()
       URL.revokeObjectURL(url)
-      modal.open('success', 'Export Complete', 'Your backup file has been downloaded.')
+      modal.open('success', t('data.exportComplete'), t('data.exportCompleteMessage'))
     } catch {
-      modal.open('error', 'Export Failed', 'Could not export your data. Please try again.')
+      modal.open('error', t('data.exportFailed'), t('data.exportFailedMessage'))
     }
     setExporting(false)
   }
@@ -145,10 +135,10 @@ export function DataSettings() {
 
       setSelectedFile(null)
       if (fileInputRef.current) fileInputRef.current.value = ''
-      modal.open('success', 'Import Complete', 'All data has been restored from the backup file.')
+      modal.open('success', t('data.importComplete'), t('data.importCompleteMessage'))
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Import failed'
-      modal.open('error', 'Import Failed', message)
+      const message = err instanceof Error ? err.message : t('data.importFailed')
+      modal.open('error', t('data.importFailed'), message)
     }
     setImporting(false)
   }
@@ -182,12 +172,12 @@ export function DataSettings() {
       setLubelogOpen(false)
       modal.open(
         'success',
-        'LubeLog Import Complete',
+        t('data.lubelogImportComplete'),
         `Imported ${result.imported.vehicles} vehicles, ${result.imported.serviceRecords} service records, and ${result.imported.notes} notes.`
       )
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Import failed'
-      modal.open('error', 'Import Failed', message)
+      const message = err instanceof Error ? err.message : t('data.importFailed')
+      modal.open('error', t('data.importFailed'), message)
     }
     setImportingLubelog(false)
   }
@@ -221,12 +211,12 @@ export function DataSettings() {
       setInvoiceNinjaOpen(false)
       modal.open(
         'success',
-        'Invoice Ninja Import Complete',
+        t('data.invoiceNinjaImportComplete'),
         `Imported ${result.imported.customers} customers, ${result.imported.products} products, ${result.imported.invoices} invoices, ${result.imported.documents} documents, and ${result.imported.payments} payments.`
       )
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Import failed'
-      modal.open('error', 'Import Failed', message)
+      const message = err instanceof Error ? err.message : t('data.importFailed')
+      modal.open('error', t('data.importFailed'), message)
     }
     setImportingInvoiceNinja(false)
   }
@@ -235,9 +225,9 @@ export function DataSettings() {
     <div className="space-y-6">
       <ReadOnlyBanner />
       <div>
-        <h2 className="text-lg font-semibold">Data Management</h2>
+        <h2 className="text-lg font-semibold">{t('data.title')}</h2>
         <p className="text-sm text-muted-foreground">
-          Export your data as a backup or import a previously exported file.
+          {t('data.description')}
         </p>
       </div>
 
@@ -247,28 +237,28 @@ export function DataSettings() {
           <Card className="border-0 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Download className="h-4 w-4" /> Export Data
+                <Download className="h-4 w-4" /> {t('data.exportTitle')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Download your data as a zip file. Select which categories to include in the backup.
+                {t('data.exportDescription')}
               </p>
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Include in backup:</span>
+                  <span className="text-sm font-medium">{t('data.includeInBackup')}</span>
                   <button
                     type="button"
                     onClick={toggleAll}
                     className="text-xs text-primary hover:underline"
                   >
-                    {allChecked ? 'Deselect All' : 'Select All'}
+                    {allChecked ? t('data.deselectAll') : t('data.selectAll')}
                   </button>
                 </div>
 
                 <div className="space-y-2">
-                  {OPTION_LABELS.map(({ key, label, description }) => (
+                  {OPTION_META.map(({ key, labelKey, descKey }) => (
                     <label
                       key={key}
                       className="flex items-start gap-3 rounded-md p-2 hover:bg-muted/50 cursor-pointer"
@@ -279,8 +269,8 @@ export function DataSettings() {
                         className="mt-0.5"
                       />
                       <div className="space-y-0.5">
-                        <div className="text-sm font-medium leading-none">{label}</div>
-                        <div className="text-xs text-muted-foreground">{description}</div>
+                        <div className="text-sm font-medium leading-none">{t(`data.${labelKey}`)}</div>
+                        <div className="text-xs text-muted-foreground">{t(`data.${descKey}`)}</div>
                       </div>
                     </label>
                   ))}
@@ -289,14 +279,14 @@ export function DataSettings() {
                 {options.files && (
                   <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                     <FileArchive className="h-3.5 w-3.5 shrink-0" />
-                    Includes uploaded files — backup may be larger
+                    {t('data.filesWarning')}
                   </p>
                 )}
               </div>
 
               <Button onClick={handleExport} disabled={exporting || noneChecked}>
                 {exporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Download Backup
+                {t('data.downloadBackup')}
               </Button>
             </CardContent>
           </Card>
@@ -305,15 +295,14 @@ export function DataSettings() {
           <Card className="border-0 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Upload className="h-4 w-4" /> Import Data
+                <Upload className="h-4 w-4" /> {t('data.importTitle')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-2 rounded-md bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>
-                  Importing will <strong>replace all existing data</strong> with the contents of the
-                  backup file. This action cannot be undone.
+                  {t.rich('data.importWarning', { bold: (chunks) => <strong>{chunks}</strong> })}
                 </span>
               </div>
               <div className="space-y-3">
@@ -325,7 +314,7 @@ export function DataSettings() {
                   className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary hover:file:bg-primary/20"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Supports both .zip (v2) and .json (v1) backup files.
+                  {t('data.importFileHint')}
                 </p>
                 <Button
                   onClick={handleImport}
@@ -333,7 +322,7 @@ export function DataSettings() {
                   variant="outline"
                 >
                   {importing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Upload &amp; Restore
+                  {t('data.uploadRestore')}
                 </Button>
               </div>
             </CardContent>
@@ -344,12 +333,12 @@ export function DataSettings() {
         <Card className="border-0 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <ArrowRight className="h-4 w-4" /> Import from Other Services
+              <ArrowRight className="h-4 w-4" /> {t('data.importFromOther')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Migrate your data from another platform. Select a service to get started.
+              {t('data.importFromOtherDescription')}
             </p>
             <div className="flex flex-wrap gap-4">
               {/* LubeLog */}
@@ -410,40 +399,38 @@ export function DataSettings() {
                 className="object-contain"
                 unoptimized
               />
-              Import from LubeLog
+              {t('data.lubelogTitle')}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-3">
-              <p className="text-sm font-medium">How to export your LubeLog data:</p>
+              <p className="text-sm font-medium">{t('data.lubelogExportSteps')}</p>
               <ol className="list-inside list-decimal space-y-1.5 text-sm text-muted-foreground">
-                <li>Open your LubeLog instance</li>
+                <li>{t('data.lubelogStep1')}</li>
                 <li>
-                  Go to <strong className="text-foreground">Settings</strong>
+                  {t.rich('data.lubelogStep2', { bold: (chunks) => <strong className="text-foreground">{chunks}</strong> })}
                 </li>
                 <li>
-                  Click <strong className="text-foreground">Make Backup</strong> to download a zip
-                  file
+                  {t.rich('data.lubelogStep3', { bold: (chunks) => <strong className="text-foreground">{chunks}</strong> })}
                 </li>
-                <li>Upload the downloaded zip file below</li>
+                <li>{t('data.lubelogStep4')}</li>
               </ol>
             </div>
 
             <div className="flex items-start gap-2 rounded-md bg-blue-500/10 p-3 text-sm text-blue-700 dark:text-blue-400">
               <FileArchive className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
-                This will <strong>add data alongside</strong> your existing records — nothing will
-                be deleted.
+                {t.rich('data.lubelogAddNote', { bold: (chunks) => <strong>{chunks}</strong> })}
               </span>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">What will be imported:</p>
+              <p className="text-sm font-medium">{t('data.lubelogImported')}</p>
               <ul className="list-inside list-disc space-y-1 text-sm text-muted-foreground">
-                <li>Vehicles</li>
-                <li>Service records with attachments</li>
-                <li>Notes</li>
+                <li>{t('data.lubelogVehicles')}</li>
+                <li>{t('data.lubelogServiceRecords')}</li>
+                <li>{t('data.lubelogNotes')}</li>
               </ul>
             </div>
 
@@ -455,16 +442,16 @@ export function DataSettings() {
                 onChange={(e) => setLubelogFile(e.target.files?.[0] ?? null)}
                 className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary hover:file:bg-primary/20"
               />
-              <p className="text-xs text-muted-foreground">Files up to 200MB supported.</p>
+              <p className="text-xs text-muted-foreground">{t('data.lubelogFileHint')}</p>
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="ghost" onClick={() => setLubelogOpen(false)}>
-                Cancel
+                {t('data.cancel')}
               </Button>
               <Button onClick={handleLubeLogImport} disabled={!lubelogFile || importingLubelog}>
                 {importingLubelog && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Import
+                {t('data.import')}
               </Button>
             </div>
           </div>
@@ -493,41 +480,40 @@ export function DataSettings() {
                 className="object-contain"
                 unoptimized
               />
-              Import from Invoice Ninja
+              {t('data.invoiceNinjaTitle')}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-3">
-              <p className="text-sm font-medium">How to export your Invoice Ninja data:</p>
+              <p className="text-sm font-medium">{t('data.invoiceNinjaExportSteps')}</p>
               <ol className="list-inside list-decimal space-y-1.5 text-sm text-muted-foreground">
-                <li>Open your Invoice Ninja instance</li>
+                <li>{t('data.invoiceNinjaStep1')}</li>
                 <li>
-                  Go to <strong className="text-foreground">Settings &gt; Import | Export</strong>
+                  {t.rich('data.invoiceNinjaStep2', { bold: (chunks) => <strong className="text-foreground">{chunks}</strong> })}
                 </li>
                 <li>
-                  Click <strong className="text-foreground">Export</strong> to download a zip file
+                  {t.rich('data.invoiceNinjaStep3', { bold: (chunks) => <strong className="text-foreground">{chunks}</strong> })}
                 </li>
-                <li>Upload the downloaded zip file below</li>
+                <li>{t('data.invoiceNinjaStep4')}</li>
               </ol>
             </div>
 
             <div className="flex items-start gap-2 rounded-md bg-blue-500/10 p-3 text-sm text-blue-700 dark:text-blue-400">
               <FileArchive className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
-                This will <strong>add data alongside</strong> your existing records — nothing will
-                be deleted.
+                {t.rich('data.invoiceNinjaAddNote', { bold: (chunks) => <strong>{chunks}</strong> })}
               </span>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">What will be imported:</p>
+              <p className="text-sm font-medium">{t('data.invoiceNinjaImported')}</p>
               <ul className="list-inside list-disc space-y-1 text-sm text-muted-foreground">
-                <li>Customers (clients)</li>
-                <li>Products (inventory)</li>
-                <li>Invoices as service records (parts &amp; labor)</li>
-                <li>Documents &amp; attachments</li>
-                <li>Payments</li>
+                <li>{t('data.invoiceNinjaCustomers')}</li>
+                <li>{t('data.invoiceNinjaProducts')}</li>
+                <li>{t('data.invoiceNinjaInvoices')}</li>
+                <li>{t('data.invoiceNinjaDocuments')}</li>
+                <li>{t('data.invoiceNinjaPayments')}</li>
               </ul>
             </div>
 
@@ -540,20 +526,20 @@ export function DataSettings() {
                 className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary hover:file:bg-primary/20"
               />
               <p className="text-xs text-muted-foreground">
-                Upload an Invoice Ninja zip export file. Files up to 200MB supported.
+                {t('data.invoiceNinjaFileHint')}
               </p>
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="ghost" onClick={() => setInvoiceNinjaOpen(false)}>
-                Cancel
+                {t('data.cancel')}
               </Button>
               <Button
                 onClick={handleInvoiceNinjaImport}
                 disabled={!invoiceNinjaFile || importingInvoiceNinja}
               >
                 {importingInvoiceNinja && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Import
+                {t('data.import')}
               </Button>
             </div>
           </div>

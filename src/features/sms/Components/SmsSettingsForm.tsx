@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,7 @@ export function SmsSettingsForm({
   initial: Record<string, string>;
   appUrl: string;
 }) {
+  const t = useTranslations("settings");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isTesting, setIsTesting] = useState(false);
@@ -83,7 +85,7 @@ export function SmsSettingsForm({
     if (!webhookUrl) return;
     navigator.clipboard.writeText(webhookUrl);
     setCopied(true);
-    toast.success("Webhook URL copied");
+    toast.success(t("sms.webhookCopied"));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -94,10 +96,10 @@ export function SmsSettingsForm({
           [ORG_SMS_KEYS.SMS_PROVIDER]: "",
         });
         if (result.success) {
-          toast.success("SMS settings saved — SMS disabled");
+          toast.success(t("sms.savedDisabled"));
           router.refresh();
         } else {
-          toast.error(result.error ?? "Failed to save settings");
+          toast.error(result.error ?? t("sms.failedSave"));
         }
         return;
       }
@@ -117,26 +119,26 @@ export function SmsSettingsForm({
 
       const result = await setSmsSettings(data);
       if (result.success) {
-        toast.success("SMS settings saved");
+        toast.success(t("sms.saved"));
         router.refresh();
       } else {
-        toast.error(result.error ?? "Failed to save settings");
+        toast.error(result.error ?? t("sms.failedSave"));
       }
     });
   };
 
   const handleTestSms = async () => {
     if (!testPhone.trim()) {
-      toast.error("Enter a phone number to send the test SMS to");
+      toast.error(t("sms.enterTestPhone"));
       return;
     }
     setIsTesting(true);
     try {
       const result = await testSmsSend(testPhone.trim());
       if (result.success) {
-        toast.success(`Test SMS sent to ${result.data?.sentTo}`);
+        toast.success(t("sms.testSentTo", { phone: result.data?.sentTo }));
       } else {
-        toast.error(result.error ?? "SMS test failed");
+        toast.error(result.error ?? t("sms.testFailed"));
       }
     } finally {
       setIsTesting(false);
@@ -158,18 +160,15 @@ export function SmsSettingsForm({
       <ReadOnlyWrapper>
         <Card>
           <CardHeader>
-            <CardTitle>SMS Provider</CardTitle>
-            <CardDescription>
-              Configure your SMS provider for two-way messaging with customers.
-              Each organization uses their own SMS vendor and phone number.
-            </CardDescription>
+            <CardTitle>{t("sms.title")}</CardTitle>
+            <CardDescription>{t("sms.description")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="enable-sms">Enable SMS messaging</Label>
+                <Label htmlFor="enable-sms">{t("sms.enableLabel")}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Send and receive SMS messages with customers
+                  {t("sms.enableHint")}
                 </p>
               </div>
               <Switch
@@ -183,8 +182,7 @@ export function SmsSettingsForm({
               <div className="flex items-start gap-3 rounded-lg border bg-muted/50 p-4">
                 <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">
-                  SMS messaging is disabled. Enable it to send and receive text
-                  messages with your customers.
+                  {t("sms.disabledInfo")}
                 </p>
               </div>
             )}
@@ -221,16 +219,17 @@ export function SmsSettingsForm({
 
                 {/* Phone number (shared) */}
                 <div className="space-y-2">
-                  <Label htmlFor="sms-phone-number">Phone Number</Label>
+                  <Label htmlFor="sms-phone-number">
+                    {t("sms.phoneNumber")}
+                  </Label>
                   <Input
                     id="sms-phone-number"
-                    placeholder="+15551234567"
+                    placeholder={t("sms.phoneNumberPlaceholder")}
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Your SMS-enabled phone number in E.164 format (e.g.
-                    +15551234567)
+                    {t("sms.phoneNumberHint")}
                   </p>
                 </div>
 
@@ -238,7 +237,9 @@ export function SmsSettingsForm({
                 {smsProvider === "twilio" && (
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="twilio-sid">Account SID</Label>
+                      <Label htmlFor="twilio-sid">
+                        {t("sms.accountSid")}
+                      </Label>
                       <Input
                         id="twilio-sid"
                         type="password"
@@ -248,7 +249,9 @@ export function SmsSettingsForm({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="twilio-token">Auth Token</Label>
+                      <Label htmlFor="twilio-token">
+                        {t("sms.authToken")}
+                      </Label>
                       <Input
                         id="twilio-token"
                         type="password"
@@ -264,7 +267,7 @@ export function SmsSettingsForm({
                 {smsProvider === "vonage" && (
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="vonage-key">API Key</Label>
+                      <Label htmlFor="vonage-key">{t("sms.apiKey")}</Label>
                       <Input
                         id="vonage-key"
                         type="password"
@@ -274,7 +277,9 @@ export function SmsSettingsForm({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="vonage-secret">API Secret</Label>
+                      <Label htmlFor="vonage-secret">
+                        {t("sms.apiSecret")}
+                      </Label>
                       <Input
                         id="vonage-secret"
                         type="password"
@@ -289,7 +294,7 @@ export function SmsSettingsForm({
                 {/* Telnyx fields */}
                 {smsProvider === "telnyx" && (
                   <div className="space-y-2">
-                    <Label htmlFor="telnyx-key">API Key</Label>
+                    <Label htmlFor="telnyx-key">{t("sms.apiKey")}</Label>
                     <Input
                       id="telnyx-key"
                       type="password"
@@ -303,7 +308,7 @@ export function SmsSettingsForm({
                 {/* Webhook URL */}
                 {webhookSecret && (
                   <div className="space-y-2">
-                    <Label>Webhook URL</Label>
+                    <Label>{t("sms.webhookUrl")}</Label>
                     <div className="flex items-center gap-2">
                       <Input
                         readOnly
@@ -324,8 +329,7 @@ export function SmsSettingsForm({
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Configure this URL in your {smsProvider} dashboard to
-                      receive inbound SMS messages.
+                      {t("sms.webhookUrlHint", { provider: smsProvider })}
                     </p>
                   </div>
                 )}
@@ -333,11 +337,13 @@ export function SmsSettingsForm({
                 {/* Test SMS */}
                 <div className="space-y-3 pt-2">
                   <div className="space-y-2">
-                    <Label htmlFor="test-phone">Test Phone Number</Label>
+                    <Label htmlFor="test-phone">
+                      {t("sms.testPhoneNumber")}
+                    </Label>
                     <div className="flex items-center gap-2">
                       <Input
                         id="test-phone"
-                        placeholder="+15559876543"
+                        placeholder={t("sms.testPhonePlaceholder")}
                         value={testPhone}
                         onChange={(e) => setTestPhone(e.target.value)}
                         className="max-w-xs"
@@ -353,12 +359,11 @@ export function SmsSettingsForm({
                         ) : (
                           <Send className="mr-2 h-4 w-4" />
                         )}
-                        Send Test SMS
+                        {t("sms.sendTestSms")}
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Save settings first, then enter a recipient number to
-                      send a test SMS
+                      {t("sms.testSmsHint")}
                     </p>
                   </div>
                 </div>
@@ -371,7 +376,7 @@ export function SmsSettingsForm({
           <div className="flex justify-end">
             <Button onClick={handleSave} disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Settings
+              {t("sms.saveSettings")}
             </Button>
           </div>
         </SaveButton>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -80,6 +81,7 @@ const TIMEZONE_OPTIONS = [
 ];
 
 export function AppearanceSettings({ settings }: { settings: Record<string, string> }) {
+  const t = useTranslations('settings')
   const { theme, setTheme } = useTheme()
   const router = useRouter()
   const [saving, setSaving] = useState(false)
@@ -97,7 +99,7 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
     })
     setSaving(false)
     router.refresh()
-    toast.success("Settings saved")
+    toast.success(t('appearance.saved'))
   }
 
   return (
@@ -105,10 +107,10 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <Palette className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">Appearance</CardTitle>
+          <CardTitle className="text-lg">{t('appearance.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <p className="text-sm text-muted-foreground">Customize how Torqvoice looks and feels.</p>
+          <p className="text-sm text-muted-foreground">{t('appearance.description')}</p>
 
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="flex items-center gap-3">
@@ -118,9 +120,9 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
                 <Sun className="h-5 w-5 text-muted-foreground" />
               )}
               <div>
-                <Label className="text-sm font-medium">Dark Mode</Label>
+                <Label className="text-sm font-medium">{t('appearance.darkMode')}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Switch between light and dark themes
+                  {t('appearance.darkModeHint')}
                 </p>
               </div>
             </div>
@@ -135,15 +137,15 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <Calendar className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">Date & Time</CardTitle>
+          <CardTitle className="text-lg">{t('appearance.dateTimeTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm text-muted-foreground">
-            Configure how dates and times are displayed across the application.
+            {t('appearance.dateTimeDescription')}
           </p>
 
           <div className="space-y-2">
-            <Label>Date Format</Label>
+            <Label>{t('appearance.dateFormat')}</Label>
             <Select value={dateFormat} onValueChange={setDateFormat}>
               <SelectTrigger className="w-64">
                 <SelectValue />
@@ -159,26 +161,26 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
           </div>
 
           <div className="space-y-2">
-            <Label>Time Format</Label>
+            <Label>{t('appearance.timeFormat')}</Label>
             <Select value={timeFormat} onValueChange={setTimeFormat}>
               <SelectTrigger className="w-48">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="12h">12-hour (2:30 PM)</SelectItem>
-                <SelectItem value="24h">24-hour (14:30)</SelectItem>
+                <SelectItem value="12h">{t('appearance.time12h')}</SelectItem>
+                <SelectItem value="24h">{t('appearance.time24h')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label>Timezone</Label>
+            <Label>{t('appearance.timezone')}</Label>
             <Select value={timezone || "__auto__"} onValueChange={(v) => setTimezone(v === "__auto__" ? "" : v)}>
               <SelectTrigger className="w-72">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__auto__">Auto-detect (browser)</SelectItem>
+                <SelectItem value="__auto__">{t('appearance.timezoneAuto')}</SelectItem>
                 {TIMEZONE_OPTIONS.map((tz) => (
                   <SelectItem key={tz} value={tz}>
                     {tz.replace(/_/g, " ")}
@@ -187,17 +189,17 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              When set to auto-detect, each user sees dates in their browser&apos;s timezone.
+              {t('appearance.timezoneHint')}
             </p>
           </div>
 
           <div className="rounded-lg border p-3 text-sm text-muted-foreground">
             <div className="flex items-center gap-2 mb-1">
               <Clock className="h-3.5 w-3.5" />
-              <span className="font-medium text-foreground">Preview</span>
+              <span className="font-medium text-foreground">{t('appearance.previewLabel')}</span>
             </div>
-            <p>Date: <span className="font-medium text-foreground">{formatDate(new Date(), dateFormat, timezone || undefined)}</span></p>
-            <p>Date & Time: <span className="font-medium text-foreground">{formatDateTime(new Date(), dateFormat, timeFormat as "12h" | "24h", timezone || undefined)}</span></p>
+            <p>{t('appearance.dateLabel')}: <span className="font-medium text-foreground">{formatDate(new Date(), dateFormat, timezone || undefined)}</span></p>
+            <p>{t('appearance.dateTimeLabel')}: <span className="font-medium text-foreground">{formatDateTime(new Date(), dateFormat, timeFormat as "12h" | "24h", timezone || undefined)}</span></p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -207,7 +209,7 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}
-              Save Settings
+              {t('appearance.saveSettings')}
             </Button>
           </div>
         </CardContent>

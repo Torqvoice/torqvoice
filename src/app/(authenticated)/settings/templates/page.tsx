@@ -6,7 +6,7 @@ import { getFeatures, isCloudMode } from "@/lib/features";
 import { FeatureLockedMessage } from "../feature-locked-message";
 import { redirect } from "next/navigation";
 import { getTemplates, seedDefaultTemplate } from "@/features/inspections/Actions/templateActions";
-import { SMS_TEMPLATE_DEFAULTS } from "@/lib/sms-templates";
+import { getTranslations } from "next-intl/server";
 
 export default async function TemplatePage() {
   const data = await getLayoutData();
@@ -54,19 +54,22 @@ export default async function TemplatePage() {
     ? inspectionTemplatesResult.data
     : [];
 
+  const t = await getTranslations('settings');
+
+  const smsDefaultMap: Record<string, string> = {
+    [SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY]: t.raw('templates.smsDefaults.invoiceReady'),
+    [SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY]: t.raw('templates.smsDefaults.quoteReady'),
+    [SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY]: t.raw('templates.smsDefaults.inspectionReady'),
+    [SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS]: t.raw('templates.smsDefaults.statusInProgress'),
+    [SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS]: t.raw('templates.smsDefaults.statusWaitingParts'),
+    [SETTING_KEYS.SMS_TEMPLATE_STATUS_READY]: t.raw('templates.smsDefaults.statusReady'),
+    [SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED]: t.raw('templates.smsDefaults.statusCompleted'),
+    [SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED]: t.raw('templates.smsDefaults.paymentReceived'),
+  };
+
   const smsTemplates: Record<string, string> = {};
-  const smsKeys = [
-    SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
-    SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY,
-    SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
-    SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
-    SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
-    SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
-    SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
-    SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
-  ] as const;
-  for (const key of smsKeys) {
-    smsTemplates[key] = settings[key] || SMS_TEMPLATE_DEFAULTS[key] || "";
+  for (const key of Object.keys(smsDefaultMap)) {
+    smsTemplates[key] = settings[key] || smsDefaultMap[key] || "";
   }
 
   return (

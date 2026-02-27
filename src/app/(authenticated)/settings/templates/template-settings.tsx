@@ -22,7 +22,6 @@ import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard"
 import { cn } from "@/lib/utils";
 import { TemplateListClient } from "@/features/inspections/Components/TemplateListClient";
 import { Textarea } from "@/components/ui/textarea";
-import { SMS_TEMPLATE_DEFAULTS } from "@/lib/sms-templates";
 
 interface TemplateValues {
   primaryColor: string;
@@ -460,48 +459,56 @@ const smsTemplateFields = [
     key: SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
     labelKey: "invoiceReady",
     descriptionKey: "invoiceReadyDescription",
+    defaultKey: "invoiceReady",
     variables: ["{share_link}", "{company_name}", "{customer_name}", "{current_user}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY,
     labelKey: "quoteReady",
     descriptionKey: "quoteReadyDescription",
+    defaultKey: "quoteReady",
     variables: ["{share_link}", "{company_name}", "{customer_name}", "{current_user}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
     labelKey: "inspectionReady",
     descriptionKey: "inspectionReadyDescription",
+    defaultKey: "inspectionReady",
     variables: ["{share_link}", "{company_name}", "{customer_name}", "{current_user}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
     labelKey: "statusInProgress",
     descriptionKey: "statusInProgressDescription",
+    defaultKey: "statusInProgress",
     variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
     labelKey: "statusWaitingParts",
     descriptionKey: "statusWaitingPartsDescription",
+    defaultKey: "statusWaitingParts",
     variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
     labelKey: "statusReady",
     descriptionKey: "statusReadyDescription",
+    defaultKey: "statusReady",
     variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
     labelKey: "statusCompleted",
     descriptionKey: "statusCompletedDescription",
+    defaultKey: "statusCompleted",
     variables: ["{company_name}", "{customer_name}", "{current_user}", "{vehicle}"],
   },
   {
     key: SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
     labelKey: "paymentReceived",
     descriptionKey: "paymentReceivedDescription",
+    defaultKey: "paymentReceived",
     variables: ["{amount}", "{invoice_number}", "{company_name}", "{customer_name}", "{current_user}"],
   },
 ];
@@ -515,7 +522,8 @@ function SmsTemplateTab({
 }) {
   const t = useTranslations('settings');
   const handleReset = (key: string) => {
-    const defaultVal = SMS_TEMPLATE_DEFAULTS[key] || "";
+    const field = smsTemplateFields.find((f) => f.key === key);
+    const defaultVal = field ? t.raw(`templates.smsDefaults.${field.defaultKey}`) : "";
     setValues({ ...values, [key]: defaultVal });
   };
 
