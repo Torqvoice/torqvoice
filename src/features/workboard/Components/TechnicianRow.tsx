@@ -18,7 +18,7 @@ export function TechnicianRow({
   onTechClick?: (technician: Technician) => void;
 }) {
   return (
-    <div className="grid grid-cols-[140px_repeat(7,1fr)] gap-1">
+    <div className="contents">
       {/* Tech name column */}
       <button
         type="button"
