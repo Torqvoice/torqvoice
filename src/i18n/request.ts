@@ -59,6 +59,7 @@ export default getRequestConfig(async () => {
   const inventory = (await import(`../../messages/${locale}/inventory.json`)).default
   const reports = (await import(`../../messages/${locale}/reports.json`)).default
   const settings = (await import(`../../messages/${locale}/settings.json`)).default
+  const admin = (await import(`../../messages/${locale}/admin.json`)).default
 
   return {
     locale,
@@ -80,6 +81,7 @@ export default getRequestConfig(async () => {
       inventory,
       reports,
       settings,
+      admin,
     },
   }
 })

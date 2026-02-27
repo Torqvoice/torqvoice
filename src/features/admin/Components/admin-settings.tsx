@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ export function AdminSettings({
   mode: 'cloud' | 'self-hosted'
 }) {
   const router = useRouter()
+  const t = useTranslations('admin')
   const [isPending, startTransition] = useTransition()
   const [isTesting, setIsTesting] = useState(false)
 
@@ -165,10 +167,10 @@ export function AdminSettings({
 
       const result = await setSystemSettings(data)
       if (result.success) {
-        toast.success('Settings saved successfully')
+        toast.success(t('adminSettings.saved'))
         router.refresh()
       } else {
-        toast.error(result.error ?? 'Failed to save settings')
+        toast.error(result.error ?? t('adminSettings.failedSave'))
       }
     })
   }
@@ -178,9 +180,9 @@ export function AdminSettings({
     try {
       const result = await testEmailConnection()
       if (result.success) {
-        toast.success(`Test email sent to ${result.data?.sentTo}`)
+        toast.success(t('adminSettings.testSentTo', { email: result.data?.sentTo }))
       } else {
-        toast.error(result.error ?? 'Email test failed')
+        toast.error(result.error ?? t('adminSettings.testFailed'))
       }
     } finally {
       setIsTesting(false)
@@ -201,15 +203,15 @@ export function AdminSettings({
       {/* Platform Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Platform Settings</CardTitle>
-          <CardDescription>General platform configuration options</CardDescription>
+          <CardTitle>{t('adminSettings.platformTitle')}</CardTitle>
+          <CardDescription>{t('adminSettings.platformDescription')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="registration-toggle">Disable Registration</Label>
+              <Label htmlFor="registration-toggle">{t('adminSettings.disableRegistration')}</Label>
               <p className="text-xs text-muted-foreground">
-                Block new user sign-ups on the platform
+                {t('adminSettings.disableRegistrationHint')}
               </p>
             </div>
             <Switch
@@ -224,9 +226,9 @@ export function AdminSettings({
       {/* Email Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Email Settings</CardTitle>
+          <CardTitle>{t('adminSettings.emailTitle')}</CardTitle>
           <CardDescription>
-            Platform Email Provider — Used for system-level emails such as password resets and team invitations. This is also the default email provider for all organizations. Organizations can optionally configure their own email provider in Settings &gt; Email.
+            {t('adminSettings.emailDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -285,7 +287,7 @@ export function AdminSettings({
             <>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="smtp-host">SMTP Host</Label>
+                  <Label htmlFor="smtp-host">{t('adminSettings.smtpHost')}</Label>
                   <Input
                     id="smtp-host"
                     placeholder="smtp.example.com"
@@ -294,7 +296,7 @@ export function AdminSettings({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="smtp-port">SMTP Port</Label>
+                  <Label htmlFor="smtp-port">{t('adminSettings.smtpPort')}</Label>
                   <Input
                     id="smtp-port"
                     placeholder="587"
@@ -306,7 +308,7 @@ export function AdminSettings({
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="smtp-user">Username</Label>
+                  <Label htmlFor="smtp-user">{t('adminSettings.username')}</Label>
                   <Input
                     id="smtp-user"
                     placeholder="user@example.com"
@@ -315,7 +317,7 @@ export function AdminSettings({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="smtp-pass">Password</Label>
+                  <Label htmlFor="smtp-pass">{t('adminSettings.password')}</Label>
                   <Input
                     id="smtp-pass"
                     type="password"
@@ -328,7 +330,7 @@ export function AdminSettings({
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="smtp-from-email">From Email</Label>
+                  <Label htmlFor="smtp-from-email">{t('adminSettings.fromEmail')}</Label>
                   <Input
                     id="smtp-from-email"
                     placeholder="noreply@example.com"
@@ -337,7 +339,7 @@ export function AdminSettings({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="smtp-from-name">From Name</Label>
+                  <Label htmlFor="smtp-from-name">{t('adminSettings.fromName')}</Label>
                   <Input
                     id="smtp-from-name"
                     placeholder="Torqvoice"
@@ -350,9 +352,9 @@ export function AdminSettings({
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="smtp-secure">TLS Connection (Port 465)</Label>
+                    <Label htmlFor="smtp-secure">{t('adminSettings.tlsConnection')}</Label>
                     <p className="text-xs text-muted-foreground">
-                      Enable for implicit TLS. Disable for STARTTLS (port 587/25).
+                      {t('adminSettings.tlsConnectionHint')}
                     </p>
                   </div>
                   <Switch id="smtp-secure" checked={smtpSecure} onCheckedChange={setSmtpSecure} />
@@ -360,9 +362,9 @@ export function AdminSettings({
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="smtp-reject-unauthorized">Verify TLS Certificates</Label>
+                    <Label htmlFor="smtp-reject-unauthorized">{t('adminSettings.verifyTls')}</Label>
                     <p className="text-xs text-muted-foreground">
-                      Disable to allow self-signed certificates (not recommended for production)
+                      {t('adminSettings.verifyTlsHint')}
                     </p>
                   </div>
                   <Switch
@@ -374,9 +376,9 @@ export function AdminSettings({
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="smtp-require-tls">Require TLS Upgrade</Label>
+                    <Label htmlFor="smtp-require-tls">{t('adminSettings.requireTlsUpgrade')}</Label>
                     <p className="text-xs text-muted-foreground">
-                      Force TLS upgrade on STARTTLS connections
+                      {t('adminSettings.requireTlsUpgradeHint')}
                     </p>
                   </div>
                   <Switch
@@ -392,7 +394,7 @@ export function AdminSettings({
           {emailProvider === 'resend' && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="resend-api-key">API Key</Label>
+                <Label htmlFor="resend-api-key">{t('adminSettings.apiKey')}</Label>
                 <Input
                   id="resend-api-key"
                   type="password"
@@ -401,21 +403,13 @@ export function AdminSettings({
                   onChange={(e) => setResendApiKey(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Get your API key from{' '}
-                  <a
-                    href="https://resend.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    resend.com
-                  </a>
+                  {t('adminSettings.resendApiKeyHint')}
                 </p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="resend-from-email">From Email</Label>
+                  <Label htmlFor="resend-from-email">{t('adminSettings.fromEmail')}</Label>
                   <Input
                     id="resend-from-email"
                     placeholder="noreply@yourdomain.com"
@@ -424,7 +418,7 @@ export function AdminSettings({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="resend-from-name">From Name</Label>
+                  <Label htmlFor="resend-from-name">{t('adminSettings.fromName')}</Label>
                   <Input
                     id="resend-from-name"
                     placeholder="Torqvoice"
@@ -439,7 +433,7 @@ export function AdminSettings({
           {emailProvider === 'postmark' && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="postmark-api-key">Server Token</Label>
+                <Label htmlFor="postmark-api-key">{t('adminSettings.serverToken')}</Label>
                 <Input
                   id="postmark-api-key"
                   type="password"
@@ -448,21 +442,13 @@ export function AdminSettings({
                   onChange={(e) => setPostmarkApiKey(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Get your Server Token from{' '}
-                  <a
-                    href="https://postmarkapp.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    postmarkapp.com
-                  </a>
+                  {t('adminSettings.postmarkApiKeyHint')}
                 </p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="postmark-from-email">From Email</Label>
+                  <Label htmlFor="postmark-from-email">{t('adminSettings.fromEmail')}</Label>
                   <Input
                     id="postmark-from-email"
                     placeholder="noreply@yourdomain.com"
@@ -471,7 +457,7 @@ export function AdminSettings({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="postmark-from-name">From Name</Label>
+                  <Label htmlFor="postmark-from-name">{t('adminSettings.fromName')}</Label>
                   <Input
                     id="postmark-from-name"
                     placeholder="Torqvoice"
@@ -486,7 +472,7 @@ export function AdminSettings({
           {emailProvider === 'mailgun' && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="mailgun-api-key">API Key</Label>
+                <Label htmlFor="mailgun-api-key">{t('adminSettings.apiKey')}</Label>
                 <Input
                   id="mailgun-api-key"
                   type="password"
@@ -495,21 +481,13 @@ export function AdminSettings({
                   onChange={(e) => setMailgunApiKey(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Get your API key from{' '}
-                  <a
-                    href="https://app.mailgun.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    app.mailgun.com
-                  </a>
+                  {t('adminSettings.mailgunApiKeyHint')}
                 </p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="mailgun-domain">Domain</Label>
+                  <Label htmlFor="mailgun-domain">{t('adminSettings.domain')}</Label>
                   <Input
                     id="mailgun-domain"
                     placeholder="mg.yourdomain.com"
@@ -518,7 +496,7 @@ export function AdminSettings({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="mailgun-region">Region</Label>
+                  <Label htmlFor="mailgun-region">{t('adminSettings.region')}</Label>
                   <div className="flex gap-2">
                     <Button
                       type="button"
@@ -544,7 +522,7 @@ export function AdminSettings({
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="mailgun-from-email">From Email</Label>
+                  <Label htmlFor="mailgun-from-email">{t('adminSettings.fromEmail')}</Label>
                   <Input
                     id="mailgun-from-email"
                     placeholder="noreply@yourdomain.com"
@@ -553,7 +531,7 @@ export function AdminSettings({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="mailgun-from-name">From Name</Label>
+                  <Label htmlFor="mailgun-from-name">{t('adminSettings.fromName')}</Label>
                   <Input
                     id="mailgun-from-name"
                     placeholder="Torqvoice"
@@ -568,7 +546,7 @@ export function AdminSettings({
           {emailProvider === 'sendgrid' && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="sendgrid-api-key">API Key</Label>
+                <Label htmlFor="sendgrid-api-key">{t('adminSettings.apiKey')}</Label>
                 <Input
                   id="sendgrid-api-key"
                   type="password"
@@ -577,21 +555,13 @@ export function AdminSettings({
                   onChange={(e) => setSendgridApiKey(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Get your API key from{' '}
-                  <a
-                    href="https://app.sendgrid.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    app.sendgrid.com
-                  </a>
+                  {t('adminSettings.sendgridApiKeyHint')}
                 </p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="sendgrid-from-email">From Email</Label>
+                  <Label htmlFor="sendgrid-from-email">{t('adminSettings.fromEmail')}</Label>
                   <Input
                     id="sendgrid-from-email"
                     placeholder="noreply@yourdomain.com"
@@ -600,7 +570,7 @@ export function AdminSettings({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="sendgrid-from-name">From Name</Label>
+                  <Label htmlFor="sendgrid-from-name">{t('adminSettings.fromName')}</Label>
                   <Input
                     id="sendgrid-from-name"
                     placeholder="Torqvoice"
@@ -616,7 +586,7 @@ export function AdminSettings({
             <>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="ses-access-key">Access Key ID</Label>
+                  <Label htmlFor="ses-access-key">{t('adminSettings.accessKeyId')}</Label>
                   <Input
                     id="ses-access-key"
                     type="password"
@@ -626,7 +596,7 @@ export function AdminSettings({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ses-secret-key">Secret Access Key</Label>
+                  <Label htmlFor="ses-secret-key">{t('adminSettings.secretAccessKey')}</Label>
                   <Input
                     id="ses-secret-key"
                     type="password"
@@ -638,7 +608,7 @@ export function AdminSettings({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="ses-region">AWS Region</Label>
+                <Label htmlFor="ses-region">{t('adminSettings.awsRegion')}</Label>
                 <Input
                   id="ses-region"
                   placeholder="us-east-1"
@@ -646,13 +616,13 @@ export function AdminSettings({
                   onChange={(e) => setSesRegion(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  The AWS region where SES is configured (e.g. us-east-1, eu-west-1)
+                  {t('adminSettings.awsRegionHint')}
                 </p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="ses-from-email">From Email</Label>
+                  <Label htmlFor="ses-from-email">{t('adminSettings.fromEmail')}</Label>
                   <Input
                     id="ses-from-email"
                     placeholder="noreply@yourdomain.com"
@@ -661,7 +631,7 @@ export function AdminSettings({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ses-from-name">From Name</Label>
+                  <Label htmlFor="ses-from-name">{t('adminSettings.fromName')}</Label>
                   <Input
                     id="ses-from-name"
                     placeholder="Torqvoice"
@@ -685,10 +655,10 @@ export function AdminSettings({
               ) : (
                 <Send className="mr-2 h-4 w-4" />
               )}
-              Send Test Email
+              {t('adminSettings.sendTestEmail')}
             </Button>
             <p className="text-xs text-muted-foreground">
-              Save settings first, then send a test email to your account
+              {t('adminSettings.testEmailHint')}
             </p>
           </div>
         </CardContent>
@@ -698,7 +668,7 @@ export function AdminSettings({
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={isPending}>
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Settings
+          {t('adminSettings.saveSettings')}
         </Button>
       </div>
     </div>

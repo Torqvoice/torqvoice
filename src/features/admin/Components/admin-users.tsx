@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useConfirm } from "@/components/confirm-dialog";
 import { Input } from "@/components/ui/input";
@@ -63,6 +64,7 @@ export function AdminUsers({
   data: PaginatedData;
   search: string;
 }) {
+  const t = useTranslations("admin");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -101,9 +103,9 @@ export function AdminUsers({
   const handleToggleSuperAdmin = async (user: UserRow) => {
     const action = user.isSuperAdmin ? "demote" : "promote";
     const confirmed = await confirm({
-      title: `${action === "promote" ? "Promote" : "Demote"} User`,
-      description: `Are you sure you want to ${action} "${user.name}" ${action === "promote" ? "to" : "from"} super admin?`,
-      confirmLabel: action === "promote" ? "Promote" : "Demote",
+      title: action === "promote" ? t("users.promoteTitle") : t("users.demoteTitle"),
+      description: action === "promote" ? t("users.promoteConfirm", { name: user.name }) : t("users.demoteConfirm", { name: user.name }),
+      confirmLabel: action === "promote" ? t("users.promote") : t("users.demote"),
       destructive: action === "demote",
     });
 
@@ -116,19 +118,19 @@ export function AdminUsers({
       });
 
       if (result.success) {
-        toast.success(`User ${action}d successfully`);
+        toast.success(action === "promote" ? t("users.promotedSuccess") : t("users.demotedSuccess"));
         router.refresh();
       } else {
-        toast.error(result.error ?? "Failed to update user");
+        toast.error(result.error ?? t("users.failedUpdate"));
       }
     });
   };
 
   const handleDeleteUser = async (user: UserRow) => {
     const confirmed = await confirm({
-      title: "Delete User",
-      description: `Are you sure you want to permanently delete "${user.name}" (${user.email})? This action cannot be undone.`,
-      confirmLabel: "Delete",
+      title: t("users.deleteTitle"),
+      description: t("users.deleteConfirm", { name: user.name, email: user.email }),
+      confirmLabel: t("users.delete"),
       destructive: true,
     });
 
@@ -137,10 +139,10 @@ export function AdminUsers({
     startTransition(async () => {
       const result = await deleteUser({ userId: user.id });
       if (result.success) {
-        toast.success("User deleted successfully");
+        toast.success(t("users.deletedSuccess"));
         router.refresh();
       } else {
-        toast.error(result.error ?? "Failed to delete user");
+        toast.error(result.error ?? t("users.failedDelete"));
       }
     });
   };
@@ -151,7 +153,7 @@ export function AdminUsers({
         <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search by name or email..."
+            placeholder={t("users.searchPlaceholder")}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="pl-9"
@@ -164,12 +166,12 @@ export function AdminUsers({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead className="text-center">Orgs</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead>Last Seen</TableHead>
+              <TableHead>{t("users.name")}</TableHead>
+              <TableHead>{t("users.email")}</TableHead>
+              <TableHead>{t("users.role")}</TableHead>
+              <TableHead className="text-center">{t("users.orgs")}</TableHead>
+              <TableHead>{t("users.created")}</TableHead>
+              <TableHead>{t("users.lastSeen")}</TableHead>
               <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
@@ -177,7 +179,7 @@ export function AdminUsers({
             {data.users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                  {search ? "No users match your search." : "No users found."}
+                  {search ? t("users.noResults") : t("users.noUsers")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -189,10 +191,10 @@ export function AdminUsers({
                     {user.isSuperAdmin ? (
                       <Badge variant="default" className="gap-1">
                         <ShieldCheck className="h-3 w-3" />
-                        Super Admin
+                        {t("users.superAdmin")}
                       </Badge>
                     ) : (
-                      <Badge variant="secondary">User</Badge>
+                      <Badge variant="secondary">{t("users.user")}</Badge>
                     )}
                   </TableCell>
                   <TableCell className="text-center">{user.organizationCount}</TableCell>
@@ -203,7 +205,7 @@ export function AdminUsers({
                     {user.lastSeen && Date.now() - new Date(user.lastSeen).getTime() < 5 * 60 * 1000 ? (
                       <span className="flex items-center gap-1.5">
                         <OnlineDot lastSeen={user.lastSeen} />
-                        <span className="text-sm text-green-600 dark:text-green-400">Online</span>
+                        <span className="text-sm text-green-600 dark:text-green-400">{t("users.online")}</span>
                       </span>
                     ) : (
                       <span className="text-sm text-muted-foreground">
@@ -223,12 +225,12 @@ export function AdminUsers({
                           {user.isSuperAdmin ? (
                             <>
                               <ShieldOff className="mr-2 h-4 w-4" />
-                              Demote from Super Admin
+                              {t("users.demoteFromSuperAdmin")}
                             </>
                           ) : (
                             <>
                               <ShieldCheck className="mr-2 h-4 w-4" />
-                              Promote to Super Admin
+                              {t("users.promoteToSuperAdmin")}
                             </>
                           )}
                         </DropdownMenuItem>
@@ -237,7 +239,7 @@ export function AdminUsers({
                           className="text-destructive focus:text-destructive"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete User
+                          {t("users.deleteUser")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

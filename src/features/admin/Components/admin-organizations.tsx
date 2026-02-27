@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useConfirm } from "@/components/confirm-dialog";
@@ -55,6 +56,7 @@ export function AdminOrganizations({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const confirm = useConfirm();
+  const t = useTranslations("admin");
   const [isPending, startTransition] = useTransition();
   const [searchInput, setSearchInput] = useState(search);
 
@@ -88,9 +90,9 @@ export function AdminOrganizations({
 
   const handleDelete = async (org: OrgRow) => {
     const confirmed = await confirm({
-      title: "Delete Organization",
-      description: `Are you sure you want to permanently delete "${org.name}" and all its data? This action cannot be undone.`,
-      confirmLabel: "Delete",
+      title: t("organizations.deleteTitle"),
+      description: t("organizations.deleteConfirm", { name: org.name }),
+      confirmLabel: t("organizations.delete"),
       destructive: true,
     });
 
@@ -99,10 +101,10 @@ export function AdminOrganizations({
     startTransition(async () => {
       const result = await deleteOrganization({ organizationId: org.id });
       if (result.success) {
-        toast.success("Organization deleted successfully");
+        toast.success(t("organizations.deletedSuccess"));
         router.refresh();
       } else {
-        toast.error(result.error ?? "Failed to delete organization");
+        toast.error(result.error ?? t("organizations.failedDelete"));
       }
     });
   };
@@ -128,7 +130,7 @@ export function AdminOrganizations({
         <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search by organization name..."
+            placeholder={t("organizations.searchPlaceholder")}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="pl-9"
@@ -141,11 +143,11 @@ export function AdminOrganizations({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Owner</TableHead>
-              <TableHead className="text-center">Members</TableHead>
-              <TableHead>Subscription</TableHead>
-              <TableHead>Created</TableHead>
+              <TableHead>{t("organizations.name")}</TableHead>
+              <TableHead>{t("organizations.owner")}</TableHead>
+              <TableHead className="text-center">{t("organizations.members")}</TableHead>
+              <TableHead>{t("organizations.subscription")}</TableHead>
+              <TableHead>{t("organizations.created")}</TableHead>
               <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
@@ -153,7 +155,7 @@ export function AdminOrganizations({
             {data.organizations.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
-                  {search ? "No organizations match your search." : "No organizations found."}
+                  {search ? t("organizations.noResults") : t("organizations.noOrganizations")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -180,7 +182,7 @@ export function AdminOrganizations({
                         )}
                       </div>
                     ) : (
-                      <span className="text-xs text-muted-foreground">None</span>
+                      <span className="text-xs text-muted-foreground">{t("organizations.none")}</span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -199,7 +201,7 @@ export function AdminOrganizations({
                           className="text-destructive focus:text-destructive"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete Organization
+                          {t("organizations.deleteOrganization")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

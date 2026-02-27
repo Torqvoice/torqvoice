@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getCachedSession } from "@/lib/cached-session";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/page-header";
@@ -20,14 +21,16 @@ export default async function AdminLayout({
 
   if (!user?.isSuperAdmin) redirect("/");
 
+  const t = await getTranslations("admin");
+
   return (
     <div className="flex h-svh flex-col">
       <PageHeader />
       <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
         <div className="shrink-0">
-          <h1 className="text-3xl font-bold tracking-tight">Admin Panel</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('layout.title')}</h1>
           <p className="mt-1 text-muted-foreground">
-            Platform management for super administrators
+            {t('layout.description')}
           </p>
         </div>
         <div className="flex min-h-0 flex-1 flex-col gap-6 md:flex-row">

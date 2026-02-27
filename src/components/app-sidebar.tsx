@@ -59,7 +59,7 @@ import {
   Sun,
   Users,
 } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { switchOrganization } from '@/features/team/Actions/switchOrganization'
 import { setLocale } from '@/i18n/actions'
 import { locales, localeNames } from '@/i18n/config'
@@ -67,8 +67,6 @@ import { createNewOrganization } from '@/features/team/Actions/createNewOrganiza
 import type { PlanFeatures } from '@/lib/features'
 import { useTheme } from '@/components/theme-provider'
 import { NotificationBell, NotificationPanel } from '@/features/notifications/Components/NotificationPanel'
-
-const adminNavItems = [{ title: 'Admin Panel', url: '/admin', icon: ShieldCheck }]
 
 type OrgInfo = { id: string; name: string; role: string }
 
@@ -97,6 +95,7 @@ export function AppSidebar({
   const { data: session } = useSession()
   const { theme, setTheme } = useTheme()
   const currentLocale = useLocale()
+  const t = useTranslations('navigation')
   const [showCreateOrg, setShowCreateOrg] = React.useState(false)
   const [newOrgName, setNewOrgName] = React.useState('')
   const [creatingOrg, setCreatingOrg] = React.useState(false)
@@ -104,34 +103,34 @@ export function AppSidebar({
   const showReports = features?.reports !== false && canAccessReports
 
   const clientItems = [
-    { title: 'Customers', url: '/customers', icon: Users },
-    { title: 'Messages', url: '/messages', icon: MessageSquare },
+    { titleKey: 'sidebar.customers' as const, url: '/customers', icon: Users },
+    { titleKey: 'sidebar.messages' as const, url: '/messages', icon: MessageSquare },
   ]
 
   const workshopItems = [
-    { title: 'Vehicles', url: '/vehicles', icon: Car },
-    { title: 'Work Orders', url: '/work-orders', icon: ClipboardList },
-    { title: 'Inspections', url: '/inspections', icon: ClipboardCheck },
-    { title: 'Calendar', url: '/calendar', icon: CalendarDays },
-    { title: 'Work Board', url: '/work-board', icon: Columns3 },
+    { titleKey: 'sidebar.vehicles' as const, url: '/vehicles', icon: Car },
+    { titleKey: 'sidebar.workOrders' as const, url: '/work-orders', icon: ClipboardList },
+    { titleKey: 'sidebar.inspections' as const, url: '/inspections', icon: ClipboardCheck },
+    { titleKey: 'sidebar.calendar' as const, url: '/calendar', icon: CalendarDays },
+    { titleKey: 'sidebar.workBoard' as const, url: '/work-board', icon: Columns3 },
   ]
 
   const businessItems = [
-    { title: 'Quotes', url: '/quotes', icon: FileText },
-    { title: 'Billing', url: '/billing', icon: Receipt },
-    { title: 'Inventory', url: '/inventory', icon: Package },
-    ...(showReports ? [{ title: 'Reports', url: '/reports', icon: BarChart3 }] : []),
+    { titleKey: 'sidebar.quotes' as const, url: '/quotes', icon: FileText },
+    { titleKey: 'sidebar.billing' as const, url: '/billing', icon: Receipt },
+    { titleKey: 'sidebar.inventory' as const, url: '/inventory', icon: Package },
+    ...(showReports ? [{ titleKey: 'sidebar.reports' as const, url: '/reports', icon: BarChart3 }] : []),
   ]
 
-  const renderNavGroup = (items: { title: string; url: string; icon: React.ComponentType<{ className?: string }> }[]) =>
+  const renderNavGroup = (items: { titleKey: string; url: string; icon: React.ComponentType<{ className?: string }> }[]) =>
     items.map((item) => {
       const isActive = pathname === item.url || (item.url !== '/' && pathname.startsWith(item.url))
       return (
-        <SidebarMenuItem key={item.title}>
+        <SidebarMenuItem key={item.titleKey}>
           <SidebarMenuButton asChild isActive={isActive}>
             <Link href={item.url} className="font-medium">
               <item.icon className="size-4" />
-              {item.title}
+              {t(item.titleKey)}
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -196,7 +195,7 @@ export function AppSidebar({
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none">
                     <span className="font-semibold">
-                      {activeOrg?.name ?? 'No organization'}
+                      {activeOrg?.name ?? t('sidebar.noOrganization')}
                     </span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
@@ -209,7 +208,7 @@ export function AppSidebar({
                 sideOffset={4}
               >
                 <DropdownMenuLabel className="text-xs text-muted-foreground">
-                  Organizations
+                  {t('sidebar.organizations')}
                 </DropdownMenuLabel>
                 {organizations.map((org) => (
                   <DropdownMenuItem
@@ -225,7 +224,7 @@ export function AppSidebar({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setShowCreateOrg(true)} className="gap-2">
                   <Plus className="size-4" />
-                  <span>Add New Company</span>
+                  <span>{t('sidebar.addNewCompany')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -241,7 +240,7 @@ export function AppSidebar({
               <SidebarMenuButton asChild isActive={dashboardActive}>
                 <Link href="/" className="font-medium">
                   <LayoutDashboard className="size-4" />
-                  Dashboard
+                  {t('sidebar.dashboard')}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -250,7 +249,7 @@ export function AppSidebar({
 
         {/* Clients */}
         <SidebarGroup>
-          <SidebarGroupLabel>Clients</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('sidebar.clients')}</SidebarGroupLabel>
           <SidebarMenu className="gap-2">
             {renderNavGroup(clientItems)}
           </SidebarMenu>
@@ -258,7 +257,7 @@ export function AppSidebar({
 
         {/* Workshop */}
         <SidebarGroup>
-          <SidebarGroupLabel>Workshop</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('sidebar.workshop')}</SidebarGroupLabel>
           <SidebarMenu className="gap-2">
             {renderNavGroup(workshopItems)}
           </SidebarMenu>
@@ -266,7 +265,7 @@ export function AppSidebar({
 
         {/* Business */}
         <SidebarGroup>
-          <SidebarGroupLabel>Business</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('sidebar.business')}</SidebarGroupLabel>
           <SidebarMenu className="gap-2">
             {renderNavGroup(businessItems)}
           </SidebarMenu>
@@ -280,7 +279,7 @@ export function AppSidebar({
                 <SidebarMenuButton asChild isActive={pathname.startsWith('/settings')}>
                   <Link href="/settings" className="font-medium">
                     <Settings className="size-4" />
-                    Settings
+                    {t('sidebar.settings')}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -290,22 +289,16 @@ export function AppSidebar({
 
         {isSuperAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel>Super Admin</SidebarGroupLabel>
+            <SidebarGroupLabel>{t('sidebar.superAdmin')}</SidebarGroupLabel>
             <SidebarMenu className="gap-2">
-              {adminNavItems.map((item) => {
-                const isActive = pathname.startsWith(item.url)
-
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={isActive}>
-                      <Link href={item.url} className="font-medium">
-                        <item.icon className="size-4" />
-                        {item.title}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')}>
+                  <Link href="/admin" className="font-medium">
+                    <ShieldCheck className="size-4" />
+                    {t('sidebar.adminPanel')}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
         )}
@@ -343,7 +336,7 @@ export function AppSidebar({
                   <DropdownMenuItem asChild>
                     <Link href="/settings">
                       <Settings className="mr-2 size-4" />
-                      Settings
+                      {t('sidebar.settings')}
                     </Link>
                   </DropdownMenuItem>
                 )}
@@ -353,7 +346,7 @@ export function AppSidebar({
                   ) : (
                     <Moon className="mr-2 size-4" />
                   )}
-                  {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                  {theme === 'dark' ? t('sidebar.lightMode') : t('sidebar.darkMode')}
                 </DropdownMenuItem>
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
@@ -379,7 +372,7 @@ export function AppSidebar({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 size-4" />
-                  Sign Out
+                  {t('sidebar.signOut')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -392,7 +385,7 @@ export function AppSidebar({
       <Dialog open={showCreateOrg} onOpenChange={setShowCreateOrg}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add New Company</DialogTitle>
+            <DialogTitle>{t('sidebar.addNewCompany')}</DialogTitle>
           </DialogHeader>
           <form
             onSubmit={(e) => {
@@ -402,10 +395,10 @@ export function AppSidebar({
             className="space-y-4"
           >
             <div className="space-y-2">
-              <Label htmlFor="sidebar-org-name">Company Name</Label>
+              <Label htmlFor="sidebar-org-name">{t('sidebar.companyName')}</Label>
               <Input
                 id="sidebar-org-name"
-                placeholder="e.g. Joe's Auto Repair"
+                placeholder={t('sidebar.companyPlaceholder')}
                 value={newOrgName}
                 onChange={(e) => setNewOrgName(e.target.value)}
                 autoFocus
@@ -413,11 +406,11 @@ export function AppSidebar({
             </div>
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => setShowCreateOrg(false)}>
-                Cancel
+                {t('sidebar.cancel')}
               </Button>
               <Button type="submit" disabled={creatingOrg || !newOrgName.trim()}>
                 {creatingOrg && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Company
+                {t('sidebar.createCompany')}
               </Button>
             </div>
           </form>

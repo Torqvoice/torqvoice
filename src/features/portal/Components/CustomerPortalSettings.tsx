@@ -142,7 +142,7 @@ export function CustomerPortalSettings({
                       {slugSaving ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        {t('portal.save')}
+                        t('portal.save')
                       )}
                     </Button>
                   </div>
