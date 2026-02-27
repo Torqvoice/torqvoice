@@ -1,0 +1,10 @@
+{
+  "panel": {
+    "title": "Bildirimler",
+    "markAllRead": "Tümünü okundu olarak işaretle",
+    "empty": "Henüz bildirim yok",
+    "confirmDelete": "Emin misiniz?",
+    "delete": "Sil",
+    "cancel": "İptal"
+  }
+}

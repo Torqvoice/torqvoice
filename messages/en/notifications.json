@@ -1,0 +1,10 @@
+{
+  "panel": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "empty": "No notifications yet",
+    "confirmDelete": "Are you sure?",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  }
+}
