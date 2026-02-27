@@ -89,6 +89,17 @@
     "publicHelper": "Exibido no documento do orçamento",
     "internalHelper": "Visível apenas para sua equipe"
   },
+  "sidebar": {
+    "sharedLink": {
+      "title": "Link compartilhado",
+      "sharedOn": "Compartilhado em {date}",
+      "notViewed": "Ainda não visualizado",
+      "viewedTimes": "Visualizado {count, plural, one {# vez} other {# vezes}}",
+      "lastViewed": "Último {date}",
+      "copyLink": "Copiar link",
+      "linkCopied": "Link copiado"
+    }
+  },
   "details": {
     "title": "Detalhes do orçamento",
     "titleLabel": "Título *",

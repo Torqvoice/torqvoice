@@ -89,6 +89,17 @@
     "publicHelper": "Vises på tilbudsdokumentet",
     "internalHelper": "Kun synlig for teamet ditt"
   },
+  "sidebar": {
+    "sharedLink": {
+      "title": "Delt lenke",
+      "sharedOn": "Delt {date}",
+      "notViewed": "Ikke sett ennå",
+      "viewedTimes": "Sett {count, plural, one {# gang} other {# ganger}}",
+      "lastViewed": "Sist {date}",
+      "copyLink": "Kopier lenke",
+      "linkCopied": "Lenke kopiert"
+    }
+  },
   "details": {
     "title": "Tilbudsdetaljer",
     "titleLabel": "Tittel *",

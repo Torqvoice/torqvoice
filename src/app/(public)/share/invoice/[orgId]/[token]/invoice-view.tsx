@@ -145,6 +145,15 @@ export function InvoiceView({
   const [verifying, setVerifying] = useState(false)
   const [customAmount, setCustomAmount] = useState(false)
 
+  // Track view on mount
+  useEffect(() => {
+    fetch('/api/public/track-view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'invoice', token }),
+    }).catch(() => { /* fire-and-forget */ })
+  }, [token])
+
   const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
   const displayTotal = record.totalAmount > 0 ? record.totalAmount : record.cost
   const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`

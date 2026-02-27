@@ -89,6 +89,17 @@
     "publicHelper": "Wird auf dem Angebotsdokument angezeigt",
     "internalHelper": "Nur für Ihr Team sichtbar"
   },
+  "sidebar": {
+    "sharedLink": {
+      "title": "Geteilter Link",
+      "sharedOn": "Geteilt am {date}",
+      "notViewed": "Noch nicht angesehen",
+      "viewedTimes": "{count, plural, one {# Mal} other {# Mal}} angesehen",
+      "lastViewed": "Zuletzt {date}",
+      "copyLink": "Link kopieren",
+      "linkCopied": "Link kopiert"
+    }
+  },
   "details": {
     "title": "Angebotsdetails",
     "titleLabel": "Titel *",

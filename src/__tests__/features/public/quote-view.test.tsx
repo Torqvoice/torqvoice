@@ -64,7 +64,7 @@ beforeEach(() => {
   vi.resetAllMocks();
   URL.createObjectURL = vi.fn().mockReturnValue("blob:mock-url");
   URL.revokeObjectURL = vi.fn();
-  mockFetch = vi.fn();
+  mockFetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ success: true }) });
   vi.stubGlobal("fetch", mockFetch);
 });
 
@@ -243,7 +243,8 @@ describe("QuoteView", () => {
           "/api/public/forms/quote-response",
           expect.objectContaining({ method: "POST" })
         );
-        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+        const call = mockFetch.mock.calls.find((c: unknown[]) => c[0] === "/api/public/forms/quote-response");
+        const body = JSON.parse(call[1].body);
         expect(body.action).toBe("accepted");
         expect(body.quoteId).toBe("quote-1");
         expect(body.publicToken).toBe("tok-abc");
@@ -308,7 +309,9 @@ describe("QuoteView", () => {
       await userEvent.click(screen.getByRole("button", { name: /submit request/i }));
 
       await waitFor(() => {
-        const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+        const call = mockFetch.mock.calls.find((c: unknown[]) => c[0] === "/api/public/forms/quote-response");
+        expect(call).toBeTruthy();
+        const body = JSON.parse(call[1].body);
         expect(body.action).toBe("changes_requested");
         expect(body.message).toBe("Need a discount");
       });

@@ -41,6 +41,9 @@ export interface ServiceDetail {
   discountAmount: number;
   manuallyPaid: boolean;
   publicToken: string | null;
+  sharedAt: Date | null;
+  viewCount: number;
+  lastViewedAt: Date | null;
   partItems: PartItem[];
   laborItems: LaborItem[];
   attachments: Attachment[];
