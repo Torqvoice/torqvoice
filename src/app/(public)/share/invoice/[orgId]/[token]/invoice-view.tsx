@@ -881,7 +881,7 @@ export function InvoiceView({
             <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('notes')}</p>
             <div
               className="notes-content text-sm text-gray-600 dark:text-gray-400"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.invoiceNotes) }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.invoiceNotes!) }}
             />
           </div>
         )}
@@ -890,7 +890,7 @@ export function InvoiceView({
             <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('diagnosticNotes')}</p>
             <div
               className="notes-content text-sm text-gray-600 dark:text-gray-400"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.diagnosticNotes) }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.diagnosticNotes!) }}
             />
           </div>
         )}

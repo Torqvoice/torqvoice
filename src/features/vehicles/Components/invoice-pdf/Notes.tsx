@@ -207,7 +207,7 @@ export function Notes({
       {hasContent(diagnosticNotes) && (
         <View style={{ ...styles.notesSection, marginTop: 8 }}>
           <Text style={styles.notesLabel}>{labels.diagnosticNotes || 'Diagnostic Notes'}</Text>
-          <HtmlToPdf html={diagnosticNotes} baseStyle={styles.notesText} fontBold={fontBold} />
+          <HtmlToPdf html={diagnosticNotes!} baseStyle={styles.notesText} fontBold={fontBold} />
         </View>
       )}
 

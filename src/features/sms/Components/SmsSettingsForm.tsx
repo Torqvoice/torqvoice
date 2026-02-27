@@ -136,7 +136,7 @@ export function SmsSettingsForm({
     try {
       const result = await testSmsSend(testPhone.trim());
       if (result.success) {
-        toast.success(t("sms.testSentTo", { phone: result.data?.sentTo }));
+        toast.success(t("sms.testSentTo", { phone: result.data?.sentTo ?? '' }));
       } else {
         toast.error(result.error ?? t("sms.testFailed"));
       }

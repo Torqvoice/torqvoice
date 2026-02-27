@@ -180,7 +180,7 @@ export function AdminSettings({
     try {
       const result = await testEmailConnection()
       if (result.success) {
-        toast.success(t('adminSettings.testSentTo', { email: result.data?.sentTo }))
+        toast.success(t('adminSettings.testSentTo', { email: result.data?.sentTo ?? '' }))
       } else {
         toast.error(result.error ?? t('adminSettings.testFailed'))
       }

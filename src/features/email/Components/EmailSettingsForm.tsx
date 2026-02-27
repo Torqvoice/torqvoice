@@ -216,7 +216,7 @@ export function EmailSettingsForm({
     try {
       const result = await testOrgEmailConnection();
       if (result.success) {
-        toast.success(t("email.testSentTo", { email: result.data?.sentTo }));
+        toast.success(t("email.testSentTo", { email: result.data?.sentTo ?? '' }));
       } else {
         toast.error(result.error ?? t("email.testFailed"));
       }
