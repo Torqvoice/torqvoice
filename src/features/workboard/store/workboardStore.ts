@@ -82,7 +82,10 @@ export const useWorkBoardStore = create<WorkBoardState>((set) => ({
 
   setTechnicians: (technicians) => set({ technicians }),
   addTechnician: (tech) =>
-    set((s) => ({ technicians: [...s.technicians, tech] })),
+    set((s) => {
+      const filtered = s.technicians.filter((t) => t.id !== tech.id);
+      return { technicians: [...filtered, tech] };
+    }),
   removeTechnician: (id) =>
     set((s) => ({ technicians: s.technicians.filter((t) => t.id !== id) })),
 
