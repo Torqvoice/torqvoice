@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { getVehicle } from "@/features/vehicles/Actions/vehicleActions";
 import { getServiceRecordsPaginated } from "@/features/vehicles/Actions/serviceActions";
 import { getNotesPaginated } from "@/features/vehicles/Actions/noteActions";
@@ -49,7 +50,7 @@ export default async function VehicleDetailPage({
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-muted-foreground">
-            {result.error || "Vehicle not found"}
+            {result.error || (await getTranslations("vehicles.detail"))("notFound")}
           </p>
         </div>
       </>

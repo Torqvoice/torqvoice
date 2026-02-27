@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getTranslations } from "next-intl/server";
 import { getVehiclesPaginated } from "@/features/vehicles/Actions/vehicleActions";
 import { getCustomersList } from "@/features/customers/Actions/customerActions";
 import { VehiclesClient } from "./vehicles-client";
@@ -30,7 +31,7 @@ export default async function VehiclesPage({
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-muted-foreground">
-            {result.error || "Failed to load vehicles"}
+            {result.error || (await getTranslations("vehicles.list"))("error")}
           </p>
         </div>
       </>

@@ -44,6 +44,7 @@ import {
   Trash2,
   Wrench,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface Vehicle {
   id: string
@@ -99,6 +100,8 @@ export function VehiclesClient({
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
+  const t = useTranslations('vehicles.list')
+  const tc = useTranslations('common.buttons')
   const [searchInput, setSearchInput] = useState(search)
   const [showForm, setShowForm] = useState(false)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
@@ -142,9 +145,9 @@ export function VehiclesClient({
 
   const handleDelete = async (id: string, name: string) => {
     const ok = await confirm({
-      title: 'Delete Vehicle',
-      description: `Delete ${name}? This will remove all associated service records and notes.`,
-      confirmLabel: 'Delete',
+      title: t('deleteTitle'),
+      description: t('deleteDescription', { name }),
+      confirmLabel: tc('delete'),
       destructive: true,
     })
     if (!ok) return
@@ -152,23 +155,23 @@ export function VehiclesClient({
     if (result.success) {
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to delete vehicle')
+      modal.open('error', 'Error', result.error || t('deleteError'))
     }
   }
 
   const handleUnarchive = async (id: string, name: string) => {
     const ok = await confirm({
-      title: 'Unarchive Vehicle',
-      description: `Restore ${name} to the active vehicles list?`,
-      confirmLabel: 'Unarchive',
+      title: t('unarchiveTitle'),
+      description: t('unarchiveDescription', { name }),
+      confirmLabel: t('unarchive'),
     })
     if (!ok) return
     const result = await unarchiveVehicle(id)
     if (result.success) {
-      toast.success('Vehicle unarchived')
+      toast.success(t('vehicleUnarchived'))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to unarchive vehicle')
+      modal.open('error', 'Error', result.error || t('unarchiveError'))
     }
   }
 
@@ -186,7 +189,7 @@ export function VehiclesClient({
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Active
+              {t('active')}
             </button>
             <button
               onClick={() => router.push('/vehicles?archived=true')}
@@ -196,13 +199,13 @@ export function VehiclesClient({
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Archived{archivedCount > 0 ? ` (${archivedCount})` : ''}
+              {t('archived')}{archivedCount > 0 ? ` (${archivedCount})` : ''}
             </button>
           </div>
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search by plate, make, model, VIN..."
+              placeholder={t('searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="pl-9"
@@ -232,7 +235,7 @@ export function VehiclesClient({
           {!isArchived && (
             <Button size="sm" onClick={() => setShowForm(true)}>
               <Plus className="mr-1 h-3.5 w-3.5" />
-              Add Vehicle
+              {t('addVehicle')}
             </Button>
           )}
         </div>
@@ -240,7 +243,7 @@ export function VehiclesClient({
 
       {data.vehicles.length === 0 ? (
         <div className="flex h-32 items-center justify-center rounded-lg border text-muted-foreground">
-          {search ? 'No vehicles match your search.' : isArchived ? 'No archived vehicles.' : 'No vehicles yet.'}
+          {search ? t('emptySearch') : isArchived ? t('emptyArchived') : t('empty')}
         </div>
       ) : view === 'table' ? (
         /* Table view */
@@ -248,11 +251,11 @@ export function VehiclesClient({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[120px]">Plate</TableHead>
-                <TableHead>Vehicle</TableHead>
-                <TableHead className="hidden sm:table-cell">Customer</TableHead>
-                <TableHead className="hidden md:table-cell w-[100px] text-right">Mileage</TableHead>
-                <TableHead className="w-[80px] text-center">Services</TableHead>
+                <TableHead className="w-[120px]">{t('table.plate')}</TableHead>
+                <TableHead>{t('table.vehicle')}</TableHead>
+                <TableHead className="hidden sm:table-cell">{t('table.customer')}</TableHead>
+                <TableHead className="hidden md:table-cell w-[100px] text-right">{t('table.mileage')}</TableHead>
+                <TableHead className="w-[80px] text-center">{t('table.services')}</TableHead>
                 <TableHead className="w-[50px]" />
               </TableRow>
             </TableHeader>
@@ -293,7 +296,7 @@ export function VehiclesClient({
                             }}
                           >
                             <Pencil className="mr-2 h-4 w-4" />
-                            Edit
+                            {t('edit')}
                           </DropdownMenuItem>
                         )}
                         {isArchived ? (
@@ -304,7 +307,7 @@ export function VehiclesClient({
                             }}
                           >
                             <ArchiveRestore className="mr-2 h-4 w-4" />
-                            Unarchive
+                            {t('unarchive')}
                           </DropdownMenuItem>
                         ) : (
                           <DropdownMenuItem
@@ -314,7 +317,7 @@ export function VehiclesClient({
                             }}
                           >
                             <Archive className="mr-2 h-4 w-4" />
-                            Archive
+                            {t('archive')}
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem
@@ -325,7 +328,7 @@ export function VehiclesClient({
                           }}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
+                          {t('delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -392,7 +395,7 @@ export function VehiclesClient({
                             }}
                           >
                             <Pencil className="mr-2 h-4 w-4" />
-                            Edit
+                            {t('edit')}
                           </DropdownMenuItem>
                         )}
                         {isArchived ? (
@@ -403,7 +406,7 @@ export function VehiclesClient({
                             }}
                           >
                             <ArchiveRestore className="mr-2 h-4 w-4" />
-                            Unarchive
+                            {t('unarchive')}
                           </DropdownMenuItem>
                         ) : (
                           <DropdownMenuItem
@@ -413,7 +416,7 @@ export function VehiclesClient({
                             }}
                           >
                             <Archive className="mr-2 h-4 w-4" />
-                            Archive
+                            {t('archive')}
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem
@@ -424,7 +427,7 @@ export function VehiclesClient({
                           }}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
+                          {t('delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

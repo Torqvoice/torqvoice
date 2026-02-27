@@ -37,6 +37,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface NoteRow {
   id: string;
@@ -76,6 +77,7 @@ export function NotesTable({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const t = useTranslations("vehicles.notes");
 
   const createUrl = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -124,7 +126,7 @@ export function NotesTable({
         <div className="ml-auto">
           <Button size="sm" onClick={onAddNote}>
             <Plus className="mr-1 h-3.5 w-3.5" />
-            Add Note
+            {t("addNote")}
           </Button>
         </div>
       </div>
@@ -135,9 +137,9 @@ export function NotesTable({
           <TableHeader>
             <TableRow>
               <TableHead className="w-7.5"></TableHead>
-              <TableHead className="w-40">Title</TableHead>
-              <TableHead className="hidden sm:table-cell">Content</TableHead>
-              <TableHead className="w-30">Date</TableHead>
+              <TableHead className="w-40">{t("table.title")}</TableHead>
+              <TableHead className="hidden sm:table-cell">{t("table.content")}</TableHead>
+              <TableHead className="w-30">{t("table.date")}</TableHead>
               <TableHead className="w-12.5"></TableHead>
             </TableRow>
           </TableHeader>
@@ -145,7 +147,7 @@ export function NotesTable({
             {records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                  No notes yet.
+                  {t("empty")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -177,14 +179,14 @@ export function NotesTable({
                           ) : (
                             <Pin className="mr-2 h-4 w-4" />
                           )}
-                          {n.isPinned ? "Unpin" : "Pin"}
+                          {n.isPinned ? t("unpin") : t("pin")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-destructive"
                           onClick={() => onDeleteNote(n.id)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
+                          {t("delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -201,7 +203,7 @@ export function NotesTable({
         <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>
-              Showing {startItem}-{endItem} of {total}
+              {t("showing", { start: startItem, end: endItem, total })}
             </span>
             <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
               <SelectTrigger className="h-8 w-[70px]">
@@ -214,7 +216,7 @@ export function NotesTable({
                 <SelectItem value="50">50</SelectItem>
               </SelectContent>
             </Select>
-            <span>per page</span>
+            <span>{t("perPage")}</span>
           </div>
           <div className="flex items-center gap-1">
             <Button
@@ -236,7 +238,7 @@ export function NotesTable({
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <span className="px-3 text-sm">
-              Page {page} of {totalPages}
+              {t("page", { page, totalPages })}
             </span>
             <Button
               variant="outline"

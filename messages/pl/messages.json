@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Wiadomości SMS",
+    "featureDescription": "Wysyłaj i odbieraj wiadomości SMS z klientami bezpośrednio z Torqvoice."
+  },
+  "notConfigured": {
+    "title": "SMS nie skonfigurowany",
+    "description": "Skonfiguruj dostawcę SMS, aby wysyłać i odbierać wiadomości z klientami. Obsługuje Twilio, Vonage i Telnyx.",
+    "goToSettings": "Przejdź do ustawień SMS"
+  },
+  "threads": {
+    "title": "Rozmowy",
+    "empty": "Brak rozmów. Wyślij SMS ze strony klienta, aby rozpocząć.",
+    "loadMore": "Załaduj więcej",
+    "selectConversation": "Wybierz rozmowę",
+    "you": "Ty: ",
+    "deleteConversation": "Usuń rozmowę",
+    "deleteTitle": "Usunąć rozmowę?",
+    "deleteDescription": "Wszystkie wiadomości z {name} zostaną trwale usunięte. Tej czynności nie można cofnąć.",
+    "deleted": "Rozmowa usunięta",
+    "deleteError": "Nie udało się usunąć rozmowy"
+  },
+  "conversation": {
+    "noPhone": "Brak numeru telefonu dla {name}. Dodaj numer telefonu, aby rozpocząć wysyłanie wiadomości.",
+    "loadOlder": "Załaduj starsze",
+    "empty": "Brak wiadomości. Wyślij pierwszą wiadomość do {name}.",
+    "placeholder": "Wiadomość do {name}...",
+    "deleteMessage": "Usuń wiadomość",
+    "deleteTitle": "Usunąć wiadomość?",
+    "deleteDescription": "Ta wiadomość zostanie trwale usunięta z rozmowy. Tej czynności nie można cofnąć.",
+    "messageDeleted": "Wiadomość usunięta",
+    "deleteError": "Nie udało się usunąć wiadomości",
+    "sendError": "Nie udało się wysłać SMS"
+  },
+  "sendDialog": {
+    "send": "Wyślij {label}",
+    "message": "Wiadomość",
+    "placeholder": "Wpisz swoją wiadomość...",
+    "characters": "{count} / 1600 znaków",
+    "sendSms": "Wyślij SMS",
+    "smsSent": "SMS wysłany",
+    "sentTo": "{label} został wysłany do {name} ({phone})",
+    "sendError": "Nie udało się wysłać SMS"
+  }
+}

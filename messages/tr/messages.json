@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "SMS Mesajları",
+    "featureDescription": "Müşterilerinizle doğrudan Torqvoice üzerinden SMS mesajları gönderin ve alın."
+  },
+  "notConfigured": {
+    "title": "SMS yapılandırılmadı",
+    "description": "Müşterilerinizle mesaj göndermek ve almak için bir SMS sağlayıcısı kurun. Twilio, Vonage ve Telnyx desteklenir.",
+    "goToSettings": "SMS ayarlarına git"
+  },
+  "threads": {
+    "title": "Görüşmeler",
+    "empty": "Henüz görüşme yok. Başlamak için bir müşteri sayfasından SMS gönderin.",
+    "loadMore": "Daha fazla yükle",
+    "selectConversation": "Bir görüşme seçin",
+    "you": "Siz: ",
+    "deleteConversation": "Görüşmeyi sil",
+    "deleteTitle": "Görüşme silinsin mi?",
+    "deleteDescription": "{name} ile tüm mesajlar kalıcı olarak silinecek. Bu işlem geri alınamaz.",
+    "deleted": "Görüşme silindi",
+    "deleteError": "Görüşme silinemedi"
+  },
+  "conversation": {
+    "noPhone": "{name} için kayıtlı telefon numarası yok. Mesaj göndermeye başlamak için bir telefon numarası ekleyin.",
+    "loadOlder": "Eskileri yükle",
+    "empty": "Henüz mesaj yok. {name} kişisine ilk mesajı gönderin.",
+    "placeholder": "{name} kişisine mesaj...",
+    "deleteMessage": "Mesajı sil",
+    "deleteTitle": "Mesaj silinsin mi?",
+    "deleteDescription": "Bu mesaj görüşmeden kalıcı olarak silinecek. Bu işlem geri alınamaz.",
+    "messageDeleted": "Mesaj silindi",
+    "deleteError": "Mesaj silinemedi",
+    "sendError": "SMS gönderilemedi"
+  },
+  "sendDialog": {
+    "send": "{label} gönder",
+    "message": "Mesaj",
+    "placeholder": "Mesajınızı yazın...",
+    "characters": "{count} / 1600 karakter",
+    "sendSms": "SMS gönder",
+    "smsSent": "SMS gönderildi",
+    "sentTo": "{label}, {name} ({phone}) kişisine gönderildi",
+    "sendError": "SMS gönderilemedi"
+  }
+}

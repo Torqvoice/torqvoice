@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Messaggi SMS",
+    "featureDescription": "Invia e ricevi messaggi SMS con i tuoi clienti direttamente da Torqvoice."
+  },
+  "notConfigured": {
+    "title": "SMS non configurato",
+    "description": "Configura un provider SMS per inviare e ricevere messaggi con i tuoi clienti. Supporta Twilio, Vonage e Telnyx.",
+    "goToSettings": "Vai alle impostazioni SMS"
+  },
+  "threads": {
+    "title": "Conversazioni",
+    "empty": "Nessuna conversazione. Invia un SMS dalla pagina di un cliente per iniziare.",
+    "loadMore": "Carica altro",
+    "selectConversation": "Seleziona una conversazione",
+    "you": "Tu: ",
+    "deleteConversation": "Elimina conversazione",
+    "deleteTitle": "Eliminare la conversazione?",
+    "deleteDescription": "Tutti i messaggi con {name} verranno eliminati definitivamente. Questa azione non può essere annullata.",
+    "deleted": "Conversazione eliminata",
+    "deleteError": "Impossibile eliminare la conversazione"
+  },
+  "conversation": {
+    "noPhone": "Nessun numero di telefono registrato per {name}. Aggiungi un numero di telefono per iniziare a inviare messaggi.",
+    "loadOlder": "Carica precedenti",
+    "empty": "Nessun messaggio. Invia il primo messaggio a {name}.",
+    "placeholder": "Messaggio a {name}...",
+    "deleteMessage": "Elimina messaggio",
+    "deleteTitle": "Eliminare il messaggio?",
+    "deleteDescription": "Questo messaggio verrà eliminato definitivamente dalla conversazione. Questa azione non può essere annullata.",
+    "messageDeleted": "Messaggio eliminato",
+    "deleteError": "Impossibile eliminare il messaggio",
+    "sendError": "Impossibile inviare l'SMS"
+  },
+  "sendDialog": {
+    "send": "Invia {label}",
+    "message": "Messaggio",
+    "placeholder": "Scrivi il tuo messaggio...",
+    "characters": "{count} / 1600 caratteri",
+    "sendSms": "Invia SMS",
+    "smsSent": "SMS inviato",
+    "sentTo": "{label} è stato inviato a {name} ({phone})",
+    "sendError": "Impossibile inviare l'SMS"
+  }
+}

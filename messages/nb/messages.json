@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "SMS-meldinger",
+    "featureDescription": "Send og motta SMS-meldinger med kundene dine direkte fra Torqvoice."
+  },
+  "notConfigured": {
+    "title": "SMS ikke konfigurert",
+    "description": "Sett opp en SMS-leverandør for å sende og motta meldinger med kundene dine. Støtter Twilio, Vonage og Telnyx.",
+    "goToSettings": "Gå til SMS-innstillinger"
+  },
+  "threads": {
+    "title": "Samtaler",
+    "empty": "Ingen samtaler ennå. Send en SMS fra en kundeside for å starte.",
+    "loadMore": "Last inn flere",
+    "selectConversation": "Velg en samtale",
+    "you": "Du: ",
+    "deleteConversation": "Slett samtale",
+    "deleteTitle": "Slette samtale?",
+    "deleteDescription": "Alle meldinger med {name} vil bli permanent slettet. Denne handlingen kan ikke angres.",
+    "deleted": "Samtale slettet",
+    "deleteError": "Kunne ikke slette samtalen"
+  },
+  "conversation": {
+    "noPhone": "Ingen telefonnummer registrert for {name}. Legg til et telefonnummer for å starte meldinger.",
+    "loadOlder": "Last inn eldre",
+    "empty": "Ingen meldinger ennå. Send den første meldingen til {name}.",
+    "placeholder": "Melding til {name}...",
+    "deleteMessage": "Slett melding",
+    "deleteTitle": "Slette melding?",
+    "deleteDescription": "Denne meldingen vil bli permanent slettet fra samtalen. Denne handlingen kan ikke angres.",
+    "messageDeleted": "Melding slettet",
+    "deleteError": "Kunne ikke slette meldingen",
+    "sendError": "Kunne ikke sende SMS"
+  },
+  "sendDialog": {
+    "send": "Send {label}",
+    "message": "Melding",
+    "placeholder": "Skriv meldingen din...",
+    "characters": "{count} / 1600 tegn",
+    "sendSms": "Send SMS",
+    "smsSent": "SMS sendt",
+    "sentTo": "{label} har blitt sendt til {name} ({phone})",
+    "sendError": "Kunne ikke sende SMS"
+  }
+}

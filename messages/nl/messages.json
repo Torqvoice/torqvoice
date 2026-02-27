@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "SMS-berichten",
+    "featureDescription": "Verzend en ontvang SMS-berichten met uw klanten rechtstreeks vanuit Torqvoice."
+  },
+  "notConfigured": {
+    "title": "SMS niet geconfigureerd",
+    "description": "Stel een SMS-provider in om berichten te verzenden en ontvangen met uw klanten. Ondersteunt Twilio, Vonage en Telnyx.",
+    "goToSettings": "Ga naar SMS-instellingen"
+  },
+  "threads": {
+    "title": "Gesprekken",
+    "empty": "Nog geen gesprekken. Stuur een SMS vanaf een klantpagina om te beginnen.",
+    "loadMore": "Meer laden",
+    "selectConversation": "Selecteer een gesprek",
+    "you": "Jij: ",
+    "deleteConversation": "Gesprek verwijderen",
+    "deleteTitle": "Gesprek verwijderen?",
+    "deleteDescription": "Alle berichten met {name} worden permanent verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
+    "deleted": "Gesprek verwijderd",
+    "deleteError": "Gesprek kon niet worden verwijderd"
+  },
+  "conversation": {
+    "noPhone": "Geen telefoonnummer geregistreerd voor {name}. Voeg een telefoonnummer toe om berichten te sturen.",
+    "loadOlder": "Oudere laden",
+    "empty": "Nog geen berichten. Stuur het eerste bericht naar {name}.",
+    "placeholder": "Bericht aan {name}...",
+    "deleteMessage": "Bericht verwijderen",
+    "deleteTitle": "Bericht verwijderen?",
+    "deleteDescription": "Dit bericht wordt permanent verwijderd uit het gesprek. Deze actie kan niet ongedaan worden gemaakt.",
+    "messageDeleted": "Bericht verwijderd",
+    "deleteError": "Bericht kon niet worden verwijderd",
+    "sendError": "SMS kon niet worden verzonden"
+  },
+  "sendDialog": {
+    "send": "{label} verzenden",
+    "message": "Bericht",
+    "placeholder": "Typ uw bericht...",
+    "characters": "{count} / 1600 tekens",
+    "sendSms": "SMS verzenden",
+    "smsSent": "SMS verzonden",
+    "sentTo": "{label} is verzonden naar {name} ({phone})",
+    "sendError": "SMS kon niet worden verzonden"
+  }
+}

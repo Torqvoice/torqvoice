@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -38,6 +39,9 @@ export function SendSmsDialog({
   relatedEntityId,
 }: SendSmsDialogProps) {
   const modal = useGlassModal();
+  const t = useTranslations("messages.sendDialog");
+  const tc = useTranslations("common.buttons");
+  const te = useTranslations("common.errors");
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState(defaultMessage);
 
@@ -56,13 +60,13 @@ export function SendSmsDialog({
     if (result.success) {
       modal.open(
         "success",
-        "SMS Sent",
-        `${entityLabel} has been sent to ${customerName} (${customerPhone})`,
+        t("smsSent"),
+        t("sentTo", { label: entityLabel, name: customerName, phone: customerPhone }),
       );
       onOpenChange(false);
       setMessage("");
     } else {
-      modal.open("error", "Error", result.error || "Failed to send SMS");
+      modal.open("error", te("error"), result.error || t("sendError"));
     }
     setSending(false);
   };
@@ -73,7 +77,7 @@ export function SendSmsDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
-            Send {entityLabel}
+            {t("send", { label: entityLabel })}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSend} className="space-y-4">
@@ -82,17 +86,17 @@ export function SendSmsDialog({
             <span className="text-sm text-muted-foreground">{customerPhone}</span>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="sms-message">Message</Label>
+            <Label htmlFor="sms-message">{t("message")}</Label>
             <Textarea
               id="sms-message"
-              placeholder="Type your message..."
+              placeholder={t("placeholder")}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
               required
             />
             <p className="text-xs text-muted-foreground">
-              {message.length} / 1600 characters
+              {t("characters", { count: message.length })}
             </p>
           </div>
           <div className="flex justify-end gap-2">
@@ -101,7 +105,7 @@ export function SendSmsDialog({
               variant="ghost"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={sending || !message.trim()}>
               {sending ? (
@@ -109,7 +113,7 @@ export function SendSmsDialog({
               ) : (
                 <Send className="mr-2 h-4 w-4" />
               )}
-              Send SMS
+              {t("sendSms")}
             </Button>
           </div>
         </form>

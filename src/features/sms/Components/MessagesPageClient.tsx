@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useTransition, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,6 +61,8 @@ export function MessagesPageClient({
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const t = useTranslations("messages.threads");
+  const tc = useTranslations("common.buttons");
   const [threads, setThreads] = useState<SmsThread[]>(initialThreads);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(
@@ -137,7 +140,7 @@ export function MessagesPageClient({
     setIsDeletingThread(true);
     const result = await deleteConversation(deleteThreadTarget.customerId);
     if (result.success) {
-      toast.success("Conversation deleted");
+      toast.success(t("deleted"));
       setThreads((prev) => prev.filter((t) => t.customerId !== deleteThreadTarget.customerId));
       if (selectedCustomerId === deleteThreadTarget.customerId) {
         setSelectedCustomerId(null);
@@ -147,7 +150,7 @@ export function MessagesPageClient({
         router.replace(`?${params.toString()}`, { scroll: false });
       }
     } else {
-      toast.error(result.error || "Failed to delete conversation");
+      toast.error(result.error || t("deleteError"));
     }
     setIsDeletingThread(false);
     setDeleteThreadTarget(null);
@@ -193,14 +196,14 @@ export function MessagesPageClient({
       {/* Thread list */}
       <div className="w-80 shrink-0 border-r flex flex-col">
         <div className="shrink-0 border-b px-4 py-3">
-          <h2 className="text-sm font-semibold">Conversations</h2>
+          <h2 className="text-sm font-semibold">{t("title")}</h2>
         </div>
         <div className="flex-1 min-h-0 overflow-y-auto">
           {threads.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 px-4">
               <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground/40" />
               <p className="text-sm text-muted-foreground text-center">
-                No conversations yet. Send an SMS from a customer page to start.
+                {t("empty")}
               </p>
             </div>
           ) : (
@@ -234,7 +237,7 @@ export function MessagesPageClient({
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground truncate mt-0.5">
-                          {thread.lastMessage.direction === "outbound" ? "You: " : ""}
+                          {thread.lastMessage.direction === "outbound" ? t("you") : ""}
                           {thread.lastMessage.body}
                         </p>
                       </div>
@@ -256,7 +259,7 @@ export function MessagesPageClient({
                     ) : (
                       <ChevronDown className="mr-2 h-3.5 w-3.5" />
                     )}
-                    Load more
+                    {t("loadMore")}
                   </Button>
                 </div>
               )}
@@ -298,7 +301,7 @@ export function MessagesPageClient({
                     }}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    Delete conversation
+                    {t("deleteConversation")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -321,7 +324,7 @@ export function MessagesPageClient({
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center text-muted-foreground">
             <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground/40" />
-            <p className="text-sm">Select a conversation</p>
+            <p className="text-sm">{t("selectConversation")}</p>
           </div>
         )}
       </div>
@@ -330,22 +333,20 @@ export function MessagesPageClient({
       <AlertDialog open={!!deleteThreadTarget} onOpenChange={(open) => !open && setDeleteThreadTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete conversation?</AlertDialogTitle>
+            <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete all messages with{" "}
-              <span className="font-medium text-foreground">{deleteThreadTarget?.customerName}</span>.
-              This action cannot be undone.
+              {t("deleteDescription", { name: deleteThreadTarget?.customerName ?? "" })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeletingThread}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeletingThread}>{tc("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConversation}
               disabled={isDeletingThread}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isDeletingThread && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Delete
+              {tc("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

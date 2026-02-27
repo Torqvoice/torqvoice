@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Messagerie SMS",
+    "featureDescription": "Envoyez et recevez des SMS avec vos clients directement depuis Torqvoice."
+  },
+  "notConfigured": {
+    "title": "SMS non configuré",
+    "description": "Configurez un fournisseur SMS pour envoyer et recevoir des messages avec vos clients. Compatible avec Twilio, Vonage et Telnyx.",
+    "goToSettings": "Aller aux paramètres SMS"
+  },
+  "threads": {
+    "title": "Conversations",
+    "empty": "Aucune conversation pour le moment. Envoyez un SMS depuis la page d'un client pour commencer.",
+    "loadMore": "Charger plus",
+    "selectConversation": "Sélectionnez une conversation",
+    "you": "Vous : ",
+    "deleteConversation": "Supprimer la conversation",
+    "deleteTitle": "Supprimer la conversation ?",
+    "deleteDescription": "Tous les messages avec {name} seront définitivement supprimés. Cette action est irréversible.",
+    "deleted": "Conversation supprimée",
+    "deleteError": "Impossible de supprimer la conversation"
+  },
+  "conversation": {
+    "noPhone": "Aucun numéro de téléphone enregistré pour {name}. Ajoutez un numéro de téléphone pour commencer à envoyer des messages.",
+    "loadOlder": "Charger les anciens",
+    "empty": "Aucun message pour le moment. Envoyez le premier message à {name}.",
+    "placeholder": "Message à {name}...",
+    "deleteMessage": "Supprimer le message",
+    "deleteTitle": "Supprimer le message ?",
+    "deleteDescription": "Ce message sera définitivement supprimé de la conversation. Cette action est irréversible.",
+    "messageDeleted": "Message supprimé",
+    "deleteError": "Impossible de supprimer le message",
+    "sendError": "Impossible d'envoyer le SMS"
+  },
+  "sendDialog": {
+    "send": "Envoyer {label}",
+    "message": "Message",
+    "placeholder": "Tapez votre message...",
+    "characters": "{count} / 1600 caractères",
+    "sendSms": "Envoyer le SMS",
+    "smsSent": "SMS envoyé",
+    "sentTo": "{label} a été envoyé à {name} ({phone})",
+    "sendError": "Impossible d'envoyer le SMS"
+  }
+}
