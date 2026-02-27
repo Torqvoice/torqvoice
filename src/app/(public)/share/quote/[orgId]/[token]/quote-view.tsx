@@ -119,7 +119,7 @@ export function QuoteView({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'quote', token }),
-    }).catch(() => {});
+    }).catch(() => { /* fire-and-forget */ });
   }, [token]);
 
   const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`;

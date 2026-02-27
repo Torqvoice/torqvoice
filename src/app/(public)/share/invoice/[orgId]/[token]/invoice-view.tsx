@@ -151,7 +151,7 @@ export function InvoiceView({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'invoice', token }),
-    }).catch(() => {})
+    }).catch(() => { /* fire-and-forget */ })
   }, [token])
 
   const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
