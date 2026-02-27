@@ -7,6 +7,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export default async function PortalVehicleDetailPage({
   params,
@@ -14,13 +15,14 @@ export default async function PortalVehicleDetailPage({
   params: Promise<{ orgId: string; vehicleId: string }>;
 }) {
   const { orgId, vehicleId } = await params;
+  const t = await getTranslations('portal.vehicles');
   const result = await getPortalVehicleDetail(vehicleId);
 
   if (!result.success || !result.data) {
     return (
       <PortalShell orgId={orgId}>
         <p className="text-muted-foreground">
-          {result.error ?? "Vehicle not found."}
+          {result.error ?? t('vehicleNotFound')}
         </p>
       </PortalShell>
     );
@@ -45,8 +47,8 @@ export default async function PortalVehicleDetailPage({
               {v.year} {v.make} {v.model}
             </h1>
             <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
-              {v.licensePlate && <span>Plate: {v.licensePlate}</span>}
-              {v.vin && <span>VIN: {v.vin}</span>}
+              {v.licensePlate && <span>{t('plate', { plate: v.licensePlate })}</span>}
+              {v.vin && <span>{t('vin', { vin: v.vin })}</span>}
               {v.mileage > 0 && (
                 <span>{v.mileage.toLocaleString()} mi</span>
               )}
@@ -58,17 +60,17 @@ export default async function PortalVehicleDetailPage({
         <Tabs defaultValue="service-history">
           <TabsList>
             <TabsTrigger value="service-history">
-              Service History ({v.serviceRecords.length})
+              {t('serviceHistory', { count: v.serviceRecords.length })}
             </TabsTrigger>
             <TabsTrigger value="inspections">
-              Inspections ({v.inspections.length})
+              {t('inspectionsTab', { count: v.inspections.length })}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="service-history" className="mt-4">
             {v.serviceRecords.length === 0 ? (
               <p className="py-8 text-center text-sm text-muted-foreground">
-                No service records yet.
+                {t('noServiceRecords')}
               </p>
             ) : (
               <div className="space-y-3">
@@ -96,7 +98,7 @@ export default async function PortalVehicleDetailPage({
                             href={`/share/invoice/${orgId}/${sr.publicToken}`}
                             className="text-xs text-primary hover:underline"
                           >
-                            View
+                            {t('view')}
                           </Link>
                         )}
                       </div>
@@ -110,7 +112,7 @@ export default async function PortalVehicleDetailPage({
           <TabsContent value="inspections" className="mt-4">
             {v.inspections.length === 0 ? (
               <p className="py-8 text-center text-sm text-muted-foreground">
-                No inspections yet.
+                {t('noInspections')}
               </p>
             ) : (
               <div className="space-y-3">
@@ -133,22 +135,22 @@ export default async function PortalVehicleDetailPage({
                           <p className="text-xs text-muted-foreground">
                             {new Date(insp.createdAt).toLocaleDateString()}
                             {insp.completedAt &&
-                              ` - Completed ${new Date(insp.completedAt).toLocaleDateString()}`}
+                              ` - ${t('completed', { date: new Date(insp.completedAt).toLocaleDateString() })}`}
                           </p>
                           <div className="mt-1 flex gap-2">
                             {conditions.good && (
                               <span className="text-xs text-green-600">
-                                {conditions.good} good
+                                {t('good', { count: conditions.good })}
                               </span>
                             )}
                             {conditions.fair && (
                               <span className="text-xs text-yellow-600">
-                                {conditions.fair} fair
+                                {t('fair', { count: conditions.fair })}
                               </span>
                             )}
                             {conditions.poor && (
                               <span className="text-xs text-red-600">
-                                {conditions.poor} poor
+                                {t('poor', { count: conditions.poor })}
                               </span>
                             )}
                           </div>
@@ -160,7 +162,7 @@ export default async function PortalVehicleDetailPage({
                               href={`/share/inspection/${orgId}/${insp.publicToken}`}
                               className="text-xs text-primary hover:underline"
                             >
-                              View
+                              {t('view')}
                             </Link>
                           )}
                         </div>

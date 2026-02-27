@@ -16,6 +16,7 @@ import { useGlassModal } from "@/components/glass-modal";
 import { toast } from "sonner";
 import { createReminder, updateReminder } from "../Actions/reminderActions";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ReminderData {
   id: string;
@@ -35,6 +36,8 @@ interface ReminderFormProps {
 export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: ReminderFormProps) {
   const router = useRouter();
   const modal = useGlassModal();
+  const t = useTranslations("vehicles.reminders");
+  const tc = useTranslations("common.buttons");
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -74,11 +77,11 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
       : await createReminder(payload);
 
     if (result.success) {
-      toast.success(isEdit ? "Reminder updated" : "Reminder created");
+      toast.success(isEdit ? t("reminderUpdated") : t("reminderCreated"));
       onOpenChange(false);
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || `Failed to ${isEdit ? "update" : "create"} reminder`);
+      modal.open("error", "Error", result.error || t("saveError", { action: isEdit ? "update" : "create" }));
     }
 
     setLoading(false);
@@ -88,35 +91,35 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Reminder" : "Add Reminder"}</DialogTitle>
+          <DialogTitle>{isEdit ? t("editTitle") : t("addTitle")}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="reminder-title">Title *</Label>
+            <Label htmlFor="reminder-title">{t("titleLabel")}</Label>
             <Input
               id="reminder-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Oil Change"
+              placeholder={t("titlePlaceholder")}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="reminder-description">Description</Label>
+            <Label htmlFor="reminder-description">{t("descriptionLabel")}</Label>
             <Textarea
               id="reminder-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Optional details..."
+              placeholder={t("descriptionPlaceholder")}
               rows={3}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="reminder-dueDate">Due Date</Label>
+              <Label htmlFor="reminder-dueDate">{t("dueDateLabel")}</Label>
               <Input
                 id="reminder-dueDate"
                 type="date"
@@ -125,13 +128,13 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="reminder-dueMileage">Due Mileage</Label>
+              <Label htmlFor="reminder-dueMileage">{t("dueMileageLabel")}</Label>
               <Input
                 id="reminder-dueMileage"
                 type="number"
                 value={dueMileage}
                 onChange={(e) => setDueMileage(e.target.value)}
-                placeholder="e.g. 50000"
+                placeholder={t("dueMileagePlaceholder")}
               />
             </div>
           </div>
@@ -142,11 +145,11 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isEdit ? "Save Changes" : "Add Reminder"}
+              {isEdit ? tc("saveChanges") : t("addTitle")}
             </Button>
           </div>
         </form>

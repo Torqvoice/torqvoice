@@ -30,9 +30,10 @@ const CHART_COLORS = [
 
 interface DayOfWeekChartProps {
   data: DayOfWeekDistribution[];
+  labels?: { jobs: string };
 }
 
-export function DayOfWeekChart({ data }: DayOfWeekChartProps) {
+export function DayOfWeekChart({ data, labels }: DayOfWeekChartProps) {
   if (data.length === 0) return null;
 
   return (
@@ -54,7 +55,7 @@ export function DayOfWeekChart({ data }: DayOfWeekChartProps) {
             color: "hsl(var(--popover-foreground))",
           }}
         />
-        <Bar dataKey="count" name="Jobs" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="count" name={labels?.jobs ?? "Jobs"} fill="#3b82f6" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -105,10 +106,14 @@ export function ServiceTypeAnalyticsDonut({ data }: ServiceTypeDonutProps) {
 interface MonthlyTrendChartProps {
   data: MonthlyTrend[];
   formatCurrency: (value: number) => string;
+  labels?: { jobs: string; revenue: string };
 }
 
-export function MonthlyTrendChart({ data, formatCurrency }: MonthlyTrendChartProps) {
+export function MonthlyTrendChart({ data, formatCurrency, labels }: MonthlyTrendChartProps) {
   if (data.length === 0) return null;
+
+  const jobsLabel = labels?.jobs ?? "Jobs";
+  const revenueLabel = labels?.revenue ?? "Revenue";
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -133,7 +138,7 @@ export function MonthlyTrendChart({ data, formatCurrency }: MonthlyTrendChartPro
         />
         <Tooltip
           formatter={(value, name) =>
-            name === "Revenue" ? formatCurrency(Number(value)) : value
+            name === revenueLabel ? formatCurrency(Number(value)) : value
           }
           contentStyle={{
             backgroundColor: "hsl(var(--popover))",
@@ -142,8 +147,8 @@ export function MonthlyTrendChart({ data, formatCurrency }: MonthlyTrendChartPro
             color: "hsl(var(--popover-foreground))",
           }}
         />
-        <Line yAxisId="left" type="monotone" dataKey="count" name="Jobs" stroke="#3b82f6" strokeWidth={2} dot={false} />
-        <Line yAxisId="right" type="monotone" dataKey="revenue" name="Revenue" stroke="#10b981" strokeWidth={2} dot={false} />
+        <Line yAxisId="left" type="monotone" dataKey="count" name={jobsLabel} stroke="#3b82f6" strokeWidth={2} dot={false} />
+        <Line yAxisId="right" type="monotone" dataKey="revenue" name={revenueLabel} stroke="#10b981" strokeWidth={2} dot={false} />
         <Legend
           formatter={(value) => (
             <span className="text-xs text-muted-foreground">{value}</span>

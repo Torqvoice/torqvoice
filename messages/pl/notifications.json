@@ -1,0 +1,10 @@
+{
+  "panel": {
+    "title": "Powiadomienia",
+    "markAllRead": "Oznacz wszystkie jako przeczytane",
+    "empty": "Brak powiadomień",
+    "confirmDelete": "Czy na pewno?",
+    "delete": "Usuń",
+    "cancel": "Anuluj"
+  }
+}

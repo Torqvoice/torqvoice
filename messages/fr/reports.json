@@ -1,0 +1,199 @@
+{
+  "title": "Rapports et Analyses",
+  "tabs": {
+    "revenue": "Revenus",
+    "services": "Services",
+    "customers": "Clients",
+    "inventory": "Inventaire",
+    "technicians": "Techniciens",
+    "parts": "Pièces",
+    "jobAnalytics": "Analyse des Travaux",
+    "retention": "Fidélisation",
+    "tax": "Taxes"
+  },
+  "dateRange": {
+    "to": "au"
+  },
+  "actions": {
+    "refresh": "Actualiser",
+    "csv": "CSV"
+  },
+  "revenue": {
+    "revenue": "Revenus",
+    "collected": "Encaissé",
+    "outstanding": "En attente",
+    "services": "Services",
+    "monthlyRevenue": "Revenus Mensuels",
+    "revenueByType": "Revenus par Type",
+    "monthlyBreakdown": "Répartition Mensuelle",
+    "tableHeaders": {
+      "month": "Mois",
+      "revenue": "Revenus",
+      "collected": "Encaissé",
+      "count": "Nombre"
+    }
+  },
+  "services": {
+    "totalServices": "Total des Services",
+    "byStatus": "Par Statut",
+    "byType": "Par Type"
+  },
+  "customers": {
+    "total": "Total",
+    "active": "Actifs",
+    "topCustomersBySpend": "Meilleurs Clients par Dépenses",
+    "topCustomers": "Meilleurs Clients",
+    "tableHeaders": {
+      "name": "Nom",
+      "company": "Entreprise",
+      "services": "Services",
+      "totalSpent": "Total Dépensé"
+    }
+  },
+  "inventory": {
+    "parts": "Pièces",
+    "items": "Articles",
+    "costValue": "Valeur Coût",
+    "sellValue": "Valeur de Vente",
+    "potentialMargin": "Marge Potentielle",
+    "lowStock": "Stock Bas",
+    "tableHeaders": {
+      "name": "Nom",
+      "partNumber": "N° Pièce",
+      "qty": "Qté",
+      "minQty": "Qté Min."
+    }
+  },
+  "technicians": {
+    "totalJobs": "Total Travaux",
+    "totalRevenue": "Revenus Totaux",
+    "revenueByTechnician": "Revenus par Technicien",
+    "technicianBreakdown": "Répartition par Technicien",
+    "tableHeaders": {
+      "technician": "Technicien",
+      "jobs": "Travaux",
+      "revenue": "Revenus",
+      "avgRevenue": "Revenus Moy.",
+      "totalHours": "Heures Totales",
+      "avgHours": "Heures Moy."
+    }
+  },
+  "parts": {
+    "partsUsed": "Pièces Utilisées",
+    "partsRevenue": "Revenus Pièces",
+    "topPartsByUsage": "Pièces les Plus Utilisées",
+    "partsUsage": "Utilisation des Pièces",
+    "tableHeaders": {
+      "partName": "Nom de Pièce",
+      "partNumber": "N° Pièce",
+      "usageCount": "Nombre d'Utilisations",
+      "totalQty": "Qté Totale",
+      "revenue": "Revenus"
+    }
+  },
+  "jobAnalytics": {
+    "totalJobs": "Total Travaux",
+    "avgJobValue": "Valeur Moy. du Travail",
+    "jobsByDayOfWeek": "Travaux par Jour de la Semaine",
+    "serviceTypes": "Types de Service",
+    "monthlyTrend": "Tendance Mensuelle",
+    "serviceTypeBreakdown": "Répartition par Type de Service",
+    "tableHeaders": {
+      "type": "Type",
+      "count": "Nombre",
+      "avgValue": "Valeur Moy.",
+      "avgHours": "Heures Moy."
+    }
+  },
+  "retention": {
+    "returning": "Récurrents",
+    "new": "Nouveaux",
+    "totalActive": "Total Actifs",
+    "avgDaysBetween": "Moy. Jours Entre",
+    "topReturningCustomers": "Meilleurs Clients Récurrents",
+    "returningCustomers": "Clients Récurrents",
+    "tableHeaders": {
+      "customer": "Client",
+      "company": "Entreprise",
+      "visits": "Visites",
+      "totalSpent": "Total Dépensé",
+      "avgDaysBetween": "Moy. Jours Entre"
+    }
+  },
+  "tax": {
+    "totalTaxCollected": "Total Taxes Perçues",
+    "taxableRevenue": "Revenus Taxables",
+    "invoicesWithTax": "Factures avec Taxe",
+    "monthlyTaxCollected": "Taxes Mensuelles Perçues",
+    "taxByRate": "Taxe par Taux",
+    "monthlyBreakdown": "Répartition Mensuelle",
+    "tableHeaders": {
+      "taxRate": "Taux de Taxe",
+      "taxCollected": "Taxe Perçue",
+      "invoices": "Factures",
+      "month": "Mois",
+      "taxableAmount": "Montant Taxable"
+    }
+  },
+  "charts": {
+    "revenue": "Revenus",
+    "collected": "Encaissé",
+    "count": "Nombre",
+    "totalSpent": "Total Dépensé",
+    "jobs": "Travaux",
+    "visits": "Visites",
+    "taxCollected": "Taxe Perçue"
+  },
+  "days": {
+    "sunday": "Dimanche",
+    "monday": "Lundi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi",
+    "thursday": "Jeudi",
+    "friday": "Vendredi",
+    "saturday": "Samedi"
+  },
+  "daysShort": {
+    "sun": "Dim",
+    "mon": "Lun",
+    "tue": "Mar",
+    "wed": "Mer",
+    "thu": "Jeu",
+    "fri": "Ven",
+    "sat": "Sam"
+  },
+  "csvHeaders": {
+    "month": "Mois",
+    "revenue": "Revenus",
+    "collected": "Encaissé",
+    "count": "Nombre",
+    "category": "Catégorie",
+    "label": "Libellé",
+    "name": "Nom",
+    "company": "Entreprise",
+    "services": "Services",
+    "totalSpent": "Total Dépensé",
+    "partNumber": "N° Pièce",
+    "quantity": "Quantité",
+    "minQuantity": "Quantité Min.",
+    "unitCost": "Coût Unitaire",
+    "technician": "Technicien",
+    "jobs": "Travaux",
+    "totalRevenue": "Revenus Totaux",
+    "avgRevenue": "Revenus Moy.",
+    "totalHours": "Heures Totales",
+    "avgHours": "Heures Moy.",
+    "partName": "Nom de Pièce",
+    "usageCount": "Nombre d'Utilisations",
+    "totalQty": "Qté Totale",
+    "serviceType": "Type de Service",
+    "avgValue": "Valeur Moy.",
+    "customer": "Client",
+    "visits": "Visites",
+    "avgDaysBetweenVisits": "Moy. Jours Entre Visites",
+    "taxCollected": "Taxe Perçue",
+    "taxableAmount": "Montant Taxable",
+    "invoiceCount": "Nombre de Factures"
+  },
+  "empty": "Aucune donnée chargée. Cliquez sur Actualiser pour charger le rapport."
+}

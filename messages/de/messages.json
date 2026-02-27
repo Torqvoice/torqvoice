@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "SMS-Nachrichten",
+    "featureDescription": "Senden und empfangen Sie SMS-Nachrichten mit Ihren Kunden direkt über Torqvoice."
+  },
+  "notConfigured": {
+    "title": "SMS nicht konfiguriert",
+    "description": "Richten Sie einen SMS-Anbieter ein, um Nachrichten mit Ihren Kunden zu senden und zu empfangen. Unterstützt Twilio, Vonage und Telnyx.",
+    "goToSettings": "Zu den SMS-Einstellungen"
+  },
+  "threads": {
+    "title": "Unterhaltungen",
+    "empty": "Noch keine Unterhaltungen. Senden Sie eine SMS von einer Kundenseite, um zu beginnen.",
+    "loadMore": "Mehr laden",
+    "selectConversation": "Unterhaltung auswählen",
+    "you": "Sie: ",
+    "deleteConversation": "Unterhaltung löschen",
+    "deleteTitle": "Unterhaltung löschen?",
+    "deleteDescription": "Alle Nachrichten mit {name} werden dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleted": "Unterhaltung gelöscht",
+    "deleteError": "Unterhaltung konnte nicht gelöscht werden"
+  },
+  "conversation": {
+    "noPhone": "Keine Telefonnummer für {name} hinterlegt. Fügen Sie eine Telefonnummer hinzu, um Nachrichten zu senden.",
+    "loadOlder": "Ältere laden",
+    "empty": "Noch keine Nachrichten. Senden Sie die erste Nachricht an {name}.",
+    "placeholder": "Nachricht an {name}...",
+    "deleteMessage": "Nachricht löschen",
+    "deleteTitle": "Nachricht löschen?",
+    "deleteDescription": "Diese Nachricht wird dauerhaft aus der Unterhaltung gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "messageDeleted": "Nachricht gelöscht",
+    "deleteError": "Nachricht konnte nicht gelöscht werden",
+    "sendError": "SMS konnte nicht gesendet werden"
+  },
+  "sendDialog": {
+    "send": "{label} senden",
+    "message": "Nachricht",
+    "placeholder": "Nachricht eingeben...",
+    "characters": "{count} / 1600 Zeichen",
+    "sendSms": "SMS senden",
+    "smsSent": "SMS gesendet",
+    "sentTo": "{label} wurde an {name} ({phone}) gesendet",
+    "sendError": "SMS konnte nicht gesendet werden"
+  }
+}

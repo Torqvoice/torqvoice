@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -35,6 +36,7 @@ export function CustomerPortalSettings({
   appUrl: string;
 }) {
   const router = useRouter();
+  const t = useTranslations('settings');
   const [isPending, startTransition] = useTransition();
   const [enabled, setEnabled] = useState(initialEnabled);
   const [copied, setCopied] = useState(false);
@@ -53,12 +55,12 @@ export function CustomerPortalSettings({
       );
       if (result.success) {
         toast.success(
-          checked ? "Customer portal enabled" : "Customer portal disabled",
+          checked ? t('portal.enabled') : t('portal.disabled'),
         );
         router.refresh();
       } else {
         setEnabled(!checked);
-        toast.error(result.error ?? "Failed to update setting");
+        toast.error(result.error ?? t('portal.failedUpdate'));
       }
     });
   };
@@ -66,7 +68,7 @@ export function CustomerPortalSettings({
   const handleCopy = async () => {
     await navigator.clipboard.writeText(portalUrl);
     setCopied(true);
-    toast.success("Portal URL copied");
+    toast.success(t('portal.urlCopied'));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -75,10 +77,10 @@ export function CustomerPortalSettings({
     try {
       const result = await updatePortalSlug(slug || null);
       if (result.success) {
-        toast.success(slug ? "Portal slug saved" : "Portal slug removed");
+        toast.success(slug ? t('portal.slugSaved') : t('portal.slugRemoved'));
         router.refresh();
       } else {
-        toast.error(result.error ?? "Failed to update slug");
+        toast.error(result.error ?? t('portal.failedUpdateSlug'));
       }
     } finally {
       setSlugSaving(false);
@@ -95,20 +97,18 @@ export function CustomerPortalSettings({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Globe className="h-5 w-5" />
-              Customer Portal
+              {t('portal.title')}
             </CardTitle>
             <CardDescription>
-              Allow your customers to log in and view their vehicles, invoices,
-              quotes, and inspections. Customers can also submit service
-              requests.
+              {t('portal.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="portal-enabled">Enable customer portal</Label>
+                <Label htmlFor="portal-enabled">{t('portal.enablePortal')}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Customers with an email address can log in via magic link
+                  {t('portal.enablePortalHint')}
                 </p>
               </div>
               <Switch
@@ -122,7 +122,7 @@ export function CustomerPortalSettings({
             {enabled && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="portal-slug">Custom portal slug</Label>
+                  <Label htmlFor="portal-slug">{t('portal.customSlug')}</Label>
                   <div className="flex gap-2">
                     <Input
                       id="portal-slug"
@@ -142,18 +142,17 @@ export function CustomerPortalSettings({
                       {slugSaving ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        "Save"
+                        t('portal.save')
                       )}
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Lowercase letters, numbers, hyphens, and underscores. 3–48
-                    characters. Leave blank to use the default URL.
+                    {t('portal.slugHint')}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Portal URL</Label>
+                  <Label>{t('portal.portalUrl')}</Label>
                   <div className="flex gap-2">
                     <Input
                       value={portalUrl}
@@ -174,8 +173,7 @@ export function CustomerPortalSettings({
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Share this link with your customers so they can log in to
-                    their portal.
+                    {t('portal.shareHint')}
                   </p>
                 </div>
               </>

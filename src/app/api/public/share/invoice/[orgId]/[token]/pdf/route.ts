@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
+import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { InvoicePDF } from "@/features/vehicles/Components/InvoicePDF";
 import React from "react";
@@ -19,6 +20,19 @@ export async function GET(
   if (limited) return limited;
 
   try {
+    // Load locale-based PDF translations
+    const cookieStore = await cookies();
+    const locale = cookieStore.get("locale")?.value || "en";
+    let pdfMessages: Record<string, Record<string, string>>;
+    try {
+      pdfMessages = (await import(`../../../../../../../../../messages/${locale}/pdf.json`)).default;
+    } catch {
+      pdfMessages = (await import(`../../../../../../../../../messages/en/pdf.json`)).default;
+    }
+    const labels = {
+      ...pdfMessages.invoice,
+      ...pdfMessages.common,
+    };
     const { orgId: orgParam, token } = await params;
 
     // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
@@ -159,6 +173,7 @@ export async function GET(
       template,
       torqvoiceLogoDataUri,
       portalUrl,
+      labels,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const buffer = await renderToBuffer(element);

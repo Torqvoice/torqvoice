@@ -1,0 +1,199 @@
+{
+  "title": "Raporty i Analizy",
+  "tabs": {
+    "revenue": "Przychody",
+    "services": "Usługi",
+    "customers": "Klienci",
+    "inventory": "Magazyn",
+    "technicians": "Technicy",
+    "parts": "Części",
+    "jobAnalytics": "Analiza Zleceń",
+    "retention": "Utrzymanie Klientów",
+    "tax": "Podatki"
+  },
+  "dateRange": {
+    "to": "do"
+  },
+  "actions": {
+    "refresh": "Odśwież",
+    "csv": "CSV"
+  },
+  "revenue": {
+    "revenue": "Przychody",
+    "collected": "Zebrano",
+    "outstanding": "Zaległe",
+    "services": "Usługi",
+    "monthlyRevenue": "Przychody Miesięczne",
+    "revenueByType": "Przychody wg Typu",
+    "monthlyBreakdown": "Zestawienie Miesięczne",
+    "tableHeaders": {
+      "month": "Miesiąc",
+      "revenue": "Przychody",
+      "collected": "Zebrano",
+      "count": "Ilość"
+    }
+  },
+  "services": {
+    "totalServices": "Łączna Liczba Usług",
+    "byStatus": "Wg Statusu",
+    "byType": "Wg Typu"
+  },
+  "customers": {
+    "total": "Łącznie",
+    "active": "Aktywni",
+    "topCustomersBySpend": "Najlepsi Klienci wg Wydatków",
+    "topCustomers": "Najlepsi Klienci",
+    "tableHeaders": {
+      "name": "Nazwa",
+      "company": "Firma",
+      "services": "Usługi",
+      "totalSpent": "Suma Wydatków"
+    }
+  },
+  "inventory": {
+    "parts": "Części",
+    "items": "Artykuły",
+    "costValue": "Wartość Kosztowa",
+    "sellValue": "Wartość Sprzedaży",
+    "potentialMargin": "Potencjalna Marża",
+    "lowStock": "Niski Stan",
+    "tableHeaders": {
+      "name": "Nazwa",
+      "partNumber": "Nr Części",
+      "qty": "Ilość",
+      "minQty": "Min. Ilość"
+    }
+  },
+  "technicians": {
+    "totalJobs": "Łączne Zlecenia",
+    "totalRevenue": "Łączne Przychody",
+    "revenueByTechnician": "Przychody wg Technika",
+    "technicianBreakdown": "Zestawienie Techników",
+    "tableHeaders": {
+      "technician": "Technik",
+      "jobs": "Zlecenia",
+      "revenue": "Przychody",
+      "avgRevenue": "Śr. Przychód",
+      "totalHours": "Łączne Godziny",
+      "avgHours": "Śr. Godziny"
+    }
+  },
+  "parts": {
+    "partsUsed": "Użyte Części",
+    "partsRevenue": "Przychody z Części",
+    "topPartsByUsage": "Najczęściej Używane Części",
+    "partsUsage": "Użycie Części",
+    "tableHeaders": {
+      "partName": "Nazwa Części",
+      "partNumber": "Nr Części",
+      "usageCount": "Liczba Użyć",
+      "totalQty": "Łączna Ilość",
+      "revenue": "Przychody"
+    }
+  },
+  "jobAnalytics": {
+    "totalJobs": "Łączne Zlecenia",
+    "avgJobValue": "Śr. Wartość Zlecenia",
+    "jobsByDayOfWeek": "Zlecenia wg Dnia Tygodnia",
+    "serviceTypes": "Typy Usług",
+    "monthlyTrend": "Trend Miesięczny",
+    "serviceTypeBreakdown": "Zestawienie Typów Usług",
+    "tableHeaders": {
+      "type": "Typ",
+      "count": "Ilość",
+      "avgValue": "Śr. Wartość",
+      "avgHours": "Śr. Godziny"
+    }
+  },
+  "retention": {
+    "returning": "Powracający",
+    "new": "Nowi",
+    "totalActive": "Łącznie Aktywni",
+    "avgDaysBetween": "Śr. Dni Między",
+    "topReturningCustomers": "Najlepsi Powracający Klienci",
+    "returningCustomers": "Powracający Klienci",
+    "tableHeaders": {
+      "customer": "Klient",
+      "company": "Firma",
+      "visits": "Wizyty",
+      "totalSpent": "Suma Wydatków",
+      "avgDaysBetween": "Śr. Dni Między"
+    }
+  },
+  "tax": {
+    "totalTaxCollected": "Łącznie Zebrane Podatki",
+    "taxableRevenue": "Przychody Opodatkowane",
+    "invoicesWithTax": "Faktury z Podatkiem",
+    "monthlyTaxCollected": "Miesięczne Podatki Zebrane",
+    "taxByRate": "Podatek wg Stawki",
+    "monthlyBreakdown": "Zestawienie Miesięczne",
+    "tableHeaders": {
+      "taxRate": "Stawka Podatkowa",
+      "taxCollected": "Zebrany Podatek",
+      "invoices": "Faktury",
+      "month": "Miesiąc",
+      "taxableAmount": "Kwota Opodatkowana"
+    }
+  },
+  "charts": {
+    "revenue": "Przychody",
+    "collected": "Zebrano",
+    "count": "Ilość",
+    "totalSpent": "Suma Wydatków",
+    "jobs": "Zlecenia",
+    "visits": "Wizyty",
+    "taxCollected": "Zebrany Podatek"
+  },
+  "days": {
+    "sunday": "Niedziela",
+    "monday": "Poniedziałek",
+    "tuesday": "Wtorek",
+    "wednesday": "Środa",
+    "thursday": "Czwartek",
+    "friday": "Piątek",
+    "saturday": "Sobota"
+  },
+  "daysShort": {
+    "sun": "Nie",
+    "mon": "Pon",
+    "tue": "Wt",
+    "wed": "Śr",
+    "thu": "Czw",
+    "fri": "Pt",
+    "sat": "Sob"
+  },
+  "csvHeaders": {
+    "month": "Miesiąc",
+    "revenue": "Przychody",
+    "collected": "Zebrano",
+    "count": "Ilość",
+    "category": "Kategoria",
+    "label": "Etykieta",
+    "name": "Nazwa",
+    "company": "Firma",
+    "services": "Usługi",
+    "totalSpent": "Suma Wydatków",
+    "partNumber": "Nr Części",
+    "quantity": "Ilość",
+    "minQuantity": "Min. Ilość",
+    "unitCost": "Koszt Jednostkowy",
+    "technician": "Technik",
+    "jobs": "Zlecenia",
+    "totalRevenue": "Łączne Przychody",
+    "avgRevenue": "Śr. Przychód",
+    "totalHours": "Łączne Godziny",
+    "avgHours": "Śr. Godziny",
+    "partName": "Nazwa Części",
+    "usageCount": "Liczba Użyć",
+    "totalQty": "Łączna Ilość",
+    "serviceType": "Typ Usługi",
+    "avgValue": "Śr. Wartość",
+    "customer": "Klient",
+    "visits": "Wizyty",
+    "avgDaysBetweenVisits": "Śr. Dni Między Wizytami",
+    "taxCollected": "Zebrany Podatek",
+    "taxableAmount": "Kwota Opodatkowana",
+    "invoiceCount": "Liczba Faktur"
+  },
+  "empty": "Nie załadowano jeszcze danych. Kliknij Odśwież, aby załadować raport."
+}

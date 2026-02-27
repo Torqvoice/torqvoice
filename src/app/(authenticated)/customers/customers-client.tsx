@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -59,6 +60,8 @@ export function CustomersClient({
   data: PaginatedData;
   search: string;
 }) {
+  const t = useTranslations("customers.list");
+  const tc = useTranslations("common");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -99,9 +102,9 @@ export function CustomersClient({
 
   const handleDelete = async (id: string, name: string) => {
     const ok = await confirm({
-      title: "Delete Customer",
-      description: `Delete ${name}? This will unlink their vehicles.`,
-      confirmLabel: "Delete",
+      title: t("deleteTitle"),
+      description: t("deleteDescription", { name }),
+      confirmLabel: tc("buttons.delete"),
       destructive: true,
     });
     if (!ok) return;
@@ -109,7 +112,7 @@ export function CustomersClient({
     if (result.success) {
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to delete customer");
+      modal.open("error", tc("errors.error"), result.error || t("deleteError"));
     }
   };
 
@@ -121,7 +124,7 @@ export function CustomersClient({
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search customers..."
+              placeholder={t("searchPlaceholder")}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="pl-9"
@@ -131,7 +134,7 @@ export function CustomersClient({
         </div>
         <Button size="sm" onClick={() => setShowForm(true)}>
           <Plus className="mr-1 h-3.5 w-3.5" />
-          Add Customer
+          {t("addCustomer")}
         </Button>
       </div>
 
@@ -140,11 +143,11 @@ export function CustomersClient({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden sm:table-cell">Company</TableHead>
-              <TableHead className="hidden md:table-cell">Phone</TableHead>
-              <TableHead className="hidden lg:table-cell">Email</TableHead>
-              <TableHead className="w-[80px] text-center">Vehicles</TableHead>
+              <TableHead>{t("table.name")}</TableHead>
+              <TableHead className="hidden sm:table-cell">{t("table.company")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("table.phone")}</TableHead>
+              <TableHead className="hidden lg:table-cell">{t("table.email")}</TableHead>
+              <TableHead className="w-[80px] text-center">{t("table.vehicles")}</TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>
@@ -152,7 +155,7 @@ export function CustomersClient({
             {data.customers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
-                  {search ? "No customers match your search." : "No customers yet."}
+                  {search ? t("emptySearch") : t("empty")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -194,7 +197,7 @@ export function CustomersClient({
                           }}
                         >
                           <Pencil className="mr-2 h-4 w-4" />
-                          Edit
+                          {tc("buttons.edit")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-destructive"
@@ -204,7 +207,7 @@ export function CustomersClient({
                           }}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
+                          {tc("buttons.delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

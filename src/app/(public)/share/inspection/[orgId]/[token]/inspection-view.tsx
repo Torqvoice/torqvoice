@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { formatDate as fmtDate, DEFAULT_DATE_FORMAT } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Check, CheckCircle2, Download, FileText, X, AlertTriangle, ClipboardCheck, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
@@ -37,33 +38,6 @@ interface InspectionRecord {
   items: InspectionItem[];
 }
 
-const conditionConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
-  pass: {
-    label: "Pass",
-    color: "text-emerald-700",
-    bgColor: "bg-emerald-100 border-emerald-300",
-    icon: <Check className="h-4 w-4 text-emerald-600" />,
-  },
-  fail: {
-    label: "Fail",
-    color: "text-red-700",
-    bgColor: "bg-red-100 border-red-300",
-    icon: <X className="h-4 w-4 text-red-600" />,
-  },
-  attention: {
-    label: "Attention",
-    color: "text-amber-700",
-    bgColor: "bg-amber-100 border-amber-300",
-    icon: <AlertTriangle className="h-4 w-4 text-amber-600" />,
-  },
-  not_inspected: {
-    label: "Not Inspected",
-    color: "text-gray-500",
-    bgColor: "bg-gray-100 border-gray-300",
-    icon: null,
-  },
-};
-
 export function InspectionView({
   inspection,
   workshop,
@@ -91,9 +65,39 @@ export function InspectionView({
   quoteShareUrl?: string;
   portalUrl?: string;
 }) {
+  const t = useTranslations('share.inspection');
+  const tc = useTranslations('share.common');
+
   const fmt = dateFormat || DEFAULT_DATE_FORMAT;
   const tz = timezone || "America/New_York";
   const formatDate = (d: Date) => fmtDate(new Date(d), fmt, tz);
+
+  const conditionConfig: Record<string, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
+    pass: {
+      label: t('pass'),
+      color: "text-emerald-700",
+      bgColor: "bg-emerald-100 border-emerald-300",
+      icon: <Check className="h-4 w-4 text-emerald-600" />,
+    },
+    fail: {
+      label: t('fail'),
+      color: "text-red-700",
+      bgColor: "bg-red-100 border-red-300",
+      icon: <X className="h-4 w-4 text-red-600" />,
+    },
+    attention: {
+      label: t('attention'),
+      color: "text-amber-700",
+      bgColor: "bg-amber-100 border-amber-300",
+      icon: <AlertTriangle className="h-4 w-4 text-amber-600" />,
+    },
+    not_inspected: {
+      label: t('notInspected'),
+      color: "text-gray-500",
+      bgColor: "bg-gray-100 border-gray-300",
+      icon: null,
+    },
+  };
 
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
   const [quoteRequested, setQuoteRequested] = useState(hasExistingQuoteRequest);
@@ -110,13 +114,13 @@ export function InspectionView({
       });
       const data = await res.json();
       if (data.success) {
-        toast.success("Quote request cancelled");
+        toast.success(t('quoteCancelled'));
         setQuoteRequested(false);
       } else {
-        toast.error(data.error || "Failed to cancel request");
+        toast.error(data.error || t('cancelFailed'));
       }
     } catch {
-      toast.error("Failed to cancel request");
+      toast.error(t('cancelFailed'));
     } finally {
       setIsCancelling(false);
     }
@@ -219,7 +223,7 @@ export function InspectionView({
           <div className="flex items-center gap-2 sm:text-right">
             <ClipboardCheck className="hidden h-6 w-6 sm:block" style={{ color: primaryColor }} />
             <div>
-              <p className="text-lg font-bold">Vehicle Inspection</p>
+              <p className="text-lg font-bold">{t('title')}</p>
               <p className="text-sm text-gray-500">{formatDate(inspection.createdAt)}</p>
             </div>
           </div>
@@ -229,23 +233,23 @@ export function InspectionView({
       {/* Vehicle and customer info */}
       <div className="mb-6 grid grid-cols-2 gap-6 rounded-lg border p-4">
         <div>
-          <h3 className="mb-2 text-xs font-semibold uppercase text-gray-400">Vehicle</h3>
+          <h3 className="mb-2 text-xs font-semibold uppercase text-gray-400">{t('vehicle')}</h3>
           <p className="font-semibold">
             {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
           </p>
           {inspection.vehicle.vin && (
-            <p className="text-sm text-gray-500">VIN: {inspection.vehicle.vin}</p>
+            <p className="text-sm text-gray-500">{t('vin', { vin: inspection.vehicle.vin })}</p>
           )}
           {inspection.vehicle.licensePlate && (
-            <p className="text-sm text-gray-500">Plate: {inspection.vehicle.licensePlate}</p>
+            <p className="text-sm text-gray-500">{t('plate', { plate: inspection.vehicle.licensePlate })}</p>
           )}
           {inspection.mileage && (
-            <p className="text-sm text-gray-500">Mileage: {inspection.mileage.toLocaleString()}</p>
+            <p className="text-sm text-gray-500">{t('mileage', { mileage: inspection.mileage.toLocaleString() })}</p>
           )}
         </div>
         {inspection.vehicle.customer && (
           <div>
-            <h3 className="mb-2 text-xs font-semibold uppercase text-gray-400">Customer</h3>
+            <h3 className="mb-2 text-xs font-semibold uppercase text-gray-400">{t('customer')}</h3>
             <p className="font-semibold">{inspection.vehicle.customer.name}</p>
             {inspection.vehicle.customer.email && (
               <p className="text-sm text-gray-500">{inspection.vehicle.customer.email}</p>
@@ -261,19 +265,19 @@ export function InspectionView({
       <div className="mb-6 rounded-lg border p-4">
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <div className="text-sm text-gray-500">
-            <span className="font-semibold text-gray-900">{totalItems}</span> inspected
+            <span className="font-semibold text-gray-900">{totalItems}</span> {t('inspected')}
           </div>
           <div className="flex items-center gap-1.5">
             <div className="h-3 w-3 rounded-full bg-emerald-500" />
-            <span className="text-sm font-medium">{passCount} Pass</span>
+            <span className="text-sm font-medium">{passCount} {t('pass')}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="h-3 w-3 rounded-full bg-red-500" />
-            <span className="text-sm font-medium">{failCount} Fail</span>
+            <span className="text-sm font-medium">{failCount} {t('fail')}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="h-3 w-3 rounded-full bg-amber-500" />
-            <span className="text-sm font-medium">{attentionCount} Attention</span>
+            <span className="text-sm font-medium">{attentionCount} {t('attention')}</span>
           </div>
         </div>
         {/* Progress bar */}
@@ -296,10 +300,10 @@ export function InspectionView({
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-emerald-900">
-              A quote has been prepared for this inspection
+              {t('quoteAvailable')}
             </p>
             <p className="mt-0.5 text-xs text-emerald-700/70">
-              Review the quote to see pricing and approve the recommended work.
+              {t('quoteAvailableDescription')}
             </p>
           </div>
           <a
@@ -308,7 +312,7 @@ export function InspectionView({
             style={{ backgroundColor: primaryColor }}
           >
             <FileText className="h-4 w-4" />
-            View Quote
+            {t('viewQuote')}
           </a>
         </div>
       )}
@@ -328,8 +332,8 @@ export function InspectionView({
               ) : (
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
               )}
-              Quote Requested
-              <span className="text-muted-foreground">— Cancel</span>
+              {t('quoteRequested')}
+              <span className="text-muted-foreground">{t('quoteRequestedCancel')}</span>
             </Button>
           ) : (
             <Button
@@ -338,7 +342,7 @@ export function InspectionView({
               className="gap-2 text-white hover:opacity-90"
             >
               <FileText className="h-4 w-4" />
-              Request a Quote
+              {t('requestQuote')}
             </Button>
           )
         )}
@@ -348,7 +352,7 @@ export function InspectionView({
           onClick={() => window.open(`/api/public/share/inspection/${orgId}/${publicToken}/pdf`, "_blank")}
         >
           <Download className="h-4 w-4" />
-          Download PDF
+          {t('downloadPdf')}
         </Button>
       </div>
 
@@ -420,7 +424,7 @@ export function InspectionView({
       {/* Footer */}
       {inspection.notes && (
         <div className="mt-6 rounded-lg border p-4">
-          <h3 className="mb-2 text-xs font-semibold uppercase text-gray-400">Notes</h3>
+          <h3 className="mb-2 text-xs font-semibold uppercase text-gray-400">{t('notes')}</h3>
           <p className="text-sm text-gray-600 whitespace-pre-wrap">{inspection.notes}</p>
         </div>
       )}
@@ -428,9 +432,9 @@ export function InspectionView({
       {portalUrl && (
         <div className="mt-3 border-t pt-3 text-center">
           <p className="text-xs text-muted-foreground">
-            View your vehicles, invoices, and more at your{" "}
+            {tc('portalMessage')}{" "}
             <a href={portalUrl} className="font-medium text-primary hover:underline">
-              customer portal
+              {tc('customerPortal')}
             </a>
           </p>
         </div>
@@ -438,7 +442,7 @@ export function InspectionView({
 
       {showTorqvoiceBranding && (
         <div className="mt-8 flex items-center justify-center gap-1.5">
-          <span className="text-xs text-gray-400">Powered by</span>
+          <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
           <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
           <a
             href="https://torqvoice.com"

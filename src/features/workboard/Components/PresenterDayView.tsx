@@ -3,6 +3,7 @@
 import { Wrench, ClipboardCheck } from 'lucide-react'
 import type { Technician } from '../store/workboardStore'
 import type { BoardAssignmentWithJob } from '../Actions/boardActions'
+import { useTranslations } from 'next-intl'
 
 function DayJobCard({ assignment }: { assignment: BoardAssignmentWithJob }) {
   const isServiceRecord = !!assignment.serviceRecordId
@@ -50,12 +51,13 @@ export function PresenterDayView({
   technicians: Technician[]
   assignments: BoardAssignmentWithJob[]
 }) {
+  const t = useTranslations('workBoard.presenter')
   const dayAssignments = assignments.filter((a) => a.date === date)
 
   if (technicians.length === 0) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-lg text-muted-foreground">No technicians configured</p>
+        <p className="text-lg text-muted-foreground">{t('noTechnicians')}</p>
       </div>
     )
   }
@@ -79,7 +81,7 @@ export function PresenterDayView({
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{tech.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {techJobs.length} {techJobs.length === 1 ? 'job' : 'jobs'}
+                    {techJobs.length === 1 ? t('job', { count: techJobs.length }) : t('jobs', { count: techJobs.length })}
                   </p>
                 </div>
               </div>
@@ -87,7 +89,7 @@ export function PresenterDayView({
               {/* Jobs */}
               <div className="flex flex-1 flex-wrap gap-2">
                 {techJobs.length === 0 && (
-                  <p className="py-2 text-sm text-muted-foreground/60">No jobs today</p>
+                  <p className="py-2 text-sm text-muted-foreground/60">{t('noJobsToday')}</p>
                 )}
                 {techJobs.map((assignment) => (
                   <div key={assignment.id} className="w-72">

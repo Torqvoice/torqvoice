@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import {
   Building2,
@@ -12,34 +13,34 @@ import {
 
 const adminNav = [
   {
-    title: "Overview",
+    titleKey: "nav.overview.title",
+    descriptionKey: "nav.overview.description",
     href: "/admin",
     icon: ShieldCheck,
-    description: "Platform stats & health",
   },
   {
-    title: "Users",
+    titleKey: "nav.users.title",
+    descriptionKey: "nav.users.description",
     href: "/admin/users",
     icon: Users,
-    description: "Manage all users",
   },
   {
-    title: "Organizations",
+    titleKey: "nav.organizations.title",
+    descriptionKey: "nav.organizations.description",
     href: "/admin/organizations",
     icon: Building2,
-    description: "Manage all organizations",
   },
-
   {
-    title: "Settings",
+    titleKey: "nav.settings.title",
+    descriptionKey: "nav.settings.description",
     href: "/admin/settings",
     icon: Settings,
-    description: "Platform configuration",
   },
 ];
 
 export function AdminNav() {
   const pathname = usePathname();
+  const t = useTranslations("admin");
 
   return (
     <nav className="flex flex-col gap-1">
@@ -62,10 +63,10 @@ export function AdminNav() {
             <item.icon className="h-4 w-4 shrink-0" />
             <div className="min-w-0">
               <p className={cn("truncate", isActive && "font-medium")}>
-                {item.title}
+                {t(item.titleKey)}
               </p>
               <p className="hidden truncate text-xs text-muted-foreground lg:block">
-                {item.description}
+                {t(item.descriptionKey)}
               </p>
             </div>
           </Link>

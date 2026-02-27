@@ -1,0 +1,43 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Accedi",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "submit": "Invia",
+    "back": "Indietro",
+    "confirm": "Conferma",
+    "saveChanges": "Salva modifiche",
+    "edit": "Modifica",
+    "add": "Aggiungi"
+  },
+  "form": {
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "you@example.com",
+    "name": "Nome",
+    "phone": "Telefono",
+    "company": "Azienda",
+    "address": "Indirizzo",
+    "notes": "Note"
+  },
+  "errors": {
+    "unexpected": "Si è verificato un errore imprevisto. La preghiamo di riprovare.",
+    "error": "Errore"
+  },
+  "terms": {
+    "termsOfService": "Termini di servizio"
+  },
+  "errorPage": {
+    "title": "Qualcosa è andato storto",
+    "description": "Il motore si è spento inaspettatamente. I nostri meccanici sono stati avvisati e stanno lavorando alla riparazione.",
+    "tryAgain": "Riprova",
+    "backToDashboard": "Torna alla dashboard"
+  },
+  "notFoundPage": {
+    "title": "Pagina non trovata",
+    "description": "Sembra che questo pezzo sia ancora in officina. La pagina che stai cercando non esiste o è stata spostata.",
+    "backToDashboard": "Torna alla dashboard"
+  }
+}

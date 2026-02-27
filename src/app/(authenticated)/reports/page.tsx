@@ -7,9 +7,11 @@ import { getFeatures } from "@/lib/features";
 import { redirect } from "next/navigation";
 import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { getTranslations } from "next-intl/server";
 import ReportsClient from "./reports-client";
 
 export default async function ReportsPage() {
+  const t = await getTranslations("reports");
   const data = await getLayoutData();
 
   if (data.status === "unauthenticated") redirect("/auth/sign-in");
@@ -36,7 +38,7 @@ export default async function ReportsPage() {
     return (
       <>
         <PageHeader />
-        <UpgradePrompt feature="Reports & Analytics" />
+        <UpgradePrompt feature={t("title")} />
       </>
     );
   }

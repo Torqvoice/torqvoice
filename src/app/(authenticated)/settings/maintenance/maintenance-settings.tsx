@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,7 @@ import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard"
 
 export function MaintenanceSettings({ settings }: { settings: Record<string, string> }) {
   const router = useRouter();
+  const t = useTranslations('settings');
   const [saving, setSaving] = useState(false);
 
   const unitSystem = settings[SETTING_KEYS.UNIT_SYSTEM] || "imperial";
@@ -40,7 +42,7 @@ export function MaintenanceSettings({ settings }: { settings: Record<string, str
     });
     setSaving(false);
     router.refresh();
-    toast.success("Maintenance settings saved");
+    toast.success(t('maintenance.saved'));
   };
 
   return (
@@ -50,19 +52,18 @@ export function MaintenanceSettings({ settings }: { settings: Record<string, str
         <Card className="border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center gap-3 pb-4">
             <Gauge className="h-5 w-5 text-muted-foreground" />
-            <CardTitle className="text-lg">Predicted Maintenance</CardTitle>
+            <CardTitle className="text-lg">{t('maintenance.title')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="text-sm text-muted-foreground">
-              Predict each vehicle&apos;s current mileage from its service history and
-              surface vehicles that are due or approaching their next service.
+              {t('maintenance.description')}
             </p>
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="maintenance-enabled">Enable predicted maintenance</Label>
+                <Label htmlFor="maintenance-enabled">{t('maintenance.enablePredicted')}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Show predictions on vehicle details and dashboard
+                  {t('maintenance.enablePredictedHint')}
                 </p>
               </div>
               <Switch
@@ -76,7 +77,7 @@ export function MaintenanceSettings({ settings }: { settings: Record<string, str
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="serviceInterval">Service interval ({distUnit})</Label>
+                <Label htmlFor="serviceInterval">{t('maintenance.serviceInterval', { unit: distUnit })}</Label>
                 <Input
                   id="serviceInterval"
                   type="number"
@@ -86,12 +87,12 @@ export function MaintenanceSettings({ settings }: { settings: Record<string, str
                   disabled={!enabled}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Distance between recommended services
+                  {t('maintenance.serviceIntervalHint')}
                 </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="approachingThreshold">
-                  Approaching threshold ({distUnit})
+                  {t('maintenance.approachingThreshold', { unit: distUnit })}
                 </Label>
                 <Input
                   id="approachingThreshold"
@@ -102,7 +103,7 @@ export function MaintenanceSettings({ settings }: { settings: Record<string, str
                   disabled={!enabled}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Show warning when within this distance of next service
+                  {t('maintenance.approachingThresholdHint')}
                 </p>
               </div>
             </div>
@@ -116,7 +117,7 @@ export function MaintenanceSettings({ settings }: { settings: Record<string, str
                   ) : (
                     <Save className="mr-2 h-4 w-4" />
                   )}
-                  Save Maintenance Settings
+                  {t('maintenance.saveMaintenance')}
                 </Button>
               </div>
             </SaveButton>

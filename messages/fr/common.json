@@ -1,0 +1,43 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Se connecter",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "submit": "Soumettre",
+    "back": "Retour",
+    "confirm": "Confirmer",
+    "saveChanges": "Enregistrer les modifications",
+    "edit": "Modifier",
+    "add": "Ajouter"
+  },
+  "form": {
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "emailPlaceholder": "you@example.com",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "company": "Entreprise",
+    "address": "Adresse",
+    "notes": "Notes"
+  },
+  "errors": {
+    "unexpected": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+    "error": "Erreur"
+  },
+  "terms": {
+    "termsOfService": "Conditions d'utilisation"
+  },
+  "errorPage": {
+    "title": "Quelque chose s'est mal passé",
+    "description": "Le moteur a calé de manière inattendue. Nos mécaniciens ont été prévenus et travaillent dessus.",
+    "tryAgain": "Réessayer",
+    "backToDashboard": "Retour au tableau de bord"
+  },
+  "notFoundPage": {
+    "title": "Page introuvable",
+    "description": "On dirait que cette pièce est encore à l'atelier. La page que vous recherchez n'existe pas ou a été déplacée.",
+    "backToDashboard": "Retour au tableau de bord"
+  }
+}

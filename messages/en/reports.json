@@ -1,0 +1,199 @@
+{
+  "title": "Reports & Analytics",
+  "tabs": {
+    "revenue": "Revenue",
+    "services": "Services",
+    "customers": "Customers",
+    "inventory": "Inventory",
+    "technicians": "Technicians",
+    "parts": "Parts",
+    "jobAnalytics": "Job Analytics",
+    "retention": "Retention",
+    "tax": "Tax"
+  },
+  "dateRange": {
+    "to": "to"
+  },
+  "actions": {
+    "refresh": "Refresh",
+    "csv": "CSV"
+  },
+  "revenue": {
+    "revenue": "Revenue",
+    "collected": "Collected",
+    "outstanding": "Outstanding",
+    "services": "Services",
+    "monthlyRevenue": "Monthly Revenue",
+    "revenueByType": "Revenue by Type",
+    "monthlyBreakdown": "Monthly Breakdown",
+    "tableHeaders": {
+      "month": "Month",
+      "revenue": "Revenue",
+      "collected": "Collected",
+      "count": "Count"
+    }
+  },
+  "services": {
+    "totalServices": "Total Services",
+    "byStatus": "By Status",
+    "byType": "By Type"
+  },
+  "customers": {
+    "total": "Total",
+    "active": "Active",
+    "topCustomersBySpend": "Top Customers by Spend",
+    "topCustomers": "Top Customers",
+    "tableHeaders": {
+      "name": "Name",
+      "company": "Company",
+      "services": "Services",
+      "totalSpent": "Total Spent"
+    }
+  },
+  "inventory": {
+    "parts": "Parts",
+    "items": "Items",
+    "costValue": "Cost Value",
+    "sellValue": "Sell Value",
+    "potentialMargin": "Potential Margin",
+    "lowStock": "Low Stock",
+    "tableHeaders": {
+      "name": "Name",
+      "partNumber": "Part #",
+      "qty": "Qty",
+      "minQty": "Min Qty"
+    }
+  },
+  "technicians": {
+    "totalJobs": "Total Jobs",
+    "totalRevenue": "Total Revenue",
+    "revenueByTechnician": "Revenue by Technician",
+    "technicianBreakdown": "Technician Breakdown",
+    "tableHeaders": {
+      "technician": "Technician",
+      "jobs": "Jobs",
+      "revenue": "Revenue",
+      "avgRevenue": "Avg Revenue",
+      "totalHours": "Total Hours",
+      "avgHours": "Avg Hours"
+    }
+  },
+  "parts": {
+    "partsUsed": "Parts Used",
+    "partsRevenue": "Parts Revenue",
+    "topPartsByUsage": "Top Parts by Usage",
+    "partsUsage": "Parts Usage",
+    "tableHeaders": {
+      "partName": "Part Name",
+      "partNumber": "Part #",
+      "usageCount": "Usage Count",
+      "totalQty": "Total Qty",
+      "revenue": "Revenue"
+    }
+  },
+  "jobAnalytics": {
+    "totalJobs": "Total Jobs",
+    "avgJobValue": "Avg Job Value",
+    "jobsByDayOfWeek": "Jobs by Day of Week",
+    "serviceTypes": "Service Types",
+    "monthlyTrend": "Monthly Trend",
+    "serviceTypeBreakdown": "Service Type Breakdown",
+    "tableHeaders": {
+      "type": "Type",
+      "count": "Count",
+      "avgValue": "Avg Value",
+      "avgHours": "Avg Hours"
+    }
+  },
+  "retention": {
+    "returning": "Returning",
+    "new": "New",
+    "totalActive": "Total Active",
+    "avgDaysBetween": "Avg Days Between",
+    "topReturningCustomers": "Top Returning Customers",
+    "returningCustomers": "Returning Customers",
+    "tableHeaders": {
+      "customer": "Customer",
+      "company": "Company",
+      "visits": "Visits",
+      "totalSpent": "Total Spent",
+      "avgDaysBetween": "Avg Days Between"
+    }
+  },
+  "tax": {
+    "totalTaxCollected": "Total Tax Collected",
+    "taxableRevenue": "Taxable Revenue",
+    "invoicesWithTax": "Invoices with Tax",
+    "monthlyTaxCollected": "Monthly Tax Collected",
+    "taxByRate": "Tax by Rate",
+    "monthlyBreakdown": "Monthly Breakdown",
+    "tableHeaders": {
+      "taxRate": "Tax Rate",
+      "taxCollected": "Tax Collected",
+      "invoices": "Invoices",
+      "month": "Month",
+      "taxableAmount": "Taxable Amount"
+    }
+  },
+  "charts": {
+    "revenue": "Revenue",
+    "collected": "Collected",
+    "count": "Count",
+    "totalSpent": "Total Spent",
+    "jobs": "Jobs",
+    "visits": "Visits",
+    "taxCollected": "Tax Collected"
+  },
+  "days": {
+    "sunday": "Sunday",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday"
+  },
+  "daysShort": {
+    "sun": "Sun",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat"
+  },
+  "csvHeaders": {
+    "month": "Month",
+    "revenue": "Revenue",
+    "collected": "Collected",
+    "count": "Count",
+    "category": "Category",
+    "label": "Label",
+    "name": "Name",
+    "company": "Company",
+    "services": "Services",
+    "totalSpent": "Total Spent",
+    "partNumber": "Part #",
+    "quantity": "Quantity",
+    "minQuantity": "Min Quantity",
+    "unitCost": "Unit Cost",
+    "technician": "Technician",
+    "jobs": "Jobs",
+    "totalRevenue": "Total Revenue",
+    "avgRevenue": "Avg Revenue",
+    "totalHours": "Total Hours",
+    "avgHours": "Avg Hours",
+    "partName": "Part Name",
+    "usageCount": "Usage Count",
+    "totalQty": "Total Qty",
+    "serviceType": "Service Type",
+    "avgValue": "Avg Value",
+    "customer": "Customer",
+    "visits": "Visits",
+    "avgDaysBetweenVisits": "Avg Days Between Visits",
+    "taxCollected": "Tax Collected",
+    "taxableAmount": "Taxable Amount",
+    "invoiceCount": "Invoice Count"
+  },
+  "empty": "No data loaded yet. Click Refresh to load the report."
+}

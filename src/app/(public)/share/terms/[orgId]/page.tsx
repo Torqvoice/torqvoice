@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getTranslations } from 'next-intl/server';
 
 export const revalidate = 60;
 
@@ -44,6 +45,8 @@ export default async function PublicTermsPage({
   const termsContent = settingsMap["payment.termsOfSale"];
   if (!termsContent) notFound();
 
+  const t = await getTranslations('share.terms');
+
   const workshopName = org.name || "";
   const logoUrl = settingsMap["workshop.logo"] || "";
   const address = settingsMap["workshop.address"] || "";
@@ -69,7 +72,7 @@ export default async function PublicTermsPage({
               </h1>
             )}
           </div>
-          <h2 className="mt-4 text-lg font-semibold">Terms of Sale (Salgsvilkår)</h2>
+          <h2 className="mt-4 text-lg font-semibold">{t('title')}</h2>
         </div>
 
         {/* Terms Content */}
@@ -82,10 +85,10 @@ export default async function PublicTermsPage({
         {/* Footer */}
         {(address || phone || email) && (
           <div className="mt-8 border-t pt-4">
-            <p className="text-xs font-bold uppercase text-gray-400">Contact</p>
+            <p className="text-xs font-bold uppercase text-gray-400">{t('contact')}</p>
             <div className="mt-1 space-y-0.5 text-sm text-gray-500">
               {address && <p>{address}</p>}
-              {phone && <p>Tel: {phone}</p>}
+              {phone && <p>{t('tel', { phone })}</p>}
               {email && <p>{email}</p>}
             </div>
           </div>

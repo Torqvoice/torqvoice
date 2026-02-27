@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +18,7 @@ import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard"
 
 export function InvoiceSettings({ settings }: { settings: Record<string, string> }) {
   const router = useRouter();
+  const t = useTranslations('settings');
   const [saving, setSaving] = useState(false);
 
   const [invoicePrefix, setInvoicePrefix] = useState(settings[SETTING_KEYS.INVOICE_PREFIX] || "{year}-");
@@ -42,7 +44,7 @@ export function InvoiceSettings({ settings }: { settings: Record<string, string>
     });
     setSaving(false);
     router.refresh();
-    toast.success("Invoice settings saved");
+    toast.success(t('invoice.saved'));
   };
 
   return (
@@ -52,16 +54,16 @@ export function InvoiceSettings({ settings }: { settings: Record<string, string>
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <FileText className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">Invoice Layout</CardTitle>
+          <CardTitle className="text-lg">{t('invoice.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm text-muted-foreground">
-            Configure what appears on generated PDF invoices.
+            {t('invoice.description')}
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="invoicePrefix">Invoice Number Format</Label>
+              <Label htmlFor="invoicePrefix">{t('invoice.invoiceNumberFormat')}</Label>
               <Input
                 id="invoicePrefix"
                 placeholder="{year}-"
@@ -69,27 +71,31 @@ export function InvoiceSettings({ settings }: { settings: Record<string, string>
                 onChange={(e) => setInvoicePrefix(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Use <code className="rounded bg-muted px-1">{"{year}"}</code> for the current year.
-                Preview: <span className="font-medium">{invoicePrefix.replace(/\{year\}/g, String(new Date().getFullYear()))}1001</span>
+                {t.rich('invoice.invoiceNumberFormatHint', {
+                  code: (chunks) => <code className="rounded bg-muted px-1">{chunks}</code>,
+                  bold: (chunks) => <span className="font-medium">{chunks}</span>,
+                  year: '{year}',
+                  preview: invoicePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) + (invoiceStartNumber || '1001'),
+                })}
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="invoiceStartNumber">Next Invoice Number</Label>
+              <Label htmlFor="invoiceStartNumber">{t('invoice.nextInvoiceNumber')}</Label>
               <Input
                 id="invoiceStartNumber"
                 type="number"
                 min="1"
-                placeholder="e.g. 94"
+                placeholder={t('invoice.nextInvoiceNumberPlaceholder')}
                 value={invoiceStartNumber}
                 onChange={(e) => setInvoiceStartNumber(e.target.value)}
                 className="w-32"
               />
               <p className="text-xs text-muted-foreground">
-                Next invoice will use this number (e.g. {invoicePrefix}{invoiceStartNumber || "..."})
+                {t('invoice.nextInvoiceNumberHint', { example: invoicePrefix + (invoiceStartNumber || '...') })}
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="dueDays">Due Days</Label>
+              <Label htmlFor="dueDays">{t('invoice.dueDays')}</Label>
               <Input
                 id="dueDays"
                 type="number"
@@ -100,7 +106,7 @@ export function InvoiceSettings({ settings }: { settings: Record<string, string>
                 className="w-24"
               />
               <p className="text-xs text-muted-foreground">
-                Number of days until invoice is due
+                {t('invoice.dueDaysHint')}
               </p>
             </div>
           </div>
@@ -108,12 +114,12 @@ export function InvoiceSettings({ settings }: { settings: Record<string, string>
           <Separator />
 
           <div className="space-y-4">
-            <h3 className="text-sm font-medium">Visibility on Invoice</h3>
+            <h3 className="text-sm font-medium">{t('invoice.visibilityTitle')}</h3>
             <div className="flex items-center justify-between rounded-lg border p-3">
               <div>
-                <Label className="text-sm font-medium">Company Logo</Label>
+                <Label className="text-sm font-medium">{t('invoice.companyLogo')}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Display company logo in invoice header
+                  {t('invoice.companyLogoHint')}
                 </p>
               </div>
               <Switch
@@ -123,9 +129,9 @@ export function InvoiceSettings({ settings }: { settings: Record<string, string>
             </div>
             <div className="flex items-center justify-between rounded-lg border p-3">
               <div>
-                <Label className="text-sm font-medium">Company Name</Label>
+                <Label className="text-sm font-medium">{t('invoice.companyName')}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Display company name text in invoice header
+                  {t('invoice.companyNameHint')}
                 </p>
               </div>
               <Switch
@@ -135,9 +141,9 @@ export function InvoiceSettings({ settings }: { settings: Record<string, string>
             </div>
             <div className="flex items-center justify-between rounded-lg border p-3">
               <div>
-                <Label className="text-sm font-medium">Bank Account</Label>
+                <Label className="text-sm font-medium">{t('invoice.bankAccount')}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Show bank account / IBAN on invoice
+                  {t('invoice.bankAccountHint')}
                 </p>
               </div>
               <Switch
@@ -147,9 +153,9 @@ export function InvoiceSettings({ settings }: { settings: Record<string, string>
             </div>
             <div className="flex items-center justify-between rounded-lg border p-3">
               <div>
-                <Label className="text-sm font-medium">Organization Number</Label>
+                <Label className="text-sm font-medium">{t('invoice.organizationNumber')}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Show org number on invoice header
+                  {t('invoice.organizationNumberHint')}
                 </p>
               </div>
               <Switch
@@ -162,16 +168,16 @@ export function InvoiceSettings({ settings }: { settings: Record<string, string>
           <Separator />
 
           <div className="space-y-2">
-            <Label htmlFor="footerNote">Custom Invoice Footer</Label>
+            <Label htmlFor="footerNote">{t('invoice.customFooter')}</Label>
             <Textarea
               id="footerNote"
-              placeholder="Thank you for your business!"
+              placeholder={t('invoice.footerPlaceholder')}
               rows={2}
               value={footerNote}
               onChange={(e) => setFooterNote(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              This text appears at the bottom of every invoice
+              {t('invoice.footerHint')}
             </p>
           </div>
 
@@ -184,7 +190,7 @@ export function InvoiceSettings({ settings }: { settings: Record<string, string>
                 ) : (
                   <Save className="mr-2 h-4 w-4" />
                 )}
-                Save Invoice Settings
+                {t('invoice.saveInvoice')}
               </Button>
             </div>
           </SaveButton>

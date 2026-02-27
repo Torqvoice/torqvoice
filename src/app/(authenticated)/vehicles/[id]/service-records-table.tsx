@@ -34,6 +34,7 @@ import {
   Plus,
   Search,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ServiceRecordRow {
   id: string;
@@ -82,6 +83,7 @@ export function ServiceRecordsTable({
   const [isPending, startTransition] = useTransition();
   const [searchInput, setSearchInput] = useState(search);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
+  const t = useTranslations("vehicles.services");
 
   const createUrl = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -139,7 +141,7 @@ export function ServiceRecordsTable({
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search records..."
+              placeholder={t("searchPlaceholder")}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="pl-9"
@@ -153,11 +155,11 @@ export function ServiceRecordsTable({
               <SelectValue placeholder="All types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All types</SelectItem>
-              <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="repair">Repair</SelectItem>
-              <SelectItem value="upgrade">Upgrade</SelectItem>
-              <SelectItem value="inspection">Inspection</SelectItem>
+              <SelectItem value="all">{t("allTypes")}</SelectItem>
+              <SelectItem value="maintenance">{t("maintenance")}</SelectItem>
+              <SelectItem value="repair">{t("repair")}</SelectItem>
+              <SelectItem value="upgrade">{t("upgrade")}</SelectItem>
+              <SelectItem value="inspection">{t("inspection")}</SelectItem>
             </SelectContent>
           </Select>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -165,7 +167,7 @@ export function ServiceRecordsTable({
         <Button size="sm" asChild>
           <Link href={`/vehicles/${vehicleId}/service/new`}>
             <Plus className="mr-1 h-3.5 w-3.5" />
-            New Work Order
+            {t("newWorkOrder")}
           </Link>
         </Button>
       </div>
@@ -175,14 +177,14 @@ export function ServiceRecordsTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Date</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead className="w-[100px]">Type</TableHead>
-              <TableHead className="w-[100px]">Status</TableHead>
-              <TableHead className="w-[100px] text-right">Mileage</TableHead>
-              <TableHead className="hidden w-[120px] sm:table-cell">Technician</TableHead>
-              <TableHead className="w-[50px] text-center">Files</TableHead>
-              <TableHead className="w-[100px] text-right">Total</TableHead>
+              <TableHead className="w-[100px]">{t("table.date")}</TableHead>
+              <TableHead>{t("table.title")}</TableHead>
+              <TableHead className="w-[100px]">{t("table.type")}</TableHead>
+              <TableHead className="w-[100px]">{t("table.status")}</TableHead>
+              <TableHead className="w-[100px] text-right">{t("table.mileage")}</TableHead>
+              <TableHead className="hidden w-[120px] sm:table-cell">{t("table.technician")}</TableHead>
+              <TableHead className="w-[50px] text-center">{t("table.files")}</TableHead>
+              <TableHead className="w-[100px] text-right">{t("table.total")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -190,8 +192,8 @@ export function ServiceRecordsTable({
               <TableRow>
                 <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
                   {search || type !== "all"
-                    ? "No service records match your filters."
-                    : "No service records yet."}
+                    ? t("emptyFiltered")
+                    : t("empty")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -269,7 +271,7 @@ export function ServiceRecordsTable({
         <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>
-              Showing {startItem}-{endItem} of {total}
+              {t("showing", { start: startItem, end: endItem, total })}
             </span>
             <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
               <SelectTrigger className="h-8 w-[70px]">
@@ -282,7 +284,7 @@ export function ServiceRecordsTable({
                 <SelectItem value="50">50</SelectItem>
               </SelectContent>
             </Select>
-            <span>per page</span>
+            <span>{t("perPage")}</span>
           </div>
           <div className="flex items-center gap-1">
             <Button
@@ -304,7 +306,7 @@ export function ServiceRecordsTable({
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <span className="px-3 text-sm">
-              Page {page} of {totalPages}
+              {t("page", { page, totalPages })}
             </span>
             <Button
               variant="outline"

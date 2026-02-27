@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { formatDistanceToNow } from "date-fns";
 import { Bell, FileText, ClipboardCheck, Receipt, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,7 @@ export function NotificationBell() {
 }
 
 export function NotificationPanel() {
+  const t = useTranslations("notifications");
   const router = useRouter();
   const { notifications, unreadCount, isPanelOpen, setPanelOpen, markRead, markAllRead, removeNotification } =
     useNotificationStore();
@@ -91,7 +93,7 @@ export function NotificationPanel() {
         <SheetHeader className="border-b px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <SheetTitle>Notifications</SheetTitle>
+              <SheetTitle>{t("panel.title")}</SheetTitle>
               {unreadCount > 0 && (
                 <Badge variant="secondary" className="text-xs">
                   {unreadCount}
@@ -100,7 +102,7 @@ export function NotificationPanel() {
             </div>
             {unreadCount > 0 && (
               <Button variant="ghost" size="sm" className="text-xs" onClick={handleMarkAllRead}>
-                Mark all read
+                {t("panel.markAllRead")}
               </Button>
             )}
           </div>
@@ -109,7 +111,7 @@ export function NotificationPanel() {
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
               <Bell className="mb-2 h-8 w-8 opacity-40" />
-              <p className="text-sm">No notifications yet</p>
+              <p className="text-sm">{t("panel.empty")}</p>
             </div>
           ) : (
             <div className="divide-y">
@@ -145,14 +147,14 @@ export function NotificationPanel() {
                       </div>
                       {pendingDeleteId === n.id ? (
                         <div className="mt-1 flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground">Are you sure?</span>
+                          <span className="text-xs text-muted-foreground">{t("panel.confirmDelete")}</span>
                           <Button
                             variant="destructive"
                             size="sm"
                             className="h-6 px-2 text-xs"
                             onClick={(e) => handleConfirmDelete(e, n.id)}
                           >
-                            Delete
+                            {t("panel.delete")}
                           </Button>
                           <Button
                             variant="ghost"
@@ -160,7 +162,7 @@ export function NotificationPanel() {
                             className="h-6 px-2 text-xs"
                             onClick={handleCancelDelete}
                           >
-                            Cancel
+                            {t("panel.cancel")}
                           </Button>
                         </div>
                       ) : (

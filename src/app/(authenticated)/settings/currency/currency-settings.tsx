@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,42 +24,43 @@ import { formatCurrency } from "@/lib/format";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
 const CURRENCIES = [
-  { code: "USD", name: "US Dollar" },
-  { code: "EUR", name: "Euro" },
-  { code: "GBP", name: "British Pound" },
-  { code: "NOK", name: "Norwegian Krone" },
-  { code: "SEK", name: "Swedish Krona" },
-  { code: "DKK", name: "Danish Krone" },
-  { code: "CHF", name: "Swiss Franc" },
-  { code: "CAD", name: "Canadian Dollar" },
-  { code: "AUD", name: "Australian Dollar" },
-  { code: "NZD", name: "New Zealand Dollar" },
-  { code: "JPY", name: "Japanese Yen" },
-  { code: "CNY", name: "Chinese Yuan" },
-  { code: "INR", name: "Indian Rupee" },
-  { code: "BRL", name: "Brazilian Real" },
-  { code: "MXN", name: "Mexican Peso" },
-  { code: "PLN", name: "Polish Zloty" },
-  { code: "CZK", name: "Czech Koruna" },
-  { code: "HUF", name: "Hungarian Forint" },
-  { code: "TRY", name: "Turkish Lira" },
-  { code: "ZAR", name: "South African Rand" },
-  { code: "KRW", name: "South Korean Won" },
-  { code: "SGD", name: "Singapore Dollar" },
-  { code: "HKD", name: "Hong Kong Dollar" },
-  { code: "THB", name: "Thai Baht" },
-  { code: "ISK", name: "Icelandic Krona" },
-  { code: "RON", name: "Romanian Leu" },
-  { code: "ILS", name: "Israeli Shekel" },
-  { code: "PHP", name: "Philippine Peso" },
-  { code: "IDR", name: "Indonesian Rupiah" },
-  { code: "MYR", name: "Malaysian Ringgit" },
-  { code: "AED", name: "UAE Dirham" },
-  { code: "SAR", name: "Saudi Riyal" },
+  { code: "USD", key: "USD" },
+  { code: "EUR", key: "EUR" },
+  { code: "GBP", key: "GBP" },
+  { code: "NOK", key: "NOK" },
+  { code: "SEK", key: "SEK" },
+  { code: "DKK", key: "DKK" },
+  { code: "CHF", key: "CHF" },
+  { code: "CAD", key: "CAD" },
+  { code: "AUD", key: "AUD" },
+  { code: "NZD", key: "NZD" },
+  { code: "JPY", key: "JPY" },
+  { code: "CNY", key: "CNY" },
+  { code: "INR", key: "INR" },
+  { code: "BRL", key: "BRL" },
+  { code: "MXN", key: "MXN" },
+  { code: "PLN", key: "PLN" },
+  { code: "CZK", key: "CZK" },
+  { code: "HUF", key: "HUF" },
+  { code: "TRY", key: "TRY" },
+  { code: "ZAR", key: "ZAR" },
+  { code: "KRW", key: "KRW" },
+  { code: "SGD", key: "SGD" },
+  { code: "HKD", key: "HKD" },
+  { code: "THB", key: "THB" },
+  { code: "ISK", key: "ISK" },
+  { code: "RON", key: "RON" },
+  { code: "ILS", key: "ILS" },
+  { code: "PHP", key: "PHP" },
+  { code: "IDR", key: "IDR" },
+  { code: "MYR", key: "MYR" },
+  { code: "AED", key: "AED" },
+  { code: "SAR", key: "SAR" },
 ];
 
 export function CurrencySettings({ settings }: { settings: Record<string, string> }) {
   const router = useRouter();
+  const t = useTranslations('settings');
   const [saving, setSaving] = useState(false);
 
   const [currencyCode, setCurrencyCode] = useState(settings[SETTING_KEYS.CURRENCY_CODE] || "USD");
@@ -73,7 +75,7 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
     });
     setSaving(false);
     router.refresh();
-    toast.success("Settings saved");
+    toast.success(t('currency.saved'));
   };
 
   return (
@@ -82,17 +84,17 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <Coins className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">Currency & Tax</CardTitle>
+          <CardTitle className="text-lg">{t('currency.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm text-muted-foreground">
-            Default currency and tax rate used across invoices and service records.
+            {t('currency.description')}
           </p>
 
           <ReadOnlyWrapper>
           <div className="space-y-6">
           <div className="space-y-2">
-            <Label>Currency</Label>
+            <Label>{t('currency.currencyLabel')}</Label>
             <Select value={currencyCode} onValueChange={setCurrencyCode}>
               <SelectTrigger className="w-64">
                 <SelectValue />
@@ -100,13 +102,13 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
               <SelectContent>
                 {CURRENCIES.map((c) => (
                   <SelectItem key={c.code} value={c.code}>
-                    {c.code} &mdash; {c.name}
+                    {c.code} &mdash; {t('currency.currencies.' + c.code)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              Preview: {formatCurrency(1234.56, currencyCode)}
+              {t('currency.previewLabel', { value: formatCurrency(1234.56, currencyCode) })}
             </p>
           </div>
 
@@ -114,9 +116,9 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
 
           <div className="flex items-center justify-between">
             <div>
-              <Label>Enable Tax</Label>
+              <Label>{t('currency.enableTax')}</Label>
               <p className="text-xs text-muted-foreground">
-                Show tax calculation on invoices and service records
+                {t('currency.enableTaxHint')}
               </p>
             </div>
             <Switch checked={taxEnabled} onCheckedChange={setTaxEnabled} />
@@ -124,7 +126,7 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
 
           {taxEnabled && (
             <div className="space-y-2">
-              <Label htmlFor="defaultTaxRate">Default Tax Rate (%)</Label>
+              <Label htmlFor="defaultTaxRate">{t('currency.defaultTaxRate')}</Label>
               <Input
                 id="defaultTaxRate"
                 type="number"
@@ -136,7 +138,7 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
                 className="w-32"
               />
               <p className="text-xs text-muted-foreground">
-                Auto-populated when creating new service records
+                {t('currency.defaultTaxRateHint')}
               </p>
             </div>
           )}
@@ -153,7 +155,7 @@ export function CurrencySettings({ settings }: { settings: Record<string, string
                 ) : (
                   <Save className="mr-2 h-4 w-4" />
                 )}
-                Save Settings
+                {t('currency.saveSettings')}
               </Button>
             </div>
           </SaveButton>

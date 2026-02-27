@@ -1,0 +1,87 @@
+{
+  "searchPlaceholder": "Buscar peças...",
+  "categoryPlaceholder": "Categoria",
+  "allCategories": "Todas as categorias",
+  "applyMarkup": "Aplicar margem",
+  "addPart": "Adicionar peça",
+  "table": {
+    "partNumber": "N.º peça",
+    "name": "Nome",
+    "category": "Categoria",
+    "inStock": "Em estoque",
+    "unitCost": "Custo unitário",
+    "sellPrice": "Preço de venda",
+    "supplier": "Fornecedor",
+    "location": "Localização",
+    "low": "Baixo"
+  },
+  "empty": {
+    "noMatch": "Nenhuma peça corresponde à sua busca.",
+    "noParts": "Nenhuma peça no inventário ainda."
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Excluir"
+  },
+  "deletePart": {
+    "title": "Excluir peça",
+    "description": "Excluir \"{name}\" do inventário? Esta ação não pode ser desfeita.",
+    "confirm": "Excluir"
+  },
+  "markup": {
+    "title": "Aplicar margem a todas as peças",
+    "multiplierLabel": "Multiplicador de margem",
+    "description": "Isso definirá o preço de venda = custo x {multiplier} para todas as {count} peças.",
+    "percentage": "({percent}% de margem)",
+    "cancel": "Cancelar",
+    "apply": "Aplicar"
+  },
+  "errors": {
+    "multiplierPositive": "O multiplicador deve ser maior que 0",
+    "deleteFailed": "Não foi possível excluir a peça",
+    "applyFailed": "Não foi possível aplicar a margem",
+    "saveFailed": "Não foi possível salvar a peça",
+    "error": "Erro"
+  },
+  "form": {
+    "editPart": "Editar peça",
+    "addNewPart": "Adicionar nova peça",
+    "supplierLink": "Link do fornecedor",
+    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "fetch": "Buscar",
+    "fetchFailed": "Falha ao buscar",
+    "fetchError": "Não foi possível buscar os metadados da URL",
+    "image": "Imagem",
+    "dropOrClick": "Arraste uma imagem ou clique",
+    "replace": "Substituir",
+    "upload": "Enviar",
+    "imageUploading": "Enviando imagem...",
+    "imageUploaded": "Imagem enviada",
+    "imageUploadFailed": "Não foi possível enviar a imagem",
+    "imageTypeError": "Apenas imagens JPEG, PNG, WebP e AVIF são permitidas",
+    "imageSizeError": "A imagem deve ter menos de 5 MB",
+    "partNumber": "Número da peça",
+    "partNumberPlaceholder": "BRK-001",
+    "nameLabel": "Nome *",
+    "namePlaceholder": "Jogo de pastilhas de freio",
+    "category": "Categoria",
+    "categoryPlaceholder": "Freios",
+    "location": "Localização",
+    "locationPlaceholder": "Prateleira A-3",
+    "quantity": "Quantidade",
+    "minQty": "Qtd. mín.",
+    "unitCost": "Custo unitário",
+    "sellPrice": "Preço de venda",
+    "supplier": "Fornecedor",
+    "supplierPlaceholder": "AutoParts Ltda.",
+    "supplierPhone": "Telefone do fornecedor",
+    "supplierPhonePlaceholder": "(555) 123-4567",
+    "supplierEmail": "E-mail do fornecedor",
+    "supplierEmailPlaceholder": "orders@autoparts.com",
+    "description": "Descrição",
+    "descriptionPlaceholder": "Descrição da peça...",
+    "cancel": "Cancelar",
+    "saveChanges": "Salvar alterações",
+    "addPart": "Adicionar peça"
+  }
+}

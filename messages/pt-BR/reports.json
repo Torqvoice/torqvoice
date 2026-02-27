@@ -1,0 +1,199 @@
+{
+  "title": "Relatórios e Análises",
+  "tabs": {
+    "revenue": "Receita",
+    "services": "Serviços",
+    "customers": "Clientes",
+    "inventory": "Estoque",
+    "technicians": "Técnicos",
+    "parts": "Peças",
+    "jobAnalytics": "Análise de Trabalhos",
+    "retention": "Retenção",
+    "tax": "Impostos"
+  },
+  "dateRange": {
+    "to": "até"
+  },
+  "actions": {
+    "refresh": "Atualizar",
+    "csv": "CSV"
+  },
+  "revenue": {
+    "revenue": "Receita",
+    "collected": "Recebido",
+    "outstanding": "Pendente",
+    "services": "Serviços",
+    "monthlyRevenue": "Receita Mensal",
+    "revenueByType": "Receita por Tipo",
+    "monthlyBreakdown": "Detalhamento Mensal",
+    "tableHeaders": {
+      "month": "Mês",
+      "revenue": "Receita",
+      "collected": "Recebido",
+      "count": "Quantidade"
+    }
+  },
+  "services": {
+    "totalServices": "Total de Serviços",
+    "byStatus": "Por Status",
+    "byType": "Por Tipo"
+  },
+  "customers": {
+    "total": "Total",
+    "active": "Ativos",
+    "topCustomersBySpend": "Principais Clientes por Gasto",
+    "topCustomers": "Principais Clientes",
+    "tableHeaders": {
+      "name": "Nome",
+      "company": "Empresa",
+      "services": "Serviços",
+      "totalSpent": "Total Gasto"
+    }
+  },
+  "inventory": {
+    "parts": "Peças",
+    "items": "Itens",
+    "costValue": "Valor de Custo",
+    "sellValue": "Valor de Venda",
+    "potentialMargin": "Margem Potencial",
+    "lowStock": "Estoque Baixo",
+    "tableHeaders": {
+      "name": "Nome",
+      "partNumber": "N.º Peça",
+      "qty": "Qtd.",
+      "minQty": "Qtd. Mín."
+    }
+  },
+  "technicians": {
+    "totalJobs": "Total de Trabalhos",
+    "totalRevenue": "Receita Total",
+    "revenueByTechnician": "Receita por Técnico",
+    "technicianBreakdown": "Detalhamento por Técnico",
+    "tableHeaders": {
+      "technician": "Técnico",
+      "jobs": "Trabalhos",
+      "revenue": "Receita",
+      "avgRevenue": "Receita Méd.",
+      "totalHours": "Horas Totais",
+      "avgHours": "Horas Méd."
+    }
+  },
+  "parts": {
+    "partsUsed": "Peças Usadas",
+    "partsRevenue": "Receita de Peças",
+    "topPartsByUsage": "Peças Mais Usadas",
+    "partsUsage": "Uso de Peças",
+    "tableHeaders": {
+      "partName": "Nome da Peça",
+      "partNumber": "N.º Peça",
+      "usageCount": "Vezes Usada",
+      "totalQty": "Qtd. Total",
+      "revenue": "Receita"
+    }
+  },
+  "jobAnalytics": {
+    "totalJobs": "Total de Trabalhos",
+    "avgJobValue": "Valor Méd. do Trabalho",
+    "jobsByDayOfWeek": "Trabalhos por Dia da Semana",
+    "serviceTypes": "Tipos de Serviço",
+    "monthlyTrend": "Tendência Mensal",
+    "serviceTypeBreakdown": "Detalhamento por Tipo de Serviço",
+    "tableHeaders": {
+      "type": "Tipo",
+      "count": "Quantidade",
+      "avgValue": "Valor Méd.",
+      "avgHours": "Horas Méd."
+    }
+  },
+  "retention": {
+    "returning": "Recorrentes",
+    "new": "Novos",
+    "totalActive": "Total Ativos",
+    "avgDaysBetween": "Méd. Dias Entre",
+    "topReturningCustomers": "Principais Clientes Recorrentes",
+    "returningCustomers": "Clientes Recorrentes",
+    "tableHeaders": {
+      "customer": "Cliente",
+      "company": "Empresa",
+      "visits": "Visitas",
+      "totalSpent": "Total Gasto",
+      "avgDaysBetween": "Méd. Dias Entre"
+    }
+  },
+  "tax": {
+    "totalTaxCollected": "Total de Impostos Arrecadados",
+    "taxableRevenue": "Receita Tributável",
+    "invoicesWithTax": "Faturas com Imposto",
+    "monthlyTaxCollected": "Impostos Mensais Arrecadados",
+    "taxByRate": "Imposto por Alíquota",
+    "monthlyBreakdown": "Detalhamento Mensal",
+    "tableHeaders": {
+      "taxRate": "Alíquota",
+      "taxCollected": "Imposto Arrecadado",
+      "invoices": "Faturas",
+      "month": "Mês",
+      "taxableAmount": "Valor Tributável"
+    }
+  },
+  "charts": {
+    "revenue": "Receita",
+    "collected": "Recebido",
+    "count": "Quantidade",
+    "totalSpent": "Total Gasto",
+    "jobs": "Trabalhos",
+    "visits": "Visitas",
+    "taxCollected": "Imposto Arrecadado"
+  },
+  "days": {
+    "sunday": "Domingo",
+    "monday": "Segunda-feira",
+    "tuesday": "Terça-feira",
+    "wednesday": "Quarta-feira",
+    "thursday": "Quinta-feira",
+    "friday": "Sexta-feira",
+    "saturday": "Sábado"
+  },
+  "daysShort": {
+    "sun": "Dom",
+    "mon": "Seg",
+    "tue": "Ter",
+    "wed": "Qua",
+    "thu": "Qui",
+    "fri": "Sex",
+    "sat": "Sáb"
+  },
+  "csvHeaders": {
+    "month": "Mês",
+    "revenue": "Receita",
+    "collected": "Recebido",
+    "count": "Quantidade",
+    "category": "Categoria",
+    "label": "Rótulo",
+    "name": "Nome",
+    "company": "Empresa",
+    "services": "Serviços",
+    "totalSpent": "Total Gasto",
+    "partNumber": "N.º Peça",
+    "quantity": "Quantidade",
+    "minQuantity": "Quantidade Mínima",
+    "unitCost": "Custo Unitário",
+    "technician": "Técnico",
+    "jobs": "Trabalhos",
+    "totalRevenue": "Receita Total",
+    "avgRevenue": "Receita Méd.",
+    "totalHours": "Horas Totais",
+    "avgHours": "Horas Méd.",
+    "partName": "Nome da Peça",
+    "usageCount": "Vezes Usada",
+    "totalQty": "Qtd. Total",
+    "serviceType": "Tipo de Serviço",
+    "avgValue": "Valor Méd.",
+    "customer": "Cliente",
+    "visits": "Visitas",
+    "avgDaysBetweenVisits": "Méd. Dias Entre Visitas",
+    "taxCollected": "Imposto Arrecadado",
+    "taxableAmount": "Valor Tributável",
+    "invoiceCount": "Quantidade de Faturas"
+  },
+  "empty": "Nenhum dado carregado ainda. Clique em Atualizar para carregar o relatório."
+}

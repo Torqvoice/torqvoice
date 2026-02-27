@@ -1,0 +1,89 @@
+{
+  "stats": {
+    "activeJobs": "Aktive jobber",
+    "pending": "Ventende",
+    "todaysRevenue": "Dagens omsetning",
+    "totalCustomers": "Totalt antall kunder"
+  },
+  "customize": "Tilpass",
+  "showCards": "Vis kort",
+  "cards": {
+    "maintenance": "Forventet vedlikehold",
+    "reminders": "Kommende påminnelser",
+    "inspections": "Inspeksjoner",
+    "quoteRequests": "Tilbudsforespørsler",
+    "quoteResponses": "Tilbudssvar",
+    "sms": "Siste meldinger",
+    "notifications": "Siste varsler",
+    "recentCompleted": "Nylig fullført",
+    "activeJobs": "Aktive jobber"
+  },
+  "maintenance": {
+    "title": "Forventet vedlikehold",
+    "description": "Basert på servicehistorikk og estimert daglig kjørelengde",
+    "overdue": "Forfalt",
+    "approaching": "Nærmer seg",
+    "estimated": "Est. {mileage} {unit}",
+    "sinceLastService": "{mileage} {unit} siden siste service",
+    "certainty": "{percent} % sikkerhet"
+  },
+  "reminders": {
+    "title": "Kommende påminnelser",
+    "overdue": "Forfalt",
+    "dueSoon": "Forfaller snart"
+  },
+  "messages": {
+    "title": "Siste meldinger",
+    "viewAll": "Vis alle",
+    "you": "Du: "
+  },
+  "notifications": {
+    "title": "Siste varsler"
+  },
+  "inspections": {
+    "title": "Inspeksjoner",
+    "inProgress": "Pågår",
+    "completed": "Fullført",
+    "itemCount": "{inspected}/{total} punkter"
+  },
+  "quoteRequests": {
+    "title": "Tilbudsforespørsler",
+    "description": "Kunder som ber om tilbud fra delte inspeksjoner",
+    "pending": "Ventende",
+    "createQuote": "Opprett tilbud",
+    "itemsRequested": "{count, plural, one {# punkt forespurt} other {# punkter forespurt}}"
+  },
+  "quoteResponses": {
+    "title": "Kundens tilbudssvar",
+    "description": "Tilbud som kunder har akseptert eller bedt om endringer på",
+    "accepted": "Akseptert",
+    "changesRequested": "Endringer forespurt",
+    "convertToWorkOrder": "Konverter til arbeidsordre",
+    "viewQuote": "Vis tilbud"
+  },
+  "recentCompleted": {
+    "title": "Nylig fullført",
+    "date": "Dato",
+    "vehicle": "Kjøretøy",
+    "customer": "Kunde",
+    "serviceTitle": "Tittel",
+    "total": "Totalt",
+    "empty": "Ingen fullførte tjenester ennå"
+  },
+  "activeJobsTable": {
+    "title": "Aktive jobber",
+    "vehicle": "Kjøretøy",
+    "customer": "Kunde",
+    "serviceTitle": "Tittel",
+    "status": "Status",
+    "tech": "Tekniker",
+    "empty": "Ingen aktive jobber"
+  },
+  "relativeTime": {
+    "now": "nå",
+    "minutes": "{count}m",
+    "hours": "{count}t",
+    "days": "{count}d"
+  },
+  "error": "Kunne ikke laste dashbord"
+}

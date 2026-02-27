@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,6 +92,7 @@ export function TeamSettings({
   pendingInvitations?: PendingInvitation[];
 }) {
   const router = useRouter();
+  const t = useTranslations('settings');
   const modal = useGlassModal();
   const confirm = useConfirm();
   const [loading, setLoading] = useState(false);
@@ -169,29 +171,29 @@ export function TeamSettings({
     }
 
     if (result.success) {
-      toast.success(editingRole ? "Role updated" : "Role created");
+      toast.success(editingRole ? t('team.roleUpdated') : t('team.roleCreated'));
       closeRoleForm();
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to save role");
+      modal.open("error", "Error", result.error || t('team.failedSaveRole'));
     }
     setLoading(false);
   };
 
   const handleDeleteRole = async (role: RoleData) => {
     const ok = await confirm({
-      title: "Delete Role",
-      description: `Delete the "${role.name}" role? Members with this role will lose their custom permissions.`,
-      confirmLabel: "Delete",
+      title: t('team.deleteRole'),
+      description: t('team.deleteRoleDescription', { name: role.name }),
+      confirmLabel: t('team.deleteRole'),
       destructive: true,
     });
     if (!ok) return;
     const result = await deleteRole(role.id);
     if (result.success) {
-      toast.success("Role deleted");
+      toast.success(t('team.roleDeleted'));
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to delete role");
+      modal.open("error", "Error", result.error || t('team.failedDeleteRole'));
     }
   };
 
@@ -213,10 +215,10 @@ export function TeamSettings({
 
     const result = await assignRole({ memberId, role, roleId });
     if (result.success) {
-      toast.success("Role updated");
+      toast.success(t('team.roleAssigned'));
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to update role");
+      modal.open("error", "Error", result.error || t('team.failedAssignRole'));
     }
   };
 
@@ -225,10 +227,10 @@ export function TeamSettings({
     setLoading(true);
     const result = await createOrganization({ name: orgName });
     if (result.success) {
-      toast.success("Organization created");
+      toast.success(t('team.orgCreated'));
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to create organization");
+      modal.open("error", "Error", result.error || t('team.failedCreateOrg'));
     }
     setLoading(false);
   };
@@ -246,9 +248,9 @@ export function TeamSettings({
         const roleToInvite = inviteRole;
         setLoading(false);
         const ok = await confirm({
-          title: "User Not Found",
-          description: `No account found for "${emailToInvite}". Send them an invitation email to sign up and join your team?`,
-          confirmLabel: "Send Invitation",
+          title: t('team.userNotFoundTitle'),
+          description: t('team.userNotFoundDescription', { email: emailToInvite }),
+          confirmLabel: t('team.sendInvitation'),
         });
         if (ok) {
           setLoading(true);
@@ -256,64 +258,64 @@ export function TeamSettings({
           if (sendResult.success) {
             setInviteEmail("");
             router.refresh();
-            modal.open("success", "Invitation Sent", `An invitation email has been sent to ${emailToInvite}.`);
+            modal.open("success", t('team.invitationSentTitle'), t('team.invitationSentDescription', { email: emailToInvite }));
           } else {
-            modal.open("error", "Error", sendResult.error || "Failed to send invitation");
+            modal.open("error", "Error", sendResult.error || t('team.failedSendInvitation'));
           }
           setLoading(false);
         }
       } else {
         setInviteEmail("");
         router.refresh();
-        modal.open("success", "Invited", `Member invited successfully.`);
+        modal.open("success", t('team.invite'), t('team.invited'));
       }
     } else {
-      modal.open("error", "Error", result.error || "Failed to invite member");
+      modal.open("error", "Error", result.error || t('team.failedInvite'));
     }
     setLoading(false);
   };
 
   const handleCancelInvitation = async (invitation: PendingInvitation) => {
     const ok = await confirm({
-      title: "Cancel Invitation",
-      description: `Cancel the invitation to ${invitation.email}? They will no longer be able to use this link to join.`,
-      confirmLabel: "Cancel Invitation",
+      title: t('team.cancelInvitation'),
+      description: t('team.cancelInvitationDescription', { email: invitation.email }),
+      confirmLabel: t('team.cancelInvitation'),
       destructive: true,
     });
     if (!ok) return;
     const result = await cancelInvitation({ invitationId: invitation.id });
     if (result.success) {
-      toast.success("Invitation cancelled");
+      toast.success(t('team.invitationCancelled'));
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to cancel invitation");
+      modal.open("error", "Error", result.error || t('team.failedCancelInvitation'));
     }
   };
 
   const handleRoleChange = async (memberId: string, role: string) => {
     const result = await updateMemberRole({ memberId, role });
     if (result.success) {
-      toast.success("Member role updated");
+      toast.success(t('team.memberRoleUpdated'));
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to update role");
+      modal.open("error", "Error", result.error || t('team.failedUpdateRole'));
     }
   };
 
   const handleRemove = async (member: Member) => {
     const ok = await confirm({
-      title: "Remove Member",
-      description: `Remove ${member.user.name} from the team? They will lose access to shared data.`,
-      confirmLabel: "Remove",
+      title: t('team.removeMemberTitle'),
+      description: t('team.removeMemberDescription', { name: member.user.name }),
+      confirmLabel: t('team.removeButton'),
       destructive: true,
     });
     if (!ok) return;
     const result = await removeMember(member.id);
     if (result.success) {
-      toast.success("Member removed");
+      toast.success(t('team.memberRemoved'));
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to remove member");
+      modal.open("error", "Error", result.error || t('team.failedRemoveMember'));
     }
   };
 
@@ -321,34 +323,34 @@ export function TeamSettings({
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-lg font-semibold">Team</h2>
+          <h2 className="text-lg font-semibold">{t('team.title')}</h2>
           <p className="text-sm text-muted-foreground">
-            Create a team to share data with other users.
+            {t('team.noOrgDescription')}
           </p>
         </div>
 
         <Card className="border-0 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" /> Create Organization
+              <Users className="h-4 w-4" /> {t('team.createOrg')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Create an organization to invite team members. You will be the owner.
+              {t('team.createOrgDescription')}
             </p>
             <div className="flex items-end gap-3">
               <div className="flex-1 space-y-2">
-                <Label>Organization Name</Label>
+                <Label>{t('team.orgName')}</Label>
                 <Input
-                  placeholder="My Workshop"
+                  placeholder={t('team.orgNamePlaceholder')}
                   value={orgName}
                   onChange={(e) => setOrgName(e.target.value)}
                 />
               </div>
               <Button onClick={handleCreateOrg} disabled={loading || !orgName.trim()}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create
+                {t('team.create')}
               </Button>
             </div>
           </CardContent>
@@ -360,9 +362,9 @@ export function TeamSettings({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">Team</h2>
+        <h2 className="text-lg font-semibold">{t('team.title')}</h2>
         <p className="text-sm text-muted-foreground">
-          Manage your organization members and their roles.
+          {t('team.orgDescription')}
         </p>
       </div>
 
@@ -372,7 +374,7 @@ export function TeamSettings({
           <CardTitle className="flex items-center gap-2 text-base">
             <Users className="h-4 w-4" /> {organization.name}
             <Badge variant="outline" className="ml-2 text-xs">
-              {organization.members.length} member{organization.members.length !== 1 ? "s" : ""}
+              {organization.members.length !== 1 ? t('team.memberCountPlural', { count: organization.members.length }) : t('team.memberCount', { count: organization.members.length })}
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -400,8 +402,8 @@ export function TeamSettings({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="member">Member</SelectItem>
+                        <SelectItem value="admin">{t('team.admin')}</SelectItem>
+                        <SelectItem value="member">{t('team.member')}</SelectItem>
                         {roles.length > 0 && (
                           <>
                             <SelectSeparator />
@@ -438,10 +440,10 @@ export function TeamSettings({
           {isAdmin && (
             <form onSubmit={handleInvite} className="flex items-end gap-3 border-t pt-4">
               <div className="flex-1 space-y-2">
-                <Label>Invite by Email</Label>
+                <Label>{t('team.inviteByEmail')}</Label>
                 <Input
                   type="email"
-                  placeholder="user@example.com"
+                  placeholder={t('team.inviteEmailPlaceholder')}
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   required
@@ -464,8 +466,8 @@ export function TeamSettings({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="member">Member</SelectItem>
+                  <SelectItem value="admin">{t('team.admin')}</SelectItem>
+                  <SelectItem value="member">{t('team.member')}</SelectItem>
                   {roles.length > 0 && (
                     <>
                       <SelectSeparator />
@@ -480,7 +482,7 @@ export function TeamSettings({
               </Select>
               <Button type="submit" disabled={loading || !inviteEmail.trim()}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-1 h-4 w-4" />}
-                Invite
+                {t('team.invite')}
               </Button>
             </form>
           )}
@@ -492,7 +494,7 @@ export function TeamSettings({
         <Card className="border-0 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" /> Pending Invitations
+              <Mail className="h-4 w-4" /> {t('team.pendingInvitations')}
               <Badge variant="outline" className="ml-2 text-xs">
                 {pendingInvitations.length}
               </Badge>
@@ -511,22 +513,22 @@ export function TeamSettings({
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-sm">{invitation.email}</p>
                     <p className="text-xs text-muted-foreground">
-                      Invited as {invitation.customRole?.name || invitation.role} &middot; Expires {new Date(invitation.expiresAt).toLocaleDateString()}
+                      {t('team.invitedAs', { role: invitation.customRole?.name || invitation.role })} &middot; {t('team.expires', { date: new Date(invitation.expiresAt).toLocaleDateString() })}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-600 border-yellow-500/20">
-                      Pending
+                      {t('team.pending')}
                     </Badge>
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-muted-foreground"
-                      title="Copy invite link"
+                      title={t('team.copyInviteLink')}
                       onClick={() => {
                         const url = `${window.location.origin}/auth/sign-up?invite=${invitation.token}`;
                         navigator.clipboard.writeText(url);
-                        toast.success("Invite link copied to clipboard");
+                        toast.success(t('team.inviteLinkCopied'));
                       }}
                     >
                       <Copy className="h-3.5 w-3.5" />
@@ -553,12 +555,12 @@ export function TeamSettings({
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-base">
-                <ShieldCheck className="h-4 w-4" /> Custom Roles
+                <ShieldCheck className="h-4 w-4" /> {t('team.customRoles')}
               </CardTitle>
               {!showRoleForm && (
                 <Button size="sm" variant="outline" onClick={() => openRoleForm()}>
                   <Plus className="mr-1 h-4 w-4" />
-                  New Role
+                  {t('team.newRole')}
                 </Button>
               )}
             </div>
@@ -567,9 +569,9 @@ export function TeamSettings({
             {showRoleForm && (
               <div className="space-y-4 rounded-lg border p-4">
                 <div className="space-y-2">
-                  <Label>Role Name</Label>
+                  <Label>{t('team.roleName')}</Label>
                   <Input
-                    placeholder="e.g. Technician"
+                    placeholder={t('team.roleNamePlaceholder')}
                     value={roleName}
                     onChange={(e) => setRoleName(e.target.value)}
                   />
@@ -581,12 +583,12 @@ export function TeamSettings({
                     onCheckedChange={(v) => setRoleIsAdmin(v === true)}
                   />
                   <Label htmlFor="role-admin" className="text-sm">
-                    Full admin access (bypasses all permission checks)
+                    {t('team.fullAdminAccess')}
                   </Label>
                 </div>
                 {!roleIsAdmin && (
                   <div className="space-y-3">
-                    <Label className="text-sm font-medium">Permissions</Label>
+                    <Label className="text-sm font-medium">{t('team.permissions')}</Label>
                     <div className="grid gap-4 sm:grid-cols-2">
                       {permissionGroups.map((group) => (
                         <div key={group.subject} className="space-y-2 rounded-md border p-3">
@@ -622,7 +624,7 @@ export function TeamSettings({
                     size="sm"
                   >
                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {editingRole ? "Update Role" : "Create Role"}
+                    {editingRole ? t('team.updateRole') : t('team.createRole')}
                   </Button>
                   <Button variant="outline" size="sm" onClick={closeRoleForm}>
                     Cancel
@@ -633,7 +635,7 @@ export function TeamSettings({
 
             {roles.length === 0 && !showRoleForm && (
               <p className="text-sm text-muted-foreground">
-                No custom roles yet. Create one to define granular permissions for team members.
+                {t('team.noCustomRoles')}
               </p>
             )}
 
@@ -649,16 +651,16 @@ export function TeamSettings({
                         <p className="text-sm font-medium">{role.name}</p>
                         {role.isAdmin && (
                           <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-500 border-blue-500/20">
-                            Admin
+                            {t('team.admin')}
                           </Badge>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">
                         {role.isAdmin
-                          ? "Full access"
-                          : `${role.permissions.length} permission${role.permissions.length !== 1 ? "s" : ""}`}
+                          ? t('team.fullAccess')
+                          : role.permissions.length !== 1 ? t('team.permissionCountPlural', { count: role.permissions.length }) : t('team.permissionCount', { count: role.permissions.length })}
                         {" · "}
-                        {role.memberCount} member{role.memberCount !== 1 ? "s" : ""}
+                        {role.memberCount !== 1 ? t('team.memberCountPlural', { count: role.memberCount }) : t('team.memberCount', { count: role.memberCount })}
                       </p>
                     </div>
                     <div className="flex items-center gap-1">
@@ -690,27 +692,27 @@ export function TeamSettings({
       {/* Role Descriptions */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base">Built-in Roles</CardTitle>
+          <CardTitle className="text-base">{t('team.builtInRoles')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3 text-sm">
             <div className="flex items-center gap-3">
               <Badge variant="outline" className={`${roleColors.owner}`}>
-                <Crown className="mr-1 h-3 w-3" /> Owner
+                <Crown className="mr-1 h-3 w-3" /> {t('team.ownerLabel')}
               </Badge>
-              <span className="text-muted-foreground">Full access. Can manage members, change roles, and delete the organization.</span>
+              <span className="text-muted-foreground">{t('team.ownerDescription')}</span>
             </div>
             <div className="flex items-center gap-3">
               <Badge variant="outline" className={`${roleColors.admin}`}>
-                <Shield className="mr-1 h-3 w-3" /> Admin
+                <Shield className="mr-1 h-3 w-3" /> {t('team.adminLabel')}
               </Badge>
-              <span className="text-muted-foreground">Can invite/remove members and manage shared data.</span>
+              <span className="text-muted-foreground">{t('team.adminDescription')}</span>
             </div>
             <div className="flex items-center gap-3">
               <Badge variant="outline" className={`${roleColors.member}`}>
-                <User className="mr-1 h-3 w-3" /> Member
+                <User className="mr-1 h-3 w-3" /> {t('team.memberLabel')}
               </Badge>
-              <span className="text-muted-foreground">Permissions determined by assigned custom role. No custom role means read-only access.</span>
+              <span className="text-muted-foreground">{t('team.memberDescription')}</span>
             </div>
           </div>
         </CardContent>

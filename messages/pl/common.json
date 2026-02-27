@@ -1,0 +1,43 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Zaloguj się",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "submit": "Wyślij",
+    "back": "Wstecz",
+    "confirm": "Potwierdź",
+    "saveChanges": "Zapisz zmiany",
+    "edit": "Edytuj",
+    "add": "Dodaj"
+  },
+  "form": {
+    "email": "E-mail",
+    "password": "Hasło",
+    "emailPlaceholder": "you@example.com",
+    "name": "Nazwa",
+    "phone": "Telefon",
+    "company": "Firma",
+    "address": "Adres",
+    "notes": "Notatki"
+  },
+  "errors": {
+    "unexpected": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+    "error": "Błąd"
+  },
+  "terms": {
+    "termsOfService": "Regulamin"
+  },
+  "errorPage": {
+    "title": "Coś poszło nie tak",
+    "description": "Silnik niespodziewanie zgasł. Nasi mechanicy zostali powiadomieni i pracują nad naprawą.",
+    "tryAgain": "Spróbuj ponownie",
+    "backToDashboard": "Wróć do panelu"
+  },
+  "notFoundPage": {
+    "title": "Nie znaleziono strony",
+    "description": "Wygląda na to, że ta część jest jeszcze w warsztacie. Strona, której szukasz, nie istnieje lub została przeniesiona.",
+    "backToDashboard": "Wróć do panelu"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "stats": {
+    "activeJobs": "Trabajos activos",
+    "pending": "Pendientes",
+    "todaysRevenue": "Ingresos de hoy",
+    "totalCustomers": "Total de clientes"
+  },
+  "customize": "Personalizar",
+  "showCards": "Mostrar tarjetas",
+  "cards": {
+    "maintenance": "Mantenimiento previsto",
+    "reminders": "Recordatorios pendientes",
+    "inspections": "Inspecciones",
+    "quoteRequests": "Solicitudes de presupuesto",
+    "quoteResponses": "Respuestas de presupuesto",
+    "sms": "Mensajes recientes",
+    "notifications": "Notificaciones recientes",
+    "recentCompleted": "Completados recientemente",
+    "activeJobs": "Trabajos activos"
+  },
+  "maintenance": {
+    "title": "Mantenimiento previsto pendiente",
+    "description": "Basado en el historial de servicio y el kilometraje diario estimado",
+    "overdue": "Vencido",
+    "approaching": "Pr\u00f3ximo",
+    "estimated": "Est. {mileage} {unit}",
+    "sinceLastService": "{mileage} {unit} desde el \u00faltimo servicio",
+    "certainty": "{percent}% de certeza"
+  },
+  "reminders": {
+    "title": "Recordatorios pendientes",
+    "overdue": "Vencidos",
+    "dueSoon": "Pr\u00f3ximamente"
+  },
+  "messages": {
+    "title": "Mensajes recientes",
+    "viewAll": "Ver todos",
+    "you": "Usted: "
+  },
+  "notifications": {
+    "title": "Notificaciones recientes"
+  },
+  "inspections": {
+    "title": "Inspecciones",
+    "inProgress": "En progreso",
+    "completed": "Completadas",
+    "itemCount": "{inspected}/{total} elementos"
+  },
+  "quoteRequests": {
+    "title": "Solicitudes de presupuesto",
+    "description": "Clientes que solicitan presupuestos a partir de inspecciones compartidas",
+    "pending": "Pendientes",
+    "createQuote": "Crear presupuesto",
+    "itemsRequested": "{count, plural, one {# elemento solicitado} other {# elementos solicitados}}"
+  },
+  "quoteResponses": {
+    "title": "Respuestas de presupuesto de clientes",
+    "description": "Presupuestos que los clientes han aceptado o en los que han solicitado cambios",
+    "accepted": "Aceptado",
+    "changesRequested": "Cambios solicitados",
+    "convertToWorkOrder": "Convertir en orden de trabajo",
+    "viewQuote": "Ver presupuesto"
+  },
+  "recentCompleted": {
+    "title": "Completados recientemente",
+    "date": "Fecha",
+    "vehicle": "Veh\u00edculo",
+    "customer": "Cliente",
+    "serviceTitle": "T\u00edtulo",
+    "total": "Total",
+    "empty": "A\u00fan no hay servicios completados"
+  },
+  "activeJobsTable": {
+    "title": "Trabajos activos",
+    "vehicle": "Veh\u00edculo",
+    "customer": "Cliente",
+    "serviceTitle": "T\u00edtulo",
+    "status": "Estado",
+    "tech": "T\u00e9cnico",
+    "empty": "No hay trabajos activos"
+  },
+  "relativeTime": {
+    "now": "ahora",
+    "minutes": "{count}m",
+    "hours": "{count}h",
+    "days": "{count}d"
+  },
+  "error": "Error al cargar el panel de control"
+}

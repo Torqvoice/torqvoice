@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -39,6 +40,7 @@ export function ServiceRequestForm({
   orgId: string;
   vehicles: Vehicle[];
 }) {
+  const t = useTranslations("portal.requestService");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [vehicleId, setVehicleId] = useState("");
@@ -49,12 +51,12 @@ export function ServiceRequestForm({
     e.preventDefault();
 
     if (!vehicleId) {
-      toast.error("Please select a vehicle");
+      toast.error(t("selectVehicle"));
       return;
     }
 
     if (!description.trim()) {
-      toast.error("Please describe the issue");
+      toast.error(t("describeIssue"));
       return;
     }
 
@@ -66,13 +68,13 @@ export function ServiceRequestForm({
       });
 
       if (result.success) {
-        toast.success("Service request submitted");
+        toast.success(t("submitSuccess"));
         setDescription("");
         setPreferredDate("");
         setVehicleId("");
         router.refresh();
       } else {
-        toast.error(result.error ?? "Failed to submit request");
+        toast.error(result.error ?? t("submitError"));
       }
     });
   };
@@ -80,18 +82,18 @@ export function ServiceRequestForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>New Service Request</CardTitle>
+        <CardTitle>{t("newServiceRequest")}</CardTitle>
         <CardDescription>
-          Describe the issue and we&apos;ll get back to you.
+          {t("formDescription")}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="vehicle">Vehicle</Label>
+            <Label htmlFor="vehicle">{t("vehicleLabel")}</Label>
             <Select value={vehicleId} onValueChange={setVehicleId}>
               <SelectTrigger id="vehicle">
-                <SelectValue placeholder="Select a vehicle" />
+                <SelectValue placeholder={t("vehiclePlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {vehicles.map((v) => (
@@ -105,10 +107,10 @@ export function ServiceRequestForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Describe the issue</Label>
+            <Label htmlFor="description">{t("descriptionLabel")}</Label>
             <Textarea
               id="description"
-              placeholder="What's going on with your vehicle?"
+              placeholder={t("descriptionPlaceholder")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
@@ -118,8 +120,8 @@ export function ServiceRequestForm({
 
           <div className="space-y-2">
             <Label htmlFor="preferred-date">
-              Preferred date{" "}
-              <span className="text-muted-foreground">(optional)</span>
+              {t("preferredDate")}{" "}
+              <span className="text-muted-foreground">{t("preferredDateOptional")}</span>
             </Label>
             <Input
               id="preferred-date"
@@ -135,7 +137,7 @@ export function ServiceRequestForm({
               {isPending && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Submit Request
+              {t("submitRequest")}
             </Button>
           </div>
         </form>

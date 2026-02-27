@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "Impossible de charger les ordres de travail"
+  },
+  "list": {
+    "searchPlaceholder": "Rechercher des ordres de travail...",
+    "newWorkOrder": "Nouvel Ordre de Travail",
+    "selectVehicle": "Sélectionner un Véhicule",
+    "empty": "Aucun ordre de travail trouvé.",
+    "statusUpdated": "Statut mis à jour",
+    "statusTabs": {
+      "all": "Tous",
+      "active": "Actifs",
+      "pending": "En Attente",
+      "inProgress": "En Cours",
+      "waitingParts": "En Attente de Pièces",
+      "completed": "Complétés"
+    },
+    "statusActions": {
+      "startWork": "Commencer le Travail",
+      "waitingParts": "En Attente de Pièces",
+      "complete": "Terminer",
+      "resumeWork": "Reprendre le Travail",
+      "reopen": "Réouvrir"
+    },
+    "table": {
+      "invoice": "Facture nº",
+      "vehicle": "Véhicule",
+      "customer": "Client",
+      "title": "Titre",
+      "status": "Statut",
+      "tech": "Technicien",
+      "date": "Date",
+      "total": "Total"
+    },
+    "emailSubject": "Mise à jour du Statut du Véhicule: {status}"
+  },
+  "vehiclePicker": {
+    "title": "Sélectionner un Véhicule pour l'Ordre de Travail",
+    "searchPlaceholder": "Rechercher des véhicules...",
+    "empty": "Aucun véhicule trouvé.",
+    "emptySearch": "Aucun véhicule ne correspond à votre recherche.",
+    "addNewVehicle": "Ajouter un Nouveau Véhicule",
+    "noPlate": "Pas de plaque",
+    "make": "Marque *",
+    "model": "Modèle *",
+    "year": "Année *",
+    "licensePlate": "Plaque d'Immatriculation",
+    "customer": "Client",
+    "selectCustomer": "Sélectionner un client (optionnel)",
+    "createNewCustomer": "Créer un nouveau client",
+    "newCustomer": "Nouveau Client",
+    "customerName": "Nom *",
+    "customerNamePlaceholder": "Nom du client",
+    "phone": "Téléphone",
+    "phonePlaceholder": "Numéro de téléphone",
+    "creating": "Création...",
+    "createAndContinue": "Créer et Continuer",
+    "invalidYear": "Veuillez entrer une année valide",
+    "customerNameRequired": "Le nom du client est requis",
+    "failedCreateCustomer": "Impossible de créer le client",
+    "failedCreateVehicle": "Impossible de créer le véhicule",
+    "somethingWentWrong": "Une erreur s'est produite"
+  },
+  "notify": {
+    "title": "Notifier {name}",
+    "description": "Envoyer une notification au client au sujet de cette mise à jour.",
+    "sms": "SMS",
+    "email": "Email",
+    "noPhone": "(pas de numéro en dossier)",
+    "noEmail": "(pas d'email en dossier)",
+    "notAvailable": "(non disponible)",
+    "skip": "Ignorer",
+    "send": "Envoyer",
+    "smsSent": "SMS envoyé",
+    "emailSent": "Email envoyé",
+    "failedSms": "Impossible d'envoyer le SMS",
+    "failedEmail": "Impossible d'envoyer l'email"
+  }
+}

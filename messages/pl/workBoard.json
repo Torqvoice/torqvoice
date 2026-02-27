@@ -1,0 +1,67 @@
+{
+  "page": {
+    "error": "Nie udało się załadować tablicy pracy"
+  },
+  "toolbar": {
+    "today": "Dzisiaj",
+    "presenter": "Prezenter",
+    "addTechnician": "Dodaj Technika"
+  },
+  "board": {
+    "days": {
+      "mon": "Pon",
+      "tue": "Wto",
+      "wed": "Śro",
+      "thu": "Czw",
+      "fri": "Pią",
+      "sat": "Sob",
+      "sun": "Nie"
+    },
+    "noTechnicians": "Brak Techników",
+    "noTechniciansDescription": "Dodaj technika, aby rozpocząć planowanie pracy na tablicy.",
+    "failedMove": "Nie udało się przenieść przydzielenia",
+    "failedAssign": "Nie udało się przydzielić zadania",
+    "failedRemove": "Nie udało się usunąć przydzielenia"
+  },
+  "unassigned": {
+    "title": "Nieprzyzdzielone Zadania ({count})",
+    "searchPlaceholder": "Szukaj zadań...",
+    "empty": "Brak nieprzyzdzielonych zadań"
+  },
+  "technician": {
+    "editTitle": "Edytuj Technika",
+    "addTitle": "Dodaj Technika",
+    "name": "Nazwa",
+    "namePlaceholder": "np. Jan Kowalski",
+    "color": "Kolor",
+    "linkMember": "Połącz z Członkiem Organizacji (opcjonalnie)",
+    "standalone": "Niezależny technik",
+    "deleteTitle": "Usuń Technika",
+    "deleteDescription": "Usunąć \"{name}\" z tablicy pracy? Jego istniejące przydzielenia również zostaną usunięte.",
+    "addTechnician": "Dodaj Technika"
+  },
+  "jobDetail": {
+    "viewDetails": "Wyświetl Szczegóły",
+    "remove": "Usuń",
+    "date": "Data: {date}"
+  },
+  "presenter": {
+    "title": "Tablica Pracy",
+    "day": "Dzień",
+    "status": "Status",
+    "week": "Tydzień",
+    "today": "Dzisiaj",
+    "live": "Na Żywo",
+    "disconnected": "Aktualizacje na żywo rozłączone",
+    "noTechnicians": "Brak skonfigurowanych techników",
+    "noJobsToday": "Brak zadań dzisiaj",
+    "job": "{count} zadanie",
+    "jobs": "{count} zadań",
+    "statusLabels": {
+      "pending": "Oczekujące",
+      "inProgress": "W Trakcie",
+      "waitingParts": "Oczekiwanie na Części",
+      "completed": "Ukończone"
+    }
+  }
+}

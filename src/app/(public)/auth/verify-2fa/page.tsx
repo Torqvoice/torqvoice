@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,6 +11,8 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Gauge, Loader2, Shield, XCircle } from 'lucide-react'
 
 export default function VerifyTwoFactorPage() {
+  const t = useTranslations('auth.verify2fa')
+  const tc = useTranslations('common')
   const [code, setCode] = useState('')
   const [useBackupCode, setUseBackupCode] = useState(false)
   const [trustDevice, setTrustDevice] = useState(false)
@@ -29,13 +32,13 @@ export default function VerifyTwoFactorPage() {
         : await authClient.twoFactor.verifyTotp({ code, trustDevice })
 
       if (result.error) {
-        setError(result.error.message || 'Invalid code')
+        setError(result.error.message || t('errors.invalidCode'))
       } else {
         router.push('/')
         router.refresh()
       }
     } catch {
-      setError('An unexpected error occurred. Please try again.')
+      setError(tc('errors.unexpected'))
     } finally {
       setLoading(false)
     }
@@ -53,17 +56,17 @@ export default function VerifyTwoFactorPage() {
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
             <Gauge className="h-5 w-5 text-primary" />
             <span className="gradient-text text-sm font-bold tracking-wider uppercase">
-              Torqvoice
+              {tc('brandName')}
             </span>
           </div>
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
             <Shield className="h-6 w-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Two-Factor Authentication</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {useBackupCode
-              ? 'Enter one of your backup codes'
-              : 'Enter the 6-digit code from your authenticator app'}
+              ? t('descriptionBackup')
+              : t('descriptionTotp')}
           </p>
         </div>
 
@@ -76,12 +79,12 @@ export default function VerifyTwoFactorPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="code">{useBackupCode ? 'Backup Code' : 'Authentication Code'}</Label>
+            <Label htmlFor="code">{useBackupCode ? t('backupCode') : t('authCode')}</Label>
             <Input
               id="code"
               type="text"
               inputMode={useBackupCode ? 'text' : 'numeric'}
-              placeholder={useBackupCode ? 'Enter backup code' : '000000'}
+              placeholder={useBackupCode ? t('backupCodePlaceholder') : t('totpPlaceholder')}
               value={code}
               onChange={(e) => setCode(e.target.value)}
               required
@@ -98,13 +101,13 @@ export default function VerifyTwoFactorPage() {
               onCheckedChange={(checked) => setTrustDevice(checked === true)}
             />
             <Label htmlFor="trust-device" className="text-sm font-normal text-muted-foreground">
-              Trust this device for 30 days
+              {t('trustDevice')}
             </Label>
           </div>
 
           <Button type="submit" className="h-11 w-full" disabled={loading}>
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            Verify
+            {t('verify')}
           </Button>
         </form>
 
@@ -118,7 +121,7 @@ export default function VerifyTwoFactorPage() {
             }}
             className="text-sm font-medium text-primary hover:underline"
           >
-            {useBackupCode ? 'Use authenticator app instead' : 'Use a backup code'}
+            {useBackupCode ? t('useAuthenticator') : t('useBackupCode')}
           </button>
         </div>
       </div>

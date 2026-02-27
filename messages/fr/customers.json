@@ -1,0 +1,76 @@
+{
+  "list": {
+    "addCustomer": "Ajouter un client",
+    "searchPlaceholder": "Rechercher des clients...",
+    "table": {
+      "name": "Nom",
+      "company": "Entreprise",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "vehicles": "Véhicules"
+    },
+    "emptySearch": "Aucun client ne correspond à votre recherche.",
+    "empty": "Aucun client pour le moment.",
+    "deleteTitle": "Supprimer le client",
+    "deleteDescription": "Supprimer {name} ? Cela dissociera ses véhicules.",
+    "deleteError": "Échec de la suppression du client",
+    "error": "Échec du chargement des clients"
+  },
+  "detail": {
+    "backToCustomers": "Retour aux clients",
+    "editCustomer": "Modifier le client",
+    "notFound": "Client introuvable",
+    "emailCopied": "E-mail copié dans le presse-papiers",
+    "phoneCopied": "Numéro de téléphone copié dans le presse-papiers",
+    "tabs": {
+      "vehicles": "Véhicules ({count})",
+      "messages": "Messages",
+      "requests": "Demandes ({count})"
+    },
+    "vehicleTable": {
+      "plate": "Plaque",
+      "vehicle": "Véhicule",
+      "mileage": "Kilométrage",
+      "services": "Services"
+    },
+    "noVehicles": "Aucun véhicule associé à ce client"
+  },
+  "form": {
+    "addTitle": "Ajouter un nouveau client",
+    "editTitle": "Modifier le client",
+    "nameRequired": "Nom *",
+    "namePlaceholder": "Jean Dupont",
+    "emailPlaceholder": "jean@exemple.fr",
+    "phonePlaceholder": "01 23 45 67 89",
+    "companyPlaceholder": "Nom de l'entreprise",
+    "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
+    "notesPlaceholder": "Notes supplémentaires...",
+    "customerUpdated": "Client mis à jour",
+    "customerCreated": "Client créé",
+    "saveError": "Échec de l'enregistrement du client"
+  },
+  "serviceRequests": {
+    "statusNew": "Nouveau",
+    "statusConverted": "Ordre de travail créé",
+    "statusDismissed": "Rejeté",
+    "createWorkOrder": "Créer un ordre de travail",
+    "contactCustomer": "Contacter le client",
+    "dismiss": "Rejeter",
+    "viewWorkOrder": "Voir l'ordre de travail",
+    "notes": "Notes",
+    "hideNotes": "Masquer les notes",
+    "staffNotes": "Notes du personnel :",
+    "notesPlaceholder": "Ajouter des notes internes...",
+    "saveNotes": "Enregistrer les notes",
+    "submitted": "Soumis le {date}",
+    "preferred": "Préféré : {date}",
+    "workOrderCreated": "Ordre de travail créé",
+    "workOrderError": "Échec de la création de l'ordre de travail",
+    "requestDismissed": "Demande rejetée",
+    "dismissError": "Échec du rejet de la demande",
+    "notesSaved": "Notes enregistrées",
+    "notesSaveError": "Échec de l'enregistrement des notes",
+    "smsLabel": "Message de demande de service",
+    "smsDefault": "Bonjour {name}, concernant votre demande de service pour votre {vehicle} : "
+  }
+}

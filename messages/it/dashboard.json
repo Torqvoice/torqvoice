@@ -1,0 +1,89 @@
+{
+  "stats": {
+    "activeJobs": "Lavori attivi",
+    "pending": "In attesa",
+    "todaysRevenue": "Fatturato odierno",
+    "totalCustomers": "Clienti totali"
+  },
+  "customize": "Personalizza",
+  "showCards": "Mostra schede",
+  "cards": {
+    "maintenance": "Manutenzione prevista",
+    "reminders": "Promemoria in scadenza",
+    "inspections": "Ispezioni",
+    "quoteRequests": "Richieste di preventivo",
+    "quoteResponses": "Risposte ai preventivi",
+    "sms": "Messaggi recenti",
+    "notifications": "Notifiche recenti",
+    "recentCompleted": "Completati di recente",
+    "activeJobs": "Lavori attivi"
+  },
+  "maintenance": {
+    "title": "Manutenzione prevista in scadenza",
+    "description": "Basato sullo storico degli interventi e sul chilometraggio giornaliero stimato",
+    "overdue": "Scaduto",
+    "approaching": "In avvicinamento",
+    "estimated": "Stima {mileage} {unit}",
+    "sinceLastService": "{mileage} {unit} dall'ultimo intervento",
+    "certainty": "{percent}% di certezza"
+  },
+  "reminders": {
+    "title": "Promemoria in scadenza",
+    "overdue": "Scaduto",
+    "dueSoon": "In scadenza"
+  },
+  "messages": {
+    "title": "Messaggi recenti",
+    "viewAll": "Visualizza tutti",
+    "you": "Lei: "
+  },
+  "notifications": {
+    "title": "Notifiche recenti"
+  },
+  "inspections": {
+    "title": "Ispezioni",
+    "inProgress": "In corso",
+    "completed": "Completato",
+    "itemCount": "{inspected}/{total} elementi"
+  },
+  "quoteRequests": {
+    "title": "Richieste di preventivo",
+    "description": "Clienti che richiedono preventivi dalle ispezioni condivise",
+    "pending": "In attesa",
+    "createQuote": "Crea preventivo",
+    "itemsRequested": "{count, plural, one {# elemento richiesto} other {# elementi richiesti}}"
+  },
+  "quoteResponses": {
+    "title": "Risposte ai preventivi dei clienti",
+    "description": "Preventivi accettati dai clienti o per i quali sono state richieste modifiche",
+    "accepted": "Accettato",
+    "changesRequested": "Modifiche richieste",
+    "convertToWorkOrder": "Converti in ordine di lavoro",
+    "viewQuote": "Visualizza preventivo"
+  },
+  "recentCompleted": {
+    "title": "Completati di recente",
+    "date": "Data",
+    "vehicle": "Veicolo",
+    "customer": "Cliente",
+    "serviceTitle": "Titolo",
+    "total": "Totale",
+    "empty": "Nessun intervento completato"
+  },
+  "activeJobsTable": {
+    "title": "Lavori attivi",
+    "vehicle": "Veicolo",
+    "customer": "Cliente",
+    "serviceTitle": "Titolo",
+    "status": "Stato",
+    "tech": "Tecnico",
+    "empty": "Nessun lavoro attivo"
+  },
+  "relativeTime": {
+    "now": "ora",
+    "minutes": "{count}m",
+    "hours": "{count}h",
+    "days": "{count}g"
+  },
+  "error": "Impossibile caricare la dashboard"
+}

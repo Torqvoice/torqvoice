@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ export function LicenseSettings({
   initialCheckedAt: string
 }) {
   const router = useRouter()
+  const t = useTranslations('settings')
   const [licenseKey, setLicenseKey] = useState(initialKey)
   const [licenseValid, setLicenseValid] = useState(initialValid)
   const [licensePlan, setLicensePlan] = useState(initialPlan)
@@ -38,13 +40,13 @@ export function LicenseSettings({
           setLicensePlan(result.data.plan)
         }
         if (result.data.valid) {
-          toast.success('License validated successfully')
+          toast.success(t('license.validated'))
         } else {
-          toast.error('Invalid license key')
+          toast.error(t('license.invalid'))
         }
         router.refresh()
       } else {
-        toast.error(result.error ?? 'Failed to validate license')
+        toast.error(result.error ?? t('license.failedValidate'))
       }
     } finally {
       setIsValidating(false)
@@ -58,11 +60,10 @@ export function LicenseSettings({
           <div className="space-y-1.5">
             <CardTitle className="flex items-center gap-2">
               <Key className="h-5 w-5" />
-              White-Label License
+              {t('license.title')}
             </CardTitle>
             <CardDescription>
-              Activate a white-label license to remove Torqvoice branding from invoices and the
-              application.
+              {t('license.description')}
             </CardDescription>
           </div>
           {!licenseValid && (
@@ -72,7 +73,7 @@ export function LicenseSettings({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Purchase White-Label
+                {t('license.purchaseWhiteLabel')}
                 <ExternalLink className="ml-2 h-3 w-3" />
               </a>
             </Button>
@@ -80,21 +81,21 @@ export function LicenseSettings({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-2">
-            <Label>Status:</Label>
+            <Label>{t('license.status')}</Label>
             {licenseValid ? (
-              <Badge variant="default">Active</Badge>
+              <Badge variant="default">{t('license.active')}</Badge>
             ) : (
-              <Badge variant="secondary">Inactive</Badge>
+              <Badge variant="secondary">{t('license.inactive')}</Badge>
             )}
             {initialCheckedAt && (
               <span className="text-xs text-muted-foreground">
-                Last checked: {new Date(initialCheckedAt).toLocaleDateString()}
+                {t('license.lastChecked', { date: new Date(initialCheckedAt).toLocaleDateString() })}
               </span>
             )}
           </div>
           <div className="flex gap-2">
             <Input
-              placeholder="Enter license key"
+              placeholder={t('license.enterLicenseKey')}
               value={licenseKey}
               onChange={(e) => setLicenseKey(e.target.value)}
               className="font-mono"
@@ -109,12 +110,11 @@ export function LicenseSettings({
               ) : (
                 <Key className="mr-2 h-4 w-4" />
               )}
-              Validate
+              {t('license.validate')}
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            Each license key is tied to this organization and cannot be shared across multiple
-            organizations.
+            {t('license.keyHint')}
           </p>
         </CardContent>
       </Card>

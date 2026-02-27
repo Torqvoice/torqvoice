@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +37,7 @@ export function ServiceVideoManager({
   serviceRecordId,
   initialVideos,
 }: ServiceVideoManagerProps) {
+  const t = useTranslations("service");
   const [videos, setVideos] = useState<Attachment[]>(initialVideos);
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -44,9 +46,7 @@ export function ServiceVideoManager({
     async (fileList: FileList | File[]) => {
       setUploading(true);
       const fileArr = Array.from(fileList);
-      const toastId = toast.loading(
-        `Uploading ${fileArr.length} video${fileArr.length > 1 ? "s" : ""}...`
-      );
+      const toastId = toast.loading(t("videos.uploadingCount", { count: fileArr.length }));
       let successCount = 0;
 
       for (const file of fileArr) {
@@ -89,27 +89,24 @@ export function ServiceVideoManager({
       }
 
       if (successCount > 0) {
-        toast.success(
-          `${successCount} video${successCount > 1 ? "s" : ""} uploaded`,
-          { id: toastId }
-        );
+        toast.success(t("videos.uploadedCount", { count: successCount }), { id: toastId });
       } else {
-        toast.error("Upload failed", { id: toastId });
+        toast.error(t("videos.uploadFailed"), { id: toastId });
       }
       setUploading(false);
     },
-    [serviceRecordId]
+    [serviceRecordId, t]
   );
 
   const handleDelete = useCallback(async (attachmentId: string) => {
     const result = await deleteServiceAttachment(attachmentId);
     if (result.success) {
       setVideos((prev) => prev.filter((v) => v.id !== attachmentId));
-      toast.success("Video deleted");
+      toast.success(t("videos.deleted"));
     } else {
-      toast.error(result.error || "Failed to delete video");
+      toast.error(result.error || t("videos.failedDelete"));
     }
-  }, []);
+  }, [t]);
 
   const handleToggleInvoice = useCallback(
     async (attachmentId: string, checked: boolean) => {
@@ -130,10 +127,10 @@ export function ServiceVideoManager({
               : v
           )
         );
-        toast.error(result.error || "Failed to update");
+        toast.error(result.error || t("videos.failedUpdate"));
       }
     },
-    []
+    [t]
   );
 
   return (
@@ -142,7 +139,7 @@ export function ServiceVideoManager({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Film className="h-4 w-4" />
-            Service Videos
+            {t("videos.title")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -158,12 +155,10 @@ export function ServiceVideoManager({
           >
             <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />
             <p className="text-sm font-medium">
-              {uploading
-                ? "Uploading..."
-                : "Drop videos here or click to browse"}
+              {uploading ? t("videos.uploading") : t("videos.dropzone")}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              MP4, WebM, MOV — max 10MB each
+              {t("videos.formats")}
             </p>
             <input
               ref={inputRef}
@@ -183,7 +178,7 @@ export function ServiceVideoManager({
           {uploading && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Uploading videos...
+              {t("videos.uploadingVideos")}
             </div>
           )}
 
@@ -219,7 +214,7 @@ export function ServiceVideoManager({
                         }
                         className="scale-75"
                       />
-                      Invoice
+                      {t("videos.invoice")}
                     </label>
                     <Button
                       type="button"

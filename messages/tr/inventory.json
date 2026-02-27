@@ -1,0 +1,87 @@
+{
+  "searchPlaceholder": "Parça ara...",
+  "categoryPlaceholder": "Kategori",
+  "allCategories": "Tüm kategoriler",
+  "applyMarkup": "Kâr marjı uygula",
+  "addPart": "Parça ekle",
+  "table": {
+    "partNumber": "Parça No",
+    "name": "Ad",
+    "category": "Kategori",
+    "inStock": "Stokta",
+    "unitCost": "Birim maliyet",
+    "sellPrice": "Satış fiyatı",
+    "supplier": "Tedarikçi",
+    "location": "Konum",
+    "low": "Düşük"
+  },
+  "empty": {
+    "noMatch": "Aramanızla eşleşen parça bulunamadı.",
+    "noParts": "Envanterde henüz parça yok."
+  },
+  "actions": {
+    "edit": "Düzenle",
+    "delete": "Sil"
+  },
+  "deletePart": {
+    "title": "Parçayı sil",
+    "description": "\"{name}\" envanterden silinsin mi? Bu işlem geri alınamaz.",
+    "confirm": "Sil"
+  },
+  "markup": {
+    "title": "Tüm parçalara kâr marjı uygula",
+    "multiplierLabel": "Kâr marjı çarpanı",
+    "description": "Satış fiyatı tüm {count} parça için maliyet x {multiplier} olarak ayarlanacaktır.",
+    "percentage": "(%{percent} kâr marjı)",
+    "cancel": "İptal",
+    "apply": "Uygula"
+  },
+  "errors": {
+    "multiplierPositive": "Çarpan 0'dan büyük olmalıdır",
+    "deleteFailed": "Parça silinemedi",
+    "applyFailed": "Kâr marjı uygulanamadı",
+    "saveFailed": "Parça kaydedilemedi",
+    "error": "Hata"
+  },
+  "form": {
+    "editPart": "Parçayı düzenle",
+    "addNewPart": "Yeni parça ekle",
+    "supplierLink": "Tedarikçi linki",
+    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "fetch": "Getir",
+    "fetchFailed": "Getirme başarısız",
+    "fetchError": "URL'den meta veriler alınamadı",
+    "image": "Görsel",
+    "dropOrClick": "Görsel bırakın veya tıklayın",
+    "replace": "Değiştir",
+    "upload": "Yükle",
+    "imageUploading": "Görsel yükleniyor...",
+    "imageUploaded": "Görsel yüklendi",
+    "imageUploadFailed": "Görsel yüklenemedi",
+    "imageTypeError": "Yalnızca JPEG, PNG, WebP ve AVIF görsellere izin verilir",
+    "imageSizeError": "Görsel 5 MB'den küçük olmalıdır",
+    "partNumber": "Parça numarası",
+    "partNumberPlaceholder": "BRK-001",
+    "nameLabel": "Ad *",
+    "namePlaceholder": "Fren balatası seti",
+    "category": "Kategori",
+    "categoryPlaceholder": "Frenler",
+    "location": "Konum",
+    "locationPlaceholder": "Raf A-3",
+    "quantity": "Miktar",
+    "minQty": "Min. miktar",
+    "unitCost": "Birim maliyet",
+    "sellPrice": "Satış fiyatı",
+    "supplier": "Tedarikçi",
+    "supplierPlaceholder": "AutoParts Ltd.",
+    "supplierPhone": "Tedarikçi telefonu",
+    "supplierPhonePlaceholder": "(555) 123-4567",
+    "supplierEmail": "Tedarikçi e-postası",
+    "supplierEmailPlaceholder": "orders@autoparts.com",
+    "description": "Açıklama",
+    "descriptionPlaceholder": "Parça açıklaması...",
+    "cancel": "İptal",
+    "saveChanges": "Değişiklikleri kaydet",
+    "addPart": "Parça ekle"
+  }
+}

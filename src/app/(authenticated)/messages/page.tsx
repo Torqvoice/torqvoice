@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getRecentSmsThreads } from "@/features/sms/Actions/smsActions";
 import { getSmsSettings } from "@/features/sms/Actions/smsSettingsActions";
 import { MessagesPageClient } from "@/features/sms/Components/MessagesPageClient";
@@ -16,13 +17,14 @@ export default async function MessagesPage() {
   const features = await getFeatures(ctx.organizationId);
 
   if (!features.sms) {
+    const t = await getTranslations("messages.page");
     return (
       <>
         <PageHeader />
         <div className="flex flex-1 flex-col p-4 pt-0">
           <FeatureLockedMessage
-            feature="SMS Messaging"
-            description="Send and receive SMS messages with your customers directly from Torqvoice."
+            feature={t("featureName")}
+            description={t("featureDescription")}
             isCloud={isCloudMode()}
           />
         </div>

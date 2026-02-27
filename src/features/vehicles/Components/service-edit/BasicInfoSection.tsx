@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -77,6 +78,7 @@ export function BasicInfoSection({
   boardTechnicians = [],
   customer,
 }: BasicInfoSectionProps) {
+  const t = useTranslations('service.basicInfo')
   const selectedVehicleLabel = useMemo(() => {
     if (vehicles.length === 0) return vehicleName
     const v = vehicles.find((v) => v.id === selectedVehicleId)
@@ -85,17 +87,17 @@ export function BasicInfoSection({
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
-      <h3 className="text-sm font-semibold">Basic Information</h3>
+      <h3 className="text-sm font-semibold">{t('title')}</h3>
 
       {vehicles.length > 0 && (
         <div className="space-y-1">
           <div className="flex items-center justify-between">
-            <Label className="text-xs">Vehicle</Label>
+            <Label className="text-xs">{t('vehicle')}</Label>
             <Link
               href={`/vehicles/${selectedVehicleId}`}
               className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              Open
+              {t('open')}
               <ExternalLink className="h-3 w-3" />
             </Link>
           </div>
@@ -113,9 +115,9 @@ export function BasicInfoSection({
             </PopoverTrigger>
             <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
               <Command>
-                <CommandInput placeholder="Search vehicles..." />
+                <CommandInput placeholder={t('searchVehicles')} />
                 <CommandList className="max-h-60 overflow-y-auto">
-                  <CommandEmpty>No vehicle found.</CommandEmpty>
+                  <CommandEmpty>{t('noVehicleFound')}</CommandEmpty>
                   <CommandGroup>
                     {vehicles.map((v) => (
                       <CommandItem
@@ -143,7 +145,7 @@ export function BasicInfoSection({
       {customer && (
         <div className="flex items-center justify-between rounded-md border px-3 py-2">
           <div className="min-w-0">
-            <p className="text-xs text-muted-foreground">Customer</p>
+            <p className="text-xs text-muted-foreground">{t('customer')}</p>
             <Link
               href={`/customers/${customer.id}`}
               className="text-sm font-medium hover:underline"
@@ -158,18 +160,18 @@ export function BasicInfoSection({
             href={`/customers/${customer.id}`}
             className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            Open
+            {t('open')}
             <ExternalLink className="h-3 w-3" />
           </Link>
         </div>
       )}
 
       <div className="space-y-1">
-        <Label htmlFor="title" className="text-xs">Title *</Label>
+        <Label htmlFor="title" className="text-xs">{t('titleLabel')}</Label>
         <Input
           id="title"
           name="title"
-          placeholder="Oil Change"
+          placeholder={t('titlePlaceholder')}
           defaultValue={initialData.title}
           maxLength={100}
           required
@@ -178,7 +180,7 @@ export function BasicInfoSection({
 
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1">
-          <Label htmlFor="serviceDate" className="text-xs">Date</Label>
+          <Label htmlFor="serviceDate" className="text-xs">{t('date')}</Label>
           <Input
             id="serviceDate"
             name="serviceDate"
@@ -187,16 +189,16 @@ export function BasicInfoSection({
           />
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">Type</Label>
+          <Label className="text-xs">{t('type')}</Label>
           <Select value={type} onValueChange={setType}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="repair">Repair</SelectItem>
-              <SelectItem value="upgrade">Upgrade</SelectItem>
-              <SelectItem value="inspection">Inspection</SelectItem>
+              <SelectItem value="maintenance">{t('typeOptions.maintenance')}</SelectItem>
+              <SelectItem value="repair">{t('typeOptions.repair')}</SelectItem>
+              <SelectItem value="upgrade">{t('typeOptions.upgrade')}</SelectItem>
+              <SelectItem value="inspection">{t('typeOptions.inspection')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -204,7 +206,7 @@ export function BasicInfoSection({
 
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1">
-          <Label htmlFor="mileage" className="text-xs">Mileage</Label>
+          <Label htmlFor="mileage" className="text-xs">{t('mileage')}</Label>
           <Input
             id="mileage"
             name="mileage"
@@ -214,16 +216,16 @@ export function BasicInfoSection({
           />
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">Status</Label>
+          <Label className="text-xs">{t('status')}</Label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="in-progress">In Progress</SelectItem>
-              <SelectItem value="waiting-parts">Waiting Parts</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="pending">{t('statusOptions.pending')}</SelectItem>
+              <SelectItem value="in-progress">{t('statusOptions.in_progress')}</SelectItem>
+              <SelectItem value="waiting-parts">{t('statusOptions.waiting_parts')}</SelectItem>
+              <SelectItem value="completed">{t('statusOptions.completed')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -239,7 +241,7 @@ export function BasicInfoSection({
       />
 
       <div className="space-y-1">
-        <Label htmlFor="invoiceNumber" className="text-xs">Invoice Number</Label>
+        <Label htmlFor="invoiceNumber" className="text-xs">{t('invoiceNumber')}</Label>
         <Input
           id="invoiceNumber"
           name="invoiceNumber"
@@ -266,6 +268,7 @@ function TechnicianPicker({
   boardTechnicians: BoardTechnicianOption[]
   teamMembers: TeamMemberOption[]
 }) {
+  const t = useTranslations('service.basicInfo.techPicker')
   const [search, setSearch] = useState('')
 
   return (
@@ -285,14 +288,14 @@ function TechnicianPicker({
             aria-expanded={techOpen}
             className="w-full justify-between font-normal"
           >
-            {techName || <span className="text-muted-foreground">Select or type a name...</span>}
+            {techName || <span className="text-muted-foreground">{t('placeholder')}</span>}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
           <Command>
             <CommandInput
-              placeholder="Search or type name..."
+              placeholder={t('searchPlaceholder')}
               value={search}
               onValueChange={setSearch}
             />
@@ -307,14 +310,14 @@ function TechnicianPicker({
                       setTechOpen(false)
                     }}
                   >
-                    Use &quot;{search}&quot;
+                    {t('useCustom', { search })}
                   </button>
                 ) : (
-                  'Type a name...'
+                  t('typePrompt')
                 )}
               </CommandEmpty>
               {boardTechnicians.length > 0 && (
-                <CommandGroup heading="Board Technicians">
+                <CommandGroup heading={t('boardTechnicians')}>
                   {boardTechnicians.map((tech) => (
                     <CommandItem
                       key={tech.id}
@@ -333,7 +336,7 @@ function TechnicianPicker({
                 </CommandGroup>
               )}
               {teamMembers.length > 0 && (
-                <CommandGroup heading="Team Members">
+                <CommandGroup heading={t('teamMembers')}>
                   {teamMembers.map((member) => (
                     <CommandItem
                       key={member.id}

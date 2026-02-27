@@ -1,0 +1,76 @@
+{
+  "list": {
+    "addCustomer": "Legg til kunde",
+    "searchPlaceholder": "Søk etter kunder...",
+    "table": {
+      "name": "Navn",
+      "company": "Bedrift",
+      "phone": "Telefon",
+      "email": "E-post",
+      "vehicles": "Kjøretøy"
+    },
+    "emptySearch": "Ingen kunder samsvarer med søket ditt.",
+    "empty": "Ingen kunder ennå.",
+    "deleteTitle": "Slett kunde",
+    "deleteDescription": "Slette {name}? Dette vil koble fra tilknyttede kjøretøy.",
+    "deleteError": "Kunne ikke slette kunde",
+    "error": "Kunne ikke laste inn kunder"
+  },
+  "detail": {
+    "backToCustomers": "Tilbake til kunder",
+    "editCustomer": "Rediger kunde",
+    "notFound": "Kunden ble ikke funnet",
+    "emailCopied": "E-post kopiert til utklippstavlen",
+    "phoneCopied": "Telefonnummer kopiert til utklippstavlen",
+    "tabs": {
+      "vehicles": "Kjøretøy ({count})",
+      "messages": "Meldinger",
+      "requests": "Forespørsler ({count})"
+    },
+    "vehicleTable": {
+      "plate": "Registreringsnummer",
+      "vehicle": "Kjøretøy",
+      "mileage": "Kilometerstand",
+      "services": "Tjenester"
+    },
+    "noVehicles": "Ingen kjøretøy tilknyttet denne kunden"
+  },
+  "form": {
+    "addTitle": "Legg til ny kunde",
+    "editTitle": "Rediger kunde",
+    "nameRequired": "Navn *",
+    "namePlaceholder": "Ola Nordmann",
+    "emailPlaceholder": "ola@eksempel.no",
+    "phonePlaceholder": "123 45 678",
+    "companyPlaceholder": "Bedriftsnavn",
+    "addressPlaceholder": "Storgata 1, 0001 Oslo",
+    "notesPlaceholder": "Ytterligere notater...",
+    "customerUpdated": "Kunde oppdatert",
+    "customerCreated": "Kunde opprettet",
+    "saveError": "Kunne ikke lagre kunde"
+  },
+  "serviceRequests": {
+    "statusNew": "Ny",
+    "statusConverted": "Arbeidsordre opprettet",
+    "statusDismissed": "Avvist",
+    "createWorkOrder": "Opprett arbeidsordre",
+    "contactCustomer": "Kontakt kunde",
+    "dismiss": "Avvis",
+    "viewWorkOrder": "Vis arbeidsordre",
+    "notes": "Notater",
+    "hideNotes": "Skjul notater",
+    "staffNotes": "Personalnotater:",
+    "notesPlaceholder": "Legg til interne notater...",
+    "saveNotes": "Lagre notater",
+    "submitted": "Sendt inn {date}",
+    "preferred": "Foretrukket: {date}",
+    "workOrderCreated": "Arbeidsordre opprettet",
+    "workOrderError": "Kunne ikke opprette arbeidsordre",
+    "requestDismissed": "Forespørsel avvist",
+    "dismissError": "Kunne ikke avvise forespørsel",
+    "notesSaved": "Notater lagret",
+    "notesSaveError": "Kunne ikke lagre notater",
+    "smsLabel": "Melding om serviceforespørsel",
+    "smsDefault": "Hei {name}, angående din serviceforespørsel for {vehicle}: "
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "list": {
+    "addCustomer": "Add Customer",
+    "searchPlaceholder": "Search customers...",
+    "table": {
+      "name": "Name",
+      "company": "Company",
+      "phone": "Phone",
+      "email": "Email",
+      "vehicles": "Vehicles"
+    },
+    "emptySearch": "No customers match your search.",
+    "empty": "No customers yet.",
+    "deleteTitle": "Delete Customer",
+    "deleteDescription": "Delete {name}? This will unlink their vehicles.",
+    "deleteError": "Failed to delete customer",
+    "error": "Failed to load customers"
+  },
+  "detail": {
+    "backToCustomers": "Back to customers",
+    "editCustomer": "Edit Customer",
+    "notFound": "Customer not found",
+    "emailCopied": "Email copied to clipboard",
+    "phoneCopied": "Phone number copied to clipboard",
+    "tabs": {
+      "vehicles": "Vehicles ({count})",
+      "messages": "Messages",
+      "requests": "Requests ({count})"
+    },
+    "vehicleTable": {
+      "plate": "Plate",
+      "vehicle": "Vehicle",
+      "mileage": "Mileage",
+      "services": "Services"
+    },
+    "noVehicles": "No vehicles assigned to this customer"
+  },
+  "form": {
+    "addTitle": "Add New Customer",
+    "editTitle": "Edit Customer",
+    "nameRequired": "Name *",
+    "namePlaceholder": "John Doe",
+    "emailPlaceholder": "john@example.com",
+    "phonePlaceholder": "(555) 123-4567",
+    "companyPlaceholder": "Company name",
+    "addressPlaceholder": "123 Main St, City, State",
+    "notesPlaceholder": "Additional notes...",
+    "customerUpdated": "Customer updated",
+    "customerCreated": "Customer created",
+    "saveError": "Failed to save customer"
+  },
+  "serviceRequests": {
+    "statusNew": "New",
+    "statusConverted": "Work Order Created",
+    "statusDismissed": "Dismissed",
+    "createWorkOrder": "Create Work Order",
+    "contactCustomer": "Contact Customer",
+    "dismiss": "Dismiss",
+    "viewWorkOrder": "View Work Order",
+    "notes": "Notes",
+    "hideNotes": "Hide Notes",
+    "staffNotes": "Staff notes:",
+    "notesPlaceholder": "Add internal notes...",
+    "saveNotes": "Save Notes",
+    "submitted": "Submitted {date}",
+    "preferred": "Preferred: {date}",
+    "workOrderCreated": "Work order created",
+    "workOrderError": "Failed to create work order",
+    "requestDismissed": "Request dismissed",
+    "dismissError": "Failed to dismiss request",
+    "notesSaved": "Notes saved",
+    "notesSaveError": "Failed to save notes",
+    "smsLabel": "Service Request Message",
+    "smsDefault": "Hi {name}, regarding your service request for your {vehicle}: "
+  }
+}

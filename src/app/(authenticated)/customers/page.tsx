@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { getCustomersPaginated } from "@/features/customers/Actions/customerActions";
 import { CustomersClient } from "./customers-client";
 import { PageHeader } from "@/components/page-header";
@@ -15,12 +16,13 @@ export default async function CustomersPage({
   });
 
   if (!result.success || !result.data) {
+    const t = await getTranslations("customers.list");
     return (
       <>
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-muted-foreground">
-            {result.error || "Failed to load customers"}
+            {result.error || t("error")}
           </p>
         </div>
       </>

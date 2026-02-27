@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -192,6 +193,7 @@ export function QuotePageClient({
   const modal = useGlassModal();
   const confirm = useConfirm();
   const isLarge = useIsLargeScreen();
+  const t = useTranslations("quotes");
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabType>("details");
@@ -294,23 +296,23 @@ export function QuotePageClient({
       totalAmount,
     });
     if (result.success) {
-      toast.success("Quote saved");
+      toast.success(t("page.saved"));
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to save quote");
+      modal.open("error", "Error", result.error || t("page.failedSave"));
     }
     setSaving(false);
   };
 
   const handleDelete = async () => {
-    const ok = await confirm({ title: "Delete Quote", description: "This will permanently delete this quote.", confirmLabel: "Delete", destructive: true });
+    const ok = await confirm({ title: t("page.deleteTitle"), description: t("page.deleteDescription"), confirmLabel: t("page.delete"), destructive: true });
     if (!ok) return;
     const result = await deleteQuote(quote.id);
     if (result.success) {
       router.push("/quotes");
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to delete");
+      modal.open("error", "Error", result.error || t("page.failedDelete"));
     }
   };
 
@@ -318,7 +320,7 @@ export function QuotePageClient({
     setDownloading(true);
     try {
       const res = await fetch(`/api/protected/quotes/${quote.id}/pdf`);
-      if (!res.ok) throw new Error("Failed to generate PDF");
+      if (!res.ok) throw new Error(t("page.failedPdf"));
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -327,14 +329,14 @@ export function QuotePageClient({
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      modal.open("error", "Error", "Failed to generate PDF");
+      modal.open("error", "Error", t("page.failedPdf"));
     }
     setDownloading(false);
   };
 
   const handleConvert = async () => {
     if (!convertVehicleId) {
-      modal.open("error", "Error", "Please select a vehicle");
+      modal.open("error", "Error", t("page.selectVehicle"));
       return;
     }
     setConverting(true);
@@ -343,7 +345,7 @@ export function QuotePageClient({
       router.push(`/vehicles/${convertVehicleId}/service/${result.data.id}`);
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to convert");
+      modal.open("error", "Error", result.error || t("page.failedConvert"));
     }
     setConverting(false);
   };
@@ -355,7 +357,7 @@ export function QuotePageClient({
     const result = await acknowledgeQuoteResponse(quote.id);
     if (result.success) {
       setStatus("draft");
-      toast.success("Customer response resolved");
+      toast.success(t("page.responseResolved"));
       router.refresh();
     }
     setResolving(false);
@@ -367,20 +369,20 @@ export function QuotePageClient({
       {/* Parts */}
       <div className="rounded-lg border p-3 space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold">Parts</h3>
+          <h3 className="text-sm font-semibold">{t("parts.title")}</h3>
           <Button type="button" variant="outline" size="sm" onClick={() => setPartItems([...partItems, emptyPart()])}>
-            <Plus className="mr-1 h-3.5 w-3.5" /> Add Part
+            <Plus className="mr-1 h-3.5 w-3.5" /> {t("parts.addPart")}
           </Button>
         </div>
         {partItems.length > 0 && (
           <>
             <div className="hidden grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
-              <span>Part #</span><span>Name</span><span>Qty</span><span>Unit Price</span><span>Total</span><span />
+              <span>{t("parts.partNumber")}</span><span>{t("parts.name")}</span><span>{t("parts.qty")}</span><span>{t("parts.unitPrice")}</span><span>{t("parts.total")}</span><span />
             </div>
             {partItems.map((part, i) => (
               <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto]">
-                <Input placeholder="Part #" value={part.partNumber ?? ""} onChange={(e) => updatePart(i, "partNumber", e.target.value)} />
-                <Input placeholder="Name *" value={part.name} onChange={(e) => updatePart(i, "name", e.target.value)} />
+                <Input placeholder={t("parts.partNumber")} value={part.partNumber ?? ""} onChange={(e) => updatePart(i, "partNumber", e.target.value)} />
+                <Input placeholder={t("parts.namePlaceholder")} value={part.name} onChange={(e) => updatePart(i, "name", e.target.value)} />
                 <Input type="number" min="0" step="1" value={part.quantity} onChange={(e) => updatePart(i, "quantity", e.target.value)} />
                 <Input type="number" min="0" step="0.01" value={part.unitPrice} onChange={(e) => updatePart(i, "unitPrice", e.target.value)} />
                 <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(part.total, currencyCode)}</div>
@@ -388,12 +390,12 @@ export function QuotePageClient({
               </div>
             ))}
             <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => setPartItems([...partItems, emptyPart()])}><Plus className="h-4 w-4" /></button>
-            <div className="flex justify-end pt-1 text-sm"><span className="font-medium">Parts Subtotal: {formatCurrency(partsSubtotal, currencyCode)}</span></div>
+            <div className="flex justify-end pt-1 text-sm"><span className="font-medium">{t("parts.subtotal", { amount: formatCurrency(partsSubtotal, currencyCode) })}</span></div>
           </>
         )}
         {partItems.length === 0 && (
           <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => setPartItems([...partItems, emptyPart()])}>
-            <Plus className="mr-1 h-4 w-4" /><span className="text-sm">Add Part</span>
+            <Plus className="mr-1 h-4 w-4" /><span className="text-sm">{t("parts.addPart")}</span>
           </button>
         )}
       </div>
@@ -401,17 +403,17 @@ export function QuotePageClient({
       {/* Labor */}
       <div className="rounded-lg border p-3 space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold">Labor</h3>
-          <Button type="button" variant="outline" size="sm" onClick={() => setLaborItems([...laborItems, makeEmptyLabor(defaultLaborRate)])}><Plus className="mr-1 h-3.5 w-3.5" /> Add Labor</Button>
+          <h3 className="text-sm font-semibold">{t("labor.title")}</h3>
+          <Button type="button" variant="outline" size="sm" onClick={() => setLaborItems([...laborItems, makeEmptyLabor(defaultLaborRate)])}><Plus className="mr-1 h-3.5 w-3.5" /> {t("labor.addLabor")}</Button>
         </div>
         {laborItems.length > 0 && (
           <>
             <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
-              <span>Description</span><span>Hours</span><span>Rate ({cs}/hr)</span><span>Total</span><span />
+              <span>{t("labor.description")}</span><span>{t("labor.hours")}</span><span>{t("labor.rate", { currency: cs })}</span><span>{t("labor.total")}</span><span />
             </div>
             {laborItems.map((labor, i) => (
               <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]">
-                <Input placeholder="Description *" value={labor.description} onChange={(e) => updateLabor(i, "description", e.target.value)} className="col-span-2 sm:col-span-1" />
+                <Input placeholder={t("labor.descriptionPlaceholder")} value={labor.description} onChange={(e) => updateLabor(i, "description", e.target.value)} className="col-span-2 sm:col-span-1" />
                 <Input type="number" min="0" step="0.1" value={labor.hours} onChange={(e) => updateLabor(i, "hours", e.target.value)} />
                 <Input type="number" min="0" step="0.01" value={labor.rate} onChange={(e) => updateLabor(i, "rate", e.target.value)} />
                 <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(labor.total, currencyCode)}</div>
@@ -419,12 +421,12 @@ export function QuotePageClient({
               </div>
             ))}
             <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => setLaborItems([...laborItems, makeEmptyLabor(defaultLaborRate)])}><Plus className="h-4 w-4" /></button>
-            <div className="flex justify-end pt-1 text-sm"><span className="font-medium">Labor Subtotal: {formatCurrency(laborSubtotal, currencyCode)}</span></div>
+            <div className="flex justify-end pt-1 text-sm"><span className="font-medium">{t("labor.subtotal", { amount: formatCurrency(laborSubtotal, currencyCode) })}</span></div>
           </>
         )}
         {laborItems.length === 0 && (
           <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => setLaborItems([...laborItems, makeEmptyLabor(defaultLaborRate)])}>
-            <Plus className="mr-1 h-4 w-4" /><span className="text-sm">Add Labor</span>
+            <Plus className="mr-1 h-4 w-4" /><span className="text-sm">{t("labor.addLabor")}</span>
           </button>
         )}
       </div>
@@ -432,25 +434,25 @@ export function QuotePageClient({
       {/* Notes */}
       <div className="rounded-lg border p-3 space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-sm font-semibold"><FileText className="h-3.5 w-3.5" />Notes</h3>
+          <h3 className="flex items-center gap-2 text-sm font-semibold"><FileText className="h-3.5 w-3.5" />{t("notes.title")}</h3>
           <Select value={noteType} onValueChange={(v) => setNoteType(v as "public" | "internal")}>
             <SelectTrigger className="h-7 w-[120px] text-xs"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="public">Public</SelectItem>
-              <SelectItem value="internal">Internal</SelectItem>
+              <SelectItem value="public">{t("notes.public")}</SelectItem>
+              <SelectItem value="internal">{t("notes.internal")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         {noteType === "public" && (
           <div className="space-y-1">
-            <RichTextEditor content={description} onChange={setDescription} placeholder="Quote description shown to the customer..." />
-            <p className="text-xs text-muted-foreground">Shown on the quote document</p>
+            <RichTextEditor content={description} onChange={setDescription} placeholder={t("notes.publicPlaceholder")} />
+            <p className="text-xs text-muted-foreground">{t("notes.publicHelper")}</p>
           </div>
         )}
         {noteType === "internal" && (
           <div className="space-y-1">
-            <RichTextEditor content={notes} onChange={setNotes} placeholder="Internal notes (not shown to customer)..." />
-            <p className="text-xs text-muted-foreground">Only visible to your team</p>
+            <RichTextEditor content={notes} onChange={setNotes} placeholder={t("notes.internalPlaceholder")} />
+            <p className="text-xs text-muted-foreground">{t("notes.internalHelper")}</p>
           </div>
         )}
       </div>
@@ -464,7 +466,7 @@ export function QuotePageClient({
       {quote.status !== "converted" && (
         <div className="rounded-lg border p-3">
           <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => setShowConvertDialog(true)}>
-            <ArrowRight className="mr-1 h-3.5 w-3.5" /> Convert to Work Order
+            <ArrowRight className="mr-1 h-3.5 w-3.5" /> {t("page.convertToWorkOrder")}
           </Button>
         </div>
       )}
@@ -472,11 +474,11 @@ export function QuotePageClient({
       {/* Vehicle & Customer */}
       <div className="rounded-lg border p-3 space-y-3">
         <div className="space-y-1">
-          <Label className="text-xs">Vehicle</Label>
+          <Label className="text-xs">{t("details.vehicle")}</Label>
           <Select value={vehicleId || "none"} onValueChange={handleVehicleChange}>
-            <SelectTrigger><SelectValue placeholder="Select vehicle..." /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder={t("details.selectVehicle")} /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">None</SelectItem>
+              <SelectItem value="none">{t("details.none")}</SelectItem>
               {vehicles.map((v) => (
                 <SelectItem key={v.id} value={v.id}>{v.year} {v.make} {v.model}{v.licensePlate ? ` (${v.licensePlate})` : ""}</SelectItem>
               ))}
@@ -494,11 +496,11 @@ export function QuotePageClient({
           </div>
         )}
         <div className="space-y-1">
-          <Label className="text-xs">Customer</Label>
+          <Label className="text-xs">{t("details.customer")}</Label>
           <Select value={customerId || "none"} onValueChange={(v) => setCustomerId(v === "none" ? "" : v)}>
-            <SelectTrigger><SelectValue placeholder="Select customer..." /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder={t("details.selectCustomer")} /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">None</SelectItem>
+              <SelectItem value="none">{t("details.none")}</SelectItem>
               {customers.map((c) => (
                 <SelectItem key={c.id} value={c.id}>{c.name}{c.company ? ` (${c.company})` : ""}</SelectItem>
               ))}
@@ -519,26 +521,26 @@ export function QuotePageClient({
 
       {/* Quote Details */}
       <div className="rounded-lg border p-3 space-y-3">
-        <h3 className="text-sm font-semibold">Quote Details</h3>
+        <h3 className="text-sm font-semibold">{t("details.title")}</h3>
         <div className="space-y-1">
-          <Label htmlFor="title" className="text-xs">Title *</Label>
-          <Input id="title" name="title" placeholder="Vehicle repair estimate" defaultValue={quote.title} required />
+          <Label htmlFor="title" className="text-xs">{t("details.titleLabel")}</Label>
+          <Input id="title" name="title" placeholder={t("details.titlePlaceholder")} defaultValue={quote.title} required />
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
-            <Label className="text-xs">Status</Label>
+            <Label className="text-xs">{t("details.status")}</Label>
             <Select value={status} onValueChange={setStatus}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="sent">Sent</SelectItem>
-                <SelectItem value="accepted">Accepted</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
+                <SelectItem value="draft">{t("details.statusDraft")}</SelectItem>
+                <SelectItem value="sent">{t("details.statusSent")}</SelectItem>
+                <SelectItem value="accepted">{t("details.statusAccepted")}</SelectItem>
+                <SelectItem value="rejected">{t("details.statusRejected")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1">
-            <Label htmlFor="validUntil" className="text-xs">Valid Until</Label>
+            <Label htmlFor="validUntil" className="text-xs">{t("details.validUntil")}</Label>
             <Input id="validUntil" name="validUntil" type="date" defaultValue={defaultValidDate} />
           </div>
         </div>
@@ -548,7 +550,7 @@ export function QuotePageClient({
             className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <ClipboardCheck className="h-3.5 w-3.5 shrink-0" />
-            <span>View linked inspection</span>
+            <span>{t("details.viewInspection")}</span>
           </Link>
         )}
       </div>
@@ -565,7 +567,7 @@ export function QuotePageClient({
               status === "changes_requested" ? "text-orange-700 dark:text-orange-400" : "text-emerald-700 dark:text-emerald-400"
             }`}>
               <MessageSquare className="h-3.5 w-3.5" />
-              {status === "changes_requested" ? "Changes Requested" : "Quote Accepted"}
+              {status === "changes_requested" ? t("page.changesRequested") : t("page.quoteAccepted")}
             </h3>
             <span className={`text-[10px] ${
               status === "changes_requested" ? "text-orange-500 dark:text-orange-500" : "text-emerald-500 dark:text-emerald-500"
@@ -588,27 +590,27 @@ export function QuotePageClient({
             onClick={handleResolveResponse}
           >
             {resolving ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Check className="mr-1 h-3.5 w-3.5" />}
-            Mark as Resolved
+            {t("page.markResolved")}
           </Button>
         </div>
       )}
 
       {/* Totals */}
       <div className="rounded-lg border p-3 space-y-2">
-        <h3 className="text-sm font-semibold">Totals</h3>
+        <h3 className="text-sm font-semibold">{t("totals.title")}</h3>
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Parts</span><span>{formatCurrency(partsSubtotal, currencyCode)}</span></div>
-          <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Labor</span><span>{formatCurrency(laborSubtotal, currencyCode)}</span></div>
-          <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Subtotal</span><span className="font-medium">{formatCurrency(subtotal, currencyCode)}</span></div>
+          <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">{t("totals.parts")}</span><span>{formatCurrency(partsSubtotal, currencyCode)}</span></div>
+          <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">{t("totals.labor")}</span><span>{formatCurrency(laborSubtotal, currencyCode)}</span></div>
+          <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">{t("totals.subtotal")}</span><span className="font-medium">{formatCurrency(subtotal, currencyCode)}</span></div>
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">Discount</span>
+              <span className="text-muted-foreground">{t("totals.discount")}</span>
               <Select value={discountType} onValueChange={setDiscountType}>
                 <SelectTrigger className="h-7 w-28 text-xs"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  <SelectItem value="percentage">Percentage</SelectItem>
-                  <SelectItem value="fixed">Fixed</SelectItem>
+                  <SelectItem value="none">{t("totals.discountNone")}</SelectItem>
+                  <SelectItem value="percentage">{t("totals.discountPercentage")}</SelectItem>
+                  <SelectItem value="fixed">{t("totals.discountFixed")}</SelectItem>
                 </SelectContent>
               </Select>
               {discountType !== "none" && (
@@ -621,14 +623,14 @@ export function QuotePageClient({
           {taxEnabled && (
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">Tax</span>
+                <span className="text-muted-foreground">{t("totals.tax")}</span>
                 <Input type="number" min="0" step="0.1" value={taxRate} onChange={(e) => setTaxRate(e.target.value === "" ? 0 : Number(e.target.value))} className="h-7 w-20 text-right text-xs" />
                 <span className="text-muted-foreground">%</span>
               </div>
               <span>{formatCurrency(taxAmount, currencyCode)}</span>
             </div>
           )}
-          <div className="flex items-center justify-between border-t pt-2 text-lg font-bold"><span>Total</span><span>{formatCurrency(totalAmount, currencyCode)}</span></div>
+          <div className="flex items-center justify-between border-t pt-2 text-lg font-bold"><span>{t("totals.total")}</span><span>{formatCurrency(totalAmount, currencyCode)}</span></div>
         </div>
       </div>
 
@@ -653,7 +655,7 @@ export function QuotePageClient({
                 <h1 className="truncate text-lg font-semibold leading-tight">{quote.title}</h1>
               </div>
               <p className="truncate text-xs text-muted-foreground">
-                {quote.quoteNumber || `Quote`}
+                {quote.quoteNumber || t("page.quote")}
                 {quote.customer ? ` · ${quote.customer.name}` : ""}
               </p>
             </div>
@@ -661,24 +663,24 @@ export function QuotePageClient({
           <div className="flex shrink-0 items-center gap-2">
             <Button type="submit" form="quote-form" size="sm" disabled={saving}>
               {saving ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Save className="mr-1 h-3.5 w-3.5" />}
-              Save
+              {t("page.save")}
             </Button>
             <ButtonGroup>
               <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={downloading}>
                 {downloading ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Download className="mr-1 h-3.5 w-3.5" />}
-                PDF
+                {t("page.pdf")}
               </Button>
               <Button variant="outline" size="sm" onClick={() => setShowEmailDialog(true)}>
                 <Mail className="mr-1 h-3.5 w-3.5" />
-                Email
+                {t("page.email")}
               </Button>
               <Button variant="outline" size="sm" onClick={() => setShowShareDialog(true)}>
                 <Globe className="mr-1 h-3.5 w-3.5" />
-                Share
+                {t("page.share")}
               </Button>
               <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={handleDelete}>
                 <Trash2 className="mr-1 h-3.5 w-3.5" />
-                Delete
+                {t("page.delete")}
               </Button>
             </ButtonGroup>
           </div>
@@ -689,9 +691,9 @@ export function QuotePageClient({
       <div className="shrink-0 border-b bg-background px-4">
         <div className="flex gap-1">
           {([
-            { key: "details" as TabType, label: "Details", icon: FileText },
-            { key: "images" as TabType, label: "Images", icon: Camera },
-            { key: "documents" as TabType, label: "Documents", icon: Paperclip },
+            { key: "details" as TabType, label: t("page.tabs.details"), icon: FileText },
+            { key: "images" as TabType, label: t("page.tabs.images"), icon: Camera },
+            { key: "documents" as TabType, label: t("page.tabs.documents"), icon: Paperclip },
           ]).map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -767,7 +769,7 @@ export function QuotePageClient({
         open={showEmailDialog}
         onOpenChange={setShowEmailDialog}
         defaultEmail={quote.customer?.email || ""}
-        entityLabel="Quote"
+        entityLabel={t("page.entityLabel")}
         onSend={async (email, message) => sendQuoteEmail({ quoteId: quote.id, recipientEmail: email, message })}
       />
 
@@ -784,11 +786,11 @@ export function QuotePageClient({
 
       <Dialog open={showConvertDialog} onOpenChange={setShowConvertDialog}>
         <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>Convert Quote to Work Order</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t("page.convertTitle")}</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">This will create a new service record (work order) from this quote. Select a vehicle for the work order.</p>
+            <p className="text-sm text-muted-foreground">{t("page.convertDescription")}</p>
             <Select value={convertVehicleId} onValueChange={setConvertVehicleId}>
-              <SelectTrigger><SelectValue placeholder="Select vehicle..." /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t("details.selectVehicle")} /></SelectTrigger>
               <SelectContent>
                 {vehicles.map((v) => (
                   <SelectItem key={v.id} value={v.id}>{v.year} {v.make} {v.model}{v.licensePlate ? ` (${v.licensePlate})` : ""}</SelectItem>
@@ -798,9 +800,9 @@ export function QuotePageClient({
             <div className="flex gap-2">
               <Button type="button" onClick={handleConvert} disabled={converting || !convertVehicleId}>
                 {converting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Convert
+                {t("page.convert")}
               </Button>
-              <Button type="button" variant="ghost" onClick={() => setShowConvertDialog(false)}>Cancel</Button>
+              <Button type="button" variant="ghost" onClick={() => setShowConvertDialog(false)}>{t("page.cancel")}</Button>
             </div>
           </div>
         </DialogContent>

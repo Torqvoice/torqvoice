@@ -5,6 +5,13 @@ import { getFontBold } from './styles'
 import type { Style } from '@react-pdf/types'
 import { sanitizeHtml } from '@/lib/sanitize-html'
 
+function fillTemplate(template: string, values: Record<string, string>): string {
+  return Object.entries(values).reduce(
+    (str, [key, val]) => str.replace(`{${key}}`, val),
+    template
+  )
+}
+
 interface NotesProps {
   invoiceNotes: string | null
   diagnosticNotes: string | null
@@ -13,6 +20,7 @@ interface NotesProps {
   pdfAttachmentNames: string[]
   fontFamily: string
   styles: Record<string, Style>
+  labels: Record<string, string>
 }
 
 // Simple HTML token types
@@ -161,6 +169,11 @@ function HtmlToPdf({
   return <View>{renderNodes(ast)}</View>
 }
 
+function hasContent(html: string | null): boolean {
+  if (!html) return false
+  return html.replace(/<[^>]*>/g, '').trim().length > 0
+}
+
 export function Notes({
   invoiceNotes,
   diagnosticNotes,
@@ -169,40 +182,41 @@ export function Notes({
   pdfAttachmentNames,
   fontFamily,
   styles,
+  labels,
 }: NotesProps) {
   const fontBold = getFontBold(fontFamily)
 
   return (
     <>
-      {invoiceNotes && (
+      {hasContent(invoiceNotes) && (
         <View style={styles.notesSection}>
-          <Text style={styles.notesLabel}>Notes</Text>
-          <HtmlToPdf html={invoiceNotes} baseStyle={styles.notesText} fontBold={fontBold} />
+          <Text style={styles.notesLabel}>{labels.notes || 'Notes'}</Text>
+          <HtmlToPdf html={invoiceNotes!} baseStyle={styles.notesText} fontBold={fontBold} />
         </View>
       )}
 
       {invoiceSettings?.showBankAccount && invoiceSettings?.bankAccount && (
         <View style={{ ...styles.notesSection, marginTop: 12 }}>
-          <Text style={styles.notesLabel}>Til Konto / Bank Account</Text>
+          <Text style={styles.notesLabel}>{labels.bankAccount || 'Til Konto / Bank Account'}</Text>
           <Text style={{ fontSize: 11, fontFamily: fontBold }}>
             {invoiceSettings.bankAccount}
           </Text>
         </View>
       )}
 
-      {diagnosticNotes && (
+      {hasContent(diagnosticNotes) && (
         <View style={{ ...styles.notesSection, marginTop: 8 }}>
-          <Text style={styles.notesLabel}>Diagnostic Notes</Text>
-          <HtmlToPdf html={diagnosticNotes} baseStyle={styles.notesText} fontBold={fontBold} />
+          <Text style={styles.notesLabel}>{labels.diagnosticNotes || 'Diagnostic Notes'}</Text>
+          <HtmlToPdf html={diagnosticNotes!} baseStyle={styles.notesText} fontBold={fontBold} />
         </View>
       )}
 
       {(otherAttachments.length > 0 || pdfAttachmentNames.length > 0) && (
         <View style={{ ...styles.notesSection, marginTop: 8 }}>
-          <Text style={styles.notesLabel}>Attached Documents</Text>
+          <Text style={styles.notesLabel}>{labels.attachedDocuments || 'Attached Documents'}</Text>
           {pdfAttachmentNames.map((name, i) => (
             <Text key={`pdf-${i}`} style={styles.notesText}>
-              {name} (see appended pages)
+              {labels.seeAppendedPages ? fillTemplate(labels.seeAppendedPages, { name }) : `${name} (see appended pages)`}
             </Text>
           ))}
           {otherAttachments.map((att, i) => (

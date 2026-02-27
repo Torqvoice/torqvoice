@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "Werkorders kunnen niet worden geladen"
+  },
+  "list": {
+    "searchPlaceholder": "Werkorders zoeken...",
+    "newWorkOrder": "Nieuwe Werkorder",
+    "selectVehicle": "Voertuig selecteren",
+    "empty": "Geen werkorders gevonden.",
+    "statusUpdated": "Status bijgewerkt",
+    "statusTabs": {
+      "all": "Alles",
+      "active": "Actief",
+      "pending": "In afwachting",
+      "inProgress": "In uitvoering",
+      "waitingParts": "Wacht op onderdelen",
+      "completed": "Voltooid"
+    },
+    "statusActions": {
+      "startWork": "Start werkzaamheden",
+      "waitingParts": "Wacht op onderdelen",
+      "complete": "Voltooien",
+      "resumeWork": "Werkzaamheden hervatten",
+      "reopen": "Opnieuw openen"
+    },
+    "table": {
+      "invoice": "Factuurnummer",
+      "vehicle": "Voertuig",
+      "customer": "Klant",
+      "title": "Titel",
+      "status": "Status",
+      "tech": "Technicus",
+      "date": "Datum",
+      "total": "Totaal"
+    },
+    "emailSubject": "Voertuigstatus bijgewerkt: {status}"
+  },
+  "vehiclePicker": {
+    "title": "Voertuig selecteren voor werkorder",
+    "searchPlaceholder": "Voertuigen zoeken...",
+    "empty": "Geen voertuigen gevonden.",
+    "emptySearch": "Geen voertuigen die overeenkomen met uw zoekopdracht.",
+    "addNewVehicle": "Nieuw voertuig toevoegen",
+    "noPlate": "Geen kenteken",
+    "make": "Merk *",
+    "model": "Model *",
+    "year": "Jaar *",
+    "licensePlate": "Kenteken",
+    "customer": "Klant",
+    "selectCustomer": "Selecteer een klant (optioneel)",
+    "createNewCustomer": "Nieuwe klant maken",
+    "newCustomer": "Nieuwe klant",
+    "customerName": "Naam *",
+    "customerNamePlaceholder": "Klantnaam",
+    "phone": "Telefoon",
+    "phonePlaceholder": "Telefoonnummer",
+    "creating": "Bezig met maken...",
+    "createAndContinue": "Maken & Doorgaan",
+    "invalidYear": "Voer een geldig jaar in",
+    "customerNameRequired": "Klantnaam is verplicht",
+    "failedCreateCustomer": "Klant maken mislukt",
+    "failedCreateVehicle": "Voertuig maken mislukt",
+    "somethingWentWrong": "Er is iets mis gegaan"
+  },
+  "notify": {
+    "title": "Stuur bericht naar {name}",
+    "description": "Stuur een melding naar de klant over deze update.",
+    "sms": "SMS",
+    "email": "E-mail",
+    "noPhone": "(geen telefoonnummer op bestand)",
+    "noEmail": "(geen e-mailadres op bestand)",
+    "notAvailable": "(niet beschikbaar)",
+    "skip": "Overslaan",
+    "send": "Verzenden",
+    "smsSent": "SMS verzonden",
+    "emailSent": "E-mail verzonden",
+    "failedSms": "SMS verzenden mislukt",
+    "failedEmail": "E-mail verzenden mislukt"
+  }
+}

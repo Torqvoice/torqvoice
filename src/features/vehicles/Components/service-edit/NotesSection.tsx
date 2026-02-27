@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Select,
   SelectContent,
@@ -18,6 +19,7 @@ interface NotesSectionProps {
 }
 
 export function NotesSection({ initialData, onNotesChange }: NotesSectionProps) {
+  const t = useTranslations('service.notes')
   const [noteType, setNoteType] = useState<'public' | 'internal'>('public')
   const [publicNotes, setPublicNotes] = useState(initialData.invoiceNotes || '')
   const [internalNotes, setInternalNotes] = useState(initialData.diagnosticNotes || '')
@@ -37,15 +39,15 @@ export function NotesSection({ initialData, onNotesChange }: NotesSectionProps) 
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-sm font-semibold">
           <FileText className="h-3.5 w-3.5" />
-          Notes
+          {t('title')}
         </h3>
         <Select value={noteType} onValueChange={(v) => setNoteType(v as 'public' | 'internal')}>
           <SelectTrigger className="h-7 w-[120px] text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="public">Public</SelectItem>
-            <SelectItem value="internal">Internal</SelectItem>
+            <SelectItem value="public">{t('public')}</SelectItem>
+            <SelectItem value="internal">{t('internal')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -55,9 +57,9 @@ export function NotesSection({ initialData, onNotesChange }: NotesSectionProps) 
           <RichTextEditor
             content={publicNotes}
             onChange={handlePublicChange}
-            placeholder="Notes visible on the invoice..."
+            placeholder={t('publicPlaceholder')}
           />
-          <p className="text-xs text-muted-foreground">Shown on the invoice and shared documents</p>
+          <p className="text-xs text-muted-foreground">{t('publicHelper')}</p>
         </div>
       )}
 
@@ -66,9 +68,9 @@ export function NotesSection({ initialData, onNotesChange }: NotesSectionProps) 
           <RichTextEditor
             content={internalNotes}
             onChange={handleInternalChange}
-            placeholder="Internal notes (not shown on invoice)..."
+            placeholder={t('internalPlaceholder')}
           />
-          <p className="text-xs text-muted-foreground">Only visible to your team</p>
+          <p className="text-xs text-muted-foreground">{t('internalHelper')}</p>
         </div>
       )}
     </div>

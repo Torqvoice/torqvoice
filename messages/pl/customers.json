@@ -1,0 +1,76 @@
+{
+  "list": {
+    "addCustomer": "Dodaj klienta",
+    "searchPlaceholder": "Szukaj klientów...",
+    "table": {
+      "name": "Imię i nazwisko",
+      "company": "Firma",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "vehicles": "Pojazdy"
+    },
+    "emptySearch": "Brak klientów pasujących do wyszukiwania.",
+    "empty": "Brak klientów.",
+    "deleteTitle": "Usuń klienta",
+    "deleteDescription": "Usunąć {name}? Spowoduje to odłączenie jego pojazdów.",
+    "deleteError": "Nie udało się usunąć klienta",
+    "error": "Nie udało się załadować klientów"
+  },
+  "detail": {
+    "backToCustomers": "Wróć do klientów",
+    "editCustomer": "Edytuj klienta",
+    "notFound": "Nie znaleziono klienta",
+    "emailCopied": "E-mail skopiowany do schowka",
+    "phoneCopied": "Numer telefonu skopiowany do schowka",
+    "tabs": {
+      "vehicles": "Pojazdy ({count})",
+      "messages": "Wiadomości",
+      "requests": "Zlecenia ({count})"
+    },
+    "vehicleTable": {
+      "plate": "Tablica",
+      "vehicle": "Pojazd",
+      "mileage": "Przebieg",
+      "services": "Usługi"
+    },
+    "noVehicles": "Brak pojazdów przypisanych do tego klienta"
+  },
+  "form": {
+    "addTitle": "Dodaj nowego klienta",
+    "editTitle": "Edytuj klienta",
+    "nameRequired": "Imię i nazwisko *",
+    "namePlaceholder": "Jan Kowalski",
+    "emailPlaceholder": "jan@przyklad.pl",
+    "phonePlaceholder": "123 456 789",
+    "companyPlaceholder": "Nazwa firmy",
+    "addressPlaceholder": "ul. Główna 1, 00-001 Warszawa",
+    "notesPlaceholder": "Dodatkowe uwagi...",
+    "customerUpdated": "Klient zaktualizowany",
+    "customerCreated": "Klient utworzony",
+    "saveError": "Nie udało się zapisać klienta"
+  },
+  "serviceRequests": {
+    "statusNew": "Nowe",
+    "statusConverted": "Zlecenie pracy utworzone",
+    "statusDismissed": "Odrzucone",
+    "createWorkOrder": "Utwórz zlecenie pracy",
+    "contactCustomer": "Skontaktuj się z klientem",
+    "dismiss": "Odrzuć",
+    "viewWorkOrder": "Zobacz zlecenie pracy",
+    "notes": "Notatki",
+    "hideNotes": "Ukryj notatki",
+    "staffNotes": "Notatki pracownika:",
+    "notesPlaceholder": "Dodaj wewnętrzne notatki...",
+    "saveNotes": "Zapisz notatki",
+    "submitted": "Wysłano {date}",
+    "preferred": "Preferowany termin: {date}",
+    "workOrderCreated": "Zlecenie pracy utworzone",
+    "workOrderError": "Nie udało się utworzyć zlecenia pracy",
+    "requestDismissed": "Zlecenie odrzucone",
+    "dismissError": "Nie udało się odrzucić zlecenia",
+    "notesSaved": "Notatki zapisane",
+    "notesSaveError": "Nie udało się zapisać notatek",
+    "smsLabel": "Wiadomość dotycząca zlecenia serwisowego",
+    "smsDefault": "Cześć {name}, w sprawie Twojego zlecenia serwisowego dotyczącego {vehicle}: "
+  }
+}

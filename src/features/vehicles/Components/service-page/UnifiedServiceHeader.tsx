@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -41,13 +42,6 @@ interface UnifiedServiceHeaderProps {
   onShowShare: () => void
 }
 
-const tabs: { label: string; value: ServiceTab }[] = [
-  { label: 'Details', value: 'details' },
-  { label: 'Images', value: 'images' },
-  { label: 'Video', value: 'video' },
-  { label: 'Documents', value: 'documents' },
-]
-
 export function UnifiedServiceHeader({
   vehicleId,
   vehicleName,
@@ -64,6 +58,16 @@ export function UnifiedServiceHeader({
   onShowEmail,
   onShowShare,
 }: UnifiedServiceHeaderProps) {
+  const t = useTranslations('service.header')
+  const tc = useTranslations('common.buttons')
+
+  const tabs: { label: string; value: ServiceTab }[] = [
+    { label: t('tabs.details'), value: 'details' },
+    { label: t('tabs.images'), value: 'images' },
+    { label: t('tabs.video'), value: 'video' },
+    { label: t('tabs.documents'), value: 'documents' },
+  ]
+
   return (
     <div className="shrink-0 border-b bg-background px-4 pt-2 pb-0">
       <div className="mb-2 flex items-center justify-between">
@@ -78,7 +82,7 @@ export function UnifiedServiceHeader({
                 variant="outline"
                 className={`shrink-0 text-xs ${paymentStatusColors[paymentStatus] || ''}`}
               >
-                {paymentStatusLabels[paymentStatus] || 'Unpaid'}
+                {paymentStatusLabels[paymentStatus] || t('unpaid')}
               </Badge>
               <Badge
                 variant="outline"
@@ -99,7 +103,7 @@ export function UnifiedServiceHeader({
               ) : (
                 <Save className="mr-1 h-3.5 w-3.5" />
               )}
-              Save
+              {t('save')}
             </Button>
           )}
           <ButtonGroup>
@@ -109,15 +113,15 @@ export function UnifiedServiceHeader({
               ) : (
                 <Download className="mr-1 h-3.5 w-3.5" />
               )}
-              PDF
+              {t('pdf')}
             </Button>
             <Button variant="outline" size="sm" onClick={onShowEmail}>
               <Mail className="mr-1 h-3.5 w-3.5" />
-              Email
+              {t('email')}
             </Button>
             <Button variant="outline" size="sm" onClick={onShowShare}>
               <Globe className="mr-1 h-3.5 w-3.5" />
-              Share
+              {t('share')}
             </Button>
             <Button
               variant="outline"
@@ -126,7 +130,7 @@ export function UnifiedServiceHeader({
               onClick={onDelete}
             >
               <Trash2 className="mr-1 h-3.5 w-3.5" />
-              Delete
+              {t('delete')}
             </Button>
           </ButtonGroup>
         </div>

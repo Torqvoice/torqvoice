@@ -14,10 +14,13 @@ import type { RetentionCustomer } from "../Schema/reportTypes";
 interface RetentionBarChartProps {
   data: RetentionCustomer[];
   formatCurrency: (value: number) => string;
+  labels?: { visits: string; totalSpent: string };
 }
 
-export function RetentionBarChart({ data, formatCurrency }: RetentionBarChartProps) {
+export function RetentionBarChart({ data, formatCurrency, labels }: RetentionBarChartProps) {
   if (data.length === 0) return null;
+
+  const totalSpentLabel = labels?.totalSpent ?? "Total Spent";
 
   const chartData = data.slice(0, 10).map((c) => ({
     name: c.name.length > 20 ? c.name.slice(0, 18) + "\u2026" : c.name,
@@ -47,7 +50,7 @@ export function RetentionBarChart({ data, formatCurrency }: RetentionBarChartPro
         />
         <Tooltip
           formatter={(value, name) =>
-            name === "Total Spent" ? formatCurrency(Number(value)) : value
+            name === totalSpentLabel ? formatCurrency(Number(value)) : value
           }
           contentStyle={{
             backgroundColor: "hsl(var(--popover))",
@@ -56,7 +59,7 @@ export function RetentionBarChart({ data, formatCurrency }: RetentionBarChartPro
             color: "hsl(var(--popover-foreground))",
           }}
         />
-        <Bar dataKey="visitCount" name="Visits" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
+        <Bar dataKey="visitCount" name={labels?.visits ?? "Visits"} fill="#8b5cf6" radius={[0, 4, 4, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

@@ -29,6 +29,7 @@ export function InvoicePDF({
   template,
   torqvoiceLogoDataUri,
   portalUrl,
+  labels = {},
 }: {
   data: InvoiceData
   workshop?: WorkshopInfo
@@ -41,6 +42,7 @@ export function InvoicePDF({
   template?: TemplateConfig
   torqvoiceLogoDataUri?: string
   portalUrl?: string
+  labels?: Record<string, string>
 }) {
   const primaryColor = template?.primaryColor || '#d97706'
   const fontFamily = template?.fontFamily || 'Helvetica'
@@ -94,6 +96,7 @@ export function InvoicePDF({
           serviceDate={serviceDate}
           dueDate={dueDate}
           styles={styles}
+          labels={labels}
         />
 
         <InfoSection
@@ -101,10 +104,11 @@ export function InvoicePDF({
           vehicleName={vehicleName}
           invoiceSettings={invoiceSettings}
           styles={styles}
+          labels={labels}
         />
 
-        <PartsTable data={data} currencyCode={cc} styles={styles} />
-        <LaborTable data={data} currencyCode={cc} styles={styles} />
+        <PartsTable data={data} currencyCode={cc} styles={styles} labels={labels} />
+        <LaborTable data={data} currencyCode={cc} styles={styles} labels={labels} />
 
         <Totals
           data={data}
@@ -118,6 +122,7 @@ export function InvoicePDF({
           isPaidInFull={isPaidInFull}
           paymentSummary={paymentSummary}
           styles={styles}
+          labels={labels}
         />
 
         {torqvoiceLogoDataUri && (
@@ -130,7 +135,7 @@ export function InvoicePDF({
               marginTop: 6,
             }}
           >
-            <Text style={{ fontSize: 7, color: gray }}>Powered by</Text>
+            <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
             <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
             <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
           </View>
@@ -144,6 +149,7 @@ export function InvoicePDF({
           pdfAttachmentNames={pdfAttachmentNames}
           fontFamily={fontFamily}
           styles={styles}
+          labels={labels}
         />
 
         <Footer
@@ -156,12 +162,13 @@ export function InvoicePDF({
           torqvoiceLogoDataUri={torqvoiceLogoDataUri}
           portalUrl={portalUrl}
           styles={styles}
+          labels={labels}
         />
       </Page>
 
       {hasAttachments && imageAttachments.length > 0 && (
         <Page size="A4" style={styles.page}>
-          <Text style={styles.sectionTitle}>Service Images</Text>
+          <Text style={styles.sectionTitle}>{labels.serviceImages || 'Service Images'}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
             {imageAttachments.map((img, i) => (
               <View key={i} style={{ width: '48%', marginBottom: 8 }}>

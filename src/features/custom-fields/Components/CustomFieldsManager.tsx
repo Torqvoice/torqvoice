@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,26 +45,13 @@ interface FieldDef {
   isActive: boolean;
 }
 
-const fieldTypeLabels: Record<string, string> = {
-  text: "Text",
-  number: "Number",
-  date: "Date",
-  select: "Select",
-  checkbox: "Checkbox",
-  textarea: "Text Area",
-};
-
-const entityTypeLabels: Record<string, string> = {
-  service_record: "Service Record",
-  quote: "Quote",
-};
-
 export function CustomFieldsManager({
   initialFields = [],
 }: {
   initialFields?: FieldDef[];
 }) {
   const router = useRouter();
+  const t = useTranslations('settings');
   const modal = useGlassModal();
   const confirm = useConfirm();
   const [fields] = useState(initialFields);
@@ -82,6 +70,20 @@ export function CustomFieldsManager({
     sortOrder: 0,
     isActive: true,
   });
+
+  const fieldTypeLabels: Record<string, string> = {
+    text: t('customFields.fieldTypes.text'),
+    number: t('customFields.fieldTypes.number'),
+    date: t('customFields.fieldTypes.date'),
+    select: t('customFields.fieldTypes.select'),
+    checkbox: t('customFields.fieldTypes.checkbox'),
+    textarea: t('customFields.fieldTypes.textarea'),
+  };
+
+  const entityTypeLabels: Record<string, string> = {
+    service_record: t('customFields.serviceRecord'),
+    quote: t('customFields.quote'),
+  };
 
   const resetForm = () => {
     setFormData({
@@ -129,30 +131,30 @@ export function CustomFieldsManager({
       : await createFieldDefinition(payload);
 
     if (result.success) {
-      toast.success(editing ? "Custom field updated" : "Custom field created");
+      toast.success(editing ? t('customFields.fieldUpdated') : t('customFields.fieldCreated'));
       setShowDialog(false);
       resetForm();
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to save field");
+      modal.open("error", "Error", result.error || t('customFields.failedSave'));
     }
     setLoading(false);
   };
 
   const handleDelete = async (field: FieldDef) => {
     const ok = await confirm({
-      title: "Delete Custom Field",
-      description: `This will permanently delete "${field.label}" and all its saved values. This cannot be undone.`,
+      title: t('customFields.deleteTitle'),
+      description: t('customFields.deleteDescription', { label: field.label }),
       confirmLabel: "Delete",
       destructive: true,
     });
     if (!ok) return;
     const result = await deleteFieldDefinition(field.id);
     if (result.success) {
-      toast.success("Custom field deleted");
+      toast.success(t('customFields.fieldDeleted'));
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to delete");
+      modal.open("error", "Error", result.error || t('customFields.failedDelete'));
     }
   };
 
@@ -162,13 +164,13 @@ export function CustomFieldsManager({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold">Custom Fields</h2>
+          <h2 className="text-lg font-semibold">{t('customFields.title')}</h2>
           <p className="text-sm text-muted-foreground">
-            Define custom fields that appear on service records and quotes.
+            {t('customFields.description')}
           </p>
         </div>
         <Button onClick={openCreate}>
-          <Plus className="mr-1 h-4 w-4" /> Add Field
+          <Plus className="mr-1 h-4 w-4" /> {t('customFields.addField')}
         </Button>
       </div>
 
@@ -180,7 +182,7 @@ export function CustomFieldsManager({
             size="sm"
             onClick={() => setFilterEntity(key)}
           >
-            {key === "all" ? "All" : entityTypeLabels[key]}
+            {key === "all" ? t('customFields.filterAll') : entityTypeLabels[key]}
           </Button>
         ))}
       </div>
@@ -188,7 +190,7 @@ export function CustomFieldsManager({
       {filtered.length === 0 ? (
         <Card className="border-0 shadow-sm">
           <CardContent className="py-12 text-center text-muted-foreground">
-            No custom fields defined yet. Click &quot;Add Field&quot; to create one.
+            {t('customFields.emptyState')}
           </CardContent>
         </Card>
       ) : (
@@ -208,12 +210,12 @@ export function CustomFieldsManager({
                     </Badge>
                     {field.required && (
                       <Badge variant="outline" className="text-xs text-amber-600 border-amber-500/20 bg-amber-500/10">
-                        Required
+                        {t('customFields.required')}
                       </Badge>
                     )}
                     {!field.isActive && (
                       <Badge variant="outline" className="text-xs text-gray-500">
-                        Inactive
+                        {t('customFields.inactive')}
                       </Badge>
                     )}
                   </div>
@@ -242,13 +244,13 @@ export function CustomFieldsManager({
       <Dialog open={showDialog} onOpenChange={(open) => { setShowDialog(open); if (!open) resetForm(); }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Field" : "New Custom Field"}</DialogTitle>
+            <DialogTitle>{editing ? t('customFields.editField') : t('customFields.newField')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Label</Label>
+              <Label>{t('customFields.label')}</Label>
               <Input
-                placeholder="e.g. Warranty Expiry"
+                placeholder={t('customFields.labelPlaceholder')}
                 value={formData.label}
                 onChange={(e) => {
                   setFormData({
@@ -261,38 +263,38 @@ export function CustomFieldsManager({
             </div>
 
             <div className="space-y-2">
-              <Label>Field Name (ID)</Label>
+              <Label>{t('customFields.fieldName')}</Label>
               <Input
-                placeholder="warranty_expiry"
+                placeholder={t('customFields.fieldNamePlaceholder')}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 disabled={!!editing}
                 className="font-mono"
               />
-              <p className="text-xs text-muted-foreground">Lowercase letters, numbers, and underscores only.</p>
+              <p className="text-xs text-muted-foreground">{t('customFields.fieldNameHint')}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Field Type</Label>
+                <Label>{t('customFields.fieldType')}</Label>
                 <Select
                   value={formData.fieldType}
                   onValueChange={(v) => setFormData({ ...formData, fieldType: v as FieldType })}
                 >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="text">Text</SelectItem>
-                    <SelectItem value="number">Number</SelectItem>
-                    <SelectItem value="date">Date</SelectItem>
-                    <SelectItem value="select">Select (Dropdown)</SelectItem>
-                    <SelectItem value="checkbox">Checkbox</SelectItem>
-                    <SelectItem value="textarea">Text Area</SelectItem>
+                    <SelectItem value="text">{t('customFields.fieldTypes.text')}</SelectItem>
+                    <SelectItem value="number">{t('customFields.fieldTypes.number')}</SelectItem>
+                    <SelectItem value="date">{t('customFields.fieldTypes.date')}</SelectItem>
+                    <SelectItem value="select">{t('customFields.fieldTypes.select')}</SelectItem>
+                    <SelectItem value="checkbox">{t('customFields.fieldTypes.checkbox')}</SelectItem>
+                    <SelectItem value="textarea">{t('customFields.fieldTypes.textarea')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label>Entity Type</Label>
+                <Label>{t('customFields.entityType')}</Label>
                 <Select
                   value={formData.entityType}
                   onValueChange={(v) => setFormData({ ...formData, entityType: v as EntityType })}
@@ -300,8 +302,8 @@ export function CustomFieldsManager({
                 >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="service_record">Service Record</SelectItem>
-                    <SelectItem value="quote">Quote</SelectItem>
+                    <SelectItem value="service_record">{t('customFields.serviceRecord')}</SelectItem>
+                    <SelectItem value="quote">{t('customFields.quote')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -309,9 +311,9 @@ export function CustomFieldsManager({
 
             {formData.fieldType === "select" && (
               <div className="space-y-2">
-                <Label>Options (comma-separated)</Label>
+                <Label>{t('customFields.optionsLabel')}</Label>
                 <Input
-                  placeholder="Option 1, Option 2, Option 3"
+                  placeholder={t('customFields.optionsPlaceholder')}
                   value={formData.options}
                   onChange={(e) => setFormData({ ...formData, options: e.target.value })}
                 />
@@ -324,24 +326,24 @@ export function CustomFieldsManager({
                   checked={formData.required}
                   onCheckedChange={(checked) => setFormData({ ...formData, required: checked })}
                 />
-                <Label>Required</Label>
+                <Label>{t('customFields.required')}</Label>
               </div>
               <div className="flex items-center gap-2">
                 <Switch
                   checked={formData.isActive}
                   onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
                 />
-                <Label>Active</Label>
+                <Label>{t('customFields.active')}</Label>
               </div>
             </div>
 
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => { setShowDialog(false); resetForm(); }}>
-                Cancel
+                {t('customFields.cancel')}
               </Button>
               <Button onClick={handleSave} disabled={loading || !formData.name || !formData.label}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {editing ? "Update" : "Create"}
+                {editing ? t('customFields.update') : t('customFields.create')}
               </Button>
             </div>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 
@@ -15,6 +16,7 @@ export function PortalHeader({
   orgLogo?: string | null;
   customerName: string;
 }) {
+  const t = useTranslations("portal.header");
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -48,7 +50,7 @@ export function PortalHeader({
         </span>
         <Button variant="ghost" size="sm" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
-          Sign out
+          {t("signOut")}
         </Button>
       </div>
     </header>

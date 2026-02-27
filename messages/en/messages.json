@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "SMS Messaging",
+    "featureDescription": "Send and receive SMS messages with your customers directly from Torqvoice."
+  },
+  "notConfigured": {
+    "title": "SMS Not Configured",
+    "description": "Set up an SMS provider to send and receive messages with your customers. Supports Twilio, Vonage, and Telnyx.",
+    "goToSettings": "Go to SMS Settings"
+  },
+  "threads": {
+    "title": "Conversations",
+    "empty": "No conversations yet. Send an SMS from a customer page to start.",
+    "loadMore": "Load more",
+    "selectConversation": "Select a conversation",
+    "you": "You: ",
+    "deleteConversation": "Delete conversation",
+    "deleteTitle": "Delete conversation?",
+    "deleteDescription": "This will permanently delete all messages with {name}. This action cannot be undone.",
+    "deleted": "Conversation deleted",
+    "deleteError": "Failed to delete conversation"
+  },
+  "conversation": {
+    "noPhone": "No phone number on file for {name}. Add a phone number to start messaging.",
+    "loadOlder": "Load older",
+    "empty": "No messages yet. Send the first message to {name}.",
+    "placeholder": "Message {name}...",
+    "deleteMessage": "Delete message",
+    "deleteTitle": "Delete message?",
+    "deleteDescription": "This will permanently delete this message from the conversation. This action cannot be undone.",
+    "messageDeleted": "Message deleted",
+    "deleteError": "Failed to delete message",
+    "sendError": "Failed to send SMS"
+  },
+  "sendDialog": {
+    "send": "Send {label}",
+    "message": "Message",
+    "placeholder": "Type your message...",
+    "characters": "{count} / 1600 characters",
+    "sendSms": "Send SMS",
+    "smsSent": "SMS Sent",
+    "sentTo": "{label} has been sent to {name} ({phone})",
+    "sendError": "Failed to send SMS"
+  }
+}

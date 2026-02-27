@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "Failed to load work orders"
+  },
+  "list": {
+    "searchPlaceholder": "Search work orders...",
+    "newWorkOrder": "New Work Order",
+    "selectVehicle": "Select Vehicle",
+    "empty": "No work orders found.",
+    "statusUpdated": "Status updated",
+    "statusTabs": {
+      "all": "All",
+      "active": "Active",
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "waitingParts": "Waiting Parts",
+      "completed": "Completed"
+    },
+    "statusActions": {
+      "startWork": "Start Work",
+      "waitingParts": "Waiting Parts",
+      "complete": "Complete",
+      "resumeWork": "Resume Work",
+      "reopen": "Reopen"
+    },
+    "table": {
+      "invoice": "Invoice#",
+      "vehicle": "Vehicle",
+      "customer": "Customer",
+      "title": "Title",
+      "status": "Status",
+      "tech": "Tech",
+      "date": "Date",
+      "total": "Total"
+    },
+    "emailSubject": "Vehicle Status Update: {status}"
+  },
+  "vehiclePicker": {
+    "title": "Select Vehicle for Work Order",
+    "searchPlaceholder": "Search vehicles...",
+    "empty": "No vehicles found.",
+    "emptySearch": "No vehicles match your search.",
+    "addNewVehicle": "Add New Vehicle",
+    "noPlate": "No plate",
+    "make": "Make *",
+    "model": "Model *",
+    "year": "Year *",
+    "licensePlate": "License Plate",
+    "customer": "Customer",
+    "selectCustomer": "Select a customer (optional)",
+    "createNewCustomer": "Create new customer",
+    "newCustomer": "New Customer",
+    "customerName": "Name *",
+    "customerNamePlaceholder": "Customer name",
+    "phone": "Phone",
+    "phonePlaceholder": "Phone number",
+    "creating": "Creating...",
+    "createAndContinue": "Create & Continue",
+    "invalidYear": "Please enter a valid year",
+    "customerNameRequired": "Customer name is required",
+    "failedCreateCustomer": "Failed to create customer",
+    "failedCreateVehicle": "Failed to create vehicle",
+    "somethingWentWrong": "Something went wrong"
+  },
+  "notify": {
+    "title": "Notify {name}",
+    "description": "Send a notification to the customer about this update.",
+    "sms": "SMS",
+    "email": "Email",
+    "noPhone": "(no phone on file)",
+    "noEmail": "(no email on file)",
+    "notAvailable": "(not available)",
+    "skip": "Skip",
+    "send": "Send",
+    "smsSent": "SMS sent",
+    "emailSent": "Email sent",
+    "failedSms": "Failed to send SMS",
+    "failedEmail": "Failed to send email"
+  }
+}

@@ -3,6 +3,13 @@ import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { createStyles, gray, getFontBold } from '@/features/vehicles/Components/invoice-pdf/styles'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 
+function fillTemplate(template: string, values: Record<string, string>): string {
+  return Object.entries(values).reduce(
+    (str, [key, val]) => str.replace(`{${key}}`, val),
+    template
+  )
+}
+
 interface InspectionItem {
   name: string
   section: string
@@ -41,10 +48,16 @@ interface WorkshopInfo {
   email: string
 }
 
-const conditionColors: Record<string, { bg: string; text: string; label: string }> = {
-  pass: { bg: '#dcfce7', text: '#166534', label: 'Pass' },
-  attention: { bg: '#fef9c3', text: '#854d0e', label: 'Attention' },
-  fail: { bg: '#fee2e2', text: '#991b1b', label: 'Fail' },
+const conditionColors: Record<string, { bg: string; text: string }> = {
+  pass: { bg: '#dcfce7', text: '#166534' },
+  attention: { bg: '#fef9c3', text: '#854d0e' },
+  fail: { bg: '#fee2e2', text: '#991b1b' },
+}
+
+const conditionDefaultLabels: Record<string, string> = {
+  pass: 'Pass',
+  attention: 'Attention',
+  fail: 'Fail',
 }
 
 export function InspectionPDF({
@@ -56,6 +69,7 @@ export function InspectionPDF({
   timezone,
   template,
   portalUrl,
+  labels = {},
 }: {
   data: InspectionData
   workshop?: WorkshopInfo
@@ -65,6 +79,7 @@ export function InspectionPDF({
   timezone?: string
   template?: TemplateConfig
   portalUrl?: string
+  labels?: Record<string, string>
 }) {
   const primaryColor = template?.primaryColor || '#d97706'
   const fontFamily = template?.fontFamily || 'Helvetica'
@@ -132,7 +147,7 @@ export function InspectionPDF({
         </View>
         <View style={{ alignItems: 'flex-end' }}>
           <Text style={{ fontSize: 14, fontFamily: fontBold, color: primaryColor }}>
-            VEHICLE INSPECTION
+            {labels.title || 'VEHICLE INSPECTION'}
           </Text>
           <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{createdDate}</Text>
         </View>
@@ -147,7 +162,7 @@ export function InspectionPDF({
       >
         <View style={{ flexDirection: 'row', gap: 12 }}>
           {workshop?.phone && (
-            <Text style={{ fontSize: 8, color: gray }}>Tel: {workshop.phone}</Text>
+            <Text style={{ fontSize: 8, color: gray }}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>
           )}
           {workshop?.email && (
             <Text style={{ fontSize: 8, color: gray }}>{workshop.email}</Text>
@@ -201,7 +216,7 @@ export function InspectionPDF({
             <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
               {workshop?.phone && (
                 <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                  Tel: {workshop.phone}
+                  {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
                 </Text>
               )}
               {workshop?.email && (
@@ -239,7 +254,7 @@ export function InspectionPDF({
         }}
       >
         <Text style={{ fontSize: 18, fontFamily: fontBold, color: primaryColor }}>
-          VEHICLE INSPECTION
+          {labels.title || 'VEHICLE INSPECTION'}
         </Text>
         <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
       </View>
@@ -257,7 +272,7 @@ export function InspectionPDF({
         )}
         {showCompanyName && <Text style={styles.brandName}>{shopName}</Text>}
         {workshop?.address && <Text style={styles.brandSub}>{workshop.address}</Text>}
-        {workshop?.phone && <Text style={styles.brandContact}>Tel: {workshop.phone}</Text>}
+        {workshop?.phone && <Text style={styles.brandContact}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>}
         {workshop?.email && <Text style={styles.brandContact}>{workshop.email}</Text>}
       </View>
       <View>
@@ -267,7 +282,7 @@ export function InspectionPDF({
             <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
           </View>
         )}
-        <Text style={{ ...styles.invoiceTitle, color: primaryColor }}>VEHICLE INSPECTION</Text>
+        <Text style={{ ...styles.invoiceTitle, color: primaryColor }}>{labels.title || 'VEHICLE INSPECTION'}</Text>
         <Text style={styles.invoiceNumber}>{data.template.name}</Text>
         <Text style={styles.invoiceNumber}>{createdDate}</Text>
       </View>
@@ -286,23 +301,23 @@ export function InspectionPDF({
         {/* Vehicle & Customer info */}
         <View style={styles.infoRow}>
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Vehicle</Text>
+            <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
             <Text style={styles.infoTextBold}>
               {data.vehicle.year} {data.vehicle.make} {data.vehicle.model}
             </Text>
             {data.vehicle.vin && (
-              <Text style={styles.infoTextSmall}>VIN: {data.vehicle.vin}</Text>
+              <Text style={styles.infoTextSmall}>{labels.vin ? fillTemplate(labels.vin, { vin: data.vehicle.vin }) : `VIN: ${data.vehicle.vin}`}</Text>
             )}
             {data.vehicle.licensePlate && (
-              <Text style={styles.infoTextSmall}>Plate: {data.vehicle.licensePlate}</Text>
+              <Text style={styles.infoTextSmall}>{labels.plate ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate }) : `Plate: ${data.vehicle.licensePlate}`}</Text>
             )}
             {data.mileage && (
-              <Text style={styles.infoTextSmall}>Mileage: {data.mileage.toLocaleString()}</Text>
+              <Text style={styles.infoTextSmall}>{labels.mileage ? fillTemplate(labels.mileage, { mileage: data.mileage.toLocaleString() }) : `Mileage: ${data.mileage.toLocaleString()}`}</Text>
             )}
           </View>
           {data.vehicle.customer && (
             <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Customer</Text>
+              <Text style={styles.infoLabel}>{labels.customer || 'Customer'}</Text>
               <Text style={styles.infoTextBold}>{data.vehicle.customer.name}</Text>
               {data.vehicle.customer.email && (
                 <Text style={styles.infoTextSmall}>{data.vehicle.customer.email}</Text>
@@ -313,10 +328,12 @@ export function InspectionPDF({
             </View>
           )}
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Inspection Details</Text>
+            <Text style={styles.infoLabel}>{labels.inspectionDetails || 'Inspection Details'}</Text>
             <Text style={styles.infoTextBold}>{data.template.name}</Text>
             <Text style={styles.infoTextSmall}>
-              Status: {data.status === 'completed' ? 'Completed' : 'In Progress'}
+              {labels.status
+                ? fillTemplate(labels.status, { status: data.status === 'completed' ? (labels.statusCompleted || 'Completed') : (labels.statusInProgress || 'In Progress') })
+                : `Status: ${data.status === 'completed' ? 'Completed' : 'In Progress'}`}
             </Text>
           </View>
         </View>
@@ -340,7 +357,7 @@ export function InspectionPDF({
             }}
           >
             <Text style={{ fontSize: 16, fontFamily: fontBold }}>{totalInspected}</Text>
-            <Text style={{ fontSize: 7, color: gray }}>Inspected</Text>
+            <Text style={{ fontSize: 7, color: gray }}>{labels.inspected || 'Inspected'}</Text>
           </View>
           <View
             style={{
@@ -354,7 +371,7 @@ export function InspectionPDF({
             <Text style={{ fontSize: 16, fontFamily: fontBold, color: '#166534' }}>
               {passCount}
             </Text>
-            <Text style={{ fontSize: 7, color: '#166534' }}>Pass</Text>
+            <Text style={{ fontSize: 7, color: '#166534' }}>{labels.pass || 'Pass'}</Text>
           </View>
           <View
             style={{
@@ -368,7 +385,7 @@ export function InspectionPDF({
             <Text style={{ fontSize: 16, fontFamily: fontBold, color: '#854d0e' }}>
               {attentionCount}
             </Text>
-            <Text style={{ fontSize: 7, color: '#854d0e' }}>Attention</Text>
+            <Text style={{ fontSize: 7, color: '#854d0e' }}>{labels.attention || 'Attention'}</Text>
           </View>
           <View
             style={{
@@ -382,7 +399,7 @@ export function InspectionPDF({
             <Text style={{ fontSize: 16, fontFamily: fontBold, color: '#991b1b' }}>
               {failCount}
             </Text>
-            <Text style={{ fontSize: 7, color: '#991b1b' }}>Fail</Text>
+            <Text style={{ fontSize: 7, color: '#991b1b' }}>{labels.fail || 'Fail'}</Text>
           </View>
         </View>
 
@@ -392,9 +409,9 @@ export function InspectionPDF({
             <Text style={styles.sectionTitle}>{sectionName}</Text>
             <View style={styles.table}>
               <View style={styles.tableHeader}>
-                <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>Item</Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>Status</Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '40%' }}>Notes</Text>
+                <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.item || 'Item'}</Text>
+                <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>{labels.statusColumn || 'Status'}</Text>
+                <Text style={{ ...styles.tableHeaderCell, width: '40%' }}>{labels.notesColumn || 'Notes'}</Text>
               </View>
               {sections[sectionName].map((item, i) => {
                 const cond = conditionColors[item.condition]
@@ -412,7 +429,7 @@ export function InspectionPDF({
                           }}
                         >
                           <Text style={{ fontSize: 7, color: cond.text, fontFamily: fontBold }}>
-                            {cond.label}
+                            {labels[item.condition] || conditionDefaultLabels[item.condition] || item.condition}
                           </Text>
                         </View>
                       ) : (
@@ -433,7 +450,7 @@ export function InspectionPDF({
         {portalUrl && (
           <View style={{ marginTop: 8 }}>
             <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
-              View your portal: {portalUrl}
+              {labels.viewPortal ? fillTemplate(labels.viewPortal, { url: portalUrl }) : `View your portal: ${portalUrl}`}
             </Text>
           </View>
         )}
@@ -450,14 +467,14 @@ export function InspectionPDF({
             }}
           >
             <Text style={{ fontSize: 8, color: gray }}>
-              Vehicle Inspection — {shopName} ·{' '}
+              {labels.footerText ? fillTemplate(labels.footerText, { shopName }) : `Vehicle Inspection — ${shopName}`} ·{' '}
             </Text>
-            <Text style={{ fontSize: 7, color: gray }}>Powered by</Text>
+            <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
             <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
             <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
           </View>
         ) : (
-          <Text style={styles.footer}>Vehicle Inspection — {shopName}</Text>
+          <Text style={styles.footer}>{labels.footerText ? fillTemplate(labels.footerText, { shopName }) : `Vehicle Inspection — ${shopName}`}</Text>
         )}
       </Page>
     </Document>

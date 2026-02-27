@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getTranslations } from "next-intl/server";
 
 export default async function PortalRequestServicePage({
   params,
@@ -18,6 +19,7 @@ export default async function PortalRequestServicePage({
   params: Promise<{ orgId: string }>;
 }) {
   const { orgId } = await params;
+  const t = await getTranslations('portal.requestService');
   const [vehiclesResult, requestsResult] = await Promise.all([
     getPortalVehicles(),
     getPortalServiceRequests(),
@@ -26,7 +28,7 @@ export default async function PortalRequestServicePage({
   if (!vehiclesResult.success || !vehiclesResult.data) {
     return (
       <PortalShell orgId={orgId}>
-        <p className="text-muted-foreground">Failed to load data.</p>
+        <p className="text-muted-foreground">{t('failedToLoad')}</p>
       </PortalShell>
     );
   }
@@ -56,9 +58,9 @@ export default async function PortalRequestServicePage({
     <PortalShell orgId={orgId}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Request Service</h1>
+          <h1 className="text-2xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Submit a service request for one of your vehicles.
+            {t('description')}
           </p>
         </div>
 
@@ -66,8 +68,7 @@ export default async function PortalRequestServicePage({
           <Card>
             <CardContent className="py-8 text-center">
               <p className="text-muted-foreground">
-                You have no vehicles registered. Please contact us to add a
-                vehicle first.
+                {t('noVehicles')}
               </p>
             </CardContent>
           </Card>
@@ -79,7 +80,7 @@ export default async function PortalRequestServicePage({
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
-                Your Service Requests
+                {t('yourRequests')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -99,11 +100,11 @@ export default async function PortalRequestServicePage({
                       <p className="mt-1 text-xs text-muted-foreground">
                         {new Date(req.createdAt).toLocaleDateString()}
                         {req.preferredDate &&
-                          ` - Preferred: ${new Date(req.preferredDate).toLocaleDateString()}`}
+                          ` - ${t('preferred', { date: new Date(req.preferredDate).toLocaleDateString() })}`}
                       </p>
                       {req.adminNotes && (
                         <p className="mt-1 text-xs text-muted-foreground">
-                          Staff notes: {req.adminNotes}
+                          {t('staffNotes', { notes: req.adminNotes })}
                         </p>
                       )}
                     </div>

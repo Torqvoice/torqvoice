@@ -1,0 +1,10 @@
+{
+  "panel": {
+    "title": "Notifiche",
+    "markAllRead": "Segna tutto come letto",
+    "empty": "Nessuna notifica ancora",
+    "confirmDelete": "Sei sicuro?",
+    "delete": "Elimina",
+    "cancel": "Annulla"
+  }
+}

@@ -3,6 +3,7 @@
 import { Fragment } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,6 +20,7 @@ import { useShowWhiteLabelCta } from '@/components/white-label-cta-context'
 import { NewWorkOrderButton } from '@/components/new-work-order-button'
 
 function SearchTrigger() {
+  const t = useTranslations('navigation')
   return (
     <button
       type="button"
@@ -28,50 +30,58 @@ function SearchTrigger() {
       }}
     >
       <Search className="h-3.5 w-3.5" />
-      <span className="flex-1 text-left">Search...</span>
+      <span className="flex-1 text-left">{t('search')}</span>
       <kbd className="rounded border bg-background px-1.5 py-0.5 text-[10px] font-medium">
-        Ctrl+K
+        {t('shortcut')}
       </kbd>
     </button>
   )
 }
 
-type BreadcrumbSegment = { label: string; href?: string }
+type BreadcrumbSegment = { key: string; href?: string }
 
 const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
-  '/': [{ label: 'Dashboard' }],
-  '/vehicles': [{ label: 'Vehicles', href: '/vehicles' }, { label: 'All Vehicles' }],
-  '/customers': [{ label: 'Customers', href: '/customers' }, { label: 'All Customers' }],
-  '/work-orders': [{ label: 'Work Orders', href: '/work-orders' }, { label: 'All Work Orders' }],
-  '/quotes': [{ label: 'Quotes', href: '/quotes' }, { label: 'All Quotes' }],
-  '/quotes/new': [{ label: 'Quotes', href: '/quotes' }, { label: 'New Quote' }],
-  '/billing': [{ label: 'Billing', href: '/billing' }, { label: 'Billing History' }],
-  '/inventory': [{ label: 'Inventory', href: '/inventory' }, { label: 'All Parts' }],
-  '/reports': [{ label: 'Reports', href: '/reports' }, { label: 'Reports' }],
-  '/work-board': [{ label: 'Work Board' }],
-  '/work-board/presenter': [{ label: 'Work Board', href: '/work-board' }, { label: 'Presenter' }],
-  '/admin': [{ label: 'Admin Overview' }],
-  '/admin/users': [{ label: 'Admin', href: '/admin' }, { label: 'Users' }],
-  '/admin/organizations': [{ label: 'Admin', href: '/admin' }, { label: 'Organizations' }],
-  '/admin/settings': [{ label: 'Admin', href: '/admin' }, { label: 'Settings' }],
-  '/settings': [{ label: 'Settings' }],
-  '/settings/company': [{ label: 'Settings', href: '/settings' }, { label: 'Company' }],
-  '/settings/account': [{ label: 'Settings', href: '/settings' }, { label: 'Account' }],
-  '/settings/custom-fields': [{ label: 'Settings', href: '/settings' }, { label: 'Custom Fields' }],
-  '/settings/templates': [{ label: 'Settings', href: '/settings' }, { label: 'Templates' }],
-  '/settings/team': [{ label: 'Settings', href: '/settings' }, { label: 'Team' }],
-  '/settings/invoice': [{ label: 'Settings', href: '/settings' }, { label: 'Invoice' }],
-  '/settings/payment': [{ label: 'Settings', href: '/settings' }, { label: 'Payment' }],
-  '/settings/currency': [{ label: 'Settings', href: '/settings' }, { label: 'Currency' }],
-  '/settings/workshop': [{ label: 'Settings', href: '/settings' }, { label: 'Workshop' }],
-  '/settings/appearance': [{ label: 'Settings', href: '/settings' }, { label: 'Appearance' }],
-  '/settings/email': [{ label: 'Settings', href: '/settings' }, { label: 'Email' }],
-  '/settings/about': [{ label: 'Settings', href: '/settings' }, { label: 'About' }],
+  '/': [{ key: 'dashboard' }],
+  '/vehicles': [{ key: 'vehicles', href: '/vehicles' }, { key: 'allVehicles' }],
+  '/customers': [{ key: 'customers', href: '/customers' }, { key: 'allCustomers' }],
+  '/work-orders': [{ key: 'workOrders', href: '/work-orders' }, { key: 'allWorkOrders' }],
+  '/quotes': [{ key: 'quotes', href: '/quotes' }, { key: 'allQuotes' }],
+  '/quotes/new': [{ key: 'quotes', href: '/quotes' }, { key: 'newQuote' }],
+  '/billing': [{ key: 'billing', href: '/billing' }, { key: 'billingHistory' }],
+  '/inventory': [{ key: 'inventory', href: '/inventory' }, { key: 'allParts' }],
+  '/reports': [{ key: 'reports', href: '/reports' }, { key: 'reports' }],
+  '/work-board': [{ key: 'workBoard' }],
+  '/work-board/presenter': [{ key: 'workBoard', href: '/work-board' }, { key: 'presenter' }],
+  '/admin': [{ key: 'adminOverview' }],
+  '/admin/users': [{ key: 'admin', href: '/admin' }, { key: 'users' }],
+  '/admin/organizations': [{ key: 'admin', href: '/admin' }, { key: 'organizations' }],
+  '/admin/settings': [{ key: 'admin', href: '/admin' }, { key: 'settings' }],
+  '/settings': [{ key: 'settings' }],
+  '/settings/company': [{ key: 'settings', href: '/settings' }, { key: 'company' }],
+  '/settings/account': [{ key: 'settings', href: '/settings' }, { key: 'account' }],
+  '/settings/custom-fields': [{ key: 'settings', href: '/settings' }, { key: 'customFields' }],
+  '/settings/templates': [{ key: 'settings', href: '/settings' }, { key: 'templates' }],
+  '/settings/team': [{ key: 'settings', href: '/settings' }, { key: 'team' }],
+  '/settings/invoice': [{ key: 'settings', href: '/settings' }, { key: 'invoice' }],
+  '/settings/payment': [{ key: 'settings', href: '/settings' }, { key: 'payment' }],
+  '/settings/currency': [{ key: 'settings', href: '/settings' }, { key: 'currency' }],
+  '/settings/workshop': [{ key: 'settings', href: '/settings' }, { key: 'workshop' }],
+  '/settings/appearance': [{ key: 'settings', href: '/settings' }, { key: 'appearance' }],
+  '/settings/email': [{ key: 'settings', href: '/settings' }, { key: 'email' }],
+  '/settings/sms': [{ key: 'settings', href: '/settings' }, { key: 'sms' }],
+  '/settings/about': [{ key: 'settings', href: '/settings' }, { key: 'about' }],
+  '/settings/data': [{ key: 'settings', href: '/settings' }, { key: 'data' }],
+  '/settings/license': [{ key: 'settings', href: '/settings' }, { key: 'license' }],
+  '/settings/subscription': [{ key: 'settings', href: '/settings' }, { key: 'subscription' }],
+  '/settings/maintenance': [{ key: 'settings', href: '/settings' }, { key: 'maintenance' }],
+  '/settings/customer-portal': [{ key: 'settings', href: '/settings' }, { key: 'customerPortal' }],
 }
 
 export function PageHeader() {
   const pathname = usePathname()
   const showWhiteLabelCta = useShowWhiteLabelCta()
+  const t = useTranslations('navigation.breadcrumbs')
+  const tn = useTranslations('navigation')
 
   // Match exact route first
   let segments = breadcrumbMap[pathname]
@@ -81,37 +91,37 @@ export function PageHeader() {
     if (/^\/quotes\/[^/]+\/edit$/.test(pathname)) {
       const quoteId = pathname.split('/')[2]
       segments = [
-        { label: 'Quotes', href: '/quotes' },
-        { label: 'Quote Details', href: `/quotes/${quoteId}` },
-        { label: 'Edit' },
+        { key: 'quotes', href: '/quotes' },
+        { key: 'quoteDetails', href: `/quotes/${quoteId}` },
+        { key: 'edit' },
       ]
     }
     // /quotes/[id]
     else if (/^\/quotes\/[^/]+$/.test(pathname)) {
-      segments = [{ label: 'Quotes', href: '/quotes' }, { label: 'Quote Details' }]
+      segments = [{ key: 'quotes', href: '/quotes' }, { key: 'quoteDetails' }]
     }
     // /vehicles/[id]/service/new
     else if (/^\/vehicles\/[^/]+\/service\/new$/.test(pathname)) {
       const vehicleId = pathname.split('/')[2]
       segments = [
-        { label: 'Vehicles', href: '/vehicles' },
-        { label: 'Vehicle Details', href: `/vehicles/${vehicleId}` },
-        { label: 'New Service Record' },
+        { key: 'vehicles', href: '/vehicles' },
+        { key: 'vehicleDetails', href: `/vehicles/${vehicleId}` },
+        { key: 'newServiceRecord' },
       ]
     }
     // /vehicles/[id]/service/[serviceId]
     else if (/^\/vehicles\/[^/]+\/service\/[^/]+$/.test(pathname)) {
-      segments = [{ label: 'Vehicles', href: '/vehicles' }, { label: 'Service Details' }]
+      segments = [{ key: 'vehicles', href: '/vehicles' }, { key: 'serviceDetails' }]
     }
     // /vehicles/[id]
     else if (pathname.startsWith('/vehicles/')) {
-      segments = [{ label: 'Vehicles', href: '/vehicles' }, { label: 'Vehicle Details' }]
+      segments = [{ key: 'vehicles', href: '/vehicles' }, { key: 'vehicleDetails' }]
     }
     // /customers/[id]
     else if (pathname.startsWith('/customers/')) {
-      segments = [{ label: 'Customers', href: '/customers' }, { label: 'Customer Details' }]
+      segments = [{ key: 'customers', href: '/customers' }, { key: 'customerDetails' }]
     } else {
-      segments = [{ label: 'Home' }]
+      segments = [{ key: 'home' }]
     }
   }
 
@@ -126,7 +136,7 @@ export function PageHeader() {
             if (isLast) {
               return (
                 <BreadcrumbItem key={i}>
-                  <BreadcrumbPage>{segment.label}</BreadcrumbPage>
+                  <BreadcrumbPage>{t(segment.key)}</BreadcrumbPage>
                 </BreadcrumbItem>
               )
             }
@@ -134,9 +144,9 @@ export function PageHeader() {
               <Fragment key={i}>
                 <BreadcrumbItem className="hidden md:block">
                   {segment.href ? (
-                    <BreadcrumbLink href={segment.href}>{segment.label}</BreadcrumbLink>
+                    <BreadcrumbLink href={segment.href}>{t(segment.key)}</BreadcrumbLink>
                   ) : (
-                    <BreadcrumbPage>{segment.label}</BreadcrumbPage>
+                    <BreadcrumbPage>{t(segment.key)}</BreadcrumbPage>
                   )}
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
@@ -152,7 +162,7 @@ export function PageHeader() {
           <Button asChild variant="outline" size="sm">
             <Link href="/settings/license">
               <Zap className="mr-2 h-3 w-3" />
-              Purchase White-Label
+              {tn('purchaseWhiteLabel')}
             </Link>
           </Button>
         )}

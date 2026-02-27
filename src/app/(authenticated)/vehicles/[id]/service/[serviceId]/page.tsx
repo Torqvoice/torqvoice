@@ -10,6 +10,7 @@ import { db } from "@/lib/db";
 import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
 import { ServicePageClient } from "@/features/vehicles/Components/service-page/ServicePageClient";
 import { PageHeader } from "@/components/page-header";
+import { getTranslations } from "next-intl/server";
 
 export default async function ServiceDetailPage({
   params,
@@ -41,7 +42,7 @@ export default async function ServiceDetailPage({
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-muted-foreground">
-            {result.error || "Service record not found"}
+            {result.error || (await getTranslations("service.page"))("notFound")}
           </p>
         </div>
       </>

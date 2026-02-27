@@ -1,0 +1,43 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Inloggen",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "submit": "Verzenden",
+    "back": "Terug",
+    "confirm": "Bevestigen",
+    "saveChanges": "Wijzigingen opslaan",
+    "edit": "Bewerken",
+    "add": "Toevoegen"
+  },
+  "form": {
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "emailPlaceholder": "you@example.com",
+    "name": "Naam",
+    "phone": "Telefoon",
+    "company": "Bedrijf",
+    "address": "Adres",
+    "notes": "Notities"
+  },
+  "errors": {
+    "unexpected": "Er is een onverwachte fout opgetreden. Probeer het opnieuw.",
+    "error": "Fout"
+  },
+  "terms": {
+    "termsOfService": "Algemene voorwaarden"
+  },
+  "errorPage": {
+    "title": "Er ging iets mis",
+    "description": "De motor is onverwacht afgeslagen. Onze monteurs zijn op de hoogte gebracht en werken eraan.",
+    "tryAgain": "Opnieuw proberen",
+    "backToDashboard": "Terug naar dashboard"
+  },
+  "notFoundPage": {
+    "title": "Pagina niet gevonden",
+    "description": "Het lijkt erop dat dit onderdeel nog in de werkplaats is. De pagina die je zoekt bestaat niet of is verplaatst.",
+    "backToDashboard": "Terug naar dashboard"
+  }
+}

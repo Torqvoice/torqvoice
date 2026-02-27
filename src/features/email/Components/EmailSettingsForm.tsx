@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,7 @@ export function EmailSettingsForm({
 }: {
   initial: Record<string, string>;
 }) {
+  const t = useTranslations("settings");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isTesting, setIsTesting] = useState(false);
@@ -151,10 +153,10 @@ export function EmailSettingsForm({
           [ORG_EMAIL_KEYS.EMAIL_PROVIDER]: "",
         });
         if (result.success) {
-          toast.success("Email settings saved — using platform default");
+          toast.success(t("email.savedDefault"));
           router.refresh();
         } else {
-          toast.error(result.error ?? "Failed to save settings");
+          toast.error(result.error ?? t("email.failedSave"));
         }
         return;
       }
@@ -201,10 +203,10 @@ export function EmailSettingsForm({
 
       const result = await setEmailSettings(data);
       if (result.success) {
-        toast.success("Email settings saved");
+        toast.success(t("email.saved"));
         router.refresh();
       } else {
-        toast.error(result.error ?? "Failed to save settings");
+        toast.error(result.error ?? t("email.failedSave"));
       }
     });
   };
@@ -214,9 +216,9 @@ export function EmailSettingsForm({
     try {
       const result = await testOrgEmailConnection();
       if (result.success) {
-        toast.success(`Test email sent to ${result.data?.sentTo}`);
+        toast.success(t("email.testSentTo", { email: result.data?.sentTo ?? '' }));
       } else {
-        toast.error(result.error ?? "Email test failed");
+        toast.error(result.error ?? t("email.testFailed"));
       }
     } finally {
       setIsTesting(false);
@@ -239,22 +241,19 @@ export function EmailSettingsForm({
       <ReadOnlyWrapper>
       <Card>
         <CardHeader>
-          <CardTitle>Email Provider</CardTitle>
+          <CardTitle>{t("email.title")}</CardTitle>
           <CardDescription>
-            Configure your organization&apos;s email provider for sending
-            invoices and quotes. If not configured, the platform&apos;s default
-            email provider will be used.
+            {t("email.description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="use-custom-email">
-                Use custom email provider
+                {t("email.useCustomLabel")}
               </Label>
               <p className="text-xs text-muted-foreground">
-                Enable to configure your own email provider instead of using the
-                platform default
+                {t("email.useCustomHint")}
               </p>
             </div>
             <Switch
@@ -268,9 +267,7 @@ export function EmailSettingsForm({
             <div className="flex items-start gap-3 rounded-lg border bg-muted/50 p-4">
               <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                Your organization is using the platform&apos;s default email
-                provider. Invoices and quotes will be sent using the
-                platform-configured email settings.
+                {t("email.platformDefaultInfo")}
               </p>
             </div>
           )}
@@ -334,19 +331,19 @@ export function EmailSettingsForm({
                 <>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="org-smtp-host">SMTP Host</Label>
+                      <Label htmlFor="org-smtp-host">{t("email.smtpHost")}</Label>
                       <Input
                         id="org-smtp-host"
-                        placeholder="smtp.example.com"
+                        placeholder={t("email.smtpHostPlaceholder")}
                         value={smtpHost}
                         onChange={(e) => setSmtpHost(e.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="org-smtp-port">SMTP Port</Label>
+                      <Label htmlFor="org-smtp-port">{t("email.smtpPort")}</Label>
                       <Input
                         id="org-smtp-port"
-                        placeholder="587"
+                        placeholder={t("email.smtpPortPlaceholder")}
                         value={smtpPort}
                         onChange={(e) => setSmtpPort(e.target.value)}
                       />
@@ -355,16 +352,16 @@ export function EmailSettingsForm({
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="org-smtp-user">Username</Label>
+                      <Label htmlFor="org-smtp-user">{t("email.username")}</Label>
                       <Input
                         id="org-smtp-user"
-                        placeholder="user@example.com"
+                        placeholder={t("email.usernamePlaceholder")}
                         value={smtpUser}
                         onChange={(e) => setSmtpUser(e.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="org-smtp-pass">Password</Label>
+                      <Label htmlFor="org-smtp-pass">{t("email.password")}</Label>
                       <Input
                         id="org-smtp-pass"
                         type="password"
@@ -377,19 +374,19 @@ export function EmailSettingsForm({
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="org-smtp-from-email">From Email</Label>
+                      <Label htmlFor="org-smtp-from-email">{t("email.fromEmail")}</Label>
                       <Input
                         id="org-smtp-from-email"
-                        placeholder="noreply@example.com"
+                        placeholder={t("email.fromEmailPlaceholder")}
                         value={smtpFromEmail}
                         onChange={(e) => setSmtpFromEmail(e.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="org-smtp-from-name">From Name</Label>
+                      <Label htmlFor="org-smtp-from-name">{t("email.fromName")}</Label>
                       <Input
                         id="org-smtp-from-name"
-                        placeholder="Your Workshop"
+                        placeholder={t("email.fromNamePlaceholder")}
                         value={smtpFromName}
                         onChange={(e) => setSmtpFromName(e.target.value)}
                       />
@@ -400,11 +397,10 @@ export function EmailSettingsForm({
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="org-smtp-secure">
-                          TLS Connection (Port 465)
+                          {t("email.tlsConnection")}
                         </Label>
                         <p className="text-xs text-muted-foreground">
-                          Enable for implicit TLS. Disable for STARTTLS (port
-                          587/25).
+                          {t("email.tlsConnectionHint")}
                         </p>
                       </div>
                       <Switch
@@ -417,11 +413,10 @@ export function EmailSettingsForm({
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="org-smtp-reject-unauthorized">
-                          Verify TLS Certificates
+                          {t("email.verifyTlsCerts")}
                         </Label>
                         <p className="text-xs text-muted-foreground">
-                          Disable to allow self-signed certificates (not
-                          recommended for production)
+                          {t("email.verifyTlsCertsHint")}
                         </p>
                       </div>
                       <Switch
@@ -434,10 +429,10 @@ export function EmailSettingsForm({
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <Label htmlFor="org-smtp-require-tls">
-                          Require TLS Upgrade
+                          {t("email.requireTlsUpgrade")}
                         </Label>
                         <p className="text-xs text-muted-foreground">
-                          Force TLS upgrade on STARTTLS connections
+                          {t("email.requireTlsUpgradeHint")}
                         </p>
                       </div>
                       <Switch
@@ -453,7 +448,7 @@ export function EmailSettingsForm({
               {emailProvider === "resend" && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="org-resend-api-key">API Key</Label>
+                    <Label htmlFor="org-resend-api-key">{t("email.apiKey")}</Label>
                     <Input
                       id="org-resend-api-key"
                       type="password"
@@ -462,7 +457,7 @@ export function EmailSettingsForm({
                       onChange={(e) => setResendApiKey(e.target.value)}
                     />
                     <p className="text-xs text-muted-foreground">
-                      Get your API key from{" "}
+                      {t("email.apiKeyHintResend")}{" "}
                       <a
                         href="https://resend.com"
                         target="_blank"
@@ -476,19 +471,19 @@ export function EmailSettingsForm({
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="org-resend-from-email">From Email</Label>
+                      <Label htmlFor="org-resend-from-email">{t("email.fromEmail")}</Label>
                       <Input
                         id="org-resend-from-email"
-                        placeholder="noreply@yourdomain.com"
+                        placeholder={t("email.fromEmailDomainPlaceholder")}
                         value={resendFromEmail}
                         onChange={(e) => setResendFromEmail(e.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="org-resend-from-name">From Name</Label>
+                      <Label htmlFor="org-resend-from-name">{t("email.fromName")}</Label>
                       <Input
                         id="org-resend-from-name"
-                        placeholder="Your Workshop"
+                        placeholder={t("email.fromNamePlaceholder")}
                         value={resendFromName}
                         onChange={(e) => setResendFromName(e.target.value)}
                       />
@@ -500,7 +495,7 @@ export function EmailSettingsForm({
               {emailProvider === "postmark" && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="org-postmark-api-key">Server Token</Label>
+                    <Label htmlFor="org-postmark-api-key">{t("email.serverToken")}</Label>
                     <Input
                       id="org-postmark-api-key"
                       type="password"
@@ -509,7 +504,7 @@ export function EmailSettingsForm({
                       onChange={(e) => setPostmarkApiKey(e.target.value)}
                     />
                     <p className="text-xs text-muted-foreground">
-                      Get your Server Token from{" "}
+                      {t("email.serverTokenHintPostmark")}{" "}
                       <a
                         href="https://postmarkapp.com"
                         target="_blank"
@@ -524,20 +519,20 @@ export function EmailSettingsForm({
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="org-postmark-from-email">
-                        From Email
+                        {t("email.fromEmail")}
                       </Label>
                       <Input
                         id="org-postmark-from-email"
-                        placeholder="noreply@yourdomain.com"
+                        placeholder={t("email.fromEmailDomainPlaceholder")}
                         value={postmarkFromEmail}
                         onChange={(e) => setPostmarkFromEmail(e.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="org-postmark-from-name">From Name</Label>
+                      <Label htmlFor="org-postmark-from-name">{t("email.fromName")}</Label>
                       <Input
                         id="org-postmark-from-name"
-                        placeholder="Your Workshop"
+                        placeholder={t("email.fromNamePlaceholder")}
                         value={postmarkFromName}
                         onChange={(e) => setPostmarkFromName(e.target.value)}
                       />
@@ -549,7 +544,7 @@ export function EmailSettingsForm({
               {emailProvider === "mailgun" && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="org-mailgun-api-key">API Key</Label>
+                    <Label htmlFor="org-mailgun-api-key">{t("email.apiKey")}</Label>
                     <Input
                       id="org-mailgun-api-key"
                       type="password"
@@ -558,7 +553,7 @@ export function EmailSettingsForm({
                       onChange={(e) => setMailgunApiKey(e.target.value)}
                     />
                     <p className="text-xs text-muted-foreground">
-                      Get your API key from{" "}
+                      {t("email.apiKeyHintMailgun")}{" "}
                       <a
                         href="https://app.mailgun.com"
                         target="_blank"
@@ -572,16 +567,16 @@ export function EmailSettingsForm({
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="org-mailgun-domain">Domain</Label>
+                      <Label htmlFor="org-mailgun-domain">{t("email.domain")}</Label>
                       <Input
                         id="org-mailgun-domain"
-                        placeholder="mg.yourdomain.com"
+                        placeholder={t("email.domainPlaceholder")}
                         value={mailgunDomain}
                         onChange={(e) => setMailgunDomain(e.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="org-mailgun-region">Region</Label>
+                      <Label htmlFor="org-mailgun-region">{t("email.region")}</Label>
                       <div className="flex gap-2">
                         <Button
                           type="button"
@@ -612,20 +607,20 @@ export function EmailSettingsForm({
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="org-mailgun-from-email">
-                        From Email
+                        {t("email.fromEmail")}
                       </Label>
                       <Input
                         id="org-mailgun-from-email"
-                        placeholder="noreply@yourdomain.com"
+                        placeholder={t("email.fromEmailDomainPlaceholder")}
                         value={mailgunFromEmail}
                         onChange={(e) => setMailgunFromEmail(e.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="org-mailgun-from-name">From Name</Label>
+                      <Label htmlFor="org-mailgun-from-name">{t("email.fromName")}</Label>
                       <Input
                         id="org-mailgun-from-name"
-                        placeholder="Your Workshop"
+                        placeholder={t("email.fromNamePlaceholder")}
                         value={mailgunFromName}
                         onChange={(e) => setMailgunFromName(e.target.value)}
                       />
@@ -637,7 +632,7 @@ export function EmailSettingsForm({
               {emailProvider === "sendgrid" && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="org-sendgrid-api-key">API Key</Label>
+                    <Label htmlFor="org-sendgrid-api-key">{t("email.apiKey")}</Label>
                     <Input
                       id="org-sendgrid-api-key"
                       type="password"
@@ -646,7 +641,7 @@ export function EmailSettingsForm({
                       onChange={(e) => setSendgridApiKey(e.target.value)}
                     />
                     <p className="text-xs text-muted-foreground">
-                      Get your API key from{" "}
+                      {t("email.apiKeyHintSendGrid")}{" "}
                       <a
                         href="https://app.sendgrid.com"
                         target="_blank"
@@ -661,20 +656,20 @@ export function EmailSettingsForm({
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="org-sendgrid-from-email">
-                        From Email
+                        {t("email.fromEmail")}
                       </Label>
                       <Input
                         id="org-sendgrid-from-email"
-                        placeholder="noreply@yourdomain.com"
+                        placeholder={t("email.fromEmailDomainPlaceholder")}
                         value={sendgridFromEmail}
                         onChange={(e) => setSendgridFromEmail(e.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="org-sendgrid-from-name">From Name</Label>
+                      <Label htmlFor="org-sendgrid-from-name">{t("email.fromName")}</Label>
                       <Input
                         id="org-sendgrid-from-name"
-                        placeholder="Your Workshop"
+                        placeholder={t("email.fromNamePlaceholder")}
                         value={sendgridFromName}
                         onChange={(e) => setSendgridFromName(e.target.value)}
                       />
@@ -688,7 +683,7 @@ export function EmailSettingsForm({
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="org-ses-access-key">
-                        Access Key ID
+                        {t("email.accessKeyId")}
                       </Label>
                       <Input
                         id="org-ses-access-key"
@@ -700,7 +695,7 @@ export function EmailSettingsForm({
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="org-ses-secret-key">
-                        Secret Access Key
+                        {t("email.secretAccessKey")}
                       </Label>
                       <Input
                         id="org-ses-secret-key"
@@ -713,34 +708,33 @@ export function EmailSettingsForm({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="org-ses-region">AWS Region</Label>
+                    <Label htmlFor="org-ses-region">{t("email.awsRegion")}</Label>
                     <Input
                       id="org-ses-region"
-                      placeholder="us-east-1"
+                      placeholder={t("email.awsRegionPlaceholder")}
                       value={sesRegion}
                       onChange={(e) => setSesRegion(e.target.value)}
                     />
                     <p className="text-xs text-muted-foreground">
-                      The AWS region where SES is configured (e.g. us-east-1,
-                      eu-west-1)
+                      {t("email.awsRegionHint")}
                     </p>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="org-ses-from-email">From Email</Label>
+                      <Label htmlFor="org-ses-from-email">{t("email.fromEmail")}</Label>
                       <Input
                         id="org-ses-from-email"
-                        placeholder="noreply@yourdomain.com"
+                        placeholder={t("email.fromEmailDomainPlaceholder")}
                         value={sesFromEmail}
                         onChange={(e) => setSesFromEmail(e.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="org-ses-from-name">From Name</Label>
+                      <Label htmlFor="org-ses-from-name">{t("email.fromName")}</Label>
                       <Input
                         id="org-ses-from-name"
-                        placeholder="Your Workshop"
+                        placeholder={t("email.fromNamePlaceholder")}
                         value={sesFromName}
                         onChange={(e) => setSesFromName(e.target.value)}
                       />
@@ -761,10 +755,10 @@ export function EmailSettingsForm({
                   ) : (
                     <Send className="mr-2 h-4 w-4" />
                   )}
-                  Send Test Email
+                  {t("email.sendTestEmail")}
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  Save settings first, then send a test email to your account
+                  {t("email.testEmailHint")}
                 </p>
               </div>
             </>
@@ -776,7 +770,7 @@ export function EmailSettingsForm({
         <div className="flex justify-end">
           <Button onClick={handleSave} disabled={isPending}>
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Settings
+            {t("email.saveSettings")}
           </Button>
         </div>
       </SaveButton>

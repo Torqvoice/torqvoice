@@ -1,0 +1,61 @@
+{
+  "weekdays": {
+    "sun": "Dom",
+    "mon": "Lun",
+    "tue": "Mar",
+    "wed": "Mi\u00e9",
+    "thu": "Jue",
+    "fri": "Vie",
+    "sat": "S\u00e1b"
+  },
+  "months": {
+    "january": "Enero",
+    "february": "Febrero",
+    "march": "Marzo",
+    "april": "Abril",
+    "may": "Mayo",
+    "june": "Junio",
+    "july": "Julio",
+    "august": "Agosto",
+    "september": "Septiembre",
+    "october": "Octubre",
+    "november": "Noviembre",
+    "december": "Diciembre"
+  },
+  "stats": {
+    "services": "Servicios",
+    "overdue": "Vencidos",
+    "pendingQuotes": "Presupuestos pendientes",
+    "revenue": "Ingresos"
+  },
+  "today": "Hoy",
+  "workOrder": "Orden de trabajo",
+  "filters": {
+    "services": "Servicios",
+    "reminders": "Recordatorios",
+    "quotes": "Presupuestos"
+  },
+  "selectVehicle": "Seleccionar veh\u00edculo para orden de trabajo",
+  "more": "+ {count} m\u00e1s",
+  "events": {
+    "status": {
+      "completed": "Completado",
+      "inProgress": "En progreso",
+      "waitingParts": "Esperando piezas",
+      "pending": "Pendiente",
+      "sent": "Enviado",
+      "approved": "Aprobado",
+      "draft": "Borrador",
+      "done": "Hecho",
+      "overdue": "Vencido",
+      "upcoming": "Pr\u00f3ximo"
+    },
+    "type": {
+      "service": "Servicio",
+      "reminder": "Recordatorio",
+      "quote": "Presupuesto"
+    },
+    "noEvents": "Sin eventos",
+    "selectDay": "Seleccione un d\u00eda con eventos o cree una nueva orden de trabajo."
+  }
+}

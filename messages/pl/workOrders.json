@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "Nie udało się załadować zleceń pracy"
+  },
+  "list": {
+    "searchPlaceholder": "Szukaj zleceń pracy...",
+    "newWorkOrder": "Nowe Zlecenie Pracy",
+    "selectVehicle": "Wybierz Pojazd",
+    "empty": "Nie znaleziono zleceń pracy.",
+    "statusUpdated": "Status zaktualizowany",
+    "statusTabs": {
+      "all": "Wszystkie",
+      "active": "Aktywne",
+      "pending": "Oczekujące",
+      "inProgress": "W Trakcie",
+      "waitingParts": "Oczekiwanie na Części",
+      "completed": "Ukończone"
+    },
+    "statusActions": {
+      "startWork": "Rozpocznij Pracę",
+      "waitingParts": "Oczekiwanie na Części",
+      "complete": "Ukończ",
+      "resumeWork": "Wznów Pracę",
+      "reopen": "Otwórz Ponownie"
+    },
+    "table": {
+      "invoice": "Faktura#",
+      "vehicle": "Pojazd",
+      "customer": "Klient",
+      "title": "Tytuł",
+      "status": "Status",
+      "tech": "Tech",
+      "date": "Data",
+      "total": "Razem"
+    },
+    "emailSubject": "Aktualizacja Statusu Pojazdu: {status}"
+  },
+  "vehiclePicker": {
+    "title": "Wybierz Pojazd do Zlecenia Pracy",
+    "searchPlaceholder": "Szukaj pojazdów...",
+    "empty": "Nie znaleziono pojazdów.",
+    "emptySearch": "Brak pojazdów pasujących do wyszukiwania.",
+    "addNewVehicle": "Dodaj Nowy Pojazd",
+    "noPlate": "Brak tablicy",
+    "make": "Marka *",
+    "model": "Model *",
+    "year": "Rok *",
+    "licensePlate": "Tablica Rejestracyjna",
+    "customer": "Klient",
+    "selectCustomer": "Wybierz klienta (opcjonalnie)",
+    "createNewCustomer": "Utwórz nowego klienta",
+    "newCustomer": "Nowy Klient",
+    "customerName": "Nazwa *",
+    "customerNamePlaceholder": "Nazwa klienta",
+    "phone": "Telefon",
+    "phonePlaceholder": "Numer telefonu",
+    "creating": "Tworzenie...",
+    "createAndContinue": "Utwórz i Kontynuuj",
+    "invalidYear": "Proszę wpisać prawidłowy rok",
+    "customerNameRequired": "Nazwa klienta jest wymagana",
+    "failedCreateCustomer": "Nie udało się utworzyć klienta",
+    "failedCreateVehicle": "Nie udało się utworzyć pojazdu",
+    "somethingWentWrong": "Coś poszło nie tak"
+  },
+  "notify": {
+    "title": "Powiadom {name}",
+    "description": "Wyślij powiadomienie do klienta o tej aktualizacji.",
+    "sms": "SMS",
+    "email": "Email",
+    "noPhone": "(brak numeru telefonu)",
+    "noEmail": "(brak adresu email)",
+    "notAvailable": "(niedostępne)",
+    "skip": "Pomiń",
+    "send": "Wyślij",
+    "smsSent": "SMS wysłany",
+    "emailSent": "Email wysłany",
+    "failedSms": "Nie udało się wysłać SMS",
+    "failedEmail": "Nie udało się wysłać email"
+  }
+}

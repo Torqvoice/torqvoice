@@ -1,0 +1,43 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Entrar",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "submit": "Enviar",
+    "back": "Voltar",
+    "confirm": "Confirmar",
+    "saveChanges": "Salvar alterações",
+    "edit": "Editar",
+    "add": "Adicionar"
+  },
+  "form": {
+    "email": "E-mail",
+    "password": "Senha",
+    "emailPlaceholder": "you@example.com",
+    "name": "Nome",
+    "phone": "Telefone",
+    "company": "Empresa",
+    "address": "Endereço",
+    "notes": "Observações"
+  },
+  "errors": {
+    "unexpected": "Ocorreu um erro inesperado. Por favor, tente novamente.",
+    "error": "Erro"
+  },
+  "terms": {
+    "termsOfService": "Termos de Serviço"
+  },
+  "errorPage": {
+    "title": "Algo deu errado",
+    "description": "O motor engasgou inesperadamente. Nossos mecânicos foram notificados e estão trabalhando nisso.",
+    "tryAgain": "Tentar novamente",
+    "backToDashboard": "Voltar ao painel"
+  },
+  "notFoundPage": {
+    "title": "Página não encontrada",
+    "description": "Parece que essa peça ainda está na oficina. A página que você procura não existe ou foi movida.",
+    "backToDashboard": "Voltar ao painel"
+  }
+}

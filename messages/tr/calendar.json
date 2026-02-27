@@ -1,0 +1,61 @@
+{
+  "weekdays": {
+    "sun": "Paz",
+    "mon": "Pzt",
+    "tue": "Sal",
+    "wed": "\u00c7ar",
+    "thu": "Per",
+    "fri": "Cum",
+    "sat": "Cmt"
+  },
+  "months": {
+    "january": "Ocak",
+    "february": "\u015eubat",
+    "march": "Mart",
+    "april": "Nisan",
+    "may": "May\u0131s",
+    "june": "Haziran",
+    "july": "Temmuz",
+    "august": "A\u011fustos",
+    "september": "Eyl\u00fcl",
+    "october": "Ekim",
+    "november": "Kas\u0131m",
+    "december": "Aral\u0131k"
+  },
+  "stats": {
+    "services": "Servisler",
+    "overdue": "Gecikmi\u015f",
+    "pendingQuotes": "Bekleyen teklifler",
+    "revenue": "Gelir"
+  },
+  "today": "Bug\u00fcn",
+  "workOrder": "\u0130\u015f emri",
+  "filters": {
+    "services": "Servisler",
+    "reminders": "Hat\u0131rlat\u0131c\u0131lar",
+    "quotes": "Teklifler"
+  },
+  "selectVehicle": "\u0130\u015f emri i\u00e7in ara\u00e7 se\u00e7in",
+  "more": "+ {count} daha",
+  "events": {
+    "status": {
+      "completed": "Tamamland\u0131",
+      "inProgress": "Devam ediyor",
+      "waitingParts": "Par\u00e7a bekleniyor",
+      "pending": "Beklemede",
+      "sent": "G\u00f6nderildi",
+      "approved": "Onayland\u0131",
+      "draft": "Taslak",
+      "done": "Bitti",
+      "overdue": "Gecikmi\u015f",
+      "upcoming": "Yakla\u015fan"
+    },
+    "type": {
+      "service": "Servis",
+      "reminder": "Hat\u0131rlat\u0131c\u0131",
+      "quote": "Teklif"
+    },
+    "noEvents": "Etkinlik yok",
+    "selectDay": "Etkinli\u011fi olan bir g\u00fcn se\u00e7in veya yeni bir i\u015f emri olu\u015fturun."
+  }
+}

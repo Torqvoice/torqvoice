@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useWorkBoardStore } from "../store/workboardStore";
 import { UnassignedJobCard } from "./BoardJobCard";
+import { useTranslations } from "next-intl";
 
 export function UnassignedJobsPanel() {
   const serviceRecords = useWorkBoardStore((s) => s.unassignedServiceRecords);
   const inspections = useWorkBoardStore((s) => s.unassignedInspections);
   const [search, setSearch] = useState("");
+  const t = useTranslations("workBoard.unassigned");
 
   const lowerSearch = search.toLowerCase();
 
@@ -40,12 +42,12 @@ export function UnassignedJobsPanel() {
     <div className="flex w-64 shrink-0 flex-col rounded-lg border bg-muted/30">
       <div className="border-b p-3">
         <h3 className="mb-2 text-sm font-semibold">
-          Unassigned Jobs ({totalCount})
+          {t("title", { count: totalCount })}
         </h3>
         <div className="relative">
           <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search jobs..."
+            placeholder={t("searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="h-8 pl-7 text-xs"
@@ -62,7 +64,7 @@ export function UnassignedJobsPanel() {
           ))}
           {totalCount === 0 && (
             <p className="py-8 text-center text-xs text-muted-foreground">
-              No unassigned jobs
+              {t("empty")}
             </p>
           )}
         </div>

@@ -1,0 +1,89 @@
+{
+  "stats": {
+    "activeJobs": "Aktif İşler",
+    "pending": "Beklemede",
+    "todaysRevenue": "Bugünkü Gelir",
+    "totalCustomers": "Toplam Müşteriler"
+  },
+  "customize": "Özelleştir",
+  "showCards": "Kartları göster",
+  "cards": {
+    "maintenance": "Tahmini Bakım",
+    "reminders": "Yaklaşan Hatırlatmalar",
+    "inspections": "Muayeneler",
+    "quoteRequests": "Teklif Talepleri",
+    "quoteResponses": "Teklif Yanıtları",
+    "sms": "Son Mesajlar",
+    "notifications": "Son Bildirimler",
+    "recentCompleted": "Son Tamamlananlar",
+    "activeJobs": "Aktif İşler"
+  },
+  "maintenance": {
+    "title": "Tahmini Bakım Zamanı",
+    "description": "Servis geçmişi ve tahmini günlük kilometre bazında",
+    "overdue": "Gecikmiş",
+    "approaching": "Yaklaşan",
+    "estimated": "Tahmini {mileage} {unit}",
+    "sinceLastService": "Son servisten bu yana {mileage} {unit}",
+    "certainty": "%{percent} kesinlik"
+  },
+  "reminders": {
+    "title": "Yaklaşan Hatırlatmalar",
+    "overdue": "Gecikmiş",
+    "dueSoon": "Yakında"
+  },
+  "messages": {
+    "title": "Son Mesajlar",
+    "viewAll": "Tümünü Görüntüle",
+    "you": "Siz: "
+  },
+  "notifications": {
+    "title": "Son Bildirimler"
+  },
+  "inspections": {
+    "title": "Muayeneler",
+    "inProgress": "Devam Ediyor",
+    "completed": "Tamamlandı",
+    "itemCount": "{inspected}/{total} öğe"
+  },
+  "quoteRequests": {
+    "title": "Teklif Talepleri",
+    "description": "Paylaşılan muayenelerden teklif talep eden müşteriler",
+    "pending": "Beklemede",
+    "createQuote": "Teklif Oluştur",
+    "itemsRequested": "{count, plural, one {# öğe talep edildi} other {# öğe talep edildi}}"
+  },
+  "quoteResponses": {
+    "title": "Müşteri Teklif Yanıtları",
+    "description": "Müşterilerin kabul ettiği veya değişiklik talep ettiği teklifler",
+    "accepted": "Kabul Edildi",
+    "changesRequested": "Değişiklik Talep Edildi",
+    "convertToWorkOrder": "İş Emrine Dönüştür",
+    "viewQuote": "Teklifi Görüntüle"
+  },
+  "recentCompleted": {
+    "title": "Son Tamamlananlar",
+    "date": "Tarih",
+    "vehicle": "Araç",
+    "customer": "Müşteri",
+    "serviceTitle": "Başlık",
+    "total": "Toplam",
+    "empty": "Henüz tamamlanmış servis bulunmamaktadır"
+  },
+  "activeJobsTable": {
+    "title": "Aktif İşler",
+    "vehicle": "Araç",
+    "customer": "Müşteri",
+    "serviceTitle": "Başlık",
+    "status": "Durum",
+    "tech": "Teknisyen",
+    "empty": "Aktif iş bulunmamaktadır"
+  },
+  "relativeTime": {
+    "now": "şimdi",
+    "minutes": "{count}dk",
+    "hours": "{count}sa",
+    "days": "{count}g"
+  },
+  "error": "Kontrol paneli yüklenemedi"
+}

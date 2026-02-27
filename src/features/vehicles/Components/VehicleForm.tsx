@@ -38,6 +38,7 @@ import { createVehicle, updateVehicle } from "../Actions/vehicleActions";
 import { Camera, Check, ChevronsUpDown, Loader2, Plus, X } from "lucide-react";
 import { compressImage } from "@/lib/compress-image";
 import { CustomerForm } from "@/features/customers/Components/CustomerForm";
+import { useTranslations } from "next-intl";
 import type { CreateVehicleInput } from "../Schema/vehicleSchema";
 
 interface VehicleFormProps {
@@ -64,6 +65,8 @@ interface VehicleFormProps {
 export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleFormProps) {
   const router = useRouter();
   const modal = useGlassModal();
+  const t = useTranslations("vehicles.form");
+  const tc = useTranslations("common.buttons");
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<string | null>(vehicle?.imageUrl ?? null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -83,18 +86,18 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
   }, [vehicle?.id, vehicle?.customerId, vehicle?.imageUrl]);
 
   const selectedCustomerLabel = useMemo(() => {
-    if (!selectedCustomerId || selectedCustomerId === "none") return "No customer";
+    if (!selectedCustomerId || selectedCustomerId === "none") return t("noCustomer");
     const c = localCustomers.find((c) => c.id === selectedCustomerId);
-    if (!c) return "No customer";
+    if (!c) return t("noCustomer");
     return c.name + (c.company ? ` (${c.company})` : "");
-  }, [selectedCustomerId, localCustomers]);
+  }, [selectedCustomerId, localCustomers, t]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      modal.open("error", "Image too large", "Max file size is 5MB");
+      modal.open("error", t("imageTooLarge"), t("maxFileSize"));
       return;
     }
 
@@ -111,7 +114,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
   const uploadImage = async (): Promise<string | undefined> => {
     if (!imageFile) return preview ?? undefined;
 
-    const toastId = toast.loading("Uploading image...");
+    const toastId = toast.loading(t("uploadingImage"));
     const compressed = await compressImage(imageFile);
     const formData = new FormData();
     formData.append("file", compressed);
@@ -119,12 +122,12 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
     const res = await fetch("/api/protected/upload", { method: "POST", body: formData });
     if (!res.ok) {
       const err = await res.json();
-      toast.error(err.error || "Upload failed", { id: toastId });
-      throw new Error(err.error || "Upload failed");
+      toast.error(err.error || t("uploadFailed"), { id: toastId });
+      throw new Error(err.error || t("uploadFailed"));
     }
 
     const { url } = await res.json();
-    toast.success("Image uploaded", { id: toastId });
+    toast.success(t("imageUploaded"), { id: toastId });
     return url;
   };
 
@@ -164,12 +167,12 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
         : await createVehicle(payload);
 
       if (result.success) {
-        toast.success(vehicle ? "Vehicle updated" : "Vehicle added");
+        toast.success(vehicle ? t("vehicleUpdated") : t("vehicleAdded"));
         onOpenChange(false);
         setImageFile(null);
         router.refresh();
       } else {
-        modal.open("error", "Error", result.error || "Failed to save vehicle");
+        modal.open("error", "Error", result.error || t("saveError"));
       }
     } finally {
       setLoading(false);
@@ -182,14 +185,14 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {vehicle ? "Edit Vehicle" : "Add New Vehicle"}
+            {vehicle ? t("editTitle") : t("addTitle")}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Image upload */}
           <div className="space-y-2">
-            <Label>Photo</Label>
+            <Label>{t("photo")}</Label>
             <div
               onClick={() => fileRef.current?.click()}
               className="group relative flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-border bg-muted/30 transition-colors hover:border-primary/50 hover:bg-muted/50"
@@ -218,8 +221,8 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
               ) : (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                   <Camera className="h-8 w-8" />
-                  <span className="text-sm">Click to upload a photo</span>
-                  <span className="text-xs">JPEG, PNG, WebP up to 5MB</span>
+                  <span className="text-sm">{t("clickToUpload")}</span>
+                  <span className="text-xs">{t("imageFormats")}</span>
                 </div>
               )}
             </div>
@@ -234,7 +237,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
 
           {/* Customer selector */}
           <div className="space-y-2">
-            <Label>Customer</Label>
+            <Label>{t("customer")}</Label>
             <Popover open={customerOpen} onOpenChange={setCustomerOpen} modal={true}>
               <PopoverTrigger asChild>
                 <Button
@@ -249,9 +252,9 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
                 <Command>
-                  <CommandInput placeholder="Search customers..." />
+                  <CommandInput placeholder={t("searchCustomers")} />
                   <CommandList className="max-h-60 overflow-y-auto">
-                    <CommandEmpty>No customer found.</CommandEmpty>
+                    <CommandEmpty>{t("noCustomerFound")}</CommandEmpty>
                     <CommandGroup>
                       <CommandItem
                         value="no-customer"
@@ -261,7 +264,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
                         }}
                       >
                         <Check className={`mr-2 h-4 w-4 ${selectedCustomerId === "none" ? "opacity-100" : "opacity-0"}`} />
-                        No customer
+                        {t("noCustomer")}
                       </CommandItem>
                       {localCustomers.map((c) => {
                         const label = c.name + (c.company ? ` (${c.company})` : "");
@@ -291,7 +294,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
                       }}
                     >
                       <Plus className="h-4 w-4" />
-                      Add Customer
+                      {t("addCustomer")}
                     </button>
                   </div>
                 </Command>
@@ -301,7 +304,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="make">Make *</Label>
+              <Label htmlFor="make">{t("make")}</Label>
               <Input
                 id="make"
                 name="make"
@@ -311,7 +314,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="model">Model *</Label>
+              <Label htmlFor="model">{t("model")}</Label>
               <Input
                 id="model"
                 name="model"
@@ -324,7 +327,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="year">Year *</Label>
+              <Label htmlFor="year">{t("year")}</Label>
               <Input
                 id="year"
                 name="year"
@@ -335,7 +338,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="mileage">Mileage</Label>
+              <Label htmlFor="mileage">{t("mileage")}</Label>
               <Input
                 id="mileage"
                 name="mileage"
@@ -348,7 +351,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="vin">VIN</Label>
+              <Label htmlFor="vin">{t("vin")}</Label>
               <Input
                 id="vin"
                 name="vin"
@@ -357,7 +360,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="licensePlate">License Plate</Label>
+              <Label htmlFor="licensePlate">{t("licensePlate")}</Label>
               <Input
                 id="licensePlate"
                 name="licensePlate"
@@ -369,7 +372,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
 
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="color">Color</Label>
+              <Label htmlFor="color">{t("color")}</Label>
               <Input
                 id="color"
                 name="color"
@@ -378,7 +381,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="fuelType">Fuel Type</Label>
+              <Label htmlFor="fuelType">{t("fuelType")}</Label>
               <Select
                 name="fuelType"
                 defaultValue={vehicle?.fuelType ?? "gasoline"}
@@ -387,16 +390,16 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="gasoline">Gasoline</SelectItem>
-                  <SelectItem value="diesel">Diesel</SelectItem>
-                  <SelectItem value="electric">Electric</SelectItem>
-                  <SelectItem value="hybrid">Hybrid</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="gasoline">{t("gasoline")}</SelectItem>
+                  <SelectItem value="diesel">{t("diesel")}</SelectItem>
+                  <SelectItem value="electric">{t("electric")}</SelectItem>
+                  <SelectItem value="hybrid">{t("hybrid")}</SelectItem>
+                  <SelectItem value="other">{t("other")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="transmission">Transmission</Label>
+              <Label htmlFor="transmission">{t("transmission")}</Label>
               <Select
                 name="transmission"
                 defaultValue={vehicle?.transmission ?? "automatic"}
@@ -405,16 +408,16 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="automatic">Automatic</SelectItem>
-                  <SelectItem value="manual">Manual</SelectItem>
-                  <SelectItem value="cvt">CVT</SelectItem>
+                  <SelectItem value="automatic">{t("automatic")}</SelectItem>
+                  <SelectItem value="manual">{t("manual")}</SelectItem>
+                  <SelectItem value="cvt">{t("cvt")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="engineSize">Engine Size</Label>
+            <Label htmlFor="engineSize">{t("engineSize")}</Label>
             <Input
               id="engineSize"
               name="engineSize"
@@ -429,11 +432,11 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {vehicle ? "Save Changes" : "Add Vehicle"}
+              {vehicle ? tc("saveChanges") : t("addTitle")}
             </Button>
           </div>
         </form>

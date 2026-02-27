@@ -38,6 +38,7 @@ import { ServiceVideoManager } from '../service-video-manager'
 import { ServiceDocumentsManager } from '../service-documents-manager'
 
 import { UnifiedServiceHeader, type ServiceTab } from './UnifiedServiceHeader'
+import { useTranslations } from 'next-intl'
 
 interface Attachment {
   id: string
@@ -104,6 +105,8 @@ export function ServicePageClient({
   const router = useRouter()
   const modal = useGlassModal()
   const confirm = useConfirm()
+  const t = useTranslations('service')
+  const tc = useTranslations('common')
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
 
   // Tab state
@@ -239,14 +242,14 @@ export function ServicePageClient({
     const result = await updateServiceRecord(payload)
 
     if (result.success) {
-      toast.success('Service record updated')
+      toast.success(t('page.updated'))
       if (selectedVehicleId !== vehicleId) {
         router.push(`/vehicles/${selectedVehicleId}/service/${initialData.id}`)
       } else {
         router.refresh()
       }
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to update service record')
+      modal.open('error', tc('errors.error'), result.error || t('page.failedUpdate'))
     }
 
     setLoading(false)
@@ -255,10 +258,9 @@ export function ServicePageClient({
   // Detail actions
   const handleDelete = async () => {
     const ok = await confirm({
-      title: 'Delete Service Record',
-      description:
-        'This will permanently delete this service record and all associated data. This cannot be undone.',
-      confirmLabel: 'Delete',
+      title: t('page.deleteTitle'),
+      description: t('page.deleteDescription'),
+      confirmLabel: tc('buttons.delete'),
       destructive: true,
     })
     if (!ok) return
@@ -267,7 +269,7 @@ export function ServicePageClient({
       router.push(`/vehicles/${vehicleId}`)
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to delete')
+      modal.open('error', tc('errors.error'), result.error || t('page.failedDelete'))
     }
   }
 
@@ -286,26 +288,26 @@ export function ServicePageClient({
       a.click()
       URL.revokeObjectURL(url)
     } catch {
-      modal.open('error', 'Error', 'Failed to generate PDF invoice')
+      modal.open('error', tc('errors.error'), t('payments.failedPdf'))
     }
     setDownloading(false)
   }
 
   const handleDeleteAttachment = async (id: string) => {
     const ok = await confirm({
-      title: 'Delete Attachment',
-      description: 'This will permanently delete this attachment. This cannot be undone.',
-      confirmLabel: 'Delete',
+      title: t('attachments.deleteTitle'),
+      description: t('attachments.deleteDescription'),
+      confirmLabel: tc('buttons.delete'),
       destructive: true,
     })
     if (!ok) return
     setDeletingAttachment(id)
     const result = await deleteServiceAttachment(id)
     if (result.success) {
-      toast.success('Attachment deleted')
+      toast.success(t('attachments.deleted'))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to delete attachment')
+      modal.open('error', tc('errors.error'), result.error || t('attachments.failedDelete'))
     }
     setDeletingAttachment(null)
   }
@@ -320,7 +322,7 @@ export function ServicePageClient({
     const result = await createPayment({ serviceRecordId: record.id, ...data })
     setPaymentLoading(false)
     if (result.success) {
-      toast.success('Payment recorded')
+      toast.success(t('payments.recorded'))
       router.refresh()
       if (record.vehicle.customer) {
         const invoiceNum = record.invoiceNumber || `#${record.id.slice(-8).toUpperCase()}`
@@ -340,7 +342,7 @@ export function ServicePageClient({
       }
       return true
     }
-    modal.open('error', 'Error', result.error || 'Failed to record payment')
+    modal.open('error', tc('errors.error'), result.error || t('payments.failedRecord'))
     return false
   }
 
@@ -349,7 +351,7 @@ export function ServicePageClient({
     const result = await toggleManuallyPaid(record.id)
     setPaymentLoading(false)
     if (result.success) {
-      toast.success(result.data?.manuallyPaid ? 'Marked as paid' : 'Marked as unpaid')
+      toast.success(result.data?.manuallyPaid ? t('payments.markedPaid') : t('payments.markedUnpaid'))
       router.refresh()
       if (result.data?.manuallyPaid && record.vehicle.customer) {
         const invoiceNum = record.invoiceNumber || `#${record.id.slice(-8).toUpperCase()}`
@@ -368,25 +370,25 @@ export function ServicePageClient({
         setShowPaymentNotifyDialog(true)
       }
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to update payment status')
+      modal.open('error', tc('errors.error'), result.error || t('payments.failedStatus'))
     }
   }
 
   const handleDeletePayment = async (id: string) => {
     const ok = await confirm({
-      title: 'Delete Payment',
-      description: 'This will remove this payment record.',
-      confirmLabel: 'Delete',
+      title: t('payments.deleteTitle'),
+      description: t('payments.deleteDescription'),
+      confirmLabel: tc('buttons.delete'),
       destructive: true,
     })
     if (!ok) return
     setDeletingPayment(id)
     const result = await deletePayment(id)
     if (result.success) {
-      toast.success('Payment deleted')
+      toast.success(t('payments.deleted'))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to delete payment')
+      modal.open('error', tc('errors.error'), result.error || t('payments.failedDelete'))
     }
     setDeletingPayment(null)
   }
@@ -575,7 +577,7 @@ export function ServicePageClient({
         open={showEmailDialog}
         onOpenChange={setShowEmailDialog}
         defaultEmail={record.vehicle.customer?.email || ''}
-        entityLabel="Invoice"
+        entityLabel={t('invoice.entityLabel')}
         onSend={async (email, message) =>
           sendInvoiceEmail({ serviceRecordId: record.id, recipientEmail: email, message })
         }
@@ -598,7 +600,7 @@ export function ServicePageClient({
           onOpenChange={setShowPaymentNotifyDialog}
           customer={record.vehicle.customer}
           defaultMessage={paymentNotifyMessage}
-          emailSubject="Payment Confirmation"
+          emailSubject={t('invoice.emailSubject')}
           smsEnabled={smsEnabled}
           emailEnabled={emailEnabled}
           relatedEntityType="service-record"

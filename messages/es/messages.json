@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Mensajería SMS",
+    "featureDescription": "Envíe y reciba mensajes SMS con sus clientes directamente desde Torqvoice."
+  },
+  "notConfigured": {
+    "title": "SMS no configurado",
+    "description": "Configure un proveedor de SMS para enviar y recibir mensajes con sus clientes. Compatible con Twilio, Vonage y Telnyx.",
+    "goToSettings": "Ir a configuración de SMS"
+  },
+  "threads": {
+    "title": "Conversaciones",
+    "empty": "Aún no hay conversaciones. Envíe un SMS desde la página de un cliente para comenzar.",
+    "loadMore": "Cargar más",
+    "selectConversation": "Seleccione una conversación",
+    "you": "Tú: ",
+    "deleteConversation": "Eliminar conversación",
+    "deleteTitle": "¿Eliminar conversación?",
+    "deleteDescription": "Se eliminarán permanentemente todos los mensajes con {name}. Esta acción no se puede deshacer.",
+    "deleted": "Conversación eliminada",
+    "deleteError": "No se pudo eliminar la conversación"
+  },
+  "conversation": {
+    "noPhone": "No hay número de teléfono registrado para {name}. Agregue un número de teléfono para comenzar a enviar mensajes.",
+    "loadOlder": "Cargar anteriores",
+    "empty": "Aún no hay mensajes. Envíe el primer mensaje a {name}.",
+    "placeholder": "Mensaje para {name}...",
+    "deleteMessage": "Eliminar mensaje",
+    "deleteTitle": "¿Eliminar mensaje?",
+    "deleteDescription": "Este mensaje se eliminará permanentemente de la conversación. Esta acción no se puede deshacer.",
+    "messageDeleted": "Mensaje eliminado",
+    "deleteError": "No se pudo eliminar el mensaje",
+    "sendError": "No se pudo enviar el SMS"
+  },
+  "sendDialog": {
+    "send": "Enviar {label}",
+    "message": "Mensaje",
+    "placeholder": "Escribe tu mensaje...",
+    "characters": "{count} / 1600 caracteres",
+    "sendSms": "Enviar SMS",
+    "smsSent": "SMS enviado",
+    "sentTo": "{label} ha sido enviado a {name} ({phone})",
+    "sendError": "No se pudo enviar el SMS"
+  }
+}

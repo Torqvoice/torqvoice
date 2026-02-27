@@ -1,0 +1,67 @@
+{
+  "page": {
+    "error": "İş panosu yüklenemedi"
+  },
+  "toolbar": {
+    "today": "Bugün",
+    "presenter": "Sunucu",
+    "addTechnician": "Teknisyen Ekle"
+  },
+  "board": {
+    "days": {
+      "mon": "Pzt",
+      "tue": "Sal",
+      "wed": "Çar",
+      "thu": "Per",
+      "fri": "Cum",
+      "sat": "Cmt",
+      "sun": "Paz"
+    },
+    "noTechnicians": "Henüz Teknisyen Yok",
+    "noTechniciansDescription": "Panoda iş planlamaya başlamak için bir teknisyen ekleyin.",
+    "failedMove": "Atama taşınamadı",
+    "failedAssign": "İş atanmadı",
+    "failedRemove": "Atama kaldırılamadı"
+  },
+  "unassigned": {
+    "title": "Atanmamış İşler ({count})",
+    "searchPlaceholder": "İş ara...",
+    "empty": "Atanmamış iş yok"
+  },
+  "technician": {
+    "editTitle": "Teknisyeni Düzenle",
+    "addTitle": "Teknisyen Ekle",
+    "name": "Ad",
+    "namePlaceholder": "örn. Ahmet Yılmaz",
+    "color": "Renk",
+    "linkMember": "Org Üyesine Bağla (isteğe bağlı)",
+    "standalone": "Bağımsız teknisyen",
+    "deleteTitle": "Teknisyeni Sil",
+    "deleteDescription": "\"{name}\" öğesini iş panosundan kaldırılsın mı? Mevcut atamaları da kaldırılacaktır.",
+    "addTechnician": "Teknisyen Ekle"
+  },
+  "jobDetail": {
+    "viewDetails": "Ayrıntıları Görüntüle",
+    "remove": "Kaldır",
+    "date": "Tarih: {date}"
+  },
+  "presenter": {
+    "title": "İş Panosu",
+    "day": "Gün",
+    "status": "Durum",
+    "week": "Hafta",
+    "today": "Bugün",
+    "live": "Canlı",
+    "disconnected": "Canlı güncellemeler kesildi",
+    "noTechnicians": "Hiçbir teknisyen yapılandırılmadı",
+    "noJobsToday": "Bugün iş yok",
+    "job": "{count} iş",
+    "jobs": "{count} iş",
+    "statusLabels": {
+      "pending": "Beklemede",
+      "inProgress": "Devam Ediyor",
+      "waitingParts": "Parça Bekleniyor",
+      "completed": "Tamamlandı"
+    }
+  }
+}

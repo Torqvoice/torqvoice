@@ -1,0 +1,76 @@
+{
+  "list": {
+    "addCustomer": "Aggiungi cliente",
+    "searchPlaceholder": "Cerca clienti...",
+    "table": {
+      "name": "Nome",
+      "company": "Azienda",
+      "phone": "Telefono",
+      "email": "Email",
+      "vehicles": "Veicoli"
+    },
+    "emptySearch": "Nessun cliente corrisponde alla ricerca.",
+    "empty": "Nessun cliente presente.",
+    "deleteTitle": "Elimina cliente",
+    "deleteDescription": "Eliminare {name}? I suoi veicoli verranno scollegati.",
+    "deleteError": "Eliminazione del cliente non riuscita",
+    "error": "Caricamento dei clienti non riuscito"
+  },
+  "detail": {
+    "backToCustomers": "Torna ai clienti",
+    "editCustomer": "Modifica cliente",
+    "notFound": "Cliente non trovato",
+    "emailCopied": "Email copiata negli appunti",
+    "phoneCopied": "Numero di telefono copiato negli appunti",
+    "tabs": {
+      "vehicles": "Veicoli ({count})",
+      "messages": "Messaggi",
+      "requests": "Richieste ({count})"
+    },
+    "vehicleTable": {
+      "plate": "Targa",
+      "vehicle": "Veicolo",
+      "mileage": "Chilometraggio",
+      "services": "Servizi"
+    },
+    "noVehicles": "Nessun veicolo assegnato a questo cliente"
+  },
+  "form": {
+    "addTitle": "Aggiungi nuovo cliente",
+    "editTitle": "Modifica cliente",
+    "nameRequired": "Nome *",
+    "namePlaceholder": "Mario Rossi",
+    "emailPlaceholder": "mario@esempio.it",
+    "phonePlaceholder": "333 1234567",
+    "companyPlaceholder": "Nome azienda",
+    "addressPlaceholder": "Via Roma 1, 00100 Roma",
+    "notesPlaceholder": "Note aggiuntive...",
+    "customerUpdated": "Cliente aggiornato",
+    "customerCreated": "Cliente creato",
+    "saveError": "Salvataggio del cliente non riuscito"
+  },
+  "serviceRequests": {
+    "statusNew": "Nuova",
+    "statusConverted": "Ordine di lavoro creato",
+    "statusDismissed": "Archiviata",
+    "createWorkOrder": "Crea ordine di lavoro",
+    "contactCustomer": "Contatta il cliente",
+    "dismiss": "Archivia",
+    "viewWorkOrder": "Visualizza ordine di lavoro",
+    "notes": "Note",
+    "hideNotes": "Nascondi note",
+    "staffNotes": "Note del personale:",
+    "notesPlaceholder": "Aggiungi note interne...",
+    "saveNotes": "Salva note",
+    "submitted": "Inviata il {date}",
+    "preferred": "Preferita: {date}",
+    "workOrderCreated": "Ordine di lavoro creato",
+    "workOrderError": "Creazione dell'ordine di lavoro non riuscita",
+    "requestDismissed": "Richiesta archiviata",
+    "dismissError": "Archiviazione della richiesta non riuscita",
+    "notesSaved": "Note salvate",
+    "notesSaveError": "Salvataggio delle note non riuscito",
+    "smsLabel": "Messaggio di richiesta servizio",
+    "smsDefault": "Salve {name}, riguardo alla sua richiesta di servizio per il suo {vehicle}: "
+  }
+}

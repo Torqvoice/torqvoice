@@ -1,0 +1,87 @@
+{
+  "searchPlaceholder": "Onderdelen zoeken...",
+  "categoryPlaceholder": "Categorie",
+  "allCategories": "Alle categorieën",
+  "applyMarkup": "Opslag toepassen",
+  "addPart": "Onderdeel toevoegen",
+  "table": {
+    "partNumber": "Onderdeelnr.",
+    "name": "Naam",
+    "category": "Categorie",
+    "inStock": "Op voorraad",
+    "unitCost": "Kostprijs",
+    "sellPrice": "Verkoopprijs",
+    "supplier": "Leverancier",
+    "location": "Locatie",
+    "low": "Laag"
+  },
+  "empty": {
+    "noMatch": "Geen onderdelen gevonden voor uw zoekopdracht.",
+    "noParts": "Nog geen onderdelen in de voorraad."
+  },
+  "actions": {
+    "edit": "Bewerken",
+    "delete": "Verwijderen"
+  },
+  "deletePart": {
+    "title": "Onderdeel verwijderen",
+    "description": "\"{name}\" uit de voorraad verwijderen? Dit kan niet ongedaan worden gemaakt.",
+    "confirm": "Verwijderen"
+  },
+  "markup": {
+    "title": "Opslag toepassen op alle onderdelen",
+    "multiplierLabel": "Opslagfactor",
+    "description": "De verkoopprijs wordt ingesteld op kostprijs x {multiplier} voor alle {count} onderdelen.",
+    "percentage": "({percent}% opslag)",
+    "cancel": "Annuleren",
+    "apply": "Toepassen"
+  },
+  "errors": {
+    "multiplierPositive": "De vermenigvuldiger moet groter zijn dan 0",
+    "deleteFailed": "Kan onderdeel niet verwijderen",
+    "applyFailed": "Kan opslag niet toepassen",
+    "saveFailed": "Kan onderdeel niet opslaan",
+    "error": "Fout"
+  },
+  "form": {
+    "editPart": "Onderdeel bewerken",
+    "addNewPart": "Nieuw onderdeel toevoegen",
+    "supplierLink": "Leverancierslink",
+    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "fetch": "Ophalen",
+    "fetchFailed": "Ophalen mislukt",
+    "fetchError": "Kan metadata niet ophalen van URL",
+    "image": "Afbeelding",
+    "dropOrClick": "Sleep afbeelding of klik",
+    "replace": "Vervangen",
+    "upload": "Uploaden",
+    "imageUploading": "Afbeelding uploaden...",
+    "imageUploaded": "Afbeelding geüpload",
+    "imageUploadFailed": "Kan afbeelding niet uploaden",
+    "imageTypeError": "Alleen JPEG-, PNG-, WebP- en AVIF-afbeeldingen zijn toegestaan",
+    "imageSizeError": "De afbeelding mag maximaal 5 MB zijn",
+    "partNumber": "Onderdeelnummer",
+    "partNumberPlaceholder": "BRK-001",
+    "nameLabel": "Naam *",
+    "namePlaceholder": "Remblokkenset",
+    "category": "Categorie",
+    "categoryPlaceholder": "Remmen",
+    "location": "Locatie",
+    "locationPlaceholder": "Schap A-3",
+    "quantity": "Aantal",
+    "minQty": "Min. aantal",
+    "unitCost": "Kostprijs",
+    "sellPrice": "Verkoopprijs",
+    "supplier": "Leverancier",
+    "supplierPlaceholder": "AutoParts B.V.",
+    "supplierPhone": "Telefoon leverancier",
+    "supplierPhonePlaceholder": "(555) 123-4567",
+    "supplierEmail": "E-mail leverancier",
+    "supplierEmailPlaceholder": "orders@autoparts.com",
+    "description": "Beschrijving",
+    "descriptionPlaceholder": "Beschrijving van het onderdeel...",
+    "cancel": "Annuleren",
+    "saveChanges": "Wijzigingen opslaan",
+    "addPart": "Onderdeel toevoegen"
+  }
+}

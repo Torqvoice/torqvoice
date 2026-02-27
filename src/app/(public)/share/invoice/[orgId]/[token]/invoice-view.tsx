@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { sanitizeHtml } from '@/lib/sanitize-html'
+import { useTranslations } from 'next-intl'
 
 interface InvoiceRecord {
   id: string
@@ -92,6 +93,11 @@ interface InvoiceSettings {
   dueDays: number
 }
 
+function hasContent(html: string | null): boolean {
+  if (!html) return false
+  return html.replace(/<[^>]*>/g, '').trim().length > 0
+}
+
 export function InvoiceView({
   record,
   workshop,
@@ -129,6 +135,8 @@ export function InvoiceView({
   headerStyle?: string
   portalUrl?: string
 }) {
+  const t = useTranslations('share.invoice')
+  const tc = useTranslations('share.common')
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
   const [paymentAmount, setPaymentAmount] = useState('')
   const [paymentLoading, setPaymentLoading] = useState<string | null>(null)
@@ -222,10 +230,10 @@ export function InvoiceView({
         if (data.verified) {
           setPaymentSuccess({ amount: data.amount })
         } else {
-          setPaymentError('Payment could not be verified. It may still be processing.')
+          setPaymentError(t('errorVerifyFailed'))
         }
       } catch {
-        setPaymentError('Failed to verify payment status.')
+        setPaymentError(t('errorVerifyRequest'))
       } finally {
         setVerifying(false)
       }
@@ -268,11 +276,11 @@ export function InvoiceView({
     setPaymentError(null)
     const amount = Number.parseFloat(paymentAmount)
     if (Number.isNaN(amount) || amount < 0.01) {
-      setPaymentError('Please enter a valid amount.')
+      setPaymentError(t('errorInvalidAmount'))
       return
     }
     if (amount > balanceDue + 0.01) {
-      setPaymentError(`Amount cannot exceed ${formatCurrency(balanceDue, currencyCode)}.`)
+      setPaymentError(t('errorExceedsBalance', { amount: formatCurrency(balanceDue, currencyCode) }))
       return
     }
 
@@ -285,12 +293,12 @@ export function InvoiceView({
       })
       const data = await res.json()
       if (!res.ok) {
-        setPaymentError(data.error || 'Failed to start checkout.')
+        setPaymentError(data.error || t('errorCheckoutFailed'))
         return
       }
       window.location.href = data.redirectUrl
     } catch {
-      setPaymentError('Failed to initiate payment. Please try again.')
+      setPaymentError(t('errorPaymentFailed'))
     } finally {
       setPaymentLoading(null)
     }
@@ -299,14 +307,14 @@ export function InvoiceView({
   return (
     <div className="mx-auto max-w-3xl p-4 sm:p-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Invoice</h1>
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
         <button
           onClick={handleDownloadPDF}
           className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white"
           style={{ backgroundColor: primaryColor }}
         >
           <Download className="h-4 w-4" />
-          Download PDF
+          {t('downloadPdf')}
         </button>
       </div>
 
@@ -325,10 +333,10 @@ export function InvoiceView({
             </svg>
           </div>
           <p className="text-lg font-semibold text-emerald-700 dark:text-emerald-400">
-            Payment received!
+            {t('paymentReceived')}
           </p>
           <p className="text-sm text-emerald-600 dark:text-emerald-500">
-            {formatCurrency(paymentSuccess.amount, currencyCode)} has been applied to this invoice.
+            {t('paymentApplied', { amount: formatCurrency(paymentSuccess.amount, currencyCode) })}
           </p>
         </div>
       )}
@@ -337,7 +345,7 @@ export function InvoiceView({
       {verifying && (
         <div className="mb-6 flex items-center justify-center gap-2 rounded-xl border bg-gray-50 p-5 shadow-sm dark:bg-gray-800">
           <Loader2 className="h-5 w-5 animate-spin text-amber-600" />
-          <span className="font-medium">Verifying payment...</span>
+          <span className="font-medium">{t('verifyingPayment')}</span>
         </div>
       )}
 
@@ -348,7 +356,7 @@ export function InvoiceView({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-white">
                 <CreditCard className="h-4 w-4" />
-                <span className="text-sm font-semibold">Balance Due</span>
+                <span className="text-sm font-semibold">{t('balanceDue')}</span>
               </div>
               <span className="text-lg font-bold text-white">
                 {formatCurrency(balanceDue, currencyCode)}
@@ -371,7 +379,7 @@ export function InvoiceView({
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400'
                   }`}
                 >
-                  Full amount
+                  {t('fullAmount')}
                 </button>
                 <button
                   type="button"
@@ -382,7 +390,7 @@ export function InvoiceView({
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400'
                   }`}
                 >
-                  Partial payment
+                  {t('partialPayment')}
                 </button>
               </div>
               {customAmount && (
@@ -391,7 +399,7 @@ export function InvoiceView({
                     htmlFor="payAmount"
                     className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400"
                   >
-                    Enter amount
+                    {t('enterAmount')}
                   </label>
                   <input
                     id="payAmount"
@@ -422,8 +430,7 @@ export function InvoiceView({
                   ) : (
                     <CreditCard className="h-4 w-4" />
                   )}
-                  Pay {formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode)} with
-                  Card
+                  {t('payWithCard', { amount: formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode) })}
                 </button>
               )}
               {enabledProviders.includes('vipps') && (
@@ -437,8 +444,7 @@ export function InvoiceView({
                   ) : (
                     <span className="text-base font-black leading-none">V</span>
                   )}
-                  Pay {formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode)} with
-                  Vipps
+                  {t('payWithVipps', { amount: formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode) })}
                 </button>
               )}
               {enabledProviders.includes('paypal') && (
@@ -452,8 +458,7 @@ export function InvoiceView({
                   ) : (
                     <span className="text-base font-black leading-none">P</span>
                   )}
-                  Pay {formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode)} with
-                  PayPal
+                  {t('payWithPaypal', { amount: formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode) })}
                 </button>
               )}
             </div>
@@ -478,12 +483,12 @@ export function InvoiceView({
               )}
               {workshop.address && <p className="mt-1 text-sm opacity-80">{workshop.address}</p>}
               <div className="mt-1 flex flex-wrap justify-center gap-3 text-sm opacity-70">
-                {workshop.phone && <span>Tel: {workshop.phone}</span>}
+                {workshop.phone && <span>{t('tel', { phone: workshop.phone })}</span>}
                 {workshop.email && <span>{workshop.email}</span>}
               </div>
             </div>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <h3 className="text-xl font-bold">INVOICE</h3>
+              <h3 className="text-xl font-bold uppercase">{t('title')}</h3>
               <div className="flex gap-3 text-sm text-gray-500">
                 <span>{invoiceNum}</span>
                 <span>{serviceDate}</span>
@@ -508,7 +513,7 @@ export function InvoiceView({
               </div>
             </div>
             <div className="sm:text-right">
-              <h3 className="text-lg font-bold">INVOICE</h3>
+              <h3 className="text-lg font-bold uppercase">{t('title')}</h3>
               <p className="text-sm text-gray-500">{invoiceNum}</p>
               <p className="text-sm text-gray-500">{serviceDate}</p>
             </div>
@@ -528,7 +533,7 @@ export function InvoiceView({
                 <h2 className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2>
               )}
               {workshop.address && <p className="mt-1 text-sm text-gray-500">{workshop.address}</p>}
-              {workshop.phone && <p className="text-sm text-gray-500">Tel: {workshop.phone}</p>}
+              {workshop.phone && <p className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p>}
               {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
             </div>
             <div className="sm:text-right">
@@ -538,7 +543,7 @@ export function InvoiceView({
                   <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
                 </div>
               )}
-              <h3 className="text-xl font-bold" style={{ color: primaryColor }}>INVOICE</h3>
+              <h3 className="text-xl font-bold uppercase" style={{ color: primaryColor }}>{t('title')}</h3>
               <p className="mt-1 text-sm text-gray-500">{invoiceNum}</p>
               <p className="text-sm text-gray-500">{serviceDate}</p>
             </div>
@@ -549,7 +554,7 @@ export function InvoiceView({
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {record.vehicle.customer && (
             <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-              <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Bill To</p>
+              <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('billTo')}</p>
               <p className="font-semibold">{record.vehicle.customer.name}</p>
               {record.vehicle.customer.company && (
                 <p className="text-sm">{record.vehicle.customer.company}</p>
@@ -566,36 +571,36 @@ export function InvoiceView({
             </div>
           )}
           <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Vehicle</p>
+            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('vehicle')}</p>
             <p className="font-semibold">{vehicleName}</p>
             {record.vehicle.vin && (
-              <p className="text-sm text-gray-500">VIN: {record.vehicle.vin}</p>
+              <p className="text-sm text-gray-500">{t('vin', { vin: record.vehicle.vin })}</p>
             )}
             {record.vehicle.licensePlate && (
-              <p className="text-sm text-gray-500">Plate: {record.vehicle.licensePlate}</p>
+              <p className="text-sm text-gray-500">{t('plate', { plate: record.vehicle.licensePlate })}</p>
             )}
           </div>
           <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Service</p>
+            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('service')}</p>
             <p className="font-semibold">{record.title}</p>
-            <p className="text-sm text-gray-500">Type: {record.type}</p>
-            {record.techName && <p className="text-sm text-gray-500">Tech: {record.techName}</p>}
+            <p className="text-sm text-gray-500">{t('type', { type: record.type })}</p>
+            {record.techName && <p className="text-sm text-gray-500">{t('tech', { tech: record.techName })}</p>}
           </div>
         </div>
 
         {/* Parts */}
         {record.partItems.length > 0 && (
           <div className="mt-6">
-            <h4 className="mb-3 font-semibold">Parts</h4>
+            <h4 className="mb-3 font-semibold">{t('parts')}</h4>
             <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
               <table className="w-full min-w-125 text-sm">
                 <thead>
                   <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
-                    <th className="p-2 font-medium">Part #</th>
-                    <th className="p-2 font-medium">Description</th>
-                    <th className="p-2 text-right font-medium">Qty</th>
-                    <th className="p-2 text-right font-medium">Unit Price</th>
-                    <th className="p-2 text-right font-medium">Total</th>
+                    <th className="p-2 font-medium">{t('partNumber')}</th>
+                    <th className="p-2 font-medium">{t('description')}</th>
+                    <th className="p-2 text-right font-medium">{t('qty')}</th>
+                    <th className="p-2 text-right font-medium">{t('unitPrice')}</th>
+                    <th className="p-2 text-right font-medium">{t('total')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -621,15 +626,15 @@ export function InvoiceView({
         {/* Labor */}
         {record.laborItems.length > 0 && (
           <div className="mt-6">
-            <h4 className="mb-3 font-semibold">Labor</h4>
+            <h4 className="mb-3 font-semibold">{t('labor')}</h4>
             <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
               <table className="w-full min-w-112.5 text-sm">
                 <thead>
                   <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
-                    <th className="p-2 font-medium">Description</th>
-                    <th className="p-2 text-right font-medium">Hours</th>
-                    <th className="p-2 text-right font-medium">Rate</th>
-                    <th className="p-2 text-right font-medium">Total</th>
+                    <th className="p-2 font-medium">{t('description')}</th>
+                    <th className="p-2 text-right font-medium">{t('hours')}</th>
+                    <th className="p-2 text-right font-medium">{t('rate')}</th>
+                    <th className="p-2 text-right font-medium">{t('total')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -637,7 +642,7 @@ export function InvoiceView({
                     <tr key={i}>
                       <td className="p-2">{l.description}</td>
                       <td className="p-2 text-right">{l.hours}</td>
-                      <td className="p-2 text-right">{formatCurrency(l.rate, currencyCode)}/hr</td>
+                      <td className="p-2 text-right">{t('ratePerHour', { rate: formatCurrency(l.rate, currencyCode) })}</td>
                       <td className="p-2 text-right font-medium">
                         {formatCurrency(l.total, currencyCode)}
                       </td>
@@ -653,14 +658,14 @@ export function InvoiceView({
         <div className="mt-6 ml-auto max-w-xs space-y-2">
           {record.subtotal > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Subtotal</span>
+              <span className="text-gray-500">{t('subtotal')}</span>
               <span>{formatCurrency(record.subtotal, currencyCode)}</span>
             </div>
           )}
           {record.discountAmount > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">
-                Discount{record.discountType === 'percentage' ? ` (${record.discountValue}%)` : ''}
+                {record.discountType === 'percentage' ? t('discountPercent', { percent: record.discountValue }) : t('discount')}
               </span>
               <span className="text-red-500">
                 {formatCurrency(-record.discountAmount, currencyCode)}
@@ -669,7 +674,7 @@ export function InvoiceView({
           )}
           {record.taxRate > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Tax ({record.taxRate}%)</span>
+              <span className="text-gray-500">{t('tax', { rate: record.taxRate })}</span>
               <span>{formatCurrency(record.taxAmount, currencyCode)}</span>
             </div>
           )}
@@ -680,7 +685,7 @@ export function InvoiceView({
             <div
               className={`flex justify-between ${totalPaid > 0 ? 'text-sm text-gray-500' : 'text-lg font-bold'}`}
             >
-              <span>Total</span>
+              <span>{t('total')}</span>
               <span style={totalPaid > 0 ? undefined : { color: primaryColor }}>
                 {formatCurrency(displayTotal, currencyCode)}
               </span>
@@ -689,20 +694,20 @@ export function InvoiceView({
           {totalPaid > 0 && (
             <>
               <div className="flex justify-between text-sm text-emerald-600">
-                <span>Paid</span>
+                <span>{t('paid')}</span>
                 <span>{formatCurrency(-totalPaid, currencyCode)}</span>
               </div>
               {balanceDue <= 0 ? (
                 <div className="rounded-lg bg-emerald-50 px-4 py-3 dark:bg-emerald-900/20">
                   <div className="flex justify-between text-lg font-bold text-emerald-600">
-                    <span>Balance Due</span>
-                    <span>PAID IN FULL</span>
+                    <span>{t('balanceDue')}</span>
+                    <span>{t('paidInFull')}</span>
                   </div>
                 </div>
               ) : (
                 <div className="rounded-lg bg-amber-50 px-4 py-3 ring-2 ring-amber-400 dark:bg-amber-900/20 dark:ring-amber-600">
                   <div className="flex justify-between text-lg font-bold">
-                    <span>Amount Due</span>
+                    <span>{t('amountDue')}</span>
                     <span className="text-amber-700 dark:text-amber-400">
                       {formatCurrency(balanceDue, currencyCode)}
                     </span>
@@ -716,7 +721,7 @@ export function InvoiceView({
         {/* Torqvoice branding near totals */}
         {showTorqvoiceBranding && (
           <div className="mt-3 flex items-center justify-end gap-1.5">
-            <span className="text-xs text-gray-400">Powered by</span>
+            <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
             <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-3.5 w-3.5" />
             <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
           </div>
@@ -728,29 +733,29 @@ export function InvoiceView({
             invoiceSettings.orgNumber ||
             invoiceSettings.paymentTerms) && (
             <div className="mt-6 rounded-lg border p-4" style={{ borderColor: `${primaryColor}40`, backgroundColor: `${primaryColor}08` }}>
-              <p className="mb-2 text-xs font-bold uppercase" style={{ color: primaryColor }}>Payment Information</p>
+              <p className="mb-2 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('paymentInformation')}</p>
               <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                 {invoiceSettings.showBankAccount && invoiceSettings.bankAccount && (
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Bank Account</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('bankAccount')}</p>
                     <p className="font-medium">{invoiceSettings.bankAccount}</p>
                   </div>
                 )}
                 {invoiceSettings.showOrgNumber && invoiceSettings.orgNumber && (
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Org. Number</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('orgNumber')}</p>
                     <p className="font-medium">{invoiceSettings.orgNumber}</p>
                   </div>
                 )}
                 {invoiceSettings.paymentTerms && (
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Payment Terms</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('paymentTerms')}</p>
                     <p className="font-medium">{invoiceSettings.paymentTerms}</p>
                   </div>
                 )}
                 {invoiceSettings.dueDays > 0 && (
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Due Date</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('dueDate')}</p>
                     <p className="font-medium">
                       {fmtDate(
                         new Date(
@@ -771,7 +776,7 @@ export function InvoiceView({
           <div className="mt-6">
             <h4 className="mb-3 flex items-center gap-2 font-semibold">
               <Camera className="h-4 w-4" />
-              Service Images ({imageAttachments.length})
+              {t('serviceImages', { count: imageAttachments.length })}
             </h4>
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
               {imageAttachments.map((att, idx) => (
@@ -805,7 +810,7 @@ export function InvoiceView({
             <div className="mt-6">
               <h4 className="mb-3 flex items-center gap-2 font-semibold">
                 <Film className="h-4 w-4" />
-                Service Videos ({videoAttachments.length})
+                {t('serviceVideos', { count: videoAttachments.length })}
               </h4>
               <div className="space-y-3">
                 {videoAttachments.map((att) => (
@@ -844,7 +849,7 @@ export function InvoiceView({
               <div className="mt-6">
                 <h4 className="mb-3 flex items-center gap-2 font-semibold">
                   <Paperclip className="h-4 w-4" />
-                  Diagnostic Reports ({reports.length})
+                  {t('diagnosticReports', { count: reports.length })}
                 </h4>
                 <div className="space-y-2">
                   {reports.map((att) => (
@@ -871,21 +876,21 @@ export function InvoiceView({
           })()}
 
         {/* Notes */}
-        {record.invoiceNotes && (
+        {hasContent(record.invoiceNotes) && (
           <div className="mt-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Notes</p>
+            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('notes')}</p>
             <div
               className="notes-content text-sm text-gray-600 dark:text-gray-400"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.invoiceNotes) }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.invoiceNotes!) }}
             />
           </div>
         )}
-        {record.diagnosticNotes && (
+        {hasContent(record.diagnosticNotes) && (
           <div className="mt-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>Diagnostic Notes</p>
+            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('diagnosticNotes')}</p>
             <div
               className="notes-content text-sm text-gray-600 dark:text-gray-400"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.diagnosticNotes) }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.diagnosticNotes!) }}
             />
           </div>
         )}
@@ -901,9 +906,9 @@ export function InvoiceView({
       {portalUrl && (
         <div className="mt-3 border-t pt-3 text-center">
           <p className="text-xs text-muted-foreground">
-            View your vehicles, invoices, and more at your{" "}
+            {tc('portalMessage')}{" "}
             <a href={portalUrl} className="font-medium text-primary hover:underline">
-              customer portal
+              {tc('customerPortal')}
             </a>
           </p>
         </div>
@@ -912,7 +917,7 @@ export function InvoiceView({
       <div className="mt-4 flex flex-col items-center gap-1">
         {showTorqvoiceBranding ? (
           <div className="flex items-center justify-center gap-1.5">
-            <span className="text-xs text-gray-400">Powered by</span>
+            <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
             <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
             <a
               href="https://torqvoice.com"
@@ -935,7 +940,7 @@ export function InvoiceView({
             rel="noopener noreferrer"
             className="text-xs text-gray-400 hover:text-gray-600"
           >
-            Terms of Sale
+            {tc('termsOfSale')}
           </a>
         )}
       </div>

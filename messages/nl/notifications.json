@@ -1,0 +1,10 @@
+{
+  "panel": {
+    "title": "Meldingen",
+    "markAllRead": "Alles als gelezen markeren",
+    "empty": "Nog geen meldingen",
+    "confirmDelete": "Weet je het zeker?",
+    "delete": "Verwijderen",
+    "cancel": "Annuleren"
+  }
+}

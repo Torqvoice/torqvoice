@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +34,8 @@ interface CustomerFormProps {
 }
 
 export function CustomerForm({ open, onOpenChange, customer, onCreated }: CustomerFormProps) {
+  const t = useTranslations("customers.form");
+  const tc = useTranslations("common");
   const router = useRouter();
   const modal = useGlassModal();
   const [loading, setLoading] = useState(false);
@@ -56,7 +59,7 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
       : await createCustomer(data);
 
     if (result.success) {
-      toast.success(customer ? "Customer updated" : "Customer created");
+      toast.success(customer ? t("customerUpdated") : t("customerCreated"));
       onOpenChange(false);
       if (!customer && result.data && onCreated) {
         const created = result.data as { id: string; name: string; company: string | null };
@@ -64,7 +67,7 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
       }
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || "Failed to save customer");
+      modal.open("error", tc("errors.error"), result.error || t("saveError"));
     }
 
     setLoading(false);
@@ -75,17 +78,17 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {customer ? "Edit Customer" : "Add New Customer"}
+            {customer ? t("editTitle") : t("addTitle")}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name *</Label>
+            <Label htmlFor="name">{t("nameRequired")}</Label>
             <Input
               id="name"
               name="name"
-              placeholder="John Doe"
+              placeholder={t("namePlaceholder")}
               defaultValue={customer?.name}
               required
             />
@@ -93,52 +96,52 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{tc("form.email")}</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="john@example.com"
+                placeholder={t("emailPlaceholder")}
                 defaultValue={customer?.email ?? ""}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{tc("form.phone")}</Label>
               <Input
                 id="phone"
                 name="phone"
-                placeholder="(555) 123-4567"
+                placeholder={t("phonePlaceholder")}
                 defaultValue={customer?.phone ?? ""}
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="company">Company</Label>
+            <Label htmlFor="company">{tc("form.company")}</Label>
             <Input
               id="company"
               name="company"
-              placeholder="Company name"
+              placeholder={t("companyPlaceholder")}
               defaultValue={customer?.company ?? ""}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
+            <Label htmlFor="address">{tc("form.address")}</Label>
             <Input
               id="address"
               name="address"
-              placeholder="123 Main St, City, State"
+              placeholder={t("addressPlaceholder")}
               defaultValue={customer?.address ?? ""}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{tc("form.notes")}</Label>
             <Textarea
               id="notes"
               name="notes"
-              placeholder="Additional notes..."
+              placeholder={t("notesPlaceholder")}
               rows={3}
               defaultValue={customer?.notes ?? ""}
             />
@@ -150,11 +153,11 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {tc("buttons.cancel")}
             </Button>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {customer ? "Save Changes" : "Add Customer"}
+              {customer ? tc("buttons.saveChanges") : t("addTitle")}
             </Button>
           </div>
         </form>

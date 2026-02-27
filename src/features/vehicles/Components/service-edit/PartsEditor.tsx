@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Package, Plus, Trash2 } from 'lucide-react'
 import { formatCurrency } from '@/lib/format'
+import { useTranslations } from 'next-intl'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
 import { emptyPart } from './form-types'
 
@@ -27,15 +28,17 @@ export function PartsEditor({
   hasInventory,
   onOpenInventory,
 }: PartsEditorProps) {
+  const t = useTranslations('service.parts')
+
   return (
     <div className="rounded-lg border p-3 space-y-2">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">Parts</h3>
+        <h3 className="text-sm font-semibold">{t('title')}</h3>
         <div className="flex gap-2">
           {hasInventory && (
             <Button type="button" variant="outline" size="sm" onClick={onOpenInventory}>
               <Package className="mr-1 h-3.5 w-3.5" />
-              From Inventory
+              {t('fromInventory')}
             </Button>
           )}
           <Button
@@ -45,7 +48,7 @@ export function PartsEditor({
             onClick={() => setPartItems((prev) => [...prev, emptyPart()])}
           >
             <Plus className="mr-1 h-3.5 w-3.5" />
-            Add Part
+            {t('addPart')}
           </Button>
         </div>
       </div>
@@ -53,11 +56,11 @@ export function PartsEditor({
       {partItems.length > 0 && (
         <>
           <div className="hidden grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
-            <span>Part #</span>
-            <span>Name</span>
-            <span>Qty</span>
-            <span>Unit Price</span>
-            <span>Total</span>
+            <span>{t('partNumber')}</span>
+            <span>{t('name')}</span>
+            <span>{t('qty')}</span>
+            <span>{t('unitPrice')}</span>
+            <span>{t('total')}</span>
             <span />
           </div>
           {partItems.map((part, i) => (
@@ -66,12 +69,12 @@ export function PartsEditor({
               className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto]"
             >
               <Input
-                placeholder="Part #"
+                placeholder={t('partNumber')}
                 value={part.partNumber ?? ''}
                 onChange={(e) => updatePart(i, 'partNumber', e.target.value)}
               />
               <Textarea
-                placeholder="Name *"
+                placeholder={t('namePlaceholder')}
                 value={part.name}
                 onChange={(e) => updatePart(i, 'name', e.target.value)}
                 rows={1}
@@ -114,7 +117,7 @@ export function PartsEditor({
           </button>
           <div className="flex justify-end pt-1 text-sm">
             <span className="font-medium">
-              Parts Subtotal: {formatCurrency(partsSubtotal, currencyCode)}
+              {t('subtotal', { amount: formatCurrency(partsSubtotal, currencyCode) })}
             </span>
           </div>
         </>
@@ -127,7 +130,7 @@ export function PartsEditor({
           onClick={() => setPartItems((prev) => [...prev, emptyPart()])}
         >
           <Plus className="mr-1 h-4 w-4" />
-          <span className="text-sm">Add Part</span>
+          <span className="text-sm">{t('addPart')}</span>
         </button>
       )}
     </div>

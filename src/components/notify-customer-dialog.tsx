@@ -16,6 +16,7 @@ import { Loader2, Mail, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
 import { sendSmsToCustomer } from "@/features/sms/Actions/smsActions";
 import { sendNotificationEmail } from "@/features/email/Actions/emailActions";
+import { useTranslations } from "next-intl";
 
 interface NotifyCustomerDialogProps {
   open: boolean;
@@ -49,6 +50,7 @@ export function NotifyCustomerDialog({
   const [sendSms, setSendSms] = useState(false);
   const [sendEmail, setSendEmail] = useState(false);
   const [sending, setSending] = useState(false);
+  const t = useTranslations("workOrders.notify");
 
   const hasPhone = !!customer.phone;
   const hasEmail = !!customer.email;
@@ -76,8 +78,8 @@ export function NotifyCustomerDialog({
         relatedEntityType,
         relatedEntityId,
       });
-      if (res.success) results.push("SMS sent");
-      else toast.error(res.error || "Failed to send SMS");
+      if (res.success) results.push(t("smsSent"));
+      else toast.error(res.error || t("failedSms"));
     }
 
     if (sendEmail && hasEmail) {
@@ -86,8 +88,8 @@ export function NotifyCustomerDialog({
         subject: emailSubject,
         body: message,
       });
-      if (res.success) results.push("Email sent");
-      else toast.error(res.error || "Failed to send email");
+      if (res.success) results.push(t("emailSent"));
+      else toast.error(res.error || t("failedEmail"));
     }
 
     if (results.length > 0) {
@@ -104,9 +106,9 @@ export function NotifyCustomerDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Notify {customer.name}</DialogTitle>
+          <DialogTitle>{t("title", { name: customer.name })}</DialogTitle>
           <DialogDescription>
-            Send a notification to the customer about this update.
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -131,9 +133,9 @@ export function NotifyCustomerDialog({
                 className={`flex items-center gap-1.5 text-sm ${!smsEnabled || !hasPhone ? "text-muted-foreground/50" : ""}`}
               >
                 <MessageSquare className="h-3.5 w-3.5" />
-                SMS
-                {!hasPhone && <span className="text-xs">(no phone on file)</span>}
-                {hasPhone && !smsEnabled && <span className="text-xs">(not available)</span>}
+                {t("sms")}
+                {!hasPhone && <span className="text-xs">{t("noPhone")}</span>}
+                {hasPhone && !smsEnabled && <span className="text-xs">{t("notAvailable")}</span>}
               </Label>
             </div>
             <div className="flex items-center gap-2">
@@ -148,16 +150,16 @@ export function NotifyCustomerDialog({
                 className={`flex items-center gap-1.5 text-sm ${!emailEnabled || !hasEmail ? "text-muted-foreground/50" : ""}`}
               >
                 <Mail className="h-3.5 w-3.5" />
-                Email
-                {!hasEmail && <span className="text-xs">(no email on file)</span>}
-                {hasEmail && !emailEnabled && <span className="text-xs">(not available)</span>}
+                {t("email")}
+                {!hasEmail && <span className="text-xs">{t("noEmail")}</span>}
+                {hasEmail && !emailEnabled && <span className="text-xs">{t("notAvailable")}</span>}
               </Label>
             </div>
           </div>
 
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => onOpenChange(false)}>
-              Skip
+              {t("skip")}
             </Button>
             <Button onClick={handleSend} disabled={!canSend || sending}>
               {sending ? (
@@ -165,7 +167,7 @@ export function NotifyCustomerDialog({
               ) : (
                 <Send className="mr-2 h-4 w-4" />
               )}
-              Send
+              {t("send")}
             </Button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
+import { cookies } from "next/headers";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
 import { InvoicePDF } from "@/features/vehicles/Components/InvoicePDF";
@@ -21,6 +22,20 @@ export async function GET(
     if (!ctx) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    // Load locale-based PDF translations
+    const cookieStore = await cookies();
+    const locale = cookieStore.get("locale")?.value || "en";
+    let pdfMessages: Record<string, Record<string, string>>;
+    try {
+      pdfMessages = (await import(`../../../../../../../messages/${locale}/pdf.json`)).default;
+    } catch {
+      pdfMessages = (await import(`../../../../../../../messages/en/pdf.json`)).default;
+    }
+    const labels = {
+      ...pdfMessages.invoice,
+      ...pdfMessages.common,
+    };
 
     const { id } = await params;
 
@@ -202,6 +217,7 @@ export async function GET(
       template,
       torqvoiceLogoDataUri,
       portalUrl,
+      labels,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const invoiceBuffer = await renderToBuffer(element);

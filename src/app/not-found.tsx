@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getTranslations("common");
+
   return (
     <div className="grid-bg flex min-h-screen items-center justify-center p-4">
       <div className="absolute inset-0 overflow-hidden">
@@ -16,14 +19,14 @@ export default function NotFound() {
         </div>
 
         <p className="mb-2 font-mono text-6xl font-bold tracking-tighter text-primary">404</p>
-        <h1 className="text-xl font-semibold tracking-tight">Page Not Found</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("notFoundPage.title")}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Looks like this part is still in the shop. The page you&apos;re looking for doesn&apos;t exist or has been moved.
+          {t("notFoundPage.description")}
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button asChild>
-            <Link href="/">Back to Dashboard</Link>
+            <Link href="/">{t("notFoundPage.backToDashboard")}</Link>
           </Button>
         </div>
       </div>

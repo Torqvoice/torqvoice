@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { getCustomer } from "@/features/customers/Actions/customerActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
@@ -20,12 +21,13 @@ export default async function CustomerDetailPage({
   ]);
 
   if (!result.success || !result.data) {
+    const t = await getTranslations("customers.detail");
     return (
       <>
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-muted-foreground">
-            {result.error || "Customer not found"}
+            {result.error || t("notFound")}
           </p>
         </div>
       </>

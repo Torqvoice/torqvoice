@@ -1,0 +1,89 @@
+{
+  "stats": {
+    "activeJobs": "Active Jobs",
+    "pending": "Pending",
+    "todaysRevenue": "Today's Revenue",
+    "totalCustomers": "Total Customers"
+  },
+  "customize": "Customize",
+  "showCards": "Show cards",
+  "cards": {
+    "maintenance": "Predicted Maintenance",
+    "reminders": "Upcoming Reminders",
+    "inspections": "Inspections",
+    "quoteRequests": "Quote Requests",
+    "quoteResponses": "Quote Responses",
+    "sms": "Recent Messages",
+    "notifications": "Recent Notifications",
+    "recentCompleted": "Recent Completed",
+    "activeJobs": "Active Jobs"
+  },
+  "maintenance": {
+    "title": "Predicted Maintenance Due",
+    "description": "Based on service history and estimated daily mileage",
+    "overdue": "Overdue",
+    "approaching": "Approaching",
+    "estimated": "Est. {mileage} {unit}",
+    "sinceLastService": "{mileage} {unit} since last service",
+    "certainty": "{percent}% certainty"
+  },
+  "reminders": {
+    "title": "Upcoming Reminders",
+    "overdue": "Overdue",
+    "dueSoon": "Due Soon"
+  },
+  "messages": {
+    "title": "Recent Messages",
+    "viewAll": "View All",
+    "you": "You: "
+  },
+  "notifications": {
+    "title": "Recent Notifications"
+  },
+  "inspections": {
+    "title": "Inspections",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "itemCount": "{inspected}/{total} items"
+  },
+  "quoteRequests": {
+    "title": "Quote Requests",
+    "description": "Customers requesting quotes from shared inspections",
+    "pending": "Pending",
+    "createQuote": "Create Quote",
+    "itemsRequested": "{count, plural, one {# item requested} other {# items requested}}"
+  },
+  "quoteResponses": {
+    "title": "Customer Quote Responses",
+    "description": "Quotes that customers have accepted or requested changes on",
+    "accepted": "Accepted",
+    "changesRequested": "Changes Requested",
+    "convertToWorkOrder": "Convert to Work Order",
+    "viewQuote": "View Quote"
+  },
+  "recentCompleted": {
+    "title": "Recent Completed",
+    "date": "Date",
+    "vehicle": "Vehicle",
+    "customer": "Customer",
+    "serviceTitle": "Title",
+    "total": "Total",
+    "empty": "No completed services yet"
+  },
+  "activeJobsTable": {
+    "title": "Active Jobs",
+    "vehicle": "Vehicle",
+    "customer": "Customer",
+    "serviceTitle": "Title",
+    "status": "Status",
+    "tech": "Tech",
+    "empty": "No active jobs"
+  },
+  "relativeTime": {
+    "now": "now",
+    "minutes": "{count}m",
+    "hours": "{count}h",
+    "days": "{count}d"
+  },
+  "error": "Failed to load dashboard"
+}

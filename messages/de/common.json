@@ -1,0 +1,43 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Anmelden",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "submit": "Absenden",
+    "back": "Zurück",
+    "confirm": "Bestätigen",
+    "saveChanges": "Änderungen speichern",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen"
+  },
+  "form": {
+    "email": "E-Mail",
+    "password": "Passwort",
+    "emailPlaceholder": "you@example.com",
+    "name": "Name",
+    "phone": "Telefon",
+    "company": "Firma",
+    "address": "Adresse",
+    "notes": "Notizen"
+  },
+  "errors": {
+    "unexpected": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "error": "Fehler"
+  },
+  "terms": {
+    "termsOfService": "Nutzungsbedingungen"
+  },
+  "errorPage": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Der Motor ist unerwartet abgewürgt. Unsere Mechaniker wurden benachrichtigt und arbeiten bereits daran.",
+    "tryAgain": "Erneut versuchen",
+    "backToDashboard": "Zurück zum Dashboard"
+  },
+  "notFoundPage": {
+    "title": "Seite nicht gefunden",
+    "description": "Sieht aus, als wäre dieses Teil noch in der Werkstatt. Die Seite, die Sie suchen, existiert nicht oder wurde verschoben.",
+    "backToDashboard": "Zurück zum Dashboard"
+  }
+}

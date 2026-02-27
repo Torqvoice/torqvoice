@@ -4,6 +4,13 @@ import type { InvoiceData, PaymentSummary } from './types'
 import { gray, lightenColor, getFontBold } from './styles'
 import type { Style } from '@react-pdf/types'
 
+function fillTemplate(template: string, values: Record<string, string>): string {
+  return Object.entries(values).reduce(
+    (str, [key, val]) => str.replace(`{${key}}`, val),
+    template
+  )
+}
+
 interface TotalsProps {
   data: InvoiceData
   currencyCode: string
@@ -16,6 +23,7 @@ interface TotalsProps {
   isPaidInFull: boolean
   paymentSummary?: PaymentSummary
   styles: Record<string, Style>
+  labels: Record<string, string>
 }
 
 export function Totals({
@@ -30,6 +38,7 @@ export function Totals({
   isPaidInFull,
   paymentSummary,
   styles,
+  labels,
 }: TotalsProps) {
   const fontBold = getFontBold(fontFamily)
 
@@ -37,26 +46,28 @@ export function Totals({
     <View style={styles.totalsBox}>
       {data.partItems.length > 0 && (
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Parts</Text>
+          <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
           <Text style={styles.totalValue}>{formatCurrency(partsSubtotal, currencyCode)}</Text>
         </View>
       )}
       {data.laborItems.length > 0 && (
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Labor</Text>
+          <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
           <Text style={styles.totalValue}>{formatCurrency(laborSubtotal, currencyCode)}</Text>
         </View>
       )}
       {data.subtotal > 0 && (
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Subtotal</Text>
+          <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
           <Text style={styles.totalValue}>{formatCurrency(data.subtotal, currencyCode)}</Text>
         </View>
       )}
       {(data.discountAmount ?? 0) > 0 && (
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>
-            Discount{data.discountType === 'percentage' ? ` (${data.discountValue}%)` : ''}
+            {data.discountType === 'percentage'
+              ? (labels.discountPercent ? fillTemplate(labels.discountPercent, { percent: String(data.discountValue) }) : `Discount (${data.discountValue}%)`)
+              : (labels.discount || 'Discount')}
           </Text>
           <Text style={{ ...styles.totalValue, color: '#dc2626' }}>
             {formatCurrency(-(data.discountAmount ?? 0), currencyCode)}
@@ -65,7 +76,7 @@ export function Totals({
       )}
       {data.taxRate > 0 && (
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Tax ({data.taxRate}%)</Text>
+          <Text style={styles.totalLabel}>{labels.tax ? fillTemplate(labels.tax, { rate: String(data.taxRate) }) : `Tax (${data.taxRate}%)`}</Text>
           <Text style={styles.totalValue}>{formatCurrency(data.taxAmount, currencyCode)}</Text>
         </View>
       )}
@@ -73,14 +84,14 @@ export function Totals({
       {paymentSummary && paymentSummary.payments.length > 0 ? (
         <>
           <View style={styles.totalRow}>
-            <Text style={{ fontSize: 10, fontFamily: fontBold }}>Total</Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>{labels.total || 'Total'}</Text>
             <Text style={{ fontSize: 10, fontFamily: fontBold }}>
               {formatCurrency(displayTotal, currencyCode)}
             </Text>
           </View>
           <View style={{ ...styles.totalDivider, marginVertical: 6 }} />
           <Text style={{ fontSize: 9, fontFamily: fontBold, marginBottom: 4 }}>
-            Payments Received
+            {labels.paymentsReceived || 'Payments Received'}
           </Text>
           {paymentSummary.payments.map((p, i) => (
             <View key={i} style={styles.totalRow}>
@@ -107,7 +118,7 @@ export function Totals({
             }}
           >
             <Text style={{ fontSize: 16, fontFamily: fontBold }}>
-              {isPaidInFull ? 'PAID IN FULL' : 'Amount Due'}
+              {isPaidInFull ? (labels.paidInFull || 'PAID IN FULL') : (labels.amountDue || 'Amount Due')}
             </Text>
             <Text
               style={{
@@ -122,7 +133,7 @@ export function Totals({
         </>
       ) : (
         <View style={styles.grandTotalRow}>
-          <Text style={styles.grandTotalLabel}>Total</Text>
+          <Text style={styles.grandTotalLabel}>{labels.total || 'Total'}</Text>
           <Text style={styles.grandTotalValue}>{formatCurrency(displayTotal, currencyCode)}</Text>
         </View>
       )}

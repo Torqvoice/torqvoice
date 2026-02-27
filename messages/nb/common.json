@@ -1,0 +1,43 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Logg inn",
+    "save": "Lagre",
+    "saveChanges": "Lagre endringer",
+    "cancel": "Avbryt",
+    "delete": "Slett",
+    "submit": "Send inn",
+    "back": "Tilbake",
+    "confirm": "Bekreft",
+    "edit": "Rediger",
+    "add": "Legg til"
+  },
+  "form": {
+    "email": "E-post",
+    "password": "Passord",
+    "emailPlaceholder": "you@example.com",
+    "name": "Navn",
+    "phone": "Telefon",
+    "company": "Firma",
+    "address": "Adresse",
+    "notes": "Notater"
+  },
+  "errors": {
+    "unexpected": "En uventet feil oppstod. Vennligst prøv igjen.",
+    "error": "Feil"
+  },
+  "terms": {
+    "termsOfService": "Vilkår for bruk"
+  },
+  "errorPage": {
+    "title": "Noe gikk galt",
+    "description": "Motoren stoppet uventet. Mekanikerne våre er varslet og jobber med saken.",
+    "tryAgain": "Prøv igjen",
+    "backToDashboard": "Tilbake til dashbordet"
+  },
+  "notFoundPage": {
+    "title": "Siden ble ikke funnet",
+    "description": "Det ser ut som denne delen fortsatt er på verkstedet. Siden du leter etter finnes ikke eller har blitt flyttet.",
+    "backToDashboard": "Tilbake til dashbordet"
+  }
+}

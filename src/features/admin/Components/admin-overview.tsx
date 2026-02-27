@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useTranslations } from "next-intl";
 import { Building2, CreditCard, DollarSign, Users } from "lucide-react";
 
 type AdminStats = {
@@ -16,24 +17,26 @@ type AdminStats = {
 };
 
 export function AdminOverview({ stats }: { stats: AdminStats }) {
+  const t = useTranslations("admin");
+
   const cards = [
     {
-      title: "Total Users",
+      title: t("overview.totalUsers"),
       value: stats.totalUsers,
       icon: Users,
     },
     {
-      title: "Organizations",
+      title: t("overview.organizations"),
       value: stats.totalOrganizations,
       icon: Building2,
     },
     {
-      title: "Active Subscriptions",
+      title: t("overview.activeSubscriptions"),
       value: stats.totalActiveSubscriptions,
       icon: CreditCard,
     },
     {
-      title: "Monthly Revenue",
+      title: t("overview.monthlyRevenue"),
       value: `$${stats.totalRevenue.toFixed(2)}`,
       icon: DollarSign,
     },

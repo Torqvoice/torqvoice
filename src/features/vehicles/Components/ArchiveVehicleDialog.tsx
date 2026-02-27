@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   Dialog,
   DialogContent,
@@ -29,6 +30,8 @@ export function ArchiveVehicleDialog({
   vehicleName: string
 }) {
   const router = useRouter()
+  const t = useTranslations('vehicles.archiveDialog')
+  const tc = useTranslations('common.buttons')
   const [reason, setReason] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -38,12 +41,12 @@ export function ArchiveVehicleDialog({
     setLoading(false)
 
     if (result.success) {
-      toast.success(`${vehicleName} archived`)
+      toast.success(t('archived', { name: vehicleName }))
       setReason('')
       onOpenChange(false)
       router.refresh()
     } else {
-      toast.error(result.error || 'Failed to archive vehicle')
+      toast.error(result.error || t('archiveError'))
     }
   }
 
@@ -57,17 +60,16 @@ export function ArchiveVehicleDialog({
     >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Archive Vehicle</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
-            Archive <span className="font-medium">{vehicleName}</span>? It will be hidden from the
-            main list but all service history will be preserved.
+            {t.rich('description', { name: vehicleName, span: (chunks) => <span className="font-medium">{chunks}</span> })}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
-          <Label htmlFor="archive-reason">Reason (optional)</Label>
+          <Label htmlFor="archive-reason">{t('reasonLabel')}</Label>
           <Textarea
             id="archive-reason"
-            placeholder="e.g. Sold, totaled, decommissioned..."
+            placeholder={t('reasonPlaceholder')}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             rows={3}
@@ -75,7 +77,7 @@ export function ArchiveVehicleDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-            Cancel
+            {tc('cancel')}
           </Button>
           <Button
             className="bg-amber-600 text-white hover:bg-amber-700"
@@ -83,7 +85,7 @@ export function ArchiveVehicleDialog({
             disabled={loading}
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Archive
+            {t('title')}
           </Button>
         </DialogFooter>
       </DialogContent>

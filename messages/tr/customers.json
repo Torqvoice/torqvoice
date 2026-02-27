@@ -1,0 +1,76 @@
+{
+  "list": {
+    "addCustomer": "Müşteri Ekle",
+    "searchPlaceholder": "Müşteri ara...",
+    "table": {
+      "name": "Ad Soyad",
+      "company": "Şirket",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "vehicles": "Araçlar"
+    },
+    "emptySearch": "Aramanızla eşleşen müşteri bulunamadı.",
+    "empty": "Henüz müşteri yok.",
+    "deleteTitle": "Müşteriyi Sil",
+    "deleteDescription": "{name} silinsin mi? Bu işlem araçlarının bağlantısını kaldıracaktır.",
+    "deleteError": "Müşteri silinemedi",
+    "error": "Müşteriler yüklenemedi"
+  },
+  "detail": {
+    "backToCustomers": "Müşterilere dön",
+    "editCustomer": "Müşteriyi Düzenle",
+    "notFound": "Müşteri bulunamadı",
+    "emailCopied": "E-posta panoya kopyalandı",
+    "phoneCopied": "Telefon numarası panoya kopyalandı",
+    "tabs": {
+      "vehicles": "Araçlar ({count})",
+      "messages": "Mesajlar",
+      "requests": "Talepler ({count})"
+    },
+    "vehicleTable": {
+      "plate": "Plaka",
+      "vehicle": "Araç",
+      "mileage": "Kilometre",
+      "services": "Servisler"
+    },
+    "noVehicles": "Bu müşteriye atanmış araç yok"
+  },
+  "form": {
+    "addTitle": "Yeni Müşteri Ekle",
+    "editTitle": "Müşteriyi Düzenle",
+    "nameRequired": "Ad Soyad *",
+    "namePlaceholder": "Ahmet Yılmaz",
+    "emailPlaceholder": "ahmet@ornek.com.tr",
+    "phonePlaceholder": "0532 123 4567",
+    "companyPlaceholder": "Şirket adı",
+    "addressPlaceholder": "Atatürk Cad. No:1, 34000 İstanbul",
+    "notesPlaceholder": "Ek notlar...",
+    "customerUpdated": "Müşteri güncellendi",
+    "customerCreated": "Müşteri oluşturuldu",
+    "saveError": "Müşteri kaydedilemedi"
+  },
+  "serviceRequests": {
+    "statusNew": "Yeni",
+    "statusConverted": "İş Emri Oluşturuldu",
+    "statusDismissed": "Reddedildi",
+    "createWorkOrder": "İş Emri Oluştur",
+    "contactCustomer": "Müşteriyle İletişime Geç",
+    "dismiss": "Reddet",
+    "viewWorkOrder": "İş Emrini Görüntüle",
+    "notes": "Notlar",
+    "hideNotes": "Notları Gizle",
+    "staffNotes": "Personel notları:",
+    "notesPlaceholder": "Dahili not ekle...",
+    "saveNotes": "Notları Kaydet",
+    "submitted": "{date} tarihinde gönderildi",
+    "preferred": "Tercih edilen: {date}",
+    "workOrderCreated": "İş emri oluşturuldu",
+    "workOrderError": "İş emri oluşturulamadı",
+    "requestDismissed": "Talep reddedildi",
+    "dismissError": "Talep reddedilemedi",
+    "notesSaved": "Notlar kaydedildi",
+    "notesSaveError": "Notlar kaydedilemedi",
+    "smsLabel": "Servis Talebi Mesajı",
+    "smsDefault": "Merhaba {name}, {vehicle} aracınıza ilişkin servis talebinizle ilgili olarak: "
+  }
+}

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { signUp } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,6 +12,8 @@ import { Gauge, Loader2, XCircle } from 'lucide-react'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 
 export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
+  const t = useTranslations('auth.signUp')
+  const tc = useTranslations('common')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -27,13 +30,13 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
     try {
       const result = await signUp.email({ name, email, password })
       if (result.error) {
-        const message = result.error.message || 'Could not create account'
+        const message = result.error.message || t('errors.couldNotCreate')
         const isDisabled =
           message.toLowerCase().includes('disabled') ||
           message.toLowerCase().includes('failed to create')
         setError(
           isDisabled
-            ? 'Registration is currently disabled. Please contact your administrator.'
+            ? t('errors.registrationDisabled')
             : message,
         )
       } else if (inviteToken) {
@@ -42,7 +45,7 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
           router.push('/')
           router.refresh()
         } else {
-          setError(acceptResult.error || 'Failed to accept invitation')
+          setError(acceptResult.error || t('errors.invitationFailed'))
           router.push('/onboarding')
           router.refresh()
         }
@@ -51,7 +54,7 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
         router.refresh()
       }
     } catch {
-      setError('An unexpected error occurred. Please try again.')
+      setError(tc('errors.unexpected'))
     } finally {
       setLoading(false)
     }
@@ -69,14 +72,14 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
             <Gauge className="h-5 w-5 text-primary" />
             <span className="gradient-text text-sm font-bold tracking-wider uppercase">
-              Torqvoice
+              {tc('brandName')}
             </span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Create an account</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {inviteToken
-              ? 'Create your account to join the team'
-              : 'Set up your workshop to manage customer vehicles'}
+              ? t('descriptionInvite')
+              : t('descriptionDefault')}
           </p>
         </div>
 
@@ -89,11 +92,11 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="name">{t('fullName')}</Label>
             <Input
               id="name"
               type="text"
-              placeholder="John Doe"
+              placeholder={t('fullNamePlaceholder')}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -102,11 +105,11 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{tc('form.email')}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder={tc('form.emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -115,11 +118,11 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{tc('form.password')}</Label>
             <Input
               id="password"
               type="password"
-              placeholder="Create a strong password"
+              placeholder={t('passwordPlaceholder')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -138,23 +141,23 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
               className="mt-1 h-4 w-4 rounded border-border accent-primary"
             />
             <Label htmlFor="terms" className="text-sm font-normal leading-snug text-muted-foreground">
-              I agree to the{' '}
+              {t('agreeToTerms')}{' '}
               <Link href="/terms" target="_blank" className="font-medium text-primary hover:underline">
-                Terms of Service
+                {tc('terms.termsOfService')}
               </Link>
             </Label>
           </div>
 
           <Button type="submit" className="h-11 w-full" disabled={loading || !termsAccepted}>
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            {inviteToken ? 'Create Account & Join Team' : 'Create Account'}
+            {inviteToken ? t('createAccountJoin') : t('createAccount')}
           </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          Already have an account?{' '}
+          {t('alreadyHaveAccount')}{' '}
           <Link href="/auth/sign-in" className="font-medium text-primary hover:underline">
-            Sign in
+            {tc('buttons.signIn')}
           </Link>
         </p>
       </div>

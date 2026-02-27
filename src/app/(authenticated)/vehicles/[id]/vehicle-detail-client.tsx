@@ -16,12 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useGlassModal } from '@/components/glass-modal'
 import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
 import { NoteForm } from '@/features/vehicles/Components/NoteForm'
@@ -33,7 +28,10 @@ import { deleteNote, toggleNotePin } from '@/features/vehicles/Actions/noteActio
 import { toggleReminder, deleteReminder } from '@/features/vehicles/Actions/reminderActions'
 import { unarchiveVehicle } from '@/features/vehicles/Actions/unarchiveVehicle'
 import { deleteVehicle } from '@/features/vehicles/Actions/deleteVehicle'
-import { dismissMaintenance, undismissMaintenance } from '@/features/vehicles/Actions/dismissMaintenance'
+import {
+  dismissMaintenance,
+  undismissMaintenance,
+} from '@/features/vehicles/Actions/dismissMaintenance'
 import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
 import { formatCurrency } from '@/lib/format'
 import {
@@ -79,6 +77,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { useTranslations } from 'next-intl'
 
 interface CustomerOption {
   id: string
@@ -213,6 +212,10 @@ export function VehicleDetailClient({
   const router = useRouter()
   const searchParams = useSearchParams()
   const { formatDate } = useFormatDate()
+  const t = useTranslations('vehicles.detail')
+  const ti = useTranslations('vehicles.inspections')
+  const tr = useTranslations('vehicles.reminders')
+  const tc = useTranslations('common.buttons')
 
   const validTabs = ['services', 'inspections', 'notes', 'reminders'] as const
   const tabParam = searchParams.get('tab')
@@ -220,16 +223,19 @@ export function VehicleDetailClient({
     ? (tabParam as string)
     : 'services'
 
-  const handleTabChange = useCallback((value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (value === 'services') {
-      params.delete('tab')
-    } else {
-      params.set('tab', value)
-    }
-    const query = params.toString()
-    router.replace(`/vehicles/${vehicle.id}${query ? `?${query}` : ''}`, { scroll: false })
-  }, [searchParams, router, vehicle.id])
+  const handleTabChange = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (value === 'services') {
+        params.delete('tab')
+      } else {
+        params.set('tab', value)
+      }
+      const query = params.toString()
+      router.replace(`/vehicles/${vehicle.id}${query ? `?${query}` : ''}`, { scroll: false })
+    },
+    [searchParams, router, vehicle.id]
+  )
   const modal = useGlassModal()
   const [showEditForm, setShowEditForm] = useState(false)
   const [showNoteForm, setShowNoteForm] = useState(false)
@@ -287,10 +293,10 @@ export function VehicleDetailClient({
   const handleDeleteNote = async (id: string) => {
     const result = await deleteNote(id)
     if (result.success) {
-      toast.success('Note deleted')
+      toast.success(t('noteDeleted'))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to delete')
+      modal.open('error', 'Error', result.error || t('noteDeleteError'))
     }
   }
 
@@ -307,30 +313,30 @@ export function VehicleDetailClient({
   const handleDeleteReminder = async (id: string) => {
     const result = await deleteReminder(id)
     if (result.success) {
-      toast.success('Reminder deleted')
+      toast.success(t('reminderDeleted'))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to delete')
+      modal.open('error', 'Error', result.error || t('reminderDeleteError'))
     }
   }
 
   const handleUnarchive = async () => {
     const result = await unarchiveVehicle(vehicle.id)
     if (result.success) {
-      toast.success('Vehicle unarchived')
+      toast.success(t('vehicleUnarchived'))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to unarchive')
+      modal.open('error', 'Error', result.error || t('unarchiveError'))
     }
   }
 
   const handleDelete = async () => {
     const result = await deleteVehicle(vehicle.id)
     if (result.success) {
-      toast.success('Vehicle deleted')
+      toast.success(t('vehicleDeleted'))
       router.push('/vehicles')
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to delete vehicle')
+      modal.open('error', 'Error', result.error || t('vehicleDeleteError'))
     }
   }
 
@@ -341,14 +347,14 @@ export function VehicleDetailClient({
         <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
           <div className="flex items-center gap-2 text-sm">
             <Archive className="h-4 w-4 text-amber-600" />
-            <span className="font-medium text-amber-600">This vehicle is archived</span>
+            <span className="font-medium text-amber-600">{t('vehicleArchived')}</span>
             {vehicle.archiveReason && (
               <span className="text-muted-foreground">&mdash; {vehicle.archiveReason}</span>
             )}
           </div>
           <Button size="sm" variant="outline" onClick={handleUnarchive}>
             <ArchiveRestore className="mr-1 h-3.5 w-3.5" />
-            Unarchive
+            {t('unarchive')}
           </Button>
         </div>
       )}
@@ -361,22 +367,14 @@ export function VehicleDetailClient({
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to vehicles
+            {t('backToVehicles')}
           </Link>
           <div className="flex items-center gap-2">
             {!vehicle.isArchived && (
-              <>
-                <Button size="sm" asChild>
-                  <Link href={`/vehicles/${vehicle.id}/service/new`}>
-                    <Plus className="mr-1 h-3.5 w-3.5" />
-                    New Work Order
-                  </Link>
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => setShowEditForm(true)}>
-                  <Pencil className="mr-1 h-3.5 w-3.5" />
-                  Edit Vehicle
-                </Button>
-              </>
+              <Button variant="outline" size="sm" onClick={() => setShowEditForm(true)}>
+                <Pencil className="mr-1 h-3.5 w-3.5" />
+                {t('editVehicle')}
+              </Button>
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -388,12 +386,12 @@ export function VehicleDetailClient({
                 {vehicle.isArchived ? (
                   <DropdownMenuItem onClick={handleUnarchive}>
                     <ArchiveRestore className="mr-2 h-4 w-4" />
-                    Unarchive
+                    {t('unarchive')}
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem onClick={() => setShowArchiveDialog(true)}>
                     <Archive className="mr-2 h-4 w-4" />
-                    Archive
+                    {t('archive')}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
@@ -402,7 +400,7 @@ export function VehicleDetailClient({
                   onClick={() => setShowDeleteDialog(true)}
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  {t('delete')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -491,17 +489,19 @@ export function VehicleDetailClient({
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <TrendingUp className="h-3.5 w-3.5" />
               <span className="text-xs">
-                {unitSystem === 'metric' ? 'Predicted Km' : 'Predicted Mileage'}
+                {unitSystem === 'metric' ? t('predictedKm') : t('predictedMileage')}
               </span>
               <span className="font-semibold text-foreground">
                 ~{predictionData.predictedMileage.toLocaleString()}
               </span>
-              <span className="text-[10px] text-muted-foreground/70">({predictionData.confidencePercent}%)</span>
+              <span className="text-[10px] text-muted-foreground/70">
+                ({predictionData.confidencePercent}%)
+              </span>
               {predictionData.status && predictionData.maintenanceDismissed ? (
                 <>
                   <Badge variant="outline" className="text-[10px] ml-1 text-muted-foreground">
                     <EyeOff className="mr-0.5 h-3 w-3" />
-                    Dismissed
+                    {t('dismissed')}
                   </Badge>
                   <Button
                     variant="ghost"
@@ -515,7 +515,7 @@ export function VehicleDetailClient({
                     ) : (
                       <>
                         <Undo2 className="mr-0.5 h-3 w-3" />
-                        Undo
+                        {t('undo')}
                       </>
                     )}
                   </Button>
@@ -525,7 +525,7 @@ export function VehicleDetailClient({
                   {predictionData.status === 'overdue' && (
                     <>
                       <Badge variant="destructive" className="text-[10px] ml-1">
-                        Service Overdue
+                        {t('serviceOverdue')}
                       </Badge>
                       <Button
                         variant="ghost"
@@ -545,7 +545,7 @@ export function VehicleDetailClient({
                   {predictionData.status === 'approaching' && (
                     <>
                       <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px] ml-1">
-                        Service Soon
+                        {t('serviceSoon')}
                       </Badge>
                       <Button
                         variant="ghost"
@@ -569,7 +569,7 @@ export function VehicleDetailClient({
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Wrench className="h-3.5 w-3.5" />
             <span className="font-semibold text-foreground">{vehicle._count.serviceRecords}</span>
-            <span className="text-xs">services</span>
+            <span className="text-xs">{t('services')}</span>
           </div>
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <DollarSign className="h-3.5 w-3.5" />
@@ -580,7 +580,7 @@ export function VehicleDetailClient({
           {vehicle.purchaseDate && (
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <span className="text-xs">
-                Purchased {formatDate(new Date(vehicle.purchaseDate))}
+                {t('purchased', { date: formatDate(new Date(vehicle.purchaseDate)) })}
               </span>
             </div>
           )}
@@ -592,19 +592,19 @@ export function VehicleDetailClient({
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="services" className="gap-1.5">
             <Wrench className="h-3.5 w-3.5" />
-            Services
+            {t('tabs.services')}
           </TabsTrigger>
           <TabsTrigger value="inspections" className="gap-1.5">
             <ClipboardCheck className="h-3.5 w-3.5" />
-            Inspections
+            {t('tabs.inspections')}
           </TabsTrigger>
           <TabsTrigger value="notes" className="gap-1.5">
             <StickyNote className="h-3.5 w-3.5" />
-            Notes
+            {t('tabs.notes')}
           </TabsTrigger>
           <TabsTrigger value="reminders" className="gap-1.5">
             <Bell className="h-3.5 w-3.5" />
-            Reminders
+            {t('tabs.reminders')}
             {overdueCount > 0 && (
               <Badge variant="destructive" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                 {overdueCount}
@@ -633,15 +633,15 @@ export function VehicleDetailClient({
           <div className="flex justify-end">
             <Button size="sm" onClick={() => setShowNewInspection(true)}>
               <Plus className="mr-1 h-3.5 w-3.5" />
-              New Inspection
+              {ti('newInspection')}
             </Button>
           </div>
 
-          {(!inspections || inspections.length === 0) ? (
+          {!inspections || inspections.length === 0 ? (
             <Card className="border-dashed">
               <CardContent className="flex flex-col items-center py-12">
                 <ClipboardCheck className="mb-3 h-10 w-10 text-muted-foreground/40" />
-                <p className="text-sm text-muted-foreground">No inspections yet</p>
+                <p className="text-sm text-muted-foreground">{ti('empty')}</p>
               </CardContent>
             </Card>
           ) : (
@@ -649,16 +649,18 @@ export function VehicleDetailClient({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Template</TableHead>
-                    <TableHead className="w-32">Progress</TableHead>
-                    <TableHead className="w-28">Status</TableHead>
-                    <TableHead className="w-24">Date</TableHead>
+                    <TableHead>{ti('template')}</TableHead>
+                    <TableHead className="w-32">{ti('progress')}</TableHead>
+                    <TableHead className="w-28">{ti('status')}</TableHead>
+                    <TableHead className="w-24">{ti('date')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {inspections.map((insp) => {
                     const total = insp.items.length
-                    const inspected = insp.items.filter((i) => i.condition !== 'not_inspected').length
+                    const inspected = insp.items.filter(
+                      (i) => i.condition !== 'not_inspected'
+                    ).length
                     const passCount = insp.items.filter((i) => i.condition === 'pass').length
                     const failCount = insp.items.filter((i) => i.condition === 'fail').length
                     return (
@@ -673,13 +675,26 @@ export function VehicleDetailClient({
                             <div className="flex h-2 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                               {total > 0 && (
                                 <>
-                                  <div className="bg-emerald-500" style={{ width: `${(passCount / total) * 100}%` }} />
-                                  <div className="bg-red-500" style={{ width: `${(failCount / total) * 100}%` }} />
-                                  <div className="bg-amber-500" style={{ width: `${((inspected - passCount - failCount) / total) * 100}%` }} />
+                                  <div
+                                    className="bg-emerald-500"
+                                    style={{ width: `${(passCount / total) * 100}%` }}
+                                  />
+                                  <div
+                                    className="bg-red-500"
+                                    style={{ width: `${(failCount / total) * 100}%` }}
+                                  />
+                                  <div
+                                    className="bg-amber-500"
+                                    style={{
+                                      width: `${((inspected - passCount - failCount) / total) * 100}%`,
+                                    }}
+                                  />
                                 </>
                               )}
                             </div>
-                            <span className="text-xs text-muted-foreground">{inspected}/{total}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {inspected}/{total}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -687,7 +702,7 @@ export function VehicleDetailClient({
                             variant="outline"
                             className={`text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
                           >
-                            {insp.status === 'completed' ? 'Completed' : 'In Progress'}
+                            {insp.status === 'completed' ? ti('completed') : ti('inProgress')}
                           </Badge>
                         </TableCell>
                         <TableCell className="font-mono text-xs text-muted-foreground">
@@ -712,7 +727,10 @@ export function VehicleDetailClient({
             pageSize={paginatedNotes.pageSize}
             totalPages={paginatedNotes.totalPages}
             onSelectNote={setSelectedNote}
-            onAddNote={() => { setEditingNote(undefined); setShowNoteForm(true); }}
+            onAddNote={() => {
+              setEditingNote(undefined)
+              setShowNoteForm(true)
+            }}
             onTogglePin={handleTogglePin}
             onDeleteNote={handleDeleteNote}
           />
@@ -732,7 +750,7 @@ export function VehicleDetailClient({
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                  {tr(f)}
                 </button>
               ))}
             </div>
@@ -744,7 +762,7 @@ export function VehicleDetailClient({
               }}
             >
               <Plus className="mr-1 h-3.5 w-3.5" />
-              Add Reminder
+              {tr('addReminder')}
             </Button>
           </div>
 
@@ -754,10 +772,10 @@ export function VehicleDetailClient({
                 <Bell className="mb-3 h-10 w-10 text-muted-foreground/40" />
                 <p className="text-sm text-muted-foreground">
                   {reminderFilter === 'active'
-                    ? 'No active reminders'
+                    ? tr('emptyActive')
                     : reminderFilter === 'completed'
-                      ? 'No completed reminders'
-                      : 'No reminders yet'}
+                      ? tr('emptyCompleted')
+                      : tr('empty')}
                 </p>
               </CardContent>
             </Card>
@@ -798,20 +816,20 @@ export function VehicleDetailClient({
                             {urgency === 'overdue' && (
                               <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
                                 <AlertTriangle className="mr-0.5 h-3 w-3" />
-                                Overdue
+                                {tr('overdue')}
                               </Badge>
                             )}
                             {urgency === 'due-soon' && (
                               <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px] px-1.5 py-0">
                                 <Clock className="mr-0.5 h-3 w-3" />
-                                Due Soon
+                                {tr('dueSoon')}
                               </Badge>
                             )}
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            {r.dueDate && `Due ${formatDate(new Date(r.dueDate))}`}
+                            {r.dueDate && tr('due', { date: formatDate(new Date(r.dueDate)) })}
                             {r.dueMileage &&
-                              `${r.dueDate ? ' · ' : 'Due at '}${r.dueMileage.toLocaleString()} ${distUnit}`}
+                              `${r.dueDate ? ' · ' : ''}${tr('dueAt', { mileage: r.dueMileage.toLocaleString(), unit: distUnit })}`}
                           </p>
                           {r.description && (
                             <p className="mt-1 text-xs text-muted-foreground">{r.description}</p>
@@ -832,14 +850,14 @@ export function VehicleDetailClient({
                             }}
                           >
                             <Pencil className="mr-2 h-4 w-4" />
-                            Edit
+                            {tc('edit')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive"
                             onClick={() => handleDeleteReminder(r.id)}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
+                            {tc('delete')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -858,8 +876,18 @@ export function VehicleDetailClient({
         vehicle={vehicle}
         customers={customers}
       />
-      <NoteForm vehicleId={vehicle.id} open={showNoteForm} onOpenChange={setShowNoteForm} note={editingNote} />
-      <Dialog open={!!selectedNote} onOpenChange={(open) => { if (!open) setSelectedNote(null) }}>
+      <NoteForm
+        vehicleId={vehicle.id}
+        open={showNoteForm}
+        onOpenChange={setShowNoteForm}
+        note={editingNote}
+      />
+      <Dialog
+        open={!!selectedNote}
+        onOpenChange={(open) => {
+          if (!open) setSelectedNote(null)
+        }}
+      >
         <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -872,7 +900,7 @@ export function VehicleDetailClient({
           </DialogHeader>
           <div
             className="notes-content max-h-[60vh] overflow-y-auto text-sm break-all"
-            dangerouslySetInnerHTML={{ __html: selectedNote?.content ?? "" }}
+            dangerouslySetInnerHTML={{ __html: selectedNote?.content ?? '' }}
           />
           <div className="flex justify-end pt-2">
             <Button
@@ -887,7 +915,7 @@ export function VehicleDetailClient({
               }}
             >
               <Pencil className="mr-1 h-3.5 w-3.5" />
-              Edit
+              {t('edit')}
             </Button>
           </div>
         </DialogContent>
@@ -913,22 +941,18 @@ export function VehicleDetailClient({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete vehicle?</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete{' '}
-              <span className="font-semibold">
-                {vehicle.year} {vehicle.make} {vehicle.model}
-              </span>{' '}
-              and all associated service records, notes, and reminders. This action cannot be undone.
+              {t('deleteDescription', { name: `${vehicle.year} ${vehicle.make} ${vehicle.model}` })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {tc('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

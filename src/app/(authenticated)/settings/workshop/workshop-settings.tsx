@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +23,7 @@ import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard"
 
 export function WorkshopSettings({ settings }: { settings: Record<string, string> }) {
   const router = useRouter();
+  const t = useTranslations('settings');
   const [saving, setSaving] = useState(false);
 
   const [defaultTechnician, setDefaultTechnician] = useState(
@@ -47,7 +49,7 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
     });
     setSaving(false);
     router.refresh();
-    toast.success("Workshop settings saved");
+    toast.success(t('workshop.saved'));
   };
 
   return (
@@ -57,29 +59,29 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <Wrench className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">Workshop Defaults</CardTitle>
+          <CardTitle className="text-lg">{t('workshop.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm text-muted-foreground">
-            Default values used when creating new service records.
+            {t('workshop.description')}
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="defaultTechnician">Default Technician Name</Label>
+              <Label htmlFor="defaultTechnician">{t('workshop.defaultTechnician')}</Label>
               <Input
                 id="defaultTechnician"
-                placeholder="John Smith"
+                placeholder={t('workshop.technicianPlaceholder')}
                 value={defaultTechnician}
                 onChange={(e) => setDefaultTechnician(e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="defaultLaborRate">Default Labor Rate (per hour)</Label>
+              <Label htmlFor="defaultLaborRate">{t('workshop.defaultLaborRate')}</Label>
               <Input
                 id="defaultLaborRate"
                 type="number"
-                placeholder="75.00"
+                placeholder={t('workshop.laborRatePlaceholder')}
                 value={defaultLaborRate}
                 onChange={(e) => setDefaultLaborRate(e.target.value)}
               />
@@ -87,10 +89,10 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="workingHours">Working Hours</Label>
+            <Label htmlFor="workingHours">{t('workshop.workingHours')}</Label>
             <Input
               id="workingHours"
-              placeholder="Mon-Fri 8:00 AM - 5:00 PM"
+              placeholder={t('workshop.workingHoursPlaceholder')}
               value={workingHours}
               onChange={(e) => setWorkingHours(e.target.value)}
             />
@@ -101,21 +103,21 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
           <div className="space-y-4">
             <div className="flex flex-row items-center gap-3">
               <Ruler className="h-5 w-5 text-muted-foreground" />
-              <h3 className="text-lg font-semibold">Units</h3>
+              <h3 className="text-lg font-semibold">{t('workshop.unitsTitle')}</h3>
             </div>
             <p className="text-sm text-muted-foreground">
-              Choose between metric (km, liters) and imperial (miles, gallons) units.
+              {t('workshop.unitsDescription')}
             </p>
 
             <div className="space-y-2">
-              <Label htmlFor="unitSystem">Unit System</Label>
+              <Label htmlFor="unitSystem">{t('workshop.unitSystem')}</Label>
               <Select value={unitSystem} onValueChange={setUnitSystem}>
                 <SelectTrigger className="w-48">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="metric">Metric (km, liters)</SelectItem>
-                  <SelectItem value="imperial">Imperial (miles, gallons)</SelectItem>
+                  <SelectItem value="metric">{t('workshop.metric')}</SelectItem>
+                  <SelectItem value="imperial">{t('workshop.imperial')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -123,13 +125,13 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
             <div className="rounded-lg border p-3 text-sm text-muted-foreground">
               {unitSystem === "metric" ? (
                 <div className="space-y-1">
-                  <p>Distance: <span className="font-medium text-foreground">kilometers (km)</span></p>
-                  <p>Volume: <span className="font-medium text-foreground">liters (L)</span></p>
+                  <p>{t('workshop.distanceLabel')}: <span className="font-medium text-foreground">{t('workshop.kilometers')}</span></p>
+                  <p>{t('workshop.volumeLabel')}: <span className="font-medium text-foreground">{t('workshop.liters')}</span></p>
                 </div>
               ) : (
                 <div className="space-y-1">
-                  <p>Distance: <span className="font-medium text-foreground">miles (mi)</span></p>
-                  <p>Volume: <span className="font-medium text-foreground">gallons (gal)</span></p>
+                  <p>{t('workshop.distanceLabel')}: <span className="font-medium text-foreground">{t('workshop.miles')}</span></p>
+                  <p>{t('workshop.volumeLabel')}: <span className="font-medium text-foreground">{t('workshop.gallons')}</span></p>
                 </div>
               )}
             </div>
@@ -144,7 +146,7 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
                 ) : (
                   <Save className="mr-2 h-4 w-4" />
                 )}
-                Save Workshop Settings
+                {t('workshop.saveWorkshop')}
               </Button>
             </div>
           </SaveButton>

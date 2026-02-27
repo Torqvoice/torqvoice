@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,6 +56,7 @@ export function ServiceDocumentsManager({
   maxDiagnostics,
   maxDocuments,
 }: ServiceDocumentsManagerProps) {
+  const t = useTranslations("service");
   const [files, setFiles] = useState<Attachment[]>(initialDocuments);
   const [uploadingReports, setUploadingReports] = useState(false);
   const [uploadingDocuments, setUploadingDocuments] = useState(false);
@@ -77,21 +79,19 @@ export function ServiceDocumentsManager({
       if (maxLimit !== undefined) {
         const remaining = maxLimit - currentItems.length;
         if (remaining <= 0) {
-          const label = category === "diagnostic" ? "Diagnostic report" : "Document";
-          toast.error(`${label} limit reached (${currentItems.length}/${maxLimit}). Upgrade your plan for more.`);
+          const label = category === "diagnostic" ? t("documents.diagnosticLabel") : t("documents.documentLabel");
+          toast.error(t("documents.limitReachedToast", { label, count: currentItems.length, max: maxLimit }));
           return;
         }
         if (fileArr.length > remaining) {
           fileArr = fileArr.slice(0, remaining);
-          toast.warning(`Only uploading ${remaining} file${remaining > 1 ? "s" : ""} to stay within limit.`);
+          toast.warning(t("documents.onlyUploading", { count: remaining }));
         }
       }
       const setUploading =
         category === "diagnostic" ? setUploadingReports : setUploadingDocuments;
       setUploading(true);
-      const toastId = toast.loading(
-        `Uploading ${fileArr.length} file${fileArr.length > 1 ? "s" : ""}...`
-      );
+      const toastId = toast.loading(t("documents.uploadingCount", { count: fileArr.length }));
       let successCount = 0;
 
       for (const file of fileArr) {
@@ -134,27 +134,24 @@ export function ServiceDocumentsManager({
       }
 
       if (successCount > 0) {
-        toast.success(
-          `${successCount} file${successCount > 1 ? "s" : ""} uploaded`,
-          { id: toastId }
-        );
+        toast.success(t("documents.uploadedCount", { count: successCount }), { id: toastId });
       } else {
-        toast.error("Upload failed", { id: toastId });
+        toast.error(t("documents.uploadFailed"), { id: toastId });
       }
       setUploading(false);
     },
-    [serviceRecordId, maxDiagnostics, maxDocuments, diagnosticReports, documents]
+    [serviceRecordId, maxDiagnostics, maxDocuments, diagnosticReports, documents, t]
   );
 
   const handleDelete = useCallback(async (attachmentId: string) => {
     const result = await deleteServiceAttachment(attachmentId);
     if (result.success) {
       setFiles((prev) => prev.filter((f) => f.id !== attachmentId));
-      toast.success("File deleted");
+      toast.success(t("documents.deleted"));
     } else {
-      toast.error(result.error || "Failed to delete file");
+      toast.error(result.error || t("documents.failedDelete"));
     }
-  }, []);
+  }, [t]);
 
   const handleToggleInvoice = useCallback(
     async (attachmentId: string, checked: boolean) => {
@@ -175,10 +172,10 @@ export function ServiceDocumentsManager({
               : f
           )
         );
-        toast.error(result.error || "Failed to update");
+        toast.error(result.error || t("documents.failedUpdate"));
       }
     },
-    []
+    [t]
   );
 
   const renderFileList = (items: Attachment[]) =>
@@ -204,7 +201,7 @@ export function ServiceDocumentsManager({
                 }
                 className="scale-75"
               />
-              Invoice
+              {t("documents.invoice")}
             </label>
             <Button
               type="button"
@@ -227,7 +224,7 @@ export function ServiceDocumentsManager({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <FileText className="h-4 w-4" />
-            Diagnostic Reports
+            {t("documents.diagnosticTitle")}
             {maxDiagnostics !== undefined && (
               <span className="ml-auto text-xs font-normal text-muted-foreground">
                 {diagnosticReports.length} / {maxDiagnostics}
@@ -239,10 +236,10 @@ export function ServiceDocumentsManager({
           {diagnosticsAtLimit ? (
             <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
               <p className="text-sm font-medium text-muted-foreground">
-                Diagnostic report limit reached ({diagnosticReports.length}/{maxDiagnostics})
+                {t("documents.diagnosticLimitReached", { count: diagnosticReports.length, max: maxDiagnostics })}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Upgrade your plan to upload more.
+                {t("documents.upgradePrompt")}
               </p>
             </div>
           ) : (
@@ -258,12 +255,10 @@ export function ServiceDocumentsManager({
             >
               <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />
               <p className="text-sm font-medium">
-                {uploadingReports
-                  ? "Uploading..."
-                  : "Drop files here or click to browse"}
+                {uploadingReports ? t("documents.uploading") : t("documents.dropzone")}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                PDF, CSV, TXT — max 10MB each
+                {t("documents.diagnosticFormats")}
               </p>
               <input
                 ref={reportInputRef}
@@ -284,7 +279,7 @@ export function ServiceDocumentsManager({
           {uploadingReports && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Uploading reports...
+              {t("documents.uploadingReports")}
             </div>
           )}
 
@@ -297,7 +292,7 @@ export function ServiceDocumentsManager({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Paperclip className="h-4 w-4" />
-            Documents
+            {t("documents.documentsTitle")}
             {maxDocuments !== undefined && (
               <span className="ml-auto text-xs font-normal text-muted-foreground">
                 {documents.length} / {maxDocuments}
@@ -309,10 +304,10 @@ export function ServiceDocumentsManager({
           {documentsAtLimit ? (
             <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
               <p className="text-sm font-medium text-muted-foreground">
-                Document limit reached ({documents.length}/{maxDocuments})
+                {t("documents.documentLimitReached", { count: documents.length, max: maxDocuments })}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Upgrade your plan to upload more.
+                {t("documents.upgradePrompt")}
               </p>
             </div>
           ) : (
@@ -328,12 +323,10 @@ export function ServiceDocumentsManager({
             >
               <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />
               <p className="text-sm font-medium">
-                {uploadingDocuments
-                  ? "Uploading..."
-                  : "Drop files here or click to browse"}
+                {uploadingDocuments ? t("documents.uploading") : t("documents.dropzone")}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                PDF, DOCX, XLSX, CSV, TXT — max 10MB each
+                {t("documents.documentFormats")}
               </p>
               <input
                 ref={documentInputRef}
@@ -354,7 +347,7 @@ export function ServiceDocumentsManager({
           {uploadingDocuments && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Uploading documents...
+              {t("documents.uploadingDocuments")}
             </div>
           )}
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Search } from 'lucide-react'
@@ -23,6 +24,7 @@ export function InventoryPickerDialog({
   currencyCode,
   onSelectPart,
 }: InventoryPickerDialogProps) {
+  const t = useTranslations('service.parts')
   const [search, setSearch] = useState('')
 
   const filtered = inventoryParts.filter((p) => {
@@ -45,12 +47,12 @@ export function InventoryPickerDialog({
     >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Select Part from Inventory</DialogTitle>
+          <DialogTitle>{t('inventoryTitle')}</DialogTitle>
         </DialogHeader>
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search inventory..."
+            placeholder={t('searchInventory')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -84,7 +86,7 @@ export function InventoryPickerDialog({
                     </span>
                   )}
                 </div>
-                <span className="text-xs text-muted-foreground">{ip.quantity} in stock</span>
+                <span className="text-xs text-muted-foreground">{t('inStock', { quantity: ip.quantity })}</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
                 {ip.category && <span>{ip.category}</span>}
@@ -101,7 +103,7 @@ export function InventoryPickerDialog({
           ))}
           {filtered.length === 0 && (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              No inventory parts found.
+              {t('noInventory')}
             </p>
           )}
         </div>

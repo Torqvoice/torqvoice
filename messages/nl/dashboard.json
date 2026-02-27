@@ -1,0 +1,89 @@
+{
+  "stats": {
+    "activeJobs": "Actieve opdrachten",
+    "pending": "In afwachting",
+    "todaysRevenue": "Omzet vandaag",
+    "totalCustomers": "Totaal klanten"
+  },
+  "customize": "Aanpassen",
+  "showCards": "Kaarten tonen",
+  "cards": {
+    "maintenance": "Verwacht onderhoud",
+    "reminders": "Aankomende herinneringen",
+    "inspections": "Inspecties",
+    "quoteRequests": "Offerte-aanvragen",
+    "quoteResponses": "Offerte-reacties",
+    "sms": "Recente berichten",
+    "notifications": "Recente meldingen",
+    "recentCompleted": "Recent afgerond",
+    "activeJobs": "Actieve opdrachten"
+  },
+  "maintenance": {
+    "title": "Verwacht onderhoud gepland",
+    "description": "Gebaseerd op servicehistorie en geschatte dagelijkse kilometrage",
+    "overdue": "Achterstallig",
+    "approaching": "Binnenkort",
+    "estimated": "Geschat {mileage} {unit}",
+    "sinceLastService": "{mileage} {unit} sinds laatste service",
+    "certainty": "{percent}% zekerheid"
+  },
+  "reminders": {
+    "title": "Aankomende herinneringen",
+    "overdue": "Achterstallig",
+    "dueSoon": "Binnenkort verlopen"
+  },
+  "messages": {
+    "title": "Recente berichten",
+    "viewAll": "Alles bekijken",
+    "you": "U: "
+  },
+  "notifications": {
+    "title": "Recente meldingen"
+  },
+  "inspections": {
+    "title": "Inspecties",
+    "inProgress": "In uitvoering",
+    "completed": "Afgerond",
+    "itemCount": "{inspected}/{total} items"
+  },
+  "quoteRequests": {
+    "title": "Offerte-aanvragen",
+    "description": "Klanten die offertes aanvragen vanuit gedeelde inspecties",
+    "pending": "In afwachting",
+    "createQuote": "Offerte aanmaken",
+    "itemsRequested": "{count, plural, one {# item aangevraagd} other {# items aangevraagd}}"
+  },
+  "quoteResponses": {
+    "title": "Offerte-reacties van klanten",
+    "description": "Offertes die klanten hebben geaccepteerd of waarop wijzigingen zijn aangevraagd",
+    "accepted": "Geaccepteerd",
+    "changesRequested": "Wijzigingen aangevraagd",
+    "convertToWorkOrder": "Omzetten naar werkorder",
+    "viewQuote": "Offerte bekijken"
+  },
+  "recentCompleted": {
+    "title": "Recent afgerond",
+    "date": "Datum",
+    "vehicle": "Voertuig",
+    "customer": "Klant",
+    "serviceTitle": "Titel",
+    "total": "Totaal",
+    "empty": "Nog geen afgeronde services"
+  },
+  "activeJobsTable": {
+    "title": "Actieve opdrachten",
+    "vehicle": "Voertuig",
+    "customer": "Klant",
+    "serviceTitle": "Titel",
+    "status": "Status",
+    "tech": "Monteur",
+    "empty": "Geen actieve opdrachten"
+  },
+  "relativeTime": {
+    "now": "nu",
+    "minutes": "{count}m",
+    "hours": "{count}u",
+    "days": "{count}d"
+  },
+  "error": "Laden van dashboard mislukt"
+}

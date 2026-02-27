@@ -3,6 +3,13 @@ import { formatCurrency, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/for
 import { createStyles, gray, getFontBold } from '@/features/vehicles/Components/invoice-pdf/styles'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 
+function fillTemplate(template: string, values: Record<string, string>): string {
+  return Object.entries(values).reduce(
+    (str, [key, val]) => str.replace(`{${key}}`, val),
+    template
+  )
+}
+
 interface QuoteData {
   quoteNumber: string | null
   title: string
@@ -72,6 +79,7 @@ export function QuotePDF({
   imageAttachments = [],
   otherAttachments = [],
   pdfAttachmentNames = [],
+  labels = {},
 }: {
   data: QuoteData
   workshop?: WorkshopInfo
@@ -85,6 +93,7 @@ export function QuotePDF({
   imageAttachments?: ImageAttachmentPDF[]
   otherAttachments?: OtherAttachmentPDF[]
   pdfAttachmentNames?: string[]
+  labels?: Record<string, string>
 }) {
   const primaryColor = template?.primaryColor || '#d97706'
   const fontFamily = template?.fontFamily || 'Helvetica'
@@ -132,10 +141,10 @@ export function QuotePDF({
           )}
         </View>
         <View style={{ alignItems: 'flex-end' }}>
-          <Text style={{ fontSize: 14, fontFamily: fontBold, color: primaryColor }}>QUOTE</Text>
+          <Text style={{ fontSize: 14, fontFamily: fontBold, color: primaryColor }}>{labels.title || 'QUOTE'}</Text>
           <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{quoteNum}</Text>
           <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
-          {validDate && <Text style={{ fontSize: 9, color: gray }}>Valid until: {validDate}</Text>}
+          {validDate && <Text style={{ fontSize: 9, color: gray }}>{labels.validUntil ? fillTemplate(labels.validUntil, { date: validDate }) : `Valid until: ${validDate}`}</Text>}
         </View>
       </View>
       <View
@@ -148,7 +157,7 @@ export function QuotePDF({
       >
         <View style={{ flexDirection: 'row', gap: 12 }}>
           {workshop?.phone && (
-            <Text style={{ fontSize: 8, color: gray }}>Tel: {workshop.phone}</Text>
+            <Text style={{ fontSize: 8, color: gray }}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>
           )}
           {workshop?.email && (
             <Text style={{ fontSize: 8, color: gray }}>{workshop.email}</Text>
@@ -202,7 +211,7 @@ export function QuotePDF({
             <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
               {workshop?.phone && (
                 <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                  Tel: {workshop.phone}
+                  {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
                 </Text>
               )}
               {workshop?.email && (
@@ -239,11 +248,11 @@ export function QuotePDF({
           paddingBottom: 8,
         }}
       >
-        <Text style={{ fontSize: 18, fontFamily: fontBold, color: primaryColor }}>QUOTE</Text>
+        <Text style={{ fontSize: 18, fontFamily: fontBold, color: primaryColor }}>{labels.title || 'QUOTE'}</Text>
         <View style={{ flexDirection: 'row', gap: 16 }}>
           <Text style={{ fontSize: 9, color: gray }}>{quoteNum}</Text>
           <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
-          {validDate && <Text style={{ fontSize: 9, color: gray }}>Valid until: {validDate}</Text>}
+          {validDate && <Text style={{ fontSize: 9, color: gray }}>{labels.validUntil ? fillTemplate(labels.validUntil, { date: validDate }) : `Valid until: ${validDate}`}</Text>}
         </View>
       </View>
     </View>
@@ -260,7 +269,7 @@ export function QuotePDF({
         )}
         {showCompanyName && <Text style={styles.brandName}>{shopName}</Text>}
         {workshop?.address && <Text style={styles.brandSub}>{workshop.address}</Text>}
-        {workshop?.phone && <Text style={styles.brandContact}>Tel: {workshop.phone}</Text>}
+        {workshop?.phone && <Text style={styles.brandContact}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>}
         {workshop?.email && <Text style={styles.brandContact}>{workshop.email}</Text>}
       </View>
       <View>
@@ -270,10 +279,10 @@ export function QuotePDF({
             <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
           </View>
         )}
-        <Text style={{ ...styles.invoiceTitle, color: primaryColor }}>QUOTE</Text>
+        <Text style={{ ...styles.invoiceTitle, color: primaryColor }}>{labels.title || 'QUOTE'}</Text>
         <Text style={styles.invoiceNumber}>{quoteNum}</Text>
         <Text style={styles.invoiceNumber}>{createdDate}</Text>
-        {validDate && <Text style={styles.invoiceNumber}>Valid until: {validDate}</Text>}
+        {validDate && <Text style={styles.invoiceNumber}>{labels.validUntil ? fillTemplate(labels.validUntil, { date: validDate }) : `Valid until: ${validDate}`}</Text>}
       </View>
     </View>
   )
@@ -290,7 +299,7 @@ export function QuotePDF({
         <View style={styles.infoRow}>
           {data.customer && (
             <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>To</Text>
+              <Text style={styles.infoLabel}>{labels.to || 'To'}</Text>
               <Text style={styles.infoTextBold}>{data.customer.name}</Text>
               {data.customer.company && (
                 <Text style={styles.infoText}>{data.customer.company}</Text>
@@ -308,39 +317,39 @@ export function QuotePDF({
           )}
           {data.vehicle && (
             <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>Vehicle</Text>
+              <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
               <Text style={styles.infoTextBold}>
                 {data.vehicle.year} {data.vehicle.make} {data.vehicle.model}
               </Text>
               {data.vehicle.vin && (
-                <Text style={styles.infoTextSmall}>VIN: {data.vehicle.vin}</Text>
+                <Text style={styles.infoTextSmall}>{labels.vin ? fillTemplate(labels.vin, { vin: data.vehicle.vin }) : `VIN: ${data.vehicle.vin}`}</Text>
               )}
               {data.vehicle.licensePlate && (
-                <Text style={styles.infoTextSmall}>Plate: {data.vehicle.licensePlate}</Text>
+                <Text style={styles.infoTextSmall}>{labels.plate ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate }) : `Plate: ${data.vehicle.licensePlate}`}</Text>
               )}
             </View>
           )}
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Quote Details</Text>
+            <Text style={styles.infoLabel}>{labels.quoteDetails || 'Quote Details'}</Text>
             <Text style={styles.infoTextBold}>{data.title}</Text>
           </View>
         </View>
 
         {data.partItems.length > 0 && (
           <View>
-            <Text style={styles.sectionTitle}>Parts</Text>
+            <Text style={styles.sectionTitle}>{labels.parts || 'Parts'}</Text>
             <View style={styles.table}>
               <View style={styles.tableHeader}>
-                <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>Part #</Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>Description</Text>
+                <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>{labels.partNumber || 'Part #'}</Text>
+                <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>{labels.description || 'Description'}</Text>
                 <Text style={{ ...styles.tableHeaderCell, width: '12%', textAlign: 'right' }}>
-                  Qty
+                  {labels.qty || 'Qty'}
                 </Text>
                 <Text style={{ ...styles.tableHeaderCell, width: '18%', textAlign: 'right' }}>
-                  Unit Price
+                  {labels.unitPrice || 'Unit Price'}
                 </Text>
                 <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
-                  Total
+                  {labels.total || 'Total'}
                 </Text>
               </View>
               {data.partItems.map((p, i) => (
@@ -364,18 +373,18 @@ export function QuotePDF({
 
         {data.laborItems.length > 0 && (
           <View>
-            <Text style={styles.sectionTitle}>Labor</Text>
+            <Text style={styles.sectionTitle}>{labels.labor || 'Labor'}</Text>
             <View style={styles.table}>
               <View style={styles.tableHeader}>
-                <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>Description</Text>
+                <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.description || 'Description'}</Text>
                 <Text style={{ ...styles.tableHeaderCell, width: '15%', textAlign: 'right' }}>
-                  Hours
+                  {labels.hours || 'Hours'}
                 </Text>
                 <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
-                  Rate
+                  {labels.rate || 'Rate'}
                 </Text>
                 <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
-                  Total
+                  {labels.total || 'Total'}
                 </Text>
               </View>
               {data.laborItems.map((l, i) => (
@@ -385,7 +394,7 @@ export function QuotePDF({
                     {l.hours}
                   </Text>
                   <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right' }}>
-                    {formatCurrency(l.rate, currencyCode)}/hr
+                    {labels.ratePerHour ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(l.rate, currencyCode) }) : `${formatCurrency(l.rate, currencyCode)}/hr`}
                   </Text>
                   <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
                     {formatCurrency(l.total, currencyCode)}
@@ -399,7 +408,7 @@ export function QuotePDF({
         <View style={styles.totalsBox}>
           {data.laborItems.length > 0 && (
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Labor</Text>
+              <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
               <Text style={styles.totalValue}>
                 {formatCurrency(data.laborItems.reduce((sum, l) => sum + l.total, 0), currencyCode)}
               </Text>
@@ -407,7 +416,7 @@ export function QuotePDF({
           )}
           {data.partItems.length > 0 && (
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Parts</Text>
+              <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
               <Text style={styles.totalValue}>
                 {formatCurrency(data.partItems.reduce((sum, p) => sum + p.total, 0), currencyCode)}
               </Text>
@@ -415,14 +424,16 @@ export function QuotePDF({
           )}
           {data.subtotal > 0 && (
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Subtotal</Text>
+              <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
               <Text style={styles.totalValue}>{formatCurrency(data.subtotal, currencyCode)}</Text>
             </View>
           )}
           {data.discountAmount > 0 && (
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>
-                Discount{data.discountType === 'percentage' ? ` (${data.discountValue}%)` : ''}
+                {data.discountType === 'percentage'
+                  ? (labels.discountPercent ? fillTemplate(labels.discountPercent, { percent: String(data.discountValue) }) : `Discount (${data.discountValue}%)`)
+                  : (labels.discount || 'Discount')}
               </Text>
               <Text style={{ ...styles.totalValue, color: '#dc2626' }}>
                 {formatCurrency(-data.discountAmount, currencyCode)}
@@ -431,13 +442,13 @@ export function QuotePDF({
           )}
           {data.taxRate > 0 && (
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Tax ({data.taxRate}%)</Text>
+              <Text style={styles.totalLabel}>{labels.tax ? fillTemplate(labels.tax, { rate: String(data.taxRate) }) : `Tax (${data.taxRate}%)`}</Text>
               <Text style={styles.totalValue}>{formatCurrency(data.taxAmount, currencyCode)}</Text>
             </View>
           )}
           <View style={styles.totalDivider} />
           <View style={styles.grandTotalRow}>
-            <Text style={styles.grandTotalLabel}>Total</Text>
+            <Text style={styles.grandTotalLabel}>{labels.total || 'Total'}</Text>
             <Text style={styles.grandTotalValue}>
               {formatCurrency(data.totalAmount, currencyCode)}
             </Text>
@@ -446,7 +457,7 @@ export function QuotePDF({
 
         {torqvoiceLogoDataUri && (
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginTop: 6 }}>
-            <Text style={{ fontSize: 7, color: gray }}>Powered by</Text>
+            <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
             <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
             <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
           </View>
@@ -462,7 +473,7 @@ export function QuotePDF({
         {portalUrl && (
           <View style={{ marginTop: 8 }}>
             <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
-              View your portal: {portalUrl}
+              {labels.viewPortal ? fillTemplate(labels.viewPortal, { url: portalUrl }) : `View your portal: ${portalUrl}`}
             </Text>
           </View>
         )}
@@ -470,7 +481,7 @@ export function QuotePDF({
         {/* Document attachment names */}
         {(otherAttachments.length > 0 || pdfAttachmentNames.length > 0) && (
           <View style={{ marginTop: 10 }}>
-            <Text style={styles.sectionTitle}>Attached Documents</Text>
+            <Text style={styles.sectionTitle}>{labels.attachedDocuments || 'Attached Documents'}</Text>
             {otherAttachments.map((att, i) => (
               <Text key={`other-${i}`} style={{ fontSize: 9, color: gray, marginBottom: 2 }}>
                 {att.fileName}
@@ -478,7 +489,7 @@ export function QuotePDF({
             ))}
             {pdfAttachmentNames.map((name, i) => (
               <Text key={`pdf-${i}`} style={{ fontSize: 9, color: gray, marginBottom: 2 }}>
-                {name} (attached)
+                {labels.attached ? fillTemplate(labels.attached, { name }) : `${name} (attached)`}
               </Text>
             ))}
           </View>
@@ -493,22 +504,26 @@ export function QuotePDF({
             gap: 4,
           }}>
             <Text style={{ fontSize: 8, color: gray }}>
-              This quote is valid{validDate ? ` until ${validDate}` : ' for 30 days'} ·{' '}
+              {validDate
+                ? (labels.validityFooterUntil ? fillTemplate(labels.validityFooterUntil, { date: validDate }) : `This quote is valid until ${validDate}`)
+                : (labels.validityFooter30 || 'This quote is valid for 30 days')} ·{' '}
             </Text>
-            <Text style={{ fontSize: 7, color: gray }}>Powered by</Text>
+            <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
             <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
             <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
           </View>
         ) : (
           <Text style={styles.footer}>
-            This quote is valid{validDate ? ` until ${validDate}` : ' for 30 days'} · {shopName}
+            {validDate
+              ? (labels.validityFooterUntil ? fillTemplate(labels.validityFooterUntil, { date: validDate }) : `This quote is valid until ${validDate}`)
+              : (labels.validityFooter30 || 'This quote is valid for 30 days')} · {shopName}
           </Text>
         )}
       </Page>
 
       {imageAttachments.length > 0 && (
         <Page size="A4" style={styles.page}>
-          <Text style={styles.sectionTitle}>Quote Images</Text>
+          <Text style={styles.sectionTitle}>{labels.quoteImages || 'Quote Images'}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
             {imageAttachments.map((img, i) => (
               <View key={i} style={{ width: '48%', marginBottom: 8 }}>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import {
   Car,
@@ -14,38 +15,39 @@ import {
 
 const navItems = [
   {
-    title: "Dashboard",
+    key: "dashboard" as const,
     href: "dashboard",
     icon: LayoutDashboard,
   },
   {
-    title: "Vehicles",
+    key: "vehicles" as const,
     href: "vehicles",
     icon: Car,
   },
   {
-    title: "Invoices",
+    key: "invoices" as const,
     href: "invoices",
     icon: FileText,
   },
   {
-    title: "Quotes",
+    key: "quotes" as const,
     href: "quotes",
     icon: FileQuestion,
   },
   {
-    title: "Inspections",
+    key: "inspections" as const,
     href: "inspections",
     icon: ClipboardCheck,
   },
   {
-    title: "Request Service",
+    key: "requestService" as const,
     href: "request-service",
     icon: Wrench,
   },
 ];
 
 export function PortalNav({ orgId }: { orgId: string }) {
+  const t = useTranslations("portal.nav");
   const pathname = usePathname();
 
   return (
@@ -65,7 +67,7 @@ export function PortalNav({ orgId }: { orgId: string }) {
             )}
           >
             <item.icon className="h-4 w-4 shrink-0" />
-            <span className="truncate">{item.title}</span>
+            <span className="truncate">{t(item.key)}</span>
           </Link>
         );
       })}

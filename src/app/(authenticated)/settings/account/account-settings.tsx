@@ -25,6 +25,7 @@ import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
 import { deleteContent } from '@/features/settings/Actions/deleteContent'
 import { signOut } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 interface ContentCounts {
   vehicles: number
@@ -42,6 +43,7 @@ export function AccountSettings({
 }) {
   const { data: session } = useSession()
   const router = useRouter()
+  const t = useTranslations('settings')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
 
@@ -95,11 +97,11 @@ export function AccountSettings({
         await signOut()
         router.push('/auth/sign-in')
       } else {
-        toast.error(result.error || 'Failed to delete account')
+        toast.error(result.error || t('account.failedDeleteAccount'))
         setDeleting(false)
       }
     } catch {
-      toast.error('Failed to delete account')
+      toast.error(t('account.failedDeleteAccount'))
       setDeleting(false)
     }
   }
@@ -113,58 +115,58 @@ export function AccountSettings({
     try {
       const result = await deleteContent(contentSelections)
       if (result.success) {
-        toast.success('Selected content has been permanently deleted')
+        toast.success(t('account.contentDeleted'))
         setContentDialogOpen(false)
         setContentConfirmText('')
         setContentSelections({ vehicles: false, customers: false, quotes: false, inventory: false })
         router.refresh()
       } else {
-        toast.error(result.error || 'Failed to delete content')
+        toast.error(result.error || t('account.failedDeleteContent'))
       }
     } catch {
-      toast.error('Failed to delete content')
+      toast.error(t('account.failedDeleteContent'))
     }
     setDeletingContent(false)
   }
 
   const handleEnable2FA = async () => {
     if (!twoFactorPassword) {
-      toast.error('Please enter your password')
+      toast.error(t('account.enterPasswordError'))
       return
     }
     setEnabling2FA(true)
     try {
       const result = await authClient.twoFactor.enable({ password: twoFactorPassword })
       if (result.error) {
-        toast.error(result.error.message || 'Failed to enable 2FA')
+        toast.error(result.error.message || t('account.failedEnable2FA'))
       } else {
         setTotpURI(result.data?.totpURI || '')
         setBackupCodes(result.data?.backupCodes || [])
         setSetupStep('qr')
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to enable 2FA')
+      toast.error(err instanceof Error ? err.message : t('account.failedEnable2FA'))
     }
     setEnabling2FA(false)
   }
 
   const handleDisable2FA = async () => {
     if (!twoFactorPassword) {
-      toast.error('Please enter your password')
+      toast.error(t('account.enterPasswordError'))
       return
     }
     setDisabling2FA(true)
     try {
       const result = await authClient.twoFactor.disable({ password: twoFactorPassword })
       if (result.error) {
-        toast.error(result.error.message || 'Failed to disable 2FA')
+        toast.error(result.error.message || t('account.failedDisable2FA'))
       } else {
         setTwoFactorEnabled(false)
         setTwoFactorPassword('')
-        toast.success('Two-factor authentication disabled')
+        toast.success(t('account.twoFactorDisabled'))
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to disable 2FA')
+      toast.error(err instanceof Error ? err.message : t('account.failedDisable2FA'))
     }
     setDisabling2FA(false)
   }
@@ -172,25 +174,25 @@ export function AccountSettings({
   const handleCopyBackupCodes = () => {
     navigator.clipboard.writeText(backupCodes.join('\n'))
     setCopiedBackup(true)
-    toast.success('Backup codes copied to clipboard')
+    toast.success(t('account.backupCodesCopied'))
     setTimeout(() => setCopiedBackup(false), 2000)
   }
 
   const handleVerify2FA = async () => {
     if (!verifyCode.trim()) {
-      toast.error('Please enter the code from your authenticator app')
+      toast.error(t('account.enterCodeError'))
       return
     }
     setVerifying2FA(true)
     try {
       const result = await authClient.twoFactor.verifyTotp({ code: verifyCode })
       if (result.error) {
-        toast.error(result.error.message || 'Invalid code. Please try again.')
+        toast.error(result.error.message || t('account.invalidCode'))
       } else {
         setSetupStep('backup')
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Verification failed')
+      toast.error(err instanceof Error ? err.message : t('account.verificationFailed'))
     }
     setVerifying2FA(false)
   }
@@ -211,7 +213,7 @@ export function AccountSettings({
     setBackupCodes([])
     setTwoFactorPassword('')
     setVerifyCode('')
-    toast.success('Two-factor authentication enabled')
+    toast.success(t('account.twoFactorEnabledSuccess'))
   }
 
   const handleUpdateProfile = async () => {
@@ -219,30 +221,30 @@ export function AccountSettings({
     try {
       const result = await authClient.updateUser({ name })
       if (result.error) {
-        toast.error(result.error.message || 'Failed to update profile')
+        toast.error(result.error.message || t('account.failedUpdateProfile'))
         return
       }
       if (email !== session?.user?.email) {
         const emailResult = await updateEmail({ email })
         if (!emailResult.success) {
-          toast.error(emailResult.error || 'Failed to update email')
+          toast.error(emailResult.error || t('account.failedUpdateEmail'))
           return
         }
       }
-      toast.success('Profile updated')
+      toast.success(t('account.profileUpdated'))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to update profile')
+      toast.error(err instanceof Error ? err.message : t('account.failedUpdateProfile'))
     }
     setSavingProfile(false)
   }
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      toast.error('Passwords do not match')
+      toast.error(t('account.passwordsNoMatch'))
       return
     }
     if (newPassword.length < 8) {
-      toast.error('Password must be at least 8 characters')
+      toast.error(t('account.passwordMinLength'))
       return
     }
     setSavingPassword(true)
@@ -252,15 +254,15 @@ export function AccountSettings({
         newPassword,
       })
       if (result.error) {
-        toast.error(result.error.message || 'Failed to change password')
+        toast.error(result.error.message || t('account.failedChangePassword'))
       } else {
-        toast.success('Password changed')
+        toast.success(t('account.passwordChanged'))
         setCurrentPassword('')
         setNewPassword('')
         setConfirmPassword('')
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to change password')
+      toast.error(err instanceof Error ? err.message : t('account.failedChangePassword'))
     }
     setSavingPassword(false)
   }
@@ -297,15 +299,15 @@ export function AccountSettings({
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <User className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">Profile</CardTitle>
+          <CardTitle className="text-lg">{t('account.profileTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Update your display name and email address.
+            {t('account.profileDescription')}
           </p>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="display-name">Name</Label>
+              <Label htmlFor="display-name">{t('account.name')}</Label>
               <Input
                 id="display-name"
                 value={name}
@@ -314,18 +316,18 @@ export function AccountSettings({
                   if (e.target.value === session?.user?.email) return
                   setName(e.target.value)
                 }}
-                placeholder="Your name"
+                placeholder={t('account.namePlaceholder')}
                 autoComplete="off"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="profile-email">Email</Label>
+              <Label htmlFor="profile-email">{t('account.emailLabel')}</Label>
               <Input
                 id="profile-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your email"
+                placeholder={t('account.emailPlaceholder')}
                 autoComplete="off"
               />
             </div>
@@ -338,7 +340,7 @@ export function AccountSettings({
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}
-              Save Profile
+              {t('account.saveProfile')}
             </Button>
           </div>
         </CardContent>
@@ -348,15 +350,15 @@ export function AccountSettings({
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <KeyRound className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">Change Password</CardTitle>
+          <CardTitle className="text-lg">{t('account.changePasswordTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Enter your current password and choose a new one.
+            {t('account.changePasswordDescription')}
           </p>
           <div className="grid gap-4 sm:grid-cols-1 max-w-sm">
             <div className="space-y-2">
-              <Label htmlFor="currentPassword">Current Password</Label>
+              <Label htmlFor="currentPassword">{t('account.currentPassword')}</Label>
               <Input
                 id="currentPassword"
                 type="password"
@@ -365,7 +367,7 @@ export function AccountSettings({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="newPassword">New Password</Label>
+              <Label htmlFor="newPassword">{t('account.newPassword')}</Label>
               <Input
                 id="newPassword"
                 type="password"
@@ -374,7 +376,7 @@ export function AccountSettings({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <Label htmlFor="confirmPassword">{t('account.confirmNewPassword')}</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -391,7 +393,7 @@ export function AccountSettings({
               ) : (
                 <KeyRound className="mr-2 h-4 w-4" />
               )}
-              Change Password
+              {t('account.changePassword')}
             </Button>
           </div>
         </CardContent>
@@ -400,7 +402,7 @@ export function AccountSettings({
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <Shield className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">Two-Factor Authentication</CardTitle>
+          <CardTitle className="text-lg">{t('account.twoFactorTitle')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {twoFactorEnabled ? (
@@ -408,20 +410,20 @@ export function AccountSettings({
               <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-3">
                 <Shield className="h-5 w-5 text-emerald-500" />
                 <span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-                  Two-factor authentication is enabled
+                  {t('account.twoFactorEnabled')}
                 </span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Enter your password to disable two-factor authentication.
+                {t('account.twoFactorDisablePrompt')}
               </p>
               <div className="max-w-sm space-y-2">
-                <Label htmlFor="2fa-disable-password">Password</Label>
+                <Label htmlFor="2fa-disable-password">{t('account.password')}</Label>
                 <Input
                   id="2fa-disable-password"
                   type="password"
                   value={twoFactorPassword}
                   onChange={(e) => setTwoFactorPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder={t('account.enterPassword')}
                 />
               </div>
               <Separator />
@@ -435,19 +437,18 @@ export function AccountSettings({
                 ) : (
                   <ShieldOff className="mr-2 h-4 w-4" />
                 )}
-                Disable 2FA
+                {t('account.disable2FA')}
               </Button>
             </>
           ) : (
             <>
               <p className="text-sm text-muted-foreground">
-                Add an extra layer of security to your account by enabling two-factor authentication
-                with an authenticator app.
+                {t('account.twoFactorEnablePrompt')}
               </p>
               <Separator />
               <Button onClick={handleOpenSetupDialog}>
                 <Shield className="mr-2 h-4 w-4" />
-                Enable 2FA
+                {t('account.enable2FA')}
               </Button>
             </>
           )}
@@ -467,19 +468,19 @@ export function AccountSettings({
           {setupStep === 'password' && (
             <>
               <DialogHeader>
-                <DialogTitle>Enable Two-Factor Authentication</DialogTitle>
+                <DialogTitle>{t('account.setupDialogTitle')}</DialogTitle>
                 <DialogDescription>
-                  Enter your password to begin setting up 2FA with an authenticator app.
+                  {t('account.setupDialogDescription')}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-2 py-2">
-                <Label htmlFor="2fa-enable-password">Password</Label>
+                <Label htmlFor="2fa-enable-password">{t('account.password')}</Label>
                 <Input
                   id="2fa-enable-password"
                   type="password"
                   value={twoFactorPassword}
                   onChange={(e) => setTwoFactorPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder={t('account.enterPassword')}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleEnable2FA()
                   }}
@@ -491,7 +492,7 @@ export function AccountSettings({
                 </Button>
                 <Button onClick={handleEnable2FA} disabled={enabling2FA}>
                   {enabling2FA && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Continue
+                  {t('account.continue')}
                 </Button>
               </DialogFooter>
             </>
@@ -500,9 +501,9 @@ export function AccountSettings({
           {setupStep === 'qr' && (
             <>
               <DialogHeader>
-                <DialogTitle>Scan QR Code</DialogTitle>
+                <DialogTitle>{t('account.scanQRTitle')}</DialogTitle>
                 <DialogDescription>
-                  Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)
+                  {t('account.scanQRDescription')}
                 </DialogDescription>
               </DialogHeader>
               <div className="flex justify-center rounded-lg bg-white p-6">
@@ -510,7 +511,7 @@ export function AccountSettings({
               </div>
               <DialogFooter>
                 <Button onClick={() => setSetupStep('verify')} className="w-full">
-                  Continue
+                  {t('account.continue')}
                 </Button>
               </DialogFooter>
             </>
@@ -519,18 +520,18 @@ export function AccountSettings({
           {setupStep === 'verify' && (
             <>
               <DialogHeader>
-                <DialogTitle>Verify Code</DialogTitle>
+                <DialogTitle>{t('account.verifyCodeTitle')}</DialogTitle>
                 <DialogDescription>
-                  Enter the 6-digit code from your authenticator app to verify it&apos;s set up correctly.
+                  {t('account.verifyCodeDescription')}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-2 py-2">
-                <Label htmlFor="2fa-verify-code">Authentication Code</Label>
+                <Label htmlFor="2fa-verify-code">{t('account.authCode')}</Label>
                 <Input
                   id="2fa-verify-code"
                   type="text"
                   inputMode="numeric"
-                  placeholder="000000"
+                  placeholder={t('account.authCodePlaceholder')}
                   value={verifyCode}
                   onChange={(e) => setVerifyCode(e.target.value)}
                   autoFocus
@@ -543,11 +544,11 @@ export function AccountSettings({
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setSetupStep('qr')}>
-                  Back
+                  {t('account.back')}
                 </Button>
                 <Button onClick={handleVerify2FA} disabled={verifying2FA}>
                   {verifying2FA && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Verify
+                  {t('account.verify')}
                 </Button>
               </DialogFooter>
             </>
@@ -556,10 +557,9 @@ export function AccountSettings({
           {setupStep === 'backup' && (
             <>
               <DialogHeader>
-                <DialogTitle>Save Backup Codes</DialogTitle>
+                <DialogTitle>{t('account.backupCodesTitle')}</DialogTitle>
                 <DialogDescription className="text-amber-700 dark:text-amber-400">
-                  Save these codes in a safe place. You can use them to sign in if you lose access to
-                  your authenticator app. Each code can only be used once.
+                  {t('account.backupCodesDescription')}
                 </DialogDescription>
               </DialogHeader>
               <div className="rounded-lg border bg-muted/50 p-4">
@@ -578,10 +578,10 @@ export function AccountSettings({
                   ) : (
                     <Copy className="mr-2 h-4 w-4" />
                   )}
-                  {copiedBackup ? 'Copied' : 'Copy Codes'}
+                  {copiedBackup ? t('account.copied') : t('account.copyCodes')}
                 </Button>
                 <Button onClick={handleFinishSetup} className="w-full">
-                  I&apos;ve saved my backup codes
+                  {t('account.savedBackupCodes')}
                 </Button>
               </DialogFooter>
             </>
@@ -593,16 +593,15 @@ export function AccountSettings({
       <Card className="border-destructive/30 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <AlertTriangle className="h-5 w-5 text-destructive" />
-          <CardTitle className="text-lg text-destructive">Danger Zone</CardTitle>
+          <CardTitle className="text-lg text-destructive">{t('account.dangerZone')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Delete Content */}
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="font-medium">Delete Content</p>
+              <p className="font-medium">{t('account.deleteContentTitle')}</p>
               <p className="text-sm text-muted-foreground">
-                Selectively delete organization data such as vehicles, customers, quotes, or inventory.
-                Your account and settings will remain intact.
+                {t('account.deleteContentDescription')}
               </p>
             </div>
             <Button
@@ -615,7 +614,7 @@ export function AccountSettings({
               }}
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete Content
+              {t('account.deleteContentButton')}
             </Button>
           </div>
 
@@ -624,10 +623,9 @@ export function AccountSettings({
           {/* Delete Account */}
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="font-medium">Delete Account</p>
+              <p className="font-medium">{t('account.deleteAccountTitle')}</p>
               <p className="text-sm text-muted-foreground">
-                Permanently delete your account and all associated data including vehicles, service records,
-                work orders, invoices, customers, files, and payments. This action cannot be undone.
+                {t('account.deleteAccountDescription')}
               </p>
             </div>
             <Button
@@ -635,7 +633,7 @@ export function AccountSettings({
               onClick={() => { setDeleteConfirmText(''); setDeleteDialogOpen(true) }}
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete Account
+              {t('account.deleteAccountButton')}
             </Button>
           </div>
         </CardContent>
@@ -645,23 +643,21 @@ export function AccountSettings({
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-destructive">Delete Account</DialogTitle>
+            <DialogTitle className="text-destructive">{t('account.deleteAccountDialogTitle')}</DialogTitle>
             <DialogDescription>
-              This will permanently delete your account and all data associated with it. This action is
-              irreversible. All your vehicles, service records, work orders, quotes, customers, files,
-              and payment history will be permanently removed.
+              {t('account.deleteAccountDialogDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
               <p className="text-sm font-medium text-destructive">
-                Type <span className="font-mono font-bold">delete me</span> to confirm
+                {t.rich('account.deleteAccountConfirmPrompt', { bold: (chunks) => <span className="font-mono font-bold">{chunks}</span> })}
               </p>
             </div>
             <Input
               value={deleteConfirmText}
               onChange={(e) => setDeleteConfirmText(e.target.value)}
-              placeholder="delete me"
+              placeholder={t('account.deleteAccountConfirmPhrase')}
               autoComplete="off"
             />
           </div>
@@ -679,7 +675,7 @@ export function AccountSettings({
               ) : (
                 <Trash2 className="mr-2 h-4 w-4" />
               )}
-              {deleting ? 'Deleting...' : 'Permanently Delete'}
+              {deleting ? t('account.deleting') : t('account.permanentlyDelete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -689,9 +685,9 @@ export function AccountSettings({
       <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-destructive">Delete Content</DialogTitle>
+            <DialogTitle className="text-destructive">{t('account.deleteContentDialogTitle')}</DialogTitle>
             <DialogDescription>
-              Select the content you want to permanently delete. This action cannot be undone.
+              {t('account.deleteContentDialogDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
@@ -699,27 +695,27 @@ export function AccountSettings({
               {([
                 {
                   key: 'vehicles' as const,
-                  label: 'Vehicles',
+                  label: t('account.contentVehicles'),
                   count: contentCounts.vehicles,
-                  description: 'All vehicles and their service records, notes, reminders, fuel logs, and recurring invoices',
+                  description: t('account.contentVehiclesDescription'),
                 },
                 {
                   key: 'customers' as const,
-                  label: 'Customers',
+                  label: t('account.contentCustomers'),
                   count: contentCounts.customers,
-                  description: 'All customer records. Vehicles linked to deleted customers will be unlinked.',
+                  description: t('account.contentCustomersDescription'),
                 },
                 {
                   key: 'quotes' as const,
-                  label: 'Quotes',
+                  label: t('account.contentQuotes'),
                   count: contentCounts.quotes,
-                  description: 'All quotes and their line items',
+                  description: t('account.contentQuotesDescription'),
                 },
                 {
                   key: 'inventory' as const,
-                  label: 'Inventory',
+                  label: t('account.contentInventory'),
                   count: contentCounts.inventory,
-                  description: 'All inventory parts and their images',
+                  description: t('account.contentInventoryDescription'),
                 },
               ]).map((item) => (
                 <label
@@ -755,13 +751,13 @@ export function AccountSettings({
               <>
                 <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
                   <p className="text-sm font-medium text-destructive">
-                    Type <span className="font-mono font-bold">delete my data</span> to confirm
+                    {t.rich('account.deleteContentConfirmPrompt', { bold: (chunks) => <span className="font-mono font-bold">{chunks}</span> })}
                   </p>
                 </div>
                 <Input
                   value={contentConfirmText}
                   onChange={(e) => setContentConfirmText(e.target.value)}
-                  placeholder="delete my data"
+                  placeholder={t('account.deleteContentConfirmPhrase')}
                   autoComplete="off"
                 />
               </>
@@ -785,7 +781,7 @@ export function AccountSettings({
               ) : (
                 <Trash2 className="mr-2 h-4 w-4" />
               )}
-              {deletingContent ? 'Deleting...' : `Delete ${selectedContentCount} selected`}
+              {deletingContent ? t('account.deleting') : t('account.deleteSelected', { count: selectedContentCount })}
             </Button>
           </DialogFooter>
         </DialogContent>

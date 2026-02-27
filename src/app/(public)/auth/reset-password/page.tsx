@@ -3,6 +3,7 @@
 import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,6 +11,8 @@ import { Label } from '@/components/ui/label'
 import { Gauge, Loader2, XCircle } from 'lucide-react'
 
 function ResetPasswordInner() {
+  const t = useTranslations('auth.resetPassword')
+  const tc = useTranslations('common')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
@@ -23,12 +26,12 @@ function ResetPasswordInner() {
     setError('')
 
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match.')
+      setError(t('errors.passwordsMismatch'))
       return
     }
 
     if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters long.')
+      setError(t('errors.passwordTooShort'))
       return
     }
 
@@ -41,12 +44,12 @@ function ResetPasswordInner() {
       })
 
       if (result.error) {
-        setError(result.error.message || 'Could not reset password. The link may have expired.')
+        setError(result.error.message || t('errors.resetFailed'))
       } else {
         setSuccess(true)
       }
     } catch {
-      setError('An unexpected error occurred. Please try again.')
+      setError(tc('errors.unexpected'))
     } finally {
       setLoading(false)
     }
@@ -56,11 +59,11 @@ function ResetPasswordInner() {
     return (
       <div className="space-y-4 text-center">
         <p className="text-sm text-muted-foreground">
-          Invalid or missing reset token. Please request a new password reset link.
+          {t('invalidToken')}
         </p>
         <Link href="/auth/forgot-password">
           <Button variant="outline" className="h-11 w-full">
-            Request New Link
+            {t('requestNewLink')}
           </Button>
         </Link>
       </div>
@@ -71,10 +74,10 @@ function ResetPasswordInner() {
     return (
       <div className="space-y-4 text-center">
         <p className="text-sm text-muted-foreground">
-          Your password has been reset successfully. You can now sign in with your new password.
+          {t('successMessage')}
         </p>
         <Link href="/auth/sign-in">
-          <Button className="h-11 w-full">Sign In</Button>
+          <Button className="h-11 w-full">{tc('buttons.signIn')}</Button>
         </Link>
       </div>
     )
@@ -91,11 +94,11 @@ function ResetPasswordInner() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="new-password">New Password</Label>
+          <Label htmlFor="new-password">{t('newPassword')}</Label>
           <Input
             id="new-password"
             type="password"
-            placeholder="Enter new password"
+            placeholder={t('newPasswordPlaceholder')}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
@@ -105,11 +108,11 @@ function ResetPasswordInner() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="confirm-password">Confirm Password</Label>
+          <Label htmlFor="confirm-password">{t('confirmPassword')}</Label>
           <Input
             id="confirm-password"
             type="password"
-            placeholder="Confirm new password"
+            placeholder={t('confirmPasswordPlaceholder')}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
@@ -120,7 +123,7 @@ function ResetPasswordInner() {
 
         <Button type="submit" className="h-11 w-full" disabled={loading}>
           {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Reset Password
+          {t('resetButton')}
         </Button>
       </form>
     </>
@@ -128,6 +131,9 @@ function ResetPasswordInner() {
 }
 
 export default function ResetPasswordPage() {
+  const t = useTranslations('auth.resetPassword')
+  const tc = useTranslations('common')
+
   return (
     <div className="grid-bg flex min-h-screen items-center justify-center p-4">
       <div className="absolute inset-0 overflow-hidden">
@@ -140,11 +146,11 @@ export default function ResetPasswordPage() {
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
             <Gauge className="h-5 w-5 text-primary" />
             <span className="gradient-text text-sm font-bold tracking-wider uppercase">
-              Torqvoice
+              {tc('brandName')}
             </span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Set new password</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Enter your new password below</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
         </div>
 
         <Suspense>
@@ -153,7 +159,7 @@ export default function ResetPasswordPage() {
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           <Link href="/auth/sign-in" className="font-medium text-primary hover:underline">
-            Back to Sign In
+            {t('backToSignIn')}
           </Link>
         </p>
       </div>

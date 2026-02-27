@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Wrench, ClipboardCheck, ExternalLink, Trash2 } from "lucide-react";
 import type { BoardAssignmentWithJob } from "../Actions/boardActions";
+import { useTranslations } from "next-intl";
 
 export function JobDetailPopover({
   assignment,
@@ -23,6 +24,7 @@ export function JobDetailPopover({
   onOpenChange: (open: boolean) => void;
   onRemove: () => void;
 }) {
+  const t = useTranslations("workBoard.jobDetail");
   const isServiceRecord = !!assignment.serviceRecordId;
   const vehicle = isServiceRecord
     ? assignment.serviceRecord?.vehicle
@@ -70,14 +72,14 @@ export function JobDetailPopover({
           )}
 
           <p className="text-xs text-muted-foreground">
-            Date: {assignment.date}
+            {t("date", { date: assignment.date })}
           </p>
 
           <div className="flex gap-2">
             <Button asChild variant="outline" size="sm" className="flex-1">
               <Link href={detailUrl}>
                 <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                View Details
+                {t("viewDetails")}
               </Link>
             </Button>
             <Button
@@ -86,7 +88,7 @@ export function JobDetailPopover({
               onClick={onRemove}
             >
               <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-              Remove
+              {t("remove")}
             </Button>
           </div>
         </div>

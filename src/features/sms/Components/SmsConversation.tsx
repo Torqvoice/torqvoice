@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useRef, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -47,6 +48,8 @@ export function SmsConversation({
   initialNextCursor,
   className,
 }: SmsConversationProps) {
+  const t = useTranslations("messages.conversation");
+  const tc = useTranslations("common.buttons");
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
   const [newMessage, setNewMessage] = useState("");
@@ -140,7 +143,7 @@ export function SmsConversation({
           setNextCursor(conv.data.nextCursor);
         }
       } else {
-        toast.error(result.error ?? "Failed to send SMS");
+        toast.error(result.error ?? t("sendError"));
         setNewMessage(body);
       }
     });
@@ -167,9 +170,9 @@ export function SmsConversation({
     const result = await deleteSmsMessage(deleteTarget.id);
     if (result.success) {
       setMessages((prev) => prev.filter((m) => m.id !== deleteTarget.id));
-      toast.success("Message deleted");
+      toast.success(t("messageDeleted"));
     } else {
-      toast.error(result.error || "Failed to delete message");
+      toast.error(result.error || t("deleteError"));
     }
     setIsDeleting(false);
     setDeleteTarget(null);
@@ -187,7 +190,7 @@ export function SmsConversation({
       <div className="flex flex-col items-center justify-center py-12">
         <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground/40" />
         <p className="text-sm text-muted-foreground">
-          No phone number on file for {customerName}. Add a phone number to start messaging.
+          {t("noPhone", { name: customerName })}
         </p>
       </div>
     );
@@ -210,7 +213,7 @@ export function SmsConversation({
               ) : (
                 <ChevronUp className="mr-1 h-3 w-3" />
               )}
-              Load older
+              {t("loadOlder")}
             </Button>
           </div>
         )}
@@ -219,7 +222,7 @@ export function SmsConversation({
           <div className="flex flex-col items-center justify-center py-12">
             <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground/40" />
             <p className="text-sm text-muted-foreground">
-              No messages yet. Send the first message to {customerName}.
+              {t("empty", { name: customerName })}
             </p>
           </div>
         )}
@@ -246,7 +249,7 @@ export function SmsConversation({
                   type="button"
                   onClick={() => setDeleteTarget(msg)}
                   className="mr-2 self-center opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                  title="Delete message"
+                  title={t("deleteMessage")}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -279,7 +282,7 @@ export function SmsConversation({
                   type="button"
                   onClick={() => setDeleteTarget(msg)}
                   className="ml-2 self-center opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                  title="Delete message"
+                  title={t("deleteMessage")}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -294,7 +297,7 @@ export function SmsConversation({
       <div className="shrink-0 border-t bg-background p-4">
         <div className="flex items-end gap-2">
           <Textarea
-            placeholder={`Message ${customerName}...`}
+            placeholder={t("placeholder", { name: customerName })}
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -319,20 +322,20 @@ export function SmsConversation({
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete message?</AlertDialogTitle>
+            <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this message from the conversation. This action cannot be undone.
+              {t("deleteDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>{tc("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteMessage}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Delete
+              {tc("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

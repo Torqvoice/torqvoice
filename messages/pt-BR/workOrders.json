@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "Falha ao carregar ordens de serviço"
+  },
+  "list": {
+    "searchPlaceholder": "Pesquisar ordens de serviço...",
+    "newWorkOrder": "Nova Ordem de Serviço",
+    "selectVehicle": "Selecionar Veículo",
+    "empty": "Nenhuma ordem de serviço encontrada.",
+    "statusUpdated": "Status atualizado",
+    "statusTabs": {
+      "all": "Todas",
+      "active": "Ativas",
+      "pending": "Pendente",
+      "inProgress": "Em Progresso",
+      "waitingParts": "Aguardando Peças",
+      "completed": "Concluída"
+    },
+    "statusActions": {
+      "startWork": "Iniciar Trabalho",
+      "waitingParts": "Aguardando Peças",
+      "complete": "Concluir",
+      "resumeWork": "Retomar Trabalho",
+      "reopen": "Reabrir"
+    },
+    "table": {
+      "invoice": "Fatura nº",
+      "vehicle": "Veículo",
+      "customer": "Cliente",
+      "title": "Título",
+      "status": "Status",
+      "tech": "Técnico",
+      "date": "Data",
+      "total": "Total"
+    },
+    "emailSubject": "Atualização de Status do Veículo: {status}"
+  },
+  "vehiclePicker": {
+    "title": "Selecionar Veículo para Ordem de Serviço",
+    "searchPlaceholder": "Pesquisar veículos...",
+    "empty": "Nenhum veículo encontrado.",
+    "emptySearch": "Nenhum veículo corresponde à sua pesquisa.",
+    "addNewVehicle": "Adicionar Novo Veículo",
+    "noPlate": "Sem placa",
+    "make": "Marca *",
+    "model": "Modelo *",
+    "year": "Ano *",
+    "licensePlate": "Placa",
+    "customer": "Cliente",
+    "selectCustomer": "Selecionar um cliente (opcional)",
+    "createNewCustomer": "Criar novo cliente",
+    "newCustomer": "Novo Cliente",
+    "customerName": "Nome *",
+    "customerNamePlaceholder": "Nome do cliente",
+    "phone": "Telefone",
+    "phonePlaceholder": "Número de telefone",
+    "creating": "Criando...",
+    "createAndContinue": "Criar e Continuar",
+    "invalidYear": "Por favor, insira um ano válido",
+    "customerNameRequired": "Nome do cliente é obrigatório",
+    "failedCreateCustomer": "Falha ao criar cliente",
+    "failedCreateVehicle": "Falha ao criar veículo",
+    "somethingWentWrong": "Algo deu errado"
+  },
+  "notify": {
+    "title": "Notificar {name}",
+    "description": "Enviar uma notificação ao cliente sobre esta atualização.",
+    "sms": "SMS",
+    "email": "Email",
+    "noPhone": "(sem telefone registrado)",
+    "noEmail": "(sem email registrado)",
+    "notAvailable": "(não disponível)",
+    "skip": "Pular",
+    "send": "Enviar",
+    "smsSent": "SMS enviado",
+    "emailSent": "Email enviado",
+    "failedSms": "Falha ao enviar SMS",
+    "failedEmail": "Falha ao enviar email"
+  }
+}

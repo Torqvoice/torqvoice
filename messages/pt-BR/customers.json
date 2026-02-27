@@ -1,0 +1,76 @@
+{
+  "list": {
+    "addCustomer": "Adicionar Cliente",
+    "searchPlaceholder": "Buscar clientes...",
+    "table": {
+      "name": "Nome",
+      "company": "Empresa",
+      "phone": "Telefone",
+      "email": "E-mail",
+      "vehicles": "Veículos"
+    },
+    "emptySearch": "Nenhum cliente encontrado para sua busca.",
+    "empty": "Nenhum cliente cadastrado.",
+    "deleteTitle": "Excluir Cliente",
+    "deleteDescription": "Excluir {name}? Os veículos vinculados serão desassociados.",
+    "deleteError": "Falha ao excluir cliente",
+    "error": "Falha ao carregar clientes"
+  },
+  "detail": {
+    "backToCustomers": "Voltar para clientes",
+    "editCustomer": "Editar Cliente",
+    "notFound": "Cliente não encontrado",
+    "emailCopied": "E-mail copiado para a área de transferência",
+    "phoneCopied": "Número de telefone copiado para a área de transferência",
+    "tabs": {
+      "vehicles": "Veículos ({count})",
+      "messages": "Mensagens",
+      "requests": "Solicitações ({count})"
+    },
+    "vehicleTable": {
+      "plate": "Placa",
+      "vehicle": "Veículo",
+      "mileage": "Quilometragem",
+      "services": "Serviços"
+    },
+    "noVehicles": "Nenhum veículo atribuído a este cliente"
+  },
+  "form": {
+    "addTitle": "Adicionar Novo Cliente",
+    "editTitle": "Editar Cliente",
+    "nameRequired": "Nome *",
+    "namePlaceholder": "João Silva",
+    "emailPlaceholder": "joao@exemplo.com.br",
+    "phonePlaceholder": "(11) 91234-5678",
+    "companyPlaceholder": "Nome da empresa",
+    "addressPlaceholder": "Rua Principal 123, São Paulo, SP",
+    "notesPlaceholder": "Observações adicionais...",
+    "customerUpdated": "Cliente atualizado",
+    "customerCreated": "Cliente cadastrado",
+    "saveError": "Falha ao salvar cliente"
+  },
+  "serviceRequests": {
+    "statusNew": "Novo",
+    "statusConverted": "Ordem de Serviço Criada",
+    "statusDismissed": "Dispensado",
+    "createWorkOrder": "Criar Ordem de Serviço",
+    "contactCustomer": "Contatar Cliente",
+    "dismiss": "Dispensar",
+    "viewWorkOrder": "Ver Ordem de Serviço",
+    "notes": "Observações",
+    "hideNotes": "Ocultar Observações",
+    "staffNotes": "Notas internas:",
+    "notesPlaceholder": "Adicionar notas internas...",
+    "saveNotes": "Salvar Observações",
+    "submitted": "Enviado em {date}",
+    "preferred": "Preferência: {date}",
+    "workOrderCreated": "Ordem de serviço criada",
+    "workOrderError": "Falha ao criar ordem de serviço",
+    "requestDismissed": "Solicitação dispensada",
+    "dismissError": "Falha ao dispensar solicitação",
+    "notesSaved": "Observações salvas",
+    "notesSaveError": "Falha ao salvar observações",
+    "smsLabel": "Mensagem de Solicitação de Serviço",
+    "smsDefault": "Olá {name}, referente à sua solicitação de serviço para o seu {vehicle}: "
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Sign In",
+    "save": "Save",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "submit": "Submit",
+    "back": "Back",
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "add": "Add"
+  },
+  "form": {
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "you@example.com",
+    "name": "Name",
+    "phone": "Phone",
+    "company": "Company",
+    "address": "Address",
+    "notes": "Notes"
+  },
+  "errors": {
+    "unexpected": "An unexpected error occurred. Please try again.",
+    "error": "Error"
+  },
+  "terms": {
+    "termsOfService": "Terms of Service"
+  },
+  "errorPage": {
+    "title": "Something Went Wrong",
+    "description": "The engine stalled unexpectedly. Our mechanics have been notified and are working on it.",
+    "tryAgain": "Try Again",
+    "backToDashboard": "Back to Dashboard"
+  },
+  "notFoundPage": {
+    "title": "Page Not Found",
+    "description": "Looks like this part is still in the shop. The page you're looking for doesn't exist or has been moved.",
+    "backToDashboard": "Back to Dashboard"
+  }
+}

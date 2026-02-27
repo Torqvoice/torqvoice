@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "Arbeitsaufträge konnten nicht geladen werden"
+  },
+  "list": {
+    "searchPlaceholder": "Arbeitsaufträge durchsuchen...",
+    "newWorkOrder": "Neuer Arbeitsauftrag",
+    "selectVehicle": "Fahrzeug auswählen",
+    "empty": "Keine Arbeitsaufträge gefunden.",
+    "statusUpdated": "Status aktualisiert",
+    "statusTabs": {
+      "all": "Alle",
+      "active": "Aktiv",
+      "pending": "Ausstehend",
+      "inProgress": "In Bearbeitung",
+      "waitingParts": "Warten auf Teile",
+      "completed": "Abgeschlossen"
+    },
+    "statusActions": {
+      "startWork": "Arbeit starten",
+      "waitingParts": "Warten auf Teile",
+      "complete": "Abschließen",
+      "resumeWork": "Arbeit fortsetzen",
+      "reopen": "Erneut öffnen"
+    },
+    "table": {
+      "invoice": "Rechnung#",
+      "vehicle": "Fahrzeug",
+      "customer": "Kunde",
+      "title": "Titel",
+      "status": "Status",
+      "tech": "Techniker",
+      "date": "Datum",
+      "total": "Gesamt"
+    },
+    "emailSubject": "Fahrzeugstatusupdate: {status}"
+  },
+  "vehiclePicker": {
+    "title": "Fahrzeug für Arbeitsauftrag auswählen",
+    "searchPlaceholder": "Fahrzeuge durchsuchen...",
+    "empty": "Keine Fahrzeuge gefunden.",
+    "emptySearch": "Keine Fahrzeuge entsprechen Ihrer Suche.",
+    "addNewVehicle": "Neues Fahrzeug hinzufügen",
+    "noPlate": "Kein Kennzeichen",
+    "make": "Hersteller *",
+    "model": "Modell *",
+    "year": "Jahr *",
+    "licensePlate": "Kennzeichen",
+    "customer": "Kunde",
+    "selectCustomer": "Wählen Sie einen Kunden (optional)",
+    "createNewCustomer": "Neuen Kunden erstellen",
+    "newCustomer": "Neuer Kunde",
+    "customerName": "Name *",
+    "customerNamePlaceholder": "Kundenname",
+    "phone": "Telefon",
+    "phonePlaceholder": "Telefonnummer",
+    "creating": "Wird erstellt...",
+    "createAndContinue": "Erstellen & Fortfahren",
+    "invalidYear": "Bitte geben Sie ein gültiges Jahr ein",
+    "customerNameRequired": "Kundenname ist erforderlich",
+    "failedCreateCustomer": "Kunde konnte nicht erstellt werden",
+    "failedCreateVehicle": "Fahrzeug konnte nicht erstellt werden",
+    "somethingWentWrong": "Etwas ist schief gelaufen"
+  },
+  "notify": {
+    "title": "{name} benachrichtigen",
+    "description": "Senden Sie eine Benachrichtigung an den Kunden über dieses Update.",
+    "sms": "SMS",
+    "email": "E-Mail",
+    "noPhone": "(keine Telefonnummer vorhanden)",
+    "noEmail": "(keine E-Mail vorhanden)",
+    "notAvailable": "(nicht verfügbar)",
+    "skip": "Überspringen",
+    "send": "Senden",
+    "smsSent": "SMS gesendet",
+    "emailSent": "E-Mail gesendet",
+    "failedSms": "SMS konnte nicht gesendet werden",
+    "failedEmail": "E-Mail konnte nicht gesendet werden"
+  }
+}

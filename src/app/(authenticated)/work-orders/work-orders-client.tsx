@@ -33,6 +33,7 @@ import {
 import { formatCurrency } from "@/lib/format";
 import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
 import { NotifyCustomerDialog } from "@/components/notify-customer-dialog";
+import { useTranslations } from "next-intl";
 import { getSmsTemplates } from "@/features/sms/Actions/smsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from "@/lib/sms-templates";
@@ -81,14 +82,16 @@ interface PaginatedData {
   statusCounts: Record<string, number>;
 }
 
-const statusTabs = [
-  { key: "all", label: "All" },
-  { key: "active", label: "Active" },
-  { key: "pending", label: "Pending" },
-  { key: "in-progress", label: "In Progress" },
-  { key: "waiting-parts", label: "Waiting Parts" },
-  { key: "completed", label: "Completed" },
-];
+const statusTabKeys = ["all", "active", "pending", "in-progress", "waiting-parts", "completed"] as const;
+
+const statusTabI18nMap: Record<string, string> = {
+  "all": "all",
+  "active": "active",
+  "pending": "pending",
+  "in-progress": "inProgress",
+  "waiting-parts": "waitingParts",
+  "completed": "completed",
+};
 
 const statusTemplateKeys: Record<string, string> = {
   "in-progress": SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
@@ -96,20 +99,28 @@ const statusTemplateKeys: Record<string, string> = {
   "completed": SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
 };
 
-const statusTransitions: Record<string, { label: string; target: string }[]> = {
+const statusActionI18nMap: Record<string, string> = {
+  "startWork": "startWork",
+  "waitingParts": "waitingParts",
+  "complete": "complete",
+  "resumeWork": "resumeWork",
+  "reopen": "reopen",
+};
+
+const statusTransitions: Record<string, { actionKey: string; target: string }[]> = {
   pending: [
-    { label: "Start Work", target: "in-progress" },
+    { actionKey: "startWork", target: "in-progress" },
   ],
   "in-progress": [
-    { label: "Waiting Parts", target: "waiting-parts" },
-    { label: "Complete", target: "completed" },
+    { actionKey: "waitingParts", target: "waiting-parts" },
+    { actionKey: "complete", target: "completed" },
   ],
   "waiting-parts": [
-    { label: "Resume Work", target: "in-progress" },
-    { label: "Complete", target: "completed" },
+    { actionKey: "resumeWork", target: "in-progress" },
+    { actionKey: "complete", target: "completed" },
   ],
   completed: [
-    { label: "Reopen", target: "pending" },
+    { actionKey: "reopen", target: "pending" },
   ],
 };
 
@@ -137,6 +148,7 @@ export function WorkOrdersClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const t = useTranslations("workOrders.list");
   const [searchInput, setSearchInput] = useState(search);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
@@ -175,7 +187,7 @@ export function WorkOrdersClient({
 
   const handleStatusChange = async (workOrder: WorkOrder, newStatus: string) => {
     await updateServiceStatus(workOrder.id, newStatus);
-    toast.success("Status updated");
+    toast.success(t("statusUpdated"));
     router.refresh();
 
     const templateKey = statusTemplateKeys[newStatus];
@@ -201,19 +213,19 @@ export function WorkOrdersClient({
     <div className="space-y-4">
       {/* Status tabs */}
       <div className="flex flex-wrap gap-2">
-        {statusTabs.map((tab) => {
-          const isActive = statusFilter === tab.key;
-          const count = tab.key === "all" || tab.key === "active"
+        {statusTabKeys.map((key) => {
+          const isActive = statusFilter === key;
+          const count = key === "all" || key === "active"
             ? undefined
-            : data.statusCounts[tab.key] || 0;
+            : data.statusCounts[key] || 0;
           return (
             <Button
-              key={tab.key}
+              key={key}
               variant={isActive ? "default" : "outline"}
               size="sm"
-              onClick={() => navigate({ status: tab.key || undefined })}
+              onClick={() => navigate({ status: key || undefined })}
             >
-              {tab.label}
+              {t(`statusTabs.${statusTabI18nMap[key]}`)}
               {count !== undefined && (
                 <Badge variant="secondary" className="ml-1.5 h-5 min-w-5 px-1 text-xs">
                   {count}
@@ -230,7 +242,7 @@ export function WorkOrdersClient({
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search work orders..."
+              placeholder={t("searchPlaceholder")}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="pl-9"
@@ -240,7 +252,7 @@ export function WorkOrdersClient({
         </div>
         <Button size="sm" onClick={() => setShowPicker(true)}>
           <Plus className="mr-1 h-3.5 w-3.5" />
-          New Work Order
+          {t("newWorkOrder")}
         </Button>
       </div>
 
@@ -249,14 +261,14 @@ export function WorkOrdersClient({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="hidden sm:table-cell w-[100px]">Invoice#</TableHead>
-              <TableHead>Vehicle</TableHead>
-              <TableHead className="hidden md:table-cell">Customer</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead className="w-[110px]">Status</TableHead>
-              <TableHead className="hidden lg:table-cell">Tech</TableHead>
-              <TableHead className="w-[90px]">Date</TableHead>
-              <TableHead className="w-[90px] text-right">Total</TableHead>
+              <TableHead className="hidden sm:table-cell w-[100px]">{t("table.invoice")}</TableHead>
+              <TableHead>{t("table.vehicle")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("table.customer")}</TableHead>
+              <TableHead>{t("table.title")}</TableHead>
+              <TableHead className="w-[110px]">{t("table.status")}</TableHead>
+              <TableHead className="hidden lg:table-cell">{t("table.tech")}</TableHead>
+              <TableHead className="w-[90px]">{t("table.date")}</TableHead>
+              <TableHead className="w-[90px] text-right">{t("table.total")}</TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>
@@ -264,7 +276,7 @@ export function WorkOrdersClient({
             {data.records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={9} className="h-32 text-center text-muted-foreground">
-                  No work orders found.
+                  {t("empty")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -324,15 +336,15 @@ export function WorkOrdersClient({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            {transitions.map((t) => (
+                            {transitions.map((tr) => (
                               <DropdownMenuItem
-                                key={t.target}
+                                key={tr.target}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleStatusChange(r, t.target);
+                                  handleStatusChange(r, tr.target);
                                 }}
                               >
-                                {t.label}
+                                {t(`statusActions.${tr.actionKey}`)}
                               </DropdownMenuItem>
                             ))}
                           </DropdownMenuContent>
@@ -360,7 +372,7 @@ export function WorkOrdersClient({
         onOpenChange={setShowPicker}
         vehicles={vehicles}
         customers={customers}
-        title="Select Vehicle"
+        title={t("selectVehicle")}
       />
 
       {notifyCustomer && (
@@ -369,7 +381,7 @@ export function WorkOrdersClient({
           onOpenChange={setShowNotifyDialog}
           customer={notifyCustomer}
           defaultMessage={notifyMessage}
-          emailSubject={`Vehicle Status Update: ${notifyStatus}`}
+          emailSubject={t("emailSubject", { status: notifyStatus })}
           smsEnabled={smsEnabled}
           emailEnabled={emailEnabled}
           relatedEntityType="work-order"

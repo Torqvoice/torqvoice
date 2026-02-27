@@ -14,9 +14,10 @@ import type { TechnicianMetrics } from "../Schema/reportTypes";
 interface TechnicianBarChartProps {
   data: TechnicianMetrics[];
   formatCurrency: (value: number) => string;
+  labels?: { revenue: string };
 }
 
-export function TechnicianBarChart({ data, formatCurrency }: TechnicianBarChartProps) {
+export function TechnicianBarChart({ data, formatCurrency, labels }: TechnicianBarChartProps) {
   if (data.length === 0) return null;
 
   const chartData = data.slice(0, 10).map((t) => ({
@@ -54,7 +55,7 @@ export function TechnicianBarChart({ data, formatCurrency }: TechnicianBarChartP
             color: "hsl(var(--popover-foreground))",
           }}
         />
-        <Bar dataKey="totalRevenue" name="Revenue" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
+        <Bar dataKey="totalRevenue" name={labels?.revenue ?? "Revenue"} fill="#8b5cf6" radius={[0, 4, 4, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

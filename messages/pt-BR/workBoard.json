@@ -1,0 +1,67 @@
+{
+  "page": {
+    "error": "Falha ao carregar quadro de trabalho"
+  },
+  "toolbar": {
+    "today": "Hoje",
+    "presenter": "Apresentador",
+    "addTechnician": "Adicionar Técnico"
+  },
+  "board": {
+    "days": {
+      "mon": "Seg",
+      "tue": "Ter",
+      "wed": "Qua",
+      "thu": "Qui",
+      "fri": "Sex",
+      "sat": "Sab",
+      "sun": "Dom"
+    },
+    "noTechnicians": "Nenhum Técnico Ainda",
+    "noTechniciansDescription": "Adicione um técnico para começar a agendar trabalho no quadro.",
+    "failedMove": "Falha ao mover atribuição",
+    "failedAssign": "Falha ao atribuir trabalho",
+    "failedRemove": "Falha ao remover atribuição"
+  },
+  "unassigned": {
+    "title": "Trabalhos Não Atribuídos ({count})",
+    "searchPlaceholder": "Pesquisar trabalhos...",
+    "empty": "Nenhum trabalho não atribuído"
+  },
+  "technician": {
+    "editTitle": "Editar Técnico",
+    "addTitle": "Adicionar Técnico",
+    "name": "Nome",
+    "namePlaceholder": "ex: João Silva",
+    "color": "Cor",
+    "linkMember": "Vincular a Membro da Organização (opcional)",
+    "standalone": "Técnico independente",
+    "deleteTitle": "Deletar Técnico",
+    "deleteDescription": "Remover \"{name}\" do quadro de trabalho? Suas atribuições existentes também serão removidas.",
+    "addTechnician": "Adicionar Técnico"
+  },
+  "jobDetail": {
+    "viewDetails": "Ver Detalhes",
+    "remove": "Remover",
+    "date": "Data: {date}"
+  },
+  "presenter": {
+    "title": "Quadro de Trabalho",
+    "day": "Dia",
+    "status": "Status",
+    "week": "Semana",
+    "today": "Hoje",
+    "live": "Ao Vivo",
+    "disconnected": "Atualizações ao vivo desconectadas",
+    "noTechnicians": "Nenhum técnico configurado",
+    "noJobsToday": "Nenhum trabalho hoje",
+    "job": "{count} trabalho",
+    "jobs": "{count} trabalhos",
+    "statusLabels": {
+      "pending": "Pendente",
+      "inProgress": "Em Progresso",
+      "waitingParts": "Aguardando Peças",
+      "completed": "Concluído"
+    }
+  }
+}

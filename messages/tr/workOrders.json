@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "İş emirleri yüklenemedi"
+  },
+  "list": {
+    "searchPlaceholder": "İş emirlerinde ara...",
+    "newWorkOrder": "Yeni İş Emri",
+    "selectVehicle": "Araç Seç",
+    "empty": "İş emri bulunamadı.",
+    "statusUpdated": "Durum güncellendi",
+    "statusTabs": {
+      "all": "Tümü",
+      "active": "Aktif",
+      "pending": "Beklemede",
+      "inProgress": "Devam Ediyor",
+      "waitingParts": "Parça Bekleniyor",
+      "completed": "Tamamlandı"
+    },
+    "statusActions": {
+      "startWork": "İşe Başla",
+      "waitingParts": "Parça Bekleniyor",
+      "complete": "Tamamla",
+      "resumeWork": "İşe Devam Et",
+      "reopen": "Yeniden Aç"
+    },
+    "table": {
+      "invoice": "Fatura#",
+      "vehicle": "Araç",
+      "customer": "Müşteri",
+      "title": "Başlık",
+      "status": "Durum",
+      "tech": "Teknisyen",
+      "date": "Tarih",
+      "total": "Toplam"
+    },
+    "emailSubject": "Araç Durum Güncellemesi: {status}"
+  },
+  "vehiclePicker": {
+    "title": "İş Emri için Araç Seç",
+    "searchPlaceholder": "Araç ara...",
+    "empty": "Araç bulunamadı.",
+    "emptySearch": "Aramanıza uygun araç bulunamadı.",
+    "addNewVehicle": "Yeni Araç Ekle",
+    "noPlate": "Plaka yok",
+    "make": "Marka *",
+    "model": "Model *",
+    "year": "Yıl *",
+    "licensePlate": "Plaka",
+    "customer": "Müşteri",
+    "selectCustomer": "Müşteri seç (isteğe bağlı)",
+    "createNewCustomer": "Yeni müşteri oluştur",
+    "newCustomer": "Yeni Müşteri",
+    "customerName": "Ad *",
+    "customerNamePlaceholder": "Müşteri adı",
+    "phone": "Telefon",
+    "phonePlaceholder": "Telefon numarası",
+    "creating": "Oluşturuluyor...",
+    "createAndContinue": "Oluştur & Devam Et",
+    "invalidYear": "Lütfen geçerli bir yıl girin",
+    "customerNameRequired": "Müşteri adı gereklidir",
+    "failedCreateCustomer": "Müşteri oluşturulamadı",
+    "failedCreateVehicle": "Araç oluşturulamadı",
+    "somethingWentWrong": "Bir sorun oluştu"
+  },
+  "notify": {
+    "title": "{name} Bilgilendir",
+    "description": "Müşteriye bu güncellemesi hakkında bildirim gönder.",
+    "sms": "SMS",
+    "email": "E-posta",
+    "noPhone": "(dosyada telefon yok)",
+    "noEmail": "(dosyada e-posta yok)",
+    "notAvailable": "(mevcut değil)",
+    "skip": "Atla",
+    "send": "Gönder",
+    "smsSent": "SMS gönderildi",
+    "emailSent": "E-posta gönderildi",
+    "failedSms": "SMS gönderilemedi",
+    "failedEmail": "E-posta gönderilemedi"
+  }
+}

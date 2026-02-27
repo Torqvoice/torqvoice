@@ -1,0 +1,67 @@
+{
+  "page": {
+    "error": "Failed to load work board"
+  },
+  "toolbar": {
+    "today": "Today",
+    "presenter": "Presenter",
+    "addTechnician": "Add Technician"
+  },
+  "board": {
+    "days": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "noTechnicians": "No Technicians Yet",
+    "noTechniciansDescription": "Add a technician to start scheduling work on the board.",
+    "failedMove": "Failed to move assignment",
+    "failedAssign": "Failed to assign job",
+    "failedRemove": "Failed to remove assignment"
+  },
+  "unassigned": {
+    "title": "Unassigned Jobs ({count})",
+    "searchPlaceholder": "Search jobs...",
+    "empty": "No unassigned jobs"
+  },
+  "technician": {
+    "editTitle": "Edit Technician",
+    "addTitle": "Add Technician",
+    "name": "Name",
+    "namePlaceholder": "e.g. John Smith",
+    "color": "Color",
+    "linkMember": "Link to Org Member (optional)",
+    "standalone": "Standalone technician",
+    "deleteTitle": "Delete Technician",
+    "deleteDescription": "Remove \"{name}\" from the work board? Their existing assignments will also be removed.",
+    "addTechnician": "Add Technician"
+  },
+  "jobDetail": {
+    "viewDetails": "View Details",
+    "remove": "Remove",
+    "date": "Date: {date}"
+  },
+  "presenter": {
+    "title": "Work Board",
+    "day": "Day",
+    "status": "Status",
+    "week": "Week",
+    "today": "Today",
+    "live": "Live",
+    "disconnected": "Live updates disconnected",
+    "noTechnicians": "No technicians configured",
+    "noJobsToday": "No jobs today",
+    "job": "{count} job",
+    "jobs": "{count} jobs",
+    "statusLabels": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "waitingParts": "Waiting Parts",
+      "completed": "Completed"
+    }
+  }
+}

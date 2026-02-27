@@ -21,6 +21,7 @@ import { Loader2 } from "lucide-react";
 import { createTechnician, updateTechnician, deleteTechnician, getOrgMembers } from "../Actions/technicianActions";
 import { useWorkBoardStore, type Technician } from "../store/workboardStore";
 import { useConfirm } from "@/components/confirm-dialog";
+import { useTranslations } from "next-intl";
 
 const PRESET_COLORS = [
   "#3b82f6",
@@ -54,6 +55,8 @@ export function TechnicianDialog({
   const [deleting, setDeleting] = useState(false);
   const addTechnician = useWorkBoardStore((s) => s.addTechnician);
   const confirm = useConfirm();
+  const t = useTranslations("workBoard.technician");
+  const tc = useTranslations("common.buttons");
 
   useEffect(() => {
     if (open) {
@@ -117,15 +120,15 @@ export function TechnicianDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {technician ? "Edit Technician" : "Add Technician"}
+            {technician ? t("editTitle") : t("addTitle")}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="tech-name">Name</Label>
+            <Label htmlFor="tech-name">{t("name")}</Label>
             <Input
               id="tech-name"
-              placeholder="e.g. John Smith"
+              placeholder={t("namePlaceholder")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoFocus
@@ -133,7 +136,7 @@ export function TechnicianDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Color</Label>
+            <Label>{t("color")}</Label>
             <div className="flex flex-wrap gap-2">
               {PRESET_COLORS.map((c) => (
                 <button
@@ -151,13 +154,13 @@ export function TechnicianDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="tech-member">Link to Org Member (optional)</Label>
+            <Label htmlFor="tech-member">{t("linkMember")}</Label>
             <Select value={memberId} onValueChange={setMemberId}>
               <SelectTrigger id="tech-member">
-                <SelectValue placeholder="Standalone technician" />
+                <SelectValue placeholder={t("standalone")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Standalone technician</SelectItem>
+                <SelectItem value="none">{t("standalone")}</SelectItem>
                 {members.map((m) => (
                   <SelectItem key={m.id} value={m.id}>
                     {m.name} ({m.email})
@@ -175,9 +178,9 @@ export function TechnicianDialog({
                 disabled={deleting || loading}
                 onClick={async () => {
                   const ok = await confirm({
-                    title: "Delete Technician",
-                    description: `Remove "${technician.name}" from the work board? Their existing assignments will also be removed.`,
-                    confirmLabel: "Delete",
+                    title: t("deleteTitle"),
+                    description: t("deleteDescription", { name: technician.name }),
+                    confirmLabel: tc("delete"),
                     destructive: true,
                   });
                   if (!ok) return;
@@ -191,7 +194,7 @@ export function TechnicianDialog({
                 }}
               >
                 {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Delete
+                {tc("delete")}
               </Button>
             ) : (
               <div />
@@ -202,11 +205,11 @@ export function TechnicianDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                {tc("cancel")}
               </Button>
               <Button type="submit" disabled={loading || !name.trim()}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {technician ? "Save" : "Add Technician"}
+                {technician ? tc("save") : t("addTechnician")}
               </Button>
             </div>
           </div>

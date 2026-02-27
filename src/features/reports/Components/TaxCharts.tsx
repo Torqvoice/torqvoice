@@ -14,9 +14,10 @@ import type { MonthlyTax } from "../Schema/reportTypes";
 interface TaxBarChartProps {
   data: MonthlyTax[];
   formatCurrency: (value: number) => string;
+  labels?: { taxCollected: string };
 }
 
-export function TaxBarChart({ data, formatCurrency }: TaxBarChartProps) {
+export function TaxBarChart({ data, formatCurrency, labels }: TaxBarChartProps) {
   if (data.length === 0) return null;
 
   return (
@@ -42,7 +43,7 @@ export function TaxBarChart({ data, formatCurrency }: TaxBarChartProps) {
             color: "hsl(var(--popover-foreground))",
           }}
         />
-        <Bar dataKey="taxCollected" name="Tax Collected" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="taxCollected" name={labels?.taxCollected ?? "Tax Collected"} fill="#f59e0b" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
