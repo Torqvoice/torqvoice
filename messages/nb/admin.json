@@ -68,6 +68,8 @@
     "platformDescription": "Generelle konfigurasjonsalternativer for plattformen",
     "disableRegistration": "Deaktiver registrering",
     "disableRegistrationHint": "Blokker nye brukerregistreringer på plattformen",
+    "requireEmailVerification": "Krev e-postbekreftelse",
+    "requireEmailVerificationHint": "Nye brukere må bekrefte e-postadressen sin før de får tilgang til plattformen",
     "emailTitle": "E-postinnstillinger",
     "emailDescription": "Plattformens e-postleverandør — Brukes for e-poster på systemnivå som tilbakestilling av passord og teaminvitasjoner. Dette er også standard e-postleverandør for alle organisasjoner. Organisasjoner kan valgfritt konfigurere sin egen e-postleverandør under Innstillinger > E-post.",
     "smtpHost": "SMTP-vert",

@@ -4,6 +4,9 @@ export const SYSTEM_SETTING_KEYS = {
   // Registration
   REGISTRATION_DISABLED: "registration.disabled",
 
+  // Email Verification
+  EMAIL_VERIFICATION_REQUIRED: "email.verificationRequired",
+
   // Email Provider
   EMAIL_PROVIDER: "email.provider",
 

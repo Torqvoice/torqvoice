@@ -8,9 +8,10 @@ import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { WhiteLabelCtaProvider } from "@/components/white-label-cta-context";
 import { DateSettingsProvider } from "@/components/date-settings-context";
-import { getCachedMembership } from "@/lib/cached-session";
+import { getCachedMembership, getCachedSession } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { OnlineTracker } from "@/components/online-tracker";
+import { db } from "@/lib/db";
 
 export default async function DashboardLayout({
   children,
@@ -21,6 +22,20 @@ export default async function DashboardLayout({
 
   if (data.status === "unauthenticated") redirect("/auth/sign-in");
   if (data.status === "no-organization") redirect("/onboarding");
+
+  // Check email verification requirement (super admins bypass this)
+  if (!data.isSuperAdmin) {
+    const verificationSetting = await db.systemSetting.findUnique({
+      where: { key: "email.verificationRequired" },
+      select: { value: true },
+    });
+    if (verificationSetting?.value === "true") {
+      const session = await getCachedSession();
+      if (session?.user && !session.user.emailVerified) {
+        redirect("/auth/verify-email");
+      }
+    }
+  }
 
   const features = await getFeatures(data.organizationId);
   const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved;

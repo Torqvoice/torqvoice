@@ -68,6 +68,8 @@
     "platformDescription": "Opzioni generali di configurazione della piattaforma",
     "disableRegistration": "Disabilita registrazione",
     "disableRegistrationHint": "Blocca le nuove registrazioni degli utenti sulla piattaforma",
+    "requireEmailVerification": "Richiedi verifica email",
+    "requireEmailVerificationHint": "I nuovi utenti devono verificare il proprio indirizzo email prima di accedere alla piattaforma",
     "emailTitle": "Impostazioni email",
     "emailDescription": "Provider email della piattaforma — Utilizzato per le email a livello di sistema come il ripristino della password e gli inviti al team. Questo è anche il provider email predefinito per tutte le organizzazioni. Le organizzazioni possono configurare opzionalmente il proprio provider email in Impostazioni > Email.",
     "smtpHost": "Host SMTP",

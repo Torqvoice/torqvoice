@@ -68,6 +68,8 @@
     "platformDescription": "Options générales de configuration de la plateforme",
     "disableRegistration": "Désactiver l'inscription",
     "disableRegistrationHint": "Bloquer les nouvelles inscriptions d'utilisateurs sur la plateforme",
+    "requireEmailVerification": "Exiger la vérification de l'e-mail",
+    "requireEmailVerificationHint": "Les nouveaux utilisateurs doivent vérifier leur adresse e-mail avant d'accéder à la plateforme",
     "emailTitle": "Paramètres e-mail",
     "emailDescription": "Fournisseur d'e-mail de la plateforme — Utilisé pour les e-mails au niveau du système tels que les réinitialisations de mot de passe et les invitations d'équipe. C'est également le fournisseur d'e-mail par défaut pour toutes les organisations. Les organisations peuvent éventuellement configurer leur propre fournisseur d'e-mail dans Paramètres > E-mail.",
     "smtpHost": "Hôte SMTP",

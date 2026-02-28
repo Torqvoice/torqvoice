@@ -15,6 +15,52 @@ export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: "postgresql",
   }),
+  emailVerification: {
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      // Only send if email verification is required
+      const setting = await db.systemSetting.findUnique({
+        where: { key: "email.verificationRequired" },
+      });
+      if (setting?.value !== "true") return;
+
+      // Skip for invited users — their email is already known
+      const invitation = await db.teamInvitation.findFirst({
+        where: {
+          email: user.email,
+          status: { in: ["pending", "accepted"] },
+        },
+      });
+      if (invitation) return;
+
+      const { sendMail, getFromAddress } = await import("@/lib/email");
+      const from = await getFromAddress();
+
+      await sendMail({
+        from,
+        to: user.email,
+        subject: "Verify your Torqvoice email",
+        html: `
+          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+            <h2>Email Verification</h2>
+            <p>Hi${user.name ? ` ${user.name}` : ""},</p>
+            <p>Please verify your email address by clicking the button below:</p>
+            <div style="margin: 24px 0;">
+              <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
+                Verify Email
+              </a>
+            </div>
+            <p style="color: #6b7280; font-size: 14px;">If you didn't create an account, you can safely ignore this email.</p>
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
+            <p style="color: #6b7280; font-size: 12px;">
+              If the button doesn't work, copy and paste this URL into your browser:<br/>
+              <a href="${url}" style="color: #6b7280;">${url}</a>
+            </p>
+          </div>
+        `,
+      });
+    },
+  },
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {

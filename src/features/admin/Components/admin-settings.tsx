@@ -32,6 +32,9 @@ export function AdminSettings({
   const [registrationDisabled, setRegistrationDisabled] = useState(
     initial[SYSTEM_SETTING_KEYS.REGISTRATION_DISABLED] === 'true'
   )
+  const [emailVerificationRequired, setEmailVerificationRequired] = useState(
+    initial[SYSTEM_SETTING_KEYS.EMAIL_VERIFICATION_REQUIRED] === 'true'
+  )
 
   // Email provider
   const [emailProvider, setEmailProvider] = useState<EmailProviderType>(
@@ -128,6 +131,7 @@ export function AdminSettings({
     startTransition(async () => {
       const data: Record<string, string> = {
         [SYSTEM_SETTING_KEYS.REGISTRATION_DISABLED]: String(registrationDisabled),
+        [SYSTEM_SETTING_KEYS.EMAIL_VERIFICATION_REQUIRED]: String(emailVerificationRequired),
         [SYSTEM_SETTING_KEYS.EMAIL_PROVIDER]: emailProvider,
         // SMTP
         [SYSTEM_SETTING_KEYS.SMTP_HOST]: smtpHost,
@@ -218,6 +222,19 @@ export function AdminSettings({
               id="registration-toggle"
               checked={registrationDisabled}
               onCheckedChange={setRegistrationDisabled}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="email-verification-toggle">{t('adminSettings.requireEmailVerification')}</Label>
+              <p className="text-xs text-muted-foreground">
+                {t('adminSettings.requireEmailVerificationHint')}
+              </p>
+            </div>
+            <Switch
+              id="email-verification-toggle"
+              checked={emailVerificationRequired}
+              onCheckedChange={setEmailVerificationRequired}
             />
           </div>
         </CardContent>

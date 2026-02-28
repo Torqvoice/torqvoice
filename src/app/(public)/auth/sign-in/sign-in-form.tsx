@@ -32,6 +32,13 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
       if (result.error) {
         if (result.error.status === 429) {
           setError(t('errors.tooManyAttempts'))
+        } else if (
+          result.error.status === 403 &&
+          result.error.message?.toLowerCase().includes('email')
+        ) {
+          router.push('/auth/verify-email')
+          router.refresh()
+          return
         } else {
           setError(result.error.message || t('errors.invalidCredentials'))
         }

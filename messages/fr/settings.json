@@ -72,6 +72,13 @@
   "account": {
     "profileTitle": "Profil",
     "profileDescription": "Mettez a jour votre nom d'affichage et votre adresse e-mail.",
+    "emailVerified": "Vérifié",
+    "emailNotVerified": "Non vérifié",
+    "sendVerificationEmail": "Envoyer l'e-mail de vérification",
+    "verificationEmailSent": "E-mail de vérification envoyé. Vérifiez votre boîte de réception.",
+    "verificationEmailFailed": "Échec de l'envoi de l'e-mail de vérification",
+    "resendCooldown": "Renvoyer dans {seconds}s",
+    "emailChangeSent": "Un lien de confirmation a été envoyé à votre nouvelle adresse e-mail. Votre e-mail sera mis à jour lorsque vous cliquerez sur le lien.",
     "name": "Nom",
     "namePlaceholder": "Votre nom",
     "emailLabel": "E-mail",

@@ -68,6 +68,8 @@
     "platformDescription": "Ogólne opcje konfiguracji platformy",
     "disableRegistration": "Wyłącz rejestrację",
     "disableRegistrationHint": "Zablokuj rejestrację nowych użytkowników na platformie",
+    "requireEmailVerification": "Wymagaj weryfikacji e-mail",
+    "requireEmailVerificationHint": "Nowi użytkownicy muszą zweryfikować swój adres e-mail przed uzyskaniem dostępu do platformy",
     "emailTitle": "Ustawienia e-mail",
     "emailDescription": "Dostawca e-mail platformy — Używany do e-maili systemowych, takich jak resetowanie hasła i zaproszenia do zespołu. Jest to również domyślny dostawca e-mail dla wszystkich organizacji. Organizacje mogą opcjonalnie skonfigurować własnego dostawcę e-mail w Ustawienia > E-mail.",
     "smtpHost": "Host SMTP",

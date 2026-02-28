@@ -18,10 +18,11 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Checkbox } from '@/components/ui/checkbox'
-import { AlertTriangle, Check, Copy, KeyRound, Loader2, Save, Shield, ShieldOff, Trash2, User } from 'lucide-react'
+import { AlertTriangle, BadgeCheck, Check, Copy, KeyRound, Loader2, Mail, Save, Shield, ShieldOff, Trash2, User } from 'lucide-react'
 import { PasskeySettings } from '@/features/settings/Components/passkey-settings'
 import { QRCodeSVG } from 'qrcode.react'
-import { updateEmail } from '@/features/settings/Actions/accountActions'
+import { updateEmail, requestEmailChange } from '@/features/settings/Actions/accountActions'
+import { useCooldown } from '@/hooks/use-cooldown'
 import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
 import { deleteContent } from '@/features/settings/Actions/deleteContent'
 import { signOut } from '@/lib/auth-client'
@@ -37,9 +38,13 @@ interface ContentCounts {
 
 export function AccountSettings({
   twoFactorEnabled: initialTwoFactorEnabled,
+  emailVerified: initialEmailVerified,
+  emailVerificationRequired,
   contentCounts,
 }: {
   twoFactorEnabled: boolean
+  emailVerified: boolean
+  emailVerificationRequired: boolean
   contentCounts: ContentCounts
 }) {
   const { data: session } = useSession()
@@ -53,6 +58,9 @@ export function AccountSettings({
     if (session?.user?.email) setEmail(session.user.email)
   }, [session?.user?.name, session?.user?.email])
 
+  const [emailVerified, setEmailVerified] = useState(initialEmailVerified)
+  const [sendingVerification, setSendingVerification] = useState(false)
+  const [verificationCooldown, startVerificationCooldown] = useCooldown('account-verify-email', 60)
   const [savingProfile, setSavingProfile] = useState(false)
 
   const [currentPassword, setCurrentPassword] = useState('')
@@ -217,6 +225,22 @@ export function AccountSettings({
     toast.success(t('account.twoFactorEnabledSuccess'))
   }
 
+  const handleSendVerificationEmail = async () => {
+    if (verificationCooldown > 0) return
+    setSendingVerification(true)
+    try {
+      await authClient.sendVerificationEmail({
+        email: session?.user?.email ?? '',
+        callbackURL: '/settings/account',
+      })
+      toast.success(t('account.verificationEmailSent'))
+      startVerificationCooldown()
+    } catch {
+      toast.error(t('account.verificationEmailFailed'))
+    }
+    setSendingVerification(false)
+  }
+
   const handleUpdateProfile = async () => {
     setSavingProfile(true)
     try {
@@ -226,13 +250,24 @@ export function AccountSettings({
         return
       }
       if (email !== session?.user?.email) {
-        const emailResult = await updateEmail({ email })
-        if (!emailResult.success) {
-          toast.error(emailResult.error || t('account.failedUpdateEmail'))
-          return
+        if (emailVerificationRequired) {
+          const emailResult = await requestEmailChange({ email })
+          if (!emailResult.success) {
+            toast.error(emailResult.error || t('account.failedUpdateEmail'))
+            return
+          }
+          toast.success(t('account.emailChangeSent'))
+        } else {
+          const emailResult = await updateEmail({ email })
+          if (!emailResult.success) {
+            toast.error(emailResult.error || t('account.failedUpdateEmail'))
+            return
+          }
+          toast.success(t('account.profileUpdated'))
         }
+      } else {
+        toast.success(t('account.profileUpdated'))
       }
-      toast.success(t('account.profileUpdated'))
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t('account.failedUpdateProfile'))
     }
@@ -331,6 +366,39 @@ export function AccountSettings({
                 placeholder={t('account.emailPlaceholder')}
                 autoComplete="off"
               />
+              {emailVerificationRequired && (
+                <div className="flex items-center gap-2">
+                  {emailVerified ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                      <BadgeCheck className="h-3 w-3" />
+                      {t('account.emailVerified')}
+                    </span>
+                  ) : (
+                    <>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/10 px-2 py-0.5 text-xs font-medium text-orange-700 dark:text-orange-400">
+                        {t('account.emailNotVerified')}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-xs"
+                        onClick={handleSendVerificationEmail}
+                        disabled={sendingVerification || verificationCooldown > 0}
+                      >
+                        {sendingVerification ? (
+                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                        ) : (
+                          <Mail className="mr-1 h-3 w-3" />
+                        )}
+                        {verificationCooldown > 0
+                          ? t('account.resendCooldown', { seconds: verificationCooldown })
+                          : t('account.sendVerificationEmail')}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
           <Separator />
