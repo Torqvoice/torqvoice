@@ -62,8 +62,8 @@ export async function POST(request: Request) {
           organizationId: membership.organizationId,
         },
       },
-      success_url: `${appUrl}/admin/settings?subscription=success`,
-      cancel_url: `${appUrl}/admin/settings`,
+      success_url: `${appUrl}/settings/subscription?subscription=success`,
+      cancel_url: `${appUrl}/settings/subscription`,
     });
 
     return NextResponse.json({ url: checkoutSession.url });

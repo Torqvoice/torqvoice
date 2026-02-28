@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -64,6 +64,7 @@ export function SubscriptionSettings({
   features,
 }: Props) {
   const t = useTranslations("settings");
+  const locale = useLocale();
   const router = useRouter();
   const [checkoutLoading, setCheckoutLoading] = useState<"pro" | "enterprise" | null>(null);
   const [cancelLoading, setCancelLoading] = useState(false);
@@ -140,7 +141,7 @@ export function SubscriptionSettings({
 
   const formatDate = (iso: string | null) => {
     if (!iso) return "—";
-    return new Date(iso).toLocaleDateString(undefined, {
+    return new Date(iso).toLocaleDateString(locale, {
       year: "numeric",
       month: "long",
       day: "numeric",

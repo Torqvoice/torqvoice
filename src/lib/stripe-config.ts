@@ -46,6 +46,8 @@ export async function getStripeConfig(): Promise<StripeConfig> {
     process.env.STRIPE_ENTERPRISE_PRICE_ID ||
     "";
 
+  console.log("[StripeConfig] mode:", mode, "| DB keys found:", [...map.keys()], "| secretKey starts with:", secretKey.slice(0, 12) + "...");
+
   return { secretKey, webhookSecret, proPriceId, enterprisePriceId };
 }
 
