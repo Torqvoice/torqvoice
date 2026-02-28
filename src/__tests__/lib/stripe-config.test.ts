@@ -100,6 +100,12 @@ describe("getStripeConfig", () => {
   });
 
   it("returns empty strings when nothing is configured", async () => {
+    vi.stubEnv("STRIPE_SECRET_KEY", "");
+    vi.stubEnv("STRIPE_WEBHOOK_SECRET", "");
+    vi.stubEnv("STRIPE_PRO_PRICE_ID", "");
+    vi.stubEnv("STRIPE_ENTERPRISE_PRICE_ID", "");
+    vi.stubEnv("STRIPE_MODE", "");
+
     mockFindMany.mockResolvedValue([]);
 
     const config = await getStripeConfig();
