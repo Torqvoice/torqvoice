@@ -4,6 +4,7 @@ import { db } from './db'
 export type Plan = 'free' | 'pro' | 'enterprise' | 'white-label'
 
 export type PlanFeatures = {
+  maxOrganizations: number
   maxCustomers: number
   maxUsers: number
   templates: number
@@ -24,6 +25,7 @@ export type PlanFeatures = {
 
 export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
   free: {
+    maxOrganizations: 1,
     maxCustomers: 5,
     maxUsers: 1,
     templates: 2,
@@ -42,6 +44,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     customerPortal: false,
   },
   pro: {
+    maxOrganizations: 3,
     maxCustomers: 999999,
     maxUsers: 5,
     templates: 999999,
@@ -60,6 +63,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     customerPortal: true,
   },
   enterprise: {
+    maxOrganizations: 10,
     maxCustomers: 999999,
     maxUsers: 50,
     templates: 999999,
@@ -78,6 +82,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     customerPortal: true,
   },
   'white-label': {
+    maxOrganizations: 999999,
     maxCustomers: 999999,
     maxUsers: 999999,
     templates: 999999,
@@ -155,6 +160,30 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
     customPlatformName: hasLicense,
   }
 })
+
+/**
+ * Returns the max organizations a user is allowed based on their best plan
+ * across all orgs they own. In self-hosted mode, returns unlimited.
+ */
+export async function getMaxOrganizations(userId: string): Promise<number> {
+  if (!isCloudMode()) return 999999
+
+  const ownedOrgs = await db.organizationMember.findMany({
+    where: { userId, role: 'owner' },
+    select: { organizationId: true },
+  })
+
+  let best = PLAN_FEATURES.free.maxOrganizations
+
+  for (const membership of ownedOrgs) {
+    const features = await getFeatures(membership.organizationId)
+    if (features.maxOrganizations > best) {
+      best = features.maxOrganizations
+    }
+  }
+
+  return best
+}
 
 export class FeatureGatedError extends Error {
   feature: string
