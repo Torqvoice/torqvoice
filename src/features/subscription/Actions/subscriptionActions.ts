@@ -1,19 +1,8 @@
 "use server";
 
-import Stripe from "stripe";
 import { withAuth } from "@/lib/with-auth";
 import { db } from "@/lib/db";
-
-let stripeClient: Stripe | null = null;
-
-function getStripe(): Stripe {
-  if (!stripeClient) {
-    const key = process.env.STRIPE_SECRET_KEY;
-    if (!key) throw new Error("STRIPE_SECRET_KEY is not configured");
-    stripeClient = new Stripe(key);
-  }
-  return stripeClient;
-}
+import { getStripeClient } from "@/lib/stripe-config";
 
 export async function cancelSubscription() {
   return withAuth(async ({ organizationId }) => {
@@ -25,7 +14,7 @@ export async function cancelSubscription() {
       throw new Error("No active subscription found");
     }
 
-    const stripe = getStripe();
+    const stripe = await getStripeClient();
 
     await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
       cancel_at_period_end: true,
@@ -50,7 +39,7 @@ export async function resumeSubscription() {
       throw new Error("No active subscription found");
     }
 
-    const stripe = getStripe();
+    const stripe = await getStripeClient();
 
     await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
       cancel_at_period_end: false,

@@ -131,8 +131,9 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
       }
     }
 
-    const planName = subscription.plan.name.toLowerCase() as Plan
-    return PLAN_FEATURES[planName] ?? PLAN_FEATURES.free
+    const name = subscription.plan.name.toLowerCase()
+    const planName: Plan = name.includes('enterprise') ? 'enterprise' : name.includes('pro') ? 'pro' : 'free'
+    return PLAN_FEATURES[planName]
   }
 
   // Self-hosted mode — all features unlocked, license only controls branding
