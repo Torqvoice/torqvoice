@@ -44,7 +44,8 @@
     "failedDelete": "Benutzer konnte nicht gelöscht werden",
     "promoteToSuperAdmin": "Zum Super-Admin befördern",
     "demoteFromSuperAdmin": "Vom Super-Admin herabstufen",
-    "deleteUser": "Benutzer löschen"
+    "deleteUser": "Benutzer löschen",
+    "emailVerified": "E-Mail verifiziert"
   },
   "organizations": {
     "searchPlaceholder": "Nach Organisationsname suchen...",

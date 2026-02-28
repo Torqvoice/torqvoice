@@ -44,7 +44,8 @@
     "failedDelete": "Gebruiker verwijderen mislukt",
     "promoteToSuperAdmin": "Promoveren tot superbeheerder",
     "demoteFromSuperAdmin": "Degraderen als superbeheerder",
-    "deleteUser": "Gebruiker verwijderen"
+    "deleteUser": "Gebruiker verwijderen",
+    "emailVerified": "E-mail geverifieerd"
   },
   "organizations": {
     "searchPlaceholder": "Zoeken op organisatienaam...",

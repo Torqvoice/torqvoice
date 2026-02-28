@@ -44,7 +44,8 @@
     "failedDelete": "Kunne ikke slette bruker",
     "promoteToSuperAdmin": "Forfrem til superadmin",
     "demoteFromSuperAdmin": "Degrader fra superadmin",
-    "deleteUser": "Slett bruker"
+    "deleteUser": "Slett bruker",
+    "emailVerified": "E-post verifisert"
   },
   "organizations": {
     "searchPlaceholder": "Søk etter organisasjonsnavn...",

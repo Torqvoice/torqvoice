@@ -44,7 +44,8 @@
     "failedDelete": "Kullanıcı silinemedi",
     "promoteToSuperAdmin": "Süper Yöneticiye Yükselt",
     "demoteFromSuperAdmin": "Süper Yöneticilikten Düşür",
-    "deleteUser": "Kullanıcıyı Sil"
+    "deleteUser": "Kullanıcıyı Sil",
+    "emailVerified": "E-posta doğrulandı"
   },
   "organizations": {
     "searchPlaceholder": "Organizasyon adına göre ara...",

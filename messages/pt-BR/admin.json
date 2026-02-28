@@ -44,7 +44,8 @@
     "failedDelete": "Falha ao excluir usuário",
     "promoteToSuperAdmin": "Promover a Super Admin",
     "demoteFromSuperAdmin": "Rebaixar de Super Admin",
-    "deleteUser": "Excluir Usuário"
+    "deleteUser": "Excluir Usuário",
+    "emailVerified": "E-mail verificado"
   },
   "organizations": {
     "searchPlaceholder": "Buscar por nome da organização...",

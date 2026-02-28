@@ -29,6 +29,9 @@ vi.mock("@/lib/db", () => ({
       findFirst: vi.fn(),
       create: vi.fn(),
     },
+    user: {
+      update: vi.fn(),
+    },
     $transaction: vi.fn(),
   },
 }));
@@ -118,11 +121,29 @@ describe("acceptInvitation", () => {
     mockGetSession.mockResolvedValue(SESSION as any);
     mockFindInvitation.mockResolvedValue(VALID_INVITATION as any);
     mockFindMembership.mockResolvedValue(null);
-    mockTransaction.mockResolvedValue([{}, {}] as any);
+    mockTransaction.mockResolvedValue([{}, {}, {}] as any);
 
     const result = await acceptInvitation({ token: "tok-abc" });
     expect(result).toEqual({ success: true, data: { accepted: true } });
     expect(mockTransaction).toHaveBeenCalled();
+  });
+
+  it("sets emailVerified to true in the transaction", async () => {
+    mockGetSession.mockResolvedValue(SESSION as any);
+    mockFindInvitation.mockResolvedValue(VALID_INVITATION as any);
+    mockFindMembership.mockResolvedValue(null);
+    mockTransaction.mockResolvedValue([{}, {}, {}] as any);
+
+    await acceptInvitation({ token: "tok-abc" });
+
+    // The transaction should be called with an array containing the user.update call
+    const transactionArg = mockTransaction.mock.calls[0][0];
+    expect(transactionArg).toHaveLength(3);
+    // Verify db.user.update was called with emailVerified: true
+    expect(db.user.update).toHaveBeenCalledWith({
+      where: { id: SESSION.user.id },
+      data: { emailVerified: true },
+    });
   });
 
   it("returns error when transaction throws", async () => {

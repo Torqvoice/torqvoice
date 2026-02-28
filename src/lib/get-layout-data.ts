@@ -31,7 +31,10 @@ export async function getLayoutData(): Promise<AuthResult> {
     }),
   ]);
 
-  const isSuperAdmin = user?.isSuperAdmin ?? false;
+  // User record deleted (e.g. admin removed the account) but session cookie still cached
+  if (!user) return { status: "unauthenticated" };
+
+  const isSuperAdmin = user.isSuperAdmin;
 
   if (!membership && !isSuperAdmin) return { status: "no-organization" };
 

@@ -1,70 +1,70 @@
-import { passkey } from "@better-auth/passkey";
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { nextCookies } from "better-auth/next-js";
-import { twoFactor } from "better-auth/plugins/two-factor";
-import { db } from "./db";
+import { passkey } from '@better-auth/passkey'
+import { betterAuth } from 'better-auth'
+import { prismaAdapter } from 'better-auth/adapters/prisma'
+import { nextCookies } from 'better-auth/next-js'
+import { twoFactor } from 'better-auth/plugins/two-factor'
+import { db } from './db'
 
-const baseURL = process.env.NEXT_PUBLIC_APP_URL;
-const isProduction = baseURL?.startsWith("https://");
+const baseURL = process.env.NEXT_PUBLIC_APP_URL
+const isProduction = baseURL?.startsWith('https://')
 
 export const auth = betterAuth({
   baseURL,
-  basePath: "/api/public/auth",
+  basePath: '/api/public/auth',
   trustedOrigins: baseURL ? [baseURL] : [],
   database: prismaAdapter(db, {
-    provider: "postgresql",
+    provider: 'postgresql',
   }),
   emailVerification: {
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
       // Only send if email verification is required
       const setting = await db.systemSetting.findUnique({
-        where: { key: "email.verificationRequired" },
-      });
-      if (setting?.value !== "true") return;
+        where: { key: 'email.verificationRequired' },
+      })
+      if (setting?.value !== 'true') return
 
-      // Skip for invited users — their email is already known
-      const invitation = await db.teamInvitation.findFirst({
+      // Skip for users with a pending invitation — acceptInvitation will set emailVerified
+      const pendingInvitation = await db.teamInvitation.findFirst({
         where: {
           email: user.email,
-          status: { in: ["pending", "accepted"] },
+          status: 'pending',
         },
-      });
-      if (invitation) return;
+      })
+      if (pendingInvitation) return
 
       // Server-side rate limit: 60 seconds between verification emails per user
-      const cooldownKey = `email-verify-cooldown:${user.id}`;
+      const cooldownKey = `email-verify-cooldown:${user.id}`
       const existingCooldown = await db.verification.findUnique({
         where: { identifier: cooldownKey },
-      });
-      if (existingCooldown && existingCooldown.expiresAt > new Date()) return;
+      })
+      if (existingCooldown && existingCooldown.expiresAt > new Date()) return
 
       // Set cooldown record
       await db.verification.upsert({
         where: { identifier: cooldownKey },
         create: {
           identifier: cooldownKey,
-          value: "1",
+          value: '1',
           expiresAt: new Date(Date.now() + 60_000),
         },
         update: {
           expiresAt: new Date(Date.now() + 60_000),
         },
-      });
+      })
 
       try {
-        const { sendMail, getFromAddress } = await import("@/lib/email");
-        const from = await getFromAddress();
+        const { sendMail, getFromAddress } = await import('@/lib/email')
+        const from = await getFromAddress()
 
         await sendMail({
           from,
           to: user.email,
-          subject: "Verify your Torqvoice email",
+          subject: 'Verify your Torqvoice email',
           html: `
             <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
               <h2>Email Verification</h2>
-              <p>Hi${user.name ? ` ${user.name}` : ""},</p>
+              <p>Hi${user.name ? ` ${user.name}` : ''},</p>
               <p>Please verify your email address by clicking the button below:</p>
               <div style="margin: 24px 0;">
                 <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
@@ -79,26 +79,26 @@ export const auth = betterAuth({
               </p>
             </div>
           `,
-        });
+        })
       } catch (error) {
-        console.error("[emailVerification] Failed to send verification email:", error);
+        console.error('[emailVerification] Failed to send verification email:', error)
       }
     },
   },
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
-      const { sendMail, getFromAddress } = await import("@/lib/email");
-      const from = await getFromAddress();
+      const { sendMail, getFromAddress } = await import('@/lib/email')
+      const from = await getFromAddress()
 
       await sendMail({
         from,
         to: user.email,
-        subject: "Reset your Torqvoice password",
+        subject: 'Reset your Torqvoice password',
         html: `
           <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
             <h2>Password Reset</h2>
-            <p>Hi${user.name ? ` ${user.name}` : ""},</p>
+            <p>Hi${user.name ? ` ${user.name}` : ''},</p>
             <p>We received a request to reset your password. Click the button below to set a new password:</p>
             <div style="margin: 24px 0;">
               <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
@@ -113,7 +113,7 @@ export const auth = betterAuth({
             </p>
           </div>
         `,
-      });
+      })
     },
   },
   session: {
@@ -134,7 +134,7 @@ export const auth = betterAuth({
           await db.user.update({
             where: { id: session.userId },
             data: { lastLogin: new Date() },
-          });
+          })
         },
       },
     },
@@ -143,48 +143,48 @@ export const auth = betterAuth({
         before: async (user) => {
           // Block registration if disabled via system settings
           const setting = await db.systemSetting.findUnique({
-            where: { key: "registration.disabled" },
-          });
-          if (setting?.value === "true") {
+            where: { key: 'registration.disabled' },
+          })
+          if (setting?.value === 'true') {
             // Allow registration if there's a pending invitation for this email
             const invitation = await db.teamInvitation.findFirst({
               where: {
                 email: user.email,
-                status: "pending",
+                status: 'pending',
                 expiresAt: { gt: new Date() },
               },
-            });
+            })
             if (!invitation) {
-              return false;
+              return false
             }
           }
-          return { data: user };
+          return { data: user }
         },
         after: async (user) => {
           // Auto-promote the first registered user to super admin
-          const count = await db.user.count();
+          const count = await db.user.count()
           if (count === 1) {
             await db.user.update({
               where: { id: user.id },
               data: { isSuperAdmin: true, termsAcceptedAt: new Date() },
-            });
+            })
           } else {
             await db.user.update({
               where: { id: user.id },
               data: { termsAcceptedAt: new Date() },
-            });
+            })
           }
         },
       },
     },
   },
   plugins: [
-    twoFactor({ issuer: "Torqvoice" }),
+    twoFactor({ issuer: 'Torqvoice' }),
     passkey({
-      rpID: baseURL ? new URL(baseURL).hostname : "localhost",
-      rpName: "Torqvoice",
-      origin: baseURL || "http://localhost:3000",
+      rpID: baseURL ? new URL(baseURL).hostname : 'localhost',
+      rpName: 'Torqvoice',
+      origin: baseURL || 'http://localhost:3000',
     }),
     nextCookies(), // Must be last plugin
   ],
-});
+})

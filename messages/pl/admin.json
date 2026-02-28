@@ -44,7 +44,8 @@
     "failedDelete": "Nie udało się usunąć użytkownika",
     "promoteToSuperAdmin": "Awansuj na superadmina",
     "demoteFromSuperAdmin": "Degraduj z superadmina",
-    "deleteUser": "Usuń użytkownika"
+    "deleteUser": "Usuń użytkownika",
+    "emailVerified": "E-mail zweryfikowany"
   },
   "organizations": {
     "searchPlaceholder": "Szukaj po nazwie organizacji...",

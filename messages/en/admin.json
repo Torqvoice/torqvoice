@@ -44,7 +44,8 @@
     "failedDelete": "Failed to delete user",
     "promoteToSuperAdmin": "Promote to Super Admin",
     "demoteFromSuperAdmin": "Demote from Super Admin",
-    "deleteUser": "Delete User"
+    "deleteUser": "Delete User",
+    "emailVerified": "Email verified"
   },
   "organizations": {
     "searchPlaceholder": "Search by organization name...",
