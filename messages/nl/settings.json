@@ -62,6 +62,13 @@
   "account": {
     "profileTitle": "Profiel",
     "profileDescription": "Werk uw weergavenaam en e-mailadres bij.",
+    "emailVerified": "Geverifieerd",
+    "emailNotVerified": "Niet geverifieerd",
+    "sendVerificationEmail": "Verificatie-e-mail verzenden",
+    "verificationEmailSent": "Verificatie-e-mail verzonden. Controleer uw postvak.",
+    "verificationEmailFailed": "Kon verificatie-e-mail niet verzenden",
+    "resendCooldown": "Opnieuw verzenden over {seconds}s",
+    "emailChangeSent": "Er is een bevestigingslink naar uw nieuwe e-mailadres gestuurd. Uw e-mail wordt bijgewerkt zodra u op de link klikt.",
     "name": "Naam", "namePlaceholder": "Uw naam",
     "emailLabel": "E-mail", "emailPlaceholder": "Uw e-mail",
     "saveProfile": "Profiel opslaan", "profileUpdated": "Profiel bijgewerkt",

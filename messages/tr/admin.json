@@ -44,7 +44,8 @@
     "failedDelete": "Kullanıcı silinemedi",
     "promoteToSuperAdmin": "Süper Yöneticiye Yükselt",
     "demoteFromSuperAdmin": "Süper Yöneticilikten Düşür",
-    "deleteUser": "Kullanıcıyı Sil"
+    "deleteUser": "Kullanıcıyı Sil",
+    "emailVerified": "E-posta doğrulandı"
   },
   "organizations": {
     "searchPlaceholder": "Organizasyon adına göre ara...",
@@ -68,6 +69,8 @@
     "platformDescription": "Genel platform yapılandırma seçenekleri",
     "disableRegistration": "Kayıt Olmayı Devre Dışı Bırak",
     "disableRegistrationHint": "Platformda yeni kullanıcı kayıtlarını engelle",
+    "requireEmailVerification": "E-posta Doğrulaması Gerektir",
+    "requireEmailVerificationHint": "Yeni kullanıcılar platforma erişmeden önce e-posta adreslerini doğrulamalıdır",
     "emailTitle": "E-posta Ayarları",
     "emailDescription": "Platform E-posta Sağlayıcısı — Parola sıfırlama ve ekip davetleri gibi sistem düzeyindeki e-postalar için kullanılır. Bu aynı zamanda tüm organizasyonlar için varsayılan e-posta sağlayıcısıdır. Organizasyonlar isteğe bağlı olarak Ayarlar > E-posta bölümünden kendi e-posta sağlayıcılarını yapılandırabilir.",
     "smtpHost": "SMTP Sunucusu",

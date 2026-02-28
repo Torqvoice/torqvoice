@@ -72,6 +72,13 @@
   "account": {
     "profileTitle": "Profil",
     "profileDescription": "Görünen adınızı ve e-posta adresinizi güncelleyin.",
+    "emailVerified": "Doğrulandı",
+    "emailNotVerified": "Doğrulanmadı",
+    "sendVerificationEmail": "Doğrulama e-postası gönder",
+    "verificationEmailSent": "Doğrulama e-postası gönderildi. Gelen kutunuzu kontrol edin.",
+    "verificationEmailFailed": "Doğrulama e-postası gönderilemedi",
+    "resendCooldown": "{seconds}s sonra yeniden gönder",
+    "emailChangeSent": "Yeni e-posta adresinize bir onay bağlantısı gönderildi. Bağlantıya tıkladığınızda e-postanız güncellenecektir.",
     "name": "Ad",
     "namePlaceholder": "Adınız",
     "emailLabel": "E-posta",

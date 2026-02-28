@@ -44,7 +44,8 @@
     "failedDelete": "Gebruiker verwijderen mislukt",
     "promoteToSuperAdmin": "Promoveren tot superbeheerder",
     "demoteFromSuperAdmin": "Degraderen als superbeheerder",
-    "deleteUser": "Gebruiker verwijderen"
+    "deleteUser": "Gebruiker verwijderen",
+    "emailVerified": "E-mail geverifieerd"
   },
   "organizations": {
     "searchPlaceholder": "Zoeken op organisatienaam...",
@@ -68,6 +69,8 @@
     "platformDescription": "Algemene platformconfiguratie-opties",
     "disableRegistration": "Registratie uitschakelen",
     "disableRegistrationHint": "Nieuwe gebruikersregistraties op het platform blokkeren",
+    "requireEmailVerification": "E-mailverificatie vereisen",
+    "requireEmailVerificationHint": "Nieuwe gebruikers moeten hun e-mailadres verifiëren voordat ze toegang krijgen tot het platform",
     "emailTitle": "E-mailinstellingen",
     "emailDescription": "Platform e-mailprovider — Wordt gebruikt voor e-mails op systeemniveau, zoals wachtwoordresets en teamuitnodigingen. Dit is ook de standaard e-mailprovider voor alle organisaties. Organisaties kunnen optioneel hun eigen e-mailprovider configureren in Instellingen > E-mail.",
     "smtpHost": "SMTP Host",

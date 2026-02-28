@@ -72,6 +72,13 @@
   "account": {
     "profileTitle": "Perfil",
     "profileDescription": "Actualice su nombre para mostrar y direccion de correo electronico.",
+    "emailVerified": "Verificado",
+    "emailNotVerified": "No verificado",
+    "sendVerificationEmail": "Enviar correo de verificación",
+    "verificationEmailSent": "Correo de verificación enviado. Revise su bandeja de entrada.",
+    "verificationEmailFailed": "No se pudo enviar el correo de verificación",
+    "resendCooldown": "Reenviar en {seconds}s",
+    "emailChangeSent": "Se ha enviado un enlace de confirmación a su nueva dirección de correo electrónico. Su correo se actualizará cuando haga clic en el enlace.",
     "name": "Nombre",
     "namePlaceholder": "Su nombre",
     "emailLabel": "Correo electronico",

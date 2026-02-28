@@ -11,6 +11,7 @@ type AuthResult =
       organizationId: string;
       role: string;
       isSuperAdmin: boolean;
+      emailVerified: boolean;
       companyLogo: string | undefined;
       dateFormat: string | undefined;
       timeFormat: string | undefined;
@@ -26,11 +27,14 @@ export async function getLayoutData(): Promise<AuthResult> {
     getCachedMembership(session.user.id),
     db.user.findUnique({
       where: { id: session.user.id },
-      select: { isSuperAdmin: true },
+      select: { isSuperAdmin: true, emailVerified: true },
     }),
   ]);
 
-  const isSuperAdmin = user?.isSuperAdmin ?? false;
+  // User record deleted (e.g. admin removed the account) but session cookie still cached
+  if (!user) return { status: "unauthenticated" };
+
+  const isSuperAdmin = user.isSuperAdmin;
 
   if (!membership && !isSuperAdmin) return { status: "no-organization" };
 
@@ -68,6 +72,7 @@ export async function getLayoutData(): Promise<AuthResult> {
     organizationId: membership?.organizationId ?? "",
     role: isSuperAdmin ? "super_admin" : (membership?.role ?? "member"),
     isSuperAdmin,
+    emailVerified: user?.emailVerified ?? false,
     companyLogo: orgMap.get(SETTING_KEYS.COMPANY_LOGO) || undefined,
     dateFormat: orgMap.get(SETTING_KEYS.DATE_FORMAT) || undefined,
     timeFormat: orgMap.get(SETTING_KEYS.TIME_FORMAT) || undefined,

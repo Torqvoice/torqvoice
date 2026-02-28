@@ -31,7 +31,7 @@ vi.mock("@/lib/email", () => ({
 
 vi.mock("@/lib/db", () => ({
   db: {
-    user: { findUnique: vi.fn() },
+    user: { findUnique: vi.fn(), update: vi.fn() },
     teamInvitation: {
       findUnique: vi.fn(),
       findFirst: vi.fn(),
@@ -153,7 +153,7 @@ describe("acceptInvitation — role and org assignment correctness", () => {
       user: { id: "invited-user", email: "invited@example.com" },
     } as any);
     vi.mocked(db.organizationMember.findFirst).mockResolvedValue(null);
-    vi.mocked(db.$transaction).mockResolvedValue([{}, {}] as any);
+    vi.mocked(db.$transaction).mockResolvedValue([{}, {}, {}] as any);
   });
 
   it("creates membership in the invitation's org, not any other org", async () => {

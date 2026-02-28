@@ -9,12 +9,16 @@ export default async function AccountSettingsPage() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/auth/sign-in");
 
-  const [user, countsResult] = await Promise.all([
+  const [user, countsResult, verificationSetting] = await Promise.all([
     db.user.findUnique({
       where: { id: session.user.id },
-      select: { twoFactorEnabled: true },
+      select: { twoFactorEnabled: true, emailVerified: true },
     }),
     getContentCounts(),
+    db.systemSetting.findUnique({
+      where: { key: "email.verificationRequired" },
+      select: { value: true },
+    }),
   ]);
 
   const contentCounts = countsResult.success && countsResult.data
@@ -24,6 +28,8 @@ export default async function AccountSettingsPage() {
   return (
     <AccountSettings
       twoFactorEnabled={user?.twoFactorEnabled ?? false}
+      emailVerified={user?.emailVerified ?? false}
+      emailVerificationRequired={verificationSetting?.value === "true"}
       contentCounts={contentCounts}
     />
   );

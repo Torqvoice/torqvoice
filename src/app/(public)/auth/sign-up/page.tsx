@@ -24,5 +24,11 @@ export default async function SignUpPage({
     }
   }
 
-  return <SignUpForm inviteToken={inviteToken} />
+  const verificationSetting = await db.systemSetting.findUnique({
+    where: { key: 'email.verificationRequired' },
+    select: { value: true },
+  })
+  const emailVerificationRequired = verificationSetting?.value === 'true'
+
+  return <SignUpForm inviteToken={inviteToken} emailVerificationRequired={emailVerificationRequired} />
 }

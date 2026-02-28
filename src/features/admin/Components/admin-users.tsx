@@ -23,7 +23,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
-import { Loader2, MoreHorizontal, Search, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
+import { BadgeCheck, Loader2, MoreHorizontal, Search, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
+import { useFormatDate } from "@/lib/use-format-date";
 import { toggleSuperAdmin } from "../Actions/toggleSuperAdmin";
 import { deleteUser } from "../Actions/deleteUser";
 
@@ -32,6 +33,7 @@ type UserRow = {
   name: string;
   email: string;
   isSuperAdmin: boolean;
+  emailVerified: boolean;
   createdAt: string;
   lastSeen: string | null;
   organizationCount: number;
@@ -69,6 +71,7 @@ export function AdminUsers({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const confirm = useConfirm();
+  const { formatDate, formatDateTime } = useFormatDate();
   const [isPending, startTransition] = useTransition();
   const [searchInput, setSearchInput] = useState(search);
 
@@ -186,7 +189,14 @@ export function AdminUsers({
               data.users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                    <span className="flex items-center gap-1.5">
+                      {user.email}
+                      {user.emailVerified && (
+                        <span title={t("users.emailVerified")}><BadgeCheck className="h-4 w-4 text-blue-500" /></span>
+                      )}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     {user.isSuperAdmin ? (
                       <Badge variant="default" className="gap-1">
@@ -199,7 +209,7 @@ export function AdminUsers({
                   </TableCell>
                   <TableCell className="text-center">{user.organizationCount}</TableCell>
                   <TableCell>
-                    {new Date(user.createdAt).toLocaleDateString()}
+                    {formatDate(user.createdAt)}
                   </TableCell>
                   <TableCell>
                     {user.lastSeen && Date.now() - new Date(user.lastSeen).getTime() < 5 * 60 * 1000 ? (
@@ -209,7 +219,7 @@ export function AdminUsers({
                       </span>
                     ) : (
                       <span className="text-sm text-muted-foreground">
-                        {user.lastSeen ? new Date(user.lastSeen).toLocaleString() : "—"}
+                        {user.lastSeen ? formatDateTime(user.lastSeen) : "—"}
                       </span>
                     )}
                   </TableCell>

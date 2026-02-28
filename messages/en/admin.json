@@ -44,7 +44,8 @@
     "failedDelete": "Failed to delete user",
     "promoteToSuperAdmin": "Promote to Super Admin",
     "demoteFromSuperAdmin": "Demote from Super Admin",
-    "deleteUser": "Delete User"
+    "deleteUser": "Delete User",
+    "emailVerified": "Email verified"
   },
   "organizations": {
     "searchPlaceholder": "Search by organization name...",
@@ -68,6 +69,8 @@
     "platformDescription": "General platform configuration options",
     "disableRegistration": "Disable Registration",
     "disableRegistrationHint": "Block new user sign-ups on the platform",
+    "requireEmailVerification": "Require Email Verification",
+    "requireEmailVerificationHint": "New users must verify their email address before accessing the platform",
     "emailTitle": "Email Settings",
     "emailDescription": "Platform Email Provider — Used for system-level emails such as password resets and team invitations. This is also the default email provider for all organizations. Organizations can optionally configure their own email provider in Settings > Email.",
     "smtpHost": "SMTP Host",

@@ -72,6 +72,13 @@
   "account": {
     "profileTitle": "Profilo",
     "profileDescription": "Aggiorna il tuo nome visualizzato e indirizzo email.",
+    "emailVerified": "Verificato",
+    "emailNotVerified": "Non verificato",
+    "sendVerificationEmail": "Invia email di verifica",
+    "verificationEmailSent": "Email di verifica inviata. Controlla la tua casella di posta.",
+    "verificationEmailFailed": "Impossibile inviare l'email di verifica",
+    "resendCooldown": "Reinvia tra {seconds}s",
+    "emailChangeSent": "Un link di conferma è stato inviato al tuo nuovo indirizzo email. La tua email verrà aggiornata quando cliccherai sul link.",
     "name": "Nome",
     "namePlaceholder": "Il tuo nome",
     "emailLabel": "Email",

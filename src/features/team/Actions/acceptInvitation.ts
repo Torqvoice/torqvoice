@@ -47,7 +47,7 @@ export async function acceptInvitation(input: unknown) {
       return { success: true, data: { accepted: true } };
     }
 
-    // Create membership and mark invitation as accepted
+    // Create membership, mark invitation as accepted, and verify email
     await db.$transaction([
       db.organizationMember.create({
         data: {
@@ -60,6 +60,10 @@ export async function acceptInvitation(input: unknown) {
       db.teamInvitation.update({
         where: { id: invitation.id },
         data: { status: "accepted" },
+      }),
+      db.user.update({
+        where: { id: session.user.id },
+        data: { emailVerified: true },
       }),
     ]);
 

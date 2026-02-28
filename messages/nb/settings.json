@@ -72,6 +72,13 @@
   "account": {
     "profileTitle": "Profil",
     "profileDescription": "Oppdater visningsnavnet og e-postadressen din.",
+    "emailVerified": "Bekreftet",
+    "emailNotVerified": "Ikke bekreftet",
+    "sendVerificationEmail": "Send bekreftelses-e-post",
+    "verificationEmailSent": "Bekreftelses-e-post sendt. Sjekk innboksen din.",
+    "verificationEmailFailed": "Kunne ikke sende bekreftelses-e-post",
+    "resendCooldown": "Send på nytt om {seconds}s",
+    "emailChangeSent": "En bekreftelseslenke er sendt til din nye e-postadresse. E-posten din vil bli oppdatert når du klikker på lenken.",
     "name": "Navn",
     "namePlaceholder": "Ditt navn",
     "emailLabel": "E-post",

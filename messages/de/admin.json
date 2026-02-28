@@ -44,7 +44,8 @@
     "failedDelete": "Benutzer konnte nicht gelöscht werden",
     "promoteToSuperAdmin": "Zum Super-Admin befördern",
     "demoteFromSuperAdmin": "Vom Super-Admin herabstufen",
-    "deleteUser": "Benutzer löschen"
+    "deleteUser": "Benutzer löschen",
+    "emailVerified": "E-Mail verifiziert"
   },
   "organizations": {
     "searchPlaceholder": "Nach Organisationsname suchen...",
@@ -68,6 +69,8 @@
     "platformDescription": "Allgemeine Plattformkonfigurationsoptionen",
     "disableRegistration": "Registrierung deaktivieren",
     "disableRegistrationHint": "Neue Benutzerregistrierungen auf der Plattform blockieren",
+    "requireEmailVerification": "E-Mail-Verifizierung erforderlich",
+    "requireEmailVerificationHint": "Neue Benutzer müssen ihre E-Mail-Adresse bestätigen, bevor sie auf die Plattform zugreifen können",
     "emailTitle": "E-Mail-Einstellungen",
     "emailDescription": "Plattform-E-Mail-Anbieter — Wird für systemweite E-Mails wie Passwortzurücksetzungen und Teameinladungen verwendet. Dies ist auch der Standard-E-Mail-Anbieter für alle Organisationen. Organisationen können optional ihren eigenen E-Mail-Anbieter unter Einstellungen > E-Mail konfigurieren.",
     "smtpHost": "SMTP-Host",

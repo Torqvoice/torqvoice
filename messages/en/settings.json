@@ -72,6 +72,13 @@
   "account": {
     "profileTitle": "Profile",
     "profileDescription": "Update your display name and email address.",
+    "emailVerified": "Verified",
+    "emailNotVerified": "Not verified",
+    "sendVerificationEmail": "Send verification email",
+    "verificationEmailSent": "Verification email sent. Check your inbox.",
+    "verificationEmailFailed": "Failed to send verification email",
+    "resendCooldown": "Resend in {seconds}s",
+    "emailChangeSent": "A confirmation link has been sent to your new email address. Your email will be updated once you click the link.",
     "name": "Name",
     "namePlaceholder": "Your name",
     "emailLabel": "Email",

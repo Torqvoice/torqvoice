@@ -11,6 +11,7 @@ import { DateSettingsProvider } from "@/components/date-settings-context";
 import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { OnlineTracker } from "@/components/online-tracker";
+import { db } from "@/lib/db";
 
 export default async function DashboardLayout({
   children,
@@ -21,6 +22,17 @@ export default async function DashboardLayout({
 
   if (data.status === "unauthenticated") redirect("/auth/sign-in");
   if (data.status === "no-organization") redirect("/onboarding");
+
+  // Check email verification requirement (super admins bypass this)
+  if (!data.isSuperAdmin && !data.emailVerified) {
+    const verificationSetting = await db.systemSetting.findUnique({
+      where: { key: "email.verificationRequired" },
+      select: { value: true },
+    });
+    if (verificationSetting?.value === "true") {
+      redirect("/auth/verify-email");
+    }
+  }
 
   const features = await getFeatures(data.organizationId);
   const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved;

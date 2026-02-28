@@ -44,7 +44,8 @@
     "failedDelete": "Falha ao excluir usuário",
     "promoteToSuperAdmin": "Promover a Super Admin",
     "demoteFromSuperAdmin": "Rebaixar de Super Admin",
-    "deleteUser": "Excluir Usuário"
+    "deleteUser": "Excluir Usuário",
+    "emailVerified": "E-mail verificado"
   },
   "organizations": {
     "searchPlaceholder": "Buscar por nome da organização...",
@@ -68,6 +69,8 @@
     "platformDescription": "Opções gerais de configuração da plataforma",
     "disableRegistration": "Desativar Registro",
     "disableRegistrationHint": "Bloquear novos cadastros de usuários na plataforma",
+    "requireEmailVerification": "Exigir verificação de e-mail",
+    "requireEmailVerificationHint": "Novos usuários devem verificar seu endereço de e-mail antes de acessar a plataforma",
     "emailTitle": "Configurações de E-mail",
     "emailDescription": "Provedor de E-mail da Plataforma — Usado para e-mails em nível de sistema, como redefinição de senha e convites de equipe. Este também é o provedor de e-mail padrão para todas as organizações. As organizações podem opcionalmente configurar seu próprio provedor de e-mail em Configurações > E-mail.",
     "smtpHost": "Host SMTP",

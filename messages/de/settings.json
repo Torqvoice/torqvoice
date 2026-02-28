@@ -72,6 +72,13 @@
   "account": {
     "profileTitle": "Profil",
     "profileDescription": "Aktualisieren Sie Ihren Anzeigenamen und Ihre E-Mail-Adresse.",
+    "emailVerified": "Bestätigt",
+    "emailNotVerified": "Nicht bestätigt",
+    "sendVerificationEmail": "Bestätigungs-E-Mail senden",
+    "verificationEmailSent": "Bestätigungs-E-Mail gesendet. Überprüfen Sie Ihren Posteingang.",
+    "verificationEmailFailed": "Bestätigungs-E-Mail konnte nicht gesendet werden",
+    "resendCooldown": "Erneut senden in {seconds}s",
+    "emailChangeSent": "Ein Bestätigungslink wurde an Ihre neue E-Mail-Adresse gesendet. Ihre E-Mail wird aktualisiert, sobald Sie auf den Link klicken.",
     "name": "Name",
     "namePlaceholder": "Ihr Name",
     "emailLabel": "E-Mail",

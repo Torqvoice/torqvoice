@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Gauge, Loader2, XCircle } from 'lucide-react'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 
-export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
+export function SignUpForm({ inviteToken, emailVerificationRequired }: { inviteToken?: string; emailVerificationRequired?: boolean }) {
   const t = useTranslations('auth.signUp')
   const tc = useTranslations('common')
   const [name, setName] = useState('')
@@ -42,6 +42,7 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
       } else if (inviteToken) {
         const acceptResult = await acceptInvitation({ token: inviteToken })
         if (acceptResult.success) {
+          // Invited users have a known email — skip verification, go straight to dashboard
           router.push('/')
           router.refresh()
         } else {
@@ -49,6 +50,9 @@ export function SignUpForm({ inviteToken }: { inviteToken?: string }) {
           router.push('/onboarding')
           router.refresh()
         }
+      } else if (emailVerificationRequired) {
+        router.push('/auth/verify-email')
+        router.refresh()
       } else {
         router.push('/onboarding')
         router.refresh()

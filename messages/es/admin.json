@@ -44,7 +44,8 @@
     "failedDelete": "Error al eliminar el usuario",
     "promoteToSuperAdmin": "Promover a superadministrador",
     "demoteFromSuperAdmin": "Degradar de superadministrador",
-    "deleteUser": "Eliminar usuario"
+    "deleteUser": "Eliminar usuario",
+    "emailVerified": "Correo verificado"
   },
   "organizations": {
     "searchPlaceholder": "Buscar por nombre de organización...",
@@ -68,6 +69,8 @@
     "platformDescription": "Opciones generales de configuración de la plataforma",
     "disableRegistration": "Desactivar registro",
     "disableRegistrationHint": "Bloquear nuevos registros de usuarios en la plataforma",
+    "requireEmailVerification": "Requerir verificación de correo electrónico",
+    "requireEmailVerificationHint": "Los nuevos usuarios deben verificar su dirección de correo electrónico antes de acceder a la plataforma",
     "emailTitle": "Configuración de correo electrónico",
     "emailDescription": "Proveedor de correo electrónico de la plataforma — Se utiliza para correos electrónicos a nivel del sistema, como restablecimiento de contraseñas e invitaciones de equipo. Este es también el proveedor de correo electrónico predeterminado para todas las organizaciones. Las organizaciones pueden configurar opcionalmente su propio proveedor de correo electrónico en Configuración > Correo electrónico.",
     "smtpHost": "Host SMTP",
