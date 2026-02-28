@@ -8,7 +8,7 @@ vi.mock("@/lib/db", () => ({
 }));
 
 import { db } from "@/lib/db";
-import { getFeatures, PLAN_FEATURES, isCloudMode } from "@/lib/features";
+import { getFeatures, PLAN_FEATURES } from "@/lib/features";
 
 const mockFindUnique = vi.mocked(db.subscription.findUnique);
 const mockFindMany = vi.mocked(db.appSetting.findMany);
