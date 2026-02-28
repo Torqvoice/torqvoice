@@ -4,7 +4,6 @@ import { db } from "@/lib/db";
 import { getStripeClient, getStripeConfig } from "@/lib/stripe-config";
 
 export async function POST(request: Request) {
-  console.log("[Subscription Webhook] POST received");
   try {
     const body = await request.text();
     const signature = request.headers.get("stripe-signature");
