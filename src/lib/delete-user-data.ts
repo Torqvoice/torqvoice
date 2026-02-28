@@ -2,7 +2,7 @@ import { db } from '@/lib/db'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { unlink, rm } from 'fs/promises'
 import path from 'path'
-import Stripe from 'stripe'
+import { getStripeClient } from '@/lib/stripe-config'
 
 /**
  * Clean up a single organization where the user is the last member.
@@ -42,12 +42,12 @@ async function deleteOrganization(organizationId: string, userId: string) {
     select: { stripeSubscriptionId: true },
   })
 
-  if (subscription?.stripeSubscriptionId && process.env.STRIPE_SECRET_KEY) {
+  if (subscription?.stripeSubscriptionId) {
     try {
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+      const stripe = await getStripeClient()
       await stripe.subscriptions.cancel(subscription.stripeSubscriptionId)
     } catch {
-      // Subscription may already be canceled on Stripe's side
+      // Subscription may already be canceled on Stripe's side, or Stripe not configured
     }
   }
 

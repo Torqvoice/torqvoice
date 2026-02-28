@@ -11,8 +11,6 @@ services:
     command: sleep infinity
     ports:
       - 3000:3000
-    environment:
-      - DATABASE_URL=postgresql://torqvoice:torqvoice@db:5432/torqvoice
     networks:
       - default
       - torqvoice-shared
@@ -21,6 +19,7 @@ services:
         condition: service_healthy
 
   db:
+    container_name: torqvoice-db
     image: postgres:16-alpine
     restart: unless-stopped
     volumes:
@@ -36,6 +35,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - default
+      - torqvoice-shared
 
   pgadmin:
     image: dpage/pgadmin4:latest

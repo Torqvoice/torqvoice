@@ -1,17 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { db } from "@/lib/db";
-
-let stripeClient: Stripe | null = null;
-
-function getStripe(): Stripe {
-  if (!stripeClient) {
-    const key = process.env.STRIPE_SECRET_KEY;
-    if (!key) throw new Error("STRIPE_SECRET_KEY is not configured");
-    stripeClient = new Stripe(key);
-  }
-  return stripeClient;
-}
+import { getStripeClient, getStripeConfig } from "@/lib/stripe-config";
 
 export async function POST(request: Request) {
   try {
@@ -25,19 +15,19 @@ export async function POST(request: Request) {
       );
     }
 
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    if (!webhookSecret) {
+    const config = await getStripeConfig();
+    if (!config.webhookSecret) {
       return NextResponse.json(
         { error: "Webhook secret not configured" },
         { status: 500 },
       );
     }
 
-    const stripe = getStripe();
+    const stripe = await getStripeClient();
     let event: Stripe.Event;
 
     try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+      event = stripe.webhooks.constructEvent(body, signature, config.webhookSecret);
     } catch {
       return NextResponse.json(
         { error: "Invalid signature" },
@@ -79,11 +69,12 @@ export async function POST(request: Request) {
         const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
         // Find or create the plan record
+        const stripePriceId = plan === "pro" ? config.proPriceId : config.enterprisePriceId;
         const subscriptionPlan = await db.subscriptionPlan.upsert({
-          where: { stripePriceId: plan === "pro" ? process.env.STRIPE_PRO_PRICE_ID! : process.env.STRIPE_ENTERPRISE_PRICE_ID! },
+          where: { stripePriceId: stripePriceId || "unknown" },
           create: {
             name: plan === "pro" ? "Torq Pro" : "Enterprise",
-            stripePriceId: plan === "pro" ? process.env.STRIPE_PRO_PRICE_ID : process.env.STRIPE_ENTERPRISE_PRICE_ID,
+            stripePriceId: stripePriceId || null,
             price: plan === "pro" ? 99 : 140,
             interval: "year",
             maxMembers: plan === "pro" ? 5 : 50,

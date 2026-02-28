@@ -1,6 +1,7 @@
 import { CronJob } from 'cron'
 import Stripe from 'stripe'
 import { db } from './lib/db'
+import { getStripeClient, getStripeConfig } from './lib/stripe-config'
 
 const TORQVOICE_COM_URL = process.env.NEXT_PUBLIC_TORQVOICE_COM_URL || 'https://torqvoice.com'
 
@@ -8,17 +9,6 @@ const TORQVOICE_COM_URL = process.env.NEXT_PUBLIC_TORQVOICE_COM_URL || 'https://
 // Cloud mode: Stripe subscription validation
 // Runs daily at 01:00 UTC (offset from license check at 00:00 to spread load)
 // ---------------------------------------------------------------------------
-
-let stripeClient: Stripe | null = null
-
-function getStripe(): Stripe {
-  if (!stripeClient) {
-    const key = process.env.STRIPE_SECRET_KEY
-    if (!key) throw new Error('STRIPE_SECRET_KEY is not configured')
-    stripeClient = new Stripe(key)
-  }
-  return stripeClient
-}
 
 function mapStripeStatus(stripeStatus: string): string {
   switch (stripeStatus) {
@@ -45,11 +35,14 @@ function resolveLicensePlan(internalStatus: string, planName: string): string {
 
 export function checkSubscriptions() {
   const isCloud = process.env.TORQVOICE_MODE === 'cloud'
-  if (!isCloud || !process.env.STRIPE_SECRET_KEY) return
+  if (!isCloud) return
 
   const job = new CronJob('0 1 * * *', async () => {
     try {
-      const stripe = getStripe()
+      const config = await getStripeConfig()
+      if (!config.secretKey) return
+
+      const stripe = await getStripeClient()
 
       const subscriptions = await db.subscription.findMany({
         where: {

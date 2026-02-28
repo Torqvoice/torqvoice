@@ -1,19 +1,8 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
-
-let stripeClient: Stripe | null = null;
-
-function getStripe(): Stripe {
-  if (!stripeClient) {
-    const key = process.env.STRIPE_SECRET_KEY;
-    if (!key) throw new Error("STRIPE_SECRET_KEY is not configured");
-    stripeClient = new Stripe(key);
-  }
-  return stripeClient;
-}
+import { getStripeClient, getStripeConfig } from "@/lib/stripe-config";
 
 export async function POST(request: Request) {
   try {
@@ -44,10 +33,9 @@ export async function POST(request: Request) {
       );
     }
 
+    const config = await getStripeConfig();
     const priceId =
-      plan === "pro"
-        ? process.env.STRIPE_PRO_PRICE_ID
-        : process.env.STRIPE_ENTERPRISE_PRICE_ID;
+      plan === "pro" ? config.proPriceId : config.enterprisePriceId;
 
     if (!priceId) {
       return NextResponse.json(
@@ -57,7 +45,7 @@ export async function POST(request: Request) {
     }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const stripe = getStripe();
+    const stripe = await getStripeClient();
 
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "subscription",

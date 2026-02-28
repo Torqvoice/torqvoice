@@ -2,17 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { db } from "@/lib/db";
 import { isCloudMode } from "@/lib/features";
-
-let stripeClient: Stripe | null = null;
-
-function getStripe(): Stripe {
-  if (!stripeClient) {
-    const key = process.env.STRIPE_SECRET_KEY;
-    if (!key) throw new Error("STRIPE_SECRET_KEY is not configured");
-    stripeClient = new Stripe(key);
-  }
-  return stripeClient;
-}
+import { getStripeClient, getStripeConfig } from "@/lib/stripe-config";
 
 /**
  * Map Stripe subscription status to our internal status.
@@ -86,14 +76,15 @@ export async function GET(request: Request) {
   }
 
   // --- Guard: Stripe must be configured ---
-  if (!process.env.STRIPE_SECRET_KEY) {
+  const config = await getStripeConfig();
+  if (!config.secretKey) {
     return NextResponse.json(
-      { error: "STRIPE_SECRET_KEY is not configured" },
+      { error: "Stripe secret key is not configured" },
       { status: 500 },
     );
   }
 
-  const stripe = getStripe();
+  const stripe = await getStripeClient();
   const results: ValidationResult[] = [];
 
   // Fetch all subscriptions that are not already in a terminal state.
