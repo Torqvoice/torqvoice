@@ -8,7 +8,7 @@ import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { WhiteLabelCtaProvider } from "@/components/white-label-cta-context";
 import { DateSettingsProvider } from "@/components/date-settings-context";
-import { getCachedMembership, getCachedSession } from "@/lib/cached-session";
+import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { OnlineTracker } from "@/components/online-tracker";
 import { db } from "@/lib/db";
@@ -24,16 +24,13 @@ export default async function DashboardLayout({
   if (data.status === "no-organization") redirect("/onboarding");
 
   // Check email verification requirement (super admins bypass this)
-  if (!data.isSuperAdmin) {
+  if (!data.isSuperAdmin && !data.emailVerified) {
     const verificationSetting = await db.systemSetting.findUnique({
       where: { key: "email.verificationRequired" },
       select: { value: true },
     });
     if (verificationSetting?.value === "true") {
-      const session = await getCachedSession();
-      if (session?.user && !session.user.emailVerified) {
-        redirect("/auth/verify-email");
-      }
+      redirect("/auth/verify-email");
     }
   }
 

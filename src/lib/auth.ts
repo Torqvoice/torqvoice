@@ -33,32 +33,56 @@ export const auth = betterAuth({
       });
       if (invitation) return;
 
-      const { sendMail, getFromAddress } = await import("@/lib/email");
-      const from = await getFromAddress();
-
-      await sendMail({
-        from,
-        to: user.email,
-        subject: "Verify your Torqvoice email",
-        html: `
-          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-            <h2>Email Verification</h2>
-            <p>Hi${user.name ? ` ${user.name}` : ""},</p>
-            <p>Please verify your email address by clicking the button below:</p>
-            <div style="margin: 24px 0;">
-              <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
-                Verify Email
-              </a>
-            </div>
-            <p style="color: #6b7280; font-size: 14px;">If you didn't create an account, you can safely ignore this email.</p>
-            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-            <p style="color: #6b7280; font-size: 12px;">
-              If the button doesn't work, copy and paste this URL into your browser:<br/>
-              <a href="${url}" style="color: #6b7280;">${url}</a>
-            </p>
-          </div>
-        `,
+      // Server-side rate limit: 60 seconds between verification emails per user
+      const cooldownKey = `email-verify-cooldown:${user.id}`;
+      const existingCooldown = await db.verification.findUnique({
+        where: { identifier: cooldownKey },
       });
+      if (existingCooldown && existingCooldown.expiresAt > new Date()) return;
+
+      // Set cooldown record
+      await db.verification.upsert({
+        where: { identifier: cooldownKey },
+        create: {
+          identifier: cooldownKey,
+          value: "1",
+          expiresAt: new Date(Date.now() + 60_000),
+        },
+        update: {
+          expiresAt: new Date(Date.now() + 60_000),
+        },
+      });
+
+      try {
+        const { sendMail, getFromAddress } = await import("@/lib/email");
+        const from = await getFromAddress();
+
+        await sendMail({
+          from,
+          to: user.email,
+          subject: "Verify your Torqvoice email",
+          html: `
+            <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+              <h2>Email Verification</h2>
+              <p>Hi${user.name ? ` ${user.name}` : ""},</p>
+              <p>Please verify your email address by clicking the button below:</p>
+              <div style="margin: 24px 0;">
+                <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
+                  Verify Email
+                </a>
+              </div>
+              <p style="color: #6b7280; font-size: 14px;">If you didn't create an account, you can safely ignore this email.</p>
+              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
+              <p style="color: #6b7280; font-size: 12px;">
+                If the button doesn't work, copy and paste this URL into your browser:<br/>
+                <a href="${url}" style="color: #6b7280;">${url}</a>
+              </p>
+            </div>
+          `,
+        });
+      } catch (error) {
+        console.error("[emailVerification] Failed to send verification email:", error);
+      }
     },
   },
   emailAndPassword: {

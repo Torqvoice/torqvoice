@@ -8,6 +8,8 @@ import { Gauge, Loader2, Mail, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCooldown } from '@/hooks/use-cooldown'
 
+const POLL_INTERVAL = 5000
+
 export default function VerifyEmailPage() {
   const t = useTranslations('auth.verifyEmail')
   const tc = useTranslations('common')
@@ -17,28 +19,41 @@ export default function VerifyEmailPage() {
   const [cooldown, startCooldown] = useCooldown('verify-email', 60)
   const router = useRouter()
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const redirectingRef = useRef(false)
 
-  // Poll for email verification status every 5 seconds
-  useEffect(() => {
-    const checkVerification = async () => {
-      try {
-        const { data } = await authClient.getSession({
-          query: { disableCookieCache: true },
-        })
-        if (data?.user?.emailVerified) {
-          router.push('/')
-          router.refresh()
-        }
-      } catch {
-        // silently handle
+  // Fetch fresh session and redirect if verified
+  const checkVerification = useCallback(async () => {
+    if (redirectingRef.current) return
+    try {
+      const { data } = await authClient.getSession({
+        query: { disableCookieCache: true },
+      })
+      if (data?.user?.emailVerified) {
+        redirectingRef.current = true
+        if (pollRef.current) clearInterval(pollRef.current)
+        router.push('/')
+        router.refresh()
       }
+    } catch {
+      // Network error — will retry on next poll
     }
+  }, [router])
 
-    pollRef.current = setInterval(checkVerification, 5000)
+  // Check immediately on mount + poll every 5 seconds
+  useEffect(() => {
+    checkVerification()
+    pollRef.current = setInterval(checkVerification, POLL_INTERVAL)
     return () => {
       if (pollRef.current) clearInterval(pollRef.current)
     }
-  }, [router])
+  }, [checkVerification])
+
+  // Also re-check when window regains focus (user may have clicked link in another tab)
+  useEffect(() => {
+    const onFocus = () => checkVerification()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [checkVerification])
 
   const handleResend = useCallback(async () => {
     if (cooldown > 0) return
@@ -51,7 +66,7 @@ export default function VerifyEmailPage() {
       setSent(true)
       startCooldown()
     } catch {
-      // silently handle
+      // silently handle — server-side rate limit is the real enforcement
     } finally {
       setLoading(false)
     }

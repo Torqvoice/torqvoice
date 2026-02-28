@@ -24,7 +24,7 @@ export async function updateEmail(data: { email: string }) {
 
     await db.user.update({
       where: { id: userId },
-      data: { email: parsed.email },
+      data: { email: parsed.email, emailVerified: false },
     });
 
     return { email: parsed.email };
@@ -36,6 +36,12 @@ export async function updateEmail(data: { email: string }) {
  * Instead of changing the email immediately, sends a confirmation link
  * to the NEW email address. The user's current email stays unchanged
  * until they click the confirmation link.
+ *
+ * Security:
+ * - Random opaque token in URL (no user data leaked)
+ * - Token hash stored in DB (DB compromise doesn't expose valid tokens)
+ * - Timing-safe comparison on verification
+ * - Upsert by userId ensures only one pending change per user
  */
 export async function requestEmailChange(data: { email: string }) {
   return withAuth(async ({ userId }) => {
@@ -56,29 +62,30 @@ export async function requestEmailChange(data: { email: string }) {
 
     if (!user) throw new Error("User not found");
 
-    // Generate a secure token containing userId and new email
+    // Generate a cryptographically random token
     const token = crypto.randomBytes(32).toString("hex");
-    const payload = JSON.stringify({ userId, email: parsed.email, token });
-    const encoded = Buffer.from(payload).toString("base64url");
 
-    // Store the token in the verification table
+    // Store hash of token (so DB leak doesn't expose valid tokens)
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+    // Store: identifier for upsert (one pending change per user), value contains hash + email
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
     await db.verification.upsert({
       where: { identifier: `email-change:${userId}` },
       create: {
         identifier: `email-change:${userId}`,
-        value: encoded,
+        value: JSON.stringify({ tokenHash, email: parsed.email }),
         expiresAt,
       },
       update: {
-        value: encoded,
+        value: JSON.stringify({ tokenHash, email: parsed.email }),
         expiresAt,
       },
     });
 
-    // Send confirmation email to the NEW address
+    // URL contains only the opaque token and userId (no email leaked)
     const baseURL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const confirmUrl = `${baseURL}/api/public/confirm-email-change?token=${encoded}`;
+    const confirmUrl = `${baseURL}/api/public/confirm-email-change?token=${token}&uid=${userId}`;
 
     const { sendMail, getFromAddress } = await import("@/lib/email");
     const from = await getFromAddress();
