@@ -6,7 +6,7 @@ import { withAuth } from "@/lib/with-auth";
 import { createOrganizationSchema, inviteMemberSchema, updateMemberRoleSchema } from "../Schema/teamSchema";
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { getFeatures, FeatureGatedError } from "@/lib/features";
+import { getFeatures, getMaxOrganizations, isCloudMode, FeatureGatedError } from "@/lib/features";
 
 export async function getOrganization() {
   return withAuth(async ({ userId, organizationId }) => {
@@ -59,6 +59,19 @@ export async function getOrganization() {
 export async function createOrganization(input: unknown) {
   return withAuth(async ({ userId }) => {
     const data = createOrganizationSchema.parse(input);
+
+    if (isCloudMode()) {
+      const ownedCount = await db.organizationMember.count({
+        where: { userId, role: "owner" },
+      });
+      const maxOrgs = await getMaxOrganizations(userId);
+
+      if (ownedCount >= maxOrgs) {
+        throw new Error(
+          `You have reached the maximum number of organizations (${maxOrgs}) for your plan. Upgrade to create more.`,
+        );
+      }
+    }
 
     const org = await db.$transaction(async (tx) => {
       const created = await tx.organization.create({

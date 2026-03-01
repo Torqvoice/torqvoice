@@ -4,6 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { signOut, useSession } from '@/lib/auth-client'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -153,6 +154,8 @@ export function AppSidebar({
       setShowCreateOrg(false)
       setNewOrgName('')
       router.refresh()
+    } else if (result.error) {
+      toast.error(result.error)
     }
   }
 

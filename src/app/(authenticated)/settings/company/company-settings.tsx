@@ -86,6 +86,8 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
       setNewOrgName("");
       router.refresh();
       toast.success(t('company.companyCreated'));
+    } else if (result.error) {
+      toast.error(result.error);
     }
   };
   const handleRemoveLogo = async () => {
