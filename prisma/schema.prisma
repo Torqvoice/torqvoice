@@ -323,7 +323,7 @@ model ServiceAttachment {
   description      String?
   includeInInvoice Boolean  @default(true)
   createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime @default(now()) @updatedAt
 
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
@@ -340,7 +340,7 @@ model ServicePart {
   unitPrice  Float    @default(0)
   total      Float    @default(0)
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @default(now()) @updatedAt
 
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
@@ -356,7 +356,7 @@ model ServiceLabor {
   rate        Float    @default(0)
   total       Float    @default(0)
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(now()) @updatedAt
 
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
@@ -452,7 +452,7 @@ model QuoteAttachment {
   description      String?
   includeInInvoice Boolean  @default(true)
   createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime @default(now()) @updatedAt
 
   quoteId String
   quote   Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
@@ -469,7 +469,7 @@ model QuotePart {
   unitPrice  Float    @default(0)
   total      Float    @default(0)
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @default(now()) @updatedAt
 
   quoteId String
   quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
@@ -485,7 +485,7 @@ model QuoteLabor {
   rate        Float    @default(0)
   total       Float    @default(0)
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(now()) @updatedAt
 
   quoteId String
   quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
