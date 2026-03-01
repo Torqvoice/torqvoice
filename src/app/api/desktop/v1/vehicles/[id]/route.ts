@@ -17,7 +17,29 @@ export async function GET(
         where: { id, organizationId },
         include: {
           customer: { select: { id: true, name: true, company: true, email: true, phone: true } },
-          _count: { select: { serviceRecords: true } },
+          serviceRecords: {
+            orderBy: { serviceDate: "desc" },
+            select: { id: true, cost: true, totalAmount: true },
+          },
+          reminders: {
+            orderBy: [{ isCompleted: "asc" }, { dueDate: "asc" }],
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              dueDate: true,
+              dueMileage: true,
+              isCompleted: true,
+              createdAt: true,
+            },
+          },
+          _count: {
+            select: {
+              serviceRecords: true,
+              notes: true,
+              reminders: true,
+            },
+          },
         },
       });
 
@@ -71,6 +93,50 @@ export async function PUT(
       });
 
       return NextResponse.json({ vehicle });
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES },
+      ],
+    },
+  );
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+
+  return withDesktopAuth(
+    request,
+    async ({ organizationId }) => {
+      const body = await request.json();
+      const { action } = body;
+
+      if (action === "archive") {
+        const result = await db.vehicle.updateMany({
+          where: { id, organizationId },
+          data: { isArchived: true, archiveReason: body.reason || null },
+        });
+        if (result.count === 0) {
+          return NextResponse.json({ error: "Vehicle not found" }, { status: 404 });
+        }
+        return NextResponse.json({ success: true });
+      }
+
+      if (action === "unarchive") {
+        const result = await db.vehicle.updateMany({
+          where: { id, organizationId },
+          data: { isArchived: false, archiveReason: null },
+        });
+        if (result.count === 0) {
+          return NextResponse.json({ error: "Vehicle not found" }, { status: 404 });
+        }
+        return NextResponse.json({ success: true });
+      }
+
+      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     },
     {
       requiredPermissions: [

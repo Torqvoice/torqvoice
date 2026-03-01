@@ -31,7 +31,7 @@ export async function GET(request: Request) {
         }
       }
 
-      const [vehicles, total] = await Promise.all([
+      const [vehicles, total, archivedCount] = await Promise.all([
         db.vehicle.findMany({
           where,
           include: {
@@ -43,6 +43,7 @@ export async function GET(request: Request) {
           take: pageSize,
         }),
         db.vehicle.count({ where }),
+        db.vehicle.count({ where: { organizationId, isArchived: true } }),
       ]);
 
       return NextResponse.json({
@@ -51,6 +52,7 @@ export async function GET(request: Request) {
         page,
         pageSize,
         totalPages: Math.ceil(total / pageSize),
+        archivedCount,
       });
     },
     {
