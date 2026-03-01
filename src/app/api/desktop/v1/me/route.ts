@@ -30,7 +30,18 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "User not found" }, { status: 401 });
   }
 
-  return NextResponse.json({ user });
+  // Get active organization
+  const membership = await db.organizationMember.findFirst({
+    where: { userId: session.userId },
+    select: {
+      organization: { select: { id: true, name: true } },
+    },
+  });
+
+  return NextResponse.json({
+    user,
+    organization: membership?.organization ?? null,
+  });
 }
 
 export async function DELETE(request: Request) {
