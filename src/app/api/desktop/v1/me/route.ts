@@ -34,13 +34,26 @@ export async function GET(request: Request) {
   const membership = await db.organizationMember.findFirst({
     where: { userId: session.userId },
     select: {
+      organizationId: true,
       organization: { select: { id: true, name: true } },
     },
   });
 
+  // Get company logo
+  let companyLogo: string | null = null;
+  if (membership?.organizationId) {
+    const logoSetting = await db.appSetting.findFirst({
+      where: { organizationId: membership.organizationId, key: "workshop.logo" },
+      select: { value: true },
+    });
+    companyLogo = logoSetting?.value || null;
+  }
+
   return NextResponse.json({
     user,
-    organization: membership?.organization ?? null,
+    organization: membership?.organization
+      ? { ...membership.organization, logo: companyLogo }
+      : null,
   });
 }
 
