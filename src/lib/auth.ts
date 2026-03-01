@@ -11,7 +11,7 @@ const isProduction = baseURL?.startsWith('https://')
 export const auth = betterAuth({
   baseURL,
   basePath: '/api/public/auth',
-  trustedOrigins: baseURL ? [baseURL] : [],
+  trustedOrigins: [...(baseURL ? [baseURL] : []), 'http://tauri.localhost', 'tauri://localhost'],
   database: prismaAdapter(db, {
     provider: 'postgresql',
   }),

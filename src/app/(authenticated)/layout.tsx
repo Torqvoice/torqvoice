@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SearchCommand } from "@/features/search/Components/SearchCommand";
@@ -22,6 +23,15 @@ export default async function DashboardLayout({
 
   if (data.status === "unauthenticated") redirect("/auth/sign-in");
   if (data.status === "no-organization") redirect("/onboarding");
+
+  // Check for pending desktop auth request
+  const cookieStore = await cookies();
+  const desktopAuthCookie = cookieStore.get("desktop_auth_request");
+  if (desktopAuthCookie) {
+    const { codeChallenge, state } = JSON.parse(desktopAuthCookie.value);
+    cookieStore.delete("desktop_auth_request");
+    redirect(`/auth/desktop?code_challenge=${codeChallenge}&state=${state}`);
+  }
 
   // Check email verification requirement (super admins bypass this)
   if (!data.isSuperAdmin && !data.emailVerified) {
