@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { createNoteSchema, updateNoteSchema } from "../Schema/noteSchema";
 import { revalidatePath } from "next/cache";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function getNotesPaginated(
   vehicleId: string,
@@ -88,6 +89,7 @@ export async function deleteNote(noteId: string) {
     });
     if (!note) throw new Error("Note not found");
 
+    await recordDeletion("note", noteId, organizationId);
     await db.note.delete({ where: { id: noteId } });
     revalidatePath(`/vehicles/${note.vehicleId}`);
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });

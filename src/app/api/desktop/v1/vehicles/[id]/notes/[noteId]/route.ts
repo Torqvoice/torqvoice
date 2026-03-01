@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { withDesktopAuth } from "@/lib/with-desktop-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { updateNoteSchema } from "@/features/vehicles/Schema/noteSchema";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function PUT(
   request: Request,
@@ -54,6 +55,7 @@ export async function DELETE(
         return NextResponse.json({ error: "Note not found" }, { status: 404 });
       }
 
+      await recordDeletion("note", noteId, organizationId);
       await db.note.delete({ where: { id: noteId } });
       return new NextResponse(null, { status: 204 });
     },

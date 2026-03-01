@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { createReminderSchema, updateReminderSchema } from "../Schema/reminderSchema";
 import { revalidatePath } from "next/cache";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function createReminder(input: unknown) {
   return withAuth(async ({ organizationId }) => {
@@ -72,6 +73,7 @@ export async function deleteReminder(reminderId: string) {
     });
     if (!reminder) throw new Error("Reminder not found");
 
+    await recordDeletion("reminder", reminderId, organizationId);
     await db.reminder.delete({ where: { id: reminderId } });
     revalidatePath(`/vehicles/${reminder.vehicleId}`);
     revalidatePath("/");

@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { createPaymentSchema } from "../Schema/paymentSchema";
 import { revalidatePath } from "next/cache";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function createPayment(input: unknown) {
   return withAuth(async ({ organizationId }) => {
@@ -40,6 +41,7 @@ export async function deletePayment(paymentId: string) {
     });
     if (!payment) throw new Error("Payment not found");
 
+    await recordDeletion("payment", paymentId, organizationId);
     await db.payment.delete({ where: { id: paymentId } });
 
     const { vehicleId, id: serviceId } = payment.serviceRecord;

@@ -10,6 +10,7 @@ import {
   moveAssignmentSchema,
   removeAssignmentSchema,
 } from "../Schema/workboardSchema";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export type BoardAssignmentWithJob = {
   id: string;
@@ -396,6 +397,7 @@ export async function removeAssignment(input: unknown) {
         });
       }
 
+      await recordDeletion("boardAssignment", data.id, organizationId);
       await db.boardAssignment.delete({ where: { id: data.id } });
 
       notificationBus.emit("workboard", {

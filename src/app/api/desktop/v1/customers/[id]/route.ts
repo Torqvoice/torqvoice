@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { withDesktopAuth } from "@/lib/with-desktop-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { updateCustomerSchema } from "@/features/customers/Schema/customerSchema";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function GET(
   request: Request,
@@ -91,6 +92,7 @@ export async function DELETE(
   return withDesktopAuth(
     request,
     async ({ organizationId }) => {
+      await recordDeletion("customer", id, organizationId);
       const result = await db.customer.deleteMany({
         where: { id, organizationId },
       });

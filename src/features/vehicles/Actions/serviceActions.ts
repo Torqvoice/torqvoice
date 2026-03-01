@@ -10,6 +10,7 @@ import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
 import { notificationBus } from "@/lib/notification-bus";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function getServiceRecords(vehicleId: string) {
   return withAuth(async ({ organizationId }) => {
@@ -670,7 +671,13 @@ export async function deleteServiceRecord(recordId: string) {
   return withAuth(async ({ organizationId }) => {
     const record = await db.serviceRecord.findFirst({
       where: { id: recordId, vehicle: { organizationId } },
-      include: { attachments: true },
+      include: {
+        attachments: true,
+        partItems: { select: { id: true } },
+        laborItems: { select: { id: true } },
+        payments: { select: { id: true } },
+        boardAssignments: { select: { id: true } },
+      },
     });
     if (!record) throw new Error("Record not found");
 
@@ -683,6 +690,15 @@ export async function deleteServiceRecord(recordId: string) {
         console.warn(`[deleteServiceRecord] Failed to delete file "${filePath}":`, err);
       }
     }
+
+    // Record cascade deletions
+    const deletions: Promise<void>[] = [recordDeletion("serviceRecord", recordId, organizationId)];
+    if (record.attachments.length) deletions.push(recordDeletion("serviceAttachment", record.attachments.map(a => a.id), organizationId));
+    if (record.partItems.length) deletions.push(recordDeletion("servicePart", record.partItems.map(p => p.id), organizationId));
+    if (record.laborItems.length) deletions.push(recordDeletion("serviceLabor", record.laborItems.map(l => l.id), organizationId));
+    if (record.payments.length) deletions.push(recordDeletion("payment", record.payments.map(p => p.id), organizationId));
+    if (record.boardAssignments.length) deletions.push(recordDeletion("boardAssignment", record.boardAssignments.map(b => b.id), organizationId));
+    await Promise.all(deletions);
 
     await db.serviceRecord.delete({ where: { id: recordId } });
     revalidatePath("/");
@@ -707,6 +723,7 @@ export async function deleteServiceAttachment(attachmentId: string) {
       console.warn(`[deleteServiceAttachment] Failed to delete file "${filePath}":`, err);
     }
 
+    await recordDeletion("serviceAttachment", attachmentId, organizationId);
     await db.serviceAttachment.delete({ where: { id: attachmentId } });
 
     const { vehicleId, id: serviceId } = attachment.serviceRecord;

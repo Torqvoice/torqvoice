@@ -9,6 +9,7 @@ import { z } from "zod";
 import { unlink } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function getInventoryPartsPaginated(params: {
   page?: number;
@@ -141,6 +142,7 @@ export async function deleteInventoryPart(partId: string) {
       select: { imageUrl: true },
     });
 
+    await recordDeletion("inventoryPart", partId, organizationId);
     const result = await db.inventoryPart.deleteMany({
       where: { id: partId, organizationId },
     });

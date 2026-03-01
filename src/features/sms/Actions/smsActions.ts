@@ -7,6 +7,7 @@ import { requireFeature } from "@/lib/features";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { SMS_TEMPLATE_DEFAULTS } from "@/lib/sms-templates";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function sendSmsToCustomer(input: {
   customerId: string;
@@ -129,6 +130,7 @@ export async function deleteSmsMessage(messageId: string) {
       });
       if (!message) throw new Error("Message not found");
 
+      await recordDeletion("smsMessage", messageId, organizationId);
       await db.smsMessage.delete({ where: { id: messageId } });
       return { deleted: true };
     },
@@ -148,6 +150,14 @@ export async function deleteConversation(customerId: string) {
         select: { id: true },
       });
       if (!customer) throw new Error("Customer not found");
+
+      const messages = await db.smsMessage.findMany({
+        where: { organizationId, customerId },
+        select: { id: true },
+      });
+      if (messages.length) {
+        await recordDeletion("smsMessage", messages.map(m => m.id), organizationId);
+      }
 
       const { count } = await db.smsMessage.deleteMany({
         where: { organizationId, customerId },

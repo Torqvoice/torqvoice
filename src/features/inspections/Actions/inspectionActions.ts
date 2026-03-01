@@ -6,6 +6,7 @@ import { createInspectionSchema, updateInspectionItemSchema } from "../Schema/in
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { notificationBus } from "@/lib/notification-bus";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function getInspectionsPaginated(params: {
   page?: number;
@@ -226,8 +227,17 @@ export async function deleteInspection(id: string) {
   return withAuth(async ({ organizationId }) => {
     const inspection = await db.inspection.findFirst({
       where: { id, organizationId },
+      include: {
+        items: { select: { id: true } },
+        boardAssignments: { select: { id: true } },
+      },
     });
     if (!inspection) throw new Error("Inspection not found");
+
+    const deletions: Promise<void>[] = [recordDeletion("inspection", id, organizationId)];
+    if (inspection.items.length) deletions.push(recordDeletion("inspectionItem", inspection.items.map(i => i.id), organizationId));
+    if (inspection.boardAssignments.length) deletions.push(recordDeletion("boardAssignment", inspection.boardAssignments.map(b => b.id), organizationId));
+    await Promise.all(deletions);
 
     await db.inspection.deleteMany({ where: { id, organizationId } });
     revalidatePath("/inspections");

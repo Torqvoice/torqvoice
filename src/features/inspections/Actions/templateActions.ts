@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { createTemplateSchema, updateTemplateSchema } from "../Schema/templateSchema";
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function getTemplates() {
   return withAuth(async ({ organizationId }) => {
@@ -167,6 +168,18 @@ export async function deleteTemplate(id: string) {
         `This template has ${inspectionCount} inspection${inspectionCount === 1 ? "" : "s"}. Delete the inspections first before removing the template.`
       );
     }
+
+    const sections = await db.inspectionTemplateSection.findMany({
+      where: { templateId: id },
+      select: { id: true, items: { select: { id: true } } },
+    });
+    const deletions: Promise<void>[] = [recordDeletion("inspectionTemplate", id, organizationId)];
+    if (sections.length) {
+      deletions.push(recordDeletion("inspectionTemplateSection", sections.map(s => s.id), organizationId));
+      const itemIds = sections.flatMap(s => s.items.map(i => i.id));
+      if (itemIds.length) deletions.push(recordDeletion("inspectionTemplateItem", itemIds, organizationId));
+    }
+    await Promise.all(deletions);
 
     await db.inspectionTemplate.delete({ where: { id } });
 

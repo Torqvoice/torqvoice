@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { getFeatures, FeatureGatedError } from "@/lib/features";
 import { createDraftServiceRecord } from "@/features/vehicles/Actions/createDraftServiceRecord";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function getCustomers() {
   return withAuth(async ({ userId, organizationId }) => {
@@ -90,6 +91,7 @@ export async function updateCustomer(input: unknown) {
 
 export async function deleteCustomer(customerId: string) {
   return withAuth(async ({ userId, organizationId }) => {
+    await recordDeletion("customer", customerId, organizationId);
     const result = await db.customer.deleteMany({ where: { id: customerId, organizationId } });
     if (result.count === 0) throw new Error("Customer not found");
     revalidatePath("/customers");

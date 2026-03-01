@@ -7,6 +7,7 @@ import { createVehicleSchema, updateVehicleSchema } from "../Schema/vehicleSchem
 import { revalidatePath } from "next/cache";
 import { unlink } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function getVehicles() {
   return withAuth(async ({ organizationId }) => {
@@ -184,11 +185,67 @@ export async function deleteVehicle(vehicleId: string) {
       select: {
         imageUrl: true,
         serviceRecords: {
-          select: { attachments: { select: { fileUrl: true } } },
+          select: {
+            id: true,
+            attachments: { select: { id: true, fileUrl: true } },
+            partItems: { select: { id: true } },
+            laborItems: { select: { id: true } },
+            payments: { select: { id: true } },
+            boardAssignments: { select: { id: true } },
+          },
         },
+        notes: { select: { id: true } },
+        fuelLogs: { select: { id: true } },
+        reminders: { select: { id: true } },
+        quotes: {
+          select: {
+            id: true,
+            partItems: { select: { id: true } },
+            laborItems: { select: { id: true } },
+            attachments: { select: { id: true } },
+          },
+        },
+        recurringInvoices: { select: { id: true } },
+        inspections: {
+          select: {
+            id: true,
+            items: { select: { id: true } },
+            boardAssignments: { select: { id: true } },
+          },
+        },
+        serviceRequests: { select: { id: true } },
       },
     });
     if (!vehicle) throw new Error("Vehicle not found");
+
+    // Record all cascade deletions before deleting
+    const deletions: Promise<void>[] = [];
+    for (const sr of vehicle.serviceRecords) {
+      deletions.push(recordDeletion("serviceRecord", sr.id, organizationId));
+      if (sr.partItems.length) deletions.push(recordDeletion("servicePart", sr.partItems.map(p => p.id), organizationId));
+      if (sr.laborItems.length) deletions.push(recordDeletion("serviceLabor", sr.laborItems.map(l => l.id), organizationId));
+      if (sr.attachments.length) deletions.push(recordDeletion("serviceAttachment", sr.attachments.map(a => a.id), organizationId));
+      if (sr.payments.length) deletions.push(recordDeletion("payment", sr.payments.map(p => p.id), organizationId));
+      if (sr.boardAssignments.length) deletions.push(recordDeletion("boardAssignment", sr.boardAssignments.map(b => b.id), organizationId));
+    }
+    if (vehicle.notes.length) deletions.push(recordDeletion("note", vehicle.notes.map(n => n.id), organizationId));
+    if (vehicle.fuelLogs.length) deletions.push(recordDeletion("fuelLog", vehicle.fuelLogs.map(f => f.id), organizationId));
+    if (vehicle.reminders.length) deletions.push(recordDeletion("reminder", vehicle.reminders.map(r => r.id), organizationId));
+    for (const q of vehicle.quotes) {
+      deletions.push(recordDeletion("quote", q.id, organizationId));
+      if (q.partItems.length) deletions.push(recordDeletion("quotePart", q.partItems.map(p => p.id), organizationId));
+      if (q.laborItems.length) deletions.push(recordDeletion("quoteLabor", q.laborItems.map(l => l.id), organizationId));
+      if (q.attachments.length) deletions.push(recordDeletion("quoteAttachment", q.attachments.map(a => a.id), organizationId));
+    }
+    if (vehicle.recurringInvoices.length) deletions.push(recordDeletion("recurringInvoice", vehicle.recurringInvoices.map(r => r.id), organizationId));
+    for (const insp of vehicle.inspections) {
+      deletions.push(recordDeletion("inspection", insp.id, organizationId));
+      if (insp.items.length) deletions.push(recordDeletion("inspectionItem", insp.items.map(i => i.id), organizationId));
+      if (insp.boardAssignments.length) deletions.push(recordDeletion("boardAssignment", insp.boardAssignments.map(b => b.id), organizationId));
+    }
+    if (vehicle.serviceRequests.length) deletions.push(recordDeletion("serviceRequest", vehicle.serviceRequests.map(s => s.id), organizationId));
+    deletions.push(recordDeletion("vehicle", vehicleId, organizationId));
+    await Promise.all(deletions);
 
     await db.vehicle.deleteMany({ where: { id: vehicleId, organizationId } });
 

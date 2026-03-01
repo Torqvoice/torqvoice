@@ -8,6 +8,7 @@ import { resolveInvoicePrefix } from "@/lib/invoice-utils";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { copyFile, mkdir } from "fs/promises";
 import path from "path";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function getQuotesPaginated(params: {
   page?: number;
@@ -221,8 +222,19 @@ export async function deleteQuote(quoteId: string) {
   return withAuth(async ({ userId, organizationId }) => {
     const quote = await db.quote.findFirst({
       where: { id: quoteId, organizationId },
+      include: {
+        partItems: { select: { id: true } },
+        laborItems: { select: { id: true } },
+        attachments: { select: { id: true } },
+      },
     });
     if (!quote) throw new Error("Quote not found");
+
+    const deletions: Promise<void>[] = [recordDeletion("quote", quoteId, organizationId)];
+    if (quote.partItems.length) deletions.push(recordDeletion("quotePart", quote.partItems.map(p => p.id), organizationId));
+    if (quote.laborItems.length) deletions.push(recordDeletion("quoteLabor", quote.laborItems.map(l => l.id), organizationId));
+    if (quote.attachments.length) deletions.push(recordDeletion("quoteAttachment", quote.attachments.map(a => a.id), organizationId));
+    await Promise.all(deletions);
 
     await db.quote.deleteMany({ where: { id: quoteId, organizationId } });
     revalidatePath("/quotes");

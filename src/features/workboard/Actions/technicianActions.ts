@@ -9,6 +9,7 @@ import {
   createTechnicianSchema,
   updateTechnicianSchema,
 } from "../Schema/workboardSchema";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function getTechnicians() {
   return withAuth(
@@ -95,6 +96,7 @@ export async function updateTechnician(input: unknown) {
 export async function deleteTechnician(id: string) {
   return withAuth(
     async ({ organizationId }) => {
+      await recordDeletion("technician", id, organizationId);
       await db.technician.deleteMany({
         where: { id, organizationId },
       });

@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { withDesktopAuth } from "@/lib/with-desktop-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { updateReminderSchema } from "@/features/vehicles/Schema/reminderSchema";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function PUT(
   request: Request,
@@ -59,6 +60,7 @@ export async function DELETE(
         return NextResponse.json({ error: "Reminder not found" }, { status: 404 });
       }
 
+      await recordDeletion("reminder", reminderId, organizationId);
       await db.reminder.delete({ where: { id: reminderId } });
       return new NextResponse(null, { status: 204 });
     },

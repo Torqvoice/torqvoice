@@ -6,6 +6,7 @@ import { createFieldDefinitionSchema, updateFieldDefinitionSchema } from "../Sch
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { requireFeature } from "@/lib/features";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function getFieldDefinitions(entityType?: string) {
   return withAuth(async ({ organizationId }) => {
@@ -66,6 +67,14 @@ export async function deleteFieldDefinition(fieldId: string) {
       where: { id: fieldId, organizationId },
     });
     if (!field) throw new Error("Field not found");
+
+    const values = await db.customFieldValue.findMany({
+      where: { fieldId },
+      select: { id: true },
+    });
+    const deletions: Promise<void>[] = [recordDeletion("customFieldDefinition", fieldId, organizationId)];
+    if (values.length) deletions.push(recordDeletion("customFieldValue", values.map(v => v.id), organizationId));
+    await Promise.all(deletions);
 
     await db.$transaction([
       db.customFieldValue.deleteMany({ where: { fieldId } }),

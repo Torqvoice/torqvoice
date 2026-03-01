@@ -11,6 +11,7 @@ import {
   type UpdateRecurringInvoiceInput,
 } from "../Schema/recurringInvoiceSchema";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
+import { recordDeletion } from "@/lib/sync-deletion";
 
 export async function getRecurringInvoices() {
   return withAuth(async ({ organizationId }) => {
@@ -155,6 +156,7 @@ export async function deleteRecurringInvoice(id: string) {
     });
     if (!existing) throw new Error("Recurring invoice not found");
 
+    await recordDeletion("recurringInvoice", id, organizationId);
     await db.recurringInvoice.delete({ where: { id } });
 
     revalidatePath("/billing/recurring");
