@@ -78,7 +78,7 @@ function buildAST(tokens: Token[]): (ASTNode | string)[] {
   return root
 }
 
-function HtmlToPdf({
+export function HtmlToPdf({
   html,
   baseStyle,
   fontBold,
