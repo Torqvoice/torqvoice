@@ -27,6 +27,8 @@
     "deleteTitle": "Delete Quote",
     "deleteDescription": "This will permanently delete this quote.",
     "saved": "Quote saved",
+    "unsavedChanges": "Unsaved changes",
+    "saveFirst": "Please save your changes first",
     "failedSave": "Failed to save quote",
     "failedDelete": "Failed to delete",
     "failedPdf": "Failed to generate PDF",

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
@@ -127,6 +127,57 @@ export function ServicePageClient({
   const [discountType, setDiscountType] = useState<string>(initialData.discountType || 'none')
   const [discountValue, setDiscountValue] = useState(initialData.discountValue ?? 0)
   const [showInventoryPicker, setShowInventoryPicker] = useState(false)
+  // Detail-page state
+  const [downloading, setDownloading] = useState(false)
+  const [deletingAttachment, setDeletingAttachment] = useState<string | null>(null)
+  const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
+  const [paymentLoading, setPaymentLoading] = useState(false)
+  const [deletingPayment, setDeletingPayment] = useState<string | null>(null)
+  const [showShareDialog, setShowShareDialog] = useState(false)
+  const [showEmailDialog, setShowEmailDialog] = useState(false)
+  const [showPaymentNotifyDialog, setShowPaymentNotifyDialog] = useState(false)
+  const [paymentNotifyMessage, setPaymentNotifyMessage] = useState('')
+
+  // Autosave state
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [showSaved, setShowSaved] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
+  const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isSavingRef = useRef(false)
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const markDirty = useCallback(() => {
+    setHasUnsavedChanges(true)
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    autosaveTimer.current = setTimeout(() => {
+      if (!isSavingRef.current && formRef.current) {
+        formRef.current.requestSubmit()
+      }
+    }, 5000)
+  }, [])
+
+  useEffect(() => {
+    if (!hasUnsavedChanges) return
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [hasUnsavedChanges])
+
+  const saveNow = async () => {
+    if (!formRef.current || isSavingRef.current) return
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    formRef.current.requestSubmit()
+    await new Promise<void>((resolve) => {
+      const check = () => {
+        if (!isSavingRef.current) return resolve()
+        setTimeout(check, 50)
+      }
+      setTimeout(check, 50)
+    })
+  }
+
   const notesRef = useRef({
     invoiceNotes: initialData.invoiceNotes || '',
     diagnosticNotes: initialData.diagnosticNotes || '',
@@ -136,8 +187,9 @@ export function ServicePageClient({
   const handleNotesChange = useCallback(
     (field: 'invoiceNotes' | 'diagnosticNotes' | 'description', value: string) => {
       notesRef.current[field] = value
+      markDirty()
     },
-    []
+    [markDirty]
   )
 
   // Computed totals
@@ -152,17 +204,6 @@ export function ServicePageClient({
         : 0
   const taxAmount = (subtotal - discountAmount) * (taxRate / 100)
   const totalAmount = subtotal - discountAmount + taxAmount
-
-  // Detail-page state
-  const [downloading, setDownloading] = useState(false)
-  const [deletingAttachment, setDeletingAttachment] = useState<string | null>(null)
-  const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
-  const [paymentLoading, setPaymentLoading] = useState(false)
-  const [deletingPayment, setDeletingPayment] = useState<string | null>(null)
-  const [showShareDialog, setShowShareDialog] = useState(false)
-  const [showEmailDialog, setShowEmailDialog] = useState(false)
-  const [showPaymentNotifyDialog, setShowPaymentNotifyDialog] = useState(false)
-  const [paymentNotifyMessage, setPaymentNotifyMessage] = useState('')
 
   const displayTotal = totalAmount > 0 ? totalAmount : record.cost
   const paidFromPayments = record.payments?.reduce((sum, p) => sum + p.amount, 0) || 0
@@ -190,8 +231,9 @@ export function ServicePageClient({
         updated[index] = part
         return updated
       })
+      markDirty()
     },
-    []
+    [markDirty]
   )
 
   const updateLabor = useCallback(
@@ -205,13 +247,36 @@ export function ServicePageClient({
         updated[index] = labor
         return updated
       })
+      markDirty()
     },
-    []
+    [markDirty]
   )
+
+  // Wrapped setters that trigger autosave
+  const dirtySetPartItems: typeof setPartItems = useCallback((action) => {
+    setPartItems(action)
+    markDirty()
+  }, [markDirty])
+
+  const dirtySetLaborItems: typeof setLaborItems = useCallback((action) => {
+    setLaborItems(action)
+    markDirty()
+  }, [markDirty])
+
+  const dirtySetDiscountType = useCallback((v: string) => { setDiscountType(v); markDirty() }, [markDirty])
+  const dirtySetDiscountValue = useCallback((v: number) => { setDiscountValue(v); markDirty() }, [markDirty])
+  const dirtySetTaxRate = useCallback((v: number) => { setTaxRate(v); markDirty() }, [markDirty])
+  const dirtySetType = useCallback((v: string) => { setType(v); markDirty() }, [markDirty])
+  const dirtySetStatus = useCallback((v: string) => { setStatus(v); markDirty() }, [markDirty])
+  const dirtySetTechName = useCallback((v: string) => { setTechName(v); markDirty() }, [markDirty])
+  const dirtySetSelectedVehicleId = useCallback((v: string) => { setSelectedVehicleId(v); markDirty() }, [markDirty])
 
   // Form submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (isSavingRef.current) return
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    isSavingRef.current = true
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
@@ -243,7 +308,10 @@ export function ServicePageClient({
     const result = await updateServiceRecord(payload)
 
     if (result.success) {
-      toast.success(t('page.updated'))
+      setHasUnsavedChanges(false)
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
+      setShowSaved(true)
+      savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
       if (selectedVehicleId !== vehicleId) {
         router.push(`/vehicles/${selectedVehicleId}/service/${initialData.id}`)
       } else {
@@ -253,6 +321,7 @@ export function ServicePageClient({
       modal.open('error', tc('errors.error'), result.error || t('page.failedUpdate'))
     }
 
+    isSavingRef.current = false
     setLoading(false)
   }
 
@@ -399,7 +468,7 @@ export function ServicePageClient({
     <div className="space-y-3">
       <PartsEditor
         partItems={partItems}
-        setPartItems={setPartItems}
+        setPartItems={dirtySetPartItems}
         updatePart={updatePart}
         partsSubtotal={partsSubtotal}
         currencyCode={currencyCode}
@@ -408,7 +477,7 @@ export function ServicePageClient({
       />
       <LaborEditor
         laborItems={laborItems}
-        setLaborItems={setLaborItems}
+        setLaborItems={dirtySetLaborItems}
         updateLabor={updateLabor}
         laborSubtotal={laborSubtotal}
         currencyCode={currencyCode}
@@ -472,16 +541,16 @@ export function ServicePageClient({
         vehicleId={vehicleId}
         vehicleName={vehicleName}
         selectedVehicleId={selectedVehicleId}
-        setSelectedVehicleId={setSelectedVehicleId}
+        setSelectedVehicleId={dirtySetSelectedVehicleId}
         vehicles={vehicles}
         vehicleOpen={vehicleOpen}
         setVehicleOpen={setVehicleOpen}
         type={type}
-        setType={setType}
+        setType={dirtySetType}
         status={status}
-        setStatus={setStatus}
+        setStatus={dirtySetStatus}
         techName={techName}
-        setTechName={setTechName}
+        setTechName={dirtySetTechName}
         techOpen={techOpen}
         setTechOpen={setTechOpen}
         teamMembers={teamMembers}
@@ -493,13 +562,13 @@ export function ServicePageClient({
         laborSubtotal={laborSubtotal}
         subtotal={subtotal}
         discountType={discountType}
-        setDiscountType={setDiscountType}
+        setDiscountType={dirtySetDiscountType}
         discountValue={discountValue}
-        setDiscountValue={setDiscountValue}
+        setDiscountValue={dirtySetDiscountValue}
         discountAmount={discountAmount}
         taxEnabled={taxEnabled}
         taxRate={taxRate}
-        setTaxRate={setTaxRate}
+        setTaxRate={dirtySetTaxRate}
         taxAmount={taxAmount}
         totalAmount={totalAmount}
         currencyCode={currencyCode}
@@ -531,14 +600,16 @@ export function ServicePageClient({
         }}
         downloading={downloading}
         saving={loading}
-        onDownloadPDF={handleDownloadPDF}
+        hasUnsavedChanges={hasUnsavedChanges}
+        showSaved={showSaved}
+        onDownloadPDF={async () => { if (hasUnsavedChanges) await saveNow(); handleDownloadPDF() }}
         onDelete={handleDelete}
-        onShowEmail={() => setShowEmailDialog(true)}
-        onShowShare={() => setShowShareDialog(true)}
+        onShowEmail={async () => { if (hasUnsavedChanges) await saveNow(); setShowEmailDialog(true) }}
+        onShowShare={async () => { if (hasUnsavedChanges) await saveNow(); setShowShareDialog(true) }}
       />
 
       {activeTab === 'details' && (
-        <form id="service-record-form" onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+        <form id="service-record-form" ref={formRef} onSubmit={handleSubmit} onInput={markDirty} className="flex min-h-0 flex-1 flex-col">
           <ServiceDetailContent leftColumn={detailsLeftColumn} rightColumn={detailsRightColumn} />
         </form>
       )}
@@ -578,7 +649,7 @@ export function ServicePageClient({
         onOpenChange={setShowInventoryPicker}
         inventoryParts={inventoryParts}
         currencyCode={currencyCode}
-        onSelectPart={(part) => setPartItems((prev) => [...prev, part])}
+        onSelectPart={(part) => dirtySetPartItems((prev) => [...prev, part])}
       />
 
       <ImageCarousel

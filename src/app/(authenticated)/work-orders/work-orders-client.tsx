@@ -25,6 +25,9 @@ import { DataTablePagination } from "@/components/data-table-pagination";
 import { statusColors } from "@/lib/table-utils";
 import { updateServiceStatus } from "@/features/vehicles/Actions/serviceActions";
 import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   ChevronDown,
   Loader2,
   Plus,
@@ -131,6 +134,8 @@ export function WorkOrdersClient({
   currencyCode = "USD",
   search,
   statusFilter,
+  sortBy,
+  sortOrder,
   smsEnabled = false,
   emailEnabled = false,
 }: {
@@ -140,6 +145,8 @@ export function WorkOrdersClient({
   currencyCode?: string;
   search: string;
   statusFilter: string;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
   smsEnabled?: boolean;
   emailEnabled?: boolean;
 }) {
@@ -176,6 +183,21 @@ export function WorkOrdersClient({
     },
     [router, pathname, searchParams]
   );
+
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
+      navigate({ sortBy: column, sortOrder: newOrder });
+    },
+    [navigate, sortBy, sortOrder]
+  );
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
+    return sortOrder === "asc"
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />;
+  };
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
@@ -261,14 +283,38 @@ export function WorkOrdersClient({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="hidden sm:table-cell w-[100px]">{t("table.invoice")}</TableHead>
+              <TableHead className="hidden sm:table-cell w-[100px]">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("invoiceNumber")}>
+                  {t("table.invoice")}<SortIcon column="invoiceNumber" />
+                </button>
+              </TableHead>
               <TableHead>{t("table.vehicle")}</TableHead>
               <TableHead className="hidden md:table-cell">{t("table.customer")}</TableHead>
-              <TableHead>{t("table.title")}</TableHead>
-              <TableHead className="w-[110px]">{t("table.status")}</TableHead>
-              <TableHead className="hidden lg:table-cell">{t("table.tech")}</TableHead>
-              <TableHead className="w-[90px]">{t("table.date")}</TableHead>
-              <TableHead className="w-[90px] text-right">{t("table.total")}</TableHead>
+              <TableHead>
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("title")}>
+                  {t("table.title")}<SortIcon column="title" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[110px]">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("status")}>
+                  {t("table.status")}<SortIcon column="status" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden lg:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("techName")}>
+                  {t("table.tech")}<SortIcon column="techName" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[90px]">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("serviceDate")}>
+                  {t("table.date")}<SortIcon column="serviceDate" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[90px] text-right">
+                <button type="button" className="flex items-center justify-end hover:text-foreground ml-auto" onClick={() => handleSort("totalAmount")}>
+                  {t("table.total")}<SortIcon column="totalAmount" />
+                </button>
+              </TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>

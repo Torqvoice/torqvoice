@@ -462,6 +462,7 @@ model QuotePart {
   quantity   Float   @default(1)
   unitPrice  Float   @default(0)
   total      Float   @default(0)
+  excluded   Boolean @default(false)
 
   quoteId String
   quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
@@ -471,11 +472,12 @@ model QuotePart {
 }
 
 model QuoteLabor {
-  id          String @id @default(cuid())
+  id          String  @id @default(cuid())
   description String
-  hours       Float  @default(0)
-  rate        Float  @default(0)
-  total       Float  @default(0)
+  hours       Float   @default(0)
+  rate        Float   @default(0)
+  total       Float   @default(0)
+  excluded    Boolean @default(false)
 
   quoteId String
   quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)

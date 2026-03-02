@@ -36,6 +36,8 @@ interface UnifiedServiceHeaderProps {
   tabCounts: TabCounts
   downloading: boolean
   saving: boolean
+  hasUnsavedChanges?: boolean
+  showSaved?: boolean
   onDownloadPDF: () => void
   onDelete: () => void
   onShowEmail: () => void
@@ -53,6 +55,8 @@ export function UnifiedServiceHeader({
   tabCounts,
   downloading,
   saving,
+  hasUnsavedChanges = false,
+  showSaved = false,
   onDownloadPDF,
   onDelete,
   onShowEmail,
@@ -97,14 +101,22 @@ export function UnifiedServiceHeader({
         </Link>
         <div className="flex shrink-0 items-center gap-2">
           {activeTab === 'details' && (
-            <Button type="submit" form="service-record-form" size="sm" disabled={saving}>
-              {saving ? (
-                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Save className="mr-1 h-3.5 w-3.5" />
+            <>
+              {hasUnsavedChanges && (
+                <span className="text-xs font-medium text-amber-600 dark:text-amber-400">{t('unsavedChanges')}</span>
               )}
-              {t('save')}
-            </Button>
+              {showSaved && !hasUnsavedChanges && (
+                <span className="text-xs font-medium text-green-600 dark:text-green-400">{t('saved')}</span>
+              )}
+              <Button type="submit" form="service-record-form" size="sm" disabled={saving} variant={hasUnsavedChanges ? "default" : "outline"} className={hasUnsavedChanges ? "animate-pulse" : ""}>
+                {saving ? (
+                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Save className="mr-1 h-3.5 w-3.5" />
+                )}
+                {t('save')}
+              </Button>
+            </>
           )}
           <ButtonGroup>
             <Button variant="outline" size="sm" onClick={onDownloadPDF} disabled={downloading}>
