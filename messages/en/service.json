@@ -20,7 +20,9 @@
     "email": "Email",
     "share": "Share",
     "delete": "Delete",
-    "unpaid": "Unpaid"
+    "unpaid": "Unpaid",
+    "unsavedChanges": "Unsaved changes",
+    "saved": "Saved"
   },
   "basicInfo": {
     "title": "Basic Information",

@@ -27,6 +27,8 @@
     "deleteTitle": "Supprimer le devis",
     "deleteDescription": "Ce devis sera définitivement supprimé.",
     "saved": "Devis enregistré",
+    "unsavedChanges": "Modifications non enregistrées",
+    "saveFirst": "Veuillez d'abord enregistrer vos modifications",
     "failedSave": "Échec de l'enregistrement du devis",
     "failedDelete": "Échec de la suppression",
     "failedPdf": "Échec de la génération du PDF",

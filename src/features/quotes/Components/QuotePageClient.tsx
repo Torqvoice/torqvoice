@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -127,8 +127,8 @@ interface QuoteRecord {
   inspectionId: string | null;
   createdAt: Date;
   updatedAt: Date;
-  partItems: { id: string; partNumber: string | null; name: string; quantity: number; unitPrice: number; total: number }[];
-  laborItems: { id: string; description: string; hours: number; rate: number; total: number }[];
+  partItems: { id: string; partNumber: string | null; name: string; quantity: number; unitPrice: number; total: number; excluded?: boolean }[];
+  laborItems: { id: string; description: string; hours: number; rate: number; total: number; excluded?: boolean }[];
   customer: { id: string; name: string; email: string | null; phone: string | null; address: string | null; company: string | null } | null;
   vehicle: { id: string; make: string; model: string; year: number; vin: string | null; licensePlate: string | null; mileage: number } | null;
 }
@@ -139,6 +139,7 @@ const emptyPart = (): QuotePartInput => ({
   quantity: 1,
   unitPrice: 0,
   total: 0,
+  excluded: false,
 });
 
 const makeEmptyLabor = (defaultRate: number): QuoteLaborInput => ({
@@ -146,6 +147,7 @@ const makeEmptyLabor = (defaultRate: number): QuoteLaborInput => ({
   hours: 0,
   rate: defaultRate,
   total: 0,
+  excluded: false,
 });
 
 const LG_BREAKPOINT = 1024;
@@ -210,10 +212,10 @@ export function QuotePageClient({
   const [customerId, setCustomerId] = useState(quote.customer?.id || "");
   const [vehicleId, setVehicleId] = useState(quote.vehicle?.id || "");
   const [partItems, setPartItems] = useState<QuotePartInput[]>(
-    quote.partItems.map((p) => ({ partNumber: p.partNumber || "", name: p.name, quantity: p.quantity, unitPrice: p.unitPrice, total: p.total }))
+    quote.partItems.map((p) => ({ partNumber: p.partNumber || "", name: p.name, quantity: p.quantity, unitPrice: p.unitPrice, total: p.total, excluded: p.excluded ?? false }))
   );
   const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(
-    quote.laborItems.map((l) => ({ description: l.description, hours: l.hours, rate: l.rate, total: l.total }))
+    quote.laborItems.map((l) => ({ description: l.description, hours: l.hours, rate: l.rate, total: l.total, excluded: l.excluded ?? false }))
   );
   const [taxRate, setTaxRate] = useState(quote.taxRate ?? defaultTaxRate);
   const [discountType, setDiscountType] = useState<string>(quote.discountType || "none");
@@ -233,9 +235,42 @@ export function QuotePageClient({
     quote.validUntil ? new Date(quote.validUntil).toISOString().split("T")[0] : ""
   );
 
+  // Unsaved changes tracking & autosave
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showSaved, setShowSaved] = useState(false);
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isSavingRef = useRef(false);
+
+  const markDirty = useCallback(() => {
+    setHasUnsavedChanges(true);
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    autosaveTimer.current = setTimeout(() => {
+      if (!isSavingRef.current && formRef.current) {
+        formRef.current.requestSubmit();
+      }
+    }, 5000);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [hasUnsavedChanges]);
+
   // Calculations
-  const partsSubtotal = partItems.reduce((sum, p) => sum + p.total, 0);
-  const laborSubtotal = laborItems.reduce((sum, l) => sum + l.total, 0);
+  const partsSubtotal = partItems.reduce((sum, p) => p.excluded ? sum : sum + p.total, 0);
+  const laborSubtotal = laborItems.reduce((sum, l) => l.excluded ? sum : sum + l.total, 0);
   const subtotal = partsSubtotal + laborSubtotal;
   const discountAmount = discountType === "percentage"
     ? subtotal * (discountValue / 100)
@@ -255,9 +290,10 @@ export function QuotePageClient({
       const vehicle = vehicles.find((veh) => veh.id === vid);
       if (vehicle?.customerId) setCustomerId(vehicle.customerId);
     }
+    markDirty();
   };
 
-  const updatePart = useCallback((index: number, field: keyof QuotePartInput, value: string | number) => {
+  const updatePart = useCallback((index: number, field: keyof QuotePartInput, value: string | number | boolean) => {
     setPartItems((prev) => {
       const updated = [...prev];
       const part = { ...updated[index], [field]: value };
@@ -265,9 +301,10 @@ export function QuotePageClient({
       updated[index] = part;
       return updated;
     });
-  }, []);
+    markDirty();
+  }, [markDirty]);
 
-  const updateLabor = useCallback((index: number, field: keyof QuoteLaborInput, value: string | number) => {
+  const updateLabor = useCallback((index: number, field: keyof QuoteLaborInput, value: string | number | boolean) => {
     setLaborItems((prev) => {
       const updated = [...prev];
       const labor = { ...updated[index], [field]: value };
@@ -275,10 +312,14 @@ export function QuotePageClient({
       updated[index] = labor;
       return updated;
     });
-  }, []);
+    markDirty();
+  }, [markDirty]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isSavingRef.current) return;
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    isSavingRef.current = true;
     setSaving(true);
     const formData = new FormData(e.currentTarget);
     const result = await updateQuote({
@@ -301,11 +342,15 @@ export function QuotePageClient({
       totalAmount,
     });
     if (result.success) {
-      toast.success(t("page.saved"));
+      setHasUnsavedChanges(false);
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+      setShowSaved(true);
+      savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000);
       router.refresh();
     } else {
       modal.open("error", "Error", result.error || t("page.failedSave"));
     }
+    isSavingRef.current = false;
     setSaving(false);
   };
 
@@ -321,7 +366,22 @@ export function QuotePageClient({
     }
   };
 
+  const saveNow = async () => {
+    if (!formRef.current || isSavingRef.current) return;
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
+    formRef.current.requestSubmit();
+    // Wait for save to complete
+    await new Promise<void>((resolve) => {
+      const check = () => {
+        if (!isSavingRef.current) return resolve();
+        setTimeout(check, 50);
+      };
+      setTimeout(check, 50);
+    });
+  };
+
   const handleDownloadPDF = async () => {
+    if (hasUnsavedChanges) await saveNow();
     setDownloading(true);
     try {
       const res = await fetch(`/api/protected/quotes/${quote.id}/pdf`);
@@ -340,6 +400,7 @@ export function QuotePageClient({
   };
 
   const handleConvert = async () => {
+    if (hasUnsavedChanges) await saveNow();
     if (!convertVehicleId) {
       modal.open("error", "Error", t("page.selectVehicle"));
       return;
@@ -375,7 +436,7 @@ export function QuotePageClient({
       <div className="rounded-lg border p-3 space-y-2">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold">{t("parts.title")}</h3>
-          <Button type="button" variant="outline" size="sm" onClick={() => setPartItems([...partItems, emptyPart()])}>
+          <Button type="button" variant="outline" size="sm" onClick={() => { setPartItems([...partItems, emptyPart()]); markDirty(); }}>
             <Plus className="mr-1 h-3.5 w-3.5" /> {t("parts.addPart")}
           </Button>
         </div>
@@ -385,21 +446,24 @@ export function QuotePageClient({
               <span>{t("parts.partNumber")}</span><span>{t("parts.name")}</span><span>{t("parts.qty")}</span><span>{t("parts.unitPrice")}</span><span>{t("parts.total")}</span><span />
             </div>
             {partItems.map((part, i) => (
-              <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto]">
+              <div key={i} className={`grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto]${part.excluded ? " line-through opacity-50" : ""}`}>
                 <Input placeholder={t("parts.partNumber")} value={part.partNumber ?? ""} onChange={(e) => updatePart(i, "partNumber", e.target.value)} />
                 <Input placeholder={t("parts.namePlaceholder")} value={part.name} onChange={(e) => updatePart(i, "name", e.target.value)} />
                 <Input type="number" min="0" step="1" value={part.quantity} onChange={(e) => updatePart(i, "quantity", e.target.value)} />
                 <Input type="number" min="0" step="0.01" value={part.unitPrice} onChange={(e) => updatePart(i, "unitPrice", e.target.value)} />
                 <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(part.total, currencyCode)}</div>
-                <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setPartItems(partItems.filter((_, j) => j !== i))}><Trash2 className="h-4 w-4" /></Button>
+                <div className="flex items-center gap-1">
+                  <input type="checkbox" checked={part.excluded ?? false} onChange={(e) => updatePart(i, "excluded", e.target.checked)} className="h-4 w-4 rounded border-gray-300" title="Exclude from total" />
+                  <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => { setPartItems(partItems.filter((_, j) => j !== i)); markDirty(); }}><Trash2 className="h-4 w-4" /></Button>
+                </div>
               </div>
             ))}
-            <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => setPartItems([...partItems, emptyPart()])}><Plus className="h-4 w-4" /></button>
+            <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => { setPartItems([...partItems, emptyPart()]); markDirty(); }}><Plus className="h-4 w-4" /></button>
             <div className="flex justify-end pt-1 text-sm"><span className="font-medium">{t("parts.subtotal", { amount: formatCurrency(partsSubtotal, currencyCode) })}</span></div>
           </>
         )}
         {partItems.length === 0 && (
-          <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => setPartItems([...partItems, emptyPart()])}>
+          <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => { setPartItems([...partItems, emptyPart()]); markDirty(); }}>
             <Plus className="mr-1 h-4 w-4" /><span className="text-sm">{t("parts.addPart")}</span>
           </button>
         )}
@@ -409,7 +473,7 @@ export function QuotePageClient({
       <div className="rounded-lg border p-3 space-y-2">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold">{t("labor.title")}</h3>
-          <Button type="button" variant="outline" size="sm" onClick={() => setLaborItems([...laborItems, makeEmptyLabor(defaultLaborRate)])}><Plus className="mr-1 h-3.5 w-3.5" /> {t("labor.addLabor")}</Button>
+          <Button type="button" variant="outline" size="sm" onClick={() => { setLaborItems([...laborItems, makeEmptyLabor(defaultLaborRate)]); markDirty(); }}><Plus className="mr-1 h-3.5 w-3.5" /> {t("labor.addLabor")}</Button>
         </div>
         {laborItems.length > 0 && (
           <>
@@ -417,20 +481,23 @@ export function QuotePageClient({
               <span>{t("labor.description")}</span><span>{t("labor.hours")}</span><span>{t("labor.rate", { currency: cs })}</span><span>{t("labor.total")}</span><span />
             </div>
             {laborItems.map((labor, i) => (
-              <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]">
+              <div key={i} className={`grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]${labor.excluded ? " line-through opacity-50" : ""}`}>
                 <Input placeholder={t("labor.descriptionPlaceholder")} value={labor.description} onChange={(e) => updateLabor(i, "description", e.target.value)} className="col-span-2 sm:col-span-1" />
                 <Input type="number" min="0" step="0.1" value={labor.hours} onChange={(e) => updateLabor(i, "hours", e.target.value)} />
                 <Input type="number" min="0" step="0.01" value={labor.rate} onChange={(e) => updateLabor(i, "rate", e.target.value)} />
                 <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(labor.total, currencyCode)}</div>
-                <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setLaborItems(laborItems.filter((_, j) => j !== i))}><Trash2 className="h-4 w-4" /></Button>
+                <div className="flex items-center gap-1">
+                  <input type="checkbox" checked={labor.excluded ?? false} onChange={(e) => updateLabor(i, "excluded", e.target.checked)} className="h-4 w-4 rounded border-gray-300" title="Exclude from total" />
+                  <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => { setLaborItems(laborItems.filter((_, j) => j !== i)); markDirty(); }}><Trash2 className="h-4 w-4" /></Button>
+                </div>
               </div>
             ))}
-            <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => setLaborItems([...laborItems, makeEmptyLabor(defaultLaborRate)])}><Plus className="h-4 w-4" /></button>
+            <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => { setLaborItems([...laborItems, makeEmptyLabor(defaultLaborRate)]); markDirty(); }}><Plus className="h-4 w-4" /></button>
             <div className="flex justify-end pt-1 text-sm"><span className="font-medium">{t("labor.subtotal", { amount: formatCurrency(laborSubtotal, currencyCode) })}</span></div>
           </>
         )}
         {laborItems.length === 0 && (
-          <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => setLaborItems([...laborItems, makeEmptyLabor(defaultLaborRate)])}>
+          <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={() => { setLaborItems([...laborItems, makeEmptyLabor(defaultLaborRate)]); markDirty(); }}>
             <Plus className="mr-1 h-4 w-4" /><span className="text-sm">{t("labor.addLabor")}</span>
           </button>
         )}
@@ -450,13 +517,13 @@ export function QuotePageClient({
         </div>
         {noteType === "public" && (
           <div className="space-y-1">
-            <RichTextEditor content={description} onChange={setDescription} placeholder={t("notes.publicPlaceholder")} />
+            <RichTextEditor content={description} onChange={(v) => { setDescription(v); markDirty(); }} placeholder={t("notes.publicPlaceholder")} />
             <p className="text-xs text-muted-foreground">{t("notes.publicHelper")}</p>
           </div>
         )}
         {noteType === "internal" && (
           <div className="space-y-1">
-            <RichTextEditor content={notes} onChange={setNotes} placeholder={t("notes.internalPlaceholder")} />
+            <RichTextEditor content={notes} onChange={(v) => { setNotes(v); markDirty(); }} placeholder={t("notes.internalPlaceholder")} />
             <p className="text-xs text-muted-foreground">{t("notes.internalHelper")}</p>
           </div>
         )}
@@ -513,12 +580,12 @@ export function QuotePageClient({
               <span className="font-medium">{selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}</span>
               {selectedVehicle.licensePlate && <span className="ml-1.5 text-muted-foreground">{selectedVehicle.licensePlate}</span>}
             </Link>
-            <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => setVehicleId("")}><X className="h-3 w-3" /></Button>
+            <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => { setVehicleId(""); markDirty(); }}><X className="h-3 w-3" /></Button>
           </div>
         )}
         <div className="space-y-1">
           <Label className="text-xs">{t("details.customer")}</Label>
-          <Select value={customerId || "none"} onValueChange={(v) => setCustomerId(v === "none" ? "" : v)}>
+          <Select value={customerId || "none"} onValueChange={(v) => { setCustomerId(v === "none" ? "" : v); markDirty(); }}>
             <SelectTrigger><SelectValue placeholder={t("details.selectCustomer")} /></SelectTrigger>
             <SelectContent>
               <SelectItem value="none">{t("details.none")}</SelectItem>
@@ -535,7 +602,7 @@ export function QuotePageClient({
               <span className="font-medium">{selectedCustomer.name}</span>
               {selectedCustomer.company && <span className="ml-1.5 text-muted-foreground">{selectedCustomer.company}</span>}
             </Link>
-            <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => setCustomerId("")}><X className="h-3 w-3" /></Button>
+            <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => { setCustomerId(""); markDirty(); }}><X className="h-3 w-3" /></Button>
           </div>
         )}
       </div>
@@ -545,12 +612,12 @@ export function QuotePageClient({
         <h3 className="text-sm font-semibold">{t("details.title")}</h3>
         <div className="space-y-1">
           <Label htmlFor="title" className="text-xs">{t("details.titleLabel")}</Label>
-          <Input id="title" name="title" placeholder={t("details.titlePlaceholder")} defaultValue={quote.title} required />
+          <Input id="title" name="title" placeholder={t("details.titlePlaceholder")} defaultValue={quote.title} required onChange={markDirty} />
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
             <Label className="text-xs">{t("details.status")}</Label>
-            <Select value={status} onValueChange={setStatus}>
+            <Select value={status} onValueChange={(v) => { setStatus(v); markDirty(); }}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="draft">{t("details.statusDraft")}</SelectItem>
@@ -562,7 +629,7 @@ export function QuotePageClient({
           </div>
           <div className="space-y-1">
             <Label htmlFor="validUntil" className="text-xs">{t("details.validUntil")}</Label>
-            <Input id="validUntil" name="validUntil" type="date" defaultValue={defaultValidDate} />
+            <Input id="validUntil" name="validUntil" type="date" defaultValue={defaultValidDate} onChange={markDirty} />
           </div>
         </div>
         {quote.inspectionId && (
@@ -626,7 +693,7 @@ export function QuotePageClient({
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground">{t("totals.discount")}</span>
-              <Select value={discountType} onValueChange={setDiscountType}>
+              <Select value={discountType} onValueChange={(v) => { setDiscountType(v); markDirty(); }}>
                 <SelectTrigger className="h-7 w-28 text-xs"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">{t("totals.discountNone")}</SelectItem>
@@ -635,7 +702,7 @@ export function QuotePageClient({
                 </SelectContent>
               </Select>
               {discountType !== "none" && (
-                <Input type="number" min="0" step="0.01" value={discountValue} onChange={(e) => setDiscountValue(e.target.value === "" ? 0 : Number(e.target.value))} className="h-7 w-20 text-right text-xs" />
+                <Input type="number" min="0" step="0.01" value={discountValue} onChange={(e) => { setDiscountValue(e.target.value === "" ? 0 : Number(e.target.value)); markDirty(); }} className="h-7 w-20 text-right text-xs" />
               )}
               {discountType === "percentage" && <span className="text-muted-foreground">%</span>}
             </div>
@@ -645,7 +712,7 @@ export function QuotePageClient({
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">{t("totals.tax")}</span>
-                <Input type="number" min="0" step="0.1" value={taxRate} onChange={(e) => setTaxRate(e.target.value === "" ? 0 : Number(e.target.value))} className="h-7 w-20 text-right text-xs" />
+                <Input type="number" min="0" step="0.1" value={taxRate} onChange={(e) => { setTaxRate(e.target.value === "" ? 0 : Number(e.target.value)); markDirty(); }} className="h-7 w-20 text-right text-xs" />
                 <span className="text-muted-foreground">%</span>
               </div>
               <span>{formatCurrency(taxAmount, currencyCode)}</span>
@@ -682,7 +749,13 @@ export function QuotePageClient({
             </div>
           </Link>
           <div className="flex shrink-0 items-center gap-2">
-            <Button type="submit" form="quote-form" size="sm" disabled={saving}>
+            {hasUnsavedChanges && (
+              <span className="text-xs font-medium text-amber-600 dark:text-amber-400">{t("page.unsavedChanges")}</span>
+            )}
+            {showSaved && !hasUnsavedChanges && (
+              <span className="text-xs font-medium text-green-600 dark:text-green-400">{t("page.saved")}</span>
+            )}
+            <Button type="submit" form="quote-form" size="sm" disabled={saving} variant={hasUnsavedChanges ? "default" : "outline"} className={hasUnsavedChanges ? "animate-pulse" : ""}>
               {saving ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Save className="mr-1 h-3.5 w-3.5" />}
               {t("page.save")}
             </Button>
@@ -691,11 +764,11 @@ export function QuotePageClient({
                 {downloading ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Download className="mr-1 h-3.5 w-3.5" />}
                 {t("page.pdf")}
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setShowEmailDialog(true)}>
+              <Button variant="outline" size="sm" onClick={async () => { if (hasUnsavedChanges) await saveNow(); setShowEmailDialog(true); }}>
                 <Mail className="mr-1 h-3.5 w-3.5" />
                 {t("page.email")}
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setShowShareDialog(true)}>
+              <Button variant="outline" size="sm" onClick={async () => { if (hasUnsavedChanges) await saveNow(); setShowShareDialog(true); }}>
                 <Globe className="mr-1 h-3.5 w-3.5" />
                 {t("page.share")}
               </Button>
@@ -735,7 +808,7 @@ export function QuotePageClient({
 
       {/* Tab Content */}
       {activeTab === "details" && (
-        <form id="quote-form" onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <form id="quote-form" ref={formRef} onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {isLarge ? (
             <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
               <ResizablePanel defaultSize={75} minSize={40}>

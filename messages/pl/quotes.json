@@ -27,6 +27,8 @@
     "deleteTitle": "Usuń wycenę",
     "deleteDescription": "Ta wycena zostanie trwale usunięta.",
     "saved": "Wycena zapisana",
+    "unsavedChanges": "Niezapisane zmiany",
+    "saveFirst": "Najpierw zapisz zmiany",
     "failedSave": "Nie udało się zapisać wyceny",
     "failedDelete": "Nie udało się usunąć",
     "failedPdf": "Nie udało się wygenerować PDF",

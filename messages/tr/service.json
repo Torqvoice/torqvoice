@@ -20,7 +20,9 @@
     "email": "E-posta",
     "share": "Paylaş",
     "delete": "Sil",
-    "unpaid": "Ödenmedi"
+    "unpaid": "Ödenmedi",
+    "unsavedChanges": "Kaydedilmemiş değişiklikler",
+    "saved": "Kaydedildi"
   },
   "basicInfo": {
     "title": "Temel Bilgiler",

@@ -20,7 +20,9 @@
     "email": "E-post",
     "share": "Del",
     "delete": "Slett",
-    "unpaid": "Ubetalt"
+    "unpaid": "Ubetalt",
+    "unsavedChanges": "Ulagrede endringer",
+    "saved": "Lagret"
   },
   "basicInfo": {
     "title": "Grunnleggende informasjon",

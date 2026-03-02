@@ -468,6 +468,7 @@ model QuotePart {
   quantity   Float    @default(1)
   unitPrice  Float    @default(0)
   total      Float    @default(0)
+  excluded   Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 
@@ -484,6 +485,7 @@ model QuoteLabor {
   hours       Float    @default(0)
   rate        Float    @default(0)
   total       Float    @default(0)
+  excluded    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 

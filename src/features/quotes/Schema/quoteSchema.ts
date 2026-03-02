@@ -6,6 +6,7 @@ export const quotePartSchema = z.object({
   quantity: z.coerce.number().min(0).default(1),
   unitPrice: z.coerce.number().min(0).default(0),
   total: z.coerce.number().min(0).default(0),
+  excluded: z.boolean().optional().default(false),
 });
 
 export const quoteLaborSchema = z.object({
@@ -13,6 +14,7 @@ export const quoteLaborSchema = z.object({
   hours: z.coerce.number().min(0).default(0),
   rate: z.coerce.number().min(0).default(0),
   total: z.coerce.number().min(0).default(0),
+  excluded: z.boolean().optional().default(false),
 });
 
 export const quoteAttachmentSchema = z.object({

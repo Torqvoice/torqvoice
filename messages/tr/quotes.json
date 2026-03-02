@@ -27,6 +27,8 @@
     "deleteTitle": "Teklifi Sil",
     "deleteDescription": "Bu teklif kalıcı olarak silinecektir.",
     "saved": "Teklif kaydedildi",
+    "unsavedChanges": "Kaydedilmemiş değişiklikler",
+    "saveFirst": "Lütfen önce değişikliklerinizi kaydedin",
     "failedSave": "Teklif kaydedilemedi",
     "failedDelete": "Silinemedi",
     "failedPdf": "PDF oluşturulamadı",

@@ -599,6 +599,8 @@ export async function getWorkOrders(params: {
   pageSize?: number;
   search?: string;
   status?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ organizationId }) => {
     const page = params.page || 1;
@@ -639,7 +641,18 @@ export async function getWorkOrders(params: {
             },
           },
         },
-        orderBy: { serviceDate: "desc" },
+        orderBy: (() => {
+          const dir = params.sortOrder || "desc";
+          switch (params.sortBy) {
+            case "invoiceNumber": return { invoiceNumber: dir };
+            case "title": return { title: dir };
+            case "status": return { status: dir };
+            case "techName": return { techName: dir };
+            case "totalAmount": return { totalAmount: dir };
+            case "serviceDate":
+            default: return { serviceDate: dir };
+          }
+        })(),
         skip,
         take: pageSize,
       }),

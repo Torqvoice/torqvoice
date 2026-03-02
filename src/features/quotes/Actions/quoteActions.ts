@@ -302,9 +302,10 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         },
       });
 
-      if (quote.partItems.length > 0) {
+      const includedParts = quote.partItems.filter((p) => !p.excluded);
+      if (includedParts.length > 0) {
         await tx.servicePart.createMany({
-          data: quote.partItems.map((p) => ({
+          data: includedParts.map((p) => ({
             partNumber: p.partNumber,
             name: p.name,
             quantity: p.quantity,
@@ -315,9 +316,10 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         });
       }
 
-      if (quote.laborItems.length > 0) {
+      const includedLabor = quote.laborItems.filter((l) => !l.excluded);
+      if (includedLabor.length > 0) {
         await tx.serviceLabor.createMany({
-          data: quote.laborItems.map((l) => ({
+          data: includedLabor.map((l) => ({
             description: l.description,
             hours: l.hours,
             rate: l.rate,
