@@ -27,6 +27,8 @@
     "deleteTitle": "Excluir orçamento",
     "deleteDescription": "Este orçamento será excluído permanentemente.",
     "saved": "Orçamento salvo",
+    "unsavedChanges": "Alterações não salvas",
+    "saveFirst": "Salve suas alterações primeiro",
     "failedSave": "Falha ao salvar o orçamento",
     "failedDelete": "Falha ao excluir",
     "failedPdf": "Falha ao gerar o PDF",

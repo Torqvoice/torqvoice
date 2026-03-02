@@ -30,8 +30,9 @@ interface QuoteData {
     quantity: number
     unitPrice: number
     total: number
+    excluded?: boolean
   }[]
-  laborItems: { description: string; hours: number; rate: number; total: number }[]
+  laborItems: { description: string; hours: number; rate: number; total: number; excluded?: boolean }[]
   customer: {
     name: string
     email: string | null
@@ -353,16 +354,16 @@ export function QuotePDF({
                 </Text>
               </View>
               {data.partItems.map((p, i) => (
-                <View key={i} style={styles.tableRow}>
-                  <Text style={{ ...styles.tableCell, width: '15%' }}>{p.partNumber || '-'}</Text>
-                  <Text style={{ ...styles.tableCell, width: '35%' }}>{p.name}</Text>
-                  <Text style={{ ...styles.tableCell, width: '12%', textAlign: 'right' }}>
+                <View key={i} style={{ ...styles.tableRow, ...(p.excluded ? { opacity: 0.5 } : {}) }}>
+                  <Text style={{ ...styles.tableCell, width: '15%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.partNumber || '-'}</Text>
+                  <Text style={{ ...styles.tableCell, width: '35%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.name}</Text>
+                  <Text style={{ ...styles.tableCell, width: '12%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
                     {p.quantity}
                   </Text>
-                  <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right' }}>
+                  <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
                     {formatCurrency(p.unitPrice, currencyCode)}
                   </Text>
-                  <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
+                  <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
                     {formatCurrency(p.total, currencyCode)}
                   </Text>
                 </View>
@@ -388,15 +389,15 @@ export function QuotePDF({
                 </Text>
               </View>
               {data.laborItems.map((l, i) => (
-                <View key={i} style={styles.tableRow}>
-                  <Text style={{ ...styles.tableCell, width: '45%' }}>{l.description}</Text>
-                  <Text style={{ ...styles.tableCell, width: '15%', textAlign: 'right' }}>
+                <View key={i} style={{ ...styles.tableRow, ...(l.excluded ? { opacity: 0.5 } : {}) }}>
+                  <Text style={{ ...styles.tableCell, width: '45%', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>{l.description}</Text>
+                  <Text style={{ ...styles.tableCell, width: '15%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
                     {l.hours}
                   </Text>
-                  <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right' }}>
+                  <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
                     {labels.ratePerHour ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(l.rate, currencyCode) }) : `${formatCurrency(l.rate, currencyCode)}/hr`}
                   </Text>
-                  <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
+                  <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
                     {formatCurrency(l.total, currencyCode)}
                   </Text>
                 </View>
@@ -405,55 +406,69 @@ export function QuotePDF({
           </View>
         )}
 
-        <View style={styles.totalsBox}>
-          {data.laborItems.length > 0 && (
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
-              <Text style={styles.totalValue}>
-                {formatCurrency(data.laborItems.reduce((sum, l) => sum + l.total, 0), currencyCode)}
-              </Text>
+        {(() => {
+          const laborTotal = data.laborItems.reduce((sum, l) => l.excluded ? sum : sum + l.total, 0)
+          const partsTotal = data.partItems.reduce((sum, p) => p.excluded ? sum : sum + p.total, 0)
+          const sub = laborTotal + partsTotal
+          const disc = data.discountType === 'percentage'
+            ? sub * (data.discountValue / 100)
+            : data.discountType === 'fixed'
+            ? Math.min(data.discountValue, sub)
+            : 0
+          const tax = (sub - disc) * (data.taxRate / 100)
+          const total = sub - disc + tax
+          return (
+            <View style={styles.totalsBox}>
+              {data.laborItems.length > 0 && (
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
+                  <Text style={styles.totalValue}>
+                    {formatCurrency(laborTotal, currencyCode)}
+                  </Text>
+                </View>
+              )}
+              {data.partItems.length > 0 && (
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
+                  <Text style={styles.totalValue}>
+                    {formatCurrency(partsTotal, currencyCode)}
+                  </Text>
+                </View>
+              )}
+              {sub > 0 && (
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
+                  <Text style={styles.totalValue}>{formatCurrency(sub, currencyCode)}</Text>
+                </View>
+              )}
+              {disc > 0 && (
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>
+                    {data.discountType === 'percentage'
+                      ? (labels.discountPercent ? fillTemplate(labels.discountPercent, { percent: String(data.discountValue) }) : `Discount (${data.discountValue}%)`)
+                      : (labels.discount || 'Discount')}
+                  </Text>
+                  <Text style={{ ...styles.totalValue, color: '#dc2626' }}>
+                    {formatCurrency(-disc, currencyCode)}
+                  </Text>
+                </View>
+              )}
+              {data.taxRate > 0 && (
+                <View style={styles.totalRow}>
+                  <Text style={styles.totalLabel}>{labels.tax ? fillTemplate(labels.tax, { rate: String(data.taxRate) }) : `Tax (${data.taxRate}%)`}</Text>
+                  <Text style={styles.totalValue}>{formatCurrency(tax, currencyCode)}</Text>
+                </View>
+              )}
+              <View style={styles.totalDivider} />
+              <View style={styles.grandTotalRow}>
+                <Text style={styles.grandTotalLabel}>{labels.total || 'Total'}</Text>
+                <Text style={styles.grandTotalValue}>
+                  {formatCurrency(total, currencyCode)}
+                </Text>
+              </View>
             </View>
-          )}
-          {data.partItems.length > 0 && (
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
-              <Text style={styles.totalValue}>
-                {formatCurrency(data.partItems.reduce((sum, p) => sum + p.total, 0), currencyCode)}
-              </Text>
-            </View>
-          )}
-          {data.subtotal > 0 && (
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
-              <Text style={styles.totalValue}>{formatCurrency(data.subtotal, currencyCode)}</Text>
-            </View>
-          )}
-          {data.discountAmount > 0 && (
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>
-                {data.discountType === 'percentage'
-                  ? (labels.discountPercent ? fillTemplate(labels.discountPercent, { percent: String(data.discountValue) }) : `Discount (${data.discountValue}%)`)
-                  : (labels.discount || 'Discount')}
-              </Text>
-              <Text style={{ ...styles.totalValue, color: '#dc2626' }}>
-                {formatCurrency(-data.discountAmount, currencyCode)}
-              </Text>
-            </View>
-          )}
-          {data.taxRate > 0 && (
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>{labels.tax ? fillTemplate(labels.tax, { rate: String(data.taxRate) }) : `Tax (${data.taxRate}%)`}</Text>
-              <Text style={styles.totalValue}>{formatCurrency(data.taxAmount, currencyCode)}</Text>
-            </View>
-          )}
-          <View style={styles.totalDivider} />
-          <View style={styles.grandTotalRow}>
-            <Text style={styles.grandTotalLabel}>{labels.total || 'Total'}</Text>
-            <Text style={styles.grandTotalValue}>
-              {formatCurrency(data.totalAmount, currencyCode)}
-            </Text>
-          </View>
-        </View>
+          )
+        })()}
 
         {torqvoiceLogoDataUri && (
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginTop: 6 }}>

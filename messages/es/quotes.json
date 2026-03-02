@@ -27,6 +27,8 @@
     "deleteTitle": "Eliminar presupuesto",
     "deleteDescription": "Este presupuesto se eliminará permanentemente.",
     "saved": "Presupuesto guardado",
+    "unsavedChanges": "Cambios sin guardar",
+    "saveFirst": "Por favor, guarde sus cambios primero",
     "failedSave": "Error al guardar el presupuesto",
     "failedDelete": "Error al eliminar",
     "failedPdf": "Error al generar el PDF",

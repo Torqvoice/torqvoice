@@ -70,6 +70,7 @@ const emptyPart = (): QuotePartInput => ({
   quantity: 1,
   unitPrice: 0,
   total: 0,
+  excluded: false,
 });
 
 const makeEmptyLabor = (defaultRate: number): QuoteLaborInput => ({
@@ -77,6 +78,7 @@ const makeEmptyLabor = (defaultRate: number): QuoteLaborInput => ({
   hours: 0,
   rate: defaultRate,
   total: 0,
+  excluded: false,
 });
 
 const LG_BREAKPOINT = 1024;
@@ -98,7 +100,7 @@ interface PrefillData {
   vehicleId?: string;
   customerId?: string;
   inspectionId?: string;
-  laborItems?: QuoteLaborInput[];
+  laborItems?: (Omit<QuoteLaborInput, 'excluded'> & { excluded?: boolean })[];
 }
 
 export function QuoteForm({
@@ -133,7 +135,7 @@ export function QuoteForm({
   const [customerId, setCustomerId] = useState(initialData?.customerId || prefill?.customerId || "");
   const [vehicleId, setVehicleId] = useState(initialData?.vehicleId || prefill?.vehicleId || "");
   const [partItems, setPartItems] = useState<QuotePartInput[]>(initialData?.partItems || []);
-  const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(initialData?.laborItems || prefill?.laborItems || []);
+  const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(initialData?.laborItems || (prefill?.laborItems?.map((l) => ({ ...l, excluded: l.excluded ?? false }))) || []);
   const [taxRate, setTaxRate] = useState(initialData?.taxRate ?? defaultTaxRate);
   const [discountType, setDiscountType] = useState<string>(initialData?.discountType || "none");
   const [discountValue, setDiscountValue] = useState(initialData?.discountValue ?? 0);
@@ -147,8 +149,8 @@ export function QuoteForm({
       : new Date(Date.now() + quoteValidDays * 86400000).toISOString().split("T")[0]
   );
 
-  const partsSubtotal = partItems.reduce((sum, p) => sum + p.total, 0);
-  const laborSubtotal = laborItems.reduce((sum, l) => sum + l.total, 0);
+  const partsSubtotal = partItems.reduce((sum, p) => p.excluded ? sum : sum + p.total, 0);
+  const laborSubtotal = laborItems.reduce((sum, l) => l.excluded ? sum : sum + l.total, 0);
   const subtotal = partsSubtotal + laborSubtotal;
   const discountAmount = discountType === "percentage"
     ? subtotal * (discountValue / 100)
@@ -172,7 +174,7 @@ export function QuoteForm({
     }
   };
 
-  const updatePart = useCallback((index: number, field: keyof QuotePartInput, value: string | number) => {
+  const updatePart = useCallback((index: number, field: keyof QuotePartInput, value: string | number | boolean) => {
     setPartItems((prev) => {
       const updated = [...prev];
       const part = { ...updated[index], [field]: value };
@@ -184,7 +186,7 @@ export function QuoteForm({
     });
   }, []);
 
-  const updateLabor = useCallback((index: number, field: keyof QuoteLaborInput, value: string | number) => {
+  const updateLabor = useCallback((index: number, field: keyof QuoteLaborInput, value: string | number | boolean) => {
     setLaborItems((prev) => {
       const updated = [...prev];
       const labor = { ...updated[index], [field]: value };
@@ -252,15 +254,18 @@ export function QuoteForm({
               <span>{t("parts.partNumber")}</span><span>{t("parts.name")}</span><span>{t("parts.qty")}</span><span>{t("parts.unitPrice")}</span><span>{t("parts.total")}</span><span />
             </div>
             {partItems.map((part, i) => (
-              <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto]">
+              <div key={i} className={`grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto]${part.excluded ? " line-through opacity-50" : ""}`}>
                 <Input placeholder={t("parts.partNumber")} value={part.partNumber ?? ""} onChange={(e) => updatePart(i, "partNumber", e.target.value)} />
                 <Input placeholder={t("parts.namePlaceholder")} value={part.name} onChange={(e) => updatePart(i, "name", e.target.value)} />
                 <Input type="number" min="0" step="1" value={part.quantity} onChange={(e) => updatePart(i, "quantity", e.target.value)} />
                 <Input type="number" min="0" step="0.01" value={part.unitPrice} onChange={(e) => updatePart(i, "unitPrice", e.target.value)} />
                 <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(part.total, currencyCode)}</div>
-                <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setPartItems(partItems.filter((_, j) => j !== i))}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <input type="checkbox" checked={part.excluded ?? false} onChange={(e) => updatePart(i, "excluded", e.target.checked)} className="h-4 w-4 rounded border-gray-300" title="Exclude from total" />
+                  <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setPartItems(partItems.filter((_, j) => j !== i))}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))}
             <button
@@ -301,14 +306,17 @@ export function QuoteForm({
               <span>{t("labor.description")}</span><span>{t("labor.hours")}</span><span>{t("labor.rate", { currency: cs })}</span><span>{t("labor.total")}</span><span />
             </div>
             {laborItems.map((labor, i) => (
-              <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]">
+              <div key={i} className={`grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]${labor.excluded ? " line-through opacity-50" : ""}`}>
                 <Input placeholder={t("labor.descriptionPlaceholder")} value={labor.description} onChange={(e) => updateLabor(i, "description", e.target.value)} className="col-span-2 sm:col-span-1" />
                 <Input type="number" min="0" step="0.1" value={labor.hours} onChange={(e) => updateLabor(i, "hours", e.target.value)} />
                 <Input type="number" min="0" step="0.01" value={labor.rate} onChange={(e) => updateLabor(i, "rate", e.target.value)} />
                 <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(labor.total, currencyCode)}</div>
-                <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setLaborItems(laborItems.filter((_, j) => j !== i))}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <input type="checkbox" checked={labor.excluded ?? false} onChange={(e) => updateLabor(i, "excluded", e.target.checked)} className="h-4 w-4 rounded border-gray-300" title="Exclude from total" />
+                  <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => setLaborItems(laborItems.filter((_, j) => j !== i))}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))}
             <button

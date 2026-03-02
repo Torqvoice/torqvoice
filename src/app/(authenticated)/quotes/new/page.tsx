@@ -29,7 +29,7 @@ export default async function NewQuotePage({
   const vehicles = vehiclesResult.success && vehiclesResult.data ? vehiclesResult.data : [];
 
   // Build prefill data from inspection if provided
-  let prefill: { title?: string; vehicleId?: string; customerId?: string; inspectionId?: string; laborItems?: { description: string; hours: number; rate: number; total: number }[] } | undefined;
+  let prefill: { title?: string; vehicleId?: string; customerId?: string; inspectionId?: string; laborItems?: { description: string; hours: number; rate: number; total: number; excluded?: boolean }[] } | undefined;
 
   if (params.fromInspection) {
     const inspResult = await getInspection(params.fromInspection);
