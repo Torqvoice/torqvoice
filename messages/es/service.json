@@ -20,7 +20,9 @@
     "email": "Correo Electrónico",
     "share": "Compartir",
     "delete": "Eliminar",
-    "unpaid": "Sin Pagar"
+    "unpaid": "Sin Pagar",
+    "unsavedChanges": "Cambios sin guardar",
+    "saved": "Guardado"
   },
   "basicInfo": {
     "title": "Información Básica",

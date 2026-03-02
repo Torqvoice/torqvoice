@@ -27,6 +27,8 @@
     "deleteTitle": "Elimina preventivo",
     "deleteDescription": "Questo preventivo verrà eliminato definitivamente.",
     "saved": "Preventivo salvato",
+    "unsavedChanges": "Modifiche non salvate",
+    "saveFirst": "Salva prima le modifiche",
     "failedSave": "Salvataggio del preventivo non riuscito",
     "failedDelete": "Eliminazione non riuscita",
     "failedPdf": "Generazione PDF non riuscita",

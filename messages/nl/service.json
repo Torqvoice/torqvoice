@@ -20,7 +20,9 @@
     "email": "E-mail",
     "share": "Delen",
     "delete": "Verwijderen",
-    "unpaid": "Onbetaald"
+    "unpaid": "Onbetaald",
+    "unsavedChanges": "Niet-opgeslagen wijzigingen",
+    "saved": "Opgeslagen"
   },
   "basicInfo": {
     "title": "Basisinformatie",

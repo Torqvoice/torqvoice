@@ -28,12 +28,14 @@ interface QuoteRecord {
     quantity: number;
     unitPrice: number;
     total: number;
+    excluded?: boolean;
   }[];
   laborItems: {
     description: string;
     hours: number;
     rate: number;
     total: number;
+    excluded?: boolean;
   }[];
   customer: {
     name: string;
@@ -389,7 +391,7 @@ export function QuoteView({
                 </thead>
                 <tbody className="divide-y">
                   {quote.partItems.map((p, i) => (
-                    <tr key={i}>
+                    <tr key={i} className={p.excluded ? "line-through text-gray-400" : ""}>
                       <td className="p-2 font-mono text-xs">{p.partNumber || "-"}</td>
                       <td className="p-2">{p.name}</td>
                       <td className="p-2 text-right">{p.quantity}</td>
@@ -419,7 +421,7 @@ export function QuoteView({
                 </thead>
                 <tbody className="divide-y">
                   {quote.laborItems.map((l, i) => (
-                    <tr key={i}>
+                    <tr key={i} className={l.excluded ? "line-through text-gray-400" : ""}>
                       <td className="p-2">{l.description}</td>
                       <td className="p-2 text-right">{l.hours}</td>
                       <td className="p-2 text-right">{t('ratePerHour', { rate: formatCurrency(l.rate, currencyCode) })}</td>
@@ -434,44 +436,60 @@ export function QuoteView({
 
         {/* Totals */}
         <div className="mt-6 ml-auto max-w-xs space-y-2">
-          {quote.laborItems.length > 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">{t('labor')}</span>
-              <span>{formatCurrency(quote.laborItems.reduce((sum, l) => sum + l.total, 0), currencyCode)}</span>
-            </div>
-          )}
-          {quote.partItems.length > 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">{t('parts')}</span>
-              <span>{formatCurrency(quote.partItems.reduce((sum, p) => sum + p.total, 0), currencyCode)}</span>
-            </div>
-          )}
-          {quote.subtotal > 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">{t('subtotal')}</span>
-              <span>{formatCurrency(quote.subtotal, currencyCode)}</span>
-            </div>
-          )}
-          {quote.discountAmount > 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">
-                {quote.discountType === "percentage" ? t('discountPercent', { percent: quote.discountValue }) : t('discount')}
-              </span>
-              <span className="text-red-500">{formatCurrency(-quote.discountAmount, currencyCode)}</span>
-            </div>
-          )}
-          {quote.taxRate > 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">{t('tax', { rate: quote.taxRate })}</span>
-              <span>{formatCurrency(quote.taxAmount, currencyCode)}</span>
-            </div>
-          )}
-          <div className="border-t pt-2" style={{ borderColor: primaryColor }}>
-            <div className="flex justify-between text-lg font-bold">
-              <span>{t('total')}</span>
-              <span style={{ color: primaryColor }}>{formatCurrency(quote.totalAmount, currencyCode)}</span>
-            </div>
-          </div>
+          {(() => {
+            const laborTotal = quote.laborItems.reduce((sum, l) => l.excluded ? sum : sum + l.total, 0);
+            const partsTotal = quote.partItems.reduce((sum, p) => p.excluded ? sum : sum + p.total, 0);
+            const sub = laborTotal + partsTotal;
+            const disc = quote.discountType === "percentage"
+              ? sub * (quote.discountValue / 100)
+              : quote.discountType === "fixed"
+              ? Math.min(quote.discountValue, sub)
+              : 0;
+            const tax = (sub - disc) * (quote.taxRate / 100);
+            const total = sub - disc + tax;
+            return (
+              <>
+                {quote.laborItems.length > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">{t('labor')}</span>
+                    <span>{formatCurrency(laborTotal, currencyCode)}</span>
+                  </div>
+                )}
+                {quote.partItems.length > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">{t('parts')}</span>
+                    <span>{formatCurrency(partsTotal, currencyCode)}</span>
+                  </div>
+                )}
+                {sub > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">{t('subtotal')}</span>
+                    <span>{formatCurrency(sub, currencyCode)}</span>
+                  </div>
+                )}
+                {disc > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">
+                      {quote.discountType === "percentage" ? t('discountPercent', { percent: quote.discountValue }) : t('discount')}
+                    </span>
+                    <span className="text-red-500">{formatCurrency(-disc, currencyCode)}</span>
+                  </div>
+                )}
+                {quote.taxRate > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">{t('tax', { rate: quote.taxRate })}</span>
+                    <span>{formatCurrency(tax, currencyCode)}</span>
+                  </div>
+                )}
+                <div className="border-t pt-2" style={{ borderColor: primaryColor }}>
+                  <div className="flex justify-between text-lg font-bold">
+                    <span>{t('total')}</span>
+                    <span style={{ color: primaryColor }}>{formatCurrency(total, currencyCode)}</span>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </div>
 
         {/* Image Attachments */}

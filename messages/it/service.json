@@ -20,7 +20,9 @@
     "email": "Email",
     "share": "Condividi",
     "delete": "Elimina",
-    "unpaid": "Non Pagato"
+    "unpaid": "Non Pagato",
+    "unsavedChanges": "Modifiche non salvate",
+    "saved": "Salvato"
   },
   "basicInfo": {
     "title": "Informazioni di Base",

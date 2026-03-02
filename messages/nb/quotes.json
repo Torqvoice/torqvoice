@@ -27,6 +27,8 @@
     "deleteTitle": "Slett tilbud",
     "deleteDescription": "Dette tilbudet vil bli permanent slettet.",
     "saved": "Tilbud lagret",
+    "unsavedChanges": "Ulagrede endringer",
+    "saveFirst": "Lagre endringene dine først",
     "failedSave": "Kunne ikke lagre tilbudet",
     "failedDelete": "Kunne ikke slette",
     "failedPdf": "Kunne ikke generere PDF",

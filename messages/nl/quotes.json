@@ -27,6 +27,8 @@
     "deleteTitle": "Offerte verwijderen",
     "deleteDescription": "Deze offerte wordt permanent verwijderd.",
     "saved": "Offerte opgeslagen",
+    "unsavedChanges": "Niet-opgeslagen wijzigingen",
+    "saveFirst": "Sla eerst uw wijzigingen op",
     "failedSave": "Offerte opslaan mislukt",
     "failedDelete": "Verwijderen mislukt",
     "failedPdf": "PDF genereren mislukt",

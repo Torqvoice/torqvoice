@@ -27,6 +27,8 @@
     "deleteTitle": "Angebot löschen",
     "deleteDescription": "Dieses Angebot wird dauerhaft gelöscht.",
     "saved": "Angebot gespeichert",
+    "unsavedChanges": "Nicht gespeicherte Änderungen",
+    "saveFirst": "Bitte speichern Sie zuerst Ihre Änderungen",
     "failedSave": "Angebot konnte nicht gespeichert werden",
     "failedDelete": "Löschen fehlgeschlagen",
     "failedPdf": "PDF konnte nicht erstellt werden",
