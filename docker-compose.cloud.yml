@@ -1,0 +1,31 @@
+networks:
+  proxy:
+    external: true
+    name: proxy
+
+services:
+  torqvoice-app:
+    container_name: torqvoice-app
+    image: ghcr.io/torqvoice/torqvoice:${APP_TAG:-latest}
+    restart: unless-stopped
+    volumes:
+      - torqvoice_data:/app/data
+    expose:
+      - "3000"
+    environment:
+      VIRTUAL_HOST: ${VIRTUAL_HOST}
+      VIRTUAL_PORT: "3000"
+      LETSENCRYPT_HOST: ${VIRTUAL_HOST}
+      DATABASE_URL: ${DATABASE_URL}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      NEXT_PUBLIC_APP_URL: ${APP_URL}
+      TORQVOICE_MODE: cloud
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      STRIPE_PRO_PRICE_ID: ${STRIPE_PRO_PRICE_ID}
+      STRIPE_ENTERPRISE_PRICE_ID: ${STRIPE_ENTERPRISE_PRICE_ID}
+    networks:
+      - proxy
+
+volumes:
+  torqvoice_data:
