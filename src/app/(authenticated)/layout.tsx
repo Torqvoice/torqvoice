@@ -11,6 +11,7 @@ import { DateSettingsProvider } from "@/components/date-settings-context";
 import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { OnlineTracker } from "@/components/online-tracker";
+import { InstallBanner } from "@/components/pwa-install-prompt";
 import { db } from "@/lib/db";
 
 export default async function DashboardLayout({
@@ -89,6 +90,7 @@ export default async function DashboardLayout({
         <SearchCommand />
         {isOwnerOrAdmin && <NotificationInitializer />}
         <OnlineTracker />
+        <InstallBanner />
       </ConfirmProvider>
       </DateSettingsProvider>
     </SidebarProvider>
