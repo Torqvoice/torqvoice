@@ -163,6 +163,7 @@ describe("QuoteView", () => {
         ...DEFAULT_PROPS,
         quote: {
           ...BASE_QUOTE,
+          partItems: [{ name: "Part A", partNumber: "", quantity: 1, unitPrice: 110, total: 110 }],
           discountType: "fixed",
           discountValue: 10,
           discountAmount: 10,
