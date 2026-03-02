@@ -29,3 +29,4 @@ services:
 
 volumes:
   torqvoice_data:
+    name: torqvoicecom_torqvoice_data
