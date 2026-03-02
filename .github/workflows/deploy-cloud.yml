@@ -1,0 +1,38 @@
+name: "Deploy: app.torqvoice.com"
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to deploy (e.g. latest, v1.3.0, dev-abc1234)"
+        required: false
+        default: "latest"
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, Linux, X64, hetzner]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Write .env file
+        env:
+          VIRTUAL_HOST: ${{ secrets.CLOUD_VIRTUAL_HOST }}
+          DATABASE_URL: ${{ secrets.CLOUD_DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.CLOUD_BETTER_AUTH_SECRET }}
+          APP_URL: ${{ secrets.CLOUD_APP_URL }}
+          STRIPE_SECRET_KEY: ${{ secrets.CLOUD_STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.CLOUD_STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRO_PRICE_ID: ${{ secrets.CLOUD_STRIPE_PRO_PRICE_ID }}
+          STRIPE_ENTERPRISE_PRICE_ID: ${{ secrets.CLOUD_STRIPE_ENTERPRISE_PRICE_ID }}
+        run: env | grep -E '^(VIRTUAL_HOST|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_)' > .env
+
+      - name: Deploy
+        run: APP_TAG=${{ inputs.tag }} docker compose -f docker-compose.cloud.yml up -d --pull always
+
+      - name: Prune old images and build cache
+        run: docker image prune -f && docker builder prune -f
