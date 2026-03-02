@@ -17,6 +17,8 @@ export default async function WorkOrdersPage({
     pageSize?: string;
     search?: string;
     status?: string;
+    sortBy?: string;
+    sortOrder?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -26,6 +28,8 @@ export default async function WorkOrdersPage({
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       status: params.status,
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder as "asc" | "desc" | undefined,
     }),
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
     getVehicles(),
@@ -75,6 +79,8 @@ export default async function WorkOrdersPage({
           currencyCode={currencyCode}
           search={params.search || ""}
           statusFilter={params.status || "all"}
+          sortBy={params.sortBy || "serviceDate"}
+          sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
           smsEnabled={features?.sms ?? false}
           emailEnabled={features?.smtp ?? false}
         />
