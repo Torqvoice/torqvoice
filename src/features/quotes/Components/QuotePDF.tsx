@@ -1,6 +1,7 @@
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatCurrency, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { createStyles, gray, getFontBold } from '@/features/vehicles/Components/invoice-pdf/styles'
+import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -481,7 +482,7 @@ export function QuotePDF({
         {data.description && (
           <View style={styles.notesSection}>
             <Text style={styles.notesLabel}>Description</Text>
-            <Text style={styles.notesText}>{data.description}</Text>
+            <HtmlToPdf html={data.description} baseStyle={styles.notesText} fontBold={fontBold} />
           </View>
         )}
 

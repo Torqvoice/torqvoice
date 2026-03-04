@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { withDesktopAuth } from "@/lib/with-desktop-auth";
+import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 
 export async function GET(request: Request) {
   return withDesktopAuth(request, async ({ organizationId }) => {
@@ -218,5 +219,9 @@ export async function GET(request: Request) {
         deletedAt: d.deletedAt,
       })),
     });
+  }, {
+    requiredPermissions: [
+      { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+    ],
   });
 }

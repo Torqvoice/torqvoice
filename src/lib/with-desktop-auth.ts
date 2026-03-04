@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ZodError } from "zod";
 import { db } from "./db";
 import { hasAllPermissions, type PermissionInput } from "./permissions";
 import { rateLimit } from "./rate-limit";
@@ -30,6 +31,10 @@ export async function withDesktopAuth(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const token = authHeader.slice(7);
+
+  if (!token || token.length > 256) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   // Look up session (expiry checked)
   const session = await db.session.findFirst({
@@ -94,11 +99,25 @@ export async function withDesktopAuth(
     }
   }
 
-  return handler({
-    userId: session.userId,
-    organizationId: membership.organizationId,
-    role: isSuperAdmin ? "super_admin" : (membership.role ?? "member"),
-    isSuperAdmin,
-    isAdmin: isSuperAdmin || isOwnerOrAdmin || roleIsAdmin,
-  });
+  try {
+    return await handler({
+      userId: session.userId,
+      organizationId: membership.organizationId,
+      role: isSuperAdmin ? "super_admin" : (membership.role ?? "member"),
+      isSuperAdmin,
+      isAdmin: isSuperAdmin || isOwnerOrAdmin || roleIsAdmin,
+    });
+  } catch (err) {
+    if (err instanceof ZodError) {
+      return NextResponse.json(
+        { error: "Validation error", details: err.issues.map((e) => ({ path: e.path.join("."), message: e.message })) },
+        { status: 400 },
+      );
+    }
+    if (err instanceof SyntaxError) {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+    console.error("[desktop-api]", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }

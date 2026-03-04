@@ -10,6 +10,15 @@ import React from "react";
 import { readFile } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 async function getWorkshopSettings(organizationId: string) {
   const settings = await db.appSetting.findMany({ where: { organizationId } });
   const map: Record<string, string> = {};
@@ -115,7 +124,7 @@ export async function POST(
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
             <h2>Invoice ${invoiceNum}</h2>
             <p>Please find your invoice attached.</p>
-            ${message ? `<p>${message}</p>` : ""}
+            ${message ? `<p>${escapeHtml(message)}</p>` : ""}
             ${publicLink ? `<p><a href="${publicLink}" style="color: #2563eb;">View Invoice Online</a></p>` : ""}
             <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
             <p style="color: #666; font-size: 14px;">

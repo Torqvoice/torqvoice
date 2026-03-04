@@ -68,6 +68,7 @@ import { createNewOrganization } from '@/features/team/Actions/createNewOrganiza
 import type { PlanFeatures } from '@/lib/features'
 import { useTheme } from '@/components/theme-provider'
 import { NotificationBell, NotificationPanel } from '@/features/notifications/Components/NotificationPanel'
+import { SidebarInstallButton } from '@/components/pwa-install-prompt'
 
 type OrgInfo = { id: string; name: string; role: string }
 
@@ -305,6 +306,7 @@ export function AppSidebar({
             </SidebarMenu>
           </SidebarGroup>
         )}
+        <SidebarInstallButton />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
