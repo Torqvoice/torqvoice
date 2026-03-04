@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { QueryProvider } from '@/lib/query-provider'
 import { GlassModal } from '@/components/glass-modal'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { PWAServiceWorker } from '@/components/pwa-service-worker'
 import './globals.css'
 
 const geistSans = Geist({
@@ -21,6 +22,14 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'TorqVoice',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
   title: {
     default: 'TorqVoice - Workshop Management Platform',
     template: '%s | TorqVoice',
@@ -75,6 +84,8 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
+        <meta name="theme-color" content="#09090b" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('torqvoice-theme')||'dark';if(t==='system'){t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}document.documentElement.classList.add(t)}catch(e){}})()`,
@@ -89,6 +100,7 @@ export default async function RootLayout({
                 {children}
                 <GlassModal />
                 <Toaster richColors position="bottom-right" />
+                <PWAServiceWorker />
               </TooltipProvider>
             </QueryProvider>
           </ThemeProvider>
