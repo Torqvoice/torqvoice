@@ -6,7 +6,7 @@ export const createTechnicianSchema = z.object({
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color")
     .default("#3b82f6"),
-  memberId: z.string().optional(),
+  memberId: z.string().nullish(),
 });
 
 export const updateTechnicianSchema = z.object({
@@ -24,9 +24,9 @@ export const updateTechnicianSchema = z.object({
 export const createBoardAssignmentSchema = z.object({
   date: z.string().min(1, "Date is required"),
   technicianId: z.string().min(1, "Technician is required"),
-  serviceRecordId: z.string().optional(),
-  inspectionId: z.string().optional(),
-  notes: z.string().optional(),
+  serviceRecordId: z.string().nullish(),
+  inspectionId: z.string().nullish(),
+  notes: z.string().nullish(),
   sortOrder: z.number().int().min(0).default(0),
 });
 

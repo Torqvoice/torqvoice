@@ -3,13 +3,16 @@ import { z } from "zod";
 export const createInspectionSchema = z.object({
   vehicleId: z.string().min(1, "Vehicle is required"),
   templateId: z.string().min(1, "Template is required"),
-  mileage: z.coerce.number().int().min(0).optional(),
+  mileage: z.preprocess(
+    (v) => (v === null || v === undefined || v === "" ? undefined : v),
+    z.coerce.number().int().min(0).optional(),
+  ),
 });
 
 export const updateInspectionItemSchema = z.object({
   condition: z.enum(["pass", "fail", "attention", "not_inspected"]).default("not_inspected"),
-  notes: z.string().optional(),
-  imageUrls: z.array(z.string()).optional(),
+  notes: z.string().nullish(),
+  imageUrls: z.array(z.string()).nullish(),
 });
 
 export type CreateInspectionInput = z.infer<typeof createInspectionSchema>;

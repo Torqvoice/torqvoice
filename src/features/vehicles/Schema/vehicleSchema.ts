@@ -7,17 +7,20 @@ export const createVehicleSchema = z.object({
     .number()
     .min(1900, "Year must be after 1900")
     .max(new Date().getFullYear() + 2, "Year is too far in the future"),
-  vin: z.string().optional(),
-  licensePlate: z.string().optional(),
-  color: z.string().optional(),
+  vin: z.string().nullish(),
+  licensePlate: z.string().nullish(),
+  color: z.string().nullish(),
   mileage: z.coerce.number().min(0).default(0),
-  fuelType: z.string().optional(),
-  transmission: z.string().optional(),
-  engineSize: z.string().optional(),
-  purchaseDate: z.string().optional(),
-  purchasePrice: z.coerce.number().optional(),
-  imageUrl: z.string().optional(),
-  customerId: z.string().optional(),
+  fuelType: z.string().nullish(),
+  transmission: z.string().nullish(),
+  engineSize: z.string().nullish(),
+  purchaseDate: z.string().nullish(),
+  purchasePrice: z.preprocess(
+    (v) => (v === null || v === undefined || v === "" ? undefined : v),
+    z.coerce.number().optional(),
+  ),
+  imageUrl: z.string().nullish(),
+  customerId: z.string().nullish(),
 });
 
 export const updateVehicleSchema = createVehicleSchema.partial().extend({

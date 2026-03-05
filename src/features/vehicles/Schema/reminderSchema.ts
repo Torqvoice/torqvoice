@@ -3,9 +3,12 @@ import { z } from "zod";
 export const createReminderSchema = z.object({
   vehicleId: z.string(),
   title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  dueDate: z.string().optional(),
-  dueMileage: z.coerce.number().optional(),
+  description: z.string().nullish(),
+  dueDate: z.string().nullish(),
+  dueMileage: z.preprocess(
+    (v) => (v === null || v === undefined || v === "" ? undefined : v),
+    z.coerce.number().optional(),
+  ),
 });
 
 export type CreateReminderInput = z.infer<typeof createReminderSchema>;
