@@ -26,6 +26,7 @@ export async function POST(
 
       const reminder = await db.reminder.create({
         data: {
+          ...(body.id ? { id: body.id } : {}),
           ...data,
           dueDate: data.dueDate ? new Date(data.dueDate) : null,
         },

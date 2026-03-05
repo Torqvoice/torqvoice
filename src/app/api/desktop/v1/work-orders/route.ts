@@ -99,6 +99,7 @@ export async function POST(request: Request) {
       const workOrder = await db.$transaction(async (tx) => {
         const created = await tx.serviceRecord.create({
           data: {
+            ...(body.id ? { id: body.id } : {}),
             ...recordData,
             serviceDate: new Date(recordData.serviceDate),
           },

@@ -24,6 +24,7 @@ export async function POST(request: Request) {
 
       const assignment = await db.boardAssignment.create({
         data: {
+          ...(body.id ? { id: body.id } : {}),
           date: new Date(data.date),
           sortOrder: data.sortOrder,
           notes: data.notes,

@@ -13,6 +13,7 @@ export async function POST(request: Request) {
 
       const part = await db.inventoryPart.create({
         data: {
+          ...(body.id ? { id: body.id } : {}),
           ...data,
           partNumber: data.partNumber || undefined,
           description: data.description || undefined,

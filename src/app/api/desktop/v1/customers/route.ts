@@ -74,6 +74,7 @@ export async function POST(request: Request) {
 
       const customer = await db.customer.create({
         data: {
+          ...(body.id ? { id: body.id } : {}),
           ...data,
           email: data.email || null,
           userId,

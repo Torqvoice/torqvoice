@@ -36,6 +36,7 @@ export async function POST(request: Request) {
       const quote = await db.$transaction(async (tx) => {
         const created = await tx.quote.create({
           data: {
+            ...(body.id ? { id: body.id } : {}),
             ...quoteData,
             quoteNumber,
             userId,

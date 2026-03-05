@@ -9,7 +9,8 @@ export async function POST(request: Request) {
   return withDesktopAuth(
     request,
     async ({ organizationId }) => {
-      const { customerId, body: messageBody, relatedEntityType, relatedEntityId } = await request.json();
+      const rawBody = await request.json();
+      const { customerId, body: messageBody, relatedEntityType, relatedEntityId } = rawBody;
 
       if (!customerId || !messageBody) {
         return NextResponse.json({ error: "customerId and body are required" }, { status: 400 });
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
       // Create message record
       const message = await db.smsMessage.create({
         data: {
+          ...(rawBody.id ? { id: rawBody.id } : {}),
           direction: "outbound",
           fromNumber,
           toNumber: customer.phone,

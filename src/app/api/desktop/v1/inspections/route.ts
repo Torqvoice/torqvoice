@@ -34,6 +34,7 @@ export async function POST(request: Request) {
       const inspection = await db.$transaction(async (tx) => {
         const created = await tx.inspection.create({
           data: {
+            ...(body.id ? { id: body.id } : {}),
             vehicleId: data.vehicleId,
             templateId: data.templateId,
             mileage: data.mileage,

@@ -72,7 +72,12 @@ export async function POST(
       const body = await request.json();
       const data = createNoteSchema.parse({ ...body, vehicleId: id });
 
-      const note = await db.note.create({ data });
+      const note = await db.note.create({
+        data: {
+          ...(body.id ? { id: body.id } : {}),
+          ...data,
+        },
+      });
       return NextResponse.json({ note }, { status: 201 });
     },
     {

@@ -72,6 +72,7 @@ export async function POST(request: Request) {
 
       const vehicle = await db.vehicle.create({
         data: {
+          ...(body.id ? { id: body.id } : {}),
           ...data,
           purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : null,
           customerId: data.customerId || null,

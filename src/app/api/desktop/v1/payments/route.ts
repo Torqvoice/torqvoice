@@ -21,6 +21,7 @@ export async function POST(request: Request) {
 
       const payment = await db.payment.create({
         data: {
+          ...(body.id ? { id: body.id } : {}),
           serviceRecordId: data.serviceRecordId,
           amount: data.amount,
           date: new Date(data.date),
