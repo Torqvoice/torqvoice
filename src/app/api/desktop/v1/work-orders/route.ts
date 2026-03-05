@@ -96,11 +96,58 @@ export async function POST(request: Request) {
 
       const { partItems, laborItems, attachments, ...recordData } = data;
 
+      // Auto-generate invoice number if not provided
+      let invoiceNumber = recordData.invoiceNumber || undefined;
+      if (!invoiceNumber) {
+        const [settings, org] = await Promise.all([
+          db.appSetting.findMany({
+            where: {
+              organizationId,
+              key: { in: ["workshop.invoicePrefix", "workshop.invoiceStartNumber"] },
+            },
+          }),
+          db.organization.findUnique({
+            where: { id: organizationId },
+            select: { name: true },
+          }),
+        ]);
+        const settingsMap: Record<string, string> = {};
+        for (const s of settings) settingsMap[s.key] = s.value;
+
+        const rawPrefix = settingsMap["workshop.invoicePrefix"] || "{year}-";
+        const now = new Date();
+        const prefix = rawPrefix
+          .replace("{year}", now.getFullYear().toString())
+          .replace("{month}", String(now.getMonth() + 1).padStart(2, "0"));
+
+        const startNumber = parseInt(settingsMap["workshop.invoiceStartNumber"] || "0", 10);
+        const lastRecord = await db.serviceRecord.findFirst({
+          where: { vehicle: { customer: { organizationId } } },
+          orderBy: { createdAt: "desc" },
+          select: { invoiceNumber: true },
+        });
+        let nextNum = startNumber || 1001;
+        if (lastRecord?.invoiceNumber) {
+          const match = lastRecord.invoiceNumber.match(/(\d+)$/);
+          if (match) {
+            const lastNum = parseInt(match[1], 10) + 1;
+            nextNum = Math.max(nextNum, lastNum);
+          }
+        }
+        invoiceNumber = `${prefix}${nextNum}`;
+
+        // Also set shopName if not provided
+        if (!recordData.shopName && org?.name) {
+          (recordData as Record<string, unknown>).shopName = org.name;
+        }
+      }
+
       const workOrder = await db.$transaction(async (tx) => {
         const created = await tx.serviceRecord.create({
           data: {
             ...(body.id ? { id: body.id } : {}),
             ...recordData,
+            invoiceNumber,
             serviceDate: new Date(recordData.serviceDate),
           },
         });
