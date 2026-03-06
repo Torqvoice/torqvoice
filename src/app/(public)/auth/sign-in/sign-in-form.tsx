@@ -152,7 +152,7 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
       {!registrationDisabled && (
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {t('noAccount')}{' '}
-          <Link href="/auth/sign-up" className="font-medium text-primary hover:underline">
+          <Link href={`/auth/sign-up${searchParams.get('redirect') ? `?redirect=${encodeURIComponent(searchParams.get('redirect')!)}` : ''}`} className="font-medium text-primary hover:underline">
             {t('createOne')}
           </Link>
         </p>

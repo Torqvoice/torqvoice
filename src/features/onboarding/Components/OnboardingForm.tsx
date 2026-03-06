@@ -9,7 +9,7 @@ import { useGlassModal } from "@/components/glass-modal";
 import { Gauge, Loader2 } from "lucide-react";
 import { createOnboardingOrg } from "../Actions/createOnboardingOrg";
 
-export function OnboardingForm() {
+export function OnboardingForm({ redirectTo }: { redirectTo?: string }) {
   const [workshopName, setWorkshopName] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -24,7 +24,7 @@ export function OnboardingForm() {
       if (!result.success) {
         modal.open("error", "Setup Failed", result.error || "Could not create workshop");
       } else {
-        router.push("/");
+        router.push(redirectTo || "/");
         router.refresh();
       }
     } catch {
