@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Gauge, Loader2, XCircle } from 'lucide-react'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 
-export function SignUpForm({ inviteToken, emailVerificationRequired }: { inviteToken?: string; emailVerificationRequired?: boolean }) {
+export function SignUpForm({ inviteToken, emailVerificationRequired, redirectTo }: { inviteToken?: string; emailVerificationRequired?: boolean; redirectTo?: string }) {
   const t = useTranslations('auth.signUp')
   const tc = useTranslations('common')
   const [name, setName] = useState('')
@@ -43,18 +43,18 @@ export function SignUpForm({ inviteToken, emailVerificationRequired }: { inviteT
         const acceptResult = await acceptInvitation({ token: inviteToken })
         if (acceptResult.success) {
           // Invited users have a known email — skip verification, go straight to dashboard
-          router.push('/')
+          router.push(redirectTo || '/')
           router.refresh()
         } else {
           setError(acceptResult.error || t('errors.invitationFailed'))
-          router.push('/onboarding')
+          router.push(redirectTo ? `/onboarding?redirect=${encodeURIComponent(redirectTo)}` : '/onboarding')
           router.refresh()
         }
       } else if (emailVerificationRequired) {
         router.push('/auth/verify-email')
         router.refresh()
       } else {
-        router.push('/onboarding')
+        router.push(redirectTo ? `/onboarding?redirect=${encodeURIComponent(redirectTo)}` : '/onboarding')
         router.refresh()
       }
     } catch {
