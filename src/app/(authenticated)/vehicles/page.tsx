@@ -14,7 +14,7 @@ export default async function VehiclesPage({
   const isArchived = params.archived === "true";
   const cookieStore = await cookies();
   const viewCookie = cookieStore.get("torqvoice-vehicles-view")?.value;
-  const initialView = viewCookie === "grid" ? "grid" : "table";
+  const initialView = viewCookie === "grid" ? "grid" : viewCookie === "grid6" ? "grid6" : "table";
   const [result, customersResult] = await Promise.all([
     getVehiclesPaginated({
       page: params.page ? parseInt(params.page) : 1,
