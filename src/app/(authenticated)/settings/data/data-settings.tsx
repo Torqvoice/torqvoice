@@ -6,10 +6,21 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { useGlassModal } from '@/components/glass-modal'
-import { AlertTriangle, ArrowRight, Download, FileArchive, Loader2, Upload } from 'lucide-react'
+import { AlertTriangle, ArrowRight, Download, FileArchive, Loader2, Trash2, Upload } from 'lucide-react'
 import { ReadOnlyBanner, ReadOnlyWrapper } from '../read-only-guard'
+import { deleteContent } from '@/features/settings/Actions/deleteContent'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
+
+interface ContentCounts {
+  vehicles: number
+  customers: number
+  quotes: number
+  inventory: number
+}
 
 interface ExportOptions {
   settings: boolean
@@ -41,8 +52,9 @@ const ALL_TRUE: ExportOptions = {
   files: true,
 }
 
-export function DataSettings() {
+export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }) {
   const t = useTranslations('settings')
+  const router = useRouter()
   const modal = useGlassModal()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [exporting, setExporting] = useState(false)
@@ -187,6 +199,40 @@ export function DataSettings() {
   const [invoiceNinjaOpen, setInvoiceNinjaOpen] = useState(false)
   const [invoiceNinjaFile, setInvoiceNinjaFile] = useState<File | null>(null)
   const [importingInvoiceNinja, setImportingInvoiceNinja] = useState(false)
+
+  // Delete content state
+  const [contentDialogOpen, setContentDialogOpen] = useState(false)
+  const [contentConfirmText, setContentConfirmText] = useState('')
+  const [deletingContent, setDeletingContent] = useState(false)
+  const [contentSelections, setContentSelections] = useState({
+    vehicles: false,
+    customers: false,
+    quotes: false,
+    inventory: false,
+  })
+
+  const selectedContentCount = Object.values(contentSelections).filter(Boolean).length
+
+  const handleDeleteContent = async () => {
+    if (contentConfirmText !== 'delete my data') return
+    if (selectedContentCount === 0) return
+    setDeletingContent(true)
+    try {
+      const result = await deleteContent(contentSelections)
+      if (result.success) {
+        toast.success(t('account.contentDeleted'))
+        setContentDialogOpen(false)
+        setContentConfirmText('')
+        setContentSelections({ vehicles: false, customers: false, quotes: false, inventory: false })
+        router.refresh()
+      } else {
+        toast.error(result.error || t('account.failedDeleteContent'))
+      }
+    } catch {
+      toast.error(t('account.failedDeleteContent'))
+    }
+    setDeletingContent(false)
+  }
 
   const handleInvoiceNinjaImport = async () => {
     if (!invoiceNinjaFile) return
@@ -455,6 +501,142 @@ export function DataSettings() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Danger Zone */}
+      <Card className="border-destructive/30 shadow-sm">
+        <CardHeader className="flex flex-row items-center gap-3 pb-4">
+          <AlertTriangle className="h-5 w-5 text-destructive" />
+          <CardTitle className="text-lg text-destructive">{t('account.dangerZone')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="font-medium">{t('account.deleteContentTitle')}</p>
+              <p className="text-sm text-muted-foreground">
+                {t('account.deleteContentDescription')}
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => {
+                setContentConfirmText('')
+                setContentSelections({ vehicles: false, customers: false, quotes: false, inventory: false })
+                setContentDialogOpen(true)
+              }}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {t('account.deleteContentButton')}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Delete Content Confirmation Dialog */}
+      <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">{t('account.deleteContentDialogTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('account.deleteContentDialogDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-3">
+              {([
+                {
+                  key: 'vehicles' as const,
+                  label: t('account.contentVehicles'),
+                  count: contentCounts.vehicles,
+                  description: t('account.contentVehiclesDescription'),
+                },
+                {
+                  key: 'customers' as const,
+                  label: t('account.contentCustomers'),
+                  count: contentCounts.customers,
+                  description: t('account.contentCustomersDescription'),
+                },
+                {
+                  key: 'quotes' as const,
+                  label: t('account.contentQuotes'),
+                  count: contentCounts.quotes,
+                  description: t('account.contentQuotesDescription'),
+                },
+                {
+                  key: 'inventory' as const,
+                  label: t('account.contentInventory'),
+                  count: contentCounts.inventory,
+                  description: t('account.contentInventoryDescription'),
+                },
+              ]).map((item) => (
+                <label
+                  key={item.key}
+                  className={`flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
+                    contentSelections[item.key]
+                      ? 'border-destructive/50 bg-destructive/5'
+                      : 'hover:bg-muted/50'
+                  } ${item.count === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <Checkbox
+                    checked={contentSelections[item.key]}
+                    disabled={item.count === 0}
+                    onCheckedChange={(checked) =>
+                      setContentSelections((prev) => ({ ...prev, [item.key]: checked === true }))
+                    }
+                    className="mt-0.5"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{item.label}</span>
+                      <span className="text-xs text-muted-foreground font-mono">
+                        {item.count}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
+                  </div>
+                </label>
+              ))}
+            </div>
+
+            {selectedContentCount > 0 && (
+              <>
+                <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+                  <p className="text-sm font-medium text-destructive">
+                    {t.rich('account.deleteContentConfirmPrompt', { bold: (chunks) => <span className="font-mono font-bold">{chunks}</span> })}
+                  </p>
+                </div>
+                <Input
+                  value={contentConfirmText}
+                  onChange={(e) => setContentConfirmText(e.target.value)}
+                  placeholder={t('account.deleteContentConfirmPhrase')}
+                  autoComplete="off"
+                />
+              </>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setContentDialogOpen(false)} disabled={deletingContent}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteContent}
+              disabled={
+                selectedContentCount === 0 ||
+                contentConfirmText !== 'delete my data' ||
+                deletingContent
+              }
+            >
+              {deletingContent ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              {deletingContent ? t('account.deleting') : t('account.deleteSelected', { count: selectedContentCount })}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
