@@ -34,6 +34,7 @@ import {
   Archive,
   ArchiveRestore,
   Gauge,
+  Grid3X3,
   LayoutGrid,
   List,
   Loader2,
@@ -92,7 +93,7 @@ export function VehiclesClient({
   data: PaginatedData
   customers: CustomerOption[]
   search: string
-  initialView?: 'table' | 'grid'
+  initialView?: 'table' | 'grid' | 'grid6'
   isArchived?: boolean
   archivedCount?: number
 }) {
@@ -105,12 +106,12 @@ export function VehiclesClient({
   const [searchInput, setSearchInput] = useState(search)
   const [showForm, setShowForm] = useState(false)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
-  const [view, setView] = useState<'table' | 'grid'>(initialView)
+  const [view, setView] = useState<'table' | 'grid' | 'grid6'>(initialView)
   const [archiveTarget, setArchiveTarget] = useState<{ id: string; name: string } | null>(null)
   const modal = useGlassModal()
   const confirm = useConfirm()
 
-  const toggleView = (v: 'table' | 'grid') => {
+  const toggleView = (v: 'table' | 'grid' | 'grid6') => {
     setView(v)
     document.cookie = `${VIEW_COOKIE}=${v};path=/;max-age=${60 * 60 * 24 * 365}`
   }
@@ -226,10 +227,18 @@ export function VehiclesClient({
             <Button
               variant={view === 'grid' ? 'secondary' : 'ghost'}
               size="icon"
-              className="h-8 w-8 rounded-l-none"
+              className="h-8 w-8 rounded-none border-x"
               onClick={() => toggleView('grid')}
             >
               <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={view === 'grid6' ? 'secondary' : 'ghost'}
+              size="icon"
+              className="h-8 w-8 rounded-l-none"
+              onClick={() => toggleView('grid6')}
+            >
+              <Grid3X3 className="h-4 w-4" />
             </Button>
           </div>
           {!isArchived && (
@@ -340,8 +349,8 @@ export function VehiclesClient({
         </div>
       ) : isPending ? (
         /* Grid skeleton */
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 6 }).map((_, i) => (
+        <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}>
+          {Array.from({ length: view === 'grid6' ? 12 : 6 }).map((_, i) => (
             <Card key={i} className="overflow-hidden border-0 shadow-sm">
               <Skeleton className="aspect-[16/10] rounded-none" />
               <CardContent className="flex items-center justify-between p-4">
@@ -353,7 +362,7 @@ export function VehiclesClient({
         </div>
       ) : (
         /* Grid view */
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}>
           {data.vehicles.map((v) => (
             <Card
               key={v.id}
@@ -369,12 +378,12 @@ export function VehiclesClient({
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-4">
-                    <h3 className="text-lg font-bold text-white drop-shadow-sm">
+                  <div className={`absolute inset-x-0 bottom-0 ${view === 'grid6' ? 'p-2' : 'p-4'}`}>
+                    <h3 className={`font-bold text-white drop-shadow-sm ${view === 'grid6' ? 'text-sm' : 'text-lg'}`}>
                       {v.year} {v.make} {v.model}
                     </h3>
                     {v.licensePlate && (
-                      <p className="mt-0.5 font-mono text-xs text-white/80">{v.licensePlate}</p>
+                      <p className={`font-mono text-white/80 ${view === 'grid6' ? 'text-[10px]' : 'mt-0.5 text-xs'}`}>{v.licensePlate}</p>
                     )}
                   </div>
                   {/* Action menu */}
@@ -433,15 +442,15 @@ export function VehiclesClient({
                     </DropdownMenu>
                   </div>
                 </div>
-                <CardContent className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Gauge className="h-3.5 w-3.5" />
+                <CardContent className={`flex items-center justify-between ${view === 'grid6' ? 'p-2 text-xs' : 'p-4 text-sm'}`}>
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <Gauge className={view === 'grid6' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
                     <span className="font-medium">{v.mileage.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    {v.customer && <span className="text-xs">{v.customer.name}</span>}
+                  <div className={`flex items-center ${view === 'grid6' ? 'gap-2' : 'gap-3'} text-muted-foreground`}>
+                    {v.customer && <span className={view === 'grid6' ? 'text-[10px] hidden xl:inline' : 'text-xs'}>{v.customer.name}</span>}
                     <div className="flex items-center gap-1">
-                      <Wrench className="h-3.5 w-3.5" />
+                      <Wrench className={view === 'grid6' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
                       <span>{v._count.serviceRecords}</span>
                     </div>
                   </div>
