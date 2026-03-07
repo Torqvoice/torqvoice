@@ -9,7 +9,7 @@ services:
     image: ghcr.io/torqvoice/torqvoice:${APP_TAG:-latest}
     restart: unless-stopped
     volumes:
-      - torqvoice_data:/app/data
+      - /mnt/HC_Volume_105022362/torqvoice_data:/app/data
     expose:
       - "3000"
     environment:
@@ -27,6 +27,3 @@ services:
     networks:
       - proxy
 
-volumes:
-  torqvoice_data:
-    name: torqvoicecom_torqvoice_data
