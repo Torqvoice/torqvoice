@@ -1,14 +1,12 @@
 "use client";
 
 import { useRef, useMemo, useState, useCallback, useEffect } from "react";
-import { cn } from "@/lib/utils";
 import type { WorkBoardJob } from "../../Actions/boardActions";
 import type { Technician } from "../../store/workboardStore";
 import { useWorkBoardStore } from "../../store/workboardStore";
 import { jobOverlapsDate } from "../../utils/datetime";
 import { timeToMinutes, minutesToTime } from "./utils";
 import { TechTimelineRow } from "./TimelineColumn";
-import { useTranslations } from "next-intl";
 
 const SNAP_MINUTES = 5;
 
