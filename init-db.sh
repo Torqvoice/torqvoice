@@ -16,9 +16,9 @@ c.connect().then(() => { c.end(); process.exit(0); }).catch(() => process.exit(1
 done
 echo "PostgreSQL is ready!"
 
-echo "Applying database schema..."
-npx prisma db push --accept-data-loss
-echo "Schema applied successfully!"
+echo "Applying database migrations..."
+npx prisma migrate deploy
+echo "Migrations applied successfully!"
 
 echo "Starting application..."
 exec $cmd
