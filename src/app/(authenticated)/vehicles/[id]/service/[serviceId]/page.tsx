@@ -167,7 +167,6 @@ export default async function ServiceDetailPage({
         initialData={initialData}
         inventoryParts={inventoryParts}
         vehicles={vehicles}
-        teamMembers={teamMembers}
         boardTechnicians={boardTechnicians}
         currentUserName={currentUserName}
         imageAttachmentsForManager={imageAttachmentsForManager}

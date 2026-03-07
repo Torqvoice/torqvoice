@@ -1,5 +1,8 @@
 import { redirect } from "next/navigation";
 import { createDraftServiceRecord } from "@/features/vehicles/Actions/createDraftServiceRecord";
+import { db } from "@/lib/db";
+import { withAuth } from "@/lib/with-auth";
+import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 
 export default async function NewServicePage({
   params,
@@ -10,6 +13,35 @@ export default async function NewServicePage({
 }) {
   const { id } = await params;
   const query = await searchParams;
+
+  // Guard: if a pending draft already exists for this vehicle (created within the last 5 seconds),
+  // reuse it instead of creating a duplicate. This prevents double-creation from
+  // Next.js Server Component re-renders.
+  const existingResult = await withAuth(
+    async ({ organizationId }) => {
+      const fiveSecondsAgo = new Date(Date.now() - 5000);
+      return db.serviceRecord.findFirst({
+        where: {
+          vehicleId: id,
+          vehicle: { organizationId },
+          status: "pending",
+          title: "New Service Record",
+          createdAt: { gte: fiveSecondsAgo },
+        },
+        select: { id: true },
+        orderBy: { createdAt: "desc" },
+      });
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES },
+      ],
+    },
+  );
+
+  if (existingResult.success && existingResult.data?.id) {
+    redirect(`/vehicles/${id}/service/${existingResult.data.id}`);
+  }
 
   // If coming from work board context menu, use the provided date
   const boardDate = query.boardDate;

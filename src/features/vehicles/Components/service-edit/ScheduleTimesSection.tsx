@@ -3,21 +3,26 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Clock, Plus } from 'lucide-react'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '@/components/ui/command'
+import { Input } from '@/components/ui/input'
+import { Check, ChevronsUpDown, Clock, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import {
   assignTechnician,
   updateServiceTimes,
 } from '@/features/workboard/Actions/boardActions'
+import { createTechnician } from '@/features/workboard/Actions/technicianActions'
 import { cn } from '@/lib/utils'
 
 const HOUR_PRESETS = [1, 2, 4, 5, 7]
@@ -33,23 +38,23 @@ interface ScheduleTimesSectionProps {
   initialStartDateTime?: string | null
   initialEndDateTime?: string | null
   initialTechnicianId?: string | null
-  initialTechnicianName?: string | null
 }
 
 export function ScheduleTimesSection({
   serviceRecordId,
-  technicians = [],
+  technicians: initialTechnicians = [],
   initialStartDateTime,
   initialEndDateTime,
   initialTechnicianId,
-  initialTechnicianName,
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
-  const [assignedTech, setAssignedTech] = useState<{ id: string; name: string } | null>(
-    initialTechnicianId && initialTechnicianName
-      ? { id: initialTechnicianId, name: initialTechnicianName }
-      : null,
-  )
+  const [selectedTechId, setSelectedTechId] = useState(initialTechnicianId || '')
+  const [techOpen, setTechOpen] = useState(false)
+  const [technicians, setTechnicians] = useState<Technician[]>(initialTechnicians)
+  const [techSearch, setTechSearch] = useState('')
+  const [creating, setCreating] = useState(false)
+  const [showNewInput, setShowNewInput] = useState(false)
+  const [newTechName, setNewTechName] = useState('')
 
   const [startDateTime, setStartDateTime] = useState<Date | undefined>(
     initialStartDateTime ? new Date(initialStartDateTime) : new Date(),
@@ -57,9 +62,6 @@ export function ScheduleTimesSection({
   const [endDateTime, setEndDateTime] = useState<Date | undefined>(
     initialEndDateTime ? new Date(initialEndDateTime) : new Date(Date.now() + 3600000),
   )
-
-  const [selectedTechId, setSelectedTechId] = useState('')
-  const [creating, setCreating] = useState(false)
 
   const saveTimes = async (start: Date, end: Date) => {
     if (end <= start) {
@@ -83,23 +85,41 @@ export function ScheduleTimesSection({
     saveTimes(startDateTime, newEnd)
   }
 
-  const handleCreate = async () => {
-    if (!selectedTechId) return
-    setCreating(true)
+  const handleTechSelect = async (techId: string) => {
+    setSelectedTechId(techId)
+    setTechOpen(false)
     const res = await assignTechnician({
       id: serviceRecordId,
-      technicianId: selectedTechId,
+      technicianId: techId,
       type: 'serviceRecord',
     })
-    if (res.success) {
-      const tech = technicians.find((t) => t.id === selectedTechId)
-      if (tech) setAssignedTech({ id: tech.id, name: tech.name })
-      toast.success(t('assigned'))
-    } else {
+    if (!res.success) {
       toast.error(t('failedAssign'))
+      setSelectedTechId(initialTechnicianId || '')
     }
-    setCreating(false)
   }
+
+  const doCreateTechnician = async (name: string) => {
+    if (!name.trim()) return
+    setCreating(true)
+    const res = await createTechnician({ name: name.trim() })
+    setCreating(false)
+    if (res.success && res.data) {
+      const newTech = { id: res.data.id, name: res.data.name }
+      setTechnicians((prev) => [...prev, newTech])
+      setTechSearch('')
+      setNewTechName('')
+      setShowNewInput(false)
+      handleTechSelect(newTech.id)
+    } else {
+      toast.error(t('failedCreate'))
+    }
+  }
+
+  const selectedTechName = technicians.find((t) => t.id === selectedTechId)?.name
+
+  const searchLower = techSearch.toLowerCase()
+  const exactMatch = technicians.some((t) => t.name.toLowerCase() === searchLower)
 
   const currentHours = startDateTime && endDateTime
     ? Math.round((endDateTime.getTime() - startDateTime.getTime()) / 3600000)
@@ -112,31 +132,107 @@ export function ScheduleTimesSection({
         <h3 className="text-sm font-semibold">{t('title')}</h3>
       </div>
 
-      {assignedTech ? (
-        <div className="text-xs text-muted-foreground">{assignedTech.name}</div>
-      ) : technicians.length > 0 ? (
-        <div className="space-y-2">
-          <div className="space-y-1">
-            <Label className="text-xs">{t('technician')}</Label>
-            <Select value={selectedTechId} onValueChange={setSelectedTechId}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('selectTechnician')} />
-              </SelectTrigger>
-              <SelectContent>
-                {technicians.map((tech) => (
-                  <SelectItem key={tech.id} value={tech.id}>
-                    {tech.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button size="sm" className="w-full" disabled={!selectedTechId || creating} onClick={handleCreate}>
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            {t('assign')}
-          </Button>
-        </div>
-      ) : null}
+      <div className="space-y-1">
+        <Label className="text-xs">{t('technician')}</Label>
+        <Popover open={techOpen} onOpenChange={setTechOpen} modal={true}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={techOpen}
+              className="w-full justify-between font-normal"
+            >
+              <span className="truncate">
+                {selectedTechName || t('selectTechnician')}
+              </span>
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+            <Command shouldFilter={true}>
+              <CommandInput
+                placeholder={t('searchOrCreate')}
+                value={techSearch}
+                onValueChange={setTechSearch}
+              />
+              <CommandList className="max-h-60 overflow-y-auto">
+                <CommandEmpty className="p-0" />
+                <CommandGroup>
+                  {technicians.map((tech) => (
+                    <CommandItem
+                      key={tech.id}
+                      value={tech.name}
+                      onSelect={() => handleTechSelect(tech.id)}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          selectedTechId === tech.id ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      {tech.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+                {techSearch.trim() && !exactMatch && (
+                  <CommandGroup>
+                    <CommandItem
+                      value={`__create__${techSearch}`}
+                      onSelect={() => doCreateTechnician(techSearch)}
+                      disabled={creating}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      {creating ? t('creating') : t('createTechnician', { name: techSearch.trim() })}
+                    </CommandItem>
+                  </CommandGroup>
+                )}
+                <CommandSeparator />
+                <CommandGroup>
+                  {showNewInput ? (
+                    <div className="flex items-center gap-1.5 px-2 py-1.5" onKeyDown={(e) => e.stopPropagation()}>
+                      <Input
+                        autoFocus
+                        placeholder={t('newTechPlaceholder')}
+                        value={newTechName}
+                        onChange={(e) => setNewTechName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            doCreateTechnician(newTechName)
+                          }
+                          if (e.key === 'Escape') {
+                            setShowNewInput(false)
+                            setNewTechName('')
+                          }
+                        }}
+                        className="h-7 text-sm"
+                        disabled={creating}
+                      />
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 px-2 shrink-0"
+                        disabled={creating || !newTechName.trim()}
+                        onClick={() => doCreateTechnician(newTechName)}
+                      >
+                        {creating ? t('creating') : t('add')}
+                      </Button>
+                    </div>
+                  ) : (
+                    <CommandItem
+                      value="__add_new__"
+                      onSelect={() => setShowNewInput(true)}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      {t('addNew')}
+                    </CommandItem>
+                  )}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      </div>
 
       <div className="space-y-1.5">
         <Label className="text-xs">{t('startTime')}</Label>
