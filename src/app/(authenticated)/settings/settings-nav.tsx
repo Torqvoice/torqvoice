@@ -1,10 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import type { PlanFeatures } from "@/lib/features";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Banknote,
   Building2,
@@ -86,8 +93,9 @@ const settingsCategories: SettingsCategory[] = [
   },
 ];
 
-export function SettingsNav({ features, isCloud }: { features?: PlanFeatures; isCloud?: boolean }) {
+export function SettingsNav({ features, isCloud, mobile }: { features?: PlanFeatures; isCloud?: boolean; mobile?: boolean }) {
   const pathname = usePathname();
+  const router = useRouter();
   const t = useTranslations("settings");
 
   const filterItem = (item: SettingsNavItem) => {
@@ -95,6 +103,30 @@ export function SettingsNav({ features, isCloud }: { features?: PlanFeatures; is
     if (item.selfHostedOnly && isCloud) return false;
     return true;
   };
+
+  if (mobile) {
+    const allItems = settingsCategories.flatMap((c) => c.items.filter(filterItem));
+    const activeItem = allItems.find((item) => pathname === item.href);
+
+    return (
+      <Select value={activeItem?.href ?? pathname} onValueChange={(value) => router.push(value)}>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder={t("title")} />
+        </SelectTrigger>
+        <SelectContent>
+          {settingsCategories.map((category) => {
+            const visibleItems = category.items.filter(filterItem);
+            if (visibleItems.length === 0) return null;
+            return visibleItems.map((item) => (
+              <SelectItem key={item.href} value={item.href}>
+                {t(`nav.items.${item.key}.title`)}
+              </SelectItem>
+            ));
+          })}
+        </SelectContent>
+      </Select>
+    );
+  }
 
   return (
     <nav className="flex flex-col gap-4">
