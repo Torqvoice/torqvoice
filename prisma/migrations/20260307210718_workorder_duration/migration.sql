@@ -37,6 +37,10 @@ CREATE INDEX "inspections_technicianId_idx" ON "inspections"("technicianId");
 -- CreateIndex
 CREATE INDEX "service_records_technicianId_idx" ON "service_records"("technicianId");
 
+-- Clean up orphaned technicianId references before adding foreign keys
+UPDATE "service_records" SET "technicianId" = NULL WHERE "technicianId" IS NOT NULL AND "technicianId" NOT IN (SELECT id FROM "technicians");
+UPDATE "inspections" SET "technicianId" = NULL WHERE "technicianId" IS NOT NULL AND "technicianId" NOT IN (SELECT id FROM "technicians");
+
 -- AddForeignKey
 ALTER TABLE "service_records" ADD CONSTRAINT "service_records_technicianId_fkey" FOREIGN KEY ("technicianId") REFERENCES "technicians"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
