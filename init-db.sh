@@ -6,7 +6,7 @@ trap 'echo "An error occurred. Exiting..."; exit 1' ERR
 cmd="$@"
 
 echo "Waiting for PostgreSQL to be ready..."
-until npx prisma db execute --stdin <<< "SELECT 1" 2>/dev/null; do
+until npx prisma db execute --schema prisma/schema.prisma --stdin <<< "SELECT 1" 2>/dev/null; do
   echo "PostgreSQL is unavailable - sleeping 2s..."
   sleep 2
 done
@@ -14,10 +14,11 @@ echo "PostgreSQL is ready!"
 
 echo "Applying database migrations..."
 if ! npx prisma migrate deploy 2>/dev/null; then
-  # P3005: existing DB created with db push, no migration history.
-  # Mark idempotent baseline as applied, then run remaining migrations.
-  echo "Existing database detected. Baselining..."
-  npx prisma migrate resolve --applied 0_init
+  # P3005: existing DB without migration history (from db push).
+  # Create empty migration table so migrate deploy can run.
+  # 0_init is fully idempotent — safe on any DB state.
+  echo "Existing database detected. Creating migration table..."
+  npx prisma db execute --schema prisma/schema.prisma --stdin <<< 'CREATE TABLE IF NOT EXISTS "_prisma_migrations" ("id" VARCHAR(36) PRIMARY KEY NOT NULL, "checksum" VARCHAR(64) NOT NULL, "finished_at" TIMESTAMPTZ, "migration_name" VARCHAR(255) NOT NULL, "logs" TEXT, "rolled_back_at" TIMESTAMPTZ, "started_at" TIMESTAMPTZ NOT NULL DEFAULT now(), "applied_steps_count" INTEGER NOT NULL DEFAULT 0)'
   npx prisma migrate deploy
 fi
 echo "Migrations applied successfully!"
