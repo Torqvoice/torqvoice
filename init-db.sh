@@ -6,19 +6,21 @@ trap 'echo "An error occurred. Exiting..."; exit 1' ERR
 cmd="$@"
 
 echo "Waiting for PostgreSQL to be ready..."
-until node -e "
-const { Client } = require('pg');
-const c = new Client({ connectionString: process.env.DATABASE_URL });
-c.connect().then(() => { c.end(); process.exit(0); }).catch(() => process.exit(1));
-" 2>/dev/null; do
+until npx prisma db execute --stdin <<< "SELECT 1" 2>/dev/null; do
   echo "PostgreSQL is unavailable - sleeping 2s..."
   sleep 2
 done
 echo "PostgreSQL is ready!"
 
-echo "Applying database schema..."
-npx prisma db push --accept-data-loss
-echo "Schema applied successfully!"
+echo "Applying database migrations..."
+if ! npx prisma migrate deploy 2>/dev/null; then
+  # P3005: existing DB created with db push, no migration history.
+  # Mark idempotent baseline as applied, then run remaining migrations.
+  echo "Existing database detected. Baselining..."
+  npx prisma migrate resolve --applied 0_init
+  npx prisma migrate deploy
+fi
+echo "Migrations applied successfully!"
 
 echo "Starting application..."
 exec $cmd
