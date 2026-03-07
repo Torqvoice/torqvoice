@@ -3,6 +3,7 @@
 import { Wrench, ClipboardCheck } from 'lucide-react'
 import type { Technician } from '../store/workboardStore'
 import type { BoardAssignmentWithJob } from '../Actions/boardActions'
+import { assignmentOverlapsDate } from '../utils/datetime'
 import { useTranslations } from 'next-intl'
 
 function DayJobCard({ assignment }: { assignment: BoardAssignmentWithJob }) {
@@ -52,7 +53,7 @@ export function PresenterDayView({
   assignments: BoardAssignmentWithJob[]
 }) {
   const t = useTranslations('workBoard.presenter')
-  const dayAssignments = assignments.filter((a) => a.date === date)
+  const dayAssignments = assignments.filter((a) => assignmentOverlapsDate(a, date))
 
   if (technicians.length === 0) {
     return (
@@ -72,7 +73,6 @@ export function PresenterDayView({
 
           return (
             <div key={tech.id} className="flex gap-4 p-4">
-              {/* Tech label */}
               <div className="flex w-36 shrink-0 items-start gap-2 pt-1">
                 <div
                   className="mt-1 h-3.5 w-3.5 shrink-0 rounded-full"
@@ -86,7 +86,6 @@ export function PresenterDayView({
                 </div>
               </div>
 
-              {/* Jobs */}
               <div className="flex flex-1 flex-wrap gap-2">
                 {techJobs.length === 0 && (
                   <p className="py-2 text-sm text-muted-foreground/60">{t('noJobsToday')}</p>

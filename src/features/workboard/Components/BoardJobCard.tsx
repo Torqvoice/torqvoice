@@ -2,8 +2,10 @@
 
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Wrench, ClipboardCheck } from "lucide-react";
+import { Clock, GripVertical, Wrench, ClipboardCheck } from "lucide-react";
 import type { BoardAssignmentWithJob } from "../Actions/boardActions";
+import { getAssignmentDateRange, getDurationMinutes } from "../utils/datetime";
+import { formatDuration } from "./DurationSlider";
 
 export function BoardJobCard({
   assignment,
@@ -37,6 +39,9 @@ export function BoardJobCard({
     ? assignment.serviceRecord?.status
     : assignment.inspection?.status;
 
+  const { start, end } = getAssignmentDateRange(assignment);
+  const durationMins = start && end ? getDurationMinutes(start, end) : null;
+
   return (
     <div
       ref={setNodeRef}
@@ -67,11 +72,19 @@ export function BoardJobCard({
             {vehicle.licensePlate ? ` · ${vehicle.licensePlate}` : ""}
           </p>
         )}
-        {status && (
-          <span className="inline-block rounded bg-muted px-1 py-0.5 text-[10px] capitalize">
-            {status.replace(/_/g, " ")}
-          </span>
-        )}
+        <div className="flex items-center gap-1.5">
+          {status && (
+            <span className="inline-block rounded bg-muted px-1 py-0.5 text-[10px] capitalize">
+              {status.replace(/_/g, " ")}
+            </span>
+          )}
+          {durationMins != null && durationMins > 0 && (
+            <span className="inline-flex items-center gap-0.5 rounded bg-blue-500/10 px-1 py-0.5 text-[10px] text-blue-600 dark:text-blue-400">
+              <Clock className="h-2.5 w-2.5" />
+              {formatDuration(durationMins)}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -86,24 +99,12 @@ export function UnassignedJobCard({
         id: string;
         title: string;
         status: string;
-        vehicle: {
-          id: string;
-          make: string;
-          model: string;
-          year: number;
-          licensePlate: string | null;
-        };
+        vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null };
       }
     | {
         id: string;
         status: string;
-        vehicle: {
-          id: string;
-          make: string;
-          model: string;
-          year: number;
-          licensePlate: string | null;
-        };
+        vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null };
         template: { name: string };
       };
   type: "serviceRecord" | "inspection";

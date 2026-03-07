@@ -178,30 +178,26 @@ export function BasicInfoSection({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <div className="space-y-1">
-          <Label htmlFor="serviceDate" className="text-xs">{t('date')}</Label>
-          <Input
-            id="serviceDate"
-            name="serviceDate"
-            type="date"
-            defaultValue={initialData.serviceDate || new Date().toISOString().split('T')[0]}
-          />
-        </div>
-        <div className="space-y-1">
-          <Label className="text-xs">{t('type')}</Label>
-          <Select value={type} onValueChange={setType}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="maintenance">{t('typeOptions.maintenance')}</SelectItem>
-              <SelectItem value="repair">{t('typeOptions.repair')}</SelectItem>
-              <SelectItem value="upgrade">{t('typeOptions.upgrade')}</SelectItem>
-              <SelectItem value="inspection">{t('typeOptions.inspection')}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Hidden serviceDate — kept for form submission, visible scheduling is in ScheduleTimesSection */}
+      <input
+        type="hidden"
+        name="serviceDate"
+        value={initialData.serviceDate || new Date().toISOString().split('T')[0]}
+      />
+
+      <div className="space-y-1">
+        <Label className="text-xs">{t('type')}</Label>
+        <Select value={type} onValueChange={setType}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="maintenance">{t('typeOptions.maintenance')}</SelectItem>
+            <SelectItem value="repair">{t('typeOptions.repair')}</SelectItem>
+            <SelectItem value="upgrade">{t('typeOptions.upgrade')}</SelectItem>
+            <SelectItem value="inspection">{t('typeOptions.inspection')}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="grid grid-cols-2 gap-2">

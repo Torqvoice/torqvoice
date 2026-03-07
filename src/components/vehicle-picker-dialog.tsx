@@ -52,6 +52,7 @@ interface VehiclePickerDialogProps {
   vehicles: Vehicle[];
   customers: Customer[];
   title?: string;
+  redirectQuery?: Record<string, string>;
 }
 
 export function VehiclePickerDialog({
@@ -60,6 +61,7 @@ export function VehiclePickerDialog({
   vehicles,
   customers,
   title,
+  redirectQuery,
 }: VehiclePickerDialogProps) {
   const router = useRouter();
   const t = useTranslations("workOrders.vehiclePicker");
@@ -107,7 +109,10 @@ export function VehiclePickerDialog({
   const handleSelect = (vehicleId: string) => {
     onOpenChange(false);
     resetState();
-    router.push(`/vehicles/${vehicleId}/service/new`);
+    const qs = redirectQuery
+      ? "?" + new URLSearchParams(redirectQuery).toString()
+      : "";
+    router.push(`/vehicles/${vehicleId}/service/new${qs}`);
   };
 
   const handleOpenChange = (nextOpen: boolean) => {

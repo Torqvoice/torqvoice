@@ -91,7 +91,7 @@ model Account {
 
 model Verification {
   id         String    @id @default(cuid())
-  identifier String   @unique
+  identifier String    @unique
   value      String
   expiresAt  DateTime
   createdAt  DateTime? @default(now())
@@ -173,29 +173,31 @@ model Vehicle {
 }
 
 model ServiceRecord {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   title           String
   description     String?
-  type            String   @default("maintenance")
-  status          String   @default("completed")
-  cost            Float    @default(0)
+  type            String    @default("maintenance")
+  status          String    @default("completed")
+  cost            Float     @default(0)
   mileage         Int?
-  serviceDate     DateTime @default(now())
+  serviceDate     DateTime  @default(now())
+  startDateTime   DateTime?
+  endDateTime     DateTime?
   shopName        String?
   techName        String?
   parts           String?
   laborHours      Float?
   diagnosticNotes String?
   invoiceNotes    String?
-  subtotal        Float    @default(0)
-  taxRate         Float    @default(0)
-  taxAmount       Float    @default(0)
-  totalAmount     Float    @default(0)
+  subtotal        Float     @default(0)
+  taxRate         Float     @default(0)
+  taxAmount       Float     @default(0)
+  totalAmount     Float     @default(0)
   invoiceNumber   String?
   discountType    String?
-  discountValue   Float    @default(0)
-  discountAmount  Float    @default(0)
-  manuallyPaid    Boolean  @default(false)
+  discountValue   Float     @default(0)
+  discountAmount  Float     @default(0)
+  manuallyPaid    Boolean   @default(false)
   publicToken     String?   @unique
   sharedAt        DateTime?
   viewCount       Int       @default(0)
@@ -206,11 +208,11 @@ model ServiceRecord {
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
-  partItems        ServicePart[]
-  laborItems       ServiceLabor[]
-  attachments      ServiceAttachment[]
-  payments         Payment[]
-  boardAssignments BoardAssignment[]
+  partItems       ServicePart[]
+  laborItems      ServiceLabor[]
+  attachments     ServiceAttachment[]
+  payments        Payment[]
+  boardAssignment BoardAssignment?
 
   @@index([vehicleId])
   @@map("service_records")
@@ -449,7 +451,7 @@ model QuoteAttachment {
   createdAt        DateTime @default(now())
 
   quoteId String
-  quote   Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 
   @@index([quoteId])
   @@map("quote_attachments")
@@ -765,14 +767,16 @@ model InspectionTemplateItem {
 }
 
 model Inspection {
-  id          String    @id @default(cuid())
-  status      String    @default("in_progress")
-  mileage     Int?
-  notes       String?
-  publicToken String?   @unique
-  completedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  status        String    @default("in_progress")
+  mileage       Int?
+  notes         String?
+  startDateTime DateTime?
+  endDateTime   DateTime?
+  publicToken   String?   @unique
+  completedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
@@ -784,10 +788,10 @@ model Inspection {
 
   organizationId String
 
-  items            InspectionItem[]
-  quoteRequests    InspectionQuoteRequest[]
-  quotes           Quote[]
-  boardAssignments BoardAssignment[]
+  items           InspectionItem[]
+  quoteRequests   InspectionQuoteRequest[]
+  quotes          Quote[]
+  boardAssignment BoardAssignment?
 
   @@index([vehicleId])
   @@index([organizationId])
@@ -871,11 +875,12 @@ model SmsMessage {
 }
 
 model Technician {
-  id        String  @id @default(cuid())
-  name      String
-  color     String  @default("#3b82f6")
-  isActive  Boolean @default(true)
-  sortOrder Int     @default(0)
+  id            String  @id @default(cuid())
+  name          String
+  color         String  @default("#3b82f6")
+  isActive      Boolean @default(true)
+  sortOrder     Int     @default(0)
+  dailyCapacity Int     @default(480)
 
   memberId String?
 
@@ -892,18 +897,17 @@ model Technician {
 }
 
 model BoardAssignment {
-  id        String   @id @default(cuid())
-  date      DateTime @db.Date
-  sortOrder Int      @default(0)
+  id        String  @id @default(cuid())
+  sortOrder Int     @default(0)
   notes     String?
 
   technicianId String
   technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
 
-  serviceRecordId String?
+  serviceRecordId String?        @unique
   serviceRecord   ServiceRecord? @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
 
-  inspectionId String?
+  inspectionId String?     @unique
   inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
 
   organizationId String
@@ -911,10 +915,8 @@ model BoardAssignment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([serviceRecordId, date])
-  @@unique([inspectionId, date])
-  @@index([organizationId, date])
-  @@index([technicianId, date])
+  @@index([organizationId])
+  @@index([technicianId])
   @@map("board_assignments")
 }
 

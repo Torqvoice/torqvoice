@@ -33,6 +33,7 @@ export type Technician = {
   color: string;
   isActive: boolean;
   sortOrder: number;
+  dailyCapacity: number;
   memberId: string | null;
   organizationId: string;
 };
@@ -64,12 +65,8 @@ type WorkBoardState = {
   setWeekStart: (weekStart: string) => void;
   setConnected: (connected: boolean) => void;
 
-  // Optimistic DnD: move an assignment locally before server confirms
-  optimisticMove: (
-    assignmentId: string,
-    newTechId: string,
-    newDate: string,
-  ) => void;
+  updateServiceTimes: (assignmentId: string, startDateTime: string, endDateTime: string) => void;
+  optimisticMove: (assignmentId: string, newTechId: string) => void;
 };
 
 export const useWorkBoardStore = create<WorkBoardState>((set) => ({
@@ -82,76 +79,60 @@ export const useWorkBoardStore = create<WorkBoardState>((set) => ({
 
   setTechnicians: (technicians) => set({ technicians }),
   addTechnician: (tech) =>
-    set((s) => {
-      const filtered = s.technicians.filter((t) => t.id !== tech.id);
-      return { technicians: [...filtered, tech] };
-    }),
+    set((s) => ({
+      technicians: [...s.technicians.filter((t) => t.id !== tech.id), tech],
+    })),
   removeTechnician: (id) =>
     set((s) => ({ technicians: s.technicians.filter((t) => t.id !== id) })),
 
   setAssignments: (assignments) => set({ assignments }),
   addAssignment: (assignment) =>
-    set((s) => {
-      // Avoid duplicates
-      const filtered = s.assignments.filter((a) => a.id !== assignment.id);
-      return { assignments: [...filtered, assignment] };
-    }),
+    set((s) => ({
+      assignments: [...s.assignments.filter((a) => a.id !== assignment.id), assignment],
+    })),
   updateAssignment: (assignment) =>
     set((s) => ({
-      assignments: s.assignments.map((a) =>
-        a.id === assignment.id ? assignment : a,
-      ),
+      assignments: s.assignments.map((a) => (a.id === assignment.id ? assignment : a)),
     })),
   removeAssignment: (id) =>
-    set((s) => ({
-      assignments: s.assignments.filter((a) => a.id !== id),
-    })),
+    set((s) => ({ assignments: s.assignments.filter((a) => a.id !== id) })),
 
   setUnassigned: (serviceRecords, inspections) =>
-    set({
-      unassignedServiceRecords: serviceRecords,
-      unassignedInspections: inspections,
-    }),
+    set({ unassignedServiceRecords: serviceRecords, unassignedInspections: inspections }),
   removeFromUnassigned: (jobId, type) =>
     set((s) =>
       type === "serviceRecord"
-        ? {
-            unassignedServiceRecords: s.unassignedServiceRecords.filter(
-              (sr) => sr.id !== jobId,
-            ),
-          }
-        : {
-            unassignedInspections: s.unassignedInspections.filter(
-              (i) => i.id !== jobId,
-            ),
-          },
+        ? { unassignedServiceRecords: s.unassignedServiceRecords.filter((sr) => sr.id !== jobId) }
+        : { unassignedInspections: s.unassignedInspections.filter((i) => i.id !== jobId) },
     ),
   addToUnassigned: (job, type) =>
     set((s) =>
       type === "serviceRecord"
-        ? {
-            unassignedServiceRecords: [
-              job as UnassignedServiceRecord,
-              ...s.unassignedServiceRecords,
-            ],
-          }
-        : {
-            unassignedInspections: [
-              job as UnassignedInspection,
-              ...s.unassignedInspections,
-            ],
-          },
+        ? { unassignedServiceRecords: [job as UnassignedServiceRecord, ...s.unassignedServiceRecords] }
+        : { unassignedInspections: [job as UnassignedInspection, ...s.unassignedInspections] },
     ),
+
+  updateServiceTimes: (assignmentId, startDateTime, endDateTime) =>
+    set((s) => ({
+      assignments: s.assignments.map((a) => {
+        if (a.id !== assignmentId) return a;
+        if (a.serviceRecord) {
+          return { ...a, serviceRecord: { ...a.serviceRecord, startDateTime, endDateTime } };
+        }
+        if (a.inspection) {
+          return { ...a, inspection: { ...a.inspection, startDateTime, endDateTime } };
+        }
+        return a;
+      }),
+    })),
 
   setWeekStart: (weekStart) => set({ weekStart }),
   setConnected: (isConnected) => set({ isConnected }),
 
-  optimisticMove: (assignmentId, newTechId, newDate) =>
+  optimisticMove: (assignmentId, newTechId) =>
     set((s) => ({
       assignments: s.assignments.map((a) =>
-        a.id === assignmentId
-          ? { ...a, technicianId: newTechId, date: newDate }
-          : a,
+        a.id === assignmentId ? { ...a, technicianId: newTechId } : a,
       ),
     })),
 }));

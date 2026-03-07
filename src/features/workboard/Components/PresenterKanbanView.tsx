@@ -3,6 +3,7 @@
 import { Wrench, ClipboardCheck } from 'lucide-react'
 import type { Technician } from '../store/workboardStore'
 import type { BoardAssignmentWithJob } from '../Actions/boardActions'
+import { assignmentOverlapsDate } from '../utils/datetime'
 import { useTranslations } from 'next-intl'
 
 const STATUS_COLUMNS = [
@@ -57,7 +58,7 @@ export function PresenterKanbanView({
   assignments: BoardAssignmentWithJob[]
 }) {
   const t = useTranslations('workBoard.presenter')
-  const dayAssignments = assignments.filter((a) => a.date === date)
+  const dayAssignments = assignments.filter((a) => assignmentOverlapsDate(a, date))
 
   if (technicians.length === 0) {
     return (
@@ -76,7 +77,6 @@ export function PresenterKanbanView({
           gridTemplateRows: `auto ${technicians.length > 0 ? `repeat(${technicians.length}, 1fr)` : '1fr'}`,
         }}
       >
-        {/* Status header row */}
         <div className="border-b p-2" />
         {STATUS_COLUMNS.map((col) => {
           const count = dayAssignments.filter((a) => getAssignmentStatus(a) === col.key).length
@@ -89,12 +89,10 @@ export function PresenterKanbanView({
           )
         })}
 
-        {/* Tech rows */}
         {technicians.map((tech) => {
           const techJobs = dayAssignments.filter((a) => a.technicianId === tech.id)
           return (
             <div key={tech.id} className="contents">
-              {/* Tech name */}
               <div className="flex items-center gap-2 border-b p-2">
                 <div
                   className="h-3 w-3 shrink-0 rounded-full"
@@ -108,7 +106,6 @@ export function PresenterKanbanView({
                 </div>
               </div>
 
-              {/* Status columns */}
               {STATUS_COLUMNS.map((col) => {
                 const cellJobs = techJobs
                   .filter((a) => getAssignmentStatus(a) === col.key)

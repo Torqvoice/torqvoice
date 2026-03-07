@@ -4,7 +4,11 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 
-export async function createDraftServiceRecord(vehicleId: string, serviceDate?: Date) {
+export async function createDraftServiceRecord(
+  vehicleId: string,
+  startDateTime?: Date,
+  endDateTime?: Date,
+) {
   return withAuth(
     async ({ organizationId, userId }) => {
       const vehicle = await db.vehicle.findFirst({
@@ -12,7 +16,6 @@ export async function createDraftServiceRecord(vehicleId: string, serviceDate?: 
       });
       if (!vehicle) throw new Error("Vehicle not found");
 
-      // Auto-populate shop name and invoice number
       const [settings, org, currentUser] = await Promise.all([
         db.appSetting.findMany({
           where: {
@@ -37,17 +40,15 @@ export async function createDraftServiceRecord(vehicleId: string, serviceDate?: 
       const shopName = org?.name || undefined;
       const techName = currentUser?.name || undefined;
 
-      // Resolve invoice prefix
       const rawPrefix = settingsMap["workshop.invoicePrefix"] || "{year}-";
       const now = new Date();
       const prefix = rawPrefix
         .replace("{year}", now.getFullYear().toString())
         .replace("{month}", String(now.getMonth() + 1).padStart(2, "0"));
 
-      // Generate sequential invoice number
       const startNumber = parseInt(
         settingsMap["workshop.invoiceStartNumber"] || "0",
-        10
+        10,
       );
       const lastRecord = await db.serviceRecord.findFirst({
         where: { vehicle: { organizationId } },
@@ -80,7 +81,9 @@ export async function createDraftServiceRecord(vehicleId: string, serviceDate?: 
           shopName,
           techName,
           invoiceNumber,
-          serviceDate: serviceDate ?? now,
+          serviceDate: startDateTime ?? now,
+          startDateTime: startDateTime ?? now,
+          endDateTime: endDateTime ?? new Date((startDateTime ?? now).getTime() + 3600000),
         },
       });
 
@@ -93,6 +96,6 @@ export async function createDraftServiceRecord(vehicleId: string, serviceDate?: 
           subject: PermissionSubject.SERVICES,
         },
       ],
-    }
+    },
   );
 }

@@ -4,6 +4,8 @@
   },
   "toolbar": {
     "today": "Today",
+    "day": "Day",
+    "week": "Week",
     "presenter": "Presenter",
     "addTechnician": "Add Technician"
   },
@@ -21,7 +23,8 @@
     "noTechniciansDescription": "Add a technician to start scheduling work on the board.",
     "failedMove": "Failed to move assignment",
     "failedAssign": "Failed to assign job",
-    "failedRemove": "Failed to remove assignment"
+    "failedRemove": "Failed to remove assignment",
+    "createNewWorkorder": "Create new Workorder"
   },
   "unassigned": {
     "title": "Unassigned Jobs ({count})",
@@ -43,7 +46,11 @@
   "jobDetail": {
     "viewDetails": "View Details",
     "remove": "Remove",
-    "date": "Date: {date}"
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "failedDuration": "Failed to update duration",
+    "failedTimes": "Failed to update times",
+    "endBeforeStart": "End time must be after start time"
   },
   "presenter": {
     "title": "Work Board",
@@ -51,6 +58,7 @@
     "status": "Status",
     "week": "Week",
     "today": "Today",
+    "timeline": "Timeline",
     "live": "Live",
     "disconnected": "Live updates disconnected",
     "noTechnicians": "No technicians configured",

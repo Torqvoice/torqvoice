@@ -27,6 +27,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
 
 import { BasicInfoSection } from '../service-edit/BasicInfoSection'
+import { ScheduleTimesSection } from '../service-edit/ScheduleTimesSection'
 import { PartsEditor } from '../service-edit/PartsEditor'
 import { LaborEditor } from '../service-edit/LaborEditor'
 import { TotalsSection } from '../service-edit/TotalsSection'
@@ -556,6 +557,12 @@ export function ServicePageClient({
         teamMembers={teamMembers}
         boardTechnicians={boardTechnicians}
         customer={record.vehicle.customer}
+      />
+      <ScheduleTimesSection
+        serviceRecordId={record.id}
+        technicians={boardTechnicians}
+        initialStartDateTime={initialData.startDateTime}
+        initialEndDateTime={initialData.endDateTime}
       />
       <TotalsSection
         partsSubtotal={partsSubtotal}

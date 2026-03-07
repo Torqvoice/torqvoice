@@ -18,11 +18,11 @@ export const updateTechnicianSchema = z.object({
     .optional(),
   isActive: z.boolean().optional(),
   sortOrder: z.number().int().min(0).optional(),
+  dailyCapacity: z.number().int().min(60).max(720).optional(),
   memberId: z.string().nullable().optional(),
 });
 
 export const createBoardAssignmentSchema = z.object({
-  date: z.string().min(1, "Date is required"),
   technicianId: z.string().min(1, "Technician is required"),
   serviceRecordId: z.string().optional(),
   inspectionId: z.string().optional(),
@@ -33,8 +33,13 @@ export const createBoardAssignmentSchema = z.object({
 export const moveAssignmentSchema = z.object({
   id: z.string().min(1),
   technicianId: z.string().min(1),
-  date: z.string().min(1),
   sortOrder: z.number().int().min(0).default(0),
+});
+
+export const updateServiceTimesSchema = z.object({
+  id: z.string().min(1),
+  startDateTime: z.coerce.date(),
+  endDateTime: z.coerce.date(),
 });
 
 export const removeAssignmentSchema = z.object({
@@ -45,3 +50,4 @@ export type CreateTechnicianInput = z.infer<typeof createTechnicianSchema>;
 export type UpdateTechnicianInput = z.infer<typeof updateTechnicianSchema>;
 export type CreateBoardAssignmentInput = z.infer<typeof createBoardAssignmentSchema>;
 export type MoveAssignmentInput = z.infer<typeof moveAssignmentSchema>;
+export type UpdateServiceTimesInput = z.infer<typeof updateServiceTimesSchema>;
