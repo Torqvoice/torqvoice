@@ -29,6 +29,7 @@ jobs:
           STRIPE_WEBHOOK_SECRET: ${{ secrets.CLOUD_STRIPE_WEBHOOK_SECRET }}
           STRIPE_PRO_PRICE_ID: ${{ secrets.CLOUD_STRIPE_PRO_PRICE_ID }}
           STRIPE_ENTERPRISE_PRICE_ID: ${{ secrets.CLOUD_STRIPE_ENTERPRISE_PRICE_ID }}
+          DATA_PATH: ${{ secrets.DATA_PATH }}
         run: env | grep -E '^(VIRTUAL_HOST|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_)' > .env
 
       - name: Deploy
