@@ -91,7 +91,7 @@ export function TechTimelineRow({
               if (timelineRef.current) {
                 const rect = timelineRef.current.getBoundingClientRect();
                 const xPct = (e.clientX - rect.left) / rect.width;
-                contextClickTimeRef.current = Math.round((dayStartMins + xPct * totalMinutes) / 15) * 15;
+                contextClickTimeRef.current = Math.round((dayStartMins + xPct * totalMinutes) / 5) * 5;
               }
             }}
           >

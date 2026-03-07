@@ -247,5 +247,26 @@
     "failedDelete": "Bestand verwijderen mislukt",
     "failedUpdate": "Bijwerken mislukt",
     "invoice": "Factuur"
+  },
+  "schedule": {
+    "title": "Planning",
+    "date": "Datum",
+    "startTime": "Starttijd",
+    "endTime": "Eindtijd",
+    "technician": "Technicus",
+    "selectTechnician": "Selecteer technicus...",
+    "searchOrCreate": "Zoek of maak technicus aan...",
+    "createTechnician": "\"{name}\" aanmaken",
+    "creating": "Aanmaken...",
+    "failedCreate": "Technicus aanmaken mislukt",
+    "addNew": "+ Nieuwe toevoegen",
+    "add": "Toevoegen",
+    "newTechPlaceholder": "Naam technicus...",
+    "assign": "Toewijzen aan bord",
+    "assigned": "Toegewezen aan werkbord",
+    "failedAssign": "Toewijzing mislukt",
+    "endBeforeStart": "Eindtijd moet na de starttijd zijn",
+    "failedUpdate": "Planning bijwerken mislukt",
+    "splitCreated": "Taak beslaat meerdere dagen — vervolg aangemaakt voor de volgende dag"
   }
 }

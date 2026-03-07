@@ -247,5 +247,26 @@
     "failedDelete": "Datei konnte nicht gelöscht werden",
     "failedUpdate": "Aktualisierung fehlgeschlagen",
     "invoice": "Rechnung"
+  },
+  "schedule": {
+    "title": "Zeitplan",
+    "date": "Datum",
+    "startTime": "Startzeit",
+    "endTime": "Endzeit",
+    "technician": "Techniker",
+    "selectTechnician": "Techniker auswählen...",
+    "searchOrCreate": "Techniker suchen oder erstellen...",
+    "createTechnician": "\"{name}\" erstellen",
+    "creating": "Erstelle...",
+    "failedCreate": "Techniker konnte nicht erstellt werden",
+    "addNew": "+ Neu hinzufügen",
+    "add": "Hinzufügen",
+    "newTechPlaceholder": "Technikername...",
+    "assign": "Tafel zuweisen",
+    "assigned": "Der Arbeitstafel zugewiesen",
+    "failedAssign": "Zuweisung fehlgeschlagen",
+    "endBeforeStart": "Endzeit muss nach der Startzeit liegen",
+    "failedUpdate": "Zeitplan konnte nicht aktualisiert werden",
+    "splitCreated": "Auftrag erstreckt sich über mehrere Tage — Fortsetzung für den nächsten Tag erstellt"
   }
 }

@@ -4,6 +4,8 @@
   },
   "toolbar": {
     "today": "Vandaag",
+    "day": "Dag",
+    "week": "Week",
     "presenter": "Presentator",
     "addTechnician": "Technicus toevoegen"
   },

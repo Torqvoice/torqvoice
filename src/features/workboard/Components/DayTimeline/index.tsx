@@ -10,7 +10,7 @@ import { timeToMinutes, minutesToTime } from "./utils";
 import { TechTimelineRow } from "./TimelineColumn";
 import { useTranslations } from "next-intl";
 
-const SNAP_MINUTES = 15;
+const SNAP_MINUTES = 5;
 
 function snapMinutes(mins: number): number {
   return Math.round(mins / SNAP_MINUTES) * SNAP_MINUTES;

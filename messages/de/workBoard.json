@@ -4,6 +4,8 @@
   },
   "toolbar": {
     "today": "Heute",
+    "day": "Tag",
+    "week": "Woche",
     "presenter": "Präsentator",
     "addTechnician": "Techniker hinzufügen"
   },

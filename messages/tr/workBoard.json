@@ -4,6 +4,8 @@
   },
   "toolbar": {
     "today": "Bugün",
+    "day": "Gün",
+    "week": "Hafta",
     "presenter": "Sunucu",
     "addTechnician": "Teknisyen Ekle"
   },

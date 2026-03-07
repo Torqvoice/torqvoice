@@ -247,5 +247,26 @@
     "failedDelete": "Nie udało się usunąć pliku",
     "failedUpdate": "Nie udało się zaktualizować",
     "invoice": "Faktura"
+  },
+  "schedule": {
+    "title": "Harmonogram",
+    "date": "Data",
+    "startTime": "Czas rozpoczęcia",
+    "endTime": "Czas zakończenia",
+    "technician": "Technik",
+    "selectTechnician": "Wybierz technika...",
+    "searchOrCreate": "Szukaj lub utwórz technika...",
+    "createTechnician": "Utwórz \"{name}\"",
+    "creating": "Tworzenie...",
+    "failedCreate": "Nie udało się utworzyć technika",
+    "addNew": "+ Dodaj nowego",
+    "add": "Dodaj",
+    "newTechPlaceholder": "Nazwa technika...",
+    "assign": "Przypisz do tablicy",
+    "assigned": "Przypisano do tablicy roboczej",
+    "failedAssign": "Przypisanie nie powiodło się",
+    "endBeforeStart": "Czas zakończenia musi być po czasie rozpoczęcia",
+    "failedUpdate": "Nie udało się zaktualizować harmonogramu",
+    "splitCreated": "Zadanie obejmuje wiele dni — kontynuacja utworzona na następny dzień"
   }
 }
