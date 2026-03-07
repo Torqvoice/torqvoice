@@ -170,19 +170,35 @@ export function BasicInfoSection({
         value={initialData.serviceDate || new Date().toISOString().split('T')[0]}
       />
 
-      <div className="space-y-1">
-        <Label className="text-xs">{t('type')}</Label>
-        <Select value={type} onValueChange={setType}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="maintenance">{t('typeOptions.maintenance')}</SelectItem>
-            <SelectItem value="repair">{t('typeOptions.repair')}</SelectItem>
-            <SelectItem value="upgrade">{t('typeOptions.upgrade')}</SelectItem>
-            <SelectItem value="inspection">{t('typeOptions.inspection')}</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1">
+          <Label className="text-xs">{t('type')}</Label>
+          <Select value={type} onValueChange={setType}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="maintenance">{t('typeOptions.maintenance')}</SelectItem>
+              <SelectItem value="repair">{t('typeOptions.repair')}</SelectItem>
+              <SelectItem value="upgrade">{t('typeOptions.upgrade')}</SelectItem>
+              <SelectItem value="inspection">{t('typeOptions.inspection')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t('status')}</Label>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">{t('statusOptions.pending')}</SelectItem>
+              <SelectItem value="in-progress">{t('statusOptions.in_progress')}</SelectItem>
+              <SelectItem value="waiting-parts">{t('statusOptions.waiting_parts')}</SelectItem>
+              <SelectItem value="completed">{t('statusOptions.completed')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
@@ -197,32 +213,17 @@ export function BasicInfoSection({
           />
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">{t('status')}</Label>
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">{t('statusOptions.pending')}</SelectItem>
-              <SelectItem value="in-progress">{t('statusOptions.in_progress')}</SelectItem>
-              <SelectItem value="waiting-parts">{t('statusOptions.waiting_parts')}</SelectItem>
-              <SelectItem value="completed">{t('statusOptions.completed')}</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label htmlFor="invoiceNumber" className="text-xs">{t('invoiceNumber')}</Label>
+          <Input
+            id="invoiceNumber"
+            name="invoiceNumber"
+            placeholder="2026-1001"
+            defaultValue={initialData.invoiceNumber || ''}
+          />
         </div>
       </div>
 
       <input type="hidden" name="techName" value={techName} />
-
-      <div className="space-y-1">
-        <Label htmlFor="invoiceNumber" className="text-xs">{t('invoiceNumber')}</Label>
-        <Input
-          id="invoiceNumber"
-          name="invoiceNumber"
-          placeholder="2026-1001"
-          defaultValue={initialData.invoiceNumber || ''}
-        />
-      </div>
     </div>
   )
 }
