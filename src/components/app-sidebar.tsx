@@ -31,6 +31,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -96,6 +97,7 @@ export function AppSidebar({
   const router = useRouter()
   const { data: session } = useSession()
   const { theme, setTheme } = useTheme()
+  const { setOpenMobile, isMobile } = useSidebar()
   const currentLocale = useLocale()
   const t = useTranslations('navigation')
   const [showCreateOrg, setShowCreateOrg] = React.useState(false)
@@ -124,13 +126,17 @@ export function AppSidebar({
     ...(showReports ? [{ titleKey: 'sidebar.reports' as const, url: '/reports', icon: BarChart3 }] : []),
   ]
 
+  const closeMobileSidebar = () => {
+    if (isMobile) setOpenMobile(false)
+  }
+
   const renderNavGroup = (items: { titleKey: string; url: string; icon: React.ComponentType<{ className?: string }> }[]) =>
     items.map((item) => {
       const isActive = pathname === item.url || (item.url !== '/' && pathname.startsWith(item.url))
       return (
         <SidebarMenuItem key={item.titleKey}>
           <SidebarMenuButton asChild isActive={isActive}>
-            <Link href={item.url} className="font-medium">
+            <Link href={item.url} className="font-medium" onClick={closeMobileSidebar}>
               <item.icon className="size-4" />
               {t(item.titleKey)}
             </Link>
@@ -242,7 +248,7 @@ export function AppSidebar({
           <SidebarMenu className="gap-2">
             <SidebarMenuItem>
               <SidebarMenuButton asChild isActive={dashboardActive}>
-                <Link href="/" className="font-medium">
+                <Link href="/" className="font-medium" onClick={closeMobileSidebar}>
                   <LayoutDashboard className="size-4" />
                   {t('sidebar.dashboard')}
                 </Link>
@@ -281,7 +287,7 @@ export function AppSidebar({
             <SidebarMenu className="gap-2">
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={pathname.startsWith('/settings')}>
-                  <Link href="/settings" className="font-medium">
+                  <Link href="/settings" className="font-medium" onClick={closeMobileSidebar}>
                     <Settings className="size-4" />
                     {t('sidebar.settings')}
                   </Link>
@@ -297,7 +303,7 @@ export function AppSidebar({
             <SidebarMenu className="gap-2">
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')}>
-                  <Link href="/admin" className="font-medium">
+                  <Link href="/admin" className="font-medium" onClick={closeMobileSidebar}>
                     <ShieldCheck className="size-4" />
                     {t('sidebar.adminPanel')}
                   </Link>
