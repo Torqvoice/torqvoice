@@ -6,13 +6,13 @@ import { DndContext, DragOverlay, type DragEndEvent, type DragStartEvent, Pointe
 import { toast } from "sonner";
 import { useWorkBoardStore, type Technician } from "../store/workboardStore";
 import { useWorkBoardWebSocket } from "../hooks/useWorkBoardWebSocket";
-import type { BoardAssignmentWithJob } from "../Actions/boardActions";
+import type { WorkBoardJob } from "../Actions/boardActions";
 import {
-  getBoardAssignments,
+  getBoardJobs,
   getUnassignedJobs,
-  createBoardAssignment,
-  moveAssignment,
-  removeAssignment,
+  assignTechnician,
+  moveJob,
+  unassignJob,
 } from "../Actions/boardActions";
 import { WorkBoardToolbar, type BoardView } from "./WorkBoardToolbar";
 import { DayTimeline } from "./DayTimeline";
@@ -77,7 +77,7 @@ export function WorkBoardClient({
   boardSettings,
 }: {
   initialTechnicians: Technician[];
-  initialAssignments: BoardAssignmentWithJob[];
+  initialAssignments: WorkBoardJob[];
   initialUnassigned: { serviceRecords: unknown[]; inspections: unknown[] };
   initialWeekStart: string;
   boardSettings: WorkBoardSettings;
@@ -94,11 +94,11 @@ export function WorkBoardClient({
 
   useEffect(() => {
     store.setTechnicians(initialTechnicians);
-    store.setAssignments(initialAssignments);
+    store.setJobs(initialAssignments);
     store.setUnassigned(initialUnassigned.serviceRecords as Parameters<typeof store.setUnassigned>[0], initialUnassigned.inspections as Parameters<typeof store.setUnassigned>[1]);
     store.setWeekStart(urlWeek || initialWeekStart);
     if (urlWeek && urlWeek !== initialWeekStart) {
-      getBoardAssignments(urlWeek).then((res) => { if (res.success && res.data) store.setAssignments(res.data as BoardAssignmentWithJob[]); });
+      getBoardJobs(urlWeek).then((res) => { if (res.success && res.data) store.setJobs(res.data as WorkBoardJob[]); });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -109,9 +109,9 @@ export function WorkBoardClient({
   const [selectedDate, setSelectedDateState] = useState(urlDate || toLocalDateString(new Date()));
   const [techDialogOpen, setTechDialogOpen] = useState(false);
   const [editingTech, setEditingTech] = useState<Technician | null>(null);
-  const [selectedAssignment, setSelectedAssignment] = useState<BoardAssignmentWithJob | null>(null);
+  const [selectedJob, setSelectedJob] = useState<WorkBoardJob | null>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const [activeDrag, setActiveDrag] = useState<{ id: string; assignment?: BoardAssignmentWithJob; unassignedJob?: { job: Record<string, unknown>; type: "serviceRecord" | "inspection" } } | null>(null);
+  const [activeDrag, setActiveDrag] = useState<{ id: string; job?: WorkBoardJob; unassignedJob?: { job: Record<string, unknown>; type: "serviceRecord" | "inspection" } } | null>(null);
   const [vehiclePickerOpen, setVehiclePickerOpen] = useState(false);
   const [vehiclePickerVehicles, setVehiclePickerVehicles] = useState<{ id: string; make: string; model: string; year: number; licensePlate: string | null; customer: { id: string; name: string; company: string | null } | null }[]>([]);
   const [vehiclePickerCustomers, setVehiclePickerCustomers] = useState<{ id: string; name: string; company: string | null }[]>([]);
@@ -131,8 +131,8 @@ export function WorkBoardClient({
 
   const loadWeekData = useCallback(async (ws: string) => {
     store.setWeekStart(ws); updateUrl(view, selectedDate, ws);
-    const [assignRes, unassignedRes] = await Promise.all([getBoardAssignments(ws), getUnassignedJobs()]);
-    if (assignRes.success && assignRes.data) store.setAssignments(assignRes.data as BoardAssignmentWithJob[]);
+    const [assignRes, unassignedRes] = await Promise.all([getBoardJobs(ws), getUnassignedJobs()]);
+    if (assignRes.success && assignRes.data) store.setJobs(assignRes.data as WorkBoardJob[]);
     if (unassignedRes.success && unassignedRes.data) store.setUnassigned(unassignedRes.data.serviceRecords as Parameters<typeof store.setUnassigned>[0], unassignedRes.data.inspections as Parameters<typeof store.setUnassigned>[1]);
   }, [store, view, selectedDate, updateUrl]);
 
@@ -152,7 +152,7 @@ export function WorkBoardClient({
 
   const handleDragStart = (event: DragStartEvent) => {
     const data = event.active.data.current;
-    if (data?.assignment) setActiveDrag({ id: event.active.id as string, assignment: data.assignment });
+    if (data?.job && data.job.type) setActiveDrag({ id: event.active.id as string, job: data.job });
     else if (data?.job && data?.type) setActiveDrag({ id: event.active.id as string, unassignedJob: { job: data.job, type: data.type as "serviceRecord" | "inspection" } });
     else setActiveDrag({ id: event.active.id as string });
   };
@@ -165,36 +165,35 @@ export function WorkBoardClient({
     if (!overData?.technicianId) return;
     const activeData = active.data.current;
 
-    if (activeData?.assignment) {
-      const assignment = activeData.assignment as BoardAssignmentWithJob;
-      if (assignment.technicianId === overData.technicianId) return;
-      store.optimisticMove(assignment.id, overData.technicianId);
-      const res = await moveAssignment({ id: assignment.id, technicianId: overData.technicianId, sortOrder: 0 });
-      if (!res.success) { toast.error(t("failedMove"), { description: res.error }); store.optimisticMove(assignment.id, assignment.technicianId); }
-      else if (res.data) store.updateAssignment(res.data as BoardAssignmentWithJob);
+    if (activeData?.job && activeData.job.type) {
+      const job = activeData.job as WorkBoardJob;
+      if (job.technicianId === overData.technicianId) return;
+      store.optimisticMove(job.id, overData.technicianId);
+      const res = await moveJob({ id: job.id, technicianId: overData.technicianId, sortOrder: 0, type: job.type });
+      if (!res.success) { toast.error(t("failedMove"), { description: res.error }); store.optimisticMove(job.id, job.technicianId!); }
+      else if (res.data) store.updateJob(res.data as WorkBoardJob);
       return;
     }
 
     if (activeData?.job && activeData?.type) {
       const job = activeData.job;
       const jobType = activeData.type as "serviceRecord" | "inspection";
-      const input = { technicianId: overData.technicianId, ...(jobType === "serviceRecord" ? { serviceRecordId: job.id } : { inspectionId: job.id }) };
       store.removeFromUnassigned(job.id, jobType);
-      const res = await createBoardAssignment(input);
+      const res = await assignTechnician({ id: job.id, technicianId: overData.technicianId, type: jobType });
       if (!res.success) { toast.error(t("failedAssign"), { description: res.error }); store.addToUnassigned(job, jobType); }
-      else if (res.data) store.addAssignment(res.data as BoardAssignmentWithJob);
+      else if (res.data) store.addJob(res.data as WorkBoardJob);
     }
   };
 
-  const handleRemoveAssignment = async (assignment: BoardAssignmentWithJob) => {
-    setPopoverOpen(false); setSelectedAssignment(null);
-    store.removeAssignment(assignment.id);
-    const res = await removeAssignment({ id: assignment.id });
-    if (!res.success) { toast.error(t("failedRemove"), { description: res.error }); store.addAssignment(assignment); }
+  const handleRemoveJob = async (job: WorkBoardJob) => {
+    setPopoverOpen(false); setSelectedJob(null);
+    store.removeJob(job.id);
+    const res = await unassignJob({ id: job.id, type: job.type });
+    if (!res.success) { toast.error(t("failedRemove"), { description: res.error }); store.addJob(job); }
     else { const unRes = await getUnassignedJobs(); if (unRes.success && unRes.data) store.setUnassigned(unRes.data.serviceRecords as Parameters<typeof store.setUnassigned>[0], unRes.data.inspections as Parameters<typeof store.setUnassigned>[1]); }
   };
 
-  const handleCardClick = (a: BoardAssignmentWithJob) => { setSelectedAssignment(a); setPopoverOpen(true); };
+  const handleCardClick = (a: WorkBoardJob) => { setSelectedJob(a); setPopoverOpen(true); };
 
   if (store.technicians.length === 0) {
     return (
@@ -209,8 +208,8 @@ export function WorkBoardClient({
     );
   }
 
-  const dragOverlay = activeDrag?.assignment ? (
-    <div className="w-48 opacity-90"><BoardJobCard assignment={activeDrag.assignment} /></div>
+  const dragOverlay = activeDrag?.job ? (
+    <div className="w-48 opacity-90"><BoardJobCard job={activeDrag.job} /></div>
   ) : activeDrag?.unassignedJob ? (
     <div className="w-48 opacity-90"><UnassignedJobOverlayCard job={activeDrag.unassignedJob.job} type={activeDrag.unassignedJob.type} /></div>
   ) : null;
@@ -223,7 +222,7 @@ export function WorkBoardClient({
         <div className="flex flex-1 gap-4 overflow-hidden">
           <ScrollArea className="flex-1">
             {view === "day" ? (
-              <DayTimeline date={selectedDate} technicians={store.technicians} assignments={store.assignments} workDayStart={boardSettings.workDayStart} workDayEnd={boardSettings.workDayEnd} onCardClick={handleCardClick} onTechClick={(t) => { setEditingTech(t); setTechDialogOpen(true); }} onCreateWorkOrder={handleCreateWorkOrder} />
+              <DayTimeline date={selectedDate} technicians={store.technicians} assignments={store.jobs} workDayStart={boardSettings.workDayStart} workDayEnd={boardSettings.workDayEnd} onCardClick={handleCardClick} onTechClick={(t) => { setEditingTech(t); setTechDialogOpen(true); }} onCreateWorkOrder={handleCreateWorkOrder} />
             ) : (
               <div className="min-w-[900px] grid gap-1" style={{ gridTemplateColumns: `140px ${days.map((d) => (d === toLocalDateString(new Date()) ? "minmax(0,2fr)" : "minmax(0,1fr)")).join(" ")}` }}>
                 <div />
@@ -234,7 +233,7 @@ export function WorkBoardClient({
                   return <div key={day} className={`rounded-md px-2 py-1 text-center text-xs font-medium ${isToday ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{t(`days.${dayKey}`)} {d.getDate()}</div>;
                 })}
                 {store.technicians.map((tech) => (
-                  <TechnicianRow key={tech.id} technician={tech} days={days} assignments={store.assignments} onCardClick={handleCardClick} onTechClick={(t) => { setEditingTech(t); setTechDialogOpen(true); }} />
+                  <TechnicianRow key={tech.id} technician={tech} days={days} assignments={store.jobs} onCardClick={handleCardClick} onTechClick={(t) => { setEditingTech(t); setTechDialogOpen(true); }} />
                 ))}
               </div>
             )}
@@ -244,8 +243,8 @@ export function WorkBoardClient({
         <DragOverlay dropAnimation={null}>{dragOverlay}</DragOverlay>
       </DndContext>
 
-      {selectedAssignment && (
-        <JobDetailPopover assignment={selectedAssignment} open={popoverOpen} onOpenChange={(o) => { setPopoverOpen(o); if (!o) setSelectedAssignment(null); }} onRemove={() => handleRemoveAssignment(selectedAssignment)} />
+      {selectedJob && (
+        <JobDetailPopover job={selectedJob} open={popoverOpen} onOpenChange={(o) => { setPopoverOpen(o); if (!o) setSelectedJob(null); }} onRemove={() => handleRemoveJob(selectedJob)} />
       )}
       <TechnicianDialog open={techDialogOpen} onOpenChange={setTechDialogOpen} technician={editingTech} />
       <VehiclePickerDialog open={vehiclePickerOpen} onOpenChange={(open) => { setVehiclePickerOpen(open); if (!open) setBoardContext({}); }} vehicles={vehiclePickerVehicles} customers={vehiclePickerCustomers} redirectQuery={boardContext} />

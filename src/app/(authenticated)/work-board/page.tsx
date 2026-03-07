@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/page-header";
 import { getTechnicians } from "@/features/workboard/Actions/technicianActions";
-import { getBoardAssignments, getUnassignedJobs, getWorkBoardSettings } from "@/features/workboard/Actions/boardActions";
+import { getBoardJobs, getUnassignedJobs, getWorkBoardSettings } from "@/features/workboard/Actions/boardActions";
 import { WorkBoardClient } from "@/features/workboard/Components/WorkBoardClient";
 
 function getWeekStart(date: Date, weekStartDay: number): string {
@@ -25,7 +25,7 @@ export default async function WorkBoardPage() {
 
   const [techResult, assignResult, unassignedResult] = await Promise.all([
     getTechnicians(),
-    getBoardAssignments(weekStart),
+    getBoardJobs(weekStart),
     getUnassignedJobs(),
   ]);
 

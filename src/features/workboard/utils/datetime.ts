@@ -3,7 +3,7 @@
  * All scheduling data uses full DateTime (startDateTime/endDateTime) on ServiceRecord/Inspection.
  */
 
-import type { BoardAssignmentWithJob } from "../Actions/boardActions";
+import type { WorkBoardJob } from "../Actions/boardActions";
 
 /** Convert a Date to "HH:MM" string */
 export function getTimeOfDay(date: Date): string {
@@ -59,19 +59,13 @@ export function clampToDay(
   };
 }
 
-/** Extract startDateTime/endDateTime from an assignment's linked record */
-export function getAssignmentDateRange(
-  assignment: BoardAssignmentWithJob,
+/** Extract startDateTime/endDateTime from a job */
+export function getJobDateRange(
+  job: WorkBoardJob,
 ): { start: Date | null; end: Date | null } {
-  const sr = assignment.serviceRecord;
-  const insp = assignment.inspection;
-
-  const startStr = sr?.startDateTime ?? insp?.startDateTime ?? null;
-  const endStr = sr?.endDateTime ?? insp?.endDateTime ?? null;
-
   return {
-    start: startStr ? new Date(startStr) : null,
-    end: endStr ? new Date(endStr) : null,
+    start: job.startDateTime ? new Date(job.startDateTime) : null,
+    end: job.endDateTime ? new Date(job.endDateTime) : null,
   };
 }
 
@@ -80,12 +74,12 @@ export function getDurationMinutes(start: Date, end: Date): number {
   return Math.round((end.getTime() - start.getTime()) / 60000);
 }
 
-/** Check if an assignment overlaps with a given date string (YYYY-MM-DD) */
-export function assignmentOverlapsDate(
-  assignment: BoardAssignmentWithJob,
+/** Check if a job overlaps with a given date string (YYYY-MM-DD) */
+export function jobOverlapsDate(
+  job: WorkBoardJob,
   dateStr: string,
 ): boolean {
-  const { start, end } = getAssignmentDateRange(assignment);
+  const { start, end } = getJobDateRange(job);
   if (!start || !end) return false;
 
   const dayStart = new Date(dateStr + "T00:00:00");

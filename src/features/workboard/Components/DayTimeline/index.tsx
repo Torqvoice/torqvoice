@@ -2,10 +2,10 @@
 
 import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import type { BoardAssignmentWithJob } from "../../Actions/boardActions";
+import type { WorkBoardJob } from "../../Actions/boardActions";
 import type { Technician } from "../../store/workboardStore";
 import { useWorkBoardStore } from "../../store/workboardStore";
-import { assignmentOverlapsDate } from "../../utils/datetime";
+import { jobOverlapsDate } from "../../utils/datetime";
 import { timeToMinutes, minutesToTime } from "./utils";
 import { TechTimelineRow } from "./TimelineColumn";
 import { useTranslations } from "next-intl";
@@ -59,10 +59,10 @@ export function DayTimeline({
 }: {
   date: string;
   technicians: Technician[];
-  assignments: BoardAssignmentWithJob[];
+  assignments: WorkBoardJob[];
   workDayStart: string;
   workDayEnd: string;
-  onCardClick: (assignment: BoardAssignmentWithJob) => void;
+  onCardClick: (job: WorkBoardJob) => void;
   onTechClick?: (technician: Technician) => void;
   onCreateWorkOrder?: (techId: string, startTime: string, endTime: string) => void;
 }) {
@@ -71,16 +71,14 @@ export function DayTimeline({
   const baseEndMins = timeToMinutes(workDayEnd);
 
   const dayAssignments = useMemo(
-    () => assignments.filter((a) => assignmentOverlapsDate(a, date)),
+    () => assignments.filter((a) => jobOverlapsDate(a, date)),
     [assignments, date],
   );
 
   const dayEndMins = useMemo(() => {
     let max = baseEndMins;
     for (const a of dayAssignments) {
-      const sr = a.serviceRecord;
-      const insp = a.inspection;
-      const endStr = sr?.endDateTime ?? insp?.endDateTime;
+      const endStr = a.endDateTime;
       if (endStr) {
         const end = new Date(endStr);
         const endMins = end.getHours() * 60 + end.getMinutes();
@@ -164,24 +162,20 @@ export function DayTimeline({
     const newEndDate = new Date(date + "T00:00:00");
     newEndDate.setMinutes(override.endMins);
 
+    // Find the job to get its type
+    const job = store.jobs.find((x) => x.id === d.assignmentId);
+
     if (override.techId !== d.origTechId) {
       store.optimisticMove(d.assignmentId, override.techId);
       store.updateServiceTimes(d.assignmentId, newStartDate.toISOString(), newEndDate.toISOString());
-      const { moveAssignment, updateServiceTimes: updateST } = await import("../../Actions/boardActions");
-      const res = await moveAssignment({ id: d.assignmentId, technicianId: override.techId, sortOrder: 0 });
-      if (!res.success) { store.optimisticMove(d.assignmentId, d.origTechId); } else if (res.data) { store.updateAssignment(res.data as BoardAssignmentWithJob); }
-      // Also update times on the record
-      const a = store.assignments.find((x) => x.id === d.assignmentId);
-      const recId = a?.serviceRecordId ?? a?.inspectionId;
-      if (recId) await updateST({ id: recId, startDateTime: newStartDate, endDateTime: newEndDate });
+      const { moveJob, updateServiceTimes: updateST } = await import("../../Actions/boardActions");
+      const res = await moveJob({ id: d.assignmentId, technicianId: override.techId, sortOrder: 0, type: job?.type ?? "serviceRecord" });
+      if (!res.success) { store.optimisticMove(d.assignmentId, d.origTechId); } else if (res.data) { store.updateJob(res.data as WorkBoardJob); }
+      await updateST({ id: d.assignmentId, startDateTime: newStartDate, endDateTime: newEndDate });
     } else {
       store.updateServiceTimes(d.assignmentId, newStartDate.toISOString(), newEndDate.toISOString());
-      const a = store.assignments.find((x) => x.id === d.assignmentId);
-      const recId = a?.serviceRecordId ?? a?.inspectionId;
-      if (recId) {
-        const { updateServiceTimes: updateST } = await import("../../Actions/boardActions");
-        await updateST({ id: recId, startDateTime: newStartDate, endDateTime: newEndDate });
-      }
+      const { updateServiceTimes: updateST } = await import("../../Actions/boardActions");
+      await updateST({ id: d.assignmentId, startDateTime: newStartDate, endDateTime: newEndDate });
     }
   }, [store, date]);
 
@@ -192,15 +186,14 @@ export function DayTimeline({
     return () => { window.removeEventListener("mousemove", handleMouseMove); window.removeEventListener("mouseup", handleMouseUp); };
   }, [drag, hasPending, handleMouseMove, handleMouseUp]);
 
-  const startDrag = (e: React.MouseEvent, assignment: BoardAssignmentWithJob, mode: DragMode, timelineEl: HTMLElement) => {
+  const startDrag = (e: React.MouseEvent, job: WorkBoardJob, mode: DragMode, timelineEl: HTMLElement) => {
     e.preventDefault(); e.stopPropagation();
-    const sr = assignment.serviceRecord; const insp = assignment.inspection;
-    const startStr = sr?.startDateTime ?? insp?.startDateTime;
-    const endStr = sr?.endDateTime ?? insp?.endDateTime;
+    const startStr = job.startDateTime;
+    const endStr = job.endDateTime;
     let startMins = dayStartMins, endMins = dayStartMins + 60;
     if (startStr) { const d = new Date(startStr); startMins = d.getHours() * 60 + d.getMinutes(); }
     if (endStr) { const d = new Date(endStr); endMins = d.getHours() * 60 + d.getMinutes(); }
-    pendingDragRef.current = { assignmentId: assignment.id, mode, origStartMins: startMins, origEndMins: endMins, origTechId: assignment.technicianId, anchorX: e.clientX, anchorY: e.clientY, timelineWidth: timelineEl.getBoundingClientRect().width };
+    pendingDragRef.current = { assignmentId: job.id, mode, origStartMins: startMins, origEndMins: endMins, origTechId: job.technicianId!, anchorX: e.clientX, anchorY: e.clientY, timelineWidth: timelineEl.getBoundingClientRect().width };
     setHasPending(true);
   };
 

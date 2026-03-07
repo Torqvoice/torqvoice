@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createDraftServiceRecord } from "@/features/vehicles/Actions/createDraftServiceRecord";
-import { createBoardAssignment } from "@/features/workboard/Actions/boardActions";
 
 export default async function NewServicePage({
   params,
@@ -29,22 +28,10 @@ export default async function NewServicePage({
       : new Date(startDateTime.getTime() + 3600000);
   }
 
-  const result = await createDraftServiceRecord(id, startDateTime, endDateTime);
+  const boardTechId = query.boardTech;
+  const result = await createDraftServiceRecord(id, startDateTime, endDateTime, boardTechId);
 
   if (result.success && result.data?.id) {
-    const boardTechId = query.boardTech;
-
-    if (boardTechId) {
-      try {
-        await createBoardAssignment({
-          technicianId: boardTechId,
-          serviceRecordId: result.data.id,
-        });
-      } catch {
-        // Board assignment failed but service record was created
-      }
-    }
-
     redirect(`/vehicles/${id}/service/${result.data.id}`);
   }
 

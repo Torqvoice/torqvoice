@@ -2,10 +2,10 @@
 
 import { useDroppable } from "@dnd-kit/core";
 import { cn } from "@/lib/utils";
-import type { BoardAssignmentWithJob } from "../Actions/boardActions";
+import type { WorkBoardJob } from "../Actions/boardActions";
 import { BoardJobCard } from "./BoardJobCard";
 import { formatDuration } from "./DurationSlider";
-import { getAssignmentDateRange, getDurationMinutes } from "../utils/datetime";
+import { getJobDateRange, getDurationMinutes } from "../utils/datetime";
 
 export function CapacityBar({
   bookedMinutes,
@@ -44,9 +44,9 @@ export function CapacityBar({
   );
 }
 
-function getBookedMinutes(assignments: BoardAssignmentWithJob[]): number {
-  return assignments.reduce((sum, a) => {
-    const { start, end } = getAssignmentDateRange(a);
+function getBookedMinutes(jobs: WorkBoardJob[]): number {
+  return jobs.reduce((sum, a) => {
+    const { start, end } = getJobDateRange(a);
     if (start && end) return sum + getDurationMinutes(start, end);
     return sum;
   }, 0);
@@ -61,9 +61,9 @@ export function BoardDayCell({
 }: {
   technicianId: string;
   date: string;
-  assignments: BoardAssignmentWithJob[];
+  assignments: WorkBoardJob[];
   dailyCapacity: number;
-  onCardClick: (assignment: BoardAssignmentWithJob) => void;
+  onCardClick: (job: WorkBoardJob) => void;
 }) {
   const droppableId = `${technicianId}::${date}`;
   const { isOver, setNodeRef } = useDroppable({
@@ -89,7 +89,7 @@ export function BoardDayCell({
       {assignments.map((a) => (
         <BoardJobCard
           key={a.id}
-          assignment={a}
+          job={a}
           onClick={() => onCardClick(a)}
         />
       ))}

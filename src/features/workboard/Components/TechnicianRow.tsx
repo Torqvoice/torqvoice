@@ -1,11 +1,11 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { BoardAssignmentWithJob } from "../Actions/boardActions";
+import type { WorkBoardJob } from "../Actions/boardActions";
 import type { Technician } from "../store/workboardStore";
 import { BoardDayCell } from "./BoardDayCell";
 import { formatDuration } from "./DurationSlider";
-import { assignmentOverlapsDate, getAssignmentDateRange, getDurationMinutes } from "../utils/datetime";
+import { jobOverlapsDate, getJobDateRange, getDurationMinutes } from "../utils/datetime";
 
 export function TechnicianRow({
   technician,
@@ -16,8 +16,8 @@ export function TechnicianRow({
 }: {
   technician: Technician;
   days: string[];
-  assignments: BoardAssignmentWithJob[];
-  onCardClick: (assignment: BoardAssignmentWithJob) => void;
+  assignments: WorkBoardJob[];
+  onCardClick: (job: WorkBoardJob) => void;
   onTechClick?: (technician: Technician) => void;
 }) {
   const techAssignments = assignments.filter(
@@ -25,7 +25,7 @@ export function TechnicianRow({
   );
 
   const weekBooked = techAssignments.reduce((sum, a) => {
-    const { start, end } = getAssignmentDateRange(a);
+    const { start, end } = getJobDateRange(a);
     if (start && end) return sum + getDurationMinutes(start, end);
     return sum;
   }, 0);
@@ -70,7 +70,7 @@ export function TechnicianRow({
 
       {days.map((day) => {
         const cellAssignments = techAssignments.filter(
-          (a) => assignmentOverlapsDate(a, day),
+          (a) => jobOverlapsDate(a, day),
         );
         return (
           <BoardDayCell

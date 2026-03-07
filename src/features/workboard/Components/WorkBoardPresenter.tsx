@@ -6,13 +6,13 @@ import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight, Wrench, ClipboardCheck, Wifi, WifiOff } from 'lucide-react'
 import { useWorkBoardStore, type Technician } from '../store/workboardStore'
 import { useWorkBoardWebSocket } from '../hooks/useWorkBoardWebSocket'
-import type { BoardAssignmentWithJob } from '../Actions/boardActions'
-import { getBoardAssignments } from '../Actions/boardActions'
+import type { WorkBoardJob } from '../Actions/boardActions'
+import { getBoardJobs } from '../Actions/boardActions'
 import { getTechnicians } from '../Actions/technicianActions'
 import { PresenterDayView } from './PresenterDayView'
 import { PresenterKanbanView } from './PresenterKanbanView'
 import { PresenterTimeline } from './PresenterTimeline'
-import { assignmentOverlapsDate } from '../utils/datetime'
+import { jobOverlapsDate } from '../utils/datetime'
 import { useTranslations, useLocale } from 'next-intl'
 
 type ViewMode = 'week' | 'day' | 'status' | 'timeline'
@@ -51,25 +51,22 @@ function LiveClock() {
   return <span className="tabular-nums">{time}</span>
 }
 
-function PresenterJobCard({ assignment }: { assignment: BoardAssignmentWithJob }) {
-  const isServiceRecord = !!assignment.serviceRecordId
-  const vehicle = isServiceRecord ? assignment.serviceRecord?.vehicle : assignment.inspection?.vehicle
-  const title = isServiceRecord ? assignment.serviceRecord?.title : assignment.inspection?.template?.name
-  const status = isServiceRecord ? assignment.serviceRecord?.status : assignment.inspection?.status
+function PresenterJobCard({ job }: { job: WorkBoardJob }) {
+  const isServiceRecord = job.type === 'serviceRecord'
   return (
     <div className="rounded-md border bg-card p-2 text-sm shadow-sm">
       <div className="flex items-center gap-1.5">
         {isServiceRecord ? <Wrench className="h-4 w-4 shrink-0 text-blue-500" /> : <ClipboardCheck className="h-4 w-4 shrink-0 text-green-500" />}
-        <span className="truncate font-semibold">{title}</span>
+        <span className="truncate font-semibold">{job.title}</span>
       </div>
-      {vehicle && <p className="mt-0.5 truncate text-muted-foreground">{vehicle.year} {vehicle.make} {vehicle.model}{vehicle.licensePlate ? ` · ${vehicle.licensePlate}` : ''}</p>}
-      {status && <span className="mt-1 inline-block rounded bg-muted px-1.5 py-0.5 text-xs capitalize">{status.replace(/_/g, ' ')}</span>}
+      {job.vehicle && <p className="mt-0.5 truncate text-muted-foreground">{job.vehicle.year} {job.vehicle.make} {job.vehicle.model}{job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}</p>}
+      {job.status && <span className="mt-1 inline-block rounded bg-muted px-1.5 py-0.5 text-xs capitalize">{job.status.replace(/_/g, ' ')}</span>}
     </div>
   )
 }
 
 export function WorkBoardPresenter({ initialTechnicians, initialAssignments, initialWeekStart, workDayStart = '07:00', workDayEnd = '15:00' }: {
-  initialTechnicians: Technician[]; initialAssignments: BoardAssignmentWithJob[]; initialWeekStart: string; workDayStart?: string; workDayEnd?: string
+  initialTechnicians: Technician[]; initialAssignments: WorkBoardJob[]; initialWeekStart: string; workDayStart?: string; workDayEnd?: string
 }) {
   const store = useWorkBoardStore()
   const t = useTranslations('workBoard.presenter')
@@ -85,7 +82,7 @@ export function WorkBoardPresenter({ initialTechnicians, initialAssignments, ini
   const setSelectedDate = useCallback((d: string) => { setSelectedDateState(d); updateUrl(viewMode, d) }, [viewMode, updateUrl])
   const handleSetViewMode = (m: ViewMode) => { setViewMode(m); updateUrl(m, selectedDate) }
 
-  useEffect(() => { store.setTechnicians(initialTechnicians); store.setAssignments(initialAssignments); store.setWeekStart(initialWeekStart); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [])
+  useEffect(() => { store.setTechnicians(initialTechnicians); store.setJobs(initialAssignments); store.setWeekStart(initialWeekStart); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [])
   useWorkBoardWebSocket()
 
   const weekStart = store.weekStart || initialWeekStart
@@ -94,8 +91,8 @@ export function WorkBoardPresenter({ initialTechnicians, initialAssignments, ini
 
   const loadWeekData = useCallback(async (ws: string) => {
     store.setWeekStart(ws)
-    const [assignRes, techRes] = await Promise.all([getBoardAssignments(ws), getTechnicians()])
-    if (assignRes.success && assignRes.data) store.setAssignments(assignRes.data as BoardAssignmentWithJob[])
+    const [assignRes, techRes] = await Promise.all([getBoardJobs(ws), getTechnicians()])
+    if (assignRes.success && assignRes.data) store.setJobs(assignRes.data as WorkBoardJob[])
     if (techRes.success && techRes.data) store.setTechnicians(techRes.data as Technician[])
   }, [store])
 
@@ -140,11 +137,11 @@ export function WorkBoardPresenter({ initialTechnicians, initialAssignments, ini
       </header>
 
       {viewMode === 'timeline' ? (
-        <PresenterTimeline date={selectedDate} technicians={store.technicians} assignments={store.assignments} workDayStart={workDayStart} workDayEnd={workDayEnd} />
+        <PresenterTimeline date={selectedDate} technicians={store.technicians} assignments={store.jobs} workDayStart={workDayStart} workDayEnd={workDayEnd} />
       ) : viewMode === 'day' ? (
-        <PresenterDayView date={selectedDate} technicians={store.technicians} assignments={store.assignments} />
+        <PresenterDayView date={selectedDate} technicians={store.technicians} assignments={store.jobs} />
       ) : viewMode === 'status' ? (
-        <PresenterKanbanView date={selectedDate} technicians={store.technicians} assignments={store.assignments} />
+        <PresenterKanbanView date={selectedDate} technicians={store.technicians} assignments={store.jobs} />
       ) : (
         <div className="flex-1 overflow-auto">
           <div className="grid h-full min-w-225" style={{ gridTemplateColumns: '160px repeat(7, 1fr)', gridTemplateRows: `auto ${store.technicians.length > 0 ? `repeat(${store.technicians.length}, 1fr)` : '1fr'}` }}>
@@ -154,7 +151,7 @@ export function WorkBoardPresenter({ initialTechnicians, initialAssignments, ini
               return <div key={day} className={`border-b border-l p-2 text-center text-sm font-semibold ${isToday ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}>{tb(`days.${DAY_KEYS[i]}`)} {d.getDate()}/{d.getMonth() + 1}</div>
             })}
             {store.technicians.map((tech) => {
-              const techAssignments = store.assignments.filter((a) => a.technicianId === tech.id)
+              const techJobs = store.jobs.filter((a) => a.technicianId === tech.id)
               return (
                 <div key={tech.id} className="contents">
                   <div className="flex items-center gap-2 border-b p-2">
@@ -162,11 +159,11 @@ export function WorkBoardPresenter({ initialTechnicians, initialAssignments, ini
                     <span className="truncate text-sm font-semibold">{tech.name}</span>
                   </div>
                   {days.map((day) => {
-                    const cellAssignments = techAssignments.filter((a) => assignmentOverlapsDate(a, day)).sort((a, b) => a.sortOrder - b.sortOrder)
+                    const cellJobs = techJobs.filter((a) => jobOverlapsDate(a, day)).sort((a, b) => a.sortOrder - b.sortOrder)
                     const isToday = day === today
                     return (
                       <div key={`${tech.id}-${day}`} className={`space-y-1 overflow-y-auto border-b border-l p-1.5 ${isToday ? 'bg-primary/5' : ''}`}>
-                        {cellAssignments.map((a) => <PresenterJobCard key={a.id} assignment={a} />)}
+                        {cellJobs.map((a) => <PresenterJobCard key={a.id} job={a} />)}
                       </div>
                     )
                   })}

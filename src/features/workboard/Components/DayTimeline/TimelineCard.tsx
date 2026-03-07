@@ -3,11 +3,11 @@
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Wrench, ClipboardCheck } from "lucide-react";
-import type { BoardAssignmentWithJob } from "../../Actions/boardActions";
+import type { WorkBoardJob } from "../../Actions/boardActions";
 import { minutesToTime } from "./utils";
 
 export function JobBar({
-  assignment,
+  job,
   leftPct,
   widthPct,
   colorClass,
@@ -20,7 +20,7 @@ export function JobBar({
   onResizeStartLeft,
   onResizeStartRight,
 }: {
-  assignment: BoardAssignmentWithJob;
+  job: WorkBoardJob;
   leftPct: number;
   widthPct: number;
   colorClass: string;
@@ -33,13 +33,7 @@ export function JobBar({
   onResizeStartLeft: (e: React.MouseEvent) => void;
   onResizeStartRight: (e: React.MouseEvent) => void;
 }) {
-  const isServiceRecord = !!assignment.serviceRecordId;
-  const vehicle = isServiceRecord
-    ? assignment.serviceRecord?.vehicle
-    : assignment.inspection?.vehicle;
-  const title = isServiceRecord
-    ? assignment.serviceRecord?.title
-    : assignment.inspection?.template?.name;
+  const isServiceRecord = job.type === "serviceRecord";
 
   const mouseDownPos = useRef<{ x: number; y: number } | null>(null);
 
@@ -52,7 +46,7 @@ export function JobBar({
         isDragging && "opacity-80 ring-2 ring-primary z-[3]",
       )}
       style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
-      title={`${minutesToTime(startMins)}–${minutesToTime(endMins)} · ${title}${vehicle ? ` - ${vehicle.year} ${vehicle.make} ${vehicle.model}` : ""}`}
+      title={`${minutesToTime(startMins)}–${minutesToTime(endMins)} · ${job.title}${job.vehicle ? ` - ${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}` : ""}`}
       onMouseDown={(e) => {
         if (e.button !== 0) return;
         mouseDownPos.current = { x: e.clientX, y: e.clientY };
@@ -74,8 +68,8 @@ export function JobBar({
       <div className="flex items-center gap-1 px-3 min-w-0 cursor-grab active:cursor-grabbing text-[11px] font-medium">
         {isServiceRecord ? <Wrench className="h-3 w-3 shrink-0" /> : <ClipboardCheck className="h-3 w-3 shrink-0" />}
         <span className="truncate">
-          {title}
-          {vehicle ? ` - ${vehicle.licensePlate || `${vehicle.make} ${vehicle.model}`}` : ""}
+          {job.title}
+          {job.vehicle ? ` - ${job.vehicle.licensePlate || `${job.vehicle.make} ${job.vehicle.model}`}` : ""}
         </span>
       </div>
       <div

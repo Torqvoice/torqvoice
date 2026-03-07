@@ -6,35 +6,27 @@ import {
   isSameDay,
   dateOverlaps,
   clampToDay,
-  getAssignmentDateRange,
+  getJobDateRange,
   getDurationMinutes,
-  assignmentOverlapsDate,
+  jobOverlapsDate,
 } from "@/features/workboard/utils/datetime";
-import type { BoardAssignmentWithJob } from "@/features/workboard/Actions/boardActions";
+import type { WorkBoardJob } from "@/features/workboard/Actions/boardActions";
 
-function makeAssignment(
+function makeJob(
   startDateTime: string | null,
   endDateTime: string | null,
-): BoardAssignmentWithJob {
+): WorkBoardJob {
   return {
     id: "a1",
+    type: "serviceRecord",
     technicianId: "t1",
-    serviceRecordId: "sr1",
-    inspectionId: null,
     sortOrder: 0,
-    notes: null,
-    technician: { id: "t1", name: "Tech", color: "#000" },
-    serviceRecord: {
-      id: "sr1",
-      title: "Test",
-      status: "pending",
-      type: "maintenance",
-      startDateTime,
-      endDateTime,
-      vehicle: null,
-    },
-    inspection: null,
-  } as unknown as BoardAssignmentWithJob;
+    title: "Test",
+    status: "pending",
+    startDateTime,
+    endDateTime,
+    vehicle: null,
+  };
 }
 
 describe("getTimeOfDay", () => {
@@ -166,17 +158,17 @@ describe("clampToDay", () => {
   });
 });
 
-describe("getAssignmentDateRange", () => {
-  it("extracts dates from service record", () => {
-    const a = makeAssignment("2026-03-17T08:00:00.000Z", "2026-03-17T16:00:00.000Z");
-    const { start, end } = getAssignmentDateRange(a);
+describe("getJobDateRange", () => {
+  it("extracts dates from job", () => {
+    const j = makeJob("2026-03-17T08:00:00.000Z", "2026-03-17T16:00:00.000Z");
+    const { start, end } = getJobDateRange(j);
     expect(start).toBeInstanceOf(Date);
     expect(end).toBeInstanceOf(Date);
   });
 
   it("returns null when no dates", () => {
-    const a = makeAssignment(null, null);
-    const { start, end } = getAssignmentDateRange(a);
+    const j = makeJob(null, null);
+    const { start, end } = getJobDateRange(j);
     expect(start).toBeNull();
     expect(end).toBeNull();
   });
@@ -196,25 +188,25 @@ describe("getDurationMinutes", () => {
   });
 });
 
-describe("assignmentOverlapsDate", () => {
-  it("returns true when assignment spans the date", () => {
-    const a = makeAssignment("2026-03-17T08:00:00.000Z", "2026-03-17T16:00:00.000Z");
-    expect(assignmentOverlapsDate(a, "2026-03-17")).toBe(true);
+describe("jobOverlapsDate", () => {
+  it("returns true when job spans the date", () => {
+    const j = makeJob("2026-03-17T08:00:00.000Z", "2026-03-17T16:00:00.000Z");
+    expect(jobOverlapsDate(j, "2026-03-17")).toBe(true);
   });
 
-  it("returns false when assignment is on different date", () => {
-    const a = makeAssignment("2026-03-18T08:00:00.000Z", "2026-03-18T16:00:00.000Z");
-    expect(assignmentOverlapsDate(a, "2026-03-17")).toBe(false);
+  it("returns false when job is on different date", () => {
+    const j = makeJob("2026-03-18T08:00:00.000Z", "2026-03-18T16:00:00.000Z");
+    expect(jobOverlapsDate(j, "2026-03-17")).toBe(false);
   });
 
-  it("returns true for multi-day assignment overlapping the date", () => {
-    const a = makeAssignment("2026-03-16T14:00:00.000Z", "2026-03-18T10:00:00.000Z");
-    expect(assignmentOverlapsDate(a, "2026-03-17")).toBe(true);
+  it("returns true for multi-day job overlapping the date", () => {
+    const j = makeJob("2026-03-16T14:00:00.000Z", "2026-03-18T10:00:00.000Z");
+    expect(jobOverlapsDate(j, "2026-03-17")).toBe(true);
   });
 
-  it("returns false when no dates on assignment", () => {
-    const a = makeAssignment(null, null);
-    expect(assignmentOverlapsDate(a, "2026-03-17")).toBe(false);
+  it("returns false when no dates on job", () => {
+    const j = makeJob(null, null);
+    expect(jobOverlapsDate(j, "2026-03-17")).toBe(false);
   });
 });
 

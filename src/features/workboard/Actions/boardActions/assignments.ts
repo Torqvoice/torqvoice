@@ -6,117 +6,142 @@ import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
 import { notificationBus } from "@/lib/notification-bus";
 import {
-  createBoardAssignmentSchema,
-  moveAssignmentSchema,
-  removeAssignmentSchema,
+  assignTechnicianSchema,
+  moveJobSchema,
+  unassignJobSchema,
 } from "../../Schema/workboardSchema";
-import type { BoardAssignmentWithJob } from "./types";
+import type { WorkBoardJob, WorkBoardSettings } from "./types";
 
-const SERVICE_RECORD_SELECT = {
-  id: true,
-  title: true,
-  status: true,
-  startDateTime: true,
-  endDateTime: true,
-  vehicle: {
-    select: { id: true, make: true, model: true, year: true, licensePlate: true },
-  },
-} as const;
-
-const INSPECTION_SELECT = {
-  id: true,
-  status: true,
-  startDateTime: true,
-  endDateTime: true,
-  vehicle: {
-    select: { id: true, make: true, model: true, year: true, licensePlate: true },
-  },
-  template: { select: { name: true } },
-} as const;
-
-function serializeAssignment(a: {
+function serviceRecordToJob(sr: {
   id: string;
+  title: string;
+  status: string;
+  startDateTime: Date | null;
+  endDateTime: Date | null;
+  technicianId: string | null;
   sortOrder: number;
-  notes: string | null;
-  technicianId: string;
-  serviceRecordId: string | null;
-  inspectionId: string | null;
-  organizationId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  technician: { id: string; name: string; color: string; isActive: boolean; sortOrder: number; dailyCapacity: number; memberId: string | null; organizationId: string; createdAt: Date; updatedAt: Date };
-  serviceRecord?: { id: string; title: string; status: string; startDateTime: Date | null; endDateTime: Date | null; vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null } } | null;
-  inspection?: { id: string; status: string; startDateTime: Date | null; endDateTime: Date | null; vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null }; template: { name: string } } | null;
-}): BoardAssignmentWithJob & Record<string, unknown> {
+  vehicle: {
+    id: string;
+    make: string;
+    model: string;
+    year: number;
+    licensePlate: string | null;
+  };
+}): WorkBoardJob {
   return {
-    ...a,
-    createdAt: a.createdAt.toISOString(),
-    updatedAt: a.updatedAt.toISOString(),
-    technician: {
-      ...a.technician,
-      createdAt: a.technician.createdAt.toISOString(),
-      updatedAt: a.technician.updatedAt.toISOString(),
-    },
-    serviceRecord: a.serviceRecord ? {
-      ...a.serviceRecord,
-      startDateTime: a.serviceRecord.startDateTime?.toISOString() ?? null,
-      endDateTime: a.serviceRecord.endDateTime?.toISOString() ?? null,
-    } : null,
-    inspection: a.inspection ? {
-      ...a.inspection,
-      startDateTime: a.inspection.startDateTime?.toISOString() ?? null,
-      endDateTime: a.inspection.endDateTime?.toISOString() ?? null,
-    } : null,
+    id: sr.id,
+    type: "serviceRecord",
+    technicianId: sr.technicianId,
+    sortOrder: sr.sortOrder,
+    title: sr.title,
+    status: sr.status,
+    startDateTime: sr.startDateTime?.toISOString() ?? null,
+    endDateTime: sr.endDateTime?.toISOString() ?? null,
+    vehicle: sr.vehicle,
   };
 }
 
-export async function getBoardAssignments(weekStart: string) {
+function inspectionToJob(insp: {
+  id: string;
+  status: string;
+  startDateTime: Date | null;
+  endDateTime: Date | null;
+  technicianId: string | null;
+  sortOrder: number;
+  vehicle: {
+    id: string;
+    make: string;
+    model: string;
+    year: number;
+    licensePlate: string | null;
+  };
+  template: { name: string };
+}): WorkBoardJob {
+  return {
+    id: insp.id,
+    type: "inspection",
+    technicianId: insp.technicianId,
+    sortOrder: insp.sortOrder,
+    title: insp.template.name,
+    status: insp.status,
+    startDateTime: insp.startDateTime?.toISOString() ?? null,
+    endDateTime: insp.endDateTime?.toISOString() ?? null,
+    vehicle: insp.vehicle,
+    templateName: insp.template.name,
+  };
+}
+
+const VEHICLE_SELECT = {
+  id: true,
+  make: true,
+  model: true,
+  year: true,
+  licensePlate: true,
+} as const;
+
+export async function getBoardJobs(weekStart: string) {
   return withAuth(
     async ({ organizationId }) => {
       const start = new Date(weekStart);
       const end = new Date(start);
       end.setDate(end.getDate() + 7);
 
-      const assignments = await db.boardAssignment.findMany({
-        where: {
-          organizationId,
-          OR: [
-            {
-              serviceRecord: {
-                OR: [
-                  { startDateTime: { gte: start, lt: end } },
-                  { endDateTime: { gt: start, lte: end } },
-                  { startDateTime: { lte: start }, endDateTime: { gte: end } },
-                ],
-              },
-            },
-            {
-              inspection: {
-                OR: [
-                  { startDateTime: { gte: start, lt: end } },
-                  { endDateTime: { gt: start, lte: end } },
-                  { startDateTime: { lte: start }, endDateTime: { gte: end } },
-                ],
-              },
-            },
-            // Fallback: records without dates
-            {
-              serviceRecord: { startDateTime: null },
-            },
-            {
-              inspection: { startDateTime: null },
-            },
-          ],
-        },
-        include: {
-          technician: true,
-          serviceRecord: { select: SERVICE_RECORD_SELECT },
-          inspection: { select: INSPECTION_SELECT },
-        },
-        orderBy: { sortOrder: "asc" },
-      });
+      const [serviceRecords, inspections] = await Promise.all([
+        db.serviceRecord.findMany({
+          where: {
+            vehicle: { organizationId },
+            technicianId: { not: null },
+            OR: [
+              { startDateTime: { gte: start, lt: end } },
+              { endDateTime: { gt: start, lte: end } },
+              { startDateTime: { lte: start }, endDateTime: { gte: end } },
+              { startDateTime: null },
+            ],
+          },
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            startDateTime: true,
+            endDateTime: true,
+            technicianId: true,
+            sortOrder: true,
+            vehicle: { select: VEHICLE_SELECT },
+          },
+          orderBy: { sortOrder: "asc" },
+        }),
+        db.inspection.findMany({
+          where: {
+            organizationId,
+            technicianId: { not: null },
+            OR: [
+              { startDateTime: { gte: start, lt: end } },
+              { endDateTime: { gt: start, lte: end } },
+              { startDateTime: { lte: start }, endDateTime: { gte: end } },
+              { startDateTime: null },
+            ],
+          },
+          select: {
+            id: true,
+            status: true,
+            startDateTime: true,
+            endDateTime: true,
+            technicianId: true,
+            sortOrder: true,
+            vehicle: { select: VEHICLE_SELECT },
+            template: { select: { name: true } },
+          },
+          orderBy: { sortOrder: "asc" },
+        }),
+      ]);
 
-      return assignments.map(serializeAssignment);
+      const jobs: WorkBoardJob[] = [
+        ...serviceRecords.map(serviceRecordToJob),
+        ...inspections.map(inspectionToJob),
+      ];
+      jobs.sort((a, b) => a.sortOrder - b.sortOrder);
+
+      return jobs;
     },
     {
       requiredPermissions: [
@@ -129,30 +154,18 @@ export async function getBoardAssignments(weekStart: string) {
 export async function getUnassignedJobs() {
   return withAuth(
     async ({ organizationId }) => {
-      const assignedServiceRecordIds = (
-        await db.boardAssignment.findMany({
-          where: { organizationId, serviceRecordId: { not: null } },
-          select: { serviceRecordId: true },
-        })
-      ).map((a) => a.serviceRecordId!);
-
-      const assignedInspectionIds = (
-        await db.boardAssignment.findMany({
-          where: { organizationId, inspectionId: { not: null } },
-          select: { inspectionId: true },
-        })
-      ).map((a) => a.inspectionId!);
-
       const [serviceRecords, inspections] = await Promise.all([
         db.serviceRecord.findMany({
           where: {
             vehicle: { organizationId },
+            technicianId: null,
             status: { in: ["pending", "in-progress", "waiting-parts", "scheduled"] },
-            id: { notIn: assignedServiceRecordIds },
           },
           select: {
-            id: true, title: true, status: true,
-            vehicle: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
+            id: true,
+            title: true,
+            status: true,
+            vehicle: { select: VEHICLE_SELECT },
           },
           orderBy: { createdAt: "desc" },
           take: 100,
@@ -160,12 +173,13 @@ export async function getUnassignedJobs() {
         db.inspection.findMany({
           where: {
             organizationId,
+            technicianId: null,
             status: { in: ["in_progress", "pending"] },
-            id: { notIn: assignedInspectionIds },
           },
           select: {
-            id: true, status: true,
-            vehicle: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
+            id: true,
+            status: true,
+            vehicle: { select: VEHICLE_SELECT },
             template: { select: { name: true } },
           },
           orderBy: { createdAt: "desc" },
@@ -183,54 +197,60 @@ export async function getUnassignedJobs() {
   );
 }
 
-export async function createBoardAssignment(input: unknown) {
+export async function assignTechnician(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
-      const data = createBoardAssignmentSchema.parse(input);
+      const data = assignTechnicianSchema.parse(input);
 
       const tech = await db.technician.findFirst({
         where: { id: data.technicianId, organizationId },
       });
       if (!tech) throw new Error("Technician not found");
 
-      if (!data.serviceRecordId && !data.inspectionId) {
-        throw new Error("Must provide serviceRecordId or inspectionId");
-      }
+      let job: WorkBoardJob;
 
-      // Sync techName on service record
-      if (data.serviceRecordId) {
-        await db.serviceRecord.update({
-          where: { id: data.serviceRecordId },
-          data: { techName: tech.name },
+      if (data.type === "serviceRecord") {
+        const sr = await db.serviceRecord.update({
+          where: { id: data.id },
+          data: { technicianId: data.technicianId, techName: tech.name },
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            startDateTime: true,
+            endDateTime: true,
+            technicianId: true,
+            sortOrder: true,
+            vehicle: { select: VEHICLE_SELECT },
+          },
         });
+        job = serviceRecordToJob(sr);
+      } else {
+        const insp = await db.inspection.update({
+          where: { id: data.id },
+          data: { technicianId: data.technicianId },
+          select: {
+            id: true,
+            status: true,
+            startDateTime: true,
+            endDateTime: true,
+            technicianId: true,
+            sortOrder: true,
+            vehicle: { select: VEHICLE_SELECT },
+            template: { select: { name: true } },
+          },
+        });
+        job = inspectionToJob(insp);
       }
-
-      const assignment = await db.boardAssignment.create({
-        data: {
-          sortOrder: data.sortOrder,
-          notes: data.notes,
-          technicianId: data.technicianId,
-          serviceRecordId: data.serviceRecordId || null,
-          inspectionId: data.inspectionId || null,
-          organizationId,
-        },
-        include: {
-          technician: true,
-          serviceRecord: { select: SERVICE_RECORD_SELECT },
-          inspection: { select: INSPECTION_SELECT },
-        },
-      });
-
-      const serialized = serializeAssignment(assignment);
 
       notificationBus.emit("workboard", {
-        type: "assignment_created",
+        type: "job_assigned",
         organizationId,
-        assignment: serialized,
+        job,
       });
 
       revalidatePath("/work-board");
-      return serialized;
+      return job;
     },
     {
       requiredPermissions: [
@@ -240,49 +260,67 @@ export async function createBoardAssignment(input: unknown) {
   );
 }
 
-export async function moveAssignment(input: unknown) {
+export async function moveJob(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
-      const data = moveAssignmentSchema.parse(input);
-
-      const assignment = await db.boardAssignment.findFirst({
-        where: { id: data.id, organizationId },
-      });
-      if (!assignment) throw new Error("Assignment not found");
+      const data = moveJobSchema.parse(input);
 
       const tech = await db.technician.findFirst({
         where: { id: data.technicianId, organizationId },
       });
       if (!tech) throw new Error("Technician not found");
 
-      const updated = await db.boardAssignment.update({
-        where: { id: data.id },
-        data: { technicianId: data.technicianId, sortOrder: data.sortOrder },
-        include: {
-          technician: true,
-          serviceRecord: { select: SERVICE_RECORD_SELECT },
-          inspection: { select: INSPECTION_SELECT },
-        },
-      });
+      let job: WorkBoardJob;
 
-      // Sync techName
-      if (updated.serviceRecordId) {
-        await db.serviceRecord.update({
-          where: { id: updated.serviceRecordId },
-          data: { techName: tech.name },
+      if (data.type === "serviceRecord") {
+        const sr = await db.serviceRecord.update({
+          where: { id: data.id },
+          data: {
+            technicianId: data.technicianId,
+            sortOrder: data.sortOrder,
+            techName: tech.name,
+          },
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            startDateTime: true,
+            endDateTime: true,
+            technicianId: true,
+            sortOrder: true,
+            vehicle: { select: VEHICLE_SELECT },
+          },
         });
+        job = serviceRecordToJob(sr);
+      } else {
+        const insp = await db.inspection.update({
+          where: { id: data.id },
+          data: {
+            technicianId: data.technicianId,
+            sortOrder: data.sortOrder,
+          },
+          select: {
+            id: true,
+            status: true,
+            startDateTime: true,
+            endDateTime: true,
+            technicianId: true,
+            sortOrder: true,
+            vehicle: { select: VEHICLE_SELECT },
+            template: { select: { name: true } },
+          },
+        });
+        job = inspectionToJob(insp);
       }
 
-      const serialized = serializeAssignment(updated);
-
       notificationBus.emit("workboard", {
-        type: "assignment_moved",
+        type: "job_moved",
         organizationId,
-        assignment: serialized,
+        job,
       });
 
       revalidatePath("/work-board");
-      return serialized;
+      return job;
     },
     {
       requiredPermissions: [
@@ -292,29 +330,38 @@ export async function moveAssignment(input: unknown) {
   );
 }
 
-export async function removeAssignment(input: unknown) {
+export async function unassignJob(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
-      const data = removeAssignmentSchema.parse(input);
+      const data = unassignJobSchema.parse(input);
 
-      const assignment = await db.boardAssignment.findFirst({
-        where: { id: data.id, organizationId },
-      });
-      if (!assignment) throw new Error("Assignment not found");
+      if (data.type === "serviceRecord") {
+        const sr = await db.serviceRecord.findFirst({
+          where: { id: data.id, vehicle: { organizationId } },
+        });
+        if (!sr) throw new Error("Service record not found");
 
-      if (assignment.serviceRecordId) {
         await db.serviceRecord.update({
-          where: { id: assignment.serviceRecordId },
-          data: { techName: null },
+          where: { id: data.id },
+          data: { technicianId: null, techName: null, sortOrder: 0 },
+        });
+      } else {
+        const insp = await db.inspection.findFirst({
+          where: { id: data.id, organizationId },
+        });
+        if (!insp) throw new Error("Inspection not found");
+
+        await db.inspection.update({
+          where: { id: data.id },
+          data: { technicianId: null, sortOrder: 0 },
         });
       }
 
-      await db.boardAssignment.delete({ where: { id: data.id } });
-
       notificationBus.emit("workboard", {
-        type: "assignment_removed",
+        type: "job_unassigned",
         organizationId,
-        assignmentId: data.id,
+        jobId: data.id,
+        jobType: data.type,
       });
 
       revalidatePath("/work-board");
@@ -323,6 +370,35 @@ export async function removeAssignment(input: unknown) {
     {
       requiredPermissions: [
         { action: PermissionAction.DELETE, subject: PermissionSubject.WORK_BOARD },
+      ],
+    },
+  );
+}
+
+export async function getWorkBoardSettings() {
+  return withAuth(
+    async ({ organizationId }) => {
+      const settings = await db.appSetting.findMany({
+        where: {
+          organizationId,
+          key: { in: ["workboard.weekStartDay", "workboard.workDayStart", "workboard.workDayEnd"] },
+        },
+      });
+
+      const map: Record<string, string> = {};
+      for (const s of settings) {
+        map[s.key] = s.value;
+      }
+
+      return {
+        weekStartDay: parseInt(map["workboard.weekStartDay"] || "1", 10),
+        workDayStart: map["workboard.workDayStart"] || "07:00",
+        workDayEnd: map["workboard.workDayEnd"] || "15:00",
+      } as WorkBoardSettings;
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.WORK_BOARD },
       ],
     },
   );

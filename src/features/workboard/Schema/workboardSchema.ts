@@ -22,18 +22,22 @@ export const updateTechnicianSchema = z.object({
   memberId: z.string().nullable().optional(),
 });
 
-export const createBoardAssignmentSchema = z.object({
-  technicianId: z.string().min(1, "Technician is required"),
-  serviceRecordId: z.string().optional(),
-  inspectionId: z.string().optional(),
-  notes: z.string().optional(),
-  sortOrder: z.number().int().min(0).default(0),
+export const assignTechnicianSchema = z.object({
+  id: z.string().min(1),
+  technicianId: z.string().min(1),
+  type: z.enum(["serviceRecord", "inspection"]),
 });
 
-export const moveAssignmentSchema = z.object({
+export const moveJobSchema = z.object({
   id: z.string().min(1),
   technicianId: z.string().min(1),
   sortOrder: z.number().int().min(0).default(0),
+  type: z.enum(["serviceRecord", "inspection"]),
+});
+
+export const unassignJobSchema = z.object({
+  id: z.string().min(1),
+  type: z.enum(["serviceRecord", "inspection"]),
 });
 
 export const updateServiceTimesSchema = z.object({
@@ -42,12 +46,9 @@ export const updateServiceTimesSchema = z.object({
   endDateTime: z.coerce.date(),
 });
 
-export const removeAssignmentSchema = z.object({
-  id: z.string().min(1),
-});
-
 export type CreateTechnicianInput = z.infer<typeof createTechnicianSchema>;
 export type UpdateTechnicianInput = z.infer<typeof updateTechnicianSchema>;
-export type CreateBoardAssignmentInput = z.infer<typeof createBoardAssignmentSchema>;
-export type MoveAssignmentInput = z.infer<typeof moveAssignmentSchema>;
+export type AssignTechnicianInput = z.infer<typeof assignTechnicianSchema>;
+export type MoveJobInput = z.infer<typeof moveJobSchema>;
+export type UnassignJobInput = z.infer<typeof unassignJobSchema>;
 export type UpdateServiceTimesInput = z.infer<typeof updateServiceTimesSchema>;

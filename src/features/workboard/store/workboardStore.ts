@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { BoardAssignmentWithJob } from "../Actions/boardActions";
+import type { WorkBoardJob } from "../Actions/boardActions";
 
 type UnassignedServiceRecord = {
   id: string;
@@ -40,7 +40,7 @@ export type Technician = {
 
 type WorkBoardState = {
   technicians: Technician[];
-  assignments: BoardAssignmentWithJob[];
+  jobs: WorkBoardJob[];
   unassignedServiceRecords: UnassignedServiceRecord[];
   unassignedInspections: UnassignedInspection[];
   weekStart: string;
@@ -50,10 +50,10 @@ type WorkBoardState = {
   addTechnician: (tech: Technician) => void;
   removeTechnician: (id: string) => void;
 
-  setAssignments: (assignments: BoardAssignmentWithJob[]) => void;
-  addAssignment: (assignment: BoardAssignmentWithJob) => void;
-  updateAssignment: (assignment: BoardAssignmentWithJob) => void;
-  removeAssignment: (id: string) => void;
+  setJobs: (jobs: WorkBoardJob[]) => void;
+  addJob: (job: WorkBoardJob) => void;
+  updateJob: (job: WorkBoardJob) => void;
+  removeJob: (id: string) => void;
 
   setUnassigned: (
     serviceRecords: UnassignedServiceRecord[],
@@ -65,13 +65,13 @@ type WorkBoardState = {
   setWeekStart: (weekStart: string) => void;
   setConnected: (connected: boolean) => void;
 
-  updateServiceTimes: (assignmentId: string, startDateTime: string, endDateTime: string) => void;
-  optimisticMove: (assignmentId: string, newTechId: string) => void;
+  updateServiceTimes: (jobId: string, startDateTime: string, endDateTime: string) => void;
+  optimisticMove: (jobId: string, newTechId: string) => void;
 };
 
 export const useWorkBoardStore = create<WorkBoardState>((set) => ({
   technicians: [],
-  assignments: [],
+  jobs: [],
   unassignedServiceRecords: [],
   unassignedInspections: [],
   weekStart: "",
@@ -85,17 +85,17 @@ export const useWorkBoardStore = create<WorkBoardState>((set) => ({
   removeTechnician: (id) =>
     set((s) => ({ technicians: s.technicians.filter((t) => t.id !== id) })),
 
-  setAssignments: (assignments) => set({ assignments }),
-  addAssignment: (assignment) =>
+  setJobs: (jobs) => set({ jobs }),
+  addJob: (job) =>
     set((s) => ({
-      assignments: [...s.assignments.filter((a) => a.id !== assignment.id), assignment],
+      jobs: [...s.jobs.filter((j) => j.id !== job.id), job],
     })),
-  updateAssignment: (assignment) =>
+  updateJob: (job) =>
     set((s) => ({
-      assignments: s.assignments.map((a) => (a.id === assignment.id ? assignment : a)),
+      jobs: s.jobs.map((j) => (j.id === job.id ? job : j)),
     })),
-  removeAssignment: (id) =>
-    set((s) => ({ assignments: s.assignments.filter((a) => a.id !== id) })),
+  removeJob: (id) =>
+    set((s) => ({ jobs: s.jobs.filter((j) => j.id !== id) })),
 
   setUnassigned: (serviceRecords, inspections) =>
     set({ unassignedServiceRecords: serviceRecords, unassignedInspections: inspections }),
@@ -112,27 +112,20 @@ export const useWorkBoardStore = create<WorkBoardState>((set) => ({
         : { unassignedInspections: [job as UnassignedInspection, ...s.unassignedInspections] },
     ),
 
-  updateServiceTimes: (assignmentId, startDateTime, endDateTime) =>
+  updateServiceTimes: (jobId, startDateTime, endDateTime) =>
     set((s) => ({
-      assignments: s.assignments.map((a) => {
-        if (a.id !== assignmentId) return a;
-        if (a.serviceRecord) {
-          return { ...a, serviceRecord: { ...a.serviceRecord, startDateTime, endDateTime } };
-        }
-        if (a.inspection) {
-          return { ...a, inspection: { ...a.inspection, startDateTime, endDateTime } };
-        }
-        return a;
-      }),
+      jobs: s.jobs.map((j) =>
+        j.id === jobId ? { ...j, startDateTime, endDateTime } : j,
+      ),
     })),
 
   setWeekStart: (weekStart) => set({ weekStart }),
   setConnected: (isConnected) => set({ isConnected }),
 
-  optimisticMove: (assignmentId, newTechId) =>
+  optimisticMove: (jobId, newTechId) =>
     set((s) => ({
-      assignments: s.assignments.map((a) =>
-        a.id === assignmentId ? { ...a, technicianId: newTechId } : a,
+      jobs: s.jobs.map((j) =>
+        j.id === jobId ? { ...j, technicianId: newTechId } : j,
       ),
     })),
 }));

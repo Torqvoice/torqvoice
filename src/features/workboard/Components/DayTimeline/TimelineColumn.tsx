@@ -3,10 +3,10 @@
 import { useRef, useCallback } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { cn } from "@/lib/utils";
-import type { BoardAssignmentWithJob } from "../../Actions/boardActions";
+import type { WorkBoardJob } from "../../Actions/boardActions";
 import type { Technician } from "../../store/workboardStore";
 import { formatDuration } from "../DurationSlider";
-import { getAssignmentDateRange, getDurationMinutes } from "../../utils/datetime";
+import { getJobDateRange, getDurationMinutes } from "../../utils/datetime";
 import { getResolvedRange, BAR_COLORS, minutesToTime } from "./utils";
 import { JobBar, CurrentTimeIndicator } from "./TimelineCard";
 import type { DragState, DragOverride, DragMode } from "./index";
@@ -38,15 +38,15 @@ export function TechTimelineRow({
 }: {
   tech: Technician;
   date: string;
-  dayAssignments: BoardAssignmentWithJob[];
+  dayAssignments: WorkBoardJob[];
   dayStartMins: number;
   dayEndMins: number;
   totalMinutes: number;
   hourSlots: string[];
   drag: DragState | null;
   dragOverride: DragOverride | null;
-  startDrag: (e: React.MouseEvent, a: BoardAssignmentWithJob, mode: DragMode, el: HTMLElement) => void;
-  onCardClick: (a: BoardAssignmentWithJob) => void;
+  startDrag: (e: React.MouseEvent, a: WorkBoardJob, mode: DragMode, el: HTMLElement) => void;
+  onCardClick: (a: WorkBoardJob) => void;
   onTechClick?: (t: Technician) => void;
   onCreateWorkOrder?: (techId: string, startTime: string, endTime: string) => void;
   cancelPendingDrag: () => void;
@@ -58,7 +58,7 @@ export function TechTimelineRow({
   const techJobs = dayAssignments.filter((a) => a.technicianId === tech.id);
 
   const bookedMinutes = techJobs.reduce((sum, a) => {
-    const { start, end } = getAssignmentDateRange(a);
+    const { start, end } = getJobDateRange(a);
     return start && end ? sum + getDurationMinutes(start, end) : sum;
   }, 0);
 
@@ -102,11 +102,9 @@ export function TechTimelineRow({
             </div>
             <CurrentTimeIndicator dayStartMins={dayStartMins} totalMinutes={totalMinutes} date={date} />
 
-            {techJobs.map((assignment, jobIdx) => {
-              const isDragged = drag?.assignmentId === assignment.id;
-              const sr = assignment.serviceRecord;
-              const insp = assignment.inspection;
-              const resolved = getResolvedRange(sr?.startDateTime ?? insp?.startDateTime, sr?.endDateTime ?? insp?.endDateTime, dayStartMins);
+            {techJobs.map((job, jobIdx) => {
+              const isDragged = drag?.assignmentId === job.id;
+              const resolved = getResolvedRange(job.startDateTime ?? null, job.endDateTime ?? null, dayStartMins);
               let { startMins, endMins } = resolved;
 
               if (isDragged && dragOverride) {
@@ -120,8 +118,8 @@ export function TechTimelineRow({
 
               return (
                 <JobBar
-                  key={assignment.id}
-                  assignment={assignment}
+                  key={job.id}
+                  job={job}
                   leftPct={Math.max(leftPct, 0)}
                   widthPct={Math.max(widthPct, 1)}
                   colorClass={BAR_COLORS[jobIdx % BAR_COLORS.length]}
@@ -129,10 +127,10 @@ export function TechTimelineRow({
                   isDragging={isDragged}
                   startMins={startMins}
                   endMins={endMins}
-                  onClick={() => { cancelPendingDrag(); if (!isDragged) onCardClick(assignment); }}
-                  onMoveStart={(e) => { if (timelineRef.current) startDrag(e, assignment, "move", timelineRef.current); }}
-                  onResizeStartLeft={(e) => { if (timelineRef.current) startDrag(e, assignment, "resize-start", timelineRef.current); }}
-                  onResizeStartRight={(e) => { if (timelineRef.current) startDrag(e, assignment, "resize-end", timelineRef.current); }}
+                  onClick={() => { cancelPendingDrag(); if (!isDragged) onCardClick(job); }}
+                  onMoveStart={(e) => { if (timelineRef.current) startDrag(e, job, "move", timelineRef.current); }}
+                  onResizeStartLeft={(e) => { if (timelineRef.current) startDrag(e, job, "resize-start", timelineRef.current); }}
+                  onResizeStartRight={(e) => { if (timelineRef.current) startDrag(e, job, "resize-end", timelineRef.current); }}
                 />
               );
             })}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
 import {
@@ -15,8 +15,7 @@ import { Clock, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import {
-  getAssignmentForServiceRecord,
-  createBoardAssignment,
+  assignTechnician,
   updateServiceTimes,
 } from '@/features/workboard/Actions/boardActions'
 import { cn } from '@/lib/utils'
@@ -33,6 +32,8 @@ interface ScheduleTimesSectionProps {
   technicians?: Technician[]
   initialStartDateTime?: string | null
   initialEndDateTime?: string | null
+  initialTechnicianId?: string | null
+  initialTechnicianName?: string | null
 }
 
 export function ScheduleTimesSection({
@@ -40,10 +41,15 @@ export function ScheduleTimesSection({
   technicians = [],
   initialStartDateTime,
   initialEndDateTime,
+  initialTechnicianId,
+  initialTechnicianName,
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
-  const [loading, setLoading] = useState(true)
-  const [assignedTech, setAssignedTech] = useState<{ id: string; name: string } | null>(null)
+  const [assignedTech, setAssignedTech] = useState<{ id: string; name: string } | null>(
+    initialTechnicianId && initialTechnicianName
+      ? { id: initialTechnicianId, name: initialTechnicianName }
+      : null,
+  )
 
   const [startDateTime, setStartDateTime] = useState<Date | undefined>(
     initialStartDateTime ? new Date(initialStartDateTime) : new Date(),
@@ -54,17 +60,6 @@ export function ScheduleTimesSection({
 
   const [selectedTechId, setSelectedTechId] = useState('')
   const [creating, setCreating] = useState(false)
-
-  useEffect(() => {
-    getAssignmentForServiceRecord(serviceRecordId)
-      .then((res) => {
-        setLoading(false)
-        if (res.success && res.data) {
-          setAssignedTech(res.data.technician)
-        }
-      })
-      .catch(() => setLoading(false))
-  }, [serviceRecordId])
 
   const saveTimes = async (start: Date, end: Date) => {
     if (end <= start) {
@@ -91,23 +86,20 @@ export function ScheduleTimesSection({
   const handleCreate = async () => {
     if (!selectedTechId) return
     setCreating(true)
-    const res = await createBoardAssignment({
+    const res = await assignTechnician({
+      id: serviceRecordId,
       technicianId: selectedTechId,
-      serviceRecordId,
+      type: 'serviceRecord',
     })
-    if (res.success && res.data) {
-      const refetch = await getAssignmentForServiceRecord(serviceRecordId)
-      if (refetch.success && refetch.data) {
-        setAssignedTech(refetch.data.technician)
-      }
+    if (res.success) {
+      const tech = technicians.find((t) => t.id === selectedTechId)
+      if (tech) setAssignedTech({ id: tech.id, name: tech.name })
       toast.success(t('assigned'))
     } else {
       toast.error(t('failedAssign'))
     }
     setCreating(false)
   }
-
-  if (loading) return null
 
   const currentHours = startDateTime && endDateTime
     ? Math.round((endDateTime.getTime() - startDateTime.getTime()) / 3600000)

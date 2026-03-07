@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { getTechnicians } from "@/features/workboard/Actions/technicianActions";
-import { getBoardAssignments, getWorkBoardSettings } from "@/features/workboard/Actions/boardActions";
+import { getBoardJobs, getWorkBoardSettings } from "@/features/workboard/Actions/boardActions";
 import { WorkBoardPresenter } from "@/features/workboard/Components/WorkBoardPresenter";
 
 function getMonday(date: Date): string {
@@ -20,7 +20,7 @@ export default async function WorkBoardPresenterPage() {
 
   const [techResult, assignResult, settingsResult] = await Promise.all([
     getTechnicians(),
-    getBoardAssignments(weekStart),
+    getBoardJobs(weekStart),
     getWorkBoardSettings(),
   ]);
 

@@ -12,22 +12,22 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Wrench, ClipboardCheck, ExternalLink, Trash2 } from "lucide-react";
-import type { BoardAssignmentWithJob } from "../Actions/boardActions";
+import type { WorkBoardJob } from "../Actions/boardActions";
 import { updateServiceTimes, updateInspectionTimes } from "../Actions/boardActions";
 import { useWorkBoardStore } from "../store/workboardStore";
 import { DurationPicker } from "./DurationSlider";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { getAssignmentDateRange } from "../utils/datetime";
+import { getJobDateRange } from "../utils/datetime";
 
 export function JobDetailPopover({
-  assignment,
+  job,
   open,
   onOpenChange,
   onRemove,
 }: {
-  assignment: BoardAssignmentWithJob;
+  job: WorkBoardJob;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onRemove: () => void;
@@ -35,37 +35,24 @@ export function JobDetailPopover({
   const t = useTranslations("workBoard.jobDetail");
   const store = useWorkBoardStore();
 
-  const liveAssignment =
-    store.assignments.find((a) => a.id === assignment.id) ?? assignment;
+  const liveJob =
+    store.jobs.find((j) => j.id === job.id) ?? job;
 
-  const { start: initStart, end: initEnd } = getAssignmentDateRange(liveAssignment);
+  const { start: initStart, end: initEnd } = getJobDateRange(liveJob);
   const [startDate, setStartDate] = useState<Date | undefined>(initStart ?? undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(initEnd ?? undefined);
 
   useEffect(() => {
-    const { start, end } = getAssignmentDateRange(liveAssignment);
+    const { start, end } = getJobDateRange(liveJob);
     setStartDate(start ?? undefined);
     setEndDate(end ?? undefined);
-  }, [liveAssignment.id, liveAssignment.serviceRecord?.startDateTime, liveAssignment.serviceRecord?.endDateTime, liveAssignment.inspection?.startDateTime, liveAssignment.inspection?.endDateTime]);
+  }, [liveJob.id, liveJob.startDateTime, liveJob.endDateTime]);
 
-  const isServiceRecord = !!liveAssignment.serviceRecordId;
-  const vehicle = isServiceRecord
-    ? liveAssignment.serviceRecord?.vehicle
-    : liveAssignment.inspection?.vehicle;
-  const title = isServiceRecord
-    ? liveAssignment.serviceRecord?.title
-    : liveAssignment.inspection?.template?.name;
-  const status = isServiceRecord
-    ? liveAssignment.serviceRecord?.status
-    : liveAssignment.inspection?.status;
+  const isServiceRecord = liveJob.type === "serviceRecord";
 
   const detailUrl = isServiceRecord
-    ? `/vehicles/${vehicle?.id}/service/${liveAssignment.serviceRecordId}`
-    : `/inspections/${liveAssignment.inspectionId}`;
-
-  const recordId = isServiceRecord
-    ? liveAssignment.serviceRecordId!
-    : liveAssignment.inspectionId!;
+    ? `/vehicles/${liveJob.vehicle?.id}/service/${liveJob.id}`
+    : `/inspections/${liveJob.id}`;
 
   const saveTimes = useCallback(
     async (start: Date | undefined, end: Date | undefined) => {
@@ -76,26 +63,26 @@ export function JobDetailPopover({
       }
 
       store.updateServiceTimes(
-        assignment.id,
+        job.id,
         start.toISOString(),
         end.toISOString(),
       );
 
       const action = isServiceRecord ? updateServiceTimes : updateInspectionTimes;
       const res = await action({
-        id: recordId,
+        id: job.id,
         startDateTime: start,
         endDateTime: end,
       });
       if (!res.success) {
-        const { start: origStart, end: origEnd } = getAssignmentDateRange(assignment);
+        const { start: origStart, end: origEnd } = getJobDateRange(job);
         if (origStart && origEnd) {
-          store.updateServiceTimes(assignment.id, origStart.toISOString(), origEnd.toISOString());
+          store.updateServiceTimes(job.id, origStart.toISOString(), origEnd.toISOString());
         }
         toast.error(t("failedTimes"));
       }
     },
-    [assignment, store, t, isServiceRecord, recordId],
+    [job, store, t, isServiceRecord],
   );
 
   const handleDurationChange = (hours: number | null) => {
@@ -120,25 +107,21 @@ export function JobDetailPopover({
             ) : (
               <ClipboardCheck className="h-4 w-4 shrink-0 text-green-500" />
             )}
-            {title}
+            {liveJob.title}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
-          {vehicle && (
+          {liveJob.vehicle && (
             <p className="text-sm text-muted-foreground">
-              {vehicle.year} {vehicle.make} {vehicle.model}
-              {vehicle.licensePlate ? ` · ${vehicle.licensePlate}` : ""}
+              {liveJob.vehicle.year} {liveJob.vehicle.make} {liveJob.vehicle.model}
+              {liveJob.vehicle.licensePlate ? ` · ${liveJob.vehicle.licensePlate}` : ""}
             </p>
           )}
 
-          {status && (
+          {liveJob.status && (
             <Badge variant="secondary" className="capitalize">
-              {status.replace(/_/g, " ")}
+              {liveJob.status.replace(/_/g, " ")}
             </Badge>
-          )}
-
-          {liveAssignment.notes && (
-            <p className="text-sm text-muted-foreground">{liveAssignment.notes}</p>
           )}
 
           <DurationPicker

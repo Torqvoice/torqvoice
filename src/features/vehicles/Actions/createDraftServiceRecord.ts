@@ -8,6 +8,7 @@ export async function createDraftServiceRecord(
   vehicleId: string,
   startDateTime?: Date,
   endDateTime?: Date,
+  technicianId?: string,
 ) {
   return withAuth(
     async ({ organizationId, userId }) => {
@@ -38,7 +39,16 @@ export async function createDraftServiceRecord(
       for (const s of settings) settingsMap[s.key] = s.value;
 
       const shopName = org?.name || undefined;
-      const techName = currentUser?.name || undefined;
+      let techName = currentUser?.name || undefined;
+
+      // If a technician is specified, use their name instead
+      if (technicianId) {
+        const tech = await db.technician.findFirst({
+          where: { id: technicianId, organizationId },
+          select: { name: true },
+        });
+        if (tech) techName = tech.name;
+      }
 
       const rawPrefix = settingsMap["workshop.invoicePrefix"] || "{year}-";
       const now = new Date();
@@ -80,6 +90,7 @@ export async function createDraftServiceRecord(
           vehicleId,
           shopName,
           techName,
+          technicianId: technicianId || undefined,
           invoiceNumber,
           serviceDate: startDateTime ?? now,
           startDateTime: startDateTime ?? now,

@@ -208,13 +208,17 @@ model ServiceRecord {
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
-  partItems       ServicePart[]
-  laborItems      ServiceLabor[]
-  attachments     ServiceAttachment[]
-  payments        Payment[]
-  boardAssignment BoardAssignment?
+  technicianId String?
+  technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+  sortOrder    Int         @default(0)
+
+  partItems   ServicePart[]
+  laborItems  ServiceLabor[]
+  attachments ServiceAttachment[]
+  payments    Payment[]
 
   @@index([vehicleId])
+  @@index([technicianId])
   @@map("service_records")
 }
 
@@ -784,17 +788,19 @@ model Inspection {
   templateId String
   template   InspectionTemplate @relation(fields: [templateId], references: [id])
 
-  technicianId String
+  technicianId String?
+  technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+  sortOrder    Int         @default(0)
 
   organizationId String
 
-  items           InspectionItem[]
-  quoteRequests   InspectionQuoteRequest[]
-  quotes          Quote[]
-  boardAssignment BoardAssignment?
+  items         InspectionItem[]
+  quoteRequests InspectionQuoteRequest[]
+  quotes        Quote[]
 
   @@index([vehicleId])
   @@index([organizationId])
+  @@index([technicianId])
   @@map("inspections")
 }
 
@@ -887,37 +893,14 @@ model Technician {
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  assignments BoardAssignment[]
+  serviceRecords ServiceRecord[]
+  inspections    Inspection[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([organizationId])
   @@map("technicians")
-}
-
-model BoardAssignment {
-  id        String  @id @default(cuid())
-  sortOrder Int     @default(0)
-  notes     String?
-
-  technicianId String
-  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
-
-  serviceRecordId String?        @unique
-  serviceRecord   ServiceRecord? @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
-
-  inspectionId String?     @unique
-  inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
-
-  organizationId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([organizationId])
-  @@index([technicianId])
-  @@map("board_assignments")
 }
 
 model CustomerSession {

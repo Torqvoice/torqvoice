@@ -2,19 +2,12 @@
 
 import { Wrench, ClipboardCheck } from 'lucide-react'
 import type { Technician } from '../store/workboardStore'
-import type { BoardAssignmentWithJob } from '../Actions/boardActions'
-import { assignmentOverlapsDate } from '../utils/datetime'
+import type { WorkBoardJob } from '../Actions/boardActions'
+import { jobOverlapsDate } from '../utils/datetime'
 import { useTranslations } from 'next-intl'
 
-function DayJobCard({ assignment }: { assignment: BoardAssignmentWithJob }) {
-  const isServiceRecord = !!assignment.serviceRecordId
-  const vehicle = isServiceRecord
-    ? assignment.serviceRecord?.vehicle
-    : assignment.inspection?.vehicle
-  const title = isServiceRecord
-    ? assignment.serviceRecord?.title
-    : assignment.inspection?.template?.name
-  const status = isServiceRecord ? assignment.serviceRecord?.status : assignment.inspection?.status
+function DayJobCard({ job }: { job: WorkBoardJob }) {
+  const isServiceRecord = job.type === 'serviceRecord'
 
   return (
     <div className="flex items-start gap-3 rounded-lg border bg-card p-3 shadow-sm">
@@ -26,17 +19,17 @@ function DayJobCard({ assignment }: { assignment: BoardAssignmentWithJob }) {
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-base font-semibold">{title}</p>
-        {vehicle && (
+        <p className="truncate text-base font-semibold">{job.title}</p>
+        {job.vehicle && (
           <p className="truncate text-sm text-muted-foreground">
-            {vehicle.year} {vehicle.make} {vehicle.model}
-            {vehicle.licensePlate ? ` · ${vehicle.licensePlate}` : ''}
+            {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+            {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
           </p>
         )}
       </div>
-      {status && (
+      {job.status && (
         <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium capitalize">
-          {status.replace(/_/g, ' ')}
+          {job.status.replace(/_/g, ' ')}
         </span>
       )}
     </div>
@@ -50,10 +43,10 @@ export function PresenterDayView({
 }: {
   date: string
   technicians: Technician[]
-  assignments: BoardAssignmentWithJob[]
+  assignments: WorkBoardJob[]
 }) {
   const t = useTranslations('workBoard.presenter')
-  const dayAssignments = assignments.filter((a) => assignmentOverlapsDate(a, date))
+  const dayAssignments = assignments.filter((a) => jobOverlapsDate(a, date))
 
   if (technicians.length === 0) {
     return (
@@ -90,9 +83,9 @@ export function PresenterDayView({
                 {techJobs.length === 0 && (
                   <p className="py-2 text-sm text-muted-foreground/60">{t('noJobsToday')}</p>
                 )}
-                {techJobs.map((assignment) => (
-                  <div key={assignment.id} className="w-72">
-                    <DayJobCard assignment={assignment} />
+                {techJobs.map((job) => (
+                  <div key={job.id} className="w-72">
+                    <DayJobCard job={job} />
                   </div>
                 ))}
               </div>

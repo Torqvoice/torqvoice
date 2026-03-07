@@ -3,21 +3,21 @@
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Clock, GripVertical, Wrench, ClipboardCheck } from "lucide-react";
-import type { BoardAssignmentWithJob } from "../Actions/boardActions";
-import { getAssignmentDateRange, getDurationMinutes } from "../utils/datetime";
+import type { WorkBoardJob } from "../Actions/boardActions";
+import { getJobDateRange, getDurationMinutes } from "../utils/datetime";
 import { formatDuration } from "./DurationSlider";
 
 export function BoardJobCard({
-  assignment,
+  job,
   onClick,
 }: {
-  assignment: BoardAssignmentWithJob;
+  job: WorkBoardJob;
   onClick?: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
-      id: assignment.id,
-      data: { assignment },
+      id: job.id,
+      data: { job },
     });
 
   const style = transform
@@ -28,18 +28,9 @@ export function BoardJobCard({
       }
     : undefined;
 
-  const isServiceRecord = !!assignment.serviceRecordId;
-  const vehicle = isServiceRecord
-    ? assignment.serviceRecord?.vehicle
-    : assignment.inspection?.vehicle;
-  const title = isServiceRecord
-    ? assignment.serviceRecord?.title
-    : assignment.inspection?.template?.name;
-  const status = isServiceRecord
-    ? assignment.serviceRecord?.status
-    : assignment.inspection?.status;
+  const isServiceRecord = job.type === "serviceRecord";
 
-  const { start, end } = getAssignmentDateRange(assignment);
+  const { start, end } = getJobDateRange(job);
   const durationMins = start && end ? getDurationMinutes(start, end) : null;
 
   return (
@@ -64,18 +55,18 @@ export function BoardJobCard({
           ) : (
             <ClipboardCheck className="h-3 w-3 shrink-0 text-green-500" />
           )}
-          <span className="truncate font-medium">{title}</span>
+          <span className="truncate font-medium">{job.title}</span>
         </div>
-        {vehicle && (
+        {job.vehicle && (
           <p className="truncate text-muted-foreground">
-            {vehicle.year} {vehicle.make} {vehicle.model}
-            {vehicle.licensePlate ? ` · ${vehicle.licensePlate}` : ""}
+            {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+            {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ""}
           </p>
         )}
         <div className="flex items-center gap-1.5">
-          {status && (
+          {job.status && (
             <span className="inline-block rounded bg-muted px-1 py-0.5 text-[10px] capitalize">
-              {status.replace(/_/g, " ")}
+              {job.status.replace(/_/g, " ")}
             </span>
           )}
           {durationMins != null && durationMins > 0 && (

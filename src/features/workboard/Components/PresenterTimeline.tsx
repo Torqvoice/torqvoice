@@ -2,10 +2,10 @@
 
 import { useMemo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import type { BoardAssignmentWithJob } from "../Actions/boardActions";
+import type { WorkBoardJob } from "../Actions/boardActions";
 import type { Technician } from "../store/workboardStore";
 import { Wrench, ClipboardCheck } from "lucide-react";
-import { assignmentOverlapsDate, getAssignmentDateRange, getDurationMinutes } from "../utils/datetime";
+import { jobOverlapsDate, getJobDateRange, getDurationMinutes } from "../utils/datetime";
 import { formatDuration } from "./DurationSlider";
 import { useTranslations } from "next-intl";
 
@@ -49,7 +49,7 @@ export function PresenterTimeline({
 }: {
   date: string;
   technicians: Technician[];
-  assignments: BoardAssignmentWithJob[];
+  assignments: WorkBoardJob[];
   workDayStart: string;
   workDayEnd: string;
 }) {
@@ -58,15 +58,14 @@ export function PresenterTimeline({
   const baseEndMins = timeToMinutes(workDayEnd);
 
   const dayAssignments = useMemo(
-    () => assignments.filter((a) => assignmentOverlapsDate(a, date)),
+    () => assignments.filter((a) => jobOverlapsDate(a, date)),
     [assignments, date],
   );
 
   const dayEndMins = useMemo(() => {
     let max = baseEndMins;
     for (const a of dayAssignments) {
-      const sr = a.serviceRecord; const insp = a.inspection;
-      const endStr = sr?.endDateTime ?? insp?.endDateTime;
+      const endStr = a.endDateTime;
       if (endStr) {
         const d = new Date(endStr);
         const endMins = d.getHours() * 60 + d.getMinutes();
@@ -100,7 +99,7 @@ export function PresenterTimeline({
         {technicians.map((tech) => {
           const techJobs = dayAssignments.filter((a) => a.technicianId === tech.id).sort((a, b) => a.sortOrder - b.sortOrder);
           const bookedMinutes = techJobs.reduce((sum, a) => {
-            const { start, end } = getAssignmentDateRange(a);
+            const { start, end } = getJobDateRange(a);
             return start && end ? sum + getDurationMinutes(start, end) : sum;
           }, 0);
 
@@ -124,30 +123,27 @@ export function PresenterTimeline({
                 </div>
                 <PresenterCurrentTime dayStartMins={dayStartMins} totalMinutes={totalMinutes} date={date} />
 
-                {techJobs.map((assignment, jobIdx) => {
-                  const sr = assignment.serviceRecord; const insp = assignment.inspection;
-                  const startStr = sr?.startDateTime ?? insp?.startDateTime;
-                  const endStr = sr?.endDateTime ?? insp?.endDateTime;
+                {techJobs.map((job, jobIdx) => {
+                  const startStr = job.startDateTime;
+                  const endStr = job.endDateTime;
                   let startMins = dayStartMins, endMins = dayStartMins + 60;
                   if (startStr) { const d = new Date(startStr); startMins = d.getHours() * 60 + d.getMinutes(); }
                   if (endStr) { const d = new Date(endStr); endMins = d.getHours() * 60 + d.getMinutes(); }
                   const isUnscheduled = !startStr || !endStr;
                   const leftPct = ((startMins - dayStartMins) / totalMinutes) * 100;
                   const widthPct = ((endMins - startMins) / totalMinutes) * 100;
-                  const isServiceRecord = !!assignment.serviceRecordId;
-                  const vehicle = isServiceRecord ? sr?.vehicle : insp?.vehicle;
-                  const title = isServiceRecord ? sr?.title : insp?.template?.name;
+                  const isServiceRecord = job.type === "serviceRecord";
 
                   return (
                     <div
-                      key={assignment.id}
+                      key={job.id}
                       className={cn("absolute top-1 bottom-1 z-[1] flex items-center overflow-hidden rounded shadow-sm select-none", BAR_COLORS[jobIdx % BAR_COLORS.length], isUnscheduled && "border border-dashed border-current/30 opacity-70")}
                       style={{ left: `${Math.max(leftPct, 0)}%`, width: `${Math.max(widthPct, 1)}%` }}
-                      title={`${minutesToTime(startMins)}–${minutesToTime(endMins)} · ${title}${vehicle ? ` - ${vehicle.make} ${vehicle.model}` : ""}`}
+                      title={`${minutesToTime(startMins)}–${minutesToTime(endMins)} · ${job.title}${job.vehicle ? ` - ${job.vehicle.make} ${job.vehicle.model}` : ""}`}
                     >
                       <div className="flex items-center gap-1.5 px-3 min-w-0 text-xs font-semibold">
                         {isServiceRecord ? <Wrench className="h-3.5 w-3.5 shrink-0" /> : <ClipboardCheck className="h-3.5 w-3.5 shrink-0" />}
-                        <span className="truncate">{title}{vehicle ? ` - ${vehicle.licensePlate || `${vehicle.make} ${vehicle.model}`}` : ""}</span>
+                        <span className="truncate">{job.title}{job.vehicle ? ` - ${job.vehicle.licensePlate || `${job.vehicle.make} ${job.vehicle.model}`}` : ""}</span>
                         <span className="ml-auto shrink-0 text-[10px] opacity-75">{minutesToTime(startMins)}–{minutesToTime(endMins)}</span>
                       </div>
                     </div>

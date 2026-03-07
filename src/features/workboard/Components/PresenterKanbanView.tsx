@@ -2,8 +2,8 @@
 
 import { Wrench, ClipboardCheck } from 'lucide-react'
 import type { Technician } from '../store/workboardStore'
-import type { BoardAssignmentWithJob } from '../Actions/boardActions'
-import { assignmentOverlapsDate } from '../utils/datetime'
+import type { WorkBoardJob } from '../Actions/boardActions'
+import { jobOverlapsDate } from '../utils/datetime'
 import { useTranslations } from 'next-intl'
 
 const STATUS_COLUMNS = [
@@ -13,20 +13,8 @@ const STATUS_COLUMNS = [
   { key: 'completed', i18nKey: 'completed', color: 'bg-emerald-500' },
 ] as const
 
-function getAssignmentStatus(a: BoardAssignmentWithJob): string {
-  if (a.serviceRecordId) return a.serviceRecord?.status ?? 'pending'
-  if (a.inspectionId) return a.inspection?.status ?? 'pending'
-  return 'pending'
-}
-
-function KanbanCard({ assignment }: { assignment: BoardAssignmentWithJob }) {
-  const isServiceRecord = !!assignment.serviceRecordId
-  const vehicle = isServiceRecord
-    ? assignment.serviceRecord?.vehicle
-    : assignment.inspection?.vehicle
-  const title = isServiceRecord
-    ? assignment.serviceRecord?.title
-    : assignment.inspection?.template?.name
+function KanbanCard({ job }: { job: WorkBoardJob }) {
+  const isServiceRecord = job.type === 'serviceRecord'
 
   return (
     <div className="rounded-lg border bg-card p-2.5 shadow-sm">
@@ -36,12 +24,12 @@ function KanbanCard({ assignment }: { assignment: BoardAssignmentWithJob }) {
         ) : (
           <ClipboardCheck className="h-4 w-4 shrink-0 text-green-500" />
         )}
-        <span className="truncate text-sm font-semibold">{title}</span>
+        <span className="truncate text-sm font-semibold">{job.title}</span>
       </div>
-      {vehicle && (
+      {job.vehicle && (
         <p className="mt-1 truncate text-sm text-muted-foreground">
-          {vehicle.year} {vehicle.make} {vehicle.model}
-          {vehicle.licensePlate ? ` · ${vehicle.licensePlate}` : ''}
+          {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+          {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
         </p>
       )}
     </div>
@@ -55,10 +43,10 @@ export function PresenterKanbanView({
 }: {
   date: string
   technicians: Technician[]
-  assignments: BoardAssignmentWithJob[]
+  assignments: WorkBoardJob[]
 }) {
   const t = useTranslations('workBoard.presenter')
-  const dayAssignments = assignments.filter((a) => assignmentOverlapsDate(a, date))
+  const dayAssignments = assignments.filter((a) => jobOverlapsDate(a, date))
 
   if (technicians.length === 0) {
     return (
@@ -79,7 +67,7 @@ export function PresenterKanbanView({
       >
         <div className="border-b p-2" />
         {STATUS_COLUMNS.map((col) => {
-          const count = dayAssignments.filter((a) => getAssignmentStatus(a) === col.key).length
+          const count = dayAssignments.filter((a) => a.status === col.key).length
           return (
             <div key={col.key} className="flex items-center justify-center gap-2 border-b border-l p-2">
               <div className={`h-2.5 w-2.5 rounded-full ${col.color}`} />
@@ -108,12 +96,12 @@ export function PresenterKanbanView({
 
               {STATUS_COLUMNS.map((col) => {
                 const cellJobs = techJobs
-                  .filter((a) => getAssignmentStatus(a) === col.key)
+                  .filter((a) => a.status === col.key)
                   .sort((a, b) => a.sortOrder - b.sortOrder)
                 return (
                   <div key={`${tech.id}-${col.key}`} className="space-y-1.5 overflow-y-auto border-b border-l p-1.5">
-                    {cellJobs.map((assignment) => (
-                      <KanbanCard key={assignment.id} assignment={assignment} />
+                    {cellJobs.map((job) => (
+                      <KanbanCard key={job.id} job={job} />
                     ))}
                   </div>
                 )
