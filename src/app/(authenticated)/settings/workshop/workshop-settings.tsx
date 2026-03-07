@@ -8,10 +8,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/ui/command";
 import { toast } from "sonner";
 import { setSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { Loader2, Ruler, Save, Wrench, CalendarDays } from "lucide-react";
+import { Loader2, Ruler, Save, Wrench, CalendarDays, Check, ChevronsUpDown, Plus } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -19,9 +29,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { createTechnician } from "@/features/workboard/Actions/technicianActions";
+import { cn } from "@/lib/utils";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
-export function WorkshopSettings({ settings }: { settings: Record<string, string> }) {
+interface TechnicianOption {
+  id: string
+  name: string
+}
+
+export function WorkshopSettings({ settings, technicians: initialTechnicians = [] }: { settings: Record<string, string>; technicians?: TechnicianOption[] }) {
   const router = useRouter();
   const t = useTranslations('settings');
   const [saving, setSaving] = useState(false);
@@ -29,6 +46,12 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
   const [defaultTechnician, setDefaultTechnician] = useState(
     settings[SETTING_KEYS.DEFAULT_TECHNICIAN] || ""
   );
+  const [technicians, setTechnicians] = useState<TechnicianOption[]>(initialTechnicians);
+  const [techOpen, setTechOpen] = useState(false);
+  const [techSearch, setTechSearch] = useState('');
+  const [creatingTech, setCreatingTech] = useState(false);
+  const [showNewInput, setShowNewInput] = useState(false);
+  const [newTechName, setNewTechName] = useState('');
   const [defaultLaborRate, setDefaultLaborRate] = useState(
     settings[SETTING_KEYS.DEFAULT_LABOR_RATE] || ""
   );
@@ -47,6 +70,31 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
   const [workDayEnd, setWorkDayEnd] = useState(
     settings[SETTING_KEYS.WORKBOARD_WORK_DAY_END] || "15:00"
   );
+
+  const handleTechSelect = (techName: string) => {
+    setDefaultTechnician(techName);
+    setTechOpen(false);
+  };
+
+  const doCreateTechnician = async (name: string) => {
+    if (!name.trim()) return;
+    setCreatingTech(true);
+    const res = await createTechnician({ name: name.trim() });
+    setCreatingTech(false);
+    if (res.success && res.data) {
+      const newTech = { id: res.data.id, name: res.data.name };
+      setTechnicians((prev) => [...prev, newTech]);
+      setTechSearch('');
+      setNewTechName('');
+      setShowNewInput(false);
+      handleTechSelect(newTech.name);
+    } else {
+      toast.error(t('workshop.failedCreateTech'));
+    }
+  };
+
+  const searchLower = techSearch.toLowerCase();
+  const exactMatch = technicians.some((tech) => tech.name.toLowerCase() === searchLower);
 
   const handleSave = async () => {
     setSaving(true);
@@ -80,13 +128,105 @@ export function WorkshopSettings({ settings }: { settings: Record<string, string
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="defaultTechnician">{t('workshop.defaultTechnician')}</Label>
-              <Input
-                id="defaultTechnician"
-                placeholder={t('workshop.technicianPlaceholder')}
-                value={defaultTechnician}
-                onChange={(e) => setDefaultTechnician(e.target.value)}
-              />
+              <Label>{t('workshop.defaultTechnician')}</Label>
+              <Popover open={techOpen} onOpenChange={setTechOpen} modal={true}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={techOpen}
+                    className="w-full justify-between font-normal"
+                  >
+                    <span className="truncate">
+                      {defaultTechnician || t('workshop.technicianPlaceholder')}
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <Command shouldFilter={true}>
+                    <CommandInput
+                      placeholder={t('workshop.technicianPlaceholder')}
+                      value={techSearch}
+                      onValueChange={setTechSearch}
+                    />
+                    <CommandList className="max-h-60 overflow-y-auto">
+                      <CommandEmpty className="p-0" />
+                      <CommandGroup>
+                        {technicians.map((tech) => (
+                          <CommandItem
+                            key={tech.id}
+                            value={tech.name}
+                            onSelect={() => handleTechSelect(tech.name)}
+                          >
+                            <Check
+                              className={cn(
+                                'mr-2 h-4 w-4',
+                                defaultTechnician === tech.name ? 'opacity-100' : 'opacity-0',
+                              )}
+                            />
+                            {tech.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                      {techSearch.trim() && !exactMatch && (
+                        <CommandGroup>
+                          <CommandItem
+                            value={`__create__${techSearch}`}
+                            onSelect={() => doCreateTechnician(techSearch)}
+                            disabled={creatingTech}
+                          >
+                            <Plus className="mr-2 h-4 w-4" />
+                            {creatingTech ? t('workshop.creating') : t('workshop.createTechnician', { name: techSearch.trim() })}
+                          </CommandItem>
+                        </CommandGroup>
+                      )}
+                      <CommandSeparator />
+                      <CommandGroup>
+                        {showNewInput ? (
+                          <div className="flex items-center gap-1.5 px-2 py-1.5" onKeyDown={(e) => e.stopPropagation()}>
+                            <Input
+                              autoFocus
+                              placeholder={t('workshop.newTechPlaceholder')}
+                              value={newTechName}
+                              onChange={(e) => setNewTechName(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  doCreateTechnician(newTechName);
+                                }
+                                if (e.key === 'Escape') {
+                                  setShowNewInput(false);
+                                  setNewTechName('');
+                                }
+                              }}
+                              className="h-7 text-sm"
+                              disabled={creatingTech}
+                            />
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 px-2 shrink-0"
+                              disabled={creatingTech || !newTechName.trim()}
+                              onClick={() => doCreateTechnician(newTechName)}
+                            >
+                              {creatingTech ? t('workshop.creating') : t('workshop.addTech')}
+                            </Button>
+                          </div>
+                        ) : (
+                          <CommandItem
+                            value="__add_new__"
+                            onSelect={() => setShowNewInput(true)}
+                          >
+                            <Plus className="mr-2 h-4 w-4" />
+                            {t('workshop.addNewTech')}
+                          </CommandItem>
+                        )}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="space-y-2">
               <Label htmlFor="defaultLaborRate">{t('workshop.defaultLaborRate')}</Label>

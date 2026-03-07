@@ -22,7 +22,11 @@ export async function createDraftServiceRecord(
           where: {
             organizationId,
             key: {
-              in: ["workshop.invoicePrefix", "workshop.invoiceStartNumber"],
+              in: [
+                "workshop.invoicePrefix",
+                "workshop.invoiceStartNumber",
+                "workshop.defaultTechnician",
+              ],
             },
           },
         }),
@@ -41,10 +45,23 @@ export async function createDraftServiceRecord(
       const shopName = org?.name || undefined;
       let techName = currentUser?.name || undefined;
 
-      // If a technician is specified, use their name instead
-      if (technicianId) {
+      // If no technician specified, look up the default technician from settings
+      let resolvedTechId = technicianId;
+      if (!resolvedTechId && settingsMap["workshop.defaultTechnician"]) {
+        const defaultTech = await db.technician.findFirst({
+          where: { organizationId, name: settingsMap["workshop.defaultTechnician"], isActive: true },
+          select: { id: true, name: true },
+        });
+        if (defaultTech) {
+          resolvedTechId = defaultTech.id;
+          techName = defaultTech.name;
+        }
+      }
+
+      // If a technician is resolved (explicit or default), use their name
+      if (resolvedTechId) {
         const tech = await db.technician.findFirst({
-          where: { id: technicianId, organizationId },
+          where: { id: resolvedTechId, organizationId },
           select: { name: true },
         });
         if (tech) techName = tech.name;
@@ -90,7 +107,7 @@ export async function createDraftServiceRecord(
           vehicleId,
           shopName,
           techName,
-          technicianId: technicianId || undefined,
+          technicianId: resolvedTechId || undefined,
           invoiceNumber,
           serviceDate: startDateTime ?? now,
           startDateTime: startDateTime ?? now,
