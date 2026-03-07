@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -56,6 +56,8 @@ export function ScheduleTimesSection({
   const [techSearch, setTechSearch] = useState('')
   const [creating, setCreating] = useState(false)
   const [showNewInput, setShowNewInput] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
   const [newTechName, setNewTechName] = useState('')
 
   const [startDateTime, setStartDateTime] = useState<Date | undefined>(
@@ -242,36 +244,44 @@ export function ScheduleTimesSection({
 
       <div className="space-y-1.5">
         <Label className="text-xs">{t('startTime')}</Label>
-        <DateTimePicker
-          value={startDateTime}
-          onChange={(d) => {
-            setStartDateTime(d);
-            if (d) {
-              const newEnd = new Date(d.getTime() + 3600000);
-              setEndDateTime(newEnd);
-              saveTimes(d, newEnd);
-            }
-          }}
-          granularity="minute"
-          hourCycle={24}
-          placeholder={t('startTime')}
-          displayFormat={{ hour24: "PPP HH:mm" }}
-        />
+        {mounted ? (
+          <DateTimePicker
+            value={startDateTime}
+            onChange={(d) => {
+              setStartDateTime(d);
+              if (d) {
+                const newEnd = new Date(d.getTime() + 3600000);
+                setEndDateTime(newEnd);
+                saveTimes(d, newEnd);
+              }
+            }}
+            granularity="minute"
+            hourCycle={24}
+            placeholder={t('startTime')}
+            displayFormat={{ hour24: "PPP HH:mm" }}
+          />
+        ) : (
+          <div className="h-9 rounded-md border" />
+        )}
       </div>
 
       <div className="space-y-1.5">
         <Label className="text-xs">{t('endTime')}</Label>
-        <DateTimePicker
-          value={endDateTime}
-          onChange={(d) => {
-            setEndDateTime(d);
-            if (d && startDateTime) saveTimes(startDateTime, d);
-          }}
-          granularity="minute"
-          hourCycle={24}
-          placeholder={t('endTime')}
-          displayFormat={{ hour24: "PPP HH:mm" }}
-        />
+        {mounted ? (
+          <DateTimePicker
+            value={endDateTime}
+            onChange={(d) => {
+              setEndDateTime(d);
+              if (d && startDateTime) saveTimes(startDateTime, d);
+            }}
+            granularity="minute"
+            hourCycle={24}
+            placeholder={t('endTime')}
+            displayFormat={{ hour24: "PPP HH:mm" }}
+          />
+        ) : (
+          <div className="h-9 rounded-md border" />
+        )}
       </div>
 
       <div className="space-y-1">

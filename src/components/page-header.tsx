@@ -159,7 +159,7 @@ export function PageHeader() {
         <SearchTrigger />
         <NewWorkOrderButton />
         {showWhiteLabelCta && (
-          <Button asChild variant="outline" size="sm">
+          <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
             <Link href="/settings/license">
               <Zap className="mr-2 h-3 w-3" />
               {tn('purchaseWhiteLabel')}
