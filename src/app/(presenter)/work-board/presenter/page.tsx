@@ -4,6 +4,8 @@ import { getTechnicians } from "@/features/workboard/Actions/technicianActions";
 import { getBoardJobs, getWorkBoardSettings } from "@/features/workboard/Actions/boardActions";
 import { WorkBoardPresenter } from "@/features/workboard/Components/WorkBoardPresenter";
 
+export const dynamic = "force-dynamic";
+
 function getMonday(date: Date): string {
   const d = new Date(date);
   const day = d.getDay();
@@ -15,8 +17,14 @@ function getMonday(date: Date): string {
   return `${y}-${m}-${dd}`;
 }
 
-export default async function WorkBoardPresenterPage() {
-  const weekStart = getMonday(new Date());
+export default async function WorkBoardPresenterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ date?: string }>;
+}) {
+  const params = await searchParams;
+  const baseDate = params.date ? new Date(params.date + "T12:00:00") : new Date();
+  const weekStart = getMonday(baseDate);
 
   const [techResult, assignResult, settingsResult] = await Promise.all([
     getTechnicians(),

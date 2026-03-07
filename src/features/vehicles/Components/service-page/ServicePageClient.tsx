@@ -147,6 +147,12 @@ export function ServicePageClient({
   const isSavingRef = useRef(false)
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const flashSaved = useCallback(() => {
+    if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
+    setShowSaved(true)
+    savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
+  }, [])
+
   const markDirty = useCallback(() => {
     setHasUnsavedChanges(true)
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
@@ -309,9 +315,7 @@ export function ServicePageClient({
 
     if (result.success) {
       setHasUnsavedChanges(false)
-      if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
-      setShowSaved(true)
-      savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
+      flashSaved()
       if (selectedVehicleId !== vehicleId) {
         router.push(`/vehicles/${selectedVehicleId}/service/${initialData.id}`)
       } else {
@@ -558,6 +562,7 @@ export function ServicePageClient({
         initialStartDateTime={initialData.startDateTime}
         initialEndDateTime={initialData.endDateTime}
         initialTechnicianId={record.technicianId}
+        onSaved={flashSaved}
       />
       <TotalsSection
         partsSubtotal={partsSubtotal}

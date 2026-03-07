@@ -38,6 +38,7 @@ interface ScheduleTimesSectionProps {
   initialStartDateTime?: string | null
   initialEndDateTime?: string | null
   initialTechnicianId?: string | null
+  onSaved?: () => void
 }
 
 export function ScheduleTimesSection({
@@ -46,6 +47,7 @@ export function ScheduleTimesSection({
   initialStartDateTime,
   initialEndDateTime,
   initialTechnicianId,
+  onSaved,
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
   const [selectedTechId, setSelectedTechId] = useState(initialTechnicianId || '')
@@ -73,7 +75,9 @@ export function ScheduleTimesSection({
       startDateTime: start,
       endDateTime: end,
     })
-    if (!res.success) {
+    if (res.success) {
+      onSaved?.()
+    } else {
       toast.error(res.error || t('failedUpdate'))
     }
   }
@@ -93,7 +97,9 @@ export function ScheduleTimesSection({
       technicianId: techId,
       type: 'serviceRecord',
     })
-    if (!res.success) {
+    if (res.success) {
+      onSaved?.()
+    } else {
       toast.error(t('failedAssign'))
       setSelectedTechId(initialTechnicianId || '')
     }

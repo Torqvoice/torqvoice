@@ -67,10 +67,14 @@ export function JobBar({
       />
       <div className="flex items-center gap-1 px-3 min-w-0 cursor-grab active:cursor-grabbing text-[11px] font-medium">
         {isServiceRecord ? <Wrench className="h-3 w-3 shrink-0" /> : <ClipboardCheck className="h-3 w-3 shrink-0" />}
-        <span className="truncate">
-          {job.title}
-          {job.vehicle ? ` - ${job.vehicle.licensePlate || `${job.vehicle.make} ${job.vehicle.model}`}` : ""}
-        </span>
+        {isDragging ? (
+          <span className="font-semibold whitespace-nowrap">{minutesToTime(startMins)} – {minutesToTime(endMins)}</span>
+        ) : (
+          <span className="truncate">
+            {job.title}
+            {job.vehicle ? ` - ${job.vehicle.licensePlate || `${job.vehicle.make} ${job.vehicle.model}`}` : ""}
+          </span>
+        )}
       </div>
       <div
         className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize z-[2] opacity-0 group-hover:opacity-100 bg-black/10 hover:bg-black/20 rounded-r transition-opacity"

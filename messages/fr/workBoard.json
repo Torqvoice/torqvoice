@@ -23,7 +23,8 @@
     "noTechniciansDescription": "Ajoutez un technicien pour commencer à programmer le travail sur le tableau.",
     "failedMove": "Impossible de déplacer l'assignation",
     "failedAssign": "Impossible d'assigner le travail",
-    "failedRemove": "Impossible de supprimer l'assignation"
+    "failedRemove": "Impossible de supprimer l'assignation",
+    "createNewWorkorder": "Créer un nouvel ordre de travail"
   },
   "unassigned": {
     "title": "Travaux Non Assignés ({count})",
@@ -53,6 +54,7 @@
     "status": "Statut",
     "week": "Semaine",
     "today": "Aujourd'hui",
+    "timeline": "Chronologie",
     "live": "En Direct",
     "disconnected": "Mises à jour en direct déconnectées",
     "noTechnicians": "Aucun technicien configuré",

@@ -142,7 +142,11 @@ export function TechTimelineRow({
                   left: `${Math.max(((ghostBar.startMins - dayStartMins) / totalMinutes) * 100, 0)}%`,
                   width: `${Math.max(((ghostBar.endMins - ghostBar.startMins) / totalMinutes) * 100, 1)}%`,
                 }}
-              />
+              >
+                <div className="flex items-center justify-center h-full text-[11px] font-semibold text-primary whitespace-nowrap">
+                  {minutesToTime(ghostBar.startMins)} – {minutesToTime(ghostBar.endMins)}
+                </div>
+              </div>
             )}
           </div>
         </ContextMenuTrigger>

@@ -67,6 +67,28 @@ export function useWorkBoardWebSocket() {
               });
               break;
 
+            case "service_times_updated": {
+              const { serviceRecordId, startDateTime, endDateTime } = data;
+              const updatedJobs = store.jobs.map((j) =>
+                j.type === "serviceRecord" && j.id === serviceRecordId
+                  ? { ...j, startDateTime, endDateTime }
+                  : j,
+              );
+              store.setJobs(updatedJobs);
+              break;
+            }
+
+            case "inspection_times_updated": {
+              const { inspectionId, startDateTime, endDateTime } = data;
+              const updatedJobs = store.jobs.map((j) =>
+                j.type === "inspection" && j.id === inspectionId
+                  ? { ...j, startDateTime, endDateTime }
+                  : j,
+              );
+              store.setJobs(updatedJobs);
+              break;
+            }
+
             case "job_status_changed": {
               const { serviceRecordId, inspectionId, status, serviceRecord } = data;
               const activeStatuses = ["pending", "in-progress", "waiting-parts", "scheduled"];

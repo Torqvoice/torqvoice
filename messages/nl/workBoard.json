@@ -23,7 +23,8 @@
     "noTechniciansDescription": "Voeg een technicus toe om werk op het bord in te plannen.",
     "failedMove": "Toewijzing verplaatsen mislukt",
     "failedAssign": "Taak toewijzen mislukt",
-    "failedRemove": "Toewijzing verwijderen mislukt"
+    "failedRemove": "Toewijzing verwijderen mislukt",
+    "createNewWorkorder": "Nieuwe werkorder aanmaken"
   },
   "unassigned": {
     "title": "Niet-toegewezen taken ({count})",
@@ -53,6 +54,7 @@
     "status": "Status",
     "week": "Week",
     "today": "Vandaag",
+    "timeline": "Tijdlijn",
     "live": "Live",
     "disconnected": "Live-updates verbroken",
     "noTechnicians": "Geen technici geconfigureerd",
