@@ -65,6 +65,16 @@ jobs:
                 - proxy
           COMPOSE
 
+      - name: Ensure data directory permissions
+        run: |
+          DATA_DIR="${{ secrets.DATA_PATH }}/torqvoice_staging_data"
+          TAG=${{ inputs.tag || 'latest' }}
+          IMAGE="ghcr.io/torqvoice/torqvoice:${TAG}"
+          APP_UID=$(docker run --rm --entrypoint id "$IMAGE" -u)
+          APP_GID=$(docker run --rm --entrypoint id "$IMAGE" -g)
+          mkdir -p "$DATA_DIR"
+          sudo chown -R "${APP_UID}:${APP_GID}" "$DATA_DIR"
+
       - name: Deploy staging
         run: |
           cd /tmp/torqvoice-staging
