@@ -27,10 +27,8 @@ export function SharedLinkCard({
   const [copied, setCopied] = useState(false);
   const [revoking, setRevoking] = useState(false);
 
-  const publicUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/share/${type === "quote" ? "quote" : "invoice"}/${organizationId}/${publicToken}`
-      : "";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : "");
+  const publicUrl = `${baseUrl}/share/${type === "quote" ? "quote" : "invoice"}/${organizationId}/${publicToken}`;
 
   const handleCopy = async () => {
     try {

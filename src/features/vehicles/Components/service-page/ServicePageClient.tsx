@@ -285,21 +285,31 @@ export function ServicePageClient({
     isSavingRef.current = true
     setLoading(true)
 
-    const formData = new FormData(e.currentTarget)
+    // Mobile + desktop layouts both render inputs with the same name.
+    // formData.get() returns the first (hidden/stale) one, so read the visible input via offsetParent.
+    const form = e.currentTarget
+    const getVisible = (name: string) => {
+      const inputs = form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`)
+      const visible = Array.from(inputs).find(el => el.offsetParent !== null)
+      return visible?.value ?? new FormData(form).get(name) as string
+    }
+    const rawMileage = getVisible('mileage')
+    const parsedMileage = rawMileage ? Number(rawMileage) || undefined : undefined
+
     const payload = {
       id: initialData.id,
       vehicleId: selectedVehicleId,
-      title: formData.get('title') as string,
+      title: getVisible('title'),
       description: notesRef.current.description || undefined,
       type,
       status,
       cost: totalAmount,
-      mileage: Number(formData.get('mileage')) || undefined,
-      serviceDate: (formData.get('serviceDate') as string) || new Date().toISOString(),
+      mileage: parsedMileage,
+      serviceDate: getVisible('serviceDate') || new Date().toISOString(),
       techName: techName || undefined,
       diagnosticNotes: notesRef.current.diagnosticNotes || undefined,
       invoiceNotes: notesRef.current.invoiceNotes || undefined,
-      invoiceNumber: (formData.get('invoiceNumber') as string) || undefined,
+      invoiceNumber: getVisible('invoiceNumber') || undefined,
       partItems: partItems.filter((p) => p.name),
       laborItems: laborItems.filter((l) => l.description),
       subtotal,
