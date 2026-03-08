@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { updateInspectionItem, completeInspection, deleteInspection } from "../Actions/inspectionActions";
+import { createQuote } from "@/features/quotes/Actions/quoteActions";
 import { InspectionShareDialog } from "./InspectionShareDialog";
 
 type Condition = "pass" | "fail" | "attention" | "not_inspected";
@@ -424,6 +425,7 @@ export function InspectionPageClient({
   const [showCompleteDialog, setShowCompleteDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [isCreatingQuote, setIsCreatingQuote] = useState(false);
 
   const isCompleted = inspection.status === "completed";
 
@@ -445,7 +447,39 @@ export function InspectionPageClient({
   const failCount = inspection.items.filter((i) => i.condition === "fail").length;
   const attentionCount = inspection.items.filter((i) => i.condition === "attention").length;
   const hasIssueItems = failCount > 0 || attentionCount > 0;
+  const issueItems = inspection.items.filter(
+    (i) => i.condition === "fail" || i.condition === "attention"
+  );
   const pendingQuoteRequest = inspection.quoteRequests?.[0] ?? null;
+
+  const handleCreateQuoteFromInspection = async () => {
+    setIsCreatingQuote(true);
+    const result = await createQuote({
+      title: `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model} - Inspection Quote`,
+      vehicleId: inspection.vehicle.id,
+      customerId: inspection.vehicle.customer?.id || undefined,
+      inspectionId: inspection.id,
+      status: "draft",
+      laborItems: issueItems.map((item) => ({
+        description: `${item.name}${item.notes ? ` - ${item.notes}` : ""}`,
+        hours: 0,
+        rate: 0,
+        total: 0,
+      })),
+      subtotal: 0,
+      taxRate: 0,
+      taxAmount: 0,
+      discountValue: 0,
+      discountAmount: 0,
+      totalAmount: 0,
+    });
+    if (result.success && result.data) {
+      router.push(`/quotes/${result.data.id}`);
+    } else {
+      toast.error(result.error || "Failed to create quote");
+      setIsCreatingQuote(false);
+    }
+  };
 
   const handleComplete = () => {
     startTransition(async () => {
@@ -505,9 +539,10 @@ export function InspectionPageClient({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push(`/quotes/new?fromInspection=${inspection.id}`)}
+                disabled={isCreatingQuote}
+                onClick={handleCreateQuoteFromInspection}
               >
-                <FileText className="mr-1 h-3.5 w-3.5" />
+                {isCreatingQuote ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <FileText className="mr-1 h-3.5 w-3.5" />}
                 Create Quote
               </Button>
             ) : null}
@@ -648,9 +683,10 @@ export function InspectionPageClient({
                   size="sm"
                   variant="outline"
                   className="border-amber-500/30 text-amber-900 hover:bg-amber-100 dark:text-amber-200 dark:hover:bg-amber-900/30"
-                  onClick={() => router.push(`/quotes/new?fromInspection=${inspection.id}`)}
+                  disabled={isCreatingQuote}
+                  onClick={handleCreateQuoteFromInspection}
                 >
-                  <FileText className="mr-1 h-3.5 w-3.5" />
+                  {isCreatingQuote ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <FileText className="mr-1 h-3.5 w-3.5" />}
                   Create Quote
                 </Button>
               </div>

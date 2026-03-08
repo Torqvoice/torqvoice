@@ -43,7 +43,8 @@ import { formatCurrency } from "@/lib/format";
 import { dismissMaintenance, undismissMaintenance } from "@/features/vehicles/Actions/dismissMaintenance";
 import { updateQuoteRequestStatus } from "@/features/inspections/Actions/quoteRequestActions";
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
-import { convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
+import { toast } from "sonner";
+import { convertQuoteToServiceRecord, createQuote } from "@/features/quotes/Actions/quoteActions";
 import { useDashboardVisibility, DASHBOARD_CARD_IDS } from "@/hooks/use-dashboard-visibility";
 
 interface ServiceItem {
@@ -141,7 +142,7 @@ interface DashboardQuoteRequest {
       model: string;
       year: number;
       licensePlate: string | null;
-      customer: { name: string } | null;
+      customer: { id: string; name: string } | null;
     };
     items: { id: string; name: string; section: string; condition: string; notes: string | null }[];
   };
@@ -844,8 +845,34 @@ export function DashboardClient({
                           onClick={() => {
                             startTransition(async () => {
                               await updateQuoteRequestStatus(req.id, "quoted");
+                              const issueItems = req.inspection.items.filter(
+                                (i) => i.condition === "fail" || i.condition === "attention"
+                              );
+                              const result = await createQuote({
+                                title: `${req.inspection.vehicle.year} ${req.inspection.vehicle.make} ${req.inspection.vehicle.model} - Inspection Quote`,
+                                vehicleId: req.inspection.vehicle.id,
+                                customerId: req.inspection.vehicle.customer?.id || undefined,
+                                inspectionId: req.inspection.id,
+                                status: "draft",
+                                laborItems: issueItems.map((item) => ({
+                                  description: `${item.name}${item.notes ? ` - ${item.notes}` : ""}`,
+                                  hours: 0,
+                                  rate: 0,
+                                  total: 0,
+                                })),
+                                subtotal: 0,
+                                taxRate: 0,
+                                taxAmount: 0,
+                                discountValue: 0,
+                                discountAmount: 0,
+                                totalAmount: 0,
+                              });
+                              if (result.success && result.data) {
+                                router.push(`/quotes/${result.data.id}`);
+                              } else {
+                                toast.error(result.error || "Failed to create quote");
+                              }
                             });
-                            router.push(`/quotes/new?fromInspection=${req.inspection.id}`);
                           }}
                         >
                           {t("quoteRequests.createQuote")}
