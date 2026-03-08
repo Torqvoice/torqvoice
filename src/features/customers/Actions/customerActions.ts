@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
+import { z } from "zod";
 import { createCustomerSchema, updateCustomerSchema } from "../Schema/customerSchema";
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
@@ -198,6 +199,129 @@ export async function createWorkOrderFromRequest(requestId: string) {
     revalidatePath("/customers");
     return { vehicleId, serviceRecordId: record.id };
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.CUSTOMERS }] });
+}
+
+const importCustomerRowSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email().optional().or(z.literal("")),
+  phone: z.string().optional(),
+  company: z.string().optional(),
+  address: z.string().optional(),
+});
+
+export async function checkDuplicateCustomers(
+  rows: { name: string; email?: string; phone?: string }[]
+) {
+  return withAuth(async ({ organizationId }) => {
+    const existing = await db.customer.findMany({
+      where: { organizationId },
+      select: { id: true, name: true, email: true, phone: true, company: true, address: true },
+    });
+
+    const duplicates: Record<number, { id: string; name: string; matchedOn: string; isExact: boolean }> = {};
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      for (const ex of existing) {
+        // Match by email (non-empty)
+        if (row.email && ex.email && row.email.toLowerCase() === ex.email.toLowerCase()) {
+          const isExact = ex.name.toLowerCase() === row.name.toLowerCase()
+            && (ex.phone || "") === (row.phone || "");
+          duplicates[i] = { id: ex.id, name: ex.name, matchedOn: "email", isExact };
+          break;
+        }
+        // Match by phone (non-empty)
+        if (row.phone && ex.phone && row.phone.replace(/\D/g, "") === ex.phone.replace(/\D/g, "")) {
+          const isExact = ex.name.toLowerCase() === row.name.toLowerCase()
+            && (ex.email || "").toLowerCase() === (row.email || "").toLowerCase();
+          duplicates[i] = { id: ex.id, name: ex.name, matchedOn: "phone", isExact };
+          break;
+        }
+        // Match by name (case-insensitive)
+        if (ex.name.toLowerCase() === row.name.toLowerCase()) {
+          const isExact = (ex.email || "").toLowerCase() === (row.email || "").toLowerCase()
+            && (ex.phone || "") === (row.phone || "");
+          duplicates[i] = { id: ex.id, name: ex.name, matchedOn: "name", isExact };
+          break;
+        }
+      }
+    }
+
+    return duplicates;
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS }] });
+}
+
+export async function importCustomers(
+  rows: { name: string; email?: string; phone?: string; company?: string; address?: string }[],
+  mergeMap?: Record<number, string>, // rowIndex → existing customer ID to update
+) {
+  return withAuth(async ({ userId, organizationId }) => {
+    const features = await getFeatures(organizationId);
+    const currentCount = await db.customer.count({ where: { organizationId } });
+
+    type ValidRow = { name: string; email: string | null; phone: string | null; company: string | null; address: string | null };
+    const toCreate: ValidRow[] = [];
+    const toMerge: { id: string; data: ValidRow }[] = [];
+    const errors: { row: number; error: string }[] = [];
+    let skipped = 0;
+
+    for (let i = 0; i < rows.length; i++) {
+      const result = importCustomerRowSchema.safeParse(rows[i]);
+      if (!result.success) {
+        errors.push({ row: i + 1, error: result.error.issues[0]?.message || "Invalid data" });
+        continue;
+      }
+
+      const parsed: ValidRow = {
+        name: result.data.name,
+        email: result.data.email || null,
+        phone: result.data.phone || null,
+        company: result.data.company || null,
+        address: result.data.address || null,
+      };
+
+      const mergeId = mergeMap?.[i];
+      if (mergeId === "__skip__") {
+        skipped++;
+      } else if (mergeId) {
+        toMerge.push({ id: mergeId, data: parsed });
+      } else {
+        toCreate.push(parsed);
+      }
+    }
+
+    const remaining = features.maxCustomers - currentCount;
+    if (toCreate.length > remaining) {
+      throw new FeatureGatedError(
+        "maxCustomers",
+        `Customer limit reached. You can import ${remaining} more customer(s). Upgrade your plan for more.`
+      );
+    }
+
+    if (toCreate.length > 0) {
+      await db.customer.createMany({
+        data: toCreate.map((c) => ({ ...c, userId, organizationId })),
+      });
+    }
+
+    let merged = 0;
+    for (const { id, data } of toMerge) {
+      const res = await db.customer.updateMany({
+        where: { id, organizationId },
+        data: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          company: data.company,
+          address: data.address,
+        },
+      });
+      if (res.count > 0) merged++;
+    }
+
+    revalidatePath("/customers");
+    return { imported: toCreate.length, merged, skipped, errors };
+  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.CUSTOMERS }] });
 }
 
 export async function getCustomersList() {
