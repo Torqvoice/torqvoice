@@ -28,8 +28,8 @@ jobs:
           STRIPE_ENTERPRISE_PRICE_ID: ${{ secrets.CLOUD_STRIPE_ENTERPRISE_PRICE_ID }}
           DATA_PATH: ${{ secrets.DATA_PATH }}
         run: |
-          mkdir -p ${{ secrets.DATA_PATH }}/torqvoice-deploy/prod
-          cd ${{ secrets.DATA_PATH }}/torqvoice-deploy/prod
+          mkdir -p $HOME/torqvoice-deploy/prod
+          cd $HOME/torqvoice-deploy/prod
 
           env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_)' > .env
 
@@ -71,7 +71,7 @@ jobs:
 
       - name: Deploy
         run: |
-          cd ${{ secrets.DATA_PATH }}/torqvoice-deploy/prod
+          cd $HOME/torqvoice-deploy/prod
           APP_TAG=${{ inputs.tag }} docker compose up -d --pull always
 
       - name: Prune old images and build cache
