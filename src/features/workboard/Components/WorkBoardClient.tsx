@@ -178,8 +178,12 @@ export function WorkBoardClient({
     if (activeData?.job && activeData?.type) {
       const job = activeData.job;
       const jobType = activeData.type as "serviceRecord" | "inspection";
+      // Set default time on the drop target's date (1 hour block at work day start)
+      const dropDate = overData.date || selectedDate;
+      const startDateTime = new Date(dropDate + "T" + boardSettings.workDayStart + ":00");
+      const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
       store.removeFromUnassigned(job.id, jobType);
-      const res = await assignTechnician({ id: job.id, technicianId: overData.technicianId, type: jobType });
+      const res = await assignTechnician({ id: job.id, technicianId: overData.technicianId, type: jobType, startDateTime, endDateTime });
       if (!res.success) { toast.error(t("failedAssign"), { description: res.error }); store.addToUnassigned(job, jobType); }
       else if (res.data) store.addJob(res.data as WorkBoardJob);
     }

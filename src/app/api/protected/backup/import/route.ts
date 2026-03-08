@@ -300,6 +300,11 @@ export async function POST(request: NextRequest) {
         });
       }
 
+      // Resolve work day start time from imported settings for backfilling service record times
+      const workDayStartSetting = (data.settings as Record<string, unknown>[] | undefined)
+        ?.find((s) => s.key === "workboard.workDayStart");
+      const workDayStartTime = (workDayStartSetting?.value as string) || "07:00";
+
       // 6. Insert vehicles with nested data
       if (data.vehicles?.length) {
         for (const v of data.vehicles as Record<string, unknown>[]) {
@@ -409,6 +414,22 @@ export async function POST(request: NextRequest) {
             | undefined;
           if (serviceRecords?.length) {
             for (const sr of serviceRecords) {
+              // Derive startDateTime/endDateTime from backup or fall back to serviceDate + work day start
+              let startDT: Date | undefined;
+              let endDT: Date | undefined;
+              if (sr.startDateTime) {
+                startDT = new Date(sr.startDateTime as string);
+              } else if (sr.serviceDate) {
+                const sd = new Date(sr.serviceDate as string);
+                const [h, m] = workDayStartTime.split(":").map(Number);
+                startDT = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate(), h, m, 0, 0);
+              }
+              if (sr.endDateTime) {
+                endDT = new Date(sr.endDateTime as string);
+              } else if (startDT) {
+                endDT = new Date(startDT.getTime() + 3600000);
+              }
+
               await tx.serviceRecord.create({
                 data: {
                   id: sr.id as string,
@@ -421,6 +442,8 @@ export async function POST(request: NextRequest) {
                   serviceDate: sr.serviceDate
                     ? new Date(sr.serviceDate as string)
                     : undefined,
+                  startDateTime: startDT ?? undefined,
+                  endDateTime: endDT ?? undefined,
                   shopName: (sr.shopName as string) || null,
                   techName: (sr.techName as string) || null,
                   parts: (sr.parts as string) || null,

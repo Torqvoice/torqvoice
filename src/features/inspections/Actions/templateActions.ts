@@ -276,13 +276,14 @@ async function seedDefaultTemplateForOrg(organizationId: string) {
     },
   });
 
-  revalidatePath("/settings/inspections");
   return template;
 }
 
 export async function seedDefaultTemplate() {
   return withAuth(async ({ organizationId }) => {
-    return seedDefaultTemplateForOrg(organizationId);
+    const result = await seedDefaultTemplateForOrg(organizationId);
+    revalidatePath("/settings/inspections");
+    return result;
   }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }] });
 }
 

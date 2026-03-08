@@ -209,10 +209,14 @@ export async function assignTechnician(input: unknown) {
 
       let job: WorkBoardJob;
 
+      const timeData = data.startDateTime && data.endDateTime
+        ? { startDateTime: data.startDateTime, endDateTime: data.endDateTime }
+        : {};
+
       if (data.type === "serviceRecord") {
         const sr = await db.serviceRecord.update({
           where: { id: data.id },
-          data: { technicianId: data.technicianId, techName: tech.name },
+          data: { technicianId: data.technicianId, techName: tech.name, ...timeData },
           select: {
             id: true,
             title: true,
@@ -228,7 +232,7 @@ export async function assignTechnician(input: unknown) {
       } else {
         const insp = await db.inspection.update({
           where: { id: data.id },
-          data: { technicianId: data.technicianId },
+          data: { technicianId: data.technicianId, ...timeData },
           select: {
             id: true,
             status: true,

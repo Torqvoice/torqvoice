@@ -26,6 +26,8 @@ export const assignTechnicianSchema = z.object({
   id: z.string().min(1),
   technicianId: z.string().min(1),
   type: z.enum(["serviceRecord", "inspection"]),
+  startDateTime: z.coerce.date().optional(),
+  endDateTime: z.coerce.date().optional(),
 });
 
 export const moveJobSchema = z.object({

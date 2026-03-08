@@ -26,6 +26,7 @@ export async function createDraftServiceRecord(
                 "workshop.invoicePrefix",
                 "workshop.invoiceStartNumber",
                 "workshop.defaultTechnician",
+                "workboard.workDayStart",
               ],
             },
           },
@@ -99,6 +100,18 @@ export async function createDraftServiceRecord(
         });
       }
 
+      // Default to today's date at work day start time (from settings, fallback 07:00)
+      let defaultStart: Date;
+      if (!startDateTime) {
+        const workDayStart = settingsMap["workboard.workDayStart"] || "07:00";
+        const [h, m] = workDayStart.split(":").map(Number);
+        defaultStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
+      } else {
+        defaultStart = startDateTime;
+      }
+      // serviceDate should be date-only (start of day)
+      const serviceDate = new Date(defaultStart.getFullYear(), defaultStart.getMonth(), defaultStart.getDate());
+
       const record = await db.serviceRecord.create({
         data: {
           title: "New Service Record",
@@ -109,9 +122,9 @@ export async function createDraftServiceRecord(
           techName,
           technicianId: resolvedTechId || undefined,
           invoiceNumber,
-          serviceDate: startDateTime ?? now,
-          startDateTime: startDateTime ?? now,
-          endDateTime: endDateTime ?? new Date((startDateTime ?? now).getTime() + 3600000),
+          serviceDate,
+          startDateTime: defaultStart,
+          endDateTime: endDateTime ?? new Date(defaultStart.getTime() + 3600000),
         },
       });
 
