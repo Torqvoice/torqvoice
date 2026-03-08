@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useTransition } from 'react'
+import { useState, useCallback, useTransition, useRef, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -102,7 +102,6 @@ export function VehiclesClient({
   const [isPending, startTransition] = useTransition()
   const t = useTranslations('vehicles.list')
   const tc = useTranslations('common.buttons')
-  const [searchInput, setSearchInput] = useState(search)
   const [showForm, setShowForm] = useState(false)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
   const [view, setView] = useState<'table' | 'grid' | 'grid6'>(initialView)
@@ -135,13 +134,23 @@ export function VehiclesClient({
     [router, pathname, searchParams]
   )
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault()
-      navigate({ search: searchInput || undefined })
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+      debounceRef.current = setTimeout(() => {
+        navigate({ search: value || undefined })
+      }, 300)
     },
-    [navigate, searchInput]
+    [navigate]
   )
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [])
 
   const handleDelete = async (id: string, name: string) => {
     const ok = await confirm({
@@ -202,15 +211,15 @@ export function VehiclesClient({
               {t('archived')}{archivedCount > 0 ? ` (${archivedCount})` : ''}
             </button>
           </div>
-          <form onSubmit={handleSearch} className="relative flex-1 min-w-0 sm:max-w-sm">
+          <div className="relative flex-1 min-w-0 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t('searchPlaceholder')}
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              defaultValue={search}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-9"
             />
-          </form>
+          </div>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
         <div className="flex items-center justify-between gap-2 shrink-0 flex-1 sm:flex-none">
