@@ -349,7 +349,7 @@ export async function updateServiceRecord(input: unknown) {
       where: { id: data.id, vehicle: { organizationId } },
       include: {
         attachments: { select: { fileUrl: true, category: true } },
-        vehicle: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
+        vehicle: { select: { id: true, mileage: true, make: true, model: true, year: true, licensePlate: true } },
       },
     });
     if (!existing) throw new Error("Service record not found");
@@ -430,6 +430,21 @@ export async function updateServiceRecord(input: unknown) {
 
       return updated;
     });
+
+    // Update vehicle mileage if this is the latest service record and mileage is higher
+    if (recordData.mileage && recordData.mileage > existing.vehicle.mileage) {
+      const latestRecord = await db.serviceRecord.findFirst({
+        where: { vehicleId: existing.vehicle.id },
+        orderBy: { serviceDate: 'desc' },
+        select: { id: true },
+      });
+      if (latestRecord?.id === id) {
+        await db.vehicle.update({
+          where: { id: existing.vehicle.id },
+          data: { mileage: recordData.mileage },
+        });
+      }
+    }
 
     // Delete removed attachment files from disk (after successful DB transaction)
     for (const fileUrl of removedFileUrls) {

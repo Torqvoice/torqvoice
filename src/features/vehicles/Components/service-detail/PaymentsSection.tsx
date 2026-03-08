@@ -75,7 +75,7 @@ export function PaymentsSection({
 
   return (
     <div className="rounded-lg border p-3">
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <h3 className="flex items-center gap-2 text-sm font-semibold">
             <CreditCard className="h-3.5 w-3.5" />
