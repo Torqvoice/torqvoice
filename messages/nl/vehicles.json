@@ -38,6 +38,7 @@
     "notFound": "Voertuig niet gevonden",
     "predictedKm": "Voorspelde km",
     "predictedMileage": "Voorspelde kilometerstand",
+    "predictedTooltip": "Geschatte huidige kilometerstand op basis van servicehistorie. Het percentage geeft de betrouwbaarheid van de voorspelling aan.",
     "dismissed": "Genegeerd",
     "undo": "Ongedaan maken",
     "serviceOverdue": "Onderhoud achterstallig",

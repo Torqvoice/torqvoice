@@ -1,0 +1,11 @@
+{
+  "error": "Erinnerungen konnten nicht geladen werden",
+  "showing": "{count} von {total} angezeigt",
+  "deleted": "Erinnerung gelöscht",
+  "deleteError": "Erinnerung konnte nicht gelöscht werden",
+  "vehicle": "Fahrzeug",
+  "selectVehicle": "Fahrzeug auswählen...",
+  "searchVehicle": "Fahrzeuge suchen...",
+  "noVehicle": "Keine Fahrzeuge gefunden.",
+  "pickDate": "Datum auswählen"
+}

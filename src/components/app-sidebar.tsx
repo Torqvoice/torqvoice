@@ -38,6 +38,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import {
   BarChart3,
+  Bell,
   Building2,
   CalendarDays,
   Car,
@@ -113,6 +114,7 @@ export function AppSidebar({
 
   const workshopItems = [
     { titleKey: 'sidebar.vehicles' as const, url: '/vehicles', icon: Car },
+    { titleKey: 'sidebar.reminders' as const, url: '/reminders', icon: Bell },
     { titleKey: 'sidebar.workOrders' as const, url: '/work-orders', icon: ClipboardList },
     { titleKey: 'sidebar.inspections' as const, url: '/inspections', icon: ClipboardCheck },
     { titleKey: 'sidebar.calendar' as const, url: '/calendar', icon: CalendarDays },

@@ -36,6 +36,12 @@ function calculateConfidencePercent(dataPoints: number, totalDays: number): numb
 
 export async function getVehiclePredictedMileage(vehicleId: string) {
   return withAuth(async ({ organizationId }) => {
+    const vehicle = await db.vehicle.findFirst({
+      where: { id: vehicleId, organizationId },
+      select: { mileage: true },
+    });
+    if (!vehicle) return null;
+
     const records = await db.serviceRecord.findMany({
       where: {
         vehicleId,
@@ -71,8 +77,10 @@ export async function getVehiclePredictedMileage(vehicleId: string) {
     // Project from latest known data point to today
     const daysSinceLatest =
       (Date.now() - latest.date.getTime()) / (1000 * 60 * 60 * 24);
-    const predictedMileage = Math.round(
-      latest.mileage + daysSinceLatest * avgPerDay
+    // Never predict less than the vehicle's actual recorded mileage
+    const predictedMileage = Math.max(
+      vehicle.mileage,
+      Math.round(latest.mileage + daysSinceLatest * avgPerDay)
     );
 
     return {
@@ -205,5 +213,40 @@ export async function getVehiclesDueForService() {
     });
 
     return results;
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
+}
+
+export type DismissedMaintenanceVehicle = {
+  vehicleId: string;
+  make: string;
+  model: string;
+  year: number;
+  licensePlate: string | null;
+  dismissedAt: Date | null;
+};
+
+export async function getDismissedMaintenanceVehicles() {
+  return withAuth(async ({ organizationId }) => {
+    const vehicles = await db.vehicle.findMany({
+      where: { organizationId, isArchived: false, maintenanceDismissed: true },
+      orderBy: { maintenanceDismissedAt: "desc" },
+      select: {
+        id: true,
+        make: true,
+        model: true,
+        year: true,
+        licensePlate: true,
+        maintenanceDismissedAt: true,
+      },
+    });
+
+    return vehicles.map((v) => ({
+      vehicleId: v.id,
+      make: v.make,
+      model: v.model,
+      year: v.year,
+      licensePlate: v.licensePlate,
+      dismissedAt: v.maintenanceDismissedAt,
+    })) satisfies DismissedMaintenanceVehicle[];
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
 }

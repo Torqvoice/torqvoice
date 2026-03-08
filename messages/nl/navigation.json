@@ -46,7 +46,9 @@
     "license": "Licentie",
     "subscription": "Abonnement",
     "maintenance": "Onderhoud",
-    "customerPortal": "Klantenportaal"
+    "customerPortal": "Klantenportaal",
+    "reminders": "Herinneringen",
+    "allReminders": "Alle herinneringen"
   },
   "search": "Zoeken...",
   "shortcut": "Ctrl+K",
@@ -59,6 +61,7 @@
     "messages": "Berichten",
     "workshop": "Werkplaats",
     "vehicles": "Voertuigen",
+    "reminders": "Herinneringen",
     "workOrders": "Werkorders",
     "inspections": "Inspecties",
     "calendar": "Kalender",

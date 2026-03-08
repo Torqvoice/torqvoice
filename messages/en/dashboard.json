@@ -6,6 +6,7 @@
     "totalCustomers": "Total Customers"
   },
   "customize": "Customize",
+  "viewAll": "View All",
   "showCards": "Show cards",
   "cards": {
     "maintenance": "Predicted Maintenance",
@@ -25,33 +26,43 @@
     "approaching": "Approaching",
     "estimated": "Est. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} since last service",
-    "certainty": "{percent}% certainty"
+    "certainty": "{percent}% certainty",
+    "active": "Active",
+    "dismissedTab": "Dismissed",
+    "noActive": "No vehicles currently due for service.",
+    "dismissedOn": "Dismissed {date}",
+    "restore": "Restore"
   },
   "reminders": {
     "title": "Upcoming Reminders",
     "overdue": "Overdue",
-    "dueSoon": "Due Soon"
+    "dueSoon": "Due Soon",
+    "noData": "No upcoming reminders."
   },
   "messages": {
     "title": "Recent Messages",
     "viewAll": "View All",
-    "you": "You: "
+    "you": "You: ",
+    "noData": "No recent messages."
   },
   "notifications": {
-    "title": "Recent Notifications"
+    "title": "Recent Notifications",
+    "noData": "No recent notifications."
   },
   "inspections": {
     "title": "Inspections",
     "inProgress": "In Progress",
     "completed": "Completed",
-    "itemCount": "{inspected}/{total} items"
+    "itemCount": "{inspected}/{total} items",
+    "noData": "No inspections."
   },
   "quoteRequests": {
     "title": "Quote Requests",
     "description": "Customers requesting quotes from shared inspections",
     "pending": "Pending",
     "createQuote": "Create Quote",
-    "itemsRequested": "{count, plural, one {# item requested} other {# items requested}}"
+    "itemsRequested": "{count, plural, one {# item requested} other {# items requested}}",
+    "noData": "No pending quote requests."
   },
   "quoteResponses": {
     "title": "Customer Quote Responses",
@@ -59,7 +70,8 @@
     "accepted": "Accepted",
     "changesRequested": "Changes Requested",
     "convertToWorkOrder": "Convert to Work Order",
-    "viewQuote": "View Quote"
+    "viewQuote": "View Quote",
+    "noData": "No customer responses."
   },
   "recentCompleted": {
     "title": "Recent Completed",

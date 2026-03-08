@@ -1,0 +1,11 @@
+{
+  "error": "Falha ao carregar lembretes",
+  "showing": "Mostrando {count} de {total}",
+  "deleted": "Lembrete excluído",
+  "deleteError": "Falha ao excluir lembrete",
+  "vehicle": "Veículo",
+  "selectVehicle": "Selecionar veículo...",
+  "searchVehicle": "Buscar veículos...",
+  "noVehicle": "Nenhum veículo encontrado.",
+  "pickDate": "Escolher uma data"
+}

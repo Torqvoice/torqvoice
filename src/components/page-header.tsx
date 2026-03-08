@@ -50,6 +50,7 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/billing': [{ key: 'billing', href: '/billing' }, { key: 'billingHistory' }],
   '/inventory': [{ key: 'inventory', href: '/inventory' }, { key: 'allParts' }],
   '/reports': [{ key: 'reports', href: '/reports' }, { key: 'reports' }],
+  '/reminders': [{ key: 'reminders', href: '/reminders' }, { key: 'allReminders' }],
   '/work-board': [{ key: 'workBoard' }],
   '/work-board/presenter': [{ key: 'workBoard', href: '/work-board' }, { key: 'presenter' }],
   '/admin': [{ key: 'adminOverview' }],

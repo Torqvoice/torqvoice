@@ -6,6 +6,7 @@
     "totalCustomers": "Total des clients"
   },
   "customize": "Personnaliser",
+  "viewAll": "Tout voir",
   "showCards": "Afficher les cartes",
   "cards": {
     "maintenance": "Maintenance pr\u00e9vue",
@@ -25,33 +26,43 @@
     "approaching": "Imminent",
     "estimated": "Est. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} depuis le dernier entretien",
-    "certainty": "{percent}\u00a0% de certitude"
+    "certainty": "{percent}\u00a0% de certitude",
+    "active": "Actifs",
+    "dismissedTab": "Ignorés",
+    "noActive": "Aucun véhicule n'a besoin d'entretien actuellement.",
+    "dismissedOn": "Ignoré le {date}",
+    "restore": "Restaurer"
   },
   "reminders": {
     "title": "Rappels \u00e0 venir",
     "overdue": "En retard",
-    "dueSoon": "Bient\u00f4t d\u00fb"
+    "dueSoon": "Bient\u00f4t d\u00fb",
+    "noData": "Aucun rappel à venir."
   },
   "messages": {
     "title": "Messages r\u00e9cents",
     "viewAll": "Tout afficher",
-    "you": "Vous\u00a0: "
+    "you": "Vous\u00a0: ",
+    "noData": "Aucun message récent."
   },
   "notifications": {
-    "title": "Notifications r\u00e9centes"
+    "title": "Notifications r\u00e9centes",
+    "noData": "Aucune notification récente."
   },
   "inspections": {
     "title": "Inspections",
     "inProgress": "En cours",
     "completed": "Termin\u00e9",
-    "itemCount": "{inspected}/{total} \u00e9l\u00e9ments"
+    "itemCount": "{inspected}/{total} \u00e9l\u00e9ments",
+    "noData": "Aucune inspection."
   },
   "quoteRequests": {
     "title": "Demandes de devis",
     "description": "Clients demandant des devis \u00e0 partir d\u2019inspections partag\u00e9es",
     "pending": "En attente",
     "createQuote": "Cr\u00e9er un devis",
-    "itemsRequested": "{count, plural, one {# \u00e9l\u00e9ment demand\u00e9} other {# \u00e9l\u00e9ments demand\u00e9s}}"
+    "itemsRequested": "{count, plural, one {# \u00e9l\u00e9ment demand\u00e9} other {# \u00e9l\u00e9ments demand\u00e9s}}",
+    "noData": "Aucune demande de devis en attente."
   },
   "quoteResponses": {
     "title": "R\u00e9ponses des clients aux devis",
@@ -59,7 +70,8 @@
     "accepted": "Accept\u00e9",
     "changesRequested": "Modifications demand\u00e9es",
     "convertToWorkOrder": "Convertir en ordre de travail",
-    "viewQuote": "Voir le devis"
+    "viewQuote": "Voir le devis",
+    "noData": "Aucune réponse client."
   },
   "recentCompleted": {
     "title": "Termin\u00e9s r\u00e9cemment",

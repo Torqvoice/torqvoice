@@ -6,6 +6,7 @@
     "totalCustomers": "Totaal klanten"
   },
   "customize": "Aanpassen",
+  "viewAll": "Alles bekijken",
   "showCards": "Kaarten tonen",
   "cards": {
     "maintenance": "Verwacht onderhoud",
@@ -25,33 +26,43 @@
     "approaching": "Binnenkort",
     "estimated": "Geschat {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} sinds laatste service",
-    "certainty": "{percent}% zekerheid"
+    "certainty": "{percent}% zekerheid",
+    "active": "Actief",
+    "dismissedTab": "Genegeerd",
+    "noActive": "Geen voertuigen hebben momenteel onderhoud nodig.",
+    "dismissedOn": "Genegeerd op {date}",
+    "restore": "Herstellen"
   },
   "reminders": {
     "title": "Aankomende herinneringen",
     "overdue": "Achterstallig",
-    "dueSoon": "Binnenkort verlopen"
+    "dueSoon": "Binnenkort verlopen",
+    "noData": "Geen komende herinneringen."
   },
   "messages": {
     "title": "Recente berichten",
     "viewAll": "Alles bekijken",
-    "you": "U: "
+    "you": "U: ",
+    "noData": "Geen recente berichten."
   },
   "notifications": {
-    "title": "Recente meldingen"
+    "title": "Recente meldingen",
+    "noData": "Geen recente meldingen."
   },
   "inspections": {
     "title": "Inspecties",
     "inProgress": "In uitvoering",
     "completed": "Afgerond",
-    "itemCount": "{inspected}/{total} items"
+    "itemCount": "{inspected}/{total} items",
+    "noData": "Geen inspecties."
   },
   "quoteRequests": {
     "title": "Offerte-aanvragen",
     "description": "Klanten die offertes aanvragen vanuit gedeelde inspecties",
     "pending": "In afwachting",
     "createQuote": "Offerte aanmaken",
-    "itemsRequested": "{count, plural, one {# item aangevraagd} other {# items aangevraagd}}"
+    "itemsRequested": "{count, plural, one {# item aangevraagd} other {# items aangevraagd}}",
+    "noData": "Geen openstaande offerteaanvragen."
   },
   "quoteResponses": {
     "title": "Offerte-reacties van klanten",
@@ -59,7 +70,8 @@
     "accepted": "Geaccepteerd",
     "changesRequested": "Wijzigingen aangevraagd",
     "convertToWorkOrder": "Omzetten naar werkorder",
-    "viewQuote": "Offerte bekijken"
+    "viewQuote": "Offerte bekijken",
+    "noData": "Geen klantreacties."
   },
   "recentCompleted": {
     "title": "Recent afgerond",

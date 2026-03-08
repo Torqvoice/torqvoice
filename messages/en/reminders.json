@@ -1,0 +1,11 @@
+{
+  "error": "Failed to load reminders",
+  "showing": "Showing {count} of {total}",
+  "deleted": "Reminder deleted",
+  "deleteError": "Failed to delete reminder",
+  "vehicle": "Vehicle",
+  "selectVehicle": "Select vehicle...",
+  "searchVehicle": "Search vehicles...",
+  "noVehicle": "No vehicles found.",
+  "pickDate": "Pick a date"
+}

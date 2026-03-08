@@ -6,6 +6,7 @@
     "totalCustomers": "Clienti totali"
   },
   "customize": "Personalizza",
+  "viewAll": "Vedi tutto",
   "showCards": "Mostra schede",
   "cards": {
     "maintenance": "Manutenzione prevista",
@@ -25,33 +26,43 @@
     "approaching": "In avvicinamento",
     "estimated": "Stima {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} dall'ultimo intervento",
-    "certainty": "{percent}% di certezza"
+    "certainty": "{percent}% di certezza",
+    "active": "Attivi",
+    "dismissedTab": "Ignorati",
+    "noActive": "Nessun veicolo attualmente in scadenza per la manutenzione.",
+    "dismissedOn": "Ignorato il {date}",
+    "restore": "Ripristina"
   },
   "reminders": {
     "title": "Promemoria in scadenza",
     "overdue": "Scaduto",
-    "dueSoon": "In scadenza"
+    "dueSoon": "In scadenza",
+    "noData": "Nessun promemoria in arrivo."
   },
   "messages": {
     "title": "Messaggi recenti",
     "viewAll": "Visualizza tutti",
-    "you": "Lei: "
+    "you": "Lei: ",
+    "noData": "Nessun messaggio recente."
   },
   "notifications": {
-    "title": "Notifiche recenti"
+    "title": "Notifiche recenti",
+    "noData": "Nessuna notifica recente."
   },
   "inspections": {
     "title": "Ispezioni",
     "inProgress": "In corso",
     "completed": "Completato",
-    "itemCount": "{inspected}/{total} elementi"
+    "itemCount": "{inspected}/{total} elementi",
+    "noData": "Nessuna ispezione."
   },
   "quoteRequests": {
     "title": "Richieste di preventivo",
     "description": "Clienti che richiedono preventivi dalle ispezioni condivise",
     "pending": "In attesa",
     "createQuote": "Crea preventivo",
-    "itemsRequested": "{count, plural, one {# elemento richiesto} other {# elementi richiesti}}"
+    "itemsRequested": "{count, plural, one {# elemento richiesto} other {# elementi richiesti}}",
+    "noData": "Nessuna richiesta di preventivo in sospeso."
   },
   "quoteResponses": {
     "title": "Risposte ai preventivi dei clienti",
@@ -59,7 +70,8 @@
     "accepted": "Accettato",
     "changesRequested": "Modifiche richieste",
     "convertToWorkOrder": "Converti in ordine di lavoro",
-    "viewQuote": "Visualizza preventivo"
+    "viewQuote": "Visualizza preventivo",
+    "noData": "Nessuna risposta dai clienti."
   },
   "recentCompleted": {
     "title": "Completati di recente",

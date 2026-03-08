@@ -6,6 +6,7 @@
     "totalCustomers": "Totalt antall kunder"
   },
   "customize": "Tilpass",
+  "viewAll": "Vis alle",
   "showCards": "Vis kort",
   "cards": {
     "maintenance": "Forventet vedlikehold",
@@ -25,33 +26,43 @@
     "approaching": "Nærmer seg",
     "estimated": "Est. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} siden siste service",
-    "certainty": "{percent} % sikkerhet"
+    "certainty": "{percent} % sikkerhet",
+    "active": "Aktive",
+    "dismissedTab": "Avvist",
+    "noActive": "Ingen kjøretøy trenger service for øyeblikket.",
+    "dismissedOn": "Avvist {date}",
+    "restore": "Gjenopprett"
   },
   "reminders": {
     "title": "Kommende påminnelser",
     "overdue": "Forfalt",
-    "dueSoon": "Forfaller snart"
+    "dueSoon": "Forfaller snart",
+    "noData": "Ingen kommende påminnelser."
   },
   "messages": {
     "title": "Siste meldinger",
     "viewAll": "Vis alle",
-    "you": "Du: "
+    "you": "Du: ",
+    "noData": "Ingen nylige meldinger."
   },
   "notifications": {
-    "title": "Siste varsler"
+    "title": "Siste varsler",
+    "noData": "Ingen nylige varsler."
   },
   "inspections": {
     "title": "Inspeksjoner",
     "inProgress": "Pågår",
     "completed": "Fullført",
-    "itemCount": "{inspected}/{total} punkter"
+    "itemCount": "{inspected}/{total} punkter",
+    "noData": "Ingen inspeksjoner."
   },
   "quoteRequests": {
     "title": "Tilbudsforespørsler",
     "description": "Kunder som ber om tilbud fra delte inspeksjoner",
     "pending": "Ventende",
     "createQuote": "Opprett tilbud",
-    "itemsRequested": "{count, plural, one {# punkt forespurt} other {# punkter forespurt}}"
+    "itemsRequested": "{count, plural, one {# punkt forespurt} other {# punkter forespurt}}",
+    "noData": "Ingen ventende tilbudsforespørsler."
   },
   "quoteResponses": {
     "title": "Kundens tilbudssvar",
@@ -59,7 +70,8 @@
     "accepted": "Akseptert",
     "changesRequested": "Endringer forespurt",
     "convertToWorkOrder": "Konverter til arbeidsordre",
-    "viewQuote": "Vis tilbud"
+    "viewQuote": "Vis tilbud",
+    "noData": "Ingen kundesvar."
   },
   "recentCompleted": {
     "title": "Nylig fullført",

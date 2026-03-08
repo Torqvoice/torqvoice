@@ -6,6 +6,7 @@
     "totalCustomers": "Total de clientes"
   },
   "customize": "Personalizar",
+  "viewAll": "Ver todo",
   "showCards": "Mostrar tarjetas",
   "cards": {
     "maintenance": "Mantenimiento previsto",
@@ -25,33 +26,43 @@
     "approaching": "Pr\u00f3ximo",
     "estimated": "Est. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} desde el \u00faltimo servicio",
-    "certainty": "{percent}% de certeza"
+    "certainty": "{percent}% de certeza",
+    "active": "Activos",
+    "dismissedTab": "Descartados",
+    "noActive": "No hay vehículos que requieran servicio actualmente.",
+    "dismissedOn": "Descartado el {date}",
+    "restore": "Restaurar"
   },
   "reminders": {
     "title": "Recordatorios pendientes",
     "overdue": "Vencidos",
-    "dueSoon": "Pr\u00f3ximamente"
+    "dueSoon": "Pr\u00f3ximamente",
+    "noData": "No hay recordatorios próximos."
   },
   "messages": {
     "title": "Mensajes recientes",
     "viewAll": "Ver todos",
-    "you": "Usted: "
+    "you": "Usted: ",
+    "noData": "No hay mensajes recientes."
   },
   "notifications": {
-    "title": "Notificaciones recientes"
+    "title": "Notificaciones recientes",
+    "noData": "No hay notificaciones recientes."
   },
   "inspections": {
     "title": "Inspecciones",
     "inProgress": "En progreso",
     "completed": "Completadas",
-    "itemCount": "{inspected}/{total} elementos"
+    "itemCount": "{inspected}/{total} elementos",
+    "noData": "No hay inspecciones."
   },
   "quoteRequests": {
     "title": "Solicitudes de presupuesto",
     "description": "Clientes que solicitan presupuestos a partir de inspecciones compartidas",
     "pending": "Pendientes",
     "createQuote": "Crear presupuesto",
-    "itemsRequested": "{count, plural, one {# elemento solicitado} other {# elementos solicitados}}"
+    "itemsRequested": "{count, plural, one {# elemento solicitado} other {# elementos solicitados}}",
+    "noData": "No hay solicitudes de presupuesto pendientes."
   },
   "quoteResponses": {
     "title": "Respuestas de presupuesto de clientes",
@@ -59,7 +70,8 @@
     "accepted": "Aceptado",
     "changesRequested": "Cambios solicitados",
     "convertToWorkOrder": "Convertir en orden de trabajo",
-    "viewQuote": "Ver presupuesto"
+    "viewQuote": "Ver presupuesto",
+    "noData": "No hay respuestas de clientes."
   },
   "recentCompleted": {
     "title": "Completados recientemente",

@@ -1,0 +1,11 @@
+{
+  "error": "Kunne ikke laste påminnelser",
+  "showing": "Viser {count} av {total}",
+  "deleted": "Påminnelse slettet",
+  "deleteError": "Kunne ikke slette påminnelse",
+  "vehicle": "Kjøretøy",
+  "selectVehicle": "Velg kjøretøy...",
+  "searchVehicle": "Søk kjøretøy...",
+  "noVehicle": "Ingen kjøretøy funnet.",
+  "pickDate": "Velg en dato"
+}

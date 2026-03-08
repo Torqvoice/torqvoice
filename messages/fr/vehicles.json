@@ -38,6 +38,7 @@
     "notFound": "V\u00e9hicule introuvable",
     "predictedKm": "Km pr\u00e9vus",
     "predictedMileage": "Kilom\u00e9trage pr\u00e9vu",
+    "predictedTooltip": "Kilom\u00e9trage actuel estim\u00e9 bas\u00e9 sur l'historique d'entretien. Le pourcentage indique la fiabilit\u00e9 de la pr\u00e9diction.",
     "dismissed": "Ignor\u00e9",
     "undo": "Annuler",
     "serviceOverdue": "Service en retard",

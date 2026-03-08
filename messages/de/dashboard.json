@@ -6,6 +6,7 @@
     "totalCustomers": "Kunden gesamt"
   },
   "customize": "Anpassen",
+  "viewAll": "Alle anzeigen",
   "showCards": "Karten anzeigen",
   "cards": {
     "maintenance": "Voraussichtliche Wartung",
@@ -25,33 +26,43 @@
     "approaching": "Bevorstehend",
     "estimated": "Gesch. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} seit letztem Service",
-    "certainty": "{percent}% Sicherheit"
+    "certainty": "{percent}% Sicherheit",
+    "active": "Aktiv",
+    "dismissedTab": "Verworfen",
+    "noActive": "Derzeit sind keine Fahrzeuge wartungsfällig.",
+    "dismissedOn": "Verworfen am {date}",
+    "restore": "Wiederherstellen"
   },
   "reminders": {
     "title": "Anstehende Erinnerungen",
     "overdue": "Überfällig",
-    "dueSoon": "Bald fällig"
+    "dueSoon": "Bald fällig",
+    "noData": "Keine kommenden Erinnerungen."
   },
   "messages": {
     "title": "Letzte Nachrichten",
     "viewAll": "Alle anzeigen",
-    "you": "Sie: "
+    "you": "Sie: ",
+    "noData": "Keine neuen Nachrichten."
   },
   "notifications": {
-    "title": "Letzte Benachrichtigungen"
+    "title": "Letzte Benachrichtigungen",
+    "noData": "Keine neuen Benachrichtigungen."
   },
   "inspections": {
     "title": "Inspektionen",
     "inProgress": "In Bearbeitung",
     "completed": "Abgeschlossen",
-    "itemCount": "{inspected}/{total} Positionen"
+    "itemCount": "{inspected}/{total} Positionen",
+    "noData": "Keine Inspektionen."
   },
   "quoteRequests": {
     "title": "Angebotsanfragen",
     "description": "Kunden, die Angebote aus geteilten Inspektionen anfordern",
     "pending": "Ausstehend",
     "createQuote": "Angebot erstellen",
-    "itemsRequested": "{count, plural, one {# Position angefragt} other {# Positionen angefragt}}"
+    "itemsRequested": "{count, plural, one {# Position angefragt} other {# Positionen angefragt}}",
+    "noData": "Keine ausstehenden Angebotsanfragen."
   },
   "quoteResponses": {
     "title": "Angebotsantworten der Kunden",
@@ -59,7 +70,8 @@
     "accepted": "Angenommen",
     "changesRequested": "Änderungen gewünscht",
     "convertToWorkOrder": "In Arbeitsauftrag umwandeln",
-    "viewQuote": "Angebot anzeigen"
+    "viewQuote": "Angebot anzeigen",
+    "noData": "Keine Kundenantworten."
   },
   "recentCompleted": {
     "title": "Kürzlich abgeschlossen",

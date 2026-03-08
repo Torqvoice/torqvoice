@@ -46,7 +46,9 @@
     "license": "Lisans",
     "subscription": "Abonelik",
     "maintenance": "Bakım",
-    "customerPortal": "Müşteri Portalı"
+    "customerPortal": "Müşteri Portalı",
+    "reminders": "Hatırlatmalar",
+    "allReminders": "Tüm hatırlatmalar"
   },
   "search": "Ara...",
   "shortcut": "Ctrl+K",
@@ -59,6 +61,7 @@
     "messages": "Mesajlar",
     "workshop": "Atölye",
     "vehicles": "Araçlar",
+    "reminders": "Hatırlatmalar",
     "workOrders": "İş Emirleri",
     "inspections": "Muayeneler",
     "calendar": "Takvim",

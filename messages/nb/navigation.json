@@ -46,7 +46,9 @@
     "license": "Lisens",
     "subscription": "Abonnement",
     "maintenance": "Vedlikehold",
-    "customerPortal": "Kundeportal"
+    "customerPortal": "Kundeportal",
+    "reminders": "Påminnelser",
+    "allReminders": "Alle påminnelser"
   },
   "search": "Søk...",
   "shortcut": "Ctrl+K",
@@ -59,6 +61,7 @@
     "messages": "Meldinger",
     "workshop": "Verksted",
     "vehicles": "Kjøretøy",
+    "reminders": "Påminnelser",
     "workOrders": "Arbeidsordre",
     "inspections": "Inspeksjoner",
     "calendar": "Kalender",
