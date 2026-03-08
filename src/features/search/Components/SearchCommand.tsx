@@ -10,7 +10,7 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command";
-import { Car, FileText, Package, Settings, Users, Wrench } from "lucide-react";
+import { Bell, Car, ClipboardCheck, FileText, Package, Settings, Users, Wrench } from "lucide-react";
 import { globalSearch, getRecentCustomers } from "@/features/search/Actions/searchActions";
 
 interface SearchResult {
@@ -51,6 +51,32 @@ interface SearchResult {
     title: string;
     quoteNumber: string | null;
     status: string;
+  }[];
+  reminders: {
+    id: string;
+    title: string;
+    dueDate: Date | null;
+    isCompleted: boolean;
+    vehicle: {
+      id: string;
+      make: string;
+      model: string;
+      year: number;
+      licensePlate: string | null;
+    };
+  }[];
+  inspections: {
+    id: string;
+    status: string;
+    createdAt: Date;
+    template: { name: string };
+    vehicle: {
+      id: string;
+      make: string;
+      model: string;
+      year: number;
+      licensePlate: string | null;
+    };
   }[];
 }
 
@@ -101,7 +127,7 @@ export function SearchCommand() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult>({ vehicles: [], customers: [], services: [], parts: [], quotes: [] });
+  const [results, setResults] = useState<SearchResult>({ vehicles: [], customers: [], services: [], parts: [], quotes: [], reminders: [], inspections: [] });
   const [loading, setLoading] = useState(false);
   const [recentCustomers, setRecentCustomers] = useState<RecentCustomer[]>([]);
   const recentFetchedRef = useRef(false);
@@ -136,7 +162,7 @@ export function SearchCommand() {
   useEffect(() => {
     if (!debouncedQuery || debouncedQuery.length < 2) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- clearing results on query change is intentional
-      setResults({ vehicles: [], customers: [], services: [], parts: [], quotes: [] });
+      setResults({ vehicles: [], customers: [], services: [], parts: [], quotes: [], reminders: [], inspections: [] });
       setLoading(false);
       return;
     }
@@ -167,7 +193,7 @@ export function SearchCommand() {
   );
 
   const hasQuery = debouncedQuery.length >= 2;
-  const hasResults = results.vehicles.length > 0 || results.customers.length > 0 || results.services.length > 0 || results.parts.length > 0 || results.quotes.length > 0;
+  const hasResults = results.vehicles.length > 0 || results.customers.length > 0 || results.services.length > 0 || results.parts.length > 0 || results.quotes.length > 0 || results.reminders.length > 0 || results.inspections.length > 0;
   const matchedSettings = hasQuery ? filterSettings(debouncedQuery) : SEARCHABLE_SETTINGS;
   const showDefault = !hasQuery;
 
@@ -307,6 +333,47 @@ export function SearchCommand() {
                       <span>{p.name}</span>
                       <span className="text-xs text-muted-foreground">
                         {[p.partNumber, `${p.quantity} in stock`].filter(Boolean).join(" · ")}
+                      </span>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+            {results.reminders.length > 0 && (
+              <CommandGroup heading="Reminders">
+                {results.reminders.map((r) => (
+                  <CommandItem
+                    key={r.id}
+                    value={`${r.title} ${r.vehicle.make} ${r.vehicle.model} ${r.vehicle.licensePlate || ""}`}
+                    onSelect={() => handleSelect(`/vehicles/${r.vehicle.id}?tab=reminders`)}
+                  >
+                    <Bell className="mr-2 h-4 w-4 text-muted-foreground" />
+                    <div className="flex flex-col">
+                      <span>{r.title}{r.isCompleted && <span className="ml-1.5 text-muted-foreground line-through">(done)</span>}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {`${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}`}
+                        {r.vehicle.licensePlate && ` · ${r.vehicle.licensePlate}`}
+                      </span>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+            {results.inspections.length > 0 && (
+              <CommandGroup heading="Inspections">
+                {results.inspections.map((insp) => (
+                  <CommandItem
+                    key={insp.id}
+                    value={`${insp.template.name} ${insp.vehicle.make} ${insp.vehicle.model} ${insp.vehicle.licensePlate || ""}`}
+                    onSelect={() => handleSelect(`/inspections/${insp.id}`)}
+                  >
+                    <ClipboardCheck className="mr-2 h-4 w-4 text-muted-foreground" />
+                    <div className="flex flex-col">
+                      <span>{insp.template.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {`${insp.vehicle.year} ${insp.vehicle.make} ${insp.vehicle.model}`}
+                        {insp.vehicle.licensePlate && ` · ${insp.vehicle.licensePlate}`}
+                        {` · ${insp.status}`}
                       </span>
                     </div>
                   </CommandItem>

@@ -520,7 +520,7 @@ export function DashboardClient({
                     <div
                       key={r.id}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(`/vehicles/${r.vehicle.id}`)}
+                      onClick={() => router.push(`/vehicles/${r.vehicle.id}?tab=reminders`)}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${

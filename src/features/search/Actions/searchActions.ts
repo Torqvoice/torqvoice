@@ -26,7 +26,7 @@ export async function getRecentCustomers() {
 export async function globalSearch(query: string) {
   return withAuth(async ({ organizationId }) => {
     if (!query || query.trim().length < 2) {
-      return { vehicles: [], customers: [], services: [], parts: [], quotes: [] };
+      return { vehicles: [], customers: [], services: [], parts: [], quotes: [], reminders: [], inspections: [] };
     }
 
     const q = query.trim();
@@ -42,7 +42,7 @@ export async function globalSearch(query: string) {
       vehicleOr.push({ year: Number(q) });
     }
 
-    const [vehicles, customers, services, parts, quotes] = await Promise.all([
+    const [vehicles, customers, services, parts, quotes, reminders, inspections] = await Promise.all([
       db.vehicle.findMany({
         where: { organizationId, OR: vehicleOr },
         select: {
@@ -133,8 +133,64 @@ export async function globalSearch(query: string) {
         },
         take: 10,
       }),
+      db.reminder.findMany({
+        where: {
+          vehicle: { organizationId },
+          OR: [
+            { title: { contains: q, mode } },
+            { description: { contains: q, mode } },
+            { vehicle: { make: { contains: q, mode } } },
+            { vehicle: { model: { contains: q, mode } } },
+            { vehicle: { licensePlate: { contains: q, mode } } },
+          ],
+        },
+        select: {
+          id: true,
+          title: true,
+          dueDate: true,
+          isCompleted: true,
+          vehicle: {
+            select: {
+              id: true,
+              make: true,
+              model: true,
+              year: true,
+              licensePlate: true,
+            },
+          },
+        },
+        take: 10,
+      }),
+      db.inspection.findMany({
+        where: {
+          vehicle: { organizationId },
+          OR: [
+            { template: { name: { contains: q, mode } } },
+            { notes: { contains: q, mode } },
+            { vehicle: { make: { contains: q, mode } } },
+            { vehicle: { model: { contains: q, mode } } },
+            { vehicle: { licensePlate: { contains: q, mode } } },
+          ],
+        },
+        select: {
+          id: true,
+          status: true,
+          createdAt: true,
+          template: { select: { name: true } },
+          vehicle: {
+            select: {
+              id: true,
+              make: true,
+              model: true,
+              year: true,
+              licensePlate: true,
+            },
+          },
+        },
+        take: 10,
+      }),
     ]);
 
-    return { vehicles, customers, services, parts, quotes };
+    return { vehicles, customers, services, parts, quotes, reminders, inspections };
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.DASHBOARD }] });
 }

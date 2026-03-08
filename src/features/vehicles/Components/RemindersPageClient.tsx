@@ -290,7 +290,7 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
                       <span className="text-xs text-muted-foreground">
                         <span
                           className="hover:underline cursor-pointer"
-                          onClick={() => router.push(`/vehicles/${r.vehicle.id}`)}
+                          onClick={() => router.push(`/vehicles/${r.vehicle.id}?tab=reminders`)}
                         >
                           {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
                           {r.vehicle.licensePlate && ` · ${r.vehicle.licensePlate}`}
