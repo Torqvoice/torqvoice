@@ -23,6 +23,7 @@ import { DataTablePagination } from "@/components/data-table-pagination";
 import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { CustomerForm } from "@/features/customers/Components/CustomerForm";
+import { ImportCustomersDialog } from "@/features/customers/Components/ImportCustomersDialog";
 import { deleteCustomer } from "@/features/customers/Actions/customerActions";
 import {
   Loader2,
@@ -31,6 +32,7 @@ import {
   Plus,
   Search,
   Trash2,
+  Upload,
   Users,
 } from "lucide-react";
 
@@ -68,6 +70,7 @@ export function CustomersClient({
   const [isPending, startTransition] = useTransition();
   const [searchInput, setSearchInput] = useState(search);
   const [showForm, setShowForm] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
   const modal = useGlassModal();
   const confirm = useConfirm();
@@ -132,16 +135,22 @@ export function CustomersClient({
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <Button size="sm" onClick={() => setShowForm(true)}>
-          <Plus className="mr-1 h-3.5 w-3.5" />
-          {t("addCustomer")}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => setShowImport(true)}>
+            <Upload className="mr-1 h-3.5 w-3.5" />
+            {t("importCustomers")}
+          </Button>
+          <Button size="sm" onClick={() => setShowForm(true)}>
+            <Plus className="mr-1 h-3.5 w-3.5" />
+            {t("addCustomer")}
+          </Button>
+        </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg border">
+      {/* Table - only this scrolls */}
+      <div className="overflow-auto rounded-lg border max-h-[calc(100vh-220px)]">
         <Table>
-          <TableHeader>
+          <TableHeader className="sticky top-0 z-10 bg-background">
             <TableRow>
               <TableHead>{t("table.name")}</TableHead>
               <TableHead className="hidden sm:table-cell">{t("table.company")}</TableHead>
@@ -220,11 +229,11 @@ export function CustomersClient({
       </div>
 
       <DataTablePagination
-        total={data.total}
-        page={data.page}
-        pageSize={data.pageSize}
-        totalPages={data.totalPages}
-        onNavigate={navigate}
+          total={data.total}
+          page={data.page}
+          pageSize={data.pageSize}
+          totalPages={data.totalPages}
+          onNavigate={navigate}
       />
 
       <CustomerForm
@@ -234,6 +243,11 @@ export function CustomersClient({
           if (!open) setEditCustomer(null);
         }}
         customer={editCustomer ?? undefined}
+      />
+
+      <ImportCustomersDialog
+        open={showImport}
+        onOpenChange={setShowImport}
       />
     </div>
   );
