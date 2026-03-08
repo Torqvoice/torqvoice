@@ -135,16 +135,16 @@ export function SignUpForm({ inviteToken, emailVerificationRequired, redirectTo 
             />
           </div>
 
-          <div className="flex items-start gap-2">
+          <div className="flex items-center gap-2">
             <input
               id="terms"
               type="checkbox"
               checked={termsAccepted}
               onChange={(e) => setTermsAccepted(e.target.checked)}
               required
-              className="mt-1 h-4 w-4 rounded border-border accent-primary"
+              className="h-4 w-4 shrink-0 rounded border-border accent-primary"
             />
-            <Label htmlFor="terms" className="text-sm font-normal leading-snug text-muted-foreground">
+            <Label htmlFor="terms" className="text-sm font-normal text-muted-foreground">
               {t('agreeToTerms')}{' '}
               <Link href="/terms" target="_blank" className="font-medium text-primary hover:underline">
                 {tc('terms.termsOfService')}
