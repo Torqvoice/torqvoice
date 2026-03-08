@@ -6,6 +6,7 @@
     "totalCustomers": "Total de Clientes"
   },
   "customize": "Personalizar",
+  "viewAll": "Ver tudo",
   "showCards": "Mostrar cartões",
   "cards": {
     "maintenance": "Manutenção Prevista",
@@ -35,28 +36,33 @@
   "reminders": {
     "title": "Lembretes Próximos",
     "overdue": "Atrasado",
-    "dueSoon": "Vence em Breve"
+    "dueSoon": "Vence em Breve",
+    "noData": "Nenhum lembrete próximo."
   },
   "messages": {
     "title": "Mensagens Recentes",
     "viewAll": "Ver Todas",
-    "you": "Você: "
+    "you": "Você: ",
+    "noData": "Nenhuma mensagem recente."
   },
   "notifications": {
-    "title": "Notificações Recentes"
+    "title": "Notificações Recentes",
+    "noData": "Nenhuma notificação recente."
   },
   "inspections": {
     "title": "Inspeções",
     "inProgress": "Em Andamento",
     "completed": "Concluído",
-    "itemCount": "{inspected}/{total} itens"
+    "itemCount": "{inspected}/{total} itens",
+    "noData": "Nenhuma inspeção."
   },
   "quoteRequests": {
     "title": "Solicitações de Orçamento",
     "description": "Clientes solicitando orçamentos a partir de inspeções compartilhadas",
     "pending": "Pendente",
     "createQuote": "Criar Orçamento",
-    "itemsRequested": "{count, plural, one {# item solicitado} other {# itens solicitados}}"
+    "itemsRequested": "{count, plural, one {# item solicitado} other {# itens solicitados}}",
+    "noData": "Nenhuma solicitação de orçamento pendente."
   },
   "quoteResponses": {
     "title": "Respostas de Orçamento dos Clientes",
@@ -64,7 +70,8 @@
     "accepted": "Aceito",
     "changesRequested": "Alterações Solicitadas",
     "convertToWorkOrder": "Converter em Ordem de Serviço",
-    "viewQuote": "Ver Orçamento"
+    "viewQuote": "Ver Orçamento",
+    "noData": "Nenhuma resposta de cliente."
   },
   "recentCompleted": {
     "title": "Concluídos Recentemente",

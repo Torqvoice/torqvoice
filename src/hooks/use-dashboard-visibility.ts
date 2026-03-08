@@ -18,7 +18,7 @@ export type DashboardCardId = (typeof DASHBOARD_CARD_IDS)[number];
 
 const STORAGE_KEY = "torqvoice-dashboard-hidden";
 
-export function useDashboardVisibility() {
+export function useDashboardVisibility(excludeId?: DashboardCardId) {
   const [hidden, setHidden] = useState<Set<string>>(() => {
     if (typeof window !== "undefined") {
       try {
@@ -46,5 +46,11 @@ export function useDashboardVisibility() {
 
   const isVisible = useCallback((id: string) => !hidden.has(id), [hidden]);
 
-  return { toggleCard, isVisible };
+  const applicableIds = excludeId
+    ? DASHBOARD_CARD_IDS.filter((id) => id !== excludeId)
+    : DASHBOARD_CARD_IDS;
+  const visibleCount = applicableIds.filter((id) => !hidden.has(id)).length;
+  const totalCount = applicableIds.length;
+
+  return { toggleCard, isVisible, visibleCount, totalCount };
 }

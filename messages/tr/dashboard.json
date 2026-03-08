@@ -6,6 +6,7 @@
     "totalCustomers": "Toplam Müşteriler"
   },
   "customize": "Özelleştir",
+  "viewAll": "Tümünü Gör",
   "showCards": "Kartları göster",
   "cards": {
     "maintenance": "Tahmini Bakım",
@@ -35,28 +36,33 @@
   "reminders": {
     "title": "Yaklaşan Hatırlatmalar",
     "overdue": "Gecikmiş",
-    "dueSoon": "Yakında"
+    "dueSoon": "Yakında",
+    "noData": "Yaklaşan hatırlatma yok."
   },
   "messages": {
     "title": "Son Mesajlar",
     "viewAll": "Tümünü Görüntüle",
-    "you": "Siz: "
+    "you": "Siz: ",
+    "noData": "Son mesaj yok."
   },
   "notifications": {
-    "title": "Son Bildirimler"
+    "title": "Son Bildirimler",
+    "noData": "Son bildirim yok."
   },
   "inspections": {
     "title": "Muayeneler",
     "inProgress": "Devam Ediyor",
     "completed": "Tamamlandı",
-    "itemCount": "{inspected}/{total} öğe"
+    "itemCount": "{inspected}/{total} öğe",
+    "noData": "İnceleme yok."
   },
   "quoteRequests": {
     "title": "Teklif Talepleri",
     "description": "Paylaşılan muayenelerden teklif talep eden müşteriler",
     "pending": "Beklemede",
     "createQuote": "Teklif Oluştur",
-    "itemsRequested": "{count, plural, one {# öğe talep edildi} other {# öğe talep edildi}}"
+    "itemsRequested": "{count, plural, one {# öğe talep edildi} other {# öğe talep edildi}}",
+    "noData": "Bekleyen teklif talebi yok."
   },
   "quoteResponses": {
     "title": "Müşteri Teklif Yanıtları",
@@ -64,7 +70,8 @@
     "accepted": "Kabul Edildi",
     "changesRequested": "Değişiklik Talep Edildi",
     "convertToWorkOrder": "İş Emrine Dönüştür",
-    "viewQuote": "Teklifi Görüntüle"
+    "viewQuote": "Teklifi Görüntüle",
+    "noData": "Müşteri yanıtı yok."
   },
   "recentCompleted": {
     "title": "Son Tamamlananlar",

@@ -6,6 +6,7 @@
     "totalCustomers": "Łączna liczba klientów"
   },
   "customize": "Dostosuj",
+  "viewAll": "Pokaż wszystkie",
   "showCards": "Pokaż karty",
   "cards": {
     "maintenance": "Przewidywana konserwacja",
@@ -35,28 +36,33 @@
   "reminders": {
     "title": "Nadchodzące przypomnienia",
     "overdue": "Zaległe",
-    "dueSoon": "Wkrótce"
+    "dueSoon": "Wkrótce",
+    "noData": "Brak nadchodzących przypomnień."
   },
   "messages": {
     "title": "Ostatnie wiadomości",
     "viewAll": "Pokaż wszystkie",
-    "you": "Ty: "
+    "you": "Ty: ",
+    "noData": "Brak ostatnich wiadomości."
   },
   "notifications": {
-    "title": "Ostatnie powiadomienia"
+    "title": "Ostatnie powiadomienia",
+    "noData": "Brak ostatnich powiadomień."
   },
   "inspections": {
     "title": "Przeglądy",
     "inProgress": "W trakcie",
     "completed": "Ukończone",
-    "itemCount": "{inspected}/{total} pozycji"
+    "itemCount": "{inspected}/{total} pozycji",
+    "noData": "Brak inspekcji."
   },
   "quoteRequests": {
     "title": "Zapytania o wycenę",
     "description": "Klienci wnioskujący o wycenę z udostępnionych przeglądów",
     "pending": "Oczekujące",
     "createQuote": "Utwórz wycenę",
-    "itemsRequested": "{count, plural, one {# pozycja zgłoszona} few {# pozycje zgłoszone} many {# pozycji zgłoszonych} other {# pozycji zgłoszonych}}"
+    "itemsRequested": "{count, plural, one {# pozycja zgłoszona} few {# pozycje zgłoszone} many {# pozycji zgłoszonych} other {# pozycji zgłoszonych}}",
+    "noData": "Brak oczekujących zapytań ofertowych."
   },
   "quoteResponses": {
     "title": "Odpowiedzi klientów na wyceny",
@@ -64,7 +70,8 @@
     "accepted": "Zaakceptowane",
     "changesRequested": "Zgłoszono zmiany",
     "convertToWorkOrder": "Przekształć w zlecenie",
-    "viewQuote": "Pokaż wycenę"
+    "viewQuote": "Pokaż wycenę",
+    "noData": "Brak odpowiedzi klientów."
   },
   "recentCompleted": {
     "title": "Ostatnio ukończone",
