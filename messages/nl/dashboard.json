@@ -25,7 +25,12 @@
     "approaching": "Binnenkort",
     "estimated": "Geschat {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} sinds laatste service",
-    "certainty": "{percent}% zekerheid"
+    "certainty": "{percent}% zekerheid",
+    "active": "Actief",
+    "dismissedTab": "Genegeerd",
+    "noActive": "Geen voertuigen hebben momenteel onderhoud nodig.",
+    "dismissedOn": "Genegeerd op {date}",
+    "restore": "Herstellen"
   },
   "reminders": {
     "title": "Aankomende herinneringen",

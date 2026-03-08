@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { getDashboardStats, getUpcomingReminders } from "@/features/vehicles/Actions/dashboardActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { getVehiclesDueForService } from "@/features/vehicles/Actions/predictedMaintenanceActions";
+import { getVehiclesDueForService, getDismissedMaintenanceVehicles } from "@/features/vehicles/Actions/predictedMaintenanceActions";
 import { getInspectionsPaginated } from "@/features/inspections/Actions/inspectionActions";
 import { getQuoteRequests } from "@/features/inspections/Actions/quoteRequestActions";
 import { getQuoteResponses } from "@/features/quotes/Actions/quoteResponseActions";
@@ -18,11 +18,12 @@ export default async function DashboardPage() {
   const features = auth ? await getFeatures(auth.organizationId) : null;
   const smsEnabled = features?.sms ?? false;
 
-  const [result, settingsResult, remindersResult, maintenanceResult, inProgressResult, completedResult, quoteRequestsResult, quoteResponsesResult, smsResult, notificationsResult] = await Promise.all([
+  const [result, settingsResult, remindersResult, maintenanceResult, dismissedMaintenanceResult, inProgressResult, completedResult, quoteRequestsResult, quoteResponsesResult, smsResult, notificationsResult] = await Promise.all([
     getDashboardStats(),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
     getUpcomingReminders(),
     getVehiclesDueForService(),
+    getDismissedMaintenanceVehicles(),
     getInspectionsPaginated({ status: "in_progress", pageSize: 5 }),
     getInspectionsPaginated({ status: "completed", pageSize: 5 }),
     getQuoteRequests(),
@@ -60,6 +61,7 @@ export default async function DashboardPage() {
           currencyCode={currencyCode}
           upcomingReminders={remindersResult.success && remindersResult.data ? remindersResult.data : []}
           vehiclesDueForService={maintenanceResult.success && maintenanceResult.data ? maintenanceResult.data : []}
+          dismissedMaintenanceVehicles={dismissedMaintenanceResult.success && dismissedMaintenanceResult.data ? dismissedMaintenanceResult.data : []}
           unitSystem={unitSystem}
           inProgressInspections={inProgressResult.success && inProgressResult.data ? inProgressResult.data.records : []}
           completedInspections={completedResult.success && completedResult.data ? completedResult.data.records : []}

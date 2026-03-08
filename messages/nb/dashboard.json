@@ -25,7 +25,12 @@
     "approaching": "Nærmer seg",
     "estimated": "Est. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} siden siste service",
-    "certainty": "{percent} % sikkerhet"
+    "certainty": "{percent} % sikkerhet",
+    "active": "Aktive",
+    "dismissedTab": "Avvist",
+    "noActive": "Ingen kjøretøy trenger service for øyeblikket.",
+    "dismissedOn": "Avvist {date}",
+    "restore": "Gjenopprett"
   },
   "reminders": {
     "title": "Kommende påminnelser",

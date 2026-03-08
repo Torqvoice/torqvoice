@@ -25,7 +25,12 @@
     "approaching": "Approaching",
     "estimated": "Est. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} since last service",
-    "certainty": "{percent}% certainty"
+    "certainty": "{percent}% certainty",
+    "active": "Active",
+    "dismissedTab": "Dismissed",
+    "noActive": "No vehicles currently due for service.",
+    "dismissedOn": "Dismissed {date}",
+    "restore": "Restore"
   },
   "reminders": {
     "title": "Upcoming Reminders",

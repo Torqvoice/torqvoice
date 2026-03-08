@@ -25,7 +25,12 @@
     "approaching": "Imminent",
     "estimated": "Est. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} depuis le dernier entretien",
-    "certainty": "{percent}\u00a0% de certitude"
+    "certainty": "{percent}\u00a0% de certitude",
+    "active": "Actifs",
+    "dismissedTab": "Ignorés",
+    "noActive": "Aucun véhicule n'a besoin d'entretien actuellement.",
+    "dismissedOn": "Ignoré le {date}",
+    "restore": "Restaurer"
   },
   "reminders": {
     "title": "Rappels \u00e0 venir",

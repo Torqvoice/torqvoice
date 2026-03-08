@@ -25,7 +25,12 @@
     "approaching": "Zbliżający się",
     "estimated": "Szac. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} od ostatniego serwisu",
-    "certainty": "{percent}% pewności"
+    "certainty": "{percent}% pewności",
+    "active": "Aktywne",
+    "dismissedTab": "Odrzucone",
+    "noActive": "Żaden pojazd nie wymaga obecnie serwisu.",
+    "dismissedOn": "Odrzucono {date}",
+    "restore": "Przywróć"
   },
   "reminders": {
     "title": "Nadchodzące przypomnienia",

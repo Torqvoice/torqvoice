@@ -25,7 +25,12 @@
     "approaching": "Bevorstehend",
     "estimated": "Gesch. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} seit letztem Service",
-    "certainty": "{percent}% Sicherheit"
+    "certainty": "{percent}% Sicherheit",
+    "active": "Aktiv",
+    "dismissedTab": "Verworfen",
+    "noActive": "Derzeit sind keine Fahrzeuge wartungsfällig.",
+    "dismissedOn": "Verworfen am {date}",
+    "restore": "Wiederherstellen"
   },
   "reminders": {
     "title": "Anstehende Erinnerungen",

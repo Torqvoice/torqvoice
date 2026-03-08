@@ -27,17 +27,19 @@ import {
   ClipboardList,
   Clock,
   DollarSign,
+  EyeOff,
   FileText,
   Gauge,
   Loader2,
   BellRing,
   MessageSquare,
   SlidersHorizontal,
+  Undo2,
   Users,
   X,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
-import { dismissMaintenance } from "@/features/vehicles/Actions/dismissMaintenance";
+import { dismissMaintenance, undismissMaintenance } from "@/features/vehicles/Actions/dismissMaintenance";
 import { updateQuoteRequestStatus } from "@/features/inspections/Actions/quoteRequestActions";
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
 import { convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
@@ -98,6 +100,15 @@ interface VehicleDueForService {
   serviceInterval: number;
   status: "overdue" | "approaching";
   confidencePercent: number;
+}
+
+interface DismissedMaintenanceVehicle {
+  vehicleId: string;
+  make: string;
+  model: string;
+  year: number;
+  licensePlate: string | null;
+  dismissedAt: Date | null;
 }
 
 interface DashboardInspection {
@@ -178,6 +189,7 @@ export function DashboardClient({
   currencyCode = "USD",
   upcomingReminders = [],
   vehiclesDueForService = [],
+  dismissedMaintenanceVehicles = [],
   unitSystem = "imperial",
   inProgressInspections = [],
   completedInspections = [],
@@ -191,6 +203,7 @@ export function DashboardClient({
   currencyCode?: string;
   upcomingReminders?: ReminderItem[];
   vehiclesDueForService?: VehicleDueForService[];
+  dismissedMaintenanceVehicles?: DismissedMaintenanceVehicle[];
   unitSystem?: "metric" | "imperial";
   inProgressInspections?: DashboardInspection[];
   completedInspections?: DashboardInspection[];
@@ -206,6 +219,8 @@ export function DashboardClient({
   const { formatDate } = useFormatDate();
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [dismissingId, setDismissingId] = useState<string | null>(null);
+  const [maintenanceTab, setMaintenanceTab] = useState<"active" | "dismissed">("active");
+  const [restoringId, setRestoringId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toggleCard, isVisible } = useDashboardVisibility();
 
@@ -224,12 +239,18 @@ export function DashboardClient({
     return d.toLocaleDateString([], { month: "short", day: "numeric" });
   };
 
-  const handleDismiss = (vehicleId: string) => {
+  const handleDismiss = async (vehicleId: string) => {
     setDismissingId(vehicleId);
-    startTransition(async () => {
-      await dismissMaintenance(vehicleId);
-      setDismissingId(null);
-    });
+    await dismissMaintenance(vehicleId);
+    setDismissingId(null);
+    router.refresh();
+  };
+
+  const handleRestore = async (vehicleId: string) => {
+    setRestoringId(vehicleId);
+    await undismissMaintenance(vehicleId);
+    setRestoringId(null);
+    router.refresh();
   };
 
   return (
@@ -310,7 +331,7 @@ export function DashboardClient({
       {/* Card grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Vehicles Due for Service */}
-        {isVisible("maintenance") && vehiclesDueForService.length > 0 && (
+        {isVisible("maintenance") && (vehiclesDueForService.length > 0 || dismissedMaintenanceVehicles.length > 0) && (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-1">
               <CardTitle className="flex items-center gap-2 text-base">
@@ -320,69 +341,134 @@ export function DashboardClient({
               <p className="text-xs text-muted-foreground">
                 {t("maintenance.description")}
               </p>
+              <div className="flex gap-1 pt-1">
+                  <Button
+                    variant={maintenanceTab === "active" ? "default" : "ghost"}
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => setMaintenanceTab("active")}
+                  >
+                    {t("maintenance.active")} ({vehiclesDueForService.length})
+                  </Button>
+                  <Button
+                    variant={maintenanceTab === "dismissed" ? "default" : "ghost"}
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => setMaintenanceTab("dismissed")}
+                  >
+                    {t("maintenance.dismissedTab")} ({dismissedMaintenanceVehicles.length})
+                  </Button>
+              </div>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="divide-y">
-                {vehiclesDueForService.map((v) => (
-                  <div
-                    key={v.vehicleId}
-                    className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => router.push(`/vehicles/${v.vehicleId}`)}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                        v.status === "overdue" ? "bg-red-500/10" : "bg-amber-500/10"
-                      }`}>
-                        {v.status === "overdue" ? (
-                          <AlertTriangle className="h-4 w-4 text-red-500" />
-                        ) : (
-                          <Clock className="h-4 w-4 text-amber-500" />
-                        )}
+              {maintenanceTab === "active" && (
+                <div className="divide-y">
+                  {vehiclesDueForService.length === 0 ? (
+                    <p className="px-5 py-4 text-xs text-muted-foreground">{t("maintenance.noActive")}</p>
+                  ) : vehiclesDueForService.map((v) => (
+                    <div
+                      key={v.vehicleId}
+                      className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => router.push(`/vehicles/${v.vehicleId}`)}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                          v.status === "overdue" ? "bg-red-500/10" : "bg-amber-500/10"
+                        }`}>
+                          {v.status === "overdue" ? (
+                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                          ) : (
+                            <Clock className="h-4 w-4 text-amber-500" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate">
+                            {v.year} {v.make} {v.model}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {v.licensePlate && `${v.licensePlate} · `}
+                            {t("maintenance.estimated", { mileage: v.predictedMileage.toLocaleString(), unit: distUnit })}
+                            {" · "}
+                            {t("maintenance.sinceLastService", { mileage: v.mileageSinceLastService.toLocaleString(), unit: distUnit })}
+                            {" · "}
+                            {t("maintenance.certainty", { percent: v.confidencePercent })}
+                          </p>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="font-medium text-sm truncate">
-                          {v.year} {v.make} {v.model}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {v.licensePlate && `${v.licensePlate} · `}
-                          {t("maintenance.estimated", { mileage: v.predictedMileage.toLocaleString(), unit: distUnit })}
-                          {" · "}
-                          {t("maintenance.sinceLastService", { mileage: v.mileageSinceLastService.toLocaleString(), unit: distUnit })}
-                          {" · "}
-                          {t("maintenance.certainty", { percent: v.confidencePercent })}
-                        </p>
+                      <div className="shrink-0 ml-3 flex items-center gap-1.5">
+                        {v.status === "overdue" ? (
+                          <Badge variant="destructive" className="text-[10px]">
+                            {t("maintenance.overdue")}
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px]">
+                            {t("maintenance.approaching")}
+                          </Badge>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                          disabled={dismissingId === v.vehicleId}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDismiss(v.vehicleId);
+                          }}
+                        >
+                          {dismissingId === v.vehicleId ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <X className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
                       </div>
                     </div>
-                    <div className="shrink-0 ml-3 flex items-center gap-1.5">
-                      {v.status === "overdue" ? (
-                        <Badge variant="destructive" className="text-[10px]">
-                          {t("maintenance.overdue")}
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px]">
-                          {t("maintenance.approaching")}
-                        </Badge>
-                      )}
+                  ))}
+                </div>
+              )}
+              {maintenanceTab === "dismissed" && (
+                <div className="divide-y">
+                  {dismissedMaintenanceVehicles.map((v) => (
+                    <div
+                      key={v.vehicleId}
+                      className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => router.push(`/vehicles/${v.vehicleId}`)}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate">
+                            {v.year} {v.make} {v.model}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {v.licensePlate && `${v.licensePlate} · `}
+                            {v.dismissedAt && t("maintenance.dismissedOn", { date: formatDate(new Date(v.dismissedAt)) })}
+                          </p>
+                        </div>
+                      </div>
                       <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                        disabled={dismissingId === v.vehicleId}
+                        size="sm"
+                        className="h-7 shrink-0 ml-3 text-xs text-muted-foreground hover:text-foreground"
+                        disabled={restoringId === v.vehicleId}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDismiss(v.vehicleId);
+                          handleRestore(v.vehicleId);
                         }}
                       >
-                        {dismissingId === v.vehicleId ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        {restoringId === v.vehicleId ? (
+                          <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
                         ) : (
-                          <X className="h-3.5 w-3.5" />
+                          <Undo2 className="mr-1 h-3.5 w-3.5" />
                         )}
+                        {t("maintenance.restore")}
                       </Button>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

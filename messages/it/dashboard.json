@@ -25,7 +25,12 @@
     "approaching": "In avvicinamento",
     "estimated": "Stima {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} dall'ultimo intervento",
-    "certainty": "{percent}% di certezza"
+    "certainty": "{percent}% di certezza",
+    "active": "Attivi",
+    "dismissedTab": "Ignorati",
+    "noActive": "Nessun veicolo attualmente in scadenza per la manutenzione.",
+    "dismissedOn": "Ignorato il {date}",
+    "restore": "Ripristina"
   },
   "reminders": {
     "title": "Promemoria in scadenza",

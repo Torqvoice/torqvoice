@@ -215,3 +215,38 @@ export async function getVehiclesDueForService() {
     return results;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
 }
+
+export type DismissedMaintenanceVehicle = {
+  vehicleId: string;
+  make: string;
+  model: string;
+  year: number;
+  licensePlate: string | null;
+  dismissedAt: Date | null;
+};
+
+export async function getDismissedMaintenanceVehicles() {
+  return withAuth(async ({ organizationId }) => {
+    const vehicles = await db.vehicle.findMany({
+      where: { organizationId, isArchived: false, maintenanceDismissed: true },
+      orderBy: { maintenanceDismissedAt: "desc" },
+      select: {
+        id: true,
+        make: true,
+        model: true,
+        year: true,
+        licensePlate: true,
+        maintenanceDismissedAt: true,
+      },
+    });
+
+    return vehicles.map((v) => ({
+      vehicleId: v.id,
+      make: v.make,
+      model: v.model,
+      year: v.year,
+      licensePlate: v.licensePlate,
+      dismissedAt: v.maintenanceDismissedAt,
+    })) satisfies DismissedMaintenanceVehicle[];
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
+}

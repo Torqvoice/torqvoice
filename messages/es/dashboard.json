@@ -25,7 +25,12 @@
     "approaching": "Pr\u00f3ximo",
     "estimated": "Est. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} desde el \u00faltimo servicio",
-    "certainty": "{percent}% de certeza"
+    "certainty": "{percent}% de certeza",
+    "active": "Activos",
+    "dismissedTab": "Descartados",
+    "noActive": "No hay vehículos que requieran servicio actualmente.",
+    "dismissedOn": "Descartado el {date}",
+    "restore": "Restaurar"
   },
   "reminders": {
     "title": "Recordatorios pendientes",

@@ -25,7 +25,12 @@
     "approaching": "Próximo",
     "estimated": "Est. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} desde o último serviço",
-    "certainty": "{percent}% de certeza"
+    "certainty": "{percent}% de certeza",
+    "active": "Ativos",
+    "dismissedTab": "Dispensados",
+    "noActive": "Nenhum veículo precisa de manutenção no momento.",
+    "dismissedOn": "Dispensado em {date}",
+    "restore": "Restaurar"
   },
   "reminders": {
     "title": "Lembretes Próximos",

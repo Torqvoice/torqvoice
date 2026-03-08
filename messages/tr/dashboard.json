@@ -25,7 +25,12 @@
     "approaching": "Yaklaşan",
     "estimated": "Tahmini {mileage} {unit}",
     "sinceLastService": "Son servisten bu yana {mileage} {unit}",
-    "certainty": "%{percent} kesinlik"
+    "certainty": "%{percent} kesinlik",
+    "active": "Aktif",
+    "dismissedTab": "Kapatılan",
+    "noActive": "Şu anda bakım gerektiren araç bulunmuyor.",
+    "dismissedOn": "{date} tarihinde kapatıldı",
+    "restore": "Geri Yükle"
   },
   "reminders": {
     "title": "Yaklaşan Hatırlatmalar",
