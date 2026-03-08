@@ -36,6 +36,12 @@ function calculateConfidencePercent(dataPoints: number, totalDays: number): numb
 
 export async function getVehiclePredictedMileage(vehicleId: string) {
   return withAuth(async ({ organizationId }) => {
+    const vehicle = await db.vehicle.findFirst({
+      where: { id: vehicleId, organizationId },
+      select: { mileage: true },
+    });
+    if (!vehicle) return null;
+
     const records = await db.serviceRecord.findMany({
       where: {
         vehicleId,
@@ -71,8 +77,10 @@ export async function getVehiclePredictedMileage(vehicleId: string) {
     // Project from latest known data point to today
     const daysSinceLatest =
       (Date.now() - latest.date.getTime()) / (1000 * 60 * 60 * 24);
-    const predictedMileage = Math.round(
-      latest.mileage + daysSinceLatest * avgPerDay
+    // Never predict less than the vehicle's actual recorded mileage
+    const predictedMileage = Math.max(
+      vehicle.mileage,
+      Math.round(latest.mileage + daysSinceLatest * avgPerDay)
     );
 
     return {

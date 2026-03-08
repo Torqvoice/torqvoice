@@ -38,6 +38,7 @@
     "notFound": "Araç bulunamadı",
     "predictedKm": "Tahmini Km",
     "predictedMileage": "Tahmini Kilometre",
+    "predictedTooltip": "Servis geçmişine dayalı tahmini güncel kilometre. Yüzde, tahmin güvenilirliğini gösterir.",
     "dismissed": "Kapatıldı",
     "undo": "Geri Al",
     "serviceOverdue": "Servis Gecikmiş",

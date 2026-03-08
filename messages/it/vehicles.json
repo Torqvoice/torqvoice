@@ -38,6 +38,7 @@
     "notFound": "Veicolo non trovato",
     "predictedKm": "Km Previsti",
     "predictedMileage": "Chilometraggio Previsto",
+    "predictedTooltip": "Chilometraggio attuale stimato in base alla cronologia dei servizi. La percentuale indica l'affidabilità della previsione.",
     "dismissed": "Ignorato",
     "undo": "Annulla",
     "serviceOverdue": "Intervento Scaduto",

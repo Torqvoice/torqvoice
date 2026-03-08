@@ -38,6 +38,7 @@
     "notFound": "Fahrzeug nicht gefunden",
     "predictedKm": "Prognostizierte Km",
     "predictedMileage": "Prognostizierter Kilometerstand",
+    "predictedTooltip": "Geschätzter aktueller Kilometerstand basierend auf der Servicehistorie. Der Prozentsatz zeigt die Zuverlässigkeit der Berechnung.",
     "dismissed": "Verworfen",
     "undo": "R\u00fcckg\u00e4ngig",
     "serviceOverdue": "Service \u00fcberf\u00e4llig",

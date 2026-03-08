@@ -38,6 +38,7 @@
     "notFound": "Nie znaleziono pojazdu",
     "predictedKm": "Przewidywane km",
     "predictedMileage": "Przewidywany przebieg",
+    "predictedTooltip": "Szacowany aktualny przebieg na podstawie historii serwisowej. Procent wskazuje pewność prognozy.",
     "dismissed": "Odrzucono",
     "undo": "Cofnij",
     "serviceOverdue": "Przegląd zaległy",

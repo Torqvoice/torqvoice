@@ -38,6 +38,7 @@
     "notFound": "Vehicle not found",
     "predictedKm": "Predicted Km",
     "predictedMileage": "Predicted Mileage",
+    "predictedTooltip": "Estimated current mileage based on service history trends. The percentage indicates prediction confidence.",
     "dismissed": "Dismissed",
     "undo": "Undo",
     "serviceOverdue": "Service Overdue",

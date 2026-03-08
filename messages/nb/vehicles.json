@@ -38,6 +38,7 @@
     "notFound": "Kjoretoy ikke funnet",
     "predictedKm": "Beregnet km",
     "predictedMileage": "Beregnet kilometerstand",
+    "predictedTooltip": "Estimert kilometerstand basert på servicehistorikk. Prosenten viser hvor sikker beregningen er.",
     "dismissed": "Avvist",
     "undo": "Angre",
     "serviceOverdue": "Service forfalt",

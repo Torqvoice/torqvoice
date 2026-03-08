@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   Table,
   TableBody,
@@ -487,16 +488,27 @@ export function VehicleDetailClient({
           </div>
           {predictionData && (
             <div className="flex items-center gap-1.5 text-muted-foreground">
-              <TrendingUp className="h-3.5 w-3.5" />
-              <span className="text-xs">
-                {unitSystem === 'metric' ? t('predictedKm') : t('predictedMileage')}
-              </span>
-              <span className="font-semibold text-foreground">
-                ~{predictionData.predictedMileage.toLocaleString()}
-              </span>
-              <span className="text-[10px] text-muted-foreground/70">
-                ({predictionData.confidencePercent}%)
-              </span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex cursor-help items-center gap-1.5">
+                      <TrendingUp className="h-3.5 w-3.5" />
+                      <span className="text-xs">
+                        {unitSystem === 'metric' ? t('predictedKm') : t('predictedMileage')}
+                      </span>
+                      <span className="font-semibold text-foreground">
+                        ~{predictionData.predictedMileage.toLocaleString()}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground/70">
+                        ({predictionData.confidencePercent}%)
+                      </span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs text-xs">{t('predictedTooltip')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               {predictionData.status && predictionData.maintenanceDismissed ? (
                 <>
                   <Badge variant="outline" className="text-[10px] ml-1 text-muted-foreground">
