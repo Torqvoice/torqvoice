@@ -105,7 +105,7 @@ export async function getQuoteRequests() {
                 model: true,
                 year: true,
                 licensePlate: true,
-                customer: { select: { name: true } },
+                customer: { select: { id: true, name: true } },
               },
             },
             items: { select: { id: true, name: true, section: true, condition: true, notes: true } },
