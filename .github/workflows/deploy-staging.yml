@@ -41,8 +41,8 @@ jobs:
               external: true
               name: proxy
           services:
-            torqvoice-staging:
-              container_name: torqvoice-staging
+            torqvoice-app-staging:
+              container_name: torqvoice-app-staging
               image: ghcr.io/torqvoice/torqvoice:${APP_TAG:-latest}
               restart: unless-stopped
               volumes:
@@ -73,15 +73,19 @@ jobs:
 
       - name: Health check
         run: |
-          echo "Waiting for staging to be ready..."
-          for i in $(seq 1 30); do
-            if curl -sf "${{ secrets.STAGING_APP_URL }}" > /dev/null 2>&1; then
-              echo "Staging is healthy!"
+          echo "Waiting for staging container to be ready..."
+          for i in $(seq 1 12); do
+            STATUS=$(docker inspect --format='{{.State.Status}}' torqvoice-app-staging 2>/dev/null || echo "not found")
+            if [ "$STATUS" = "running" ]; then
+              echo "Container is running!"
               exit 0
             fi
+            echo "Status: $STATUS, retrying in 5s..."
             sleep 5
           done
-          echo "::warning::Staging health check timed out after 150s"
+          echo "::error::Container failed to start"
+          docker logs torqvoice-app-staging --tail 50
+          exit 1
 
       - name: Prune old images and build cache
         run: docker image prune -f && docker builder prune -f
