@@ -1,0 +1,46 @@
+import type { ServicePartInput, ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
+import type { ServiceDetail } from '../service-detail/types'
+import type { InitialData, InventoryPartOption, VehicleOption } from '../service-edit/form-types'
+
+export interface BoardTechnicianOption {
+  id: string
+  name: string
+}
+
+export interface Attachment {
+  id: string
+  fileName: string
+  fileUrl: string
+  fileType: string
+  fileSize: number
+  category: string
+  description: string | null
+  includeInInvoice: boolean
+  createdAt: Date
+}
+
+export interface ServicePageClientProps {
+  record: ServiceDetail
+  vehicleId: string
+  organizationId: string
+  currencyCode: string
+  unitSystem: 'metric' | 'imperial'
+  defaultTaxRate: number
+  taxEnabled: boolean
+  defaultLaborRate: number
+  initialData: InitialData
+  inventoryParts: InventoryPartOption[]
+  vehicles: VehicleOption[]
+  boardTechnicians?: BoardTechnicianOption[]
+  currentUserName: string
+  imageAttachmentsForManager: Attachment[]
+  videoAttachments: Attachment[]
+  documentAttachments: Attachment[]
+  maxImagesPerService: number
+  maxDiagnosticsPerService: number
+  maxDocumentsPerService: number
+  smsEnabled?: boolean
+  emailEnabled?: boolean
+}
+
+export type { ServicePartInput, ServiceLaborInput, ServiceDetail, InitialData, InventoryPartOption, VehicleOption }
