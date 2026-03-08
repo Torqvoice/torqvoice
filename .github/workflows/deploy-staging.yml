@@ -30,8 +30,8 @@ jobs:
           STRIPE_ENTERPRISE_PRICE_ID: ${{ secrets.STAGING_STRIPE_ENTERPRISE_PRICE_ID }}
           DATA_PATH: ${{ secrets.DATA_PATH }}
         run: |
-          mkdir -p /tmp/torqvoice-staging
-          cd /tmp/torqvoice-staging
+          mkdir -p ${{ secrets.DATA_PATH }}/torqvoice-deploy/staging
+          cd ${{ secrets.DATA_PATH }}/torqvoice-deploy/staging
 
           env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_)' > .env
 
@@ -73,7 +73,7 @@ jobs:
 
       - name: Deploy staging
         run: |
-          cd /tmp/torqvoice-staging
+          cd ${{ secrets.DATA_PATH }}/torqvoice-deploy/staging
           TAG=${{ inputs.tag || 'latest' }}
           APP_TAG=$TAG docker compose up -d --pull always
 
