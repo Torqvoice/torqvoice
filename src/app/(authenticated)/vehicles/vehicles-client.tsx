@@ -34,7 +34,6 @@ import {
   Archive,
   ArchiveRestore,
   Gauge,
-  Grid3X3,
   LayoutGrid,
   List,
   Loader2,
