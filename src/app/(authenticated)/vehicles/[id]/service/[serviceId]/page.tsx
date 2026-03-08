@@ -108,6 +108,8 @@ export default async function ServiceDetailPage({
     status: record.status,
     mileage: record.mileage,
     serviceDate: new Date(record.serviceDate).toISOString().split("T")[0],
+    startDateTime: record.startDateTime?.toISOString() ?? null,
+    endDateTime: record.endDateTime?.toISOString() ?? null,
     techName: record.techName || "",
     diagnosticNotes: record.diagnosticNotes || "",
     invoiceNotes: record.invoiceNotes || "",
@@ -165,7 +167,6 @@ export default async function ServiceDetailPage({
         initialData={initialData}
         inventoryParts={inventoryParts}
         vehicles={vehicles}
-        teamMembers={teamMembers}
         boardTechnicians={boardTechnicians}
         currentUserName={currentUserName}
         imageAttachmentsForManager={imageAttachmentsForManager}

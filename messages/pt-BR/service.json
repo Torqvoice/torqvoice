@@ -247,5 +247,26 @@
     "failedDelete": "Falha ao deletar arquivo",
     "failedUpdate": "Falha ao atualizar",
     "invoice": "Fatura"
+  },
+  "schedule": {
+    "title": "Agendamento",
+    "date": "Data",
+    "startTime": "Hora de início",
+    "endTime": "Hora de término",
+    "technician": "Técnico",
+    "selectTechnician": "Selecionar técnico...",
+    "searchOrCreate": "Buscar ou criar técnico...",
+    "createTechnician": "Criar \"{name}\"",
+    "creating": "Criando...",
+    "failedCreate": "Falha ao criar técnico",
+    "addNew": "+ Adicionar novo",
+    "add": "Adicionar",
+    "newTechPlaceholder": "Nome do técnico...",
+    "assign": "Atribuir ao quadro",
+    "assigned": "Atribuído ao quadro de trabalho",
+    "failedAssign": "Falha ao atribuir",
+    "endBeforeStart": "A hora de término deve ser após a hora de início",
+    "failedUpdate": "Falha ao atualizar o agendamento",
+    "splitCreated": "O trabalho abrange vários dias — continuação criada para o dia seguinte"
   }
 }

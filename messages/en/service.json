@@ -247,5 +247,26 @@
     "failedDelete": "Failed to delete file",
     "failedUpdate": "Failed to update",
     "invoice": "Invoice"
+  },
+  "schedule": {
+    "title": "Schedule",
+    "date": "Date",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "technician": "Technician",
+    "selectTechnician": "Select technician...",
+    "searchOrCreate": "Search or create technician...",
+    "createTechnician": "Create \"{name}\"",
+    "creating": "Creating...",
+    "failedCreate": "Failed to create technician",
+    "addNew": "+ Add New",
+    "add": "Add",
+    "newTechPlaceholder": "Technician name...",
+    "assign": "Assign to Board",
+    "assigned": "Assigned to work board",
+    "failedAssign": "Failed to assign",
+    "endBeforeStart": "End time must be after start time",
+    "failedUpdate": "Failed to update schedule times",
+    "splitCreated": "Job spans multiple days — continuation created for next day"
   }
 }

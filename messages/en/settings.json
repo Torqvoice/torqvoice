@@ -492,7 +492,13 @@
     "title": "Workshop Defaults",
     "description": "Default values used when creating new service records.",
     "defaultTechnician": "Default Technician Name",
-    "technicianPlaceholder": "John Smith",
+    "technicianPlaceholder": "Search technician...",
+    "failedCreateTech": "Failed to create technician",
+    "creating": "Creating...",
+    "createTechnician": "Create \"{name}\"",
+    "newTechPlaceholder": "Technician name",
+    "addTech": "Add",
+    "addNewTech": "+ Add New",
     "defaultLaborRate": "Default Labor Rate (per hour)",
     "laborRatePlaceholder": "75.00",
     "workingHours": "Working Hours",
@@ -509,7 +515,21 @@
     "miles": "miles (mi)",
     "gallons": "gallons (gal)",
     "saveWorkshop": "Save Workshop Settings",
-    "saved": "Workshop settings saved"
+    "saved": "Workshop settings saved",
+    "workBoardTitle": "Work Board Settings",
+    "workBoardDescription": "Configure the work board schedule and day view timeline.",
+    "weekStartDay": "Week Start Day",
+    "workDayStart": "Work Day Start",
+    "workDayEnd": "Work Day End",
+    "weekDays": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    }
   },
   "maintenance": {
     "title": "Predicted Maintenance",

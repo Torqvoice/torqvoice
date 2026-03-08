@@ -22,6 +22,8 @@ export interface InitialData {
   status: string
   mileage: number | null
   serviceDate: string
+  startDateTime?: string | null
+  endDateTime?: string | null
   techName: string
   diagnosticNotes: string
   invoiceNotes: string

@@ -247,5 +247,26 @@
     "failedDelete": "Error al eliminar archivo",
     "failedUpdate": "Error al actualizar",
     "invoice": "Factura"
+  },
+  "schedule": {
+    "title": "Horario",
+    "date": "Fecha",
+    "startTime": "Hora de inicio",
+    "endTime": "Hora de fin",
+    "technician": "Técnico",
+    "selectTechnician": "Seleccionar técnico...",
+    "searchOrCreate": "Buscar o crear técnico...",
+    "createTechnician": "Crear \"{name}\"",
+    "creating": "Creando...",
+    "failedCreate": "Error al crear técnico",
+    "addNew": "+ Agregar nuevo",
+    "add": "Agregar",
+    "newTechPlaceholder": "Nombre del técnico...",
+    "assign": "Asignar al tablero",
+    "assigned": "Asignado al tablero de trabajo",
+    "failedAssign": "Error al asignar",
+    "endBeforeStart": "La hora de fin debe ser posterior a la hora de inicio",
+    "failedUpdate": "Error al actualizar el horario",
+    "splitCreated": "El trabajo abarca varios días — continuación creada para el día siguiente"
   }
 }

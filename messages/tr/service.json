@@ -247,5 +247,26 @@
     "failedDelete": "Dosya silinemedi",
     "failedUpdate": "Güncellenemedi",
     "invoice": "Fatura"
+  },
+  "schedule": {
+    "title": "Zamanlama",
+    "date": "Tarih",
+    "startTime": "Başlangıç Saati",
+    "endTime": "Bitiş Saati",
+    "technician": "Teknisyen",
+    "selectTechnician": "Teknisyen seçin...",
+    "searchOrCreate": "Teknisyen ara veya oluştur...",
+    "createTechnician": "\"{name}\" oluştur",
+    "creating": "Oluşturuluyor...",
+    "failedCreate": "Teknisyen oluşturulamadı",
+    "addNew": "+ Yeni Ekle",
+    "add": "Ekle",
+    "newTechPlaceholder": "Teknisyen adı...",
+    "assign": "Panoya ata",
+    "assigned": "Çalışma panosuna atandı",
+    "failedAssign": "Atama başarısız",
+    "endBeforeStart": "Bitiş saati başlangıç saatinden sonra olmalıdır",
+    "failedUpdate": "Zamanlama güncellenemedi",
+    "splitCreated": "İş birden fazla güne yayılıyor — sonraki gün için devam oluşturuldu"
   }
 }

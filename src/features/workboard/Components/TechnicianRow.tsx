@@ -1,8 +1,11 @@
 "use client";
 
-import type { BoardAssignmentWithJob } from "../Actions/boardActions";
+import { cn } from "@/lib/utils";
+import type { WorkBoardJob } from "../Actions/boardActions";
 import type { Technician } from "../store/workboardStore";
 import { BoardDayCell } from "./BoardDayCell";
+import { formatDuration } from "./DurationSlider";
+import { jobOverlapsDate, getJobDateRange, getDurationMinutes } from "../utils/datetime";
 
 export function TechnicianRow({
   technician,
@@ -13,31 +16,61 @@ export function TechnicianRow({
 }: {
   technician: Technician;
   days: string[];
-  assignments: BoardAssignmentWithJob[];
-  onCardClick: (assignment: BoardAssignmentWithJob) => void;
+  assignments: WorkBoardJob[];
+  onCardClick: (job: WorkBoardJob) => void;
   onTechClick?: (technician: Technician) => void;
 }) {
+  const techAssignments = assignments.filter(
+    (a) => a.technicianId === technician.id,
+  );
+
+  const weekBooked = techAssignments.reduce((sum, a) => {
+    const { start, end } = getJobDateRange(a);
+    if (start && end) return sum + getDurationMinutes(start, end);
+    return sum;
+  }, 0);
+  const weekCapacity = technician.dailyCapacity * days.length;
+  const weekPct = weekCapacity > 0 ? Math.round((weekBooked / weekCapacity) * 100) : 0;
+
   return (
     <div className="contents">
-      {/* Tech name column */}
       <button
         type="button"
-        className="flex items-start gap-2 rounded-md bg-muted/50 p-2 text-left transition-colors hover:bg-muted"
+        className="flex flex-col gap-1.5 rounded-md bg-muted/50 p-2 text-left transition-colors hover:bg-muted"
         onClick={() => onTechClick?.(technician)}
       >
-        <div
-          className="mt-0.5 h-3 w-3 shrink-0 rounded-full"
-          style={{ backgroundColor: technician.color }}
-        />
-        <span className="text-sm font-medium leading-tight">
-          {technician.name}
-        </span>
+        <div className="flex items-center gap-2">
+          <div
+            className="h-3 w-3 shrink-0 rounded-full"
+            style={{ backgroundColor: technician.color }}
+          />
+          <span className="text-sm font-medium leading-tight">
+            {technician.name}
+          </span>
+        </div>
+        <div className="w-full space-y-0.5">
+          <div className="h-1 w-full overflow-hidden rounded-full bg-background">
+            <div
+              className={cn(
+                "h-full rounded-full transition-all",
+                weekPct > 100
+                  ? "bg-red-500"
+                  : weekPct >= 75
+                    ? "bg-amber-500"
+                    : "bg-emerald-500",
+              )}
+              style={{ width: `${Math.min(weekPct, 100)}%` }}
+            />
+          </div>
+          <p className="text-[10px] text-muted-foreground">
+            {formatDuration(weekBooked)} / {formatDuration(weekCapacity)}
+          </p>
+        </div>
       </button>
 
-      {/* Day cells */}
       {days.map((day) => {
-        const cellAssignments = assignments.filter(
-          (a) => a.technicianId === technician.id && a.date === day,
+        const cellAssignments = techAssignments.filter(
+          (a) => jobOverlapsDate(a, day),
         );
         return (
           <BoardDayCell
@@ -45,6 +78,7 @@ export function TechnicianRow({
             technicianId={technician.id}
             date={day}
             assignments={cellAssignments}
+            dailyCapacity={technician.dailyCapacity}
             onCardClick={onCardClick}
           />
         );

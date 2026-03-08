@@ -74,14 +74,14 @@ export function UnifiedServiceHeader({
 
   return (
     <div className="shrink-0 border-b bg-background px-4 pt-2 pb-0">
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <Link
           href={`/vehicles/${vehicleId}`}
           className="flex min-w-0 items-center gap-3 text-foreground transition-colors hover:text-muted-foreground"
         >
           <ArrowLeft className="h-4 w-4 shrink-0" />
           <div className="min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5">
               <Badge
                 variant="outline"
                 className={`shrink-0 text-xs ${paymentStatusColors[paymentStatus] || ''}`}
@@ -99,7 +99,7 @@ export function UnifiedServiceHeader({
             <p className="truncate text-xs text-muted-foreground">{vehicleName}</p>
           </div>
         </Link>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           {activeTab === 'details' && (
             <>
               {hasUnsavedChanges && (

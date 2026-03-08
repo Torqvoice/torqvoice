@@ -4,6 +4,8 @@
   },
   "toolbar": {
     "today": "Heute",
+    "day": "Tag",
+    "week": "Woche",
     "presenter": "Präsentator",
     "addTechnician": "Techniker hinzufügen"
   },
@@ -21,7 +23,8 @@
     "noTechniciansDescription": "Fügen Sie einen Techniker hinzu, um mit der Planung von Arbeiten im Board zu beginnen.",
     "failedMove": "Zuweisung konnte nicht verschoben werden",
     "failedAssign": "Auftrag konnte nicht zugewiesen werden",
-    "failedRemove": "Zuweisung konnte nicht entfernt werden"
+    "failedRemove": "Zuweisung konnte nicht entfernt werden",
+    "createNewWorkorder": "Neuen Arbeitsauftrag erstellen"
   },
   "unassigned": {
     "title": "Nicht zugewiesene Aufträge ({count})",
@@ -51,6 +54,7 @@
     "status": "Status",
     "week": "Woche",
     "today": "Heute",
+    "timeline": "Zeitleiste",
     "live": "Live",
     "disconnected": "Live-Updates unterbrochen",
     "noTechnicians": "Keine Techniker konfiguriert",

@@ -4,6 +4,8 @@
   },
   "toolbar": {
     "today": "Hoje",
+    "day": "Dia",
+    "week": "Semana",
     "presenter": "Apresentador",
     "addTechnician": "Adicionar Técnico"
   },
@@ -21,7 +23,8 @@
     "noTechniciansDescription": "Adicione um técnico para começar a agendar trabalho no quadro.",
     "failedMove": "Falha ao mover atribuição",
     "failedAssign": "Falha ao atribuir trabalho",
-    "failedRemove": "Falha ao remover atribuição"
+    "failedRemove": "Falha ao remover atribuição",
+    "createNewWorkorder": "Criar nova ordem de serviço"
   },
   "unassigned": {
     "title": "Trabalhos Não Atribuídos ({count})",
@@ -51,6 +54,7 @@
     "status": "Status",
     "week": "Semana",
     "today": "Hoje",
+    "timeline": "Linha do tempo",
     "live": "Ao Vivo",
     "disconnected": "Atualizações ao vivo desconectadas",
     "noTechnicians": "Nenhum técnico configurado",

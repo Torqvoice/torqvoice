@@ -4,6 +4,8 @@
   },
   "toolbar": {
     "today": "Bugün",
+    "day": "Gün",
+    "week": "Hafta",
     "presenter": "Sunucu",
     "addTechnician": "Teknisyen Ekle"
   },
@@ -21,7 +23,8 @@
     "noTechniciansDescription": "Panoda iş planlamaya başlamak için bir teknisyen ekleyin.",
     "failedMove": "Atama taşınamadı",
     "failedAssign": "İş atanmadı",
-    "failedRemove": "Atama kaldırılamadı"
+    "failedRemove": "Atama kaldırılamadı",
+    "createNewWorkorder": "Yeni iş emri oluştur"
   },
   "unassigned": {
     "title": "Atanmamış İşler ({count})",
@@ -51,6 +54,7 @@
     "status": "Durum",
     "week": "Hafta",
     "today": "Bugün",
+    "timeline": "Zaman çizelgesi",
     "live": "Canlı",
     "disconnected": "Canlı güncellemeler kesildi",
     "noTechnicians": "Hiçbir teknisyen yapılandırılmadı",

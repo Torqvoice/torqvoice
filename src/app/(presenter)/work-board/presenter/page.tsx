@@ -1,7 +1,10 @@
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { getTechnicians } from "@/features/workboard/Actions/technicianActions";
-import { getBoardAssignments } from "@/features/workboard/Actions/boardActions";
+import { getBoardJobs, getWorkBoardSettings } from "@/features/workboard/Actions/boardActions";
 import { WorkBoardPresenter } from "@/features/workboard/Components/WorkBoardPresenter";
+
+export const dynamic = "force-dynamic";
 
 function getMonday(date: Date): string {
   const d = new Date(date);
@@ -14,13 +17,24 @@ function getMonday(date: Date): string {
   return `${y}-${m}-${dd}`;
 }
 
-export default async function WorkBoardPresenterPage() {
-  const weekStart = getMonday(new Date());
+export default async function WorkBoardPresenterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ date?: string }>;
+}) {
+  const params = await searchParams;
+  const baseDate = params.date ? new Date(params.date + "T12:00:00") : new Date();
+  const weekStart = getMonday(baseDate);
 
-  const [techResult, assignResult] = await Promise.all([
+  const [techResult, assignResult, settingsResult] = await Promise.all([
     getTechnicians(),
-    getBoardAssignments(weekStart),
+    getBoardJobs(weekStart),
+    getWorkBoardSettings(),
   ]);
+
+  const boardSettings = settingsResult.success && settingsResult.data
+    ? settingsResult.data
+    : { weekStartDay: 1, workDayStart: "07:00", workDayEnd: "15:00" };
 
   if (!techResult.success) {
     return (
@@ -37,14 +51,18 @@ export default async function WorkBoardPresenterPage() {
     assignResult.success && assignResult.data ? assignResult.data : [];
 
   return (
-    <WorkBoardPresenter
-      initialTechnicians={
-        technicians as Parameters<typeof WorkBoardPresenter>[0]["initialTechnicians"]
-      }
-      initialAssignments={
-        assignments as Parameters<typeof WorkBoardPresenter>[0]["initialAssignments"]
-      }
-      initialWeekStart={weekStart}
-    />
+    <Suspense>
+      <WorkBoardPresenter
+        initialTechnicians={
+          technicians as Parameters<typeof WorkBoardPresenter>[0]["initialTechnicians"]
+        }
+        initialAssignments={
+          assignments as Parameters<typeof WorkBoardPresenter>[0]["initialAssignments"]
+        }
+        initialWeekStart={weekStart}
+        workDayStart={boardSettings.workDayStart}
+        workDayEnd={boardSettings.workDayEnd}
+      />
+    </Suspense>
   );
 }

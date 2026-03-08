@@ -4,6 +4,8 @@
   },
   "toolbar": {
     "today": "Oggi",
+    "day": "Giorno",
+    "week": "Settimana",
     "presenter": "Presentatore",
     "addTechnician": "Aggiungi Tecnico"
   },
@@ -21,7 +23,8 @@
     "noTechniciansDescription": "Aggiungi un tecnico per iniziare a programmare il lavoro sulla lavagna.",
     "failedMove": "Impossibile spostare l'incarico",
     "failedAssign": "Impossibile assegnare il lavoro",
-    "failedRemove": "Impossibile rimuovere l'incarico"
+    "failedRemove": "Impossibile rimuovere l'incarico",
+    "createNewWorkorder": "Crea nuovo ordine di lavoro"
   },
   "unassigned": {
     "title": "Lavori Non Assegnati ({count})",
@@ -51,6 +54,7 @@
     "status": "Stato",
     "week": "Settimana",
     "today": "Oggi",
+    "timeline": "Cronologia",
     "live": "Dal Vivo",
     "disconnected": "Aggiornamenti dal vivo disconnessi",
     "noTechnicians": "Nessun tecnico configurato",

@@ -4,6 +4,8 @@
   },
   "toolbar": {
     "today": "I dag",
+    "day": "Dag",
+    "week": "Uke",
     "presenter": "Presentatør",
     "addTechnician": "Legg til tekniker"
   },
@@ -21,7 +23,8 @@
     "noTechniciansDescription": "Legg til en tekniker for å begynne å planlegge arbeid på tavlen.",
     "failedMove": "Kunne ikke flytte tilordning",
     "failedAssign": "Kunne ikke tilordne jobb",
-    "failedRemove": "Kunne ikke fjerne tilordning"
+    "failedRemove": "Kunne ikke fjerne tilordning",
+    "createNewWorkorder": "Opprett ny arbeidsordre"
   },
   "unassigned": {
     "title": "Utildelte jobber ({count})",
@@ -43,7 +46,11 @@
   "jobDetail": {
     "viewDetails": "Vis detaljer",
     "remove": "Fjern",
-    "date": "Dato: {date}"
+    "startTime": "Starttid",
+    "endTime": "Sluttid",
+    "failedDuration": "Kunne ikke oppdatere varighet",
+    "failedTimes": "Kunne ikke oppdatere tider",
+    "endBeforeStart": "Sluttid må være etter starttid"
   },
   "presenter": {
     "title": "Arbeidstavle",
@@ -51,6 +58,7 @@
     "status": "Status",
     "week": "Uke",
     "today": "I dag",
+    "timeline": "Tidslinje",
     "live": "Direkte",
     "disconnected": "Direkteoppdateringer frakoblet",
     "noTechnicians": "Ingen teknikere konfigurert",

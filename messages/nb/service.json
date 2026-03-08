@@ -77,19 +77,19 @@
     "noInventory": "Ingen beholdningsdeler funnet."
   },
   "labor": {
-    "title": "Arbeidskraft",
-    "addLabor": "Legg til arbeidskraft",
+    "title": "Arbeid",
+    "addLabor": "Legg til arbeid",
     "description": "Beskrivelse",
     "hours": "Timer",
     "rate": "Sats ({currency}/time)",
     "total": "Total",
     "descriptionPlaceholder": "Beskrivelse *",
-    "subtotal": "Arbeidskraft delsum: {amount}"
+    "subtotal": "Arbeid delsum: {amount}"
   },
   "totals": {
     "title": "Totalt",
     "parts": "Deler",
-    "labor": "Arbeidskraft",
+    "labor": "Arbeid",
     "subtotal": "Delsum",
     "discount": "Rabatt",
     "discountNone": "Ingen",
@@ -247,5 +247,26 @@
     "failedDelete": "Kunne ikke slette fil",
     "failedUpdate": "Kunne ikke oppdatere",
     "invoice": "Faktura"
+  },
+  "schedule": {
+    "title": "Tidsplan",
+    "date": "Dato",
+    "startTime": "Starttid",
+    "endTime": "Sluttid",
+    "technician": "Tekniker",
+    "selectTechnician": "Velg tekniker...",
+    "searchOrCreate": "Søk eller opprett tekniker...",
+    "createTechnician": "Opprett \"{name}\"",
+    "creating": "Oppretter...",
+    "failedCreate": "Kunne ikke opprette tekniker",
+    "addNew": "+ Legg til ny",
+    "add": "Legg til",
+    "newTechPlaceholder": "Teknikernavn...",
+    "assign": "Tilordne til tavle",
+    "assigned": "Tilordnet arbeidstavle",
+    "failedAssign": "Kunne ikke tilordne",
+    "endBeforeStart": "Sluttid må være etter starttid",
+    "failedUpdate": "Kunne ikke oppdatere tidsplan",
+    "splitCreated": "Jobben går over flere dager — fortsettelse opprettet for neste dag"
   }
 }

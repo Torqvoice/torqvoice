@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,12 +23,7 @@ import {
 } from '@/components/ui/command'
 import Link from 'next/link'
 import { Check, ChevronsUpDown, ExternalLink } from 'lucide-react'
-import type { InitialData, VehicleOption, TeamMemberOption } from './form-types'
-
-export interface BoardTechnicianOption {
-  id: string
-  name: string
-}
+import type { InitialData, VehicleOption } from './form-types'
 
 interface CustomerInfo {
   id: string
@@ -50,11 +45,6 @@ interface BasicInfoSectionProps {
   status: string
   setStatus: (status: string) => void
   techName: string
-  setTechName: (name: string) => void
-  techOpen: boolean
-  setTechOpen: (open: boolean) => void
-  teamMembers: TeamMemberOption[]
-  boardTechnicians?: BoardTechnicianOption[]
   customer?: CustomerInfo | null
 }
 
@@ -71,11 +61,6 @@ export function BasicInfoSection({
   status,
   setStatus,
   techName,
-  setTechName,
-  techOpen,
-  setTechOpen,
-  teamMembers,
-  boardTechnicians = [],
   customer,
 }: BasicInfoSectionProps) {
   const t = useTranslations('service.basicInfo')
@@ -178,20 +163,18 @@ export function BasicInfoSection({
         />
       </div>
 
+      {/* Hidden serviceDate — kept for form submission, visible scheduling is in ScheduleTimesSection */}
+      <input
+        type="hidden"
+        name="serviceDate"
+        value={initialData.serviceDate || new Date().toISOString().split('T')[0]}
+      />
+
       <div className="grid grid-cols-2 gap-2">
-        <div className="space-y-1">
-          <Label htmlFor="serviceDate" className="text-xs">{t('date')}</Label>
-          <Input
-            id="serviceDate"
-            name="serviceDate"
-            type="date"
-            defaultValue={initialData.serviceDate || new Date().toISOString().split('T')[0]}
-          />
-        </div>
         <div className="space-y-1">
           <Label className="text-xs">{t('type')}</Label>
           <Select value={type} onValueChange={setType}>
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -199,6 +182,20 @@ export function BasicInfoSection({
               <SelectItem value="repair">{t('typeOptions.repair')}</SelectItem>
               <SelectItem value="upgrade">{t('typeOptions.upgrade')}</SelectItem>
               <SelectItem value="inspection">{t('typeOptions.inspection')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t('status')}</Label>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">{t('statusOptions.pending')}</SelectItem>
+              <SelectItem value="in-progress">{t('statusOptions.in_progress')}</SelectItem>
+              <SelectItem value="waiting-parts">{t('statusOptions.waiting_parts')}</SelectItem>
+              <SelectItem value="completed">{t('statusOptions.completed')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -216,148 +213,18 @@ export function BasicInfoSection({
           />
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">{t('status')}</Label>
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">{t('statusOptions.pending')}</SelectItem>
-              <SelectItem value="in-progress">{t('statusOptions.in_progress')}</SelectItem>
-              <SelectItem value="waiting-parts">{t('statusOptions.waiting_parts')}</SelectItem>
-              <SelectItem value="completed">{t('statusOptions.completed')}</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label htmlFor="invoiceNumber" className="text-xs">{t('invoiceNumber')}</Label>
+          <Input
+            id="invoiceNumber"
+            name="invoiceNumber"
+            placeholder="2026-1001"
+            defaultValue={initialData.invoiceNumber || ''}
+          />
         </div>
       </div>
 
-      <TechnicianPicker
-        techName={techName}
-        setTechName={setTechName}
-        techOpen={techOpen}
-        setTechOpen={setTechOpen}
-        boardTechnicians={boardTechnicians}
-        teamMembers={teamMembers}
-      />
-
-      <div className="space-y-1">
-        <Label htmlFor="invoiceNumber" className="text-xs">{t('invoiceNumber')}</Label>
-        <Input
-          id="invoiceNumber"
-          name="invoiceNumber"
-          placeholder="2026-1001"
-          defaultValue={initialData.invoiceNumber || ''}
-        />
-      </div>
+      <input type="hidden" name="techName" value={techName} />
     </div>
   )
 }
 
-function TechnicianPicker({
-  techName,
-  setTechName,
-  techOpen,
-  setTechOpen,
-  boardTechnicians,
-  teamMembers,
-}: {
-  techName: string
-  setTechName: (name: string) => void
-  techOpen: boolean
-  setTechOpen: (open: boolean) => void
-  boardTechnicians: BoardTechnicianOption[]
-  teamMembers: TeamMemberOption[]
-}) {
-  const t = useTranslations('service.basicInfo.techPicker')
-  const [search, setSearch] = useState('')
-
-  return (
-    <div className="space-y-1">
-      <Label className="text-xs">Technician</Label>
-      <Popover
-        open={techOpen}
-        onOpenChange={(open) => {
-          setTechOpen(open)
-          if (open) setSearch('')
-        }}
-      >
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={techOpen}
-            className="w-full justify-between font-normal"
-          >
-            {techName || <span className="text-muted-foreground">{t('placeholder')}</span>}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-          <Command>
-            <CommandInput
-              placeholder={t('searchPlaceholder')}
-              value={search}
-              onValueChange={setSearch}
-            />
-            <CommandList>
-              <CommandEmpty>
-                {search ? (
-                  <button
-                    type="button"
-                    className="w-full px-2 py-1.5 text-sm text-left"
-                    onClick={() => {
-                      setTechName(search)
-                      setTechOpen(false)
-                    }}
-                  >
-                    {t('useCustom', { search })}
-                  </button>
-                ) : (
-                  t('typePrompt')
-                )}
-              </CommandEmpty>
-              {boardTechnicians.length > 0 && (
-                <CommandGroup heading={t('boardTechnicians')}>
-                  {boardTechnicians.map((tech) => (
-                    <CommandItem
-                      key={tech.id}
-                      value={tech.name}
-                      onSelect={() => {
-                        setTechName(tech.name)
-                        setTechOpen(false)
-                      }}
-                    >
-                      <Check
-                        className={`mr-2 h-4 w-4 ${techName === tech.name ? 'opacity-100' : 'opacity-0'}`}
-                      />
-                      {tech.name}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-              {teamMembers.length > 0 && (
-                <CommandGroup heading={t('teamMembers')}>
-                  {teamMembers.map((member) => (
-                    <CommandItem
-                      key={member.id}
-                      value={member.name}
-                      onSelect={() => {
-                        setTechName(member.name)
-                        setTechOpen(false)
-                      }}
-                    >
-                      <Check
-                        className={`mr-2 h-4 w-4 ${techName === member.name ? 'opacity-100' : 'opacity-0'}`}
-                      />
-                      {member.name}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-    </div>
-  )
-}

@@ -11,8 +11,11 @@ import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
 import type { ServicePartInput, ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { ServiceDetail } from '../service-detail/types'
-import type { InitialData, InventoryPartOption, VehicleOption, TeamMemberOption } from '../service-edit/form-types'
-import type { BoardTechnicianOption } from '../service-edit/BasicInfoSection'
+import type { InitialData, InventoryPartOption, VehicleOption } from '../service-edit/form-types'
+export interface BoardTechnicianOption {
+  id: string
+  name: string
+}
 
 import { ServiceDetailContent } from '../service-detail/ServiceDetailContent'
 import { InvoiceSummary } from '../service-detail/InvoiceSummary'
@@ -27,6 +30,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
 
 import { BasicInfoSection } from '../service-edit/BasicInfoSection'
+import { ScheduleTimesSection } from '../service-edit/ScheduleTimesSection'
 import { PartsEditor } from '../service-edit/PartsEditor'
 import { LaborEditor } from '../service-edit/LaborEditor'
 import { TotalsSection } from '../service-edit/TotalsSection'
@@ -65,7 +69,6 @@ export interface ServicePageClientProps {
   initialData: InitialData
   inventoryParts: InventoryPartOption[]
   vehicles: VehicleOption[]
-  teamMembers: TeamMemberOption[]
   boardTechnicians?: BoardTechnicianOption[]
   currentUserName: string
   // Media data
@@ -91,7 +94,6 @@ export function ServicePageClient({
   initialData,
   inventoryParts,
   vehicles,
-  teamMembers,
   boardTechnicians = [],
   currentUserName,
   imageAttachmentsForManager,
@@ -117,8 +119,7 @@ export function ServicePageClient({
   const [loading, setLoading] = useState(false)
   const [selectedVehicleId, setSelectedVehicleId] = useState(vehicleId)
   const [vehicleOpen, setVehicleOpen] = useState(false)
-  const [techName, setTechName] = useState(initialData.techName || currentUserName)
-  const [techOpen, setTechOpen] = useState(false)
+  const [techName] = useState(initialData.techName || currentUserName)
   const [type, setType] = useState(initialData.type || 'maintenance')
   const [status, setStatus] = useState(initialData.status || 'completed')
   const [partItems, setPartItems] = useState<ServicePartInput[]>(initialData.partItems || [])
@@ -145,6 +146,12 @@ export function ServicePageClient({
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isSavingRef = useRef(false)
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const flashSaved = useCallback(() => {
+    if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
+    setShowSaved(true)
+    savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
+  }, [])
 
   const markDirty = useCallback(() => {
     setHasUnsavedChanges(true)
@@ -268,7 +275,6 @@ export function ServicePageClient({
   const dirtySetTaxRate = useCallback((v: number) => { setTaxRate(v); markDirty() }, [markDirty])
   const dirtySetType = useCallback((v: string) => { setType(v); markDirty() }, [markDirty])
   const dirtySetStatus = useCallback((v: string) => { setStatus(v); markDirty() }, [markDirty])
-  const dirtySetTechName = useCallback((v: string) => { setTechName(v); markDirty() }, [markDirty])
   const dirtySetSelectedVehicleId = useCallback((v: string) => { setSelectedVehicleId(v); markDirty() }, [markDirty])
 
   // Form submit
@@ -309,9 +315,7 @@ export function ServicePageClient({
 
     if (result.success) {
       setHasUnsavedChanges(false)
-      if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
-      setShowSaved(true)
-      savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
+      flashSaved()
       if (selectedVehicleId !== vehicleId) {
         router.push(`/vehicles/${selectedVehicleId}/service/${initialData.id}`)
       } else {
@@ -550,12 +554,15 @@ export function ServicePageClient({
         status={status}
         setStatus={dirtySetStatus}
         techName={techName}
-        setTechName={dirtySetTechName}
-        techOpen={techOpen}
-        setTechOpen={setTechOpen}
-        teamMembers={teamMembers}
-        boardTechnicians={boardTechnicians}
         customer={record.vehicle.customer}
+      />
+      <ScheduleTimesSection
+        serviceRecordId={record.id}
+        technicians={boardTechnicians}
+        initialStartDateTime={initialData.startDateTime}
+        initialEndDateTime={initialData.endDateTime}
+        initialTechnicianId={record.technicianId}
+        onSaved={flashSaved}
       />
       <TotalsSection
         partsSubtotal={partsSubtotal}

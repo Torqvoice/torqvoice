@@ -247,5 +247,26 @@
     "failedDelete": "Impossibile eliminare il file",
     "failedUpdate": "Impossibile aggiornare",
     "invoice": "Fattura"
+  },
+  "schedule": {
+    "title": "Pianificazione",
+    "date": "Data",
+    "startTime": "Ora di inizio",
+    "endTime": "Ora di fine",
+    "technician": "Tecnico",
+    "selectTechnician": "Seleziona tecnico...",
+    "searchOrCreate": "Cerca o crea tecnico...",
+    "createTechnician": "Crea \"{name}\"",
+    "creating": "Creazione...",
+    "failedCreate": "Impossibile creare il tecnico",
+    "addNew": "+ Aggiungi nuovo",
+    "add": "Aggiungi",
+    "newTechPlaceholder": "Nome del tecnico...",
+    "assign": "Assegna alla bacheca",
+    "assigned": "Assegnato alla bacheca di lavoro",
+    "failedAssign": "Assegnazione fallita",
+    "endBeforeStart": "L'ora di fine deve essere dopo l'ora di inizio",
+    "failedUpdate": "Impossibile aggiornare la pianificazione",
+    "splitCreated": "Il lavoro si estende su più giorni — continuazione creata per il giorno successivo"
   }
 }

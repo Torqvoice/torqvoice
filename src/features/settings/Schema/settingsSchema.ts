@@ -70,6 +70,9 @@ export const SETTING_KEYS = {
   SMS_TEMPLATE_STATUS_COMPLETED: "sms.template.statusCompleted",
   SMS_TEMPLATE_PAYMENT_RECEIVED: "sms.template.paymentReceived",
   PORTAL_ENABLED: "portal.enabled",
+  WORKBOARD_WEEK_START_DAY: "workboard.weekStartDay",
+  WORKBOARD_WORK_DAY_START: "workboard.workDayStart",
+  WORKBOARD_WORK_DAY_END: "workboard.workDayEnd",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

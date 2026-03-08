@@ -4,6 +4,8 @@
   },
   "toolbar": {
     "today": "Dzisiaj",
+    "day": "Dzień",
+    "week": "Tydzień",
     "presenter": "Prezenter",
     "addTechnician": "Dodaj Technika"
   },
@@ -21,7 +23,8 @@
     "noTechniciansDescription": "Dodaj technika, aby rozpocząć planowanie pracy na tablicy.",
     "failedMove": "Nie udało się przenieść przydzielenia",
     "failedAssign": "Nie udało się przydzielić zadania",
-    "failedRemove": "Nie udało się usunąć przydzielenia"
+    "failedRemove": "Nie udało się usunąć przydzielenia",
+    "createNewWorkorder": "Utwórz nowe zlecenie pracy"
   },
   "unassigned": {
     "title": "Nieprzyzdzielone Zadania ({count})",
@@ -51,6 +54,7 @@
     "status": "Status",
     "week": "Tydzień",
     "today": "Dzisiaj",
+    "timeline": "Oś czasu",
     "live": "Na Żywo",
     "disconnected": "Aktualizacje na żywo rozłączone",
     "noTechnicians": "Brak skonfigurowanych techników",

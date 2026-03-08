@@ -4,6 +4,8 @@
   },
   "toolbar": {
     "today": "Hoy",
+    "day": "Día",
+    "week": "Semana",
     "presenter": "Presentador",
     "addTechnician": "Agregar Técnico"
   },
@@ -21,7 +23,8 @@
     "noTechniciansDescription": "Agregue un técnico para comenzar a programar trabajo en el tablero.",
     "failedMove": "Error al mover asignación",
     "failedAssign": "Error al asignar trabajo",
-    "failedRemove": "Error al eliminar asignación"
+    "failedRemove": "Error al eliminar asignación",
+    "createNewWorkorder": "Crear nueva orden de trabajo"
   },
   "unassigned": {
     "title": "Trabajos Sin Asignar ({count})",
@@ -51,6 +54,7 @@
     "status": "Estado",
     "week": "Semana",
     "today": "Hoy",
+    "timeline": "Línea de tiempo",
     "live": "En Vivo",
     "disconnected": "Actualizaciones en vivo desconectadas",
     "noTechnicians": "Sin técnicos configurados",

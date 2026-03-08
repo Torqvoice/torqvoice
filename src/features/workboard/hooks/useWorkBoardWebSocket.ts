@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useWorkBoardStore } from "../store/workboardStore";
+import type { WorkBoardJob } from "../Actions/boardActions";
 
 export function useWorkBoardWebSocket() {
   const wsRef = useRef<WebSocket | null>(null);
@@ -32,29 +33,22 @@ export function useWorkBoardWebSocket() {
           const data = msg.data;
 
           switch (data.type) {
-            case "assignment_created":
-              store.addAssignment(data.assignment);
-              // Remove from unassigned lists
-              if (data.assignment.serviceRecordId) {
-                store.removeFromUnassigned(
-                  data.assignment.serviceRecordId,
-                  "serviceRecord",
-                );
-              }
-              if (data.assignment.inspectionId) {
-                store.removeFromUnassigned(
-                  data.assignment.inspectionId,
-                  "inspection",
-                );
+            case "job_assigned":
+              store.addJob(data.job as WorkBoardJob);
+              // Remove from unassigned lists based on job type and id
+              if (data.job.type === "serviceRecord") {
+                store.removeFromUnassigned(data.job.id, "serviceRecord");
+              } else if (data.job.type === "inspection") {
+                store.removeFromUnassigned(data.job.id, "inspection");
               }
               break;
 
-            case "assignment_moved":
-              store.updateAssignment(data.assignment);
+            case "job_moved":
+              store.updateJob(data.job as WorkBoardJob);
               break;
 
-            case "assignment_removed":
-              store.removeAssignment(data.assignmentId);
+            case "job_unassigned":
+              store.removeJob(data.jobId);
               break;
 
             case "technician_created":
@@ -73,26 +67,48 @@ export function useWorkBoardWebSocket() {
               });
               break;
 
+            case "service_times_updated": {
+              const { serviceRecordId, startDateTime, endDateTime } = data;
+              const updatedJobs = store.jobs.map((j) =>
+                j.type === "serviceRecord" && j.id === serviceRecordId
+                  ? { ...j, startDateTime, endDateTime }
+                  : j,
+              );
+              store.setJobs(updatedJobs);
+              break;
+            }
+
+            case "inspection_times_updated": {
+              const { inspectionId, startDateTime, endDateTime } = data;
+              const updatedJobs = store.jobs.map((j) =>
+                j.type === "inspection" && j.id === inspectionId
+                  ? { ...j, startDateTime, endDateTime }
+                  : j,
+              );
+              store.setJobs(updatedJobs);
+              break;
+            }
+
             case "job_status_changed": {
               const { serviceRecordId, inspectionId, status, serviceRecord } = data;
               const activeStatuses = ["pending", "in-progress", "waiting-parts", "scheduled"];
 
-              // Update the status on matching assignments in-place
-              const updated = store.assignments.map((a) => {
-                if (serviceRecordId && a.serviceRecordId === serviceRecordId && a.serviceRecord) {
-                  return { ...a, serviceRecord: { ...a.serviceRecord, status } };
+              // Update the status on matching jobs in-place
+              const updated = store.jobs.map((j) => {
+                if (serviceRecordId && j.type === "serviceRecord" && j.id === serviceRecordId) {
+                  return { ...j, status };
                 }
-                if (inspectionId && a.inspectionId === inspectionId && a.inspection) {
-                  return { ...a, inspection: { ...a.inspection, status } };
+                if (inspectionId && j.type === "inspection" && j.id === inspectionId) {
+                  return { ...j, status };
                 }
-                return a;
+                return j;
               });
-              store.setAssignments(updated);
+              store.setJobs(updated);
 
               // Add/remove from unassigned pool for service records
               if (serviceRecordId && serviceRecord) {
-                const isAssigned = store.assignments.some(
-                  (a) => a.serviceRecordId === serviceRecordId,
+                const isAssigned = store.jobs.some(
+                  (j) => j.type === "serviceRecord" && j.id === serviceRecordId,
                 );
                 const isAlreadyUnassigned = store.unassignedServiceRecords.some(
                   (sr) => sr.id === serviceRecordId,

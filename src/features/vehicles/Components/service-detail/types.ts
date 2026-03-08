@@ -27,6 +27,7 @@ export interface ServiceDetail {
   serviceDate: Date;
   shopName: string | null;
   techName: string | null;
+  technicianId: string | null;
   parts: string | null;
   laborHours: number | null;
   diagnosticNotes: string | null;

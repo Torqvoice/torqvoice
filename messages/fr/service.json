@@ -247,5 +247,26 @@
     "failedDelete": "Impossible de supprimer le fichier",
     "failedUpdate": "Impossible de mettre à jour",
     "invoice": "Facture"
+  },
+  "schedule": {
+    "title": "Planification",
+    "date": "Date",
+    "startTime": "Heure de début",
+    "endTime": "Heure de fin",
+    "technician": "Technicien",
+    "selectTechnician": "Sélectionner un technicien...",
+    "searchOrCreate": "Rechercher ou créer un technicien...",
+    "createTechnician": "Créer \"{name}\"",
+    "creating": "Création...",
+    "failedCreate": "Impossible de créer le technicien",
+    "addNew": "+ Ajouter nouveau",
+    "add": "Ajouter",
+    "newTechPlaceholder": "Nom du technicien...",
+    "assign": "Assigner au tableau",
+    "assigned": "Assigné au tableau de travail",
+    "failedAssign": "Échec de l'assignation",
+    "endBeforeStart": "L'heure de fin doit être après l'heure de début",
+    "failedUpdate": "Impossible de mettre à jour le planning",
+    "splitCreated": "Le travail s'étend sur plusieurs jours — suite créée pour le jour suivant"
   }
 }
