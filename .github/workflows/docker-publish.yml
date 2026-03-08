@@ -55,7 +55,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
-            type=semver,pattern=v{{version}}
+            type=raw,value=${{ steps.version.outputs.value }},enable=${{ steps.version.outputs.value != 'development' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
