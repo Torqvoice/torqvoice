@@ -1,4 +1,4 @@
-name: "Deploy: staging.torqvoice.com"
+name: "Deploy: Staging"
 
 on:
   push:
