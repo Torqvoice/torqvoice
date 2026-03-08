@@ -27,6 +27,13 @@ interface SearchResult {
     email: string | null;
     phone: string | null;
     company: string | null;
+    vehicles: {
+      id: string;
+      make: string;
+      model: string;
+      year: number;
+      licensePlate: string | null;
+    }[];
   }[];
   services: {
     id: string;
@@ -241,19 +248,38 @@ export function SearchCommand() {
             {results.customers.length > 0 && (
               <CommandGroup heading="Customers">
                 {results.customers.map((c) => (
-                  <CommandItem
-                    key={c.id}
-                    value={`${c.name} ${c.email || ""} ${c.company || ""}`}
-                    onSelect={() => handleSelect(`/customers/${c.id}`)}
-                  >
-                    <Users className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <div className="flex flex-col">
-                      <span>{c.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {[c.company, c.email, c.phone].filter(Boolean).join(" · ")}
-                      </span>
-                    </div>
-                  </CommandItem>
+                  <div key={c.id}>
+                    <CommandItem
+                      value={`${c.name} ${c.email || ""} ${c.company || ""}`}
+                      onSelect={() => handleSelect(`/customers/${c.id}`)}
+                    >
+                      <Users className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <div className="flex flex-col">
+                        <span>{c.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {[c.company, c.email, c.phone].filter(Boolean).join(" · ")}
+                        </span>
+                      </div>
+                    </CommandItem>
+                    {c.vehicles.map((v) => (
+                      <CommandItem
+                        key={v.id}
+                        value={`${c.name} ${v.year} ${v.make} ${v.model} ${v.licensePlate || ""}`}
+                        onSelect={() => handleSelect(`/vehicles/${v.id}`)}
+                        className="pl-10"
+                      >
+                        <Car className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="text-sm">
+                          {v.year} {v.make} {v.model}
+                        </span>
+                        {v.licensePlate && (
+                          <span className="ml-2 font-mono text-xs text-muted-foreground">
+                            {v.licensePlate}
+                          </span>
+                        )}
+                      </CommandItem>
+                    ))}
+                  </div>
                 ))}
               </CommandGroup>
             )}
