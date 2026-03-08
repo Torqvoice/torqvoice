@@ -21,7 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Loader2, MessageSquare, MoreVertical, Phone, Trash2, User } from "lucide-react";
+import { ArrowLeft, ChevronDown, Loader2, MessageSquare, MoreVertical, Phone, Trash2, User } from "lucide-react";
 import { toast } from "sonner";
 import { getConversation, getRecentSmsThreads, deleteConversation } from "../Actions/smsActions";
 import { SmsConversation } from "./SmsConversation";
@@ -116,6 +116,14 @@ export function MessagesPageClient({
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
+  const handleBack = () => {
+    setSelectedCustomerId(null);
+    setConversation(null);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("customerId");
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
   const handleLoadMore = () => {
     startLoadMore(async () => {
       const result = await getRecentSmsThreads(threads.length, THREADS_PAGE_SIZE);
@@ -193,8 +201,11 @@ export function MessagesPageClient({
 
   return (
     <div className="flex h-[calc(100vh-8rem)] rounded-lg border overflow-hidden bg-background">
-      {/* Thread list */}
-      <div className="w-80 shrink-0 border-r flex flex-col">
+      {/* Thread list — full width on mobile, hidden when conversation open */}
+      <div className={cn(
+        "w-full sm:w-80 shrink-0 sm:border-r flex flex-col",
+        selectedCustomerId ? "hidden sm:flex" : "flex",
+      )}>
         <div className="shrink-0 border-b px-4 py-3">
           <h2 className="text-sm font-semibold">{t("title")}</h2>
         </div>
@@ -268,12 +279,23 @@ export function MessagesPageClient({
         </div>
       </div>
 
-      {/* Conversation panel */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* Conversation panel — full width on mobile, hidden when no conversation on mobile */}
+      <div className={cn(
+        "flex-1 flex flex-col min-w-0",
+        selectedCustomerId ? "flex" : "hidden sm:flex",
+      )}>
         {selectedCustomerId && conversation && !loadingConversation ? (
           <>
             {/* Conversation header */}
             <div className="shrink-0 border-b px-4 py-3 flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 h-8 w-8 sm:hidden"
+                onClick={handleBack}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <User className="h-4 w-4" />
               </div>
