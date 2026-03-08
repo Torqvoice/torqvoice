@@ -15,7 +15,13 @@
     "deleteDescription": "Delete {name}? This will unlink their vehicles.",
     "deleteError": "Failed to delete customer",
     "error": "Failed to load customers",
-    "importCustomers": "Import"
+    "importCustomers": "Import",
+    "selectedCount": "{count} selected",
+    "clearSelection": "Clear",
+    "batchDelete": "Delete ({count})",
+    "batchDeleteTitle": "Delete Customers",
+    "batchDeleteDescription": "Delete {count} customer(s)? This will unlink their vehicles.",
+    "batchDeleteSuccess": "{count} customer(s) deleted"
   },
   "detail": {
     "backToCustomers": "Back to customers",

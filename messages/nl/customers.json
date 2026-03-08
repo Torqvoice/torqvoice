@@ -15,7 +15,13 @@
     "deleteDescription": "{name} verwijderen? Hun voertuigen worden ontkoppeld.",
     "deleteError": "Verwijderen van klant mislukt",
     "error": "Laden van klanten mislukt",
-    "importCustomers": "Importeren"
+    "importCustomers": "Importeren",
+    "selectedCount": "{count} geselecteerd",
+    "clearSelection": "Wissen",
+    "batchDelete": "Verwijderen ({count})",
+    "batchDeleteTitle": "Klanten verwijderen",
+    "batchDeleteDescription": "{count} klant(en) verwijderen? Hun voertuigen worden ontkoppeld.",
+    "batchDeleteSuccess": "{count} klant(en) verwijderd"
   },
   "detail": {
     "backToCustomers": "Terug naar klanten",

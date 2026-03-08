@@ -15,7 +15,13 @@
     "deleteDescription": "{name} silinsin mi? Bu işlem araçlarının bağlantısını kaldıracaktır.",
     "deleteError": "Müşteri silinemedi",
     "error": "Müşteriler yüklenemedi",
-    "importCustomers": "İçe Aktar"
+    "importCustomers": "İçe Aktar",
+    "selectedCount": "{count} seçili",
+    "clearSelection": "Temizle",
+    "batchDelete": "Sil ({count})",
+    "batchDeleteTitle": "Müşterileri Sil",
+    "batchDeleteDescription": "{count} müşteri silinsin mi? Bu işlem araçlarının bağlantısını kaldıracaktır.",
+    "batchDeleteSuccess": "{count} müşteri silindi"
   },
   "detail": {
     "backToCustomers": "Müşterilere dön",

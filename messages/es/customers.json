@@ -15,7 +15,13 @@
     "deleteDescription": "¿Eliminar a {name}? Esto desvinculará sus vehículos.",
     "deleteError": "Error al eliminar el cliente",
     "error": "Error al cargar los clientes",
-    "importCustomers": "Importar"
+    "importCustomers": "Importar",
+    "selectedCount": "{count} seleccionado(s)",
+    "clearSelection": "Limpiar",
+    "batchDelete": "Eliminar ({count})",
+    "batchDeleteTitle": "Eliminar Clientes",
+    "batchDeleteDescription": "¿Eliminar {count} cliente(s)? Esto desvinculará sus vehículos.",
+    "batchDeleteSuccess": "{count} cliente(s) eliminado(s)"
   },
   "detail": {
     "backToCustomers": "Volver a clientes",

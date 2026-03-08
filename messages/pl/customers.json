@@ -15,7 +15,13 @@
     "deleteDescription": "Usunąć {name}? Spowoduje to odłączenie jego pojazdów.",
     "deleteError": "Nie udało się usunąć klienta",
     "error": "Nie udało się załadować klientów",
-    "importCustomers": "Importuj"
+    "importCustomers": "Importuj",
+    "selectedCount": "{count} zaznaczono",
+    "clearSelection": "Wyczyść",
+    "batchDelete": "Usuń ({count})",
+    "batchDeleteTitle": "Usuń klientów",
+    "batchDeleteDescription": "Usunąć {count} klient(ów)? Spowoduje to odłączenie ich pojazdów.",
+    "batchDeleteSuccess": "{count} klient(ów) usunięto"
   },
   "detail": {
     "backToCustomers": "Wróć do klientów",

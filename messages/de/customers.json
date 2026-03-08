@@ -15,7 +15,13 @@
     "deleteDescription": "{name} löschen? Die zugehörigen Fahrzeuge werden dabei entknüpft.",
     "deleteError": "Kunde konnte nicht gelöscht werden",
     "error": "Kunden konnten nicht geladen werden",
-    "importCustomers": "Importieren"
+    "importCustomers": "Importieren",
+    "selectedCount": "{count} ausgewählt",
+    "clearSelection": "Auswahl aufheben",
+    "batchDelete": "Löschen ({count})",
+    "batchDeleteTitle": "Kunden löschen",
+    "batchDeleteDescription": "{count} Kunde(n) löschen? Die zugehörigen Fahrzeuge werden dabei entknüpft.",
+    "batchDeleteSuccess": "{count} Kunde(n) gelöscht"
   },
   "detail": {
     "backToCustomers": "Zurück zur Kundenliste",
