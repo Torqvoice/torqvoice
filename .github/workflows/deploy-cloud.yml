@@ -66,12 +66,8 @@ jobs:
       - name: Ensure data directory permissions
         run: |
           DATA_DIR="${{ secrets.DATA_PATH }}/torqvoice_data"
-          TAG=${{ inputs.tag || 'latest' }}
-          IMAGE="ghcr.io/torqvoice/torqvoice:${TAG}"
-          APP_UID=$(docker run --rm --entrypoint id "$IMAGE" -u)
-          APP_GID=$(docker run --rm --entrypoint id "$IMAGE" -g)
           mkdir -p "$DATA_DIR"
-          sudo chown -R "${APP_UID}:${APP_GID}" "$DATA_DIR"
+          docker run --rm -v "$DATA_DIR":/data alpine chown -R 1001:1001 /data
 
       - name: Deploy
         run: |
