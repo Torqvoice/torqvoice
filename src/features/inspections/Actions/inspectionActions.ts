@@ -139,13 +139,19 @@ export async function createInspection(input: unknown) {
     });
     if (!template) throw new Error("Template not found");
 
+    // Look up technician linked to current user
+    const technician = await db.technician.findFirst({
+      where: { memberId: userId, organizationId, isActive: true },
+      select: { id: true },
+    });
+
     const inspection = await db.$transaction(async (tx) => {
       const created = await tx.inspection.create({
         data: {
           vehicleId: data.vehicleId,
           templateId: data.templateId,
           mileage: data.mileage,
-          technicianId: userId,
+          technicianId: technician?.id ?? null,
           organizationId,
         },
       });
