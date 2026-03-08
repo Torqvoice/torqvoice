@@ -497,7 +497,7 @@ export function DashboardClient({
                   variant="ghost"
                   size="sm"
                   className="h-7 text-xs gap-1"
-                  onClick={() => router.push("/vehicles")}
+                  onClick={() => router.push("/reminders")}
                 >
                   {t("viewAll")}
                   <ArrowRight className="h-3 w-3" />

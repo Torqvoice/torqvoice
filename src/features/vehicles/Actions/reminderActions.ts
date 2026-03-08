@@ -6,6 +6,29 @@ import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { createReminderSchema, updateReminderSchema } from "../Schema/reminderSchema";
 import { revalidatePath } from "next/cache";
 
+export async function getAllReminders() {
+  return withAuth(async ({ organizationId }) => {
+    return db.reminder.findMany({
+      where: {
+        vehicle: { organizationId },
+      },
+      include: {
+        vehicle: {
+          select: {
+            id: true,
+            make: true,
+            model: true,
+            year: true,
+            licensePlate: true,
+            mileage: true,
+          },
+        },
+      },
+      orderBy: [{ isCompleted: "asc" }, { dueDate: "asc" }],
+    });
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
+}
+
 export async function createReminder(input: unknown) {
   return withAuth(async ({ organizationId }) => {
     const data = createReminderSchema.parse(input);
@@ -22,6 +45,7 @@ export async function createReminder(input: unknown) {
     });
     revalidatePath(`/vehicles/${data.vehicleId}`);
     revalidatePath("/");
+    revalidatePath("/reminders");
     return reminder;
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });
 }
@@ -45,6 +69,7 @@ export async function updateReminder(input: unknown) {
     });
     revalidatePath(`/vehicles/${reminder.vehicleId}`);
     revalidatePath("/");
+    revalidatePath("/reminders");
     return updated;
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });
 }
@@ -62,6 +87,7 @@ export async function toggleReminder(reminderId: string) {
     });
     revalidatePath(`/vehicles/${reminder.vehicleId}`);
     revalidatePath("/");
+    revalidatePath("/reminders");
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });
 }
 
@@ -75,5 +101,6 @@ export async function deleteReminder(reminderId: string) {
     await db.reminder.delete({ where: { id: reminderId } });
     revalidatePath(`/vehicles/${reminder.vehicleId}`);
     revalidatePath("/");
+    revalidatePath("/reminders");
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });
 }

@@ -1,0 +1,11 @@
+{
+  "error": "No se pudieron cargar los recordatorios",
+  "showing": "Mostrando {count} de {total}",
+  "deleted": "Recordatorio eliminado",
+  "deleteError": "No se pudo eliminar el recordatorio",
+  "vehicle": "Vehículo",
+  "selectVehicle": "Seleccionar vehículo...",
+  "searchVehicle": "Buscar vehículos...",
+  "noVehicle": "No se encontraron vehículos.",
+  "pickDate": "Seleccionar fecha"
+}

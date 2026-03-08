@@ -1,0 +1,11 @@
+{
+  "error": "Herinneringen konden niet worden geladen",
+  "showing": "{count} van {total} weergegeven",
+  "deleted": "Herinnering verwijderd",
+  "deleteError": "Herinnering kon niet worden verwijderd",
+  "vehicle": "Voertuig",
+  "selectVehicle": "Voertuig selecteren...",
+  "searchVehicle": "Voertuigen zoeken...",
+  "noVehicle": "Geen voertuigen gevonden.",
+  "pickDate": "Datum kiezen"
+}

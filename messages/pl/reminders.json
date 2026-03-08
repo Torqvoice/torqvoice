@@ -1,0 +1,11 @@
+{
+  "error": "Nie udało się załadować przypomnień",
+  "showing": "Wyświetlanie {count} z {total}",
+  "deleted": "Przypomnienie usunięte",
+  "deleteError": "Nie udało się usunąć przypomnienia",
+  "vehicle": "Pojazd",
+  "selectVehicle": "Wybierz pojazd...",
+  "searchVehicle": "Szukaj pojazdów...",
+  "noVehicle": "Nie znaleziono pojazdów.",
+  "pickDate": "Wybierz datę"
+}

@@ -46,7 +46,9 @@
     "license": "Licencia",
     "subscription": "Suscripci\u00f3n",
     "maintenance": "Mantenimiento",
-    "customerPortal": "Portal del cliente"
+    "customerPortal": "Portal del cliente",
+    "reminders": "Recordatorios",
+    "allReminders": "Todos los recordatorios"
   },
   "search": "Buscar...",
   "shortcut": "Ctrl+K",
@@ -59,6 +61,7 @@
     "messages": "Mensajes",
     "workshop": "Taller",
     "vehicles": "Vehículos",
+    "reminders": "Recordatorios",
     "workOrders": "Órdenes de trabajo",
     "inspections": "Inspecciones",
     "calendar": "Calendario",

@@ -1,0 +1,11 @@
+{
+  "error": "Impossible de charger les rappels",
+  "showing": "{count} sur {total} affichés",
+  "deleted": "Rappel supprimé",
+  "deleteError": "Impossible de supprimer le rappel",
+  "vehicle": "Véhicule",
+  "selectVehicle": "Sélectionner un véhicule...",
+  "searchVehicle": "Rechercher des véhicules...",
+  "noVehicle": "Aucun véhicule trouvé.",
+  "pickDate": "Choisir une date"
+}

@@ -1,0 +1,11 @@
+{
+  "error": "Hatırlatmalar yüklenemedi",
+  "showing": "{total} içinden {count} gösteriliyor",
+  "deleted": "Hatırlatma silindi",
+  "deleteError": "Hatırlatma silinemedi",
+  "vehicle": "Araç",
+  "selectVehicle": "Araç seçin...",
+  "searchVehicle": "Araç ara...",
+  "noVehicle": "Araç bulunamadı.",
+  "pickDate": "Tarih seçin"
+}
