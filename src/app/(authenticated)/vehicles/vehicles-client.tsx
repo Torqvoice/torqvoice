@@ -34,7 +34,6 @@ import {
   Archive,
   ArchiveRestore,
   Gauge,
-  Grid3X3,
   LayoutGrid,
   List,
   Loader2,
@@ -179,9 +178,9 @@ export function VehiclesClient({
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex flex-1 items-center gap-2">
-          <div className="flex gap-1 rounded-lg border p-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex flex-1 items-center gap-2 min-w-0">
+          <div className="flex gap-1 rounded-lg border p-1 shrink-0">
             <button
               onClick={() => router.push('/vehicles')}
               className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
@@ -203,7 +202,7 @@ export function VehiclesClient({
               {t('archived')}{archivedCount > 0 ? ` (${archivedCount})` : ''}
             </button>
           </div>
-          <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
+          <form onSubmit={handleSearch} className="relative flex-1 min-w-0 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t('searchPlaceholder')}
@@ -214,7 +213,7 @@ export function VehiclesClient({
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between gap-2 shrink-0 flex-1 sm:flex-none">
           <div className="flex items-center rounded-md border">
             <Button
               variant={view === 'table' ? 'secondary' : 'ghost'}
@@ -225,24 +224,16 @@ export function VehiclesClient({
               <List className="h-4 w-4" />
             </Button>
             <Button
-              variant={view === 'grid' ? 'secondary' : 'ghost'}
+              variant={view === 'grid' || view === 'grid6' ? 'secondary' : 'ghost'}
               size="icon"
-              className="h-8 w-8 rounded-none border-x"
+              className="h-8 w-8 rounded-l-none"
               onClick={() => toggleView('grid')}
             >
               <LayoutGrid className="h-4 w-4" />
             </Button>
-            <Button
-              variant={view === 'grid6' ? 'secondary' : 'ghost'}
-              size="icon"
-              className="h-8 w-8 rounded-l-none"
-              onClick={() => toggleView('grid6')}
-            >
-              <Grid3X3 className="h-4 w-4" />
-            </Button>
           </div>
           {!isArchived && (
-            <Button size="sm" onClick={() => setShowForm(true)}>
+            <Button size="sm" className="ml-auto" onClick={() => setShowForm(true)}>
               <Plus className="mr-1 h-3.5 w-3.5" />
               {t('addVehicle')}
             </Button>
@@ -386,8 +377,8 @@ export function VehiclesClient({
                       <p className={`font-mono text-white/80 ${view === 'grid6' ? 'text-[10px]' : 'mt-0.5 text-xs'}`}>{v.licensePlate}</p>
                     )}
                   </div>
-                  {/* Action menu */}
-                  <div className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100">
+                  {/* Action menu - desktop only */}
+                  <div className="absolute right-2 top-2 hidden sm:block opacity-0 transition-opacity group-hover:opacity-100">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
                         <Button variant="secondary" size="icon" className="h-8 w-8">
