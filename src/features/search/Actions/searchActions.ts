@@ -70,6 +70,18 @@ export async function globalSearch(query: string) {
           email: true,
           phone: true,
           company: true,
+          vehicles: {
+            where: { isArchived: false },
+            select: {
+              id: true,
+              make: true,
+              model: true,
+              year: true,
+              licensePlate: true,
+            },
+            take: 5,
+            orderBy: { updatedAt: "desc" },
+          },
         },
         take: 10,
       }),
