@@ -15,7 +15,13 @@
     "deleteDescription": "Supprimer {name} ? Cela dissociera ses véhicules.",
     "deleteError": "Échec de la suppression du client",
     "error": "Échec du chargement des clients",
-    "importCustomers": "Importer"
+    "importCustomers": "Importer",
+    "selectedCount": "{count} sélectionné(s)",
+    "clearSelection": "Effacer",
+    "batchDelete": "Supprimer ({count})",
+    "batchDeleteTitle": "Supprimer les clients",
+    "batchDeleteDescription": "Supprimer {count} client(s) ? Cela dissociera leurs véhicules.",
+    "batchDeleteSuccess": "{count} client(s) supprimé(s)"
   },
   "detail": {
     "backToCustomers": "Retour aux clients",

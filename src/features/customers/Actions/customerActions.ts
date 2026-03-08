@@ -97,6 +97,17 @@ export async function deleteCustomer(customerId: string) {
   }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS }] });
 }
 
+export async function deleteCustomers(customerIds: string[]) {
+  return withAuth(async ({ userId, organizationId }) => {
+    if (customerIds.length === 0) throw new Error("No customers selected");
+    const result = await db.customer.deleteMany({
+      where: { id: { in: customerIds }, organizationId },
+    });
+    revalidatePath("/customers");
+    return { deleted: result.count };
+  }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS }] });
+}
+
 export async function getCustomersPaginated(params: {
   page?: number;
   pageSize?: number;

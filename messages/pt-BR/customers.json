@@ -15,7 +15,13 @@
     "deleteDescription": "Excluir {name}? Os veículos vinculados serão desassociados.",
     "deleteError": "Falha ao excluir cliente",
     "error": "Falha ao carregar clientes",
-    "importCustomers": "Importar"
+    "importCustomers": "Importar",
+    "selectedCount": "{count} selecionado(s)",
+    "clearSelection": "Limpar",
+    "batchDelete": "Excluir ({count})",
+    "batchDeleteTitle": "Excluir Clientes",
+    "batchDeleteDescription": "Excluir {count} cliente(s)? Os veículos vinculados serão desassociados.",
+    "batchDeleteSuccess": "{count} cliente(s) excluído(s)"
   },
   "detail": {
     "backToCustomers": "Voltar para clientes",

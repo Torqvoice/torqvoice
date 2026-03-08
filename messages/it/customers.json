@@ -15,7 +15,13 @@
     "deleteDescription": "Eliminare {name}? I suoi veicoli verranno scollegati.",
     "deleteError": "Eliminazione del cliente non riuscita",
     "error": "Caricamento dei clienti non riuscito",
-    "importCustomers": "Importa"
+    "importCustomers": "Importa",
+    "selectedCount": "{count} selezionato/i",
+    "clearSelection": "Deseleziona",
+    "batchDelete": "Elimina ({count})",
+    "batchDeleteTitle": "Elimina clienti",
+    "batchDeleteDescription": "Eliminare {count} cliente/i? I veicoli verranno scollegati.",
+    "batchDeleteSuccess": "{count} cliente/i eliminato/i"
   },
   "detail": {
     "backToCustomers": "Torna ai clienti",

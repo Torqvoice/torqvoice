@@ -15,7 +15,13 @@
     "deleteDescription": "Slette {name}? Dette vil koble fra tilknyttede kjøretøy.",
     "deleteError": "Kunne ikke slette kunde",
     "error": "Kunne ikke laste inn kunder",
-    "importCustomers": "Importer"
+    "importCustomers": "Importer",
+    "selectedCount": "{count} valgt",
+    "clearSelection": "Fjern valg",
+    "batchDelete": "Slett ({count})",
+    "batchDeleteTitle": "Slett kunder",
+    "batchDeleteDescription": "Slette {count} kunde(r)? Dette vil koble fra tilknyttede kjøretøy.",
+    "batchDeleteSuccess": "{count} kunde(r) slettet"
   },
   "detail": {
     "backToCustomers": "Tilbake til kunder",
