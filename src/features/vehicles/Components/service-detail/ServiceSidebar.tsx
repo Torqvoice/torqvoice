@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Building2, Car, Mail, MapPin, Phone, Users } from "lucide-react";
-import { CustomFieldsDisplay } from "@/features/custom-fields/Components/CustomFieldsDisplay";
+import { CustomFieldsForm } from "@/features/custom-fields/Components/CustomFieldsForm";
 import type { Vehicle } from "./types";
 
 interface ServiceSidebarProps {
@@ -89,7 +89,7 @@ export function ServiceSidebar({
       )}
 
       {/* Custom Fields */}
-      <CustomFieldsDisplay entityId={recordId} entityType="service_record" />
+      <CustomFieldsForm entityId={recordId} entityType="service_record" />
     </>
   );
 }

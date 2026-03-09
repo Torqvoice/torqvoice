@@ -11,6 +11,7 @@ import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
 import { formatDateForPdf } from "@/lib/format";
+import { mergeWithDefaults } from "@/features/settings/Schema/invoiceLayoutSchema";
 
 export async function GET(
   _request: Request,
@@ -80,6 +81,17 @@ export async function GET(
     if (!record) {
       return NextResponse.json({ error: "Record not found" }, { status: 404 });
     }
+
+    // Fetch custom field values for this service record
+    const customFieldValues = await db.customFieldValue.findMany({
+      where: { entityId: record.id, entityType: "service_record" },
+      include: { field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } } },
+      orderBy: { field: { sortOrder: "asc" } },
+    });
+
+    const customFields = customFieldValues
+      .filter(v => v.field.isActive && v.value)
+      .map(v => ({ label: v.field.label, value: v.value, fieldType: v.field.fieldType }));
 
     // Build settings map
     const settingsMap: Record<string, string> = {};
@@ -177,12 +189,21 @@ export async function GET(
         }
       : undefined;
 
+    // Fetch layout config
+    const layoutConfigSetting = await db.appSetting.findUnique({
+      where: { organizationId_key: { organizationId: ctx.organizationId, key: "invoice.layoutConfig" } },
+    });
+    const layoutConfig = mergeWithDefaults(
+      layoutConfigSetting?.value ? JSON.parse(layoutConfigSetting.value) : {}
+    );
+
     const template = {
       primaryColor: settingsMap["invoice.primaryColor"] || settingsMap["invoice.template.primaryColor"] || "#d97706",
       fontFamily: settingsMap["invoice.fontFamily"] || settingsMap["invoice.template.fontFamily"] || "Helvetica",
       showLogo: (settingsMap["invoice.showLogo"] ?? settingsMap["invoice.template.showLogo"]) !== "false",
       showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",
       headerStyle: settingsMap["invoice.headerStyle"] || settingsMap["invoice.template.headerStyle"] || "standard",
+      layoutConfig,
     };
 
     // Check if Torqvoice branding should be shown
@@ -201,7 +222,7 @@ export async function GET(
       : undefined;
 
     const element = React.createElement(InvoicePDF, {
-      data: record,
+      data: { ...record, customFields },
       workshop: {
         name: org?.name || "",
         address: settingsMap["workshop.address"] || "",

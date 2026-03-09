@@ -289,7 +289,8 @@
       "invoice": "Faktura",
       "quotation": "Tilbud",
       "inspections": "Inspeksjoner",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Oppsett"
     },
     "presets": "Malforandsvisninger",
     "primaryColor": "Primarfarge",
@@ -341,6 +342,11 @@
     "paymentReceivedDescription": "Sendes nar en betaling registreres for en faktura.",
     "saveSmsTemplates": "Lagre SMS-maler",
     "smsTemplateSaved": "SMS-malinnstillinger lagret",
+    "layoutTitle": "Fakturaoppsett",
+    "layoutDescription": "Tilpass rekkefølgen og synligheten av seksjoner i fakturaer og tilbud.",
+    "layoutSaved": "Oppsett lagret",
+    "layoutDocInvoice": "Faktura",
+    "layoutDocQuote": "Tilbud",
     "smsDefaults": {
       "invoiceReady": "Fakturaen din er klar. Se den her: {share_link}",
       "quoteReady": "Tilbudet ditt er klart for gjennomgang. Se det her: {share_link}",

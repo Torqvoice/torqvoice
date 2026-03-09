@@ -48,13 +48,22 @@ export function useServiceActions({
     discountType, discountValue, discountAmount,
     isSavingRef, autosaveTimer, setLoading,
     setHasUnsavedChanges, flashSaved, notesRef,
-    initialData,
+    initialData, customFieldsSaveRef,
   } = formState
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+
+    // Validate custom fields before saving
+    if (customFieldsSaveRef.current) {
+      const { valid } = await customFieldsSaveRef.current()
+      if (!valid) {
+        return
+      }
+    }
+
     isSavingRef.current = true
     setLoading(true)
 

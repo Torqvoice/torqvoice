@@ -1,9 +1,12 @@
+import type { InvoiceLayoutConfig } from "@/features/settings/Schema/invoiceLayoutSchema";
+
 export interface TemplateConfig {
   primaryColor?: string
   fontFamily?: string
   showLogo?: boolean
   showCompanyName?: boolean
   headerStyle?: string
+  layoutConfig?: InvoiceLayoutConfig
 }
 
 export interface InvoiceData {
@@ -39,6 +42,7 @@ export interface InvoiceData {
     rate: number
     total: number
   }[]
+  customFields?: Array<{ label: string; value: string; fieldType: string }>;
   vehicle: {
     make: string
     model: string

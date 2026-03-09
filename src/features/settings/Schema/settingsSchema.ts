@@ -73,6 +73,8 @@ export const SETTING_KEYS = {
   WORKBOARD_WEEK_START_DAY: "workboard.weekStartDay",
   WORKBOARD_WORK_DAY_START: "workboard.workDayStart",
   WORKBOARD_WORK_DAY_END: "workboard.workDayEnd",
+  INVOICE_LAYOUT_CONFIG: "invoice.layoutConfig",
+  QUOTE_LAYOUT_CONFIG: "quote.layoutConfig",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

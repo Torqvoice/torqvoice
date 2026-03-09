@@ -1,3 +1,4 @@
+import React from 'react'
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { createStyles, gray, getFontBold } from './styles'
@@ -5,8 +6,10 @@ import { Header } from './Header'
 import { InfoSection } from './InfoSection'
 import { PartsTable, LaborTable } from './Tables'
 import { Totals } from './Totals'
-import { Notes } from './Notes'
+import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
+import { CustomFields } from './CustomFields'
 import { Footer, AttachmentsFooter } from './Footer'
+import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type {
   TemplateConfig,
   InvoiceData,
@@ -16,6 +19,42 @@ import type {
   ImageAttachment,
   OtherAttachment,
 } from './types'
+
+// ---------------------------------------------------------------------------
+// Layout config helpers
+// ---------------------------------------------------------------------------
+
+const DEFAULT_SECTION_ORDER = [
+  'header',
+  'info',
+  'parts_table',
+  'labor_table',
+  'totals',
+  'custom_fields',
+  'notes',
+  'diagnostic_notes',
+  'bank_account',
+  'footer',
+]
+
+function getSortedSectionIds(layoutConfig: InvoiceLayoutConfig | undefined): string[] {
+  if (!layoutConfig) return DEFAULT_SECTION_ORDER
+  return [...layoutConfig.sections]
+    .sort((a, b) => a.order - b.order)
+    .filter((s) => s.visible)
+    .map((s) => s.id)
+}
+
+function getVisibleInfoFields(layoutConfig: InvoiceLayoutConfig | undefined): Set<string> | null {
+  return getVisibleFieldsForSection(layoutConfig, 'info')
+}
+
+function getVisibleFieldsForSection(layoutConfig: InvoiceLayoutConfig | undefined, sectionId: string): Set<string> | null {
+  if (!layoutConfig) return null // show all – fall back to individual toggles
+  const section = layoutConfig.sections.find((s) => s.id === sectionId)
+  if (!section?.fields) return null
+  return new Set(section.fields.filter((f) => f.visible).map((f) => f.id))
+}
 
 export function InvoicePDF({
   data,
@@ -78,38 +117,60 @@ export function InvoicePDF({
   const shopDisplayName = workshop?.name || data.shopName || 'Torqvoice'
   const hasAttachments = imageAttachments.length > 0 || otherAttachments.length > 0
 
-  return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        <Header
-          headerStyle={headerStyle}
-          primaryColor={primaryColor}
-          fontFamily={fontFamily}
-          showLogo={showLogo}
-          showCompanyName={showCompanyName}
-          logoDataUri={logoDataUri}
-          torqvoiceLogoDataUri={torqvoiceLogoDataUri}
-          workshop={workshop}
-          invoiceSettings={invoiceSettings}
-          shopDisplayName={shopDisplayName}
-          invoiceNum={invoiceNum}
-          serviceDate={serviceDate}
-          dueDate={dueDate}
-          styles={styles}
-          labels={labels}
-        />
+  // ---------------------------------------------------------------------------
+  // Layout-driven section rendering
+  // ---------------------------------------------------------------------------
+  const layoutConfig = template?.layoutConfig
+  const sectionOrder = getSortedSectionIds(layoutConfig)
+  const visibleInfoFields = getVisibleInfoFields(layoutConfig)
+  const visibleHeaderFields = getVisibleFieldsForSection(layoutConfig, 'header')
+  const visibleBankAccountFields = getVisibleFieldsForSection(layoutConfig, 'bank_account')
 
-        <InfoSection
-          data={data}
-          vehicleName={vehicleName}
-          invoiceSettings={invoiceSettings}
-          styles={styles}
-          labels={labels}
-        />
+  // Map each section ID to its JSX. Sections that have no data naturally
+  // return null and will be skipped by React.
+  const sectionMap: Record<string, React.ReactNode> = {
+    header: (
+      <Header
+        headerStyle={headerStyle}
+        primaryColor={primaryColor}
+        fontFamily={fontFamily}
+        showLogo={showLogo}
+        showCompanyName={showCompanyName}
+        visibleFields={visibleHeaderFields}
+        logoDataUri={logoDataUri}
+        torqvoiceLogoDataUri={torqvoiceLogoDataUri}
+        workshop={workshop}
+        invoiceSettings={invoiceSettings}
+        shopDisplayName={shopDisplayName}
+        invoiceNum={invoiceNum}
+        serviceDate={serviceDate}
+        dueDate={dueDate}
+        styles={styles}
+        labels={labels}
+      />
+    ),
 
-        <PartsTable data={data} currencyCode={cc} styles={styles} labels={labels} />
-        <LaborTable data={data} currencyCode={cc} styles={styles} labels={labels} />
+    info: (
+      <InfoSection
+        data={data}
+        vehicleName={vehicleName}
+        invoiceSettings={invoiceSettings}
+        styles={styles}
+        labels={labels}
+        visibleFields={visibleInfoFields}
+      />
+    ),
 
+    parts_table: (
+      <PartsTable data={data} currencyCode={cc} styles={styles} labels={labels} />
+    ),
+
+    labor_table: (
+      <LaborTable data={data} currencyCode={cc} styles={styles} labels={labels} />
+    ),
+
+    totals: (
+      <>
         <Totals
           data={data}
           currencyCode={cc}
@@ -124,7 +185,6 @@ export function InvoicePDF({
           styles={styles}
           labels={labels}
         />
-
         {torqvoiceLogoDataUri && (
           <View
             style={{
@@ -140,30 +200,66 @@ export function InvoicePDF({
             <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
           </View>
         )}
+      </>
+    ),
 
-        <Notes
-          invoiceNotes={data.invoiceNotes}
-          diagnosticNotes={data.diagnosticNotes}
-          invoiceSettings={invoiceSettings}
-          otherAttachments={otherAttachments}
-          pdfAttachmentNames={pdfAttachmentNames}
-          fontFamily={fontFamily}
-          styles={styles}
-          labels={labels}
-        />
+    custom_fields:
+      data.customFields && data.customFields.length > 0 ? (
+        <CustomFields fields={data.customFields} styles={styles} labels={labels} />
+      ) : null,
 
-        <Footer
-          shopDisplayName={shopDisplayName}
-          serviceDate={serviceDate}
-          invoiceSettings={invoiceSettings}
-          invoiceNum={invoiceNum}
-          primaryColor={primaryColor}
-          fontFamily={fontFamily}
-          torqvoiceLogoDataUri={torqvoiceLogoDataUri}
-          portalUrl={portalUrl}
-          styles={styles}
-          labels={labels}
-        />
+    notes: (
+      <NotesOnly
+        invoiceNotes={data.invoiceNotes}
+        otherAttachments={otherAttachments}
+        pdfAttachmentNames={pdfAttachmentNames}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+      />
+    ),
+
+    diagnostic_notes: (
+      <DiagnosticNotesSection
+        diagnosticNotes={data.diagnosticNotes}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+      />
+    ),
+
+    bank_account: (
+      <BankAccountSection
+        invoiceSettings={invoiceSettings}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+        visibleFields={visibleBankAccountFields}
+      />
+    ),
+
+    footer: (
+      <Footer
+        shopDisplayName={shopDisplayName}
+        serviceDate={serviceDate}
+        invoiceSettings={invoiceSettings}
+        invoiceNum={invoiceNum}
+        primaryColor={primaryColor}
+        fontFamily={fontFamily}
+        torqvoiceLogoDataUri={torqvoiceLogoDataUri}
+        portalUrl={portalUrl}
+        styles={styles}
+        labels={labels}
+      />
+    ),
+  }
+
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {sectionOrder.map((id) => (
+          <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>
+        ))}
       </Page>
 
       {hasAttachments && imageAttachments.length > 0 && (

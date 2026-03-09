@@ -4,6 +4,7 @@ import { BasicInfoSection } from '../service-edit/BasicInfoSection'
 import { ScheduleTimesSection } from '../service-edit/ScheduleTimesSection'
 import { TotalsSection } from '../service-edit/TotalsSection'
 import { ServiceAttachments } from '../service-detail/ServiceAttachments'
+import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
 import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
@@ -98,6 +99,12 @@ export function DetailsRightColumn({
         onImageClick={actions.onImageClick}
         onDeleteAttachment={actions.handleDeleteAttachment}
         deletingAttachment={actions.deletingAttachment}
+      />
+      <CustomFieldsForm
+        entityId={record.id}
+        entityType="service_record"
+        onValuesReady={formState.onCustomFieldsReady}
+        onChange={formState.markDirty}
       />
     </div>
   )

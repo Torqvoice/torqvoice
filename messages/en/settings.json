@@ -289,7 +289,8 @@
       "invoice": "Invoice",
       "quotation": "Quotation",
       "inspections": "Inspections",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Layout"
     },
     "presets": "Template Presets",
     "primaryColor": "Primary Color",
@@ -341,6 +342,11 @@
     "paymentReceivedDescription": "Sent when a payment is recorded for an invoice.",
     "saveSmsTemplates": "Save SMS Templates",
     "smsTemplateSaved": "SMS template settings saved",
+    "layoutTitle": "Invoice Layout",
+    "layoutDescription": "Customize the order and visibility of sections in your invoices and quotes.",
+    "layoutSaved": "Layout saved successfully",
+    "layoutDocInvoice": "Invoice",
+    "layoutDocQuote": "Quote",
     "smsDefaults": {
       "invoiceReady": "Your invoice is ready. View it here: {share_link}",
       "quoteReady": "Your quote is ready for review. View it here: {share_link}",

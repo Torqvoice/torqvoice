@@ -16,6 +16,8 @@ interface HeaderProps {
   fontFamily: string
   showLogo: boolean
   showCompanyName: boolean
+  /** When provided by layoutConfig, takes priority over showLogo/showCompanyName */
+  visibleFields?: Set<string> | null
   logoDataUri?: string
   torqvoiceLogoDataUri?: string
   workshop?: WorkshopInfo
@@ -32,8 +34,9 @@ export function Header({
   headerStyle,
   primaryColor,
   fontFamily,
-  showLogo,
-  showCompanyName,
+  showLogo: showLogoProp,
+  showCompanyName: showCompanyNameProp,
+  visibleFields,
   logoDataUri,
   torqvoiceLogoDataUri,
   workshop,
@@ -46,6 +49,10 @@ export function Header({
   labels,
 }: HeaderProps) {
   const fontBold = getFontBold(fontFamily)
+
+  // layoutConfig fields take priority over individual toggle props
+  const showLogo = visibleFields ? visibleFields.has('logo') : showLogoProp
+  const showCompanyName = visibleFields ? visibleFields.has('company_name') : showCompanyNameProp
 
   if (headerStyle === 'compact') {
     return (
