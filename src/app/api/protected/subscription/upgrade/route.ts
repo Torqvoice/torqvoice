@@ -25,6 +25,7 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const plan = body.plan as string;
+    const prorationDate = body.prorationDate as number | undefined;
 
     if (plan !== "enterprise") {
       return NextResponse.json(
@@ -77,7 +78,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Update the subscription with the new price, prorating immediately
+    // Update the subscription with the new price, prorating immediately.
+    // Pass the same proration_date used in the preview so the charged
+    // amount matches exactly what the user saw.
     const updated = await stripe.subscriptions.update(
       subscription.stripeSubscriptionId,
       {
@@ -88,6 +91,7 @@ export async function POST(request: Request) {
           },
         ],
         proration_behavior: "always_invoice",
+        ...(prorationDate ? { proration_date: prorationDate } : {}),
         metadata: {
           plan,
           organizationId: membership.organizationId,

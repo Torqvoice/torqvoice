@@ -74,6 +74,7 @@ export function SubscriptionSettings({
   const [upgradePreview, setUpgradePreview] = useState<{
     amountDue: number;
     currency: string;
+    prorationDate: number;
   } | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
 
@@ -130,7 +131,10 @@ export function SubscriptionSettings({
       const res = await fetch("/api/protected/subscription/upgrade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: "enterprise" }),
+        body: JSON.stringify({
+          plan: "enterprise",
+          prorationDate: upgradePreview?.prorationDate,
+        }),
       });
       const data = await res.json();
       if (data.success) {

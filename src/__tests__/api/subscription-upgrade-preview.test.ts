@@ -36,12 +36,6 @@ const mockFindSubscription = vi.mocked(db.subscription.findUnique);
 const mockGetStripeConfig = vi.mocked(getStripeConfig);
 const mockGetStripeClient = vi.mocked(getStripeClient);
 
-function makeRequest() {
-  return new Request("http://localhost/api/protected/subscription/upgrade-preview", {
-    method: "POST",
-  });
-}
-
 function setupAuth() {
   mockGetSession.mockResolvedValue({
     user: { id: "user-1", email: "user@example.com" },
@@ -69,7 +63,7 @@ beforeEach(() => {
 describe("POST /api/protected/subscription/upgrade-preview", () => {
   it("returns 401 when not authenticated", async () => {
     mockGetSession.mockResolvedValue(null);
-    const res = await POST(makeRequest());
+    const res = await POST();
     expect(res.status).toBe(401);
   });
 
@@ -77,11 +71,47 @@ describe("POST /api/protected/subscription/upgrade-preview", () => {
     setupAuth();
     mockFindSubscription.mockResolvedValue(null);
 
-    const res = await POST(makeRequest());
+    const res = await POST();
     expect(res.status).toBe(400);
   });
 
-  it("returns prorated amount for valid subscription", async () => {
+  it("returns only proration amount, not full invoice", async () => {
+    setupAuth();
+    mockFindSubscription.mockResolvedValue({
+      stripeSubscriptionId: "sub_123",
+      stripeCustomerId: "cus_123",
+      status: "active",
+    } as any);
+    setupStripe();
+
+    mockSubscriptionsRetrieve.mockResolvedValue({
+      id: "sub_123",
+      items: { data: [{ id: "si_item_1" }] },
+    });
+
+    // Simulate Stripe preview with proration items + next period charge
+    mockInvoicesCreatePreview.mockResolvedValue({
+      amount_due: 18100, // Total including next period — should NOT be used
+      currency: "usd",
+      lines: {
+        data: [
+          { type: "invoiceitem", amount: -9900 }, // Credit for unused Pro
+          { type: "invoiceitem", amount: 13900 }, // Charge for Enterprise remainder
+          { type: "subscription", amount: 14000 }, // Next period (should be excluded)
+        ],
+      },
+    });
+
+    const res = await POST();
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    // Only proration items: -9900 + 13900 = 4000 cents = $40.00
+    expect(data.amountDue).toBe(40);
+    expect(data.currency).toBe("usd");
+    expect(data.prorationDate).toBeTypeOf("number");
+  });
+
+  it("returns 0 when proration is negative", async () => {
     setupAuth();
     mockFindSubscription.mockResolvedValue({
       stripeSubscriptionId: "sub_123",
@@ -96,17 +126,18 @@ describe("POST /api/protected/subscription/upgrade-preview", () => {
     });
 
     mockInvoicesCreatePreview.mockResolvedValue({
-      amount_due: 2050,
+      amount_due: 0,
       currency: "usd",
-      lines: { data: [] },
+      lines: {
+        data: [
+          { type: "invoiceitem", amount: -5000 },
+        ],
+      },
     });
 
-    const res = await POST(makeRequest());
-    expect(res.status).toBe(200);
+    const res = await POST();
     const data = await res.json();
-    expect(data.amountDue).toBe(20.50);
-    expect(data.currency).toBe("usd");
-    expect(data.prorationDate).toBeTypeOf("number");
+    expect(data.amountDue).toBe(0);
   });
 
   it("calls Stripe createPreview with correct params", async () => {
@@ -129,7 +160,7 @@ describe("POST /api/protected/subscription/upgrade-preview", () => {
       lines: { data: [] },
     });
 
-    await POST(makeRequest());
+    await POST();
 
     expect(mockInvoicesCreatePreview).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -150,7 +181,7 @@ describe("POST /api/protected/subscription/upgrade-preview", () => {
       status: "canceled",
     } as any);
 
-    const res = await POST(makeRequest());
+    const res = await POST();
     expect(res.status).toBe(400);
     const data = await res.json();
     expect(data.error).toBe("Subscription is not active");

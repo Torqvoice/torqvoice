@@ -200,16 +200,17 @@ describe("POST /api/protected/subscription/upgrade", () => {
     mockUpdateSubscription.mockResolvedValue({} as any);
     mockUpsertSetting.mockResolvedValue({} as any);
 
-    const res = await POST(makeRequest({ plan: "enterprise" }));
+    const res = await POST(makeRequest({ plan: "enterprise", prorationDate: 1700000000 }));
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.success).toBe(true);
 
-    // Verify Stripe was called with correct proration
+    // Verify Stripe was called with correct proration and proration_date
     expect(mockSubscriptionsRetrieve).toHaveBeenCalledWith("sub_123");
     expect(mockSubscriptionsUpdate).toHaveBeenCalledWith("sub_123", {
       items: [{ id: "si_item_1", price: "price_enterprise" }],
       proration_behavior: "always_invoice",
+      proration_date: 1700000000,
       metadata: { plan: "enterprise", organizationId: "org-1" },
     });
 

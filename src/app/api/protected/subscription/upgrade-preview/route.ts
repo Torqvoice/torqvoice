@@ -81,8 +81,15 @@ export async function POST() {
       },
     });
 
+    // Only sum proration line items (type "invoiceitem"), not regular
+    // subscription charges (type "subscription") which represent the
+    // next renewal period.
+    const prorationAmount = preview.lines.data
+      .filter((line) => line.type === "invoiceitem")
+      .reduce((sum, line) => sum + line.amount, 0);
+
     return NextResponse.json({
-      amountDue: preview.amount_due / 100,
+      amountDue: Math.max(0, prorationAmount) / 100,
       currency: preview.currency,
       prorationDate: proration_date,
     });
