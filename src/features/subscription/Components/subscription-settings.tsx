@@ -70,6 +70,7 @@ export function SubscriptionSettings({
   const [cancelLoading, setCancelLoading] = useState(false);
   const [resumeLoading, setResumeLoading] = useState(false);
   const [billingLoading, setBillingLoading] = useState(false);
+  const [upgradeLoading, setUpgradeLoading] = useState(false);
 
   const isPaid = plan === "pro" || plan === "enterprise";
   const isCanceling = cancelAtPeriodEnd && status === "active";
@@ -94,6 +95,27 @@ export function SubscriptionSettings({
       toast.error("Failed to start checkout");
       setCheckoutLoading(null);
     }
+  };
+
+  const handleUpgrade = async () => {
+    setUpgradeLoading(true);
+    try {
+      const res = await fetch("/api/protected/subscription/upgrade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: "enterprise" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(t("subscription.upgradeSuccess"));
+        router.refresh();
+      } else {
+        toast.error(data.error ?? t("subscription.upgradeError"));
+      }
+    } catch {
+      toast.error(t("subscription.upgradeError"));
+    }
+    setUpgradeLoading(false);
   };
 
   const handleCancel = async () => {
@@ -414,19 +436,40 @@ export function SubscriptionSettings({
             <CardDescription>{t("subscription.upgradeToEnterpriseDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleCheckout("enterprise")}
-              disabled={checkoutLoading !== null}
-            >
-              {checkoutLoading === "enterprise" ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Crown className="mr-2 h-4 w-4" />
-              )}
-              {t("subscription.upgradeToEnterprise")}
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={upgradeLoading}
+                >
+                  {upgradeLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Crown className="mr-2 h-4 w-4" />
+                  )}
+                  {t("subscription.upgradeToEnterprise")}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("subscription.upgradeDialogTitle")}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t("subscription.upgradeDialogDescription")}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("subscription.cancelDialogCancel")}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleUpgrade}
+                    disabled={upgradeLoading}
+                  >
+                    {upgradeLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {t("subscription.upgradeConfirm")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </CardContent>
         </Card>
       )}
