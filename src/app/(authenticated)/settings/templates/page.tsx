@@ -5,7 +5,7 @@ import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { FeatureLockedMessage } from "../feature-locked-message";
 import { redirect } from "next/navigation";
-import { getTemplates, seedDefaultTemplate } from "@/features/inspections/Actions/templateActions";
+import { getTemplates } from "@/features/inspections/Actions/templateActions";
 import { getTranslations } from "next-intl/server";
 
 export default async function TemplatePage() {
@@ -25,9 +25,6 @@ export default async function TemplatePage() {
       />
     );
   }
-
-  // Auto-seed default inspection template if none exist
-  await seedDefaultTemplate();
 
   const [result, inspectionTemplatesResult] = await Promise.all([
     getSettings([

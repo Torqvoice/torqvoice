@@ -801,6 +801,13 @@
     "upgradeToProDescription": "Oppgrader for a lase opp ubegrensede kunder, teammedlemmer, rapporter, SMTP, API-tilgang og mer.",
     "upgradeToEnterpriseDescription": "Trenger du mer enn 5 teammedlemmer? Oppgrader til Enterprise for opptil 50 brukere.",
     "upgradeToPro": "Oppgrader til Pro — $99/ar",
-    "upgradeToEnterprise": "Enterprise — $140/ar"
+    "upgradeToEnterprise": "Enterprise — $140/ar",
+    "upgradeDialogTitle": "Oppgrader til Enterprise",
+    "upgradeDialogDescription": "Din gjeldende Pro-plan vil bli oppgradert til Enterprise. Du vil kun bli belastet for den forholdsmessige differansen for den gjenværende faktureringsperioden.",
+    "upgradeConfirm": "Bekreft oppgradering",
+    "upgradeCalculating": "Beregner forholdsmessig beløp…",
+    "upgradeAmountDue": "Beløp å betale nå",
+    "upgradeSuccess": "Vellykket oppgradert til Enterprise!",
+    "upgradeError": "Kunne ikke oppgradere abonnementet"
   }
 }

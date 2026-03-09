@@ -121,16 +121,23 @@ export async function POST(request: Request) {
         });
 
         // Update the license plan in system settings
-        await db.appSetting.upsert({
-          where: { organizationId_key: { organizationId, key: "license.plan" } },
-          create: {
-            organizationId,
-            key: "license.plan",
-            value: plan,
-            userId: "", // system-managed
-          },
-          update: { value: plan },
+        const orgMember = await db.organizationMember.findFirst({
+          where: { organizationId },
+          select: { userId: true },
         });
+
+        if (orgMember) {
+          await db.appSetting.upsert({
+            where: { organizationId_key: { organizationId, key: "license.plan" } },
+            create: {
+              organizationId,
+              key: "license.plan",
+              value: plan,
+              userId: orgMember.userId,
+            },
+            update: { value: plan },
+          });
+        }
 
         break;
       }
@@ -178,21 +185,28 @@ export async function POST(request: Request) {
           });
 
           // Downgrade license plan
-          await db.appSetting.upsert({
-            where: {
-              organizationId_key: {
+          const member = await db.organizationMember.findFirst({
+            where: { organizationId: existing.organizationId },
+            select: { userId: true },
+          });
+
+          if (member) {
+            await db.appSetting.upsert({
+              where: {
+                organizationId_key: {
+                  organizationId: existing.organizationId,
+                  key: "license.plan",
+                },
+              },
+              create: {
                 organizationId: existing.organizationId,
                 key: "license.plan",
+                value: "free",
+                userId: member.userId,
               },
-            },
-            create: {
-              organizationId: existing.organizationId,
-              key: "license.plan",
-              value: "free",
-              userId: "",
-            },
-            update: { value: "free" },
-          });
+              update: { value: "free" },
+            });
+          }
         }
 
         break;

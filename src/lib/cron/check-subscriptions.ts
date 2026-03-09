@@ -53,29 +53,47 @@ async function syncSubscription(
 
   const licensePlan = resolveLicensePlan(newStatus, sub.plan.name)
 
+  const orgMember = await db.organizationMember.findFirst({
+    where: { organizationId: sub.organizationId },
+    select: { userId: true },
+  })
+
   await db.$transaction([
     db.subscription.update({
       where: { id: sub.id },
       data: { status: newStatus, currentPeriodStart: periodStart, currentPeriodEnd: periodEnd, cancelAtPeriodEnd },
     }),
-    db.appSetting.upsert({
-      where: { organizationId_key: { organizationId: sub.organizationId, key: 'license.plan' } },
-      create: { organizationId: sub.organizationId, key: 'license.plan', value: licensePlan, userId: '' },
-      update: { value: licensePlan },
-    }),
+    ...(orgMember
+      ? [
+          db.appSetting.upsert({
+            where: { organizationId_key: { organizationId: sub.organizationId, key: 'license.plan' } },
+            create: { organizationId: sub.organizationId, key: 'license.plan', value: licensePlan, userId: orgMember.userId },
+            update: { value: licensePlan },
+          }),
+        ]
+      : []),
   ])
 
   return true
 }
 
 async function cancelOrphanedSubscription(subId: string, organizationId: string) {
+  const orgMember = await db.organizationMember.findFirst({
+    where: { organizationId },
+    select: { userId: true },
+  })
+
   await db.$transaction([
     db.subscription.update({ where: { id: subId }, data: { status: 'canceled' } }),
-    db.appSetting.upsert({
-      where: { organizationId_key: { organizationId, key: 'license.plan' } },
-      create: { organizationId, key: 'license.plan', value: 'free', userId: '' },
-      update: { value: 'free' },
-    }),
+    ...(orgMember
+      ? [
+          db.appSetting.upsert({
+            where: { organizationId_key: { organizationId, key: 'license.plan' } },
+            create: { organizationId, key: 'license.plan', value: 'free', userId: orgMember.userId },
+            update: { value: 'free' },
+          }),
+        ]
+      : []),
   ])
 }
 

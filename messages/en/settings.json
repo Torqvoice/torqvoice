@@ -801,6 +801,13 @@
     "upgradeToProDescription": "Upgrade to unlock unlimited customers, team members, reports, SMTP, API access, and more.",
     "upgradeToEnterpriseDescription": "Need more than 5 team members? Upgrade to Enterprise for up to 50 users.",
     "upgradeToPro": "Upgrade to Pro — $99/yr",
-    "upgradeToEnterprise": "Enterprise — $140/yr"
+    "upgradeToEnterprise": "Enterprise — $140/yr",
+    "upgradeDialogTitle": "Upgrade to Enterprise",
+    "upgradeDialogDescription": "Your current Pro plan will be upgraded to Enterprise. You will only be charged the prorated difference for the remaining billing period.",
+    "upgradeConfirm": "Confirm Upgrade",
+    "upgradeCalculating": "Calculating prorated amount…",
+    "upgradeAmountDue": "Amount due now",
+    "upgradeSuccess": "Successfully upgraded to Enterprise!",
+    "upgradeError": "Failed to upgrade subscription"
   }
 }
