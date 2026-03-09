@@ -95,9 +95,18 @@ describe("POST /api/protected/subscription/upgrade-preview", () => {
       currency: "usd",
       lines: {
         data: [
-          { type: "invoiceitem", amount: -9900 }, // Credit for unused Pro
-          { type: "invoiceitem", amount: 13900 }, // Charge for Enterprise remainder
-          { type: "subscription", amount: 14000 }, // Next period (should be excluded)
+          {
+            amount: -9900, // Credit for unused Pro
+            parent: { type: "invoice_item_details", invoice_item_details: { proration: true }, subscription_item_details: null },
+          },
+          {
+            amount: 13900, // Charge for Enterprise remainder
+            parent: { type: "invoice_item_details", invoice_item_details: { proration: true }, subscription_item_details: null },
+          },
+          {
+            amount: 14000, // Next period (should be excluded)
+            parent: { type: "subscription_item_details", invoice_item_details: null, subscription_item_details: { proration: false } },
+          },
         ],
       },
     });
@@ -130,7 +139,10 @@ describe("POST /api/protected/subscription/upgrade-preview", () => {
       currency: "usd",
       lines: {
         data: [
-          { type: "invoiceitem", amount: -5000 },
+          {
+            amount: -5000,
+            parent: { type: "invoice_item_details", invoice_item_details: { proration: true }, subscription_item_details: null },
+          },
         ],
       },
     });

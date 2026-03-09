@@ -81,11 +81,20 @@ export async function POST() {
       },
     });
 
-    // Only sum proration line items (type "invoiceitem"), not regular
-    // subscription charges (type "subscription") which represent the
-    // next renewal period.
+    // Only sum proration line items, not regular subscription charges
+    // which represent the next renewal period.
     const prorationAmount = preview.lines.data
-      .filter((line) => line.type === "invoiceitem")
+      .filter((line) => {
+        const parent = line.parent;
+        if (!parent) return false;
+        if (parent.type === "invoice_item_details") {
+          return parent.invoice_item_details?.proration === true;
+        }
+        if (parent.type === "subscription_item_details") {
+          return parent.subscription_item_details?.proration === true;
+        }
+        return false;
+      })
       .reduce((sum, line) => sum + line.amount, 0);
 
     return NextResponse.json({
