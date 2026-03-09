@@ -16,6 +16,7 @@ import {
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { sanitizeHtml } from '@/lib/sanitize-html'
 import { useTranslations } from 'next-intl'
+import { isCustomFieldId, fromCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 interface InvoiceRecord {
   id: string
@@ -93,6 +94,75 @@ interface InvoiceSettings {
   dueDays: number
 }
 
+interface InvoiceLayoutConfig {
+  sections: Array<{
+    id: string
+    visible: boolean
+    order: number
+    fields?: Array<{ id: string; visible: boolean }>
+  }>
+}
+
+interface CustomField {
+  label: string
+  value: string
+  fieldType: string
+  fieldId?: string
+}
+
+function isSectionVisible(config: InvoiceLayoutConfig | undefined, sectionId: string): boolean {
+  if (!config) return true
+  const section = config.sections.find(s => s.id === sectionId)
+  return section?.visible ?? true
+}
+
+function isFieldVisible(config: InvoiceLayoutConfig | undefined, sectionId: string, fieldId: string): boolean {
+  if (!config) return true
+  const section = config.sections.find(s => s.id === sectionId)
+  if (!section?.visible) return false
+  if (!section.fields) return true
+  const field = section.fields.find(f => f.id === fieldId)
+  return field?.visible ?? true
+}
+
+function getSectionOrder(config: InvoiceLayoutConfig | undefined): string[] {
+  if (!config) return ['header', 'customer', 'vehicle', 'service', 'parts_table', 'labor_table', 'totals', 'general', 'notes', 'diagnostic_notes', 'bank_account', 'footer']
+  return [...config.sections].sort((a, b) => a.order - b.order).map(s => s.id)
+}
+
+function getCustomFieldsForSection(
+  config: InvoiceLayoutConfig | null,
+  sectionId: string,
+  allCustomFields: CustomField[],
+): CustomField[] {
+  if (!config || !allCustomFields?.length) return []
+  const section = config.sections.find(s => s.id === sectionId)
+  if (!section?.fields) return []
+  const cfIds = new Set(
+    section.fields
+      .filter(f => f.visible !== false && isCustomFieldId(f.id))
+      .map(f => fromCustomFieldId(f.id))
+  )
+  return allCustomFields.filter(cf => cf.fieldId && cfIds.has(cf.fieldId))
+}
+
+function getUnassignedCustomFields(
+  config: InvoiceLayoutConfig | null,
+  allCustomFields: CustomField[],
+): CustomField[] {
+  if (!config || !allCustomFields?.length) return allCustomFields || []
+  const assignedFieldIds = new Set<string>()
+  for (const section of config.sections) {
+    if (!section.fields) continue
+    for (const f of section.fields) {
+      if (isCustomFieldId(f.id)) {
+        assignedFieldIds.add(fromCustomFieldId(f.id))
+      }
+    }
+  }
+  return allCustomFields.filter(cf => !cf.fieldId || !assignedFieldIds.has(cf.fieldId))
+}
+
 function hasContent(html: string | null): boolean {
   if (!html) return false
   return html.replace(/<[^>]*>/g, '').trim().length > 0
@@ -116,6 +186,8 @@ export function InvoiceView({
   primaryColor = '#d97706',
   headerStyle = 'standard',
   portalUrl,
+  layoutConfig,
+  customFields = [],
 }: {
   record: InvoiceRecord
   workshop: { name: string; address: string; phone: string; email: string }
@@ -134,6 +206,8 @@ export function InvoiceView({
   primaryColor?: string
   headerStyle?: string
   portalUrl?: string
+  layoutConfig?: InvoiceLayoutConfig
+  customFields?: CustomField[]
 }) {
   const t = useTranslations('share.invoice')
   const tc = useTranslations('share.common')
@@ -164,6 +238,16 @@ export function InvoiceView({
   const totalPaid = record.manuallyPaid ? displayTotal : paidFromPayments
   const balanceDue = displayTotal - totalPaid
   const shopName = workshop.name || record.shopName || 'Torqvoice'
+
+  // Layout config overrides for header field visibility
+  const effectiveShowLogo = layoutConfig
+    ? isFieldVisible(layoutConfig, 'header', 'logo')
+    : showLogo
+  const effectiveShowCompanyName = layoutConfig
+    ? isFieldVisible(layoutConfig, 'header', 'company_name')
+    : showCompanyName
+
+  const sectionOrder = getSectionOrder(layoutConfig)
 
   const showPaymentSection = enabledProviders.length > 0 && balanceDue > 0 && !paymentSuccess
 
@@ -476,311 +560,445 @@ export function InvoiceView({
       )}
 
       <div className="rounded-xl border bg-white p-6 shadow-sm sm:p-8 dark:bg-gray-900">
-        {/* Header */}
-        {headerStyle === 'modern' ? (
-          <>
-            <div className="rounded-lg p-6 text-center text-white" style={{ backgroundColor: primaryColor }}>
-              {showLogo && logoUrl && (
-                <img
-                  src={logoUrl}
-                  alt={shopName}
-                  className="mx-auto mb-2 max-h-16 max-w-[180px] object-contain"
-                />
-              )}
-              {showCompanyName && (
-                <h2 className="text-xl font-bold sm:text-2xl">{shopName}</h2>
-              )}
-              {workshop.address && <p className="mt-1 text-sm opacity-80">{workshop.address}</p>}
-              <div className="mt-1 flex flex-wrap justify-center gap-3 text-sm opacity-70">
-                {workshop.phone && <span>{t('tel', { phone: workshop.phone })}</span>}
-                {workshop.email && <span>{workshop.email}</span>}
-              </div>
-            </div>
-            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <h3 className="text-xl font-bold uppercase">{t('title')}</h3>
-              <div className="flex gap-3 text-sm text-gray-500">
-                <span>{invoiceNum}</span>
-                <span>{serviceDate}</span>
-              </div>
-            </div>
-          </>
-        ) : headerStyle === 'compact' ? (
-          <div className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: '#e5e7eb' }}>
-            <div className="flex items-center gap-3">
-              {showLogo && logoUrl && (
-                <img
-                  src={logoUrl}
-                  alt={shopName}
-                  className="h-12 w-12 rounded object-contain"
-                />
-              )}
-              <div>
-                {showCompanyName && (
-                  <h2 className="text-lg font-bold" style={{ color: primaryColor }}>{shopName}</h2>
-                )}
-                {workshop.address && <p className="text-sm text-gray-500">{workshop.address}</p>}
-              </div>
-            </div>
-            <div className="sm:text-right">
-              <h3 className="text-lg font-bold uppercase">{t('title')}</h3>
-              <p className="text-sm text-gray-500">{invoiceNum}</p>
-              <p className="text-sm text-gray-500">{serviceDate}</p>
-            </div>
-          </div>
-        ) : (
-          /* Standard */
-          <div className="flex flex-col gap-4 border-b-2 pb-6 sm:flex-row sm:items-start sm:justify-between" style={{ borderColor: primaryColor }}>
-            <div>
-              {showLogo && logoUrl && (
-                <img
-                  src={logoUrl}
-                  alt={shopName}
-                  className="mb-2 max-h-16 max-w-[180px] object-contain object-left"
-                />
-              )}
-              {showCompanyName && (
-                <h2 className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2>
-              )}
-              {workshop.address && <p className="mt-1 text-sm text-gray-500">{workshop.address}</p>}
-              {workshop.phone && <p className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p>}
-              {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
-            </div>
-            <div className="sm:text-right">
-              {showTorqvoiceBranding && (
-                <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 dark:bg-gray-800">
-                  <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
-                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+        {sectionOrder.map((sectionId) => {
+          if (!isSectionVisible(layoutConfig, sectionId)) return null
+
+          switch (sectionId) {
+            case 'header':
+              return (
+                <div key="header">
+                  {headerStyle === 'modern' ? (
+                    <>
+                      <div className="rounded-lg p-6 text-center text-white" style={{ backgroundColor: primaryColor }}>
+                        {effectiveShowLogo && logoUrl && (
+                          <img
+                            src={logoUrl}
+                            alt={shopName}
+                            className="mx-auto mb-2 max-h-16 max-w-[180px] object-contain"
+                          />
+                        )}
+                        {effectiveShowCompanyName && (
+                          <h2 className="text-xl font-bold sm:text-2xl">{shopName}</h2>
+                        )}
+                        {workshop.address && <p className="mt-1 text-sm opacity-80">{workshop.address}</p>}
+                        <div className="mt-1 flex flex-wrap justify-center gap-3 text-sm opacity-70">
+                          {workshop.phone && <span>{t('tel', { phone: workshop.phone })}</span>}
+                          {workshop.email && <span>{workshop.email}</span>}
+                        </div>
+                      </div>
+                      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <h3 className="text-xl font-bold uppercase">{t('title')}</h3>
+                        <div className="flex gap-3 text-sm text-gray-500">
+                          <span>{invoiceNum}</span>
+                          <span>{serviceDate}</span>
+                        </div>
+                      </div>
+                    </>
+                  ) : headerStyle === 'compact' ? (
+                    <div className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: '#e5e7eb' }}>
+                      <div className="flex items-center gap-3">
+                        {effectiveShowLogo && logoUrl && (
+                          <img
+                            src={logoUrl}
+                            alt={shopName}
+                            className="h-12 w-12 rounded object-contain"
+                          />
+                        )}
+                        <div>
+                          {effectiveShowCompanyName && (
+                            <h2 className="text-lg font-bold" style={{ color: primaryColor }}>{shopName}</h2>
+                          )}
+                          {workshop.address && <p className="text-sm text-gray-500">{workshop.address}</p>}
+                        </div>
+                      </div>
+                      <div className="sm:text-right">
+                        <h3 className="text-lg font-bold uppercase">{t('title')}</h3>
+                        <p className="text-sm text-gray-500">{invoiceNum}</p>
+                        <p className="text-sm text-gray-500">{serviceDate}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Standard */
+                    <div className="flex flex-col gap-4 border-b-2 pb-6 sm:flex-row sm:items-start sm:justify-between" style={{ borderColor: primaryColor }}>
+                      <div>
+                        {effectiveShowLogo && logoUrl && (
+                          <img
+                            src={logoUrl}
+                            alt={shopName}
+                            className="mb-2 max-h-16 max-w-[180px] object-contain object-left"
+                          />
+                        )}
+                        {effectiveShowCompanyName && (
+                          <h2 className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2>
+                        )}
+                        {workshop.address && <p className="mt-1 text-sm text-gray-500">{workshop.address}</p>}
+                        {workshop.phone && <p className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p>}
+                        {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
+                      </div>
+                      <div className="sm:text-right">
+                        {showTorqvoiceBranding && (
+                          <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 dark:bg-gray-800">
+                            <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
+                            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+                          </div>
+                        )}
+                        <h3 className="text-xl font-bold uppercase" style={{ color: primaryColor }}>{t('title')}</h3>
+                        <p className="mt-1 text-sm text-gray-500">{invoiceNum}</p>
+                        <p className="text-sm text-gray-500">{serviceDate}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-              <h3 className="text-xl font-bold uppercase" style={{ color: primaryColor }}>{t('title')}</h3>
-              <p className="mt-1 text-sm text-gray-500">{invoiceNum}</p>
-              <p className="text-sm text-gray-500">{serviceDate}</p>
-            </div>
-          </div>
-        )}
+              )
 
-        {/* Info Boxes */}
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {record.vehicle.customer && (
-            <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-              <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('billTo')}</p>
-              <p className="font-semibold">{record.vehicle.customer.name}</p>
-              {record.vehicle.customer.company && (
-                <p className="text-sm">{record.vehicle.customer.company}</p>
-              )}
-              {record.vehicle.customer.address && (
-                <p className="text-sm text-gray-500">{record.vehicle.customer.address}</p>
-              )}
-              {record.vehicle.customer.email && (
-                <p className="text-sm text-gray-500">{record.vehicle.customer.email}</p>
-              )}
-              {record.vehicle.customer.phone && (
-                <p className="text-sm text-gray-500">{record.vehicle.customer.phone}</p>
-              )}
-            </div>
-          )}
-          <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('vehicle')}</p>
-            <p className="font-semibold">{vehicleName}</p>
-            {record.vehicle.vin && (
-              <p className="text-sm text-gray-500">{t('vin', { vin: record.vehicle.vin })}</p>
-            )}
-            {record.vehicle.licensePlate && (
-              <p className="text-sm text-gray-500">{t('plate', { plate: record.vehicle.licensePlate })}</p>
-            )}
-          </div>
-          <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('service')}</p>
-            <p className="font-semibold">{record.title}</p>
-            <p className="text-sm text-gray-500">{t('type', { type: record.type })}</p>
-            {record.techName && <p className="text-sm text-gray-500">{t('tech', { tech: record.techName })}</p>}
-          </div>
-        </div>
+            case 'customer':
+            case 'vehicle':
+            case 'service': {
+              // These are grouped together - only render when we hit the first one
+              if (sectionId !== sectionOrder.find(s => ['customer', 'vehicle', 'service'].includes(s) && isSectionVisible(layoutConfig, s))) return null
+              const infoSections = sectionOrder.filter(s => ['customer', 'vehicle', 'service'].includes(s) && isSectionVisible(layoutConfig, s))
+              return (
+                <div key="info-group" className="mt-6 grid gap-4 sm:grid-cols-3">
+                  {infoSections.map(sid => {
+                    if (sid === 'customer') {
+                      if (!record.vehicle.customer) return null
+                      if (!(isFieldVisible(layoutConfig, 'customer', 'customer_name') || isFieldVisible(layoutConfig, 'customer', 'customer_email') || isFieldVisible(layoutConfig, 'customer', 'customer_phone') || isFieldVisible(layoutConfig, 'customer', 'customer_address') || isFieldVisible(layoutConfig, 'customer', 'customer_company'))) return null
+                      return (
+                        <div key="customer" className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                          <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('billTo')}</p>
+                          {isFieldVisible(layoutConfig, 'customer', 'customer_name') && (
+                            <p className="font-semibold">{record.vehicle.customer.name}</p>
+                          )}
+                          {isFieldVisible(layoutConfig, 'customer', 'customer_company') && record.vehicle.customer.company && (
+                            <p className="text-sm">{record.vehicle.customer.company}</p>
+                          )}
+                          {isFieldVisible(layoutConfig, 'customer', 'customer_address') && record.vehicle.customer.address && (
+                            <p className="text-sm text-gray-500">{record.vehicle.customer.address}</p>
+                          )}
+                          {isFieldVisible(layoutConfig, 'customer', 'customer_email') && record.vehicle.customer.email && (
+                            <p className="text-sm text-gray-500">{record.vehicle.customer.email}</p>
+                          )}
+                          {isFieldVisible(layoutConfig, 'customer', 'customer_phone') && record.vehicle.customer.phone && (
+                            <p className="text-sm text-gray-500">{record.vehicle.customer.phone}</p>
+                          )}
+                          {getCustomFieldsForSection(layoutConfig ?? null, 'customer', customFields).map((cf, i) => (
+                            <div key={`cf-${i}`} className="mt-1 text-sm">
+                              <span className="font-medium">{cf.label}:</span>{' '}
+                              <span className="text-gray-500">{cf.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    }
+                    if (sid === 'vehicle') {
+                      if (!(isFieldVisible(layoutConfig, 'vehicle', 'vehicle_name') || isFieldVisible(layoutConfig, 'vehicle', 'vin') || isFieldVisible(layoutConfig, 'vehicle', 'license_plate') || isFieldVisible(layoutConfig, 'vehicle', 'mileage'))) return null
+                      return (
+                        <div key="vehicle" className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                          <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('vehicle')}</p>
+                          {isFieldVisible(layoutConfig, 'vehicle', 'vehicle_name') && (
+                            <p className="font-semibold">{vehicleName}</p>
+                          )}
+                          {isFieldVisible(layoutConfig, 'vehicle', 'vin') && record.vehicle.vin && (
+                            <p className="text-sm text-gray-500">{t('vin', { vin: record.vehicle.vin })}</p>
+                          )}
+                          {isFieldVisible(layoutConfig, 'vehicle', 'license_plate') && record.vehicle.licensePlate && (
+                            <p className="text-sm text-gray-500">{t('plate', { plate: record.vehicle.licensePlate })}</p>
+                          )}
+                          {isFieldVisible(layoutConfig, 'vehicle', 'mileage') && record.vehicle.mileage > 0 && (
+                            <p className="text-sm text-gray-500">{record.vehicle.mileage}</p>
+                          )}
+                          {getCustomFieldsForSection(layoutConfig ?? null, 'vehicle', customFields).map((cf, i) => (
+                            <div key={`cf-${i}`} className="mt-1 text-sm">
+                              <span className="font-medium">{cf.label}:</span>{' '}
+                              <span className="text-gray-500">{cf.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    }
+                    if (sid === 'service') {
+                      if (!(isFieldVisible(layoutConfig, 'service', 'service_title') || isFieldVisible(layoutConfig, 'service', 'service_type') || isFieldVisible(layoutConfig, 'service', 'tech_name'))) return null
+                      return (
+                        <div key="service" className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                          <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('service')}</p>
+                          {isFieldVisible(layoutConfig, 'service', 'service_title') && (
+                            <p className="font-semibold">{record.title}</p>
+                          )}
+                          {isFieldVisible(layoutConfig, 'service', 'service_type') && (
+                            <p className="text-sm text-gray-500">{t('type', { type: record.type })}</p>
+                          )}
+                          {isFieldVisible(layoutConfig, 'service', 'tech_name') && record.techName && (
+                            <p className="text-sm text-gray-500">{t('tech', { tech: record.techName })}</p>
+                          )}
+                          {getCustomFieldsForSection(layoutConfig ?? null, 'service', customFields).map((cf, i) => (
+                            <div key={`cf-${i}`} className="mt-1 text-sm">
+                              <span className="font-medium">{cf.label}:</span>{' '}
+                              <span className="text-gray-500">{cf.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    }
+                    return null
+                  })}
+                </div>
+              )
+            }
 
-        {/* Parts */}
-        {record.partItems.length > 0 && (
-          <div className="mt-6">
-            <h4 className="mb-3 font-semibold">{t('parts')}</h4>
-            <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
-              <table className="w-full min-w-125 text-sm">
-                <thead>
-                  <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
-                    <th className="p-2 font-medium">{t('partNumber')}</th>
-                    <th className="p-2 font-medium">{t('description')}</th>
-                    <th className="p-2 text-right font-medium">{t('qty')}</th>
-                    <th className="p-2 text-right font-medium">{t('unitPrice')}</th>
-                    <th className="p-2 text-right font-medium">{t('total')}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {record.partItems.map((p, i) => (
-                    <tr key={i}>
-                      <td className="p-2 font-mono text-xs">{p.partNumber || '-'}</td>
-                      <td className="p-2">{p.name}</td>
-                      <td className="p-2 text-right">{p.quantity}</td>
-                      <td className="p-2 text-right">
-                        {formatCurrency(p.unitPrice, currencyCode)}
-                      </td>
-                      <td className="p-2 text-right font-medium">
-                        {formatCurrency(p.total, currencyCode)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Labor */}
-        {record.laborItems.length > 0 && (
-          <div className="mt-6">
-            <h4 className="mb-3 font-semibold">{t('labor')}</h4>
-            <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
-              <table className="w-full min-w-112.5 text-sm">
-                <thead>
-                  <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
-                    <th className="p-2 font-medium">{t('description')}</th>
-                    <th className="p-2 text-right font-medium">{t('hours')}</th>
-                    <th className="p-2 text-right font-medium">{t('rate')}</th>
-                    <th className="p-2 text-right font-medium">{t('total')}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {record.laborItems.map((l, i) => (
-                    <tr key={i}>
-                      <td className="p-2">{l.description}</td>
-                      <td className="p-2 text-right">{l.hours}</td>
-                      <td className="p-2 text-right">{t('ratePerHour', { rate: formatCurrency(l.rate, currencyCode) })}</td>
-                      <td className="p-2 text-right font-medium">
-                        {formatCurrency(l.total, currencyCode)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Totals */}
-        <div className="mt-6 ml-auto max-w-xs space-y-2">
-          {record.subtotal > 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">{t('subtotal')}</span>
-              <span>{formatCurrency(record.subtotal, currencyCode)}</span>
-            </div>
-          )}
-          {record.discountAmount > 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">
-                {record.discountType === 'percentage' ? t('discountPercent', { percent: record.discountValue }) : t('discount')}
-              </span>
-              <span className="text-red-500">
-                {formatCurrency(-record.discountAmount, currencyCode)}
-              </span>
-            </div>
-          )}
-          {record.taxRate > 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">{t('tax', { rate: record.taxRate })}</span>
-              <span>{formatCurrency(record.taxAmount, currencyCode)}</span>
-            </div>
-          )}
-          <div
-            className={`border-t pt-2 ${totalPaid > 0 ? 'border-gray-200' : ''}`}
-            style={totalPaid > 0 ? undefined : { borderColor: primaryColor }}
-          >
-            <div
-              className={`flex justify-between ${totalPaid > 0 ? 'text-sm text-gray-500' : 'text-lg font-bold'}`}
-            >
-              <span>{t('total')}</span>
-              <span style={totalPaid > 0 ? undefined : { color: primaryColor }}>
-                {formatCurrency(displayTotal, currencyCode)}
-              </span>
-            </div>
-          </div>
-          {totalPaid > 0 && (
-            <>
-              <div className="flex justify-between text-sm text-emerald-600">
-                <span>{t('paid')}</span>
-                <span>{formatCurrency(-totalPaid, currencyCode)}</span>
-              </div>
-              {balanceDue <= 0 ? (
-                <div className="rounded-lg bg-emerald-50 px-4 py-3 dark:bg-emerald-900/20">
-                  <div className="flex justify-between text-lg font-bold text-emerald-600">
-                    <span>{t('balanceDue')}</span>
-                    <span>{t('paidInFull')}</span>
+            case 'parts_table':
+              if (record.partItems.length === 0) return null
+              return (
+                <div key="parts_table" className="mt-6">
+                  <h4 className="mb-3 font-semibold">{t('parts')}</h4>
+                  <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+                    <table className="w-full min-w-125 text-sm">
+                      <thead>
+                        <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
+                          <th className="p-2 font-medium">{t('partNumber')}</th>
+                          <th className="p-2 font-medium">{t('description')}</th>
+                          <th className="p-2 text-right font-medium">{t('qty')}</th>
+                          <th className="p-2 text-right font-medium">{t('unitPrice')}</th>
+                          <th className="p-2 text-right font-medium">{t('total')}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {record.partItems.map((p, i) => (
+                          <tr key={i}>
+                            <td className="p-2 font-mono text-xs">{p.partNumber || '-'}</td>
+                            <td className="p-2">{p.name}</td>
+                            <td className="p-2 text-right">{p.quantity}</td>
+                            <td className="p-2 text-right">
+                              {formatCurrency(p.unitPrice, currencyCode)}
+                            </td>
+                            <td className="p-2 text-right font-medium">
+                              {formatCurrency(p.total, currencyCode)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              ) : (
-                <div className="rounded-lg bg-amber-50 px-4 py-3 ring-2 ring-amber-400 dark:bg-amber-900/20 dark:ring-amber-600">
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>{t('amountDue')}</span>
-                    <span className="text-amber-700 dark:text-amber-400">
-                      {formatCurrency(balanceDue, currencyCode)}
-                    </span>
+              )
+
+            case 'labor_table':
+              if (record.laborItems.length === 0) return null
+              return (
+                <div key="labor_table" className="mt-6">
+                  <h4 className="mb-3 font-semibold">{t('labor')}</h4>
+                  <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+                    <table className="w-full min-w-112.5 text-sm">
+                      <thead>
+                        <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
+                          <th className="p-2 font-medium">{t('description')}</th>
+                          <th className="p-2 text-right font-medium">{t('hours')}</th>
+                          <th className="p-2 text-right font-medium">{t('rate')}</th>
+                          <th className="p-2 text-right font-medium">{t('total')}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {record.laborItems.map((l, i) => (
+                          <tr key={i}>
+                            <td className="p-2">{l.description}</td>
+                            <td className="p-2 text-right">{l.hours}</td>
+                            <td className="p-2 text-right">{t('ratePerHour', { rate: formatCurrency(l.rate, currencyCode) })}</td>
+                            <td className="p-2 text-right font-medium">
+                              {formatCurrency(l.total, currencyCode)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              )}
-            </>
-          )}
-        </div>
+              )
 
-        {/* Torqvoice branding near totals */}
-        {showTorqvoiceBranding && (
-          <div className="mt-3 flex items-center justify-end gap-1.5">
-            <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
-            <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-3.5 w-3.5" />
-            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
-          </div>
-        )}
+            case 'totals':
+              return (
+                <div key="totals">
+                  <div className="mt-6 ml-auto max-w-xs space-y-2">
+                    {record.subtotal > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">{t('subtotal')}</span>
+                        <span>{formatCurrency(record.subtotal, currencyCode)}</span>
+                      </div>
+                    )}
+                    {record.discountAmount > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">
+                          {record.discountType === 'percentage' ? t('discountPercent', { percent: record.discountValue }) : t('discount')}
+                        </span>
+                        <span className="text-red-500">
+                          {formatCurrency(-record.discountAmount, currencyCode)}
+                        </span>
+                      </div>
+                    )}
+                    {record.taxRate > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">{t('tax', { rate: record.taxRate })}</span>
+                        <span>{formatCurrency(record.taxAmount, currencyCode)}</span>
+                      </div>
+                    )}
+                    <div
+                      className={`border-t pt-2 ${totalPaid > 0 ? 'border-gray-200' : ''}`}
+                      style={totalPaid > 0 ? undefined : { borderColor: primaryColor }}
+                    >
+                      <div
+                        className={`flex justify-between ${totalPaid > 0 ? 'text-sm text-gray-500' : 'text-lg font-bold'}`}
+                      >
+                        <span>{t('total')}</span>
+                        <span style={totalPaid > 0 ? undefined : { color: primaryColor }}>
+                          {formatCurrency(displayTotal, currencyCode)}
+                        </span>
+                      </div>
+                    </div>
+                    {totalPaid > 0 && (
+                      <>
+                        <div className="flex justify-between text-sm text-emerald-600">
+                          <span>{t('paid')}</span>
+                          <span>{formatCurrency(-totalPaid, currencyCode)}</span>
+                        </div>
+                        {balanceDue <= 0 ? (
+                          <div className="rounded-lg bg-emerald-50 px-4 py-3 dark:bg-emerald-900/20">
+                            <div className="flex justify-between text-lg font-bold text-emerald-600">
+                              <span>{t('balanceDue')}</span>
+                              <span>{t('paidInFull')}</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="rounded-lg bg-amber-50 px-4 py-3 ring-2 ring-amber-400 dark:bg-amber-900/20 dark:ring-amber-600">
+                            <div className="flex justify-between text-lg font-bold">
+                              <span>{t('amountDue')}</span>
+                              <span className="text-amber-700 dark:text-amber-400">
+                                {formatCurrency(balanceDue, currencyCode)}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
 
-        {/* Payment Information */}
-        {invoiceSettings &&
-          (invoiceSettings.bankAccount ||
-            invoiceSettings.orgNumber ||
-            invoiceSettings.paymentTerms) && (
-            <div className="mt-6 rounded-lg border p-4" style={{ borderColor: `${primaryColor}40`, backgroundColor: `${primaryColor}08` }}>
-              <p className="mb-2 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('paymentInformation')}</p>
-              <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
-                {invoiceSettings.showBankAccount && invoiceSettings.bankAccount && (
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('bankAccount')}</p>
-                    <p className="font-medium">{invoiceSettings.bankAccount}</p>
-                  </div>
-                )}
-                {invoiceSettings.showOrgNumber && invoiceSettings.orgNumber && (
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('orgNumber')}</p>
-                    <p className="font-medium">{invoiceSettings.orgNumber}</p>
-                  </div>
-                )}
-                {invoiceSettings.paymentTerms && (
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('paymentTerms')}</p>
-                    <p className="font-medium">{invoiceSettings.paymentTerms}</p>
-                  </div>
-                )}
-                {invoiceSettings.dueDays > 0 && (
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('dueDate')}</p>
-                    <p className="font-medium">
-                      {fmtDate(
-                        new Date(
-                          new Date(record.serviceDate).getTime() + invoiceSettings.dueDays * 86400000
-                        ),
-                        df,
-                        tz,
-                      )}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+                  {/* Torqvoice branding near totals */}
+                  {showTorqvoiceBranding && (
+                    <div className="mt-3 flex items-center justify-end gap-1.5">
+                      <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
+                      <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-3.5 w-3.5" />
+                      <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+                    </div>
+                  )}
+                </div>
+              )
 
-        {/* Service Images */}
+            case 'general': {
+              const generalCfs = layoutConfig
+                ? getCustomFieldsForSection(layoutConfig, 'general', customFields)
+                : getUnassignedCustomFields(layoutConfig ?? null, customFields)
+              if (generalCfs.length === 0) return null
+              return (
+                <div key="general" className="mt-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                  <p className="mb-2 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('customFields', { defaultValue: 'Additional Information' })}</p>
+                  <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+                    {generalCfs.map((cf, i) => (
+                      <div key={i}>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{cf.label}</p>
+                        <p className="font-medium">{cf.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            }
+
+            case 'notes':
+              if (!hasContent(record.invoiceNotes)) return null
+              return (
+                <div key="notes" className="mt-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                  <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('notes')}</p>
+                  <div
+                    className="notes-content text-sm text-gray-600 dark:text-gray-400"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.invoiceNotes!) }}
+                  />
+                </div>
+              )
+
+            case 'diagnostic_notes':
+              if (!hasContent(record.diagnosticNotes)) return null
+              return (
+                <div key="diagnostic_notes" className="mt-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                  <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('diagnosticNotes')}</p>
+                  <div
+                    className="notes-content text-sm text-gray-600 dark:text-gray-400"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.diagnosticNotes!) }}
+                  />
+                </div>
+              )
+
+            case 'bank_account': {
+              const effectiveShowBankAccount = layoutConfig
+                ? isFieldVisible(layoutConfig, 'bank_account', 'bank_account')
+                : invoiceSettings?.showBankAccount ?? true
+              const effectiveShowOrgNumber = layoutConfig
+                ? isFieldVisible(layoutConfig, 'bank_account', 'org_number')
+                : invoiceSettings?.showOrgNumber ?? true
+              if (!invoiceSettings || (!invoiceSettings.bankAccount && !invoiceSettings.orgNumber && !invoiceSettings.paymentTerms)) return null
+              return (
+                <div key="bank_account" className="mt-6 rounded-lg border p-4" style={{ borderColor: `${primaryColor}40`, backgroundColor: `${primaryColor}08` }}>
+                  <p className="mb-2 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('paymentInformation')}</p>
+                  <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+                    {effectiveShowBankAccount && invoiceSettings.bankAccount && (
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('bankAccount')}</p>
+                        <p className="font-medium">{invoiceSettings.bankAccount}</p>
+                      </div>
+                    )}
+                    {effectiveShowOrgNumber && invoiceSettings.orgNumber && (
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('orgNumber')}</p>
+                        <p className="font-medium">{invoiceSettings.orgNumber}</p>
+                      </div>
+                    )}
+                    {invoiceSettings.paymentTerms && (
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('paymentTerms')}</p>
+                        <p className="font-medium">{invoiceSettings.paymentTerms}</p>
+                      </div>
+                    )}
+                    {invoiceSettings.dueDays > 0 && (
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('dueDate')}</p>
+                        <p className="font-medium">
+                          {fmtDate(
+                            new Date(
+                              new Date(record.serviceDate).getTime() + invoiceSettings.dueDays * 86400000
+                            ),
+                            df,
+                            tz,
+                          )}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            }
+
+            case 'footer':
+              if (!invoiceSettings?.footerNote) return null
+              return (
+                <div key="footer" className="mt-4 border-t pt-4">
+                  <p className="whitespace-pre-wrap text-center text-xs text-gray-500 dark:text-gray-400">
+                    {invoiceSettings.footerNote}
+                  </p>
+                </div>
+              )
+
+            default:
+              return null
+          }
+        })}
+
+        {/* Service Images (not part of layout config sections) */}
         {imageAttachments.length > 0 && (
           <div className="mt-6">
             <h4 className="mb-3 flex items-center gap-2 font-semibold">
@@ -883,33 +1101,6 @@ export function InvoiceView({
               </div>
             )
           })()}
-
-        {/* Notes */}
-        {hasContent(record.invoiceNotes) && (
-          <div className="mt-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('notes')}</p>
-            <div
-              className="notes-content text-sm text-gray-600 dark:text-gray-400"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.invoiceNotes!) }}
-            />
-          </div>
-        )}
-        {hasContent(record.diagnosticNotes) && (
-          <div className="mt-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-            <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('diagnosticNotes')}</p>
-            <div
-              className="notes-content text-sm text-gray-600 dark:text-gray-400"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.diagnosticNotes!) }}
-            />
-          </div>
-        )}
-        {invoiceSettings?.footerNote && (
-          <div className="mt-4 border-t pt-4">
-            <p className="whitespace-pre-wrap text-center text-xs text-gray-500 dark:text-gray-400">
-              {invoiceSettings.footerNote}
-            </p>
-          </div>
-        )}
       </div>
 
       {portalUrl && (

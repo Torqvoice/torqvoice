@@ -7,8 +7,6 @@ import { FeatureLockedMessage } from "../feature-locked-message";
 import { redirect } from "next/navigation";
 import { getTemplates } from "@/features/inspections/Actions/templateActions";
 import { getTranslations } from "next-intl/server";
-import { getInvoiceLayoutConfig, getQuoteLayoutConfig } from "@/features/settings/Actions/invoiceLayoutActions";
-
 export default async function TemplatePage() {
   const data = await getLayoutData();
 
@@ -27,7 +25,7 @@ export default async function TemplatePage() {
     );
   }
 
-  const [result, inspectionTemplatesResult, invoiceLayoutResult, quoteLayoutResult] = await Promise.all([
+  const [result, inspectionTemplatesResult] = await Promise.all([
     getSettings([
       SETTING_KEYS.INVOICE_PRIMARY_COLOR,
       SETTING_KEYS.INVOICE_FONT_FAMILY,
@@ -45,8 +43,6 @@ export default async function TemplatePage() {
       SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
     ]),
     getTemplates(),
-    getInvoiceLayoutConfig(),
-    getQuoteLayoutConfig(),
   ]);
 
   const settings = result.success && result.data ? result.data : {};
@@ -87,8 +83,6 @@ export default async function TemplatePage() {
       inspectionTemplates={inspectionTemplates}
       smsEnabled={features.sms ?? false}
       initialSmsTemplates={smsTemplates}
-      initialInvoiceLayout={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
-      initialQuoteLayout={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
     />
   );
 }

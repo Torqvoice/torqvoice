@@ -24,7 +24,7 @@ import {
   Info,
   Key,
   Layout,
-  ListPlus,
+
   Mail,
   MessageSquare,
   Palette,
@@ -64,7 +64,6 @@ const settingsCategories: SettingsCategory[] = [
       { key: "templates", href: "/settings/templates", icon: Layout, gate: "customTemplates" },
       { key: "payment", href: "/settings/payment", icon: Banknote, gate: "payments" },
       { key: "currency", href: "/settings/currency", icon: Coins },
-      { key: "customFields", href: "/settings/custom-fields", icon: ListPlus, gate: "customFields" },
     ],
   },
   {

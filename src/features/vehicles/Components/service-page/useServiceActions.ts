@@ -53,13 +53,21 @@ export function useServiceActions({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const form = e.currentTarget
     if (isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
 
-    // Validate custom fields before saving
+    // Validate and save custom fields before saving
     if (customFieldsSaveRef.current) {
-      const { valid } = await customFieldsSaveRef.current()
-      if (!valid) {
+      try {
+        const { valid } = await customFieldsSaveRef.current()
+        if (!valid) {
+          toast.error(t('page.customFieldsInvalid'))
+          return
+        }
+      } catch (err) {
+        console.error('Custom fields save error:', err)
+        toast.error(t('page.customFieldsSaveFailed'))
         return
       }
     }
@@ -69,7 +77,6 @@ export function useServiceActions({
 
     // Mobile + desktop layouts both render inputs with the same name.
     // formData.get() returns the first (hidden/stale) one, so read the visible input via offsetParent.
-    const form = e.currentTarget
     const getVisible = (name: string) => {
       const inputs = form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`)
       const visible = Array.from(inputs).find(el => el.offsetParent !== null)

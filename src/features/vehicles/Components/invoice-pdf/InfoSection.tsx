@@ -1,6 +1,8 @@
 import { Text, View } from '@react-pdf/renderer'
 import type { InvoiceData, InvoiceSettingsProps } from './types'
 import type { Style } from '@react-pdf/types'
+import { isCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { formatFieldValue } from './CustomFields'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce(
@@ -9,23 +11,58 @@ function fillTemplate(template: string, values: Record<string, string>): string 
   )
 }
 
-interface InfoSectionProps {
+interface CustomFieldEntry {
+  fieldId: string
+  label: string
+  value: string
+  fieldType: string
+}
+
+interface SectionProps {
   data: InvoiceData
-  vehicleName: string
+  vehicleName?: string
   invoiceSettings?: InvoiceSettingsProps
   styles: Record<string, Style>
   labels: Record<string, string>
-  /** Optional set of visible field IDs from the layout config. If null/undefined, all fields render. */
   visibleFields?: Set<string> | null
+  customFields?: CustomFieldEntry[]
 }
 
-export function InfoSection({ data, vehicleName, invoiceSettings, styles, labels, visibleFields }: InfoSectionProps) {
-  // When visibleFields is null/undefined, every field is shown (backward compatible).
+/**
+ * Renders custom fields inline, ordered by visibleFields if available.
+ */
+function renderCustomFields(
+  customFields: CustomFieldEntry[] | undefined,
+  visibleFields: Set<string> | null | undefined,
+  styles: Record<string, Style>,
+) {
+  if (!customFields || customFields.length === 0) return null
+
+  // If visibleFields is set, render in that order; otherwise render in array order
+  let ordered = customFields
+  if (visibleFields) {
+    const cfOrder = [...visibleFields].filter(id => isCustomFieldId(id))
+    const cfMap = new Map(customFields.map(cf => [`cf_${cf.fieldId}`, cf]))
+    ordered = cfOrder.map(id => cfMap.get(id)).filter(Boolean) as CustomFieldEntry[]
+  }
+
+  return (
+    <>
+      {ordered
+        .filter(cf => cf.value !== '' && cf.value != null)
+        .map((cf, i) => (
+          <Text key={`cf-${i}`} style={styles.infoTextSmall}>
+            {cf.label}: {formatFieldValue(cf.value, cf.fieldType)}
+          </Text>
+        ))}
+    </>
+  )
+}
+
+export function CustomerSection({ data, styles, labels, visibleFields, customFields }: SectionProps) {
   const show = (fieldId: string) => !visibleFields || visibleFields.has(fieldId)
 
-  // Determine whether each info box has any visible content so we can skip
-  // rendering an empty box entirely.
-  const hasCustomerContent =
+  const hasBuiltinContent =
     data.vehicle.customer &&
     (show('customer_name') ||
       (show('customer_company') && data.vehicle.customer.company) ||
@@ -33,22 +70,15 @@ export function InfoSection({ data, vehicleName, invoiceSettings, styles, labels
       (show('customer_email') && data.vehicle.customer.email) ||
       (show('customer_phone') && data.vehicle.customer.phone))
 
-  const hasVehicleContent =
-    show('vehicle_name') ||
-    (show('vin') && data.vehicle.vin) ||
-    (show('license_plate') && data.vehicle.licensePlate) ||
-    (show('mileage') && data.mileage)
+  const hasCfContent = customFields && customFields.some(cf => cf.value !== '' && cf.value != null)
 
-  const hasServiceContent =
-    show('service_title') ||
-    show('service_type') ||
-    (show('tech_name') && data.techName)
+  if (!hasBuiltinContent && !hasCfContent) return null
 
   return (
-    <View style={styles.infoRow}>
-      {hasCustomerContent && data.vehicle.customer && (
-        <View style={styles.infoBox}>
-          <Text style={styles.infoLabel}>{labels.billTo || 'Bill To'}</Text>
+    <View style={styles.infoBox}>
+      <Text style={styles.infoLabel}>{labels.billTo || 'Bill To'}</Text>
+      {data.vehicle.customer && (
+        <>
           {show('customer_name') && (
             <Text style={styles.infoTextBold}>{data.vehicle.customer.name}</Text>
           )}
@@ -64,38 +94,84 @@ export function InfoSection({ data, vehicleName, invoiceSettings, styles, labels
           {show('customer_phone') && data.vehicle.customer.phone && (
             <Text style={styles.infoTextSmall}>{data.vehicle.customer.phone}</Text>
           )}
-        </View>
+        </>
       )}
-      {hasVehicleContent && (
-        <View style={styles.infoBox}>
-          <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
-          {show('vehicle_name') && (
-            <Text style={styles.infoTextBold}>{vehicleName}</Text>
-          )}
-          {show('vin') && data.vehicle.vin && <Text style={styles.infoTextSmall}>{labels.vin ? fillTemplate(labels.vin, { vin: data.vehicle.vin }) : `VIN: ${data.vehicle.vin}`}</Text>}
-          {show('license_plate') && data.vehicle.licensePlate && (
-            <Text style={styles.infoTextSmall}>{labels.plate ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate }) : `Plate: ${data.vehicle.licensePlate}`}</Text>
-          )}
-          {show('mileage') && data.mileage && (
-            <Text style={styles.infoTextSmall}>
-              {labels.mileage ? fillTemplate(labels.mileage, { mileage: data.mileage.toLocaleString() }) : `Mileage: ${data.mileage.toLocaleString()}`}{' '}
-              {invoiceSettings?.unitSystem === 'metric' ? (labels.km || 'km') : (labels.mi || 'mi')}
-            </Text>
-          )}
-        </View>
+      {renderCustomFields(customFields, visibleFields, styles)}
+    </View>
+  )
+}
+
+export function VehicleSection({ data, vehicleName, invoiceSettings, styles, labels, visibleFields, customFields }: SectionProps) {
+  const show = (fieldId: string) => !visibleFields || visibleFields.has(fieldId)
+
+  const hasBuiltinContent =
+    show('vehicle_name') ||
+    (show('vin') && data.vehicle.vin) ||
+    (show('license_plate') && data.vehicle.licensePlate) ||
+    (show('mileage') && data.mileage)
+
+  const hasCfContent = customFields && customFields.some(cf => cf.value !== '' && cf.value != null)
+
+  if (!hasBuiltinContent && !hasCfContent) return null
+
+  return (
+    <View style={styles.infoBox}>
+      <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
+      {show('vehicle_name') && (
+        <Text style={styles.infoTextBold}>{vehicleName}</Text>
       )}
-      {hasServiceContent && (
-        <View style={styles.infoBox}>
-          <Text style={styles.infoLabel}>{labels.service || 'Service'}</Text>
-          {show('service_title') && (
-            <Text style={styles.infoTextBold}>{data.title}</Text>
-          )}
-          {show('service_type') && (
-            <Text style={styles.infoTextSmall}>{labels.type ? fillTemplate(labels.type, { type: data.type }) : `Type: ${data.type}`}</Text>
-          )}
-          {show('tech_name') && data.techName && <Text style={styles.infoTextSmall}>{labels.tech ? fillTemplate(labels.tech, { tech: data.techName }) : `Tech: ${data.techName}`}</Text>}
-        </View>
+      {show('vin') && data.vehicle.vin && <Text style={styles.infoTextSmall}>{labels.vin ? fillTemplate(labels.vin, { vin: data.vehicle.vin }) : `VIN: ${data.vehicle.vin}`}</Text>}
+      {show('license_plate') && data.vehicle.licensePlate && (
+        <Text style={styles.infoTextSmall}>{labels.plate ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate }) : `Plate: ${data.vehicle.licensePlate}`}</Text>
       )}
+      {show('mileage') && data.mileage && (
+        <Text style={styles.infoTextSmall}>
+          {labels.mileage ? fillTemplate(labels.mileage, { mileage: data.mileage.toLocaleString() }) : `Mileage: ${data.mileage.toLocaleString()}`}{' '}
+          {invoiceSettings?.unitSystem === 'metric' ? (labels.km || 'km') : (labels.mi || 'mi')}
+        </Text>
+      )}
+      {renderCustomFields(customFields, visibleFields, styles)}
+    </View>
+  )
+}
+
+export function ServiceSection({ data, styles, labels, visibleFields, customFields }: SectionProps) {
+  const show = (fieldId: string) => !visibleFields || visibleFields.has(fieldId)
+
+  const hasBuiltinContent =
+    show('service_title') ||
+    show('service_type') ||
+    (show('tech_name') && data.techName)
+
+  const hasCfContent = customFields && customFields.some(cf => cf.value !== '' && cf.value != null)
+
+  if (!hasBuiltinContent && !hasCfContent) return null
+
+  return (
+    <View style={styles.infoBox}>
+      <Text style={styles.infoLabel}>{labels.service || 'Service'}</Text>
+      {show('service_title') && (
+        <Text style={styles.infoTextBold}>{data.title}</Text>
+      )}
+      {show('service_type') && (
+        <Text style={styles.infoTextSmall}>{labels.type ? fillTemplate(labels.type, { type: data.type }) : `Type: ${data.type}`}</Text>
+      )}
+      {show('tech_name') && data.techName && <Text style={styles.infoTextSmall}>{labels.tech ? fillTemplate(labels.tech, { tech: data.techName }) : `Tech: ${data.techName}`}</Text>}
+      {renderCustomFields(customFields, visibleFields, styles)}
+    </View>
+  )
+}
+
+/**
+ * @deprecated Use CustomerSection, VehicleSection, ServiceSection instead.
+ * Kept for backward compatibility.
+ */
+export function InfoSection({ data, vehicleName, invoiceSettings, styles, labels, visibleFields }: SectionProps) {
+  return (
+    <View style={styles.infoRow}>
+      <CustomerSection data={data} styles={styles} labels={labels} visibleFields={visibleFields} />
+      <VehicleSection data={data} vehicleName={vehicleName} invoiceSettings={invoiceSettings} styles={styles} labels={labels} visibleFields={visibleFields} />
+      <ServiceSection data={data} styles={styles} labels={labels} visibleFields={visibleFields} />
     </View>
   )
 }

@@ -3,13 +3,14 @@ import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { createStyles, gray, getFontBold } from './styles'
 import { Header } from './Header'
-import { InfoSection } from './InfoSection'
+import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable } from './Tables'
 import { Totals } from './Totals'
 import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
 import { CustomFields } from './CustomFields'
 import { Footer, AttachmentsFooter } from './Footer'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { isCustomFieldId, fromCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type {
   TemplateConfig,
   InvoiceData,
@@ -26,11 +27,13 @@ import type {
 
 const DEFAULT_SECTION_ORDER = [
   'header',
-  'info',
+  'customer',
+  'vehicle',
+  'service',
   'parts_table',
   'labor_table',
   'totals',
-  'custom_fields',
+  'general',
   'notes',
   'diagnostic_notes',
   'bank_account',
@@ -45,8 +48,20 @@ function getSortedSectionIds(layoutConfig: InvoiceLayoutConfig | undefined): str
     .map((s) => s.id)
 }
 
-function getVisibleInfoFields(layoutConfig: InvoiceLayoutConfig | undefined): Set<string> | null {
-  return getVisibleFieldsForSection(layoutConfig, 'info')
+function getCustomFieldsForSection(
+  layoutConfig: InvoiceLayoutConfig | undefined,
+  sectionId: string,
+  allCustomFields: Array<{ fieldId: string; label: string; value: string; fieldType: string }>,
+): Array<{ fieldId: string; label: string; value: string; fieldType: string }> {
+  if (!layoutConfig || !allCustomFields?.length) return []
+  const section = layoutConfig.sections.find(s => s.id === sectionId)
+  if (!section?.fields) return []
+  const cfIds = new Set(
+    section.fields
+      .filter(f => f.visible && isCustomFieldId(f.id))
+      .map(f => fromCustomFieldId(f.id))
+  )
+  return allCustomFields.filter(cf => cfIds.has(cf.fieldId))
 }
 
 function getVisibleFieldsForSection(layoutConfig: InvoiceLayoutConfig | undefined, sectionId: string): Set<string> | null {
@@ -122,9 +137,19 @@ export function InvoicePDF({
   // ---------------------------------------------------------------------------
   const layoutConfig = template?.layoutConfig
   const sectionOrder = getSortedSectionIds(layoutConfig)
-  const visibleInfoFields = getVisibleInfoFields(layoutConfig)
+  const visibleCustomerFields = getVisibleFieldsForSection(layoutConfig, 'customer')
+  const visibleVehicleFields = getVisibleFieldsForSection(layoutConfig, 'vehicle')
+  const visibleServiceFields = getVisibleFieldsForSection(layoutConfig, 'service')
   const visibleHeaderFields = getVisibleFieldsForSection(layoutConfig, 'header')
   const visibleBankAccountFields = getVisibleFieldsForSection(layoutConfig, 'bank_account')
+
+  const allCf = data.customFields || []
+  const customerCf = getCustomFieldsForSection(layoutConfig, 'customer', allCf)
+  const vehicleCf = getCustomFieldsForSection(layoutConfig, 'vehicle', allCf)
+  const serviceCf = getCustomFieldsForSection(layoutConfig, 'service', allCf)
+  const generalCf = getCustomFieldsForSection(layoutConfig, 'general', allCf)
+  // If no layout config, all custom fields go to the general section
+  const generalFallbackCf = !layoutConfig ? allCf : generalCf
 
   // Map each section ID to its JSX. Sections that have no data naturally
   // return null and will be skipped by React.
@@ -150,16 +175,9 @@ export function InvoicePDF({
       />
     ),
 
-    info: (
-      <InfoSection
-        data={data}
-        vehicleName={vehicleName}
-        invoiceSettings={invoiceSettings}
-        styles={styles}
-        labels={labels}
-        visibleFields={visibleInfoFields}
-      />
-    ),
+    customer: '__info_group__',
+    vehicle: '__info_group__',
+    service: '__info_group__',
 
     parts_table: (
       <PartsTable data={data} currencyCode={cc} styles={styles} labels={labels} />
@@ -203,9 +221,9 @@ export function InvoicePDF({
       </>
     ),
 
-    custom_fields:
-      data.customFields && data.customFields.length > 0 ? (
-        <CustomFields fields={data.customFields} styles={styles} labels={labels} />
+    general:
+      generalFallbackCf.length > 0 ? (
+        <CustomFields fields={generalFallbackCf} styles={styles} labels={labels} />
       ) : null,
 
     notes: (
@@ -254,12 +272,72 @@ export function InvoicePDF({
     ),
   }
 
+  // Group consecutive customer/vehicle/service into a single infoRow
+  const INFO_GROUP_IDS = new Set(['customer', 'vehicle', 'service'])
+  const renderedSections: React.ReactNode[] = []
+  let infoGroupItems: React.ReactNode[] = []
+
+  const flushInfoGroup = () => {
+    if (infoGroupItems.length > 0) {
+      renderedSections.push(
+        <View key="info-group" style={styles.infoRow}>
+          {infoGroupItems}
+        </View>
+      )
+      infoGroupItems = []
+    }
+  }
+
+  for (const id of sectionOrder) {
+    if (INFO_GROUP_IDS.has(id)) {
+      const componentMap: Record<string, React.ReactNode> = {
+        customer: (
+          <CustomerSection
+            key="customer"
+            data={data}
+            styles={styles}
+            labels={labels}
+            visibleFields={visibleCustomerFields}
+            customFields={customerCf}
+          />
+        ),
+        vehicle: (
+          <VehicleSection
+            key="vehicle"
+            data={data}
+            vehicleName={vehicleName}
+            invoiceSettings={invoiceSettings}
+            styles={styles}
+            labels={labels}
+            visibleFields={visibleVehicleFields}
+            customFields={vehicleCf}
+          />
+        ),
+        service: (
+          <ServiceSection
+            key="service"
+            data={data}
+            styles={styles}
+            labels={labels}
+            visibleFields={visibleServiceFields}
+            customFields={serviceCf}
+          />
+        ),
+      }
+      infoGroupItems.push(componentMap[id])
+    } else {
+      flushInfoGroup()
+      renderedSections.push(
+        <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>
+      )
+    }
+  }
+  flushInfoGroup()
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {sectionOrder.map((id) => (
-          <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>
-        ))}
+        {renderedSections}
       </Page>
 
       {hasAttachments && imageAttachments.length > 0 && (

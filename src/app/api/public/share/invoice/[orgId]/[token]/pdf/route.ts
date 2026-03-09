@@ -83,7 +83,7 @@ export async function GET(
 
     const customFields = customFieldValues
       .filter(v => v.field.isActive && v.value)
-      .map(v => ({ label: v.field.label, value: v.value, fieldType: v.field.fieldType }));
+      .map(v => ({ fieldId: v.fieldId, label: v.field.label, value: v.value, fieldType: v.field.fieldType }));
 
     const [settings, org] = await Promise.all([
       db.appSetting.findMany({

@@ -14,8 +14,8 @@
       "subscription": { "title": "Subscription", "description": "Plan & billing" },
       "account": { "title": "Account", "description": "Name, email & password" },
       "team": { "title": "Team", "description": "Members & roles" },
-      "invoice": { "title": "Invoice", "description": "Invoice layout & fields" },
-      "templates": { "title": "Templates", "description": "Invoice, quote & inspection templates" },
+      "invoice": { "title": "Invoice & Quotes", "description": "Invoice settings, layout & custom fields" },
+      "templates": { "title": "Templates", "description": "Visual style, colors & fonts" },
       "payment": { "title": "Payment", "description": "Payment terms & accounts" },
       "currency": { "title": "Currency", "description": "Currency & tax defaults" },
       "customFields": { "title": "Custom Fields", "description": "Define custom data fields" },
@@ -256,8 +256,13 @@
     "failedUpdateRole": "Failed to update role"
   },
   "invoice": {
-    "title": "Invoice Layout",
-    "description": "Configure what appears on generated PDF invoices.",
+    "title": "Invoice & Quotes",
+    "description": "Configure invoice settings, layout and custom fields.",
+    "tabs": {
+      "general": "General",
+      "layout": "Layout",
+      "customFields": "Custom Fields"
+    },
     "invoiceNumberFormat": "Invoice Number Format",
     "invoiceNumberFormatHint": "Use <code>{year}</code> for the current year. Preview: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Next Invoice Number",
@@ -278,7 +283,12 @@
     "footerPlaceholder": "Thank you for your business!",
     "footerHint": "This text appears at the bottom of every invoice",
     "saveInvoice": "Save Invoice Settings",
-    "saved": "Invoice settings saved"
+    "saved": "Invoice settings saved",
+    "layoutDescription": "Customize the order and visibility of sections in your invoices and quotes.",
+    "layoutSaved": "Layout saved successfully",
+    "layoutDocInvoice": "Invoice",
+    "layoutDocQuote": "Quote",
+    "saveLayout": "Save Layout"
   },
   "templates": {
     "title": "Templates",

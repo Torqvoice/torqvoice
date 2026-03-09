@@ -269,7 +269,7 @@ describe("InvoiceView", () => {
           expect.objectContaining({ method: "POST" })
         );
         const call = mockFetch.mock.calls.find((c: unknown[]) => c[0] === "/api/public/share/invoice/org-1/tok-xyz/checkout");
-        const body = JSON.parse(call[1].body);
+        const body = JSON.parse(call![1].body);
         expect(body.provider).toBe("stripe");
         expect(body.amount).toBe(200);
       });
@@ -329,7 +329,7 @@ describe("InvoiceView", () => {
       await waitFor(() => {
         const call = mockFetch.mock.calls.find((c: unknown[]) => c[0] === "/api/public/share/invoice/org-1/tok-xyz/verify");
         expect(call).toBeTruthy();
-        const body = JSON.parse(call[1].body);
+        const body = JSON.parse(call![1].body);
         expect(body.provider).toBe("vipps");
         expect(body.externalId).toBe("vipps-ref-456");
       });

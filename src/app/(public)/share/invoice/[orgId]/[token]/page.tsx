@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { InvoiceView } from "./invoice-view";
 import { getFeatures } from "@/lib/features";
 import { resolvePortalOrg } from "@/lib/portal-slug";
+import { mergeWithDefaults } from "@/features/settings/Schema/invoiceLayoutSchema";
 import type { Metadata } from "next";
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
@@ -94,6 +95,7 @@ export default async function PublicInvoicePage({
             "workshop.dateFormat",
             "workshop.timezone",
             "portal.enabled",
+            "invoice.layoutConfig",
           ],
         },
       },
@@ -106,6 +108,17 @@ export default async function PublicInvoicePage({
       : null,
     getFeatures(orgId),
   ]);
+
+  // Fetch custom field values for this service record
+  const customFieldValues = await db.customFieldValue.findMany({
+    where: { entityId: record.id, entityType: "service_record" },
+    include: { field: { select: { id: true, label: true, fieldType: true, isActive: true, sortOrder: true } } },
+    orderBy: { field: { sortOrder: "asc" } },
+  });
+
+  const customFields = customFieldValues
+    .filter(v => v.field.isActive && v.value)
+    .map(v => ({ label: v.field.label, value: v.value, fieldType: v.field.fieldType, fieldId: v.field.id }));
 
   const settingsMap: Record<string, string> = {};
   for (const s of settings) settingsMap[s.key] = s.value;
@@ -153,6 +166,11 @@ export default async function PublicInvoicePage({
       })),
   };
 
+  // Parse layout config
+  const layoutConfig = mergeWithDefaults(
+    settingsMap["invoice.layoutConfig"] ? JSON.parse(settingsMap["invoice.layoutConfig"]) : {}
+  );
+
   const termsOfSaleUrl = settingsMap["payment.termsOfSaleUrl"]
     || (settingsMap["payment.termsOfSale"] ? `/share/terms/${orgId}` : undefined);
 
@@ -183,6 +201,8 @@ export default async function PublicInvoicePage({
       primaryColor={settingsMap["invoice.primaryColor"] || "#d97706"}
       headerStyle={settingsMap["invoice.headerStyle"] || "standard"}
       portalUrl={portalUrl}
+      layoutConfig={layoutConfig}
+      customFields={customFields}
     />
   );
 }

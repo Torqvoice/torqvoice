@@ -2,12 +2,12 @@ import { Text, View } from '@react-pdf/renderer'
 import type { Style } from '@react-pdf/types'
 
 interface CustomFieldsProps {
-  fields: Array<{ label: string; value: string; fieldType: string }>
+  fields: Array<{ fieldId?: string; label: string; value: string; fieldType: string }>
   styles: Record<string, Style>
   labels?: Record<string, string>
 }
 
-function formatFieldValue(value: string, fieldType: string): string {
+export function formatFieldValue(value: string, fieldType: string): string {
   if (fieldType === 'checkbox') {
     return value === 'true' || value === '1' ? 'Yes' : 'No'
   }

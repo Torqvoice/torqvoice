@@ -31,6 +31,11 @@ import {
   deleteFieldDefinition,
 } from "@/features/custom-fields/Actions/customFieldActions";
 import type { FieldType, EntityType } from "@/features/custom-fields/Schema/customFieldSchema";
+import {
+  type InvoiceLayoutConfig,
+  BUILTIN_SECTIONS,
+  CUSTOM_FIELD_PREFIX,
+} from "@/features/settings/Schema/invoiceLayoutSchema";
 import { GripVertical, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 
 interface FieldDef {
@@ -45,10 +50,31 @@ interface FieldDef {
   isActive: boolean;
 }
 
+/**
+ * Find the layout section a custom field definition is assigned to.
+ * Returns the human-readable section name, or null if not assigned.
+ */
+function getSectionForField(
+  definitionId: string,
+  layoutConfig?: InvoiceLayoutConfig,
+): string | null {
+  if (!layoutConfig) return null;
+  const cfId = `${CUSTOM_FIELD_PREFIX}${definitionId}`;
+  for (const section of layoutConfig.sections) {
+    if (section.fields?.some((f) => f.id === cfId)) {
+      const builtin = BUILTIN_SECTIONS.find((s) => s.id === section.id);
+      return builtin?.name ?? section.id;
+    }
+  }
+  return null;
+}
+
 export function CustomFieldsManager({
   initialFields = [],
+  layoutConfig,
 }: {
   initialFields?: FieldDef[];
+  layoutConfig?: InvoiceLayoutConfig;
 }) {
   const router = useRouter();
   const t = useTranslations('settings');
@@ -218,6 +244,18 @@ export function CustomFieldsManager({
                         {t('customFields.inactive')}
                       </Badge>
                     )}
+                    {layoutConfig && (() => {
+                      const sectionName = getSectionForField(field.id, layoutConfig);
+                      return sectionName ? (
+                        <Badge variant="outline" className="text-xs text-blue-600 border-blue-500/20 bg-blue-500/10">
+                          {sectionName}
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs text-muted-foreground border-dashed">
+                          Not assigned
+                        </Badge>
+                      );
+                    })()}
                   </div>
                   <p className="text-xs text-muted-foreground font-mono">{field.name}</p>
                 </div>

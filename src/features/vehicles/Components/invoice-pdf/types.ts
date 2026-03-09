@@ -42,7 +42,7 @@ export interface InvoiceData {
     rate: number
     total: number
   }[]
-  customFields?: Array<{ label: string; value: string; fieldType: string }>;
+  customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>;
   vehicle: {
     make: string
     model: string

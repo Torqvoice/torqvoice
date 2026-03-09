@@ -6,7 +6,9 @@
     "deleteTitle": "Delete Service Record",
     "deleteDescription": "This will permanently delete this service record and all associated data. This cannot be undone.",
     "deleted": "Service record deleted",
-    "failedDelete": "Failed to delete"
+    "failedDelete": "Failed to delete",
+    "customFieldsInvalid": "Please fill in all required custom fields",
+    "customFieldsSaveFailed": "Failed to save custom fields"
   },
   "header": {
     "tabs": {

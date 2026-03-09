@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -15,31 +14,63 @@ import { setSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { FileText, Loader2, Save } from "lucide-react";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
+import { cn } from "@/lib/utils";
+import { InvoiceLayoutEditor } from "@/features/settings/Components/InvoiceLayoutEditor";
+import { saveInvoiceLayoutConfig, saveQuoteLayoutConfig } from "@/features/settings/Actions/invoiceLayoutActions";
+import { type InvoiceLayoutConfig, getDefaultInvoiceLayout } from "@/features/settings/Schema/invoiceLayoutSchema";
+import { CustomFieldsManager } from "@/features/custom-fields/Components/CustomFieldsManager";
 
-export function InvoiceSettings({ settings }: { settings: Record<string, string> }) {
+type TabType = "general" | "layout" | "customFields";
+
+interface FieldDef {
+  id: string;
+  name: string;
+  label: string;
+  fieldType: string;
+  entityType: string;
+  options: string | null;
+  required: boolean;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+interface InvoiceSettingsProps {
+  settings: Record<string, string>;
+  initialInvoiceLayout?: InvoiceLayoutConfig;
+  initialQuoteLayout?: InvoiceLayoutConfig;
+  customFields: FieldDef[];
+  customFieldsEnabled: boolean;
+}
+
+export function InvoiceSettings({
+  settings,
+  initialInvoiceLayout,
+  initialQuoteLayout,
+  customFields,
+  customFieldsEnabled,
+}: InvoiceSettingsProps) {
   const router = useRouter();
   const t = useTranslations('settings');
+  const [tab, setTab] = useState<TabType>("general");
   const [saving, setSaving] = useState(false);
 
+  // General tab state
   const [invoicePrefix, setInvoicePrefix] = useState(settings[SETTING_KEYS.INVOICE_PREFIX] || "{year}-");
   const [invoiceStartNumber, setInvoiceStartNumber] = useState(settings[SETTING_KEYS.INVOICE_START_NUMBER] || "");
   const [dueDays, setDueDays] = useState(settings[SETTING_KEYS.INVOICE_DUE_DAYS] || "14");
-  const [showBankAccount, setShowBankAccount] = useState(settings[SETTING_KEYS.INVOICE_SHOW_BANK_ACCOUNT] === "true");
-  const [showOrgNumber, setShowOrgNumber] = useState(settings[SETTING_KEYS.INVOICE_SHOW_ORG_NUMBER] === "true");
-  const [showLogo, setShowLogo] = useState(settings[SETTING_KEYS.INVOICE_SHOW_LOGO] !== "false");
-  const [showCompanyName, setShowCompanyName] = useState(settings[SETTING_KEYS.INVOICE_SHOW_COMPANY_NAME] !== "false");
   const [footerNote, setFooterNote] = useState(settings[SETTING_KEYS.INVOICE_FOOTER_NOTE] || "");
 
-  const handleSave = async () => {
+  // Layout tab state
+  const [invoiceLayout, setInvoiceLayout] = useState(initialInvoiceLayout ?? getDefaultInvoiceLayout());
+  const [quoteLayout, setQuoteLayout] = useState(initialQuoteLayout ?? getDefaultInvoiceLayout());
+  const [layoutDocType, setLayoutDocType] = useState<"invoice" | "quote">("invoice");
+
+  const handleSaveGeneral = async () => {
     setSaving(true);
     await setSettings({
       [SETTING_KEYS.INVOICE_PREFIX]: invoicePrefix,
       [SETTING_KEYS.INVOICE_START_NUMBER]: invoiceStartNumber,
       [SETTING_KEYS.INVOICE_DUE_DAYS]: dueDays,
-      [SETTING_KEYS.INVOICE_SHOW_BANK_ACCOUNT]: showBankAccount ? "true" : "false",
-      [SETTING_KEYS.INVOICE_SHOW_ORG_NUMBER]: showOrgNumber ? "true" : "false",
-      [SETTING_KEYS.INVOICE_SHOW_LOGO]: showLogo ? "true" : "false",
-      [SETTING_KEYS.INVOICE_SHOW_COMPANY_NAME]: showCompanyName ? "true" : "false",
       [SETTING_KEYS.INVOICE_FOOTER_NOTE]: footerNote,
     });
     setSaving(false);
@@ -47,156 +78,220 @@ export function InvoiceSettings({ settings }: { settings: Record<string, string>
     toast.success(t('invoice.saved'));
   };
 
+  const handleSaveLayout = async () => {
+    setSaving(true);
+    try {
+      if (layoutDocType === "invoice") {
+        await saveInvoiceLayoutConfig(invoiceLayout);
+      } else {
+        await saveQuoteLayoutConfig(quoteLayout);
+      }
+      toast.success(t('invoice.layoutSaved'));
+    } catch {
+      toast.error(t('templates.failedSave'));
+    }
+    setSaving(false);
+  };
+
   return (
     <div className="space-y-6">
       <ReadOnlyBanner />
-      <ReadOnlyWrapper>
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <FileText className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('invoice.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <p className="text-sm text-muted-foreground">
-            {t('invoice.description')}
-          </p>
+      <div>
+        <h2 className="text-lg font-semibold">{t('invoice.title')}</h2>
+        <p className="text-sm text-muted-foreground">
+          {tab === "layout"
+            ? t('invoice.layoutDescription')
+            : tab === "customFields"
+              ? t('customFields.description')
+              : t('invoice.description')}
+        </p>
+      </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="invoicePrefix">{t('invoice.invoiceNumberFormat')}</Label>
-              <Input
-                id="invoicePrefix"
-                placeholder="{year}-"
-                value={invoicePrefix}
-                onChange={(e) => setInvoicePrefix(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                {t.rich('invoice.invoiceNumberFormatHint', {
-                  code: (chunks) => <code className="rounded bg-muted px-1">{chunks}</code>,
-                  bold: (chunks) => <span className="font-medium">{chunks}</span>,
-                  year: '{year}',
-                  preview: invoicePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) + (invoiceStartNumber || '1001'),
-                })}
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="invoiceStartNumber">{t('invoice.nextInvoiceNumber')}</Label>
-              <Input
-                id="invoiceStartNumber"
-                type="number"
-                min="1"
-                placeholder={t('invoice.nextInvoiceNumberPlaceholder')}
-                value={invoiceStartNumber}
-                onChange={(e) => setInvoiceStartNumber(e.target.value)}
-                className="w-32"
-              />
-              <p className="text-xs text-muted-foreground">
-                {t('invoice.nextInvoiceNumberHint', { example: invoicePrefix + (invoiceStartNumber || '...') })}
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="dueDays">{t('invoice.dueDays')}</Label>
-              <Input
-                id="dueDays"
-                type="number"
-                min="0"
-                placeholder="14"
-                value={dueDays}
-                onChange={(e) => setDueDays(e.target.value)}
-                className="w-24"
-              />
-              <p className="text-xs text-muted-foreground">
-                {t('invoice.dueDaysHint')}
-              </p>
-            </div>
-          </div>
+      {/* Tab Buttons */}
+      <div className="flex gap-1 rounded-lg border bg-muted p-1">
+        <button
+          type="button"
+          onClick={() => setTab("general")}
+          className={cn(
+            "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
+            tab === "general"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          {t('invoice.tabs.general')}
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("layout")}
+          className={cn(
+            "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
+            tab === "layout"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          {t('invoice.tabs.layout')}
+        </button>
+        {customFieldsEnabled && (
+          <button
+            type="button"
+            onClick={() => setTab("customFields")}
+            className={cn(
+              "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
+              tab === "customFields"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {t('invoice.tabs.customFields')}
+          </button>
+        )}
+      </div>
 
-          <Separator />
+      {tab === "general" ? (
+        <ReadOnlyWrapper>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="flex flex-row items-center gap-3 pb-4">
+              <FileText className="h-5 w-5 text-muted-foreground" />
+              <CardTitle className="text-lg">{t('invoice.tabs.general')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="invoicePrefix">{t('invoice.invoiceNumberFormat')}</Label>
+                  <Input
+                    id="invoicePrefix"
+                    placeholder="{year}-"
+                    value={invoicePrefix}
+                    onChange={(e) => setInvoicePrefix(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t.rich('invoice.invoiceNumberFormatHint', {
+                      code: (chunks) => <code className="rounded bg-muted px-1">{chunks}</code>,
+                      bold: (chunks) => <span className="font-medium">{chunks}</span>,
+                      year: '{year}',
+                      preview: invoicePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) + (invoiceStartNumber || '1001'),
+                    })}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="invoiceStartNumber">{t('invoice.nextInvoiceNumber')}</Label>
+                  <Input
+                    id="invoiceStartNumber"
+                    type="number"
+                    min="1"
+                    placeholder={t('invoice.nextInvoiceNumberPlaceholder')}
+                    value={invoiceStartNumber}
+                    onChange={(e) => setInvoiceStartNumber(e.target.value)}
+                    className="w-32"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t('invoice.nextInvoiceNumberHint', { example: invoicePrefix + (invoiceStartNumber || '...') })}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dueDays">{t('invoice.dueDays')}</Label>
+                  <Input
+                    id="dueDays"
+                    type="number"
+                    min="0"
+                    placeholder="14"
+                    value={dueDays}
+                    onChange={(e) => setDueDays(e.target.value)}
+                    className="w-24"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t('invoice.dueDaysHint')}
+                  </p>
+                </div>
+              </div>
 
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium">{t('invoice.visibilityTitle')}</h3>
-            <div className="flex items-center justify-between rounded-lg border p-3">
-              <div>
-                <Label className="text-sm font-medium">{t('invoice.companyLogo')}</Label>
+              <Separator />
+
+              <div className="space-y-2">
+                <Label htmlFor="footerNote">{t('invoice.customFooter')}</Label>
+                <Textarea
+                  id="footerNote"
+                  placeholder={t('invoice.footerPlaceholder')}
+                  rows={2}
+                  value={footerNote}
+                  onChange={(e) => setFooterNote(e.target.value)}
+                />
                 <p className="text-xs text-muted-foreground">
-                  {t('invoice.companyLogoHint')}
+                  {t('invoice.footerHint')}
                 </p>
               </div>
-              <Switch
-                checked={showLogo}
-                onCheckedChange={setShowLogo}
-              />
-            </div>
-            <div className="flex items-center justify-between rounded-lg border p-3">
-              <div>
-                <Label className="text-sm font-medium">{t('invoice.companyName')}</Label>
-                <p className="text-xs text-muted-foreground">
-                  {t('invoice.companyNameHint')}
-                </p>
-              </div>
-              <Switch
-                checked={showCompanyName}
-                onCheckedChange={setShowCompanyName}
-              />
-            </div>
-            <div className="flex items-center justify-between rounded-lg border p-3">
-              <div>
-                <Label className="text-sm font-medium">{t('invoice.bankAccount')}</Label>
-                <p className="text-xs text-muted-foreground">
-                  {t('invoice.bankAccountHint')}
-                </p>
-              </div>
-              <Switch
-                checked={showBankAccount}
-                onCheckedChange={setShowBankAccount}
-              />
-            </div>
-            <div className="flex items-center justify-between rounded-lg border p-3">
-              <div>
-                <Label className="text-sm font-medium">{t('invoice.organizationNumber')}</Label>
-                <p className="text-xs text-muted-foreground">
-                  {t('invoice.organizationNumberHint')}
-                </p>
-              </div>
-              <Switch
-                checked={showOrgNumber}
-                onCheckedChange={setShowOrgNumber}
-              />
-            </div>
-          </div>
 
-          <Separator />
-
-          <div className="space-y-2">
-            <Label htmlFor="footerNote">{t('invoice.customFooter')}</Label>
-            <Textarea
-              id="footerNote"
-              placeholder={t('invoice.footerPlaceholder')}
-              rows={2}
-              value={footerNote}
-              onChange={(e) => setFooterNote(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">
-              {t('invoice.footerHint')}
-            </p>
-          </div>
-
+              <SaveButton>
+                <Separator />
+                <div className="flex items-center gap-3">
+                  <Button onClick={handleSaveGeneral} disabled={saving}>
+                    {saving ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="mr-2 h-4 w-4" />
+                    )}
+                    {t('invoice.saveInvoice')}
+                  </Button>
+                </div>
+              </SaveButton>
+            </CardContent>
+          </Card>
+        </ReadOnlyWrapper>
+      ) : tab === "layout" ? (
+        <>
+          <ReadOnlyWrapper>
+            <div className="space-y-4">
+              <div className="flex gap-1 rounded-lg border bg-muted p-1 max-w-xs">
+                <button
+                  type="button"
+                  onClick={() => setLayoutDocType("invoice")}
+                  className={cn(
+                    "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                    layoutDocType === "invoice"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {t('invoice.layoutDocInvoice')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLayoutDocType("quote")}
+                  className={cn(
+                    "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                    layoutDocType === "quote"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {t('invoice.layoutDocQuote')}
+                </button>
+              </div>
+              <InvoiceLayoutEditor
+                config={layoutDocType === "invoice" ? invoiceLayout : quoteLayout}
+                onChange={layoutDocType === "invoice" ? setInvoiceLayout : setQuoteLayout}
+                documentType={layoutDocType}
+                customFields={customFields}
+              />
+            </div>
+          </ReadOnlyWrapper>
           <SaveButton>
-            <Separator />
-            <div className="flex items-center gap-3">
-              <Button onClick={handleSave} disabled={saving}>
-                {saving ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="mr-2 h-4 w-4" />
-                )}
-                {t('invoice.saveInvoice')}
+            <div className="flex justify-end">
+              <Button onClick={handleSaveLayout} disabled={saving}>
+                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t('invoice.saveLayout')}
               </Button>
             </div>
           </SaveButton>
-        </CardContent>
-      </Card>
-      </ReadOnlyWrapper>
+        </>
+      ) : (
+        <CustomFieldsManager
+          initialFields={customFields}
+          layoutConfig={layoutDocType === "invoice" ? invoiceLayout : quoteLayout}
+        />
+      )}
     </div>
   );
 }

@@ -142,7 +142,6 @@ export function CustomFieldsForm({
                 <Input
                   value={val}
                   onChange={(e) => updateValue(field.id, e.target.value)}
-                  required={field.required}
                   className={cn(hasError && "border-destructive focus-visible:ring-destructive")}
                 />
               )}
@@ -152,7 +151,6 @@ export function CustomFieldsForm({
                   type="number"
                   value={val}
                   onChange={(e) => updateValue(field.id, e.target.value)}
-                  required={field.required}
                   className={cn(hasError && "border-destructive focus-visible:ring-destructive")}
                 />
               )}
@@ -162,7 +160,6 @@ export function CustomFieldsForm({
                   type="date"
                   value={val}
                   onChange={(e) => updateValue(field.id, e.target.value)}
-                  required={field.required}
                   className={cn(hasError && "border-destructive focus-visible:ring-destructive")}
                 />
               )}
@@ -172,7 +169,6 @@ export function CustomFieldsForm({
                   value={val}
                   onChange={(e) => updateValue(field.id, e.target.value)}
                   rows={3}
-                  required={field.required}
                   className={cn(hasError && "border-destructive focus-visible:ring-destructive")}
                 />
               )}

@@ -245,7 +245,7 @@ describe("QuoteView", () => {
           expect.objectContaining({ method: "POST" })
         );
         const call = mockFetch.mock.calls.find((c: unknown[]) => c[0] === "/api/public/forms/quote-response");
-        const body = JSON.parse(call[1].body);
+        const body = JSON.parse(call![1].body);
         expect(body.action).toBe("accepted");
         expect(body.quoteId).toBe("quote-1");
         expect(body.publicToken).toBe("tok-abc");
@@ -312,7 +312,7 @@ describe("QuoteView", () => {
       await waitFor(() => {
         const call = mockFetch.mock.calls.find((c: unknown[]) => c[0] === "/api/public/forms/quote-response");
         expect(call).toBeTruthy();
-        const body = JSON.parse(call[1].body);
+        const body = JSON.parse(call![1].body);
         expect(body.action).toBe("changes_requested");
         expect(body.message).toBe("Need a discount");
       });

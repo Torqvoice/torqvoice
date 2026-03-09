@@ -22,9 +22,6 @@ import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard"
 import { cn } from "@/lib/utils";
 import { TemplateListClient } from "@/features/inspections/Components/TemplateListClient";
 import { Textarea } from "@/components/ui/textarea";
-import { InvoiceLayoutEditor } from "@/features/settings/Components/InvoiceLayoutEditor";
-import { saveInvoiceLayoutConfig, saveQuoteLayoutConfig } from "@/features/settings/Actions/invoiceLayoutActions";
-import { type InvoiceLayoutConfig, getDefaultInvoiceLayout } from "@/features/settings/Schema/invoiceLayoutSchema";
 
 interface TemplateValues {
   primaryColor: string;
@@ -32,7 +29,7 @@ interface TemplateValues {
   headerStyle: string;
 }
 
-type TabType = "invoice" | "quotation" | "inspections" | "sms" | "layout";
+type TabType = "invoice" | "quotation" | "inspections" | "sms";
 
 const fontMap: Record<string, string> = {
   Helvetica: "Helvetica, Arial, sans-serif",
@@ -613,16 +610,12 @@ export function TemplateSettings({
   inspectionTemplates = [],
   smsEnabled = false,
   initialSmsTemplates = {},
-  initialInvoiceLayout,
-  initialQuoteLayout,
 }: {
   initialInvoiceValues: TemplateValues;
   initialQuoteValues: TemplateValues;
   inspectionTemplates?: InspectionTemplate[];
   smsEnabled?: boolean;
   initialSmsTemplates?: Record<string, string>;
-  initialInvoiceLayout?: InvoiceLayoutConfig;
-  initialQuoteLayout?: InvoiceLayoutConfig;
 }) {
   const t = useTranslations('settings');
   const [tab, setTab] = useState<TabType>("invoice");
@@ -630,9 +623,6 @@ export function TemplateSettings({
   const [invoiceValues, setInvoiceValues] = useState(initialInvoiceValues);
   const [quoteValues, setQuoteValues] = useState(initialQuoteValues);
   const [smsValues, setSmsValues] = useState<Record<string, string>>(initialSmsTemplates);
-  const [invoiceLayout, setInvoiceLayout] = useState(initialInvoiceLayout ?? getDefaultInvoiceLayout());
-  const [quoteLayout, setQuoteLayout] = useState(initialQuoteLayout ?? getDefaultInvoiceLayout());
-  const [layoutDocType, setLayoutDocType] = useState<"invoice" | "quote">("invoice");
 
   const handleSave = async () => {
     setSaving(true);
@@ -658,13 +648,6 @@ export function TemplateSettings({
           ),
         );
         toast.success(t('templates.smsTemplateSaved'));
-      } else if (tab === "layout") {
-        if (layoutDocType === "invoice") {
-          await saveInvoiceLayoutConfig(invoiceLayout);
-        } else {
-          await saveQuoteLayoutConfig(quoteLayout);
-        }
-        toast.success(t('templates.layoutSaved'));
       }
     } catch {
       toast.error(t('templates.failedSave'));
@@ -682,9 +665,7 @@ export function TemplateSettings({
             ? t('templates.inspectionsDescription')
             : tab === "sms"
               ? t('templates.smsDescription')
-              : tab === "layout"
-                ? t('templates.layoutDescription')
-                : t('templates.invoiceDescription')}
+              : t('templates.invoiceDescription')}
         </p>
       </div>
 
@@ -726,18 +707,6 @@ export function TemplateSettings({
         >
           {t('templates.tabs.inspections')}
         </button>
-        <button
-          type="button"
-          onClick={() => setTab("layout")}
-          className={cn(
-            "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
-            tab === "layout"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          {t('templates.tabs.layout')}
-        </button>
         {smsEnabled && (
           <button
             type="button"
@@ -756,52 +725,6 @@ export function TemplateSettings({
 
       {tab === "inspections" ? (
         <TemplateListClient templates={inspectionTemplates} />
-      ) : tab === "layout" ? (
-        <>
-          <ReadOnlyWrapper>
-            <div className="space-y-4">
-              <div className="flex gap-1 rounded-lg border bg-muted p-1 max-w-xs">
-                <button
-                  type="button"
-                  onClick={() => setLayoutDocType("invoice")}
-                  className={cn(
-                    "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                    layoutDocType === "invoice"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {t('templates.layoutDocInvoice')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setLayoutDocType("quote")}
-                  className={cn(
-                    "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                    layoutDocType === "quote"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {t('templates.layoutDocQuote')}
-                </button>
-              </div>
-              <InvoiceLayoutEditor
-                config={layoutDocType === "invoice" ? invoiceLayout : quoteLayout}
-                onChange={layoutDocType === "invoice" ? setInvoiceLayout : setQuoteLayout}
-                documentType={layoutDocType}
-              />
-            </div>
-          </ReadOnlyWrapper>
-          <SaveButton>
-            <div className="flex justify-end">
-              <Button onClick={handleSave} disabled={saving}>
-                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('templates.saveInvoiceTemplate')}
-              </Button>
-            </div>
-          </SaveButton>
-        </>
       ) : tab === "sms" ? (
         <>
           <ReadOnlyWrapper>

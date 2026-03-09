@@ -14,8 +14,8 @@
       "subscription": { "title": "Abonnement", "description": "Plan og fakturering" },
       "account": { "title": "Konto", "description": "Navn, e-post og passord" },
       "team": { "title": "Team", "description": "Medlemmer og roller" },
-      "invoice": { "title": "Faktura", "description": "Fakturalayout og felter" },
-      "templates": { "title": "Maler", "description": "Faktura-, tilbuds- og inspeksjonsmaler" },
+      "invoice": { "title": "Faktura og tilbud", "description": "Fakturainnstillinger, layout og egendefinerte felter" },
+      "templates": { "title": "Maler", "description": "Visuell stil, farger og skrifter" },
       "payment": { "title": "Betaling", "description": "Betalingsvilkar og kontoer" },
       "currency": { "title": "Valuta", "description": "Valuta- og avgiftsstandarder" },
       "customFields": { "title": "Egendefinerte felter", "description": "Definer egne datafelter" },
@@ -256,8 +256,13 @@
     "failedUpdateRole": "Kunne ikke oppdatere rolle"
   },
   "invoice": {
-    "title": "Fakturalayout",
-    "description": "Konfigurer hva som vises pa genererte PDF-fakturaer.",
+    "title": "Faktura og tilbud",
+    "description": "Konfigurer fakturainnstillinger, layout og egendefinerte felter.",
+    "tabs": {
+      "general": "Generelt",
+      "layout": "Oppsett",
+      "customFields": "Egendefinerte felter"
+    },
     "invoiceNumberFormat": "Fakturanummerformat",
     "invoiceNumberFormatHint": "Bruk <code>{year}</code> for innevarende ar. Forhandsvisning: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Neste fakturanummer",
@@ -278,7 +283,12 @@
     "footerPlaceholder": "Takk for handelen!",
     "footerHint": "Denne teksten vises nederst pa hver faktura",
     "saveInvoice": "Lagre fakturainnstillinger",
-    "saved": "Fakturainnstillinger lagret"
+    "saved": "Fakturainnstillinger lagret",
+    "layoutDescription": "Tilpass rekkefølgen og synligheten av seksjoner i fakturaer og tilbud.",
+    "layoutSaved": "Oppsett lagret",
+    "layoutDocInvoice": "Faktura",
+    "layoutDocQuote": "Tilbud",
+    "saveLayout": "Lagre oppsett"
   },
   "templates": {
     "title": "Maler",
