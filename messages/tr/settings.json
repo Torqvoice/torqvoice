@@ -791,6 +791,8 @@
     "upgradeDialogTitle": "Enterprise'a Yükselt",
     "upgradeDialogDescription": "Mevcut Pro planınız Enterprise'a yükseltilecek. Yalnızca kalan fatura dönemi için orantılı fark tahsil edilecektir.",
     "upgradeConfirm": "Yükseltmeyi Onayla",
+    "upgradeCalculating": "Orantılı tutar hesaplanıyor…",
+    "upgradeAmountDue": "Şimdi ödenecek tutar",
     "upgradeSuccess": "Enterprise'a başarıyla yükseltildi!",
     "upgradeError": "Abonelik yükseltilemedi"
   }

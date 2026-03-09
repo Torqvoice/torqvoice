@@ -791,6 +791,8 @@
     "upgradeDialogTitle": "Passer à Enterprise",
     "upgradeDialogDescription": "Votre plan Pro actuel sera mis à niveau vers Enterprise. Seule la différence au prorata pour la période de facturation restante vous sera facturée.",
     "upgradeConfirm": "Confirmer la mise à niveau",
+    "upgradeCalculating": "Calcul du montant au prorata…",
+    "upgradeAmountDue": "Montant dû maintenant",
     "upgradeSuccess": "Mis à niveau vers Enterprise avec succès !",
     "upgradeError": "Échec de la mise à niveau de l'abonnement"
   }

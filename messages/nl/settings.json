@@ -616,6 +616,8 @@
     "upgradeDialogTitle": "Upgraden naar Enterprise",
     "upgradeDialogDescription": "Uw huidige Pro-plan wordt geüpgraded naar Enterprise. U wordt alleen het evenredige verschil voor de resterende factureringsperiode in rekening gebracht.",
     "upgradeConfirm": "Upgrade bevestigen",
+    "upgradeCalculating": "Evenredig bedrag berekenen…",
+    "upgradeAmountDue": "Nu te betalen bedrag",
     "upgradeSuccess": "Succesvol geüpgraded naar Enterprise!",
     "upgradeError": "Upgrade van abonnement mislukt"
   }

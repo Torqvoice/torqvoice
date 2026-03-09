@@ -741,6 +741,8 @@
     "upgradeDialogTitle": "Przejdź na Enterprise",
     "upgradeDialogDescription": "Twój aktualny plan Pro zostanie ulepszony do Enterprise. Zostaniesz obciążony jedynie proporcjonalną różnicą za pozostały okres rozliczeniowy.",
     "upgradeConfirm": "Potwierdź ulepszenie",
+    "upgradeCalculating": "Obliczanie proporcjonalnej kwoty…",
+    "upgradeAmountDue": "Kwota do zapłaty teraz",
     "upgradeSuccess": "Pomyślnie ulepszono do Enterprise!",
     "upgradeError": "Nie udało się ulepszyć subskrypcji"
   }

@@ -791,6 +791,8 @@
     "upgradeDialogTitle": "Mejorar a Enterprise",
     "upgradeDialogDescription": "Su plan Pro actual se mejorará a Enterprise. Solo se le cobrará la diferencia prorrateada por el período de facturación restante.",
     "upgradeConfirm": "Confirmar mejora",
+    "upgradeCalculating": "Calculando el monto prorrateado…",
+    "upgradeAmountDue": "Monto a pagar ahora",
     "upgradeSuccess": "¡Mejorado a Enterprise con éxito!",
     "upgradeError": "Error al mejorar la suscripción"
   }

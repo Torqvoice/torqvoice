@@ -791,6 +791,8 @@
     "upgradeDialogTitle": "Passa a Enterprise",
     "upgradeDialogDescription": "Il tuo piano Pro attuale verrà aggiornato a Enterprise. Ti verrà addebitata solo la differenza proporzionale per il periodo di fatturazione rimanente.",
     "upgradeConfirm": "Conferma aggiornamento",
+    "upgradeCalculating": "Calcolo dell'importo proporzionale…",
+    "upgradeAmountDue": "Importo dovuto ora",
     "upgradeSuccess": "Aggiornato a Enterprise con successo!",
     "upgradeError": "Aggiornamento dell'abbonamento non riuscito"
   }

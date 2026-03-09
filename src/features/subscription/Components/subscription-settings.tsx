@@ -71,6 +71,11 @@ export function SubscriptionSettings({
   const [resumeLoading, setResumeLoading] = useState(false);
   const [billingLoading, setBillingLoading] = useState(false);
   const [upgradeLoading, setUpgradeLoading] = useState(false);
+  const [upgradePreview, setUpgradePreview] = useState<{
+    amountDue: number;
+    currency: string;
+  } | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   const isPaid = plan === "pro" || plan === "enterprise";
   const isCanceling = cancelAtPeriodEnd && status === "active";
@@ -95,6 +100,28 @@ export function SubscriptionSettings({
       toast.error("Failed to start checkout");
       setCheckoutLoading(null);
     }
+  };
+
+  const handleUpgradeDialogOpen = async (open: boolean) => {
+    if (!open) {
+      setUpgradePreview(null);
+      return;
+    }
+    setPreviewLoading(true);
+    try {
+      const res = await fetch("/api/protected/subscription/upgrade-preview", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (data.amountDue !== undefined) {
+        setUpgradePreview(data);
+      } else {
+        toast.error(data.error ?? t("subscription.upgradeError"));
+      }
+    } catch {
+      toast.error(t("subscription.upgradeError"));
+    }
+    setPreviewLoading(false);
   };
 
   const handleUpgrade = async () => {
@@ -436,7 +463,7 @@ export function SubscriptionSettings({
             <CardDescription>{t("subscription.upgradeToEnterpriseDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <AlertDialog>
+            <AlertDialog onOpenChange={handleUpgradeDialogOpen}>
               <AlertDialogTrigger asChild>
                 <Button
                   variant="outline"
@@ -458,11 +485,27 @@ export function SubscriptionSettings({
                     {t("subscription.upgradeDialogDescription")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
+                {previewLoading && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {t("subscription.upgradeCalculating")}
+                  </div>
+                )}
+                {upgradePreview && (
+                  <div className="rounded-md border bg-muted/50 p-3 text-sm">
+                    <p>
+                      {t("subscription.upgradeAmountDue")}:{" "}
+                      <span className="font-semibold">
+                        ${upgradePreview.amountDue.toFixed(2)} {upgradePreview.currency.toUpperCase()}
+                      </span>
+                    </p>
+                  </div>
+                )}
                 <AlertDialogFooter>
                   <AlertDialogCancel>{t("subscription.cancelDialogCancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleUpgrade}
-                    disabled={upgradeLoading}
+                    disabled={upgradeLoading || previewLoading || !upgradePreview}
                   >
                     {upgradeLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {t("subscription.upgradeConfirm")}

@@ -805,6 +805,8 @@
     "upgradeDialogTitle": "Oppgrader til Enterprise",
     "upgradeDialogDescription": "Din gjeldende Pro-plan vil bli oppgradert til Enterprise. Du vil kun bli belastet for den forholdsmessige differansen for den gjenværende faktureringsperioden.",
     "upgradeConfirm": "Bekreft oppgradering",
+    "upgradeCalculating": "Beregner forholdsmessig beløp…",
+    "upgradeAmountDue": "Beløp å betale nå",
     "upgradeSuccess": "Vellykket oppgradert til Enterprise!",
     "upgradeError": "Kunne ikke oppgradere abonnementet"
   }

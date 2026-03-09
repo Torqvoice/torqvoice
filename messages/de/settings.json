@@ -791,6 +791,8 @@
     "upgradeDialogTitle": "Auf Enterprise upgraden",
     "upgradeDialogDescription": "Ihr aktueller Pro-Plan wird auf Enterprise aufgerüstet. Es wird Ihnen nur die anteilige Differenz für den verbleibenden Abrechnungszeitraum berechnet.",
     "upgradeConfirm": "Upgrade bestätigen",
+    "upgradeCalculating": "Anteiligen Betrag berechnen…",
+    "upgradeAmountDue": "Jetzt fälliger Betrag",
     "upgradeSuccess": "Erfolgreich auf Enterprise upgegradet!",
     "upgradeError": "Abonnement konnte nicht upgegradet werden"
   }

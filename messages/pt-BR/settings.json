@@ -791,6 +791,8 @@
     "upgradeDialogTitle": "Atualizar para Enterprise",
     "upgradeDialogDescription": "Seu plano Pro atual será atualizado para Enterprise. Você será cobrado apenas pela diferença proporcional do período de faturamento restante.",
     "upgradeConfirm": "Confirmar atualização",
+    "upgradeCalculating": "Calculando o valor proporcional…",
+    "upgradeAmountDue": "Valor a pagar agora",
     "upgradeSuccess": "Atualizado para Enterprise com sucesso!",
     "upgradeError": "Falha ao atualizar a assinatura"
   }
