@@ -250,7 +250,7 @@ describe("POST /api/protected/subscription/upgrade", () => {
         organizationId: "org-1",
         key: "license.plan",
         value: "enterprise",
-        userId: "",
+        userId: "user-1",
       },
       update: { value: "enterprise" },
     });

@@ -138,7 +138,7 @@ export async function POST(request: Request) {
         organizationId: membership.organizationId,
         key: "license.plan",
         value: plan,
-        userId: "",
+        userId: session.user.id,
       },
       update: { value: plan },
     });
