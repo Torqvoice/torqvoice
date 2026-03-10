@@ -199,14 +199,14 @@ export function NotesOnly({
   return (
     <>
       {hasContent(invoiceNotes) && (
-        <View style={styles.notesSection}>
+        <View wrap={false} style={styles.notesSection}>
           <Text style={styles.notesLabel}>{labels.notes || 'Notes'}</Text>
           <HtmlToPdf html={invoiceNotes!} baseStyle={styles.notesText} fontBold={fontBold} />
         </View>
       )}
 
       {(otherAttachments.length > 0 || pdfAttachmentNames.length > 0) && (
-        <View style={{ ...styles.notesSection, marginTop: 8 }}>
+        <View wrap={false} style={{ ...styles.notesSection, marginTop: 8 }}>
           <Text style={styles.notesLabel}>{labels.attachedDocuments || 'Attached Documents'}</Text>
           {pdfAttachmentNames.map((name, i) => (
             <Text key={`pdf-${i}`} style={styles.notesText}>
@@ -230,6 +230,8 @@ export function BankAccountSection({
   styles,
   labels,
   visibleFields,
+  primaryColor = '#d97706',
+  dueDate,
 }: {
   invoiceSettings?: InvoiceSettingsProps
   fontFamily: string
@@ -237,6 +239,8 @@ export function BankAccountSection({
   labels: Record<string, string>
   /** When provided by layoutConfig, takes priority over individual toggle props */
   visibleFields?: Set<string> | null
+  primaryColor?: string
+  dueDate?: string | null
 }) {
   const fontBold = getFontBold(fontFamily)
 
@@ -250,27 +254,76 @@ export function BankAccountSection({
 
   const hasBankAccount = showBankAccount && invoiceSettings?.bankAccount
   const hasOrgNumber = showOrgNumber && invoiceSettings?.orgNumber
+  const hasPaymentTerms = !!invoiceSettings?.paymentTerms
+  const hasDueDate = !!dueDate
 
-  if (!hasBankAccount && !hasOrgNumber) return null
+  if (!hasBankAccount && !hasOrgNumber && !hasPaymentTerms && !hasDueDate) return null
+
+  // Convert hex color to rgba-like background (10% opacity)
+  const bgColor = `${primaryColor}14`
+  const borderColor = primaryColor
 
   return (
-    <View style={{ ...styles.notesSection, marginTop: 12 }}>
-      {hasBankAccount && (
-        <>
-          <Text style={styles.notesLabel}>{labels.bankAccount || 'Til Konto / Bank Account'}</Text>
-          <Text style={{ fontSize: 11, fontFamily: fontBold }}>
-            {invoiceSettings!.bankAccount}
-          </Text>
-        </>
-      )}
-      {hasOrgNumber && (
-        <View style={hasBankAccount ? { marginTop: 6 } : undefined}>
-          <Text style={styles.notesLabel}>{labels.orgNumber || 'Org. Number'}</Text>
-          <Text style={{ fontSize: 11, fontFamily: fontBold }}>
-            {invoiceSettings!.orgNumber}
-          </Text>
-        </View>
-      )}
+    <View wrap={false} style={{
+      marginTop: 12,
+      padding: 12,
+      borderWidth: 1,
+      borderColor: borderColor,
+      borderRadius: 4,
+      backgroundColor: bgColor,
+    }}>
+      <Text style={{
+        fontSize: 9,
+        fontFamily: fontBold,
+        color: primaryColor,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+        marginBottom: 8,
+      }}>
+        {labels.paymentInformation || 'Payment Information'}
+      </Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+        {hasBankAccount && (
+          <View style={{ minWidth: '40%' }}>
+            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+              {labels.bankAccount || 'Bank Account'}
+            </Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
+              {invoiceSettings!.bankAccount}
+            </Text>
+          </View>
+        )}
+        {hasOrgNumber && (
+          <View style={{ minWidth: '40%' }}>
+            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+              {labels.orgNumberLabel || 'Org. Number'}
+            </Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
+              {invoiceSettings!.orgNumber}
+            </Text>
+          </View>
+        )}
+        {hasPaymentTerms && (
+          <View style={{ minWidth: '40%' }}>
+            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+              {labels.paymentTermsLabel || 'Payment Terms'}
+            </Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
+              {invoiceSettings!.paymentTerms}
+            </Text>
+          </View>
+        )}
+        {hasDueDate && (
+          <View style={{ minWidth: '40%' }}>
+            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+              {labels.dueDateLabel || 'Due Date'}
+            </Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
+              {dueDate}
+            </Text>
+          </View>
+        )}
+      </View>
     </View>
   )
 }
@@ -289,7 +342,7 @@ export function DiagnosticNotesSection({
   const fontBold = getFontBold(fontFamily)
   if (!hasContent(diagnosticNotes)) return null
   return (
-    <View style={{ ...styles.notesSection, marginTop: 8 }}>
+    <View wrap={false} style={{ ...styles.notesSection, marginTop: 8 }}>
       <Text style={styles.notesLabel}>{labels.diagnosticNotes || 'Diagnostic Notes'}</Text>
       <HtmlToPdf html={diagnosticNotes!} baseStyle={styles.notesText} fontBold={fontBold} />
     </View>

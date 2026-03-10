@@ -253,6 +253,8 @@ export function InvoicePDF({
         styles={styles}
         labels={labels}
         visibleFields={visibleBankAccountFields}
+        primaryColor={primaryColor}
+        dueDate={dueDate}
       />
     ),
 
