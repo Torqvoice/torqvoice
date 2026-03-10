@@ -10,24 +10,78 @@
       "system": "Sistema"
     },
     "items": {
-      "company": { "title": "Empresa", "description": "Detalhes comerciais e marca" },
-      "subscription": { "title": "Assinatura", "description": "Plano e faturamento" },
-      "account": { "title": "Conta", "description": "Nome, e-mail e senha" },
-      "team": { "title": "Equipe", "description": "Membros e funcoes" },
-      "invoice": { "title": "Faturas e orcamentos", "description": "Configuracoes de fatura, layout e campos personalizados" },
-      "templates": { "title": "Modelos", "description": "Estilo visual, cores e fontes" },
-      "payment": { "title": "Pagamento", "description": "Condicoes de pagamento e contas" },
-      "currency": { "title": "Moeda", "description": "Padroes de moeda e impostos" },
-      "customFields": { "title": "Campos personalizados", "description": "Definir campos de dados personalizados" },
-      "email": { "title": "E-mail", "description": "Provedor de e-mail e envio" },
-      "sms": { "title": "SMS", "description": "Provedor SMS e mensagens" },
-      "customerPortal": { "title": "Portal do cliente", "description": "Portal de autoatendimento do cliente" },
-      "workshop": { "title": "Oficina", "description": "Padroes de tecnico e mao de obra" },
-      "maintenance": { "title": "Manutencao", "description": "Intervalos de servico previstos" },
-      "appearance": { "title": "Aparencia", "description": "Tema e exibicao" },
-      "data": { "title": "Dados", "description": "Exportar e importar backup" },
-      "license": { "title": "Licenca", "description": "Licenca marca branca" },
-      "about": { "title": "Sobre", "description": "Versao e informacoes" }
+      "company": {
+        "title": "Empresa",
+        "description": "Detalhes comerciais e marca"
+      },
+      "subscription": {
+        "title": "Assinatura",
+        "description": "Plano e faturamento"
+      },
+      "account": {
+        "title": "Conta",
+        "description": "Nome, e-mail e senha"
+      },
+      "team": {
+        "title": "Equipe",
+        "description": "Membros e funcoes"
+      },
+      "invoice": {
+        "title": "Faturas e orcamentos",
+        "description": "Configuracoes de fatura, layout e campos personalizados"
+      },
+      "templates": {
+        "title": "Modelos",
+        "description": "Estilo visual, cores e fontes"
+      },
+      "payment": {
+        "title": "Pagamento",
+        "description": "Condicoes de pagamento e contas"
+      },
+      "currency": {
+        "title": "Moeda",
+        "description": "Padroes de moeda e impostos"
+      },
+      "customFields": {
+        "title": "Campos personalizados",
+        "description": "Definir campos de dados personalizados"
+      },
+      "email": {
+        "title": "E-mail",
+        "description": "Provedor de e-mail e envio"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "Provedor SMS e mensagens"
+      },
+      "customerPortal": {
+        "title": "Portal do cliente",
+        "description": "Portal de autoatendimento do cliente"
+      },
+      "workshop": {
+        "title": "Oficina",
+        "description": "Padroes de tecnico e mao de obra"
+      },
+      "maintenance": {
+        "title": "Manutencao",
+        "description": "Intervalos de servico previstos"
+      },
+      "appearance": {
+        "title": "Aparencia",
+        "description": "Tema e exibicao"
+      },
+      "data": {
+        "title": "Dados",
+        "description": "Exportar e importar backup"
+      },
+      "license": {
+        "title": "Licenca",
+        "description": "Licenca marca branca"
+      },
+      "about": {
+        "title": "Sobre",
+        "description": "Versao e informacoes"
+      }
     },
     "pro": "PRO"
   },
@@ -278,7 +332,13 @@
     "footerPlaceholder": "Obrigado pela preferencia!",
     "footerHint": "Este texto aparece no final de cada fatura",
     "saveInvoice": "Salvar configuracoes da fatura",
-    "saved": "Configuracoes da fatura salvas"
+    "saved": "Configuracoes da fatura salvas",
+    "layoutDescription": "Personalize a ordem e visibilidade das seções em suas faturas e orçamentos.",
+    "layoutSaved": "Layout salvo com sucesso",
+    "preview": "Pré-visualização",
+    "layoutDocInvoice": "Fatura",
+    "layoutDocQuote": "Orçamento",
+    "saveLayout": "Salvar layout"
   },
   "templates": {
     "title": "Modelos",
@@ -315,6 +375,12 @@
     "rate": "Taxa",
     "subtotal": "Subtotal",
     "tax": "Imposto ({rate}%)",
+    "previewService": "Serviço",
+    "previewNotes": "Observações",
+    "previewDiagnosticNotes": "Notas de diagnóstico",
+    "previewDue": "Vencimento: {date}",
+    "previewAdditionalInfo": "Informações adicionais",
+    "previewThankYou": "Obrigado pela preferência",
     "saveInvoiceTemplate": "Salvar modelo de fatura",
     "saveQuotationTemplate": "Salvar modelo de orcamento",
     "invoiceTemplateSaved": "Configuracoes do modelo de fatura salvas",

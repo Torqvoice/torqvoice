@@ -10,24 +10,78 @@
       "system": "Sistema"
     },
     "items": {
-      "company": { "title": "Empresa", "description": "Datos comerciales y marca" },
-      "subscription": { "title": "Suscripcion", "description": "Plan y facturacion" },
-      "account": { "title": "Cuenta", "description": "Nombre, correo y contrasena" },
-      "team": { "title": "Equipo", "description": "Miembros y roles" },
-      "invoice": { "title": "Facturas y presupuestos", "description": "Configuracion de facturas, diseno y campos personalizados" },
-      "templates": { "title": "Plantillas", "description": "Estilo visual, colores y fuentes" },
-      "payment": { "title": "Pago", "description": "Condiciones de pago y cuentas" },
-      "currency": { "title": "Moneda", "description": "Valores predeterminados de moneda e impuestos" },
-      "customFields": { "title": "Campos personalizados", "description": "Definir campos de datos personalizados" },
-      "email": { "title": "Correo", "description": "Proveedor de correo y envio" },
-      "sms": { "title": "SMS", "description": "Proveedor de SMS y mensajeria" },
-      "customerPortal": { "title": "Portal del cliente", "description": "Portal de autoservicio del cliente" },
-      "workshop": { "title": "Taller", "description": "Valores predeterminados de tecnico y mano de obra" },
-      "maintenance": { "title": "Mantenimiento", "description": "Intervalos de servicio predichos" },
-      "appearance": { "title": "Apariencia", "description": "Tema y visualizacion" },
-      "data": { "title": "Datos", "description": "Exportar e importar respaldo" },
-      "license": { "title": "Licencia", "description": "Licencia marca blanca" },
-      "about": { "title": "Acerca de", "description": "Version e informacion" }
+      "company": {
+        "title": "Empresa",
+        "description": "Datos comerciales y marca"
+      },
+      "subscription": {
+        "title": "Suscripcion",
+        "description": "Plan y facturacion"
+      },
+      "account": {
+        "title": "Cuenta",
+        "description": "Nombre, correo y contrasena"
+      },
+      "team": {
+        "title": "Equipo",
+        "description": "Miembros y roles"
+      },
+      "invoice": {
+        "title": "Facturas y presupuestos",
+        "description": "Configuracion de facturas, diseno y campos personalizados"
+      },
+      "templates": {
+        "title": "Plantillas",
+        "description": "Estilo visual, colores y fuentes"
+      },
+      "payment": {
+        "title": "Pago",
+        "description": "Condiciones de pago y cuentas"
+      },
+      "currency": {
+        "title": "Moneda",
+        "description": "Valores predeterminados de moneda e impuestos"
+      },
+      "customFields": {
+        "title": "Campos personalizados",
+        "description": "Definir campos de datos personalizados"
+      },
+      "email": {
+        "title": "Correo",
+        "description": "Proveedor de correo y envio"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "Proveedor de SMS y mensajeria"
+      },
+      "customerPortal": {
+        "title": "Portal del cliente",
+        "description": "Portal de autoservicio del cliente"
+      },
+      "workshop": {
+        "title": "Taller",
+        "description": "Valores predeterminados de tecnico y mano de obra"
+      },
+      "maintenance": {
+        "title": "Mantenimiento",
+        "description": "Intervalos de servicio predichos"
+      },
+      "appearance": {
+        "title": "Apariencia",
+        "description": "Tema y visualizacion"
+      },
+      "data": {
+        "title": "Datos",
+        "description": "Exportar e importar respaldo"
+      },
+      "license": {
+        "title": "Licencia",
+        "description": "Licencia marca blanca"
+      },
+      "about": {
+        "title": "Acerca de",
+        "description": "Version e informacion"
+      }
     },
     "pro": "PRO"
   },
@@ -278,7 +332,13 @@
     "footerPlaceholder": "Gracias por su preferencia!",
     "footerHint": "Este texto aparece al final de cada factura",
     "saveInvoice": "Guardar configuracion de factura",
-    "saved": "Configuracion de factura guardada"
+    "saved": "Configuracion de factura guardada",
+    "layoutDescription": "Personaliza el orden y la visibilidad de las secciones en tus facturas y presupuestos.",
+    "layoutSaved": "Diseño guardado correctamente",
+    "preview": "Vista previa",
+    "layoutDocInvoice": "Factura",
+    "layoutDocQuote": "Presupuesto",
+    "saveLayout": "Guardar diseño"
   },
   "templates": {
     "title": "Plantillas",
@@ -315,6 +375,12 @@
     "rate": "Tarifa",
     "subtotal": "Subtotal",
     "tax": "Impuesto ({rate}%)",
+    "previewService": "Servicio",
+    "previewNotes": "Notas",
+    "previewDiagnosticNotes": "Notas de diagnóstico",
+    "previewDue": "Vencimiento: {date}",
+    "previewAdditionalInfo": "Información adicional",
+    "previewThankYou": "Gracias por su confianza",
     "saveInvoiceTemplate": "Guardar plantilla de factura",
     "saveQuotationTemplate": "Guardar plantilla de cotizacion",
     "invoiceTemplateSaved": "Configuracion de plantilla de factura guardada",

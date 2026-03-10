@@ -16,6 +16,7 @@ import { FileText, Loader2, Save } from "lucide-react";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 import { cn } from "@/lib/utils";
 import { InvoiceLayoutEditor } from "@/features/settings/Components/InvoiceLayoutEditor";
+import { InvoiceLayoutPreview } from "@/features/settings/Components/InvoiceLayoutPreview";
 import { saveInvoiceLayoutConfig, saveQuoteLayoutConfig } from "@/features/settings/Actions/invoiceLayoutActions";
 import { type InvoiceLayoutConfig, getDefaultInvoiceLayout } from "@/features/settings/Schema/invoiceLayoutSchema";
 import { CustomFieldsManager } from "@/features/custom-fields/Components/CustomFieldsManager";
@@ -76,6 +77,18 @@ export function InvoiceSettings({
   const [invoiceLayout, setInvoiceLayout] = useState(initialInvoiceLayout ?? getDefaultInvoiceLayout());
   const [quoteLayout, setQuoteLayout] = useState(initialQuoteLayout ?? getDefaultInvoiceLayout());
   const [layoutDocType, setLayoutDocType] = useState<"invoice" | "quote">("invoice");
+
+  // Template values from saved settings
+  const invoiceTemplate = {
+    primaryColor: settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || "#d97706",
+    fontFamily: settings[SETTING_KEYS.INVOICE_FONT_FAMILY] || "Helvetica",
+    headerStyle: settings[SETTING_KEYS.INVOICE_HEADER_STYLE] || "standard",
+  };
+  const quoteTemplate = {
+    primaryColor: settings[SETTING_KEYS.QUOTE_PRIMARY_COLOR] || invoiceTemplate.primaryColor,
+    fontFamily: settings[SETTING_KEYS.QUOTE_FONT_FAMILY] || invoiceTemplate.fontFamily,
+    headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || invoiceTemplate.headerStyle,
+  };
 
   const handleSaveGeneral = async () => {
     setSaving(true);
@@ -281,12 +294,26 @@ export function InvoiceSettings({
                   {t('invoice.layoutDocQuote')}
                 </button>
               </div>
-              <InvoiceLayoutEditor
-                config={layoutDocType === "invoice" ? invoiceLayout : quoteLayout}
-                onChange={layoutDocType === "invoice" ? setInvoiceLayout : setQuoteLayout}
-                documentType={layoutDocType}
-                customFields={customFields}
-              />
+              <div className="grid gap-6 xl:grid-cols-2">
+                <InvoiceLayoutEditor
+                  config={layoutDocType === "invoice" ? invoiceLayout : quoteLayout}
+                  onChange={layoutDocType === "invoice" ? setInvoiceLayout : setQuoteLayout}
+                  documentType={layoutDocType}
+                  customFields={customFields}
+                />
+                <div className="hidden xl:block pr-2">
+                  <div className="sticky top-6 space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground">{t('invoice.preview')}</p>
+                    <InvoiceLayoutPreview
+                      config={layoutDocType === "invoice" ? invoiceLayout : quoteLayout}
+                      documentType={layoutDocType}
+                      customFields={customFields}
+                      template={layoutDocType === "invoice" ? invoiceTemplate : quoteTemplate}
+                      logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </ReadOnlyWrapper>
           <SaveButton>

@@ -10,24 +10,78 @@
       "system": "System"
     },
     "items": {
-      "company": { "title": "Unternehmen", "description": "Firmendetails & Branding" },
-      "subscription": { "title": "Abonnement", "description": "Tarif & Abrechnung" },
-      "account": { "title": "Konto", "description": "Name, E-Mail & Passwort" },
-      "team": { "title": "Team", "description": "Mitglieder & Rollen" },
-      "invoice": { "title": "Rechnung & Angebote", "description": "Rechnungseinstellungen, Layout & benutzerdefinierte Felder" },
-      "templates": { "title": "Vorlagen", "description": "Visueller Stil, Farben & Schriftarten" },
-      "payment": { "title": "Zahlung", "description": "Zahlungsbedingungen & Konten" },
-      "currency": { "title": "Wahrung", "description": "Wahrungs- & Steuerstandards" },
-      "customFields": { "title": "Benutzerdefinierte Felder", "description": "Eigene Datenfelder definieren" },
-      "email": { "title": "E-Mail", "description": "E-Mail-Anbieter & Versand" },
-      "sms": { "title": "SMS", "description": "SMS-Anbieter & Nachrichten" },
-      "customerPortal": { "title": "Kundenportal", "description": "Kunden-Self-Service-Portal" },
-      "workshop": { "title": "Werkstatt", "description": "Techniker- & Arbeitsstandards" },
-      "maintenance": { "title": "Wartung", "description": "Vorhergesagte Serviceintervalle" },
-      "appearance": { "title": "Darstellung", "description": "Design & Anzeige" },
-      "data": { "title": "Daten", "description": "Export & Import-Backup" },
-      "license": { "title": "Lizenz", "description": "White-Label-Lizenz" },
-      "about": { "title": "Info", "description": "Version & Informationen" }
+      "company": {
+        "title": "Unternehmen",
+        "description": "Firmendetails & Branding"
+      },
+      "subscription": {
+        "title": "Abonnement",
+        "description": "Tarif & Abrechnung"
+      },
+      "account": {
+        "title": "Konto",
+        "description": "Name, E-Mail & Passwort"
+      },
+      "team": {
+        "title": "Team",
+        "description": "Mitglieder & Rollen"
+      },
+      "invoice": {
+        "title": "Rechnung & Angebote",
+        "description": "Rechnungseinstellungen, Layout & benutzerdefinierte Felder"
+      },
+      "templates": {
+        "title": "Vorlagen",
+        "description": "Visueller Stil, Farben & Schriftarten"
+      },
+      "payment": {
+        "title": "Zahlung",
+        "description": "Zahlungsbedingungen & Konten"
+      },
+      "currency": {
+        "title": "Wahrung",
+        "description": "Wahrungs- & Steuerstandards"
+      },
+      "customFields": {
+        "title": "Benutzerdefinierte Felder",
+        "description": "Eigene Datenfelder definieren"
+      },
+      "email": {
+        "title": "E-Mail",
+        "description": "E-Mail-Anbieter & Versand"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "SMS-Anbieter & Nachrichten"
+      },
+      "customerPortal": {
+        "title": "Kundenportal",
+        "description": "Kunden-Self-Service-Portal"
+      },
+      "workshop": {
+        "title": "Werkstatt",
+        "description": "Techniker- & Arbeitsstandards"
+      },
+      "maintenance": {
+        "title": "Wartung",
+        "description": "Vorhergesagte Serviceintervalle"
+      },
+      "appearance": {
+        "title": "Darstellung",
+        "description": "Design & Anzeige"
+      },
+      "data": {
+        "title": "Daten",
+        "description": "Export & Import-Backup"
+      },
+      "license": {
+        "title": "Lizenz",
+        "description": "White-Label-Lizenz"
+      },
+      "about": {
+        "title": "Info",
+        "description": "Version & Informationen"
+      }
     },
     "pro": "PRO"
   },
@@ -278,7 +332,13 @@
     "footerPlaceholder": "Vielen Dank fur Ihren Auftrag!",
     "footerHint": "Dieser Text erscheint am Ende jeder Rechnung",
     "saveInvoice": "Rechnungseinstellungen speichern",
-    "saved": "Rechnungseinstellungen gespeichert"
+    "saved": "Rechnungseinstellungen gespeichert",
+    "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
+    "layoutSaved": "Layout erfolgreich gespeichert",
+    "preview": "Vorschau",
+    "layoutDocInvoice": "Rechnung",
+    "layoutDocQuote": "Angebot",
+    "saveLayout": "Layout speichern"
   },
   "templates": {
     "title": "Vorlagen",
@@ -315,6 +375,12 @@
     "rate": "Satz",
     "subtotal": "Zwischensumme",
     "tax": "Steuer ({rate}%)",
+    "previewService": "Service",
+    "previewNotes": "Anmerkungen",
+    "previewDiagnosticNotes": "Diagnosebericht",
+    "previewDue": "Fällig: {date}",
+    "previewAdditionalInfo": "Zusätzliche Informationen",
+    "previewThankYou": "Vielen Dank für Ihren Auftrag",
     "saveInvoiceTemplate": "Rechnungsvorlage speichern",
     "saveQuotationTemplate": "Angebotsvorlage speichern",
     "invoiceTemplateSaved": "Rechnungsvorlageneinstellungen gespeichert",

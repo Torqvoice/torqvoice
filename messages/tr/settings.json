@@ -10,24 +10,78 @@
       "system": "Sistem"
     },
     "items": {
-      "company": { "title": "Şirket", "description": "İşletme bilgileri & marka" },
-      "subscription": { "title": "Abonelik", "description": "Plan & faturalandırma" },
-      "account": { "title": "Hesap", "description": "Ad, e-posta & şifre" },
-      "team": { "title": "Ekip", "description": "Üyeler & roller" },
-      "invoice": { "title": "Faturalar ve teklifler", "description": "Fatura ayarlari, duzen ve ozel alanlar" },
-      "templates": { "title": "Şablonlar", "description": "Gorsel stil, renkler ve yazi tipleri" },
-      "payment": { "title": "Ödeme", "description": "Ödeme koşulları & hesaplar" },
-      "currency": { "title": "Para Birimi", "description": "Para birimi & vergi varsayılanları" },
-      "customFields": { "title": "Özel Alanlar", "description": "Özel veri alanları tanımlayın" },
-      "email": { "title": "E-posta", "description": "E-posta sağlayıcı & gönderim" },
-      "sms": { "title": "SMS", "description": "SMS sağlayıcı & mesajlaşma" },
-      "customerPortal": { "title": "Müşteri Portalı", "description": "Müşteri self-servis portalı" },
-      "workshop": { "title": "Atölye", "description": "Teknisyen & işçilik varsayılanları" },
-      "maintenance": { "title": "Bakım", "description": "Öngörülen servis aralıkları" },
-      "appearance": { "title": "Görünüm", "description": "Tema & görüntüleme" },
-      "data": { "title": "Veri", "description": "Dışa & içe aktarma yedeği" },
-      "license": { "title": "Lisans", "description": "Beyaz etiket lisansı" },
-      "about": { "title": "Hakkında", "description": "Sürüm & bilgi" }
+      "company": {
+        "title": "Şirket",
+        "description": "İşletme bilgileri & marka"
+      },
+      "subscription": {
+        "title": "Abonelik",
+        "description": "Plan & faturalandırma"
+      },
+      "account": {
+        "title": "Hesap",
+        "description": "Ad, e-posta & şifre"
+      },
+      "team": {
+        "title": "Ekip",
+        "description": "Üyeler & roller"
+      },
+      "invoice": {
+        "title": "Faturalar ve teklifler",
+        "description": "Fatura ayarlari, duzen ve ozel alanlar"
+      },
+      "templates": {
+        "title": "Şablonlar",
+        "description": "Gorsel stil, renkler ve yazi tipleri"
+      },
+      "payment": {
+        "title": "Ödeme",
+        "description": "Ödeme koşulları & hesaplar"
+      },
+      "currency": {
+        "title": "Para Birimi",
+        "description": "Para birimi & vergi varsayılanları"
+      },
+      "customFields": {
+        "title": "Özel Alanlar",
+        "description": "Özel veri alanları tanımlayın"
+      },
+      "email": {
+        "title": "E-posta",
+        "description": "E-posta sağlayıcı & gönderim"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "SMS sağlayıcı & mesajlaşma"
+      },
+      "customerPortal": {
+        "title": "Müşteri Portalı",
+        "description": "Müşteri self-servis portalı"
+      },
+      "workshop": {
+        "title": "Atölye",
+        "description": "Teknisyen & işçilik varsayılanları"
+      },
+      "maintenance": {
+        "title": "Bakım",
+        "description": "Öngörülen servis aralıkları"
+      },
+      "appearance": {
+        "title": "Görünüm",
+        "description": "Tema & görüntüleme"
+      },
+      "data": {
+        "title": "Veri",
+        "description": "Dışa & içe aktarma yedeği"
+      },
+      "license": {
+        "title": "Lisans",
+        "description": "Beyaz etiket lisansı"
+      },
+      "about": {
+        "title": "Hakkında",
+        "description": "Sürüm & bilgi"
+      }
     },
     "pro": "PRO"
   },
@@ -278,7 +332,13 @@
     "footerPlaceholder": "İşiniz için teşekkür ederiz!",
     "footerHint": "Bu metin her faturanın altında görünür",
     "saveInvoice": "Fatura Ayarlarını Kaydet",
-    "saved": "Fatura ayarları kaydedildi"
+    "saved": "Fatura ayarları kaydedildi",
+    "layoutDescription": "Fatura ve tekliflerinizdeki bölümlerin sırasını ve görünürlüğünü özelleştirin.",
+    "layoutSaved": "Düzen başarıyla kaydedildi",
+    "preview": "Önizleme",
+    "layoutDocInvoice": "Fatura",
+    "layoutDocQuote": "Teklif",
+    "saveLayout": "Düzeni kaydet"
   },
   "templates": {
     "title": "Şablonlar",
@@ -315,6 +375,12 @@
     "rate": "Ücret",
     "subtotal": "Ara Toplam",
     "tax": "Vergi (%{rate})",
+    "previewService": "Servis",
+    "previewNotes": "Notlar",
+    "previewDiagnosticNotes": "Teşhis notları",
+    "previewDue": "Vade: {date}",
+    "previewAdditionalInfo": "Ek bilgiler",
+    "previewThankYou": "Bizi tercih ettiğiniz için teşekkürler",
     "saveInvoiceTemplate": "Fatura Şablonunu Kaydet",
     "saveQuotationTemplate": "Teklif Şablonunu Kaydet",
     "invoiceTemplateSaved": "Fatura şablon ayarları kaydedildi",

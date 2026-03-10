@@ -10,24 +10,78 @@
       "system": "Systeme"
     },
     "items": {
-      "company": { "title": "Entreprise", "description": "Details commerciaux et image de marque" },
-      "subscription": { "title": "Abonnement", "description": "Plan et facturation" },
-      "account": { "title": "Compte", "description": "Nom, e-mail et mot de passe" },
-      "team": { "title": "Equipe", "description": "Membres et roles" },
-      "invoice": { "title": "Factures et devis", "description": "Parametres de facturation, mise en page et champs personnalises" },
-      "templates": { "title": "Modeles", "description": "Style visuel, couleurs et polices" },
-      "payment": { "title": "Paiement", "description": "Conditions de paiement et comptes" },
-      "currency": { "title": "Devise", "description": "Devise et taxes par defaut" },
-      "customFields": { "title": "Champs personnalises", "description": "Definir des champs de donnees personnalises" },
-      "email": { "title": "E-mail", "description": "Fournisseur et envoi d'e-mails" },
-      "sms": { "title": "SMS", "description": "Fournisseur SMS et messagerie" },
-      "customerPortal": { "title": "Portail client", "description": "Portail libre-service client" },
-      "workshop": { "title": "Atelier", "description": "Valeurs par defaut technicien et main-d'oeuvre" },
-      "maintenance": { "title": "Maintenance", "description": "Intervalles de service predits" },
-      "appearance": { "title": "Apparence", "description": "Theme et affichage" },
-      "data": { "title": "Donnees", "description": "Exporter et importer une sauvegarde" },
-      "license": { "title": "Licence", "description": "Licence marque blanche" },
-      "about": { "title": "A propos", "description": "Version et informations" }
+      "company": {
+        "title": "Entreprise",
+        "description": "Details commerciaux et image de marque"
+      },
+      "subscription": {
+        "title": "Abonnement",
+        "description": "Plan et facturation"
+      },
+      "account": {
+        "title": "Compte",
+        "description": "Nom, e-mail et mot de passe"
+      },
+      "team": {
+        "title": "Equipe",
+        "description": "Membres et roles"
+      },
+      "invoice": {
+        "title": "Factures et devis",
+        "description": "Parametres de facturation, mise en page et champs personnalises"
+      },
+      "templates": {
+        "title": "Modeles",
+        "description": "Style visuel, couleurs et polices"
+      },
+      "payment": {
+        "title": "Paiement",
+        "description": "Conditions de paiement et comptes"
+      },
+      "currency": {
+        "title": "Devise",
+        "description": "Devise et taxes par defaut"
+      },
+      "customFields": {
+        "title": "Champs personnalises",
+        "description": "Definir des champs de donnees personnalises"
+      },
+      "email": {
+        "title": "E-mail",
+        "description": "Fournisseur et envoi d'e-mails"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "Fournisseur SMS et messagerie"
+      },
+      "customerPortal": {
+        "title": "Portail client",
+        "description": "Portail libre-service client"
+      },
+      "workshop": {
+        "title": "Atelier",
+        "description": "Valeurs par defaut technicien et main-d'oeuvre"
+      },
+      "maintenance": {
+        "title": "Maintenance",
+        "description": "Intervalles de service predits"
+      },
+      "appearance": {
+        "title": "Apparence",
+        "description": "Theme et affichage"
+      },
+      "data": {
+        "title": "Donnees",
+        "description": "Exporter et importer une sauvegarde"
+      },
+      "license": {
+        "title": "Licence",
+        "description": "Licence marque blanche"
+      },
+      "about": {
+        "title": "A propos",
+        "description": "Version et informations"
+      }
     },
     "pro": "PRO"
   },
@@ -278,7 +332,13 @@
     "footerPlaceholder": "Merci pour votre confiance !",
     "footerHint": "Ce texte apparait en bas de chaque facture",
     "saveInvoice": "Enregistrer les parametres de facture",
-    "saved": "Parametres de facture enregistres"
+    "saved": "Parametres de facture enregistres",
+    "layoutDescription": "Personnalisez l'ordre et la visibilité des sections dans vos factures et devis.",
+    "layoutSaved": "Mise en page enregistrée",
+    "preview": "Aperçu",
+    "layoutDocInvoice": "Facture",
+    "layoutDocQuote": "Devis",
+    "saveLayout": "Enregistrer la mise en page"
   },
   "templates": {
     "title": "Modeles",
@@ -315,6 +375,12 @@
     "rate": "Taux",
     "subtotal": "Sous-total",
     "tax": "Taxe ({rate}%)",
+    "previewService": "Service",
+    "previewNotes": "Notes",
+    "previewDiagnosticNotes": "Notes de diagnostic",
+    "previewDue": "Échéance: {date}",
+    "previewAdditionalInfo": "Informations supplémentaires",
+    "previewThankYou": "Merci pour votre confiance",
     "saveInvoiceTemplate": "Enregistrer le modele de facture",
     "saveQuotationTemplate": "Enregistrer le modele de devis",
     "invoiceTemplateSaved": "Parametres du modele de facture enregistres",

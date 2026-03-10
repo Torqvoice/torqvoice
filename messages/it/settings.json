@@ -10,24 +10,78 @@
       "system": "Sistema"
     },
     "items": {
-      "company": { "title": "Azienda", "description": "Dettagli aziendali e branding" },
-      "subscription": { "title": "Abbonamento", "description": "Piano e fatturazione" },
-      "account": { "title": "Account", "description": "Nome, email e password" },
-      "team": { "title": "Team", "description": "Membri e ruoli" },
-      "invoice": { "title": "Fatture e preventivi", "description": "Impostazioni fattura, layout e campi personalizzati" },
-      "templates": { "title": "Modelli", "description": "Stile visivo, colori e caratteri" },
-      "payment": { "title": "Pagamento", "description": "Termini di pagamento e conti" },
-      "currency": { "title": "Valuta", "description": "Valuta e imposte predefinite" },
-      "customFields": { "title": "Campi personalizzati", "description": "Definisci campi dati personalizzati" },
-      "email": { "title": "Email", "description": "Provider email e invio" },
-      "sms": { "title": "SMS", "description": "Provider SMS e messaggistica" },
-      "customerPortal": { "title": "Portale clienti", "description": "Portale self-service clienti" },
-      "workshop": { "title": "Officina", "description": "Tecnico e valori predefiniti manodopera" },
-      "maintenance": { "title": "Manutenzione", "description": "Intervalli di servizio previsti" },
-      "appearance": { "title": "Aspetto", "description": "Tema e visualizzazione" },
-      "data": { "title": "Dati", "description": "Esportazione e importazione backup" },
-      "license": { "title": "Licenza", "description": "Licenza white-label" },
-      "about": { "title": "Informazioni", "description": "Versione e info" }
+      "company": {
+        "title": "Azienda",
+        "description": "Dettagli aziendali e branding"
+      },
+      "subscription": {
+        "title": "Abbonamento",
+        "description": "Piano e fatturazione"
+      },
+      "account": {
+        "title": "Account",
+        "description": "Nome, email e password"
+      },
+      "team": {
+        "title": "Team",
+        "description": "Membri e ruoli"
+      },
+      "invoice": {
+        "title": "Fatture e preventivi",
+        "description": "Impostazioni fattura, layout e campi personalizzati"
+      },
+      "templates": {
+        "title": "Modelli",
+        "description": "Stile visivo, colori e caratteri"
+      },
+      "payment": {
+        "title": "Pagamento",
+        "description": "Termini di pagamento e conti"
+      },
+      "currency": {
+        "title": "Valuta",
+        "description": "Valuta e imposte predefinite"
+      },
+      "customFields": {
+        "title": "Campi personalizzati",
+        "description": "Definisci campi dati personalizzati"
+      },
+      "email": {
+        "title": "Email",
+        "description": "Provider email e invio"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "Provider SMS e messaggistica"
+      },
+      "customerPortal": {
+        "title": "Portale clienti",
+        "description": "Portale self-service clienti"
+      },
+      "workshop": {
+        "title": "Officina",
+        "description": "Tecnico e valori predefiniti manodopera"
+      },
+      "maintenance": {
+        "title": "Manutenzione",
+        "description": "Intervalli di servizio previsti"
+      },
+      "appearance": {
+        "title": "Aspetto",
+        "description": "Tema e visualizzazione"
+      },
+      "data": {
+        "title": "Dati",
+        "description": "Esportazione e importazione backup"
+      },
+      "license": {
+        "title": "Licenza",
+        "description": "Licenza white-label"
+      },
+      "about": {
+        "title": "Informazioni",
+        "description": "Versione e info"
+      }
     },
     "pro": "PRO"
   },
@@ -278,7 +332,13 @@
     "footerPlaceholder": "Grazie per la vostra fiducia!",
     "footerHint": "Questo testo appare in fondo a ogni fattura",
     "saveInvoice": "Salva impostazioni fattura",
-    "saved": "Impostazioni fattura salvate"
+    "saved": "Impostazioni fattura salvate",
+    "layoutDescription": "Personalizza l'ordine e la visibilità delle sezioni nelle tue fatture e preventivi.",
+    "layoutSaved": "Layout salvato con successo",
+    "preview": "Anteprima",
+    "layoutDocInvoice": "Fattura",
+    "layoutDocQuote": "Preventivo",
+    "saveLayout": "Salva layout"
   },
   "templates": {
     "title": "Modelli",
@@ -315,6 +375,12 @@
     "rate": "Tariffa",
     "subtotal": "Subtotale",
     "tax": "IVA ({rate}%)",
+    "previewService": "Servizio",
+    "previewNotes": "Note",
+    "previewDiagnosticNotes": "Note diagnostiche",
+    "previewDue": "Scadenza: {date}",
+    "previewAdditionalInfo": "Informazioni aggiuntive",
+    "previewThankYou": "Grazie per la vostra fiducia",
     "saveInvoiceTemplate": "Salva modello fattura",
     "saveQuotationTemplate": "Salva modello preventivo",
     "invoiceTemplateSaved": "Impostazioni modello fattura salvate",
