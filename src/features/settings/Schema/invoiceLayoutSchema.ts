@@ -427,6 +427,39 @@ export function groupSectionsForRendering(
 }
 
 // ---------------------------------------------------------------------------
+// Shared field-ordering helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns field IDs in the order specified by a layout config's visible fields Set.
+ * The Set's iteration order reflects the layout config ordering.
+ * Falls back to `defaults` when no config is provided.
+ */
+export function getOrderedFieldIds(
+  visibleFields: Set<string> | null | undefined,
+  defaults: string[],
+): string[] {
+  if (!visibleFields) return defaults;
+  // Set iteration order = insertion order = layout config order
+  const ordered = [...visibleFields].filter((id) => !isCustomFieldId(id));
+  return ordered.length > 0 ? ordered : defaults;
+}
+
+/**
+ * Returns a Set of visible field IDs for a given section, preserving field order.
+ * Returns null if no layout config is present (meaning show all fields).
+ */
+export function getVisibleFieldsForSection(
+  layoutConfig: InvoiceLayoutConfig | undefined | null,
+  sectionId: string,
+): Set<string> | null {
+  if (!layoutConfig) return null;
+  const section = layoutConfig.sections.find((s) => s.id === sectionId);
+  if (!section?.fields) return null;
+  return new Set(section.fields.filter((f) => f.visible).map((f) => f.id));
+}
+
+// ---------------------------------------------------------------------------
 // Field merge helper
 // ---------------------------------------------------------------------------
 

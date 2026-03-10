@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from "@/lib/format";
 import { sanitizeHtml } from "@/lib/sanitize-html";
-import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout } from "@/features/settings/Schema/invoiceLayoutSchema";
+import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds, getVisibleFieldsForSection } from "@/features/settings/Schema/invoiceLayoutSchema";
 
 interface QuoteRecord {
   id: string;
@@ -469,15 +469,27 @@ export function QuoteView({
             case 'service': {
               const renderInfoCard = (sid: string) => {
                 if (sid === 'customer') {
-                  if (!quote.customer || !(isFieldVisible(layoutConfig, 'customer', 'customer_name') || isFieldVisible(layoutConfig, 'customer', 'customer_email') || isFieldVisible(layoutConfig, 'customer', 'customer_phone') || isFieldVisible(layoutConfig, 'customer', 'customer_address') || isFieldVisible(layoutConfig, 'customer', 'customer_company'))) return null;
+                  const c = quote.customer
+                  if (!c) return null
+                  const vf = getVisibleFieldsForSection(layoutConfig, 'customer')
+                  const show = (fid: string) => !vf || vf.has(fid)
+                  if (!(show('customer_name') || show('customer_email') || show('customer_phone') || show('customer_address') || show('customer_company'))) return null
+                  const fieldOrder = getOrderedFieldIds(vf, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone'])
+                  const renderField = (fid: string) => {
+                    if (!show(fid)) return null
+                    switch (fid) {
+                      case 'customer_name': return <p key={fid} className="font-semibold">{c.name}</p>
+                      case 'customer_company': return c.company ? <p key={fid} className="text-sm">{c.company}</p> : null
+                      case 'customer_address': return c.address ? <p key={fid} className="text-sm text-gray-500">{c.address}</p> : null
+                      case 'customer_email': return c.email ? <p key={fid} className="text-sm text-gray-500">{c.email}</p> : null
+                      case 'customer_phone': return c.phone ? <p key={fid} className="text-sm text-gray-500">{c.phone}</p> : null
+                      default: return null
+                    }
+                  }
                   return (
                     <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
                       <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('preparedFor')}</p>
-                      {isFieldVisible(layoutConfig, 'customer', 'customer_name') && <p className="font-semibold">{quote.customer.name}</p>}
-                      {isFieldVisible(layoutConfig, 'customer', 'customer_company') && quote.customer.company && <p className="text-sm">{quote.customer.company}</p>}
-                      {isFieldVisible(layoutConfig, 'customer', 'customer_address') && quote.customer.address && <p className="text-sm text-gray-500">{quote.customer.address}</p>}
-                      {isFieldVisible(layoutConfig, 'customer', 'customer_email') && quote.customer.email && <p className="text-sm text-gray-500">{quote.customer.email}</p>}
-                      {isFieldVisible(layoutConfig, 'customer', 'customer_phone') && quote.customer.phone && <p className="text-sm text-gray-500">{quote.customer.phone}</p>}
+                      {fieldOrder.map(renderField)}
                       {getCustomFieldsForSection(layoutConfig ?? null, 'customer', customFields).map((cf, i) => (
                         <div key={`cf-cust-${i}`} className="mt-1 text-sm"><span className="font-medium">{cf.label}:</span>{' '}<span className="text-gray-500">{cf.value}</span></div>
                       ))}
@@ -485,13 +497,24 @@ export function QuoteView({
                   );
                 }
                 if (sid === 'vehicle') {
-                  if (!quote.vehicle || !(isFieldVisible(layoutConfig, 'vehicle', 'vehicle_name') || isFieldVisible(layoutConfig, 'vehicle', 'vin') || isFieldVisible(layoutConfig, 'vehicle', 'license_plate'))) return null;
+                  if (!quote.vehicle) return null
+                  const vf = getVisibleFieldsForSection(layoutConfig, 'vehicle')
+                  const show = (fid: string) => !vf || vf.has(fid)
+                  if (!(show('vehicle_name') || show('vin') || show('license_plate'))) return null
+                  const fieldOrder = getOrderedFieldIds(vf, ['vehicle_name', 'vin', 'license_plate'])
+                  const renderField = (fid: string) => {
+                    if (!show(fid)) return null
+                    switch (fid) {
+                      case 'vehicle_name': return <p key={fid} className="font-semibold">{quote.vehicle!.year} {quote.vehicle!.make} {quote.vehicle!.model}</p>
+                      case 'vin': return quote.vehicle!.vin ? <p key={fid} className="text-sm text-gray-500">{t('vin', { vin: quote.vehicle!.vin })}</p> : null
+                      case 'license_plate': return quote.vehicle!.licensePlate ? <p key={fid} className="text-sm text-gray-500">{t('plate', { plate: quote.vehicle!.licensePlate })}</p> : null
+                      default: return null
+                    }
+                  }
                   return (
                     <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
                       <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('vehicle')}</p>
-                      {isFieldVisible(layoutConfig, 'vehicle', 'vehicle_name') && <p className="font-semibold">{quote.vehicle.year} {quote.vehicle.make} {quote.vehicle.model}</p>}
-                      {isFieldVisible(layoutConfig, 'vehicle', 'vin') && quote.vehicle.vin && <p className="text-sm text-gray-500">{t('vin', { vin: quote.vehicle.vin })}</p>}
-                      {isFieldVisible(layoutConfig, 'vehicle', 'license_plate') && quote.vehicle.licensePlate && <p className="text-sm text-gray-500">{t('plate', { plate: quote.vehicle.licensePlate })}</p>}
+                      {fieldOrder.map(renderField)}
                       {getCustomFieldsForSection(layoutConfig ?? null, 'vehicle', customFields).map((cf, i) => (
                         <div key={`cf-veh-${i}`} className="mt-1 text-sm"><span className="font-medium">{cf.label}:</span>{' '}<span className="text-gray-500">{cf.value}</span></div>
                       ))}
@@ -499,11 +522,21 @@ export function QuoteView({
                   );
                 }
                 if (sid === 'service') {
-                  if (!isFieldVisible(layoutConfig, 'service', 'service_title')) return null;
+                  const vf = getVisibleFieldsForSection(layoutConfig, 'service')
+                  const show = (fid: string) => !vf || vf.has(fid)
+                  if (!show('service_title')) return null
+                  const fieldOrder = getOrderedFieldIds(vf, ['service_title'])
+                  const renderField = (fid: string) => {
+                    if (!show(fid)) return null
+                    switch (fid) {
+                      case 'service_title': return <p key={fid} className="font-semibold">{quote.title}</p>
+                      default: return null
+                    }
+                  }
                   return (
                     <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
                       <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('quoteDetails')}</p>
-                      <p className="font-semibold">{quote.title}</p>
+                      {fieldOrder.map(renderField)}
                       {getCustomFieldsForSection(layoutConfig ?? null, 'service', customFields).map((cf, i) => (
                         <div key={`cf-svc-${i}`} className="mt-1 text-sm"><span className="font-medium">{cf.label}:</span>{' '}<span className="text-gray-500">{cf.value}</span></div>
                       ))}

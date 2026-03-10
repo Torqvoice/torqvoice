@@ -312,6 +312,11 @@
   "invoice": {
     "title": "Rechnungslayout",
     "description": "Konfigurieren Sie, was auf generierten PDF-Rechnungen erscheint.",
+    "tabs": {
+      "general": "Allgemein",
+      "layout": "Layout",
+      "customFields": "Benutzerdefinierte Felder"
+    },
     "invoiceNumberFormat": "Rechnungsnummernformat",
     "invoiceNumberFormatHint": "Verwenden Sie <code>{year}</code> fur das aktuelle Jahr. Vorschau: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Nachste Rechnungsnummer",
@@ -340,6 +345,50 @@
     "layoutDocQuote": "Angebot",
     "saveLayout": "Layout speichern",
     "resetLayout": "Zurücksetzen"
+  },
+  "layoutEditor": {
+    "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",
+    "addField": "Feld hinzufügen",
+    "custom": "benutzerdefiniert",
+    "full": "Voll",
+    "L": "L",
+    "R": "R",
+    "left": "links",
+    "right": "rechts",
+    "halfWidthHint": "Halbbreite ({column}) — Klicken für volle Breite",
+    "fullWidthHint": "Volle Breite — Klicken für Halbbreite (links)",
+    "sections": {
+      "header": "Kopfzeile",
+      "customer": "Kunde",
+      "vehicle": "Fahrzeug",
+      "service": "Service",
+      "parts_table": "Teile",
+      "labor_table": "Arbeit",
+      "totals": "Summen",
+      "notes": "Notizen",
+      "diagnostic_notes": "Diagnosenotizen",
+      "bank_account": "Bankkonto",
+      "footer": "Fußzeile",
+      "general": "Allgemein"
+    },
+    "fields": {
+      "customer_name": "Kundenname",
+      "customer_company": "Firma",
+      "customer_address": "Adresse",
+      "customer_email": "E-Mail",
+      "customer_phone": "Telefon",
+      "vehicle_name": "Fahrzeug",
+      "vin": "FIN",
+      "license_plate": "Kennzeichen",
+      "mileage": "Kilometerstand",
+      "service_title": "Servicetitel",
+      "service_type": "Servicetyp",
+      "tech_name": "Techniker",
+      "logo": "Logo",
+      "company_name": "Firmenname",
+      "bank_account": "Bankkonto",
+      "org_number": "Organisationsnummer"
+    }
   },
   "templates": {
     "title": "Vorlagen",

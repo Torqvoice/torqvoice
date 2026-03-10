@@ -312,6 +312,11 @@
   "invoice": {
     "title": "Mise en page de facture",
     "description": "Configurez ce qui apparait sur les factures PDF generees.",
+    "tabs": {
+      "general": "Général",
+      "layout": "Mise en page",
+      "customFields": "Champs personnalisés"
+    },
     "invoiceNumberFormat": "Format du numero de facture",
     "invoiceNumberFormatHint": "Utilisez <code>{year}</code> pour l'annee en cours. Apercu : <bold>{preview}</bold>",
     "nextInvoiceNumber": "Prochain numero de facture",
@@ -340,6 +345,50 @@
     "layoutDocQuote": "Devis",
     "saveLayout": "Enregistrer la mise en page",
     "resetLayout": "Réinitialiser"
+  },
+  "layoutEditor": {
+    "helpText": "Glissez pour réorganiser. Utilisez le sélecteur de largeur pour placer les sections côte à côte. Les sections consécutives en demi-largeur (G/D) s'afficheront en deux colonnes.",
+    "addField": "Ajouter un champ",
+    "custom": "personnalisé",
+    "full": "Plein",
+    "L": "G",
+    "R": "D",
+    "left": "gauche",
+    "right": "droite",
+    "halfWidthHint": "Demi-largeur ({column}) — cliquer pour pleine largeur",
+    "fullWidthHint": "Pleine largeur — cliquer pour demi-largeur (gauche)",
+    "sections": {
+      "header": "En-tête",
+      "customer": "Client",
+      "vehicle": "Véhicule",
+      "service": "Service",
+      "parts_table": "Pièces",
+      "labor_table": "Main-d'œuvre",
+      "totals": "Totaux",
+      "notes": "Notes",
+      "diagnostic_notes": "Notes de diagnostic",
+      "bank_account": "Compte bancaire",
+      "footer": "Pied de page",
+      "general": "Général"
+    },
+    "fields": {
+      "customer_name": "Nom du client",
+      "customer_company": "Entreprise",
+      "customer_address": "Adresse",
+      "customer_email": "E-mail",
+      "customer_phone": "Téléphone",
+      "vehicle_name": "Véhicule",
+      "vin": "VIN",
+      "license_plate": "Plaque d'immatriculation",
+      "mileage": "Kilométrage",
+      "service_title": "Titre du service",
+      "service_type": "Type de service",
+      "tech_name": "Technicien",
+      "logo": "Logo",
+      "company_name": "Nom de l'entreprise",
+      "bank_account": "Compte bancaire",
+      "org_number": "Numéro d'organisation"
+    }
   },
   "templates": {
     "title": "Modeles",

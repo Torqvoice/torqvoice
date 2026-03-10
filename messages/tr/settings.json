@@ -312,6 +312,11 @@
   "invoice": {
     "title": "Fatura Düzeni",
     "description": "Oluşturulan PDF faturalarda nelerin görüneceğini yapılandırın.",
+    "tabs": {
+      "general": "Genel",
+      "layout": "Düzen",
+      "customFields": "Özel alanlar"
+    },
     "invoiceNumberFormat": "Fatura Numara Formatı",
     "invoiceNumberFormatHint": "Geçerli yıl için <code>{year}</code> kullanın. Önizleme: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Sonraki Fatura Numarası",
@@ -340,6 +345,50 @@
     "layoutDocQuote": "Teklif",
     "saveLayout": "Düzeni kaydet",
     "resetLayout": "Sıfırla"
+  },
+  "layoutEditor": {
+    "helpText": "Sıralamak için sürükleyin. Bölümleri yan yana yerleştirmek için genişlik değiştiriciyi kullanın. Ardışık yarım genişlik bölümleri (S/S) iki sütun halinde görüntülenir.",
+    "addField": "Alan ekle",
+    "custom": "özel",
+    "full": "Tam",
+    "L": "S",
+    "R": "S",
+    "left": "sol",
+    "right": "sağ",
+    "halfWidthHint": "Yarım genişlik ({column}) — tam genişlik için tıklayın",
+    "fullWidthHint": "Tam genişlik — yarım genişlik için tıklayın (sol)",
+    "sections": {
+      "header": "Başlık",
+      "customer": "Müşteri",
+      "vehicle": "Araç",
+      "service": "Servis",
+      "parts_table": "Parçalar",
+      "labor_table": "İşçilik",
+      "totals": "Toplamlar",
+      "notes": "Notlar",
+      "diagnostic_notes": "Teşhis notları",
+      "bank_account": "Banka hesabı",
+      "footer": "Alt bilgi",
+      "general": "Genel"
+    },
+    "fields": {
+      "customer_name": "Müşteri adı",
+      "customer_company": "Şirket",
+      "customer_address": "Adres",
+      "customer_email": "E-posta",
+      "customer_phone": "Telefon",
+      "vehicle_name": "Araç",
+      "vin": "VIN",
+      "license_plate": "Plaka",
+      "mileage": "Kilometre",
+      "service_title": "Servis başlığı",
+      "service_type": "Servis türü",
+      "tech_name": "Teknisyen",
+      "logo": "Logo",
+      "company_name": "Şirket adı",
+      "bank_account": "Banka hesabı",
+      "org_number": "Kuruluş numarası"
+    }
   },
   "templates": {
     "title": "Şablonlar",

@@ -6,7 +6,7 @@ import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import { CustomFields } from '@/features/vehicles/Components/invoice-pdf/CustomFields'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 import type { InvoiceLayoutConfig, InvoiceSection } from '@/features/settings/Schema/invoiceLayoutSchema'
-import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce(
@@ -334,13 +334,6 @@ export function QuotePDF({
   const visibleCustomerFields = getVisibleFieldsForSection('customer')
   const visibleVehicleFields = getVisibleFieldsForSection('vehicle')
   const visibleServiceFields = getVisibleFieldsForSection('service')
-
-  // Helper: get ordered field IDs from visibleFields set (preserves insertion order)
-  const getOrderedFieldIds = (vf: Set<string> | null, defaults: string[]): string[] => {
-    if (!vf) return defaults
-    const ordered = [...vf].filter(id => !isCustomFieldId(id))
-    return ordered.length > 0 ? ordered : defaults
-  }
 
   const renderCustomerSection = () => {
     const showC = (fid: string) => !visibleCustomerFields || visibleCustomerFields.has(fid)

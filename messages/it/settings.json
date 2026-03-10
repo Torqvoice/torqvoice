@@ -312,6 +312,11 @@
   "invoice": {
     "title": "Layout fattura",
     "description": "Configura cosa appare sulle fatture PDF generate.",
+    "tabs": {
+      "general": "Generale",
+      "layout": "Layout",
+      "customFields": "Campi personalizzati"
+    },
     "invoiceNumberFormat": "Formato numero fattura",
     "invoiceNumberFormatHint": "Usa <code>{year}</code> per l'anno corrente. Anteprima: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Prossimo numero fattura",
@@ -340,6 +345,50 @@
     "layoutDocQuote": "Preventivo",
     "saveLayout": "Salva layout",
     "resetLayout": "Ripristina"
+  },
+  "layoutEditor": {
+    "helpText": "Trascina per riordinare. Usa il selettore di larghezza per posizionare le sezioni affiancate. Le sezioni consecutive a mezza larghezza (S/D) verranno visualizzate in due colonne.",
+    "addField": "Aggiungi campo",
+    "custom": "personalizzato",
+    "full": "Intero",
+    "L": "S",
+    "R": "D",
+    "left": "sinistra",
+    "right": "destra",
+    "halfWidthHint": "Mezza larghezza ({column}) — clicca per larghezza intera",
+    "fullWidthHint": "Larghezza intera — clicca per mezza larghezza (sinistra)",
+    "sections": {
+      "header": "Intestazione",
+      "customer": "Cliente",
+      "vehicle": "Veicolo",
+      "service": "Servizio",
+      "parts_table": "Ricambi",
+      "labor_table": "Manodopera",
+      "totals": "Totali",
+      "notes": "Note",
+      "diagnostic_notes": "Note diagnostiche",
+      "bank_account": "Conto bancario",
+      "footer": "Piè di pagina",
+      "general": "Generale"
+    },
+    "fields": {
+      "customer_name": "Nome cliente",
+      "customer_company": "Azienda",
+      "customer_address": "Indirizzo",
+      "customer_email": "E-mail",
+      "customer_phone": "Telefono",
+      "vehicle_name": "Veicolo",
+      "vin": "VIN",
+      "license_plate": "Targa",
+      "mileage": "Chilometraggio",
+      "service_title": "Titolo servizio",
+      "service_type": "Tipo di servizio",
+      "tech_name": "Tecnico",
+      "logo": "Logo",
+      "company_name": "Nome azienda",
+      "bank_account": "Conto bancario",
+      "org_number": "Numero organizzazione"
+    }
   },
   "templates": {
     "title": "Modelli",

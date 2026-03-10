@@ -10,7 +10,7 @@ import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
 import { CustomFields } from './CustomFields'
 import { Footer, AttachmentsFooter } from './Footer'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
-import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getVisibleFieldsForSection } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type {
   TemplateConfig,
   InvoiceData,
@@ -39,13 +39,6 @@ function getCustomFieldsForSection(
       .map(f => fromCustomFieldId(f.id))
   )
   return allCustomFields.filter(cf => cfIds.has(cf.fieldId))
-}
-
-function getVisibleFieldsForSection(layoutConfig: InvoiceLayoutConfig | undefined, sectionId: string): Set<string> | null {
-  if (!layoutConfig) return null // show all – fall back to individual toggles
-  const section = layoutConfig.sections.find((s) => s.id === sectionId)
-  if (!section?.fields) return null
-  return new Set(section.fields.filter((f) => f.visible).map((f) => f.id))
 }
 
 export function InvoicePDF({

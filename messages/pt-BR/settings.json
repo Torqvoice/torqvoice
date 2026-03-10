@@ -312,6 +312,11 @@
   "invoice": {
     "title": "Layout da fatura",
     "description": "Configure o que aparece nas faturas PDF geradas.",
+    "tabs": {
+      "general": "Geral",
+      "layout": "Layout",
+      "customFields": "Campos personalizados"
+    },
     "invoiceNumberFormat": "Formato do numero da fatura",
     "invoiceNumberFormatHint": "Use <code>{year}</code> para o ano atual. Visualizacao: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Proximo numero da fatura",
@@ -340,6 +345,50 @@
     "layoutDocQuote": "Orçamento",
     "saveLayout": "Salvar layout",
     "resetLayout": "Redefinir"
+  },
+  "layoutEditor": {
+    "helpText": "Arraste para reordenar. Use o alternador de largura para posicionar seções lado a lado. Seções consecutivas de meia largura (E/D) serão exibidas em duas colunas.",
+    "addField": "Adicionar campo",
+    "custom": "personalizado",
+    "full": "Inteiro",
+    "L": "E",
+    "R": "D",
+    "left": "esquerda",
+    "right": "direita",
+    "halfWidthHint": "Meia largura ({column}) — clique para largura inteira",
+    "fullWidthHint": "Largura inteira — clique para meia largura (esquerda)",
+    "sections": {
+      "header": "Cabeçalho",
+      "customer": "Cliente",
+      "vehicle": "Veículo",
+      "service": "Serviço",
+      "parts_table": "Peças",
+      "labor_table": "Mão de obra",
+      "totals": "Totais",
+      "notes": "Notas",
+      "diagnostic_notes": "Notas de diagnóstico",
+      "bank_account": "Conta bancária",
+      "footer": "Rodapé",
+      "general": "Geral"
+    },
+    "fields": {
+      "customer_name": "Nome do cliente",
+      "customer_company": "Empresa",
+      "customer_address": "Endereço",
+      "customer_email": "E-mail",
+      "customer_phone": "Telefone",
+      "vehicle_name": "Veículo",
+      "vin": "VIN",
+      "license_plate": "Placa",
+      "mileage": "Quilometragem",
+      "service_title": "Título do serviço",
+      "service_type": "Tipo de serviço",
+      "tech_name": "Técnico",
+      "logo": "Logo",
+      "company_name": "Nome da empresa",
+      "bank_account": "Conta bancária",
+      "org_number": "Número da organização"
+    }
   },
   "templates": {
     "title": "Modelos",

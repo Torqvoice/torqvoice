@@ -312,6 +312,11 @@
   "invoice": {
     "title": "Factuurindeling",
     "description": "Configureer wat er op gegenereerde PDF-facturen verschijnt.",
+    "tabs": {
+      "general": "Algemeen",
+      "layout": "Layout",
+      "customFields": "Aangepaste velden"
+    },
     "invoiceNumberFormat": "Factuurnummerformaat",
     "invoiceNumberFormatHint": "Gebruik <code>{year}</code> voor het huidige jaar. Voorbeeld: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Volgend factuurnummer",
@@ -340,6 +345,50 @@
     "layoutDocQuote": "Offerte",
     "saveLayout": "Layout opslaan",
     "resetLayout": "Herstellen"
+  },
+  "layoutEditor": {
+    "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",
+    "addField": "Veld toevoegen",
+    "custom": "aangepast",
+    "full": "Volledig",
+    "L": "L",
+    "R": "R",
+    "left": "links",
+    "right": "rechts",
+    "halfWidthHint": "Halve breedte ({column}) — klik voor volledige breedte",
+    "fullWidthHint": "Volledige breedte — klik voor halve breedte (links)",
+    "sections": {
+      "header": "Koptekst",
+      "customer": "Klant",
+      "vehicle": "Voertuig",
+      "service": "Service",
+      "parts_table": "Onderdelen",
+      "labor_table": "Arbeid",
+      "totals": "Totalen",
+      "notes": "Notities",
+      "diagnostic_notes": "Diagnostische notities",
+      "bank_account": "Bankrekening",
+      "footer": "Voettekst",
+      "general": "Algemeen"
+    },
+    "fields": {
+      "customer_name": "Klantnaam",
+      "customer_company": "Bedrijf",
+      "customer_address": "Adres",
+      "customer_email": "E-mail",
+      "customer_phone": "Telefoon",
+      "vehicle_name": "Voertuig",
+      "vin": "VIN",
+      "license_plate": "Kenteken",
+      "mileage": "Kilometerstand",
+      "service_title": "Servicetitel",
+      "service_type": "Servicetype",
+      "tech_name": "Monteur",
+      "logo": "Logo",
+      "company_name": "Bedrijfsnaam",
+      "bank_account": "Bankrekening",
+      "org_number": "Organisatienummer"
+    }
   },
   "templates": {
     "title": "Sjablonen",

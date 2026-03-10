@@ -312,6 +312,11 @@
   "invoice": {
     "title": "Uklad faktury",
     "description": "Skonfiguruj, co pojawia sie na generowanych fakturach PDF.",
+    "tabs": {
+      "general": "Ogólne",
+      "layout": "Układ",
+      "customFields": "Pola niestandardowe"
+    },
     "invoiceNumberFormat": "Format numeru faktury",
     "invoiceNumberFormatHint": "Uzyj <code>{year}</code> dla biezacego roku. Podglad: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Nastepny numer faktury",
@@ -340,6 +345,50 @@
     "layoutDocQuote": "Wycena",
     "saveLayout": "Zapisz układ",
     "resetLayout": "Resetuj"
+  },
+  "layoutEditor": {
+    "helpText": "Przeciągnij, aby zmienić kolejność. Użyj przełącznika szerokości, aby umieścić sekcje obok siebie. Kolejne sekcje o połowie szerokości (L/P) będą wyświetlane w dwóch kolumnach.",
+    "addField": "Dodaj pole",
+    "custom": "niestandardowe",
+    "full": "Pełna",
+    "L": "L",
+    "R": "P",
+    "left": "lewa",
+    "right": "prawa",
+    "halfWidthHint": "Połowa szerokości ({column}) — kliknij dla pełnej szerokości",
+    "fullWidthHint": "Pełna szerokość — kliknij dla połowy szerokości (lewa)",
+    "sections": {
+      "header": "Nagłówek",
+      "customer": "Klient",
+      "vehicle": "Pojazd",
+      "service": "Usługa",
+      "parts_table": "Części",
+      "labor_table": "Robocizna",
+      "totals": "Podsumowanie",
+      "notes": "Notatki",
+      "diagnostic_notes": "Notatki diagnostyczne",
+      "bank_account": "Konto bankowe",
+      "footer": "Stopka",
+      "general": "Ogólne"
+    },
+    "fields": {
+      "customer_name": "Nazwa klienta",
+      "customer_company": "Firma",
+      "customer_address": "Adres",
+      "customer_email": "E-mail",
+      "customer_phone": "Telefon",
+      "vehicle_name": "Pojazd",
+      "vin": "VIN",
+      "license_plate": "Tablica rejestracyjna",
+      "mileage": "Przebieg",
+      "service_title": "Tytuł usługi",
+      "service_type": "Typ usługi",
+      "tech_name": "Technik",
+      "logo": "Logo",
+      "company_name": "Nazwa firmy",
+      "bank_account": "Konto bankowe",
+      "org_number": "Numer organizacji"
+    }
   },
   "templates": {
     "title": "Szablony",

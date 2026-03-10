@@ -2,7 +2,7 @@ import React from 'react'
 import { Text, View } from '@react-pdf/renderer'
 import type { InvoiceData, InvoiceSettingsProps } from './types'
 import type { Style } from '@react-pdf/types'
-import { isCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { isCustomFieldId, getOrderedFieldIds } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { formatFieldValue } from './CustomFields'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -154,17 +154,6 @@ function renderServiceField(fieldId: string, ctx: ServiceRenderCtx): React.React
 const DEFAULT_CUSTOMER_FIELDS = ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone']
 const DEFAULT_VEHICLE_FIELDS = ['vehicle_name', 'vin', 'license_plate', 'mileage']
 const DEFAULT_SERVICE_FIELDS = ['service_title', 'service_type', 'tech_name']
-
-/**
- * Get ordered field IDs from visibleFields set, falling back to defaults.
- * visibleFields is a Set which preserves insertion order (from the layout config field array).
- */
-function getOrderedFieldIds(visibleFields: Set<string> | null | undefined, defaults: string[]): string[] {
-  if (!visibleFields) return defaults
-  // Set iteration order = insertion order = layout config order
-  const ordered = [...visibleFields].filter(id => !isCustomFieldId(id))
-  return ordered.length > 0 ? ordered : defaults
-}
 
 // ---------------------------------------------------------------------------
 // Section components

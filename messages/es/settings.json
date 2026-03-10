@@ -312,6 +312,11 @@
   "invoice": {
     "title": "Diseno de factura",
     "description": "Configure lo que aparece en las facturas PDF generadas.",
+    "tabs": {
+      "general": "General",
+      "layout": "Diseño",
+      "customFields": "Campos personalizados"
+    },
     "invoiceNumberFormat": "Formato de numero de factura",
     "invoiceNumberFormatHint": "Use <code>{year}</code> para el ano actual. Vista previa: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Siguiente numero de factura",
@@ -340,6 +345,50 @@
     "layoutDocQuote": "Presupuesto",
     "saveLayout": "Guardar diseño",
     "resetLayout": "Restablecer"
+  },
+  "layoutEditor": {
+    "helpText": "Arrastra para reordenar. Usa el selector de ancho para colocar secciones lado a lado. Las secciones consecutivas de medio ancho (I/D) se mostrarán en dos columnas.",
+    "addField": "Añadir campo",
+    "custom": "personalizado",
+    "full": "Completo",
+    "L": "I",
+    "R": "D",
+    "left": "izquierda",
+    "right": "derecha",
+    "halfWidthHint": "Medio ancho ({column}) — clic para ancho completo",
+    "fullWidthHint": "Ancho completo — clic para medio ancho (izquierda)",
+    "sections": {
+      "header": "Encabezado",
+      "customer": "Cliente",
+      "vehicle": "Vehículo",
+      "service": "Servicio",
+      "parts_table": "Piezas",
+      "labor_table": "Mano de obra",
+      "totals": "Totales",
+      "notes": "Notas",
+      "diagnostic_notes": "Notas de diagnóstico",
+      "bank_account": "Cuenta bancaria",
+      "footer": "Pie de página",
+      "general": "General"
+    },
+    "fields": {
+      "customer_name": "Nombre del cliente",
+      "customer_company": "Empresa",
+      "customer_address": "Dirección",
+      "customer_email": "Correo electrónico",
+      "customer_phone": "Teléfono",
+      "vehicle_name": "Vehículo",
+      "vin": "VIN",
+      "license_plate": "Matrícula",
+      "mileage": "Kilometraje",
+      "service_title": "Título del servicio",
+      "service_type": "Tipo de servicio",
+      "tech_name": "Técnico",
+      "logo": "Logo",
+      "company_name": "Nombre de empresa",
+      "bank_account": "Cuenta bancaria",
+      "org_number": "Número de organización"
+    }
   },
   "templates": {
     "title": "Plantillas",

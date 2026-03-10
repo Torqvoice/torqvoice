@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import {
   DndContext,
   closestCenter,
@@ -80,13 +81,18 @@ interface InvoiceLayoutEditorProps {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function getSectionName(id: string): string {
+function getSectionName(id: string, t: ReturnType<typeof useTranslations>): string {
+  const key = `layoutEditor.sections.${id}` as Parameters<typeof t>[0];
+  const translated = t(key);
+  // If the key is not found, next-intl returns the key itself
+  if (translated !== key) return translated;
   const builtin = BUILTIN_SECTIONS.find((s) => s.id === id);
   return builtin?.name ?? id;
 }
 
 function getFieldDisplayName(
   fieldId: string,
+  t: ReturnType<typeof useTranslations>,
   customFields?: FieldDef[],
 ): string {
   if (isCustomFieldId(fieldId)) {
@@ -94,6 +100,9 @@ function getFieldDisplayName(
     const def = customFields?.find((cf) => cf.id === defId);
     return def?.label ?? def?.name ?? fieldId;
   }
+  const key = `layoutEditor.fields.${fieldId}` as Parameters<typeof t>[0];
+  const translated = t(key);
+  if (translated !== key) return translated;
   return getBuiltinFieldName(fieldId) ?? fieldId;
 }
 
@@ -122,6 +131,7 @@ function SortableField({
   customFields,
   onToggleVisibility,
   onRemove,
+  t,
 }: {
   field: InvoiceFieldConfig;
   sectionId: string;
@@ -129,6 +139,7 @@ function SortableField({
   customFields?: FieldDef[];
   onToggleVisibility: (sectionId: string, fieldId: string) => void;
   onRemove: (sectionId: string, fieldId: string) => void;
+  t: ReturnType<typeof useTranslations>;
 }) {
   const {
     attributes,
@@ -165,10 +176,10 @@ function SortableField({
       </button>
 
       <span className="flex-1 text-sm text-muted-foreground">
-        {getFieldDisplayName(field.id, customFields)}
+        {getFieldDisplayName(field.id, t, customFields)}
         {!isBuiltin && (
           <span className="ml-1.5 text-xs text-muted-foreground/60">
-            (custom)
+            ({t('layoutEditor.custom')})
           </span>
         )}
       </span>
@@ -208,10 +219,12 @@ function AddCustomFieldButton({
   sectionId,
   availableFields,
   onAdd,
+  t,
 }: {
   sectionId: string;
   availableFields: FieldDef[];
   onAdd: (sectionId: string, definitionId: string) => void;
+  t: ReturnType<typeof useTranslations>;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -227,7 +240,7 @@ function AddCustomFieldButton({
           className="h-7 gap-1 text-xs text-muted-foreground"
         >
           <Plus className="h-3.5 w-3.5" />
-          Add field
+          {t('layoutEditor.addField')}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-56 p-1" align="start">
@@ -263,6 +276,7 @@ function FieldsPanel({
   onRemoveField,
   onAddCustomField,
   onReorderFields,
+  t,
 }: {
   section: InvoiceSection;
   customFields?: FieldDef[];
@@ -271,6 +285,7 @@ function FieldsPanel({
   onRemoveField: (sectionId: string, fieldId: string) => void;
   onAddCustomField: (sectionId: string, definitionId: string) => void;
   onReorderFields: (sectionId: string, oldIndex: number, newIndex: number) => void;
+  t: ReturnType<typeof useTranslations>;
 }) {
   const builtinFields = getBuiltinFieldsForSection(section.id);
   const builtinFieldIds = new Set(builtinFields.map((f) => f.id));
@@ -320,6 +335,7 @@ function FieldsPanel({
               customFields={customFields}
               onToggleVisibility={onToggleFieldVisibility}
               onRemove={onRemoveField}
+              t={t}
             />
           ))}
         </SortableContext>
@@ -328,6 +344,7 @@ function FieldsPanel({
         sectionId={section.id}
         availableFields={availableCustomFields}
         onAdd={onAddCustomField}
+        t={t}
       />
     </div>
   );
@@ -340,9 +357,11 @@ function FieldsPanel({
 function WidthToggle({
   column,
   onChange,
+  t,
 }: {
   column: "left" | "right" | undefined;
   onChange: (column: "left" | "right" | undefined) => void;
+  t: ReturnType<typeof useTranslations>;
 }) {
   // Cycle: undefined (full) → left → right → undefined
   const isHalf = column === "left" || column === "right";
@@ -352,8 +371,8 @@ function WidthToggle({
       type="button"
       title={
         isHalf
-          ? `Half width (${column}) — click to make full width`
-          : "Full width — click to make half width (left)"
+          ? t('layoutEditor.halfWidthHint', { column: column === "left" ? t('layoutEditor.left') : t('layoutEditor.right') })
+          : t('layoutEditor.fullWidthHint')
       }
       onClick={() => {
         if (!column) onChange("left");
@@ -370,12 +389,12 @@ function WidthToggle({
       {isHalf ? (
         <>
           <Columns2 className="h-3 w-3" />
-          <span className="uppercase">{column === "left" ? "L" : "R"}</span>
+          <span className="uppercase">{column === "left" ? t('layoutEditor.L') : t('layoutEditor.R')}</span>
         </>
       ) : (
         <>
           <Square className="h-3 w-3" />
-          <span>Full</span>
+          <span>{t('layoutEditor.full')}</span>
         </>
       )}
     </button>
@@ -398,6 +417,7 @@ function SectionCard({
   isExpanded,
   onToggleExpand,
   availableCustomFields,
+  t,
 }: {
   section: InvoiceSection;
   customFields?: FieldDef[];
@@ -410,6 +430,7 @@ function SectionCard({
   isExpanded: boolean;
   onToggleExpand: (sectionId: string) => void;
   availableCustomFields: FieldDef[];
+  t: ReturnType<typeof useTranslations>;
 }) {
   const {
     attributes,
@@ -467,7 +488,7 @@ function SectionCard({
 
         {/* Section name */}
         <span className="flex-1 text-sm font-medium">
-          {getSectionName(section.id)}
+          {getSectionName(section.id, t)}
         </span>
 
         {/* Width toggle (only for column-eligible sections) */}
@@ -475,6 +496,7 @@ function SectionCard({
           <WidthToggle
             column={section.column}
             onChange={(col) => onSetColumn(section.id, col)}
+            t={t}
           />
         )}
 
@@ -504,6 +526,7 @@ function SectionCard({
             onRemoveField={onRemoveField}
             onAddCustomField={onAddCustomField}
             onReorderFields={onReorderFields}
+            t={t}
           />
         </div>
       )}
@@ -521,6 +544,7 @@ export function InvoiceLayoutEditor({
   documentType,
   customFields,
 }: InvoiceLayoutEditorProps) {
+  const t = useTranslations('settings');
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(),
   );
@@ -651,8 +675,7 @@ export function InvoiceLayoutEditor({
   return (
     <div className="space-y-1">
       <p className="text-xs text-muted-foreground mb-2">
-        Drag to reorder. Use the width toggle to place sections side-by-side.
-        Consecutive half-width sections (L/R) will render in two columns.
+        {t('layoutEditor.helpText')}
       </p>
 
       <DndContext
@@ -678,6 +701,7 @@ export function InvoiceLayoutEditor({
               isExpanded={expandedSections.has(section.id)}
               onToggleExpand={toggleExpand}
               availableCustomFields={availableCustomFields}
+              t={t}
             />
           ))}
         </SortableContext>
