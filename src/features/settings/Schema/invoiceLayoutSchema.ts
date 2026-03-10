@@ -13,6 +13,8 @@ export const invoiceSectionSchema = z.object({
   id: z.string(),
   visible: z.boolean(),
   order: z.number().int().nonnegative(),
+  /** When set, the section renders in a 2-column row alongside other column sections. */
+  column: z.enum(["left", "right"]).optional(),
   /** Controls which fields are shown within this section. */
   fields: z.array(invoiceFieldConfigSchema).optional(),
 });
@@ -122,6 +124,33 @@ export const SECTIONS_WITH_FIELDS = new Set<string>([
   "general",
 ]);
 
+/** Sections that can be placed in left/right columns */
+export const COLUMN_ELIGIBLE_SECTIONS = new Set<string>([
+  "customer",
+  "vehicle",
+  "service",
+  "general",
+  "notes",
+  "diagnostic_notes",
+  "bank_account",
+]);
+
+/** Sections that MUST be full-width (cannot be in columns) */
+export const FULL_WIDTH_ONLY_SECTIONS = new Set<string>([
+  "header",
+  "parts_table",
+  "labor_table",
+  "totals",
+  "footer",
+]);
+
+/** Default column assignment for column-eligible sections */
+const DEFAULT_COLUMN: Record<string, "left" | "right"> = {
+  customer: "left",
+  vehicle: "left",
+  service: "right",
+};
+
 // ---------------------------------------------------------------------------
 // Defaults
 // ---------------------------------------------------------------------------
@@ -149,10 +178,12 @@ export function getDefaultInvoiceLayout(): InvoiceLayoutConfig {
   return {
     sections: BUILTIN_SECTIONS.map((s, index) => {
       const fields = getDefaultFieldsForSection(s.id);
+      const column = DEFAULT_COLUMN[s.id];
       return {
         id: s.id,
         visible: s.id !== "general", // general hidden by default (no fields)
         order: index,
+        ...(column ? { column } : {}),
         ...(fields ? { fields } : {}),
       };
     }),
@@ -209,6 +240,8 @@ export function mergeWithDefaults(
   const seen = new Set<string>();
 
   for (const section of migrated) {
+    // Skip duplicate section IDs (keep first occurrence)
+    if (seen.has(section.id)) continue;
     seen.add(section.id);
 
     const defaultFields = getDefaultFieldsForSection(section.id);
@@ -228,6 +261,16 @@ export function mergeWithDefaults(
   for (const def of defaults.sections) {
     if (!seen.has(def.id)) {
       merged.push({ ...def, order: nextOrder++ });
+    }
+  }
+
+  // Auto-assign column values to column-eligible sections if none have columns
+  const hasAnyColumn = merged.some((s) => s.column);
+  if (!hasAnyColumn) {
+    for (const section of merged) {
+      if (DEFAULT_COLUMN[section.id]) {
+        section.column = DEFAULT_COLUMN[section.id];
+      }
     }
   }
 
@@ -324,6 +367,63 @@ function migrateFromLegacy(sections: InvoiceSection[]): InvoiceSection[] {
   });
 
   return result;
+}
+
+// ---------------------------------------------------------------------------
+// Field merge helper
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Rendering helper – groups sections into full-width or 2-column rows
+// ---------------------------------------------------------------------------
+
+export type RenderGroup =
+  | { type: "full-width"; sectionId: string }
+  | { type: "columns"; left: string[]; right: string[] };
+
+/**
+ * Groups sorted visible sections for rendering.
+ * Consecutive column-assigned sections are grouped into a single 2-column row.
+ * Sections without a column render as full-width.
+ */
+export function groupSectionsForRendering(
+  sections: InvoiceSection[],
+): RenderGroup[] {
+  // Deduplicate by section ID (keep first occurrence by order)
+  const seen = new Set<string>();
+  const sorted = [...sections]
+    .filter((s) => s.visible)
+    .sort((a, b) => a.order - b.order)
+    .filter((s) => {
+      if (seen.has(s.id)) return false;
+      seen.add(s.id);
+      return true;
+    });
+
+  const groups: RenderGroup[] = [];
+  let pendingLeft: string[] = [];
+  let pendingRight: string[] = [];
+
+  const flushColumns = () => {
+    if (pendingLeft.length > 0 || pendingRight.length > 0) {
+      groups.push({ type: "columns", left: [...pendingLeft], right: [...pendingRight] });
+      pendingLeft = [];
+      pendingRight = [];
+    }
+  };
+
+  for (const section of sorted) {
+    if (section.column === "left" || section.column === "right") {
+      if (section.column === "left") pendingLeft.push(section.id);
+      else pendingRight.push(section.id);
+    } else {
+      flushColumns();
+      groups.push({ type: "full-width", sectionId: section.id });
+    }
+  }
+  flushColumns();
+
+  return groups;
 }
 
 // ---------------------------------------------------------------------------

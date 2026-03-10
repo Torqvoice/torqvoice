@@ -6,7 +6,7 @@ import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import { CustomFields } from '@/features/vehicles/Components/invoice-pdf/CustomFields'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 import type { InvoiceLayoutConfig, InvoiceSection } from '@/features/settings/Schema/invoiceLayoutSchema'
-import { isCustomFieldId, fromCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce(
@@ -142,36 +142,6 @@ export function QuotePDF({
     )
     return customFields.filter(cf => cfIds.has(cf.fieldId))
   }
-
-  const isFieldVisible = (fieldId: string, sectionId?: string): boolean => {
-    const sec = sectionMap.get(sectionId || 'customer')
-    if (!sec?.fields) return true
-    const field = sec.fields.find((f) => f.id === fieldId)
-    return field ? field.visible : true
-  }
-
-  const getSortedSections = (): { id: string; order: number }[] => {
-    if (sections.length === 0) {
-      // Default order when no layout config
-      return [
-        { id: 'header', order: 0 },
-        { id: 'customer', order: 1 },
-        { id: 'vehicle', order: 2 },
-        { id: 'service', order: 3 },
-        { id: 'parts_table', order: 4 },
-        { id: 'labor_table', order: 5 },
-        { id: 'totals', order: 6 },
-        { id: 'general', order: 7 },
-        { id: 'notes', order: 8 },
-        { id: 'footer', order: 9 },
-      ]
-    }
-    return [...sections]
-      .filter((s) => s.visible)
-      .sort((a, b) => a.order - b.order)
-  }
-
-  const sortedSections = getSortedSections()
 
   const quoteNum = data.quoteNumber || 'QUOTE'
   const df = dateFormat || DEFAULT_DATE_FORMAT
@@ -365,23 +335,38 @@ export function QuotePDF({
   const visibleVehicleFields = getVisibleFieldsForSection('vehicle')
   const visibleServiceFields = getVisibleFieldsForSection('service')
 
+  // Helper: get ordered field IDs from visibleFields set (preserves insertion order)
+  const getOrderedFieldIds = (vf: Set<string> | null, defaults: string[]): string[] => {
+    if (!vf) return defaults
+    const ordered = [...vf].filter(id => !isCustomFieldId(id))
+    return ordered.length > 0 ? ordered : defaults
+  }
+
   const renderCustomerSection = () => {
     const showC = (fid: string) => !visibleCustomerFields || visibleCustomerFields.has(fid)
     const hasCustomer = data.customer && (showC('customer_name') || (showC('customer_company') && data.customer.company) || (showC('customer_address') && data.customer.address) || (showC('customer_email') && data.customer.email) || (showC('customer_phone') && data.customer.phone))
     const hasCustCf = customerCf.some(cf => cf.value !== '' && cf.value != null)
     if (!hasCustomer && !hasCustCf) return null
+
+    const fieldOrder = getOrderedFieldIds(visibleCustomerFields, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone'])
+    const c = data.customer
+
+    const renderField = (fid: string) => {
+      if (!c || !showC(fid)) return null
+      switch (fid) {
+        case 'customer_name': return <Text key={fid} style={styles.infoTextBold}>{c.name}</Text>
+        case 'customer_company': return c.company ? <Text key={fid} style={styles.infoText}>{c.company}</Text> : null
+        case 'customer_address': return c.address ? <Text key={fid} style={styles.infoTextSmall}>{c.address}</Text> : null
+        case 'customer_email': return c.email ? <Text key={fid} style={styles.infoTextSmall}>{c.email}</Text> : null
+        case 'customer_phone': return c.phone ? <Text key={fid} style={styles.infoTextSmall}>{c.phone}</Text> : null
+        default: return null
+      }
+    }
+
     return (
       <View style={styles.infoBox}>
         <Text style={styles.infoLabel}>{labels.to || 'To'}</Text>
-        {data.customer && (
-          <>
-            {showC('customer_name') && <Text style={styles.infoTextBold}>{data.customer.name}</Text>}
-            {showC('customer_company') && data.customer.company && <Text style={styles.infoText}>{data.customer.company}</Text>}
-            {showC('customer_address') && data.customer.address && <Text style={styles.infoTextSmall}>{data.customer.address}</Text>}
-            {showC('customer_email') && data.customer.email && <Text style={styles.infoTextSmall}>{data.customer.email}</Text>}
-            {showC('customer_phone') && data.customer.phone && <Text style={styles.infoTextSmall}>{data.customer.phone}</Text>}
-          </>
-        )}
+        {fieldOrder.map(renderField)}
         {customerCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
           <Text key={`cf-cust-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
         ))}
@@ -394,22 +379,24 @@ export function QuotePDF({
     const hasVehicle = data.vehicle && (showV('vehicle_name') || (showV('vin') && data.vehicle.vin) || (showV('license_plate') && data.vehicle.licensePlate))
     const hasVehCf = vehicleCf.some(cf => cf.value !== '' && cf.value != null)
     if (!hasVehicle && !hasVehCf) return null
+
+    const fieldOrder = getOrderedFieldIds(visibleVehicleFields, ['vehicle_name', 'vin', 'license_plate'])
+    const v = data.vehicle
+
+    const renderField = (fid: string) => {
+      if (!v || !showV(fid)) return null
+      switch (fid) {
+        case 'vehicle_name': return <Text key={fid} style={styles.infoTextBold}>{v.year} {v.make} {v.model}</Text>
+        case 'vin': return v.vin ? <Text key={fid} style={styles.infoTextSmall}>{labels.vin ? fillTemplate(labels.vin, { vin: v.vin }) : `VIN: ${v.vin}`}</Text> : null
+        case 'license_plate': return v.licensePlate ? <Text key={fid} style={styles.infoTextSmall}>{labels.plate ? fillTemplate(labels.plate, { plate: v.licensePlate }) : `Plate: ${v.licensePlate}`}</Text> : null
+        default: return null
+      }
+    }
+
     return (
       <View style={styles.infoBox}>
         <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
-        {data.vehicle && (
-          <>
-            {showV('vehicle_name') && (
-              <Text style={styles.infoTextBold}>{data.vehicle.year} {data.vehicle.make} {data.vehicle.model}</Text>
-            )}
-            {showV('vin') && data.vehicle.vin && (
-              <Text style={styles.infoTextSmall}>{labels.vin ? fillTemplate(labels.vin, { vin: data.vehicle.vin }) : `VIN: ${data.vehicle.vin}`}</Text>
-            )}
-            {showV('license_plate') && data.vehicle.licensePlate && (
-              <Text style={styles.infoTextSmall}>{labels.plate ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate }) : `Plate: ${data.vehicle.licensePlate}`}</Text>
-            )}
-          </>
-        )}
+        {fieldOrder.map(renderField)}
         {vehicleCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
           <Text key={`cf-veh-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
         ))}
@@ -422,10 +409,21 @@ export function QuotePDF({
     const hasBuiltin = show('service_title')
     const hasCf = serviceCf.some(cf => cf.value !== '' && cf.value != null)
     if (!hasBuiltin && !hasCf) return null
+
+    const fieldOrder = getOrderedFieldIds(visibleServiceFields, ['service_title'])
+
+    const renderField = (fid: string) => {
+      if (!show(fid)) return null
+      switch (fid) {
+        case 'service_title': return <Text key={fid} style={styles.infoTextBold}>{data.title}</Text>
+        default: return null
+      }
+    }
+
     return (
       <View style={styles.infoBox}>
         <Text style={styles.infoLabel}>{labels.quoteDetails || 'Quote Details'}</Text>
-        {show('service_title') && <Text style={styles.infoTextBold}>{data.title}</Text>}
+        {fieldOrder.map(renderField)}
         {serviceCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
           <Text key={`cf-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
         ))}
@@ -690,28 +688,29 @@ export function QuotePDF({
     }
   }
 
-  // Render sections in user-configured order.
-  // Adjacent info sections (customer, vehicle, service) pair into 2-column rows.
-  // Non-adjacent ones render as full-width blocks.
-  const INFO_IDS = new Set(['customer', 'vehicle', 'service'])
+  // Use column-based grouping from layout config
+  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
+  const renderGroups = groupSectionsForRendering(effectiveSections)
   const renderedSections: React.ReactNode[] = []
 
-  for (let i = 0; i < sortedSections.length; i++) {
-    const section = sortedSections[i]
-    if (section.id === 'footer') continue
-    const nextSection = sortedSections[i + 1]
-
-    if (INFO_IDS.has(section.id) && nextSection && INFO_IDS.has(nextSection.id) && nextSection.id !== 'footer') {
+  for (const group of renderGroups) {
+    if (group.type === 'full-width') {
+      if (group.sectionId === 'footer') continue
       renderedSections.push(
-        <View key={`${section.id}-${nextSection.id}`} style={styles.infoRow}>
-          {renderSection(section.id)}
-          {renderSection(nextSection.id)}
-        </View>
+        <View key={group.sectionId}>{renderSection(group.sectionId)}</View>
       )
-      i++ // skip next, already rendered
     } else {
+      const allIds = [...group.left, ...group.right].filter(id => id !== 'footer')
+      if (allIds.length === 0) continue
       renderedSections.push(
-        <View key={section.id}>{renderSection(section.id)}</View>
+        <View key={`col-${allIds[0]}`} style={styles.infoRow}>
+          <View style={{ flex: 1, gap: 4 }}>
+            {group.left.map(id => <React.Fragment key={id}>{renderSection(id)}</React.Fragment>)}
+          </View>
+          <View style={{ flex: 1, gap: 4 }}>
+            {group.right.map(id => <React.Fragment key={id}>{renderSection(id)}</React.Fragment>)}
+          </View>
+        </View>
       )
     }
   }

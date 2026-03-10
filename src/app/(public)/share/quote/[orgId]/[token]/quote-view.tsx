@@ -1,11 +1,11 @@
 "use client";
 
 import { Camera, Check, ChevronLeft, ChevronRight, Download, FileText, Loader2, MessageSquare, X } from "lucide-react";
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from "@/lib/format";
 import { sanitizeHtml } from "@/lib/sanitize-html";
-import { isCustomFieldId, fromCustomFieldId } from "@/features/settings/Schema/invoiceLayoutSchema";
+import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout } from "@/features/settings/Schema/invoiceLayoutSchema";
 
 interface QuoteRecord {
   id: string;
@@ -59,6 +59,7 @@ interface InvoiceLayoutConfig {
     id: string;
     visible: boolean;
     order: number;
+    column?: 'left' | 'right';
     fields?: Array<{ id: string; visible: boolean }>;
   }>;
 }
@@ -311,17 +312,19 @@ export function QuoteView({
 
       <div className="rounded-xl border bg-white p-6 shadow-sm sm:p-8 dark:bg-gray-900">
         {(() => {
-          // Pre-compute which info sections are paired (adjacent) for 2-column layout
-          const INFO_IDS = new Set(['customer', 'vehicle', 'service']);
-          const visibleOrder = sectionOrder.filter(s => isSectionVisible(layoutConfig, s));
-          const pairedWith = new Map<string, string>(); // first -> second
-          const skipSet = new Set<string>(); // second of pair
-          for (let i = 0; i < visibleOrder.length - 1; i++) {
-            const a = visibleOrder[i], b = visibleOrder[i + 1];
-            if (INFO_IDS.has(a) && INFO_IDS.has(b) && !skipSet.has(a)) {
-              pairedWith.set(a, b);
-              skipSet.add(b);
-              i++; // skip b
+          // Use column-based grouping for layout
+          const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections;
+          const groups = groupSectionsForRendering(effectiveSections);
+          const columnGroupMap = new Map<string, { left: string[]; right: string[] }>();
+          const skipSet = new Set<string>();
+          for (const g of groups) {
+            if (g.type === 'columns') {
+              const allIds = [...g.left, ...g.right];
+              const firstId = allIds[0];
+              if (firstId) {
+                columnGroupMap.set(firstId, g);
+                for (const id of allIds.slice(1)) skipSet.add(id);
+              }
             }
           }
           return sectionOrder.map((sectionId) => {
@@ -510,12 +513,12 @@ export function QuoteView({
                 return null;
               };
 
-              const partner = pairedWith.get(sectionId);
-              if (partner) {
+              const colGroup = columnGroupMap.get(sectionId);
+              if (colGroup) {
                 return (
-                  <div key={`${sectionId}-${partner}`} className="mt-6 grid gap-4 sm:grid-cols-2">
-                    {renderInfoCard(sectionId)}
-                    {renderInfoCard(partner)}
+                  <div key={`col-${sectionId}`} className="mt-6 grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-4">{colGroup.left.map(id => <React.Fragment key={id}>{renderInfoCard(id)}</React.Fragment>)}</div>
+                    <div className="space-y-4">{colGroup.right.map(id => <React.Fragment key={id}>{renderInfoCard(id)}</React.Fragment>)}</div>
                   </div>
                 );
               }

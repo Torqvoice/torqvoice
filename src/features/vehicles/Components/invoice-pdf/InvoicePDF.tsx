@@ -10,7 +10,7 @@ import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
 import { CustomFields } from './CustomFields'
 import { Footer, AttachmentsFooter } from './Footer'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
-import { isCustomFieldId, fromCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type {
   TemplateConfig,
   InvoiceData,
@@ -24,29 +24,6 @@ import type {
 // ---------------------------------------------------------------------------
 // Layout config helpers
 // ---------------------------------------------------------------------------
-
-const DEFAULT_SECTION_ORDER = [
-  'header',
-  'customer',
-  'vehicle',
-  'service',
-  'parts_table',
-  'labor_table',
-  'totals',
-  'general',
-  'notes',
-  'diagnostic_notes',
-  'bank_account',
-  'footer',
-]
-
-function getSortedSectionIds(layoutConfig: InvoiceLayoutConfig | undefined): string[] {
-  if (!layoutConfig) return DEFAULT_SECTION_ORDER
-  return [...layoutConfig.sections]
-    .sort((a, b) => a.order - b.order)
-    .filter((s) => s.visible)
-    .map((s) => s.id)
-}
 
 function getCustomFieldsForSection(
   layoutConfig: InvoiceLayoutConfig | undefined,
@@ -136,7 +113,6 @@ export function InvoicePDF({
   // Layout-driven section rendering
   // ---------------------------------------------------------------------------
   const layoutConfig = template?.layoutConfig
-  const sectionOrder = getSortedSectionIds(layoutConfig)
   const visibleCustomerFields = getVisibleFieldsForSection(layoutConfig, 'customer')
   const visibleVehicleFields = getVisibleFieldsForSection(layoutConfig, 'vehicle')
   const visibleServiceFields = getVisibleFieldsForSection(layoutConfig, 'service')
@@ -303,29 +279,27 @@ export function InvoicePDF({
     ),
   }
 
-  // Render sections in user-configured order.
-  // Adjacent info sections (customer, vehicle, service) pair into 2-column rows.
-  // Non-adjacent ones render as full-width blocks.
-  const INFO_IDS = new Set(['customer', 'vehicle', 'service'])
+  // Use column-based grouping from layout config.
+  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
+  const renderGroups = groupSectionsForRendering(effectiveSections)
   const renderedSections: React.ReactNode[] = []
 
-  for (let i = 0; i < sectionOrder.length; i++) {
-    const id = sectionOrder[i]
-    const nextId = sectionOrder[i + 1]
-
-    if (INFO_IDS.has(id) && nextId && INFO_IDS.has(nextId)) {
-      // Two adjacent info sections → 2-column row
+  for (const group of renderGroups) {
+    if (group.type === 'full-width') {
       renderedSections.push(
-        <View key={`${id}-${nextId}`} style={styles.infoRow}>
-          {sectionMap[id]}
-          {sectionMap[nextId]}
-        </View>
+        <React.Fragment key={group.sectionId}>{sectionMap[group.sectionId]}</React.Fragment>
       )
-      i++ // skip next, already rendered
     } else {
-      renderedSections.push(
-        <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>
-      )
+      const leftNodes = group.left.map(id => <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>).filter(Boolean)
+      const rightNodes = group.right.map(id => <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>).filter(Boolean)
+      if (leftNodes.length > 0 || rightNodes.length > 0) {
+        renderedSections.push(
+          <View key={`col-${group.left[0] || group.right[0]}`} style={styles.infoRow}>
+            <View style={{ flex: 1, gap: 4 }}>{leftNodes}</View>
+            <View style={{ flex: 1, gap: 4 }}>{rightNodes}</View>
+          </View>
+        )
+      }
     }
   }
 

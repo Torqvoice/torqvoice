@@ -268,31 +268,37 @@ export function InvoiceSettings({
         <>
           <ReadOnlyWrapper>
             <div className="space-y-4">
-              <div className="flex gap-1 rounded-lg border bg-muted p-1 max-w-xs">
-                <button
-                  type="button"
-                  onClick={() => setLayoutDocType("invoice")}
-                  className={cn(
-                    "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                    layoutDocType === "invoice"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {t('invoice.layoutDocInvoice')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setLayoutDocType("quote")}
-                  className={cn(
-                    "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                    layoutDocType === "quote"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {t('invoice.layoutDocQuote')}
-                </button>
+              <div className="flex items-center justify-between">
+                <div className="flex gap-1 rounded-lg border bg-muted p-1 max-w-xs">
+                  <button
+                    type="button"
+                    onClick={() => setLayoutDocType("invoice")}
+                    className={cn(
+                      "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                      layoutDocType === "invoice"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {t('invoice.layoutDocInvoice')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLayoutDocType("quote")}
+                    className={cn(
+                      "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                      layoutDocType === "quote"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {t('invoice.layoutDocQuote')}
+                  </button>
+                </div>
+                <Button onClick={handleSaveLayout} disabled={saving} size="sm" className="mr-2">
+                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {t('invoice.saveLayout')}
+                </Button>
               </div>
               <div className="grid gap-6 xl:grid-cols-2">
                 <InvoiceLayoutEditor

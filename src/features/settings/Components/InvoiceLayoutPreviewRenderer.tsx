@@ -211,6 +211,15 @@ export function InvoiceLayoutPreviewRenderer({
     [customFields],
   );
 
+  // Stable key to force PDFViewer remount when layout changes
+  const configKey = useMemo(
+    () =>
+      config.sections
+        .map((s) => `${s.id}:${s.order}:${s.visible}:${s.column ?? "f"}`)
+        .join("|"),
+    [config],
+  );
+
   const templateConfig = useMemo(
     () => ({
       primaryColor: template.primaryColor,
@@ -234,6 +243,7 @@ export function InvoiceLayoutPreviewRenderer({
   return (
     <div className="rounded-lg shadow-sm overflow-hidden bg-gray-100">
       <PDFViewer
+        key={configKey}
         width="100%"
         height={920}
         showToolbar={false}

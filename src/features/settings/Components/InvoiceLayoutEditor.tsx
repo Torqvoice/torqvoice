@@ -28,6 +28,8 @@ import {
   Lock,
   X,
   Plus,
+  Columns2,
+  Square,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -40,6 +42,7 @@ import { cn } from "@/lib/utils";
 import {
   BUILTIN_SECTIONS,
   SECTIONS_WITH_FIELDS,
+  COLUMN_ELIGIBLE_SECTIONS,
   getBuiltinFieldsForSection,
   getBuiltinFieldName,
   isCustomFieldId,
@@ -94,9 +97,6 @@ function getFieldDisplayName(
   return getBuiltinFieldName(fieldId) ?? fieldId;
 }
 
-/**
- * Collect all cf_ field IDs already assigned to any section in the config.
- */
 function getAssignedCustomFieldIds(config: InvoiceLayoutConfig): Set<string> {
   const assigned = new Set<string>();
   for (const section of config.sections) {
@@ -112,7 +112,7 @@ function getAssignedCustomFieldIds(config: InvoiceLayoutConfig): Set<string> {
 }
 
 // ---------------------------------------------------------------------------
-// SortableField (draggable field within a section)
+// SortableField
 // ---------------------------------------------------------------------------
 
 function SortableField({
@@ -252,54 +252,35 @@ function AddCustomFieldButton({
 }
 
 // ---------------------------------------------------------------------------
-// SortableSection
+// FieldsPanel – expandable field list inside a section card
 // ---------------------------------------------------------------------------
 
-function SortableSection({
+function FieldsPanel({
   section,
-  config,
   customFields,
-  onToggleVisibility,
+  availableCustomFields,
   onToggleFieldVisibility,
   onRemoveField,
   onAddCustomField,
   onReorderFields,
-  isExpanded,
-  onToggleExpand,
-  availableCustomFields,
 }: {
   section: InvoiceSection;
-  config: InvoiceLayoutConfig;
   customFields?: FieldDef[];
-  onToggleVisibility: (sectionId: string) => void;
+  availableCustomFields: FieldDef[];
   onToggleFieldVisibility: (sectionId: string, fieldId: string) => void;
   onRemoveField: (sectionId: string, fieldId: string) => void;
   onAddCustomField: (sectionId: string, definitionId: string) => void;
   onReorderFields: (sectionId: string, oldIndex: number, newIndex: number) => void;
-  isExpanded: boolean;
-  onToggleExpand: (sectionId: string) => void;
-  availableCustomFields: FieldDef[];
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: section.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  const hasFields = SECTIONS_WITH_FIELDS.has(section.id);
   const builtinFields = getBuiltinFieldsForSection(section.id);
   const builtinFieldIds = new Set(builtinFields.map((f) => f.id));
-
   const fields = section.fields ?? [];
 
-  // Create sortable item IDs for the nested context
   const fieldSortableIds: UniqueIdentifier[] = fields.map(
     (f) => `field::${section.id}::${f.id}`,
   );
 
-  const sensors = useSensors(
+  const fieldSensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -309,27 +290,158 @@ function SortableSection({
   const handleFieldDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-
     const prefix = `field::${section.id}::`;
     const activeFieldId = String(active.id).replace(prefix, "");
     const overFieldId = String(over.id).replace(prefix, "");
-
     const oldIndex = fields.findIndex((f) => f.id === activeFieldId);
     const newIndex = fields.findIndex((f) => f.id === overFieldId);
-
     if (oldIndex !== -1 && newIndex !== -1) {
       onReorderFields(section.id, oldIndex, newIndex);
     }
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes}>
+    <div className="mt-1 space-y-1">
+      <DndContext
+        sensors={fieldSensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleFieldDragEnd}
+      >
+        <SortableContext
+          items={fieldSortableIds}
+          strategy={verticalListSortingStrategy}
+        >
+          {fields.map((field) => (
+            <SortableField
+              key={field.id}
+              field={field}
+              sectionId={section.id}
+              isBuiltin={builtinFieldIds.has(field.id)}
+              customFields={customFields}
+              onToggleVisibility={onToggleFieldVisibility}
+              onRemove={onRemoveField}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
+      <AddCustomFieldButton
+        sectionId={section.id}
+        availableFields={availableCustomFields}
+        onAdd={onAddCustomField}
+      />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Width toggle – simple "full" or "half (L/R)" selector
+// ---------------------------------------------------------------------------
+
+function WidthToggle({
+  column,
+  onChange,
+}: {
+  column: "left" | "right" | undefined;
+  onChange: (column: "left" | "right" | undefined) => void;
+}) {
+  // Cycle: undefined (full) → left → right → undefined
+  const isHalf = column === "left" || column === "right";
+
+  return (
+    <button
+      type="button"
+      title={
+        isHalf
+          ? `Half width (${column}) — click to make full width`
+          : "Full width — click to make half width (left)"
+      }
+      onClick={() => {
+        if (!column) onChange("left");
+        else if (column === "left") onChange("right");
+        else onChange(undefined);
+      }}
+      className={cn(
+        "flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium transition-colors",
+        isHalf
+          ? "border-primary/30 bg-primary/10 text-primary"
+          : "border-transparent bg-muted text-muted-foreground hover:bg-muted/80",
+      )}
+    >
+      {isHalf ? (
+        <>
+          <Columns2 className="h-3 w-3" />
+          <span className="uppercase">{column === "left" ? "L" : "R"}</span>
+        </>
+      ) : (
+        <>
+          <Square className="h-3 w-3" />
+          <span>Full</span>
+        </>
+      )}
+    </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SectionCard – single section row in the list
+// ---------------------------------------------------------------------------
+
+function SectionCard({
+  section,
+  customFields,
+  onToggleVisibility,
+  onToggleFieldVisibility,
+  onRemoveField,
+  onAddCustomField,
+  onReorderFields,
+  onSetColumn,
+  isExpanded,
+  onToggleExpand,
+  availableCustomFields,
+}: {
+  section: InvoiceSection;
+  customFields?: FieldDef[];
+  onToggleVisibility: (sectionId: string) => void;
+  onToggleFieldVisibility: (sectionId: string, fieldId: string) => void;
+  onRemoveField: (sectionId: string, fieldId: string) => void;
+  onAddCustomField: (sectionId: string, definitionId: string) => void;
+  onReorderFields: (sectionId: string, oldIndex: number, newIndex: number) => void;
+  onSetColumn: (sectionId: string, column: "left" | "right" | undefined) => void;
+  isExpanded: boolean;
+  onToggleExpand: (sectionId: string) => void;
+  availableCustomFields: FieldDef[];
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: section.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const hasFields = SECTIONS_WITH_FIELDS.has(section.id);
+  const isColumnEligible = COLUMN_ELIGIBLE_SECTIONS.has(section.id);
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className={cn(isDragging && "z-10 opacity-50")}
+    >
       <div
         className={cn(
-          "flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5 transition-colors",
-          !section.visible && "opacity-60",
+          "flex items-center gap-2 rounded-lg border bg-card px-3 py-2 transition-colors",
+          !section.visible && "opacity-50",
         )}
       >
+        {/* Drag handle */}
         <button
           type="button"
           {...listeners}
@@ -338,6 +450,7 @@ function SortableSection({
           <GripVertical className="h-4 w-4" />
         </button>
 
+        {/* Expand toggle for sections with fields */}
         {hasFields && (
           <button
             type="button"
@@ -352,11 +465,21 @@ function SortableSection({
           </button>
         )}
 
+        {/* Section name */}
         <span className="flex-1 text-sm font-medium">
           {getSectionName(section.id)}
         </span>
 
-        <div className="flex items-center gap-2">
+        {/* Width toggle (only for column-eligible sections) */}
+        {isColumnEligible && (
+          <WidthToggle
+            column={section.column}
+            onChange={(col) => onSetColumn(section.id, col)}
+          />
+        )}
+
+        {/* Visibility toggle */}
+        <div className="flex items-center gap-1.5 ml-1">
           {section.visible ? (
             <Eye className="h-3.5 w-3.5 text-muted-foreground" />
           ) : (
@@ -370,36 +493,17 @@ function SortableSection({
         </div>
       </div>
 
-      {/* Expandable fields for sections with configurable child fields */}
+      {/* Expandable fields panel */}
       {hasFields && isExpanded && (
-        <div className="ml-8 mt-1 space-y-1">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleFieldDragEnd}
-          >
-            <SortableContext
-              items={fieldSortableIds}
-              strategy={verticalListSortingStrategy}
-            >
-              {fields.map((field) => (
-                <SortableField
-                  key={field.id}
-                  field={field}
-                  sectionId={section.id}
-                  isBuiltin={builtinFieldIds.has(field.id)}
-                  customFields={customFields}
-                  onToggleVisibility={onToggleFieldVisibility}
-                  onRemove={onRemoveField}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
-
-          <AddCustomFieldButton
-            sectionId={section.id}
-            availableFields={availableCustomFields}
-            onAdd={onAddCustomField}
+        <div className="ml-6">
+          <FieldsPanel
+            section={section}
+            customFields={customFields}
+            availableCustomFields={availableCustomFields}
+            onToggleFieldVisibility={onToggleFieldVisibility}
+            onRemoveField={onRemoveField}
+            onAddCustomField={onAddCustomField}
+            onReorderFields={onReorderFields}
           />
         </div>
       )}
@@ -428,12 +532,11 @@ export function InvoiceLayoutEditor({
     }),
   );
 
-  // Sort sections by order for display
-  const sortedSections = [...config.sections].sort(
-    (a, b) => a.order - b.order,
+  const sortedSections = useMemo(
+    () => [...config.sections].sort((a, b) => a.order - b.order),
+    [config.sections],
   );
 
-  // Compute available (unassigned) custom fields
   const availableCustomFields = useMemo(() => {
     if (!customFields) return [];
     const assigned = getAssignedCustomFieldIds(config);
@@ -445,14 +548,13 @@ export function InvoiceLayoutEditor({
   const toggleExpand = useCallback((sectionId: string) => {
     setExpandedSections((prev) => {
       const next = new Set(prev);
-      if (next.has(sectionId)) {
-        next.delete(sectionId);
-      } else {
-        next.add(sectionId);
-      }
+      if (next.has(sectionId)) next.delete(sectionId);
+      else next.add(sectionId);
       return next;
     });
   }, []);
+
+  // --- Handlers ---
 
   const handleToggleVisibility = useCallback(
     (sectionId: string) => {
@@ -484,10 +586,7 @@ export function InvoiceLayoutEditor({
     (sectionId: string, fieldId: string) => {
       const updatedSections = config.sections.map((s) => {
         if (s.id !== sectionId || !s.fields) return s;
-        return {
-          ...s,
-          fields: s.fields.filter((f) => f.id !== fieldId),
-        };
+        return { ...s, fields: s.fields.filter((f) => f.id !== fieldId) };
       });
       onChange({ sections: updatedSections });
     },
@@ -500,10 +599,7 @@ export function InvoiceLayoutEditor({
       const updatedSections = config.sections.map((s) => {
         if (s.id !== sectionId) return s;
         const currentFields = s.fields ?? [];
-        return {
-          ...s,
-          fields: [...currentFields, { id: cfId, visible: true }],
-        };
+        return { ...s, fields: [...currentFields, { id: cfId, visible: true }] };
       });
       onChange({ sections: updatedSections });
     },
@@ -514,35 +610,51 @@ export function InvoiceLayoutEditor({
     (sectionId: string, oldIndex: number, newIndex: number) => {
       const updatedSections = config.sections.map((s) => {
         if (s.id !== sectionId || !s.fields) return s;
-        return {
-          ...s,
-          fields: arrayMove(s.fields, oldIndex, newIndex),
-        };
+        return { ...s, fields: arrayMove(s.fields, oldIndex, newIndex) };
       });
       onChange({ sections: updatedSections });
     },
     [config, onChange],
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
+  const handleSetColumn = useCallback(
+    (sectionId: string, column: "left" | "right" | undefined) => {
+      const updatedSections = config.sections.map((s) =>
+        s.id === sectionId ? { ...s, column } : s,
+      );
+      onChange({ sections: updatedSections });
+    },
+    [config, onChange],
+  );
 
-    const oldIndex = sortedSections.findIndex((s) => s.id === active.id);
-    const newIndex = sortedSections.findIndex((s) => s.id === over.id);
-    const reordered = arrayMove(sortedSections, oldIndex, newIndex);
+  // --- Drag reorder (single flat list) ---
 
-    // Reassign order values based on new positions
-    const updatedSections = reordered.map((section, index) => ({
-      ...section,
-      order: index,
-    }));
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
 
-    onChange({ sections: updatedSections });
-  };
+      const oldIndex = sortedSections.findIndex((s) => s.id === active.id);
+      const newIndex = sortedSections.findIndex((s) => s.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const reordered = arrayMove(sortedSections, oldIndex, newIndex);
+      const updatedSections = config.sections.map((s) => {
+        const idx = reordered.findIndex((r) => r.id === s.id);
+        return { ...s, order: idx };
+      });
+      onChange({ sections: updatedSections });
+    },
+    [config, onChange, sortedSections],
+  );
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
+      <p className="text-xs text-muted-foreground mb-2">
+        Drag to reorder. Use the width toggle to place sections side-by-side.
+        Consecutive half-width sections (L/R) will render in two columns.
+      </p>
+
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -553,16 +665,16 @@ export function InvoiceLayoutEditor({
           strategy={verticalListSortingStrategy}
         >
           {sortedSections.map((section) => (
-            <SortableSection
+            <SectionCard
               key={section.id}
               section={section}
-              config={config}
               customFields={customFields}
               onToggleVisibility={handleToggleVisibility}
               onToggleFieldVisibility={handleToggleFieldVisibility}
               onRemoveField={handleRemoveField}
               onAddCustomField={handleAddCustomField}
               onReorderFields={handleReorderFields}
+              onSetColumn={handleSetColumn}
               isExpanded={expandedSections.has(section.id)}
               onToggleExpand={toggleExpand}
               availableCustomFields={availableCustomFields}
