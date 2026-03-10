@@ -7,7 +7,7 @@ import { FeatureLockedMessage } from "../feature-locked-message";
 import { redirect } from "next/navigation";
 import { getTemplates } from "@/features/inspections/Actions/templateActions";
 import { getTranslations } from "next-intl/server";
-
+import { getInvoiceLayoutConfig } from "@/features/settings/Actions/invoiceLayoutActions";
 export default async function TemplatePage() {
   const data = await getLayoutData();
 
@@ -26,14 +26,17 @@ export default async function TemplatePage() {
     );
   }
 
-  const [result, inspectionTemplatesResult] = await Promise.all([
+  const [result, inspectionTemplatesResult, invoiceLayoutResult] = await Promise.all([
     getSettings([
       SETTING_KEYS.INVOICE_PRIMARY_COLOR,
       SETTING_KEYS.INVOICE_FONT_FAMILY,
       SETTING_KEYS.INVOICE_HEADER_STYLE,
+      SETTING_KEYS.INVOICE_LOGO_SIZE,
       SETTING_KEYS.QUOTE_PRIMARY_COLOR,
       SETTING_KEYS.QUOTE_FONT_FAMILY,
       SETTING_KEYS.QUOTE_HEADER_STYLE,
+      SETTING_KEYS.QUOTE_LOGO_SIZE,
+      SETTING_KEYS.COMPANY_LOGO,
       SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
       SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY,
       SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
@@ -44,6 +47,7 @@ export default async function TemplatePage() {
       SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
     ]),
     getTemplates(),
+    getInvoiceLayoutConfig(),
   ]);
 
   const settings = result.success && result.data ? result.data : {};
@@ -75,15 +79,19 @@ export default async function TemplatePage() {
         primaryColor: settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || "#d97706",
         fontFamily: settings[SETTING_KEYS.INVOICE_FONT_FAMILY] || "Helvetica",
         headerStyle: settings[SETTING_KEYS.INVOICE_HEADER_STYLE] || "standard",
+        logoSize: Number(settings[SETTING_KEYS.INVOICE_LOGO_SIZE]) || 100,
       }}
       initialQuoteValues={{
         primaryColor: settings[SETTING_KEYS.QUOTE_PRIMARY_COLOR] || "#d97706",
         fontFamily: settings[SETTING_KEYS.QUOTE_FONT_FAMILY] || "Helvetica",
         headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || "standard",
+        logoSize: Number(settings[SETTING_KEYS.QUOTE_LOGO_SIZE]) || 100,
       }}
       inspectionTemplates={inspectionTemplates}
       smsEnabled={features.sms ?? false}
       initialSmsTemplates={smsTemplates}
+      logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}
+      invoiceLayoutConfig={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
     />
   );
 }

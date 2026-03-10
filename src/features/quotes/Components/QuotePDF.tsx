@@ -1,8 +1,12 @@
+import React from 'react'
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatCurrency, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { createStyles, gray, getFontBold } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
+import { CustomFields } from '@/features/vehicles/Components/invoice-pdf/CustomFields'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
+import type { InvoiceLayoutConfig, InvoiceSection } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce(
@@ -81,7 +85,9 @@ export function QuotePDF({
   imageAttachments = [],
   otherAttachments = [],
   pdfAttachmentNames = [],
+  customFields = [],
   labels = {},
+  layoutConfig,
 }: {
   data: QuoteData
   workshop?: WorkshopInfo
@@ -95,15 +101,47 @@ export function QuotePDF({
   imageAttachments?: ImageAttachmentPDF[]
   otherAttachments?: OtherAttachmentPDF[]
   pdfAttachmentNames?: string[]
+  customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
   labels?: Record<string, string>
+  layoutConfig?: InvoiceLayoutConfig
 }) {
   const primaryColor = template?.primaryColor || '#d97706'
   const fontFamily = template?.fontFamily || 'Helvetica'
   const headerStyle = template?.headerStyle || 'standard'
   const showLogo = template?.showLogo !== false
   const showCompanyName = template?.showCompanyName !== false
+  const logoScale = (template?.logoSize || 100) / 100
   const styles = createStyles(primaryColor, fontFamily)
   const fontBold = getFontBold(fontFamily)
+
+  // Layout config helpers
+  const sections = layoutConfig?.sections ?? []
+  const sectionMap = new Map<string, InvoiceSection>(sections.map((s) => [s.id, s]))
+
+  const isSectionVisible = (id: string): boolean => {
+    const s = sectionMap.get(id)
+    return s ? s.visible : true // default visible when no config
+  }
+
+  const getVisibleFieldsForSection = (sectionId: string): Set<string> | null => {
+    const section = sectionMap.get(sectionId)
+    if (!section?.fields) return null
+    return new Set(section.fields.filter((f) => f.visible).map((f) => f.id))
+  }
+
+  const getCustomFieldsForSection = (
+    sectionId: string,
+  ): Array<{ fieldId: string; label: string; value: string; fieldType: string }> => {
+    if (!layoutConfig || !customFields?.length) return []
+    const section = sectionMap.get(sectionId)
+    if (!section?.fields) return []
+    const cfIds = new Set(
+      section.fields
+        .filter(f => f.visible && isCustomFieldId(f.id))
+        .map(f => fromCustomFieldId(f.id))
+    )
+    return customFields.filter(cf => cfIds.has(cf.fieldId))
+  }
 
   const quoteNum = data.quoteNumber || 'QUOTE'
   const df = dateFormat || DEFAULT_DATE_FORMAT
@@ -124,22 +162,20 @@ export function QuotePDF({
           borderBottomColor: '#e5e7eb',
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <View>
           {showLogo && logoDataUri && (
             <Image
               src={logoDataUri}
-              style={{ maxWidth: 40, maxHeight: 40, borderRadius: 4, objectFit: 'contain' }}
+              style={{ maxWidth: 40 * logoScale, maxHeight: 40 * logoScale, borderRadius: 4, objectFit: 'contain', marginBottom: 4 }}
             />
           )}
           {showCompanyName && (
-            <View>
-              <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
-                {shopName}
-              </Text>
-              {workshop?.address && (
-                <Text style={{ fontSize: 8, color: gray }}>{workshop.address}</Text>
-              )}
-            </View>
+            <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
+              {shopName}
+            </Text>
+          )}
+          {workshop?.address && (
+            <Text style={{ fontSize: 8, color: gray }}>{workshop.address}</Text>
           )}
         </View>
         <View style={{ alignItems: 'flex-end' }}>
@@ -185,43 +221,34 @@ export function QuotePDF({
           marginHorizontal: -10,
         }}
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 12,
-          }}
-        >
+        <View style={{ alignItems: 'center' }}>
           {showLogo && logoDataUri && (
             <Image
               src={logoDataUri}
-              style={{ maxWidth: 50, maxHeight: 50, borderRadius: 4, objectFit: 'contain' }}
+              style={{ maxWidth: 50 * logoScale, maxHeight: 50 * logoScale, borderRadius: 4, objectFit: 'contain', marginBottom: 6 }}
             />
           )}
-          <View style={{ alignItems: 'center' }}>
-            {showCompanyName && (
-              <Text style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
-                {shopName}
+          {showCompanyName && (
+            <Text style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
+              {shopName}
+            </Text>
+          )}
+          {workshop?.address && (
+            <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
+              {workshop.address}
+            </Text>
+          )}
+          <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
+            {workshop?.phone && (
+              <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
+                {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
               </Text>
             )}
-            {workshop?.address && (
-              <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
-                {workshop.address}
+            {workshop?.email && (
+              <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
+                {workshop.email}
               </Text>
             )}
-            <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
-              {workshop?.phone && (
-                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                  {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
-                </Text>
-              )}
-              {workshop?.email && (
-                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                  {workshop.email}
-                </Text>
-              )}
-            </View>
           </View>
         </View>
         {torqvoiceLogoDataUri && (
@@ -266,7 +293,14 @@ export function QuotePDF({
         {showLogo && logoDataUri && (
           <Image
             src={logoDataUri}
-            style={{ width: 60, height: 60, marginBottom: 6, borderRadius: 4 }}
+            style={{
+              maxWidth: 150 * logoScale,
+              maxHeight: 60 * logoScale,
+              marginBottom: 6,
+              borderRadius: 4,
+              objectFit: 'contain',
+              objectPosition: 'left',
+            }}
           />
         )}
         {showCompanyName && <Text style={styles.brandName}>{shopName}</Text>}
@@ -289,252 +323,396 @@ export function QuotePDF({
     </View>
   )
 
-  return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        {headerStyle === 'compact'
+  // ---------- Section renderers ----------
+
+  const customerCf = getCustomFieldsForSection('customer')
+  const vehicleCf = getCustomFieldsForSection('vehicle')
+  const serviceCf = getCustomFieldsForSection('service')
+  const generalCf = getCustomFieldsForSection('general')
+  const generalFallbackCf = !layoutConfig ? customFields : generalCf
+
+  const visibleCustomerFields = getVisibleFieldsForSection('customer')
+  const visibleVehicleFields = getVisibleFieldsForSection('vehicle')
+  const visibleServiceFields = getVisibleFieldsForSection('service')
+
+  const renderCustomerSection = () => {
+    const showC = (fid: string) => !visibleCustomerFields || visibleCustomerFields.has(fid)
+    const hasCustomer = data.customer && (showC('customer_name') || (showC('customer_company') && data.customer.company) || (showC('customer_address') && data.customer.address) || (showC('customer_email') && data.customer.email) || (showC('customer_phone') && data.customer.phone))
+    const hasCustCf = customerCf.some(cf => cf.value !== '' && cf.value != null)
+    if (!hasCustomer && !hasCustCf) return null
+
+    const fieldOrder = getOrderedFieldIds(visibleCustomerFields, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone'])
+    const c = data.customer
+
+    const renderField = (fid: string) => {
+      if (!c || !showC(fid)) return null
+      switch (fid) {
+        case 'customer_name': return <Text key={fid} style={styles.infoTextBold}>{c.name}</Text>
+        case 'customer_company': return c.company ? <Text key={fid} style={styles.infoText}>{c.company}</Text> : null
+        case 'customer_address': return c.address ? <Text key={fid} style={styles.infoTextSmall}>{c.address}</Text> : null
+        case 'customer_email': return c.email ? <Text key={fid} style={styles.infoTextSmall}>{c.email}</Text> : null
+        case 'customer_phone': return c.phone ? <Text key={fid} style={styles.infoTextSmall}>{c.phone}</Text> : null
+        default: return null
+      }
+    }
+
+    return (
+      <View style={styles.infoBox}>
+        <Text style={styles.infoLabel}>{labels.to || 'To'}</Text>
+        {fieldOrder.map(renderField)}
+        {customerCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
+          <Text key={`cf-cust-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
+        ))}
+      </View>
+    )
+  }
+
+  const renderVehicleSection = () => {
+    const showV = (fid: string) => !visibleVehicleFields || visibleVehicleFields.has(fid)
+    const hasVehicle = data.vehicle && (showV('vehicle_name') || (showV('vin') && data.vehicle.vin) || (showV('license_plate') && data.vehicle.licensePlate))
+    const hasVehCf = vehicleCf.some(cf => cf.value !== '' && cf.value != null)
+    if (!hasVehicle && !hasVehCf) return null
+
+    const fieldOrder = getOrderedFieldIds(visibleVehicleFields, ['vehicle_name', 'vin', 'license_plate'])
+    const v = data.vehicle
+
+    const renderField = (fid: string) => {
+      if (!v || !showV(fid)) return null
+      switch (fid) {
+        case 'vehicle_name': return <Text key={fid} style={styles.infoTextBold}>{v.year} {v.make} {v.model}</Text>
+        case 'vin': return v.vin ? <Text key={fid} style={styles.infoTextSmall}>{labels.vin ? fillTemplate(labels.vin, { vin: v.vin }) : `VIN: ${v.vin}`}</Text> : null
+        case 'license_plate': return v.licensePlate ? <Text key={fid} style={styles.infoTextSmall}>{labels.plate ? fillTemplate(labels.plate, { plate: v.licensePlate }) : `Plate: ${v.licensePlate}`}</Text> : null
+        default: return null
+      }
+    }
+
+    return (
+      <View style={styles.infoBox}>
+        <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
+        {fieldOrder.map(renderField)}
+        {vehicleCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
+          <Text key={`cf-veh-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
+        ))}
+      </View>
+    )
+  }
+
+  const renderServiceSection = () => {
+    const show = (fid: string) => !visibleServiceFields || visibleServiceFields.has(fid)
+    const hasBuiltin = show('service_title')
+    const hasCf = serviceCf.some(cf => cf.value !== '' && cf.value != null)
+    if (!hasBuiltin && !hasCf) return null
+
+    const fieldOrder = getOrderedFieldIds(visibleServiceFields, ['service_title'])
+
+    const renderField = (fid: string) => {
+      if (!show(fid)) return null
+      switch (fid) {
+        case 'service_title': return <Text key={fid} style={styles.infoTextBold}>{data.title}</Text>
+        default: return null
+      }
+    }
+
+    return (
+      <View style={styles.infoBox}>
+        <Text style={styles.infoLabel}>{labels.quoteDetails || 'Quote Details'}</Text>
+        {fieldOrder.map(renderField)}
+        {serviceCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
+          <Text key={`cf-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
+        ))}
+      </View>
+    )
+  }
+
+  const renderPartsTable = () => {
+    if (data.partItems.length === 0) return null
+    return (
+      <View>
+        <Text style={styles.sectionTitle}>{labels.parts || 'Parts'}</Text>
+        <View style={styles.table}>
+          <View style={styles.tableHeader}>
+            <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>{labels.partNumber || 'Part #'}</Text>
+            <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>{labels.description || 'Description'}</Text>
+            <Text style={{ ...styles.tableHeaderCell, width: '12%', textAlign: 'right' }}>
+              {labels.qty || 'Qty'}
+            </Text>
+            <Text style={{ ...styles.tableHeaderCell, width: '18%', textAlign: 'right' }}>
+              {labels.unitPrice || 'Unit Price'}
+            </Text>
+            <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
+              {labels.total || 'Total'}
+            </Text>
+          </View>
+          {data.partItems.map((p, i) => (
+            <View key={i} style={{ ...styles.tableRow, ...(p.excluded ? { opacity: 0.5 } : {}) }}>
+              <Text style={{ ...styles.tableCell, width: '15%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.partNumber || '-'}</Text>
+              <Text style={{ ...styles.tableCell, width: '35%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.name}</Text>
+              <Text style={{ ...styles.tableCell, width: '12%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                {p.quantity}
+              </Text>
+              <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                {formatCurrency(p.unitPrice, currencyCode)}
+              </Text>
+              <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                {formatCurrency(p.total, currencyCode)}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    )
+  }
+
+  const renderLaborTable = () => {
+    if (data.laborItems.length === 0) return null
+    return (
+      <View>
+        <Text style={styles.sectionTitle}>{labels.labor || 'Labor'}</Text>
+        <View style={styles.table}>
+          <View style={styles.tableHeader}>
+            <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.description || 'Description'}</Text>
+            <Text style={{ ...styles.tableHeaderCell, width: '15%', textAlign: 'right' }}>
+              {labels.hours || 'Hours'}
+            </Text>
+            <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
+              {labels.rate || 'Rate'}
+            </Text>
+            <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
+              {labels.total || 'Total'}
+            </Text>
+          </View>
+          {data.laborItems.map((l, i) => (
+            <View key={i} style={{ ...styles.tableRow, ...(l.excluded ? { opacity: 0.5 } : {}) }}>
+              <Text style={{ ...styles.tableCell, width: '45%', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>{l.description}</Text>
+              <Text style={{ ...styles.tableCell, width: '15%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                {l.hours}
+              </Text>
+              <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                {labels.ratePerHour ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(l.rate, currencyCode) }) : `${formatCurrency(l.rate, currencyCode)}/hr`}
+              </Text>
+              <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                {formatCurrency(l.total, currencyCode)}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    )
+  }
+
+  const renderTotals = () => {
+    const laborTotal = data.laborItems.reduce((sum, l) => l.excluded ? sum : sum + l.total, 0)
+    const partsTotal = data.partItems.reduce((sum, p) => p.excluded ? sum : sum + p.total, 0)
+    const sub = laborTotal + partsTotal
+    const disc = data.discountType === 'percentage'
+      ? sub * (data.discountValue / 100)
+      : data.discountType === 'fixed'
+      ? Math.min(data.discountValue, sub)
+      : 0
+    const tax = (sub - disc) * (data.taxRate / 100)
+    const total = sub - disc + tax
+    return (
+      <View style={styles.totalsBox}>
+        {data.laborItems.length > 0 && (
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
+            <Text style={styles.totalValue}>
+              {formatCurrency(laborTotal, currencyCode)}
+            </Text>
+          </View>
+        )}
+        {data.partItems.length > 0 && (
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
+            <Text style={styles.totalValue}>
+              {formatCurrency(partsTotal, currencyCode)}
+            </Text>
+          </View>
+        )}
+        {sub > 0 && (
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
+            <Text style={styles.totalValue}>{formatCurrency(sub, currencyCode)}</Text>
+          </View>
+        )}
+        {disc > 0 && (
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>
+              {data.discountType === 'percentage'
+                ? (labels.discountPercent ? fillTemplate(labels.discountPercent, { percent: String(data.discountValue) }) : `Discount (${data.discountValue}%)`)
+                : (labels.discount || 'Discount')}
+            </Text>
+            <Text style={{ ...styles.totalValue, color: '#dc2626' }}>
+              {formatCurrency(-disc, currencyCode)}
+            </Text>
+          </View>
+        )}
+        {data.taxRate > 0 && (
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>{labels.tax ? fillTemplate(labels.tax, { rate: String(data.taxRate) }) : `Tax (${data.taxRate}%)`}</Text>
+            <Text style={styles.totalValue}>{formatCurrency(tax, currencyCode)}</Text>
+          </View>
+        )}
+        <View style={styles.totalDivider} />
+        <View style={styles.grandTotalRow}>
+          <Text style={styles.grandTotalLabel}>{labels.total || 'Total'}</Text>
+          <Text style={styles.grandTotalValue}>
+            {formatCurrency(total, currencyCode)}
+          </Text>
+        </View>
+      </View>
+    )
+  }
+
+  const renderGeneralSection = () => {
+    if (generalFallbackCf.length === 0) return null
+    return (
+      <View style={{ marginTop: 10 }}>
+        <CustomFields fields={generalFallbackCf} styles={styles} labels={labels} />
+      </View>
+    )
+  }
+
+  const renderNotes = () => {
+    if (!data.description) return null
+    return (
+      <View style={styles.notesSection}>
+        <Text style={styles.notesLabel}>Description</Text>
+        <HtmlToPdf html={data.description} baseStyle={styles.notesText} fontBold={fontBold} />
+      </View>
+    )
+  }
+
+  const renderFooter = () => (
+    <>
+      {portalUrl && (
+        <View style={{ marginTop: 8 }}>
+          <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
+            {labels.viewPortal ? fillTemplate(labels.viewPortal, { url: portalUrl }) : `View your portal: ${portalUrl}`}
+          </Text>
+        </View>
+      )}
+
+      {/* Document attachment names */}
+      {(otherAttachments.length > 0 || pdfAttachmentNames.length > 0) && (
+        <View style={{ marginTop: 10 }}>
+          <Text style={styles.sectionTitle}>{labels.attachedDocuments || 'Attached Documents'}</Text>
+          {otherAttachments.map((att, i) => (
+            <Text key={`other-${i}`} style={{ fontSize: 9, color: gray, marginBottom: 2 }}>
+              {att.fileName}
+            </Text>
+          ))}
+          {pdfAttachmentNames.map((name, i) => (
+            <Text key={`pdf-${i}`} style={{ fontSize: 9, color: gray, marginBottom: 2 }}>
+              {labels.attached ? fillTemplate(labels.attached, { name }) : `${name} (attached)`}
+            </Text>
+          ))}
+        </View>
+      )}
+
+      {torqvoiceLogoDataUri ? (
+        <View style={{
+          ...styles.footer,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 4,
+        }}>
+          <Text style={{ fontSize: 8, color: gray }}>
+            {validDate
+              ? (labels.validityFooterUntil ? fillTemplate(labels.validityFooterUntil, { date: validDate }) : `This quote is valid until ${validDate}`)
+              : (labels.validityFooter30 || 'This quote is valid for 30 days')} ·{' '}
+          </Text>
+          <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
+          <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
+          <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
+        </View>
+      ) : (
+        <Text style={styles.footer}>
+          {validDate
+            ? (labels.validityFooterUntil ? fillTemplate(labels.validityFooterUntil, { date: validDate }) : `This quote is valid until ${validDate}`)
+            : (labels.validityFooter30 || 'This quote is valid for 30 days')} · {shopName}
+        </Text>
+      )}
+    </>
+  )
+
+  // ---------- Map section IDs to renderers ----------
+
+  const renderSection = (sectionId: string) => {
+    switch (sectionId) {
+      case 'header':
+        return headerStyle === 'compact'
           ? renderCompactHeader()
           : headerStyle === 'modern'
             ? renderModernHeader()
-            : renderStandardHeader()}
+            : renderStandardHeader()
+      case 'customer':
+        return renderCustomerSection()
+      case 'vehicle':
+        return renderVehicleSection()
+      case 'service':
+        return renderServiceSection()
+      case 'parts_table':
+        return renderPartsTable()
+      case 'labor_table':
+        return renderLaborTable()
+      case 'totals':
+        return (
+          <>
+            {renderTotals()}
+            {torqvoiceLogoDataUri && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginTop: 6 }}>
+                <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
+                <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
+                <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
+              </View>
+            )}
+          </>
+        )
+      case 'general':
+        return renderGeneralSection()
+      case 'notes':
+        return renderNotes()
+      case 'footer':
+        return renderFooter()
+      default:
+        return null
+    }
+  }
 
-        <View style={styles.infoRow}>
-          {data.customer && (
-            <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>{labels.to || 'To'}</Text>
-              <Text style={styles.infoTextBold}>{data.customer.name}</Text>
-              {data.customer.company && (
-                <Text style={styles.infoText}>{data.customer.company}</Text>
-              )}
-              {data.customer.address && (
-                <Text style={styles.infoTextSmall}>{data.customer.address}</Text>
-              )}
-              {data.customer.email && (
-                <Text style={styles.infoTextSmall}>{data.customer.email}</Text>
-              )}
-              {data.customer.phone && (
-                <Text style={styles.infoTextSmall}>{data.customer.phone}</Text>
-              )}
-            </View>
-          )}
-          {data.vehicle && (
-            <View style={styles.infoBox}>
-              <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
-              <Text style={styles.infoTextBold}>
-                {data.vehicle.year} {data.vehicle.make} {data.vehicle.model}
-              </Text>
-              {data.vehicle.vin && (
-                <Text style={styles.infoTextSmall}>{labels.vin ? fillTemplate(labels.vin, { vin: data.vehicle.vin }) : `VIN: ${data.vehicle.vin}`}</Text>
-              )}
-              {data.vehicle.licensePlate && (
-                <Text style={styles.infoTextSmall}>{labels.plate ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate }) : `Plate: ${data.vehicle.licensePlate}`}</Text>
-              )}
-            </View>
-          )}
-          <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>{labels.quoteDetails || 'Quote Details'}</Text>
-            <Text style={styles.infoTextBold}>{data.title}</Text>
+  // Use column-based grouping from layout config
+  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
+  const renderGroups = groupSectionsForRendering(effectiveSections)
+  const renderedSections: React.ReactNode[] = []
+
+  for (const group of renderGroups) {
+    if (group.type === 'full-width') {
+      if (group.sectionId === 'footer') continue
+      renderedSections.push(
+        <View key={group.sectionId}>{renderSection(group.sectionId)}</View>
+      )
+    } else {
+      const allIds = [...group.left, ...group.right].filter(id => id !== 'footer')
+      if (allIds.length === 0) continue
+      renderedSections.push(
+        <View key={`col-${allIds[0]}`} style={styles.infoRow}>
+          <View style={{ flex: 1, gap: 4 }}>
+            {group.left.map(id => <React.Fragment key={id}>{renderSection(id)}</React.Fragment>)}
+          </View>
+          <View style={{ flex: 1, gap: 4 }}>
+            {group.right.map(id => <React.Fragment key={id}>{renderSection(id)}</React.Fragment>)}
           </View>
         </View>
+      )
+    }
+  }
 
-        {data.partItems.length > 0 && (
-          <View>
-            <Text style={styles.sectionTitle}>{labels.parts || 'Parts'}</Text>
-            <View style={styles.table}>
-              <View style={styles.tableHeader}>
-                <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>{labels.partNumber || 'Part #'}</Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>{labels.description || 'Description'}</Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '12%', textAlign: 'right' }}>
-                  {labels.qty || 'Qty'}
-                </Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '18%', textAlign: 'right' }}>
-                  {labels.unitPrice || 'Unit Price'}
-                </Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
-                  {labels.total || 'Total'}
-                </Text>
-              </View>
-              {data.partItems.map((p, i) => (
-                <View key={i} style={{ ...styles.tableRow, ...(p.excluded ? { opacity: 0.5 } : {}) }}>
-                  <Text style={{ ...styles.tableCell, width: '15%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.partNumber || '-'}</Text>
-                  <Text style={{ ...styles.tableCell, width: '35%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.name}</Text>
-                  <Text style={{ ...styles.tableCell, width: '12%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                    {p.quantity}
-                  </Text>
-                  <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                    {formatCurrency(p.unitPrice, currencyCode)}
-                  </Text>
-                  <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                    {formatCurrency(p.total, currencyCode)}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {data.laborItems.length > 0 && (
-          <View>
-            <Text style={styles.sectionTitle}>{labels.labor || 'Labor'}</Text>
-            <View style={styles.table}>
-              <View style={styles.tableHeader}>
-                <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.description || 'Description'}</Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '15%', textAlign: 'right' }}>
-                  {labels.hours || 'Hours'}
-                </Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
-                  {labels.rate || 'Rate'}
-                </Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
-                  {labels.total || 'Total'}
-                </Text>
-              </View>
-              {data.laborItems.map((l, i) => (
-                <View key={i} style={{ ...styles.tableRow, ...(l.excluded ? { opacity: 0.5 } : {}) }}>
-                  <Text style={{ ...styles.tableCell, width: '45%', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>{l.description}</Text>
-                  <Text style={{ ...styles.tableCell, width: '15%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                    {l.hours}
-                  </Text>
-                  <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                    {labels.ratePerHour ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(l.rate, currencyCode) }) : `${formatCurrency(l.rate, currencyCode)}/hr`}
-                  </Text>
-                  <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                    {formatCurrency(l.total, currencyCode)}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {(() => {
-          const laborTotal = data.laborItems.reduce((sum, l) => l.excluded ? sum : sum + l.total, 0)
-          const partsTotal = data.partItems.reduce((sum, p) => p.excluded ? sum : sum + p.total, 0)
-          const sub = laborTotal + partsTotal
-          const disc = data.discountType === 'percentage'
-            ? sub * (data.discountValue / 100)
-            : data.discountType === 'fixed'
-            ? Math.min(data.discountValue, sub)
-            : 0
-          const tax = (sub - disc) * (data.taxRate / 100)
-          const total = sub - disc + tax
-          return (
-            <View style={styles.totalsBox}>
-              {data.laborItems.length > 0 && (
-                <View style={styles.totalRow}>
-                  <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
-                  <Text style={styles.totalValue}>
-                    {formatCurrency(laborTotal, currencyCode)}
-                  </Text>
-                </View>
-              )}
-              {data.partItems.length > 0 && (
-                <View style={styles.totalRow}>
-                  <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
-                  <Text style={styles.totalValue}>
-                    {formatCurrency(partsTotal, currencyCode)}
-                  </Text>
-                </View>
-              )}
-              {sub > 0 && (
-                <View style={styles.totalRow}>
-                  <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
-                  <Text style={styles.totalValue}>{formatCurrency(sub, currencyCode)}</Text>
-                </View>
-              )}
-              {disc > 0 && (
-                <View style={styles.totalRow}>
-                  <Text style={styles.totalLabel}>
-                    {data.discountType === 'percentage'
-                      ? (labels.discountPercent ? fillTemplate(labels.discountPercent, { percent: String(data.discountValue) }) : `Discount (${data.discountValue}%)`)
-                      : (labels.discount || 'Discount')}
-                  </Text>
-                  <Text style={{ ...styles.totalValue, color: '#dc2626' }}>
-                    {formatCurrency(-disc, currencyCode)}
-                  </Text>
-                </View>
-              )}
-              {data.taxRate > 0 && (
-                <View style={styles.totalRow}>
-                  <Text style={styles.totalLabel}>{labels.tax ? fillTemplate(labels.tax, { rate: String(data.taxRate) }) : `Tax (${data.taxRate}%)`}</Text>
-                  <Text style={styles.totalValue}>{formatCurrency(tax, currencyCode)}</Text>
-                </View>
-              )}
-              <View style={styles.totalDivider} />
-              <View style={styles.grandTotalRow}>
-                <Text style={styles.grandTotalLabel}>{labels.total || 'Total'}</Text>
-                <Text style={styles.grandTotalValue}>
-                  {formatCurrency(total, currencyCode)}
-                </Text>
-              </View>
-            </View>
-          )
-        })()}
-
-        {torqvoiceLogoDataUri && (
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginTop: 6 }}>
-            <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
-            <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
-          </View>
-        )}
-
-        {data.description && (
-          <View style={styles.notesSection}>
-            <Text style={styles.notesLabel}>Description</Text>
-            <HtmlToPdf html={data.description} baseStyle={styles.notesText} fontBold={fontBold} />
-          </View>
-        )}
-
-        {portalUrl && (
-          <View style={{ marginTop: 8 }}>
-            <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
-              {labels.viewPortal ? fillTemplate(labels.viewPortal, { url: portalUrl }) : `View your portal: ${portalUrl}`}
-            </Text>
-          </View>
-        )}
-
-        {/* Document attachment names */}
-        {(otherAttachments.length > 0 || pdfAttachmentNames.length > 0) && (
-          <View style={{ marginTop: 10 }}>
-            <Text style={styles.sectionTitle}>{labels.attachedDocuments || 'Attached Documents'}</Text>
-            {otherAttachments.map((att, i) => (
-              <Text key={`other-${i}`} style={{ fontSize: 9, color: gray, marginBottom: 2 }}>
-                {att.fileName}
-              </Text>
-            ))}
-            {pdfAttachmentNames.map((name, i) => (
-              <Text key={`pdf-${i}`} style={{ fontSize: 9, color: gray, marginBottom: 2 }}>
-                {labels.attached ? fillTemplate(labels.attached, { name }) : `${name} (attached)`}
-              </Text>
-            ))}
-          </View>
-        )}
-
-        {torqvoiceLogoDataUri ? (
-          <View style={{
-            ...styles.footer,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 4,
-          }}>
-            <Text style={{ fontSize: 8, color: gray }}>
-              {validDate
-                ? (labels.validityFooterUntil ? fillTemplate(labels.validityFooterUntil, { date: validDate }) : `This quote is valid until ${validDate}`)
-                : (labels.validityFooter30 || 'This quote is valid for 30 days')} ·{' '}
-            </Text>
-            <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
-            <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
-            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
-          </View>
-        ) : (
-          <Text style={styles.footer}>
-            {validDate
-              ? (labels.validityFooterUntil ? fillTemplate(labels.validityFooterUntil, { date: validDate }) : `This quote is valid until ${validDate}`)
-              : (labels.validityFooter30 || 'This quote is valid for 30 days')} · {shopName}
-          </Text>
-        )}
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {renderedSections}
+        {renderFooter()}
       </Page>
 
       {imageAttachments.length > 0 && (

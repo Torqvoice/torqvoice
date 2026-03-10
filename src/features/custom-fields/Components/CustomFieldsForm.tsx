@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,6 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCustomFieldValues, saveCustomFieldValues, getFieldDefinitions } from "@/features/custom-fields/Actions/customFieldActions";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface FieldWithValue {
   id: string;
@@ -30,14 +31,17 @@ export function CustomFieldsForm({
   entityId,
   entityType,
   onValuesReady,
+  onChange,
 }: {
   entityId?: string;
   entityType: "service_record" | "quote";
-  onValuesReady?: (save: () => Promise<void>) => void;
+  onValuesReady?: (save: () => Promise<{ valid: boolean }>) => void;
+  onChange?: () => void;
 }) {
   const [fields, setFields] = useState<FieldWithValue[]>([]);
   const [values, setValues] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     async function load() {
@@ -61,18 +65,47 @@ export function CustomFieldsForm({
     load();
   }, [entityId, entityType]);
 
+  const validate = useCallback((): Record<string, string> => {
+    const newErrors: Record<string, string> = {};
+    for (const field of fields) {
+      if (field.required && field.fieldType !== "checkbox") {
+        const val = values[field.id] ?? field.value ?? "";
+        if (!val.trim()) {
+          newErrors[field.id] = `${field.label} is required`;
+        }
+      }
+    }
+    return newErrors;
+  }, [fields, values]);
+
   useEffect(() => {
     if (onValuesReady) {
       onValuesReady(async () => {
+        const validationErrors = validate();
+        if (Object.keys(validationErrors).length > 0) {
+          setErrors(validationErrors);
+          return { valid: false };
+        }
+        setErrors({});
         if (entityId && Object.keys(values).length > 0) {
           await saveCustomFieldValues(entityId, entityType, values);
         }
+        return { valid: true };
       });
     }
-  }, [onValuesReady, entityId, entityType, values]);
+  }, [onValuesReady, entityId, entityType, values, validate]);
 
   const updateValue = (fieldId: string, value: string) => {
     setValues((prev) => ({ ...prev, [fieldId]: value }));
+    // Clear error for field when user types
+    if (errors[fieldId]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[fieldId];
+        return next;
+      });
+    }
+    onChange?.();
   };
 
   if (loading) {
@@ -95,10 +128,11 @@ export function CustomFieldsForm({
       <CardContent className="space-y-4">
         {fields.map((field) => {
           const val = values[field.id] ?? field.value ?? "";
+          const hasError = !!errors[field.id];
           return (
             <div key={field.id} className="space-y-1.5">
               {field.fieldType !== "checkbox" && (
-                <Label>
+                <Label className={cn(hasError && "text-destructive")}>
                   {field.label}
                   {field.required && <span className="text-destructive ml-1">*</span>}
                 </Label>
@@ -108,7 +142,7 @@ export function CustomFieldsForm({
                 <Input
                   value={val}
                   onChange={(e) => updateValue(field.id, e.target.value)}
-                  required={field.required}
+                  className={cn(hasError && "border-destructive focus-visible:ring-destructive")}
                 />
               )}
 
@@ -117,7 +151,7 @@ export function CustomFieldsForm({
                   type="number"
                   value={val}
                   onChange={(e) => updateValue(field.id, e.target.value)}
-                  required={field.required}
+                  className={cn(hasError && "border-destructive focus-visible:ring-destructive")}
                 />
               )}
 
@@ -126,7 +160,7 @@ export function CustomFieldsForm({
                   type="date"
                   value={val}
                   onChange={(e) => updateValue(field.id, e.target.value)}
-                  required={field.required}
+                  className={cn(hasError && "border-destructive focus-visible:ring-destructive")}
                 />
               )}
 
@@ -135,7 +169,7 @@ export function CustomFieldsForm({
                   value={val}
                   onChange={(e) => updateValue(field.id, e.target.value)}
                   rows={3}
-                  required={field.required}
+                  className={cn(hasError && "border-destructive focus-visible:ring-destructive")}
                 />
               )}
 
@@ -151,7 +185,9 @@ export function CustomFieldsForm({
 
               {field.fieldType === "select" && (
                 <Select value={val || "none"} onValueChange={(v) => updateValue(field.id, v === "none" ? "" : v)}>
-                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectTrigger className={cn(hasError && "border-destructive focus-visible:ring-destructive")}>
+                    <SelectValue placeholder="Select..." />
+                  </SelectTrigger>
                   <SelectContent>
                     {!field.required && <SelectItem value="none">None</SelectItem>}
                     {(field.options || "")
@@ -165,6 +201,10 @@ export function CustomFieldsForm({
                       ))}
                   </SelectContent>
                 </Select>
+              )}
+
+              {hasError && (
+                <p className="text-xs text-destructive">{errors[field.id]}</p>
               )}
             </div>
           );

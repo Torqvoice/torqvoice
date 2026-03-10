@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { QuoteView } from "./quote-view";
 import { getFeatures } from "@/lib/features";
 import { resolvePortalOrg } from "@/lib/portal-slug";
+import { mergeWithDefaults } from "@/features/settings/Schema/invoiceLayoutSchema";
 import type { Metadata } from "next";
 
 export const revalidate = 60;
@@ -68,9 +69,11 @@ export default async function PublicQuotePage({
             "workshop.timezone",
             "quote.primaryColor",
             "quote.headerStyle",
+            "quote.logoSize",
             "invoice.primaryColor",
             "invoice.headerStyle",
             "portal.enabled",
+            "quote.layoutConfig",
           ],
         },
       },
@@ -81,6 +84,17 @@ export default async function PublicQuotePage({
     }),
     getFeatures(orgId),
   ]);
+
+  // Fetch custom field values for this quote
+  const customFieldValues = await db.customFieldValue.findMany({
+    where: { entityId: quote.id, entityType: "quote" },
+    include: { field: { select: { id: true, label: true, fieldType: true, isActive: true, sortOrder: true } } },
+    orderBy: { field: { sortOrder: "asc" } },
+  });
+
+  const customFields = customFieldValues
+    .filter(v => v.field.isActive && v.value)
+    .map(v => ({ label: v.field.label, value: v.value, fieldType: v.field.fieldType, fieldId: v.field.id }));
 
   const settingsMap: Record<string, string> = {};
   for (const s of settings) settingsMap[s.key] = s.value;
@@ -123,6 +137,11 @@ export default async function PublicQuotePage({
       ),
     }));
 
+  // Parse layout config
+  const layoutConfig = mergeWithDefaults(
+    settingsMap["quote.layoutConfig"] ? JSON.parse(settingsMap["quote.layoutConfig"]) : {}
+  );
+
   const primaryColor = settingsMap["quote.primaryColor"] || settingsMap["invoice.primaryColor"] || "#d97706";
   const headerStyle = settingsMap["quote.headerStyle"] || settingsMap["invoice.headerStyle"] || "standard";
 
@@ -147,9 +166,12 @@ export default async function PublicQuotePage({
       timezone={settingsMap["workshop.timezone"] || undefined}
       primaryColor={primaryColor}
       headerStyle={headerStyle}
+      logoSize={Number(settingsMap["quote.logoSize"]) || 100}
       portalUrl={portalUrl}
       imageAttachments={imageAttachments}
       documentAttachments={documentAttachments}
+      layoutConfig={layoutConfig}
+      customFields={customFields}
     />
   );
 }

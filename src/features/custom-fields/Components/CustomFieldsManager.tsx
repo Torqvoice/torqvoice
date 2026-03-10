@@ -1,75 +1,95 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useGlassModal } from "@/components/glass-modal";
-import { useConfirm } from "@/components/confirm-dialog";
+} from '@/components/ui/select'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { useGlassModal } from '@/components/glass-modal'
+import { useConfirm } from '@/components/confirm-dialog'
 import {
   createFieldDefinition,
   updateFieldDefinition,
   deleteFieldDefinition,
-} from "@/features/custom-fields/Actions/customFieldActions";
-import type { FieldType, EntityType } from "@/features/custom-fields/Schema/customFieldSchema";
-import { GripVertical, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+} from '@/features/custom-fields/Actions/customFieldActions'
+import type { FieldType, EntityType } from '@/features/custom-fields/Schema/customFieldSchema'
+import {
+  type InvoiceLayoutConfig,
+  BUILTIN_SECTIONS,
+  CUSTOM_FIELD_PREFIX,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
+import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
 
 interface FieldDef {
-  id: string;
-  name: string;
-  label: string;
-  fieldType: string;
-  options: string | null;
-  required: boolean;
-  entityType: string;
-  sortOrder: number;
-  isActive: boolean;
+  id: string
+  name: string
+  label: string
+  fieldType: string
+  options: string | null
+  required: boolean
+  entityType: string
+  sortOrder: number
+  isActive: boolean
+}
+
+/**
+ * Find the layout section a custom field definition is assigned to.
+ * Returns the human-readable section name, or null if not assigned.
+ */
+function getSectionForField(
+  definitionId: string,
+  layoutConfig?: InvoiceLayoutConfig
+): string | null {
+  if (!layoutConfig) return null
+  const cfId = `${CUSTOM_FIELD_PREFIX}${definitionId}`
+  for (const section of layoutConfig.sections) {
+    if (section.fields?.some((f) => f.id === cfId)) {
+      const builtin = BUILTIN_SECTIONS.find((s) => s.id === section.id)
+      return builtin?.name ?? section.id
+    }
+  }
+  return null
 }
 
 export function CustomFieldsManager({
   initialFields = [],
+  layoutConfig,
 }: {
-  initialFields?: FieldDef[];
+  initialFields?: FieldDef[]
+  layoutConfig?: InvoiceLayoutConfig
 }) {
-  const router = useRouter();
-  const t = useTranslations('settings');
-  const modal = useGlassModal();
-  const confirm = useConfirm();
-  const [fields] = useState(initialFields);
-  const [showDialog, setShowDialog] = useState(false);
-  const [editing, setEditing] = useState<FieldDef | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [filterEntity, setFilterEntity] = useState<string>("all");
+  const router = useRouter()
+  const t = useTranslations('settings')
+  const modal = useGlassModal()
+  const confirm = useConfirm()
+  const [fields] = useState(initialFields)
+  const [showDialog, setShowDialog] = useState(false)
+  const [editing, setEditing] = useState<FieldDef | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [filterEntity, setFilterEntity] = useState<string>('all')
 
   const [formData, setFormData] = useState({
-    name: "",
-    label: "",
-    fieldType: "text" as FieldType,
-    options: "",
+    name: '',
+    label: '',
+    fieldType: 'text' as FieldType,
+    options: '',
     required: false,
-    entityType: "service_record" as EntityType,
+    entityType: 'service_record' as EntityType,
     sortOrder: 0,
     isActive: true,
-  });
+  })
 
   const fieldTypeLabels: Record<string, string> = {
     text: t('customFields.fieldTypes.text'),
@@ -78,173 +98,207 @@ export function CustomFieldsManager({
     select: t('customFields.fieldTypes.select'),
     checkbox: t('customFields.fieldTypes.checkbox'),
     textarea: t('customFields.fieldTypes.textarea'),
-  };
+  }
 
   const entityTypeLabels: Record<string, string> = {
     service_record: t('customFields.serviceRecord'),
     quote: t('customFields.quote'),
-  };
+  }
 
   const resetForm = () => {
     setFormData({
-      name: "",
-      label: "",
-      fieldType: "text",
-      options: "",
+      name: '',
+      label: '',
+      fieldType: 'text',
+      options: '',
       required: false,
-      entityType: "service_record",
+      entityType: 'service_record',
       sortOrder: 0,
       isActive: true,
-    });
-    setEditing(null);
-  };
+    })
+    setEditing(null)
+  }
 
   const openCreate = () => {
-    resetForm();
-    setShowDialog(true);
-  };
+    resetForm()
+    setShowDialog(true)
+  }
 
   const openEdit = (field: FieldDef) => {
-    setEditing(field);
+    setEditing(field)
     setFormData({
       name: field.name,
       label: field.label,
       fieldType: field.fieldType as FieldType,
-      options: field.options || "",
+      options: field.options || '',
       required: field.required,
       entityType: field.entityType as EntityType,
       sortOrder: field.sortOrder,
       isActive: field.isActive,
-    });
-    setShowDialog(true);
-  };
+    })
+    setShowDialog(true)
+  }
 
   const handleSave = async () => {
-    setLoading(true);
+    setLoading(true)
     const payload = {
       ...formData,
-      options: formData.fieldType === "select" ? formData.options : undefined,
-    };
+      options: formData.fieldType === 'select' ? formData.options : undefined,
+    }
 
     const result = editing
       ? await updateFieldDefinition({ id: editing.id, ...payload })
-      : await createFieldDefinition(payload);
+      : await createFieldDefinition(payload)
 
     if (result.success) {
-      toast.success(editing ? t('customFields.fieldUpdated') : t('customFields.fieldCreated'));
-      setShowDialog(false);
-      resetForm();
-      router.refresh();
+      toast.success(editing ? t('customFields.fieldUpdated') : t('customFields.fieldCreated'))
+      setShowDialog(false)
+      resetForm()
+      router.refresh()
     } else {
-      modal.open("error", "Error", result.error || t('customFields.failedSave'));
+      modal.open('error', 'Error', result.error || t('customFields.failedSave'))
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const handleDelete = async (field: FieldDef) => {
     const ok = await confirm({
       title: t('customFields.deleteTitle'),
       description: t('customFields.deleteDescription', { label: field.label }),
-      confirmLabel: "Delete",
+      confirmLabel: 'Delete',
       destructive: true,
-    });
-    if (!ok) return;
-    const result = await deleteFieldDefinition(field.id);
+    })
+    if (!ok) return
+    const result = await deleteFieldDefinition(field.id)
     if (result.success) {
-      toast.success(t('customFields.fieldDeleted'));
-      router.refresh();
+      toast.success(t('customFields.fieldDeleted'))
+      router.refresh()
     } else {
-      modal.open("error", "Error", result.error || t('customFields.failedDelete'));
+      modal.open('error', 'Error', result.error || t('customFields.failedDelete'))
     }
-  };
+  }
 
-  const filtered = filterEntity === "all" ? fields : fields.filter((f) => f.entityType === filterEntity);
+  const filtered =
+    filterEntity === 'all' ? fields : fields.filter((f) => f.entityType === filterEntity)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">{t('customFields.title')}</h2>
-          <p className="text-sm text-muted-foreground">
-            {t('customFields.description')}
-          </p>
+        <div className="flex items-center gap-3">
+          {['all', 'service_record', 'quote'].map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setFilterEntity(key)}
+              className={`text-sm font-medium transition-colors ${
+                filterEntity === key
+                  ? 'text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {key === 'all' ? t('customFields.filterAll') : entityTypeLabels[key]}
+              <span className="ml-1 text-xs text-muted-foreground">
+                ({key === 'all' ? fields.length : fields.filter((f) => f.entityType === key).length}
+                )
+              </span>
+            </button>
+          ))}
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="mr-1 h-4 w-4" /> {t('customFields.addField')}
+        <Button size="sm" onClick={openCreate}>
+          <Plus className="mr-1 h-3.5 w-3.5" /> {t('customFields.addField')}
         </Button>
       </div>
 
-      <div className="flex gap-2">
-        {["all", "service_record", "quote"].map((key) => (
-          <Button
-            key={key}
-            variant={filterEntity === key ? "default" : "outline"}
-            size="sm"
-            onClick={() => setFilterEntity(key)}
-          >
-            {key === "all" ? t('customFields.filterAll') : entityTypeLabels[key]}
-          </Button>
-        ))}
-      </div>
-
       {filtered.length === 0 ? (
-        <Card className="border-0 shadow-sm">
-          <CardContent className="py-12 text-center text-muted-foreground">
-            {t('customFields.emptyState')}
-          </CardContent>
-        </Card>
+        <div className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
+          {t('customFields.emptyState')}
+        </div>
       ) : (
-        <div className="space-y-2">
-          {filtered.map((field) => (
-            <Card key={field.id} className="border-0 shadow-sm">
-              <CardContent className="flex items-center gap-4 py-3">
-                <GripVertical className="h-4 w-4 text-muted-foreground/50" />
+        <div className="rounded-lg border divide-y">
+          {filtered.map((field) => {
+            const sectionName = layoutConfig ? getSectionForField(field.id, layoutConfig) : null
+            return (
+              <div
+                key={field.id}
+                className="flex items-center gap-3 px-3 py-2 hover:bg-muted/50 transition-colors cursor-pointer"
+                onClick={() => openEdit(field)}
+              >
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{field.label}</span>
-                    <Badge variant="outline" className="text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-medium">{field.label}</span>
+                    <span className="text-xs text-muted-foreground">·</span>
+                    <span className="text-xs text-muted-foreground">
                       {fieldTypeLabels[field.fieldType] || field.fieldType}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {entityTypeLabels[field.entityType]}
-                    </Badge>
-                    {field.required && (
-                      <Badge variant="outline" className="text-xs text-amber-600 border-amber-500/20 bg-amber-500/10">
-                        {t('customFields.required')}
-                      </Badge>
-                    )}
+                    </span>
+                    {field.required && <span className="text-xs text-amber-600">*</span>}
                     {!field.isActive && (
-                      <Badge variant="outline" className="text-xs text-gray-500">
+                      <Badge variant="outline" className="h-4 px-1 text-[10px] text-gray-500">
                         {t('customFields.inactive')}
                       </Badge>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground font-mono">{field.name}</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] text-muted-foreground font-mono">
+                      {field.name}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground">·</span>
+                    <span className="text-[11px] text-muted-foreground">
+                      {entityTypeLabels[field.entityType]}
+                    </span>
+                    {layoutConfig && (
+                      <>
+                        <span className="text-[11px] text-muted-foreground">·</span>
+                        {sectionName ? (
+                          <span className="text-[11px] text-blue-600">{sectionName}</span>
+                        ) : (
+                          <span className="text-[11px] text-muted-foreground italic">
+                            unassigned
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(field)}>
-                    <Pencil className="h-3.5 w-3.5" />
+                <div
+                  className="flex items-center gap-0.5 shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => openEdit(field)}
+                  >
+                    <Pencil className="h-3 w-3" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    className="h-7 w-7 text-muted-foreground hover:text-destructive"
                     onClick={() => handleDelete(field)}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+            )
+          })}
         </div>
       )}
 
       {/* Create/Edit Dialog */}
-      <Dialog open={showDialog} onOpenChange={(open) => { setShowDialog(open); if (!open) resetForm(); }}>
+      <Dialog
+        open={showDialog}
+        onOpenChange={(open) => {
+          setShowDialog(open)
+          if (!open) resetForm()
+        }}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{editing ? t('customFields.editField') : t('customFields.newField')}</DialogTitle>
+            <DialogTitle>
+              {editing ? t('customFields.editField') : t('customFields.newField')}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -256,8 +310,13 @@ export function CustomFieldsManager({
                   setFormData({
                     ...formData,
                     label: e.target.value,
-                    name: editing ? formData.name : e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, ""),
-                  });
+                    name: editing
+                      ? formData.name
+                      : e.target.value
+                          .toLowerCase()
+                          .replace(/[^a-z0-9]+/g, '_')
+                          .replace(/^_|_$/g, ''),
+                  })
                 }}
               />
             </div>
@@ -281,14 +340,20 @@ export function CustomFieldsManager({
                   value={formData.fieldType}
                   onValueChange={(v) => setFormData({ ...formData, fieldType: v as FieldType })}
                 >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="text">{t('customFields.fieldTypes.text')}</SelectItem>
                     <SelectItem value="number">{t('customFields.fieldTypes.number')}</SelectItem>
                     <SelectItem value="date">{t('customFields.fieldTypes.date')}</SelectItem>
                     <SelectItem value="select">{t('customFields.fieldTypes.select')}</SelectItem>
-                    <SelectItem value="checkbox">{t('customFields.fieldTypes.checkbox')}</SelectItem>
-                    <SelectItem value="textarea">{t('customFields.fieldTypes.textarea')}</SelectItem>
+                    <SelectItem value="checkbox">
+                      {t('customFields.fieldTypes.checkbox')}
+                    </SelectItem>
+                    <SelectItem value="textarea">
+                      {t('customFields.fieldTypes.textarea')}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -300,16 +365,20 @@ export function CustomFieldsManager({
                   onValueChange={(v) => setFormData({ ...formData, entityType: v as EntityType })}
                   disabled={!!editing}
                 >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="service_record">{t('customFields.serviceRecord')}</SelectItem>
+                    <SelectItem value="service_record">
+                      {t('customFields.serviceRecord')}
+                    </SelectItem>
                     <SelectItem value="quote">{t('customFields.quote')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            {formData.fieldType === "select" && (
+            {formData.fieldType === 'select' && (
               <div className="space-y-2">
                 <Label>{t('customFields.optionsLabel')}</Label>
                 <Input
@@ -338,7 +407,13 @@ export function CustomFieldsManager({
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="ghost" onClick={() => { setShowDialog(false); resetForm(); }}>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setShowDialog(false)
+                  resetForm()
+                }}
+              >
                 {t('customFields.cancel')}
               </Button>
               <Button onClick={handleSave} disabled={loading || !formData.name || !formData.label}>
@@ -350,5 +425,5 @@ export function CustomFieldsManager({
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

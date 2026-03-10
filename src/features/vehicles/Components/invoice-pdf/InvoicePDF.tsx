@@ -1,12 +1,16 @@
+import React from 'react'
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { createStyles, gray, getFontBold } from './styles'
 import { Header } from './Header'
-import { InfoSection } from './InfoSection'
+import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable } from './Tables'
 import { Totals } from './Totals'
-import { Notes } from './Notes'
+import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
+import { CustomFields } from './CustomFields'
 import { Footer, AttachmentsFooter } from './Footer'
+import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getVisibleFieldsForSection } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type {
   TemplateConfig,
   InvoiceData,
@@ -16,6 +20,26 @@ import type {
   ImageAttachment,
   OtherAttachment,
 } from './types'
+
+// ---------------------------------------------------------------------------
+// Layout config helpers
+// ---------------------------------------------------------------------------
+
+function getCustomFieldsForSection(
+  layoutConfig: InvoiceLayoutConfig | undefined,
+  sectionId: string,
+  allCustomFields: Array<{ fieldId: string; label: string; value: string; fieldType: string }>,
+): Array<{ fieldId: string; label: string; value: string; fieldType: string }> {
+  if (!layoutConfig || !allCustomFields?.length) return []
+  const section = layoutConfig.sections.find(s => s.id === sectionId)
+  if (!section?.fields) return []
+  const cfIds = new Set(
+    section.fields
+      .filter(f => f.visible && isCustomFieldId(f.id))
+      .map(f => fromCustomFieldId(f.id))
+  )
+  return allCustomFields.filter(cf => cfIds.has(cf.fieldId))
+}
 
 export function InvoicePDF({
   data,
@@ -78,38 +102,91 @@ export function InvoicePDF({
   const shopDisplayName = workshop?.name || data.shopName || 'Torqvoice'
   const hasAttachments = imageAttachments.length > 0 || otherAttachments.length > 0
 
-  return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        <Header
-          headerStyle={headerStyle}
-          primaryColor={primaryColor}
-          fontFamily={fontFamily}
-          showLogo={showLogo}
-          showCompanyName={showCompanyName}
-          logoDataUri={logoDataUri}
-          torqvoiceLogoDataUri={torqvoiceLogoDataUri}
-          workshop={workshop}
-          invoiceSettings={invoiceSettings}
-          shopDisplayName={shopDisplayName}
-          invoiceNum={invoiceNum}
-          serviceDate={serviceDate}
-          dueDate={dueDate}
-          styles={styles}
-          labels={labels}
-        />
+  // ---------------------------------------------------------------------------
+  // Layout-driven section rendering
+  // ---------------------------------------------------------------------------
+  const layoutConfig = template?.layoutConfig
+  const visibleCustomerFields = getVisibleFieldsForSection(layoutConfig, 'customer')
+  const visibleVehicleFields = getVisibleFieldsForSection(layoutConfig, 'vehicle')
+  const visibleServiceFields = getVisibleFieldsForSection(layoutConfig, 'service')
+  const visibleHeaderFields = getVisibleFieldsForSection(layoutConfig, 'header')
+  const visibleBankAccountFields = getVisibleFieldsForSection(layoutConfig, 'bank_account')
 
-        <InfoSection
-          data={data}
-          vehicleName={vehicleName}
-          invoiceSettings={invoiceSettings}
-          styles={styles}
-          labels={labels}
-        />
+  const allCf = data.customFields || []
+  const customerCf = getCustomFieldsForSection(layoutConfig, 'customer', allCf)
+  const vehicleCf = getCustomFieldsForSection(layoutConfig, 'vehicle', allCf)
+  const serviceCf = getCustomFieldsForSection(layoutConfig, 'service', allCf)
+  const generalCf = getCustomFieldsForSection(layoutConfig, 'general', allCf)
+  // If no layout config, all custom fields go to the general section
+  const generalFallbackCf = !layoutConfig ? allCf : generalCf
 
-        <PartsTable data={data} currencyCode={cc} styles={styles} labels={labels} />
-        <LaborTable data={data} currencyCode={cc} styles={styles} labels={labels} />
+  // Map each section ID to its JSX. Sections that have no data naturally
+  // return null and will be skipped by React.
+  const sectionMap: Record<string, React.ReactNode> = {
+    header: (
+      <Header
+        headerStyle={headerStyle}
+        primaryColor={primaryColor}
+        fontFamily={fontFamily}
+        showLogo={showLogo}
+        showCompanyName={showCompanyName}
+        visibleFields={visibleHeaderFields}
+        logoDataUri={logoDataUri}
+        torqvoiceLogoDataUri={torqvoiceLogoDataUri}
+        workshop={workshop}
+        invoiceSettings={invoiceSettings}
+        shopDisplayName={shopDisplayName}
+        invoiceNum={invoiceNum}
+        serviceDate={serviceDate}
+        dueDate={dueDate}
+        logoSize={template?.logoSize}
+        styles={styles}
+        labels={labels}
+      />
+    ),
 
+    customer: (
+      <CustomerSection
+        data={data}
+        styles={styles}
+        labels={labels}
+        visibleFields={visibleCustomerFields}
+        customFields={customerCf}
+      />
+    ),
+
+    vehicle: (
+      <VehicleSection
+        data={data}
+        vehicleName={vehicleName}
+        invoiceSettings={invoiceSettings}
+        styles={styles}
+        labels={labels}
+        visibleFields={visibleVehicleFields}
+        customFields={vehicleCf}
+      />
+    ),
+
+    service: (
+      <ServiceSection
+        data={data}
+        styles={styles}
+        labels={labels}
+        visibleFields={visibleServiceFields}
+        customFields={serviceCf}
+      />
+    ),
+
+    parts_table: (
+      <PartsTable data={data} currencyCode={cc} styles={styles} labels={labels} />
+    ),
+
+    labor_table: (
+      <LaborTable data={data} currencyCode={cc} styles={styles} labels={labels} />
+    ),
+
+    totals: (
+      <>
         <Totals
           data={data}
           currencyCode={cc}
@@ -124,7 +201,6 @@ export function InvoicePDF({
           styles={styles}
           labels={labels}
         />
-
         {torqvoiceLogoDataUri && (
           <View
             style={{
@@ -140,30 +216,90 @@ export function InvoicePDF({
             <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
           </View>
         )}
+      </>
+    ),
 
-        <Notes
-          invoiceNotes={data.invoiceNotes}
-          diagnosticNotes={data.diagnosticNotes}
-          invoiceSettings={invoiceSettings}
-          otherAttachments={otherAttachments}
-          pdfAttachmentNames={pdfAttachmentNames}
-          fontFamily={fontFamily}
-          styles={styles}
-          labels={labels}
-        />
+    general:
+      generalFallbackCf.length > 0 ? (
+        <CustomFields fields={generalFallbackCf} styles={styles} labels={labels} />
+      ) : null,
 
-        <Footer
-          shopDisplayName={shopDisplayName}
-          serviceDate={serviceDate}
-          invoiceSettings={invoiceSettings}
-          invoiceNum={invoiceNum}
-          primaryColor={primaryColor}
-          fontFamily={fontFamily}
-          torqvoiceLogoDataUri={torqvoiceLogoDataUri}
-          portalUrl={portalUrl}
-          styles={styles}
-          labels={labels}
-        />
+    notes: (
+      <NotesOnly
+        invoiceNotes={data.invoiceNotes}
+        otherAttachments={otherAttachments}
+        pdfAttachmentNames={pdfAttachmentNames}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+      />
+    ),
+
+    diagnostic_notes: (
+      <DiagnosticNotesSection
+        diagnosticNotes={data.diagnosticNotes}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+      />
+    ),
+
+    bank_account: (
+      <BankAccountSection
+        invoiceSettings={invoiceSettings}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+        visibleFields={visibleBankAccountFields}
+        primaryColor={primaryColor}
+        dueDate={dueDate}
+      />
+    ),
+
+    footer: (
+      <Footer
+        shopDisplayName={shopDisplayName}
+        serviceDate={serviceDate}
+        invoiceSettings={invoiceSettings}
+        invoiceNum={invoiceNum}
+        primaryColor={primaryColor}
+        fontFamily={fontFamily}
+        torqvoiceLogoDataUri={torqvoiceLogoDataUri}
+        portalUrl={portalUrl}
+        styles={styles}
+        labels={labels}
+      />
+    ),
+  }
+
+  // Use column-based grouping from layout config.
+  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
+  const renderGroups = groupSectionsForRendering(effectiveSections)
+  const renderedSections: React.ReactNode[] = []
+
+  for (const group of renderGroups) {
+    if (group.type === 'full-width') {
+      renderedSections.push(
+        <React.Fragment key={group.sectionId}>{sectionMap[group.sectionId]}</React.Fragment>
+      )
+    } else {
+      const leftNodes = group.left.map(id => <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>).filter(Boolean)
+      const rightNodes = group.right.map(id => <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>).filter(Boolean)
+      if (leftNodes.length > 0 || rightNodes.length > 0) {
+        renderedSections.push(
+          <View key={`col-${group.left[0] || group.right[0]}`} style={styles.infoRow}>
+            <View style={{ flex: 1, gap: 4 }}>{leftNodes}</View>
+            <View style={{ flex: 1, gap: 4 }}>{rightNodes}</View>
+          </View>
+        )
+      }
+    }
+  }
+
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {renderedSections}
       </Page>
 
       {hasAttachments && imageAttachments.length > 0 && (

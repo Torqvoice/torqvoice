@@ -10,24 +10,78 @@
       "system": "Sistema"
     },
     "items": {
-      "company": { "title": "Empresa", "description": "Detalhes comerciais e marca" },
-      "subscription": { "title": "Assinatura", "description": "Plano e faturamento" },
-      "account": { "title": "Conta", "description": "Nome, e-mail e senha" },
-      "team": { "title": "Equipe", "description": "Membros e funcoes" },
-      "invoice": { "title": "Fatura", "description": "Layout e campos da fatura" },
-      "templates": { "title": "Modelos", "description": "Modelos de faturas, orcamentos e inspecoes" },
-      "payment": { "title": "Pagamento", "description": "Condicoes de pagamento e contas" },
-      "currency": { "title": "Moeda", "description": "Padroes de moeda e impostos" },
-      "customFields": { "title": "Campos personalizados", "description": "Definir campos de dados personalizados" },
-      "email": { "title": "E-mail", "description": "Provedor de e-mail e envio" },
-      "sms": { "title": "SMS", "description": "Provedor SMS e mensagens" },
-      "customerPortal": { "title": "Portal do cliente", "description": "Portal de autoatendimento do cliente" },
-      "workshop": { "title": "Oficina", "description": "Padroes de tecnico e mao de obra" },
-      "maintenance": { "title": "Manutencao", "description": "Intervalos de servico previstos" },
-      "appearance": { "title": "Aparencia", "description": "Tema e exibicao" },
-      "data": { "title": "Dados", "description": "Exportar e importar backup" },
-      "license": { "title": "Licenca", "description": "Licenca marca branca" },
-      "about": { "title": "Sobre", "description": "Versao e informacoes" }
+      "company": {
+        "title": "Empresa",
+        "description": "Detalhes comerciais e marca"
+      },
+      "subscription": {
+        "title": "Assinatura",
+        "description": "Plano e faturamento"
+      },
+      "account": {
+        "title": "Conta",
+        "description": "Nome, e-mail e senha"
+      },
+      "team": {
+        "title": "Equipe",
+        "description": "Membros e funcoes"
+      },
+      "invoice": {
+        "title": "Faturas e orcamentos",
+        "description": "Configuracoes de fatura, layout e campos personalizados"
+      },
+      "templates": {
+        "title": "Modelos",
+        "description": "Estilo visual, cores e fontes"
+      },
+      "payment": {
+        "title": "Pagamento",
+        "description": "Condicoes de pagamento e contas"
+      },
+      "currency": {
+        "title": "Moeda",
+        "description": "Padroes de moeda e impostos"
+      },
+      "customFields": {
+        "title": "Campos personalizados",
+        "description": "Definir campos de dados personalizados"
+      },
+      "email": {
+        "title": "E-mail",
+        "description": "Provedor de e-mail e envio"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "Provedor SMS e mensagens"
+      },
+      "customerPortal": {
+        "title": "Portal do cliente",
+        "description": "Portal de autoatendimento do cliente"
+      },
+      "workshop": {
+        "title": "Oficina",
+        "description": "Padroes de tecnico e mao de obra"
+      },
+      "maintenance": {
+        "title": "Manutencao",
+        "description": "Intervalos de servico previstos"
+      },
+      "appearance": {
+        "title": "Aparencia",
+        "description": "Tema e exibicao"
+      },
+      "data": {
+        "title": "Dados",
+        "description": "Exportar e importar backup"
+      },
+      "license": {
+        "title": "Licenca",
+        "description": "Licenca marca branca"
+      },
+      "about": {
+        "title": "Sobre",
+        "description": "Versao e informacoes"
+      }
     },
     "pro": "PRO"
   },
@@ -258,6 +312,11 @@
   "invoice": {
     "title": "Layout da fatura",
     "description": "Configure o que aparece nas faturas PDF geradas.",
+    "tabs": {
+      "general": "Geral",
+      "layout": "Layout",
+      "customFields": "Campos personalizados"
+    },
     "invoiceNumberFormat": "Formato do numero da fatura",
     "invoiceNumberFormatHint": "Use <code>{year}</code> para o ano atual. Visualizacao: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Proximo numero da fatura",
@@ -278,7 +337,58 @@
     "footerPlaceholder": "Obrigado pela preferencia!",
     "footerHint": "Este texto aparece no final de cada fatura",
     "saveInvoice": "Salvar configuracoes da fatura",
-    "saved": "Configuracoes da fatura salvas"
+    "saved": "Configuracoes da fatura salvas",
+    "layoutDescription": "Personalize a ordem e visibilidade das seções em suas faturas e orçamentos.",
+    "layoutSaved": "Layout salvo com sucesso",
+    "preview": "Pré-visualização",
+    "layoutDocInvoice": "Fatura",
+    "layoutDocQuote": "Orçamento",
+    "saveLayout": "Salvar layout",
+    "resetLayout": "Redefinir"
+  },
+  "layoutEditor": {
+    "helpText": "Arraste para reordenar. Use o alternador de largura para posicionar seções lado a lado. Seções consecutivas de meia largura (E/D) serão exibidas em duas colunas.",
+    "addField": "Adicionar campo",
+    "custom": "personalizado",
+    "full": "Inteiro",
+    "L": "E",
+    "R": "D",
+    "left": "esquerda",
+    "right": "direita",
+    "halfWidthHint": "Meia largura ({column}) — clique para largura inteira",
+    "fullWidthHint": "Largura inteira — clique para meia largura (esquerda)",
+    "sections": {
+      "header": "Cabeçalho",
+      "customer": "Cliente",
+      "vehicle": "Veículo",
+      "service": "Serviço",
+      "parts_table": "Peças",
+      "labor_table": "Mão de obra",
+      "totals": "Totais",
+      "notes": "Notas",
+      "diagnostic_notes": "Notas de diagnóstico",
+      "bank_account": "Conta bancária",
+      "footer": "Rodapé",
+      "general": "Geral"
+    },
+    "fields": {
+      "customer_name": "Nome do cliente",
+      "customer_company": "Empresa",
+      "customer_address": "Endereço",
+      "customer_email": "E-mail",
+      "customer_phone": "Telefone",
+      "vehicle_name": "Veículo",
+      "vin": "VIN",
+      "license_plate": "Placa",
+      "mileage": "Quilometragem",
+      "service_title": "Título do serviço",
+      "service_type": "Tipo de serviço",
+      "tech_name": "Técnico",
+      "logo": "Logo",
+      "company_name": "Nome da empresa",
+      "bank_account": "Conta bancária",
+      "org_number": "Número da organização"
+    }
   },
   "templates": {
     "title": "Modelos",
@@ -299,6 +409,7 @@
     "timesRoman": "Times Roman",
     "courier": "Courier",
     "headerStyle": "Estilo do cabecalho",
+    "logoSize": "Tamanho do logotipo",
     "standard": "Padrao",
     "compact": "Compacto",
     "modern": "Moderno",
@@ -315,6 +426,12 @@
     "rate": "Taxa",
     "subtotal": "Subtotal",
     "tax": "Imposto ({rate}%)",
+    "previewService": "Serviço",
+    "previewNotes": "Observações",
+    "previewDiagnosticNotes": "Notas de diagnóstico",
+    "previewDue": "Vencimento: {date}",
+    "previewAdditionalInfo": "Informações adicionais",
+    "previewThankYou": "Obrigado pela preferência",
     "saveInvoiceTemplate": "Salvar modelo de fatura",
     "saveQuotationTemplate": "Salvar modelo de orcamento",
     "invoiceTemplateSaved": "Configuracoes do modelo de fatura salvas",

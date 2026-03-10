@@ -46,14 +46,6 @@ export function Footer({
         </View>
       )}
 
-      {invoiceSettings?.paymentTerms && (
-        <View style={{ marginTop: 8 }}>
-          <Text style={{ fontSize: 9, color: gray }}>
-            {labels.paymentTerms ? fillTemplate(labels.paymentTerms, { terms: invoiceSettings.paymentTerms }) : `Payment Terms: ${invoiceSettings.paymentTerms}`}
-          </Text>
-        </View>
-      )}
-
       {torqvoiceLogoDataUri ? (
         <View
           style={{

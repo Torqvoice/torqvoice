@@ -16,6 +16,8 @@ interface HeaderProps {
   fontFamily: string
   showLogo: boolean
   showCompanyName: boolean
+  /** When provided by layoutConfig, takes priority over showLogo/showCompanyName */
+  visibleFields?: Set<string> | null
   logoDataUri?: string
   torqvoiceLogoDataUri?: string
   workshop?: WorkshopInfo
@@ -24,6 +26,7 @@ interface HeaderProps {
   invoiceNum: string
   serviceDate: string
   dueDate: string | null
+  logoSize?: number
   styles: Record<string, Style>
   labels: Record<string, string>
 }
@@ -32,8 +35,9 @@ export function Header({
   headerStyle,
   primaryColor,
   fontFamily,
-  showLogo,
-  showCompanyName,
+  showLogo: showLogoProp,
+  showCompanyName: showCompanyNameProp,
+  visibleFields,
   logoDataUri,
   torqvoiceLogoDataUri,
   workshop,
@@ -42,10 +46,18 @@ export function Header({
   invoiceNum,
   serviceDate,
   dueDate,
+  logoSize,
   styles,
   labels,
 }: HeaderProps) {
   const fontBold = getFontBold(fontFamily)
+
+  // Logo size scale factor (default 100 = 1x)
+  const scale = (logoSize || 100) / 100
+
+  // layoutConfig fields take priority over individual toggle props
+  const showLogo = visibleFields ? visibleFields.has('logo') : showLogoProp
+  const showCompanyName = visibleFields ? visibleFields.has('company_name') : showCompanyNameProp
 
   if (headerStyle === 'compact') {
     return (
@@ -53,29 +65,27 @@ export function Header({
         <View
           style={{
             flexDirection: 'row',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
             paddingBottom: 10,
             borderBottomWidth: 1,
             borderBottomColor: '#e5e7eb',
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View>
             {showLogo && logoDataUri && (
               <Image
                 src={logoDataUri}
-                style={{ maxWidth: 40, maxHeight: 40, borderRadius: 4, objectFit: 'contain' }}
+                style={{ maxWidth: 40 * scale, maxHeight: 40 * scale, borderRadius: 4, objectFit: 'contain', marginBottom: 4 }}
               />
             )}
             {showCompanyName && (
-              <View>
-                <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
-                  {shopDisplayName}
-                </Text>
-                {workshop?.address && (
-                  <Text style={{ fontSize: 8, color: gray }}>{workshop.address}</Text>
-                )}
-              </View>
+              <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
+                {shopDisplayName}
+              </Text>
+            )}
+            {workshop?.address && (
+              <Text style={{ fontSize: 8, color: gray }}>{workshop.address}</Text>
             )}
           </View>
           <View style={{ alignItems: 'flex-end' }}>
@@ -126,53 +136,45 @@ export function Header({
             marginHorizontal: -10,
           }}
         >
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 12,
-            }}
-          >
+          <View style={{ alignItems: 'center' }}>
             {showLogo && logoDataUri && (
               <Image
                 src={logoDataUri}
                 style={{
-                  maxWidth: 50,
-                  maxHeight: 50,
+                  maxWidth: 50 * scale,
+                  maxHeight: 50 * scale,
                   borderRadius: 4,
                   objectFit: 'contain',
+                  marginBottom: 6,
                 }}
               />
             )}
-            <View style={{ alignItems: 'center' }}>
-              {showCompanyName && (
-                <Text style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
-                  {shopDisplayName}
+            {showCompanyName && (
+              <Text style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
+                {shopDisplayName}
+              </Text>
+            )}
+            {workshop?.address && (
+              <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
+                {workshop.address}
+              </Text>
+            )}
+            <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
+              {workshop?.phone && (
+                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
+                  {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
                 </Text>
               )}
-              {workshop?.address && (
-                <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
-                  {workshop.address}
+              {workshop?.email && (
+                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
+                  {workshop.email}
                 </Text>
               )}
-              <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
-                {workshop?.phone && (
-                  <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                    {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
-                  </Text>
-                )}
-                {workshop?.email && (
-                  <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                    {workshop.email}
-                  </Text>
-                )}
-                {invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber && (
-                  <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                    {labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}
-                  </Text>
-                )}
-              </View>
+              {invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber && (
+                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
+                  {labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}
+                </Text>
+              )}
             </View>
           </View>
           {torqvoiceLogoDataUri && (
@@ -220,8 +222,8 @@ export function Header({
           <Image
             src={logoDataUri}
             style={{
-              maxWidth: 150,
-              maxHeight: 60,
+              maxWidth: 150 * scale,
+              maxHeight: 60 * scale,
               marginBottom: 6,
               borderRadius: 4,
               objectFit: 'contain',

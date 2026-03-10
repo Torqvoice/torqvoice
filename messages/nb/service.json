@@ -6,7 +6,9 @@
     "deleteTitle": "Slett servicepost",
     "deleteDescription": "Dette vil permanent slette denne servicepotten og all tilknyttet data. Dette kan ikke angres.",
     "deleted": "Servicepost slettet",
-    "failedDelete": "Kunne ikke slette"
+    "failedDelete": "Kunne ikke slette",
+    "customFieldsInvalid": "Vennligst fyll ut alle obligatoriske egendefinerte felt",
+    "customFieldsSaveFailed": "Kunne ikke lagre egendefinerte felt"
   },
   "header": {
     "tabs": {

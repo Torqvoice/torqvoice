@@ -174,45 +174,39 @@ function hasContent(html: string | null): boolean {
   return html.replace(/<[^>]*>/g, '').trim().length > 0
 }
 
-export function Notes({
+// ---------------------------------------------------------------------------
+// Individual section components – used by InvoicePDF when layout ordering is
+// active so that notes, bank account, and diagnostic notes can be rendered
+// independently and in any order.
+// ---------------------------------------------------------------------------
+
+export function NotesOnly({
   invoiceNotes,
-  diagnosticNotes,
-  invoiceSettings,
   otherAttachments,
   pdfAttachmentNames,
   fontFamily,
   styles,
   labels,
-}: NotesProps) {
+}: {
+  invoiceNotes: string | null
+  otherAttachments: OtherAttachment[]
+  pdfAttachmentNames: string[]
+  fontFamily: string
+  styles: Record<string, Style>
+  labels: Record<string, string>
+}) {
   const fontBold = getFontBold(fontFamily)
-
   return (
     <>
       {hasContent(invoiceNotes) && (
-        <View style={styles.notesSection}>
+        <View wrap={false} style={styles.notesSection}>
           <Text style={styles.notesLabel}>{labels.notes || 'Notes'}</Text>
           <HtmlToPdf html={invoiceNotes!} baseStyle={styles.notesText} fontBold={fontBold} />
         </View>
       )}
 
-      {invoiceSettings?.showBankAccount && invoiceSettings?.bankAccount && (
-        <View style={{ ...styles.notesSection, marginTop: 12 }}>
-          <Text style={styles.notesLabel}>{labels.bankAccount || 'Til Konto / Bank Account'}</Text>
-          <Text style={{ fontSize: 11, fontFamily: fontBold }}>
-            {invoiceSettings.bankAccount}
-          </Text>
-        </View>
-      )}
-
-      {hasContent(diagnosticNotes) && (
-        <View style={{ ...styles.notesSection, marginTop: 8 }}>
-          <Text style={styles.notesLabel}>{labels.diagnosticNotes || 'Diagnostic Notes'}</Text>
-          <HtmlToPdf html={diagnosticNotes!} baseStyle={styles.notesText} fontBold={fontBold} />
-        </View>
-      )}
-
       {(otherAttachments.length > 0 || pdfAttachmentNames.length > 0) && (
-        <View style={{ ...styles.notesSection, marginTop: 8 }}>
+        <View wrap={false} style={{ ...styles.notesSection, marginTop: 8 }}>
           <Text style={styles.notesLabel}>{labels.attachedDocuments || 'Attached Documents'}</Text>
           {pdfAttachmentNames.map((name, i) => (
             <Text key={`pdf-${i}`} style={styles.notesText}>
@@ -226,6 +220,171 @@ export function Notes({
           ))}
         </View>
       )}
+    </>
+  )
+}
+
+export function BankAccountSection({
+  invoiceSettings,
+  fontFamily,
+  styles,
+  labels,
+  visibleFields,
+  primaryColor = '#d97706',
+  dueDate,
+}: {
+  invoiceSettings?: InvoiceSettingsProps
+  fontFamily: string
+  styles: Record<string, Style>
+  labels: Record<string, string>
+  /** When provided by layoutConfig, takes priority over individual toggle props */
+  visibleFields?: Set<string> | null
+  primaryColor?: string
+  dueDate?: string | null
+}) {
+  const fontBold = getFontBold(fontFamily)
+
+  // layoutConfig fields take priority over individual toggle props
+  const showBankAccount = visibleFields
+    ? visibleFields.has('bank_account')
+    : (invoiceSettings?.showBankAccount ?? false)
+  const showOrgNumber = visibleFields
+    ? visibleFields.has('org_number')
+    : (invoiceSettings?.showOrgNumber ?? false)
+
+  const hasBankAccount = showBankAccount && invoiceSettings?.bankAccount
+  const hasOrgNumber = showOrgNumber && invoiceSettings?.orgNumber
+  const hasPaymentTerms = !!invoiceSettings?.paymentTerms
+  const hasDueDate = !!dueDate
+
+  if (!hasBankAccount && !hasOrgNumber && !hasPaymentTerms && !hasDueDate) return null
+
+  // Convert hex color to rgba-like background (10% opacity)
+  const bgColor = `${primaryColor}14`
+  const borderColor = primaryColor
+
+  return (
+    <View wrap={false} style={{
+      marginTop: 12,
+      padding: 12,
+      borderWidth: 1,
+      borderColor: borderColor,
+      borderRadius: 4,
+      backgroundColor: bgColor,
+    }}>
+      <Text style={{
+        fontSize: 9,
+        fontFamily: fontBold,
+        color: primaryColor,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+        marginBottom: 8,
+      }}>
+        {labels.paymentInformation || 'Payment Information'}
+      </Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+        {hasBankAccount && (
+          <View style={{ minWidth: '40%' }}>
+            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+              {labels.bankAccount || 'Bank Account'}
+            </Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
+              {invoiceSettings!.bankAccount}
+            </Text>
+          </View>
+        )}
+        {hasOrgNumber && (
+          <View style={{ minWidth: '40%' }}>
+            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+              {labels.orgNumberLabel || 'Org. Number'}
+            </Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
+              {invoiceSettings!.orgNumber}
+            </Text>
+          </View>
+        )}
+        {hasPaymentTerms && (
+          <View style={{ minWidth: '40%' }}>
+            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+              {labels.paymentTermsLabel || 'Payment Terms'}
+            </Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
+              {invoiceSettings!.paymentTerms}
+            </Text>
+          </View>
+        )}
+        {hasDueDate && (
+          <View style={{ minWidth: '40%' }}>
+            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+              {labels.dueDateLabel || 'Due Date'}
+            </Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
+              {dueDate}
+            </Text>
+          </View>
+        )}
+      </View>
+    </View>
+  )
+}
+
+export function DiagnosticNotesSection({
+  diagnosticNotes,
+  fontFamily,
+  styles,
+  labels,
+}: {
+  diagnosticNotes: string | null
+  fontFamily: string
+  styles: Record<string, Style>
+  labels: Record<string, string>
+}) {
+  const fontBold = getFontBold(fontFamily)
+  if (!hasContent(diagnosticNotes)) return null
+  return (
+    <View wrap={false} style={{ ...styles.notesSection, marginTop: 8 }}>
+      <Text style={styles.notesLabel}>{labels.diagnosticNotes || 'Diagnostic Notes'}</Text>
+      <HtmlToPdf html={diagnosticNotes!} baseStyle={styles.notesText} fontBold={fontBold} />
+    </View>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Composite Notes component – kept for backward compatibility
+// ---------------------------------------------------------------------------
+
+export function Notes({
+  invoiceNotes,
+  diagnosticNotes,
+  invoiceSettings,
+  otherAttachments,
+  pdfAttachmentNames,
+  fontFamily,
+  styles,
+  labels,
+}: NotesProps) {
+  return (
+    <>
+      <NotesOnly
+        invoiceNotes={invoiceNotes}
+        otherAttachments={otherAttachments}
+        pdfAttachmentNames={pdfAttachmentNames}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+      />
+      <BankAccountSection
+        invoiceSettings={invoiceSettings}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+      />
+      <DiagnosticNotesSection
+        diagnosticNotes={diagnosticNotes}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+      />
     </>
   )
 }

@@ -10,6 +10,7 @@ import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
 import { resolvePortalOrg } from "@/lib/portal-slug";
+import { mergeWithDefaults } from "@/features/settings/Schema/invoiceLayoutSchema";
 
 export async function GET(
   _request: Request,
@@ -128,11 +129,30 @@ export async function GET(
       }
     }
 
+    // Fetch custom field values for the quote
+    const customFieldValues = await db.customFieldValue.findMany({
+      where: { entityId: quote.id, entityType: "quote" },
+      include: { field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } } },
+      orderBy: { field: { sortOrder: "asc" } },
+    });
+
+    const customFields = customFieldValues
+      .filter((v) => v.field.isActive && v.value)
+      .map((v) => ({ fieldId: v.fieldId, label: v.field.label, value: v.value, fieldType: v.field.fieldType }));
+
     const features = await getFeatures(orgId);
     let torqvoiceLogoDataUri: string | undefined;
     if (!features.brandingRemoved) {
       torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri();
     }
+
+    // Fetch layout config for quotes
+    const layoutConfigSetting = await db.appSetting.findUnique({
+      where: { organizationId_key: { organizationId: orgId, key: "quote.layoutConfig" } },
+    });
+    const layoutConfig = mergeWithDefaults(
+      layoutConfigSetting?.value ? JSON.parse(layoutConfigSetting.value) : {}
+    );
 
     const template = {
       primaryColor: settingsMap["quote.primaryColor"] || settingsMap["invoice.primaryColor"] || "#d97706",
@@ -140,6 +160,7 @@ export async function GET(
       showLogo: settingsMap["invoice.showLogo"] !== "false",
       showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",
       headerStyle: settingsMap["quote.headerStyle"] || settingsMap["invoice.headerStyle"] || "standard",
+      logoSize: Number(settingsMap["quote.logoSize"]) || 100,
     };
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL
@@ -168,7 +189,9 @@ export async function GET(
       imageAttachments,
       otherAttachments,
       pdfAttachmentNames: pdfAttachments.map((a) => a.fileName),
+      customFields,
       labels,
+      layoutConfig,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const quoteBuffer = await renderToBuffer(element);

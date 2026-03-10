@@ -10,24 +10,78 @@
       "system": "System"
     },
     "items": {
-      "company": { "title": "Firma", "description": "Dane firmy i marka" },
-      "subscription": { "title": "Subskrypcja", "description": "Plan i fakturowanie" },
-      "account": { "title": "Konto", "description": "Nazwa, e-mail i haslo" },
-      "team": { "title": "Zespol", "description": "Czlonkowie i role" },
-      "invoice": { "title": "Faktura", "description": "Uklad i pola faktury" },
-      "templates": { "title": "Szablony", "description": "Szablony faktur, wycen i inspekcji" },
-      "payment": { "title": "Platnosc", "description": "Warunki platnosci i konta" },
-      "currency": { "title": "Waluta", "description": "Domyslna waluta i podatki" },
-      "customFields": { "title": "Pola niestandardowe", "description": "Definiowanie wlasnych pol danych" },
-      "email": { "title": "E-mail", "description": "Dostawca e-mail i wysylka" },
-      "sms": { "title": "SMS", "description": "Dostawca SMS i wiadomosci" },
-      "customerPortal": { "title": "Portal klienta", "description": "Portal samoobslugowy klienta" },
-      "workshop": { "title": "Warsztat", "description": "Domyslne ustawienia technika i robocizny" },
-      "maintenance": { "title": "Konserwacja", "description": "Przewidywane interwaly serwisowe" },
-      "appearance": { "title": "Wyglad", "description": "Motyw i wyswietlanie" },
-      "data": { "title": "Dane", "description": "Eksport i import kopii zapasowej" },
-      "license": { "title": "Licencja", "description": "Licencja white-label" },
-      "about": { "title": "Informacje", "description": "Wersja i informacje" }
+      "company": {
+        "title": "Firma",
+        "description": "Dane firmy i marka"
+      },
+      "subscription": {
+        "title": "Subskrypcja",
+        "description": "Plan i fakturowanie"
+      },
+      "account": {
+        "title": "Konto",
+        "description": "Nazwa, e-mail i haslo"
+      },
+      "team": {
+        "title": "Zespol",
+        "description": "Czlonkowie i role"
+      },
+      "invoice": {
+        "title": "Faktury i wyceny",
+        "description": "Ustawienia faktur, uklad i pola niestandardowe"
+      },
+      "templates": {
+        "title": "Szablony",
+        "description": "Styl wizualny, kolory i czcionki"
+      },
+      "payment": {
+        "title": "Platnosc",
+        "description": "Warunki platnosci i konta"
+      },
+      "currency": {
+        "title": "Waluta",
+        "description": "Domyslna waluta i podatki"
+      },
+      "customFields": {
+        "title": "Pola niestandardowe",
+        "description": "Definiowanie wlasnych pol danych"
+      },
+      "email": {
+        "title": "E-mail",
+        "description": "Dostawca e-mail i wysylka"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "Dostawca SMS i wiadomosci"
+      },
+      "customerPortal": {
+        "title": "Portal klienta",
+        "description": "Portal samoobslugowy klienta"
+      },
+      "workshop": {
+        "title": "Warsztat",
+        "description": "Domyslne ustawienia technika i robocizny"
+      },
+      "maintenance": {
+        "title": "Konserwacja",
+        "description": "Przewidywane interwaly serwisowe"
+      },
+      "appearance": {
+        "title": "Wyglad",
+        "description": "Motyw i wyswietlanie"
+      },
+      "data": {
+        "title": "Dane",
+        "description": "Eksport i import kopii zapasowej"
+      },
+      "license": {
+        "title": "Licencja",
+        "description": "Licencja white-label"
+      },
+      "about": {
+        "title": "Informacje",
+        "description": "Wersja i informacje"
+      }
     },
     "pro": "PRO"
   },
@@ -258,6 +312,11 @@
   "invoice": {
     "title": "Uklad faktury",
     "description": "Skonfiguruj, co pojawia sie na generowanych fakturach PDF.",
+    "tabs": {
+      "general": "Ogólne",
+      "layout": "Układ",
+      "customFields": "Pola niestandardowe"
+    },
     "invoiceNumberFormat": "Format numeru faktury",
     "invoiceNumberFormatHint": "Uzyj <code>{year}</code> dla biezacego roku. Podglad: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Nastepny numer faktury",
@@ -278,7 +337,58 @@
     "footerPlaceholder": "Dziekujemy za zamowienie!",
     "footerHint": "Ten tekst pojawia sie na dole kazdej faktury",
     "saveInvoice": "Zapisz ustawienia faktury",
-    "saved": "Ustawienia faktury zapisane"
+    "saved": "Ustawienia faktury zapisane",
+    "layoutDescription": "Dostosuj kolejność i widoczność sekcji w fakturach i wycenach.",
+    "layoutSaved": "Układ zapisany pomyślnie",
+    "preview": "Podgląd",
+    "layoutDocInvoice": "Faktura",
+    "layoutDocQuote": "Wycena",
+    "saveLayout": "Zapisz układ",
+    "resetLayout": "Resetuj"
+  },
+  "layoutEditor": {
+    "helpText": "Przeciągnij, aby zmienić kolejność. Użyj przełącznika szerokości, aby umieścić sekcje obok siebie. Kolejne sekcje o połowie szerokości (L/P) będą wyświetlane w dwóch kolumnach.",
+    "addField": "Dodaj pole",
+    "custom": "niestandardowe",
+    "full": "Pełna",
+    "L": "L",
+    "R": "P",
+    "left": "lewa",
+    "right": "prawa",
+    "halfWidthHint": "Połowa szerokości ({column}) — kliknij dla pełnej szerokości",
+    "fullWidthHint": "Pełna szerokość — kliknij dla połowy szerokości (lewa)",
+    "sections": {
+      "header": "Nagłówek",
+      "customer": "Klient",
+      "vehicle": "Pojazd",
+      "service": "Usługa",
+      "parts_table": "Części",
+      "labor_table": "Robocizna",
+      "totals": "Podsumowanie",
+      "notes": "Notatki",
+      "diagnostic_notes": "Notatki diagnostyczne",
+      "bank_account": "Konto bankowe",
+      "footer": "Stopka",
+      "general": "Ogólne"
+    },
+    "fields": {
+      "customer_name": "Nazwa klienta",
+      "customer_company": "Firma",
+      "customer_address": "Adres",
+      "customer_email": "E-mail",
+      "customer_phone": "Telefon",
+      "vehicle_name": "Pojazd",
+      "vin": "VIN",
+      "license_plate": "Tablica rejestracyjna",
+      "mileage": "Przebieg",
+      "service_title": "Tytuł usługi",
+      "service_type": "Typ usługi",
+      "tech_name": "Technik",
+      "logo": "Logo",
+      "company_name": "Nazwa firmy",
+      "bank_account": "Konto bankowe",
+      "org_number": "Numer organizacji"
+    }
   },
   "templates": {
     "title": "Szablony",
@@ -299,6 +409,7 @@
     "timesRoman": "Times Roman",
     "courier": "Courier",
     "headerStyle": "Styl naglowka",
+    "logoSize": "Rozmiar logo",
     "standard": "Standardowy",
     "compact": "Kompaktowy",
     "modern": "Nowoczesny",
@@ -315,6 +426,12 @@
     "rate": "Stawka",
     "subtotal": "Suma czesciowa",
     "tax": "Podatek ({rate}%)",
+    "previewService": "Serwis",
+    "previewNotes": "Uwagi",
+    "previewDiagnosticNotes": "Notatki diagnostyczne",
+    "previewDue": "Termin: {date}",
+    "previewAdditionalInfo": "Dodatkowe informacje",
+    "previewThankYou": "Dziękujemy za zaufanie",
     "saveInvoiceTemplate": "Zapisz szablon faktury",
     "saveQuotationTemplate": "Zapisz szablon wyceny",
     "invoiceTemplateSaved": "Ustawienia szablonu faktury zapisane",
@@ -413,14 +530,38 @@
     "saveSettings": "Zapisz ustawienia",
     "saved": "Ustawienia zapisane",
     "currencies": {
-      "USD": "Dolar amerykanski", "EUR": "Euro", "GBP": "Funt brytyjski", "NOK": "Korona norweska",
-      "SEK": "Korona szwedzka", "DKK": "Korona dunska", "CHF": "Frank szwajcarski", "CAD": "Dolar kanadyjski",
-      "AUD": "Dolar australijski", "NZD": "Dolar nowozelandzki", "JPY": "Jen japonski", "CNY": "Juan chinski",
-      "INR": "Rupia indyjska", "BRL": "Real brazylijski", "MXN": "Peso meksykanskie", "PLN": "Zloty polski",
-      "CZK": "Korona czeska", "HUF": "Forint wegierski", "TRY": "Lira turecka", "ZAR": "Rand poludniowoafrykanski",
-      "KRW": "Won poludniowokoreanskii", "SGD": "Dolar singapurski", "HKD": "Dolar hongkonski", "THB": "Baht tajski",
-      "ISK": "Korona islandzka", "RON": "Lej rumunski", "ILS": "Szekel izraelski", "PHP": "Peso filipinskie",
-      "IDR": "Rupia indonezyjska", "MYR": "Ringgit malezyjski", "AED": "Dirham ZEA", "SAR": "Rial saudyjski"
+      "USD": "Dolar amerykanski",
+      "EUR": "Euro",
+      "GBP": "Funt brytyjski",
+      "NOK": "Korona norweska",
+      "SEK": "Korona szwedzka",
+      "DKK": "Korona dunska",
+      "CHF": "Frank szwajcarski",
+      "CAD": "Dolar kanadyjski",
+      "AUD": "Dolar australijski",
+      "NZD": "Dolar nowozelandzki",
+      "JPY": "Jen japonski",
+      "CNY": "Juan chinski",
+      "INR": "Rupia indyjska",
+      "BRL": "Real brazylijski",
+      "MXN": "Peso meksykanskie",
+      "PLN": "Zloty polski",
+      "CZK": "Korona czeska",
+      "HUF": "Forint wegierski",
+      "TRY": "Lira turecka",
+      "ZAR": "Rand poludniowoafrykanski",
+      "KRW": "Won poludniowokoreanskii",
+      "SGD": "Dolar singapurski",
+      "HKD": "Dolar hongkonski",
+      "THB": "Baht tajski",
+      "ISK": "Korona islandzka",
+      "RON": "Lej rumunski",
+      "ILS": "Szekel izraelski",
+      "PHP": "Peso filipinskie",
+      "IDR": "Rupia indonezyjska",
+      "MYR": "Ringgit malezyjski",
+      "AED": "Dirham ZEA",
+      "SAR": "Rial saudyjski"
     }
   },
   "customFields": {
@@ -486,7 +627,10 @@
     "imperial": "Imperialny (mile, galony)",
     "distanceLabel": "Odleglosc",
     "volumeLabel": "Objetosc",
-    "kilometers": "kilometry (km)", "liters": "litry (L)", "miles": "mile (mi)", "gallons": "galony (gal)",
+    "kilometers": "kilometry (km)",
+    "liters": "litry (L)",
+    "miles": "mile (mi)",
+    "gallons": "galony (gal)",
     "saveWorkshop": "Zapisz ustawienia warsztatu",
     "saved": "Ustawienia warsztatu zapisane"
   },
@@ -530,22 +674,32 @@
     "includeInBackup": "Dolacz do kopii zapasowej:",
     "selectAll": "Zaznacz wszystko",
     "deselectAll": "Odznacz wszystko",
-    "optSettings": "Ustawienia", "optSettingsDesc": "Info warsztatu, konfiguracja faktur, dostawcy platnosci",
-    "optCustomers": "Klienci", "optCustomersDesc": "Rekordy klientow i dane kontaktowe",
-    "optVehicles": "Pojazdy i rekordy serwisowe", "optVehiclesDesc": "Pojazdy, notatki, dzienniki paliwa, przypomnienia, rekordy serwisowe",
-    "optQuotes": "Wyceny", "optQuotesDesc": "Wyceny z czesciami i robocizna",
-    "optInventory": "Inwentarz", "optInventoryDesc": "Czesci inwentarza i poziomy zapasow",
-    "optCustomFields": "Pola niestandardowe", "optCustomFieldsDesc": "Definicje i wartosci pol niestandardowych",
-    "optFiles": "Przeslane pliki", "optFilesDesc": "Zdjecia, zalaczniki serwisowe, logo",
+    "optSettings": "Ustawienia",
+    "optSettingsDesc": "Info warsztatu, konfiguracja faktur, dostawcy platnosci",
+    "optCustomers": "Klienci",
+    "optCustomersDesc": "Rekordy klientow i dane kontaktowe",
+    "optVehicles": "Pojazdy i rekordy serwisowe",
+    "optVehiclesDesc": "Pojazdy, notatki, dzienniki paliwa, przypomnienia, rekordy serwisowe",
+    "optQuotes": "Wyceny",
+    "optQuotesDesc": "Wyceny z czesciami i robocizna",
+    "optInventory": "Inwentarz",
+    "optInventoryDesc": "Czesci inwentarza i poziomy zapasow",
+    "optCustomFields": "Pola niestandardowe",
+    "optCustomFieldsDesc": "Definicje i wartosci pol niestandardowych",
+    "optFiles": "Przeslane pliki",
+    "optFilesDesc": "Zdjecia, zalaczniki serwisowe, logo",
     "filesWarning": "Zawiera przeslane pliki — kopia zapasowa moze byc wieksza",
     "downloadBackup": "Pobierz kopie zapasowa",
-    "exportComplete": "Eksport zakonczony", "exportCompleteMessage": "Plik kopii zapasowej zostal pobrany.",
-    "exportFailed": "Eksport nie powiodl sie", "exportFailedMessage": "Nie udalo sie wyeksportowac danych. Sprobuj ponownie.",
+    "exportComplete": "Eksport zakonczony",
+    "exportCompleteMessage": "Plik kopii zapasowej zostal pobrany.",
+    "exportFailed": "Eksport nie powiodl sie",
+    "exportFailedMessage": "Nie udalo sie wyeksportowac danych. Sprobuj ponownie.",
     "importTitle": "Importuj dane",
     "importWarning": "Import <bold>zastapi wszystkie istniejace dane</bold> zawartoscia pliku kopii zapasowej. Tej akcji nie mozna cofnac.",
     "importFileHint": "Obsluguje pliki kopii zapasowej .zip (v2) i .json (v1).",
     "uploadRestore": "Przeslij i przywroc",
-    "importComplete": "Import zakonczony", "importCompleteMessage": "Wszystkie dane zostaly przywrocone z pliku kopii zapasowej.",
+    "importComplete": "Import zakonczony",
+    "importCompleteMessage": "Wszystkie dane zostaly przywrocone z pliku kopii zapasowej.",
     "importFailed": "Import nie powiodl sie",
     "importFromOther": "Importuj z innych uslug",
     "importFromOtherDescription": "Migruj dane z innej platformy. Wybierz usluge, aby rozpoczac.",
@@ -556,10 +710,14 @@
     "lubelogStep3": "Kliknij <bold>Make Backup</bold> aby pobrac plik zip",
     "lubelogStep4": "Przeslij pobrany plik zip ponizej",
     "lubelogAddNote": "To <bold>doda dane obok</bold> istniejacych rekordow — nic nie zostanie usuniete.",
-    "lubelogImported": "Co zostanie zaimportowane:", "lubelogVehicles": "Pojazdy",
-    "lubelogServiceRecords": "Rekordy serwisowe z zalacznikami", "lubelogNotes": "Notatki",
-    "lubelogFileHint": "Obslugiwane pliki do 200MB.", "lubelogImportComplete": "Import z LubeLog zakonczony",
-    "cancel": "Anuluj", "import": "Importuj",
+    "lubelogImported": "Co zostanie zaimportowane:",
+    "lubelogVehicles": "Pojazdy",
+    "lubelogServiceRecords": "Rekordy serwisowe z zalacznikami",
+    "lubelogNotes": "Notatki",
+    "lubelogFileHint": "Obslugiwane pliki do 200MB.",
+    "lubelogImportComplete": "Import z LubeLog zakonczony",
+    "cancel": "Anuluj",
+    "import": "Importuj",
     "invoiceNinjaTitle": "Importuj z Invoice Ninja",
     "invoiceNinjaExportSteps": "Jak wyeksportowac dane z Invoice Ninja:",
     "invoiceNinjaStep1": "Otworz instancje Invoice Ninja",
@@ -568,9 +726,11 @@
     "invoiceNinjaStep4": "Przeslij pobrany plik zip ponizej",
     "invoiceNinjaAddNote": "To <bold>doda dane obok</bold> istniejacych rekordow — nic nie zostanie usuniete.",
     "invoiceNinjaImported": "Co zostanie zaimportowane:",
-    "invoiceNinjaCustomers": "Klienci", "invoiceNinjaProducts": "Produkty (inwentarz)",
+    "invoiceNinjaCustomers": "Klienci",
+    "invoiceNinjaProducts": "Produkty (inwentarz)",
     "invoiceNinjaInvoices": "Faktury jako rekordy serwisowe (czesci i robocizna)",
-    "invoiceNinjaDocuments": "Dokumenty i zalaczniki", "invoiceNinjaPayments": "Platnosci",
+    "invoiceNinjaDocuments": "Dokumenty i zalaczniki",
+    "invoiceNinjaPayments": "Platnosci",
     "invoiceNinjaFileHint": "Przeslij plik eksportu zip Invoice Ninja. Obslugiwane pliki do 200MB.",
     "invoiceNinjaImportComplete": "Import z Invoice Ninja zakonczony"
   },
@@ -578,17 +738,24 @@
     "title": "Licencja white-label",
     "description": "Aktywuj licencje white-label, aby usunac marke Torqvoice z faktur i aplikacji.",
     "purchaseWhiteLabel": "Kup white-label",
-    "status": "Status:", "active": "Aktywna", "inactive": "Nieaktywna",
+    "status": "Status:",
+    "active": "Aktywna",
+    "inactive": "Nieaktywna",
     "lastChecked": "Ostatnio sprawdzono: {date}",
-    "enterLicenseKey": "Wprowadz klucz licencji", "validate": "Zweryfikuj",
-    "validated": "Licencja zweryfikowana pomyslnie", "invalid": "Nieprawidlowy klucz licencji",
+    "enterLicenseKey": "Wprowadz klucz licencji",
+    "validate": "Zweryfikuj",
+    "validated": "Licencja zweryfikowana pomyslnie",
+    "invalid": "Nieprawidlowy klucz licencji",
     "failedValidate": "Nie udalo sie zweryfikowac licencji",
     "keyHint": "Kazdy klucz licencji jest powiazany z ta organizacja i nie moze byc wspoldzielony miedzy wieloma organizacjami."
   },
   "about": {
     "title": "O Torqvoice",
     "description": "Torqvoice to kompletne rozwiazanie do zarzadzania serwisem pojazdow. Sledz historie serwisowa, naprawy i wiecej.",
-    "version": "Wersja", "website": "Strona", "documentation": "Dokumentacja", "changelog": "Dziennik zmian"
+    "version": "Wersja",
+    "website": "Strona",
+    "documentation": "Dokumentacja",
+    "changelog": "Dziennik zmian"
   },
   "portal": {
     "title": "Portal klienta",

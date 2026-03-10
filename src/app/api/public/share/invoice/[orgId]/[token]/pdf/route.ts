@@ -11,6 +11,7 @@ import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
 import { rateLimit } from "@/lib/rate-limit";
 import { formatDateForPdf } from "@/lib/format";
 import { resolvePortalOrg } from "@/lib/portal-slug";
+import { mergeWithDefaults } from "@/features/settings/Schema/invoiceLayoutSchema";
 
 export async function GET(
   _request: Request,
@@ -72,6 +73,17 @@ export async function GET(
     if (!record || record.vehicle.organizationId !== orgId) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+
+    // Fetch custom field values for this service record
+    const customFieldValues = await db.customFieldValue.findMany({
+      where: { entityId: record.id, entityType: "service_record" },
+      include: { field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } } },
+      orderBy: { field: { sortOrder: "asc" } },
+    });
+
+    const customFields = customFieldValues
+      .filter(v => v.field.isActive && v.value)
+      .map(v => ({ fieldId: v.fieldId, label: v.field.label, value: v.value, fieldType: v.field.fieldType }));
 
     const [settings, org] = await Promise.all([
       db.appSetting.findMany({
@@ -136,12 +148,22 @@ export async function GET(
         }
       : undefined;
 
+    // Fetch layout config
+    const layoutConfigSetting = await db.appSetting.findUnique({
+      where: { organizationId_key: { organizationId: record.vehicle.organizationId, key: "invoice.layoutConfig" } },
+    });
+    const layoutConfig = mergeWithDefaults(
+      layoutConfigSetting?.value ? JSON.parse(layoutConfigSetting.value) : {}
+    );
+
     const template = {
       primaryColor: settingsMap["invoice.primaryColor"] || "#d97706",
       fontFamily: settingsMap["invoice.fontFamily"] || "Helvetica",
       showLogo: settingsMap["invoice.showLogo"] !== "false",
       showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",
       headerStyle: settingsMap["invoice.headerStyle"] || "standard",
+      logoSize: Number(settingsMap["invoice.logoSize"]) || 100,
+      layoutConfig,
     };
 
     // Check if Torqvoice branding should be shown
@@ -160,7 +182,7 @@ export async function GET(
       : undefined;
 
     const element = React.createElement(InvoicePDF, {
-      data: record,
+      data: { ...record, customFields },
       workshop: {
         name: org?.name || "",
         address: settingsMap["workshop.address"] || "",

@@ -32,6 +32,8 @@ export const SETTING_KEYS = {
   INVOICE_SHOW_LOGO: "invoice.showLogo",
   INVOICE_SHOW_COMPANY_NAME: "invoice.showCompanyName",
   INVOICE_HEADER_STYLE: "invoice.headerStyle",
+  INVOICE_LOGO_SIZE: "invoice.logoSize",
+  QUOTE_LOGO_SIZE: "quote.logoSize",
   PAYMENT_PROVIDERS_ENABLED: "payment.providersEnabled",
   PAYMENT_STRIPE_SECRET_KEY: "payment.stripe.secretKey",
   PAYMENT_STRIPE_PUBLISHABLE_KEY: "payment.stripe.publishableKey",
@@ -73,6 +75,8 @@ export const SETTING_KEYS = {
   WORKBOARD_WEEK_START_DAY: "workboard.weekStartDay",
   WORKBOARD_WORK_DAY_START: "workboard.workDayStart",
   WORKBOARD_WORK_DAY_END: "workboard.workDayEnd",
+  INVOICE_LAYOUT_CONFIG: "invoice.layoutConfig",
+  QUOTE_LAYOUT_CONFIG: "quote.layoutConfig",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

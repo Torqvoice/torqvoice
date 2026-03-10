@@ -49,7 +49,7 @@ export function createStyles(primary: string, font: string) {
     invoiceTitle: { fontSize: 18, fontFamily: fontBold, textAlign: 'right' as const },
     invoiceNumber: { fontSize: 9, color: gray, textAlign: 'right' as const, marginTop: 4 },
     infoRow: { flexDirection: 'row', gap: 20, marginBottom: 20 },
-    infoBox: { flex: 1, padding: 12, backgroundColor: grayLight, borderRadius: 4 },
+    infoBox: { padding: 12, backgroundColor: grayLight, borderRadius: 4, marginBottom: 4 },
     infoLabel: {
       fontSize: 8,
       fontFamily: fontBold,

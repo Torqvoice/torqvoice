@@ -73,6 +73,13 @@ export function useServiceFormState({
     })
   }
 
+  // Custom fields save callback ref
+  const customFieldsSaveRef = useRef<(() => Promise<{ valid: boolean }>) | null>(null)
+
+  const onCustomFieldsReady = useCallback((save: () => Promise<{ valid: boolean }>) => {
+    customFieldsSaveRef.current = save
+  }, [])
+
   // Notes ref
   const notesRef = useRef({
     invoiceNotes: initialData.invoiceNotes || '',
@@ -180,6 +187,8 @@ export function useServiceFormState({
     flashSaved, markDirty, saveNow,
     // Notes
     notesRef, handleNotesChange,
+    // Custom fields
+    customFieldsSaveRef, onCustomFieldsReady,
     // Computed
     partsSubtotal, laborSubtotal, subtotal,
     discountAmount, taxAmount, totalAmount,

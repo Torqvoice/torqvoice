@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,11 +23,14 @@ import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard"
 import { cn } from "@/lib/utils";
 import { TemplateListClient } from "@/features/inspections/Components/TemplateListClient";
 import { Textarea } from "@/components/ui/textarea";
+import { InvoiceLayoutPreview } from "@/features/settings/Components/InvoiceLayoutPreview";
+import { type InvoiceLayoutConfig, getDefaultInvoiceLayout } from "@/features/settings/Schema/invoiceLayoutSchema";
 
 interface TemplateValues {
   primaryColor: string;
   fontFamily: string;
   headerStyle: string;
+  logoSize: number;
 }
 
 type TabType = "invoice" | "quotation" | "inspections" | "sms";
@@ -48,117 +52,20 @@ const colorPresets = [
   { key: "indigo", value: "#4f46e5" },
 ];
 
-function PreviewHeader({
-  values,
-  headerStyle,
-  fontFamily,
-  documentLabel,
-}: {
-  values: TemplateValues;
-  headerStyle: string;
-  fontFamily: string;
-  documentLabel: string;
-}) {
-  const style = { fontFamily: fontMap[fontFamily] || "sans-serif" };
-  const docNumber = documentLabel === "QUOTE" ? "QT-1001" : "INV-1001";
-
-  if (headerStyle === "compact") {
-    return (
-      <div style={style}>
-        <div
-          className="flex items-center justify-between"
-          style={{ borderBottom: "1px solid #e5e7eb", paddingBottom: 8 }}
-        >
-          <div className="flex items-center gap-2">
-            <div
-              className="flex h-8 w-8 items-center justify-center rounded text-[10px] font-bold text-white"
-              style={{ backgroundColor: values.primaryColor }}
-            >
-              L
-            </div>
-            <div>
-              <p className="text-sm font-bold" style={{ color: values.primaryColor }}>
-                Your Workshop Name
-              </p>
-              <p className="text-[9px] text-gray-500">123 Main Street, City</p>
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-sm font-bold">{documentLabel}</p>
-            <p className="text-[9px] text-gray-500">{docNumber}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (headerStyle === "modern") {
-    return (
-      <div style={style}>
-        <div
-          className="rounded-md p-4 text-center text-white"
-          style={{ backgroundColor: values.primaryColor }}
-        >
-          <p className="text-lg font-bold">Your Workshop Name</p>
-          <p className="text-[9px] opacity-80">123 Main Street, City</p>
-          <div className="mt-1 flex justify-center gap-3 text-[8px] opacity-70">
-            <span>Tel: (555) 123-4567</span>
-            <span>shop@example.com</span>
-          </div>
-        </div>
-        <div className="mt-2 flex items-center justify-between">
-          <p className="text-sm font-bold">{documentLabel}</p>
-          <div className="flex gap-3 text-[9px] text-gray-500">
-            <span>{docNumber}</span>
-            <span>Jan 15, 2026</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Standard
-  return (
-    <div style={style}>
-      <div
-        className="flex items-start justify-between"
-        style={{ borderBottom: `3px solid ${values.primaryColor}`, paddingBottom: 12 }}
-      >
-        <div>
-          <div
-            className="mb-1 flex h-8 w-8 items-center justify-center rounded text-[10px] font-bold text-white"
-            style={{ backgroundColor: values.primaryColor }}
-          >
-            Logo
-          </div>
-          <p className="text-sm font-bold" style={{ color: values.primaryColor }}>
-            Your Workshop Name
-          </p>
-          <p className="text-[9px] text-gray-500">123 Main Street, City</p>
-          <p className="text-[9px] text-gray-500">Tel: (555) 123-4567</p>
-        </div>
-        <div className="text-right">
-          <p className="text-lg font-bold tracking-tight" style={{ color: values.primaryColor }}>
-            {documentLabel}
-          </p>
-          <p className="text-[9px] text-gray-500">{docNumber}</p>
-          <p className="text-[9px] text-gray-500">Jan 15, 2026</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function TemplateTab({
   values,
   setValues,
   documentLabel,
-  billToLabel,
+  documentType,
+  logoUrl,
+  invoiceLayoutConfig,
 }: {
   values: TemplateValues;
   setValues: (v: TemplateValues) => void;
   documentLabel: string;
-  billToLabel: string;
+  documentType: "invoice" | "quote";
+  logoUrl?: string;
+  invoiceLayoutConfig?: InvoiceLayoutConfig;
 }) {
   const t = useTranslations('settings');
   const currentPresetId = templatePresets.find(
@@ -172,6 +79,7 @@ function TemplateTab({
     const preset = templatePresets.find((p) => p.id === presetId);
     if (preset) {
       setValues({
+        ...values,
         primaryColor: preset.primaryColor,
         fontFamily: preset.fontFamily,
         headerStyle: preset.headerStyle,
@@ -312,35 +220,55 @@ function TemplateTab({
           <CardHeader>
             <CardTitle className="text-base">{t('templates.fontAndLayout')}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>{t('templates.fontFamily')}</Label>
-              <Select
-                value={values.fontFamily}
-                onValueChange={(v) => setValues({ ...values, fontFamily: v })}
-              >
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Helvetica">{t('templates.helveticaDefault')}</SelectItem>
-                  <SelectItem value="Times-Roman">{t('templates.timesRoman')}</SelectItem>
-                  <SelectItem value="Courier">{t('templates.courier')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>{t('templates.fontFamily')}</Label>
+                  <Select
+                    value={values.fontFamily}
+                    onValueChange={(v) => setValues({ ...values, fontFamily: v })}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Helvetica">{t('templates.helveticaDefault')}</SelectItem>
+                      <SelectItem value="Times-Roman">{t('templates.timesRoman')}</SelectItem>
+                      <SelectItem value="Courier">{t('templates.courier')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div className="space-y-2">
-              <Label>{t('templates.headerStyle')}</Label>
-              <Select
-                value={values.headerStyle}
-                onValueChange={(v) => setValues({ ...values, headerStyle: v })}
-              >
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="standard">{t('templates.standard')}</SelectItem>
-                  <SelectItem value="compact">{t('templates.compact')}</SelectItem>
-                  <SelectItem value="modern">{t('templates.modern')}</SelectItem>
-                </SelectContent>
-              </Select>
+                <div className="space-y-2">
+                  <Label>{t('templates.headerStyle')}</Label>
+                  <Select
+                    value={values.headerStyle}
+                    onValueChange={(v) => setValues({ ...values, headerStyle: v })}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="standard">{t('templates.standard')}</SelectItem>
+                      <SelectItem value="compact">{t('templates.compact')}</SelectItem>
+                      <SelectItem value="modern">{t('templates.modern')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t('templates.logoSize')}</Label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="range"
+                    min={50}
+                    max={200}
+                    step={10}
+                    value={values.logoSize}
+                    onChange={(e) => setValues({ ...values, logoSize: Number(e.target.value) })}
+                    className="flex-1"
+                  />
+                  <span className="w-12 text-right text-sm text-muted-foreground">{values.logoSize}%</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -352,102 +280,12 @@ function TemplateTab({
           <CardTitle className="text-base">{t('templates.preview', { name: documentLabel })}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div
-            className="mx-auto max-w-[600px] rounded-lg border bg-white p-8 text-black"
-            style={{ fontFamily: fontMap[values.fontFamily] || "sans-serif" }}
-          >
-            <PreviewHeader
-              values={values}
-              headerStyle={values.headerStyle}
-              fontFamily={values.fontFamily}
-              documentLabel={documentLabel === t('templates.tabs.quotation') ? "QUOTE" : "INVOICE"}
-            />
-
-            {/* Bill To / Vehicle */}
-            <div className="my-4 grid grid-cols-2 gap-4">
-              <div>
-                <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider" style={{ color: values.primaryColor }}>
-                  {billToLabel}
-                </p>
-                <p className="text-sm font-medium">John Smith</p>
-                <p className="text-xs text-gray-500">john@example.com</p>
-              </div>
-              <div>
-                <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider" style={{ color: values.primaryColor }}>
-                  {t('templates.vehicle')}
-                </p>
-                <p className="text-sm font-medium">2022 Toyota Camry</p>
-                <p className="text-xs text-gray-500">VIN: 1HGBH41...XMN</p>
-              </div>
-            </div>
-
-            {/* Parts Table */}
-            <table className="mb-1 w-full text-xs">
-              <thead>
-                <tr style={{ backgroundColor: `${values.primaryColor}15` }}>
-                  <th className="px-2 py-1.5 text-left font-medium">{t('templates.part')}</th>
-                  <th className="px-2 py-1.5 text-center font-medium">{t('templates.qty')}</th>
-                  <th className="px-2 py-1.5 text-right font-medium">{t('templates.price')}</th>
-                  <th className="px-2 py-1.5 text-right font-medium">{t('templates.total')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-gray-100">
-                  <td className="px-2 py-1.5">Brake Pads (Front)</td>
-                  <td className="px-2 py-1.5 text-center">2</td>
-                  <td className="px-2 py-1.5 text-right">$45.00</td>
-                  <td className="px-2 py-1.5 text-right">$90.00</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="px-2 py-1.5">Oil Filter</td>
-                  <td className="px-2 py-1.5 text-center">1</td>
-                  <td className="px-2 py-1.5 text-right">$12.00</td>
-                  <td className="px-2 py-1.5 text-right">$12.00</td>
-                </tr>
-              </tbody>
-            </table>
-
-            {/* Labor Table */}
-            <table className="mb-4 w-full text-xs">
-              <thead>
-                <tr style={{ backgroundColor: `${values.primaryColor}20` }}>
-                  <th className="px-2 py-1.5 text-left font-medium">{t('templates.labor')}</th>
-                  <th className="px-2 py-1.5 text-center font-medium">{t('templates.hours')}</th>
-                  <th className="px-2 py-1.5 text-right font-medium">{t('templates.rate')}</th>
-                  <th className="px-2 py-1.5 text-right font-medium">{t('templates.total')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-gray-100">
-                  <td className="px-2 py-1.5">Brake Replacement</td>
-                  <td className="px-2 py-1.5 text-center">1.5</td>
-                  <td className="px-2 py-1.5 text-right">$85.00</td>
-                  <td className="px-2 py-1.5 text-right">$127.50</td>
-                </tr>
-              </tbody>
-            </table>
-
-            {/* Totals */}
-            <div className="flex justify-end">
-              <div className="w-48 space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">{t('templates.subtotal')}</span>
-                  <span>$229.50</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">{t('templates.tax', { rate: '8' })}</span>
-                  <span>$18.36</span>
-                </div>
-                <div
-                  className="flex justify-between border-t-2 pt-1 text-sm font-bold"
-                  style={{ borderColor: values.primaryColor, color: values.primaryColor }}
-                >
-                  <span>{t('templates.total')}</span>
-                  <span>$247.86</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <InvoiceLayoutPreview
+            config={invoiceLayoutConfig ?? getDefaultInvoiceLayout()}
+            documentType={documentType}
+            template={values}
+            logoUrl={logoUrl}
+          />
         </CardContent>
       </Card>
     </>
@@ -610,15 +448,32 @@ export function TemplateSettings({
   inspectionTemplates = [],
   smsEnabled = false,
   initialSmsTemplates = {},
+  logoUrl,
+  invoiceLayoutConfig,
 }: {
   initialInvoiceValues: TemplateValues;
   initialQuoteValues: TemplateValues;
   inspectionTemplates?: InspectionTemplate[];
   smsEnabled?: boolean;
   initialSmsTemplates?: Record<string, string>;
+  logoUrl?: string;
+  invoiceLayoutConfig?: InvoiceLayoutConfig;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations('settings');
-  const [tab, setTab] = useState<TabType>("invoice");
+
+  const tab = (searchParams.get("tab") as TabType) || "invoice";
+  const setTab = useCallback((newTab: TabType) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (newTab === "invoice") {
+      params.delete("tab");
+    } else {
+      params.set("tab", newTab);
+    }
+    const qs = params.toString();
+    router.replace(`/settings/templates${qs ? `?${qs}` : ""}`, { scroll: false });
+  }, [router, searchParams]);
   const [saving, setSaving] = useState(false);
   const [invoiceValues, setInvoiceValues] = useState(initialInvoiceValues);
   const [quoteValues, setQuoteValues] = useState(initialQuoteValues);
@@ -632,6 +487,7 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.INVOICE_PRIMARY_COLOR, invoiceValues.primaryColor),
           setSetting(SETTING_KEYS.INVOICE_FONT_FAMILY, invoiceValues.fontFamily),
           setSetting(SETTING_KEYS.INVOICE_HEADER_STYLE, invoiceValues.headerStyle),
+          setSetting(SETTING_KEYS.INVOICE_LOGO_SIZE, String(invoiceValues.logoSize)),
         ]);
         toast.success(t('templates.invoiceTemplateSaved'));
       } else if (tab === "quotation") {
@@ -639,6 +495,7 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.QUOTE_PRIMARY_COLOR, quoteValues.primaryColor),
           setSetting(SETTING_KEYS.QUOTE_FONT_FAMILY, quoteValues.fontFamily),
           setSetting(SETTING_KEYS.QUOTE_HEADER_STYLE, quoteValues.headerStyle),
+          setSetting(SETTING_KEYS.QUOTE_LOGO_SIZE, String(quoteValues.logoSize)),
         ]);
         toast.success(t('templates.quotationTemplateSaved'));
       } else if (tab === "sms") {
@@ -747,14 +604,18 @@ export function TemplateSettings({
                 values={invoiceValues}
                 setValues={setInvoiceValues}
                 documentLabel={t('templates.tabs.invoice')}
-                billToLabel={t('templates.billTo')}
+                documentType="invoice"
+                logoUrl={logoUrl}
+                invoiceLayoutConfig={invoiceLayoutConfig}
               />
             ) : (
               <TemplateTab
                 values={quoteValues}
                 setValues={setQuoteValues}
                 documentLabel={t('templates.tabs.quotation')}
-                billToLabel={t('templates.preparedFor')}
+                documentType="quote"
+                logoUrl={logoUrl}
+                invoiceLayoutConfig={invoiceLayoutConfig}
               />
             )}
           </ReadOnlyWrapper>

@@ -10,6 +10,7 @@ import { PDFDocument } from "pdf-lib";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
+import { mergeWithDefaults } from "@/features/settings/Schema/invoiceLayoutSchema";
 
 export async function GET(
   _request: Request,
@@ -118,6 +119,17 @@ export async function GET(
       }
     }
 
+    // Fetch custom field values for the quote
+    const customFieldValues = await db.customFieldValue.findMany({
+      where: { entityId: quote.id, entityType: "quote" },
+      include: { field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } } },
+      orderBy: { field: { sortOrder: "asc" } },
+    });
+
+    const customFields = customFieldValues
+      .filter((v) => v.field.isActive && v.value)
+      .map((v) => ({ fieldId: v.fieldId, label: v.field.label, value: v.value, fieldType: v.field.fieldType }));
+
     // Check if Torqvoice branding should be shown
     const features = await getFeatures(ctx.organizationId);
     let torqvoiceLogoDataUri: string | undefined;
@@ -125,12 +137,21 @@ export async function GET(
       torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri();
     }
 
+    // Fetch layout config for quotes
+    const layoutConfigSetting = await db.appSetting.findUnique({
+      where: { organizationId_key: { organizationId: ctx.organizationId, key: "quote.layoutConfig" } },
+    });
+    const layoutConfig = mergeWithDefaults(
+      layoutConfigSetting?.value ? JSON.parse(layoutConfigSetting.value) : {}
+    );
+
     const template = {
       primaryColor: settingsMap["quote.primaryColor"] || settingsMap["invoice.primaryColor"] || "#d97706",
       fontFamily: settingsMap["quote.fontFamily"] || settingsMap["invoice.fontFamily"] || "Helvetica",
       showLogo: settingsMap["invoice.showLogo"] !== "false",
       showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",
       headerStyle: settingsMap["quote.headerStyle"] || settingsMap["invoice.headerStyle"] || "standard",
+      logoSize: Number(settingsMap["quote.logoSize"]) || 100,
     };
 
     const element = React.createElement(QuotePDF, {
@@ -150,7 +171,9 @@ export async function GET(
       imageAttachments,
       otherAttachments,
       pdfAttachmentNames: pdfAttachments.map((a) => a.fileName),
+      customFields,
       labels,
+      layoutConfig,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const quoteBuffer = await renderToBuffer(element);

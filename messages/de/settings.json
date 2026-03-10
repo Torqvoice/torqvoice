@@ -10,24 +10,78 @@
       "system": "System"
     },
     "items": {
-      "company": { "title": "Unternehmen", "description": "Firmendetails & Branding" },
-      "subscription": { "title": "Abonnement", "description": "Tarif & Abrechnung" },
-      "account": { "title": "Konto", "description": "Name, E-Mail & Passwort" },
-      "team": { "title": "Team", "description": "Mitglieder & Rollen" },
-      "invoice": { "title": "Rechnung", "description": "Rechnungslayout & Felder" },
-      "templates": { "title": "Vorlagen", "description": "Rechnungs-, Angebots- & Inspektionsvorlagen" },
-      "payment": { "title": "Zahlung", "description": "Zahlungsbedingungen & Konten" },
-      "currency": { "title": "Wahrung", "description": "Wahrungs- & Steuerstandards" },
-      "customFields": { "title": "Benutzerdefinierte Felder", "description": "Eigene Datenfelder definieren" },
-      "email": { "title": "E-Mail", "description": "E-Mail-Anbieter & Versand" },
-      "sms": { "title": "SMS", "description": "SMS-Anbieter & Nachrichten" },
-      "customerPortal": { "title": "Kundenportal", "description": "Kunden-Self-Service-Portal" },
-      "workshop": { "title": "Werkstatt", "description": "Techniker- & Arbeitsstandards" },
-      "maintenance": { "title": "Wartung", "description": "Vorhergesagte Serviceintervalle" },
-      "appearance": { "title": "Darstellung", "description": "Design & Anzeige" },
-      "data": { "title": "Daten", "description": "Export & Import-Backup" },
-      "license": { "title": "Lizenz", "description": "White-Label-Lizenz" },
-      "about": { "title": "Info", "description": "Version & Informationen" }
+      "company": {
+        "title": "Unternehmen",
+        "description": "Firmendetails & Branding"
+      },
+      "subscription": {
+        "title": "Abonnement",
+        "description": "Tarif & Abrechnung"
+      },
+      "account": {
+        "title": "Konto",
+        "description": "Name, E-Mail & Passwort"
+      },
+      "team": {
+        "title": "Team",
+        "description": "Mitglieder & Rollen"
+      },
+      "invoice": {
+        "title": "Rechnung & Angebote",
+        "description": "Rechnungseinstellungen, Layout & benutzerdefinierte Felder"
+      },
+      "templates": {
+        "title": "Vorlagen",
+        "description": "Visueller Stil, Farben & Schriftarten"
+      },
+      "payment": {
+        "title": "Zahlung",
+        "description": "Zahlungsbedingungen & Konten"
+      },
+      "currency": {
+        "title": "Wahrung",
+        "description": "Wahrungs- & Steuerstandards"
+      },
+      "customFields": {
+        "title": "Benutzerdefinierte Felder",
+        "description": "Eigene Datenfelder definieren"
+      },
+      "email": {
+        "title": "E-Mail",
+        "description": "E-Mail-Anbieter & Versand"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "SMS-Anbieter & Nachrichten"
+      },
+      "customerPortal": {
+        "title": "Kundenportal",
+        "description": "Kunden-Self-Service-Portal"
+      },
+      "workshop": {
+        "title": "Werkstatt",
+        "description": "Techniker- & Arbeitsstandards"
+      },
+      "maintenance": {
+        "title": "Wartung",
+        "description": "Vorhergesagte Serviceintervalle"
+      },
+      "appearance": {
+        "title": "Darstellung",
+        "description": "Design & Anzeige"
+      },
+      "data": {
+        "title": "Daten",
+        "description": "Export & Import-Backup"
+      },
+      "license": {
+        "title": "Lizenz",
+        "description": "White-Label-Lizenz"
+      },
+      "about": {
+        "title": "Info",
+        "description": "Version & Informationen"
+      }
     },
     "pro": "PRO"
   },
@@ -258,6 +312,11 @@
   "invoice": {
     "title": "Rechnungslayout",
     "description": "Konfigurieren Sie, was auf generierten PDF-Rechnungen erscheint.",
+    "tabs": {
+      "general": "Allgemein",
+      "layout": "Layout",
+      "customFields": "Benutzerdefinierte Felder"
+    },
     "invoiceNumberFormat": "Rechnungsnummernformat",
     "invoiceNumberFormatHint": "Verwenden Sie <code>{year}</code> fur das aktuelle Jahr. Vorschau: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Nachste Rechnungsnummer",
@@ -278,7 +337,58 @@
     "footerPlaceholder": "Vielen Dank fur Ihren Auftrag!",
     "footerHint": "Dieser Text erscheint am Ende jeder Rechnung",
     "saveInvoice": "Rechnungseinstellungen speichern",
-    "saved": "Rechnungseinstellungen gespeichert"
+    "saved": "Rechnungseinstellungen gespeichert",
+    "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
+    "layoutSaved": "Layout erfolgreich gespeichert",
+    "preview": "Vorschau",
+    "layoutDocInvoice": "Rechnung",
+    "layoutDocQuote": "Angebot",
+    "saveLayout": "Layout speichern",
+    "resetLayout": "Zurücksetzen"
+  },
+  "layoutEditor": {
+    "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",
+    "addField": "Feld hinzufügen",
+    "custom": "benutzerdefiniert",
+    "full": "Voll",
+    "L": "L",
+    "R": "R",
+    "left": "links",
+    "right": "rechts",
+    "halfWidthHint": "Halbbreite ({column}) — Klicken für volle Breite",
+    "fullWidthHint": "Volle Breite — Klicken für Halbbreite (links)",
+    "sections": {
+      "header": "Kopfzeile",
+      "customer": "Kunde",
+      "vehicle": "Fahrzeug",
+      "service": "Service",
+      "parts_table": "Teile",
+      "labor_table": "Arbeit",
+      "totals": "Summen",
+      "notes": "Notizen",
+      "diagnostic_notes": "Diagnosenotizen",
+      "bank_account": "Bankkonto",
+      "footer": "Fußzeile",
+      "general": "Allgemein"
+    },
+    "fields": {
+      "customer_name": "Kundenname",
+      "customer_company": "Firma",
+      "customer_address": "Adresse",
+      "customer_email": "E-Mail",
+      "customer_phone": "Telefon",
+      "vehicle_name": "Fahrzeug",
+      "vin": "FIN",
+      "license_plate": "Kennzeichen",
+      "mileage": "Kilometerstand",
+      "service_title": "Servicetitel",
+      "service_type": "Servicetyp",
+      "tech_name": "Techniker",
+      "logo": "Logo",
+      "company_name": "Firmenname",
+      "bank_account": "Bankkonto",
+      "org_number": "Organisationsnummer"
+    }
   },
   "templates": {
     "title": "Vorlagen",
@@ -299,6 +409,7 @@
     "timesRoman": "Times Roman",
     "courier": "Courier",
     "headerStyle": "Kopfzeilenstil",
+    "logoSize": "Logogröße",
     "standard": "Standard",
     "compact": "Kompakt",
     "modern": "Modern",
@@ -315,6 +426,12 @@
     "rate": "Satz",
     "subtotal": "Zwischensumme",
     "tax": "Steuer ({rate}%)",
+    "previewService": "Service",
+    "previewNotes": "Anmerkungen",
+    "previewDiagnosticNotes": "Diagnosebericht",
+    "previewDue": "Fällig: {date}",
+    "previewAdditionalInfo": "Zusätzliche Informationen",
+    "previewThankYou": "Vielen Dank für Ihren Auftrag",
     "saveInvoiceTemplate": "Rechnungsvorlage speichern",
     "saveQuotationTemplate": "Angebotsvorlage speichern",
     "invoiceTemplateSaved": "Rechnungsvorlageneinstellungen gespeichert",

@@ -93,7 +93,7 @@ export function SharedLinkCard({
 
       {/* Shared date */}
       {sharedAt && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground" suppressHydrationWarning>
           {t("sidebar.sharedLink.sharedOn", {
             date: new Date(sharedAt).toLocaleDateString(undefined, {
               month: "short",
@@ -112,7 +112,7 @@ export function SharedLinkCard({
           }`}
         />
         {hasViews ? (
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-muted-foreground" suppressHydrationWarning>
             {t("sidebar.sharedLink.viewedTimes", { count: viewCount })}
             {lastViewedAt && (
               <>
