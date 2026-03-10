@@ -222,7 +222,7 @@ export function CustomFieldsManager({
           {filtered.map((field) => {
             const sectionName = layoutConfig ? getSectionForField(field.id, layoutConfig) : null;
             return (
-              <div key={field.id} className="flex items-center gap-3 px-3 py-2 hover:bg-muted/50 transition-colors">
+              <div key={field.id} className="flex items-center gap-3 px-3 py-2 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => openEdit(field)}>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm font-medium">{field.label}</span>
@@ -253,7 +253,7 @@ export function CustomFieldsManager({
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-0.5 shrink-0">
+                <div className="flex items-center gap-0.5 shrink-0" onClick={(e) => e.stopPropagation()}>
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(field)}>
                     <Pencil className="h-3 w-3" />
                   </Button>

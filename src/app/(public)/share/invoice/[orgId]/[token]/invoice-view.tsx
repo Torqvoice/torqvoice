@@ -218,6 +218,7 @@ export function InvoiceView({
   const [paymentSuccess, setPaymentSuccess] = useState<{ amount: number } | null>(null)
   const [verifying, setVerifying] = useState(false)
   const [customAmount, setCustomAmount] = useState(false)
+  const [downloading, setDownloading] = useState(false)
 
   // Track view on mount
   useEffect(() => {
@@ -354,15 +355,21 @@ export function InvoiceView({
   }, [verifyPayment])
 
   const handleDownloadPDF = async () => {
-    const res = await fetch(`/api/public/share/invoice/${orgId}/${token}/pdf`)
-    if (!res.ok) return
-    const blob = await res.blob()
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${invoiceNum}.pdf`
-    a.click()
-    URL.revokeObjectURL(url)
+    setDownloading(true)
+    try {
+      const res = await fetch(`/api/public/share/invoice/${orgId}/${token}/pdf`)
+      if (!res.ok) throw new Error('Failed')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${invoiceNum}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      // silent
+    }
+    setDownloading(false)
   }
 
   const handlePayment = async (provider: string) => {
@@ -403,10 +410,11 @@ export function InvoiceView({
         <h1 className="text-2xl font-bold">{t('title')}</h1>
         <button
           onClick={handleDownloadPDF}
-          className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white"
+          disabled={downloading}
+          className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
           style={{ backgroundColor: primaryColor }}
         >
-          <Download className="h-4 w-4" />
+          {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
           {t('downloadPdf')}
         </button>
       </div>
