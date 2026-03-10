@@ -338,7 +338,8 @@
     "preview": "Podgląd",
     "layoutDocInvoice": "Faktura",
     "layoutDocQuote": "Wycena",
-    "saveLayout": "Zapisz układ"
+    "saveLayout": "Zapisz układ",
+    "resetLayout": "Resetuj"
   },
   "templates": {
     "title": "Szablony",

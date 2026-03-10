@@ -295,10 +295,25 @@ export function InvoiceSettings({
                     {t('invoice.layoutDocQuote')}
                   </button>
                 </div>
-                <Button onClick={handleSaveLayout} disabled={saving} size="sm" className="mr-2">
-                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t('invoice.saveLayout')}
-                </Button>
+                <div className="flex items-center gap-2 mr-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (layoutDocType === "invoice") {
+                        setInvoiceLayout(getDefaultInvoiceLayout());
+                      } else {
+                        setQuoteLayout(getDefaultInvoiceLayout());
+                      }
+                    }}
+                  >
+                    {t('invoice.resetLayout')}
+                  </Button>
+                  <Button onClick={handleSaveLayout} disabled={saving} size="sm">
+                    {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {t('invoice.saveLayout')}
+                  </Button>
+                </div>
               </div>
               <div className="grid gap-6 xl:grid-cols-2">
                 <InvoiceLayoutEditor

@@ -338,7 +338,8 @@
     "preview": "Vista previa",
     "layoutDocInvoice": "Factura",
     "layoutDocQuote": "Presupuesto",
-    "saveLayout": "Guardar diseño"
+    "saveLayout": "Guardar diseño",
+    "resetLayout": "Restablecer"
   },
   "templates": {
     "title": "Plantillas",

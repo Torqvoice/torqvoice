@@ -338,7 +338,8 @@
     "preview": "Önizleme",
     "layoutDocInvoice": "Fatura",
     "layoutDocQuote": "Teklif",
-    "saveLayout": "Düzeni kaydet"
+    "saveLayout": "Düzeni kaydet",
+    "resetLayout": "Sıfırla"
   },
   "templates": {
     "title": "Şablonlar",

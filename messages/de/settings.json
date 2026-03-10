@@ -338,7 +338,8 @@
     "preview": "Vorschau",
     "layoutDocInvoice": "Rechnung",
     "layoutDocQuote": "Angebot",
-    "saveLayout": "Layout speichern"
+    "saveLayout": "Layout speichern",
+    "resetLayout": "Zurücksetzen"
   },
   "templates": {
     "title": "Vorlagen",

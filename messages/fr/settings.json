@@ -338,7 +338,8 @@
     "preview": "Aperçu",
     "layoutDocInvoice": "Facture",
     "layoutDocQuote": "Devis",
-    "saveLayout": "Enregistrer la mise en page"
+    "saveLayout": "Enregistrer la mise en page",
+    "resetLayout": "Réinitialiser"
   },
   "templates": {
     "title": "Modeles",

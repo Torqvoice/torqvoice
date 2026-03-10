@@ -338,7 +338,8 @@
     "preview": "Voorbeeld",
     "layoutDocInvoice": "Factuur",
     "layoutDocQuote": "Offerte",
-    "saveLayout": "Layout opslaan"
+    "saveLayout": "Layout opslaan",
+    "resetLayout": "Herstellen"
   },
   "templates": {
     "title": "Sjablonen",

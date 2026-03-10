@@ -338,7 +338,8 @@
     "preview": "Anteprima",
     "layoutDocInvoice": "Fattura",
     "layoutDocQuote": "Preventivo",
-    "saveLayout": "Salva layout"
+    "saveLayout": "Salva layout",
+    "resetLayout": "Ripristina"
   },
   "templates": {
     "title": "Modelli",

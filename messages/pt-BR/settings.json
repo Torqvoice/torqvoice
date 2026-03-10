@@ -338,7 +338,8 @@
     "preview": "Pré-visualização",
     "layoutDocInvoice": "Fatura",
     "layoutDocQuote": "Orçamento",
-    "saveLayout": "Salvar layout"
+    "saveLayout": "Salvar layout",
+    "resetLayout": "Redefinir"
   },
   "templates": {
     "title": "Modelos",

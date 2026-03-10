@@ -289,7 +289,8 @@
     "preview": "Forhåndsvisning",
     "layoutDocInvoice": "Faktura",
     "layoutDocQuote": "Tilbud",
-    "saveLayout": "Lagre oppsett"
+    "saveLayout": "Lagre oppsett",
+    "resetLayout": "Tilbakestill"
   },
   "templates": {
     "title": "Maler",
