@@ -3,7 +3,7 @@ import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { createStyles, gray, getFontBold } from './styles'
 import { Header } from './Header'
-import { BillToSection, ServiceSection } from './InfoSection'
+import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable } from './Tables'
 import { Totals } from './Totals'
 import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
@@ -176,9 +176,37 @@ export function InvoicePDF({
       />
     ),
 
-    customer: '__info_group__',
-    vehicle: '__info_group__', // rendered as part of BillTo
-    service: '__info_group__',
+    customer: (
+      <CustomerSection
+        data={data}
+        styles={styles}
+        labels={labels}
+        visibleFields={visibleCustomerFields}
+        customFields={customerCf}
+      />
+    ),
+
+    vehicle: (
+      <VehicleSection
+        data={data}
+        vehicleName={vehicleName}
+        invoiceSettings={invoiceSettings}
+        styles={styles}
+        labels={labels}
+        visibleFields={visibleVehicleFields}
+        customFields={vehicleCf}
+      />
+    ),
+
+    service: (
+      <ServiceSection
+        data={data}
+        styles={styles}
+        labels={labels}
+        visibleFields={visibleServiceFields}
+        customFields={serviceCf}
+      />
+    ),
 
     parts_table: (
       <PartsTable data={data} currencyCode={cc} styles={styles} labels={labels} />
@@ -275,40 +303,25 @@ export function InvoicePDF({
     ),
   }
 
-  // Group customer+vehicle+service into a 2-column infoRow:
-  // Left: Bill To (customer + vehicle), Right: Service
-  const INFO_GROUP_IDS = new Set(['customer', 'vehicle', 'service'])
+  // Render sections in user-configured order.
+  // Adjacent info sections (customer, vehicle, service) pair into 2-column rows.
+  // Non-adjacent ones render as full-width blocks.
+  const INFO_IDS = new Set(['customer', 'vehicle', 'service'])
   const renderedSections: React.ReactNode[] = []
-  let infoGroupRendered = false
 
-  for (const id of sectionOrder) {
-    if (INFO_GROUP_IDS.has(id)) {
-      // Render the 2-column group once when we hit the first info section
-      if (!infoGroupRendered) {
-        infoGroupRendered = true
-        renderedSections.push(
-          <View key="info-group" style={styles.infoRow}>
-            <BillToSection
-              data={data}
-              vehicleName={vehicleName}
-              invoiceSettings={invoiceSettings}
-              styles={styles}
-              labels={labels}
-              customerVisibleFields={visibleCustomerFields}
-              vehicleVisibleFields={visibleVehicleFields}
-              customerCustomFields={customerCf}
-              vehicleCustomFields={vehicleCf}
-            />
-            <ServiceSection
-              data={data}
-              styles={styles}
-              labels={labels}
-              visibleFields={visibleServiceFields}
-              customFields={serviceCf}
-            />
-          </View>
-        )
-      }
+  for (let i = 0; i < sectionOrder.length; i++) {
+    const id = sectionOrder[i]
+    const nextId = sectionOrder[i + 1]
+
+    if (INFO_IDS.has(id) && nextId && INFO_IDS.has(nextId)) {
+      // Two adjacent info sections → 2-column row
+      renderedSections.push(
+        <View key={`${id}-${nextId}`} style={styles.infoRow}>
+          {sectionMap[id]}
+          {sectionMap[nextId]}
+        </View>
+      )
+      i++ // skip next, already rendered
     } else {
       renderedSections.push(
         <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>
