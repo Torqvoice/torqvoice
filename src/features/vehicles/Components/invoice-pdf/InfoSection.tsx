@@ -38,7 +38,6 @@ function renderCustomFields(
 ) {
   if (!customFields || customFields.length === 0) return null
 
-  // If visibleFields is set, render in that order; otherwise render in array order
   let ordered = customFields
   if (visibleFields) {
     const cfOrder = [...visibleFields].filter(id => isCustomFieldId(id))
@@ -59,78 +58,101 @@ function renderCustomFields(
   )
 }
 
-export function CustomerSection({ data, styles, labels, visibleFields, customFields }: SectionProps) {
-  const show = (fieldId: string) => !visibleFields || visibleFields.has(fieldId)
+/**
+ * Combined Bill To section: customer info + vehicle info in one box.
+ */
+export function BillToSection({
+  data,
+  vehicleName,
+  invoiceSettings,
+  styles,
+  labels,
+  customerVisibleFields,
+  vehicleVisibleFields,
+  customerCustomFields,
+  vehicleCustomFields,
+}: {
+  data: InvoiceData
+  vehicleName?: string
+  invoiceSettings?: InvoiceSettingsProps
+  styles: Record<string, Style>
+  labels: Record<string, string>
+  customerVisibleFields?: Set<string> | null
+  vehicleVisibleFields?: Set<string> | null
+  customerCustomFields?: CustomFieldEntry[]
+  vehicleCustomFields?: CustomFieldEntry[]
+}) {
+  const showC = (id: string) => !customerVisibleFields || customerVisibleFields.has(id)
+  const showV = (id: string) => !vehicleVisibleFields || vehicleVisibleFields.has(id)
 
-  const hasBuiltinContent =
-    data.vehicle.customer &&
-    (show('customer_name') ||
-      (show('customer_company') && data.vehicle.customer.company) ||
-      (show('customer_address') && data.vehicle.customer.address) ||
-      (show('customer_email') && data.vehicle.customer.email) ||
-      (show('customer_phone') && data.vehicle.customer.phone))
+  const hasCustomer = data.vehicle.customer &&
+    (showC('customer_name') ||
+      (showC('customer_company') && data.vehicle.customer.company) ||
+      (showC('customer_address') && data.vehicle.customer.address) ||
+      (showC('customer_email') && data.vehicle.customer.email) ||
+      (showC('customer_phone') && data.vehicle.customer.phone))
 
-  const hasCfContent = customFields && customFields.some(cf => cf.value !== '' && cf.value != null)
+  const hasVehicle =
+    showV('vehicle_name') ||
+    (showV('vin') && data.vehicle.vin) ||
+    (showV('license_plate') && data.vehicle.licensePlate) ||
+    (showV('mileage') && data.mileage)
 
-  if (!hasBuiltinContent && !hasCfContent) return null
+  const hasCustCf = customerCustomFields?.some(cf => cf.value !== '' && cf.value != null)
+  const hasVehCf = vehicleCustomFields?.some(cf => cf.value !== '' && cf.value != null)
+
+  if (!hasCustomer && !hasVehicle && !hasCustCf && !hasVehCf) return null
 
   return (
     <View style={styles.infoBox}>
       <Text style={styles.infoLabel}>{labels.billTo || 'Bill To'}</Text>
       {data.vehicle.customer && (
         <>
-          {show('customer_name') && (
+          {showC('customer_name') && (
             <Text style={styles.infoTextBold}>{data.vehicle.customer.name}</Text>
           )}
-          {show('customer_company') && data.vehicle.customer.company && (
+          {showC('customer_company') && data.vehicle.customer.company && (
             <Text style={styles.infoText}>{data.vehicle.customer.company}</Text>
           )}
-          {show('customer_address') && data.vehicle.customer.address && (
+          {showC('customer_address') && data.vehicle.customer.address && (
             <Text style={styles.infoTextSmall}>{data.vehicle.customer.address}</Text>
           )}
-          {show('customer_email') && data.vehicle.customer.email && (
+          {showC('customer_email') && data.vehicle.customer.email && (
             <Text style={styles.infoTextSmall}>{data.vehicle.customer.email}</Text>
           )}
-          {show('customer_phone') && data.vehicle.customer.phone && (
+          {showC('customer_phone') && data.vehicle.customer.phone && (
             <Text style={styles.infoTextSmall}>{data.vehicle.customer.phone}</Text>
           )}
         </>
       )}
-      {renderCustomFields(customFields, visibleFields, styles)}
-    </View>
-  )
-}
+      {renderCustomFields(customerCustomFields, customerVisibleFields, styles)}
 
-export function VehicleSection({ data, vehicleName, invoiceSettings, styles, labels, visibleFields, customFields }: SectionProps) {
-  const show = (fieldId: string) => !visibleFields || visibleFields.has(fieldId)
-
-  const hasBuiltinContent =
-    show('vehicle_name') ||
-    (show('vin') && data.vehicle.vin) ||
-    (show('license_plate') && data.vehicle.licensePlate) ||
-    (show('mileage') && data.mileage)
-
-  const hasCfContent = customFields && customFields.some(cf => cf.value !== '' && cf.value != null)
-
-  if (!hasBuiltinContent && !hasCfContent) return null
-
-  return (
-    <View style={styles.infoBox}>
-      <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
-      {show('vehicle_name') && (
-        <Text style={styles.infoTextBold}>{vehicleName}</Text>
+      {/* Vehicle info below customer */}
+      {(hasVehicle || hasVehCf) && (
+        <View style={{ marginTop: 8 }}>
+          <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
+          {showV('vehicle_name') && (
+            <Text style={styles.infoTextBold}>{vehicleName}</Text>
+          )}
+          {showV('vin') && data.vehicle.vin && (
+            <Text style={styles.infoTextSmall}>
+              {labels.vin ? fillTemplate(labels.vin, { vin: data.vehicle.vin }) : `VIN: ${data.vehicle.vin}`}
+            </Text>
+          )}
+          {showV('license_plate') && data.vehicle.licensePlate && (
+            <Text style={styles.infoTextSmall}>
+              {labels.plate ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate }) : `Plate: ${data.vehicle.licensePlate}`}
+            </Text>
+          )}
+          {showV('mileage') && data.mileage && (
+            <Text style={styles.infoTextSmall}>
+              {labels.mileage ? fillTemplate(labels.mileage, { mileage: data.mileage.toLocaleString() }) : `Mileage: ${data.mileage.toLocaleString()}`}{' '}
+              {invoiceSettings?.unitSystem === 'metric' ? (labels.km || 'km') : (labels.mi || 'mi')}
+            </Text>
+          )}
+          {renderCustomFields(vehicleCustomFields, vehicleVisibleFields, styles)}
+        </View>
       )}
-      {show('vin') && data.vehicle.vin && <Text style={styles.infoTextSmall}>{labels.vin ? fillTemplate(labels.vin, { vin: data.vehicle.vin }) : `VIN: ${data.vehicle.vin}`}</Text>}
-      {show('license_plate') && data.vehicle.licensePlate && (
-        <Text style={styles.infoTextSmall}>{labels.plate ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate }) : `Plate: ${data.vehicle.licensePlate}`}</Text>
-      )}
-      {show('mileage') && data.mileage && (
-        <Text style={styles.infoTextSmall}>
-          {labels.mileage ? fillTemplate(labels.mileage, { mileage: data.mileage.toLocaleString() }) : `Mileage: ${data.mileage.toLocaleString()}`}{' '}
-          {invoiceSettings?.unitSystem === 'metric' ? (labels.km || 'km') : (labels.mi || 'mi')}
-        </Text>
-      )}
-      {renderCustomFields(customFields, visibleFields, styles)}
     </View>
   )
 }
@@ -162,16 +184,12 @@ export function ServiceSection({ data, styles, labels, visibleFields, customFiel
   )
 }
 
-/**
- * @deprecated Use CustomerSection, VehicleSection, ServiceSection instead.
- * Kept for backward compatibility.
- */
-export function InfoSection({ data, vehicleName, invoiceSettings, styles, labels, visibleFields }: SectionProps) {
-  return (
-    <View style={styles.infoRow}>
-      <CustomerSection data={data} styles={styles} labels={labels} visibleFields={visibleFields} />
-      <VehicleSection data={data} vehicleName={vehicleName} invoiceSettings={invoiceSettings} styles={styles} labels={labels} visibleFields={visibleFields} />
-      <ServiceSection data={data} styles={styles} labels={labels} visibleFields={visibleFields} />
-    </View>
-  )
+/** @deprecated kept for backward compat */
+export function CustomerSection(props: SectionProps) {
+  return <BillToSection data={props.data} styles={props.styles} labels={props.labels} customerVisibleFields={props.visibleFields} />
+}
+
+/** @deprecated kept for backward compat */
+export function VehicleSection(props: SectionProps) {
+  return null // vehicle is now part of BillToSection
 }

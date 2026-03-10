@@ -3,7 +3,7 @@ import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { createStyles, gray, getFontBold } from './styles'
 import { Header } from './Header'
-import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
+import { BillToSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable } from './Tables'
 import { Totals } from './Totals'
 import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
@@ -176,7 +176,7 @@ export function InvoicePDF({
     ),
 
     customer: '__info_group__',
-    vehicle: '__info_group__',
+    vehicle: '__info_group__', // rendered as part of BillTo
     service: '__info_group__',
 
     parts_table: (
@@ -272,67 +272,46 @@ export function InvoicePDF({
     ),
   }
 
-  // Group consecutive customer/vehicle/service into a single infoRow
+  // Group customer+vehicle+service into a 2-column infoRow:
+  // Left: Bill To (customer + vehicle), Right: Service
   const INFO_GROUP_IDS = new Set(['customer', 'vehicle', 'service'])
   const renderedSections: React.ReactNode[] = []
-  let infoGroupItems: React.ReactNode[] = []
-
-  const flushInfoGroup = () => {
-    if (infoGroupItems.length > 0) {
-      renderedSections.push(
-        <View key="info-group" style={styles.infoRow}>
-          {infoGroupItems}
-        </View>
-      )
-      infoGroupItems = []
-    }
-  }
+  let infoGroupRendered = false
 
   for (const id of sectionOrder) {
     if (INFO_GROUP_IDS.has(id)) {
-      const componentMap: Record<string, React.ReactNode> = {
-        customer: (
-          <CustomerSection
-            key="customer"
-            data={data}
-            styles={styles}
-            labels={labels}
-            visibleFields={visibleCustomerFields}
-            customFields={customerCf}
-          />
-        ),
-        vehicle: (
-          <VehicleSection
-            key="vehicle"
-            data={data}
-            vehicleName={vehicleName}
-            invoiceSettings={invoiceSettings}
-            styles={styles}
-            labels={labels}
-            visibleFields={visibleVehicleFields}
-            customFields={vehicleCf}
-          />
-        ),
-        service: (
-          <ServiceSection
-            key="service"
-            data={data}
-            styles={styles}
-            labels={labels}
-            visibleFields={visibleServiceFields}
-            customFields={serviceCf}
-          />
-        ),
+      // Render the 2-column group once when we hit the first info section
+      if (!infoGroupRendered) {
+        infoGroupRendered = true
+        renderedSections.push(
+          <View key="info-group" style={styles.infoRow}>
+            <BillToSection
+              data={data}
+              vehicleName={vehicleName}
+              invoiceSettings={invoiceSettings}
+              styles={styles}
+              labels={labels}
+              customerVisibleFields={visibleCustomerFields}
+              vehicleVisibleFields={visibleVehicleFields}
+              customerCustomFields={customerCf}
+              vehicleCustomFields={vehicleCf}
+            />
+            <ServiceSection
+              data={data}
+              styles={styles}
+              labels={labels}
+              visibleFields={visibleServiceFields}
+              customFields={serviceCf}
+            />
+          </View>
+        )
       }
-      infoGroupItems.push(componentMap[id])
     } else {
-      flushInfoGroup()
       renderedSections.push(
         <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>
       )
     }
   }
-  flushInfoGroup()
 
   return (
     <Document>

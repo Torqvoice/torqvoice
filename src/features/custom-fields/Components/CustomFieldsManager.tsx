@@ -187,94 +187,88 @@ export function CustomFieldsManager({
   const filtered = filterEntity === "all" ? fields : fields.filter((f) => f.entityType === filterEntity);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">{t('customFields.title')}</h2>
-          <p className="text-sm text-muted-foreground">
-            {t('customFields.description')}
-          </p>
+        <div className="flex items-center gap-3">
+          {["all", "service_record", "quote"].map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setFilterEntity(key)}
+              className={`text-sm font-medium transition-colors ${
+                filterEntity === key
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {key === "all" ? t('customFields.filterAll') : entityTypeLabels[key]}
+              <span className="ml-1 text-xs text-muted-foreground">
+                ({key === "all" ? fields.length : fields.filter(f => f.entityType === key).length})
+              </span>
+            </button>
+          ))}
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="mr-1 h-4 w-4" /> {t('customFields.addField')}
+        <Button size="sm" onClick={openCreate}>
+          <Plus className="mr-1 h-3.5 w-3.5" /> {t('customFields.addField')}
         </Button>
       </div>
 
-      <div className="flex gap-2">
-        {["all", "service_record", "quote"].map((key) => (
-          <Button
-            key={key}
-            variant={filterEntity === key ? "default" : "outline"}
-            size="sm"
-            onClick={() => setFilterEntity(key)}
-          >
-            {key === "all" ? t('customFields.filterAll') : entityTypeLabels[key]}
-          </Button>
-        ))}
-      </div>
-
       {filtered.length === 0 ? (
-        <Card className="border-0 shadow-sm">
-          <CardContent className="py-12 text-center text-muted-foreground">
-            {t('customFields.emptyState')}
-          </CardContent>
-        </Card>
+        <div className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
+          {t('customFields.emptyState')}
+        </div>
       ) : (
-        <div className="space-y-2">
-          {filtered.map((field) => (
-            <Card key={field.id} className="border-0 shadow-sm">
-              <CardContent className="flex items-center gap-4 py-3">
-                <GripVertical className="h-4 w-4 text-muted-foreground/50" />
+        <div className="rounded-lg border divide-y">
+          {filtered.map((field) => {
+            const sectionName = layoutConfig ? getSectionForField(field.id, layoutConfig) : null;
+            return (
+              <div key={field.id} className="flex items-center gap-3 px-3 py-2 hover:bg-muted/50 transition-colors">
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{field.label}</span>
-                    <Badge variant="outline" className="text-xs">
-                      {fieldTypeLabels[field.fieldType] || field.fieldType}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {entityTypeLabels[field.entityType]}
-                    </Badge>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-medium">{field.label}</span>
+                    <span className="text-xs text-muted-foreground">·</span>
+                    <span className="text-xs text-muted-foreground">{fieldTypeLabels[field.fieldType] || field.fieldType}</span>
                     {field.required && (
-                      <Badge variant="outline" className="text-xs text-amber-600 border-amber-500/20 bg-amber-500/10">
-                        {t('customFields.required')}
-                      </Badge>
+                      <span className="text-xs text-amber-600">*</span>
                     )}
                     {!field.isActive && (
-                      <Badge variant="outline" className="text-xs text-gray-500">
+                      <Badge variant="outline" className="h-4 px-1 text-[10px] text-gray-500">
                         {t('customFields.inactive')}
                       </Badge>
                     )}
-                    {layoutConfig && (() => {
-                      const sectionName = getSectionForField(field.id, layoutConfig);
-                      return sectionName ? (
-                        <Badge variant="outline" className="text-xs text-blue-600 border-blue-500/20 bg-blue-500/10">
-                          {sectionName}
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-xs text-muted-foreground border-dashed">
-                          Not assigned
-                        </Badge>
-                      );
-                    })()}
                   </div>
-                  <p className="text-xs text-muted-foreground font-mono">{field.name}</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] text-muted-foreground font-mono">{field.name}</span>
+                    <span className="text-[11px] text-muted-foreground">·</span>
+                    <span className="text-[11px] text-muted-foreground">{entityTypeLabels[field.entityType]}</span>
+                    {layoutConfig && (
+                      <>
+                        <span className="text-[11px] text-muted-foreground">·</span>
+                        {sectionName ? (
+                          <span className="text-[11px] text-blue-600">{sectionName}</span>
+                        ) : (
+                          <span className="text-[11px] text-muted-foreground italic">unassigned</span>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(field)}>
-                    <Pencil className="h-3.5 w-3.5" />
+                <div className="flex items-center gap-0.5 shrink-0">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(field)}>
+                    <Pencil className="h-3 w-3" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    className="h-7 w-7 text-muted-foreground hover:text-destructive"
                     onClick={() => handleDelete(field)}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+            );
+          })}
         </div>
       )}
 

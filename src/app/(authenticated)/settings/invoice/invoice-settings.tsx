@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -50,9 +50,21 @@ export function InvoiceSettings({
   customFieldsEnabled,
 }: InvoiceSettingsProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations('settings');
-  const [tab, setTab] = useState<TabType>("general");
   const [saving, setSaving] = useState(false);
+
+  const tab = (searchParams.get("tab") as TabType) || "general";
+  const setTab = useCallback((newTab: TabType) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (newTab === "general") {
+      params.delete("tab");
+    } else {
+      params.set("tab", newTab);
+    }
+    const qs = params.toString();
+    router.replace(`/settings/invoice${qs ? `?${qs}` : ""}`, { scroll: false });
+  }, [router, searchParams]);
 
   // General tab state
   const [invoicePrefix, setInvoicePrefix] = useState(settings[SETTING_KEYS.INVOICE_PREFIX] || "{year}-");

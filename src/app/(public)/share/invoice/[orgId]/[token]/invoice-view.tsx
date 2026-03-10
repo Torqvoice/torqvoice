@@ -654,93 +654,83 @@ export function InvoiceView({
             case 'customer':
             case 'vehicle':
             case 'service': {
-              // These are grouped together - only render when we hit the first one
+              // Render 2-column layout once on first info section
               if (sectionId !== sectionOrder.find(s => ['customer', 'vehicle', 'service'].includes(s) && isSectionVisible(layoutConfig, s))) return null
-              const infoSections = sectionOrder.filter(s => ['customer', 'vehicle', 'service'].includes(s) && isSectionVisible(layoutConfig, s))
               return (
-                <div key="info-group" className="mt-6 grid gap-4 sm:grid-cols-3">
-                  {infoSections.map(sid => {
-                    if (sid === 'customer') {
-                      if (!record.vehicle.customer) return null
-                      if (!(isFieldVisible(layoutConfig, 'customer', 'customer_name') || isFieldVisible(layoutConfig, 'customer', 'customer_email') || isFieldVisible(layoutConfig, 'customer', 'customer_phone') || isFieldVisible(layoutConfig, 'customer', 'customer_address') || isFieldVisible(layoutConfig, 'customer', 'customer_company'))) return null
-                      return (
-                        <div key="customer" className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-                          <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('billTo')}</p>
-                          {isFieldVisible(layoutConfig, 'customer', 'customer_name') && (
-                            <p className="font-semibold">{record.vehicle.customer.name}</p>
-                          )}
-                          {isFieldVisible(layoutConfig, 'customer', 'customer_company') && record.vehicle.customer.company && (
-                            <p className="text-sm">{record.vehicle.customer.company}</p>
-                          )}
-                          {isFieldVisible(layoutConfig, 'customer', 'customer_address') && record.vehicle.customer.address && (
-                            <p className="text-sm text-gray-500">{record.vehicle.customer.address}</p>
-                          )}
-                          {isFieldVisible(layoutConfig, 'customer', 'customer_email') && record.vehicle.customer.email && (
-                            <p className="text-sm text-gray-500">{record.vehicle.customer.email}</p>
-                          )}
-                          {isFieldVisible(layoutConfig, 'customer', 'customer_phone') && record.vehicle.customer.phone && (
-                            <p className="text-sm text-gray-500">{record.vehicle.customer.phone}</p>
-                          )}
-                          {getCustomFieldsForSection(layoutConfig ?? null, 'customer', customFields).map((cf, i) => (
-                            <div key={`cf-${i}`} className="mt-1 text-sm">
-                              <span className="font-medium">{cf.label}:</span>{' '}
-                              <span className="text-gray-500">{cf.value}</span>
-                            </div>
-                          ))}
+                <div key="info-group" className="mt-6 grid gap-4 sm:grid-cols-2">
+                  {/* Left: Bill To + Vehicle */}
+                  <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                    {record.vehicle.customer && (isFieldVisible(layoutConfig, 'customer', 'customer_name') || isFieldVisible(layoutConfig, 'customer', 'customer_email') || isFieldVisible(layoutConfig, 'customer', 'customer_phone') || isFieldVisible(layoutConfig, 'customer', 'customer_address') || isFieldVisible(layoutConfig, 'customer', 'customer_company')) && (
+                      <>
+                        <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('billTo')}</p>
+                        {isFieldVisible(layoutConfig, 'customer', 'customer_name') && (
+                          <p className="font-semibold">{record.vehicle.customer.name}</p>
+                        )}
+                        {isFieldVisible(layoutConfig, 'customer', 'customer_company') && record.vehicle.customer.company && (
+                          <p className="text-sm">{record.vehicle.customer.company}</p>
+                        )}
+                        {isFieldVisible(layoutConfig, 'customer', 'customer_address') && record.vehicle.customer.address && (
+                          <p className="text-sm text-gray-500">{record.vehicle.customer.address}</p>
+                        )}
+                        {isFieldVisible(layoutConfig, 'customer', 'customer_email') && record.vehicle.customer.email && (
+                          <p className="text-sm text-gray-500">{record.vehicle.customer.email}</p>
+                        )}
+                        {isFieldVisible(layoutConfig, 'customer', 'customer_phone') && record.vehicle.customer.phone && (
+                          <p className="text-sm text-gray-500">{record.vehicle.customer.phone}</p>
+                        )}
+                        {getCustomFieldsForSection(layoutConfig ?? null, 'customer', customFields).map((cf, i) => (
+                          <div key={`cf-cust-${i}`} className="mt-1 text-sm">
+                            <span className="font-medium">{cf.label}:</span>{' '}
+                            <span className="text-gray-500">{cf.value}</span>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                    {isSectionVisible(layoutConfig, 'vehicle') && (isFieldVisible(layoutConfig, 'vehicle', 'vehicle_name') || isFieldVisible(layoutConfig, 'vehicle', 'vin') || isFieldVisible(layoutConfig, 'vehicle', 'license_plate') || isFieldVisible(layoutConfig, 'vehicle', 'mileage')) && (
+                      <div className="mt-3">
+                        <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('vehicle')}</p>
+                        {isFieldVisible(layoutConfig, 'vehicle', 'vehicle_name') && (
+                          <p className="font-semibold">{vehicleName}</p>
+                        )}
+                        {isFieldVisible(layoutConfig, 'vehicle', 'vin') && record.vehicle.vin && (
+                          <p className="text-sm text-gray-500">{t('vin', { vin: record.vehicle.vin })}</p>
+                        )}
+                        {isFieldVisible(layoutConfig, 'vehicle', 'license_plate') && record.vehicle.licensePlate && (
+                          <p className="text-sm text-gray-500">{t('plate', { plate: record.vehicle.licensePlate })}</p>
+                        )}
+                        {isFieldVisible(layoutConfig, 'vehicle', 'mileage') && record.vehicle.mileage > 0 && (
+                          <p className="text-sm text-gray-500">{record.vehicle.mileage}</p>
+                        )}
+                        {getCustomFieldsForSection(layoutConfig ?? null, 'vehicle', customFields).map((cf, i) => (
+                          <div key={`cf-veh-${i}`} className="mt-1 text-sm">
+                            <span className="font-medium">{cf.label}:</span>{' '}
+                            <span className="text-gray-500">{cf.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {/* Right: Service */}
+                  {isSectionVisible(layoutConfig, 'service') && (isFieldVisible(layoutConfig, 'service', 'service_title') || isFieldVisible(layoutConfig, 'service', 'service_type') || isFieldVisible(layoutConfig, 'service', 'tech_name')) && (
+                    <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                      <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('service')}</p>
+                      {isFieldVisible(layoutConfig, 'service', 'service_title') && (
+                        <p className="font-semibold">{record.title}</p>
+                      )}
+                      {isFieldVisible(layoutConfig, 'service', 'service_type') && (
+                        <p className="text-sm text-gray-500">{t('type', { type: record.type })}</p>
+                      )}
+                      {isFieldVisible(layoutConfig, 'service', 'tech_name') && record.techName && (
+                        <p className="text-sm text-gray-500">{t('tech', { tech: record.techName })}</p>
+                      )}
+                      {getCustomFieldsForSection(layoutConfig ?? null, 'service', customFields).map((cf, i) => (
+                        <div key={`cf-svc-${i}`} className="mt-1 text-sm">
+                          <span className="font-medium">{cf.label}:</span>{' '}
+                          <span className="text-gray-500">{cf.value}</span>
                         </div>
-                      )
-                    }
-                    if (sid === 'vehicle') {
-                      if (!(isFieldVisible(layoutConfig, 'vehicle', 'vehicle_name') || isFieldVisible(layoutConfig, 'vehicle', 'vin') || isFieldVisible(layoutConfig, 'vehicle', 'license_plate') || isFieldVisible(layoutConfig, 'vehicle', 'mileage'))) return null
-                      return (
-                        <div key="vehicle" className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-                          <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('vehicle')}</p>
-                          {isFieldVisible(layoutConfig, 'vehicle', 'vehicle_name') && (
-                            <p className="font-semibold">{vehicleName}</p>
-                          )}
-                          {isFieldVisible(layoutConfig, 'vehicle', 'vin') && record.vehicle.vin && (
-                            <p className="text-sm text-gray-500">{t('vin', { vin: record.vehicle.vin })}</p>
-                          )}
-                          {isFieldVisible(layoutConfig, 'vehicle', 'license_plate') && record.vehicle.licensePlate && (
-                            <p className="text-sm text-gray-500">{t('plate', { plate: record.vehicle.licensePlate })}</p>
-                          )}
-                          {isFieldVisible(layoutConfig, 'vehicle', 'mileage') && record.vehicle.mileage > 0 && (
-                            <p className="text-sm text-gray-500">{record.vehicle.mileage}</p>
-                          )}
-                          {getCustomFieldsForSection(layoutConfig ?? null, 'vehicle', customFields).map((cf, i) => (
-                            <div key={`cf-${i}`} className="mt-1 text-sm">
-                              <span className="font-medium">{cf.label}:</span>{' '}
-                              <span className="text-gray-500">{cf.value}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    }
-                    if (sid === 'service') {
-                      if (!(isFieldVisible(layoutConfig, 'service', 'service_title') || isFieldVisible(layoutConfig, 'service', 'service_type') || isFieldVisible(layoutConfig, 'service', 'tech_name'))) return null
-                      return (
-                        <div key="service" className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-                          <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('service')}</p>
-                          {isFieldVisible(layoutConfig, 'service', 'service_title') && (
-                            <p className="font-semibold">{record.title}</p>
-                          )}
-                          {isFieldVisible(layoutConfig, 'service', 'service_type') && (
-                            <p className="text-sm text-gray-500">{t('type', { type: record.type })}</p>
-                          )}
-                          {isFieldVisible(layoutConfig, 'service', 'tech_name') && record.techName && (
-                            <p className="text-sm text-gray-500">{t('tech', { tech: record.techName })}</p>
-                          )}
-                          {getCustomFieldsForSection(layoutConfig ?? null, 'service', customFields).map((cf, i) => (
-                            <div key={`cf-${i}`} className="mt-1 text-sm">
-                              <span className="font-medium">{cf.label}:</span>{' '}
-                              <span className="text-gray-500">{cf.value}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    }
-                    return null
-                  })}
+                      ))}
+                    </div>
+                  )}
                 </div>
               )
             }

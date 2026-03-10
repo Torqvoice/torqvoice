@@ -368,54 +368,46 @@ export function QuotePDF({
   const visibleVehicleFields = getVisibleFieldsForSection('vehicle')
   const visibleServiceFields = getVisibleFieldsForSection('service')
 
-  const renderCustomerSection = () => {
-    const show = (fid: string) => !visibleCustomerFields || visibleCustomerFields.has(fid)
-    const hasBuiltin = data.customer && (show('customer_name') || (show('customer_company') && data.customer.company) || (show('customer_address') && data.customer.address) || (show('customer_email') && data.customer.email) || (show('customer_phone') && data.customer.phone))
-    const hasCf = customerCf.some(cf => cf.value !== '' && cf.value != null)
-    if (!hasBuiltin && !hasCf) return null
+  const renderBillToSection = () => {
+    const showC = (fid: string) => !visibleCustomerFields || visibleCustomerFields.has(fid)
+    const showV = (fid: string) => !visibleVehicleFields || visibleVehicleFields.has(fid)
+    const hasCustomer = data.customer && (showC('customer_name') || (showC('customer_company') && data.customer.company) || (showC('customer_address') && data.customer.address) || (showC('customer_email') && data.customer.email) || (showC('customer_phone') && data.customer.phone))
+    const hasVehicle = data.vehicle && (showV('vehicle_name') || (showV('vin') && data.vehicle.vin) || (showV('license_plate') && data.vehicle.licensePlate))
+    const hasCustCf = customerCf.some(cf => cf.value !== '' && cf.value != null)
+    const hasVehCf = vehicleCf.some(cf => cf.value !== '' && cf.value != null)
+    if (!hasCustomer && !hasVehicle && !hasCustCf && !hasVehCf) return null
     return (
       <View style={styles.infoBox}>
         <Text style={styles.infoLabel}>{labels.to || 'To'}</Text>
         {data.customer && (
           <>
-            {show('customer_name') && <Text style={styles.infoTextBold}>{data.customer.name}</Text>}
-            {show('customer_company') && data.customer.company && <Text style={styles.infoText}>{data.customer.company}</Text>}
-            {show('customer_address') && data.customer.address && <Text style={styles.infoTextSmall}>{data.customer.address}</Text>}
-            {show('customer_email') && data.customer.email && <Text style={styles.infoTextSmall}>{data.customer.email}</Text>}
-            {show('customer_phone') && data.customer.phone && <Text style={styles.infoTextSmall}>{data.customer.phone}</Text>}
+            {showC('customer_name') && <Text style={styles.infoTextBold}>{data.customer.name}</Text>}
+            {showC('customer_company') && data.customer.company && <Text style={styles.infoText}>{data.customer.company}</Text>}
+            {showC('customer_address') && data.customer.address && <Text style={styles.infoTextSmall}>{data.customer.address}</Text>}
+            {showC('customer_email') && data.customer.email && <Text style={styles.infoTextSmall}>{data.customer.email}</Text>}
+            {showC('customer_phone') && data.customer.phone && <Text style={styles.infoTextSmall}>{data.customer.phone}</Text>}
           </>
         )}
         {customerCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
-          <Text key={`cf-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
+          <Text key={`cf-cust-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
         ))}
-      </View>
-    )
-  }
-
-  const renderVehicleSection = () => {
-    const show = (fid: string) => !visibleVehicleFields || visibleVehicleFields.has(fid)
-    const hasBuiltin = data.vehicle && (show('vehicle_name') || (show('vin') && data.vehicle.vin) || (show('license_plate') && data.vehicle.licensePlate))
-    const hasCf = vehicleCf.some(cf => cf.value !== '' && cf.value != null)
-    if (!hasBuiltin && !hasCf) return null
-    return (
-      <View style={styles.infoBox}>
-        <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
-        {data.vehicle && (
-          <>
-            {show('vehicle_name') && (
+        {(hasVehicle || hasVehCf) && data.vehicle && (
+          <View style={{ marginTop: 8 }}>
+            <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
+            {showV('vehicle_name') && (
               <Text style={styles.infoTextBold}>{data.vehicle.year} {data.vehicle.make} {data.vehicle.model}</Text>
             )}
-            {show('vin') && data.vehicle.vin && (
+            {showV('vin') && data.vehicle.vin && (
               <Text style={styles.infoTextSmall}>{labels.vin ? fillTemplate(labels.vin, { vin: data.vehicle.vin }) : `VIN: ${data.vehicle.vin}`}</Text>
             )}
-            {show('license_plate') && data.vehicle.licensePlate && (
+            {showV('license_plate') && data.vehicle.licensePlate && (
               <Text style={styles.infoTextSmall}>{labels.plate ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate }) : `Plate: ${data.vehicle.licensePlate}`}</Text>
             )}
-          </>
+            {vehicleCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
+              <Text key={`cf-veh-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
+            ))}
+          </View>
         )}
-        {vehicleCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
-          <Text key={`cf-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
-        ))}
       </View>
     )
   }
@@ -660,9 +652,9 @@ export function QuotePDF({
             ? renderModernHeader()
             : renderStandardHeader()
       case 'customer':
-        return renderCustomerSection()
+        return renderBillToSection()
       case 'vehicle':
-        return renderVehicleSection()
+        return null // rendered as part of BillTo
       case 'service':
         return renderServiceSection()
       case 'parts_table':
@@ -693,34 +685,28 @@ export function QuotePDF({
     }
   }
 
-  // Group consecutive customer/vehicle/service into a single infoRow
+  // Group customer+vehicle+service into a 2-column infoRow
   const INFO_GROUP_IDS = new Set(['customer', 'vehicle', 'service'])
   const renderedSections: React.ReactNode[] = []
-  let infoGroupItems: React.ReactNode[] = []
-
-  const flushInfoGroup = () => {
-    if (infoGroupItems.length > 0) {
-      renderedSections.push(
-        <View key="info-group" style={styles.infoRow}>
-          {infoGroupItems}
-        </View>
-      )
-      infoGroupItems = []
-    }
-  }
+  let infoGroupRendered = false
 
   for (const section of sortedSections) {
     if (INFO_GROUP_IDS.has(section.id)) {
-      const node = renderSection(section.id)
-      if (node) infoGroupItems.push(<React.Fragment key={section.id}>{node}</React.Fragment>)
+      if (!infoGroupRendered) {
+        infoGroupRendered = true
+        renderedSections.push(
+          <View key="info-group" style={styles.infoRow}>
+            {renderBillToSection()}
+            {renderServiceSection()}
+          </View>
+        )
+      }
     } else {
-      flushInfoGroup()
       renderedSections.push(
         <View key={section.id}>{renderSection(section.id)}</View>
       )
     }
   }
-  flushInfoGroup()
 
   return (
     <Document>
