@@ -170,6 +170,7 @@ export function InvoicePDF({
         invoiceNum={invoiceNum}
         serviceDate={serviceDate}
         dueDate={dueDate}
+        logoSize={template?.logoSize}
         styles={styles}
         labels={labels}
       />

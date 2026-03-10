@@ -162,6 +162,7 @@ export async function GET(
       showLogo: settingsMap["invoice.showLogo"] !== "false",
       showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",
       headerStyle: settingsMap["invoice.headerStyle"] || "standard",
+      logoSize: Number(settingsMap["invoice.logoSize"]) || 100,
       layoutConfig,
     };
 

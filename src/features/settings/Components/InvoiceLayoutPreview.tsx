@@ -24,6 +24,7 @@ interface TemplateValues {
   primaryColor: string;
   fontFamily: string;
   headerStyle: string;
+  logoSize?: number;
 }
 
 export interface InvoiceLayoutPreviewProps {

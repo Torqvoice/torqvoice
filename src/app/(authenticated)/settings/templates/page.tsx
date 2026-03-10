@@ -31,9 +31,11 @@ export default async function TemplatePage() {
       SETTING_KEYS.INVOICE_PRIMARY_COLOR,
       SETTING_KEYS.INVOICE_FONT_FAMILY,
       SETTING_KEYS.INVOICE_HEADER_STYLE,
+      SETTING_KEYS.INVOICE_LOGO_SIZE,
       SETTING_KEYS.QUOTE_PRIMARY_COLOR,
       SETTING_KEYS.QUOTE_FONT_FAMILY,
       SETTING_KEYS.QUOTE_HEADER_STYLE,
+      SETTING_KEYS.QUOTE_LOGO_SIZE,
       SETTING_KEYS.COMPANY_LOGO,
       SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
       SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY,
@@ -77,11 +79,13 @@ export default async function TemplatePage() {
         primaryColor: settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || "#d97706",
         fontFamily: settings[SETTING_KEYS.INVOICE_FONT_FAMILY] || "Helvetica",
         headerStyle: settings[SETTING_KEYS.INVOICE_HEADER_STYLE] || "standard",
+        logoSize: Number(settings[SETTING_KEYS.INVOICE_LOGO_SIZE]) || 100,
       }}
       initialQuoteValues={{
         primaryColor: settings[SETTING_KEYS.QUOTE_PRIMARY_COLOR] || "#d97706",
         fontFamily: settings[SETTING_KEYS.QUOTE_FONT_FAMILY] || "Helvetica",
         headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || "standard",
+        logoSize: Number(settings[SETTING_KEYS.QUOTE_LOGO_SIZE]) || 100,
       }}
       inspectionTemplates={inspectionTemplates}
       smsEnabled={features.sms ?? false}

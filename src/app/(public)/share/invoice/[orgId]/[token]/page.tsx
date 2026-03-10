@@ -89,6 +89,7 @@ export default async function PublicInvoicePage({
             "invoice.showCompanyName",
             "invoice.primaryColor",
             "invoice.headerStyle",
+            "invoice.logoSize",
             "payment.providersEnabled",
             "payment.termsOfSale",
             "payment.termsOfSaleUrl",
@@ -200,6 +201,7 @@ export default async function PublicInvoicePage({
       termsOfSaleUrl={termsOfSaleUrl}
       primaryColor={settingsMap["invoice.primaryColor"] || "#d97706"}
       headerStyle={settingsMap["invoice.headerStyle"] || "standard"}
+      logoSize={Number(settingsMap["invoice.logoSize"]) || 100}
       portalUrl={portalUrl}
       layoutConfig={layoutConfig}
       customFields={customFields}

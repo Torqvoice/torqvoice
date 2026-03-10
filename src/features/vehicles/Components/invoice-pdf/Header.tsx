@@ -26,6 +26,7 @@ interface HeaderProps {
   invoiceNum: string
   serviceDate: string
   dueDate: string | null
+  logoSize?: number
   styles: Record<string, Style>
   labels: Record<string, string>
 }
@@ -45,10 +46,14 @@ export function Header({
   invoiceNum,
   serviceDate,
   dueDate,
+  logoSize,
   styles,
   labels,
 }: HeaderProps) {
   const fontBold = getFontBold(fontFamily)
+
+  // Logo size scale factor (default 100 = 1x)
+  const scale = (logoSize || 100) / 100
 
   // layoutConfig fields take priority over individual toggle props
   const showLogo = visibleFields ? visibleFields.has('logo') : showLogoProp
@@ -71,7 +76,7 @@ export function Header({
             {showLogo && logoDataUri && (
               <Image
                 src={logoDataUri}
-                style={{ maxWidth: 40, maxHeight: 40, borderRadius: 4, objectFit: 'contain', marginBottom: 4 }}
+                style={{ maxWidth: 40 * scale, maxHeight: 40 * scale, borderRadius: 4, objectFit: 'contain', marginBottom: 4 }}
               />
             )}
             {showCompanyName && (
@@ -136,8 +141,8 @@ export function Header({
               <Image
                 src={logoDataUri}
                 style={{
-                  maxWidth: 50,
-                  maxHeight: 50,
+                  maxWidth: 50 * scale,
+                  maxHeight: 50 * scale,
                   borderRadius: 4,
                   objectFit: 'contain',
                   marginBottom: 6,
@@ -217,8 +222,8 @@ export function Header({
           <Image
             src={logoDataUri}
             style={{
-              maxWidth: 150,
-              maxHeight: 60,
+              maxWidth: 150 * scale,
+              maxHeight: 60 * scale,
               marginBottom: 6,
               borderRadius: 4,
               objectFit: 'contain',

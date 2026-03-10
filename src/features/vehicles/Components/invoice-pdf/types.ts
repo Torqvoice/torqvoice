@@ -6,6 +6,7 @@ export interface TemplateConfig {
   showLogo?: boolean
   showCompanyName?: boolean
   headerStyle?: string
+  logoSize?: number
   layoutConfig?: InvoiceLayoutConfig
 }
 

@@ -110,6 +110,7 @@ export function QuotePDF({
   const headerStyle = template?.headerStyle || 'standard'
   const showLogo = template?.showLogo !== false
   const showCompanyName = template?.showCompanyName !== false
+  const logoScale = (template?.logoSize || 100) / 100
   const styles = createStyles(primaryColor, fontFamily)
   const fontBold = getFontBold(fontFamily)
 
@@ -191,22 +192,20 @@ export function QuotePDF({
           borderBottomColor: '#e5e7eb',
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <View>
           {showLogo && logoDataUri && (
             <Image
               src={logoDataUri}
-              style={{ maxWidth: 40, maxHeight: 40, borderRadius: 4, objectFit: 'contain' }}
+              style={{ maxWidth: 40 * logoScale, maxHeight: 40 * logoScale, borderRadius: 4, objectFit: 'contain', marginBottom: 4 }}
             />
           )}
           {showCompanyName && (
-            <View>
-              <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
-                {shopName}
-              </Text>
-              {workshop?.address && (
-                <Text style={{ fontSize: 8, color: gray }}>{workshop.address}</Text>
-              )}
-            </View>
+            <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
+              {shopName}
+            </Text>
+          )}
+          {workshop?.address && (
+            <Text style={{ fontSize: 8, color: gray }}>{workshop.address}</Text>
           )}
         </View>
         <View style={{ alignItems: 'flex-end' }}>
@@ -252,43 +251,34 @@ export function QuotePDF({
           marginHorizontal: -10,
         }}
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 12,
-          }}
-        >
+        <View style={{ alignItems: 'center' }}>
           {showLogo && logoDataUri && (
             <Image
               src={logoDataUri}
-              style={{ maxWidth: 50, maxHeight: 50, borderRadius: 4, objectFit: 'contain' }}
+              style={{ maxWidth: 50 * logoScale, maxHeight: 50 * logoScale, borderRadius: 4, objectFit: 'contain', marginBottom: 6 }}
             />
           )}
-          <View style={{ alignItems: 'center' }}>
-            {showCompanyName && (
-              <Text style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
-                {shopName}
+          {showCompanyName && (
+            <Text style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
+              {shopName}
+            </Text>
+          )}
+          {workshop?.address && (
+            <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
+              {workshop.address}
+            </Text>
+          )}
+          <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
+            {workshop?.phone && (
+              <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
+                {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
               </Text>
             )}
-            {workshop?.address && (
-              <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
-                {workshop.address}
+            {workshop?.email && (
+              <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
+                {workshop.email}
               </Text>
             )}
-            <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
-              {workshop?.phone && (
-                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                  {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
-                </Text>
-              )}
-              {workshop?.email && (
-                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                  {workshop.email}
-                </Text>
-              )}
-            </View>
           </View>
         </View>
         {torqvoiceLogoDataUri && (
@@ -333,7 +323,14 @@ export function QuotePDF({
         {showLogo && logoDataUri && (
           <Image
             src={logoDataUri}
-            style={{ width: 60, height: 60, marginBottom: 6, borderRadius: 4 }}
+            style={{
+              maxWidth: 150 * logoScale,
+              maxHeight: 60 * logoScale,
+              marginBottom: 6,
+              borderRadius: 4,
+              objectFit: 'contain',
+              objectPosition: 'left',
+            }}
           />
         )}
         {showCompanyName && <Text style={styles.brandName}>{shopName}</Text>}
@@ -691,6 +688,7 @@ export function QuotePDF({
   let infoGroupRendered = false
 
   for (const section of sortedSections) {
+    if (section.id === 'footer') continue
     if (INFO_GROUP_IDS.has(section.id)) {
       if (!infoGroupRendered) {
         infoGroupRendered = true
@@ -712,6 +710,7 @@ export function QuotePDF({
     <Document>
       <Page size="A4" style={styles.page}>
         {renderedSections}
+        {renderFooter()}
       </Page>
 
       {imageAttachments.length > 0 && (

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useMessages } from "next-intl";
 import { PDFViewer } from "@react-pdf/renderer";
 import { InvoicePDF } from "@/features/vehicles/Components/InvoicePDF";
+import { QuotePDF } from "@/features/quotes/Components/QuotePDF";
 import type { InvoiceLayoutPreviewProps } from "./InvoiceLayoutPreview";
 
 // ---------------------------------------------------------------------------
@@ -31,7 +32,7 @@ function buildDummyCustomFields(
     }));
 }
 
-const DUMMY_DATA = {
+const DUMMY_INVOICE_DATA = {
   id: "preview-dummy-id-00000001",
   title: "Brake Service & Oil Change",
   description: null,
@@ -102,6 +103,68 @@ const DUMMY_DATA = {
   },
 };
 
+const DUMMY_QUOTE_DATA = {
+  quoteNumber: "QT-2026-1001",
+  title: "Brake Service & Oil Change",
+  description: null,
+  validUntil: new Date("2026-04-10"),
+  createdAt: new Date("2026-03-10"),
+  subtotal: 314.5,
+  taxRate: 8,
+  taxAmount: 25.16,
+  discountType: null,
+  discountValue: 0,
+  discountAmount: 0,
+  totalAmount: 339.66,
+  notes: "<p>Front brake pads replacement recommended. Oil and filter change with synthetic 5W-30.</p>",
+  partItems: [
+    {
+      partNumber: "BP-001",
+      name: "Brake Pads (Front)",
+      quantity: 2,
+      unitPrice: 45.0,
+      total: 90.0,
+    },
+    {
+      partNumber: "OF-042",
+      name: "Oil Filter",
+      quantity: 1,
+      unitPrice: 12.0,
+      total: 12.0,
+    },
+    {
+      partNumber: "SO-530",
+      name: "Synthetic Oil 5W-30",
+      quantity: 5,
+      unitPrice: 8.5,
+      total: 42.5,
+    },
+  ],
+  laborItems: [
+    {
+      description: "Brake Replacement",
+      hours: 1.5,
+      rate: 85.0,
+      total: 127.5,
+    },
+    { description: "Oil Change", hours: 0.5, rate: 85.0, total: 42.5 },
+  ],
+  customer: {
+    name: "John Smith",
+    email: "john@example.com",
+    phone: "(555) 123-4567",
+    address: "123 Main Street, Springfield",
+    company: "Smith Auto Group",
+  },
+  vehicle: {
+    make: "Toyota",
+    model: "Camry",
+    year: 2022,
+    vin: "1HGBH41JXMN109186",
+    licensePlate: "ABC-1234",
+  },
+};
+
 const DUMMY_WORKSHOP = {
   name: "Your Workshop",
   address: "123 Main Street, Springfield",
@@ -127,6 +190,7 @@ const DUMMY_INVOICE_SETTINGS = {
 
 export function InvoiceLayoutPreviewRenderer({
   config,
+  documentType,
   customFields,
   template,
   logoUrl,
@@ -135,20 +199,16 @@ export function InvoiceLayoutPreviewRenderer({
 
   const labels = useMemo(() => {
     const pdf = (messages?.pdf ?? {}) as Record<string, Record<string, string>>;
+    const namespace = documentType === "quote" ? "quote" : "invoice";
     return {
-      ...(pdf.invoice ?? {}),
+      ...(pdf[namespace] ?? {}),
       ...(pdf.common ?? {}),
     };
-  }, [messages]);
+  }, [messages, documentType]);
 
   const dummyCf = useMemo(
     () => buildDummyCustomFields(customFields),
     [customFields],
-  );
-
-  const data = useMemo(
-    () => ({ ...DUMMY_DATA, customFields: dummyCf }),
-    [dummyCf],
   );
 
   const templateConfig = useMemo(
@@ -156,12 +216,20 @@ export function InvoiceLayoutPreviewRenderer({
       primaryColor: template.primaryColor,
       fontFamily: template.fontFamily,
       headerStyle: template.headerStyle,
+      logoSize: template.logoSize,
       showLogo: true,
       showCompanyName: true,
       layoutConfig: config,
     }),
     [template, config],
   );
+
+  const invoiceData = useMemo(
+    () => ({ ...DUMMY_INVOICE_DATA, customFields: dummyCf }),
+    [dummyCf],
+  );
+
+  const isQuote = documentType === "quote";
 
   return (
     <div className="rounded-lg shadow-sm overflow-hidden bg-gray-100">
@@ -171,14 +239,27 @@ export function InvoiceLayoutPreviewRenderer({
         showToolbar={false}
         style={{ border: "none" }}
       >
-        <InvoicePDF
-          data={data}
-          workshop={DUMMY_WORKSHOP}
-          invoiceSettings={DUMMY_INVOICE_SETTINGS}
-          logoDataUri={logoUrl || undefined}
-          template={templateConfig}
-          labels={labels}
-        />
+        {isQuote ? (
+          <QuotePDF
+            data={DUMMY_QUOTE_DATA}
+            workshop={DUMMY_WORKSHOP}
+            currencyCode={DUMMY_INVOICE_SETTINGS.currencyCode}
+            logoDataUri={logoUrl || undefined}
+            template={templateConfig}
+            customFields={dummyCf}
+            labels={labels}
+            layoutConfig={config}
+          />
+        ) : (
+          <InvoicePDF
+            data={invoiceData}
+            workshop={DUMMY_WORKSHOP}
+            invoiceSettings={DUMMY_INVOICE_SETTINGS}
+            logoDataUri={logoUrl || undefined}
+            template={templateConfig}
+            labels={labels}
+          />
+        )}
       </PDFViewer>
     </div>
   );

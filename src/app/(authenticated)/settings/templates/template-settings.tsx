@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,7 @@ interface TemplateValues {
   primaryColor: string;
   fontFamily: string;
   headerStyle: string;
+  logoSize: number;
 }
 
 type TabType = "invoice" | "quotation" | "inspections" | "sms";
@@ -54,12 +56,14 @@ function TemplateTab({
   values,
   setValues,
   documentLabel,
+  documentType,
   logoUrl,
   invoiceLayoutConfig,
 }: {
   values: TemplateValues;
   setValues: (v: TemplateValues) => void;
   documentLabel: string;
+  documentType: "invoice" | "quote";
   logoUrl?: string;
   invoiceLayoutConfig?: InvoiceLayoutConfig;
 }) {
@@ -75,6 +79,7 @@ function TemplateTab({
     const preset = templatePresets.find((p) => p.id === presetId);
     if (preset) {
       setValues({
+        ...values,
         primaryColor: preset.primaryColor,
         fontFamily: preset.fontFamily,
         headerStyle: preset.headerStyle,
@@ -215,35 +220,55 @@ function TemplateTab({
           <CardHeader>
             <CardTitle className="text-base">{t('templates.fontAndLayout')}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>{t('templates.fontFamily')}</Label>
-              <Select
-                value={values.fontFamily}
-                onValueChange={(v) => setValues({ ...values, fontFamily: v })}
-              >
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Helvetica">{t('templates.helveticaDefault')}</SelectItem>
-                  <SelectItem value="Times-Roman">{t('templates.timesRoman')}</SelectItem>
-                  <SelectItem value="Courier">{t('templates.courier')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>{t('templates.fontFamily')}</Label>
+                  <Select
+                    value={values.fontFamily}
+                    onValueChange={(v) => setValues({ ...values, fontFamily: v })}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Helvetica">{t('templates.helveticaDefault')}</SelectItem>
+                      <SelectItem value="Times-Roman">{t('templates.timesRoman')}</SelectItem>
+                      <SelectItem value="Courier">{t('templates.courier')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div className="space-y-2">
-              <Label>{t('templates.headerStyle')}</Label>
-              <Select
-                value={values.headerStyle}
-                onValueChange={(v) => setValues({ ...values, headerStyle: v })}
-              >
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="standard">{t('templates.standard')}</SelectItem>
-                  <SelectItem value="compact">{t('templates.compact')}</SelectItem>
-                  <SelectItem value="modern">{t('templates.modern')}</SelectItem>
-                </SelectContent>
-              </Select>
+                <div className="space-y-2">
+                  <Label>{t('templates.headerStyle')}</Label>
+                  <Select
+                    value={values.headerStyle}
+                    onValueChange={(v) => setValues({ ...values, headerStyle: v })}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="standard">{t('templates.standard')}</SelectItem>
+                      <SelectItem value="compact">{t('templates.compact')}</SelectItem>
+                      <SelectItem value="modern">{t('templates.modern')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t('templates.logoSize')}</Label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="range"
+                    min={50}
+                    max={200}
+                    step={10}
+                    value={values.logoSize}
+                    onChange={(e) => setValues({ ...values, logoSize: Number(e.target.value) })}
+                    className="flex-1"
+                  />
+                  <span className="w-12 text-right text-sm text-muted-foreground">{values.logoSize}%</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -257,7 +282,7 @@ function TemplateTab({
         <CardContent>
           <InvoiceLayoutPreview
             config={invoiceLayoutConfig ?? getDefaultInvoiceLayout()}
-            documentType="invoice"
+            documentType={documentType}
             template={values}
             logoUrl={logoUrl}
           />
@@ -434,8 +459,21 @@ export function TemplateSettings({
   logoUrl?: string;
   invoiceLayoutConfig?: InvoiceLayoutConfig;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations('settings');
-  const [tab, setTab] = useState<TabType>("invoice");
+
+  const tab = (searchParams.get("tab") as TabType) || "invoice";
+  const setTab = useCallback((newTab: TabType) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (newTab === "invoice") {
+      params.delete("tab");
+    } else {
+      params.set("tab", newTab);
+    }
+    const qs = params.toString();
+    router.replace(`/settings/templates${qs ? `?${qs}` : ""}`, { scroll: false });
+  }, [router, searchParams]);
   const [saving, setSaving] = useState(false);
   const [invoiceValues, setInvoiceValues] = useState(initialInvoiceValues);
   const [quoteValues, setQuoteValues] = useState(initialQuoteValues);
@@ -449,6 +487,7 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.INVOICE_PRIMARY_COLOR, invoiceValues.primaryColor),
           setSetting(SETTING_KEYS.INVOICE_FONT_FAMILY, invoiceValues.fontFamily),
           setSetting(SETTING_KEYS.INVOICE_HEADER_STYLE, invoiceValues.headerStyle),
+          setSetting(SETTING_KEYS.INVOICE_LOGO_SIZE, String(invoiceValues.logoSize)),
         ]);
         toast.success(t('templates.invoiceTemplateSaved'));
       } else if (tab === "quotation") {
@@ -456,6 +495,7 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.QUOTE_PRIMARY_COLOR, quoteValues.primaryColor),
           setSetting(SETTING_KEYS.QUOTE_FONT_FAMILY, quoteValues.fontFamily),
           setSetting(SETTING_KEYS.QUOTE_HEADER_STYLE, quoteValues.headerStyle),
+          setSetting(SETTING_KEYS.QUOTE_LOGO_SIZE, String(quoteValues.logoSize)),
         ]);
         toast.success(t('templates.quotationTemplateSaved'));
       } else if (tab === "sms") {
@@ -564,6 +604,7 @@ export function TemplateSettings({
                 values={invoiceValues}
                 setValues={setInvoiceValues}
                 documentLabel={t('templates.tabs.invoice')}
+                documentType="invoice"
                 logoUrl={logoUrl}
                 invoiceLayoutConfig={invoiceLayoutConfig}
               />
@@ -572,6 +613,7 @@ export function TemplateSettings({
                 values={quoteValues}
                 setValues={setQuoteValues}
                 documentLabel={t('templates.tabs.quotation')}
+                documentType="quote"
                 logoUrl={logoUrl}
                 invoiceLayoutConfig={invoiceLayoutConfig}
               />

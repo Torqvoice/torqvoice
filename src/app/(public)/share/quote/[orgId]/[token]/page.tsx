@@ -69,6 +69,7 @@ export default async function PublicQuotePage({
             "workshop.timezone",
             "quote.primaryColor",
             "quote.headerStyle",
+            "quote.logoSize",
             "invoice.primaryColor",
             "invoice.headerStyle",
             "portal.enabled",
@@ -165,6 +166,7 @@ export default async function PublicQuotePage({
       timezone={settingsMap["workshop.timezone"] || undefined}
       primaryColor={primaryColor}
       headerStyle={headerStyle}
+      logoSize={Number(settingsMap["quote.logoSize"]) || 100}
       portalUrl={portalUrl}
       imageAttachments={imageAttachments}
       documentAttachments={documentAttachments}

@@ -185,6 +185,7 @@ export function InvoiceView({
   termsOfSaleUrl,
   primaryColor = '#d97706',
   headerStyle = 'standard',
+  logoSize = 100,
   portalUrl,
   layoutConfig,
   customFields = [],
@@ -205,6 +206,7 @@ export function InvoiceView({
   termsOfSaleUrl?: string
   primaryColor?: string
   headerStyle?: string
+  logoSize?: number
   portalUrl?: string
   layoutConfig?: InvoiceLayoutConfig
   customFields?: CustomField[]
@@ -582,7 +584,8 @@ export function InvoiceView({
                           <img
                             src={logoUrl}
                             alt={shopName}
-                            className="mx-auto mb-2 max-h-16 max-w-[180px] object-contain"
+                            className="mx-auto mb-2 object-contain"
+                            style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }}
                           />
                         )}
                         {effectiveShowCompanyName && (
@@ -609,7 +612,8 @@ export function InvoiceView({
                           <img
                             src={logoUrl}
                             alt={shopName}
-                            className="h-12 w-12 rounded object-contain"
+                            className="rounded object-contain"
+                            style={{ height: 48 * (logoSize / 100), width: 48 * (logoSize / 100) }}
                           />
                         )}
                         <div>
@@ -633,7 +637,8 @@ export function InvoiceView({
                           <img
                             src={logoUrl}
                             alt={shopName}
-                            className="mb-2 max-h-16 max-w-[180px] object-contain object-left"
+                            className="mb-2 object-contain object-left"
+                            style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }}
                           />
                         )}
                         {effectiveShowCompanyName && (

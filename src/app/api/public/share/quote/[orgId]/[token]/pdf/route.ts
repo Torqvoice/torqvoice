@@ -160,6 +160,7 @@ export async function GET(
       showLogo: settingsMap["invoice.showLogo"] !== "false",
       showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",
       headerStyle: settingsMap["quote.headerStyle"] || settingsMap["invoice.headerStyle"] || "standard",
+      logoSize: Number(settingsMap["quote.logoSize"]) || 100,
     };
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL

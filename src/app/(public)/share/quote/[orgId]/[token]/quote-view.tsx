@@ -146,6 +146,7 @@ export function QuoteView({
   timezone,
   primaryColor = "#d97706",
   headerStyle = "standard",
+  logoSize = 100,
   portalUrl,
   imageAttachments = [],
   documentAttachments = [],
@@ -163,6 +164,7 @@ export function QuoteView({
   timezone?: string;
   primaryColor?: string;
   headerStyle?: string;
+  logoSize?: number;
   portalUrl?: string;
   imageAttachments?: QuoteAttachmentView[];
   documentAttachments?: QuoteAttachmentView[];
@@ -322,7 +324,8 @@ export function QuoteView({
                           <img
                             src={logoUrl || "/torqvoice_app_logo.png"}
                             alt={shopName}
-                            className="mx-auto mb-2 max-h-16 max-w-[180px] object-contain"
+                            className="mx-auto mb-2 object-contain"
+                            style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }}
                           />
                         )}
                         {effectiveShowCompanyName && (
@@ -363,7 +366,8 @@ export function QuoteView({
                           <img
                             src={logoUrl || "/torqvoice_app_logo.png"}
                             alt={shopName}
-                            className="h-12 w-12 rounded object-contain"
+                            className="rounded object-contain"
+                            style={{ height: 48 * (logoSize / 100), width: 48 * (logoSize / 100) }}
                           />
                         )}
                         <div>
@@ -401,7 +405,8 @@ export function QuoteView({
                           <img
                             src={logoUrl || "/torqvoice_app_logo.png"}
                             alt={shopName}
-                            className="mb-2 max-h-16 max-w-[180px] object-contain object-left"
+                            className="mb-2 object-contain object-left"
+                            style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }}
                           />
                         )}
                         {effectiveShowCompanyName && (
