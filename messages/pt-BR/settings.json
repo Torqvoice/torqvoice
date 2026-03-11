@@ -403,7 +403,8 @@
       "invoice": "Fatura",
       "quotation": "Orcamento",
       "inspections": "Inspecoes",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Layout"
     },
     "presets": "Presets de modelo",
     "primaryColor": "Cor primaria",
@@ -481,7 +482,12 @@
       "slate": "Ardosia",
       "rose": "Rosa",
       "indigo": "Indigo"
-    }
+    },
+    "layoutTitle": "Layout da fatura",
+    "layoutDescription": "Personalize a ordem e visibilidade das secoes nas suas faturas e orcamentos.",
+    "layoutSaved": "Layout salvo com sucesso",
+    "layoutDocInvoice": "Fatura",
+    "layoutDocQuote": "Orcamento"
   },
   "payment": {
     "detailsTitle": "Detalhes de pagamento",
@@ -634,7 +640,19 @@
     "miles": "milhas (mi)",
     "gallons": "galoes (gal)",
     "saveWorkshop": "Salvar configuracoes da oficina",
-    "saved": "Configuracoes da oficina salvas"
+    "saved": "Configuracoes da oficina salvas",
+    "weekStartDay": "Inicio da semana",
+    "workDayStart": "Inicio do expediente",
+    "workDayEnd": "Fim do expediente",
+    "weekDays": {
+      "0": "Domingo",
+      "1": "Segunda-feira",
+      "2": "Terca-feira",
+      "3": "Quarta-feira",
+      "4": "Quinta-feira",
+      "5": "Sexta-feira",
+      "6": "Sabado"
+    }
   },
   "maintenance": {
     "title": "Manutencao preditiva",

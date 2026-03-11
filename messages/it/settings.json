@@ -403,7 +403,8 @@
       "invoice": "Fattura",
       "quotation": "Preventivo",
       "inspections": "Ispezioni",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Layout"
     },
     "presets": "Preset modello",
     "primaryColor": "Colore primario",
@@ -481,7 +482,12 @@
       "slate": "Ardesia",
       "rose": "Rosa",
       "indigo": "Indaco"
-    }
+    },
+    "layoutTitle": "Layout fattura",
+    "layoutDescription": "Personalizza l'ordine e la visibilita delle sezioni nelle fatture e nei preventivi.",
+    "layoutSaved": "Layout salvato con successo",
+    "layoutDocInvoice": "Fattura",
+    "layoutDocQuote": "Preventivo"
   },
   "payment": {
     "detailsTitle": "Dettagli pagamento",
@@ -634,7 +640,19 @@
     "miles": "miglia (mi)",
     "gallons": "galloni (gal)",
     "saveWorkshop": "Salva impostazioni officina",
-    "saved": "Impostazioni officina salvate"
+    "saved": "Impostazioni officina salvate",
+    "weekStartDay": "Inizio settimana",
+    "workDayStart": "Inizio giornata",
+    "workDayEnd": "Fine giornata",
+    "weekDays": {
+      "0": "Domenica",
+      "1": "Lunedi",
+      "2": "Martedi",
+      "3": "Mercoledi",
+      "4": "Giovedi",
+      "5": "Venerdi",
+      "6": "Sabato"
+    }
   },
   "maintenance": {
     "title": "Manutenzione prevista",

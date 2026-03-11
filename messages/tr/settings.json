@@ -403,7 +403,8 @@
       "invoice": "Fatura",
       "quotation": "Teklif",
       "inspections": "Muayeneler",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Duzen"
     },
     "presets": "Şablon Hazır Ayarları",
     "primaryColor": "Ana Renk",
@@ -481,7 +482,12 @@
       "slate": "Kurşuni",
       "rose": "Gül",
       "indigo": "İndigo"
-    }
+    },
+    "layoutTitle": "Fatura Duzeni",
+    "layoutDescription": "Fatura ve tekliflerinizdeki bolumlerin sirasini ve gorunurlugunu ozellestirin.",
+    "layoutSaved": "Duzen basariyla kaydedildi",
+    "layoutDocInvoice": "Fatura",
+    "layoutDocQuote": "Teklif"
   },
   "payment": {
     "detailsTitle": "Ödeme Bilgileri",
@@ -634,7 +640,19 @@
     "miles": "mil (mi)",
     "gallons": "galon (gal)",
     "saveWorkshop": "Atölye Ayarlarını Kaydet",
-    "saved": "Atölye ayarları kaydedildi"
+    "saved": "Atölye ayarları kaydedildi",
+    "weekStartDay": "Hafta Baslangici",
+    "workDayStart": "Is Gunu Baslangici",
+    "workDayEnd": "Is Gunu Bitisi",
+    "weekDays": {
+      "0": "Pazar",
+      "1": "Pazartesi",
+      "2": "Sali",
+      "3": "Carsamba",
+      "4": "Persembe",
+      "5": "Cuma",
+      "6": "Cumartesi"
+    }
   },
   "maintenance": {
     "title": "Öngörülen Bakım",

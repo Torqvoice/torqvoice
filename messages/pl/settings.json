@@ -403,7 +403,8 @@
       "invoice": "Faktura",
       "quotation": "Wycena",
       "inspections": "Inspekcje",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Uklad"
     },
     "presets": "Gotowe szablony",
     "primaryColor": "Kolor glowny",
@@ -481,7 +482,12 @@
       "slate": "Lupkowy",
       "rose": "Rozowy",
       "indigo": "Indygo"
-    }
+    },
+    "layoutTitle": "Uklad faktury",
+    "layoutDescription": "Dostosuj kolejnosc i widocznosc sekcji w fakturach i wycenach.",
+    "layoutSaved": "Uklad zapisany pomyslnie",
+    "layoutDocInvoice": "Faktura",
+    "layoutDocQuote": "Wycena"
   },
   "payment": {
     "detailsTitle": "Szczegoly platnosci",
@@ -634,7 +640,19 @@
     "miles": "mile (mi)",
     "gallons": "galony (gal)",
     "saveWorkshop": "Zapisz ustawienia warsztatu",
-    "saved": "Ustawienia warsztatu zapisane"
+    "saved": "Ustawienia warsztatu zapisane",
+    "weekStartDay": "Poczatek tygodnia",
+    "workDayStart": "Poczatek dnia pracy",
+    "workDayEnd": "Koniec dnia pracy",
+    "weekDays": {
+      "0": "Niedziela",
+      "1": "Poniedzialek",
+      "2": "Wtorek",
+      "3": "Sroda",
+      "4": "Czwartek",
+      "5": "Piatek",
+      "6": "Sobota"
+    }
   },
   "maintenance": {
     "title": "Przewidywana konserwacja",

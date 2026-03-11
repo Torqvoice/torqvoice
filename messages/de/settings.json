@@ -403,7 +403,8 @@
       "invoice": "Rechnung",
       "quotation": "Angebot",
       "inspections": "Inspektionen",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Layout"
     },
     "presets": "Vorlagen-Presets",
     "primaryColor": "Primarfarbe",
@@ -481,7 +482,12 @@
       "slate": "Schiefer",
       "rose": "Rose",
       "indigo": "Indigo"
-    }
+    },
+    "layoutTitle": "Rechnungslayout",
+    "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
+    "layoutSaved": "Layout erfolgreich gespeichert",
+    "layoutDocInvoice": "Rechnung",
+    "layoutDocQuote": "Angebot"
   },
   "payment": {
     "detailsTitle": "Zahlungsdetails",
@@ -634,7 +640,19 @@
     "miles": "Meilen (mi)",
     "gallons": "Gallonen (gal)",
     "saveWorkshop": "Werkstatteinstellungen speichern",
-    "saved": "Werkstatteinstellungen gespeichert"
+    "saved": "Werkstatteinstellungen gespeichert",
+    "weekStartDay": "Wochenstart",
+    "workDayStart": "Arbeitsbeginn",
+    "workDayEnd": "Arbeitsende",
+    "weekDays": {
+      "0": "Sonntag",
+      "1": "Montag",
+      "2": "Dienstag",
+      "3": "Mittwoch",
+      "4": "Donnerstag",
+      "5": "Freitag",
+      "6": "Samstag"
+    }
   },
   "maintenance": {
     "title": "Vorhergesagte Wartung",

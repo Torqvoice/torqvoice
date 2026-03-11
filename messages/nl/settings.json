@@ -403,7 +403,8 @@
       "invoice": "Factuur",
       "quotation": "Offerte",
       "inspections": "Inspecties",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Indeling"
     },
     "presets": "Sjabloonpresets",
     "primaryColor": "Primaire kleur",
@@ -481,7 +482,12 @@
       "slate": "Leisteen",
       "rose": "Roze",
       "indigo": "Indigo"
-    }
+    },
+    "layoutTitle": "Factuurindeling",
+    "layoutDescription": "Pas de volgorde en zichtbaarheid van secties in uw facturen en offertes aan.",
+    "layoutSaved": "Indeling succesvol opgeslagen",
+    "layoutDocInvoice": "Factuur",
+    "layoutDocQuote": "Offerte"
   },
   "payment": {
     "detailsTitle": "Betalingsgegevens",
@@ -634,7 +640,19 @@
     "miles": "mijlen (mi)",
     "gallons": "gallons (gal)",
     "saveWorkshop": "Werkplaatsinstellingen opslaan",
-    "saved": "Werkplaatsinstellingen opgeslagen"
+    "saved": "Werkplaatsinstellingen opgeslagen",
+    "weekStartDay": "Weekstart",
+    "workDayStart": "Werkdag begin",
+    "workDayEnd": "Werkdag einde",
+    "weekDays": {
+      "0": "Zondag",
+      "1": "Maandag",
+      "2": "Dinsdag",
+      "3": "Woensdag",
+      "4": "Donderdag",
+      "5": "Vrijdag",
+      "6": "Zaterdag"
+    }
   },
   "maintenance": {
     "title": "Voorspeld onderhoud",

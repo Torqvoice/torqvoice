@@ -403,7 +403,8 @@
       "invoice": "Factura",
       "quotation": "Cotizacion",
       "inspections": "Inspecciones",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Disposicion"
     },
     "presets": "Presets de plantilla",
     "primaryColor": "Color primario",
@@ -481,7 +482,12 @@
       "slate": "Pizarra",
       "rose": "Rosa",
       "indigo": "Indigo"
-    }
+    },
+    "layoutTitle": "Disposicion de factura",
+    "layoutDescription": "Personaliza el orden y la visibilidad de las secciones en tus facturas y presupuestos.",
+    "layoutSaved": "Disposicion guardada correctamente",
+    "layoutDocInvoice": "Factura",
+    "layoutDocQuote": "Presupuesto"
   },
   "payment": {
     "detailsTitle": "Detalles de pago",
@@ -634,7 +640,19 @@
     "miles": "millas (mi)",
     "gallons": "galones (gal)",
     "saveWorkshop": "Guardar configuracion del taller",
-    "saved": "Configuracion del taller guardada"
+    "saved": "Configuracion del taller guardada",
+    "weekStartDay": "Inicio de semana",
+    "workDayStart": "Inicio de jornada",
+    "workDayEnd": "Fin de jornada",
+    "weekDays": {
+      "0": "Domingo",
+      "1": "Lunes",
+      "2": "Martes",
+      "3": "Miercoles",
+      "4": "Jueves",
+      "5": "Viernes",
+      "6": "Sabado"
+    }
   },
   "maintenance": {
     "title": "Mantenimiento predictivo",
