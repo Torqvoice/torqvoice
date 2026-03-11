@@ -10,6 +10,11 @@
   "entityId": "ID de entidad",
   "noLogsFound": "No se encontraron registros de auditoría",
   "unknownUser": "Desconocido",
+  "logDetails": "Detalles del registro",
+  "entity": "Entidad",
+  "ipAddress": "Dirección IP",
+  "userAgentLabel": "Agente de usuario",
+  "metadata": "Metadatos",
   "actions": {
     "vehicle_create": "Vehículo creado",
     "vehicle_update": "Vehículo actualizado",

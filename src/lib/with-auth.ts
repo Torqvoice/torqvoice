@@ -100,24 +100,21 @@ export async function withAuth<T>(
 
     const data = await action(ctx)
 
-    // Post-success audit logging (best-effort, non-blocking)
-    try {
-      if (options.audit) {
-        const meta = await getRequestMeta()
+    // Post-success audit logging (fire-and-forget, logAudit handles its own errors)
+    if (options.audit) {
+      getRequestMeta().then((meta) => {
         const event =
           typeof options.audit === 'function'
             ? (options.audit as AuditBuilder<T>)({ ctx, result: data })
             : options.audit
         if (event && event.action) {
-          await logAudit(ctx, {
+          logAudit(ctx, {
             ...event,
             ip: event.ip ?? meta.ip,
             userAgent: event.userAgent ?? meta.userAgent,
           })
         }
-      }
-    } catch (e) {
-      console.error('[withAuth:audit] Failed to write audit log:', e)
+      }).catch(() => { /* best-effort */ })
     }
 
     return { success: true, data }

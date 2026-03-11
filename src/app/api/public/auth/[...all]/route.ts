@@ -64,7 +64,7 @@ async function POST(request: Request) {
             })
           : null
         logAudit(
-          { userId: user?.id ?? 'anonymous', organizationId: membership?.organizationId ?? '' },
+          { userId: user?.id ?? '', organizationId: membership?.organizationId ?? '' },
           {
             action: 'auth.loginFailed',
             message: `Failed login attempt for ${email}`,

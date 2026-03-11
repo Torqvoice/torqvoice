@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
@@ -20,8 +20,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { useFormatDate } from "@/lib/use-format-date";
+import { cn } from "@/lib/utils";
 import { Search, Loader2 } from "lucide-react";
 
 type AuditLogData = {
@@ -73,6 +81,7 @@ export function AuditLogClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const [selectedLog, setSelectedLog] = useState<AuditLogData["logs"][number] | null>(null);
   const { formatDateTime } = useFormatDate();
   const t = useTranslations("audit");
 
@@ -186,7 +195,7 @@ export function AuditLogClient({
               </TableRow>
             ) : (
               data.logs.map((log) => (
-                <TableRow key={log.id}>
+                <TableRow key={log.id} className="cursor-pointer" onClick={() => setSelectedLog(log)}>
                   <TableCell className="text-xs text-muted-foreground whitespace-nowrap" suppressHydrationWarning>
                     {formatDateTime(log.timestamp)}
                   </TableCell>
@@ -219,6 +228,61 @@ export function AuditLogClient({
         totalPages={data.totalPages}
         onNavigate={navigate}
       />
+
+      {/* Detail Dialog */}
+      <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("logDetails")}</DialogTitle>
+            <DialogDescription>
+              {selectedLog && getActionLabel(selectedLog.action)}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedLog && (
+            <div className="grid gap-3 text-sm">
+              <DetailRow label={t("timestamp")} value={formatDateTime(selectedLog.timestamp)} suppressHydrationWarning />
+              <DetailRow label={t("user")} value={selectedLog.user?.name || selectedLog.user?.email || t("unknownUser")} />
+              <DetailRow label={t("action")} value={getActionLabel(selectedLog.action)} />
+              {selectedLog.message && <DetailRow label={t("details")} value={selectedLog.message} />}
+              {selectedLog.entity && <DetailRow label={t("entity")} value={selectedLog.entity} />}
+              {selectedLog.entityId && <DetailRow label={t("entityId")} value={selectedLog.entityId} mono />}
+              {selectedLog.ip && <DetailRow label={t("ipAddress")} value={selectedLog.ip} mono />}
+              {selectedLog.userAgent && <DetailRow label={t("userAgentLabel")} value={selectedLog.userAgent} className="break-all" />}
+              {selectedLog.metadata && Object.keys(selectedLog.metadata).length > 0 && (
+                <div>
+                  <span className="font-medium text-muted-foreground">{t("metadata")}</span>
+                  <pre className="mt-1 rounded-md bg-muted p-2 text-xs overflow-x-auto">
+                    {JSON.stringify(selectedLog.metadata, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function DetailRow({
+  label,
+  value,
+  mono,
+  className,
+  suppressHydrationWarning,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+  className?: string;
+  suppressHydrationWarning?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="font-medium text-muted-foreground">{label}</span>
+      <span className={cn(mono ? "font-mono text-xs" : "", className)} suppressHydrationWarning={suppressHydrationWarning}>
+        {value}
+      </span>
     </div>
   );
 }

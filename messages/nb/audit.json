@@ -10,6 +10,11 @@
   "entityId": "Enhets-ID",
   "noLogsFound": "Ingen aktivitetslogger funnet",
   "unknownUser": "Ukjent",
+  "logDetails": "Loggdetaljer",
+  "entity": "Enhet",
+  "ipAddress": "IP-adresse",
+  "userAgentLabel": "Nettleser",
+  "metadata": "Metadata",
   "actions": {
     "vehicle_create": "Opprettet kjøretøy",
     "vehicle_update": "Oppdaterte kjøretøy",

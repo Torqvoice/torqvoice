@@ -10,6 +10,11 @@
   "entityId": "ID encji",
   "noLogsFound": "Nie znaleziono wpisów w dzienniku audytu",
   "unknownUser": "Nieznany",
+  "logDetails": "Szczegóły wpisu",
+  "entity": "Encja",
+  "ipAddress": "Adres IP",
+  "userAgentLabel": "Przeglądarka",
+  "metadata": "Metadane",
   "actions": {
     "vehicle_create": "Utworzono pojazd",
     "vehicle_update": "Zaktualizowano pojazd",

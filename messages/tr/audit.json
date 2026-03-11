@@ -10,6 +10,11 @@
   "entityId": "Varlık ID",
   "noLogsFound": "Denetim günlüğü bulunamadı",
   "unknownUser": "Bilinmeyen",
+  "logDetails": "Günlük Detayları",
+  "entity": "Varlık",
+  "ipAddress": "IP Adresi",
+  "userAgentLabel": "Tarayıcı",
+  "metadata": "Meta veriler",
   "actions": {
     "vehicle_create": "Araç oluşturuldu",
     "vehicle_update": "Araç güncellendi",

@@ -10,6 +10,11 @@
   "entityId": "Eintrags-ID",
   "noLogsFound": "Keine Protokolleinträge gefunden",
   "unknownUser": "Unbekannt",
+  "logDetails": "Protokolldetails",
+  "entity": "Eintrag",
+  "ipAddress": "IP-Adresse",
+  "userAgentLabel": "User-Agent",
+  "metadata": "Metadaten",
   "actions": {
     "vehicle_create": "Fahrzeug erstellt",
     "vehicle_update": "Fahrzeug aktualisiert",

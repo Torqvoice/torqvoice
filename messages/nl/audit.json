@@ -10,6 +10,11 @@
   "entityId": "Entiteits-ID",
   "noLogsFound": "Geen activiteitenlogs gevonden",
   "unknownUser": "Onbekend",
+  "logDetails": "Logdetails",
+  "entity": "Entiteit",
+  "ipAddress": "IP-adres",
+  "userAgentLabel": "User-Agent",
+  "metadata": "Metadata",
   "actions": {
     "vehicle_create": "Voertuig aangemaakt",
     "vehicle_update": "Voertuig bijgewerkt",

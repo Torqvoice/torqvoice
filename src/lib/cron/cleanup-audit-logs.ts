@@ -11,7 +11,8 @@ import { db } from '@/lib/db'
 export function cleanupAuditLogs() {
   const job = new CronJob('0 3 * * *', async () => {
     try {
-      const retentionDays = parseInt(process.env.AUDIT_LOG_RETENTION_DAYS || '365', 10)
+      const parsed = parseInt(process.env.AUDIT_LOG_RETENTION_DAYS || '365', 10)
+      const retentionDays = Number.isFinite(parsed) && parsed > 0 ? parsed : 365
       const cutoff = new Date()
       cutoff.setDate(cutoff.getDate() - retentionDays)
 
