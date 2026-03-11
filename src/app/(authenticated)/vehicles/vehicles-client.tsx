@@ -34,6 +34,7 @@ import {
   Archive,
   ArchiveRestore,
   Gauge,
+  Grid3X3,
   LayoutGrid,
   List,
   Loader2,
@@ -233,12 +234,20 @@ export function VehiclesClient({
               <List className="h-4 w-4" />
             </Button>
             <Button
-              variant={view === 'grid' || view === 'grid6' ? 'secondary' : 'ghost'}
+              variant={view === 'grid' ? 'secondary' : 'ghost'}
               size="icon"
-              className="h-8 w-8 rounded-l-none"
+              className="h-8 w-8 rounded-l-none lg:rounded-none border-l lg:border-x"
               onClick={() => toggleView('grid')}
             >
               <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={view === 'grid6' ? 'secondary' : 'ghost'}
+              size="icon"
+              className="h-8 w-8 rounded-l-none hidden lg:inline-flex"
+              onClick={() => toggleView('grid6')}
+            >
+              <Grid3X3 className="h-4 w-4" />
             </Button>
           </div>
           {!isArchived && (
