@@ -47,7 +47,7 @@
     "purchased": "Acquistato il {date}",
     "tabs": {
       "services": "Interventi",
-      "quotes": "Quotes",
+      "quotes": "Preventivi",
       "inspections": "Ispezioni",
       "notes": "Note",
       "reminders": "Promemoria"
@@ -65,13 +65,13 @@
     "edit": "Modifica"
   },
   "quotes": {
-    "newQuote": "New Quote",
-    "empty": "No quotes yet",
-    "columnNumber": "Quote #",
-    "columnTitle": "Title",
-    "columnStatus": "Status",
-    "columnDate": "Date",
-    "columnTotal": "Total"
+    "newQuote": "Nuovo preventivo",
+    "empty": "Nessun preventivo ancora",
+    "columnNumber": "Preventivo #",
+    "columnTitle": "Titolo",
+    "columnStatus": "Stato",
+    "columnDate": "Data",
+    "columnTotal": "Totale"
   },
   "inspections": {
     "newInspection": "Nuova Ispezione",

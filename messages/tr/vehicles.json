@@ -47,7 +47,7 @@
     "purchased": "Satın alınma tarihi: {date}",
     "tabs": {
       "services": "Servisler",
-      "quotes": "Quotes",
+      "quotes": "Teklifler",
       "inspections": "Muayeneler",
       "notes": "Notlar",
       "reminders": "Hatırlatıcılar"
@@ -65,13 +65,13 @@
     "edit": "Düzenle"
   },
   "quotes": {
-    "newQuote": "New Quote",
-    "empty": "No quotes yet",
-    "columnNumber": "Quote #",
-    "columnTitle": "Title",
-    "columnStatus": "Status",
-    "columnDate": "Date",
-    "columnTotal": "Total"
+    "newQuote": "Yeni teklif",
+    "empty": "Henüz teklif yok",
+    "columnNumber": "Teklif #",
+    "columnTitle": "Başlık",
+    "columnStatus": "Durum",
+    "columnDate": "Tarih",
+    "columnTotal": "Toplam"
   },
   "inspections": {
     "newInspection": "Yeni Muayene",

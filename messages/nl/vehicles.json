@@ -47,7 +47,7 @@
     "purchased": "Gekocht op {date}",
     "tabs": {
       "services": "Onderhoud",
-      "quotes": "Quotes",
+      "quotes": "Offertes",
       "inspections": "Keuringen",
       "notes": "Notities",
       "reminders": "Herinneringen"
@@ -65,13 +65,13 @@
     "edit": "Bewerken"
   },
   "quotes": {
-    "newQuote": "New Quote",
-    "empty": "No quotes yet",
-    "columnNumber": "Quote #",
-    "columnTitle": "Title",
+    "newQuote": "Nieuwe offerte",
+    "empty": "Nog geen offertes",
+    "columnNumber": "Offerte #",
+    "columnTitle": "Titel",
     "columnStatus": "Status",
-    "columnDate": "Date",
-    "columnTotal": "Total"
+    "columnDate": "Datum",
+    "columnTotal": "Totaal"
   },
   "inspections": {
     "newInspection": "Nieuwe keuring",
