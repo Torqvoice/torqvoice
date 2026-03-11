@@ -71,6 +71,11 @@
     "customField_create": "Aangepast veld aangemaakt",
     "customField_update": "Aangepast veld bijgewerkt",
     "customField_delete": "Aangepast veld verwijderd",
-    "quoteRequest_update": "Offerteaanvraag bijgewerkt"
+    "quoteRequest_update": "Offerteaanvraag bijgewerkt",
+    "auth_login": "Gebruiker ingelogd",
+    "auth_loginFailed": "Mislukte inlogpoging",
+    "auth_register": "Gebruiker geregistreerd",
+    "auth_passwordReset": "Wachtwoord reset aangevraagd",
+    "auth_permissionDenied": "Toegang geweigerd"
   }
 }

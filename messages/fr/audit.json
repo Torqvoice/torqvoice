@@ -71,6 +71,11 @@
     "customField_create": "Champ personnalisé créé",
     "customField_update": "Champ personnalisé mis à jour",
     "customField_delete": "Champ personnalisé supprimé",
-    "quoteRequest_update": "Demande de devis mise à jour"
+    "quoteRequest_update": "Demande de devis mise à jour",
+    "auth_login": "Utilisateur connecté",
+    "auth_loginFailed": "Tentative de connexion échouée",
+    "auth_register": "Utilisateur inscrit",
+    "auth_passwordReset": "Réinitialisation du mot de passe demandée",
+    "auth_permissionDenied": "Permission refusée"
   }
 }

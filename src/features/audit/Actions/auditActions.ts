@@ -2,7 +2,6 @@
 
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
-import { Prisma } from "@prisma/client";
 
 export async function getRecentAuditLogs(limit = 10) {
   return withAuth(async ({ organizationId }) => {
@@ -81,7 +80,7 @@ export async function getAuditLogsPaginated(params: {
         orderBy: { entity: "asc" },
       }),
       db.auditLog.findMany({
-        where: { organizationId },
+        where: { organizationId, userId: { not: null } },
         select: { userId: true, user: { select: { name: true, email: true } } },
         distinct: ["userId"],
       }),
@@ -96,11 +95,13 @@ export async function getAuditLogsPaginated(params: {
       filters: {
         actions: actionValues.map((a) => a.action),
         entities: entityValues.map((e) => e.entity).filter(Boolean) as string[],
-        users: userValues.map((u) => ({
-          id: u.userId,
-          name: u.user.name,
-          email: u.user.email,
-        })),
+        users: userValues
+          .filter((u) => u.userId && u.user)
+          .map((u) => ({
+            id: u.userId!,
+            name: u.user!.name,
+            email: u.user!.email,
+          })),
       },
     };
   });

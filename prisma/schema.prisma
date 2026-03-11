@@ -916,14 +916,15 @@ model AuditLog {
   ip              String?
   userAgent       String?
 
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   organizationId  String?
   organization    Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
 
   @@index([organizationId, timestamp(sort: Desc)])
   @@index([userId, timestamp(sort: Desc)])
+  @@index([action, timestamp(sort: Desc)])
   @@map("audit_logs")
 }
 

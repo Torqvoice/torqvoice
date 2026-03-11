@@ -224,7 +224,7 @@ export function DashboardClient({
     message: string | null;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata?: any;
-    user: { id: string; name: string | null; email: string | null };
+    user: { id: string; name: string | null; email: string | null } | null;
   }[];
 }) {
   const t = useTranslations("dashboard");
@@ -1194,7 +1194,7 @@ export function DashboardClient({
             ) : (
               <div className="divide-y">
                 {recentAuditLogs.slice(0, 5).map((log) => {
-                  const userLabel = log.user.name ?? log.user.email ?? t("unknownUser");
+                  const userLabel = log.user?.name ?? log.user?.email ?? t("unknownUser");
                   const meta = (log as unknown as { metadata?: Record<string, unknown> }).metadata || {};
                   const vehicleDisplay = typeof meta["vehicleDisplay"] === "string" ? (meta["vehicleDisplay"] as string) : undefined;
                   const quoteNumber = typeof meta["quoteNumber"] === "string" ? (meta["quoteNumber"] as string) : undefined;

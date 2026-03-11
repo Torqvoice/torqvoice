@@ -71,6 +71,11 @@
     "customField_create": "Campo personalizzato creato",
     "customField_update": "Campo personalizzato aggiornato",
     "customField_delete": "Campo personalizzato eliminato",
-    "quoteRequest_update": "Richiesta di preventivo aggiornata"
+    "quoteRequest_update": "Richiesta di preventivo aggiornata",
+    "auth_login": "Utente connesso",
+    "auth_loginFailed": "Tentativo di accesso fallito",
+    "auth_register": "Utente registrato",
+    "auth_passwordReset": "Reimpostazione password richiesta",
+    "auth_permissionDenied": "Permesso negato"
   }
 }

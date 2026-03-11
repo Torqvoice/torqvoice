@@ -71,6 +71,11 @@
     "customField_create": "Utworzono pole niestandardowe",
     "customField_update": "Zaktualizowano pole niestandardowe",
     "customField_delete": "Usunięto pole niestandardowe",
-    "quoteRequest_update": "Zaktualizowano zapytanie o wycenę"
+    "quoteRequest_update": "Zaktualizowano zapytanie o wycenę",
+    "auth_login": "Użytkownik zalogowany",
+    "auth_loginFailed": "Nieudana próba logowania",
+    "auth_register": "Użytkownik zarejestrowany",
+    "auth_passwordReset": "Żądanie resetowania hasła",
+    "auth_permissionDenied": "Odmowa dostępu"
   }
 }

@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import type { AuthContext } from "@/lib/with-auth";
 
 export type AuditEvent = {
   action: string;
@@ -13,14 +12,14 @@ export type AuditEvent = {
 };
 
 export async function logAudit(
-  ctx: Pick<AuthContext, "userId" | "organizationId">,
+  ctx: { userId: string; organizationId: string },
   event: AuditEvent,
 ) {
   try {
     await db.auditLog.create({
       data: {
-        userId: ctx.userId,
-        organizationId: ctx.organizationId,
+        userId: ctx.userId || null,
+        organizationId: ctx.organizationId || null,
         action: event.action,
         entity: event.entity ?? null,
         entityId: event.entityId ?? null,

@@ -71,6 +71,11 @@
     "customField_create": "Opprettet egendefinert felt",
     "customField_update": "Oppdaterte egendefinert felt",
     "customField_delete": "Slettet egendefinert felt",
-    "quoteRequest_update": "Oppdaterte tilbudsforespørsel"
+    "quoteRequest_update": "Oppdaterte tilbudsforespørsel",
+    "auth_login": "Bruker logget inn",
+    "auth_loginFailed": "Mislykket påloggingsforsøk",
+    "auth_register": "Bruker registrert",
+    "auth_passwordReset": "Passord-tilbakestilling forespurt",
+    "auth_permissionDenied": "Tilgang nektet"
   }
 }

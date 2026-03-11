@@ -71,6 +71,11 @@
     "customField_create": "Benutzerdefiniertes Feld erstellt",
     "customField_update": "Benutzerdefiniertes Feld aktualisiert",
     "customField_delete": "Benutzerdefiniertes Feld gelöscht",
-    "quoteRequest_update": "Angebotsanfrage aktualisiert"
+    "quoteRequest_update": "Angebotsanfrage aktualisiert",
+    "auth_login": "Benutzer angemeldet",
+    "auth_loginFailed": "Fehlgeschlagener Anmeldeversuch",
+    "auth_register": "Benutzer registriert",
+    "auth_passwordReset": "Passwort-Zurücksetzung angefordert",
+    "auth_permissionDenied": "Zugriff verweigert"
   }
 }

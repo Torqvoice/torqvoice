@@ -36,7 +36,7 @@ type AuditLogData = {
     metadata: any;
     ip: string | null;
     userAgent: string | null;
-    user: { id: string; name: string | null; email: string | null };
+    user: { id: string; name: string | null; email: string | null } | null;
   }[];
   total: number;
   page: number;
@@ -73,7 +73,7 @@ export function AuditLogClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const { formatDate } = useFormatDate();
+  const { formatDateTime } = useFormatDate();
   const t = useTranslations("audit");
 
   const getActionLabel = (action: string) => {
@@ -103,11 +103,6 @@ export function AuditLogClient({
     },
     [router, pathname, searchParams],
   );
-
-  const formatTimestamp = (date: Date) => {
-    const d = new Date(date);
-    return `${formatDate(d)} ${d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}`;
-  };
 
   return (
     <div className="space-y-4">
@@ -192,11 +187,11 @@ export function AuditLogClient({
             ) : (
               data.logs.map((log) => (
                 <TableRow key={log.id}>
-                  <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                    {formatTimestamp(log.timestamp)}
+                  <TableCell className="text-xs text-muted-foreground whitespace-nowrap" suppressHydrationWarning>
+                    {formatDateTime(log.timestamp)}
                   </TableCell>
                   <TableCell className="text-sm">
-                    {log.user.name || log.user.email || t("unknownUser")}
+                    {log.user?.name || log.user?.email || t("unknownUser")}
                   </TableCell>
                   <TableCell>
                     <Badge variant={getActionColor(log.action) as "default" | "secondary" | "destructive" | "outline"}>

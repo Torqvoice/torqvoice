@@ -71,6 +71,11 @@
     "customField_create": "Campo personalizado criado",
     "customField_update": "Campo personalizado atualizado",
     "customField_delete": "Campo personalizado excluído",
-    "quoteRequest_update": "Solicitação de orçamento atualizada"
+    "quoteRequest_update": "Solicitação de orçamento atualizada",
+    "auth_login": "Usuário conectado",
+    "auth_loginFailed": "Tentativa de login falhada",
+    "auth_register": "Usuário registrado",
+    "auth_passwordReset": "Redefinição de senha solicitada",
+    "auth_permissionDenied": "Permissão negada"
   }
 }

@@ -71,6 +71,11 @@
     "customField_create": "Özel alan oluşturuldu",
     "customField_update": "Özel alan güncellendi",
     "customField_delete": "Özel alan silindi",
-    "quoteRequest_update": "Teklif talebi güncellendi"
+    "quoteRequest_update": "Teklif talebi güncellendi",
+    "auth_login": "Kullanıcı giriş yaptı",
+    "auth_loginFailed": "Başarısız giriş denemesi",
+    "auth_register": "Kullanıcı kaydoldu",
+    "auth_passwordReset": "Şifre sıfırlama talep edildi",
+    "auth_permissionDenied": "İzin reddedildi"
   }
 }
