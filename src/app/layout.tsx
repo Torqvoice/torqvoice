@@ -82,8 +82,9 @@ export default async function RootLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} translate="no" suppressHydrationWarning>
       <head>
+        <meta name="google" content="notranslate" />
         <meta name="theme-color" content="#09090b" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <script

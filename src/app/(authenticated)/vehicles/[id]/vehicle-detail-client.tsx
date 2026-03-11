@@ -678,7 +678,7 @@ export function VehicleDetailClient({
         </TabsList>
 
         {/* Services Tab - React Table with pagination */}
-        <TabsContent value="services">
+        <TabsContent value="services" forceMount>
           <ServiceRecordsTable
             vehicleId={vehicle.id}
             records={paginatedServices.records}
@@ -845,7 +845,7 @@ export function VehicleDetailClient({
         </TabsContent>
 
         {/* Notes Tab */}
-        <TabsContent value="notes">
+        <TabsContent value="notes" forceMount>
           <NotesTable
             vehicleId={vehicle.id}
             records={paginatedNotes.records}
