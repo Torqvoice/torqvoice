@@ -100,7 +100,16 @@ export async function createOrganization(input: unknown) {
 
     revalidatePath("/settings/team");
     return org;
-  }, { requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => ({
+      action: "organization.create",
+      entity: "Organization",
+      entityId: result.id,
+      message: `Created organization "${result.name}"`,
+      metadata: { organizationId: result.id },
+    }),
+  });
 }
 
 export async function inviteMember(input: unknown) {
@@ -146,8 +155,16 @@ export async function inviteMember(input: unknown) {
     });
 
     revalidatePath("/settings/team");
-    return { invited: true };
-  }, { requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }] });
+    return { invited: true, email: data.email, role: data.role };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => result.invited ? ({
+      action: "team.invite",
+      entity: "OrganizationMember",
+      message: `Invited ${result.email} as ${result.role}`,
+      metadata: { email: result.email, role: result.role },
+    }) : null,
+  });
 }
 
 export async function updateMemberRole(input: unknown) {
@@ -172,8 +189,17 @@ export async function updateMemberRole(input: unknown) {
     });
 
     revalidatePath("/settings/team");
-    return { updated: true };
-  }, { requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }] });
+    return { updated: true, memberId: data.memberId, role: data.role };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => ({
+      action: "team.updateRole",
+      entity: "OrganizationMember",
+      entityId: result.memberId,
+      message: `Changed member role to ${result.role}`,
+      metadata: { memberId: result.memberId, role: result.role },
+    }),
+  });
 }
 
 export async function removeMember(memberId: string) {
@@ -194,6 +220,15 @@ export async function removeMember(memberId: string) {
     await db.organizationMember.delete({ where: { id: memberId } });
 
     revalidatePath("/settings/team");
-    return { removed: true };
-  }, { requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }] });
+    return { removed: true, memberId };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => ({
+      action: "team.removeMember",
+      entity: "OrganizationMember",
+      entityId: result.memberId,
+      message: `Removed team member ${result.memberId}`,
+      metadata: { memberId: result.memberId },
+    }),
+  });
 }

@@ -3,6 +3,8 @@ import { getCachedSession, getCachedMembership } from "./cached-session";
 import { db } from "./db";
 import type { PermissionInput } from "./permissions";
 import { hasAllPermissions } from "./permissions";
+import { logAudit } from "@/lib/audit";
+import type { AuditEvent } from "@/lib/audit";
 
 export type ActionResult<T = unknown> = {
   success: boolean;
@@ -18,13 +20,17 @@ export type AuthContext = {
   isAdmin: boolean;
 };
 
-type WithAuthOptions = {
+type AuditBuilder<T> = (args: { ctx: AuthContext; result: T }) => AuditEvent | null | undefined;
+
+type WithAuthOptions<T = unknown> = {
   requiredPermissions?: PermissionInput[];
+  // Optional audit config. If provided, runs after successful action.
+  audit?: AuditEvent | AuditBuilder<T>;
 };
 
 export async function withAuth<T>(
   action: (ctx: AuthContext) => Promise<T>,
-  options: WithAuthOptions = {},
+  options: WithAuthOptions<T> = {},
 ): Promise<ActionResult<T>> {
   try {
     const session = await getCachedSession();
@@ -62,13 +68,29 @@ export async function withAuth<T>(
       }
     }
 
-    const data = await action({
+    const ctx: AuthContext = {
       userId: session.user.id,
       organizationId: membership.organizationId,
       role: isSuperAdmin ? "super_admin" : (membership?.role ?? "member"),
       isSuperAdmin,
       isAdmin: isSuperAdmin || isOwnerOrAdmin || roleIsAdmin,
-    });
+    };
+    const data = await action(ctx);
+
+    // Post-success audit logging (best-effort, non-blocking)
+    try {
+      if (options.audit) {
+        const event = typeof options.audit === "function"
+          ? (options.audit as AuditBuilder<T>)({ ctx, result: data })
+          : options.audit;
+        if (event && event.action) {
+          await logAudit(ctx, event);
+        }
+      }
+    } catch (e) {
+      console.error("[withAuth:audit] Failed to write audit log:", e);
+    }
+
     return { success: true, data };
   } catch (error) {
     if (error instanceof ZodError) {

@@ -60,6 +60,13 @@ export async function createTechnician(input: unknown) {
       requiredPermissions: [
         { action: PermissionAction.CREATE, subject: PermissionSubject.WORK_BOARD },
       ],
+      audit: ({ result }) => ({
+        action: "technician.create",
+        entity: "Technician",
+        entityId: result.id,
+        message: `Created technician "${result.name}"`,
+        metadata: { technicianId: result.id, technicianName: result.name },
+      }),
     },
   );
 }
@@ -82,12 +89,19 @@ export async function updateTechnician(input: unknown) {
       });
 
       revalidatePath("/work-board");
-      return technician;
+      return { ...technician, technicianId: id };
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.WORK_BOARD },
       ],
+      audit: ({ result }) => ({
+        action: "technician.update",
+        entity: "Technician",
+        entityId: result.technicianId,
+        message: `Updated technician ${result.technicianId}`,
+        metadata: { technicianId: result.technicianId },
+      }),
     },
   );
 }
@@ -105,12 +119,19 @@ export async function deleteTechnician(id: string) {
       });
 
       revalidatePath("/work-board");
-      return { success: true };
+      return { success: true, technicianId: id };
     },
     {
       requiredPermissions: [
         { action: PermissionAction.DELETE, subject: PermissionSubject.WORK_BOARD },
       ],
+      audit: ({ result }) => ({
+        action: "technician.delete",
+        entity: "Technician",
+        entityId: result.technicianId,
+        message: `Deleted technician ${result.technicianId}`,
+        metadata: { technicianId: result.technicianId },
+      }),
     },
   );
 }

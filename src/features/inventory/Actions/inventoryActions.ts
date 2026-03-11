@@ -91,7 +91,16 @@ export async function createInventoryPart(input: unknown) {
     });
     revalidatePath("/inventory");
     return part;
-  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INVENTORY }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INVENTORY }],
+    audit: ({ result }) => ({
+      action: "inventory.create",
+      entity: "InventoryPart",
+      entityId: result.id,
+      message: `Created inventory part "${result.name}"`,
+      metadata: { partId: result.id },
+    }),
+  });
 }
 
 export async function updateInventoryPart(input: unknown) {
@@ -130,8 +139,17 @@ export async function updateInventoryPart(input: unknown) {
     });
     if (result.count === 0) throw new Error("Part not found");
     revalidatePath("/inventory");
-    return { updated: true };
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }] });
+    return { updated: true, partId: id };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }],
+    audit: ({ result }) => ({
+      action: "inventory.update",
+      entity: "InventoryPart",
+      entityId: result.partId,
+      message: `Updated inventory part ${result.partId}`,
+      metadata: { partId: result.partId },
+    }),
+  });
 }
 
 export async function deleteInventoryPart(partId: string) {
@@ -155,8 +173,17 @@ export async function deleteInventoryPart(partId: string) {
     }
 
     revalidatePath("/inventory");
-    return { deleted: true };
-  }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INVENTORY }] });
+    return { deleted: true, partId };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INVENTORY }],
+    audit: ({ result }) => ({
+      action: "inventory.delete",
+      entity: "InventoryPart",
+      entityId: result.partId,
+      message: `Deleted inventory part ${result.partId}`,
+      metadata: { partId: result.partId },
+    }),
+  });
 }
 
 export async function adjustInventoryStock(input: unknown) {

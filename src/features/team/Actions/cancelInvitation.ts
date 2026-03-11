@@ -28,6 +28,15 @@ export async function cancelInvitation(input: unknown) {
     });
 
     revalidatePath("/settings/team");
-    return { cancelled: true };
-  }, { requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }] });
+    return { cancelled: true, invitationId: data.invitationId, email: invitation.email };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => ({
+      action: "team.cancelInvitation",
+      entity: "TeamInvitation",
+      entityId: result.invitationId,
+      message: `Cancelled invitation for ${result.email}`,
+      metadata: { invitationId: result.invitationId, email: result.email },
+    }),
+  });
 }

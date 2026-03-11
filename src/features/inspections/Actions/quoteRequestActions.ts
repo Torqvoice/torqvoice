@@ -134,6 +134,15 @@ export async function updateQuoteRequestStatus(id: string, status: "quoted" | "d
       data: { status },
     });
 
-    return { success: true };
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INSPECTIONS }] });
+    return { success: true, requestId: id, status };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INSPECTIONS }],
+    audit: ({ result }) => ({
+      action: "quoteRequest.update",
+      entity: "InspectionQuoteRequest",
+      entityId: result.requestId,
+      message: `Updated quote request status to ${result.status}`,
+      metadata: { requestId: result.requestId, status: result.status },
+    }),
+  });
 }

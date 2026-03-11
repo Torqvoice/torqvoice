@@ -33,6 +33,7 @@ model User {
   twoFactor              TwoFactor?
   passkeys               Passkey[]
   organizationMembers    OrganizationMember[]
+  auditLogs              AuditLog[]
 
   @@map("users")
 }
@@ -552,6 +553,7 @@ model Organization {
   inspectionTemplates    InspectionTemplate[]
   smsMessages            SmsMessage[]
   technicians            Technician[]
+  auditLogs              AuditLog[]
 
   @@map("organizations")
 }
@@ -901,6 +903,28 @@ model Technician {
 
   @@index([organizationId])
   @@map("technicians")
+}
+
+model AuditLog {
+  id              String   @id @default(cuid())
+  timestamp       DateTime @default(now())
+  action          String
+  entity          String?
+  entityId        String?
+  message         String?
+  metadata        Json?
+  ip              String?
+  userAgent       String?
+
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId  String?
+  organization    Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, timestamp(sort: Desc)])
+  @@index([userId, timestamp(sort: Desc)])
+  @@map("audit_logs")
 }
 
 model CustomerSession {

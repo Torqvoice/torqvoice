@@ -51,7 +51,16 @@ export async function createNote(input: unknown) {
     const note = await db.note.create({ data });
     revalidatePath(`/vehicles/${data.vehicleId}`);
     return note;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }],
+    audit: ({ result }) => ({
+      action: "note.create",
+      entity: "Note",
+      entityId: result.id,
+      message: `Created note on vehicle ${result.vehicleId}`,
+      metadata: { noteId: result.id, vehicleId: result.vehicleId },
+    }),
+  });
 }
 
 export async function updateNote(input: unknown) {
@@ -90,5 +99,15 @@ export async function deleteNote(noteId: string) {
 
     await db.note.delete({ where: { id: noteId } });
     revalidatePath(`/vehicles/${note.vehicleId}`);
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });
+    return { noteId };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }],
+    audit: ({ result }) => ({
+      action: "note.delete",
+      entity: "Note",
+      entityId: result.noteId,
+      message: `Deleted note ${result.noteId}`,
+      metadata: { noteId: result.noteId },
+    }),
+  });
 }

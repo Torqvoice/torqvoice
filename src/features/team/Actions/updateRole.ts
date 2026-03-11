@@ -43,5 +43,14 @@ export async function updateRole(input: unknown) {
 
     revalidatePath("/settings/team");
     return updated;
-  }, { requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => ({
+      action: "role.update",
+      entity: "Role",
+      entityId: result.id,
+      message: `Updated role "${result.name}"`,
+      metadata: { roleId: result.id, roleName: result.name },
+    }),
+  });
 }

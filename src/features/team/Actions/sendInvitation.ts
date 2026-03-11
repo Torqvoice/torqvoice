@@ -100,6 +100,14 @@ export async function sendInvitation(input: unknown) {
     }
 
     revalidatePath("/settings/team");
-    return { invited: true, pending: true };
-  }, { requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }] });
+    return { invited: true, pending: true, email: data.email, role: data.role };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => ({
+      action: "team.sendInvitation",
+      entity: "TeamInvitation",
+      message: `Sent invitation to ${result.email} as ${result.role}`,
+      metadata: { email: result.email, role: result.role },
+    }),
+  });
 }

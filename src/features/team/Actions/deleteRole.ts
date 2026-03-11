@@ -19,6 +19,15 @@ export async function deleteRole(roleId: string) {
     await db.role.delete({ where: { id: roleId } });
 
     revalidatePath("/settings/team");
-    return { deleted: true };
-  }, { requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }] });
+    return { deleted: true, roleId, roleName: existing.name };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => ({
+      action: "role.delete",
+      entity: "Role",
+      entityId: result.roleId,
+      message: `Deleted role "${result.roleName}"`,
+      metadata: { roleId: result.roleId, roleName: result.roleName },
+    }),
+  });
 }

@@ -66,7 +66,16 @@ export async function createCustomer(input: unknown) {
     });
     revalidatePath("/customers");
     return customer;
-  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.CUSTOMERS }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.CUSTOMERS }],
+    audit: ({ result }) => ({
+      action: "customer.create",
+      entity: "Customer",
+      entityId: result.id,
+      message: `Created customer ${result.name}`,
+      metadata: { customerId: result.id },
+    }),
+  });
 }
 
 export async function updateCustomer(input: unknown) {
@@ -86,7 +95,16 @@ export async function updateCustomer(input: unknown) {
     revalidatePath("/customers");
     revalidatePath(`/customers/${id}`);
     return { id };
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.CUSTOMERS }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.CUSTOMERS }],
+    audit: ({ result }) => ({
+      action: "customer.update",
+      entity: "Customer",
+      entityId: result.id,
+      message: `Updated customer ${result.id}`,
+      metadata: { customerId: result.id },
+    }),
+  });
 }
 
 export async function deleteCustomer(customerId: string) {
@@ -94,7 +112,17 @@ export async function deleteCustomer(customerId: string) {
     const result = await db.customer.deleteMany({ where: { id: customerId, organizationId } });
     if (result.count === 0) throw new Error("Customer not found");
     revalidatePath("/customers");
-  }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS }] });
+    return { customerId };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS }],
+    audit: ({ result }) => ({
+      action: "customer.delete",
+      entity: "Customer",
+      entityId: result.customerId,
+      message: `Deleted customer ${result.customerId}`,
+      metadata: { customerId: result.customerId },
+    }),
+  });
 }
 
 export async function deleteCustomers(customerIds: string[]) {

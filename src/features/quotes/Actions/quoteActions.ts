@@ -149,7 +149,16 @@ export async function createQuote(input: unknown) {
 
     revalidatePath("/quotes");
     return quote;
-  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.QUOTES }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.QUOTES }],
+    audit: ({ result }) => ({
+      action: "quote.create",
+      entity: "Quote",
+      entityId: result.id,
+      message: `Created quote ${result.quoteNumber || result.id}`,
+      metadata: { quoteId: result.id },
+    }),
+  });
 }
 
 export async function updateQuote(input: unknown) {
@@ -196,7 +205,16 @@ export async function updateQuote(input: unknown) {
     revalidatePath("/quotes");
     revalidatePath(`/quotes/${id}`);
     return quote;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES }],
+    audit: ({ result }) => ({
+      action: "quote.update",
+      entity: "Quote",
+      entityId: result.id,
+      message: `Updated quote ${result.id}`,
+      metadata: { quoteId: result.id },
+    }),
+  });
 }
 
 export async function updateQuoteStatus(quoteId: string, status: string) {
@@ -213,8 +231,17 @@ export async function updateQuoteStatus(quoteId: string, status: string) {
 
     revalidatePath("/quotes");
     revalidatePath(`/quotes/${quoteId}`);
-    return { success: true };
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES }] });
+    return { success: true, quoteId, status };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES }],
+    audit: ({ result }) => ({
+      action: "quote.status",
+      entity: "Quote",
+      entityId: result.quoteId,
+      message: `Changed quote status to ${result.status}`,
+      metadata: { quoteId: result.quoteId, status: result.status },
+    }),
+  });
 }
 
 export async function deleteQuote(quoteId: string) {
@@ -226,7 +253,17 @@ export async function deleteQuote(quoteId: string) {
 
     await db.quote.deleteMany({ where: { id: quoteId, organizationId } });
     revalidatePath("/quotes");
-  }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.QUOTES }] });
+    return { quoteId };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.QUOTES }],
+    audit: ({ result }) => ({
+      action: "quote.delete",
+      entity: "Quote",
+      entityId: result.quoteId,
+      message: `Deleted quote ${result.quoteId}`,
+      metadata: { quoteId: result.quoteId },
+    }),
+  });
 }
 
 export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: string) {
@@ -362,6 +399,15 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
     revalidatePath("/quotes");
     revalidatePath("/work-orders");
     revalidatePath(`/vehicles/${vehicleId}`);
-    return record;
-  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES }] });
+    return { ...record, convertedFromQuoteId: quoteId };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES }],
+    audit: ({ result }) => ({
+      action: "quote.convert",
+      entity: "Quote",
+      entityId: result.convertedFromQuoteId,
+      message: `Converted quote ${result.convertedFromQuoteId} to service record ${result.id}`,
+      metadata: { quoteId: result.convertedFromQuoteId, serviceRecordId: result.id },
+    }),
+  });
 }

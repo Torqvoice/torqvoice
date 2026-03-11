@@ -47,7 +47,16 @@ export async function createReminder(input: unknown) {
     revalidatePath("/");
     revalidatePath("/reminders");
     return reminder;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }],
+    audit: ({ result }) => ({
+      action: "reminder.create",
+      entity: "Reminder",
+      entityId: result.id,
+      message: `Created reminder "${result.title}"`,
+      metadata: { reminderId: result.id, vehicleId: result.vehicleId },
+    }),
+  });
 }
 
 export async function updateReminder(input: unknown) {
@@ -102,5 +111,15 @@ export async function deleteReminder(reminderId: string) {
     revalidatePath(`/vehicles/${reminder.vehicleId}`);
     revalidatePath("/");
     revalidatePath("/reminders");
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });
+    return { reminderId };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }],
+    audit: ({ result }) => ({
+      action: "reminder.delete",
+      entity: "Reminder",
+      entityId: result.reminderId,
+      message: `Deleted reminder ${result.reminderId}`,
+      metadata: { reminderId: result.reminderId },
+    }),
+  });
 }

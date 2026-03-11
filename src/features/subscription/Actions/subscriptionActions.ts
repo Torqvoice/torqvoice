@@ -26,6 +26,12 @@ export async function cancelSubscription() {
     });
 
     return { cancelAtPeriodEnd: true };
+  }, {
+    audit: () => ({
+      action: "subscription.cancel",
+      entity: "Subscription",
+      message: "Cancelled subscription (end of period)",
+    }),
   });
 }
 
@@ -51,5 +57,11 @@ export async function resumeSubscription() {
     });
 
     return { cancelAtPeriodEnd: false };
+  }, {
+    audit: () => ({
+      action: "subscription.resume",
+      entity: "Subscription",
+      message: "Resumed subscription",
+    }),
   });
 }

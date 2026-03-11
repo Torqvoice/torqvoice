@@ -31,5 +31,14 @@ export async function createRole(input: unknown) {
 
     revalidatePath("/settings/team");
     return created;
-  }, { requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => ({
+      action: "role.create",
+      entity: "Role",
+      entityId: result.id,
+      message: `Created role "${result.name}"`,
+      metadata: { roleId: result.id, roleName: result.name },
+    }),
+  });
 }

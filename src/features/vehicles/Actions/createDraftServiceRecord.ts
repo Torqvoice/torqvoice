@@ -137,6 +137,13 @@ export async function createDraftServiceRecord(
           subject: PermissionSubject.SERVICES,
         },
       ],
+      audit: ({ result }) => ({
+        action: "service.create",
+        entity: "ServiceRecord",
+        entityId: result.id,
+        message: `Created draft service record ${result.invoiceNumber || result.id}`,
+        metadata: { serviceRecordId: result.id, vehicleId: result.vehicleId },
+      }),
     },
   );
 }

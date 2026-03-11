@@ -132,12 +132,28 @@ export async function createVehicle(input: unknown) {
     revalidatePath("/");
     revalidatePath("/vehicles");
     return vehicle;
-  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.VEHICLES }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.VEHICLES }],
+    audit: ({ result }) => ({
+      action: "vehicle.create",
+      entity: "Vehicle",
+      entityId: result.id,
+      message: `Created vehicle ${result.year} ${result.make} ${result.model}`,
+      metadata: { vehicleId: result.id },
+    }),
+  });
 }
 
 export async function updateVehicle(input: unknown) {
-  return withAuth(async ({ organizationId }) => {
+  return withAuth(async ({ organizationId, userId }) => {
     const { id, ...data } = updateVehicleSchema.parse(input);
+
+    // Fetch current record for display/diff
+    const before = await db.vehicle.findFirst({
+      where: { id, organizationId },
+      select: { year: true, make: true, model: true, licensePlate: true },
+    });
+    if (!before) throw new Error("Vehicle not found");
 
     // If image is being changed, delete the old file from disk
     if (data.imageUrl !== undefined) {
@@ -154,7 +170,7 @@ export async function updateVehicle(input: unknown) {
       }
     }
 
-    const vehicle = await db.vehicle.updateMany({
+    const updateResult = await db.vehicle.updateMany({
       where: { id, organizationId },
       data: {
         ...data,
@@ -168,21 +184,36 @@ export async function updateVehicle(input: unknown) {
         customerId: data.customerId !== undefined ? (data.customerId || null) : undefined,
       },
     });
-    if (vehicle.count === 0) throw new Error("Vehicle not found");
+    if (updateResult.count === 0) throw new Error("Vehicle not found");
+    const vehicleDisplay = `${before.year} ${before.make} ${before.model}${before.licensePlate ? ` (${before.licensePlate})` : ""}`;
+    const changedKeys = Object.keys(data).filter((k) => (data as Record<string, unknown>)[k] !== undefined);
     revalidatePath("/");
     revalidatePath("/vehicles");
     revalidatePath(`/vehicles/${id}`);
-    return vehicle;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });
+    return { id, count: updateResult.count, fields: changedKeys, vehicleDisplay };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }],
+    audit: ({ result }) => ({
+      action: "vehicle.update",
+      entity: "Vehicle",
+      entityId: result.id,
+      message: `Updated vehicle ${result.vehicleDisplay} — changed: ${result.fields.join(", ") || "(no changes)"}`,
+      metadata: { vehicleId: result.id, vehicleDisplay: result.vehicleDisplay, changed: result.fields },
+    }),
+  });
 }
 
 export async function deleteVehicle(vehicleId: string) {
-  return withAuth(async ({ organizationId }) => {
+  return withAuth(async ({ organizationId, userId }) => {
     // Fetch vehicle with its attachments so we can clean up files
     const vehicle = await db.vehicle.findFirst({
       where: { id: vehicleId, organizationId },
       select: {
         imageUrl: true,
+        year: true,
+        make: true,
+        model: true,
+        licensePlate: true,
         serviceRecords: {
           select: { attachments: { select: { fileUrl: true } } },
         },
@@ -210,7 +241,18 @@ export async function deleteVehicle(vehicleId: string) {
       }
     }
 
+    const vehicleDisplay = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ""}`;
     revalidatePath("/");
     revalidatePath("/vehicles");
-  }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.VEHICLES }] });
+    return { vehicleId, vehicleDisplay };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.VEHICLES }],
+    audit: ({ result }) => ({
+      action: "vehicle.delete",
+      entity: "Vehicle",
+      entityId: result.vehicleId,
+      message: `Deleted vehicle ${result.vehicleDisplay}`,
+      metadata: { vehicleId: result.vehicleId, vehicleDisplay: result.vehicleDisplay },
+    }),
+  });
 }
