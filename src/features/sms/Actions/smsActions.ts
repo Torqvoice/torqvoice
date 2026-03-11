@@ -58,7 +58,7 @@ export async function sendSmsToCustomer(input: {
           },
         });
 
-        return { id: message.id, status: "sent" as const };
+        return { id: message.id, status: "sent" as const, customerPhone: customer.phone, customerName: customer.name };
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
@@ -75,6 +75,13 @@ export async function sendSmsToCustomer(input: {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.CUSTOMERS },
       ],
+      audit: ({ result }) => ({
+        action: "sms.send",
+        entity: "SmsMessage",
+        entityId: result.id,
+        message: `Sent SMS to ${result.customerName} (${result.customerPhone})`,
+        metadata: { messageId: result.id },
+      }),
     },
   );
 }

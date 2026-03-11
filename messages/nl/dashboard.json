@@ -1,4 +1,7 @@
 {
+  "recentActivity": "Recente activiteit",
+  "noRecentActivity": "Geen recente activiteit",
+  "unknownUser": "Gebruiker",
   "stats": {
     "activeJobs": "Actieve opdrachten",
     "pending": "In afwachting",

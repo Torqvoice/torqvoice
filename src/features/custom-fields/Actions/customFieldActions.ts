@@ -37,7 +37,16 @@ export async function createFieldDefinition(input: unknown) {
 
     revalidatePath("/settings/custom-fields");
     return field;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => ({
+      action: "customField.create",
+      entity: "CustomFieldDefinition",
+      entityId: result.id,
+      message: `Created custom field "${result.name}"`,
+      metadata: { fieldId: result.id, fieldName: result.name, entityType: result.entityType },
+    }),
+  });
 }
 
 export async function updateFieldDefinition(input: unknown) {
@@ -57,7 +66,16 @@ export async function updateFieldDefinition(input: unknown) {
 
     revalidatePath("/settings/custom-fields");
     return field;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => ({
+      action: "customField.update",
+      entity: "CustomFieldDefinition",
+      entityId: result.id,
+      message: `Updated custom field "${result.name}"`,
+      metadata: { fieldId: result.id, fieldName: result.name },
+    }),
+  });
 }
 
 export async function deleteFieldDefinition(fieldId: string) {
@@ -73,7 +91,17 @@ export async function deleteFieldDefinition(fieldId: string) {
     ]);
 
     revalidatePath("/settings/custom-fields");
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }] });
+    return { fieldId, fieldName: field.name };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }],
+    audit: ({ result }) => ({
+      action: "customField.delete",
+      entity: "CustomFieldDefinition",
+      entityId: result.fieldId,
+      message: `Deleted custom field "${result.fieldName}"`,
+      metadata: { fieldId: result.fieldId, fieldName: result.fieldName },
+    }),
+  });
 }
 
 export async function getCustomFieldValues(entityId: string, entityType: string) {

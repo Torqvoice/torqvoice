@@ -55,7 +55,14 @@ export async function saveInvoiceLayoutConfig(config: InvoiceLayoutConfig) {
 
     revalidatePath("/settings/templates");
     return validated;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }],
+    audit: () => ({
+      action: "settings.updateInvoiceLayout",
+      entity: "AppSetting",
+      message: "Updated invoice layout configuration",
+    }),
+  });
 }
 
 export async function getQuoteLayoutConfig() {
@@ -101,5 +108,12 @@ export async function saveQuoteLayoutConfig(config: InvoiceLayoutConfig) {
 
     revalidatePath("/settings/templates");
     return validated;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }],
+    audit: () => ({
+      action: "settings.updateQuoteLayout",
+      entity: "AppSetting",
+      message: "Updated quote layout configuration",
+    }),
+  });
 }

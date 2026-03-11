@@ -96,7 +96,16 @@ export async function createTemplate(input: unknown) {
 
     revalidatePath("/settings/inspections");
     return template;
-  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }],
+    audit: ({ result }) => ({
+      action: "inspectionTemplate.create",
+      entity: "InspectionTemplate",
+      entityId: result.id,
+      message: `Created inspection template "${result.name}"`,
+      metadata: { templateId: result.id, templateName: result.name },
+    }),
+  });
 }
 
 export async function updateTemplate(input: unknown) {
@@ -151,7 +160,16 @@ export async function updateTemplate(input: unknown) {
 
     revalidatePath("/settings/inspections");
     return template;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INSPECTIONS }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INSPECTIONS }],
+    audit: ({ result }) => ({
+      action: "inspectionTemplate.update",
+      entity: "InspectionTemplate",
+      entityId: result.id,
+      message: `Updated inspection template "${result.name}"`,
+      metadata: { templateId: result.id, templateName: result.name },
+    }),
+  });
 }
 
 export async function deleteTemplate(id: string) {
@@ -171,7 +189,17 @@ export async function deleteTemplate(id: string) {
     await db.inspectionTemplate.delete({ where: { id } });
 
     revalidatePath("/settings/templates");
-  }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INSPECTIONS }] });
+    return { templateId: id, templateName: template.name };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INSPECTIONS }],
+    audit: ({ result }) => ({
+      action: "inspectionTemplate.delete",
+      entity: "InspectionTemplate",
+      entityId: result.templateId,
+      message: `Deleted inspection template "${result.templateName}"`,
+      metadata: { templateId: result.templateId, templateName: result.templateName },
+    }),
+  });
 }
 
 async function seedDefaultTemplateForOrg(organizationId: string) {

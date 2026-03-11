@@ -170,6 +170,7 @@ describe("updateVehicle — cross-org isolation", () => {
 
   it("update query always includes organizationId to prevent cross-org writes", async () => {
     setupOrgAOwner();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(ORG_A_VEHICLE as any);
     vi.mocked(db.vehicle.updateMany).mockResolvedValue({ count: 1 } as any);
 
     await updateVehicle({ id: "veh-a", make: "Toyota" });
@@ -183,6 +184,7 @@ describe("updateVehicle — cross-org isolation", () => {
 
   it("successfully updates a vehicle belonging to the caller's org", async () => {
     setupOrgAOwner();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(ORG_A_VEHICLE as any);
     vi.mocked(db.vehicle.updateMany).mockResolvedValue({ count: 1 } as any);
 
     const result = await updateVehicle({ id: "veh-a", make: "Toyota", model: "Updated" });

@@ -4,6 +4,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js'
 import { twoFactor } from 'better-auth/plugins/two-factor'
 import { db } from './db'
+import { logAudit } from './audit'
 
 const baseURL = process.env.NEXT_PUBLIC_APP_URL
 const isProduction = baseURL?.startsWith('https://')
@@ -135,6 +136,21 @@ export const auth = betterAuth({
             where: { id: session.userId },
             data: { lastLogin: new Date() },
           })
+
+          // Audit: log successful login
+          const membership = await db.organizationMember.findFirst({
+            where: { userId: session.userId },
+            select: { organizationId: true },
+          })
+          logAudit(
+            { userId: session.userId, organizationId: membership?.organizationId ?? '' },
+            {
+              action: 'auth.login',
+              message: 'User logged in',
+              ip: (session as Record<string, unknown>).ipAddress as string ?? null,
+              userAgent: (session as Record<string, unknown>).userAgent as string ?? null,
+            },
+          ).catch(() => { /* best-effort */ })
         },
       },
     },
@@ -174,6 +190,7 @@ export const auth = betterAuth({
               data: { termsAcceptedAt: new Date() },
             })
           }
+
         },
       },
     },

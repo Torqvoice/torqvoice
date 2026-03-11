@@ -51,5 +51,13 @@ export async function createNewOrganization(input: unknown) {
 
     revalidatePath("/");
     return org;
+  }, {
+    audit: ({ result }) => ({
+      action: "organization.create",
+      entity: "Organization",
+      entityId: result.id,
+      message: `Created organization "${result.name}"`,
+      metadata: { organizationId: result.id },
+    }),
   });
 }

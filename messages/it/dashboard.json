@@ -1,4 +1,7 @@
 {
+  "recentActivity": "Attività recente",
+  "noRecentActivity": "Nessuna attività recente",
+  "unknownUser": "Utente",
   "stats": {
     "activeJobs": "Lavori attivi",
     "pending": "In attesa",

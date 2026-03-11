@@ -1,4 +1,7 @@
 {
+  "recentActivity": "Actividad reciente",
+  "noRecentActivity": "Sin actividad reciente",
+  "unknownUser": "Usuario",
   "stats": {
     "activeJobs": "Trabajos activos",
     "pending": "Pendientes",
@@ -23,9 +26,9 @@
     "title": "Mantenimiento previsto pendiente",
     "description": "Basado en el historial de servicio y el kilometraje diario estimado",
     "overdue": "Vencido",
-    "approaching": "Pr\u00f3ximo",
+    "approaching": "Próximo",
     "estimated": "Est. {mileage} {unit}",
-    "sinceLastService": "{mileage} {unit} desde el \u00faltimo servicio",
+    "sinceLastService": "{mileage} {unit} desde el último servicio",
     "certainty": "{percent}% de certeza",
     "active": "Activos",
     "dismissedTab": "Descartados",
@@ -36,7 +39,7 @@
   "reminders": {
     "title": "Recordatorios pendientes",
     "overdue": "Vencidos",
-    "dueSoon": "Pr\u00f3ximamente",
+    "dueSoon": "Próximamente",
     "noData": "No hay recordatorios próximos."
   },
   "messages": {
@@ -76,19 +79,19 @@
   "recentCompleted": {
     "title": "Completados recientemente",
     "date": "Fecha",
-    "vehicle": "Veh\u00edculo",
+    "vehicle": "Vehículo",
     "customer": "Cliente",
-    "serviceTitle": "T\u00edtulo",
+    "serviceTitle": "Título",
     "total": "Total",
-    "empty": "A\u00fan no hay servicios completados"
+    "empty": "Aún no hay servicios completados"
   },
   "activeJobsTable": {
     "title": "Trabajos activos",
-    "vehicle": "Veh\u00edculo",
+    "vehicle": "Vehículo",
     "customer": "Cliente",
-    "serviceTitle": "T\u00edtulo",
+    "serviceTitle": "Título",
     "status": "Estado",
-    "tech": "T\u00e9cnico",
+    "tech": "Técnico",
     "empty": "No hay trabajos activos"
   },
   "relativeTime": {

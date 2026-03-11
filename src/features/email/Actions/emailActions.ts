@@ -156,8 +156,17 @@ export async function sendQuoteEmail(input: {
       });
     }
 
-    return { sent: true };
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES }] });
+    return { sent: true, quoteId, recipientEmail };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES }],
+    audit: ({ result }) => ({
+      action: "email.sendQuote",
+      entity: "Quote",
+      entityId: result.quoteId,
+      message: `Sent quote email to ${result.recipientEmail}`,
+      metadata: { quoteId: result.quoteId, recipientEmail: result.recipientEmail },
+    }),
+  });
 }
 
 export async function sendNotificationEmail(input: {
@@ -283,8 +292,17 @@ export async function sendInvoiceEmail(input: {
       ],
     });
 
-    return { sent: true };
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }] });
+    return { sent: true, serviceRecordId, recipientEmail };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }],
+    audit: ({ result }) => ({
+      action: "email.sendInvoice",
+      entity: "ServiceRecord",
+      entityId: result.serviceRecordId,
+      message: `Sent invoice email to ${result.recipientEmail}`,
+      metadata: { serviceRecordId: result.serviceRecordId, recipientEmail: result.recipientEmail },
+    }),
+  });
 }
 
 export async function sendInspectionEmail(input: {
@@ -391,6 +409,15 @@ export async function sendInspectionEmail(input: {
       ],
     });
 
-    return { sent: true };
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }] });
+    return { sent: true, inspectionId, recipientEmail };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }],
+    audit: ({ result }) => ({
+      action: "email.sendInspection",
+      entity: "Inspection",
+      entityId: result.inspectionId,
+      message: `Sent inspection email to ${result.recipientEmail}`,
+      metadata: { inspectionId: result.inspectionId, recipientEmail: result.recipientEmail },
+    }),
+  });
 }

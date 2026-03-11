@@ -1,4 +1,7 @@
 {
+  "recentActivity": "Activité récente",
+  "noRecentActivity": "Aucune activité récente",
+  "unknownUser": "Utilisateur",
   "stats": {
     "activeJobs": "Travaux en cours",
     "pending": "En attente",
@@ -9,24 +12,24 @@
   "viewAll": "Tout voir",
   "showCards": "Afficher les cartes",
   "cards": {
-    "maintenance": "Maintenance pr\u00e9vue",
-    "reminders": "Rappels \u00e0 venir",
+    "maintenance": "Maintenance prévue",
+    "reminders": "Rappels à venir",
     "inspections": "Inspections",
     "quoteRequests": "Demandes de devis",
-    "quoteResponses": "R\u00e9ponses aux devis",
-    "sms": "Messages r\u00e9cents",
-    "notifications": "Notifications r\u00e9centes",
-    "recentCompleted": "Termin\u00e9s r\u00e9cemment",
+    "quoteResponses": "Réponses aux devis",
+    "sms": "Messages récents",
+    "notifications": "Notifications récentes",
+    "recentCompleted": "Terminés récemment",
     "activeJobs": "Travaux en cours"
   },
   "maintenance": {
-    "title": "Maintenance pr\u00e9vue \u00e0 effectuer",
-    "description": "Bas\u00e9 sur l\u2019historique d\u2019entretien et le kilom\u00e9trage quotidien estim\u00e9",
+    "title": "Maintenance prévue à effectuer",
+    "description": "Basé sur l’historique d’entretien et le kilométrage quotidien estimé",
     "overdue": "En retard",
     "approaching": "Imminent",
     "estimated": "Est. {mileage} {unit}",
     "sinceLastService": "{mileage} {unit} depuis le dernier entretien",
-    "certainty": "{percent}\u00a0% de certitude",
+    "certainty": "{percent} % de certitude",
     "active": "Actifs",
     "dismissedTab": "Ignorés",
     "noActive": "Aucun véhicule n'a besoin d'entretien actuellement.",
@@ -34,57 +37,57 @@
     "restore": "Restaurer"
   },
   "reminders": {
-    "title": "Rappels \u00e0 venir",
+    "title": "Rappels à venir",
     "overdue": "En retard",
-    "dueSoon": "Bient\u00f4t d\u00fb",
+    "dueSoon": "Bientôt dû",
     "noData": "Aucun rappel à venir."
   },
   "messages": {
-    "title": "Messages r\u00e9cents",
+    "title": "Messages récents",
     "viewAll": "Tout afficher",
-    "you": "Vous\u00a0: ",
+    "you": "Vous : ",
     "noData": "Aucun message récent."
   },
   "notifications": {
-    "title": "Notifications r\u00e9centes",
+    "title": "Notifications récentes",
     "noData": "Aucune notification récente."
   },
   "inspections": {
     "title": "Inspections",
     "inProgress": "En cours",
-    "completed": "Termin\u00e9",
-    "itemCount": "{inspected}/{total} \u00e9l\u00e9ments",
+    "completed": "Terminé",
+    "itemCount": "{inspected}/{total} éléments",
     "noData": "Aucune inspection."
   },
   "quoteRequests": {
     "title": "Demandes de devis",
-    "description": "Clients demandant des devis \u00e0 partir d\u2019inspections partag\u00e9es",
+    "description": "Clients demandant des devis à partir d’inspections partagées",
     "pending": "En attente",
-    "createQuote": "Cr\u00e9er un devis",
-    "itemsRequested": "{count, plural, one {# \u00e9l\u00e9ment demand\u00e9} other {# \u00e9l\u00e9ments demand\u00e9s}}",
+    "createQuote": "Créer un devis",
+    "itemsRequested": "{count, plural, one {# élément demandé} other {# éléments demandés}}",
     "noData": "Aucune demande de devis en attente."
   },
   "quoteResponses": {
-    "title": "R\u00e9ponses des clients aux devis",
-    "description": "Devis que les clients ont accept\u00e9s ou pour lesquels des modifications ont \u00e9t\u00e9 demand\u00e9es",
-    "accepted": "Accept\u00e9",
-    "changesRequested": "Modifications demand\u00e9es",
+    "title": "Réponses des clients aux devis",
+    "description": "Devis que les clients ont acceptés ou pour lesquels des modifications ont été demandées",
+    "accepted": "Accepté",
+    "changesRequested": "Modifications demandées",
     "convertToWorkOrder": "Convertir en ordre de travail",
     "viewQuote": "Voir le devis",
     "noData": "Aucune réponse client."
   },
   "recentCompleted": {
-    "title": "Termin\u00e9s r\u00e9cemment",
+    "title": "Terminés récemment",
     "date": "Date",
-    "vehicle": "V\u00e9hicule",
+    "vehicle": "Véhicule",
     "customer": "Client",
     "serviceTitle": "Titre",
     "total": "Total",
-    "empty": "Aucun entretien termin\u00e9 pour le moment"
+    "empty": "Aucun entretien terminé pour le moment"
   },
   "activeJobsTable": {
     "title": "Travaux en cours",
-    "vehicle": "V\u00e9hicule",
+    "vehicle": "Véhicule",
     "customer": "Client",
     "serviceTitle": "Titre",
     "status": "Statut",
@@ -93,9 +96,9 @@
   },
   "relativeTime": {
     "now": "maintenant",
-    "minutes": "{count}\u00a0min",
-    "hours": "{count}\u00a0h",
-    "days": "{count}\u00a0j"
+    "minutes": "{count} min",
+    "hours": "{count} h",
+    "days": "{count} j"
   },
-  "error": "\u00c9chec du chargement du tableau de bord"
+  "error": "Échec du chargement du tableau de bord"
 }

@@ -48,7 +48,8 @@
     "maintenance": "Konserwacja",
     "customerPortal": "Portal klienta",
     "reminders": "Przypomnienia",
-    "allReminders": "Wszystkie przypomnienia"
+    "allReminders": "Wszystkie przypomnienia",
+    "auditLog": "Dziennik audytu"
   },
   "search": "Szukaj...",
   "shortcut": "Ctrl+K",
@@ -83,6 +84,7 @@
     "createCompany": "Utwórz firmę",
     "lightMode": "Tryb jasny",
     "darkMode": "Tryb ciemny",
-    "signOut": "Wyloguj się"
+    "signOut": "Wyloguj się",
+    "auditLog": "Dziennik audytu"
   }
 }

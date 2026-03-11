@@ -364,7 +364,7 @@ export async function updatePortalSlug(
           data: { portalSlug: null },
         });
         revalidatePath("/settings/customer-portal");
-        return null;
+        return { slug: null };
       }
 
       const normalized = slug.trim().toLowerCase();
@@ -395,12 +395,18 @@ export async function updatePortalSlug(
       });
 
       revalidatePath("/settings/customer-portal");
-      return null;
+      return { slug: normalized || null };
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
+      audit: ({ result }) => result ? ({
+        action: "settings.updatePortalSlug",
+        entity: "Organization",
+        message: result.slug ? `Set portal slug to "${result.slug}"` : "Cleared portal slug",
+        metadata: { slug: result.slug },
+      }) : null,
     },
   );
 }

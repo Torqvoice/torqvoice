@@ -28,8 +28,17 @@ export async function createPayment(input: unknown) {
     });
 
     revalidatePath(`/vehicles/${serviceRecord.vehicleId}/service/${data.serviceRecordId}`);
-    return payment;
-  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.BILLING }] });
+    return { ...payment, serviceRecordId: data.serviceRecordId, amount: data.amount, method: data.method };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.BILLING }],
+    audit: ({ result }) => ({
+      action: "payment.create",
+      entity: "Payment",
+      entityId: result.id,
+      message: `Recorded payment ${result.amount} for service ${result.serviceRecordId}`,
+      metadata: { paymentId: result.id, serviceRecordId: result.serviceRecordId, amount: result.amount, method: result.method },
+    }),
+  });
 }
 
 export async function deletePayment(paymentId: string) {
@@ -44,6 +53,15 @@ export async function deletePayment(paymentId: string) {
 
     const { vehicleId, id: serviceId } = payment.serviceRecord;
     revalidatePath(`/vehicles/${vehicleId}/service/${serviceId}`);
-    return { deleted: true };
-  }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.BILLING }] });
+    return { deleted: true, paymentId };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.BILLING }],
+    audit: ({ result }) => ({
+      action: "payment.delete",
+      entity: "Payment",
+      entityId: result.paymentId,
+      message: `Deleted payment ${result.paymentId}`,
+      metadata: { paymentId: result.paymentId },
+    }),
+  });
 }

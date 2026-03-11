@@ -200,6 +200,7 @@ export function DashboardClient({
   smsThreads = [],
   smsEnabled = false,
   notifications = [],
+  recentAuditLogs = [],
 }: {
   stats: DashboardStats;
   currencyCode?: string;
@@ -214,8 +215,20 @@ export function DashboardClient({
   smsThreads?: SmsThread[];
   smsEnabled?: boolean;
   notifications?: DashboardNotification[];
+  recentAuditLogs?: {
+    id: string;
+    timestamp: string | Date;
+    action: string;
+    entity: string | null;
+    entityId: string | null;
+    message: string | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    metadata?: any;
+    user: { id: string; name: string | null; email: string | null } | null;
+  }[];
 }) {
   const t = useTranslations("dashboard");
+  const tAudit = useTranslations("audit");
   const distUnit = unitSystem === "metric" ? "km" : "mi";
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -1156,6 +1169,65 @@ export function DashboardClient({
             </CardContent>
           </Card>
         )}
+        {/* Recent Activity (Audit Logs) */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-1">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <ClipboardList className="h-4 w-4" />
+                {t("recentActivity")}
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs gap-1"
+                onClick={() => router.push("/audit-log")}
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            {recentAuditLogs.length === 0 ? (
+              <p className="px-5 py-4 text-xs text-muted-foreground">{t("noRecentActivity")}</p>
+            ) : (
+              <div className="divide-y">
+                {recentAuditLogs.slice(0, 5).map((log) => {
+                  const userLabel = log.user?.name ?? log.user?.email ?? t("unknownUser");
+                  const meta = (log as unknown as { metadata?: Record<string, unknown> }).metadata || {};
+                  const vehicleDisplay = typeof meta["vehicleDisplay"] === "string" ? (meta["vehicleDisplay"] as string) : undefined;
+                  const quoteNumber = typeof meta["quoteNumber"] === "string" ? (meta["quoteNumber"] as string) : undefined;
+                  const actionKey = log.action.replace(".", "_");
+                  let friendlyAction: string;
+                  try {
+                    friendlyAction = tAudit(`actions.${actionKey}`);
+                  } catch {
+                    friendlyAction = log.action;
+                  }
+                  const entityLabel = vehicleDisplay ?? quoteNumber ?? log.entityId?.substring(0, 8);
+                  return (
+                    <div key={log.id} className="px-5 py-3 text-sm flex items-center justify-between">
+                      <div className="min-w-0">
+                        <p className="truncate">
+                          <span className="font-medium">{userLabel}</span>{" "}
+                          {friendlyAction}
+                          {entityLabel ? <> — <span className="text-muted-foreground">{entityLabel}</span></> : null}
+                        </p>
+                        {log.message && (
+                          <p className="text-xs text-muted-foreground truncate">{log.message}</p>
+                        )}
+                      </div>
+                      <div className="shrink-0 ml-3 text-xs text-muted-foreground">
+                        {formatDate(new Date(log.timestamp))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

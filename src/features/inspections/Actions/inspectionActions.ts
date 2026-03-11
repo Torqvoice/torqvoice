@@ -176,8 +176,17 @@ export async function createInspection(input: unknown) {
 
     revalidatePath("/inspections");
     revalidatePath(`/vehicles/${data.vehicleId}`);
-    return inspection;
-  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }] });
+    return { ...inspection, vehicleId: data.vehicleId };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }],
+    audit: ({ result }) => ({
+      action: "inspection.create",
+      entity: "Inspection",
+      entityId: result.id,
+      message: `Created inspection ${result.id}`,
+      metadata: { inspectionId: result.id, vehicleId: result.vehicleId },
+    }),
+  });
 }
 
 export async function updateInspectionItem(itemId: string, input: unknown) {
@@ -224,8 +233,17 @@ export async function completeInspection(id: string) {
     revalidatePath("/inspections");
     revalidatePath(`/inspections/${id}`);
     revalidatePath(`/vehicles/${inspection.vehicleId}`);
-    return { success: true };
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INSPECTIONS }] });
+    return { success: true, inspectionId: id };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INSPECTIONS }],
+    audit: ({ result }) => ({
+      action: "inspection.complete",
+      entity: "Inspection",
+      entityId: result.inspectionId,
+      message: `Completed inspection ${result.inspectionId}`,
+      metadata: { inspectionId: result.inspectionId },
+    }),
+  });
 }
 
 export async function deleteInspection(id: string) {
@@ -238,5 +256,15 @@ export async function deleteInspection(id: string) {
     await db.inspection.deleteMany({ where: { id, organizationId } });
     revalidatePath("/inspections");
     revalidatePath(`/vehicles/${inspection.vehicleId}`);
-  }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INSPECTIONS }] });
+    return { inspectionId: id };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INSPECTIONS }],
+    audit: ({ result }) => ({
+      action: "inspection.delete",
+      entity: "Inspection",
+      entityId: result.inspectionId,
+      message: `Deleted inspection ${result.inspectionId}`,
+      metadata: { inspectionId: result.inspectionId },
+    }),
+  });
 }

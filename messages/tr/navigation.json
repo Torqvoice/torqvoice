@@ -48,7 +48,8 @@
     "maintenance": "Bakım",
     "customerPortal": "Müşteri Portalı",
     "reminders": "Hatırlatmalar",
-    "allReminders": "Tüm hatırlatmalar"
+    "allReminders": "Tüm hatırlatmalar",
+    "auditLog": "Denetim günlüğü"
   },
   "search": "Ara...",
   "shortcut": "Ctrl+K",
@@ -83,6 +84,7 @@
     "createCompany": "Şirket Oluştur",
     "lightMode": "Açık Mod",
     "darkMode": "Koyu Mod",
-    "signOut": "Çıkış Yap"
+    "signOut": "Çıkış Yap",
+    "auditLog": "Denetim günlüğü"
   }
 }

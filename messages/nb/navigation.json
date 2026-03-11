@@ -48,7 +48,8 @@
     "maintenance": "Vedlikehold",
     "customerPortal": "Kundeportal",
     "reminders": "Påminnelser",
-    "allReminders": "Alle påminnelser"
+    "allReminders": "Alle påminnelser",
+    "auditLog": "Aktivitetslogg"
   },
   "search": "Søk...",
   "shortcut": "Ctrl+K",
@@ -83,6 +84,7 @@
     "createCompany": "Opprett firma",
     "lightMode": "Lyst modus",
     "darkMode": "Mørkt modus",
-    "signOut": "Logg ut"
+    "signOut": "Logg ut",
+    "auditLog": "Aktivitetslogg"
   }
 }

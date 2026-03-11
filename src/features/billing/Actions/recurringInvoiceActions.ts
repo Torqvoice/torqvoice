@@ -78,7 +78,16 @@ export async function createRecurringInvoice(input: CreateRecurringInvoiceInput)
 
     revalidatePath("/billing/recurring");
     return invoice;
-  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.BILLING }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.BILLING }],
+    audit: ({ result }) => ({
+      action: "recurringInvoice.create",
+      entity: "RecurringInvoice",
+      entityId: result.id,
+      message: `Created recurring invoice "${result.title}"`,
+      metadata: { recurringInvoiceId: result.id },
+    }),
+  });
 }
 
 export async function updateRecurringInvoice(input: UpdateRecurringInvoiceInput) {
@@ -145,7 +154,16 @@ export async function updateRecurringInvoice(input: UpdateRecurringInvoiceInput)
 
     revalidatePath("/billing/recurring");
     return updated;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.BILLING }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.BILLING }],
+    audit: ({ result }) => ({
+      action: "recurringInvoice.update",
+      entity: "RecurringInvoice",
+      entityId: result.id,
+      message: `Updated recurring invoice "${result.title}"`,
+      metadata: { recurringInvoiceId: result.id },
+    }),
+  });
 }
 
 export async function deleteRecurringInvoice(id: string) {
@@ -158,8 +176,17 @@ export async function deleteRecurringInvoice(id: string) {
     await db.recurringInvoice.delete({ where: { id } });
 
     revalidatePath("/billing/recurring");
-    return { deleted: true };
-  }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.BILLING }] });
+    return { deleted: true, recurringInvoiceId: id };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.BILLING }],
+    audit: ({ result }) => ({
+      action: "recurringInvoice.delete",
+      entity: "RecurringInvoice",
+      entityId: result.recurringInvoiceId,
+      message: `Deleted recurring invoice ${result.recurringInvoiceId}`,
+      metadata: { recurringInvoiceId: result.recurringInvoiceId },
+    }),
+  });
 }
 
 export async function toggleRecurringInvoice(id: string) {

@@ -48,7 +48,8 @@
     "maintenance": "Manutenzione",
     "customerPortal": "Portale clienti",
     "reminders": "Promemoria",
-    "allReminders": "Tutti i promemoria"
+    "allReminders": "Tutti i promemoria",
+    "auditLog": "Registro attività"
   },
   "search": "Cerca...",
   "shortcut": "Ctrl+K",
@@ -83,6 +84,7 @@
     "createCompany": "Crea azienda",
     "lightMode": "Modalità chiara",
     "darkMode": "Modalità scura",
-    "signOut": "Esci"
+    "signOut": "Esci",
+    "auditLog": "Registro attività"
   }
 }

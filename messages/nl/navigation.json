@@ -48,7 +48,8 @@
     "maintenance": "Onderhoud",
     "customerPortal": "Klantenportaal",
     "reminders": "Herinneringen",
-    "allReminders": "Alle herinneringen"
+    "allReminders": "Alle herinneringen",
+    "auditLog": "Activiteitenlog"
   },
   "search": "Zoeken...",
   "shortcut": "Ctrl+K",
@@ -83,6 +84,7 @@
     "createCompany": "Bedrijf aanmaken",
     "lightMode": "Lichte modus",
     "darkMode": "Donkere modus",
-    "signOut": "Uitloggen"
+    "signOut": "Uitloggen",
+    "auditLog": "Activiteitenlog"
   }
 }

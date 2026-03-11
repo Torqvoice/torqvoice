@@ -339,7 +339,16 @@ export async function createServiceRecord(input: unknown) {
     revalidatePath(`/vehicles/${data.vehicleId}`);
     revalidatePath("/services");
     return record;
-  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES }],
+    audit: ({ result }) => ({
+      action: "service.create",
+      entity: "ServiceRecord",
+      entityId: result.id,
+      message: `Created service record ${result.invoiceNumber || result.id}`,
+      metadata: { serviceRecordId: result.id, vehicleId: result.vehicleId },
+    }),
+  });
 }
 
 export async function updateServiceRecord(input: unknown) {
@@ -476,7 +485,16 @@ export async function updateServiceRecord(input: unknown) {
     revalidatePath(`/vehicles/${existing.vehicleId}/service/${id}`);
     revalidatePath("/services");
     return record;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }] });
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }],
+    audit: ({ result }) => ({
+      action: "service.update",
+      entity: "ServiceRecord",
+      entityId: result.id,
+      message: `Updated service record ${result.invoiceNumber || result.id}`,
+      metadata: { serviceRecordId: result.id },
+    }),
+  });
 }
 
 export async function updateServiceStatus(recordId: string, status: string) {
@@ -513,8 +531,17 @@ export async function updateServiceStatus(recordId: string, status: string) {
     revalidatePath("/work-orders");
     revalidatePath("/services");
     revalidatePath(`/vehicles/${record.vehicleId}`);
-    return { success: true };
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }] });
+    return { success: true, recordId, status };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }],
+    audit: ({ result }) => ({
+      action: "service.status",
+      entity: "ServiceRecord",
+      entityId: result.recordId,
+      message: `Changed service record status to ${result.status}`,
+      metadata: { serviceRecordId: result.recordId, status: result.status },
+    }),
+  });
 }
 
 export async function toggleManuallyPaid(recordId: string) {
@@ -645,7 +672,17 @@ export async function deleteServiceRecord(recordId: string) {
     revalidatePath("/");
     revalidatePath(`/vehicles/${record.vehicleId}`);
     revalidatePath("/services");
-  }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.SERVICES }] });
+    return { recordId };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.SERVICES }],
+    audit: ({ result }) => ({
+      action: "service.delete",
+      entity: "ServiceRecord",
+      entityId: result.recordId,
+      message: `Deleted service record ${result.recordId}`,
+      metadata: { serviceRecordId: result.recordId },
+    }),
+  });
 }
 
 export async function deleteServiceAttachment(attachmentId: string) {

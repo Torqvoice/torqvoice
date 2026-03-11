@@ -17,12 +17,19 @@ export async function unarchiveVehicle(vehicleId: string) {
       revalidatePath("/vehicles");
       revalidatePath(`/vehicles/${vehicleId}`);
 
-      return { success: true as const };
+      return { success: true as const, vehicleId };
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES },
       ],
+      audit: ({ result }) => ({
+        action: "vehicle.unarchive",
+        entity: "Vehicle",
+        entityId: result.vehicleId,
+        message: `Unarchived vehicle ${result.vehicleId}`,
+        metadata: { vehicleId: result.vehicleId },
+      }),
     }
   );
 }

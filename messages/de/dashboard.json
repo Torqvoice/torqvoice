@@ -1,4 +1,7 @@
 {
+  "recentActivity": "Letzte Aktivitäten",
+  "noRecentActivity": "Keine aktuellen Aktivitäten",
+  "unknownUser": "Benutzer",
   "stats": {
     "activeJobs": "Aktive Aufträge",
     "pending": "Ausstehend",
