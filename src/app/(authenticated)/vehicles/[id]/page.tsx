@@ -8,6 +8,7 @@ import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getVehiclePredictedMileage } from "@/features/vehicles/Actions/predictedMaintenanceActions";
 import { getVehicleInspections } from "@/features/inspections/Actions/inspectionActions";
 import { getTemplates } from "@/features/inspections/Actions/templateActions";
+import { getVehicleQuotes } from "@/features/quotes/Actions/quoteActions";
 import { VehicleDetailClient } from "./vehicle-detail-client";
 import { PageHeader } from "@/components/page-header";
 
@@ -29,7 +30,7 @@ export default async function VehicleDetailPage({
   const notesPage = Number(sp.notesPage) || 1;
   const notesPageSize = Number(sp.notesPageSize) || 10;
 
-  const [result, customersResult, serviceResult, notesResult, settingsResult, maintenanceSettingsResult, inspectionsResult, templatesResult] = await Promise.all([
+  const [result, customersResult, serviceResult, notesResult, settingsResult, maintenanceSettingsResult, inspectionsResult, templatesResult, quotesResult] = await Promise.all([
     getVehicle(id),
     getCustomersList(),
     getServiceRecordsPaginated(id, { page, pageSize, search, type }),
@@ -42,6 +43,7 @@ export default async function VehicleDetailPage({
     ]),
     getVehicleInspections(id),
     getTemplates(),
+    getVehicleQuotes(id),
   ]);
 
   if (!result.success || !result.data) {
@@ -130,6 +132,7 @@ export default async function VehicleDetailPage({
           predictionData={predictionData}
           inspections={inspectionsResult.success && inspectionsResult.data ? inspectionsResult.data : []}
           inspectionTemplates={templatesResult.success && templatesResult.data ? templatesResult.data : []}
+          quotes={quotesResult.success && quotesResult.data ? quotesResult.data : []}
         />
       </div>
     </>

@@ -70,6 +70,25 @@ export async function getQuotesPaginated(params: {
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] });
 }
 
+export async function getVehicleQuotes(vehicleId: string) {
+  return withAuth(async ({ organizationId }) => {
+    return db.quote.findMany({
+      where: { vehicleId, organizationId },
+      select: {
+        id: true,
+        quoteNumber: true,
+        title: true,
+        status: true,
+        totalAmount: true,
+        createdAt: true,
+        validUntil: true,
+        customer: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] });
+}
+
 export async function getQuote(quoteId: string) {
   return withAuth(async ({ userId, organizationId }) => {
     const quote = await db.quote.findFirst({

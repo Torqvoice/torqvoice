@@ -47,6 +47,7 @@
     "purchased": "Gekocht op {date}",
     "tabs": {
       "services": "Onderhoud",
+      "quotes": "Quotes",
       "inspections": "Keuringen",
       "notes": "Notities",
       "reminders": "Herinneringen"
@@ -62,6 +63,15 @@
     "deleteTitle": "Voertuig verwijderen?",
     "deleteDescription": "Hiermee wordt {name} permanent verwijderd, inclusief alle bijbehorende servicegegevens, notities en herinneringen. Deze actie kan niet ongedaan worden gemaakt.",
     "edit": "Bewerken"
+  },
+  "quotes": {
+    "newQuote": "New Quote",
+    "empty": "No quotes yet",
+    "columnNumber": "Quote #",
+    "columnTitle": "Title",
+    "columnStatus": "Status",
+    "columnDate": "Date",
+    "columnTotal": "Total"
   },
   "inspections": {
     "newInspection": "Nieuwe keuring",

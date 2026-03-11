@@ -47,6 +47,7 @@
     "purchased": "Kjopt {date}",
     "tabs": {
       "services": "Tjenester",
+      "quotes": "Quotes",
       "inspections": "Inspeksjoner",
       "notes": "Notater",
       "reminders": "Paminnelser"
@@ -62,6 +63,15 @@
     "deleteTitle": "Slette kjoretoy?",
     "deleteDescription": "Dette vil permanent slette {name} og alle tilknyttede serviceoppforinger, notater og paminnelser. Denne handlingen kan ikke angres.",
     "edit": "Rediger"
+  },
+  "quotes": {
+    "newQuote": "New Quote",
+    "empty": "No quotes yet",
+    "columnNumber": "Quote #",
+    "columnTitle": "Title",
+    "columnStatus": "Status",
+    "columnDate": "Date",
+    "columnTotal": "Total"
   },
   "inspections": {
     "newInspection": "Ny inspeksjon",
