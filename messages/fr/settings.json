@@ -622,8 +622,6 @@
     "addNewTech": "+ Ajouter nouveau",
     "defaultLaborRate": "Taux horaire par defaut",
     "laborRatePlaceholder": "75,00",
-    "workingHours": "Heures de travail",
-    "workingHoursPlaceholder": "Lun-Ven 8h00 - 17h00",
     "unitsTitle": "Unites",
     "unitsDescription": "Choisissez entre metrique (km, litres) et imperial (miles, gallons).",
     "unitSystem": "Systeme d'unites",

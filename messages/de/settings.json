@@ -622,8 +622,6 @@
     "addNewTech": "+ Neu hinzufügen",
     "defaultLaborRate": "Standard-Stundensatz",
     "laborRatePlaceholder": "75,00",
-    "workingHours": "Arbeitszeiten",
-    "workingHoursPlaceholder": "Mo-Fr 8:00 - 17:00",
     "unitsTitle": "Einheiten",
     "unitsDescription": "Wahlen Sie zwischen metrisch (km, Liter) und imperial (Meilen, Gallonen).",
     "unitSystem": "Einheitensystem",

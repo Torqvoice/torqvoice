@@ -622,8 +622,6 @@
     "addNewTech": "+ Adicionar novo",
     "defaultLaborRate": "Taxa de mao de obra padrao (por hora)",
     "laborRatePlaceholder": "75,00",
-    "workingHours": "Horario de funcionamento",
-    "workingHoursPlaceholder": "Seg-Sex 8:00 - 17:00",
     "unitsTitle": "Unidades",
     "unitsDescription": "Escolha entre metrico (km, litros) e imperial (milhas, galoes).",
     "unitSystem": "Sistema de unidades",

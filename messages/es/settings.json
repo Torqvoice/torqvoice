@@ -622,8 +622,6 @@
     "addNewTech": "+ Agregar nuevo",
     "defaultLaborRate": "Tarifa de mano de obra predeterminada (por hora)",
     "laborRatePlaceholder": "75.00",
-    "workingHours": "Horario de trabajo",
-    "workingHoursPlaceholder": "Lun-Vie 8:00 AM - 5:00 PM",
     "unitsTitle": "Unidades",
     "unitsDescription": "Elija entre metrico (km, litros) e imperial (millas, galones).",
     "unitSystem": "Sistema de unidades",

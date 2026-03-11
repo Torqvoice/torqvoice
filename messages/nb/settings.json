@@ -574,8 +574,6 @@
     "addNewTech": "+ Legg til ny",
     "defaultLaborRate": "Standard timesats",
     "laborRatePlaceholder": "750",
-    "workingHours": "Arbeidstider",
-    "workingHoursPlaceholder": "Man-Fre 08:00 - 16:00",
     "unitsTitle": "Enheter",
     "unitsDescription": "Velg mellom metrisk (km, liter) og imperial (miles, gallons).",
     "unitSystem": "Enhetssystem",

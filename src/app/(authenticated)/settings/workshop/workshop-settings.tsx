@@ -55,9 +55,6 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
   const [defaultLaborRate, setDefaultLaborRate] = useState(
     settings[SETTING_KEYS.DEFAULT_LABOR_RATE] || ""
   );
-  const [workingHours, setWorkingHours] = useState(
-    settings[SETTING_KEYS.WORKING_HOURS] || ""
-  );
   const [unitSystem, setUnitSystem] = useState(
     settings[SETTING_KEYS.UNIT_SYSTEM] || "imperial"
   );
@@ -101,7 +98,6 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
     await setSettings({
       [SETTING_KEYS.DEFAULT_TECHNICIAN]: defaultTechnician,
       [SETTING_KEYS.DEFAULT_LABOR_RATE]: defaultLaborRate,
-      [SETTING_KEYS.WORKING_HOURS]: workingHours,
       [SETTING_KEYS.UNIT_SYSTEM]: unitSystem,
       [SETTING_KEYS.WORKBOARD_WEEK_START_DAY]: weekStartDay,
       [SETTING_KEYS.WORKBOARD_WORK_DAY_START]: workDayStart,
@@ -238,16 +234,6 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
                 onChange={(e) => setDefaultLaborRate(e.target.value)}
               />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="workingHours">{t('workshop.workingHours')}</Label>
-            <Input
-              id="workingHours"
-              placeholder={t('workshop.workingHoursPlaceholder')}
-              value={workingHours}
-              onChange={(e) => setWorkingHours(e.target.value)}
-            />
           </div>
 
           <Separator />

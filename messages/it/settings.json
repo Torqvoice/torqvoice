@@ -622,8 +622,6 @@
     "addNewTech": "+ Aggiungi nuovo",
     "defaultLaborRate": "Tariffa manodopera predefinita (all'ora)",
     "laborRatePlaceholder": "75,00",
-    "workingHours": "Orario di lavoro",
-    "workingHoursPlaceholder": "Lun-Ven 8:00 - 17:00",
     "unitsTitle": "Unita",
     "unitsDescription": "Scegli tra sistema metrico (km, litri) e imperiale (miglia, galloni).",
     "unitSystem": "Sistema di unita",

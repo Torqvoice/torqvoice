@@ -622,8 +622,6 @@
     "addNewTech": "+ Yeni ekle",
     "defaultLaborRate": "Varsayılan İşçilik Ücreti (saat başı)",
     "laborRatePlaceholder": "75,00",
-    "workingHours": "Çalışma Saatleri",
-    "workingHoursPlaceholder": "Pzt-Cum 08:00 - 17:00",
     "unitsTitle": "Birimler",
     "unitsDescription": "Metrik (km, litre) ve emperyal (mil, galon) birimler arasında seçim yapın.",
     "unitSystem": "Birim Sistemi",

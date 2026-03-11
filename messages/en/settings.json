@@ -574,8 +574,6 @@
     "addNewTech": "+ Add New",
     "defaultLaborRate": "Default Labor Rate (per hour)",
     "laborRatePlaceholder": "75.00",
-    "workingHours": "Working Hours",
-    "workingHoursPlaceholder": "Mon-Fri 8:00 AM - 5:00 PM",
     "unitsTitle": "Units",
     "unitsDescription": "Choose between metric (km, liters) and imperial (miles, gallons) units.",
     "unitSystem": "Unit System",
