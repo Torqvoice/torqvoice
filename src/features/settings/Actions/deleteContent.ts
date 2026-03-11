@@ -12,6 +12,12 @@ const deleteContentSchema = z.object({
   customers: z.boolean().default(false),
   quotes: z.boolean().default(false),
   inventory: z.boolean().default(false),
+  inspections: z.boolean().default(false),
+  technicians: z.boolean().default(false),
+  inspectionTemplates: z.boolean().default(false),
+  notifications: z.boolean().default(false),
+  smsMessages: z.boolean().default(false),
+  customFields: z.boolean().default(false),
 });
 
 export async function deleteContent(input: unknown) {
@@ -22,7 +28,7 @@ export async function deleteContent(input: unknown) {
 
     const selections = deleteContentSchema.parse(input);
 
-    if (!selections.vehicles && !selections.customers && !selections.quotes && !selections.inventory) {
+    if (!Object.values(selections).some(Boolean)) {
       throw new Error("No content types selected");
     }
 
@@ -71,6 +77,32 @@ export async function deleteContent(input: unknown) {
       deleted.push("customers");
     }
 
+    // --- Inspections ---
+    // Cascades: InspectionItem, InspectionQuoteRequest
+    if (selections.inspections) {
+      await db.inspection.deleteMany({ where: { organizationId } });
+      deleted.push("inspections");
+    }
+
+    // --- Technicians ---
+    // ServiceRecords/Inspections with this technician get technicianId set to null (SetNull).
+    if (selections.technicians) {
+      await db.technician.deleteMany({ where: { organizationId } });
+      deleted.push("technicians");
+    }
+
+    // --- Inspection Templates ---
+    // Cascades: InspectionTemplateSection -> InspectionTemplateItem
+    // Inspections reference templates (no cascade), so delete remaining inspections first.
+    if (selections.inspectionTemplates) {
+      if (!selections.inspections) {
+        await db.inspection.deleteMany({ where: { organizationId } });
+        deleted.push("inspections");
+      }
+      await db.inspectionTemplate.deleteMany({ where: { organizationId } });
+      deleted.push("inspectionTemplates");
+    }
+
     // --- Inventory ---
     if (selections.inventory) {
       const parts = await db.inventoryPart.findMany({
@@ -83,6 +115,25 @@ export async function deleteContent(input: unknown) {
 
       await db.inventoryPart.deleteMany({ where: { organizationId } });
       deleted.push("inventory");
+    }
+
+    // --- Notifications ---
+    if (selections.notifications) {
+      await db.notification.deleteMany({ where: { organizationId } });
+      deleted.push("notifications");
+    }
+
+    // --- SMS Messages ---
+    if (selections.smsMessages) {
+      await db.smsMessage.deleteMany({ where: { organizationId } });
+      deleted.push("smsMessages");
+    }
+
+    // --- Custom Fields ---
+    // Cascades: CustomFieldValue
+    if (selections.customFields) {
+      await db.customFieldDefinition.deleteMany({ where: { organizationId } });
+      deleted.push("customFields");
     }
 
     // Clean up files from disk (best effort)
@@ -99,6 +150,9 @@ export async function deleteContent(input: unknown) {
     revalidatePath("/customers");
     revalidatePath("/quotes");
     revalidatePath("/inventory");
+    revalidatePath("/inspections");
+    revalidatePath("/technicians");
+    revalidatePath("/settings");
     revalidatePath("/settings/account");
 
     return { deleted };
@@ -115,16 +169,34 @@ export async function deleteContent(input: unknown) {
 export async function getContentCounts() {
   return withAuth(async ({ organizationId }) => {
     if (!organizationId) {
-      return { vehicles: 0, customers: 0, quotes: 0, inventory: 0 };
+      return {
+        vehicles: 0, customers: 0, quotes: 0, inventory: 0,
+        inspections: 0, technicians: 0, inspectionTemplates: 0,
+        notifications: 0, smsMessages: 0, customFields: 0,
+      };
     }
 
-    const [vehicles, customers, quotes, inventory] = await Promise.all([
+    const [
+      vehicles, customers, quotes, inventory,
+      inspections, technicians, inspectionTemplates,
+      notifications, smsMessages, customFields,
+    ] = await Promise.all([
       db.vehicle.count({ where: { organizationId } }),
       db.customer.count({ where: { organizationId } }),
       db.quote.count({ where: { organizationId } }),
       db.inventoryPart.count({ where: { organizationId } }),
+      db.inspection.count({ where: { organizationId } }),
+      db.technician.count({ where: { organizationId } }),
+      db.inspectionTemplate.count({ where: { organizationId } }),
+      db.notification.count({ where: { organizationId } }),
+      db.smsMessage.count({ where: { organizationId } }),
+      db.customFieldDefinition.count({ where: { organizationId } }),
     ]);
 
-    return { vehicles, customers, quotes, inventory };
+    return {
+      vehicles, customers, quotes, inventory,
+      inspections, technicians, inspectionTemplates,
+      notifications, smsMessages, customFields,
+    };
   });
 }
