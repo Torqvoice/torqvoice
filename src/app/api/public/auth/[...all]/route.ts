@@ -47,35 +47,45 @@ async function POST(request: Request) {
     const cloned = request.clone()
     const response = await authPOST(request)
 
-    // Log failed authentication attempts
+    // Log failed authentication attempts (fire-and-forget to avoid timing side-channels)
     if (!response.ok) {
-      try {
-        const body = await cloned.json().catch(() => null)
-        const email = body?.email || 'unknown'
-        // Try to find user to attach userId
-        const user =
-          typeof email === 'string' && email !== 'unknown'
-            ? await db.user.findFirst({ where: { email }, select: { id: true } })
+      const ip = getRequestIp(cloned)
+      const userAgent = cloned.headers.get('user-agent')
+      const status = response.status
+      void (async () => {
+        try {
+          const body = await cloned.json().catch(() => null)
+          const rawEmail = body?.email
+          // Sanitize: must be a string, cap length to prevent log pollution
+          const email =
+            typeof rawEmail === 'string' && rawEmail.length <= 255
+              ? rawEmail
+              : 'unknown'
+          // Try to find user to attach userId
+          const user =
+            email !== 'unknown'
+              ? await db.user.findFirst({ where: { email }, select: { id: true } })
+              : null
+          const membership = user
+            ? await db.organizationMember.findFirst({
+                where: { userId: user.id },
+                select: { organizationId: true },
+              })
             : null
-        const membership = user
-          ? await db.organizationMember.findFirst({
-              where: { userId: user.id },
-              select: { organizationId: true },
-            })
-          : null
-        logAudit(
-          { userId: user?.id ?? '', organizationId: membership?.organizationId ?? '' },
-          {
-            action: 'auth.loginFailed',
-            message: `Failed login attempt for ${email}`,
-            metadata: { email, statusCode: response.status, path: pathname },
-            ip: getRequestIp(cloned),
-            userAgent: cloned.headers.get('user-agent'),
-          }
-        ).catch(() => { /* best-effort */ })
-      } catch {
-        // Don't block auth flow
-      }
+          await logAudit(
+            { userId: user?.id ?? '', organizationId: membership?.organizationId ?? '' },
+            {
+              action: 'auth.loginFailed',
+              message: `Failed login attempt for ${email}`,
+              metadata: { email, statusCode: status, path: pathname },
+              ip,
+              userAgent,
+            }
+          )
+        } catch {
+          /* best-effort */
+        }
+      })()
     }
 
     return response
