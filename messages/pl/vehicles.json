@@ -47,7 +47,7 @@
     "purchased": "Zakupiony {date}",
     "tabs": {
       "services": "Usługi",
-      "quotes": "Quotes",
+      "quotes": "Wyceny",
       "inspections": "Przeglądy",
       "notes": "Notatki",
       "reminders": "Przypomnienia"
@@ -65,13 +65,13 @@
     "edit": "Edytuj"
   },
   "quotes": {
-    "newQuote": "New Quote",
-    "empty": "No quotes yet",
-    "columnNumber": "Quote #",
-    "columnTitle": "Title",
+    "newQuote": "Nowa wycena",
+    "empty": "Brak wycen",
+    "columnNumber": "Wycena #",
+    "columnTitle": "Tytuł",
     "columnStatus": "Status",
-    "columnDate": "Date",
-    "columnTotal": "Total"
+    "columnDate": "Data",
+    "columnTotal": "Suma"
   },
   "inspections": {
     "newInspection": "Nowy przegląd",

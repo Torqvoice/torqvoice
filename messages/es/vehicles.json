@@ -47,7 +47,7 @@
     "purchased": "Comprado el {date}",
     "tabs": {
       "services": "Servicios",
-      "quotes": "Quotes",
+      "quotes": "Cotizaciones",
       "inspections": "Inspecciones",
       "notes": "Notas",
       "reminders": "Recordatorios"
@@ -65,12 +65,12 @@
     "edit": "Editar"
   },
   "quotes": {
-    "newQuote": "New Quote",
-    "empty": "No quotes yet",
-    "columnNumber": "Quote #",
-    "columnTitle": "Title",
-    "columnStatus": "Status",
-    "columnDate": "Date",
+    "newQuote": "Nueva cotización",
+    "empty": "Aún no hay cotizaciones",
+    "columnNumber": "Cotización #",
+    "columnTitle": "Título",
+    "columnStatus": "Estado",
+    "columnDate": "Fecha",
     "columnTotal": "Total"
   },
   "inspections": {

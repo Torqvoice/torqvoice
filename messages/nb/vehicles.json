@@ -47,7 +47,7 @@
     "purchased": "Kjopt {date}",
     "tabs": {
       "services": "Tjenester",
-      "quotes": "Quotes",
+      "quotes": "Tilbud",
       "inspections": "Inspeksjoner",
       "notes": "Notater",
       "reminders": "Paminnelser"
@@ -65,13 +65,13 @@
     "edit": "Rediger"
   },
   "quotes": {
-    "newQuote": "New Quote",
-    "empty": "No quotes yet",
-    "columnNumber": "Quote #",
-    "columnTitle": "Title",
+    "newQuote": "Nytt tilbud",
+    "empty": "Ingen tilbud ennå",
+    "columnNumber": "Tilbud #",
+    "columnTitle": "Tittel",
     "columnStatus": "Status",
-    "columnDate": "Date",
-    "columnTotal": "Total"
+    "columnDate": "Dato",
+    "columnTotal": "Totalt"
   },
   "inspections": {
     "newInspection": "Ny inspeksjon",

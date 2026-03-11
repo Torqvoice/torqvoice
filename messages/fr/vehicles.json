@@ -47,7 +47,7 @@
     "purchased": "Achet\u00e9 le {date}",
     "tabs": {
       "services": "Services",
-      "quotes": "Quotes",
+      "quotes": "Devis",
       "inspections": "Inspections",
       "notes": "Notes",
       "reminders": "Rappels"
@@ -65,11 +65,11 @@
     "edit": "Modifier"
   },
   "quotes": {
-    "newQuote": "New Quote",
-    "empty": "No quotes yet",
-    "columnNumber": "Quote #",
-    "columnTitle": "Title",
-    "columnStatus": "Status",
+    "newQuote": "Nouveau devis",
+    "empty": "Aucun devis pour le moment",
+    "columnNumber": "Devis #",
+    "columnTitle": "Titre",
+    "columnStatus": "Statut",
     "columnDate": "Date",
     "columnTotal": "Total"
   },
