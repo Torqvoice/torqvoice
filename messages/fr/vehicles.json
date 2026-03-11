@@ -47,6 +47,7 @@
     "purchased": "Achet\u00e9 le {date}",
     "tabs": {
       "services": "Services",
+      "quotes": "Quotes",
       "inspections": "Inspections",
       "notes": "Notes",
       "reminders": "Rappels"
@@ -62,6 +63,15 @@
     "deleteTitle": "Supprimer le v\u00e9hicule\u00a0?",
     "deleteDescription": "Cela supprimera d\u00e9finitivement {name} ainsi que tous les dossiers de service, notes et rappels associ\u00e9s. Cette action est irr\u00e9versible.",
     "edit": "Modifier"
+  },
+  "quotes": {
+    "newQuote": "New Quote",
+    "empty": "No quotes yet",
+    "columnNumber": "Quote #",
+    "columnTitle": "Title",
+    "columnStatus": "Status",
+    "columnDate": "Date",
+    "columnTotal": "Total"
   },
   "inspections": {
     "newInspection": "Nouvelle inspection",

@@ -47,6 +47,7 @@ import {
   Clock,
   DollarSign,
   EyeOff,
+  FileText,
   Gauge,
   Loader2,
   MoreVertical,
@@ -168,6 +169,26 @@ interface VehicleDetail {
   }
 }
 
+interface QuoteRecord {
+  id: string
+  quoteNumber: string | null
+  title: string
+  status: string
+  totalAmount: number
+  createdAt: Date
+  validUntil: Date | null
+  customer: { id: string; name: string } | null
+}
+
+const quoteStatusColors: Record<string, string> = {
+  draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
+  sent: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
+  expired: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+  converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+}
+
 export function VehicleDetailClient({
   vehicle,
   customers,
@@ -180,6 +201,7 @@ export function VehicleDetailClient({
   predictionData,
   inspections,
   inspectionTemplates,
+  quotes = [],
 }: {
   vehicle: VehicleDetail
   customers: CustomerOption[]
@@ -208,6 +230,7 @@ export function VehicleDetailClient({
     items: { id: string; condition: string }[]
   }[]
   inspectionTemplates?: { id: string; name: string; isDefault: boolean }[]
+  quotes?: QuoteRecord[]
 }) {
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
@@ -218,7 +241,8 @@ export function VehicleDetailClient({
   const tr = useTranslations('vehicles.reminders')
   const tc = useTranslations('common.buttons')
 
-  const validTabs = ['services', 'inspections', 'notes', 'reminders'] as const
+  const tq = useTranslations('vehicles.quotes')
+  const validTabs = ['services', 'quotes', 'inspections', 'notes', 'reminders'] as const
   const tabParam = searchParams.get('tab')
   const activeTab = validTabs.includes(tabParam as (typeof validTabs)[number])
     ? (tabParam as string)
@@ -601,27 +625,55 @@ export function VehicleDetailClient({
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="services" className="gap-1.5">
             <Wrench className="h-3.5 w-3.5" />
             {t('tabs.services')}
+            {vehicle._count.serviceRecords > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {vehicle._count.serviceRecords}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="quotes" className="gap-1.5">
+            <FileText className="h-3.5 w-3.5" />
+            {t('tabs.quotes')}
+            {quotes.length > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {quotes.length}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="inspections" className="gap-1.5">
             <ClipboardCheck className="h-3.5 w-3.5" />
             {t('tabs.inspections')}
+            {inspections && inspections.length > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {inspections.length}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="notes" className="gap-1.5">
             <StickyNote className="h-3.5 w-3.5" />
             {t('tabs.notes')}
+            {vehicle._count.notes > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {vehicle._count.notes}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="reminders" className="gap-1.5">
             <Bell className="h-3.5 w-3.5" />
             {t('tabs.reminders')}
-            {overdueCount > 0 && (
+            {overdueCount > 0 ? (
               <Badge variant="destructive" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                 {overdueCount}
               </Badge>
-            )}
+            ) : vehicle._count.reminders > 0 ? (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {vehicle._count.reminders}
+              </Badge>
+            ) : null}
           </TabsTrigger>
         </TabsList>
 
@@ -638,6 +690,69 @@ export function VehicleDetailClient({
             type={serviceType}
             currencyCode={currencyCode}
           />
+        </TabsContent>
+
+        {/* Quotes Tab */}
+        <TabsContent value="quotes" className="space-y-4">
+          <div className="flex justify-end">
+            <Button size="sm" asChild>
+              <Link href="/quotes">
+                <Plus className="mr-1 h-3.5 w-3.5" />
+                {tq('newQuote')}
+              </Link>
+            </Button>
+          </div>
+
+          {quotes.length === 0 ? (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col items-center py-12">
+                <FileText className="mb-3 h-10 w-10 text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">{tq('empty')}</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="rounded-lg border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-25">{tq('columnNumber')}</TableHead>
+                    <TableHead>{tq('columnTitle')}</TableHead>
+                    <TableHead className="w-27.5">{tq('columnStatus')}</TableHead>
+                    <TableHead className="w-24">{tq('columnDate')}</TableHead>
+                    <TableHead className="w-22.5 text-right">{tq('columnTotal')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {quotes.map((q) => (
+                    <TableRow
+                      key={q.id}
+                      className="cursor-pointer"
+                      onClick={() => router.push(`/quotes/${q.id}`)}
+                    >
+                      <TableCell className="font-mono text-xs text-muted-foreground">
+                        {q.quoteNumber || '-'}
+                      </TableCell>
+                      <TableCell className="font-medium">{q.title}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${quoteStatusColors[q.status] || ''}`}
+                        >
+                          {q.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-mono text-xs text-muted-foreground">
+                        {formatDate(new Date(q.createdAt))}
+                      </TableCell>
+                      <TableCell className="text-right font-semibold">
+                        {formatCurrency(q.totalAmount, currencyCode)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </TabsContent>
 
         {/* Inspections Tab */}

@@ -47,6 +47,7 @@
     "purchased": "Zakupiony {date}",
     "tabs": {
       "services": "Usługi",
+      "quotes": "Quotes",
       "inspections": "Przeglądy",
       "notes": "Notatki",
       "reminders": "Przypomnienia"
@@ -62,6 +63,15 @@
     "deleteTitle": "Usunąć pojazd?",
     "deleteDescription": "Spowoduje to trwałe usunięcie {name} wraz ze wszystkimi powiązanymi rekordami serwisowymi, notatkami i przypomnieniami. Tej operacji nie można cofnąć.",
     "edit": "Edytuj"
+  },
+  "quotes": {
+    "newQuote": "New Quote",
+    "empty": "No quotes yet",
+    "columnNumber": "Quote #",
+    "columnTitle": "Title",
+    "columnStatus": "Status",
+    "columnDate": "Date",
+    "columnTotal": "Total"
   },
   "inspections": {
     "newInspection": "Nowy przegląd",

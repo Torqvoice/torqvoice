@@ -47,6 +47,7 @@
     "purchased": "Satın alınma tarihi: {date}",
     "tabs": {
       "services": "Servisler",
+      "quotes": "Quotes",
       "inspections": "Muayeneler",
       "notes": "Notlar",
       "reminders": "Hatırlatıcılar"
@@ -62,6 +63,15 @@
     "deleteTitle": "Araç silinsin mi?",
     "deleteDescription": "Bu işlem {name} aracını ve tüm ilişkili servis kayıtlarını, notları ve hatırlatıcıları kalıcı olarak silecektir. Bu işlem geri alınamaz.",
     "edit": "Düzenle"
+  },
+  "quotes": {
+    "newQuote": "New Quote",
+    "empty": "No quotes yet",
+    "columnNumber": "Quote #",
+    "columnTitle": "Title",
+    "columnStatus": "Status",
+    "columnDate": "Date",
+    "columnTotal": "Total"
   },
   "inspections": {
     "newInspection": "Yeni Muayene",
