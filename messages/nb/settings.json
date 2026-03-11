@@ -385,7 +385,7 @@
     "quotationTemplateSaved": "Tilbudsmalinnstillinger lagret",
     "failedSave": "Kunne ikke lagre innstillinger",
     "smsTemplates": "SMS-meldingsmaler",
-    "smsTemplatesDescription": "Tilpass tekstmeldingene som sendes til kunder. Bruk variabler som <code>{companyName}</code> for a sette inn dynamiske verdier.",
+    "smsTemplatesDescription": "Tilpass tekstmeldingene som sendes til kunder. Bruk variabler som <code>'{companyName}'</code> for a sette inn dynamiske verdier.",
     "reset": "Tilbakestill",
     "invoiceReady": "Faktura klar",
     "invoiceReadyDescription": "Sendes nar en faktura deles med en kunde.",

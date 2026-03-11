@@ -385,7 +385,7 @@
     "quotationTemplateSaved": "Quotation template settings saved",
     "failedSave": "Failed to save settings",
     "smsTemplates": "SMS Message Templates",
-    "smsTemplatesDescription": "Customize the text messages sent to customers. Use variables like <code>{companyName}</code> to insert dynamic values.",
+    "smsTemplatesDescription": "Customize the text messages sent to customers. Use variables like <code>'{companyName}'</code> to insert dynamic values.",
     "reset": "Reset",
     "invoiceReady": "Invoice Ready",
     "invoiceReadyDescription": "Sent when sharing an invoice with a customer.",

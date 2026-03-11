@@ -438,7 +438,7 @@
     "quotationTemplateSaved": "Teklif şablon ayarları kaydedildi",
     "failedSave": "Ayarlar kaydedilemedi",
     "smsTemplates": "SMS Mesaj Şablonları",
-    "smsTemplatesDescription": "Müşterilere gönderilen metin mesajlarını özelleştirin. Dinamik değerler eklemek için <code>{companyName}</code> gibi değişkenler kullanın.",
+    "smsTemplatesDescription": "Müşterilere gönderilen metin mesajlarını özelleştirin. Dinamik değerler eklemek için <code>'{companyName}'</code> gibi değişkenler kullanın.",
     "reset": "Sıfırla",
     "invoiceReady": "Fatura Hazır",
     "invoiceReadyDescription": "Bir fatura müşteriyle paylaşıldığında gönderilir.",

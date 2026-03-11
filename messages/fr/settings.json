@@ -438,7 +438,7 @@
     "quotationTemplateSaved": "Parametres du modele de devis enregistres",
     "failedSave": "Echec de l'enregistrement des parametres",
     "smsTemplates": "Modeles de messages SMS",
-    "smsTemplatesDescription": "Personnalisez les messages texte envoyes aux clients. Utilisez des variables comme <code>{companyName}</code> pour inserer des valeurs dynamiques.",
+    "smsTemplatesDescription": "Personnalisez les messages texte envoyes aux clients. Utilisez des variables comme <code>'{companyName}'</code> pour inserer des valeurs dynamiques.",
     "reset": "Reinitialiser",
     "invoiceReady": "Facture prete",
     "invoiceReadyDescription": "Envoye lors du partage d'une facture avec un client.",

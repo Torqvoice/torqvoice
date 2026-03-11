@@ -438,7 +438,7 @@
     "quotationTemplateSaved": "Configuracion de plantilla de cotizacion guardada",
     "failedSave": "Error al guardar la configuracion",
     "smsTemplates": "Plantillas de mensajes SMS",
-    "smsTemplatesDescription": "Personalice los mensajes de texto enviados a los clientes. Use variables como <code>{companyName}</code> para insertar valores dinamicos.",
+    "smsTemplatesDescription": "Personalice los mensajes de texto enviados a los clientes. Use variables como <code>'{companyName}'</code> para insertar valores dinamicos.",
     "reset": "Restablecer",
     "invoiceReady": "Factura lista",
     "invoiceReadyDescription": "Se envia al compartir una factura con un cliente.",

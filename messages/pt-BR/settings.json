@@ -438,7 +438,7 @@
     "quotationTemplateSaved": "Configuracoes do modelo de orcamento salvas",
     "failedSave": "Falha ao salvar configuracoes",
     "smsTemplates": "Modelos de mensagens SMS",
-    "smsTemplatesDescription": "Personalize as mensagens de texto enviadas aos clientes. Use variaveis como <code>{companyName}</code> para inserir valores dinamicos.",
+    "smsTemplatesDescription": "Personalize as mensagens de texto enviadas aos clientes. Use variaveis como <code>'{companyName}'</code> para inserir valores dinamicos.",
     "reset": "Redefinir",
     "invoiceReady": "Fatura pronta",
     "invoiceReadyDescription": "Enviada ao compartilhar uma fatura com um cliente.",

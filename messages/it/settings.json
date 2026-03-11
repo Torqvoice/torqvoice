@@ -438,7 +438,7 @@
     "quotationTemplateSaved": "Impostazioni modello preventivo salvate",
     "failedSave": "Salvataggio impostazioni non riuscito",
     "smsTemplates": "Modelli messaggi SMS",
-    "smsTemplatesDescription": "Personalizza i messaggi di testo inviati ai clienti. Usa variabili come <code>{companyName}</code> per inserire valori dinamici.",
+    "smsTemplatesDescription": "Personalizza i messaggi di testo inviati ai clienti. Usa variabili come <code>'{companyName}'</code> per inserire valori dinamici.",
     "reset": "Ripristina",
     "invoiceReady": "Fattura pronta",
     "invoiceReadyDescription": "Inviato quando si condivide una fattura con un cliente.",

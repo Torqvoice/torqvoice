@@ -438,7 +438,7 @@
     "quotationTemplateSaved": "Angebotsvorlageneinstellungen gespeichert",
     "failedSave": "Einstellungen konnten nicht gespeichert werden",
     "smsTemplates": "SMS-Nachrichtenvorlagen",
-    "smsTemplatesDescription": "Passen Sie die Textnachrichten an Kunden an. Verwenden Sie Variablen wie <code>{companyName}</code>, um dynamische Werte einzufugen.",
+    "smsTemplatesDescription": "Passen Sie die Textnachrichten an Kunden an. Verwenden Sie Variablen wie <code>'{companyName}'</code>, um dynamische Werte einzufugen.",
     "reset": "Zurucksetzen",
     "invoiceReady": "Rechnung bereit",
     "invoiceReadyDescription": "Wird gesendet, wenn eine Rechnung mit einem Kunden geteilt wird.",

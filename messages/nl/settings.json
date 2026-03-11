@@ -438,7 +438,7 @@
     "quotationTemplateSaved": "Offertesjablooninstellingen opgeslagen",
     "failedSave": "Instellingen opslaan mislukt",
     "smsTemplates": "SMS-berichtsjablonen",
-    "smsTemplatesDescription": "Pas de tekstberichten aan die naar klanten worden gestuurd. Gebruik variabelen zoals <code>{companyName}</code> om dynamische waarden in te voegen.",
+    "smsTemplatesDescription": "Pas de tekstberichten aan die naar klanten worden gestuurd. Gebruik variabelen zoals <code>'{companyName}'</code> om dynamische waarden in te voegen.",
     "reset": "Resetten",
     "invoiceReady": "Factuur gereed",
     "invoiceReadyDescription": "Verzonden bij het delen van een factuur met een klant.",

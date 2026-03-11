@@ -438,7 +438,7 @@
     "quotationTemplateSaved": "Ustawienia szablonu wyceny zapisane",
     "failedSave": "Nie udalo sie zapisac ustawien",
     "smsTemplates": "Szablony wiadomosci SMS",
-    "smsTemplatesDescription": "Dostosuj wiadomosci tekstowe wysylane do klientow. Uzyj zmiennych jak <code>{companyName}</code> aby wstawic dynamiczne wartosci.",
+    "smsTemplatesDescription": "Dostosuj wiadomosci tekstowe wysylane do klientow. Uzyj zmiennych jak <code>'{companyName}'</code> aby wstawic dynamiczne wartosci.",
     "reset": "Resetuj",
     "invoiceReady": "Faktura gotowa",
     "invoiceReadyDescription": "Wysylana przy udostepnianiu faktury klientowi.",
