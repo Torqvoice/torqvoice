@@ -6,7 +6,9 @@ import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import { CustomFields } from '@/features/vehicles/Components/invoice-pdf/CustomFields'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 import type { InvoiceLayoutConfig, InvoiceSection } from '@/features/settings/Schema/invoiceLayoutSchema'
-import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds, getVisibleFieldsForSection as getVisibleFieldsForSectionHelper } from '@/features/settings/Schema/invoiceLayoutSchema'
+
+const DEFAULT_HEADER_FIELD_ORDER = ['logo', 'company_name', 'company_address', 'company_phone', 'company_email', 'company_org_number']
 
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce(
@@ -111,6 +113,8 @@ export function QuotePDF({
   const showLogo = template?.showLogo !== false
   const showCompanyName = template?.showCompanyName !== false
   const logoScale = (template?.logoSize || 100) / 100
+  const headerFields = layoutConfig ? getVisibleFieldsForSectionHelper(layoutConfig, 'header') : null
+  const headerFieldOrder = getOrderedFieldIds(headerFields, DEFAULT_HEADER_FIELD_ORDER)
   const styles = createStyles(primaryColor, fontFamily)
   const fontBold = getFontBold(fontFamily)
 
@@ -150,12 +154,35 @@ export function QuotePDF({
   const validDate = data.validUntil ? formatDateForPdf(data.validUntil, df, tz) : null
   const shopName = workshop?.name || 'Torqvoice'
 
+  const renderCompactField = (fieldId: string) => {
+    switch (fieldId) {
+      case 'logo':
+        return showLogo && logoDataUri ? (
+          <Image key="logo" src={logoDataUri} style={{ maxWidth: 40 * logoScale, maxHeight: 40 * logoScale, borderRadius: 4, objectFit: 'contain', marginBottom: 4 }} />
+        ) : null
+      case 'company_name':
+        return showCompanyName ? (
+          <Text key="company_name" style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>{shopName}</Text>
+        ) : null
+      case 'company_address':
+        return workshop?.address ? <Text key="company_address" style={{ fontSize: 8, color: gray }}>{workshop.address}</Text> : null
+      case 'company_phone':
+        return workshop?.phone ? <Text key="company_phone" style={{ fontSize: 8, color: gray }}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text> : null
+      case 'company_email':
+        return workshop?.email ? <Text key="company_email" style={{ fontSize: 8, color: gray }}>{workshop.email}</Text> : null
+      case 'company_org_number':
+        return null // org number not shown in quote header
+      default:
+        return null
+    }
+  }
+
   const renderCompactHeader = () => (
     <View style={{ marginBottom: 20 }}>
       <View
         style={{
           flexDirection: 'row',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           justifyContent: 'space-between',
           paddingBottom: 10,
           borderBottomWidth: 1,
@@ -163,20 +190,7 @@ export function QuotePDF({
         }}
       >
         <View>
-          {showLogo && logoDataUri && (
-            <Image
-              src={logoDataUri}
-              style={{ maxWidth: 40 * logoScale, maxHeight: 40 * logoScale, borderRadius: 4, objectFit: 'contain', marginBottom: 4 }}
-            />
-          )}
-          {showCompanyName && (
-            <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
-              {shopName}
-            </Text>
-          )}
-          {workshop?.address && (
-            <Text style={{ fontSize: 8, color: gray }}>{workshop.address}</Text>
-          )}
+          {headerFieldOrder.map(renderCompactField)}
         </View>
         <View style={{ alignItems: 'flex-end' }}>
           <Text style={{ fontSize: 14, fontFamily: fontBold, color: primaryColor }}>{labels.title || 'QUOTE'}</Text>
@@ -185,31 +199,43 @@ export function QuotePDF({
           {validDate && <Text style={{ fontSize: 9, color: gray }}>{labels.validUntil ? fillTemplate(labels.validUntil, { date: validDate }) : `Valid until: ${validDate}`}</Text>}
         </View>
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginTop: 6,
-          paddingHorizontal: 2,
-        }}
-      >
-        <View style={{ flexDirection: 'row', gap: 12 }}>
-          {workshop?.phone && (
-            <Text style={{ fontSize: 8, color: gray }}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>
-          )}
-          {workshop?.email && (
-            <Text style={{ fontSize: 8, color: gray }}>{workshop.email}</Text>
-          )}
+      {torqvoiceLogoDataUri && (
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginTop: 6, paddingHorizontal: 2 }}>
+          <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
+          <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
         </View>
-        {torqvoiceLogoDataUri && (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-            <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-            <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
-          </View>
-        )}
-      </View>
+      )}
     </View>
   )
+
+  const renderModernField = (fieldId: string) => {
+    switch (fieldId) {
+      case 'logo':
+        return showLogo && logoDataUri ? (
+          <Image key="logo" src={logoDataUri} style={{ maxWidth: 50 * logoScale, maxHeight: 50 * logoScale, borderRadius: 4, objectFit: 'contain', marginBottom: 6 }} />
+        ) : null
+      case 'company_name':
+        return showCompanyName ? (
+          <Text key="company_name" style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>{shopName}</Text>
+        ) : null
+      case 'company_address':
+        return workshop?.address ? (
+          <Text key="company_address" style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>{workshop.address}</Text>
+        ) : null
+      case 'company_phone':
+        return workshop?.phone ? (
+          <Text key="company_phone" style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>
+        ) : null
+      case 'company_email':
+        return workshop?.email ? (
+          <Text key="company_email" style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>{workshop.email}</Text>
+        ) : null
+      case 'company_org_number':
+        return null // org number not shown in quote header
+      default:
+        return null
+    }
+  }
 
   const renderModernHeader = () => (
     <View style={{ marginBottom: 24 }}>
@@ -222,34 +248,7 @@ export function QuotePDF({
         }}
       >
         <View style={{ alignItems: 'center' }}>
-          {showLogo && logoDataUri && (
-            <Image
-              src={logoDataUri}
-              style={{ maxWidth: 50 * logoScale, maxHeight: 50 * logoScale, borderRadius: 4, objectFit: 'contain', marginBottom: 6 }}
-            />
-          )}
-          {showCompanyName && (
-            <Text style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
-              {shopName}
-            </Text>
-          )}
-          {workshop?.address && (
-            <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
-              {workshop.address}
-            </Text>
-          )}
-          <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
-            {workshop?.phone && (
-              <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
-              </Text>
-            )}
-            {workshop?.email && (
-              <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                {workshop.email}
-              </Text>
-            )}
-          </View>
+          {headerFieldOrder.map(renderModernField)}
         </View>
         {torqvoiceLogoDataUri && (
           <View
@@ -287,26 +286,31 @@ export function QuotePDF({
     </View>
   )
 
+  const renderStandardField = (fieldId: string) => {
+    switch (fieldId) {
+      case 'logo':
+        return showLogo && logoDataUri ? (
+          <Image key="logo" src={logoDataUri} style={{ maxWidth: 150 * logoScale, maxHeight: 60 * logoScale, marginBottom: 6, borderRadius: 4, objectFit: 'contain', objectPosition: 'left' }} />
+        ) : null
+      case 'company_name':
+        return showCompanyName ? <Text key="company_name" style={styles.brandName}>{shopName}</Text> : null
+      case 'company_address':
+        return workshop?.address ? <Text key="company_address" style={styles.brandSub}>{workshop.address}</Text> : null
+      case 'company_phone':
+        return workshop?.phone ? <Text key="company_phone" style={styles.brandContact}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text> : null
+      case 'company_email':
+        return workshop?.email ? <Text key="company_email" style={styles.brandContact}>{workshop.email}</Text> : null
+      case 'company_org_number':
+        return null // org number not shown in quote header
+      default:
+        return null
+    }
+  }
+
   const renderStandardHeader = () => (
     <View style={styles.header}>
       <View>
-        {showLogo && logoDataUri && (
-          <Image
-            src={logoDataUri}
-            style={{
-              maxWidth: 150 * logoScale,
-              maxHeight: 60 * logoScale,
-              marginBottom: 6,
-              borderRadius: 4,
-              objectFit: 'contain',
-              objectPosition: 'left',
-            }}
-          />
-        )}
-        {showCompanyName && <Text style={styles.brandName}>{shopName}</Text>}
-        {workshop?.address && <Text style={styles.brandSub}>{workshop.address}</Text>}
-        {workshop?.phone && <Text style={styles.brandContact}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>}
-        {workshop?.email && <Text style={styles.brandContact}>{workshop.email}</Text>}
+        {headerFieldOrder.map(renderStandardField)}
       </View>
       <View>
         {torqvoiceLogoDataUri && (

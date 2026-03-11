@@ -243,13 +243,11 @@ export function InvoiceView({
   const balanceDue = displayTotal - totalPaid
   const shopName = workshop.name || record.shopName || 'Torqvoice'
 
-  // Layout config overrides for header field visibility
-  const effectiveShowLogo = layoutConfig
-    ? isFieldVisible(layoutConfig, 'header', 'logo')
-    : showLogo
-  const effectiveShowCompanyName = layoutConfig
-    ? isFieldVisible(layoutConfig, 'header', 'company_name')
-    : showCompanyName
+  // Layout config overrides for header field visibility & ordering
+  const headerVisibleFields = getVisibleFieldsForSection(layoutConfig, 'header')
+  const headerFieldOrder = getOrderedFieldIds(headerVisibleFields, ['logo', 'company_name', 'company_address', 'company_phone', 'company_email', 'company_org_number'])
+  const effectiveShowLogo = headerVisibleFields ? headerFieldOrder.includes('logo') : showLogo
+  const effectiveShowCompanyName = headerVisibleFields ? headerFieldOrder.includes('company_name') : showCompanyName
 
   const sectionOrder = getSectionOrder(layoutConfig)
 
@@ -596,90 +594,87 @@ export function InvoiceView({
             case 'header':
               return (
                 <div key="header">
-                  {headerStyle === 'modern' ? (
-                    <>
-                      <div className="rounded-lg p-6 text-center text-white" style={{ backgroundColor: primaryColor }}>
-                        {effectiveShowLogo && logoUrl && (
-                          <img
-                            src={logoUrl}
-                            alt={shopName}
-                            className="mx-auto mb-2 object-contain"
-                            style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }}
-                          />
-                        )}
-                        {effectiveShowCompanyName && (
-                          <h2 className="text-xl font-bold sm:text-2xl">{shopName}</h2>
-                        )}
-                        {workshop.address && <p className="mt-1 text-sm opacity-80">{workshop.address}</p>}
-                        <div className="mt-1 flex flex-wrap justify-center gap-3 text-sm opacity-70">
-                          {workshop.phone && <span>{t('tel', { phone: workshop.phone })}</span>}
-                          {workshop.email && <span>{workshop.email}</span>}
+                  {(() => {
+                    const renderModernField = (fid: string) => {
+                      switch (fid) {
+                        case 'logo': return effectiveShowLogo && logoUrl ? <img key="logo" src={logoUrl} alt={shopName} className="mx-auto mb-2 object-contain" style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }} /> : null
+                        case 'company_name': return effectiveShowCompanyName ? <h2 key="cn" className="text-xl font-bold sm:text-2xl">{shopName}</h2> : null
+                        case 'company_address': return workshop.address ? <p key="addr" className="mt-1 text-sm opacity-80">{workshop.address}</p> : null
+                        case 'company_phone': return workshop.phone ? <p key="ph" className="text-sm opacity-70">{t('tel', { phone: workshop.phone })}</p> : null
+                        case 'company_email': return workshop.email ? <p key="em" className="text-sm opacity-70">{workshop.email}</p> : null
+                        case 'company_org_number': return null
+                        default: return null
+                      }
+                    }
+                    const renderCompactField = (fid: string) => {
+                      switch (fid) {
+                        case 'logo': return effectiveShowLogo && logoUrl ? <img key="logo" src={logoUrl} alt={shopName} className="rounded object-contain" style={{ height: 48 * (logoSize / 100), width: 48 * (logoSize / 100) }} /> : null
+                        case 'company_name': return effectiveShowCompanyName ? <h2 key="cn" className="text-lg font-bold" style={{ color: primaryColor }}>{shopName}</h2> : null
+                        case 'company_address': return workshop.address ? <p key="addr" className="text-sm text-gray-500">{workshop.address}</p> : null
+                        case 'company_phone': return workshop.phone ? <p key="ph" className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p> : null
+                        case 'company_email': return workshop.email ? <p key="em" className="text-sm text-gray-500">{workshop.email}</p> : null
+                        case 'company_org_number': return null
+                        default: return null
+                      }
+                    }
+                    const renderStandardField = (fid: string) => {
+                      switch (fid) {
+                        case 'logo': return effectiveShowLogo && logoUrl ? <img key="logo" src={logoUrl} alt={shopName} className="mb-2 object-contain object-left" style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }} /> : null
+                        case 'company_name': return effectiveShowCompanyName ? <h2 key="cn" className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2> : null
+                        case 'company_address': return workshop.address ? <p key="addr" className="mt-1 text-sm text-gray-500">{workshop.address}</p> : null
+                        case 'company_phone': return workshop.phone ? <p key="ph" className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p> : null
+                        case 'company_email': return workshop.email ? <p key="em" className="text-sm text-gray-500">{workshop.email}</p> : null
+                        case 'company_org_number': return null
+                        default: return null
+                      }
+                    }
+
+                    if (headerStyle === 'modern') return (
+                      <>
+                        <div className="rounded-lg p-6 text-center text-white" style={{ backgroundColor: primaryColor }}>
+                          {headerFieldOrder.map(renderModernField)}
                         </div>
-                      </div>
-                      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <h3 className="text-xl font-bold uppercase">{t('title')}</h3>
-                        <div className="flex gap-3 text-sm text-gray-500">
-                          <span>{invoiceNum}</span>
-                          <span>{serviceDate}</span>
-                        </div>
-                      </div>
-                    </>
-                  ) : headerStyle === 'compact' ? (
-                    <div className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: '#e5e7eb' }}>
-                      <div className="flex items-center gap-3">
-                        {effectiveShowLogo && logoUrl && (
-                          <img
-                            src={logoUrl}
-                            alt={shopName}
-                            className="rounded object-contain"
-                            style={{ height: 48 * (logoSize / 100), width: 48 * (logoSize / 100) }}
-                          />
-                        )}
-                        <div>
-                          {effectiveShowCompanyName && (
-                            <h2 className="text-lg font-bold" style={{ color: primaryColor }}>{shopName}</h2>
-                          )}
-                          {workshop.address && <p className="text-sm text-gray-500">{workshop.address}</p>}
-                        </div>
-                      </div>
-                      <div className="sm:text-right">
-                        <h3 className="text-lg font-bold uppercase">{t('title')}</h3>
-                        <p className="text-sm text-gray-500">{invoiceNum}</p>
-                        <p className="text-sm text-gray-500">{serviceDate}</p>
-                      </div>
-                    </div>
-                  ) : (
-                    /* Standard */
-                    <div className="flex flex-col gap-4 border-b-2 pb-6 sm:flex-row sm:items-start sm:justify-between" style={{ borderColor: primaryColor }}>
-                      <div>
-                        {effectiveShowLogo && logoUrl && (
-                          <img
-                            src={logoUrl}
-                            alt={shopName}
-                            className="mb-2 object-contain object-left"
-                            style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }}
-                          />
-                        )}
-                        {effectiveShowCompanyName && (
-                          <h2 className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2>
-                        )}
-                        {workshop.address && <p className="mt-1 text-sm text-gray-500">{workshop.address}</p>}
-                        {workshop.phone && <p className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p>}
-                        {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
-                      </div>
-                      <div className="sm:text-right">
-                        {showTorqvoiceBranding && (
-                          <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 dark:bg-gray-800">
-                            <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
-                            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+                        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <h3 className="text-xl font-bold uppercase">{t('title')}</h3>
+                          <div className="flex gap-3 text-sm text-gray-500">
+                            <span>{invoiceNum}</span>
+                            <span>{serviceDate}</span>
                           </div>
-                        )}
-                        <h3 className="text-xl font-bold uppercase" style={{ color: primaryColor }}>{t('title')}</h3>
-                        <p className="mt-1 text-sm text-gray-500">{invoiceNum}</p>
-                        <p className="text-sm text-gray-500">{serviceDate}</p>
+                        </div>
+                      </>
+                    )
+                    if (headerStyle === 'compact') return (
+                      <div className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-start sm:justify-between" style={{ borderColor: '#e5e7eb' }}>
+                        <div>
+                          {headerFieldOrder.map(renderCompactField)}
+                        </div>
+                        <div className="sm:text-right">
+                          <h3 className="text-lg font-bold uppercase">{t('title')}</h3>
+                          <p className="text-sm text-gray-500">{invoiceNum}</p>
+                          <p className="text-sm text-gray-500">{serviceDate}</p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )
+                    /* Standard */
+                    return (
+                      <div className="flex flex-col gap-4 border-b-2 pb-6 sm:flex-row sm:items-start sm:justify-between" style={{ borderColor: primaryColor }}>
+                        <div>
+                          {headerFieldOrder.map(renderStandardField)}
+                        </div>
+                        <div className="sm:text-right">
+                          {showTorqvoiceBranding && (
+                            <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 dark:bg-gray-800">
+                              <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
+                              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+                            </div>
+                          )}
+                          <h3 className="text-xl font-bold uppercase" style={{ color: primaryColor }}>{t('title')}</h3>
+                          <p className="mt-1 text-sm text-gray-500">{invoiceNum}</p>
+                          <p className="text-sm text-gray-500">{serviceDate}</p>
+                        </div>
+                      </div>
+                    )
+                  })()}
                 </div>
               )
 

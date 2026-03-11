@@ -332,6 +332,10 @@
       "tech_name": "Technician",
       "logo": "Logo",
       "company_name": "Company Name",
+      "company_address": "Address",
+      "company_phone": "Phone",
+      "company_email": "Email",
+      "company_org_number": "Organization Number",
       "bank_account": "Bank Account",
       "org_number": "Organization Number"
     }

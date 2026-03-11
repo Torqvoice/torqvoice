@@ -386,6 +386,10 @@
       "tech_name": "Teknisyen",
       "logo": "Logo",
       "company_name": "Şirket adı",
+      "company_address": "Adres",
+      "company_phone": "Telefon",
+      "company_email": "E-posta",
+      "company_org_number": "Kuruluş numarası",
       "bank_account": "Banka hesabı",
       "org_number": "Kuruluş numarası"
     }

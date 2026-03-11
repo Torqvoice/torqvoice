@@ -332,6 +332,10 @@
       "tech_name": "Tekniker",
       "logo": "Logo",
       "company_name": "Firmanavn",
+      "company_address": "Adresse",
+      "company_phone": "Telefon",
+      "company_email": "E-post",
+      "company_org_number": "Organisasjonsnummer",
       "bank_account": "Bankkonto",
       "org_number": "Organisasjonsnummer"
     }

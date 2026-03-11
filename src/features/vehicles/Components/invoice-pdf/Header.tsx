@@ -2,6 +2,7 @@ import { Text, View, Image } from '@react-pdf/renderer'
 import type { WorkshopInfo, InvoiceSettingsProps } from './types'
 import { gray, getFontBold } from './styles'
 import type { Style } from '@react-pdf/types'
+import { getOrderedFieldIds } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce(
@@ -9,6 +10,8 @@ function fillTemplate(template: string, values: Record<string, string>): string 
     template
   )
 }
+
+const DEFAULT_HEADER_FIELD_ORDER = ['logo', 'company_name', 'company_address', 'company_phone', 'company_email', 'company_org_number']
 
 interface HeaderProps {
   headerStyle: string
@@ -55,11 +58,53 @@ export function Header({
   // Logo size scale factor (default 100 = 1x)
   const scale = (logoSize || 100) / 100
 
-  // layoutConfig fields take priority over individual toggle props
-  const showLogo = visibleFields ? visibleFields.has('logo') : showLogoProp
-  const showCompanyName = visibleFields ? visibleFields.has('company_name') : showCompanyNameProp
+  // When visibleFields is provided (from layoutConfig), getOrderedFieldIds
+  // returns only the visible fields in the configured order.
+  // When not provided, falls back to default order with legacy prop checks.
+  const fieldOrder = getOrderedFieldIds(visibleFields, DEFAULT_HEADER_FIELD_ORDER)
+
+  // For legacy prop fallback (no layoutConfig)
+  const showLogo = visibleFields ? fieldOrder.includes('logo') : showLogoProp
+  const showCompanyName = visibleFields ? fieldOrder.includes('company_name') : showCompanyNameProp
 
   if (headerStyle === 'compact') {
+    const renderCompactField = (fieldId: string) => {
+      switch (fieldId) {
+        case 'logo':
+          return showLogo && logoDataUri ? (
+            <Image
+              key="logo"
+              src={logoDataUri}
+              style={{ maxWidth: 40 * scale, maxHeight: 40 * scale, borderRadius: 4, objectFit: 'contain', marginBottom: 4 }}
+            />
+          ) : null
+        case 'company_name':
+          return showCompanyName ? (
+            <Text key="company_name" style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
+              {shopDisplayName}
+            </Text>
+          ) : null
+        case 'company_address':
+          return workshop?.address ? (
+            <Text key="company_address" style={{ fontSize: 8, color: gray }}>{workshop.address}</Text>
+          ) : null
+        case 'company_phone':
+          return workshop?.phone ? (
+            <Text key="company_phone" style={{ fontSize: 8, color: gray }}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>
+          ) : null
+        case 'company_email':
+          return workshop?.email ? (
+            <Text key="company_email" style={{ fontSize: 8, color: gray }}>{workshop.email}</Text>
+          ) : null
+        case 'company_org_number':
+          return invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber ? (
+            <Text key="company_org_number" style={{ fontSize: 8, color: gray }}>{labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}</Text>
+          ) : null
+        default:
+          return null
+      }
+    }
+
     return (
       <View style={{ marginBottom: 20 }}>
         <View
@@ -73,20 +118,7 @@ export function Header({
           }}
         >
           <View>
-            {showLogo && logoDataUri && (
-              <Image
-                src={logoDataUri}
-                style={{ maxWidth: 40 * scale, maxHeight: 40 * scale, borderRadius: 4, objectFit: 'contain', marginBottom: 4 }}
-              />
-            )}
-            {showCompanyName && (
-              <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
-                {shopDisplayName}
-              </Text>
-            )}
-            {workshop?.address && (
-              <Text style={{ fontSize: 8, color: gray }}>{workshop.address}</Text>
-            )}
+            {fieldOrder.map(renderCompactField)}
           </View>
           <View style={{ alignItems: 'flex-end' }}>
             <Text style={{ fontSize: 14, fontFamily: fontBold }}>{labels.title || 'INVOICE'}</Text>
@@ -95,37 +127,77 @@ export function Header({
             {dueDate && <Text style={{ fontSize: 9, color: gray }}>{labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}</Text>}
           </View>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginTop: 6,
-            paddingHorizontal: 2,
-          }}
-        >
-          <View style={{ flexDirection: 'row', gap: 12 }}>
-            {workshop?.phone && (
-              <Text style={{ fontSize: 8, color: gray }}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>
-            )}
-            {workshop?.email && (
-              <Text style={{ fontSize: 8, color: gray }}>{workshop.email}</Text>
-            )}
-            {invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber && (
-              <Text style={{ fontSize: 8, color: gray }}>{labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}</Text>
-            )}
+        {torqvoiceLogoDataUri && (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: 3,
+              marginTop: 6,
+              paddingHorizontal: 2,
+            }}
+          >
+            <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
+            <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
           </View>
-          {torqvoiceLogoDataUri && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-              <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-              <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
-            </View>
-          )}
-        </View>
+        )}
       </View>
     )
   }
 
   if (headerStyle === 'modern') {
+    const renderModernField = (fieldId: string) => {
+      switch (fieldId) {
+        case 'logo':
+          return showLogo && logoDataUri ? (
+            <Image
+              key="logo"
+              src={logoDataUri}
+              style={{
+                maxWidth: 50 * scale,
+                maxHeight: 50 * scale,
+                borderRadius: 4,
+                objectFit: 'contain',
+                marginBottom: 6,
+              }}
+            />
+          ) : null
+        case 'company_name':
+          return showCompanyName ? (
+            <Text key="company_name" style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
+              {shopDisplayName}
+            </Text>
+          ) : null
+        case 'company_address':
+          return workshop?.address ? (
+            <Text key="company_address" style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
+              {workshop.address}
+            </Text>
+          ) : null
+        case 'company_phone':
+          return workshop?.phone ? (
+            <Text key="company_phone" style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>
+              {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
+            </Text>
+          ) : null
+        case 'company_email':
+          return workshop?.email ? (
+            <Text key="company_email" style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>
+              {workshop.email}
+            </Text>
+          ) : null
+        case 'company_org_number':
+          return invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber ? (
+            <Text key="company_org_number" style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>
+              {labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}
+            </Text>
+          ) : null
+        default:
+          return null
+      }
+    }
+
     return (
       <View style={{ marginBottom: 24 }}>
         <View
@@ -137,45 +209,7 @@ export function Header({
           }}
         >
           <View style={{ alignItems: 'center' }}>
-            {showLogo && logoDataUri && (
-              <Image
-                src={logoDataUri}
-                style={{
-                  maxWidth: 50 * scale,
-                  maxHeight: 50 * scale,
-                  borderRadius: 4,
-                  objectFit: 'contain',
-                  marginBottom: 6,
-                }}
-              />
-            )}
-            {showCompanyName && (
-              <Text style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
-                {shopDisplayName}
-              </Text>
-            )}
-            {workshop?.address && (
-              <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
-                {workshop.address}
-              </Text>
-            )}
-            <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
-              {workshop?.phone && (
-                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                  {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
-                </Text>
-              )}
-              {workshop?.email && (
-                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                  {workshop.email}
-                </Text>
-              )}
-              {invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber && (
-                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                  {labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}
-                </Text>
-              )}
-            </View>
+            {fieldOrder.map(renderModernField)}
           </View>
           {torqvoiceLogoDataUri && (
             <View
@@ -215,11 +249,12 @@ export function Header({
   }
 
   // Standard header (default)
-  return (
-    <View style={styles.header}>
-      <View>
-        {showLogo && logoDataUri && (
+  const renderStandardField = (fieldId: string) => {
+    switch (fieldId) {
+      case 'logo':
+        return showLogo && logoDataUri ? (
           <Image
+            key="logo"
             src={logoDataUri}
             style={{
               maxWidth: 150 * scale,
@@ -230,18 +265,36 @@ export function Header({
               objectPosition: 'left',
             }}
           />
-        )}
-        {showCompanyName && <Text style={styles.brandName}>{shopDisplayName}</Text>}
-        {workshop?.address ? (
-          <Text style={styles.brandSub}>{workshop.address}</Text>
+        ) : null
+      case 'company_name':
+        return showCompanyName ? <Text key="company_name" style={styles.brandName}>{shopDisplayName}</Text> : null
+      case 'company_address':
+        return workshop?.address ? (
+          <Text key="company_address" style={styles.brandSub}>{workshop.address}</Text>
         ) : (
-          <Text style={styles.brandSub}>{labels.professionalWorkshop || 'Professional Workshop Management'}</Text>
-        )}
-        {workshop?.phone && <Text style={styles.brandContact}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>}
-        {workshop?.email && <Text style={styles.brandContact}>{workshop.email}</Text>}
-        {invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber && (
-          <Text style={styles.brandContact}>{labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}</Text>
-        )}
+          <Text key="company_address" style={styles.brandSub}>{labels.professionalWorkshop || 'Professional Workshop Management'}</Text>
+        )
+      case 'company_phone':
+        return workshop?.phone ? (
+          <Text key="company_phone" style={styles.brandContact}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>
+        ) : null
+      case 'company_email':
+        return workshop?.email ? (
+          <Text key="company_email" style={styles.brandContact}>{workshop.email}</Text>
+        ) : null
+      case 'company_org_number':
+        return invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber ? (
+          <Text key="company_org_number" style={styles.brandContact}>{labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}</Text>
+        ) : null
+      default:
+        return null
+    }
+  }
+
+  return (
+    <View style={styles.header}>
+      <View>
+        {fieldOrder.map(renderStandardField)}
         {torqvoiceLogoDataUri && (
           <View
             style={{

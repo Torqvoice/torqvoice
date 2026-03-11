@@ -208,13 +208,11 @@ export function QuoteView({
   const validUntilDate = quote.validUntil ? fmtDate(quote.validUntil, df, tz) : null;
   const shopName = workshop.name || "Torqvoice";
 
-  // Layout config overrides for header field visibility
-  const effectiveShowLogo = layoutConfig
-    ? isFieldVisible(layoutConfig, 'header', 'logo')
-    : true;
-  const effectiveShowCompanyName = layoutConfig
-    ? isFieldVisible(layoutConfig, 'header', 'company_name')
-    : true;
+  // Layout config overrides for header field visibility & ordering
+  const headerVisibleFields = getVisibleFieldsForSection(layoutConfig, 'header');
+  const headerFieldOrder = getOrderedFieldIds(headerVisibleFields, ['logo', 'company_name', 'company_address', 'company_phone', 'company_email', 'company_org_number']);
+  const effectiveShowLogo = headerVisibleFields ? headerFieldOrder.includes('logo') : true;
+  const effectiveShowCompanyName = headerVisibleFields ? headerFieldOrder.includes('company_name') : true;
 
   const sectionOrder = getSectionOrder(layoutConfig);
 
@@ -335,132 +333,109 @@ export function QuoteView({
             case 'header':
               return (
                 <div key="header">
-                  {headerStyle === "modern" ? (
-                    <>
-                      <div className="rounded-lg p-6 text-center text-white" style={{ backgroundColor: primaryColor }}>
-                        {effectiveShowLogo && (logoUrl || "/torqvoice_app_logo.png") && (
-                          <img
-                            src={logoUrl || "/torqvoice_app_logo.png"}
-                            alt={shopName}
-                            className="mx-auto mb-2 object-contain"
-                            style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }}
-                          />
-                        )}
-                        {effectiveShowCompanyName && (
-                          <h2 className="text-xl font-bold sm:text-2xl">{shopName}</h2>
-                        )}
-                        {workshop.address && <p className="mt-1 text-sm opacity-80">{workshop.address}</p>}
-                        <div className="mt-1 flex flex-wrap justify-center gap-3 text-sm opacity-70">
-                          {workshop.phone && <span>{t('tel', { phone: workshop.phone })}</span>}
-                          {workshop.email && <span>{workshop.email}</span>}
+                  {(() => {
+                    const statusBadge = (extraClass?: string) => (
+                      <span className={`${extraClass || ''} inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+                        status === "accepted"
+                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                          : status === "rejected"
+                          ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                          : status === "changes_requested"
+                          ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+                          : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                      }`}>
+                        {statusLabels[status] || status}
+                      </span>
+                    )
+                    const renderModernField = (fid: string) => {
+                      switch (fid) {
+                        case 'logo': return effectiveShowLogo ? <img key="logo" src={logoUrl || "/torqvoice_app_logo.png"} alt={shopName} className="mx-auto mb-2 object-contain" style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }} /> : null
+                        case 'company_name': return effectiveShowCompanyName ? <h2 key="cn" className="text-xl font-bold sm:text-2xl">{shopName}</h2> : null
+                        case 'company_address': return workshop.address ? <p key="addr" className="mt-1 text-sm opacity-80">{workshop.address}</p> : null
+                        case 'company_phone': return workshop.phone ? <p key="ph" className="text-sm opacity-70">{t('tel', { phone: workshop.phone })}</p> : null
+                        case 'company_email': return workshop.email ? <p key="em" className="text-sm opacity-70">{workshop.email}</p> : null
+                        default: return null
+                      }
+                    }
+                    const renderCompactField = (fid: string) => {
+                      switch (fid) {
+                        case 'logo': return effectiveShowLogo ? <img key="logo" src={logoUrl || "/torqvoice_app_logo.png"} alt={shopName} className="rounded object-contain" style={{ height: 48 * (logoSize / 100), width: 48 * (logoSize / 100) }} /> : null
+                        case 'company_name': return effectiveShowCompanyName ? <h2 key="cn" className="text-lg font-bold" style={{ color: primaryColor }}>{shopName}</h2> : null
+                        case 'company_address': return workshop.address ? <p key="addr" className="text-sm text-gray-500">{workshop.address}</p> : null
+                        case 'company_phone': return workshop.phone ? <p key="ph" className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p> : null
+                        case 'company_email': return workshop.email ? <p key="em" className="text-sm text-gray-500">{workshop.email}</p> : null
+                        default: return null
+                      }
+                    }
+                    const renderStandardField = (fid: string) => {
+                      switch (fid) {
+                        case 'logo': return effectiveShowLogo ? <img key="logo" src={logoUrl || "/torqvoice_app_logo.png"} alt={shopName} className="mb-2 object-contain object-left" style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }} /> : null
+                        case 'company_name': return effectiveShowCompanyName ? <h2 key="cn" className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2> : null
+                        case 'company_address': return workshop.address ? <p key="addr" className="mt-1 text-sm text-gray-500">{workshop.address}</p> : null
+                        case 'company_phone': return workshop.phone ? <p key="ph" className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p> : null
+                        case 'company_email': return workshop.email ? <p key="em" className="text-sm text-gray-500">{workshop.email}</p> : null
+                        default: return null
+                      }
+                    }
+
+                    if (headerStyle === "modern") return (
+                      <>
+                        <div className="rounded-lg p-6 text-center text-white" style={{ backgroundColor: primaryColor }}>
+                          {headerFieldOrder.map(renderModernField)}
                         </div>
-                      </div>
-                      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-3">
-                          <h3 className="text-xl font-bold">{t('title').toUpperCase()}</h3>
-                          <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
-                            status === "accepted"
-                              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                              : status === "rejected"
-                              ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                              : status === "changes_requested"
-                              ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
-                              : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                          }`}>
-                            {statusLabels[status] || status}
-                          </span>
-                        </div>
-                        <div className="flex gap-3 text-sm text-gray-500">
-                          <span>{quoteNum}</span>
-                          <span>{createdDate}</span>
-                          {validUntilDate && <span>{t('validUntil', { date: validUntilDate })}</span>}
-                        </div>
-                      </div>
-                    </>
-                  ) : headerStyle === "compact" ? (
-                    <div className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "#e5e7eb" }}>
-                      <div className="flex items-center gap-3">
-                        {effectiveShowLogo && (
-                          <img
-                            src={logoUrl || "/torqvoice_app_logo.png"}
-                            alt={shopName}
-                            className="rounded object-contain"
-                            style={{ height: 48 * (logoSize / 100), width: 48 * (logoSize / 100) }}
-                          />
-                        )}
-                        <div>
-                          {effectiveShowCompanyName && (
-                            <h2 className="text-lg font-bold" style={{ color: primaryColor }}>{shopName}</h2>
-                          )}
-                          {workshop.address && <p className="text-sm text-gray-500">{workshop.address}</p>}
-                        </div>
-                      </div>
-                      <div className="sm:text-right">
-                        <h3 className="text-lg font-bold">{t('title').toUpperCase()}</h3>
-                        <p className="text-sm text-gray-500">{quoteNum}</p>
-                        <p className="text-sm text-gray-500">{createdDate}</p>
-                        {validUntilDate && (
-                          <p className="text-sm text-gray-500">{t('validUntil', { date: validUntilDate })}</p>
-                        )}
-                        <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
-                          status === "accepted"
-                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                            : status === "rejected"
-                            ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                            : status === "changes_requested"
-                            ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
-                            : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                        }`}>
-                          {statusLabels[status] || status}
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    /* Standard */
-                    <div className="flex flex-col gap-4 border-b-2 pb-6 sm:flex-row sm:items-start sm:justify-between" style={{ borderColor: primaryColor }}>
-                      <div>
-                        {effectiveShowLogo && (
-                          <img
-                            src={logoUrl || "/torqvoice_app_logo.png"}
-                            alt={shopName}
-                            className="mb-2 object-contain object-left"
-                            style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }}
-                          />
-                        )}
-                        {effectiveShowCompanyName && (
-                          <h2 className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2>
-                        )}
-                        {workshop.address && <p className="mt-1 text-sm text-gray-500">{workshop.address}</p>}
-                        {workshop.phone && <p className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p>}
-                        {workshop.email && <p className="text-sm text-gray-500">{workshop.email}</p>}
-                      </div>
-                      <div className="sm:text-right">
-                        {showTorqvoiceBranding && (
-                          <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 dark:bg-gray-800">
-                            <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
-                            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+                        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex items-center gap-3">
+                            <h3 className="text-xl font-bold">{t('title').toUpperCase()}</h3>
+                            {statusBadge()}
                           </div>
-                        )}
-                        <h3 className="text-xl font-bold" style={{ color: primaryColor }}>{t('title').toUpperCase()}</h3>
-                        <p className="mt-1 text-sm text-gray-500">{quoteNum}</p>
-                        <p className="text-sm text-gray-500">{createdDate}</p>
-                        {validUntilDate && (
-                          <p className="text-sm text-gray-500">{t('validUntil', { date: validUntilDate })}</p>
-                        )}
-                        <span className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
-                          status === "accepted"
-                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                            : status === "rejected"
-                            ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                            : status === "changes_requested"
-                            ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
-                            : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                        }`}>
-                          {statusLabels[status] || status}
-                        </span>
+                          <div className="flex gap-3 text-sm text-gray-500">
+                            <span>{quoteNum}</span>
+                            <span>{createdDate}</span>
+                            {validUntilDate && <span>{t('validUntil', { date: validUntilDate })}</span>}
+                          </div>
+                        </div>
+                      </>
+                    )
+                    if (headerStyle === "compact") return (
+                      <div className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-start sm:justify-between" style={{ borderColor: "#e5e7eb" }}>
+                        <div>
+                          {headerFieldOrder.map(renderCompactField)}
+                        </div>
+                        <div className="sm:text-right">
+                          <h3 className="text-lg font-bold">{t('title').toUpperCase()}</h3>
+                          <p className="text-sm text-gray-500">{quoteNum}</p>
+                          <p className="text-sm text-gray-500">{createdDate}</p>
+                          {validUntilDate && (
+                            <p className="text-sm text-gray-500">{t('validUntil', { date: validUntilDate })}</p>
+                          )}
+                          {statusBadge("mt-1")}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )
+                    /* Standard */
+                    return (
+                      <div className="flex flex-col gap-4 border-b-2 pb-6 sm:flex-row sm:items-start sm:justify-between" style={{ borderColor: primaryColor }}>
+                        <div>
+                          {headerFieldOrder.map(renderStandardField)}
+                        </div>
+                        <div className="sm:text-right">
+                          {showTorqvoiceBranding && (
+                            <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 dark:bg-gray-800">
+                              <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
+                              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+                            </div>
+                          )}
+                          <h3 className="text-xl font-bold" style={{ color: primaryColor }}>{t('title').toUpperCase()}</h3>
+                          <p className="mt-1 text-sm text-gray-500">{quoteNum}</p>
+                          <p className="text-sm text-gray-500">{createdDate}</p>
+                          {validUntilDate && (
+                            <p className="text-sm text-gray-500">{t('validUntil', { date: validUntilDate })}</p>
+                          )}
+                          {statusBadge("mt-2")}
+                        </div>
+                      </div>
+                    )
+                  })()}
                 </div>
               );
 

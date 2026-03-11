@@ -386,6 +386,10 @@
       "tech_name": "Técnico",
       "logo": "Logo",
       "company_name": "Nombre de empresa",
+      "company_address": "Dirección",
+      "company_phone": "Teléfono",
+      "company_email": "Correo electrónico",
+      "company_org_number": "Número de organización",
       "bank_account": "Cuenta bancaria",
       "org_number": "Número de organización"
     }

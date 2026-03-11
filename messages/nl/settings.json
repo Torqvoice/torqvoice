@@ -386,6 +386,10 @@
       "tech_name": "Monteur",
       "logo": "Logo",
       "company_name": "Bedrijfsnaam",
+      "company_address": "Adres",
+      "company_phone": "Telefoon",
+      "company_email": "E-mail",
+      "company_org_number": "Organisatienummer",
       "bank_account": "Bankrekening",
       "org_number": "Organisatienummer"
     }
