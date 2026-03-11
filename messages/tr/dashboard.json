@@ -1,4 +1,7 @@
 {
+  "recentActivity": "Son aktivite",
+  "noRecentActivity": "Son aktivite yok",
+  "unknownUser": "Kullanıcı",
   "stats": {
     "activeJobs": "Aktif İşler",
     "pending": "Beklemede",

@@ -1,4 +1,7 @@
 {
+  "recentActivity": "Recent Activity",
+  "noRecentActivity": "No recent activity",
+  "unknownUser": "User",
   "stats": {
     "activeJobs": "Active Jobs",
     "pending": "Pending",

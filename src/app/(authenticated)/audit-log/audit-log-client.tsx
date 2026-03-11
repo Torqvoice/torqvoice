@@ -78,7 +78,7 @@ export function AuditLogClient({
 
   const getActionLabel = (action: string) => {
     try {
-      return t(`actions.${action}`);
+      return t(`actions.${action.replace(".", "_")}`);
     } catch {
       return action;
     }

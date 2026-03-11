@@ -228,6 +228,7 @@ export function DashboardClient({
   }[];
 }) {
   const t = useTranslations("dashboard");
+  const tAudit = useTranslations("audit");
   const distUnit = unitSystem === "metric" ? "km" : "mi";
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -1174,84 +1175,36 @@ export function DashboardClient({
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-base">
                 <ClipboardList className="h-4 w-4" />
-                Recent Activity
+                {t("recentActivity")}
               </CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs gap-1"
+                onClick={() => router.push("/audit-log")}
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </Button>
             </div>
           </CardHeader>
           <CardContent className="p-0">
             {recentAuditLogs.length === 0 ? (
-              <p className="px-5 py-4 text-xs text-muted-foreground">No recent activity</p>
+              <p className="px-5 py-4 text-xs text-muted-foreground">{t("noRecentActivity")}</p>
             ) : (
               <div className="divide-y">
                 {recentAuditLogs.slice(0, 5).map((log) => {
-                  const userLabel = log.user.name ?? log.user.email ?? "User";
+                  const userLabel = log.user.name ?? log.user.email ?? t("unknownUser");
                   const meta = (log as unknown as { metadata?: Record<string, unknown> }).metadata || {};
                   const vehicleDisplay = typeof meta["vehicleDisplay"] === "string" ? (meta["vehicleDisplay"] as string) : undefined;
                   const quoteNumber = typeof meta["quoteNumber"] === "string" ? (meta["quoteNumber"] as string) : undefined;
-                  const ACTION_LABELS: Record<string, string> = {
-                    "vehicle.create": "Created Vehicle",
-                    "vehicle.update": "Updated Vehicle",
-                    "vehicle.delete": "Deleted Vehicle",
-                    "vehicle.archive": "Archived Vehicle",
-                    "vehicle.unarchive": "Unarchived Vehicle",
-                    "service.create": "Created Service Record",
-                    "service.update": "Updated Service Record",
-                    "service.status": "Changed Service Status",
-                    "service.delete": "Deleted Service Record",
-                    "quote.create": "Created Quote",
-                    "quote.update": "Updated Quote",
-                    "quote.status": "Changed Quote Status",
-                    "quote.delete": "Deleted Quote",
-                    "quote.convert": "Converted Quote",
-                    "inspection.create": "Created Inspection",
-                    "inspection.complete": "Completed Inspection",
-                    "inspection.delete": "Deleted Inspection",
-                    "payment.create": "Recorded Payment",
-                    "payment.delete": "Deleted Payment",
-                    "customer.create": "Created Customer",
-                    "customer.update": "Updated Customer",
-                    "customer.delete": "Deleted Customer",
-                    "inventory.create": "Created Inventory Part",
-                    "inventory.update": "Updated Inventory Part",
-                    "inventory.delete": "Deleted Inventory Part",
-                    "team.invite": "Invited Team Member",
-                    "team.sendInvitation": "Sent Invitation",
-                    "team.cancelInvitation": "Cancelled Invitation",
-                    "team.updateRole": "Changed Member Role",
-                    "team.removeMember": "Removed Team Member",
-                    "role.create": "Created Role",
-                    "role.update": "Updated Role",
-                    "role.delete": "Deleted Role",
-                    "technician.create": "Created Technician",
-                    "technician.update": "Updated Technician",
-                    "technician.delete": "Deleted Technician",
-                    "recurringInvoice.create": "Created Recurring Invoice",
-                    "recurringInvoice.update": "Updated Recurring Invoice",
-                    "recurringInvoice.delete": "Deleted Recurring Invoice",
-                    "email.sendQuote": "Sent Quote Email",
-                    "email.sendInvoice": "Sent Invoice Email",
-                    "email.sendInspection": "Sent Inspection Email",
-                    "sms.send": "Sent SMS",
-                    "note.create": "Created Note",
-                    "note.delete": "Deleted Note",
-                    "reminder.create": "Created Reminder",
-                    "reminder.delete": "Deleted Reminder",
-                    "organization.create": "Created Organization",
-                    "subscription.cancel": "Cancelled Subscription",
-                    "subscription.resume": "Resumed Subscription",
-                    "settings.deleteContent": "Deleted Content",
-                    "settings.updateInvoiceLayout": "Updated Invoice Layout",
-                    "settings.updateQuoteLayout": "Updated Quote Layout",
-                    "settings.updatePortalSlug": "Updated Portal Slug",
-                    "inspectionTemplate.create": "Created Inspection Template",
-                    "inspectionTemplate.update": "Updated Inspection Template",
-                    "inspectionTemplate.delete": "Deleted Inspection Template",
-                    "customField.create": "Created Custom Field",
-                    "customField.update": "Updated Custom Field",
-                    "customField.delete": "Deleted Custom Field",
-                    "quoteRequest.update": "Updated Quote Request",
-                  };
-                  const friendlyAction = ACTION_LABELS[log.action] || log.action;
+                  const actionKey = log.action.replace(".", "_");
+                  let friendlyAction: string;
+                  try {
+                    friendlyAction = tAudit(`actions.${actionKey}`);
+                  } catch {
+                    friendlyAction = log.action;
+                  }
                   const entityLabel = vehicleDisplay ?? quoteNumber ?? log.entityId?.substring(0, 8);
                   return (
                     <div key={log.id} className="px-5 py-3 text-sm flex items-center justify-between">

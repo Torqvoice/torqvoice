@@ -1,4 +1,7 @@
 {
+  "recentActivity": "Nylig aktivitet",
+  "noRecentActivity": "Ingen nylig aktivitet",
+  "unknownUser": "Bruker",
   "stats": {
     "activeJobs": "Aktive jobber",
     "pending": "Ventende",
