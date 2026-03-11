@@ -386,6 +386,10 @@
       "tech_name": "Techniker",
       "logo": "Logo",
       "company_name": "Firmenname",
+      "company_address": "Adresse",
+      "company_phone": "Telefon",
+      "company_email": "E-Mail",
+      "company_org_number": "Organisationsnummer",
       "bank_account": "Bankkonto",
       "org_number": "Organisationsnummer"
     }
@@ -399,7 +403,8 @@
       "invoice": "Rechnung",
       "quotation": "Angebot",
       "inspections": "Inspektionen",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Layout"
     },
     "presets": "Vorlagen-Presets",
     "primaryColor": "Primarfarbe",
@@ -438,7 +443,7 @@
     "quotationTemplateSaved": "Angebotsvorlageneinstellungen gespeichert",
     "failedSave": "Einstellungen konnten nicht gespeichert werden",
     "smsTemplates": "SMS-Nachrichtenvorlagen",
-    "smsTemplatesDescription": "Passen Sie die Textnachrichten an Kunden an. Verwenden Sie Variablen wie <code>{companyName}</code>, um dynamische Werte einzufugen.",
+    "smsTemplatesDescription": "Passen Sie die Textnachrichten an Kunden an. Verwenden Sie Variablen wie <code>'{companyName}'</code>, um dynamische Werte einzufugen.",
     "reset": "Zurucksetzen",
     "invoiceReady": "Rechnung bereit",
     "invoiceReadyDescription": "Wird gesendet, wenn eine Rechnung mit einem Kunden geteilt wird.",
@@ -477,7 +482,12 @@
       "slate": "Schiefer",
       "rose": "Rose",
       "indigo": "Indigo"
-    }
+    },
+    "layoutTitle": "Rechnungslayout",
+    "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
+    "layoutSaved": "Layout erfolgreich gespeichert",
+    "layoutDocInvoice": "Rechnung",
+    "layoutDocQuote": "Angebot"
   },
   "payment": {
     "detailsTitle": "Zahlungsdetails",
@@ -618,8 +628,6 @@
     "addNewTech": "+ Neu hinzufügen",
     "defaultLaborRate": "Standard-Stundensatz",
     "laborRatePlaceholder": "75,00",
-    "workingHours": "Arbeitszeiten",
-    "workingHoursPlaceholder": "Mo-Fr 8:00 - 17:00",
     "unitsTitle": "Einheiten",
     "unitsDescription": "Wahlen Sie zwischen metrisch (km, Liter) und imperial (Meilen, Gallonen).",
     "unitSystem": "Einheitensystem",
@@ -632,7 +640,19 @@
     "miles": "Meilen (mi)",
     "gallons": "Gallonen (gal)",
     "saveWorkshop": "Werkstatteinstellungen speichern",
-    "saved": "Werkstatteinstellungen gespeichert"
+    "saved": "Werkstatteinstellungen gespeichert",
+    "weekStartDay": "Wochenstart",
+    "workDayStart": "Arbeitsbeginn",
+    "workDayEnd": "Arbeitsende",
+    "weekDays": {
+      "0": "Sonntag",
+      "1": "Montag",
+      "2": "Dienstag",
+      "3": "Mittwoch",
+      "4": "Donnerstag",
+      "5": "Freitag",
+      "6": "Samstag"
+    }
   },
   "maintenance": {
     "title": "Vorhergesagte Wartung",

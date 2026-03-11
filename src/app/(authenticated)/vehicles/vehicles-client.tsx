@@ -34,6 +34,7 @@ import {
   Archive,
   ArchiveRestore,
   Gauge,
+  Grid3X3,
   LayoutGrid,
   List,
   Loader2,
@@ -233,12 +234,20 @@ export function VehiclesClient({
               <List className="h-4 w-4" />
             </Button>
             <Button
-              variant={view === 'grid' || view === 'grid6' ? 'secondary' : 'ghost'}
+              variant={view === 'grid' ? 'secondary' : 'ghost'}
               size="icon"
-              className="h-8 w-8 rounded-l-none"
+              className="h-8 w-8 rounded-l-none lg:rounded-none border-l lg:border-x"
               onClick={() => toggleView('grid')}
             >
               <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={view === 'grid6' ? 'secondary' : 'ghost'}
+              size="icon"
+              className="h-8 w-8 rounded-l-none hidden lg:inline-flex"
+              onClick={() => toggleView('grid6')}
+            >
+              <Grid3X3 className="h-4 w-4" />
             </Button>
           </div>
           {!isArchived && (
@@ -285,7 +294,7 @@ export function VehiclesClient({
                     {v.customer?.name || '-'}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-right font-mono text-sm">
-                    {v.mileage.toLocaleString()}
+                    {new Intl.NumberFormat('en-US').format(v.mileage)}
                   </TableCell>
                   <TableCell className="text-center">{v._count.serviceRecords}</TableCell>
                   <TableCell>
@@ -445,7 +454,7 @@ export function VehiclesClient({
                 <CardContent className={`flex items-center justify-between ${view === 'grid6' ? 'p-2 text-xs' : 'p-4 text-sm'}`}>
                   <div className="flex items-center gap-1.5 text-muted-foreground">
                     <Gauge className={view === 'grid6' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
-                    <span className="font-medium">{v.mileage.toLocaleString()}</span>
+                    <span className="font-medium">{new Intl.NumberFormat('en-US').format(v.mileage)}</span>
                   </div>
                   <div className={`flex items-center ${view === 'grid6' ? 'gap-2' : 'gap-3'} text-muted-foreground`}>
                     {v.customer && <span className={view === 'grid6' ? 'text-[10px] hidden xl:inline' : 'text-xs'}>{v.customer.name}</span>}

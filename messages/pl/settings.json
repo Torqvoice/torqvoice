@@ -386,6 +386,10 @@
       "tech_name": "Technik",
       "logo": "Logo",
       "company_name": "Nazwa firmy",
+      "company_address": "Adres",
+      "company_phone": "Telefon",
+      "company_email": "E-mail",
+      "company_org_number": "Numer organizacji",
       "bank_account": "Konto bankowe",
       "org_number": "Numer organizacji"
     }
@@ -399,7 +403,8 @@
       "invoice": "Faktura",
       "quotation": "Wycena",
       "inspections": "Inspekcje",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Uklad"
     },
     "presets": "Gotowe szablony",
     "primaryColor": "Kolor glowny",
@@ -438,7 +443,7 @@
     "quotationTemplateSaved": "Ustawienia szablonu wyceny zapisane",
     "failedSave": "Nie udalo sie zapisac ustawien",
     "smsTemplates": "Szablony wiadomosci SMS",
-    "smsTemplatesDescription": "Dostosuj wiadomosci tekstowe wysylane do klientow. Uzyj zmiennych jak <code>{companyName}</code> aby wstawic dynamiczne wartosci.",
+    "smsTemplatesDescription": "Dostosuj wiadomosci tekstowe wysylane do klientow. Uzyj zmiennych jak <code>'{companyName}'</code> aby wstawic dynamiczne wartosci.",
     "reset": "Resetuj",
     "invoiceReady": "Faktura gotowa",
     "invoiceReadyDescription": "Wysylana przy udostepnianiu faktury klientowi.",
@@ -477,7 +482,12 @@
       "slate": "Lupkowy",
       "rose": "Rozowy",
       "indigo": "Indygo"
-    }
+    },
+    "layoutTitle": "Uklad faktury",
+    "layoutDescription": "Dostosuj kolejnosc i widocznosc sekcji w fakturach i wycenach.",
+    "layoutSaved": "Uklad zapisany pomyslnie",
+    "layoutDocInvoice": "Faktura",
+    "layoutDocQuote": "Wycena"
   },
   "payment": {
     "detailsTitle": "Szczegoly platnosci",
@@ -618,8 +628,6 @@
     "addNewTech": "+ Dodaj nowego",
     "defaultLaborRate": "Domyslna stawka za godzine",
     "laborRatePlaceholder": "75,00",
-    "workingHours": "Godziny pracy",
-    "workingHoursPlaceholder": "Pon-Pt 8:00 - 17:00",
     "unitsTitle": "Jednostki",
     "unitsDescription": "Wybierz miedzy metrycznym (km, litry) a imperialnym (mile, galony).",
     "unitSystem": "System jednostek",
@@ -632,7 +640,19 @@
     "miles": "mile (mi)",
     "gallons": "galony (gal)",
     "saveWorkshop": "Zapisz ustawienia warsztatu",
-    "saved": "Ustawienia warsztatu zapisane"
+    "saved": "Ustawienia warsztatu zapisane",
+    "weekStartDay": "Poczatek tygodnia",
+    "workDayStart": "Poczatek dnia pracy",
+    "workDayEnd": "Koniec dnia pracy",
+    "weekDays": {
+      "0": "Niedziela",
+      "1": "Poniedzialek",
+      "2": "Wtorek",
+      "3": "Sroda",
+      "4": "Czwartek",
+      "5": "Piatek",
+      "6": "Sobota"
+    }
   },
   "maintenance": {
     "title": "Przewidywana konserwacja",

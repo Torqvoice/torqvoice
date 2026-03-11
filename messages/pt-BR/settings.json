@@ -386,6 +386,10 @@
       "tech_name": "Técnico",
       "logo": "Logo",
       "company_name": "Nome da empresa",
+      "company_address": "Endereço",
+      "company_phone": "Telefone",
+      "company_email": "E-mail",
+      "company_org_number": "Número da organização",
       "bank_account": "Conta bancária",
       "org_number": "Número da organização"
     }
@@ -399,7 +403,8 @@
       "invoice": "Fatura",
       "quotation": "Orcamento",
       "inspections": "Inspecoes",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Layout"
     },
     "presets": "Presets de modelo",
     "primaryColor": "Cor primaria",
@@ -438,7 +443,7 @@
     "quotationTemplateSaved": "Configuracoes do modelo de orcamento salvas",
     "failedSave": "Falha ao salvar configuracoes",
     "smsTemplates": "Modelos de mensagens SMS",
-    "smsTemplatesDescription": "Personalize as mensagens de texto enviadas aos clientes. Use variaveis como <code>{companyName}</code> para inserir valores dinamicos.",
+    "smsTemplatesDescription": "Personalize as mensagens de texto enviadas aos clientes. Use variaveis como <code>'{companyName}'</code> para inserir valores dinamicos.",
     "reset": "Redefinir",
     "invoiceReady": "Fatura pronta",
     "invoiceReadyDescription": "Enviada ao compartilhar uma fatura com um cliente.",
@@ -477,7 +482,12 @@
       "slate": "Ardosia",
       "rose": "Rosa",
       "indigo": "Indigo"
-    }
+    },
+    "layoutTitle": "Layout da fatura",
+    "layoutDescription": "Personalize a ordem e visibilidade das secoes nas suas faturas e orcamentos.",
+    "layoutSaved": "Layout salvo com sucesso",
+    "layoutDocInvoice": "Fatura",
+    "layoutDocQuote": "Orcamento"
   },
   "payment": {
     "detailsTitle": "Detalhes de pagamento",
@@ -618,8 +628,6 @@
     "addNewTech": "+ Adicionar novo",
     "defaultLaborRate": "Taxa de mao de obra padrao (por hora)",
     "laborRatePlaceholder": "75,00",
-    "workingHours": "Horario de funcionamento",
-    "workingHoursPlaceholder": "Seg-Sex 8:00 - 17:00",
     "unitsTitle": "Unidades",
     "unitsDescription": "Escolha entre metrico (km, litros) e imperial (milhas, galoes).",
     "unitSystem": "Sistema de unidades",
@@ -632,7 +640,19 @@
     "miles": "milhas (mi)",
     "gallons": "galoes (gal)",
     "saveWorkshop": "Salvar configuracoes da oficina",
-    "saved": "Configuracoes da oficina salvas"
+    "saved": "Configuracoes da oficina salvas",
+    "weekStartDay": "Inicio da semana",
+    "workDayStart": "Inicio do expediente",
+    "workDayEnd": "Fim do expediente",
+    "weekDays": {
+      "0": "Domingo",
+      "1": "Segunda-feira",
+      "2": "Terca-feira",
+      "3": "Quarta-feira",
+      "4": "Quinta-feira",
+      "5": "Sexta-feira",
+      "6": "Sabado"
+    }
   },
   "maintenance": {
     "title": "Manutencao preditiva",

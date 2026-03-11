@@ -99,6 +99,10 @@ export const BUILTIN_INFO_FIELDS = [
 export const BUILTIN_HEADER_FIELDS = [
   { id: "logo", name: "Logo" },
   { id: "company_name", name: "Company Name" },
+  { id: "company_address", name: "Address" },
+  { id: "company_phone", name: "Phone" },
+  { id: "company_email", name: "Email" },
+  { id: "company_org_number", name: "Organization Number" },
 ] as const;
 
 export const BUILTIN_BANK_ACCOUNT_FIELDS = [

@@ -21,7 +21,7 @@ import {
 import { toast } from "sonner";
 import { setSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { Loader2, Ruler, Save, Wrench, CalendarDays, Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Loader2, Ruler, Save, Wrench, Check, ChevronsUpDown, Plus } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -54,9 +54,6 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
   const [newTechName, setNewTechName] = useState('');
   const [defaultLaborRate, setDefaultLaborRate] = useState(
     settings[SETTING_KEYS.DEFAULT_LABOR_RATE] || ""
-  );
-  const [workingHours, setWorkingHours] = useState(
-    settings[SETTING_KEYS.WORKING_HOURS] || ""
   );
   const [unitSystem, setUnitSystem] = useState(
     settings[SETTING_KEYS.UNIT_SYSTEM] || "imperial"
@@ -101,7 +98,6 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
     await setSettings({
       [SETTING_KEYS.DEFAULT_TECHNICIAN]: defaultTechnician,
       [SETTING_KEYS.DEFAULT_LABOR_RATE]: defaultLaborRate,
-      [SETTING_KEYS.WORKING_HOURS]: workingHours,
       [SETTING_KEYS.UNIT_SYSTEM]: unitSystem,
       [SETTING_KEYS.WORKBOARD_WEEK_START_DAY]: weekStartDay,
       [SETTING_KEYS.WORKBOARD_WORK_DAY_START]: workDayStart,
@@ -240,14 +236,40 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="workingHours">{t('workshop.workingHours')}</Label>
-            <Input
-              id="workingHours"
-              placeholder={t('workshop.workingHoursPlaceholder')}
-              value={workingHours}
-              onChange={(e) => setWorkingHours(e.target.value)}
-            />
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="space-y-2">
+              <Label htmlFor="weekStartDay">{t('workshop.weekStartDay')}</Label>
+              <Select value={weekStartDay} onValueChange={setWeekStartDay}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[0, 1, 2, 3, 4, 5, 6].map((d) => (
+                    <SelectItem key={d} value={String(d)}>
+                      {t(`workshop.weekDays.${d}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="workDayStart">{t('workshop.workDayStart')}</Label>
+              <Input
+                id="workDayStart"
+                type="time"
+                value={workDayStart}
+                onChange={(e) => setWorkDayStart(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="workDayEnd">{t('workshop.workDayEnd')}</Label>
+              <Input
+                id="workDayEnd"
+                type="time"
+                value={workDayEnd}
+                onChange={(e) => setWorkDayEnd(e.target.value)}
+              />
+            </div>
           </div>
 
           <Separator />
@@ -286,54 +308,6 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
                   <p>{t('workshop.volumeLabel')}: <span className="font-medium text-foreground">{t('workshop.gallons')}</span></p>
                 </div>
               )}
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-4">
-            <div className="flex flex-row items-center gap-3">
-              <CalendarDays className="h-5 w-5 text-muted-foreground" />
-              <h3 className="text-lg font-semibold">{t('workshop.workBoardTitle')}</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {t('workshop.workBoardDescription')}
-            </p>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="space-y-2">
-                <Label htmlFor="weekStartDay">{t('workshop.weekStartDay')}</Label>
-                <Select value={weekStartDay} onValueChange={setWeekStartDay}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[0, 1, 2, 3, 4, 5, 6].map((d) => (
-                      <SelectItem key={d} value={String(d)}>
-                        {t(`workshop.weekDays.${d}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="workDayStart">{t('workshop.workDayStart')}</Label>
-                <Input
-                  id="workDayStart"
-                  type="time"
-                  value={workDayStart}
-                  onChange={(e) => setWorkDayStart(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="workDayEnd">{t('workshop.workDayEnd')}</Label>
-                <Input
-                  id="workDayEnd"
-                  type="time"
-                  value={workDayEnd}
-                  onChange={(e) => setWorkDayEnd(e.target.value)}
-                />
-              </div>
             </div>
           </div>
 

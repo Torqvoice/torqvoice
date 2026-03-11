@@ -386,6 +386,10 @@
       "tech_name": "Technicien",
       "logo": "Logo",
       "company_name": "Nom de l'entreprise",
+      "company_address": "Adresse",
+      "company_phone": "Téléphone",
+      "company_email": "E-mail",
+      "company_org_number": "Numéro d'organisation",
       "bank_account": "Compte bancaire",
       "org_number": "Numéro d'organisation"
     }
@@ -399,7 +403,8 @@
       "invoice": "Facture",
       "quotation": "Devis",
       "inspections": "Inspections",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Mise en page"
     },
     "presets": "Presets de modele",
     "primaryColor": "Couleur primaire",
@@ -438,7 +443,7 @@
     "quotationTemplateSaved": "Parametres du modele de devis enregistres",
     "failedSave": "Echec de l'enregistrement des parametres",
     "smsTemplates": "Modeles de messages SMS",
-    "smsTemplatesDescription": "Personnalisez les messages texte envoyes aux clients. Utilisez des variables comme <code>{companyName}</code> pour inserer des valeurs dynamiques.",
+    "smsTemplatesDescription": "Personnalisez les messages texte envoyes aux clients. Utilisez des variables comme <code>'{companyName}'</code> pour inserer des valeurs dynamiques.",
     "reset": "Reinitialiser",
     "invoiceReady": "Facture prete",
     "invoiceReadyDescription": "Envoye lors du partage d'une facture avec un client.",
@@ -477,7 +482,12 @@
       "slate": "Ardoise",
       "rose": "Rose",
       "indigo": "Indigo"
-    }
+    },
+    "layoutTitle": "Mise en page de la facture",
+    "layoutDescription": "Personnalisez l'ordre et la visibilite des sections dans vos factures et devis.",
+    "layoutSaved": "Mise en page enregistree",
+    "layoutDocInvoice": "Facture",
+    "layoutDocQuote": "Devis"
   },
   "payment": {
     "detailsTitle": "Details de paiement",
@@ -618,8 +628,6 @@
     "addNewTech": "+ Ajouter nouveau",
     "defaultLaborRate": "Taux horaire par defaut",
     "laborRatePlaceholder": "75,00",
-    "workingHours": "Heures de travail",
-    "workingHoursPlaceholder": "Lun-Ven 8h00 - 17h00",
     "unitsTitle": "Unites",
     "unitsDescription": "Choisissez entre metrique (km, litres) et imperial (miles, gallons).",
     "unitSystem": "Systeme d'unites",
@@ -632,7 +640,19 @@
     "miles": "miles (mi)",
     "gallons": "gallons (gal)",
     "saveWorkshop": "Enregistrer les parametres de l'atelier",
-    "saved": "Parametres de l'atelier enregistres"
+    "saved": "Parametres de l'atelier enregistres",
+    "weekStartDay": "Debut de semaine",
+    "workDayStart": "Debut de journee",
+    "workDayEnd": "Fin de journee",
+    "weekDays": {
+      "0": "Dimanche",
+      "1": "Lundi",
+      "2": "Mardi",
+      "3": "Mercredi",
+      "4": "Jeudi",
+      "5": "Vendredi",
+      "6": "Samedi"
+    }
   },
   "maintenance": {
     "title": "Maintenance predictive",

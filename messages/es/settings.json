@@ -386,6 +386,10 @@
       "tech_name": "Técnico",
       "logo": "Logo",
       "company_name": "Nombre de empresa",
+      "company_address": "Dirección",
+      "company_phone": "Teléfono",
+      "company_email": "Correo electrónico",
+      "company_org_number": "Número de organización",
       "bank_account": "Cuenta bancaria",
       "org_number": "Número de organización"
     }
@@ -399,7 +403,8 @@
       "invoice": "Factura",
       "quotation": "Cotizacion",
       "inspections": "Inspecciones",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Disposicion"
     },
     "presets": "Presets de plantilla",
     "primaryColor": "Color primario",
@@ -438,7 +443,7 @@
     "quotationTemplateSaved": "Configuracion de plantilla de cotizacion guardada",
     "failedSave": "Error al guardar la configuracion",
     "smsTemplates": "Plantillas de mensajes SMS",
-    "smsTemplatesDescription": "Personalice los mensajes de texto enviados a los clientes. Use variables como <code>{companyName}</code> para insertar valores dinamicos.",
+    "smsTemplatesDescription": "Personalice los mensajes de texto enviados a los clientes. Use variables como <code>'{companyName}'</code> para insertar valores dinamicos.",
     "reset": "Restablecer",
     "invoiceReady": "Factura lista",
     "invoiceReadyDescription": "Se envia al compartir una factura con un cliente.",
@@ -477,7 +482,12 @@
       "slate": "Pizarra",
       "rose": "Rosa",
       "indigo": "Indigo"
-    }
+    },
+    "layoutTitle": "Disposicion de factura",
+    "layoutDescription": "Personaliza el orden y la visibilidad de las secciones en tus facturas y presupuestos.",
+    "layoutSaved": "Disposicion guardada correctamente",
+    "layoutDocInvoice": "Factura",
+    "layoutDocQuote": "Presupuesto"
   },
   "payment": {
     "detailsTitle": "Detalles de pago",
@@ -618,8 +628,6 @@
     "addNewTech": "+ Agregar nuevo",
     "defaultLaborRate": "Tarifa de mano de obra predeterminada (por hora)",
     "laborRatePlaceholder": "75.00",
-    "workingHours": "Horario de trabajo",
-    "workingHoursPlaceholder": "Lun-Vie 8:00 AM - 5:00 PM",
     "unitsTitle": "Unidades",
     "unitsDescription": "Elija entre metrico (km, litros) e imperial (millas, galones).",
     "unitSystem": "Sistema de unidades",
@@ -632,7 +640,19 @@
     "miles": "millas (mi)",
     "gallons": "galones (gal)",
     "saveWorkshop": "Guardar configuracion del taller",
-    "saved": "Configuracion del taller guardada"
+    "saved": "Configuracion del taller guardada",
+    "weekStartDay": "Inicio de semana",
+    "workDayStart": "Inicio de jornada",
+    "workDayEnd": "Fin de jornada",
+    "weekDays": {
+      "0": "Domingo",
+      "1": "Lunes",
+      "2": "Martes",
+      "3": "Miercoles",
+      "4": "Jueves",
+      "5": "Viernes",
+      "6": "Sabado"
+    }
   },
   "maintenance": {
     "title": "Mantenimiento predictivo",

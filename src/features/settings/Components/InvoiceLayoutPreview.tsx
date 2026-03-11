@@ -41,7 +41,7 @@ const PreviewRenderer = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[920px] items-center justify-center rounded-lg border bg-gray-100 text-sm text-muted-foreground">
+      <div className="flex h-230 items-center justify-center rounded-lg border bg-gray-100 text-sm text-muted-foreground">
         Loading preview…
       </div>
     ),

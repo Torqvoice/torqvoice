@@ -386,6 +386,10 @@
       "tech_name": "Tecnico",
       "logo": "Logo",
       "company_name": "Nome azienda",
+      "company_address": "Indirizzo",
+      "company_phone": "Telefono",
+      "company_email": "E-mail",
+      "company_org_number": "Numero organizzazione",
       "bank_account": "Conto bancario",
       "org_number": "Numero organizzazione"
     }
@@ -399,7 +403,8 @@
       "invoice": "Fattura",
       "quotation": "Preventivo",
       "inspections": "Ispezioni",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Layout"
     },
     "presets": "Preset modello",
     "primaryColor": "Colore primario",
@@ -438,7 +443,7 @@
     "quotationTemplateSaved": "Impostazioni modello preventivo salvate",
     "failedSave": "Salvataggio impostazioni non riuscito",
     "smsTemplates": "Modelli messaggi SMS",
-    "smsTemplatesDescription": "Personalizza i messaggi di testo inviati ai clienti. Usa variabili come <code>{companyName}</code> per inserire valori dinamici.",
+    "smsTemplatesDescription": "Personalizza i messaggi di testo inviati ai clienti. Usa variabili come <code>'{companyName}'</code> per inserire valori dinamici.",
     "reset": "Ripristina",
     "invoiceReady": "Fattura pronta",
     "invoiceReadyDescription": "Inviato quando si condivide una fattura con un cliente.",
@@ -477,7 +482,12 @@
       "slate": "Ardesia",
       "rose": "Rosa",
       "indigo": "Indaco"
-    }
+    },
+    "layoutTitle": "Layout fattura",
+    "layoutDescription": "Personalizza l'ordine e la visibilita delle sezioni nelle fatture e nei preventivi.",
+    "layoutSaved": "Layout salvato con successo",
+    "layoutDocInvoice": "Fattura",
+    "layoutDocQuote": "Preventivo"
   },
   "payment": {
     "detailsTitle": "Dettagli pagamento",
@@ -618,8 +628,6 @@
     "addNewTech": "+ Aggiungi nuovo",
     "defaultLaborRate": "Tariffa manodopera predefinita (all'ora)",
     "laborRatePlaceholder": "75,00",
-    "workingHours": "Orario di lavoro",
-    "workingHoursPlaceholder": "Lun-Ven 8:00 - 17:00",
     "unitsTitle": "Unita",
     "unitsDescription": "Scegli tra sistema metrico (km, litri) e imperiale (miglia, galloni).",
     "unitSystem": "Sistema di unita",
@@ -632,7 +640,19 @@
     "miles": "miglia (mi)",
     "gallons": "galloni (gal)",
     "saveWorkshop": "Salva impostazioni officina",
-    "saved": "Impostazioni officina salvate"
+    "saved": "Impostazioni officina salvate",
+    "weekStartDay": "Inizio settimana",
+    "workDayStart": "Inizio giornata",
+    "workDayEnd": "Fine giornata",
+    "weekDays": {
+      "0": "Domenica",
+      "1": "Lunedi",
+      "2": "Martedi",
+      "3": "Mercoledi",
+      "4": "Giovedi",
+      "5": "Venerdi",
+      "6": "Sabato"
+    }
   },
   "maintenance": {
     "title": "Manutenzione prevista",

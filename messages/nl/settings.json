@@ -386,6 +386,10 @@
       "tech_name": "Monteur",
       "logo": "Logo",
       "company_name": "Bedrijfsnaam",
+      "company_address": "Adres",
+      "company_phone": "Telefoon",
+      "company_email": "E-mail",
+      "company_org_number": "Organisatienummer",
       "bank_account": "Bankrekening",
       "org_number": "Organisatienummer"
     }
@@ -399,7 +403,8 @@
       "invoice": "Factuur",
       "quotation": "Offerte",
       "inspections": "Inspecties",
-      "sms": "SMS"
+      "sms": "SMS",
+      "layout": "Indeling"
     },
     "presets": "Sjabloonpresets",
     "primaryColor": "Primaire kleur",
@@ -438,7 +443,7 @@
     "quotationTemplateSaved": "Offertesjablooninstellingen opgeslagen",
     "failedSave": "Instellingen opslaan mislukt",
     "smsTemplates": "SMS-berichtsjablonen",
-    "smsTemplatesDescription": "Pas de tekstberichten aan die naar klanten worden gestuurd. Gebruik variabelen zoals <code>{companyName}</code> om dynamische waarden in te voegen.",
+    "smsTemplatesDescription": "Pas de tekstberichten aan die naar klanten worden gestuurd. Gebruik variabelen zoals <code>'{companyName}'</code> om dynamische waarden in te voegen.",
     "reset": "Resetten",
     "invoiceReady": "Factuur gereed",
     "invoiceReadyDescription": "Verzonden bij het delen van een factuur met een klant.",
@@ -477,7 +482,12 @@
       "slate": "Leisteen",
       "rose": "Roze",
       "indigo": "Indigo"
-    }
+    },
+    "layoutTitle": "Factuurindeling",
+    "layoutDescription": "Pas de volgorde en zichtbaarheid van secties in uw facturen en offertes aan.",
+    "layoutSaved": "Indeling succesvol opgeslagen",
+    "layoutDocInvoice": "Factuur",
+    "layoutDocQuote": "Offerte"
   },
   "payment": {
     "detailsTitle": "Betalingsgegevens",
@@ -618,8 +628,6 @@
     "addNewTech": "+ Nieuw toevoegen",
     "defaultLaborRate": "Standaard uurtarief",
     "laborRatePlaceholder": "75,00",
-    "workingHours": "Werkuren",
-    "workingHoursPlaceholder": "Ma-Vr 8:00 - 17:00",
     "unitsTitle": "Eenheden",
     "unitsDescription": "Kies tussen metrisch (km, liters) en imperiaal (mijlen, gallons).",
     "unitSystem": "Eenhedensysteem",
@@ -632,7 +640,19 @@
     "miles": "mijlen (mi)",
     "gallons": "gallons (gal)",
     "saveWorkshop": "Werkplaatsinstellingen opslaan",
-    "saved": "Werkplaatsinstellingen opgeslagen"
+    "saved": "Werkplaatsinstellingen opgeslagen",
+    "weekStartDay": "Weekstart",
+    "workDayStart": "Werkdag begin",
+    "workDayEnd": "Werkdag einde",
+    "weekDays": {
+      "0": "Zondag",
+      "1": "Maandag",
+      "2": "Dinsdag",
+      "3": "Woensdag",
+      "4": "Donderdag",
+      "5": "Vrijdag",
+      "6": "Zaterdag"
+    }
   },
   "maintenance": {
     "title": "Voorspeld onderhoud",
