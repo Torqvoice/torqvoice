@@ -26,60 +26,9 @@
 
 Torqvoice is a self-hosted workshop management platform built for automotive service businesses. It replaces scattered tools with a single place to manage customers, vehicles, service records, quotes, invoicing, inventory, billing all with a clean modern UI.
 
-## Installation
+## Quick Start
 
-For full setup instructions, see the [Installation Guide](https://torqvoice.com/docs/installation).
-
-### Quick Start with Docker Compose
-
-Create a `docker-compose.yml`:
-
-```yaml
-services:
-  app:
-    image: ghcr.io/torqvoice/torqvoice:latest
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      - DATABASE_URL=postgresql://torqvoice:torqvoice@db:5432/torqvoice
-      - BETTER_AUTH_SECRET=change-me-run-openssl-rand-hex-32
-      - NEXT_PUBLIC_APP_URL=http://localhost:3000
-    volumes:
-      - uploads:/app/data/uploads
-    depends_on:
-      db:
-        condition: service_healthy
-
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: torqvoice
-      POSTGRES_PASSWORD: torqvoice
-      POSTGRES_DB: torqvoice
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U torqvoice"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres-data:
-  uploads:
-```
-
-```bash
-# Generate a proper auth secret, and replace the placeholder in the compose file
-openssl rand -hex 32
-
-# Start everything
-docker compose up -d
-```
-
-Open [http://localhost:3000](http://localhost:3000) and create your first account.
+See the [Quick Start guide](https://torqvoice.com/docs/installation#quick-start) to get up and running with Docker Compose in minutes.
 
 ## Features
 - **Multi Company Support** — manage multiple workshops with a single login
@@ -95,14 +44,6 @@ Open [http://localhost:3000](http://localhost:3000) and create your first accoun
 - **Company Branding** — logo, invoice colors, fonts, and layout customization
 - **Global Search** — search across all entities via command palette
 - **Dark Mode** — full dark mode support
-
-## Environment Variables
-
-| Variable | Required | Description |
-|---|---|---|
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `BETTER_AUTH_SECRET` | Yes | Auth secret (`openssl rand -hex 32`) |
-| `NEXT_PUBLIC_APP_URL` | Yes | Application URL |
 
 ## License
 
