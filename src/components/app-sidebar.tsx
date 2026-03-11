@@ -48,6 +48,7 @@ import {
   ClipboardList,
   Columns3,
   FileText,
+  History,
   Globe,
   MessageSquare,
   LayoutDashboard,
@@ -126,6 +127,7 @@ export function AppSidebar({
     { titleKey: 'sidebar.billing' as const, url: '/billing', icon: Receipt },
     { titleKey: 'sidebar.inventory' as const, url: '/inventory', icon: Package },
     ...(showReports ? [{ titleKey: 'sidebar.reports' as const, url: '/reports', icon: BarChart3 }] : []),
+    { titleKey: 'sidebar.auditLog' as const, url: '/audit-log', icon: History },
   ]
 
   const closeMobileSidebar = () => {

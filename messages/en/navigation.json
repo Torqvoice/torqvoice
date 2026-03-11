@@ -48,7 +48,8 @@
     "maintenance": "Maintenance",
     "customerPortal": "Customer Portal",
     "reminders": "Reminders",
-    "allReminders": "All Reminders"
+    "allReminders": "All Reminders",
+    "auditLog": "Audit Log"
   },
   "search": "Search...",
   "shortcut": "Ctrl+K",
@@ -83,6 +84,7 @@
     "createCompany": "Create Company",
     "lightMode": "Light Mode",
     "darkMode": "Dark Mode",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "auditLog": "Audit Log"
   }
 }

@@ -48,7 +48,8 @@
     "maintenance": "Wartung",
     "customerPortal": "Kundenportal",
     "reminders": "Erinnerungen",
-    "allReminders": "Alle Erinnerungen"
+    "allReminders": "Alle Erinnerungen",
+    "auditLog": "Aktivitätsprotokoll"
   },
   "search": "Suchen...",
   "shortcut": "Ctrl+K",
@@ -83,6 +84,7 @@
     "createCompany": "Unternehmen erstellen",
     "lightMode": "Heller Modus",
     "darkMode": "Dunkler Modus",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "auditLog": "Aktivitätsprotokoll"
   }
 }
