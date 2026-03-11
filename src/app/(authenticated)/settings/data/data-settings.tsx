@@ -20,6 +20,12 @@ interface ContentCounts {
   customers: number
   quotes: number
   inventory: number
+  inspections: number
+  technicians: number
+  inspectionTemplates: number
+  notifications: number
+  smsMessages: number
+  customFields: number
 }
 
 interface ExportOptions {
@@ -209,6 +215,12 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
     customers: false,
     quotes: false,
     inventory: false,
+    inspections: false,
+    technicians: false,
+    inspectionTemplates: false,
+    notifications: false,
+    smsMessages: false,
+    customFields: false,
   })
 
   const selectedContentCount = Object.values(contentSelections).filter(Boolean).length
@@ -223,7 +235,11 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
         toast.success(t('account.contentDeleted'))
         setContentDialogOpen(false)
         setContentConfirmText('')
-        setContentSelections({ vehicles: false, customers: false, quotes: false, inventory: false })
+        setContentSelections({
+          vehicles: false, customers: false, quotes: false, inventory: false,
+          inspections: false, technicians: false, inspectionTemplates: false,
+          notifications: false, smsMessages: false, customFields: false,
+        })
         router.refresh()
       } else {
         toast.error(result.error || t('account.failedDeleteContent'))
@@ -523,7 +539,11 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
               className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
               onClick={() => {
                 setContentConfirmText('')
-                setContentSelections({ vehicles: false, customers: false, quotes: false, inventory: false })
+                setContentSelections({
+          vehicles: false, customers: false, quotes: false, inventory: false,
+          inspections: false, technicians: false, inspectionTemplates: false,
+          notifications: false, smsMessages: false, customFields: false,
+        })
                 setContentDialogOpen(true)
               }}
             >
@@ -536,7 +556,7 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
 
       {/* Delete Content Confirmation Dialog */}
       <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-[640px]">
           <DialogHeader>
             <DialogTitle className="text-destructive">{t('account.deleteContentDialogTitle')}</DialogTitle>
             <DialogDescription>
@@ -544,7 +564,7 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {([
                 {
                   key: 'vehicles' as const,
@@ -569,6 +589,42 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
                   label: t('account.contentInventory'),
                   count: contentCounts.inventory,
                   description: t('account.contentInventoryDescription'),
+                },
+                {
+                  key: 'inspections' as const,
+                  label: t('account.contentInspections'),
+                  count: contentCounts.inspections,
+                  description: t('account.contentInspectionsDescription'),
+                },
+                {
+                  key: 'technicians' as const,
+                  label: t('account.contentTechnicians'),
+                  count: contentCounts.technicians,
+                  description: t('account.contentTechniciansDescription'),
+                },
+                {
+                  key: 'inspectionTemplates' as const,
+                  label: t('account.contentInspectionTemplates'),
+                  count: contentCounts.inspectionTemplates,
+                  description: t('account.contentInspectionTemplatesDescription'),
+                },
+                {
+                  key: 'notifications' as const,
+                  label: t('account.contentNotifications'),
+                  count: contentCounts.notifications,
+                  description: t('account.contentNotificationsDescription'),
+                },
+                {
+                  key: 'smsMessages' as const,
+                  label: t('account.contentSmsMessages'),
+                  count: contentCounts.smsMessages,
+                  description: t('account.contentSmsMessagesDescription'),
+                },
+                {
+                  key: 'customFields' as const,
+                  label: t('account.contentCustomFields'),
+                  count: contentCounts.customFields,
+                  description: t('account.contentCustomFieldsDescription'),
                 },
               ]).map((item) => (
                 <label
