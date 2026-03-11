@@ -318,6 +318,7 @@ function FieldsPanel({
   return (
     <div className="mt-1 space-y-1">
       <DndContext
+        id={`layout-fields-${section.id}`}
         sensors={fieldSensors}
         collisionDetection={closestCenter}
         onDragEnd={handleFieldDragEnd}
@@ -679,6 +680,7 @@ export function InvoiceLayoutEditor({
       </p>
 
       <DndContext
+        id="layout-sections"
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
