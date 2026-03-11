@@ -587,8 +587,6 @@
     "gallons": "gallons (gal)",
     "saveWorkshop": "Lagre verkstedinnstillinger",
     "saved": "Verkstedinnstillinger lagret",
-    "workBoardTitle": "Arbeidstavle-innstillinger",
-    "workBoardDescription": "Konfigurer arbeidstavlens tidsplan og dagvisning.",
     "weekStartDay": "Ukens startdag",
     "workDayStart": "Arbeidsdagen starter",
     "workDayEnd": "Arbeidsdagen slutter",
