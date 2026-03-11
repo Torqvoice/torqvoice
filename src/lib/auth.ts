@@ -150,7 +150,7 @@ export const auth = betterAuth({
               ip: (session as Record<string, unknown>).ipAddress as string ?? null,
               userAgent: (session as Record<string, unknown>).userAgent as string ?? null,
             },
-          ).catch((err) => console.error('[audit] auth.login failed:', err))
+          ).catch(() => { /* best-effort */ })
         },
       },
     },
@@ -191,11 +191,6 @@ export const auth = betterAuth({
             })
           }
 
-          // Audit: log user registration
-          logAudit(
-            { userId: user.id, organizationId: '' },
-            { action: 'auth.register', message: `New user registered: ${user.email}` },
-          ).catch(() => { /* best-effort */ })
         },
       },
     },
