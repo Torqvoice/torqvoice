@@ -1,0 +1,18 @@
+{
+  "title": "AI-assistent",
+  "description": "Stel vragen over uw werkplaatsgegevens — voertuigen, diensten, klanten, omzet en meer.",
+  "placeholder": "Vraag over uw werkplaats...",
+  "clear": "Gesprek wissen",
+  "error": "Er ging iets mis. Probeer het opnieuw.",
+  "notEnabled": "AI is niet ingeschakeld. Configureer het in Instellingen → AI.",
+  "suggestion1": "Welke voertuigen moeten binnenkort onderhouden worden?",
+  "suggestion2": "Toon me onbetaalde facturen",
+  "suggestion3": "Wat is de omzet deze maand?",
+  "suggestion4": "Geef me een werkplaatsoverzicht",
+  "newChat": "Nieuw gesprek",
+  "noChats": "Nog geen gesprekken",
+  "chatsPrivate": "Je chats zijn privé en alleen zichtbaar voor jou.",
+  "deleteChat": "Gesprek verwijderen",
+  "hideSidebar": "Zijbalk verbergen",
+  "showSidebar": "Zijbalk tonen"
+}

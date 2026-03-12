@@ -24,6 +24,7 @@
       "customerPortal": { "title": "Customer Portal", "description": "Customer self-service portal" },
       "workshop": { "title": "Workshop", "description": "Technician & labor defaults" },
       "maintenance": { "title": "Maintenance", "description": "Predicted service intervals" },
+      "ai": { "title": "AI", "description": "AI provider & features" },
       "appearance": { "title": "Appearance", "description": "Theme & display" },
       "data": { "title": "Data", "description": "Export & import backup" },
       "license": { "title": "License", "description": "White-label license" },
@@ -250,6 +251,10 @@
     "permissionCount": "{count} permission",
     "permissionCountPlural": "{count} permissions",
     "noCustomRoles": "No custom roles yet. Create one to define granular permissions for team members.",
+    "presetAll": "All",
+    "presetViewOnly": "View Only",
+    "presetWriteAll": "Read & Write",
+    "presetNone": "None",
     "builtInRoles": "Built-in Roles",
     "ownerLabel": "Owner",
     "ownerDescription": "Full access. Can manage members, change roles, and delete the organization.",
@@ -900,5 +905,30 @@
     "upgradeAmountDue": "Amount due now",
     "upgradeSuccess": "Successfully upgraded to Enterprise!",
     "upgradeError": "Failed to upgrade subscription"
+  },
+  "ai": {
+    "title": "AI Assistant",
+    "description": "Configure AI to auto-generate service notes and summarize vehicle history.",
+    "enableLabel": "Enable AI",
+    "enableHint": "Use AI-powered features throughout the application",
+    "disabledInfo": "Enable AI to use features like auto-generated service descriptions and vehicle history summaries.",
+    "provider": "AI Provider",
+    "apiKey": "API Key",
+    "apiKeyHint": "Your {provider} API key. Stored securely and never shared.",
+    "model": "Model",
+    "testConnection": "Test Connection",
+    "testSuccess": "AI connection successful!",
+    "testFailed": "Connection failed. Check your API key and model.",
+    "saved": "AI settings saved",
+    "failedSave": "Failed to save AI settings",
+    "saveSettings": "Save Settings",
+    "featuresTitle": "AI-powered features included:",
+    "featureServiceNotes": "Auto-generate professional service descriptions from parts and labor",
+    "featureHistorySummary": "One-click vehicle service history summary",
+    "cost": {
+      "high": "High Cost",
+      "medium": "Medium",
+      "low": "Low Cost"
+    }
   }
 }

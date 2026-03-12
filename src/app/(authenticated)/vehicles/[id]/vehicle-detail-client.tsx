@@ -34,6 +34,8 @@ import {
   undismissMaintenance,
 } from '@/features/vehicles/Actions/dismissMaintenance'
 import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
+import { aiSummarizeVehicleHistory, aiGetCommonIssues, aiClearMessage } from '@/features/ai/Actions/aiActions'
+import { AI_MESSAGE_TYPES } from '@/features/ai/constants'
 import { formatCurrency } from '@/lib/format'
 import {
   AlertTriangle,
@@ -48,6 +50,7 @@ import {
   DollarSign,
   EyeOff,
   FileText,
+  Sparkles,
   Gauge,
   Loader2,
   MoreVertical,
@@ -162,6 +165,7 @@ interface VehicleDetail {
     isCompleted: boolean
     createdAt: Date
   }[]
+  aiMessages: { type: string; content: string; updatedAt: Date }[]
   _count: {
     serviceRecords: number
     notes: number
@@ -202,6 +206,7 @@ export function VehicleDetailClient({
   inspections,
   inspectionTemplates,
   quotes = [],
+  aiEnabled = false,
 }: {
   vehicle: VehicleDetail
   customers: CustomerOption[]
@@ -231,6 +236,7 @@ export function VehicleDetailClient({
   }[]
   inspectionTemplates?: { id: string; name: string; isDefault: boolean }[]
   quotes?: QuoteRecord[]
+  aiEnabled?: boolean
 }) {
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
@@ -276,6 +282,12 @@ export function VehicleDetailClient({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showNewInspection, setShowNewInspection] = useState(false)
   const [isDismissPending, startDismissTransition] = useTransition()
+  const [aiSummaryLoading, setAiSummaryLoading] = useState(false)
+  const [commonIssuesLoading, setCommonIssuesLoading] = useState(false)
+  const [activeAiPanel, setActiveAiPanel] = useState<'summary' | 'issues' | null>(null)
+
+  const storedSummary = vehicle.aiMessages.find((m) => m.type === AI_MESSAGE_TYPES.SUMMARY)
+  const storedCommonIssues = vehicle.aiMessages.find((m) => m.type === AI_MESSAGE_TYPES.COMMON_ISSUES)
 
   const handleDismissMaintenance = () => {
     startDismissTransition(async () => {
@@ -352,6 +364,52 @@ export function VehicleDetailClient({
       router.refresh()
     } else {
       modal.open('error', 'Error', result.error || t('unarchiveError'))
+    }
+  }
+
+  const handleAiSummary = async () => {
+    setAiSummaryLoading(true)
+    try {
+      const result = await aiSummarizeVehicleHistory(vehicle.id)
+      if (result.success && result.data) {
+        toast.success(t('aiSummaryGenerated'))
+        router.refresh()
+      } else {
+        toast.error(result.error ?? t('aiSummaryError'))
+      }
+    } catch {
+      toast.error(t('aiSummaryError'))
+    } finally {
+      setAiSummaryLoading(false)
+    }
+  }
+
+  const handleCommonIssues = async () => {
+    setActiveAiPanel('issues')
+    setCommonIssuesLoading(true)
+    try {
+      const result = await aiGetCommonIssues(vehicle.id)
+      if (result.success && result.data) {
+        router.refresh()
+      } else {
+        toast.error(result.error ?? t('aiSummaryError'))
+      }
+    } catch {
+      toast.error(t('aiSummaryError'))
+    } finally {
+      setCommonIssuesLoading(false)
+    }
+  }
+
+  const handleClearAiMessage = async (type: string) => {
+    try {
+      const result = await aiClearMessage(vehicle.id, type)
+      if (result.success) {
+        setActiveAiPanel(null)
+        router.refresh()
+      }
+    } catch {
+      toast.error(t('aiSummaryError'))
     }
   }
 
@@ -620,8 +678,295 @@ export function VehicleDetailClient({
               </span>
             </div>
           )}
+          {aiEnabled && (
+            <div className="flex items-center rounded-md border">
+              {vehicle._count.serviceRecords > 0 && (
+                <Button
+                  variant={activeAiPanel === 'summary' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="h-7 gap-1.5 text-xs rounded-r-none border-r"
+                  onClick={() => setActiveAiPanel(activeAiPanel === 'summary' ? null : 'summary')}
+                  disabled={aiSummaryLoading}
+                >
+                  {aiSummaryLoading ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-3.5 w-3.5" />
+                  )}
+                  {t('aiSummary')}
+                </Button>
+              )}
+              <Button
+                variant={activeAiPanel === 'issues' ? 'secondary' : 'ghost'}
+                size="sm"
+                className={`h-7 gap-1.5 text-xs ${vehicle._count.serviceRecords > 0 ? 'rounded-l-none' : ''}`}
+                onClick={() => setActiveAiPanel(activeAiPanel === 'issues' ? null : 'issues')}
+                disabled={commonIssuesLoading}
+              >
+                {commonIssuesLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                )}
+                {t('commonIssues')}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* AI Summary Panel */}
+      {activeAiPanel === 'summary' && aiEnabled && (
+        <Card className="py-0 gap-0 overflow-hidden">
+          <div className="flex items-center justify-between border-b bg-muted/30 px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-purple-500" />
+              <h3 className="text-sm font-semibold">{t('aiSummaryTitle')}</h3>
+              {storedSummary && (
+                <span className="text-[11px] text-muted-foreground">
+                  {t('aiSummaryUpdated', { date: formatDate(new Date(storedSummary.updatedAt)) })}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 gap-1.5 text-xs"
+                onClick={handleAiSummary}
+                disabled={aiSummaryLoading}
+              >
+                {aiSummaryLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3.5 w-3.5" />
+                )}
+                {storedSummary ? t('aiSummaryRegenerate') : t('aiSummaryGenerate')}
+              </Button>
+              {storedSummary && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => handleClearAiMessage(AI_MESSAGE_TYPES.SUMMARY)}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
+          </div>
+          <div className="px-4 py-3">
+            {aiSummaryLoading && !storedSummary ? (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : storedSummary ? (
+              (() => {
+                let summary: {
+                  overview: string
+                  majorWork: { title: string; date: string | null; cost: number }[]
+                  recurringIssues: { title: string; description: string }[]
+                  upcomingMaintenance: { item: string; urgency: string; reason: string }[]
+                } | null = null
+                try {
+                  const raw = storedSummary.content.replace(/^```json?\n?|\n?```$/g, '').trim()
+                  summary = JSON.parse(raw)
+                } catch {
+                  return (
+                    <div className="text-sm text-muted-foreground whitespace-pre-wrap">
+                      {storedSummary.content}
+                    </div>
+                  )
+                }
+                if (!summary) return null
+                const urgencyColor: Record<string, string> = {
+                  high: 'bg-red-500/10 text-red-600 border-red-500/20',
+                  medium: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+                  low: 'bg-green-500/10 text-green-600 border-green-500/20',
+                }
+                return (
+                  <div className="space-y-4">
+                    <p className="text-sm">{summary.overview}</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {summary.majorWork.length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-2 flex items-center gap-1.5">
+                            <Wrench className="h-3.5 w-3.5" />
+                            {t('summaryMajorWork')}
+                          </h4>
+                          <div className="space-y-1.5">
+                            {summary.majorWork.map((w, i) => (
+                              <div key={i} className="text-sm">
+                                <span className="font-medium">{w.title}</span>
+                                {(w.date || w.cost > 0) && (
+                                  <span className="text-xs text-muted-foreground ml-2">
+                                    {[w.date, w.cost > 0 && new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(w.cost)].filter(Boolean).join(' · ')}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {summary.upcomingMaintenance.length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-2 flex items-center gap-1.5">
+                            <Clock className="h-3.5 w-3.5" />
+                            {t('summaryUpcoming')}
+                          </h4>
+                          <div className="space-y-2">
+                            {summary.upcomingMaintenance.map((m, i) => (
+                              <div key={i}>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-medium">{m.item}</span>
+                                  <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${urgencyColor[m.urgency] || urgencyColor.medium}`}>
+                                    {m.urgency}
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-0.5">{m.reason}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {summary.recurringIssues.length > 0 && (
+                        <div className="md:col-span-2">
+                          <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-2 flex items-center gap-1.5">
+                            <AlertTriangle className="h-3.5 w-3.5" />
+                            {t('summaryRecurringIssues')}
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                            {summary.recurringIssues.map((issue, i) => (
+                              <div key={i} className="text-sm">
+                                <span className="font-medium">{issue.title}</span>
+                                <p className="text-xs text-muted-foreground mt-0.5">{issue.description}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })()
+            ) : (
+              <p className="text-sm text-muted-foreground italic">{t('aiSummaryEmpty')}</p>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Common Issues Panel */}
+      {activeAiPanel === 'issues' && aiEnabled && (
+        <Card className="py-0 gap-0 overflow-hidden">
+          <div className="flex items-center justify-between border-b bg-muted/30 px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              <h3 className="text-sm font-semibold">{t('commonIssuesTitle', { make: vehicle.make, model: vehicle.model })}</h3>
+              {storedCommonIssues && (
+                <span className="text-[11px] text-muted-foreground">
+                  {t('aiSummaryUpdated', { date: formatDate(new Date(storedCommonIssues.updatedAt)) })}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 gap-1.5 text-xs"
+                onClick={handleCommonIssues}
+                disabled={commonIssuesLoading}
+              >
+                {commonIssuesLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                )}
+                {storedCommonIssues ? t('aiSummaryRegenerate') : t('aiSummaryGenerate')}
+              </Button>
+              {storedCommonIssues && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => handleClearAiMessage(AI_MESSAGE_TYPES.COMMON_ISSUES)}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
+          </div>
+          <div className="divide-y">
+            {commonIssuesLoading && !storedCommonIssues ? (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : storedCommonIssues ? (
+              (() => {
+                let issues: { title: string; description: string; cost: string; risk: string; severity?: number }[] = []
+                try {
+                  const raw = storedCommonIssues.content.replace(/^```json?\n?|\n?```$/g, '').trim()
+                  issues = JSON.parse(raw)
+                } catch {
+                  return (
+                    <div className="px-4 py-3 text-sm text-muted-foreground whitespace-pre-wrap">
+                      {storedCommonIssues.content}
+                    </div>
+                  )
+                }
+                const riskColor: Record<string, string> = {
+                  safety: 'bg-red-500/10 text-red-600 border-red-500/20',
+                  engine: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+                  transmission: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+                  electrical: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+                  other: 'bg-gray-500/10 text-gray-600 border-gray-500/20',
+                }
+                const severityBarColor = (s: number) =>
+                  s >= 4 ? 'bg-red-500' : s >= 3 ? 'bg-amber-500' : 'bg-yellow-400'
+                const severityLabel = (s: number) => {
+                  if (s >= 5) return t('severityVeryCommon')
+                  if (s >= 4) return t('severityCommon')
+                  if (s >= 3) return t('severityModerate')
+                  if (s >= 2) return t('severityUncommon')
+                  return t('severityRare')
+                }
+                return issues.map((issue, i) => {
+                  const sev = Math.max(1, Math.min(5, issue.severity ?? 3))
+                  return (
+                    <div key={i} className="flex gap-3 px-4 py-3">
+                      <div className="flex flex-col items-center gap-0.5 pt-1 cursor-help" title={severityLabel(sev)}>
+                        {Array.from({ length: 5 }).map((_, j) => (
+                          <div
+                            key={j}
+                            className={`w-1.5 h-1.5 rounded-full ${4 - j < sev ? severityBarColor(sev) : 'bg-muted-foreground/20'}`}
+                          />
+                        ))}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-semibold">{issue.title}</span>
+                          <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${riskColor[issue.risk] || riskColor.other}`}>
+                            {issue.risk}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-0.5">{issue.description}</p>
+                        <span className="text-xs font-medium text-foreground/70 mt-1 inline-block">{issue.cost}</span>
+                      </div>
+                    </div>
+                  )
+                })
+              })()
+            ) : (
+              <div className="px-4 py-3">
+                <p className="text-sm text-muted-foreground italic">{t('commonIssuesEmpty')}</p>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
@@ -1084,6 +1429,7 @@ export function VehicleDetailClient({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
 
       {/* Image lightbox */}
       {showImage && vehicle.imageUrl && (

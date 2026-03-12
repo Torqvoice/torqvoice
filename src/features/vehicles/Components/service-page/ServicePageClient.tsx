@@ -45,6 +45,7 @@ export function ServicePageClient({
   maxDocumentsPerService,
   smsEnabled = false,
   emailEnabled = false,
+  aiEnabled = false,
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const [activeTab, setActiveTab] = useState<ServiceTab>('details')
@@ -100,6 +101,7 @@ export function ServicePageClient({
                 currencyCode={currencyCode}
                 defaultLaborRate={defaultLaborRate}
                 inventoryParts={inventoryParts}
+                aiEnabled={aiEnabled}
               />
             }
             rightColumn={

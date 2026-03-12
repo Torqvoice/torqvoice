@@ -105,7 +105,18 @@
     "publicPlaceholder": "Notatki widoczne na fakturze...",
     "internalPlaceholder": "Notatki wewnętrzne (nie pokazywane na fakturze)...",
     "publicHelper": "Pokazane na fakturze i współdzielonych dokumentach",
-    "internalHelper": "Widoczne tylko dla Twojego zespołu"
+    "internalHelper": "Widoczne tylko dla Twojego zespołu",
+    "aiWrite": "AI Pisz",
+    "aiGenerated": "Notatki AI wygenerowane pomyślnie",
+    "aiGenerateFailed": "Nie udało się wygenerować notatek AI",
+    "aiDialogTitle": "AI Pisz",
+    "aiDialogDescription": "AI przeanalizuje części i robociznę w tym rekordzie serwisowym i wygeneruje profesjonalny opis. Wynik zostanie zapisany w wybranym typie notatki.",
+    "aiGenerate": "Generuj",
+    "aiOverwriteDescription": "Ta notatka ma już treść. Możesz ją zastąpić lub dołączyć tekst wygenerowany przez AI poniżej.",
+    "aiOverwriteReplace": "Zastąp",
+    "aiOverwriteAppend": "Dołącz",
+    "aiOverwriteCancel": "Anuluj",
+    "aiDontShowAgain": "Nie pokazuj ponownie"
   },
   "invoice": {
     "title": "Podsumowanie Faktury",

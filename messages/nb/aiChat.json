@@ -1,0 +1,18 @@
+{
+  "title": "AI-assistent",
+  "description": "Still spørsmål om verksteddata — kjøretøy, tjenester, kunder, inntekter og mer.",
+  "placeholder": "Spør om verkstedet ditt...",
+  "clear": "Tøm samtale",
+  "error": "Noe gikk galt. Vennligst prøv igjen.",
+  "notEnabled": "AI er ikke aktivert. Konfigurer det i Innstillinger → AI.",
+  "suggestion1": "Hvilke kjøretøy trenger snart service?",
+  "suggestion2": "Vis meg ubetalte fakturaer",
+  "suggestion3": "Hva er inntekten denne måneden?",
+  "suggestion4": "Gi meg en verkstedoversikt",
+  "newChat": "Ny chat",
+  "noChats": "Ingen samtaler ennå",
+  "chatsPrivate": "Samtalene dine er private og kun synlige for deg.",
+  "deleteChat": "Slett chat",
+  "hideSidebar": "Skjul sidepanel",
+  "showSidebar": "Vis sidepanel"
+}

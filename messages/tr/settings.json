@@ -66,6 +66,7 @@
         "title": "Bakım",
         "description": "Öngörülen servis aralıkları"
       },
+      "ai": { "title": "AI", "description": "Yapay zeka saglayici ve ozellikler" },
       "appearance": {
         "title": "Görünüm",
         "description": "Tema & görüntüleme"
@@ -304,6 +305,10 @@
     "permissionCount": "{count} izin",
     "permissionCountPlural": "{count} izin",
     "noCustomRoles": "Henüz özel rol yok. Ekip üyeleri için ayrıntılı izinler tanımlamak üzere bir tane oluşturun.",
+    "presetAll": "Tümü",
+    "presetViewOnly": "Yalnızca görüntüleme",
+    "presetWriteAll": "Okuma ve yazma",
+    "presetNone": "Hiçbiri",
     "builtInRoles": "Yerleşik Roller",
     "ownerLabel": "Sahip",
     "ownerDescription": "Tam erişim. Üyeleri yönetebilir, rolleri değiştirebilir ve kuruluşu silebilir.",
@@ -954,5 +959,30 @@
     "upgradeAmountDue": "Şimdi ödenecek tutar",
     "upgradeSuccess": "Enterprise'a başarıyla yükseltildi!",
     "upgradeError": "Abonelik yükseltilemedi"
+  },
+  "ai": {
+    "title": "Yapay Zeka Asistani",
+    "description": "Servis notlarini otomatik olusturmak ve arac gecmisini ozetlemek icin yapay zekayi yapilandirin.",
+    "enableLabel": "Yapay zekayi etkinlestir",
+    "enableHint": "Uygulama genelinde yapay zeka destekli ozellikleri kullanin",
+    "disabledInfo": "Otomatik olusturulan servis aciklamalari ve arac gecmisi ozetleri gibi ozellikleri kullanmak icin yapay zekayi etkinlestirin.",
+    "provider": "Yapay Zeka Saglayici",
+    "apiKey": "API Anahtari",
+    "apiKeyHint": "{provider} API anahtariniz. Guvenli bir sekilde saklanir ve asla paylasilmaz.",
+    "model": "Model",
+    "testConnection": "Baglantiyi test et",
+    "testSuccess": "Yapay zeka baglantisi basarili!",
+    "testFailed": "Baglanti basarisiz. API anahtarinizi ve modeli kontrol edin.",
+    "saved": "Yapay zeka ayarlari kaydedildi",
+    "failedSave": "Yapay zeka ayarlari kaydedilemedi",
+    "saveSettings": "Ayarlari kaydet",
+    "featuresTitle": "Dahil edilen yapay zeka ozellikleri:",
+    "featureServiceNotes": "Parca ve iscilikten profesyonel servis aciklamalarini otomatik olusturma",
+    "featureHistorySummary": "Tek tikla arac servis gecmisi ozeti",
+    "cost": {
+      "high": "Yüksek maliyet",
+      "medium": "Orta",
+      "low": "Düşük maliyet"
+    }
   }
 }

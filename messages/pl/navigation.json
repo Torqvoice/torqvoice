@@ -49,7 +49,8 @@
     "customerPortal": "Portal klienta",
     "reminders": "Przypomnienia",
     "allReminders": "Wszystkie przypomnienia",
-    "auditLog": "Dziennik audytu"
+    "auditLog": "Dziennik audytu",
+    "aiAssistant": "Asystent AI"
   },
   "search": "Szukaj...",
   "shortcut": "Ctrl+K",
@@ -85,6 +86,7 @@
     "lightMode": "Tryb jasny",
     "darkMode": "Tryb ciemny",
     "signOut": "Wyloguj się",
-    "auditLog": "Dziennik audytu"
+    "auditLog": "Dziennik audytu",
+    "aiAssistant": "Asystent AI"
   }
 }

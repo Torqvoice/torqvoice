@@ -66,6 +66,7 @@
         "title": "Konserwacja",
         "description": "Przewidywane interwaly serwisowe"
       },
+      "ai": { "title": "AI", "description": "Dostawca AI i funkcje" },
       "appearance": {
         "title": "Wyglad",
         "description": "Motyw i wyswietlanie"
@@ -304,6 +305,10 @@
     "permissionCount": "{count} uprawnienie",
     "permissionCountPlural": "{count} uprawnien",
     "noCustomRoles": "Brak ról niestandardowych. Utworz jedną, aby zdefiniować szczególowe uprawnienia dla czlonkow zespolu.",
+    "presetAll": "Wszystkie",
+    "presetViewOnly": "Tylko podgląd",
+    "presetWriteAll": "Odczyt i zapis",
+    "presetNone": "Brak",
     "builtInRoles": "Role wbudowane",
     "ownerLabel": "Wlasciciel",
     "ownerDescription": "Pelny dostep. Moze zarzadzac czlonkami, zmieniac role i usuwac organizacje.",
@@ -954,5 +959,30 @@
     "upgradeAmountDue": "Kwota do zapłaty teraz",
     "upgradeSuccess": "Pomyślnie ulepszono do Enterprise!",
     "upgradeError": "Nie udało się ulepszyć subskrypcji"
+  },
+  "ai": {
+    "title": "Asystent AI",
+    "description": "Skonfiguruj AI do automatycznego generowania notatek serwisowych i podsumowywania historii pojazdu.",
+    "enableLabel": "Wlacz AI",
+    "enableHint": "Korzystaj z funkcji opartych na AI w calej aplikacji",
+    "disabledInfo": "Wlacz AI, aby korzystac z funkcji takich jak automatycznie generowane opisy serwisowe i podsumowania historii pojazdu.",
+    "provider": "Dostawca AI",
+    "apiKey": "Klucz API",
+    "apiKeyHint": "Twoj klucz API {provider}. Przechowywany bezpiecznie i nigdy nieudostepniany.",
+    "model": "Model",
+    "testConnection": "Testuj polaczenie",
+    "testSuccess": "Polaczenie AI udane!",
+    "testFailed": "Polaczenie nieudane. Sprawdz klucz API i model.",
+    "saved": "Ustawienia AI zapisane",
+    "failedSave": "Nie udalo sie zapisac ustawien AI",
+    "saveSettings": "Zapisz ustawienia",
+    "featuresTitle": "Zawarte funkcje AI:",
+    "featureServiceNotes": "Automatyczne generowanie profesjonalnych opisow serwisowych z czesci i robocizny",
+    "featureHistorySummary": "Podsumowanie historii serwisowej pojazdu jednym kliknieciem",
+    "cost": {
+      "high": "Wysoki koszt",
+      "medium": "Średni",
+      "low": "Niski koszt"
+    }
   }
 }

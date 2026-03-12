@@ -105,7 +105,18 @@
     "publicPlaceholder": "Notas visibles en la factura...",
     "internalPlaceholder": "Notas internas (no mostradas en la factura)...",
     "publicHelper": "Se muestra en la factura y documentos compartidos",
-    "internalHelper": "Solo visible para su equipo"
+    "internalHelper": "Solo visible para su equipo",
+    "aiWrite": "AI Escribir",
+    "aiGenerated": "Notas AI generadas exitosamente",
+    "aiGenerateFailed": "Error al generar notas AI",
+    "aiDialogTitle": "IA Escribir",
+    "aiDialogDescription": "La IA analizará las piezas y la mano de obra en este registro de servicio y generará una descripción profesional. El resultado se escribirá en el tipo de nota seleccionado.",
+    "aiGenerate": "Generar",
+    "aiOverwriteDescription": "Esta nota ya tiene contenido. Puede reemplazarlo o agregar el texto generado por IA debajo.",
+    "aiOverwriteReplace": "Reemplazar",
+    "aiOverwriteAppend": "Agregar",
+    "aiOverwriteCancel": "Cancelar",
+    "aiDontShowAgain": "No mostrar de nuevo"
   },
   "invoice": {
     "title": "Resumen de Factura",

@@ -66,6 +66,7 @@
         "title": "Manutenzione",
         "description": "Intervalli di servizio previsti"
       },
+      "ai": { "title": "AI", "description": "Provider IA e funzionalita" },
       "appearance": {
         "title": "Aspetto",
         "description": "Tema e visualizzazione"
@@ -304,6 +305,10 @@
     "permissionCount": "{count} autorizzazione",
     "permissionCountPlural": "{count} autorizzazioni",
     "noCustomRoles": "Nessun ruolo personalizzato. Creane uno per definire autorizzazioni granulari per i membri del team.",
+    "presetAll": "Tutti",
+    "presetViewOnly": "Solo visualizzazione",
+    "presetWriteAll": "Lettura e scrittura",
+    "presetNone": "Nessuno",
     "builtInRoles": "Ruoli integrati",
     "ownerLabel": "Proprietario",
     "ownerDescription": "Accesso completo. Puo gestire i membri, cambiare ruoli ed eliminare l'organizzazione.",
@@ -954,5 +959,30 @@
     "upgradeAmountDue": "Importo dovuto ora",
     "upgradeSuccess": "Aggiornato a Enterprise con successo!",
     "upgradeError": "Aggiornamento dell'abbonamento non riuscito"
+  },
+  "ai": {
+    "title": "Assistente IA",
+    "description": "Configura l'IA per generare automaticamente note di servizio e riassumere la cronologia del veicolo.",
+    "enableLabel": "Abilita IA",
+    "enableHint": "Usa le funzionalita basate sull'IA in tutta l'applicazione",
+    "disabledInfo": "Abilita l'IA per utilizzare funzionalita come descrizioni di servizio generate automaticamente e riassunti della cronologia del veicolo.",
+    "provider": "Provider IA",
+    "apiKey": "Chiave API",
+    "apiKeyHint": "La tua chiave API {provider}. Conservata in modo sicuro e mai condivisa.",
+    "model": "Modello",
+    "testConnection": "Testa connessione",
+    "testSuccess": "Connessione IA riuscita!",
+    "testFailed": "Connessione fallita. Controlla la tua chiave API e il modello.",
+    "saved": "Impostazioni IA salvate",
+    "failedSave": "Salvataggio delle impostazioni IA non riuscito",
+    "saveSettings": "Salva impostazioni",
+    "featuresTitle": "Funzionalita IA incluse:",
+    "featureServiceNotes": "Generazione automatica di descrizioni di servizio professionali da ricambi e manodopera",
+    "featureHistorySummary": "Riepilogo della cronologia di servizio del veicolo con un clic",
+    "cost": {
+      "high": "Costo alto",
+      "medium": "Medio",
+      "low": "Costo basso"
+    }
   }
 }

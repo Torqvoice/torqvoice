@@ -66,6 +66,7 @@
         "title": "Onderhoud",
         "description": "Voorspelde service-intervallen"
       },
+      "ai": { "title": "AI", "description": "AI-provider & functies" },
       "appearance": {
         "title": "Weergave",
         "description": "Thema en weergave"
@@ -304,6 +305,10 @@
     "permissionCount": "{count} machtiging",
     "permissionCountPlural": "{count} machtigingen",
     "noCustomRoles": "Nog geen aangepaste rollen. Maak er een aan om gedetailleerde machtigingen voor teamleden te definiëren.",
+    "presetAll": "Alle",
+    "presetViewOnly": "Alleen bekijken",
+    "presetWriteAll": "Lezen en schrijven",
+    "presetNone": "Geen",
     "builtInRoles": "Ingebouwde rollen",
     "ownerLabel": "Eigenaar",
     "ownerDescription": "Volledige toegang. Kan leden beheren, rollen wijzigen en de organisatie verwijderen.",
@@ -954,5 +959,30 @@
     "upgradeAmountDue": "Nu te betalen bedrag",
     "upgradeSuccess": "Succesvol geüpgraded naar Enterprise!",
     "upgradeError": "Upgrade van abonnement mislukt"
+  },
+  "ai": {
+    "title": "AI-assistent",
+    "description": "Configureer AI om automatisch servicenotities te genereren en voertuiggeschiedenis samen te vatten.",
+    "enableLabel": "AI inschakelen",
+    "enableHint": "Gebruik AI-functies in de hele applicatie",
+    "disabledInfo": "Schakel AI in om functies te gebruiken zoals automatisch gegenereerde servicebeschrijvingen en samenvattingen van voertuiggeschiedenis.",
+    "provider": "AI-provider",
+    "apiKey": "API-sleutel",
+    "apiKeyHint": "Uw {provider} API-sleutel. Veilig opgeslagen en nooit gedeeld.",
+    "model": "Model",
+    "testConnection": "Verbinding testen",
+    "testSuccess": "AI-verbinding geslaagd!",
+    "testFailed": "Verbinding mislukt. Controleer uw API-sleutel en model.",
+    "saved": "AI-instellingen opgeslagen",
+    "failedSave": "Opslaan van AI-instellingen mislukt",
+    "saveSettings": "Instellingen opslaan",
+    "featuresTitle": "Inbegrepen AI-functies:",
+    "featureServiceNotes": "Automatisch professionele servicebeschrijvingen genereren uit onderdelen en arbeid",
+    "featureHistorySummary": "Samenvatting van voertuig-servicegeschiedenis met een klik",
+    "cost": {
+      "high": "Hoge kosten",
+      "medium": "Gemiddeld",
+      "low": "Lage kosten"
+    }
   }
 }

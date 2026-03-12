@@ -1,165 +1,174 @@
-"use client";
+'use client'
 
-import { useState, useCallback, useTransition } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useFormatDate } from "@/lib/use-format-date";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState, useCallback, useTransition } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle,
-} from "@/components/ui/dialog";
-import { DataTablePagination } from "@/components/data-table-pagination";
-import { Loader2, Plus, Search } from "lucide-react";
-import { formatCurrency } from "@/lib/format";
-import { toast } from "sonner";
-import { createQuote } from "@/features/quotes/Actions/quoteActions";
-import { VehicleCombobox } from "@/features/quotes/Components/VehicleCombobox";
-import { CustomerCombobox } from "@/features/quotes/Components/CustomerCombobox";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { DataTablePagination } from '@/components/data-table-pagination'
+import { Loader2, Plus, Search } from 'lucide-react'
+import { formatCurrency } from '@/lib/format'
+import { toast } from 'sonner'
+import { createQuote } from '@/features/quotes/Actions/quoteActions'
+import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
+import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 
 interface QuoteRecord {
-  id: string;
-  quoteNumber: string | null;
-  title: string;
-  status: string;
-  totalAmount: number;
-  createdAt: Date;
-  validUntil: Date | null;
-  customer: { id: string; name: string } | null;
-  vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null } | null;
+  id: string
+  quoteNumber: string | null
+  title: string
+  status: string
+  totalAmount: number
+  createdAt: Date
+  validUntil: Date | null
+  customer: { id: string; name: string } | null
+  vehicle: {
+    id: string
+    make: string
+    model: string
+    year: number
+    licensePlate: string | null
+  } | null
 }
 
 interface PaginatedData {
-  records: QuoteRecord[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  statusCounts: Record<string, number>;
+  records: QuoteRecord[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+  statusCounts: Record<string, number>
 }
 
 const statusTabs = [
-  { key: "all", titleKey: "list.statusAll" },
-  { key: "draft", titleKey: "list.statusDraft" },
-  { key: "sent", titleKey: "list.statusSent" },
-  { key: "accepted", titleKey: "list.statusAccepted" },
-  { key: "rejected", titleKey: "list.statusRejected" },
-  { key: "converted", titleKey: "list.statusConverted" },
-] as const;
+  { key: 'all', titleKey: 'list.statusAll' },
+  { key: 'draft', titleKey: 'list.statusDraft' },
+  { key: 'sent', titleKey: 'list.statusSent' },
+  { key: 'accepted', titleKey: 'list.statusAccepted' },
+  { key: 'rejected', titleKey: 'list.statusRejected' },
+  { key: 'converted', titleKey: 'list.statusConverted' },
+] as const
 
 const statusColors: Record<string, string> = {
-  draft: "bg-gray-500/10 text-gray-500 border-gray-500/20",
-  sent: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-  accepted: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  rejected: "bg-red-500/10 text-red-500 border-red-500/20",
-  expired: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  converted: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-};
+  draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
+  sent: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
+  expired: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+  converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+}
 
 export function QuotesClient({
   data,
-  currencyCode = "USD",
+  currencyCode = 'USD',
   search,
   statusFilter,
 }: {
-  data: PaginatedData;
-  currencyCode?: string;
-  search: string;
-  statusFilter: string;
+  data: PaginatedData
+  currencyCode?: string
+  search: string
+  statusFilter: string
 }) {
-  const router = useRouter();
-  const { formatDate } = useFormatDate();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
-  const [searchInput, setSearchInput] = useState(search);
-  const t = useTranslations("quotes");
+  const router = useRouter()
+  const { formatDate } = useFormatDate()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
+  const [searchInput, setSearchInput] = useState(search)
+  const t = useTranslations('quotes')
 
   // New quote dialog state
-  const [showNewDialog, setShowNewDialog] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newVehicleId, setNewVehicleId] = useState("");
-  const [newCustomerId, setNewCustomerId] = useState("");
-  const [creating, setCreating] = useState(false);
+  const [showNewDialog, setShowNewDialog] = useState(false)
+  const [newTitle, setNewTitle] = useState('')
+  const [newVehicleId, setNewVehicleId] = useState('')
+  const [newCustomerId, setNewCustomerId] = useState('')
+  const [creating, setCreating] = useState(false)
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
-      const newParams = new URLSearchParams(searchParams.toString());
+      const newParams = new URLSearchParams(searchParams.toString())
       for (const [key, value] of Object.entries(params)) {
-        if (value === undefined || value === "") {
-          newParams.delete(key);
+        if (value === undefined || value === '') {
+          newParams.delete(key)
         } else {
-          newParams.set(key, String(value));
+          newParams.set(key, String(value))
         }
       }
-      if (!("page" in params)) newParams.delete("page");
+      if (!('page' in params)) newParams.delete('page')
       startTransition(() => {
-        router.push(`${pathname}?${newParams.toString()}`);
-      });
+        router.push(`${pathname}?${newParams.toString()}`)
+      })
     },
     [router, pathname, searchParams]
-  );
+  )
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
-      e.preventDefault();
-      navigate({ search: searchInput || undefined });
+      e.preventDefault()
+      navigate({ search: searchInput || undefined })
     },
     [navigate, searchInput]
-  );
+  )
 
   const openNewDialog = () => {
-    setNewTitle("");
-    setNewVehicleId("");
-    setNewCustomerId("");
-    setShowNewDialog(true);
-  };
+    setNewTitle('')
+    setNewVehicleId('')
+    setNewCustomerId('')
+    setShowNewDialog(true)
+  }
 
   const handleCreateQuote = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTitle.trim()) return;
-    setCreating(true);
+    e.preventDefault()
+    if (!newTitle.trim()) return
+    setCreating(true)
 
     const result = await createQuote({
       title: newTitle.trim(),
       vehicleId: newVehicleId || undefined,
       customerId: newCustomerId || undefined,
-      status: "draft",
+      status: 'draft',
       subtotal: 0,
       taxRate: 0,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
     if (result.success && result.data) {
-      toast.success(t("form.created"));
-      setShowNewDialog(false);
-      router.push(`/quotes/${result.data.id}`);
+      toast.success(t('form.created'))
+      setShowNewDialog(false)
+      router.push(`/quotes/${result.data.id}`)
     } else {
-      toast.error(result.error || t("form.failedCreate"));
+      toast.error(result.error || t('form.failedCreate'))
     }
-    setCreating(false);
-  };
+    setCreating(false)
+  }
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
         {statusTabs.map((tab) => {
-          const isActive = statusFilter === tab.key;
-          const count = tab.key === "all" ? undefined : data.statusCounts[tab.key] || 0;
+          const isActive = statusFilter === tab.key
+          const count = tab.key === 'all' ? undefined : data.statusCounts[tab.key] || 0
           return (
             <Button
               key={tab.key}
-              variant={isActive ? "default" : "outline"}
+              variant={isActive ? 'default' : 'outline'}
               size="sm"
-              onClick={() => navigate({ status: tab.key === "all" ? undefined : tab.key })}
+              onClick={() => navigate({ status: tab.key === 'all' ? undefined : tab.key })}
             >
               {t(tab.titleKey)}
               {count !== undefined && (
@@ -168,7 +177,7 @@ export function QuotesClient({
                 </Badge>
               )}
             </Button>
-          );
+          )
         })}
       </div>
 
@@ -177,7 +186,7 @@ export function QuotesClient({
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder={t("list.searchPlaceholder")}
+              placeholder={t('list.searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="pl-9"
@@ -187,7 +196,7 @@ export function QuotesClient({
         </div>
         <Button size="sm" onClick={openNewDialog}>
           <Plus className="mr-1 h-3.5 w-3.5" />
-          {t("list.newQuote")}
+          {t('list.newQuote')}
         </Button>
       </div>
 
@@ -195,20 +204,20 @@ export function QuotesClient({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-25">{t("list.columnQuoteNumber")}</TableHead>
-              <TableHead>{t("list.columnTitle")}</TableHead>
-              <TableHead className="hidden md:table-cell">{t("list.columnCustomer")}</TableHead>
-              <TableHead className="hidden lg:table-cell">{t("list.columnVehicle")}</TableHead>
-              <TableHead className="w-27.5">{t("list.columnStatus")}</TableHead>
-              <TableHead className="w-22.5">{t("list.columnDate")}</TableHead>
-              <TableHead className="w-22.5 text-right">{t("list.columnTotal")}</TableHead>
+              <TableHead className="w-25">{t('list.columnQuoteNumber')}</TableHead>
+              <TableHead>{t('list.columnTitle')}</TableHead>
+              <TableHead className="hidden md:table-cell">{t('list.columnCustomer')}</TableHead>
+              <TableHead className="hidden lg:table-cell">{t('list.columnVehicle')}</TableHead>
+              <TableHead className="w-27.5">{t('list.columnStatus')}</TableHead>
+              <TableHead className="w-22.5">{t('list.columnDate')}</TableHead>
+              <TableHead className="w-22.5 text-right">{t('list.columnTotal')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                  {t("list.noQuotes")}
+                  {t('list.noQuotes')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -219,17 +228,17 @@ export function QuotesClient({
                   onClick={() => router.push(`/quotes/${q.id}`)}
                 >
                   <TableCell className="font-mono text-xs text-muted-foreground">
-                    {q.quoteNumber || "-"}
+                    {q.quoteNumber || '-'}
                   </TableCell>
                   <TableCell className="font-medium">{q.title}</TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground">
-                    {q.customer?.name || "-"}
+                    {q.customer?.name || '-'}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell text-muted-foreground">
-                    {q.vehicle ? `${q.vehicle.year} ${q.vehicle.make} ${q.vehicle.model}` : "-"}
+                    {q.vehicle ? `${q.vehicle.year} ${q.vehicle.make} ${q.vehicle.model}` : '-'}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ""}`}>
+                    <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ''}`}>
                       {q.status}
                     </Badge>
                   </TableCell>
@@ -258,58 +267,58 @@ export function QuotesClient({
       <Dialog open={showNewDialog} onOpenChange={setShowNewDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("form.newQuote")}</DialogTitle>
+            <DialogTitle>{t('form.newQuote')}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateQuote} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="new-quote-title">{t("details.titleLabel")}</Label>
+              <Label htmlFor="new-quote-title">{t('details.titleLabel')}</Label>
               <Input
                 id="new-quote-title"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                placeholder={t("details.titlePlaceholder")}
+                placeholder={t('details.titlePlaceholder')}
                 required
                 autoFocus
               />
             </div>
 
             <div className="space-y-2">
-              <Label>{t("details.vehicle")}</Label>
+              <Label>{t('details.vehicle')}</Label>
               <VehicleCombobox
                 value={newVehicleId}
-                placeholder={t("details.selectVehicle")}
-                noneLabel={t("details.none")}
+                placeholder={t('details.selectVehicle')}
+                noneLabel={t('details.none')}
                 onChange={(id, vehicle) => {
-                  setNewVehicleId(id);
+                  setNewVehicleId(id)
                   if (vehicle?.customerId) {
-                    setNewCustomerId(vehicle.customerId);
+                    setNewCustomerId(vehicle.customerId)
                   }
                 }}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>{t("details.customer")}</Label>
+              <Label>{t('details.customer')}</Label>
               <CustomerCombobox
                 value={newCustomerId}
-                placeholder={t("details.selectCustomer")}
-                noneLabel={t("details.none")}
+                placeholder={t('details.selectCustomer')}
+                noneLabel={t('details.none')}
                 onChange={(id) => setNewCustomerId(id)}
               />
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
               <Button type="button" variant="outline" onClick={() => setShowNewDialog(false)}>
-                {t("form.cancel")}
+                {t('form.cancel')}
               </Button>
               <Button type="submit" disabled={creating || !newTitle.trim()}>
                 {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t("form.createQuote")}
+                {t('form.createQuote')}
               </Button>
             </div>
           </form>
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

@@ -9,6 +9,9 @@ import { getVehiclePredictedMileage } from "@/features/vehicles/Actions/predicte
 import { getVehicleInspections } from "@/features/inspections/Actions/inspectionActions";
 import { getTemplates } from "@/features/inspections/Actions/templateActions";
 import { getVehicleQuotes } from "@/features/quotes/Actions/quoteActions";
+import { getFeatures } from "@/lib/features";
+import { getAuthContext } from "@/lib/get-auth-context";
+import { db } from "@/lib/db";
 import { VehicleDetailClient } from "./vehicle-detail-client";
 import { PageHeader } from "@/components/page-header";
 
@@ -116,6 +119,22 @@ export default async function VehicleDetailPage({
     };
   }
 
+  // Check AI enabled
+  const authContext = await getAuthContext();
+  const orgId = authContext?.organizationId;
+  let aiEnabled = false;
+  if (orgId) {
+    const [features, aiSettings] = await Promise.all([
+      getFeatures(orgId),
+      db.appSetting.findMany({
+        where: { organizationId: orgId, key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] } },
+        select: { key: true, value: true },
+      }),
+    ]);
+    const aiMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]));
+    aiEnabled = features?.ai === true && aiMap[SETTING_KEYS.AI_ENABLED] === "true" && !!aiMap[SETTING_KEYS.AI_API_KEY];
+  }
+
   return (
     <>
       <PageHeader />
@@ -133,6 +152,7 @@ export default async function VehicleDetailPage({
           inspections={inspectionsResult.success && inspectionsResult.data ? inspectionsResult.data : []}
           inspectionTemplates={templatesResult.success && templatesResult.data ? templatesResult.data : []}
           quotes={quotesResult.success && quotesResult.data ? quotesResult.data : []}
+          aiEnabled={aiEnabled}
         />
       </div>
     </>

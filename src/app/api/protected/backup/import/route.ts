@@ -802,7 +802,7 @@ export async function POST(request: NextRequest) {
               metadata: log.metadata != null ? log.metadata as Prisma.InputJsonValue : Prisma.DbNull,
               ip: (log.ip as string) || null,
               userAgent: (log.userAgent as string) || null,
-              userId: (log.userId as string) || null,
+              userId: ctx.userId,
               organizationId: ctx.organizationId,
             })
           ),

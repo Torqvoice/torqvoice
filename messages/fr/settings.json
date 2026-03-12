@@ -66,6 +66,7 @@
         "title": "Maintenance",
         "description": "Intervalles de service predits"
       },
+      "ai": { "title": "AI", "description": "Fournisseur IA et fonctionnalites" },
       "appearance": {
         "title": "Apparence",
         "description": "Theme et affichage"
@@ -304,6 +305,10 @@
     "permissionCount": "{count} permission",
     "permissionCountPlural": "{count} permissions",
     "noCustomRoles": "Pas encore de roles personnalises. Creez-en un pour definir des permissions granulaires pour les membres de l'equipe.",
+    "presetAll": "Tous",
+    "presetViewOnly": "Lecture seule",
+    "presetWriteAll": "Lecture et écriture",
+    "presetNone": "Aucun",
     "builtInRoles": "Roles integres",
     "ownerLabel": "Proprietaire",
     "ownerDescription": "Acces complet. Peut gerer les membres, changer les roles et supprimer l'organisation.",
@@ -954,5 +959,30 @@
     "upgradeAmountDue": "Montant dû maintenant",
     "upgradeSuccess": "Mis à niveau vers Enterprise avec succès !",
     "upgradeError": "Échec de la mise à niveau de l'abonnement"
+  },
+  "ai": {
+    "title": "Assistant IA",
+    "description": "Configurez l'IA pour generer automatiquement des notes de service et resumer l'historique du vehicule.",
+    "enableLabel": "Activer l'IA",
+    "enableHint": "Utiliser les fonctionnalites alimentees par l'IA dans toute l'application",
+    "disabledInfo": "Activez l'IA pour utiliser des fonctionnalites telles que les descriptions de service generees automatiquement et les resumes d'historique de vehicule.",
+    "provider": "Fournisseur IA",
+    "apiKey": "Cle API",
+    "apiKeyHint": "Votre cle API {provider}. Stockee en toute securite et jamais partagee.",
+    "model": "Modele",
+    "testConnection": "Tester la connexion",
+    "testSuccess": "Connexion IA reussie !",
+    "testFailed": "Echec de la connexion. Verifiez votre cle API et le modele.",
+    "saved": "Parametres IA enregistres",
+    "failedSave": "Echec de l'enregistrement des parametres IA",
+    "saveSettings": "Enregistrer les parametres",
+    "featuresTitle": "Fonctionnalites IA incluses :",
+    "featureServiceNotes": "Generation automatique de descriptions de service professionnelles a partir des pieces et de la main-d'oeuvre",
+    "featureHistorySummary": "Resume de l'historique de service du vehicule en un clic",
+    "cost": {
+      "high": "Coût élevé",
+      "medium": "Moyen",
+      "low": "Faible coût"
+    }
   }
 }

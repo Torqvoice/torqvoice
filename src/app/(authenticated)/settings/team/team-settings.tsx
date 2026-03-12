@@ -32,7 +32,7 @@ import { createRole } from "@/features/team/Actions/createRole";
 import { updateRole } from "@/features/team/Actions/updateRole";
 import { deleteRole } from "@/features/team/Actions/deleteRole";
 import { assignRole } from "@/features/team/Actions/assignRole";
-import { permissionGroups } from "@/lib/permissions";
+import { permissionGroups, PermissionAction } from "@/lib/permissions";
 import { Copy, Crown, Loader2, Mail, Pencil, Plus, Shield, ShieldCheck, Trash2, User, Users, X } from "lucide-react";
 
 interface Member {
@@ -589,7 +589,69 @@ export function TeamSettings({
                 {!roleIsAdmin && (
                   <div className="space-y-3">
                     <Label className="text-sm font-medium">{t('team.permissions')}</Label>
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const all = new Set<string>();
+                          for (const g of permissionGroups) {
+                            for (const p of g.permissions) {
+                              all.add(`${p.action}:${g.subject}`);
+                            }
+                          }
+                          setSelectedPermissions(all);
+                        }}
+                      >
+                        {t('team.presetAll')}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const keys = new Set<string>();
+                          for (const g of permissionGroups) {
+                            for (const p of g.permissions) {
+                              if (p.action === PermissionAction.READ) {
+                                keys.add(`${p.action}:${g.subject}`);
+                              }
+                            }
+                          }
+                          setSelectedPermissions(keys);
+                        }}
+                      >
+                        {t('team.presetViewOnly')}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const keys = new Set<string>();
+                          for (const g of permissionGroups) {
+                            for (const p of g.permissions) {
+                              if (p.action === PermissionAction.READ || p.action === PermissionAction.CREATE || p.action === PermissionAction.UPDATE) {
+                                keys.add(`${p.action}:${g.subject}`);
+                              }
+                            }
+                          }
+                          setSelectedPermissions(keys);
+                        }}
+                      >
+                        {t('team.presetWriteAll')}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedPermissions(new Set())}
+                      >
+                        {t('team.presetNone')}
+                      </Button>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                       {permissionGroups.map((group) => (
                         <div key={group.subject} className="space-y-2 rounded-md border p-3">
                           <p className="text-sm font-medium">{group.name}</p>

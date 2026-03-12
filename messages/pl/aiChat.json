@@ -1,0 +1,18 @@
+{
+  "title": "Asystent AI",
+  "description": "Zadawaj pytania o dane warsztatu — pojazdy, usługi, klientów, przychody i więcej.",
+  "placeholder": "Zapytaj o swój warsztat...",
+  "clear": "Wyczyść rozmowę",
+  "error": "Coś poszło nie tak. Spróbuj ponownie.",
+  "notEnabled": "AI nie jest włączone. Skonfiguruj w Ustawienia → AI.",
+  "suggestion1": "Które pojazdy wkrótce wymagają serwisu?",
+  "suggestion2": "Pokaż mi nieopłacone faktury",
+  "suggestion3": "Jaki jest przychód w tym miesiącu?",
+  "suggestion4": "Daj mi przegląd warsztatu",
+  "newChat": "Nowy czat",
+  "noChats": "Brak rozmów",
+  "chatsPrivate": "Twoje czaty są prywatne i widoczne tylko dla Ciebie.",
+  "deleteChat": "Usuń czat",
+  "hideSidebar": "Ukryj panel",
+  "showSidebar": "Pokaż panel"
+}

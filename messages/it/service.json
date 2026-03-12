@@ -105,7 +105,18 @@
     "publicPlaceholder": "Note visibili sulla fattura...",
     "internalPlaceholder": "Note interne (non mostrate sulla fattura)...",
     "publicHelper": "Mostrato sulla fattura e nei documenti condivisi",
-    "internalHelper": "Visibile solo al tuo team"
+    "internalHelper": "Visibile solo al tuo team",
+    "aiWrite": "AI Scrivi",
+    "aiGenerated": "Note AI generate con successo",
+    "aiGenerateFailed": "Generazione note AI non riuscita",
+    "aiDialogTitle": "AI Scrivi",
+    "aiDialogDescription": "L'IA analizzerà le parti e la manodopera in questo record di servizio e genererà una descrizione professionale. Il risultato verrà scritto nel tipo di nota selezionato.",
+    "aiGenerate": "Genera",
+    "aiOverwriteDescription": "Questa nota ha già del contenuto. Puoi sostituirlo o aggiungere il testo generato dall'IA sotto.",
+    "aiOverwriteReplace": "Sostituisci",
+    "aiOverwriteAppend": "Aggiungi",
+    "aiOverwriteCancel": "Annulla",
+    "aiDontShowAgain": "Non mostrare più"
   },
   "invoice": {
     "title": "Riepilogo Fattura",

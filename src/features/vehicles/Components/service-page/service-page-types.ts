@@ -41,6 +41,7 @@ export interface ServicePageClientProps {
   maxDocumentsPerService: number
   smsEnabled?: boolean
   emailEnabled?: boolean
+  aiEnabled?: boolean
 }
 
 export type { ServicePartInput, ServiceLaborInput, ServiceDetail, InitialData, InventoryPartOption }

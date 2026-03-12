@@ -1,0 +1,18 @@
+{
+  "title": "AI Assistant",
+  "description": "Ask questions about your workshop data — vehicles, services, customers, revenue, and more.",
+  "placeholder": "Ask about your workshop...",
+  "clear": "Clear conversation",
+  "error": "Something went wrong. Please try again.",
+  "notEnabled": "AI is not enabled. Configure it in Settings → AI.",
+  "suggestion1": "Which vehicles are due for service?",
+  "suggestion2": "Show me unpaid invoices",
+  "suggestion3": "What's the revenue this month?",
+  "suggestion4": "Give me a workshop overview",
+  "newChat": "New chat",
+  "noChats": "No conversations yet",
+  "chatsPrivate": "Your chats are private and only visible to you.",
+  "deleteChat": "Delete chat",
+  "hideSidebar": "Hide sidebar",
+  "showSidebar": "Show sidebar"
+}

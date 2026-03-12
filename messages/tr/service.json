@@ -105,7 +105,18 @@
     "publicPlaceholder": "Faturada görünür notlar...",
     "internalPlaceholder": "İç notlar (faturada gösterilmez)...",
     "publicHelper": "Faturada gösterilir ve paylaşılan belgelerde yer alır",
-    "internalHelper": "Yalnızca takımınız tarafından görülebilir"
+    "internalHelper": "Yalnızca takımınız tarafından görülebilir",
+    "aiWrite": "AI Yaz",
+    "aiGenerated": "AI notları başarıyla oluşturuldu",
+    "aiGenerateFailed": "AI notları oluşturulamadı",
+    "aiDialogTitle": "AI Yaz",
+    "aiDialogDescription": "AI bu servis kaydındaki parçaları ve işçiliği analiz edecek ve profesyonel bir açıklama oluşturacaktır. Sonuç seçili not türüne yazılacaktır.",
+    "aiGenerate": "Oluştur",
+    "aiOverwriteDescription": "Mevcut not zaten içeriğe sahip. Değiştirebilir veya AI tarafından oluşturulan metni altına ekleyebilirsiniz.",
+    "aiOverwriteReplace": "Değiştir",
+    "aiOverwriteAppend": "Ekle",
+    "aiOverwriteCancel": "İptal",
+    "aiDontShowAgain": "Bir daha gösterme"
   },
   "invoice": {
     "title": "Fatura Özeti",

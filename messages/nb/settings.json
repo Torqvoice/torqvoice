@@ -24,6 +24,7 @@
       "customerPortal": { "title": "Kundeportal", "description": "Kundeselvbetjeningsportal" },
       "workshop": { "title": "Verksted", "description": "Tekniker- og arbeidsstandarder" },
       "maintenance": { "title": "Vedlikehold", "description": "Predikerte serviceintervaller" },
+      "ai": { "title": "AI", "description": "AI-leverandor og funksjoner" },
       "appearance": { "title": "Utseende", "description": "Tema og visning" },
       "data": { "title": "Data", "description": "Eksporter og importer sikkerhetskopi" },
       "license": { "title": "Lisens", "description": "White-label-lisens" },
@@ -250,6 +251,10 @@
     "permissionCount": "{count} tillatelse",
     "permissionCountPlural": "{count} tillatelser",
     "noCustomRoles": "Ingen egendefinerte roller enna. Opprett en for a definere detaljerte tillatelser for teammedlemmer.",
+    "presetAll": "Alle",
+    "presetViewOnly": "Kun visning",
+    "presetWriteAll": "Les og skriv",
+    "presetNone": "Ingen",
     "builtInRoles": "Innebygde roller",
     "ownerLabel": "Eier",
     "ownerDescription": "Full tilgang. Kan administrere medlemmer, endre roller og slette organisasjonen.",
@@ -900,5 +905,30 @@
     "upgradeAmountDue": "Beløp å betale nå",
     "upgradeSuccess": "Vellykket oppgradert til Enterprise!",
     "upgradeError": "Kunne ikke oppgradere abonnementet"
+  },
+  "ai": {
+    "title": "AI-assistent",
+    "description": "Konfigurer AI for automatisk generering av servicenotater og oppsummering av kjøretøyhistorikk.",
+    "enableLabel": "Aktiver AI",
+    "enableHint": "Bruk AI-drevne funksjoner i applikasjonen",
+    "disabledInfo": "Aktiver AI for å bruke funksjoner som automatisk genererte servicebeskrivelser og oppsummering av kjøretøyhistorikk.",
+    "provider": "AI-leverandør",
+    "apiKey": "API-nøkkel",
+    "apiKeyHint": "Din {provider} API-nøkkel. Lagres sikkert og deles aldri.",
+    "model": "Modell",
+    "testConnection": "Test tilkobling",
+    "testSuccess": "AI-tilkobling vellykket!",
+    "testFailed": "Tilkobling mislyktes. Sjekk API-nøkkelen og modellen din.",
+    "saved": "AI-innstillinger lagret",
+    "failedSave": "Kunne ikke lagre AI-innstillinger",
+    "saveSettings": "Lagre innstillinger",
+    "featuresTitle": "AI-drevne funksjoner inkludert:",
+    "featureServiceNotes": "Automatisk generering av profesjonelle servicebeskrivelser fra deler og arbeid",
+    "featureHistorySummary": "Oppsummering av kjøretøyets servicehistorikk med ett klikk",
+    "cost": {
+      "high": "Høy kostnad",
+      "medium": "Middels",
+      "low": "Lav kostnad"
+    }
   }
 }

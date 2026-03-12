@@ -1,17 +1,13 @@
-import { getQuote } from "@/features/quotes/Actions/quoteActions";
-import { getSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { getAuthContext } from "@/lib/get-auth-context";
-import { getFeatures } from "@/lib/features";
-import { PageHeader } from "@/components/page-header";
-import { QuotePageClient } from "@/features/quotes/Components/QuotePageClient";
+import { getQuote } from '@/features/quotes/Actions/quoteActions'
+import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { getAuthContext } from '@/lib/get-auth-context'
+import { getFeatures } from '@/lib/features'
+import { PageHeader } from '@/components/page-header'
+import { QuotePageClient } from '@/features/quotes/Components/QuotePageClient'
 
-export default async function QuoteDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const [result, settingsResult, authContext] = await Promise.all([
     getQuote(id),
     getSettings([
@@ -21,45 +17,37 @@ export default async function QuoteDetailPage({
       SETTING_KEYS.DEFAULT_LABOR_RATE,
     ]),
     getAuthContext(),
-  ]);
+  ])
 
-  const features = authContext?.organizationId
-    ? await getFeatures(authContext.organizationId)
-    : null;
+  const orgId = authContext?.organizationId
+  const features = orgId ? await getFeatures(orgId) : null
 
   if (!result.success || !result.data) {
     return (
       <div className="flex h-svh flex-col overflow-hidden">
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
-          <p className="text-muted-foreground">
-            {result.error || "Quote not found"}
-          </p>
+          <p className="text-muted-foreground">{result.error || 'Quote not found'}</p>
         </div>
       </div>
-    );
+    )
   }
 
-  const settings =
-    settingsResult.success && settingsResult.data ? settingsResult.data : {};
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || "USD";
-  const taxEnabled = settings[SETTING_KEYS.TAX_ENABLED] !== "false";
-  const defaultTaxRate = taxEnabled
-    ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0
-    : 0;
-  const defaultLaborRate =
-    Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0;
-  const organizationId = authContext?.organizationId || "";
+  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
+  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const taxEnabled = settings[SETTING_KEYS.TAX_ENABLED] !== 'false'
+  const defaultTaxRate = taxEnabled ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0 : 0
+  const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
+  const organizationId = authContext?.organizationId || ''
 
   // Separate attachments by category
-  const allAttachments = result.data.attachments || [];
+  const allAttachments = result.data.attachments || []
   const imageAttachments = allAttachments.filter(
-    (a: { category: string }) => a.category === "image"
-  );
+    (a: { category: string }) => a.category === 'image'
+  )
   const documentAttachments = allAttachments.filter(
-    (a: { category: string }) => a.category === "document"
-  );
-
+    (a: { category: string }) => a.category === 'document'
+  )
   return (
     <div className="flex h-svh flex-col overflow-hidden">
       <PageHeader />
@@ -78,5 +66,5 @@ export default async function QuoteDetailPage({
         emailEnabled={features?.smtp ?? false}
       />
     </div>
-  );
+  )
 }

@@ -19,6 +19,7 @@ export enum PermissionSubject {
   REPORTS = "reports",
   SETTINGS = "settings",
   WORK_BOARD = "work_board",
+  AI_ASSISTANT = "ai_assistant",
 }
 
 export type PermissionInput = {
@@ -138,6 +139,13 @@ export const permissionGroups: PermissionGroup[] = [
       { action: PermissionAction.READ, label: "View" },
       { action: PermissionAction.UPDATE, label: "Edit" },
       { action: PermissionAction.DELETE, label: "Delete" },
+    ],
+  },
+  {
+    name: "AI Assistant",
+    subject: PermissionSubject.AI_ASSISTANT,
+    permissions: [
+      { action: PermissionAction.READ, label: "View" },
     ],
   },
   {

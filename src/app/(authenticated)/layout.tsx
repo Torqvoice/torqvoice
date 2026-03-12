@@ -38,26 +38,22 @@ export default async function DashboardLayout({
   const features = await getFeatures(data.organizationId);
   const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved;
 
-  // Determine if user can access settings and reports
+  // Determine which subjects the user can access (for sidebar visibility)
   const isOwnerOrAdmin = data.role === "owner" || data.role === "admin" || data.role === "super_admin";
-  let canAccessSettings = isOwnerOrAdmin;
-  let canAccessReports = isOwnerOrAdmin;
+  const allSubjects = Object.values(PermissionSubject);
+  let visibleSubjects: string[] = allSubjects;
+
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId);
     // Members without a custom role have full access
-    if (!membership?.roleId) {
-      canAccessSettings = true;
-      canAccessReports = true;
-    } else {
+    if (membership?.roleId) {
       const userPermissions = membership?.customRole?.permissions ?? [];
-      canAccessSettings = hasPermission(userPermissions, {
-        action: PermissionAction.READ,
-        subject: PermissionSubject.SETTINGS,
-      });
-      canAccessReports = hasPermission(userPermissions, {
-        action: PermissionAction.READ,
-        subject: PermissionSubject.REPORTS,
-      });
+      visibleSubjects = allSubjects.filter((subject) =>
+        hasPermission(userPermissions, {
+          action: PermissionAction.READ,
+          subject: subject as PermissionSubject,
+        }),
+      );
     }
   }
 
@@ -82,8 +78,7 @@ export default async function DashboardLayout({
           activeOrgId={data.organizationId}
           isSuperAdmin={data.isSuperAdmin}
           features={features}
-          canAccessSettings={canAccessSettings}
-          canAccessReports={canAccessReports}
+          visibleSubjects={visibleSubjects}
           isAdminOrOwner={isOwnerOrAdmin}
         />
         <SidebarInset>{children}</SidebarInset>
