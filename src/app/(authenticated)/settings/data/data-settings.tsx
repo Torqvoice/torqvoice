@@ -35,6 +35,11 @@ interface ExportOptions {
   quotes: boolean
   inventory: boolean
   customFields: boolean
+  technicians: boolean
+  inspections: boolean
+  auditLogs: boolean
+  smsMessages: boolean
+  notifications: boolean
   files: boolean
 }
 
@@ -44,6 +49,11 @@ const OPTION_META: { key: keyof ExportOptions; labelKey: string; descKey: string
   { key: 'vehicles', labelKey: 'optVehicles', descKey: 'optVehiclesDesc' },
   { key: 'quotes', labelKey: 'optQuotes', descKey: 'optQuotesDesc' },
   { key: 'inventory', labelKey: 'optInventory', descKey: 'optInventoryDesc' },
+  { key: 'technicians', labelKey: 'optTechnicians', descKey: 'optTechniciansDesc' },
+  { key: 'inspections', labelKey: 'optInspections', descKey: 'optInspectionsDesc' },
+  { key: 'auditLogs', labelKey: 'optAuditLogs', descKey: 'optAuditLogsDesc' },
+  { key: 'smsMessages', labelKey: 'optSmsMessages', descKey: 'optSmsMessagesDesc' },
+  { key: 'notifications', labelKey: 'optNotifications', descKey: 'optNotificationsDesc' },
   { key: 'customFields', labelKey: 'optCustomFields', descKey: 'optCustomFieldsDesc' },
   { key: 'files', labelKey: 'optFiles', descKey: 'optFilesDesc' },
 ]
@@ -55,6 +65,11 @@ const ALL_TRUE: ExportOptions = {
   quotes: true,
   inventory: true,
   customFields: true,
+  technicians: true,
+  inspections: true,
+  auditLogs: true,
+  smsMessages: true,
+  notifications: true,
   files: true,
 }
 
@@ -80,6 +95,11 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
         quotes: false,
         inventory: false,
         customFields: false,
+        technicians: false,
+        inspections: false,
+        auditLogs: false,
+        smsMessages: false,
+        notifications: false,
         files: false,
       })
     } else {
@@ -294,9 +314,9 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
       </div>
 
       <ReadOnlyWrapper>
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-12">
           {/* Export Card */}
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm lg:col-span-7">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Download className="h-4 w-4" /> {t('data.exportTitle')}
@@ -319,7 +339,7 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
                   </button>
                 </div>
 
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                   {OPTION_META.map(({ key, labelKey, descKey }) => (
                     <label
                       key={key}
@@ -354,7 +374,7 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
           </Card>
 
           {/* Import Card */}
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm lg:col-span-5">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Upload className="h-4 w-4" /> {t('data.importTitle')}
