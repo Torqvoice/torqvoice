@@ -146,7 +146,14 @@ export async function summarizeServiceHistory(
   records: ServiceHistoryRecord[],
   locale: Locale = "en",
 ): Promise<string> {
-  const systemPrompt = `You are an automotive service advisor. Summarize a vehicle's complete service history in a concise, useful format. Highlight major work, recurring issues, and predict likely upcoming maintenance needs. Write in plain text, no markdown headers — use simple line breaks and dashes for structure.${languageInstruction(locale)}`;
+  const systemPrompt = `You are an automotive service advisor. Summarize a vehicle's complete service history as structured JSON.
+
+Return ONLY valid JSON, no markdown, no explanation. Use this exact schema:
+{"overview":"1-2 sentence general condition summary","majorWork":[{"title":"Work title","date":"YYYY-MM-DD or null","cost":0}],"recurringIssues":[{"title":"Issue name","description":"Brief explanation of the pattern"}],"upcomingMaintenance":[{"item":"Maintenance item","urgency":"high|medium|low","reason":"Why it's needed"}]}
+
+majorWork: list the 3-5 most significant services performed (most recent first).
+recurringIssues: list any patterns or repeated problems with title and description (empty array if none).
+upcomingMaintenance: predict 2-4 likely upcoming needs based on mileage, age, and service history.${languageInstruction(locale)}`;
 
   const recordsStr = records
     .map(
@@ -160,12 +167,7 @@ export async function summarizeServiceHistory(
 Service history (${records.length} records):
 ${recordsStr || "No service records found."}
 
-Provide a concise summary including:
-- Overview of the vehicle's service history
-- Major work performed
-- Any recurring issues or patterns
-- Predicted upcoming maintenance needs
-- Predicted upcoming maintenance needs`;
+Return JSON only.`;
 
   return chatCompletion(organizationId, systemPrompt, userPrompt);
 }

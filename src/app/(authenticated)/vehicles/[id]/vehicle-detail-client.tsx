@@ -36,7 +36,6 @@ import {
 import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
 import { aiSummarizeVehicleHistory, aiGetCommonIssues, aiClearMessage } from '@/features/ai/Actions/aiActions'
 import { AI_MESSAGE_TYPES } from '@/features/ai/constants'
-import Markdown from 'react-markdown'
 import { formatCurrency } from '@/lib/format'
 import {
   AlertTriangle,
@@ -762,9 +761,97 @@ export function VehicleDetailClient({
                 <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               </div>
             ) : storedSummary ? (
-              <div className="prose prose-sm dark:prose-invert max-w-none text-sm [&_p]:my-2 [&_p]:leading-relaxed [&_strong]:text-foreground">
-                <Markdown>{storedSummary.content}</Markdown>
-              </div>
+              (() => {
+                let summary: {
+                  overview: string
+                  majorWork: { title: string; date: string | null; cost: number }[]
+                  recurringIssues: { title: string; description: string }[]
+                  upcomingMaintenance: { item: string; urgency: string; reason: string }[]
+                } | null = null
+                try {
+                  const raw = storedSummary.content.replace(/^```json?\n?|\n?```$/g, '').trim()
+                  summary = JSON.parse(raw)
+                } catch {
+                  return (
+                    <div className="text-sm text-muted-foreground whitespace-pre-wrap">
+                      {storedSummary.content}
+                    </div>
+                  )
+                }
+                if (!summary) return null
+                const urgencyColor: Record<string, string> = {
+                  high: 'bg-red-500/10 text-red-600 border-red-500/20',
+                  medium: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+                  low: 'bg-green-500/10 text-green-600 border-green-500/20',
+                }
+                return (
+                  <div className="space-y-4">
+                    <p className="text-sm">{summary.overview}</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {summary.majorWork.length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-2 flex items-center gap-1.5">
+                            <Wrench className="h-3.5 w-3.5" />
+                            {t('summaryMajorWork')}
+                          </h4>
+                          <div className="space-y-1.5">
+                            {summary.majorWork.map((w, i) => (
+                              <div key={i} className="text-sm">
+                                <span className="font-medium">{w.title}</span>
+                                {(w.date || w.cost > 0) && (
+                                  <span className="text-xs text-muted-foreground ml-2">
+                                    {[w.date, w.cost > 0 && new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(w.cost)].filter(Boolean).join(' · ')}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {summary.upcomingMaintenance.length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-2 flex items-center gap-1.5">
+                            <Clock className="h-3.5 w-3.5" />
+                            {t('summaryUpcoming')}
+                          </h4>
+                          <div className="space-y-2">
+                            {summary.upcomingMaintenance.map((m, i) => (
+                              <div key={i}>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-medium">{m.item}</span>
+                                  <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${urgencyColor[m.urgency] || urgencyColor.medium}`}>
+                                    {m.urgency}
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-0.5">{m.reason}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {summary.recurringIssues.length > 0 && (
+                        <div className="md:col-span-2">
+                          <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-2 flex items-center gap-1.5">
+                            <AlertTriangle className="h-3.5 w-3.5" />
+                            {t('summaryRecurringIssues')}
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                            {summary.recurringIssues.map((issue, i) => (
+                              <div key={i} className="text-sm">
+                                <span className="font-medium">{issue.title}</span>
+                                <p className="text-xs text-muted-foreground mt-0.5">{issue.description}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })()
             ) : (
               <p className="text-sm text-muted-foreground italic">{t('aiSummaryEmpty')}</p>
             )}
