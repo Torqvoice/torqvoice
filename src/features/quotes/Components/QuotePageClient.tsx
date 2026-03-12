@@ -62,6 +62,8 @@ import {
 } from "lucide-react";
 import { SharedLinkCard } from "@/components/shared-link-card";
 import { formatCurrency, getCurrencySymbol } from "@/lib/format";
+import { VehicleCombobox } from "./VehicleCombobox";
+import { CustomerCombobox } from "./CustomerCombobox";
 
 const statusColors: Record<string, string> = {
   draft: "bg-gray-500/10 text-gray-500 border-gray-500/20",
@@ -171,8 +173,8 @@ export function QuotePageClient({
   defaultTaxRate = 0,
   taxEnabled = true,
   defaultLaborRate = 0,
-  customers = [],
-  vehicles = [],
+  customers: _customers,
+  vehicles: _vehicles,
   smsEnabled = false,
   emailEnabled = false,
   imageAttachments = [],
@@ -280,18 +282,13 @@ export function QuotePageClient({
   const taxAmount = (subtotal - discountAmount) * (taxRate / 100);
   const totalAmount = subtotal - discountAmount + taxAmount;
 
-  const selectedVehicle = vehicles.find((v) => v.id === vehicleId);
-  const selectedCustomer = customers.find((c) => c.id === customerId);
-
-  const handleVehicleChange = (v: string) => {
-    const vid = v === "none" ? "" : v;
-    setVehicleId(vid);
-    if (vid) {
-      const vehicle = vehicles.find((veh) => veh.id === vid);
-      if (vehicle?.customerId) setCustomerId(vehicle.customerId);
-    }
-    markDirty();
-  };
+  // Track selected vehicle/customer for display (initial from quote data)
+  const [selectedVehicle, setSelectedVehicle] = useState<{ id: string; make: string; model: string; year: number; licensePlate: string | null; customerId: string | null; customer: { id: string; name: string } | null } | null>(
+    quote.vehicle ? { id: quote.vehicle.id, make: quote.vehicle.make, model: quote.vehicle.model, year: quote.vehicle.year, licensePlate: quote.vehicle.licensePlate, customerId: quote.customer?.id || null, customer: quote.customer ? { id: quote.customer.id, name: quote.customer.name } : null } : null
+  );
+  const [selectedCustomer, setSelectedCustomer] = useState<{ id: string; name: string; company: string | null } | null>(
+    quote.customer ? { id: quote.customer.id, name: quote.customer.name, company: quote.customer.company } : null
+  );
 
   const updatePart = useCallback((index: number, field: keyof QuotePartInput, value: string | number | boolean) => {
     setPartItems((prev) => {
@@ -563,15 +560,21 @@ export function QuotePageClient({
       <div className="rounded-lg border p-3 space-y-3">
         <div className="space-y-1">
           <Label className="text-xs">{t("details.vehicle")}</Label>
-          <Select value={vehicleId || "none"} onValueChange={handleVehicleChange}>
-            <SelectTrigger><SelectValue placeholder={t("details.selectVehicle")} /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">{t("details.none")}</SelectItem>
-              {vehicles.map((v) => (
-                <SelectItem key={v.id} value={v.id}>{v.year} {v.make} {v.model}{v.licensePlate ? ` (${v.licensePlate})` : ""}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <VehicleCombobox
+            value={vehicleId}
+            initialVehicle={selectedVehicle}
+            placeholder={t("details.selectVehicle")}
+            noneLabel={t("details.none")}
+            onChange={(id, vehicle) => {
+              setVehicleId(id);
+              setSelectedVehicle(vehicle);
+              if (vehicle?.customerId) {
+                setCustomerId(vehicle.customerId);
+                if (vehicle.customer) setSelectedCustomer({ id: vehicle.customer.id, name: vehicle.customer.name, company: null });
+              }
+              markDirty();
+            }}
+          />
         </div>
         {selectedVehicle && (
           <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
@@ -585,15 +588,17 @@ export function QuotePageClient({
         )}
         <div className="space-y-1">
           <Label className="text-xs">{t("details.customer")}</Label>
-          <Select value={customerId || "none"} onValueChange={(v) => { setCustomerId(v === "none" ? "" : v); markDirty(); }}>
-            <SelectTrigger><SelectValue placeholder={t("details.selectCustomer")} /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">{t("details.none")}</SelectItem>
-              {customers.map((c) => (
-                <SelectItem key={c.id} value={c.id}>{c.name}{c.company ? ` (${c.company})` : ""}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <CustomerCombobox
+            value={customerId}
+            initialCustomer={selectedCustomer}
+            placeholder={t("details.selectCustomer")}
+            noneLabel={t("details.none")}
+            onChange={(id, customer) => {
+              setCustomerId(id);
+              setSelectedCustomer(customer);
+              markDirty();
+            }}
+          />
         </div>
         {selectedCustomer && (
           <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
@@ -883,14 +888,13 @@ export function QuotePageClient({
           <DialogHeader><DialogTitle>{t("page.convertTitle")}</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">{t("page.convertDescription")}</p>
-            <Select value={convertVehicleId} onValueChange={setConvertVehicleId}>
-              <SelectTrigger><SelectValue placeholder={t("details.selectVehicle")} /></SelectTrigger>
-              <SelectContent>
-                {vehicles.map((v) => (
-                  <SelectItem key={v.id} value={v.id}>{v.year} {v.make} {v.model}{v.licensePlate ? ` (${v.licensePlate})` : ""}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <VehicleCombobox
+              value={convertVehicleId}
+              initialVehicle={selectedVehicle}
+              placeholder={t("details.selectVehicle")}
+              noneLabel={t("details.none")}
+              onChange={(id) => setConvertVehicleId(id)}
+            />
             <div className="flex gap-2">
               <Button type="button" onClick={handleConvert} disabled={converting || !convertVehicleId}>
                 {converting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

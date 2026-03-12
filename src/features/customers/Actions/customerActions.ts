@@ -150,12 +150,24 @@ export async function getCustomersPaginated(params: {
     const where: any = { organizationId };
 
     if (params.search) {
-      where.OR = [
-        { name: { contains: params.search, mode: "insensitive" } },
-        { email: { contains: params.search, mode: "insensitive" } },
-        { phone: { contains: params.search, mode: "insensitive" } },
-        { company: { contains: params.search, mode: "insensitive" } },
-      ];
+      const words = params.search.trim().split(/\s+/).filter(Boolean);
+      if (words.length > 1) {
+        where.AND = words.map((word: string) => ({
+          OR: [
+            { name: { contains: word, mode: "insensitive" } },
+            { email: { contains: word, mode: "insensitive" } },
+            { phone: { contains: word, mode: "insensitive" } },
+            { company: { contains: word, mode: "insensitive" } },
+          ],
+        }));
+      } else {
+        where.OR = [
+          { name: { contains: params.search, mode: "insensitive" } },
+          { email: { contains: params.search, mode: "insensitive" } },
+          { phone: { contains: params.search, mode: "insensitive" } },
+          { company: { contains: params.search, mode: "insensitive" } },
+        ];
+      }
     }
 
     const [customers, total] = await Promise.all([
@@ -369,6 +381,41 @@ export async function getCustomersList() {
       where: { organizationId },
       select: { id: true, name: true, company: true },
       orderBy: { name: "asc" },
+    });
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS }] });
+}
+
+export async function searchCustomers(search?: string, limit = 20, offset = 0) {
+  return withAuth(async ({ organizationId }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: any = { organizationId };
+    if (search) {
+      const words = search.trim().split(/\s+/).filter(Boolean);
+      if (words.length > 1) {
+        // Every word must match in at least one field
+        where.AND = words.map((word) => ({
+          OR: [
+            { name: { contains: word, mode: "insensitive" } },
+            { email: { contains: word, mode: "insensitive" } },
+            { phone: { contains: word, mode: "insensitive" } },
+            { company: { contains: word, mode: "insensitive" } },
+          ],
+        }));
+      } else {
+        where.OR = [
+          { name: { contains: search, mode: "insensitive" } },
+          { email: { contains: search, mode: "insensitive" } },
+          { phone: { contains: search, mode: "insensitive" } },
+          { company: { contains: search, mode: "insensitive" } },
+        ];
+      }
+    }
+    return db.customer.findMany({
+      where,
+      select: { id: true, name: true, company: true },
+      orderBy: { name: "asc" },
+      skip: offset,
+      take: limit,
     });
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS }] });
 }
