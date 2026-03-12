@@ -1,88 +1,76 @@
-import { getQuote } from "@/features/quotes/Actions/quoteActions";
-import { getSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { getCustomers } from "@/features/customers/Actions/customerActions";
-import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
-import { getAuthContext } from "@/lib/get-auth-context";
-import { getFeatures } from "@/lib/features";
-import { db } from "@/lib/db";
-import { PageHeader } from "@/components/page-header";
-import { QuotePageClient } from "@/features/quotes/Components/QuotePageClient";
+import { getQuote } from '@/features/quotes/Actions/quoteActions'
+import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { getCustomers } from '@/features/customers/Actions/customerActions'
+import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
+import { getAuthContext } from '@/lib/get-auth-context'
+import { getFeatures } from '@/lib/features'
+import { db } from '@/lib/db'
+import { PageHeader } from '@/components/page-header'
+import { QuotePageClient } from '@/features/quotes/Components/QuotePageClient'
 
-export default async function QuoteDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const [result, settingsResult, customersResult, vehiclesResult, authContext] =
-    await Promise.all([
-      getQuote(id),
-      getSettings([
-        SETTING_KEYS.CURRENCY_CODE,
-        SETTING_KEYS.DEFAULT_TAX_RATE,
-        SETTING_KEYS.TAX_ENABLED,
-        SETTING_KEYS.DEFAULT_LABOR_RATE,
-      ]),
-      getCustomers(),
-      getVehicles(),
-      getAuthContext(),
-    ]);
+export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const [result, settingsResult, customersResult, vehiclesResult, authContext] = await Promise.all([
+    getQuote(id),
+    getSettings([
+      SETTING_KEYS.CURRENCY_CODE,
+      SETTING_KEYS.DEFAULT_TAX_RATE,
+      SETTING_KEYS.TAX_ENABLED,
+      SETTING_KEYS.DEFAULT_LABOR_RATE,
+    ]),
+    getCustomers(),
+    getVehicles(),
+    getAuthContext(),
+  ])
 
-  const orgId = authContext?.organizationId;
+  const orgId = authContext?.organizationId
   const [features, aiSettings] = await Promise.all([
     orgId ? getFeatures(orgId) : Promise.resolve(null),
     orgId
       ? db.appSetting.findMany({
-          where: { organizationId: orgId, key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] } },
+          where: {
+            organizationId: orgId,
+            key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] },
+          },
           select: { key: true, value: true },
         })
       : Promise.resolve([]),
-  ]);
-  const aiMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]));
-  const aiEnabled = features?.ai === true && aiMap[SETTING_KEYS.AI_ENABLED] === "true" && !!aiMap[SETTING_KEYS.AI_API_KEY];
+  ])
+  const aiMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]))
+  const aiEnabled =
+    features?.ai === true &&
+    aiMap[SETTING_KEYS.AI_ENABLED] === 'true' &&
+    !!aiMap[SETTING_KEYS.AI_API_KEY]
 
   if (!result.success || !result.data) {
     return (
       <div className="flex h-svh flex-col overflow-hidden">
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
-          <p className="text-muted-foreground">
-            {result.error || "Quote not found"}
-          </p>
+          <p className="text-muted-foreground">{result.error || 'Quote not found'}</p>
         </div>
       </div>
-    );
+    )
   }
 
-  const settings =
-    settingsResult.success && settingsResult.data ? settingsResult.data : {};
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || "USD";
-  const taxEnabled = settings[SETTING_KEYS.TAX_ENABLED] !== "false";
-  const defaultTaxRate = taxEnabled
-    ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0
-    : 0;
-  const defaultLaborRate =
-    Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0;
-  const customers =
-    customersResult.success && customersResult.data
-      ? customersResult.data
-      : [];
-  const vehicles =
-    vehiclesResult.success && vehiclesResult.data
-      ? vehiclesResult.data
-      : [];
-  const organizationId = authContext?.organizationId || "";
+  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
+  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const taxEnabled = settings[SETTING_KEYS.TAX_ENABLED] !== 'false'
+  const defaultTaxRate = taxEnabled ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0 : 0
+  const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
+  const customers = customersResult.success && customersResult.data ? customersResult.data : []
+  const vehicles = vehiclesResult.success && vehiclesResult.data ? vehiclesResult.data : []
+  const organizationId = authContext?.organizationId || ''
 
   // Separate attachments by category
-  const allAttachments = result.data.attachments || [];
+  const allAttachments = result.data.attachments || []
   const imageAttachments = allAttachments.filter(
-    (a: { category: string }) => a.category === "image"
-  );
+    (a: { category: string }) => a.category === 'image'
+  )
   const documentAttachments = allAttachments.filter(
-    (a: { category: string }) => a.category === "document"
-  );
-
+    (a: { category: string }) => a.category === 'document'
+  )
   return (
     <div className="flex h-svh flex-col overflow-hidden">
       <PageHeader />
@@ -101,12 +89,7 @@ export default async function QuoteDetailPage({
         emailEnabled={features?.smtp ?? false}
         aiEnabled={aiEnabled}
         customers={customers.map(
-          (c: {
-            id: string;
-            name: string;
-            email: string | null;
-            company: string | null;
-          }) => ({
+          (c: { id: string; name: string; email: string | null; company: string | null }) => ({
             id: c.id,
             name: c.name,
             email: c.email,
@@ -115,16 +98,16 @@ export default async function QuoteDetailPage({
         )}
         vehicles={vehicles.map(
           (v: {
-            id: string;
-            make: string;
-            model: string;
-            year: number;
-            licensePlate: string | null;
+            id: string
+            make: string
+            model: string
+            year: number
+            licensePlate: string | null
             customer: {
-              id: string;
-              name: string;
-              company: string | null;
-            } | null;
+              id: string
+              name: string
+              company: string | null
+            } | null
           }) => ({
             id: v.id,
             make: v.make,
@@ -137,5 +120,5 @@ export default async function QuoteDetailPage({
         )}
       />
     </div>
-  );
+  )
 }

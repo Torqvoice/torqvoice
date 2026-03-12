@@ -1,37 +1,28 @@
-"use client";
+'use client'
 
-import { useState, useCallback, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { useState, useCallback, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { ButtonGroup } from '@/components/ui/button-group'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from "@/components/ui/resizable";
-import { Textarea } from "@/components/ui/textarea";
-import { sendQuoteEmail } from "@/features/email/Actions/emailActions";
-import { SendEmailDialog } from "@/features/email/Components/SendEmailDialog";
-import { revokeQuotePublicLink } from "@/features/quotes/Actions/quoteShareActions";
-import { QuoteShareDialog } from "@/features/quotes/Components/QuoteShareDialog";
-import { QuoteImagesManager } from "@/features/quotes/Components/QuoteImagesManager";
-import { QuoteDocumentsManager } from "@/features/quotes/Components/QuoteDocumentsManager";
+} from '@/components/ui/select'
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
+import { Textarea } from '@/components/ui/textarea'
+import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
+import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
+import { revokeQuotePublicLink } from '@/features/quotes/Actions/quoteShareActions'
+import { QuoteShareDialog } from '@/features/quotes/Components/QuoteShareDialog'
+import { QuoteImagesManager } from '@/features/quotes/Components/QuoteImagesManager'
+import { QuoteDocumentsManager } from '@/features/quotes/Components/QuoteDocumentsManager'
 import {
   ArrowLeft,
   Camera,
@@ -44,34 +35,40 @@ import {
   Save,
   Sparkles,
   Trash2,
-} from "lucide-react";
-import { getCurrencySymbol } from "@/lib/format";
-import type { CustomerOption, VehicleOption, QuoteAttachment, QuoteRecord, TabType } from "./quote-page-types";
-import { statusColors } from "./quote-page-types";
-import { useQuoteFormState } from "./useQuoteFormState";
-import { QuotePartsEditor } from "./QuotePartsEditor";
-import { QuoteLaborEditor } from "./QuoteLaborEditor";
-import { QuoteNotesEditor } from "./QuoteNotesEditor";
-import { QuoteRightColumn } from "./QuoteRightColumn";
+} from 'lucide-react'
+import { getCurrencySymbol } from '@/lib/format'
+import type {
+  CustomerOption,
+  VehicleOption,
+  QuoteAttachment,
+  QuoteRecord,
+  TabType,
+} from './quote-page-types'
+import { statusColors } from './quote-page-types'
+import { useQuoteFormState } from './useQuoteFormState'
+import { QuotePartsEditor } from './QuotePartsEditor'
+import { QuoteLaborEditor } from './QuoteLaborEditor'
+import { QuoteNotesEditor } from './QuoteNotesEditor'
+import { QuoteRightColumn } from './QuoteRightColumn'
 
-const LG_BREAKPOINT = 1024;
+const LG_BREAKPOINT = 1024
 
 function useIsLargeScreen() {
-  const [isLarge, setIsLarge] = useState(false);
+  const [isLarge, setIsLarge] = useState(false)
   useEffect(() => {
-    const mql = window.matchMedia(`(min-width: ${LG_BREAKPOINT}px)`);
-    const onChange = () => setIsLarge(mql.matches);
-    mql.addEventListener("change", onChange);
-    setIsLarge(mql.matches);
-    return () => mql.removeEventListener("change", onChange);
-  }, []);
-  return isLarge;
+    const mql = window.matchMedia(`(min-width: ${LG_BREAKPOINT}px)`)
+    const onChange = () => setIsLarge(mql.matches)
+    mql.addEventListener('change', onChange)
+    setIsLarge(mql.matches)
+    return () => mql.removeEventListener('change', onChange)
+  }, [])
+  return isLarge
 }
 
 export function QuotePageClient({
   quote,
   organizationId,
-  currencyCode = "USD",
+  currencyCode = 'USD',
   defaultTaxRate = 0,
   taxEnabled = true,
   defaultLaborRate = 0,
@@ -85,26 +82,26 @@ export function QuotePageClient({
   maxDocuments,
   aiEnabled = false,
 }: {
-  quote: QuoteRecord;
-  organizationId: string;
-  currencyCode?: string;
-  defaultTaxRate?: number;
-  taxEnabled?: boolean;
-  defaultLaborRate?: number;
-  customers?: CustomerOption[];
-  vehicles?: VehicleOption[];
-  smsEnabled?: boolean;
-  emailEnabled?: boolean;
-  imageAttachments?: QuoteAttachment[];
-  documentAttachments?: QuoteAttachment[];
-  maxImages?: number;
-  maxDocuments?: number;
-  aiEnabled?: boolean;
+  quote: QuoteRecord
+  organizationId: string
+  currencyCode?: string
+  defaultTaxRate?: number
+  taxEnabled?: boolean
+  defaultLaborRate?: number
+  customers?: CustomerOption[]
+  vehicles?: VehicleOption[]
+  smsEnabled?: boolean
+  emailEnabled?: boolean
+  imageAttachments?: QuoteAttachment[]
+  documentAttachments?: QuoteAttachment[]
+  maxImages?: number
+  maxDocuments?: number
+  aiEnabled?: boolean
 }) {
-  const cs = getCurrencySymbol(currencyCode);
-  const router = useRouter();
-  const isLarge = useIsLargeScreen();
-  const t = useTranslations("quotes");
+  const cs = getCurrencySymbol(currencyCode)
+  const router = useRouter()
+  const isLarge = useIsLargeScreen()
+  const t = useTranslations('quotes')
 
   const state = useQuoteFormState({
     quote,
@@ -115,13 +112,35 @@ export function QuotePageClient({
     customers,
     vehicles,
     t,
-  });
+  })
 
-  const handleDescriptionChange = useCallback((v: string) => { state.setDescription(v); state.markDirty(); }, [state]);
-  const handleNotesChange = useCallback((v: string) => { state.setNotes(v); state.markDirty(); }, [state]);
-  const handleNoteTypeChange = useCallback((v: "public" | "internal") => { state.setNoteType(v); }, [state]);
-  const handleOpenAiBuild = useCallback(() => { state.setShowAiBuildDialog(true); }, [state]);
-  const handleRevoke = useCallback(async () => { await revokeQuotePublicLink(quote.id); router.refresh(); }, [quote.id, router]);
+  const handleDescriptionChange = useCallback(
+    (v: string) => {
+      state.setDescription(v)
+      state.markDirty()
+    },
+    [state]
+  )
+  const handleNotesChange = useCallback(
+    (v: string) => {
+      state.setNotes(v)
+      state.markDirty()
+    },
+    [state]
+  )
+  const handleNoteTypeChange = useCallback(
+    (v: 'public' | 'internal') => {
+      state.setNoteType(v)
+    },
+    [state]
+  )
+  const handleOpenAiBuild = useCallback(() => {
+    state.setShowAiBuildDialog(true)
+  }, [state])
+  const handleRevoke = useCallback(async () => {
+    await revokeQuotePublicLink(quote.id)
+    router.refresh()
+  }, [quote.id, router])
 
   const leftColumn = (
     <div className="space-y-3">
@@ -156,7 +175,7 @@ export function QuotePageClient({
         t={t}
       />
     </div>
-  );
+  )
 
   const rightColumn = (
     <QuoteRightColumn
@@ -169,7 +188,7 @@ export function QuotePageClient({
       t={t}
       onRevoke={handleRevoke}
     />
-  );
+  )
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -183,44 +202,90 @@ export function QuotePageClient({
             <ArrowLeft className="h-4 w-4 shrink-0" />
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className={`shrink-0 text-xs capitalize ${statusColors[state.status] || ""}`}>
+                <Badge
+                  variant="outline"
+                  className={`shrink-0 text-xs capitalize ${statusColors[state.status] || ''}`}
+                >
                   {state.status}
                 </Badge>
                 <h1 className="truncate text-lg font-semibold leading-tight">{quote.title}</h1>
               </div>
               <p className="truncate text-xs text-muted-foreground">
-                {quote.quoteNumber || t("page.quote")}
-                {quote.customer ? ` · ${quote.customer.name}` : ""}
+                {quote.quoteNumber || t('page.quote')}
+                {quote.customer ? ` · ${quote.customer.name}` : ''}
               </p>
             </div>
           </Link>
           <div className="flex shrink-0 items-center gap-2">
             {state.hasUnsavedChanges && (
-              <span className="text-xs font-medium text-amber-600 dark:text-amber-400">{t("page.unsavedChanges")}</span>
+              <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                {t('page.unsavedChanges')}
+              </span>
             )}
             {state.showSaved && !state.hasUnsavedChanges && (
-              <span className="text-xs font-medium text-green-600 dark:text-green-400">{t("page.saved")}</span>
+              <span className="text-xs font-medium text-green-600 dark:text-green-400">
+                {t('page.saved')}
+              </span>
             )}
-            <Button type="submit" form="quote-form" size="sm" disabled={state.saving} variant={state.hasUnsavedChanges ? "default" : "outline"} className={state.hasUnsavedChanges ? "animate-pulse" : ""}>
-              {state.saving ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Save className="mr-1 h-3.5 w-3.5" />}
-              {t("page.save")}
+            <Button
+              type="submit"
+              form="quote-form"
+              size="sm"
+              disabled={state.saving}
+              variant={state.hasUnsavedChanges ? 'default' : 'outline'}
+              className={state.hasUnsavedChanges ? 'animate-pulse' : ''}
+            >
+              {state.saving ? (
+                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Save className="mr-1 h-3.5 w-3.5" />
+              )}
+              {t('page.save')}
             </Button>
             <ButtonGroup>
-              <Button variant="outline" size="sm" onClick={state.handleDownloadPDF} disabled={state.downloading}>
-                {state.downloading ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Download className="mr-1 h-3.5 w-3.5" />}
-                {t("page.pdf")}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={state.handleDownloadPDF}
+                disabled={state.downloading}
+              >
+                {state.downloading ? (
+                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Download className="mr-1 h-3.5 w-3.5" />
+                )}
+                {t('page.pdf')}
               </Button>
-              <Button variant="outline" size="sm" onClick={async () => { if (state.hasUnsavedChanges) await state.saveNow(); state.setShowEmailDialog(true); }}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  if (state.hasUnsavedChanges) await state.saveNow()
+                  state.setShowEmailDialog(true)
+                }}
+              >
                 <Mail className="mr-1 h-3.5 w-3.5" />
-                {t("page.email")}
+                {t('page.email')}
               </Button>
-              <Button variant="outline" size="sm" onClick={async () => { if (state.hasUnsavedChanges) await state.saveNow(); state.setShowShareDialog(true); }}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  if (state.hasUnsavedChanges) await state.saveNow()
+                  state.setShowShareDialog(true)
+                }}
+              >
                 <Globe className="mr-1 h-3.5 w-3.5" />
-                {t("page.share")}
+                {t('page.share')}
               </Button>
-              <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={state.handleDelete}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-destructive hover:bg-destructive/10"
+                onClick={state.handleDelete}
+              >
                 <Trash2 className="mr-1 h-3.5 w-3.5" />
-                {t("page.delete")}
+                {t('page.delete')}
               </Button>
             </ButtonGroup>
           </div>
@@ -230,19 +295,19 @@ export function QuotePageClient({
       {/* Tabs */}
       <div className="shrink-0 border-b bg-background px-4">
         <div className="flex gap-1">
-          {([
-            { key: "details" as TabType, label: t("page.tabs.details"), icon: FileText },
-            { key: "images" as TabType, label: t("page.tabs.images"), icon: Camera },
-            { key: "documents" as TabType, label: t("page.tabs.documents"), icon: Paperclip },
-          ]).map(({ key, label, icon: Icon }) => (
+          {[
+            { key: 'details' as TabType, label: t('page.tabs.details'), icon: FileText },
+            { key: 'images' as TabType, label: t('page.tabs.images'), icon: Camera },
+            { key: 'documents' as TabType, label: t('page.tabs.documents'), icon: Paperclip },
+          ].map(({ key, label, icon: Icon }) => (
             <button
               key={key}
               type="button"
               onClick={() => state.setActiveTab(key)}
               className={`flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
                 state.activeTab === key
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
               <Icon className="h-3.5 w-3.5" />
@@ -253,8 +318,13 @@ export function QuotePageClient({
       </div>
 
       {/* Tab Content */}
-      {state.activeTab === "details" && (
-        <form id="quote-form" ref={state.formRef} onSubmit={state.handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      {state.activeTab === 'details' && (
+        <form
+          id="quote-form"
+          ref={state.formRef}
+          onSubmit={state.handleSubmit}
+          className="flex min-h-0 flex-1 flex-col overflow-hidden"
+        >
           {isLarge ? (
             <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
               <ResizablePanel defaultSize={75} minSize={40}>
@@ -280,18 +350,26 @@ export function QuotePageClient({
         </form>
       )}
 
-      {state.activeTab === "images" && (
+      {state.activeTab === 'images' && (
         <div className="flex-1 overflow-y-auto overscroll-contain p-4">
           <div className="mx-auto max-w-4xl pb-40">
-            <QuoteImagesManager quoteId={quote.id} initialImages={imageAttachments} maxImages={maxImages} />
+            <QuoteImagesManager
+              quoteId={quote.id}
+              initialImages={imageAttachments}
+              maxImages={maxImages}
+            />
           </div>
         </div>
       )}
 
-      {state.activeTab === "documents" && (
+      {state.activeTab === 'documents' && (
         <div className="flex-1 overflow-y-auto overscroll-contain p-4">
           <div className="mx-auto max-w-4xl pb-40">
-            <QuoteDocumentsManager quoteId={quote.id} initialDocuments={documentAttachments} maxDocuments={maxDocuments} />
+            <QuoteDocumentsManager
+              quoteId={quote.id}
+              initialDocuments={documentAttachments}
+              maxDocuments={maxDocuments}
+            />
           </div>
         </div>
       )}
@@ -300,9 +378,11 @@ export function QuotePageClient({
       <SendEmailDialog
         open={state.showEmailDialog}
         onOpenChange={state.setShowEmailDialog}
-        defaultEmail={quote.customer?.email || ""}
-        entityLabel={t("page.entityLabel")}
-        onSend={async (email, message) => sendQuoteEmail({ quoteId: quote.id, recipientEmail: email, message })}
+        defaultEmail={quote.customer?.email || ''}
+        entityLabel={t('page.entityLabel')}
+        onSend={async (email, message) =>
+          sendQuoteEmail({ quoteId: quote.id, recipientEmail: email, message })
+        }
       />
 
       <QuoteShareDialog
@@ -318,23 +398,40 @@ export function QuotePageClient({
 
       <Dialog open={state.showConvertDialog} onOpenChange={state.setShowConvertDialog}>
         <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>{t("page.convertTitle")}</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>{t('page.convertTitle')}</DialogTitle>
+          </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">{t("page.convertDescription")}</p>
+            <p className="text-sm text-muted-foreground">{t('page.convertDescription')}</p>
             <Select value={state.convertVehicleId} onValueChange={state.setConvertVehicleId}>
-              <SelectTrigger><SelectValue placeholder={t("details.selectVehicle")} /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder={t('details.selectVehicle')} />
+              </SelectTrigger>
               <SelectContent>
                 {vehicles.map((v) => (
-                  <SelectItem key={v.id} value={v.id}>{v.year} {v.make} {v.model}{v.licensePlate ? ` (${v.licensePlate})` : ""}</SelectItem>
+                  <SelectItem key={v.id} value={v.id}>
+                    {v.year} {v.make} {v.model}
+                    {v.licensePlate ? ` (${v.licensePlate})` : ''}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <div className="flex gap-2">
-              <Button type="button" onClick={state.handleConvert} disabled={state.converting || !state.convertVehicleId}>
+              <Button
+                type="button"
+                onClick={state.handleConvert}
+                disabled={state.converting || !state.convertVehicleId}
+              >
                 {state.converting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t("page.convert")}
+                {t('page.convert')}
               </Button>
-              <Button type="button" variant="ghost" onClick={() => state.setShowConvertDialog(false)}>{t("page.cancel")}</Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => state.setShowConvertDialog(false)}
+              >
+                {t('page.cancel')}
+              </Button>
             </div>
           </div>
         </DialogContent>
@@ -346,27 +443,37 @@ export function QuotePageClient({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Sparkles className="h-4 w-4" />
-              {t("page.aiBuildTitle")}
+              {t('page.aiBuildTitle')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">{t("page.aiBuildDescription")}</p>
+            <p className="text-sm text-muted-foreground">{t('page.aiBuildDescription')}</p>
             <Textarea
               value={state.aiFreeText}
               onChange={(e) => state.setAiFreeText(e.target.value)}
-              placeholder={t("page.aiBuildPlaceholder")}
+              placeholder={t('page.aiBuildPlaceholder')}
               rows={5}
             />
             <div className="flex gap-2">
-              <Button type="button" onClick={state.handleAiBuild} disabled={state.aiBuilding || !state.aiFreeText.trim()}>
+              <Button
+                type="button"
+                onClick={state.handleAiBuild}
+                disabled={state.aiBuilding || !state.aiFreeText.trim()}
+              >
                 {state.aiBuilding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t("page.aiBuildGenerate")}
+                {t('page.aiBuildGenerate')}
               </Button>
-              <Button type="button" variant="ghost" onClick={() => state.setShowAiBuildDialog(false)}>{t("page.cancel")}</Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => state.setShowAiBuildDialog(false)}
+              >
+                {t('page.cancel')}
+              </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }
