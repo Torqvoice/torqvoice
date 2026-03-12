@@ -6,7 +6,6 @@ import { NotificationInitializer } from "@/features/notifications/Components/Not
 import { ConfirmProvider } from "@/components/confirm-dialog";
 import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { WhiteLabelCtaProvider } from "@/components/white-label-cta-context";
 import { DateSettingsProvider } from "@/components/date-settings-context";
 import { getCachedMembership } from "@/lib/cached-session";
@@ -38,20 +37,6 @@ export default async function DashboardLayout({
 
   const features = await getFeatures(data.organizationId);
   const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved;
-
-  // Check if AI is fully enabled (plan + settings + API key)
-  let aiEnabled = false;
-  if (features?.ai) {
-    const aiSettings = await db.appSetting.findMany({
-      where: {
-        organizationId: data.organizationId,
-        key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] },
-      },
-      select: { key: true, value: true },
-    });
-    const aiMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]));
-    aiEnabled = aiMap[SETTING_KEYS.AI_ENABLED] === "true" && !!aiMap[SETTING_KEYS.AI_API_KEY];
-  }
 
   // Determine which subjects the user can access (for sidebar visibility)
   const isOwnerOrAdmin = data.role === "owner" || data.role === "admin" || data.role === "super_admin";
@@ -93,7 +78,6 @@ export default async function DashboardLayout({
           activeOrgId={data.organizationId}
           isSuperAdmin={data.isSuperAdmin}
           features={features}
-          aiEnabled={aiEnabled && visibleSubjects.includes(PermissionSubject.AI_ASSISTANT)}
           visibleSubjects={visibleSubjects}
           isAdminOrOwner={isOwnerOrAdmin}
         />

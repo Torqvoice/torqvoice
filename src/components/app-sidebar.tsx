@@ -60,7 +60,6 @@ import {
   Receipt,
   Settings,
   ShieldCheck,
-  Sparkles,
   Sun,
   Users,
 } from 'lucide-react'
@@ -83,7 +82,6 @@ export function AppSidebar({
   isSuperAdmin,
   features,
   isAdminOrOwner = false,
-  aiEnabled = false,
   visibleSubjects,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
@@ -93,7 +91,6 @@ export function AppSidebar({
   isSuperAdmin?: boolean
   features?: PlanFeatures
   isAdminOrOwner?: boolean
-  aiEnabled?: boolean
   visibleSubjects?: string[]
 }) {
   const pathname = usePathname()
@@ -257,22 +254,6 @@ export function AppSidebar({
                   <Link href="/" className="font-medium" onClick={closeMobileSidebar}>
                     <LayoutDashboard className="size-4" />
                     {t('sidebar.dashboard')}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-        )}
-
-        {/* AI Assistant */}
-        {aiEnabled && (
-          <SidebarGroup>
-            <SidebarMenu className="gap-2">
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/ai')}>
-                  <Link href="/ai" className="font-medium" onClick={closeMobileSidebar}>
-                    <Sparkles className="size-4" />
-                    {t('sidebar.aiAssistant')}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

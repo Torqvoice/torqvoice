@@ -146,7 +146,7 @@ export async function summarizeServiceHistory(
   records: ServiceHistoryRecord[],
   locale: Locale = "en",
 ): Promise<string> {
-  const systemPrompt = `You are an automotive service advisor. Summarize a vehicle's complete service history in a concise, useful format. Highlight major work, recurring issues, and predict likely upcoming maintenance needs. Write in plain text, no markdown headers — use simple line breaks and dashes for structure.${languageInstruction(locale)}`;
+  const systemPrompt = `You are an automotive service advisor. Summarize a vehicle's complete service history in a concise, useful format. Highlight major work, recurring issues, and predict likely upcoming maintenance needs. Also include a section titled "Most Common Critical Issues" listing exactly 5 critical/serious known problems for this specific vehicle make, model, and year, sorted by cost and criticality (most expensive and safety-critical first). Only include issues that are well-documented, serious failures — skip minor or cosmetic problems. Write in plain text, no markdown headers — use simple line breaks and dashes for structure.${languageInstruction(locale)}`;
 
   const recordsStr = records
     .map(
@@ -164,7 +164,8 @@ Provide a concise summary including:
 - Overview of the vehicle's service history
 - Major work performed
 - Any recurring issues or patterns
-- Predicted upcoming maintenance needs`;
+- Predicted upcoming maintenance needs
+- Most Common Critical Issues: List exactly 5 critical/serious known problems for the ${vehicle.year} ${vehicle.make} ${vehicle.model}, sorted by cost and criticality (most expensive and safety-critical first). Only include well-documented serious failures, recalls, and high-cost repairs — skip minor or cosmetic issues.`;
 
   return chatCompletion(organizationId, systemPrompt, userPrompt);
 }
