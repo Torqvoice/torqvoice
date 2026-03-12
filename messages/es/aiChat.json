@@ -1,0 +1,17 @@
+{
+  "title": "Asistente IA",
+  "description": "Haga preguntas sobre los datos de su taller — vehículos, servicios, clientes, ingresos y más.",
+  "placeholder": "Pregunte sobre su taller...",
+  "clear": "Borrar conversación",
+  "error": "Algo salió mal. Por favor, inténtelo de nuevo.",
+  "notEnabled": "La IA no está habilitada. Configúrela en Ajustes → IA.",
+  "suggestion1": "¿Qué vehículos necesitan servicio pronto?",
+  "suggestion2": "Muéstrame facturas sin pagar",
+  "suggestion3": "¿Cuáles son los ingresos de este mes?",
+  "suggestion4": "Dame un resumen del taller",
+  "newChat": "Nuevo chat",
+  "noChats": "Sin conversaciones aún",
+  "deleteChat": "Eliminar chat",
+  "hideSidebar": "Ocultar panel",
+  "showSidebar": "Mostrar panel"
+}

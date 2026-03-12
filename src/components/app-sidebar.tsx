@@ -60,6 +60,7 @@ import {
   Receipt,
   Settings,
   ShieldCheck,
+  Sparkles,
   Sun,
   Users,
 } from 'lucide-react'
@@ -260,6 +261,22 @@ export function AppSidebar({
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
+
+        {/* AI Assistant */}
+        {features?.ai && (
+          <SidebarGroup>
+            <SidebarMenu className="gap-2">
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/ai')}>
+                  <Link href="/ai" className="font-medium" onClick={closeMobileSidebar}>
+                    <Sparkles className="size-4" />
+                    {t('sidebar.aiAssistant')}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
 
         {/* Clients */}
         <SidebarGroup>

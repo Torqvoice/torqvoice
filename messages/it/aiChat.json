@@ -1,0 +1,17 @@
+{
+  "title": "Assistente IA",
+  "description": "Fai domande sui dati della tua officina — veicoli, servizi, clienti, ricavi e altro.",
+  "placeholder": "Chiedi della tua officina...",
+  "clear": "Cancella conversazione",
+  "error": "Qualcosa è andato storto. Riprova.",
+  "notEnabled": "L'IA non è abilitata. Configurala in Impostazioni → IA.",
+  "suggestion1": "Quali veicoli sono in scadenza per il tagliando?",
+  "suggestion2": "Mostrami le fatture non pagate",
+  "suggestion3": "Qual è il fatturato di questo mese?",
+  "suggestion4": "Dammi una panoramica dell'officina",
+  "newChat": "Nuova chat",
+  "noChats": "Nessuna conversazione",
+  "deleteChat": "Elimina chat",
+  "hideSidebar": "Nascondi pannello",
+  "showSidebar": "Mostra pannello"
+}

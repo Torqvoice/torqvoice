@@ -1,0 +1,17 @@
+{
+  "title": "Assistant IA",
+  "description": "Posez des questions sur les données de votre atelier — véhicules, services, clients, revenus et plus.",
+  "placeholder": "Demandez à propos de votre atelier...",
+  "clear": "Effacer la conversation",
+  "error": "Une erreur s'est produite. Veuillez réessayer.",
+  "notEnabled": "L'IA n'est pas activée. Configurez-la dans Paramètres → IA.",
+  "suggestion1": "Quels véhicules doivent bientôt être révisés ?",
+  "suggestion2": "Montrez-moi les factures impayées",
+  "suggestion3": "Quel est le chiffre d'affaires ce mois-ci ?",
+  "suggestion4": "Donnez-moi un aperçu de l'atelier",
+  "newChat": "Nouveau chat",
+  "noChats": "Aucune conversation",
+  "deleteChat": "Supprimer le chat",
+  "hideSidebar": "Masquer le panneau",
+  "showSidebar": "Afficher le panneau"
+}

@@ -75,6 +75,7 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/settings/subscription': [{ key: 'settings', href: '/settings' }, { key: 'subscription' }],
   '/settings/maintenance': [{ key: 'settings', href: '/settings' }, { key: 'maintenance' }],
   '/settings/customer-portal': [{ key: 'settings', href: '/settings' }, { key: 'customerPortal' }],
+  '/ai': [{ key: 'aiAssistant' }],
   '/audit-log': [{ key: 'auditLog' }],
 }
 

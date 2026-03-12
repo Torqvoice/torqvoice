@@ -10,7 +10,7 @@ interface AiConfig {
   model: string;
 }
 
-async function getAiConfig(organizationId: string): Promise<AiConfig> {
+export async function getAiConfig(organizationId: string): Promise<AiConfig> {
   const settings = await db.appSetting.findMany({
     where: {
       organizationId,
@@ -44,7 +44,7 @@ async function getAiConfig(organizationId: string): Promise<AiConfig> {
   return { provider, apiKey, model };
 }
 
-function createClient(config: AiConfig): OpenAI {
+export function createClient(config: AiConfig): OpenAI {
   if (config.provider === "anthropic") {
     return new OpenAI({
       apiKey: config.apiKey,

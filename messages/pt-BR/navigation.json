@@ -49,7 +49,8 @@
     "customerPortal": "Portal do Cliente",
     "reminders": "Lembretes",
     "allReminders": "Todos os lembretes",
-    "auditLog": "Registro de auditoria"
+    "auditLog": "Registro de auditoria",
+    "aiAssistant": "Assistente IA"
   },
   "search": "Buscar...",
   "shortcut": "Ctrl+K",
@@ -85,6 +86,7 @@
     "lightMode": "Modo Claro",
     "darkMode": "Modo Escuro",
     "signOut": "Sair",
-    "auditLog": "Registro de auditoria"
+    "auditLog": "Registro de auditoria",
+    "aiAssistant": "Assistente IA"
   }
 }

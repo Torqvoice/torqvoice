@@ -1,0 +1,17 @@
+{
+  "title": "AI Asistanı",
+  "description": "Atölye verileriniz hakkında sorular sorun — araçlar, servisler, müşteriler, gelir ve daha fazlası.",
+  "placeholder": "Atölyeniz hakkında sorun...",
+  "clear": "Sohbeti temizle",
+  "error": "Bir şeyler yanlış gitti. Lütfen tekrar deneyin.",
+  "notEnabled": "AI etkin değil. Ayarlar → AI bölümünden yapılandırın.",
+  "suggestion1": "Hangi araçların yakında servise ihtiyacı var?",
+  "suggestion2": "Ödenmemiş faturaları göster",
+  "suggestion3": "Bu ayın geliri ne kadar?",
+  "suggestion4": "Bana bir atölye özeti ver",
+  "newChat": "Yeni sohbet",
+  "noChats": "Henüz konuşma yok",
+  "deleteChat": "Sohbeti sil",
+  "hideSidebar": "Paneli gizle",
+  "showSidebar": "Paneli göster"
+}

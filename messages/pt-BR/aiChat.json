@@ -1,0 +1,17 @@
+{
+  "title": "Assistente IA",
+  "description": "Faça perguntas sobre os dados da sua oficina — veículos, serviços, clientes, receita e mais.",
+  "placeholder": "Pergunte sobre sua oficina...",
+  "clear": "Limpar conversa",
+  "error": "Algo deu errado. Tente novamente.",
+  "notEnabled": "A IA não está habilitada. Configure em Configurações → IA.",
+  "suggestion1": "Quais veículos precisam de serviço em breve?",
+  "suggestion2": "Mostre-me faturas não pagas",
+  "suggestion3": "Qual é a receita deste mês?",
+  "suggestion4": "Me dê uma visão geral da oficina",
+  "newChat": "Novo chat",
+  "noChats": "Nenhuma conversa ainda",
+  "deleteChat": "Excluir chat",
+  "hideSidebar": "Ocultar painel",
+  "showSidebar": "Mostrar painel"
+}

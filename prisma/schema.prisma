@@ -977,3 +977,31 @@ model ServiceRequest {
   @@index([customerId])
   @@map("service_requests")
 }
+
+model AiChat {
+  id        String   @id @default(cuid())
+  title     String   @default("New chat")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId         String
+  organizationId String
+
+  messages AiChatMessage[]
+
+  @@index([organizationId, userId, updatedAt(sort: Desc)])
+  @@map("ai_chats")
+}
+
+model AiChatMessage {
+  id        String   @id @default(cuid())
+  role      String   // "user" | "assistant"
+  content   String
+  createdAt DateTime @default(now())
+
+  chatId String
+  chat   AiChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@index([chatId, createdAt])
+  @@map("ai_chat_messages")
+}

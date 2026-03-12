@@ -211,6 +211,7 @@ export function SearchCommand() {
       title="Search"
       description="Search for vehicles, customers, services, and settings"
       className="sm:max-w-2xl"
+      shouldFilter={!hasQuery}
     >
       <CommandInput
         placeholder="Search by name, plate, phone, VIN, invoice..."
@@ -228,7 +229,7 @@ export function SearchCommand() {
             {recentCustomers.map((c) => (
               <CommandItem
                 key={c.id}
-                value={`${c.name} ${c.email || ""} ${c.company || ""}`}
+                value={`${c.name} ${c.email || ""} ${c.phone || ""} ${c.company || ""}`}
                 onSelect={() => handleSelect(`/customers/${c.id}`)}
               >
                 <Users className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -251,7 +252,7 @@ export function SearchCommand() {
                 {results.customers.map((c) => (
                   <div key={c.id}>
                     <CommandItem
-                      value={`${c.name} ${c.email || ""} ${c.company || ""}`}
+                      value={`${c.name} ${c.email || ""} ${c.phone || ""} ${c.company || ""}`}
                       onSelect={() => handleSelect(`/customers/${c.id}`)}
                     >
                       <Users className="mr-2 h-4 w-4 text-muted-foreground" />

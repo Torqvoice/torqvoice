@@ -1,0 +1,17 @@
+{
+  "title": "KI-Assistent",
+  "description": "Stellen Sie Fragen zu Ihren Werkstattdaten — Fahrzeuge, Services, Kunden, Umsätze und mehr.",
+  "placeholder": "Fragen Sie zu Ihrer Werkstatt...",
+  "clear": "Gespräch löschen",
+  "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+  "notEnabled": "KI ist nicht aktiviert. Konfigurieren Sie es unter Einstellungen → KI.",
+  "suggestion1": "Welche Fahrzeuge sind bald fällig für den Service?",
+  "suggestion2": "Zeige mir unbezahlte Rechnungen",
+  "suggestion3": "Wie ist der Umsatz diesen Monat?",
+  "suggestion4": "Gib mir eine Werkstattübersicht",
+  "newChat": "Neuer Chat",
+  "noChats": "Noch keine Unterhaltungen",
+  "deleteChat": "Chat löschen",
+  "hideSidebar": "Seitenleiste ausblenden",
+  "showSidebar": "Seitenleiste einblenden"
+}
