@@ -70,7 +70,14 @@
     "aiSummaryGenerated": "KI-Zusammenfassung generiert",
     "aiSummaryUpdated": "Aktualisiert {date}",
     "aiSummaryEmpty": "Klicken Sie auf Generieren, um eine KI-gestützte Zusammenfassung der Servicehistorie zu erstellen.",
-    "aiSummaryError": "Zusammenfassung konnte nicht generiert werden"
+    "aiSummaryError": "Zusammenfassung konnte nicht generiert werden",
+    "commonIssues": "Häufige Probleme",
+    "commonIssuesTitle": "Häufige kritische Probleme — {make} {model}",
+    "severityVeryCommon": "Sehr häufig — von einer großen Anzahl von Besitzern gemeldet",
+    "severityCommon": "Häufig — oft gemeldetes Problem",
+    "severityModerate": "Mäßig — von einigen Besitzern gemeldet",
+    "severityUncommon": "Ungewöhnlich — von wenigen Besitzern gemeldet",
+    "severityRare": "Selten — vereinzelte Berichte, aber kritisch wenn es auftritt"
   },
   "quotes": {
     "newQuote": "Neues Angebot",

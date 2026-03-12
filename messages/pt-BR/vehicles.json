@@ -70,7 +70,14 @@
     "aiSummaryGenerated": "Resumo IA gerado",
     "aiSummaryUpdated": "Atualizado {date}",
     "aiSummaryEmpty": "Clique em Gerar para criar um resumo com IA do histórico de serviço.",
-    "aiSummaryError": "Falha ao gerar resumo"
+    "aiSummaryError": "Falha ao gerar resumo",
+    "commonIssues": "Problemas comuns",
+    "commonIssuesTitle": "Problemas críticos comuns — {make} {model}",
+    "severityVeryCommon": "Muito comum — relatado por um grande número de proprietários",
+    "severityCommon": "Comum — problema relatado frequentemente",
+    "severityModerate": "Moderado — relatado por alguns proprietários",
+    "severityUncommon": "Incomum — relatado por poucos proprietários",
+    "severityRare": "Raro — relatos isolados, mas crítico quando ocorre"
   },
   "quotes": {
     "newQuote": "Novo orçamento",

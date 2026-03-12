@@ -70,7 +70,15 @@
     "aiSummaryGenerated": "AI-sammendrag generert",
     "aiSummaryUpdated": "Oppdatert {date}",
     "aiSummaryEmpty": "Klikk Generer for å lage et AI-drevet sammendrag av kjøretøyets servicehistorikk.",
-    "aiSummaryError": "Kunne ikke generere sammendrag"
+    "aiSummaryError": "Kunne ikke generere sammendrag",
+    "commonIssues": "Vanlige problemer",
+    "commonIssuesEmpty": "Klikk Generer for å slå opp vanlige kritiske problemer for dette kjøretøyet.",
+    "commonIssuesTitle": "Vanlige kritiske problemer — {make} {model}",
+    "severityVeryCommon": "Svært vanlig — rapportert av et stort antall eiere",
+    "severityCommon": "Vanlig — hyppig rapportert problem",
+    "severityModerate": "Moderat — rapportert av noen eiere",
+    "severityUncommon": "Uvanlig — rapportert av få eiere",
+    "severityRare": "Sjelden — isolerte rapporter, men kritisk når det oppstår"
   },
   "quotes": {
     "newQuote": "Nytt tilbud",

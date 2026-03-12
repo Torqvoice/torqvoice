@@ -146,7 +146,7 @@ export async function summarizeServiceHistory(
   records: ServiceHistoryRecord[],
   locale: Locale = "en",
 ): Promise<string> {
-  const systemPrompt = `You are an automotive service advisor. Summarize a vehicle's complete service history in a concise, useful format. Highlight major work, recurring issues, and predict likely upcoming maintenance needs. Also include a section titled "Most Common Critical Issues" listing exactly 5 critical/serious known problems for this specific vehicle make, model, and year, sorted by cost and criticality (most expensive and safety-critical first). Only include issues that are well-documented, serious failures — skip minor or cosmetic problems. Write in plain text, no markdown headers — use simple line breaks and dashes for structure.${languageInstruction(locale)}`;
+  const systemPrompt = `You are an automotive service advisor. Summarize a vehicle's complete service history in a concise, useful format. Highlight major work, recurring issues, and predict likely upcoming maintenance needs. Write in plain text, no markdown headers — use simple line breaks and dashes for structure.${languageInstruction(locale)}`;
 
   const recordsStr = records
     .map(
@@ -165,7 +165,24 @@ Provide a concise summary including:
 - Major work performed
 - Any recurring issues or patterns
 - Predicted upcoming maintenance needs
-- Most Common Critical Issues: List exactly 5 critical/serious known problems for the ${vehicle.year} ${vehicle.make} ${vehicle.model}, sorted by cost and criticality (most expensive and safety-critical first). Only include well-documented serious failures, recalls, and high-cost repairs — skip minor or cosmetic issues.`;
+- Predicted upcoming maintenance needs`;
+
+  return chatCompletion(organizationId, systemPrompt, userPrompt);
+}
+
+export async function getCommonIssues(
+  organizationId: string,
+  vehicle: { make: string; model: string; year: number },
+  locale: Locale = "en",
+): Promise<string> {
+  const systemPrompt = `You are an expert automotive technician. Return a JSON array of exactly 5 critical known issues for the requested vehicle, sorted by severity and cost (highest first). Only serious, well-documented problems.
+
+Return ONLY valid JSON, no markdown, no explanation. Use this exact schema:
+[{"title":"Issue name","description":"1-2 sentence explanation","cost":"X,XXX–X,XXX","risk":"safety|engine|transmission|electrical|other","severity":5}]
+
+severity is 1-5 based on how widely reported the issue is (5 = extremely common/well-documented, affects majority of vehicles; 1 = rare but critical).${languageInstruction(locale)}`;
+
+  const userPrompt = `What are the 5 most critical and common issues with the ${vehicle.year} ${vehicle.make} ${vehicle.model}? Return JSON only.`;
 
   return chatCompletion(organizationId, systemPrompt, userPrompt);
 }

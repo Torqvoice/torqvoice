@@ -144,22 +144,36 @@ export async function fetchAiModels(provider: AiProvider) {
           }
         }
       } else {
-        const res = await fetch("https://api.anthropic.com/v1/models?limit=100", {
-          headers: {
-            "x-api-key": apiKey,
-            "anthropic-version": "2023-06-01",
-          },
-        });
-        if (!res.ok) throw new Error("Failed to fetch models. Check your API key.");
-        const data = (await res.json()) as { data: { id: string; display_name?: string }[] };
-        for (const m of data.data) {
-          if (isAnthropicChatModel(m.id)) {
-            models.push({
-              id: m.id,
-              label: m.display_name || formatModelLabel(m.id),
-              cost: getModelCost("anthropic", m.id),
-            });
+        // Anthropic paginates models — fetch all pages
+        let afterId: string | undefined;
+        let hasMore = true;
+        while (hasMore) {
+          const url = new URL("https://api.anthropic.com/v1/models");
+          url.searchParams.set("limit", "100");
+          if (afterId) url.searchParams.set("after_id", afterId);
+          const res = await fetch(url.toString(), {
+            headers: {
+              "x-api-key": apiKey,
+              "anthropic-version": "2023-06-01",
+            },
+          });
+          if (!res.ok) throw new Error("Failed to fetch models. Check your API key.");
+          const data = (await res.json()) as {
+            data: { id: string; display_name?: string }[];
+            has_more?: boolean;
+            last_id?: string;
+          };
+          for (const m of data.data) {
+            if (isAnthropicChatModel(m.id)) {
+              models.push({
+                id: m.id,
+                label: m.display_name || formatModelLabel(m.id),
+                cost: getModelCost("anthropic", m.id),
+              });
+            }
           }
+          hasMore = data.has_more === true && !!data.last_id;
+          afterId = data.last_id;
         }
       }
 

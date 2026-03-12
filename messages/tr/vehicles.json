@@ -70,7 +70,14 @@
     "aiSummaryGenerated": "AI özeti oluşturuldu",
     "aiSummaryUpdated": "{date} güncellendi",
     "aiSummaryEmpty": "Aracın servis geçmişinin AI destekli bir özetini oluşturmak için Oluştur'a tıklayın.",
-    "aiSummaryError": "Özet oluşturulamadı"
+    "aiSummaryError": "Özet oluşturulamadı",
+    "commonIssues": "Yaygın sorunlar",
+    "commonIssuesTitle": "Yaygın kritik sorunlar — {make} {model}",
+    "severityVeryCommon": "Çok yaygın — çok sayıda araç sahibi tarafından bildirilmiş",
+    "severityCommon": "Yaygın — sıkça bildirilen sorun",
+    "severityModerate": "Orta düzey — bazı araç sahipleri tarafından bildirilmiş",
+    "severityUncommon": "Nadir — az sayıda araç sahibi tarafından bildirilmiş",
+    "severityRare": "Çok nadir — tek tük bildirimler ancak gerçekleştiğinde kritik"
   },
   "quotes": {
     "newQuote": "Yeni teklif",

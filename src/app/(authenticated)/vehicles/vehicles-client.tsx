@@ -360,9 +360,9 @@ export function VehiclesClient({
         /* Grid skeleton */
         <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}>
           {Array.from({ length: view === 'grid6' ? 12 : 6 }).map((_, i) => (
-            <Card key={i} className="overflow-hidden border-0 shadow-sm">
+            <Card key={i} className="overflow-hidden border-0 py-0 gap-0 shadow-sm">
               <Skeleton className="aspect-[16/10] rounded-none" />
-              <CardContent className="flex items-center justify-between p-4">
+              <CardContent className="flex items-center justify-between px-4 py-2">
                 <Skeleton className="h-4 w-24" />
                 <Skeleton className="h-4 w-16" />
               </CardContent>
@@ -375,7 +375,7 @@ export function VehiclesClient({
           {data.vehicles.map((v) => (
             <Card
               key={v.id}
-              className="group overflow-hidden border-0 shadow-sm transition-all hover:shadow-lg hover:-translate-y-0.5"
+              className="group overflow-hidden border-0 py-0 gap-0 shadow-sm transition-all hover:shadow-lg hover:-translate-y-0.5"
             >
               <Link href={`/vehicles/${v.id}`}>
                 <div className="relative aspect-[16/10] overflow-hidden bg-muted">
@@ -451,12 +451,12 @@ export function VehiclesClient({
                     </DropdownMenu>
                   </div>
                 </div>
-                <CardContent className={`flex items-center justify-between ${view === 'grid6' ? 'p-2 text-xs' : 'p-4 text-sm'}`}>
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                <CardContent className={`flex items-center justify-between ${view === 'grid6' ? 'px-2 py-1.5 text-xs' : 'px-4 py-2 text-sm'}`}>
+                  <div className="flex items-center gap-1.5 text-foreground">
                     <Gauge className={view === 'grid6' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
                     <span className="font-medium">{new Intl.NumberFormat('en-US').format(v.mileage)}</span>
                   </div>
-                  <div className={`flex items-center ${view === 'grid6' ? 'gap-2' : 'gap-3'} text-muted-foreground`}>
+                  <div className={`flex items-center ${view === 'grid6' ? 'gap-2' : 'gap-3'} text-foreground`}>
                     {v.customer && <span className={view === 'grid6' ? 'text-[10px] hidden xl:inline' : 'text-xs'}>{v.customer.name}</span>}
                     <div className="flex items-center gap-1">
                       <Wrench className={view === 'grid6' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />

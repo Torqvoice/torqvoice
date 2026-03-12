@@ -70,7 +70,14 @@
     "aiSummaryGenerated": "Riepilogo IA generato",
     "aiSummaryUpdated": "Aggiornato {date}",
     "aiSummaryEmpty": "Clicca Genera per creare un riepilogo IA della cronologia di assistenza.",
-    "aiSummaryError": "Impossibile generare il riepilogo"
+    "aiSummaryError": "Impossibile generare il riepilogo",
+    "commonIssues": "Problemi comuni",
+    "commonIssuesTitle": "Problemi critici comuni — {make} {model}",
+    "severityVeryCommon": "Molto comune — segnalato da un gran numero di proprietari",
+    "severityCommon": "Comune — problema segnalato frequentemente",
+    "severityModerate": "Moderato — segnalato da alcuni proprietari",
+    "severityUncommon": "Non comune — segnalato da pochi proprietari",
+    "severityRare": "Raro — segnalazioni isolate ma critico quando si verifica"
   },
   "quotes": {
     "newQuote": "Nuovo preventivo",

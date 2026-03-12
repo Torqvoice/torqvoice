@@ -49,6 +49,9 @@ export async function getVehicle(vehicleId: string) {
             createdAt: true,
           },
         },
+        aiMessages: {
+          select: { type: true, content: true, updatedAt: true },
+        },
         _count: {
           select: {
             serviceRecords: true,

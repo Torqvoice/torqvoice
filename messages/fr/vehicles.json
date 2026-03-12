@@ -70,7 +70,14 @@
     "aiSummaryGenerated": "Résumé IA généré",
     "aiSummaryUpdated": "Mis à jour {date}",
     "aiSummaryEmpty": "Cliquez sur Générer pour créer un résumé IA de l'historique de service.",
-    "aiSummaryError": "Échec de la génération du résumé"
+    "aiSummaryError": "Échec de la génération du résumé",
+    "commonIssues": "Problèmes courants",
+    "commonIssuesTitle": "Problèmes critiques courants — {make} {model}",
+    "severityVeryCommon": "Très courant — signalé par un grand nombre de propriétaires",
+    "severityCommon": "Courant — problème fréquemment signalé",
+    "severityModerate": "Modéré — signalé par certains propriétaires",
+    "severityUncommon": "Peu courant — signalé par peu de propriétaires",
+    "severityRare": "Rare — signalements isolés mais critique lorsqu'il survient"
   },
   "quotes": {
     "newQuote": "Nouveau devis",

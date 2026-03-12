@@ -148,8 +148,7 @@ model Vehicle {
   archiveReason          String?
   maintenanceDismissed   Boolean   @default(false)
   maintenanceDismissedAt DateTime?
-  aiSummary              String?
-  aiSummaryDate          DateTime?
+  aiMessages AiGeneratedMessage[]
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 
@@ -976,6 +975,20 @@ model ServiceRequest {
   @@index([organizationId, status])
   @@index([customerId])
   @@map("service_requests")
+}
+
+model AiGeneratedMessage {
+  id        String   @id @default(cuid())
+  vehicleId String
+  type      String   // "summary" | "common_issues" | etc.
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@unique([vehicleId, type])
+  @@map("ai_generated_messages")
 }
 
 model AiChat {

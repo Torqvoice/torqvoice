@@ -70,7 +70,15 @@
     "aiSummaryGenerated": "AI summary generated",
     "aiSummaryUpdated": "Updated {date}",
     "aiSummaryEmpty": "Click Generate to create an AI-powered summary of this vehicle's service history.",
-    "aiSummaryError": "Failed to generate summary"
+    "aiSummaryError": "Failed to generate summary",
+    "commonIssues": "Common Issues",
+    "commonIssuesEmpty": "Click Generate to look up common critical issues for this vehicle.",
+    "commonIssuesTitle": "Common Critical Issues — {make} {model}",
+    "severityVeryCommon": "Very common — reported by a large number of owners",
+    "severityCommon": "Common — frequently reported issue",
+    "severityModerate": "Moderate — reported by some owners",
+    "severityUncommon": "Uncommon — reported by few owners",
+    "severityRare": "Rare — isolated reports but critical when it occurs"
   },
   "quotes": {
     "newQuote": "New Quote",
