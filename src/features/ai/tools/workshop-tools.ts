@@ -97,7 +97,7 @@ const ALLOWED_TABLES = [
 
 // ─── Validation ─────────────────────────────────────────────────────────────
 
-function validateSql(sql: string): { valid: boolean; error?: string } {
+export function validateSql(sql: string): { valid: boolean; error?: string } {
   const trimmed = sql.trim();
 
   // Must start with SELECT (case-insensitive)
