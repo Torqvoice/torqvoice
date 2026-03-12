@@ -55,6 +55,7 @@ export async function aiSummarizeVehicleHistory(vehicleId: string) {
       const vehicle = await db.vehicle.findFirst({
         where: { id: vehicleId, organizationId },
         select: {
+          id: true,
           make: true,
           model: true,
           year: true,
@@ -79,7 +80,15 @@ export async function aiSummarizeVehicleHistory(vehicleId: string) {
         return "No service records found for this vehicle.";
       }
 
-      return summarizeServiceHistory(organizationId, vehicle, vehicle.serviceRecords, locale);
+      const summary = await summarizeServiceHistory(organizationId, vehicle, vehicle.serviceRecords, locale);
+
+      // Persist the summary to the vehicle record
+      await db.vehicle.update({
+        where: { id: vehicle.id },
+        data: { aiSummary: summary, aiSummaryDate: new Date() },
+      });
+
+      return summary;
     },
     {
       requiredPermissions: [

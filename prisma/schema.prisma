@@ -148,6 +148,8 @@ model Vehicle {
   archiveReason          String?
   maintenanceDismissed   Boolean   @default(false)
   maintenanceDismissedAt DateTime?
+  aiSummary              String?
+  aiSummaryDate          DateTime?
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 

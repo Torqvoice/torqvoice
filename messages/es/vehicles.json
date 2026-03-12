@@ -63,11 +63,14 @@
     "deleteTitle": "Eliminar vehiculo?",
     "deleteDescription": "Esto eliminara permanentemente {name} y todos los registros de servicio, notas y recordatorios asociados. Esta accion no se puede deshacer.",
     "edit": "Editar",
-    "aiSummary": "AI Resumen",
-    "aiSummaryTitle": "Resumen del Historial de Servicio",
-    "aiSummaryEmpty": "No hay registros de servicio para resumir",
-    "aiSummaryError": "Error al generar el resumen",
-    "aiSummaryClose": "Cerrar"
+    "aiSummary": "Resumen IA",
+    "aiSummaryTitle": "Resumen del historial de servicio",
+    "aiSummaryGenerate": "Generar",
+    "aiSummaryRegenerate": "Regenerar",
+    "aiSummaryGenerated": "Resumen IA generado",
+    "aiSummaryUpdated": "Actualizado {date}",
+    "aiSummaryEmpty": "Haga clic en Generar para crear un resumen impulsado por IA del historial de servicio.",
+    "aiSummaryError": "Error al generar el resumen"
   },
   "quotes": {
     "newQuote": "Nueva cotización",

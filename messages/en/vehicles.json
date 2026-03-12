@@ -65,9 +65,12 @@
     "edit": "Edit",
     "aiSummary": "AI Summary",
     "aiSummaryTitle": "Service History Summary",
-    "aiSummaryEmpty": "No service records to summarize",
-    "aiSummaryError": "Failed to generate summary",
-    "aiSummaryClose": "Close"
+    "aiSummaryGenerate": "Generate",
+    "aiSummaryRegenerate": "Regenerate",
+    "aiSummaryGenerated": "AI summary generated",
+    "aiSummaryUpdated": "Updated {date}",
+    "aiSummaryEmpty": "Click Generate to create an AI-powered summary of this vehicle's service history.",
+    "aiSummaryError": "Failed to generate summary"
   },
   "quotes": {
     "newQuote": "New Quote",

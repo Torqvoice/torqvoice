@@ -63,11 +63,14 @@
     "deleteTitle": "Usunąć pojazd?",
     "deleteDescription": "Spowoduje to trwałe usunięcie {name} wraz ze wszystkimi powiązanymi rekordami serwisowymi, notatkami i przypomnieniami. Tej operacji nie można cofnąć.",
     "edit": "Edytuj",
-    "aiSummary": "AI Podsumowanie",
-    "aiSummaryTitle": "Podsumowanie historii serwisu",
-    "aiSummaryEmpty": "Brak rekordów serwisowych do podsumowania",
-    "aiSummaryError": "Nie udało się wygenerować podsumowania",
-    "aiSummaryClose": "Zamknij"
+    "aiSummary": "Podsumowanie AI",
+    "aiSummaryTitle": "Podsumowanie historii serwisowej",
+    "aiSummaryGenerate": "Generuj",
+    "aiSummaryRegenerate": "Regeneruj",
+    "aiSummaryGenerated": "Podsumowanie AI wygenerowane",
+    "aiSummaryUpdated": "Zaktualizowano {date}",
+    "aiSummaryEmpty": "Kliknij Generuj, aby utworzyć podsumowanie AI historii serwisowej pojazdu.",
+    "aiSummaryError": "Nie udało się wygenerować podsumowania"
   },
   "quotes": {
     "newQuote": "Nowa wycena",

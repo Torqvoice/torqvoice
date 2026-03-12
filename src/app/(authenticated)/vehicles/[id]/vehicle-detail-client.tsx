@@ -44,6 +44,7 @@ import {
   Bell,
   Car,
   CheckCircle2,
+  ChevronDown,
   ClipboardCheck,
   Clock,
   DollarSign,
@@ -164,6 +165,8 @@ interface VehicleDetail {
     isCompleted: boolean
     createdAt: Date
   }[]
+  aiSummary: string | null
+  aiSummaryDate: Date | null
   _count: {
     serviceRecords: number
     notes: number
@@ -280,9 +283,8 @@ export function VehicleDetailClient({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showNewInspection, setShowNewInspection] = useState(false)
   const [isDismissPending, startDismissTransition] = useTransition()
-  const [showAiSummary, setShowAiSummary] = useState(false)
-  const [aiSummary, setAiSummary] = useState('')
   const [aiSummaryLoading, setAiSummaryLoading] = useState(false)
+  const [showAiSummary, setShowAiSummary] = useState(false)
 
   const handleDismissMaintenance = () => {
     startDismissTransition(async () => {
@@ -364,19 +366,16 @@ export function VehicleDetailClient({
 
   const handleAiSummary = async () => {
     setAiSummaryLoading(true)
-    setShowAiSummary(true)
-    setAiSummary('')
     try {
       const result = await aiSummarizeVehicleHistory(vehicle.id)
       if (result.success && result.data) {
-        setAiSummary(result.data)
+        toast.success(t('aiSummaryGenerated'))
+        router.refresh()
       } else {
         toast.error(result.error ?? t('aiSummaryError'))
-        setShowAiSummary(false)
       }
     } catch {
       toast.error(t('aiSummaryError'))
-      setShowAiSummary(false)
     } finally {
       setAiSummaryLoading(false)
     }
@@ -652,7 +651,7 @@ export function VehicleDetailClient({
               variant="ghost"
               size="sm"
               className="h-6 gap-1.5 text-xs"
-              onClick={handleAiSummary}
+              onClick={() => setShowAiSummary((v) => !v)}
               disabled={aiSummaryLoading}
             >
               {aiSummaryLoading ? (
@@ -661,10 +660,57 @@ export function VehicleDetailClient({
                 <Sparkles className="h-3.5 w-3.5" />
               )}
               {t('aiSummary')}
+              <ChevronDown
+                className={`h-3 w-3 transition-transform ${showAiSummary ? 'rotate-180' : ''}`}
+              />
             </Button>
           )}
         </div>
       </div>
+
+      {/* AI Summary Panel */}
+      {showAiSummary && aiEnabled && (
+        <Card>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-muted-foreground" />
+                <h3 className="text-sm font-semibold">{t('aiSummaryTitle')}</h3>
+                {vehicle.aiSummaryDate && (
+                  <span className="text-[11px] text-muted-foreground">
+                    {t('aiSummaryUpdated', { date: formatDate(new Date(vehicle.aiSummaryDate)) })}
+                  </span>
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 gap-1.5 text-xs"
+                onClick={handleAiSummary}
+                disabled={aiSummaryLoading}
+              >
+                {aiSummaryLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3.5 w-3.5" />
+                )}
+                {vehicle.aiSummary ? t('aiSummaryRegenerate') : t('aiSummaryGenerate')}
+              </Button>
+            </div>
+            {aiSummaryLoading && !vehicle.aiSummary ? (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : vehicle.aiSummary ? (
+              <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-sm text-muted-foreground">
+                {vehicle.aiSummary}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">{t('aiSummaryEmpty')}</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
@@ -1128,28 +1174,6 @@ export function VehicleDetailClient({
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* AI Summary Dialog */}
-      <Dialog open={showAiSummary} onOpenChange={setShowAiSummary}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
-              {t('aiSummaryTitle')}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="max-h-[60vh] overflow-y-auto">
-            {aiSummaryLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : (
-              <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-sm">
-                {aiSummary}
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Image lightbox */}
       {showImage && vehicle.imageUrl && (

@@ -65,9 +65,12 @@
     "edit": "Düzenle",
     "aiSummary": "AI Özet",
     "aiSummaryTitle": "Servis Geçmişi Özeti",
-    "aiSummaryEmpty": "Özetlenecek servis kaydı yok",
-    "aiSummaryError": "Özet oluşturulamadı",
-    "aiSummaryClose": "Kapat"
+    "aiSummaryGenerate": "Oluştur",
+    "aiSummaryRegenerate": "Yeniden oluştur",
+    "aiSummaryGenerated": "AI özeti oluşturuldu",
+    "aiSummaryUpdated": "{date} güncellendi",
+    "aiSummaryEmpty": "Aracın servis geçmişinin AI destekli bir özetini oluşturmak için Oluştur'a tıklayın.",
+    "aiSummaryError": "Özet oluşturulamadı"
   },
   "quotes": {
     "newQuote": "Yeni teklif",

@@ -63,11 +63,14 @@
     "deleteTitle": "Excluir veículo?",
     "deleteDescription": "Isso excluirá permanentemente {name} e todos os registros de serviço, notas e lembretes associados. Esta ação não pode ser desfeita.",
     "edit": "Editar",
-    "aiSummary": "AI Resumo",
-    "aiSummaryTitle": "Resumo do Histórico de Serviços",
-    "aiSummaryEmpty": "Nenhum registro de serviço para resumir",
-    "aiSummaryError": "Falha ao gerar o resumo",
-    "aiSummaryClose": "Fechar"
+    "aiSummary": "Resumo IA",
+    "aiSummaryTitle": "Resumo do histórico de serviço",
+    "aiSummaryGenerate": "Gerar",
+    "aiSummaryRegenerate": "Regenerar",
+    "aiSummaryGenerated": "Resumo IA gerado",
+    "aiSummaryUpdated": "Atualizado {date}",
+    "aiSummaryEmpty": "Clique em Gerar para criar um resumo com IA do histórico de serviço.",
+    "aiSummaryError": "Falha ao gerar resumo"
   },
   "quotes": {
     "newQuote": "Novo orçamento",

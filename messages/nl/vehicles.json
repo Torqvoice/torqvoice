@@ -63,11 +63,14 @@
     "deleteTitle": "Voertuig verwijderen?",
     "deleteDescription": "Hiermee wordt {name} permanent verwijderd, inclusief alle bijbehorende servicegegevens, notities en herinneringen. Deze actie kan niet ongedaan worden gemaakt.",
     "edit": "Bewerken",
-    "aiSummary": "AI Samenvatting",
-    "aiSummaryTitle": "Samenvatting Servicehistorie",
-    "aiSummaryEmpty": "Geen servicegegevens om samen te vatten",
-    "aiSummaryError": "Samenvatting genereren mislukt",
-    "aiSummaryClose": "Sluiten"
+    "aiSummary": "AI-samenvatting",
+    "aiSummaryTitle": "Samenvatting servicehistorie",
+    "aiSummaryGenerate": "Genereren",
+    "aiSummaryRegenerate": "Opnieuw genereren",
+    "aiSummaryGenerated": "AI-samenvatting gegenereerd",
+    "aiSummaryUpdated": "Bijgewerkt {date}",
+    "aiSummaryEmpty": "Klik op Genereren om een AI-samenvatting van de servicehistorie te maken.",
+    "aiSummaryError": "Kan samenvatting niet genereren"
   },
   "quotes": {
     "newQuote": "Nieuwe offerte",

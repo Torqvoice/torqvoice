@@ -63,11 +63,14 @@
     "deleteTitle": "Slette kjoretoy?",
     "deleteDescription": "Dette vil permanent slette {name} og alle tilknyttede serviceoppforinger, notater og paminnelser. Denne handlingen kan ikke angres.",
     "edit": "Rediger",
-    "aiSummary": "AI Sammendrag",
+    "aiSummary": "AI-sammendrag",
     "aiSummaryTitle": "Servicehistorikk-sammendrag",
-    "aiSummaryEmpty": "Ingen serviceoppføringer å oppsummere",
-    "aiSummaryError": "Kunne ikke generere sammendrag",
-    "aiSummaryClose": "Lukk"
+    "aiSummaryGenerate": "Generer",
+    "aiSummaryRegenerate": "Regenerer",
+    "aiSummaryGenerated": "AI-sammendrag generert",
+    "aiSummaryUpdated": "Oppdatert {date}",
+    "aiSummaryEmpty": "Klikk Generer for å lage et AI-drevet sammendrag av kjøretøyets servicehistorikk.",
+    "aiSummaryError": "Kunne ikke generere sammendrag"
   },
   "quotes": {
     "newQuote": "Nytt tilbud",
