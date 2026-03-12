@@ -53,32 +53,22 @@ export default async function DashboardLayout({
     aiEnabled = aiMap[SETTING_KEYS.AI_ENABLED] === "true" && !!aiMap[SETTING_KEYS.AI_API_KEY];
   }
 
-  // Determine if user can access settings and reports
+  // Determine which subjects the user can access (for sidebar visibility)
   const isOwnerOrAdmin = data.role === "owner" || data.role === "admin" || data.role === "super_admin";
-  let canAccessSettings = isOwnerOrAdmin;
-  let canAccessReports = isOwnerOrAdmin;
-  let canAccessAi = isOwnerOrAdmin;
+  const allSubjects = Object.values(PermissionSubject);
+  let visibleSubjects: string[] = allSubjects;
+
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId);
     // Members without a custom role have full access
-    if (!membership?.roleId) {
-      canAccessSettings = true;
-      canAccessReports = true;
-      canAccessAi = true;
-    } else {
+    if (membership?.roleId) {
       const userPermissions = membership?.customRole?.permissions ?? [];
-      canAccessSettings = hasPermission(userPermissions, {
-        action: PermissionAction.READ,
-        subject: PermissionSubject.SETTINGS,
-      });
-      canAccessReports = hasPermission(userPermissions, {
-        action: PermissionAction.READ,
-        subject: PermissionSubject.REPORTS,
-      });
-      canAccessAi = hasPermission(userPermissions, {
-        action: PermissionAction.READ,
-        subject: PermissionSubject.AI_ASSISTANT,
-      });
+      visibleSubjects = allSubjects.filter((subject) =>
+        hasPermission(userPermissions, {
+          action: PermissionAction.READ,
+          subject: subject as PermissionSubject,
+        }),
+      );
     }
   }
 
@@ -103,9 +93,8 @@ export default async function DashboardLayout({
           activeOrgId={data.organizationId}
           isSuperAdmin={data.isSuperAdmin}
           features={features}
-          aiEnabled={aiEnabled && canAccessAi}
-          canAccessSettings={canAccessSettings}
-          canAccessReports={canAccessReports}
+          aiEnabled={aiEnabled && visibleSubjects.includes(PermissionSubject.AI_ASSISTANT)}
+          visibleSubjects={visibleSubjects}
           isAdminOrOwner={isOwnerOrAdmin}
         />
         <SidebarInset>{children}</SidebarInset>

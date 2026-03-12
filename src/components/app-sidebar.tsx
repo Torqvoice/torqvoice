@@ -82,10 +82,9 @@ export function AppSidebar({
   activeOrgId,
   isSuperAdmin,
   features,
-  canAccessSettings = true,
-  canAccessReports = true,
   isAdminOrOwner = false,
   aiEnabled = false,
+  visibleSubjects,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   companyLogo?: string
@@ -93,10 +92,9 @@ export function AppSidebar({
   activeOrgId?: string
   isSuperAdmin?: boolean
   features?: PlanFeatures
-  canAccessSettings?: boolean
-  canAccessReports?: boolean
   isAdminOrOwner?: boolean
   aiEnabled?: boolean
+  visibleSubjects?: string[]
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -109,29 +107,29 @@ export function AppSidebar({
   const [newOrgName, setNewOrgName] = React.useState('')
   const [creatingOrg, setCreatingOrg] = React.useState(false)
 
-  const showReports = features?.reports !== false && canAccessReports
+  const canAccess = (subject: string) => !visibleSubjects || visibleSubjects.includes(subject)
 
   const clientItems = [
-    { titleKey: 'sidebar.customers' as const, url: '/customers', icon: Users },
-    { titleKey: 'sidebar.messages' as const, url: '/messages', icon: MessageSquare },
-  ]
+    { titleKey: 'sidebar.customers' as const, url: '/customers', icon: Users, subject: 'customers' },
+    { titleKey: 'sidebar.messages' as const, url: '/messages', icon: MessageSquare, subject: 'customers' },
+  ].filter((item) => canAccess(item.subject))
 
   const workshopItems = [
-    { titleKey: 'sidebar.vehicles' as const, url: '/vehicles', icon: Car },
-    { titleKey: 'sidebar.reminders' as const, url: '/reminders', icon: Bell },
-    { titleKey: 'sidebar.workOrders' as const, url: '/work-orders', icon: ClipboardList },
-    { titleKey: 'sidebar.inspections' as const, url: '/inspections', icon: ClipboardCheck },
-    { titleKey: 'sidebar.calendar' as const, url: '/calendar', icon: CalendarDays },
-    { titleKey: 'sidebar.workBoard' as const, url: '/work-board', icon: Columns3 },
-  ]
+    { titleKey: 'sidebar.vehicles' as const, url: '/vehicles', icon: Car, subject: 'vehicles' },
+    { titleKey: 'sidebar.reminders' as const, url: '/reminders', icon: Bell, subject: 'vehicles' },
+    { titleKey: 'sidebar.workOrders' as const, url: '/work-orders', icon: ClipboardList, subject: 'work_orders' },
+    { titleKey: 'sidebar.inspections' as const, url: '/inspections', icon: ClipboardCheck, subject: 'inspections' },
+    { titleKey: 'sidebar.calendar' as const, url: '/calendar', icon: CalendarDays, subject: 'work_orders' },
+    { titleKey: 'sidebar.workBoard' as const, url: '/work-board', icon: Columns3, subject: 'work_board' },
+  ].filter((item) => canAccess(item.subject))
 
   const businessItems = [
-    { titleKey: 'sidebar.quotes' as const, url: '/quotes', icon: FileText },
-    { titleKey: 'sidebar.billing' as const, url: '/billing', icon: Receipt },
-    { titleKey: 'sidebar.inventory' as const, url: '/inventory', icon: Package },
-    ...(showReports ? [{ titleKey: 'sidebar.reports' as const, url: '/reports', icon: BarChart3 }] : []),
-    { titleKey: 'sidebar.auditLog' as const, url: '/audit-log', icon: History },
-  ]
+    { titleKey: 'sidebar.quotes' as const, url: '/quotes', icon: FileText, subject: 'quotes' },
+    { titleKey: 'sidebar.billing' as const, url: '/billing', icon: Receipt, subject: 'billing' },
+    { titleKey: 'sidebar.inventory' as const, url: '/inventory', icon: Package, subject: 'inventory' },
+    ...(features?.reports !== false && canAccess('reports') ? [{ titleKey: 'sidebar.reports' as const, url: '/reports', icon: BarChart3, subject: 'reports' }] : []),
+    { titleKey: 'sidebar.auditLog' as const, url: '/audit-log', icon: History, subject: 'settings' },
+  ].filter((item) => canAccess(item.subject))
 
   const closeMobileSidebar = () => {
     if (isMobile) setOpenMobile(false)
@@ -251,18 +249,20 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         {/* Dashboard */}
-        <SidebarGroup>
-          <SidebarMenu className="gap-2">
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={dashboardActive}>
-                <Link href="/" className="font-medium" onClick={closeMobileSidebar}>
-                  <LayoutDashboard className="size-4" />
-                  {t('sidebar.dashboard')}
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
+        {canAccess('dashboard') && (
+          <SidebarGroup>
+            <SidebarMenu className="gap-2">
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={dashboardActive}>
+                  <Link href="/" className="font-medium" onClick={closeMobileSidebar}>
+                    <LayoutDashboard className="size-4" />
+                    {t('sidebar.dashboard')}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
 
         {/* AI Assistant */}
         {aiEnabled && (
@@ -281,31 +281,37 @@ export function AppSidebar({
         )}
 
         {/* Clients */}
-        <SidebarGroup>
-          <SidebarGroupLabel>{t('sidebar.clients')}</SidebarGroupLabel>
-          <SidebarMenu className="gap-2">
-            {renderNavGroup(clientItems)}
-          </SidebarMenu>
-        </SidebarGroup>
+        {clientItems.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>{t('sidebar.clients')}</SidebarGroupLabel>
+            <SidebarMenu className="gap-2">
+              {renderNavGroup(clientItems)}
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
 
         {/* Workshop */}
-        <SidebarGroup>
-          <SidebarGroupLabel>{t('sidebar.workshop')}</SidebarGroupLabel>
-          <SidebarMenu className="gap-2">
-            {renderNavGroup(workshopItems)}
-          </SidebarMenu>
-        </SidebarGroup>
+        {workshopItems.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>{t('sidebar.workshop')}</SidebarGroupLabel>
+            <SidebarMenu className="gap-2">
+              {renderNavGroup(workshopItems)}
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
 
         {/* Business */}
-        <SidebarGroup>
-          <SidebarGroupLabel>{t('sidebar.business')}</SidebarGroupLabel>
-          <SidebarMenu className="gap-2">
-            {renderNavGroup(businessItems)}
-          </SidebarMenu>
-        </SidebarGroup>
+        {businessItems.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>{t('sidebar.business')}</SidebarGroupLabel>
+            <SidebarMenu className="gap-2">
+              {renderNavGroup(businessItems)}
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
 
         {/* Settings */}
-        {canAccessSettings && (
+        {canAccess('settings') && (
           <SidebarGroup>
             <SidebarMenu className="gap-2">
               <SidebarMenuItem>
@@ -366,7 +372,7 @@ export function AppSidebar({
                 align="end"
                 sideOffset={4}
               >
-                {canAccessSettings && (
+                {canAccess('settings') && (
                   <DropdownMenuItem asChild>
                     <Link href="/settings">
                       <Settings className="mr-2 size-4" />

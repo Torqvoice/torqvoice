@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import {
   Loader2,
+  Lock,
   MessageSquarePlus,
   Send,
   Sparkles,
@@ -157,16 +158,20 @@ export function AiChatPage() {
     <div className="flex flex-1 overflow-hidden">
       {/* Sidebar */}
       <div className="flex w-64 shrink-0 flex-col border-r bg-muted/30">
-        <div className="flex items-center gap-2 border-b p-3">
+        <div className="flex flex-col gap-2 border-b p-3">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 justify-start gap-2"
+            className="w-full justify-start gap-2"
             onClick={handleNewChat}
           >
             <MessageSquarePlus className="h-4 w-4" />
             {t("newChat")}
           </Button>
+          <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <Lock className="h-3 w-3 shrink-0" />
+            {t("chatsPrivate")}
+          </p>
         </div>
 
         <div className="flex-1 overflow-y-auto">
