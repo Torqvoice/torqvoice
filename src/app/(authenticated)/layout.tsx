@@ -6,6 +6,7 @@ import { NotificationInitializer } from "@/features/notifications/Components/Not
 import { ConfirmProvider } from "@/components/confirm-dialog";
 import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { WhiteLabelCtaProvider } from "@/components/white-label-cta-context";
 import { DateSettingsProvider } from "@/components/date-settings-context";
 import { getCachedMembership } from "@/lib/cached-session";
@@ -38,16 +39,32 @@ export default async function DashboardLayout({
   const features = await getFeatures(data.organizationId);
   const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved;
 
+  // Check if AI is fully enabled (plan + settings + API key)
+  let aiEnabled = false;
+  if (features?.ai) {
+    const aiSettings = await db.appSetting.findMany({
+      where: {
+        organizationId: data.organizationId,
+        key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] },
+      },
+      select: { key: true, value: true },
+    });
+    const aiMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]));
+    aiEnabled = aiMap[SETTING_KEYS.AI_ENABLED] === "true" && !!aiMap[SETTING_KEYS.AI_API_KEY];
+  }
+
   // Determine if user can access settings and reports
   const isOwnerOrAdmin = data.role === "owner" || data.role === "admin" || data.role === "super_admin";
   let canAccessSettings = isOwnerOrAdmin;
   let canAccessReports = isOwnerOrAdmin;
+  let canAccessAi = isOwnerOrAdmin;
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId);
     // Members without a custom role have full access
     if (!membership?.roleId) {
       canAccessSettings = true;
       canAccessReports = true;
+      canAccessAi = true;
     } else {
       const userPermissions = membership?.customRole?.permissions ?? [];
       canAccessSettings = hasPermission(userPermissions, {
@@ -57,6 +74,10 @@ export default async function DashboardLayout({
       canAccessReports = hasPermission(userPermissions, {
         action: PermissionAction.READ,
         subject: PermissionSubject.REPORTS,
+      });
+      canAccessAi = hasPermission(userPermissions, {
+        action: PermissionAction.READ,
+        subject: PermissionSubject.AI_ASSISTANT,
       });
     }
   }
@@ -82,6 +103,7 @@ export default async function DashboardLayout({
           activeOrgId={data.organizationId}
           isSuperAdmin={data.isSuperAdmin}
           features={features}
+          aiEnabled={aiEnabled && canAccessAi}
           canAccessSettings={canAccessSettings}
           canAccessReports={canAccessReports}
           isAdminOrOwner={isOwnerOrAdmin}

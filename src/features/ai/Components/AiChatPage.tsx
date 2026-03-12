@@ -11,8 +11,6 @@ import { Card } from "@/components/ui/card";
 import {
   Loader2,
   MessageSquarePlus,
-  PanelLeftClose,
-  PanelLeftOpen,
   Send,
   Sparkles,
   Trash2,
@@ -43,7 +41,6 @@ export function AiChatPage() {
   const [loading, setLoading] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
   const [chats, setChats] = useState<ChatSummary[]>([]);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [loadingChats, setLoadingChats] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -157,14 +154,9 @@ export function AiChatPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)]">
+    <div className="flex flex-1 overflow-hidden">
       {/* Sidebar */}
-      <div
-        className={cn(
-          "flex shrink-0 flex-col border-r bg-muted/30 transition-all duration-200",
-          sidebarOpen ? "w-64" : "w-0 overflow-hidden border-r-0"
-        )}
-      >
+      <div className="flex w-64 shrink-0 flex-col border-r bg-muted/30">
         <div className="flex items-center gap-2 border-b p-3">
           <Button
             variant="outline"
@@ -217,24 +209,7 @@ export function AiChatPage() {
       </div>
 
       {/* Main chat area */}
-      <div className="flex flex-1 flex-col">
-        {/* Toggle sidebar button */}
-        <div className="flex items-center border-b px-2 py-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => setSidebarOpen((v) => !v)}
-            title={sidebarOpen ? t("hideSidebar") : t("showSidebar")}
-          >
-            {sidebarOpen ? (
-              <PanelLeftClose className="h-4 w-4" />
-            ) : (
-              <PanelLeftOpen className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-
+      <div className="flex flex-1 flex-col overflow-hidden">
         {/* Messages area */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4">
           {messages.length === 0 ? (

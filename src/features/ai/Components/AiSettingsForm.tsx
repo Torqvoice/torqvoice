@@ -73,14 +73,10 @@ export function AiSettingsForm({
   );
   const [fetchingModels, setFetchingModels] = useState(false);
 
-  const loadModels = useCallback(async (p: AiProvider, key: string) => {
-    if (!key) {
-      setModels(p === "anthropic" ? ANTHROPIC_FALLBACK_MODELS : OPENAI_FALLBACK_MODELS);
-      return;
-    }
+  const loadModels = useCallback(async (p: AiProvider) => {
     setFetchingModels(true);
     try {
-      const result = await fetchAiModels(p, key);
+      const result = await fetchAiModels(p);
       if (result.success && result.data && result.data.length > 0) {
         setModels(result.data);
       } else {
@@ -93,10 +89,10 @@ export function AiSettingsForm({
     }
   }, []);
 
-  // Fetch models on mount if we have an API key
+  // Fetch models on mount if API key is configured (hasConfig means key exists in DB)
   useEffect(() => {
-    if (apiKey) {
-      loadModels(provider, apiKey);
+    if (hasConfig) {
+      loadModels(provider);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -107,15 +103,14 @@ export function AiSettingsForm({
     const fallback = p === "anthropic" ? ANTHROPIC_FALLBACK_MODELS : OPENAI_FALLBACK_MODELS;
     setModels(fallback);
     setModel(fallback[0].id);
-    if (apiKey) {
-      loadModels(p, apiKey);
+    if (hasConfig) {
+      loadModels(p);
     }
   };
 
   const handleApiKeyBlur = () => {
-    if (apiKey) {
-      loadModels(provider, apiKey);
-    }
+    // After saving a new key, models can be refreshed
+    // But we don't send the key to the server from here — it reads from DB
   };
 
   const handleSave = () => {

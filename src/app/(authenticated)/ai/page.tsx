@@ -5,6 +5,8 @@ import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { PageHeader } from "@/components/page-header";
 import { AiChatPage } from "@/features/ai/Components/AiChatPage";
 import { getTranslations } from "next-intl/server";
+import { getCachedMembership } from "@/lib/cached-session";
+import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
 
 export default async function AiAssistantPage() {
   const authContext = await getAuthContext();
@@ -28,6 +30,25 @@ export default async function AiAssistantPage() {
       features?.ai === true &&
       aiMap[SETTING_KEYS.AI_ENABLED] === "true" &&
       !!aiMap[SETTING_KEYS.AI_API_KEY];
+  }
+
+  // Check permission for custom role users
+  if (aiEnabled && authContext?.userId) {
+    const role = authContext.role;
+    const isOwnerOrAdmin = role === "owner" || role === "admin" || role === "super_admin";
+    if (!isOwnerOrAdmin) {
+      const membership = await getCachedMembership(authContext.userId);
+      if (membership?.roleId) {
+        const userPermissions = membership?.customRole?.permissions ?? [];
+        const canAccessAi = hasPermission(userPermissions, {
+          action: PermissionAction.READ,
+          subject: PermissionSubject.AI_ASSISTANT,
+        });
+        if (!canAccessAi) {
+          aiEnabled = false;
+        }
+      }
+    }
   }
 
   if (!aiEnabled) {

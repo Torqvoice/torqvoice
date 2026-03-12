@@ -85,6 +85,7 @@ export function AppSidebar({
   canAccessSettings = true,
   canAccessReports = true,
   isAdminOrOwner = false,
+  aiEnabled = false,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   companyLogo?: string
@@ -95,6 +96,7 @@ export function AppSidebar({
   canAccessSettings?: boolean
   canAccessReports?: boolean
   isAdminOrOwner?: boolean
+  aiEnabled?: boolean
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -263,7 +265,7 @@ export function AppSidebar({
         </SidebarGroup>
 
         {/* AI Assistant */}
-        {features?.ai && (
+        {aiEnabled && (
           <SidebarGroup>
             <SidebarMenu className="gap-2">
               <SidebarMenuItem>

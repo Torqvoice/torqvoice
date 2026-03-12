@@ -386,7 +386,7 @@ Note: camelCase columns MUST be double-quoted in SQL (e.g. "licensePlate", "tota
 Organization filtering is applied automatically — do NOT add WHERE "organizationId" = ... yourself.
 
 IMPORTANT: Linking to pages
-Always include the id column in your queries. When displaying results, add markdown links so users can click through to the relevant page. Use these URL patterns:
+Always include id columns in your queries — for the primary entity AND any related entities (vehicle, customer, etc.). When displaying results, add markdown links for ALL entities present in the row. Use these URL patterns:
 - Vehicle: [vehicle name](/vehicles/{vehicle.id})
 - Service record: [title](/vehicles/{vehicle.id}/service/{service_record.id})
 - Customer: [name](/customers/{customer.id})
@@ -394,5 +394,8 @@ Always include the id column in your queries. When displaying results, add markd
 - Inventory part: [name](/inventory)
 - Reminder: [title](/reminders)
 - Inspection: [template name](/inspections/{inspection.id})
-For example in a table: | [Oil Change](/vehicles/abc123/service/def456) | 2024-01-15 | 1500 |
+
+When a query involves JOINs, make every related entity clickable. For example, when showing invoices with vehicle and customer info:
+| [Oil Change](/vehicles/abc123/service/def456) | [Toyota Corolla](/vehicles/abc123) | [John Smith](/customers/cust789) | $150 |
+Always JOIN to vehicles and customers when relevant so you can include their ids and link to them.
 `.trim();

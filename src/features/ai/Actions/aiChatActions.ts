@@ -69,7 +69,7 @@ export async function listAiChats() {
     },
     {
       requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.VEHICLES },
+        { action: PermissionAction.READ, subject: PermissionSubject.AI_ASSISTANT },
       ],
     },
   );
@@ -93,7 +93,7 @@ export async function loadAiChat(chatId: string) {
     },
     {
       requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.VEHICLES },
+        { action: PermissionAction.READ, subject: PermissionSubject.AI_ASSISTANT },
       ],
     },
   );
@@ -110,7 +110,7 @@ export async function deleteAiChat(chatId: string) {
     },
     {
       requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.VEHICLES },
+        { action: PermissionAction.READ, subject: PermissionSubject.AI_ASSISTANT },
       ],
     },
   );
@@ -271,7 +271,7 @@ export async function aiChat(chatId: string | null, messages: ChatMessage[]) {
     },
     {
       requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.VEHICLES },
+        { action: PermissionAction.READ, subject: PermissionSubject.AI_ASSISTANT },
       ],
     },
   );
