@@ -3,6 +3,8 @@
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { getLocale } from "next-intl/server";
+import type { Locale } from "@/i18n/config";
 import {
   generateServiceDescription,
   summarizeServiceHistory,
@@ -13,6 +15,7 @@ import {
 export async function aiGenerateServiceNotes(serviceRecordId: string) {
   return withAuth(
     async ({ organizationId }) => {
+      const locale = (await getLocale()) as Locale;
       const sr = await db.serviceRecord.findFirst({
         where: { id: serviceRecordId, vehicle: { organizationId } },
         include: {
@@ -36,7 +39,7 @@ export async function aiGenerateServiceNotes(serviceRecordId: string) {
           description: l.description,
           hours: l.hours,
         })),
-      });
+      }, locale);
     },
     {
       requiredPermissions: [
@@ -49,6 +52,7 @@ export async function aiGenerateServiceNotes(serviceRecordId: string) {
 export async function aiSummarizeVehicleHistory(vehicleId: string) {
   return withAuth(
     async ({ organizationId }) => {
+      const locale = (await getLocale()) as Locale;
       const vehicle = await db.vehicle.findFirst({
         where: { id: vehicleId, organizationId },
         select: {
@@ -76,7 +80,7 @@ export async function aiSummarizeVehicleHistory(vehicleId: string) {
         return "No service records found for this vehicle.";
       }
 
-      return summarizeServiceHistory(organizationId, vehicle, vehicle.serviceRecords);
+      return summarizeServiceHistory(organizationId, vehicle, vehicle.serviceRecords, locale);
     },
     {
       requiredPermissions: [
@@ -92,6 +96,7 @@ export async function aiBuildQuoteFromText(
 ) {
   return withAuth(
     async ({ organizationId }) => {
+      const locale = (await getLocale()) as Locale;
       let vehicle: { make: string; model: string; year: number } | null = null;
 
       if (vehicleId) {
@@ -108,7 +113,7 @@ export async function aiBuildQuoteFromText(
         take: 100,
       });
 
-      return buildQuoteFromText(organizationId, freeText, vehicle, inventoryParts);
+      return buildQuoteFromText(organizationId, freeText, vehicle, inventoryParts, locale);
     },
     {
       requiredPermissions: [

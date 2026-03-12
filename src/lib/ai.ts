@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
 import { AI_KEYS } from "@/features/ai/Schema/aiSettingsSchema";
+import { localeNames, type Locale } from "@/i18n/config";
 import OpenAI from "openai";
 
 interface AiConfig {
@@ -56,6 +57,12 @@ function createClient(config: AiConfig): OpenAI {
   return new OpenAI({ apiKey: config.apiKey });
 }
 
+function languageInstruction(locale: Locale): string {
+  if (locale === "en") return "";
+  const name = localeNames[locale] || locale;
+  return `\n\nIMPORTANT: You MUST respond entirely in ${name}.`;
+}
+
 async function chatCompletion(
   organizationId: string,
   systemPrompt: string,
@@ -93,8 +100,9 @@ export interface ServiceContext {
 export async function generateServiceDescription(
   organizationId: string,
   context: ServiceContext,
+  locale: Locale = "en",
 ): Promise<string> {
-  const systemPrompt = `You are a professional automotive service writer. Generate a clear, professional service description for a customer-facing invoice. Be concise but thorough. Do not include pricing. Write in plain text, no markdown.`;
+  const systemPrompt = `You are a professional automotive service writer. Generate a clear, professional service description for a customer-facing invoice. Be concise but thorough. Do not include pricing. Write in plain text, no markdown.${languageInstruction(locale)}`;
 
   const partsStr =
     context.parts.length > 0
@@ -136,8 +144,9 @@ export async function summarizeServiceHistory(
   organizationId: string,
   vehicle: { make: string; model: string; year: number; licensePlate?: string | null },
   records: ServiceHistoryRecord[],
+  locale: Locale = "en",
 ): Promise<string> {
-  const systemPrompt = `You are an automotive service advisor. Summarize a vehicle's complete service history in a concise, useful format. Highlight major work, recurring issues, and predict likely upcoming maintenance needs. Write in plain text, no markdown headers — use simple line breaks and dashes for structure.`;
+  const systemPrompt = `You are an automotive service advisor. Summarize a vehicle's complete service history in a concise, useful format. Highlight major work, recurring issues, and predict likely upcoming maintenance needs. Write in plain text, no markdown headers — use simple line breaks and dashes for structure.${languageInstruction(locale)}`;
 
   const recordsStr = records
     .map(
@@ -171,14 +180,16 @@ export async function buildQuoteFromText(
   freeText: string,
   vehicle?: { make: string; model: string; year: number } | null,
   inventoryParts?: { name: string; unitCost: number; partNumber: string | null }[],
+  locale: Locale = "en",
 ): Promise<QuoteFromTextResult> {
+  const langNote = locale !== "en" ? ` Write the "description" and labor "description" fields in ${localeNames[locale] || locale}.` : "";
   const systemPrompt = `You are an automotive service advisor. Parse the technician's free-text description into structured quote line items. Return ONLY valid JSON with this exact schema — no other text:
 {
   "description": "Professional quote description",
   "parts": [{ "name": "Part name", "quantity": 1, "estimatedPrice": 0 }],
   "labor": [{ "description": "Labor description", "hours": 1 }]
 }
-If inventory parts are provided, match against them and use their prices. Estimate reasonable prices for parts not in inventory. Be accurate with labor hour estimates.`;
+If inventory parts are provided, match against them and use their prices. Estimate reasonable prices for parts not in inventory. Be accurate with labor hour estimates.${langNote}`;
 
   const inventoryStr =
     inventoryParts && inventoryParts.length > 0

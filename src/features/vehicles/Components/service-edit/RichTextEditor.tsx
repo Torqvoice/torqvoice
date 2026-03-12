@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -26,6 +27,8 @@ interface RichTextEditorProps {
 }
 
 export function RichTextEditor({ content, onChange, placeholder }: RichTextEditorProps) {
+  const lastContentRef = useRef(content)
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -39,7 +42,9 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
     ],
     content,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML())
+      const html = editor.getHTML()
+      lastContentRef.current = html
+      onChange(html)
     },
     editorProps: {
       attributes: {
@@ -47,6 +52,14 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
       },
     },
   })
+
+  // Sync editor when content is updated externally (e.g. AI generation)
+  useEffect(() => {
+    if (editor && content !== lastContentRef.current) {
+      lastContentRef.current = content
+      editor.commands.setContent(content)
+    }
+  }, [content, editor])
 
   if (!editor) return null
 

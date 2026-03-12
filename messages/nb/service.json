@@ -110,7 +110,15 @@
     "internalHelper": "Bare synlig for ditt lag",
     "aiWrite": "AI Skriv",
     "aiGenerated": "AI-notater generert",
-    "aiGenerateFailed": "Kunne ikke generere AI-notater"
+    "aiGenerateFailed": "Kunne ikke generere AI-notater",
+    "aiDialogTitle": "AI Skriv",
+    "aiDialogDescription": "AI vil analysere delene og arbeidet i denne serviceposten og generere en profesjonell beskrivelse. Resultatet skrives til den valgte notattypen.",
+    "aiGenerate": "Generer",
+    "aiOverwriteDescription": "Dette notatet har allerede innhold. Du kan erstatte det eller legge til AI-generert tekst under.",
+    "aiOverwriteReplace": "Erstatt",
+    "aiOverwriteAppend": "Legg til",
+    "aiOverwriteCancel": "Avbryt",
+    "aiDontShowAgain": "Ikke vis dette igjen"
   },
   "invoice": {
     "title": "Fakturaoversikt",

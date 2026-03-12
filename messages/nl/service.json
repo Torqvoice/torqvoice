@@ -108,7 +108,15 @@
     "internalHelper": "Alleen zichtbaar voor uw team",
     "aiWrite": "AI Schrijven",
     "aiGenerated": "AI-notities succesvol gegenereerd",
-    "aiGenerateFailed": "AI-notities genereren mislukt"
+    "aiGenerateFailed": "AI-notities genereren mislukt",
+    "aiDialogTitle": "AI Schrijven",
+    "aiDialogDescription": "AI analyseert de onderdelen en arbeid in dit servicerecord en genereert een professionele beschrijving. Het resultaat wordt geschreven naar het geselecteerde notitietype.",
+    "aiGenerate": "Genereren",
+    "aiOverwriteDescription": "Deze notitie heeft al inhoud. U kunt deze vervangen of de AI-gegenereerde tekst eronder toevoegen.",
+    "aiOverwriteReplace": "Vervangen",
+    "aiOverwriteAppend": "Toevoegen",
+    "aiOverwriteCancel": "Annuleren",
+    "aiDontShowAgain": "Niet meer tonen"
   },
   "invoice": {
     "title": "Factuursamenvatting",

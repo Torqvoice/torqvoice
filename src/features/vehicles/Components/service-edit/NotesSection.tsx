@@ -10,11 +10,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { FileText, Loader2, Sparkles } from 'lucide-react'
 import { RichTextEditor } from './RichTextEditor'
 import type { InitialData } from './form-types'
 import { aiGenerateServiceNotes } from '@/features/ai/Actions/aiActions'
+
+const SKIP_AI_DIALOG_KEY = 'torqvoice:skipAiWriteDialog'
 
 interface NotesSectionProps {
   initialData: InitialData
@@ -23,12 +33,19 @@ interface NotesSectionProps {
   aiEnabled?: boolean
 }
 
+function hasContent(html: string): boolean {
+  const text = html.replace(/<[^>]*>/g, '').trim()
+  return text.length > 0
+}
+
 export function NotesSection({ initialData, onNotesChange, serviceRecordId, aiEnabled }: NotesSectionProps) {
   const t = useTranslations('service.notes')
   const [noteType, setNoteType] = useState<'public' | 'internal'>('public')
   const [publicNotes, setPublicNotes] = useState(initialData.invoiceNotes || '')
   const [internalNotes, setInternalNotes] = useState(initialData.diagnosticNotes || '')
   const [generating, setGenerating] = useState(false)
+  const [showDialog, setShowDialog] = useState(false)
+  const [dontShowAgain, setDontShowAgain] = useState(false)
 
   const handlePublicChange = (html: string) => {
     setPublicNotes(html)
@@ -40,19 +57,22 @@ export function NotesSection({ initialData, onNotesChange, serviceRecordId, aiEn
     onNotesChange('diagnosticNotes', html)
   }
 
-  const handleAiGenerate = async () => {
+  const runAiGenerate = async (mode: 'replace' | 'append') => {
     if (!serviceRecordId) return
     setGenerating(true)
     try {
       const result = await aiGenerateServiceNotes(serviceRecordId)
       if (result.success && result.data) {
         const html = result.data.replace(/\n/g, '<br>')
+        const currentNotes = noteType === 'public' ? publicNotes : internalNotes
+        const finalHtml = mode === 'append' ? `${currentNotes}<br><br>${html}` : html
+
         if (noteType === 'public') {
-          setPublicNotes(html)
-          onNotesChange('invoiceNotes', html)
+          setPublicNotes(finalHtml)
+          onNotesChange('invoiceNotes', finalHtml)
         } else {
-          setInternalNotes(html)
-          onNotesChange('diagnosticNotes', html)
+          setInternalNotes(finalHtml)
+          onNotesChange('diagnosticNotes', finalHtml)
         }
         toast.success(t('aiGenerated'))
       } else {
@@ -64,6 +84,28 @@ export function NotesSection({ initialData, onNotesChange, serviceRecordId, aiEn
       setGenerating(false)
     }
   }
+
+  const handleAiClick = () => {
+    const skipDialog = localStorage.getItem(SKIP_AI_DIALOG_KEY) === 'true'
+    const currentNotes = noteType === 'public' ? publicNotes : internalNotes
+
+    if (skipDialog && !hasContent(currentNotes)) {
+      runAiGenerate('replace')
+    } else {
+      setDontShowAgain(false)
+      setShowDialog(true)
+    }
+  }
+
+  const handleGenerate = (mode: 'replace' | 'append') => {
+    if (dontShowAgain) {
+      localStorage.setItem(SKIP_AI_DIALOG_KEY, 'true')
+    }
+    setShowDialog(false)
+    runAiGenerate(mode)
+  }
+
+  const notesHaveContent = hasContent(noteType === 'public' ? publicNotes : internalNotes)
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
@@ -79,7 +121,7 @@ export function NotesSection({ initialData, onNotesChange, serviceRecordId, aiEn
               variant="ghost"
               size="sm"
               className="h-7 gap-1.5 text-xs"
-              onClick={handleAiGenerate}
+              onClick={handleAiClick}
               disabled={generating}
             >
               {generating ? (
@@ -123,6 +165,48 @@ export function NotesSection({ initialData, onNotesChange, serviceRecordId, aiEn
           <p className="text-xs text-muted-foreground">{t('internalHelper')}</p>
         </div>
       )}
+
+      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              {t('aiDialogTitle')}
+            </AlertDialogTitle>
+            <AlertDialogDescription>{t('aiDialogDescription')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          {notesHaveContent && (
+            <p className="text-sm text-amber-600 dark:text-amber-400">
+              {t('aiOverwriteDescription')}
+            </p>
+          )}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="dont-show-again"
+              checked={dontShowAgain}
+              onChange={(e) => setDontShowAgain(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <label htmlFor="dont-show-again" className="text-sm text-muted-foreground">
+              {t('aiDontShowAgain')}
+            </label>
+          </div>
+          <AlertDialogFooter>
+            <Button variant="outline" onClick={() => setShowDialog(false)}>
+              {t('aiOverwriteCancel')}
+            </Button>
+            {notesHaveContent && (
+              <Button variant="outline" onClick={() => handleGenerate('append')}>
+                {t('aiOverwriteAppend')}
+              </Button>
+            )}
+            <Button onClick={() => handleGenerate('replace')}>
+              {notesHaveContent ? t('aiOverwriteReplace') : t('aiGenerate')}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

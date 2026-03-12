@@ -108,7 +108,15 @@
     "internalHelper": "Visível apenas para seu time",
     "aiWrite": "AI Escrever",
     "aiGenerated": "Notas AI geradas com sucesso",
-    "aiGenerateFailed": "Falha ao gerar notas AI"
+    "aiGenerateFailed": "Falha ao gerar notas AI",
+    "aiDialogTitle": "IA Escrever",
+    "aiDialogDescription": "A IA analisará as peças e a mão de obra neste registro de serviço e gerará uma descrição profissional. O resultado será escrito no tipo de nota selecionado.",
+    "aiGenerate": "Gerar",
+    "aiOverwriteDescription": "Esta nota já possui conteúdo. Você pode substituí-lo ou adicionar o texto gerado pela IA abaixo.",
+    "aiOverwriteReplace": "Substituir",
+    "aiOverwriteAppend": "Adicionar",
+    "aiOverwriteCancel": "Cancelar",
+    "aiDontShowAgain": "Não mostrar novamente"
   },
   "invoice": {
     "title": "Resumo da Fatura",

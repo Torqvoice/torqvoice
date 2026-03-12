@@ -108,7 +108,15 @@
     "internalHelper": "Nur für Ihr Team sichtbar",
     "aiWrite": "AI Schreiben",
     "aiGenerated": "AI-Notizen erfolgreich generiert",
-    "aiGenerateFailed": "AI-Notizen konnten nicht generiert werden"
+    "aiGenerateFailed": "AI-Notizen konnten nicht generiert werden",
+    "aiDialogTitle": "AI Schreiben",
+    "aiDialogDescription": "AI analysiert die Teile und Arbeiten in diesem Serviceeintrag und erstellt eine professionelle Beschreibung. Das Ergebnis wird in den aktuell ausgewählten Notiztyp geschrieben.",
+    "aiGenerate": "Generieren",
+    "aiOverwriteDescription": "Die aktuelle Notiz hat bereits Inhalt. Sie können ihn ersetzen oder den AI-generierten Text darunter anhängen.",
+    "aiOverwriteReplace": "Ersetzen",
+    "aiOverwriteAppend": "Anhängen",
+    "aiOverwriteCancel": "Abbrechen",
+    "aiDontShowAgain": "Nicht mehr anzeigen"
   },
   "invoice": {
     "title": "Rechnungszusammenfassung",
