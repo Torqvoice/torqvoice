@@ -2,23 +2,6 @@ import type { QuotePartInput, QuoteLaborInput } from "@/features/quotes/Schema/q
 
 export type { QuotePartInput, QuoteLaborInput };
 
-export interface CustomerOption {
-  id: string;
-  name: string;
-  email: string | null;
-  company: string | null;
-}
-
-export interface VehicleOption {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  licensePlate: string | null;
-  customerId: string | null;
-  customerName: string | null;
-}
-
 export interface QuoteAttachment {
   id: string;
   fileName: string;
