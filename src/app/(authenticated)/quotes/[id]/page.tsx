@@ -1,8 +1,6 @@
 import { getQuote } from "@/features/quotes/Actions/quoteActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { getCustomers } from "@/features/customers/Actions/customerActions";
-import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { getFeatures } from "@/lib/features";
 import { PageHeader } from "@/components/page-header";
@@ -14,19 +12,16 @@ export default async function QuoteDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [result, settingsResult, customersResult, vehiclesResult, authContext] =
-    await Promise.all([
-      getQuote(id),
-      getSettings([
-        SETTING_KEYS.CURRENCY_CODE,
-        SETTING_KEYS.DEFAULT_TAX_RATE,
-        SETTING_KEYS.TAX_ENABLED,
-        SETTING_KEYS.DEFAULT_LABOR_RATE,
-      ]),
-      getCustomers(),
-      getVehicles(),
-      getAuthContext(),
-    ]);
+  const [result, settingsResult, authContext] = await Promise.all([
+    getQuote(id),
+    getSettings([
+      SETTING_KEYS.CURRENCY_CODE,
+      SETTING_KEYS.DEFAULT_TAX_RATE,
+      SETTING_KEYS.TAX_ENABLED,
+      SETTING_KEYS.DEFAULT_LABOR_RATE,
+    ]),
+    getAuthContext(),
+  ]);
 
   const features = authContext?.organizationId
     ? await getFeatures(authContext.organizationId)
@@ -54,14 +49,6 @@ export default async function QuoteDetailPage({
     : 0;
   const defaultLaborRate =
     Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0;
-  const customers =
-    customersResult.success && customersResult.data
-      ? customersResult.data
-      : [];
-  const vehicles =
-    vehiclesResult.success && vehiclesResult.data
-      ? vehiclesResult.data
-      : [];
   const organizationId = authContext?.organizationId || "";
 
   // Separate attachments by category
@@ -89,41 +76,6 @@ export default async function QuoteDetailPage({
         defaultLaborRate={defaultLaborRate}
         smsEnabled={features?.sms ?? false}
         emailEnabled={features?.smtp ?? false}
-        customers={customers.map(
-          (c: {
-            id: string;
-            name: string;
-            email: string | null;
-            company: string | null;
-          }) => ({
-            id: c.id,
-            name: c.name,
-            email: c.email,
-            company: c.company,
-          })
-        )}
-        vehicles={vehicles.map(
-          (v: {
-            id: string;
-            make: string;
-            model: string;
-            year: number;
-            licensePlate: string | null;
-            customer: {
-              id: string;
-              name: string;
-              company: string | null;
-            } | null;
-          }) => ({
-            id: v.id,
-            make: v.make,
-            model: v.model,
-            year: v.year,
-            licensePlate: v.licensePlate,
-            customerId: v.customer?.id || null,
-            customerName: v.customer?.name || null,
-          })
-        )}
       />
     </div>
   );

@@ -79,15 +79,25 @@ export async function getVehiclesPaginated(params: {
     const where: any = { organizationId, isArchived: params.archived ?? false };
 
     if (params.search) {
-      where.OR = [
-        { make: { contains: params.search, mode: "insensitive" } },
-        { model: { contains: params.search, mode: "insensitive" } },
-        { licensePlate: { contains: params.search, mode: "insensitive" } },
-        { vin: { contains: params.search, mode: "insensitive" } },
-        { customer: { name: { contains: params.search, mode: "insensitive" } } },
-      ];
-      if (!isNaN(Number(params.search))) {
-        where.OR.push({ year: Number(params.search) });
+      const words = params.search.trim().split(/\s+/).filter(Boolean);
+      const fieldMatch = (word: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const conditions: any[] = [
+          { make: { contains: word, mode: "insensitive" } },
+          { model: { contains: word, mode: "insensitive" } },
+          { licensePlate: { contains: word, mode: "insensitive" } },
+          { vin: { contains: word, mode: "insensitive" } },
+          { customer: { name: { contains: word, mode: "insensitive" } } },
+        ];
+        if (!isNaN(Number(word))) {
+          conditions.push({ year: Number(word) });
+        }
+        return conditions;
+      };
+      if (words.length > 1) {
+        where.AND = words.map((word: string) => ({ OR: fieldMatch(word) }));
+      } else {
+        where.OR = fieldMatch(words[0]);
       }
     }
 
@@ -255,4 +265,48 @@ export async function deleteVehicle(vehicleId: string) {
       metadata: { vehicleId: result.vehicleId, vehicleDisplay: result.vehicleDisplay },
     }),
   });
+}
+
+export async function searchVehicles(search?: string, limit = 20, offset = 0) {
+  return withAuth(async ({ organizationId }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: any = { organizationId, isArchived: false };
+    if (search) {
+      const words = search.trim().split(/\s+/).filter(Boolean);
+      const fieldMatch = (word: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const conditions: any[] = [
+          { make: { contains: word, mode: "insensitive" } },
+          { model: { contains: word, mode: "insensitive" } },
+          { licensePlate: { contains: word, mode: "insensitive" } },
+          { vin: { contains: word, mode: "insensitive" } },
+          { customer: { name: { contains: word, mode: "insensitive" } } },
+        ];
+        if (!isNaN(Number(word))) {
+          conditions.push({ year: Number(word) });
+        }
+        return conditions;
+      };
+      if (words.length > 1) {
+        where.AND = words.map((word) => ({ OR: fieldMatch(word) }));
+      } else {
+        where.OR = fieldMatch(words[0]);
+      }
+    }
+    return db.vehicle.findMany({
+      where,
+      select: {
+        id: true,
+        make: true,
+        model: true,
+        year: true,
+        licensePlate: true,
+        customerId: true,
+        customer: { select: { id: true, name: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+      skip: offset,
+      take: limit,
+    });
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
 }

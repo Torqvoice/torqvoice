@@ -1,8 +1,6 @@
 import { getQuotesPaginated } from "@/features/quotes/Actions/quoteActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
-import { getCustomersList } from "@/features/customers/Actions/customerActions";
 import { QuotesClient } from "./quotes-client";
 import { PageHeader } from "@/components/page-header";
 
@@ -17,7 +15,7 @@ export default async function QuotesPage({
   }>;
 }) {
   const params = await searchParams;
-  const [result, settingsResult, vehiclesResult, customersResult] = await Promise.all([
+  const [result, settingsResult] = await Promise.all([
     getQuotesPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
@@ -25,8 +23,6 @@ export default async function QuotesPage({
       status: params.status || "all",
     }),
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
-    getVehicles(),
-    getCustomersList(),
   ]);
 
   if (!result.success || !result.data) {
@@ -44,24 +40,6 @@ export default async function QuotesPage({
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {};
   const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || "USD";
-  const vehicles = vehiclesResult.success && vehiclesResult.data
-    ? vehiclesResult.data.map((v) => ({
-        id: v.id,
-        make: v.make,
-        model: v.model,
-        year: v.year,
-        licensePlate: v.licensePlate,
-        customerId: v.customer?.id ?? null,
-        customerName: v.customer?.name ?? null,
-      }))
-    : [];
-  const customers = customersResult.success && customersResult.data
-    ? customersResult.data.map((c) => ({
-        id: c.id,
-        name: c.name,
-        company: c.company,
-      }))
-    : [];
 
   return (
     <>
@@ -72,8 +50,6 @@ export default async function QuotesPage({
           currencyCode={currencyCode}
           search={params.search || ""}
           statusFilter={params.status || "all"}
-          vehicles={vehicles}
-          customers={customers}
         />
       </div>
     </>

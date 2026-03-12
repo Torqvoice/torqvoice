@@ -14,16 +14,13 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
-} from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DataTablePagination } from "@/components/data-table-pagination";
-import { Check, ChevronsUpDown, Loader2, Plus, Search } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Loader2, Plus, Search } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { toast } from "sonner";
 import { createQuote } from "@/features/quotes/Actions/quoteActions";
+import { VehicleCombobox } from "@/features/quotes/Components/VehicleCombobox";
+import { CustomerCombobox } from "@/features/quotes/Components/CustomerCombobox";
 
 interface QuoteRecord {
   id: string;
@@ -44,22 +41,6 @@ interface PaginatedData {
   pageSize: number;
   totalPages: number;
   statusCounts: Record<string, number>;
-}
-
-interface VehicleOption {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  licensePlate: string | null;
-  customerId: string | null;
-  customerName: string | null;
-}
-
-interface CustomerOption {
-  id: string;
-  name: string;
-  company: string | null;
 }
 
 const statusTabs = [
@@ -85,15 +66,11 @@ export function QuotesClient({
   currencyCode = "USD",
   search,
   statusFilter,
-  vehicles = [],
-  customers = [],
 }: {
   data: PaginatedData;
   currencyCode?: string;
   search: string;
   statusFilter: string;
-  vehicles?: VehicleOption[];
-  customers?: CustomerOption[];
 }) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -108,8 +85,6 @@ export function QuotesClient({
   const [newTitle, setNewTitle] = useState("");
   const [newVehicleId, setNewVehicleId] = useState("");
   const [newCustomerId, setNewCustomerId] = useState("");
-  const [vehicleOpen, setVehicleOpen] = useState(false);
-  const [customerOpen, setCustomerOpen] = useState(false);
   const [creating, setCreating] = useState(false);
 
   const navigate = useCallback(
@@ -145,15 +120,6 @@ export function QuotesClient({
     setShowNewDialog(true);
   };
 
-  const handleVehicleSelect = (vehicleId: string) => {
-    setNewVehicleId(vehicleId);
-    setVehicleOpen(false);
-    const vehicle = vehicles.find((v) => v.id === vehicleId);
-    if (vehicle?.customerId) {
-      setNewCustomerId(vehicle.customerId);
-    }
-  };
-
   const handleCreateQuote = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
@@ -180,26 +146,6 @@ export function QuotesClient({
       toast.error(result.error || t("form.failedCreate"));
     }
     setCreating(false);
-  };
-
-  const filteredVehicles = newCustomerId
-    ? vehicles.filter((v) => v.customerId === newCustomerId)
-    : vehicles;
-  const selectedVehicle = vehicles.find((v) => v.id === newVehicleId);
-  const selectedCustomer = customers.find((c) => c.id === newCustomerId);
-
-  const handleCustomerSelect = (customerId: string) => {
-    setNewCustomerId(customerId);
-    setCustomerOpen(false);
-    const customerVehicles = vehicles.filter((v) => v.customerId === customerId);
-    if (customerVehicles.length > 0) {
-      setNewVehicleId(customerVehicles[0].id);
-    } else if (newVehicleId) {
-      const vehicle = vehicles.find((v) => v.id === newVehicleId);
-      if (vehicle && vehicle.customerId !== customerId) {
-        setNewVehicleId("");
-      }
-    }
   };
 
   return (
@@ -329,86 +275,27 @@ export function QuotesClient({
 
             <div className="space-y-2">
               <Label>{t("details.vehicle")}</Label>
-              <Popover open={vehicleOpen} onOpenChange={setVehicleOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-full justify-between font-normal"
-                  >
-                    {selectedVehicle
-                      ? `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}${selectedVehicle.licensePlate ? ` · ${selectedVehicle.licensePlate}` : ""}`
-                      : t("details.selectVehicle")}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                  <Command>
-                    <CommandInput placeholder={t("details.selectVehicle")} />
-                    <CommandList>
-                      <CommandEmpty>{t("details.none")}</CommandEmpty>
-                      <CommandGroup>
-                        {filteredVehicles.map((v) => (
-                          <CommandItem
-                            key={v.id}
-                            value={`${v.year} ${v.make} ${v.model} ${v.licensePlate || ""} ${v.customerName || ""}`}
-                            onSelect={() => handleVehicleSelect(v.id)}
-                          >
-                            <Check className={cn("mr-2 h-4 w-4", newVehicleId === v.id ? "opacity-100" : "opacity-0")} />
-                            <div>
-                              <p className="text-sm">
-                                {v.year} {v.make} {v.model}
-                                {v.licensePlate && <span className="ml-1.5 text-muted-foreground">· {v.licensePlate}</span>}
-                              </p>
-                              {v.customerName && (
-                                <p className="text-xs text-muted-foreground">{v.customerName}</p>
-                              )}
-                            </div>
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <VehicleCombobox
+                value={newVehicleId}
+                placeholder={t("details.selectVehicle")}
+                noneLabel={t("details.none")}
+                onChange={(id, vehicle) => {
+                  setNewVehicleId(id);
+                  if (vehicle?.customerId) {
+                    setNewCustomerId(vehicle.customerId);
+                  }
+                }}
+              />
             </div>
 
             <div className="space-y-2">
               <Label>{t("details.customer")}</Label>
-              <Popover open={customerOpen} onOpenChange={setCustomerOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="w-full justify-between font-normal"
-                  >
-                    {selectedCustomer
-                      ? `${selectedCustomer.name}${selectedCustomer.company ? ` (${selectedCustomer.company})` : ""}`
-                      : t("details.selectCustomer")}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                  <Command>
-                    <CommandInput placeholder={t("details.selectCustomer")} />
-                    <CommandList>
-                      <CommandEmpty>{t("details.none")}</CommandEmpty>
-                      <CommandGroup>
-                        {customers.map((c) => (
-                          <CommandItem
-                            key={c.id}
-                            value={`${c.name} ${c.company || ""}`}
-                            onSelect={() => handleCustomerSelect(c.id)}
-                          >
-                            <Check className={cn("mr-2 h-4 w-4", newCustomerId === c.id ? "opacity-100" : "opacity-0")} />
-                            <span>{c.name}{c.company ? ` (${c.company})` : ""}</span>
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <CustomerCombobox
+                value={newCustomerId}
+                placeholder={t("details.selectCustomer")}
+                noneLabel={t("details.none")}
+                onChange={(id) => setNewCustomerId(id)}
+              />
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
