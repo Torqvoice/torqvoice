@@ -15,6 +15,11 @@ interface ExportOptions {
   inventory: boolean;
   customFields: boolean;
   files: boolean;
+  technicians: boolean;
+  inspections: boolean;
+  auditLogs: boolean;
+  smsMessages: boolean;
+  notifications: boolean;
 }
 
 const DEFAULT_OPTIONS: ExportOptions = {
@@ -25,6 +30,11 @@ const DEFAULT_OPTIONS: ExportOptions = {
   inventory: true,
   customFields: true,
   files: true,
+  technicians: true,
+  inspections: true,
+  auditLogs: true,
+  smsMessages: true,
+  notifications: true,
 };
 
 export async function POST(request: NextRequest) {
@@ -132,6 +142,76 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (options.technicians) {
+    queries.push(
+      db.technician
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.technicians = result;
+        })
+    );
+  }
+
+  if (options.inspections) {
+    queries.push(
+      db.inspectionTemplate
+        .findMany({
+          where: { organizationId: ctx.organizationId },
+          include: {
+            sections: {
+              include: { items: true },
+            },
+          },
+        })
+        .then((result) => {
+          data.inspectionTemplates = result;
+        })
+    );
+    queries.push(
+      db.inspection
+        .findMany({
+          where: { organizationId: ctx.organizationId },
+          include: {
+            items: true,
+            quoteRequests: true,
+          },
+        })
+        .then((result) => {
+          data.inspections = result;
+        })
+    );
+  }
+
+  if (options.auditLogs) {
+    queries.push(
+      db.auditLog
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.auditLogs = result;
+        })
+    );
+  }
+
+  if (options.smsMessages) {
+    queries.push(
+      db.smsMessage
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.smsMessages = result;
+        })
+    );
+  }
+
+  if (options.notifications) {
+    queries.push(
+      db.notification
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.notifications = result;
+        })
+    );
+  }
+
   await Promise.all(queries);
 
   const backup = {
@@ -196,8 +276,10 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [settings, customers, customFieldDefinitions, inventoryParts, vehicles, quotes] =
-    await Promise.all([
+  const [
+    settings, customers, customFieldDefinitions, inventoryParts, vehicles, quotes,
+    technicians, inspectionTemplates, inspections, auditLogs, smsMessages, notifications,
+  ] = await Promise.all([
       db.appSetting.findMany({ where: { organizationId: ctx.organizationId } }),
       db.customer.findMany({ where: { organizationId: ctx.organizationId } }),
       db.customFieldDefinition.findMany({
@@ -228,6 +310,18 @@ export async function GET() {
           laborItems: true,
         },
       }),
+      db.technician.findMany({ where: { organizationId: ctx.organizationId } }),
+      db.inspectionTemplate.findMany({
+        where: { organizationId: ctx.organizationId },
+        include: { sections: { include: { items: true } } },
+      }),
+      db.inspection.findMany({
+        where: { organizationId: ctx.organizationId },
+        include: { items: true, quoteRequests: true },
+      }),
+      db.auditLog.findMany({ where: { organizationId: ctx.organizationId } }),
+      db.smsMessage.findMany({ where: { organizationId: ctx.organizationId } }),
+      db.notification.findMany({ where: { organizationId: ctx.organizationId } }),
     ]);
 
   const backup = {
@@ -240,6 +334,12 @@ export async function GET() {
       inventoryParts,
       vehicles,
       quotes,
+      technicians,
+      inspectionTemplates,
+      inspections,
+      auditLogs,
+      smsMessages,
+      notifications,
     },
   };
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useState } from 'react'
+import { memo } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,38 +13,27 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
   ArrowRight,
   Car,
   Check,
-  ChevronsUpDown,
   ClipboardCheck,
   Loader2,
   MessageSquare,
   Users,
   X,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { SharedLinkCard } from '@/components/shared-link-card'
 import { formatCurrency } from '@/lib/format'
 import type { QuoteFormState } from './useQuoteFormState'
-import type { QuoteRecord, VehicleOption, CustomerOption } from './quote-page-types'
+import type { QuoteRecord } from './quote-page-types'
+import { VehicleCombobox } from './VehicleCombobox'
+import { CustomerCombobox } from './CustomerCombobox'
 
 interface QuoteRightColumnProps {
   state: QuoteFormState
   quote: QuoteRecord
   organizationId: string
   currencyCode: string
-  vehicles: VehicleOption[]
-  customers: CustomerOption[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
   onRevoke: () => Promise<void>
@@ -55,14 +44,9 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
   quote,
   organizationId,
   currencyCode,
-  vehicles,
-  customers,
   t,
   onRevoke,
 }: QuoteRightColumnProps) {
-  const [vehicleOpen, setVehicleOpen] = useState(false)
-  const [customerOpen, setCustomerOpen] = useState(false)
-
   return (
     <div className="space-y-3">
       {/* Convert to Work Order */}
@@ -97,64 +81,27 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
       <div className="rounded-lg border p-3 space-y-3">
         <div className="space-y-1">
           <Label className="text-xs">{t('details.vehicle')}</Label>
-          <Popover open={vehicleOpen} onOpenChange={setVehicleOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                className="w-full justify-between font-normal"
-              >
-                {state.selectedVehicle
-                  ? `${state.selectedVehicle.year} ${state.selectedVehicle.make} ${state.selectedVehicle.model}${state.selectedVehicle.licensePlate ? ` (${state.selectedVehicle.licensePlate})` : ''}`
-                  : t('details.selectVehicle')}
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-              <Command>
-                <CommandInput placeholder={t('details.selectVehicle')} />
-                <CommandList>
-                  <CommandEmpty>{t('details.none')}</CommandEmpty>
-                  <CommandGroup>
-                    <CommandItem
-                      value="__none__"
-                      onSelect={() => {
-                        state.handleVehicleChange('none')
-                        setVehicleOpen(false)
-                      }}
-                    >
-                      <Check
-                        className={cn(
-                          'mr-2 h-4 w-4',
-                          !state.vehicleId ? 'opacity-100' : 'opacity-0'
-                        )}
-                      />
-                      {t('details.none')}
-                    </CommandItem>
-                    {vehicles.map((v) => (
-                      <CommandItem
-                        key={v.id}
-                        value={`${v.year} ${v.make} ${v.model} ${v.licensePlate || ''}`}
-                        onSelect={() => {
-                          state.handleVehicleChange(v.id)
-                          setVehicleOpen(false)
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            'mr-2 h-4 w-4',
-                            state.vehicleId === v.id ? 'opacity-100' : 'opacity-0'
-                          )}
-                        />
-                        {v.year} {v.make} {v.model}
-                        {v.licensePlate ? ` (${v.licensePlate})` : ''}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          <VehicleCombobox
+            value={state.vehicleId}
+            initialVehicle={state.selectedVehicle}
+            placeholder={t('details.selectVehicle')}
+            noneLabel={t('details.none')}
+            onChange={(id, vehicle) => {
+              state.setVehicleId(id)
+              state.setSelectedVehicle(vehicle)
+              if (vehicle?.customerId) {
+                state.setCustomerId(vehicle.customerId)
+                if (vehicle.customer) {
+                  state.setSelectedCustomer({
+                    id: vehicle.customer.id,
+                    name: vehicle.customer.name,
+                    company: null,
+                  })
+                }
+              }
+              state.markDirty()
+            }}
+          />
         </div>
         {state.selectedVehicle && (
           <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
@@ -181,6 +128,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
               className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
               onClick={() => {
                 state.setVehicleId('')
+                state.setSelectedVehicle(null)
                 state.markDirty()
               }}
             >
@@ -190,66 +138,17 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
         )}
         <div className="space-y-1">
           <Label className="text-xs">{t('details.customer')}</Label>
-          <Popover open={customerOpen} onOpenChange={setCustomerOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                className="w-full justify-between font-normal"
-              >
-                {state.selectedCustomer
-                  ? `${state.selectedCustomer.name}${state.selectedCustomer.company ? ` (${state.selectedCustomer.company})` : ''}`
-                  : t('details.selectCustomer')}
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
-              <Command>
-                <CommandInput placeholder={t('details.selectCustomer')} />
-                <CommandList>
-                  <CommandEmpty>{t('details.none')}</CommandEmpty>
-                  <CommandGroup>
-                    <CommandItem
-                      value="__none__"
-                      onSelect={() => {
-                        state.setCustomerId('')
-                        state.markDirty()
-                        setCustomerOpen(false)
-                      }}
-                    >
-                      <Check
-                        className={cn(
-                          'mr-2 h-4 w-4',
-                          !state.customerId ? 'opacity-100' : 'opacity-0'
-                        )}
-                      />
-                      {t('details.none')}
-                    </CommandItem>
-                    {customers.map((c) => (
-                      <CommandItem
-                        key={c.id}
-                        value={`${c.name} ${c.company || ''}`}
-                        onSelect={() => {
-                          state.setCustomerId(c.id)
-                          state.markDirty()
-                          setCustomerOpen(false)
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            'mr-2 h-4 w-4',
-                            state.customerId === c.id ? 'opacity-100' : 'opacity-0'
-                          )}
-                        />
-                        {c.name}
-                        {c.company ? ` (${c.company})` : ''}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          <CustomerCombobox
+            value={state.customerId}
+            initialCustomer={state.selectedCustomer}
+            placeholder={t('details.selectCustomer')}
+            noneLabel={t('details.none')}
+            onChange={(id, customer) => {
+              state.setCustomerId(id)
+              state.setSelectedCustomer(customer)
+              state.markDirty()
+            }}
+          />
         </div>
         {state.selectedCustomer && (
           <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
@@ -273,6 +172,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
               className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
               onClick={() => {
                 state.setCustomerId('')
+                state.setSelectedCustomer(null)
                 state.markDirty()
               }}
             >

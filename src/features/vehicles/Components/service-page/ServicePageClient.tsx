@@ -34,7 +34,7 @@ export function ServicePageClient({
   defaultLaborRate,
   initialData,
   inventoryParts,
-  vehicles,
+  initialVehicle,
   boardTechnicians = [],
   currentUserName,
   imageAttachmentsForManager,
@@ -113,7 +113,7 @@ export function ServicePageClient({
                 organizationId={organizationId}
                 currencyCode={currencyCode}
                 taxEnabled={taxEnabled}
-                vehicles={vehicles}
+                initialVehicle={initialVehicle}
                 boardTechnicians={boardTechnicians}
               />
             }

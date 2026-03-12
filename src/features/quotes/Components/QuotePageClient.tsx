@@ -8,13 +8,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
 import { Textarea } from '@/components/ui/textarea'
 import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
@@ -37,19 +30,14 @@ import {
   Trash2,
 } from 'lucide-react'
 import { getCurrencySymbol } from '@/lib/format'
-import type {
-  CustomerOption,
-  VehicleOption,
-  QuoteAttachment,
-  QuoteRecord,
-  TabType,
-} from './quote-page-types'
+import type { QuoteAttachment, QuoteRecord, TabType } from './quote-page-types'
 import { statusColors } from './quote-page-types'
 import { useQuoteFormState } from './useQuoteFormState'
 import { QuotePartsEditor } from './QuotePartsEditor'
 import { QuoteLaborEditor } from './QuoteLaborEditor'
 import { QuoteNotesEditor } from './QuoteNotesEditor'
 import { QuoteRightColumn } from './QuoteRightColumn'
+import { VehicleCombobox } from './VehicleCombobox'
 
 const LG_BREAKPOINT = 1024
 
@@ -72,8 +60,6 @@ export function QuotePageClient({
   defaultTaxRate = 0,
   taxEnabled = true,
   defaultLaborRate = 0,
-  customers = [],
-  vehicles = [],
   smsEnabled = false,
   emailEnabled = false,
   imageAttachments = [],
@@ -88,8 +74,6 @@ export function QuotePageClient({
   defaultTaxRate?: number
   taxEnabled?: boolean
   defaultLaborRate?: number
-  customers?: CustomerOption[]
-  vehicles?: VehicleOption[]
   smsEnabled?: boolean
   emailEnabled?: boolean
   imageAttachments?: QuoteAttachment[]
@@ -109,8 +93,6 @@ export function QuotePageClient({
     defaultTaxRate,
     taxEnabled,
     defaultLaborRate,
-    customers,
-    vehicles,
     t,
   })
 
@@ -183,8 +165,6 @@ export function QuotePageClient({
       quote={quote}
       organizationId={organizationId}
       currencyCode={currencyCode}
-      vehicles={vehicles}
-      customers={customers}
       t={t}
       onRevoke={handleRevoke}
     />
@@ -403,19 +383,13 @@ export function QuotePageClient({
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">{t('page.convertDescription')}</p>
-            <Select value={state.convertVehicleId} onValueChange={state.setConvertVehicleId}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('details.selectVehicle')} />
-              </SelectTrigger>
-              <SelectContent>
-                {vehicles.map((v) => (
-                  <SelectItem key={v.id} value={v.id}>
-                    {v.year} {v.make} {v.model}
-                    {v.licensePlate ? ` (${v.licensePlate})` : ''}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <VehicleCombobox
+              value={state.convertVehicleId}
+              initialVehicle={state.selectedVehicle}
+              placeholder={t('details.selectVehicle')}
+              noneLabel={t('details.none')}
+              onChange={(id) => state.setConvertVehicleId(id)}
+            />
             <div className="flex gap-2">
               <Button
                 type="button"

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import JSZip from "jszip";
 import { mkdir, rm, writeFile } from "fs/promises";
 import path from "path";
@@ -157,6 +158,21 @@ export async function POST(request: NextRequest) {
   try {
     await db.$transaction(async (tx) => {
       // 1. Delete all existing organization data (cascade handles children)
+      await tx.notification.deleteMany({
+        where: { organizationId: ctx.organizationId },
+      });
+      await tx.smsMessage.deleteMany({
+        where: { organizationId: ctx.organizationId },
+      });
+      await tx.auditLog.deleteMany({
+        where: { organizationId: ctx.organizationId },
+      });
+      await tx.inspection.deleteMany({
+        where: { organizationId: ctx.organizationId },
+      });
+      await tx.inspectionTemplate.deleteMany({
+        where: { organizationId: ctx.organizationId },
+      });
       await tx.quote.deleteMany({
         where: { organizationId: ctx.organizationId },
       });
@@ -167,6 +183,9 @@ export async function POST(request: NextRequest) {
         where: { organizationId: ctx.organizationId },
       });
       await tx.inventoryPart.deleteMany({
+        where: { organizationId: ctx.organizationId },
+      });
+      await tx.technician.deleteMany({
         where: { organizationId: ctx.organizationId },
       });
       await tx.customer.deleteMany({
@@ -223,7 +242,31 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // 4. Insert custom field definitions
+      // 4. Insert technicians
+      if (data.technicians?.length) {
+        await tx.technician.createMany({
+          data: (data.technicians as Record<string, unknown>[]).map(
+            (t: Record<string, unknown>) => ({
+              id: t.id as string,
+              name: t.name as string,
+              color: (t.color as string) || "#3b82f6",
+              isActive: t.isActive !== false,
+              sortOrder: (t.sortOrder as number) || 0,
+              dailyCapacity: (t.dailyCapacity as number) || 480,
+              memberId: (t.memberId as string) || null,
+              createdAt: t.createdAt
+                ? new Date(t.createdAt as string)
+                : undefined,
+              updatedAt: t.updatedAt
+                ? new Date(t.updatedAt as string)
+                : undefined,
+              organizationId: ctx.organizationId,
+            })
+          ),
+        });
+      }
+
+      // 5. Insert custom field definitions
       if (data.customFieldDefinitions?.length) {
         for (const def of data.customFieldDefinitions as Record<
           string,
@@ -459,6 +502,8 @@ export async function POST(request: NextRequest) {
                   discountValue: (sr.discountValue as number) || 0,
                   discountAmount: (sr.discountAmount as number) || 0,
                   publicToken: (sr.publicToken as string) || null,
+                  technicianId: (sr.technicianId as string) || null,
+                  sortOrder: (sr.sortOrder as number) || 0,
                   createdAt: sr.createdAt
                     ? new Date(sr.createdAt as string)
                     : undefined,
@@ -624,6 +669,194 @@ export async function POST(request: NextRequest) {
             });
           }
         }
+      }
+
+      // 9. Insert inspection templates with nested sections and items
+      if (data.inspectionTemplates?.length) {
+        for (const tmpl of data.inspectionTemplates as Record<string, unknown>[]) {
+          await tx.inspectionTemplate.create({
+            data: {
+              id: tmpl.id as string,
+              name: tmpl.name as string,
+              description: (tmpl.description as string) || null,
+              isDefault: (tmpl.isDefault as boolean) || false,
+              createdAt: tmpl.createdAt
+                ? new Date(tmpl.createdAt as string)
+                : undefined,
+              updatedAt: tmpl.updatedAt
+                ? new Date(tmpl.updatedAt as string)
+                : undefined,
+              organizationId: ctx.organizationId,
+            },
+          });
+
+          const sections = tmpl.sections as Record<string, unknown>[] | undefined;
+          if (sections?.length) {
+            for (const sec of sections) {
+              await tx.inspectionTemplateSection.create({
+                data: {
+                  id: sec.id as string,
+                  name: sec.name as string,
+                  sortOrder: (sec.sortOrder as number) || 0,
+                  templateId: tmpl.id as string,
+                },
+              });
+
+              const items = sec.items as Record<string, unknown>[] | undefined;
+              if (items?.length) {
+                await tx.inspectionTemplateItem.createMany({
+                  data: items.map((item) => ({
+                    id: item.id as string,
+                    name: item.name as string,
+                    sortOrder: (item.sortOrder as number) || 0,
+                    sectionId: sec.id as string,
+                  })),
+                });
+              }
+            }
+          }
+        }
+      }
+
+      // 10. Insert inspections with items and quote requests
+      if (data.inspections?.length) {
+        for (const insp of data.inspections as Record<string, unknown>[]) {
+          await tx.inspection.create({
+            data: {
+              id: insp.id as string,
+              status: (insp.status as string) || "in_progress",
+              mileage: (insp.mileage as number) || null,
+              notes: (insp.notes as string) || null,
+              startDateTime: insp.startDateTime
+                ? new Date(insp.startDateTime as string)
+                : null,
+              endDateTime: insp.endDateTime
+                ? new Date(insp.endDateTime as string)
+                : null,
+              publicToken: (insp.publicToken as string) || null,
+              completedAt: insp.completedAt
+                ? new Date(insp.completedAt as string)
+                : null,
+              sortOrder: (insp.sortOrder as number) || 0,
+              createdAt: insp.createdAt
+                ? new Date(insp.createdAt as string)
+                : undefined,
+              updatedAt: insp.updatedAt
+                ? new Date(insp.updatedAt as string)
+                : undefined,
+              vehicleId: insp.vehicleId as string,
+              templateId: insp.templateId as string,
+              technicianId: (insp.technicianId as string) || null,
+              organizationId: ctx.organizationId,
+            },
+          });
+
+          const inspItems = insp.items as Record<string, unknown>[] | undefined;
+          if (inspItems?.length) {
+            await tx.inspectionItem.createMany({
+              data: inspItems.map((item) => ({
+                id: item.id as string,
+                name: item.name as string,
+                section: item.section as string,
+                sortOrder: (item.sortOrder as number) || 0,
+                condition: (item.condition as string) || "not_inspected",
+                notes: (item.notes as string) || null,
+                imageUrls: (item.imageUrls as string[]) || [],
+                inspectionId: insp.id as string,
+              })),
+            });
+          }
+
+          const quoteReqs = insp.quoteRequests as Record<string, unknown>[] | undefined;
+          if (quoteReqs?.length) {
+            await tx.inspectionQuoteRequest.createMany({
+              data: quoteReqs.map((qr) => ({
+                id: qr.id as string,
+                status: (qr.status as string) || "pending",
+                message: (qr.message as string) || null,
+                selectedItemIds: (qr.selectedItemIds as string[]) || [],
+                createdAt: qr.createdAt
+                  ? new Date(qr.createdAt as string)
+                  : undefined,
+                inspectionId: insp.id as string,
+                organizationId: ctx.organizationId,
+              })),
+            });
+          }
+        }
+      }
+
+      // 11. Insert audit logs
+      if (data.auditLogs?.length) {
+        await tx.auditLog.createMany({
+          data: (data.auditLogs as Record<string, unknown>[]).map(
+            (log: Record<string, unknown>) => ({
+              id: log.id as string,
+              timestamp: log.timestamp
+                ? new Date(log.timestamp as string)
+                : undefined,
+              action: log.action as string,
+              entity: (log.entity as string) || null,
+              entityId: (log.entityId as string) || null,
+              message: (log.message as string) || null,
+              metadata: log.metadata != null ? log.metadata as Prisma.InputJsonValue : Prisma.DbNull,
+              ip: (log.ip as string) || null,
+              userAgent: (log.userAgent as string) || null,
+              userId: (log.userId as string) || null,
+              organizationId: ctx.organizationId,
+            })
+          ),
+        });
+      }
+
+      // 12. Insert SMS messages
+      if (data.smsMessages?.length) {
+        await tx.smsMessage.createMany({
+          data: (data.smsMessages as Record<string, unknown>[]).map(
+            (msg: Record<string, unknown>) => ({
+              id: msg.id as string,
+              direction: msg.direction as string,
+              fromNumber: msg.fromNumber as string,
+              toNumber: msg.toNumber as string,
+              body: msg.body as string,
+              status: (msg.status as string) || "queued",
+              providerMsgId: (msg.providerMsgId as string) || null,
+              errorMessage: (msg.errorMessage as string) || null,
+              relatedEntityType: (msg.relatedEntityType as string) || null,
+              relatedEntityId: (msg.relatedEntityId as string) || null,
+              createdAt: msg.createdAt
+                ? new Date(msg.createdAt as string)
+                : undefined,
+              updatedAt: msg.updatedAt
+                ? new Date(msg.updatedAt as string)
+                : undefined,
+              organizationId: ctx.organizationId,
+              customerId: (msg.customerId as string) || null,
+            })
+          ),
+        });
+      }
+
+      // 13. Insert notifications
+      if (data.notifications?.length) {
+        await tx.notification.createMany({
+          data: (data.notifications as Record<string, unknown>[]).map(
+            (n: Record<string, unknown>) => ({
+              id: n.id as string,
+              type: n.type as string,
+              title: n.title as string,
+              message: n.message as string,
+              entityType: n.entityType as string,
+              entityId: n.entityId as string,
+              entityUrl: n.entityUrl as string,
+              read: (n.read as boolean) || false,
+              createdAt: n.createdAt
+                ? new Date(n.createdAt as string)
+                : undefined,
+              organizationId: ctx.organizationId,
+            })
+          ),
+        });
       }
     });
 

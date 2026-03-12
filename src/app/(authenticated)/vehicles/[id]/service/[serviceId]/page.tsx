@@ -2,7 +2,7 @@ import { getServiceRecord } from "@/features/vehicles/Actions/serviceActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getInventoryPartsList } from "@/features/inventory/Actions/inventoryActions";
-import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
+
 import { getTechnicians } from "@/features/workboard/Actions/technicianActions";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { getFeatures } from "@/lib/features";
@@ -19,7 +19,7 @@ export default async function ServiceDetailPage({
 }) {
   const { id, serviceId } = await params;
 
-  const [result, settingsResult, inventoryResult, vehiclesResult, techniciansResult, authContext, session] =
+  const [result, settingsResult, inventoryResult, techniciansResult, authContext, session] =
     await Promise.all([
       getServiceRecord(serviceId),
       getSettings([
@@ -30,7 +30,6 @@ export default async function ServiceDetailPage({
         SETTING_KEYS.DEFAULT_LABOR_RATE,
       ]),
       getInventoryPartsList(),
-      getVehicles(),
       getTechnicians(),
       getAuthContext(),
       getCachedSession(),
@@ -64,12 +63,13 @@ export default async function ServiceDetailPage({
     Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0;
   const inventoryParts =
     inventoryResult.success && inventoryResult.data ? inventoryResult.data : [];
-  const vehicles = (
-    vehiclesResult.success && vehiclesResult.data ? vehiclesResult.data : []
-  ).map((v) => ({
-    id: v.id,
-    label: `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ""}`,
-  }));
+  const initialVehicle = {
+    id: record.vehicle.id,
+    make: record.vehicle.make,
+    model: record.vehicle.model,
+    year: record.vehicle.year,
+    licensePlate: record.vehicle.licensePlate,
+  };
   const boardTechnicians = (
     techniciansResult.success && techniciansResult.data ? techniciansResult.data : []
   ).map((t) => ({ id: t.id, name: t.name }));
@@ -177,7 +177,7 @@ export default async function ServiceDetailPage({
         defaultLaborRate={defaultLaborRate}
         initialData={initialData}
         inventoryParts={inventoryParts}
-        vehicles={vehicles}
+        initialVehicle={initialVehicle}
         boardTechnicians={boardTechnicians}
         currentUserName={currentUserName}
         imageAttachmentsForManager={imageAttachmentsForManager}

@@ -8,8 +8,24 @@ import { useConfirm } from "@/components/confirm-dialog";
 import { updateQuote, deleteQuote, convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
 import { aiBuildQuoteFromText } from "@/features/ai/Actions/aiActions";
-import type { QuoteRecord, QuotePartInput, QuoteLaborInput, VehicleOption, CustomerOption } from "./quote-page-types";
+import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from "./quote-page-types";
 import { emptyPart, makeEmptyLabor } from "./quote-page-types";
+
+interface SelectedVehicle {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  licensePlate: string | null;
+  customerId: string | null;
+  customer: { id: string; name: string } | null;
+}
+
+interface SelectedCustomer {
+  id: string;
+  name: string;
+  company: string | null;
+}
 
 export function useQuoteFormState({
   quote,
@@ -17,8 +33,6 @@ export function useQuoteFormState({
   defaultTaxRate,
   taxEnabled,
   defaultLaborRate,
-  customers,
-  vehicles,
   t,
 }: {
   quote: QuoteRecord;
@@ -26,8 +40,6 @@ export function useQuoteFormState({
   defaultTaxRate: number;
   taxEnabled: boolean;
   defaultLaborRate: number;
-  customers: CustomerOption[];
-  vehicles: VehicleOption[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string;
 }) {
@@ -70,6 +82,26 @@ export function useQuoteFormState({
 
   const [defaultValidDate] = useState(() =>
     quote.validUntil ? new Date(quote.validUntil).toISOString().split("T")[0] : ""
+  );
+
+  // Track selected vehicle/customer for display (initial from quote data)
+  const [selectedVehicle, setSelectedVehicle] = useState<SelectedVehicle | null>(
+    quote.vehicle
+      ? {
+          id: quote.vehicle.id,
+          make: quote.vehicle.make,
+          model: quote.vehicle.model,
+          year: quote.vehicle.year,
+          licensePlate: quote.vehicle.licensePlate,
+          customerId: quote.customer?.id || null,
+          customer: quote.customer ? { id: quote.customer.id, name: quote.customer.name } : null,
+        }
+      : null
+  );
+  const [selectedCustomer, setSelectedCustomer] = useState<SelectedCustomer | null>(
+    quote.customer
+      ? { id: quote.customer.id, name: quote.customer.name, company: quote.customer.company }
+      : null
   );
 
   // Unsaved changes tracking & autosave
@@ -116,19 +148,6 @@ export function useQuoteFormState({
     : 0;
   const taxAmount = (subtotal - discountAmount) * (taxRate / 100);
   const totalAmount = subtotal - discountAmount + taxAmount;
-
-  const selectedVehicle = useMemo(() => vehicles.find((v) => v.id === vehicleId), [vehicles, vehicleId]);
-  const selectedCustomer = useMemo(() => customers.find((c) => c.id === customerId), [customers, customerId]);
-
-  const handleVehicleChange = useCallback((v: string) => {
-    const vid = v === "none" ? "" : v;
-    setVehicleId(vid);
-    if (vid) {
-      const vehicle = vehicles.find((veh) => veh.id === vid);
-      if (vehicle?.customerId) setCustomerId(vehicle.customerId);
-    }
-    markDirty();
-  }, [vehicles, markDirty]);
 
   const updatePart = useCallback((index: number, field: keyof QuotePartInput, value: string | number | boolean) => {
     setPartItems((prev) => {
@@ -353,10 +372,10 @@ export function useQuoteFormState({
     hasUnsavedChanges, showSaved, formRef,
     // Computed
     partsSubtotal, laborSubtotal, subtotal, discountAmount, taxAmount, totalAmount,
-    selectedVehicle, selectedCustomer,
+    selectedVehicle, setSelectedVehicle, selectedCustomer, setSelectedCustomer,
     // Callbacks
     markDirty, updatePart, updateLabor, addPart, addLabor, deletePart, deleteLabor,
-    handleVehicleChange, handleSubmit, handleDelete, handleDownloadPDF,
+    handleSubmit, handleDelete, handleDownloadPDF,
     handleConvert, handleResolveResponse, handleAiBuild, saveNow,
   };
 }

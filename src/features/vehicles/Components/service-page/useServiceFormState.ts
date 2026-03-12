@@ -18,7 +18,7 @@ export function useServiceFormState({
   // Form state
   const [loading, setLoading] = useState(false)
   const [selectedVehicleId, setSelectedVehicleId] = useState(vehicleId)
-  const [vehicleOpen, setVehicleOpen] = useState(false)
+
   const [techName] = useState(initialData.techName || currentUserName)
   const [type, setType] = useState(initialData.type || 'maintenance')
   const [status, setStatus] = useState(initialData.status || 'completed')
@@ -176,7 +176,7 @@ export function useServiceFormState({
   return {
     // State
     loading, setLoading,
-    selectedVehicleId, vehicleOpen, setVehicleOpen,
+    selectedVehicleId,
     techName, type, status,
     partItems, laborItems,
     taxRate, discountType, discountValue,

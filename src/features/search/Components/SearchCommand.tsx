@@ -210,13 +210,14 @@ export function SearchCommand() {
       onOpenChange={setOpen}
       title="Search"
       description="Search for vehicles, customers, services, and settings"
+      className="sm:max-w-2xl"
     >
       <CommandInput
         placeholder="Search by name, plate, phone, VIN, invoice..."
         value={query}
         onValueChange={setQuery}
       />
-      <CommandList>
+      <CommandList className="min-h-[300px]">
         {!loading && hasQuery && !hasResults && matchedSettings.length === 0 && (
           <CommandEmpty>No results found.</CommandEmpty>
         )}

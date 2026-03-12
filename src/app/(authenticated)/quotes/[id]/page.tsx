@@ -1,8 +1,6 @@
 import { getQuote } from '@/features/quotes/Actions/quoteActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { getCustomers } from '@/features/customers/Actions/customerActions'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { getFeatures } from '@/lib/features'
 import { db } from '@/lib/db'
@@ -11,7 +9,7 @@ import { QuotePageClient } from '@/features/quotes/Components/QuotePageClient'
 
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [result, settingsResult, customersResult, vehiclesResult, authContext] = await Promise.all([
+  const [result, settingsResult, authContext] = await Promise.all([
     getQuote(id),
     getSettings([
       SETTING_KEYS.CURRENCY_CODE,
@@ -19,8 +17,6 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       SETTING_KEYS.TAX_ENABLED,
       SETTING_KEYS.DEFAULT_LABOR_RATE,
     ]),
-    getCustomers(),
-    getVehicles(),
     getAuthContext(),
   ])
 
@@ -59,8 +55,6 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   const taxEnabled = settings[SETTING_KEYS.TAX_ENABLED] !== 'false'
   const defaultTaxRate = taxEnabled ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0 : 0
   const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
-  const customers = customersResult.success && customersResult.data ? customersResult.data : []
-  const vehicles = vehiclesResult.success && vehiclesResult.data ? vehiclesResult.data : []
   const organizationId = authContext?.organizationId || ''
 
   // Separate attachments by category
@@ -88,36 +82,6 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         smsEnabled={features?.sms ?? false}
         emailEnabled={features?.smtp ?? false}
         aiEnabled={aiEnabled}
-        customers={customers.map(
-          (c: { id: string; name: string; email: string | null; company: string | null }) => ({
-            id: c.id,
-            name: c.name,
-            email: c.email,
-            company: c.company,
-          })
-        )}
-        vehicles={vehicles.map(
-          (v: {
-            id: string
-            make: string
-            model: string
-            year: number
-            licensePlate: string | null
-            customer: {
-              id: string
-              name: string
-              company: string | null
-            } | null
-          }) => ({
-            id: v.id,
-            make: v.make,
-            model: v.model,
-            year: v.year,
-            licensePlate: v.licensePlate,
-            customerId: v.customer?.id || null,
-            customerName: v.customer?.name || null,
-          })
-        )}
       />
     </div>
   )
