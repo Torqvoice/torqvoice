@@ -1,8 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -12,18 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
 import Link from 'next/link'
-import { Check, ChevronsUpDown, ExternalLink } from 'lucide-react'
-import type { InitialData, VehicleOption } from './form-types'
+import { ExternalLink } from 'lucide-react'
+import type { InitialData } from './form-types'
+import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
 
 interface CustomerInfo {
   id: string
@@ -37,15 +27,13 @@ interface BasicInfoSectionProps {
   vehicleName: string
   selectedVehicleId: string
   setSelectedVehicleId: (id: string) => void
-  vehicles: VehicleOption[]
-  vehicleOpen: boolean
-  setVehicleOpen: (open: boolean) => void
   type: string
   setType: (type: string) => void
   status: string
   setStatus: (status: string) => void
   techName: string
   customer?: CustomerInfo | null
+  initialVehicle?: { id: string; make: string; model: string; year: number; licensePlate: string | null } | null
 }
 
 export function BasicInfoSection({
@@ -53,79 +41,41 @@ export function BasicInfoSection({
   vehicleName,
   selectedVehicleId,
   setSelectedVehicleId,
-  vehicles,
-  vehicleOpen,
-  setVehicleOpen,
   type,
   setType,
   status,
   setStatus,
   techName,
   customer,
+  initialVehicle,
 }: BasicInfoSectionProps) {
   const t = useTranslations('service.basicInfo')
-  const selectedVehicleLabel = useMemo(() => {
-    if (vehicles.length === 0) return vehicleName
-    const v = vehicles.find((v) => v.id === selectedVehicleId)
-    return v?.label || vehicleName
-  }, [selectedVehicleId, vehicles, vehicleName])
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
       <h3 className="text-sm font-semibold">{t('title')}</h3>
 
-      {vehicles.length > 0 && (
-        <div className="space-y-1">
-          <div className="flex items-center justify-between">
-            <Label className="text-xs">{t('vehicle')}</Label>
-            <Link
-              href={`/vehicles/${selectedVehicleId}`}
-              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {t('open')}
-              <ExternalLink className="h-3 w-3" />
-            </Link>
-          </div>
-          <Popover open={vehicleOpen} onOpenChange={setVehicleOpen} modal={true}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={vehicleOpen}
-                className="w-full justify-between font-normal"
-              >
-                <span className="truncate">{selectedVehicleLabel}</span>
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-              <Command>
-                <CommandInput placeholder={t('searchVehicles')} />
-                <CommandList className="max-h-60 overflow-y-auto">
-                  <CommandEmpty>{t('noVehicleFound')}</CommandEmpty>
-                  <CommandGroup>
-                    {vehicles.map((v) => (
-                      <CommandItem
-                        key={v.id}
-                        value={v.label}
-                        onSelect={() => {
-                          setSelectedVehicleId(v.id)
-                          setVehicleOpen(false)
-                        }}
-                      >
-                        <Check
-                          className={`mr-2 h-4 w-4 ${selectedVehicleId === v.id ? 'opacity-100' : 'opacity-0'}`}
-                        />
-                        {v.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+      <div className="space-y-1">
+        <div className="flex items-center justify-between">
+          <Label className="text-xs">{t('vehicle')}</Label>
+          <Link
+            href={`/vehicles/${selectedVehicleId}`}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {t('open')}
+            <ExternalLink className="h-3 w-3" />
+          </Link>
         </div>
-      )}
+        <VehicleCombobox
+          value={selectedVehicleId}
+          initialVehicle={initialVehicle ? { ...initialVehicle, customerId: null, customer: null } : null}
+          placeholder={vehicleName || t('searchVehicles')}
+          noneLabel={t('noVehicleFound')}
+          onChange={(id) => {
+            if (id) setSelectedVehicleId(id)
+          }}
+        />
+      </div>
 
       {customer && (
         <div className="flex items-center justify-between rounded-md border px-3 py-2">
@@ -227,4 +177,3 @@ export function BasicInfoSection({
     </div>
   )
 }
-

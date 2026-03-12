@@ -9,7 +9,6 @@ import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
 import type { ServiceDetail } from '../service-detail/types'
-import type { VehicleOption } from '../service-edit/form-types'
 import type { BoardTechnicianOption } from './service-page-types'
 
 interface DetailsRightColumnProps {
@@ -20,7 +19,7 @@ interface DetailsRightColumnProps {
   organizationId: string
   currencyCode: string
   taxEnabled: boolean
-  vehicles: VehicleOption[]
+  initialVehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null }
   boardTechnicians: BoardTechnicianOption[]
 }
 
@@ -32,7 +31,7 @@ export function DetailsRightColumn({
   organizationId,
   currencyCode,
   taxEnabled,
-  vehicles,
+  initialVehicle,
   boardTechnicians,
 }: DetailsRightColumnProps) {
   const router = useRouter()
@@ -59,15 +58,13 @@ export function DetailsRightColumn({
         vehicleName={formState.vehicleName}
         selectedVehicleId={formState.selectedVehicleId}
         setSelectedVehicleId={formState.dirtySetSelectedVehicleId}
-        vehicles={vehicles}
-        vehicleOpen={formState.vehicleOpen}
-        setVehicleOpen={formState.setVehicleOpen}
         type={formState.type}
         setType={formState.dirtySetType}
         status={formState.status}
         setStatus={formState.dirtySetStatus}
         techName={formState.techName}
         customer={record.vehicle.customer}
+        initialVehicle={initialVehicle}
       />
       <ScheduleTimesSection
         serviceRecordId={record.id}

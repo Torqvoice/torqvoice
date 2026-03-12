@@ -1,6 +1,6 @@
 import type { ServicePartInput, ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { ServiceDetail } from '../service-detail/types'
-import type { InitialData, InventoryPartOption, VehicleOption } from '../service-edit/form-types'
+import type { InitialData, InventoryPartOption } from '../service-edit/form-types'
 
 export interface BoardTechnicianOption {
   id: string
@@ -30,7 +30,7 @@ export interface ServicePageClientProps {
   defaultLaborRate: number
   initialData: InitialData
   inventoryParts: InventoryPartOption[]
-  vehicles: VehicleOption[]
+  initialVehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null }
   boardTechnicians?: BoardTechnicianOption[]
   currentUserName: string
   imageAttachmentsForManager: Attachment[]
@@ -43,4 +43,4 @@ export interface ServicePageClientProps {
   emailEnabled?: boolean
 }
 
-export type { ServicePartInput, ServiceLaborInput, ServiceDetail, InitialData, InventoryPartOption, VehicleOption }
+export type { ServicePartInput, ServiceLaborInput, ServiceDetail, InitialData, InventoryPartOption }
