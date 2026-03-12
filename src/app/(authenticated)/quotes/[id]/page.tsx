@@ -3,7 +3,6 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { getFeatures } from '@/lib/features'
-import { db } from '@/lib/db'
 import { PageHeader } from '@/components/page-header'
 import { QuotePageClient } from '@/features/quotes/Components/QuotePageClient'
 
@@ -21,23 +20,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   ])
 
   const orgId = authContext?.organizationId
-  const [features, aiSettings] = await Promise.all([
-    orgId ? getFeatures(orgId) : Promise.resolve(null),
-    orgId
-      ? db.appSetting.findMany({
-          where: {
-            organizationId: orgId,
-            key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] },
-          },
-          select: { key: true, value: true },
-        })
-      : Promise.resolve([]),
-  ])
-  const aiMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]))
-  const aiEnabled =
-    features?.ai === true &&
-    aiMap[SETTING_KEYS.AI_ENABLED] === 'true' &&
-    !!aiMap[SETTING_KEYS.AI_API_KEY]
+  const features = orgId ? await getFeatures(orgId) : null
 
   if (!result.success || !result.data) {
     return (
@@ -81,7 +64,6 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         defaultLaborRate={defaultLaborRate}
         smsEnabled={features?.sms ?? false}
         emailEnabled={features?.smtp ?? false}
-        aiEnabled={aiEnabled}
       />
     </div>
   )

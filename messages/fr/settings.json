@@ -958,10 +958,10 @@
   },
   "ai": {
     "title": "Assistant IA",
-    "description": "Configurez l'IA pour generer automatiquement des notes de service, resumer l'historique du vehicule et creer des devis a partir de texte.",
+    "description": "Configurez l'IA pour generer automatiquement des notes de service et resumer l'historique du vehicule.",
     "enableLabel": "Activer l'IA",
     "enableHint": "Utiliser les fonctionnalites alimentees par l'IA dans toute l'application",
-    "disabledInfo": "Activez l'IA pour utiliser des fonctionnalites telles que les descriptions de service generees automatiquement, les resumes d'historique de vehicule et la creation de devis assistee par IA.",
+    "disabledInfo": "Activez l'IA pour utiliser des fonctionnalites telles que les descriptions de service generees automatiquement et les resumes d'historique de vehicule.",
     "provider": "Fournisseur IA",
     "apiKey": "Cle API",
     "apiKeyHint": "Votre cle API {provider}. Stockee en toute securite et jamais partagee.",
@@ -975,6 +975,10 @@
     "featuresTitle": "Fonctionnalites IA incluses :",
     "featureServiceNotes": "Generation automatique de descriptions de service professionnelles a partir des pieces et de la main-d'oeuvre",
     "featureHistorySummary": "Resume de l'historique de service du vehicule en un clic",
-    "featureQuoteBuilder": "Creer des devis a partir de descriptions en texte libre"
+    "cost": {
+      "high": "Coût élevé",
+      "medium": "Moyen",
+      "low": "Faible coût"
+    }
   }
 }

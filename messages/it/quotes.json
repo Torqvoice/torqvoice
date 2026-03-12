@@ -48,14 +48,7 @@
       "details": "Dettagli",
       "images": "Immagini",
       "documents": "Documenti"
-    },
-    "aiBuild": "AI Crea",
-    "aiBuildTitle": "Crea preventivo con AI",
-    "aiBuildDescription": "Descrivi il lavoro necessario in testo semplice e AI genererà ricambi e manodopera strutturati.",
-    "aiBuildPlaceholder": "es. BMW 320d necessita pastiglie freno anteriori, dischi e allineamento. Circa 2 ore di manodopera...",
-    "aiBuildGenerate": "Genera",
-    "aiBuildSuccess": "AI ha generato gli elementi del preventivo",
-    "aiBuildError": "Generazione del preventivo dal testo non riuscita"
+    }
   },
   "form": {
     "newQuote": "Nuovo preventivo",

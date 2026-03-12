@@ -904,10 +904,10 @@
   },
   "ai": {
     "title": "AI-assistent",
-    "description": "Konfigurer AI for automatisk generering av servicenotater, oppsummering av kjøretøyhistorikk og bygging av tilbud fra tekst.",
+    "description": "Konfigurer AI for automatisk generering av servicenotater og oppsummering av kjøretøyhistorikk.",
     "enableLabel": "Aktiver AI",
     "enableHint": "Bruk AI-drevne funksjoner i applikasjonen",
-    "disabledInfo": "Aktiver AI for å bruke funksjoner som automatisk genererte servicebeskrivelser, oppsummering av kjøretøyhistorikk og AI-drevet tilbudsbygging.",
+    "disabledInfo": "Aktiver AI for å bruke funksjoner som automatisk genererte servicebeskrivelser og oppsummering av kjøretøyhistorikk.",
     "provider": "AI-leverandør",
     "apiKey": "API-nøkkel",
     "apiKeyHint": "Din {provider} API-nøkkel. Lagres sikkert og deles aldri.",
@@ -921,6 +921,10 @@
     "featuresTitle": "AI-drevne funksjoner inkludert:",
     "featureServiceNotes": "Automatisk generering av profesjonelle servicebeskrivelser fra deler og arbeid",
     "featureHistorySummary": "Oppsummering av kjøretøyets servicehistorikk med ett klikk",
-    "featureQuoteBuilder": "Bygg tilbud fra fritekstbeskrivelser"
+    "cost": {
+      "high": "Høy kostnad",
+      "medium": "Middels",
+      "low": "Lav kostnad"
+    }
   }
 }

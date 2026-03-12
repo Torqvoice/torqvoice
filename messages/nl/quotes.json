@@ -48,14 +48,7 @@
       "details": "Details",
       "images": "Afbeeldingen",
       "documents": "Documenten"
-    },
-    "aiBuild": "AI Opstellen",
-    "aiBuildTitle": "Offerte opstellen met AI",
-    "aiBuildDescription": "Beschrijf het benodigde werk in gewone tekst en AI genereert gestructureerde onderdelen en arbeidsposten.",
-    "aiBuildPlaceholder": "bijv. BMW 320d heeft nieuwe remblokken voor, schijven en uitlijning nodig. Ongeveer 2 uur arbeid...",
-    "aiBuildGenerate": "Genereren",
-    "aiBuildSuccess": "AI heeft offerteposten gegenereerd",
-    "aiBuildError": "Offerte genereren uit tekst mislukt"
+    }
   },
   "form": {
     "newQuote": "Nieuwe offerte",

@@ -958,10 +958,10 @@
   },
   "ai": {
     "title": "Asystent AI",
-    "description": "Skonfiguruj AI do automatycznego generowania notatek serwisowych, podsumowywania historii pojazdu i tworzenia wycen z tekstu.",
+    "description": "Skonfiguruj AI do automatycznego generowania notatek serwisowych i podsumowywania historii pojazdu.",
     "enableLabel": "Wlacz AI",
     "enableHint": "Korzystaj z funkcji opartych na AI w calej aplikacji",
-    "disabledInfo": "Wlacz AI, aby korzystac z funkcji takich jak automatycznie generowane opisy serwisowe, podsumowania historii pojazdu i tworzenie wycen z pomoca AI.",
+    "disabledInfo": "Wlacz AI, aby korzystac z funkcji takich jak automatycznie generowane opisy serwisowe i podsumowania historii pojazdu.",
     "provider": "Dostawca AI",
     "apiKey": "Klucz API",
     "apiKeyHint": "Twoj klucz API {provider}. Przechowywany bezpiecznie i nigdy nieudostepniany.",
@@ -975,6 +975,10 @@
     "featuresTitle": "Zawarte funkcje AI:",
     "featureServiceNotes": "Automatyczne generowanie profesjonalnych opisow serwisowych z czesci i robocizny",
     "featureHistorySummary": "Podsumowanie historii serwisowej pojazdu jednym kliknieciem",
-    "featureQuoteBuilder": "Tworzenie wycen z opisow tekstowych"
+    "cost": {
+      "high": "Wysoki koszt",
+      "medium": "Średni",
+      "low": "Niski koszt"
+    }
   }
 }

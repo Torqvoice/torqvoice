@@ -958,10 +958,10 @@
   },
   "ai": {
     "title": "Assistente de IA",
-    "description": "Configure a IA para gerar automaticamente notas de servico, resumir o historico do veiculo e criar orcamentos a partir de texto.",
+    "description": "Configure a IA para gerar automaticamente notas de servico e resumir o historico do veiculo.",
     "enableLabel": "Ativar IA",
     "enableHint": "Usar recursos de IA em toda a aplicacao",
-    "disabledInfo": "Ative a IA para usar recursos como descricoes de servico geradas automaticamente, resumos do historico do veiculo e criacao de orcamentos com IA.",
+    "disabledInfo": "Ative a IA para usar recursos como descricoes de servico geradas automaticamente e resumos do historico do veiculo.",
     "provider": "Provedor de IA",
     "apiKey": "Chave API",
     "apiKeyHint": "Sua chave API {provider}. Armazenada com seguranca e nunca compartilhada.",
@@ -975,6 +975,10 @@
     "featuresTitle": "Recursos de IA incluidos:",
     "featureServiceNotes": "Gerar automaticamente descricoes profissionais de servico a partir de pecas e mao de obra",
     "featureHistorySummary": "Resumo do historico de servico do veiculo com um clique",
-    "featureQuoteBuilder": "Criar orcamentos a partir de descricoes em texto livre"
+    "cost": {
+      "high": "Alto custo",
+      "medium": "Médio",
+      "low": "Baixo custo"
+    }
   }
 }

@@ -904,10 +904,10 @@
   },
   "ai": {
     "title": "AI Assistant",
-    "description": "Configure AI to auto-generate service notes, summarize vehicle history, and build quotes from text.",
+    "description": "Configure AI to auto-generate service notes and summarize vehicle history.",
     "enableLabel": "Enable AI",
     "enableHint": "Use AI-powered features throughout the application",
-    "disabledInfo": "Enable AI to use features like auto-generated service descriptions, vehicle history summaries, and AI-powered quote building.",
+    "disabledInfo": "Enable AI to use features like auto-generated service descriptions and vehicle history summaries.",
     "provider": "AI Provider",
     "apiKey": "API Key",
     "apiKeyHint": "Your {provider} API key. Stored securely and never shared.",
@@ -921,6 +921,10 @@
     "featuresTitle": "AI-powered features included:",
     "featureServiceNotes": "Auto-generate professional service descriptions from parts and labor",
     "featureHistorySummary": "One-click vehicle service history summary",
-    "featureQuoteBuilder": "Build quotes from plain text descriptions"
+    "cost": {
+      "high": "High Cost",
+      "medium": "Medium",
+      "low": "Low Cost"
+    }
   }
 }

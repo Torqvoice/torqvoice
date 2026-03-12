@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
-import { Textarea } from '@/components/ui/textarea'
 import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
 import { revokeQuotePublicLink } from '@/features/quotes/Actions/quoteShareActions'
@@ -26,7 +25,6 @@ import {
   Mail,
   Paperclip,
   Save,
-  Sparkles,
   Trash2,
 } from 'lucide-react'
 import { getCurrencySymbol } from '@/lib/format'
@@ -66,7 +64,6 @@ export function QuotePageClient({
   documentAttachments = [],
   maxImages,
   maxDocuments,
-  aiEnabled = false,
 }: {
   quote: QuoteRecord
   organizationId: string
@@ -80,7 +77,6 @@ export function QuotePageClient({
   documentAttachments?: QuoteAttachment[]
   maxImages?: number
   maxDocuments?: number
-  aiEnabled?: boolean
 }) {
   const cs = getCurrencySymbol(currencyCode)
   const router = useRouter()
@@ -116,9 +112,6 @@ export function QuotePageClient({
     },
     [state]
   )
-  const handleOpenAiBuild = useCallback(() => {
-    state.setShowAiBuildDialog(true)
-  }, [state])
   const handleRevoke = useCallback(async () => {
     await revokeQuotePublicLink(quote.id)
     router.refresh()
@@ -130,11 +123,9 @@ export function QuotePageClient({
         partItems={state.partItems}
         currencyCode={currencyCode}
         partsSubtotal={state.partsSubtotal}
-        aiEnabled={aiEnabled}
         onUpdate={state.updatePart}
         onDelete={state.deletePart}
         onAdd={state.addPart}
-        onOpenAiBuild={handleOpenAiBuild}
         t={t}
       />
       <QuoteLaborEditor
@@ -411,43 +402,6 @@ export function QuotePageClient({
         </DialogContent>
       </Dialog>
 
-      {/* AI Build Quote Dialog */}
-      <Dialog open={state.showAiBuildDialog} onOpenChange={state.setShowAiBuildDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
-              {t('page.aiBuildTitle')}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">{t('page.aiBuildDescription')}</p>
-            <Textarea
-              value={state.aiFreeText}
-              onChange={(e) => state.setAiFreeText(e.target.value)}
-              placeholder={t('page.aiBuildPlaceholder')}
-              rows={5}
-            />
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                onClick={state.handleAiBuild}
-                disabled={state.aiBuilding || !state.aiFreeText.trim()}
-              >
-                {state.aiBuilding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('page.aiBuildGenerate')}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => state.setShowAiBuildDialog(false)}
-              >
-                {t('page.cancel')}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

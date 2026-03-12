@@ -48,14 +48,7 @@
       "details": "Szczegóły",
       "images": "Zdjęcia",
       "documents": "Dokumenty"
-    },
-    "aiBuild": "AI Utwórz",
-    "aiBuildTitle": "Utwórz wycenę z AI",
-    "aiBuildDescription": "Opisz potrzebne prace zwykłym tekstem, a AI wygeneruje ustrukturyzowane pozycje części i robocizny.",
-    "aiBuildPlaceholder": "np. BMW 320d potrzebuje przednich klocków hamulcowych, tarcz i wyważenia. Około 2 godz. robocizny...",
-    "aiBuildGenerate": "Generuj",
-    "aiBuildSuccess": "AI wygenerowało pozycje wyceny",
-    "aiBuildError": "Nie udało się wygenerować wyceny z tekstu"
+    }
   },
   "form": {
     "newQuote": "Nowa wycena",

@@ -169,56 +169,6 @@ Provide a concise summary including:
   return chatCompletion(organizationId, systemPrompt, userPrompt);
 }
 
-export interface QuoteFromTextResult {
-  description: string;
-  parts: { name: string; quantity: number; estimatedPrice: number }[];
-  labor: { description: string; hours: number }[];
-}
-
-export async function buildQuoteFromText(
-  organizationId: string,
-  freeText: string,
-  vehicle?: { make: string; model: string; year: number } | null,
-  inventoryParts?: { name: string; unitCost: number; partNumber: string | null }[],
-  locale: Locale = "en",
-): Promise<QuoteFromTextResult> {
-  const langNote = locale !== "en" ? ` Write the "description" and labor "description" fields in ${localeNames[locale] || locale}.` : "";
-  const systemPrompt = `You are an automotive service advisor. Parse the technician's free-text description into structured quote line items. Return ONLY valid JSON with this exact schema — no other text:
-{
-  "description": "Professional quote description",
-  "parts": [{ "name": "Part name", "quantity": 1, "estimatedPrice": 0 }],
-  "labor": [{ "description": "Labor description", "hours": 1 }]
-}
-If inventory parts are provided, match against them and use their prices. Estimate reasonable prices for parts not in inventory. Be accurate with labor hour estimates.${langNote}`;
-
-  const inventoryStr =
-    inventoryParts && inventoryParts.length > 0
-      ? `\n\nAvailable inventory (use these prices when matching):\n${inventoryParts.map((p) => `- ${p.name}${p.partNumber ? ` (${p.partNumber})` : ""}: ${p.unitCost}`).join("\n")}`
-      : "";
-
-  const vehicleStr = vehicle
-    ? `\nVehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model}`
-    : "";
-
-  const userPrompt = `${freeText}${vehicleStr}${inventoryStr}`;
-
-  const raw = await chatCompletion(organizationId, systemPrompt, userPrompt);
-
-  // Extract JSON from response (may be wrapped in code fences)
-  const jsonMatch = raw.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    throw new Error("Failed to parse AI response into structured data");
-  }
-
-  const parsed = JSON.parse(jsonMatch[0]) as QuoteFromTextResult;
-
-  return {
-    description: parsed.description || "",
-    parts: Array.isArray(parsed.parts) ? parsed.parts : [],
-    labor: Array.isArray(parsed.labor) ? parsed.labor : [],
-  };
-}
-
 export async function testAiConnection(
   organizationId: string,
 ): Promise<boolean> {

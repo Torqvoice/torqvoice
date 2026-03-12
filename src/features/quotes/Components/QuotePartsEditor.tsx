@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, Sparkles } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import type { QuotePartInput } from "./quote-page-types";
 
@@ -43,11 +43,9 @@ interface QuotePartsEditorProps {
   partItems: QuotePartInput[];
   currencyCode: string;
   partsSubtotal: number;
-  aiEnabled: boolean;
   onUpdate: (index: number, field: keyof QuotePartInput, value: string | number | boolean) => void;
   onDelete: (index: number) => void;
   onAdd: () => void;
-  onOpenAiBuild: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string;
 }
@@ -56,11 +54,9 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
   partItems,
   currencyCode,
   partsSubtotal,
-  aiEnabled,
   onUpdate,
   onDelete,
   onAdd,
-  onOpenAiBuild,
   t,
 }: QuotePartsEditorProps) {
   return (
@@ -68,11 +64,6 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">{t("parts.title")}</h3>
         <div className="flex items-center gap-2">
-          {aiEnabled && (
-            <Button type="button" variant="ghost" size="sm" className="gap-1.5 text-xs" onClick={onOpenAiBuild}>
-              <Sparkles className="h-3.5 w-3.5" /> {t("page.aiBuild")}
-            </Button>
-          )}
           <Button type="button" variant="outline" size="sm" onClick={onAdd}>
             <Plus className="mr-1 h-3.5 w-3.5" /> {t("parts.addPart")}
           </Button>

@@ -958,10 +958,10 @@
   },
   "ai": {
     "title": "Assistente IA",
-    "description": "Configura l'IA per generare automaticamente note di servizio, riassumere la cronologia del veicolo e creare preventivi dal testo.",
+    "description": "Configura l'IA per generare automaticamente note di servizio e riassumere la cronologia del veicolo.",
     "enableLabel": "Abilita IA",
     "enableHint": "Usa le funzionalita basate sull'IA in tutta l'applicazione",
-    "disabledInfo": "Abilita l'IA per utilizzare funzionalita come descrizioni di servizio generate automaticamente, riassunti della cronologia del veicolo e creazione di preventivi assistita dall'IA.",
+    "disabledInfo": "Abilita l'IA per utilizzare funzionalita come descrizioni di servizio generate automaticamente e riassunti della cronologia del veicolo.",
     "provider": "Provider IA",
     "apiKey": "Chiave API",
     "apiKeyHint": "La tua chiave API {provider}. Conservata in modo sicuro e mai condivisa.",
@@ -975,6 +975,10 @@
     "featuresTitle": "Funzionalita IA incluse:",
     "featureServiceNotes": "Generazione automatica di descrizioni di servizio professionali da ricambi e manodopera",
     "featureHistorySummary": "Riepilogo della cronologia di servizio del veicolo con un clic",
-    "featureQuoteBuilder": "Crea preventivi da descrizioni in testo libero"
+    "cost": {
+      "high": "Costo alto",
+      "medium": "Medio",
+      "low": "Costo basso"
+    }
   }
 }

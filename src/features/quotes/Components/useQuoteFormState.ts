@@ -7,7 +7,6 @@ import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { updateQuote, deleteQuote, convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
-import { aiBuildQuoteFromText } from "@/features/ai/Actions/aiActions";
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from "./quote-page-types";
 import { emptyPart, makeEmptyLabor } from "./quote-page-types";
 
@@ -75,9 +74,6 @@ export function useQuoteFormState({
   const [showConvertDialog, setShowConvertDialog] = useState(false);
   const [convertVehicleId, setConvertVehicleId] = useState(quote.vehicle?.id || "");
   const [converting, setConverting] = useState(false);
-  const [showAiBuildDialog, setShowAiBuildDialog] = useState(false);
-  const [aiFreeText, setAiFreeText] = useState("");
-  const [aiBuilding, setAiBuilding] = useState(false);
   const [resolving, setResolving] = useState(false);
 
   const [defaultValidDate] = useState(() =>
@@ -302,55 +298,6 @@ export function useQuoteFormState({
     setResolving(false);
   };
 
-  const handleAiBuild = async () => {
-    if (!aiFreeText.trim()) return;
-    setAiBuilding(true);
-    try {
-      const result = await aiBuildQuoteFromText(aiFreeText.trim(), vehicleId || null);
-      if (result.success && result.data) {
-        const parsed = result.data as { description?: string; parts?: { name: string; quantity: number; estimatedPrice: number; partNumber?: string }[]; labor?: { description: string; hours: number }[] };
-        if (parsed.description) {
-          setDescription(parsed.description);
-        }
-        if (parsed.parts?.length) {
-          setPartItems((prev) => [
-            ...prev,
-            ...parsed.parts!.map((p) => ({
-              partNumber: p.partNumber || "",
-              name: p.name,
-              quantity: p.quantity,
-              unitPrice: p.estimatedPrice,
-              total: p.quantity * p.estimatedPrice,
-              excluded: false,
-            })),
-          ]);
-        }
-        if (parsed.labor?.length) {
-          setLaborItems((prev) => [
-            ...prev,
-            ...parsed.labor!.map((l) => ({
-              description: l.description,
-              hours: l.hours,
-              rate: defaultLaborRate,
-              total: l.hours * defaultLaborRate,
-              excluded: false,
-            })),
-          ]);
-        }
-        markDirty();
-        toast.success(t("page.aiBuildSuccess"));
-        setShowAiBuildDialog(false);
-        setAiFreeText("");
-      } else {
-        toast.error(result.error ?? t("page.aiBuildError"));
-      }
-    } catch {
-      toast.error(t("page.aiBuildError"));
-    } finally {
-      setAiBuilding(false);
-    }
-  };
-
   return {
     // Tab
     activeTab, setActiveTab,
@@ -366,7 +313,6 @@ export function useQuoteFormState({
     showShareDialog, setShowShareDialog,
     showConvertDialog, setShowConvertDialog,
     convertVehicleId, setConvertVehicleId, converting,
-    showAiBuildDialog, setShowAiBuildDialog, aiFreeText, setAiFreeText, aiBuilding,
     resolving, defaultValidDate,
     // Unsaved
     hasUnsavedChanges, showSaved, formRef,
@@ -376,7 +322,7 @@ export function useQuoteFormState({
     // Callbacks
     markDirty, updatePart, updateLabor, addPart, addLabor, deletePart, deleteLabor,
     handleSubmit, handleDelete, handleDownloadPDF,
-    handleConvert, handleResolveResponse, handleAiBuild, saveNow,
+    handleConvert, handleResolveResponse, saveNow,
   };
 }
 

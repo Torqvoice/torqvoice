@@ -958,10 +958,10 @@
   },
   "ai": {
     "title": "Yapay Zeka Asistani",
-    "description": "Servis notlarini otomatik olusturmak, arac gecmisini ozetlemek ve metinden teklif olusturmak icin yapay zekayi yapilandirin.",
+    "description": "Servis notlarini otomatik olusturmak ve arac gecmisini ozetlemek icin yapay zekayi yapilandirin.",
     "enableLabel": "Yapay zekayi etkinlestir",
     "enableHint": "Uygulama genelinde yapay zeka destekli ozellikleri kullanin",
-    "disabledInfo": "Otomatik olusturulan servis aciklamalari, arac gecmisi ozetleri ve yapay zeka destekli teklif olusturma gibi ozellikleri kullanmak icin yapay zekayi etkinlestirin.",
+    "disabledInfo": "Otomatik olusturulan servis aciklamalari ve arac gecmisi ozetleri gibi ozellikleri kullanmak icin yapay zekayi etkinlestirin.",
     "provider": "Yapay Zeka Saglayici",
     "apiKey": "API Anahtari",
     "apiKeyHint": "{provider} API anahtariniz. Guvenli bir sekilde saklanir ve asla paylasilmaz.",
@@ -975,6 +975,10 @@
     "featuresTitle": "Dahil edilen yapay zeka ozellikleri:",
     "featureServiceNotes": "Parca ve iscilikten profesyonel servis aciklamalarini otomatik olusturma",
     "featureHistorySummary": "Tek tikla arac servis gecmisi ozeti",
-    "featureQuoteBuilder": "Serbest metin aciklamalarindan teklif olusturma"
+    "cost": {
+      "high": "Yüksek maliyet",
+      "medium": "Orta",
+      "low": "Düşük maliyet"
+    }
   }
 }

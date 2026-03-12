@@ -44,13 +44,6 @@
     "markResolved": "Mark as Resolved",
     "responseResolved": "Customer response resolved",
     "entityLabel": "Quote",
-    "aiBuild": "AI Build",
-    "aiBuildTitle": "Build Quote with AI",
-    "aiBuildDescription": "Describe the work needed in plain text and AI will generate structured parts and labor items.",
-    "aiBuildPlaceholder": "e.g. BMW 320d needs front brake pads, rotors, and alignment. About 2hrs labor...",
-    "aiBuildGenerate": "Generate",
-    "aiBuildSuccess": "AI generated quote items",
-    "aiBuildError": "Failed to generate quote from text",
     "tabs": {
       "details": "Details",
       "images": "Images",

@@ -958,10 +958,10 @@
   },
   "ai": {
     "title": "KI-Assistent",
-    "description": "Konfigurieren Sie KI, um automatisch Servicenotizen zu erstellen, Fahrzeughistorien zusammenzufassen und Angebote aus Text zu generieren.",
+    "description": "Konfigurieren Sie KI, um automatisch Servicenotizen zu erstellen und Fahrzeughistorien zusammenzufassen.",
     "enableLabel": "KI aktivieren",
     "enableHint": "KI-gestutzte Funktionen in der gesamten Anwendung nutzen",
-    "disabledInfo": "Aktivieren Sie KI, um Funktionen wie automatisch generierte Servicebeschreibungen, Fahrzeughistorien-Zusammenfassungen und KI-gestutzten Angebotsbau zu nutzen.",
+    "disabledInfo": "Aktivieren Sie KI, um Funktionen wie automatisch generierte Servicebeschreibungen und Fahrzeughistorien-Zusammenfassungen zu nutzen.",
     "provider": "KI-Anbieter",
     "apiKey": "API-Schlussel",
     "apiKeyHint": "Ihr {provider} API-Schlussel. Sicher gespeichert und niemals weitergegeben.",
@@ -975,6 +975,10 @@
     "featuresTitle": "Enthaltene KI-gestutzte Funktionen:",
     "featureServiceNotes": "Automatische Erstellung professioneller Servicebeschreibungen aus Teilen und Arbeit",
     "featureHistorySummary": "Zusammenfassung der Fahrzeug-Servicehistorie mit einem Klick",
-    "featureQuoteBuilder": "Angebote aus Freitextbeschreibungen erstellen"
+    "cost": {
+      "high": "Hohe Kosten",
+      "medium": "Mittel",
+      "low": "Niedrige Kosten"
+    }
   }
 }

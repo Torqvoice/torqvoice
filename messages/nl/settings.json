@@ -958,10 +958,10 @@
   },
   "ai": {
     "title": "AI-assistent",
-    "description": "Configureer AI om automatisch servicenotities te genereren, voertuiggeschiedenis samen te vatten en offertes uit tekst op te stellen.",
+    "description": "Configureer AI om automatisch servicenotities te genereren en voertuiggeschiedenis samen te vatten.",
     "enableLabel": "AI inschakelen",
     "enableHint": "Gebruik AI-functies in de hele applicatie",
-    "disabledInfo": "Schakel AI in om functies te gebruiken zoals automatisch gegenereerde servicebeschrijvingen, samenvattingen van voertuiggeschiedenis en AI-gestuurde offerte-opbouw.",
+    "disabledInfo": "Schakel AI in om functies te gebruiken zoals automatisch gegenereerde servicebeschrijvingen en samenvattingen van voertuiggeschiedenis.",
     "provider": "AI-provider",
     "apiKey": "API-sleutel",
     "apiKeyHint": "Uw {provider} API-sleutel. Veilig opgeslagen en nooit gedeeld.",
@@ -975,6 +975,10 @@
     "featuresTitle": "Inbegrepen AI-functies:",
     "featureServiceNotes": "Automatisch professionele servicebeschrijvingen genereren uit onderdelen en arbeid",
     "featureHistorySummary": "Samenvatting van voertuig-servicegeschiedenis met een klik",
-    "featureQuoteBuilder": "Offertes opstellen uit vrije tekstbeschrijvingen"
+    "cost": {
+      "high": "Hoge kosten",
+      "medium": "Gemiddeld",
+      "low": "Lage kosten"
+    }
   }
 }

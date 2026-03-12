@@ -48,14 +48,7 @@
       "details": "Detaylar",
       "images": "Görseller",
       "documents": "Belgeler"
-    },
-    "aiBuild": "AI Oluştur",
-    "aiBuildTitle": "AI ile Teklif Oluştur",
-    "aiBuildDescription": "Gerekli işi düz metin olarak açıklayın, AI yapılandırılmış parça ve işçilik kalemleri oluşturacaktır.",
-    "aiBuildPlaceholder": "örn. BMW 320d ön fren balataları, diskler ve rot ayarı gerekiyor. Yaklaşık 2 saat işçilik...",
-    "aiBuildGenerate": "Oluştur",
-    "aiBuildSuccess": "AI teklif kalemlerini oluşturdu",
-    "aiBuildError": "Metinden teklif oluşturulamadı"
+    }
   },
   "form": {
     "newQuote": "Yeni Teklif",

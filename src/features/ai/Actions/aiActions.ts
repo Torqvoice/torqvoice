@@ -8,7 +8,6 @@ import type { Locale } from "@/i18n/config";
 import {
   generateServiceDescription,
   summarizeServiceHistory,
-  buildQuoteFromText,
   testAiConnection,
 } from "@/lib/ai";
 
@@ -85,39 +84,6 @@ export async function aiSummarizeVehicleHistory(vehicleId: string) {
     {
       requiredPermissions: [
         { action: PermissionAction.READ, subject: PermissionSubject.VEHICLES },
-      ],
-    },
-  );
-}
-
-export async function aiBuildQuoteFromText(
-  freeText: string,
-  vehicleId?: string | null,
-) {
-  return withAuth(
-    async ({ organizationId }) => {
-      const locale = (await getLocale()) as Locale;
-      let vehicle: { make: string; model: string; year: number } | null = null;
-
-      if (vehicleId) {
-        vehicle = await db.vehicle.findFirst({
-          where: { id: vehicleId, organizationId },
-          select: { make: true, model: true, year: true },
-        });
-      }
-
-      // Fetch inventory for price matching
-      const inventoryParts = await db.inventoryPart.findMany({
-        where: { organizationId, isArchived: false },
-        select: { name: true, unitCost: true, partNumber: true },
-        take: 100,
-      });
-
-      return buildQuoteFromText(organizationId, freeText, vehicle, inventoryParts, locale);
-    },
-    {
-      requiredPermissions: [
-        { action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES },
       ],
     },
   );
