@@ -31,20 +31,30 @@ export async function globalSearch(query: string) {
 
     const q = query.trim();
     const mode = "insensitive" as Prisma.QueryMode;
+    const words = q.split(/\s+/).filter(Boolean);
 
-    const vehicleOr: Prisma.VehicleWhereInput[] = [
-      { make: { contains: q, mode } },
-      { model: { contains: q, mode } },
-      { licensePlate: { contains: q, mode } },
-      { vin: { contains: q, mode } },
-    ];
-    if (!isNaN(Number(q))) {
-      vehicleOr.push({ year: Number(q) });
-    }
+    // For multi-word queries, each word must match at least one field (AND logic).
+    // For single-word queries, behavior is the same as before.
+
+    const vehicleWhere: Prisma.VehicleWhereInput = {
+      organizationId,
+      AND: words.map((word) => {
+        const or: Prisma.VehicleWhereInput[] = [
+          { make: { contains: word, mode } },
+          { model: { contains: word, mode } },
+          { licensePlate: { contains: word, mode } },
+          { vin: { contains: word, mode } },
+        ];
+        if (!isNaN(Number(word))) {
+          or.push({ year: Number(word) });
+        }
+        return { OR: or };
+      }),
+    };
 
     const [vehicles, customers, services, parts, quotes, reminders, inspections] = await Promise.all([
       db.vehicle.findMany({
-        where: { organizationId, OR: vehicleOr },
+        where: vehicleWhere,
         select: {
           id: true,
           make: true,
@@ -57,12 +67,14 @@ export async function globalSearch(query: string) {
       db.customer.findMany({
         where: {
           organizationId,
-          OR: [
-            { name: { contains: q, mode } },
-            { email: { contains: q, mode } },
-            { phone: { contains: q, mode } },
-            { company: { contains: q, mode } },
-          ],
+          AND: words.map((word) => ({
+            OR: [
+              { name: { contains: word, mode } },
+              { email: { contains: word, mode } },
+              { phone: { contains: word, mode } },
+              { company: { contains: word, mode } },
+            ],
+          })),
         },
         select: {
           id: true,
@@ -88,11 +100,13 @@ export async function globalSearch(query: string) {
       db.serviceRecord.findMany({
         where: {
           vehicle: { organizationId },
-          OR: [
-            { title: { contains: q, mode } },
-            { invoiceNumber: { contains: q, mode } },
-            { techName: { contains: q, mode } },
-          ],
+          AND: words.map((word) => ({
+            OR: [
+              { title: { contains: word, mode } },
+              { invoiceNumber: { contains: word, mode } },
+              { techName: { contains: word, mode } },
+            ],
+          })),
         },
         select: {
           id: true,
@@ -114,11 +128,13 @@ export async function globalSearch(query: string) {
         where: {
           organizationId,
           isArchived: false,
-          OR: [
-            { name: { contains: q, mode } },
-            { partNumber: { contains: q, mode } },
-            { supplier: { contains: q, mode } },
-          ],
+          AND: words.map((word) => ({
+            OR: [
+              { name: { contains: word, mode } },
+              { partNumber: { contains: word, mode } },
+              { supplier: { contains: word, mode } },
+            ],
+          })),
         },
         select: {
           id: true,
@@ -131,11 +147,13 @@ export async function globalSearch(query: string) {
       db.quote.findMany({
         where: {
           organizationId,
-          OR: [
-            { title: { contains: q, mode } },
-            { quoteNumber: { contains: q, mode } },
-            { customer: { name: { contains: q, mode } } },
-          ],
+          AND: words.map((word) => ({
+            OR: [
+              { title: { contains: word, mode } },
+              { quoteNumber: { contains: word, mode } },
+              { customer: { name: { contains: word, mode } } },
+            ],
+          })),
         },
         select: {
           id: true,
@@ -148,13 +166,15 @@ export async function globalSearch(query: string) {
       db.reminder.findMany({
         where: {
           vehicle: { organizationId },
-          OR: [
-            { title: { contains: q, mode } },
-            { description: { contains: q, mode } },
-            { vehicle: { make: { contains: q, mode } } },
-            { vehicle: { model: { contains: q, mode } } },
-            { vehicle: { licensePlate: { contains: q, mode } } },
-          ],
+          AND: words.map((word) => ({
+            OR: [
+              { title: { contains: word, mode } },
+              { description: { contains: word, mode } },
+              { vehicle: { make: { contains: word, mode } } },
+              { vehicle: { model: { contains: word, mode } } },
+              { vehicle: { licensePlate: { contains: word, mode } } },
+            ],
+          })),
         },
         select: {
           id: true,
@@ -176,13 +196,15 @@ export async function globalSearch(query: string) {
       db.inspection.findMany({
         where: {
           vehicle: { organizationId },
-          OR: [
-            { template: { name: { contains: q, mode } } },
-            { notes: { contains: q, mode } },
-            { vehicle: { make: { contains: q, mode } } },
-            { vehicle: { model: { contains: q, mode } } },
-            { vehicle: { licensePlate: { contains: q, mode } } },
-          ],
+          AND: words.map((word) => ({
+            OR: [
+              { template: { name: { contains: word, mode } } },
+              { notes: { contains: word, mode } },
+              { vehicle: { make: { contains: word, mode } } },
+              { vehicle: { model: { contains: word, mode } } },
+              { vehicle: { licensePlate: { contains: word, mode } } },
+            ],
+          })),
         },
         select: {
           id: true,
