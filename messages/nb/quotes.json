@@ -44,6 +44,13 @@
     "markResolved": "Merk som løst",
     "responseResolved": "Kundesvar løst",
     "entityLabel": "Tilbud",
+    "aiBuild": "AI Bygg",
+    "aiBuildTitle": "Bygg tilbud med AI",
+    "aiBuildDescription": "Beskriv arbeidet som trengs i ren tekst, så genererer AI strukturerte deler og arbeidsposter.",
+    "aiBuildPlaceholder": "f.eks. BMW 320d trenger nye bremseklosser foran, skiver og hjulinnstilling. Ca 2 timer arbeid...",
+    "aiBuildGenerate": "Generer",
+    "aiBuildSuccess": "AI genererte tilbudsposter",
+    "aiBuildError": "Kunne ikke generere tilbud fra tekst",
     "tabs": {
       "details": "Detaljer",
       "images": "Bilder",

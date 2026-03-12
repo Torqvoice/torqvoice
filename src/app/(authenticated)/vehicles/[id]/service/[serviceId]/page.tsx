@@ -81,7 +81,7 @@ export default async function ServiceDetailPage({
     : null;
   const orgId = membership?.organizationId;
 
-  const [members, currentUser, features] = await Promise.all([
+  const [members, currentUser, features, aiSettings] = await Promise.all([
     orgId
       ? db.organizationMember.findMany({
           where: { organizationId: orgId },
@@ -95,10 +95,21 @@ export default async function ServiceDetailPage({
         })
       : Promise.resolve(null),
     orgId ? getFeatures(orgId) : Promise.resolve(null),
+    orgId
+      ? db.appSetting.findMany({
+          where: {
+            organizationId: orgId,
+            key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] },
+          },
+          select: { key: true, value: true },
+        })
+      : Promise.resolve([]),
   ]);
 
   const teamMembers = members.map((m) => ({ id: m.id, name: m.user.name }));
   const currentUserName = currentUser?.name || "";
+  const aiSettingsMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]));
+  const aiEnabled = features?.ai === true && aiSettingsMap[SETTING_KEYS.AI_ENABLED] === "true" && !!aiSettingsMap[SETTING_KEYS.AI_API_KEY];
 
   const initialData = {
     id: record.id,
@@ -177,6 +188,7 @@ export default async function ServiceDetailPage({
         maxDocumentsPerService={features?.maxDocumentsPerService ?? 999999}
         smsEnabled={features?.sms ?? false}
         emailEnabled={features?.smtp ?? false}
+        aiEnabled={aiEnabled}
       />
     </div>
   );

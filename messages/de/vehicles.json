@@ -62,7 +62,12 @@
     "vehicleDeleteError": "Fehler beim L\u00f6schen des Fahrzeugs",
     "deleteTitle": "Fahrzeug l\u00f6schen?",
     "deleteDescription": "Dadurch werden {name} und alle zugeh\u00f6rigen Serviceeintr\u00e4ge, Notizen und Erinnerungen dauerhaft gel\u00f6scht. Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
-    "edit": "Bearbeiten"
+    "edit": "Bearbeiten",
+    "aiSummary": "AI Zusammenfassung",
+    "aiSummaryTitle": "Servicehistorie Zusammenfassung",
+    "aiSummaryEmpty": "Keine Serviceeinträge zum Zusammenfassen",
+    "aiSummaryError": "Zusammenfassung konnte nicht generiert werden",
+    "aiSummaryClose": "Schließen"
   },
   "quotes": {
     "newQuote": "Neues Angebot",

@@ -28,6 +28,7 @@ import {
   Mail,
   MessageSquare,
   Palette,
+  Sparkles,
   UserCog,
   UsersRound,
   Wrench,
@@ -79,6 +80,7 @@ const settingsCategories: SettingsCategory[] = [
     items: [
       { key: "workshop", href: "/settings/workshop", icon: Wrench },
       { key: "maintenance", href: "/settings/maintenance", icon: Gauge },
+      { key: "ai", href: "/settings/ai", icon: Sparkles, gate: "ai" },
     ],
   },
   {

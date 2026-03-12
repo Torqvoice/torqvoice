@@ -105,7 +105,10 @@
     "publicPlaceholder": "Note visibili sulla fattura...",
     "internalPlaceholder": "Note interne (non mostrate sulla fattura)...",
     "publicHelper": "Mostrato sulla fattura e nei documenti condivisi",
-    "internalHelper": "Visibile solo al tuo team"
+    "internalHelper": "Visibile solo al tuo team",
+    "aiWrite": "AI Scrivi",
+    "aiGenerated": "Note AI generate con successo",
+    "aiGenerateFailed": "Generazione note AI non riuscita"
   },
   "invoice": {
     "title": "Riepilogo Fattura",

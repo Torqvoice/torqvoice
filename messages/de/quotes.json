@@ -48,7 +48,14 @@
       "details": "Details",
       "images": "Bilder",
       "documents": "Dokumente"
-    }
+    },
+    "aiBuild": "AI Erstellen",
+    "aiBuildTitle": "Angebot mit AI erstellen",
+    "aiBuildDescription": "Beschreiben Sie die benötigte Arbeit in einfachem Text und AI wird strukturierte Teile- und Arbeitspositionen generieren.",
+    "aiBuildPlaceholder": "z.B. BMW 320d benötigt vordere Bremsbeläge, Bremsscheiben und Achsvermessung. Etwa 2 Stunden Arbeitszeit...",
+    "aiBuildGenerate": "Generieren",
+    "aiBuildSuccess": "AI hat Angebotspositionen generiert",
+    "aiBuildError": "Angebot konnte nicht aus Text generiert werden"
   },
   "form": {
     "newQuote": "Neues Angebot",

@@ -107,7 +107,10 @@
     "publicPlaceholder": "Notes visible on the invoice...",
     "internalPlaceholder": "Internal notes (not shown on invoice)...",
     "publicHelper": "Shown on the invoice and shared documents",
-    "internalHelper": "Only visible to your team"
+    "internalHelper": "Only visible to your team",
+    "aiWrite": "AI Write",
+    "aiGenerated": "AI notes generated successfully",
+    "aiGenerateFailed": "Failed to generate AI notes"
   },
   "invoice": {
     "title": "Invoice Summary",

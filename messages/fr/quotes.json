@@ -48,7 +48,14 @@
       "details": "Détails",
       "images": "Images",
       "documents": "Documents"
-    }
+    },
+    "aiBuild": "AI Créer",
+    "aiBuildTitle": "Créer un devis avec AI",
+    "aiBuildDescription": "Décrivez les travaux nécessaires en texte libre et AI générera des pièces et de la main-d'œuvre structurées.",
+    "aiBuildPlaceholder": "ex. BMW 320d a besoin de plaquettes de frein avant, disques et alignement. Environ 2h de main-d'œuvre...",
+    "aiBuildGenerate": "Générer",
+    "aiBuildSuccess": "AI a généré les éléments du devis",
+    "aiBuildError": "Échec de la génération du devis à partir du texte"
   },
   "form": {
     "newQuote": "Nouveau devis",

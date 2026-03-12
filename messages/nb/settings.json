@@ -24,6 +24,7 @@
       "customerPortal": { "title": "Kundeportal", "description": "Kundeselvbetjeningsportal" },
       "workshop": { "title": "Verksted", "description": "Tekniker- og arbeidsstandarder" },
       "maintenance": { "title": "Vedlikehold", "description": "Predikerte serviceintervaller" },
+      "ai": { "title": "AI", "description": "AI-leverandor og funksjoner" },
       "appearance": { "title": "Utseende", "description": "Tema og visning" },
       "data": { "title": "Data", "description": "Eksporter og importer sikkerhetskopi" },
       "license": { "title": "Lisens", "description": "White-label-lisens" },
@@ -890,5 +891,26 @@
     "upgradeAmountDue": "Beløp å betale nå",
     "upgradeSuccess": "Vellykket oppgradert til Enterprise!",
     "upgradeError": "Kunne ikke oppgradere abonnementet"
+  },
+  "ai": {
+    "title": "AI-assistent",
+    "description": "Konfigurer AI for automatisk generering av servicenotater, oppsummering av kjøretøyhistorikk og bygging av tilbud fra tekst.",
+    "enableLabel": "Aktiver AI",
+    "enableHint": "Bruk AI-drevne funksjoner i applikasjonen",
+    "disabledInfo": "Aktiver AI for å bruke funksjoner som automatisk genererte servicebeskrivelser, oppsummering av kjøretøyhistorikk og AI-drevet tilbudsbygging.",
+    "provider": "AI-leverandør",
+    "apiKey": "API-nøkkel",
+    "apiKeyHint": "Din {provider} API-nøkkel. Lagres sikkert og deles aldri.",
+    "model": "Modell",
+    "testConnection": "Test tilkobling",
+    "testSuccess": "AI-tilkobling vellykket!",
+    "testFailed": "Tilkobling mislyktes. Sjekk API-nøkkelen og modellen din.",
+    "saved": "AI-innstillinger lagret",
+    "failedSave": "Kunne ikke lagre AI-innstillinger",
+    "saveSettings": "Lagre innstillinger",
+    "featuresTitle": "AI-drevne funksjoner inkludert:",
+    "featureServiceNotes": "Automatisk generering av profesjonelle servicebeskrivelser fra deler og arbeid",
+    "featureHistorySummary": "Oppsummering av kjøretøyets servicehistorikk med ett klikk",
+    "featureQuoteBuilder": "Bygg tilbud fra fritekstbeskrivelser"
   }
 }

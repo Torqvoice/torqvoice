@@ -62,7 +62,12 @@
     "vehicleDeleteError": "Failed to delete vehicle",
     "deleteTitle": "Delete vehicle?",
     "deleteDescription": "This will permanently delete {name} and all associated service records, notes, and reminders. This action cannot be undone.",
-    "edit": "Edit"
+    "edit": "Edit",
+    "aiSummary": "AI Summary",
+    "aiSummaryTitle": "Service History Summary",
+    "aiSummaryEmpty": "No service records to summarize",
+    "aiSummaryError": "Failed to generate summary",
+    "aiSummaryClose": "Close"
   },
   "quotes": {
     "newQuote": "New Quote",

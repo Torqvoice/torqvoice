@@ -105,7 +105,10 @@
     "publicPlaceholder": "Opmerkingen zichtbaar op de factuur...",
     "internalPlaceholder": "Interne opmerkingen (niet weergegeven op de factuur)...",
     "publicHelper": "Weergegeven op de factuur en gedeelde documenten",
-    "internalHelper": "Alleen zichtbaar voor uw team"
+    "internalHelper": "Alleen zichtbaar voor uw team",
+    "aiWrite": "AI Schrijven",
+    "aiGenerated": "AI-notities succesvol gegenereerd",
+    "aiGenerateFailed": "AI-notities genereren mislukt"
   },
   "invoice": {
     "title": "Factuursamenvatting",

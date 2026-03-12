@@ -62,7 +62,12 @@
     "vehicleDeleteError": "Kunne ikke slette kjoretoy",
     "deleteTitle": "Slette kjoretoy?",
     "deleteDescription": "Dette vil permanent slette {name} og alle tilknyttede serviceoppforinger, notater og paminnelser. Denne handlingen kan ikke angres.",
-    "edit": "Rediger"
+    "edit": "Rediger",
+    "aiSummary": "AI Sammendrag",
+    "aiSummaryTitle": "Servicehistorikk-sammendrag",
+    "aiSummaryEmpty": "Ingen serviceoppføringer å oppsummere",
+    "aiSummaryError": "Kunne ikke generere sammendrag",
+    "aiSummaryClose": "Lukk"
   },
   "quotes": {
     "newQuote": "Nytt tilbud",

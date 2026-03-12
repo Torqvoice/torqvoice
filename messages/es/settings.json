@@ -66,6 +66,7 @@
         "title": "Mantenimiento",
         "description": "Intervalos de servicio predichos"
       },
+      "ai": { "title": "AI", "description": "Proveedor de IA y funciones" },
       "appearance": {
         "title": "Apariencia",
         "description": "Tema y visualizacion"
@@ -944,5 +945,26 @@
     "upgradeAmountDue": "Monto a pagar ahora",
     "upgradeSuccess": "¡Mejorado a Enterprise con éxito!",
     "upgradeError": "Error al mejorar la suscripción"
+  },
+  "ai": {
+    "title": "Asistente de IA",
+    "description": "Configure la IA para generar automaticamente notas de servicio, resumir el historial del vehiculo y crear presupuestos a partir de texto.",
+    "enableLabel": "Habilitar IA",
+    "enableHint": "Usar funciones impulsadas por IA en toda la aplicacion",
+    "disabledInfo": "Habilite la IA para usar funciones como descripciones de servicio generadas automaticamente, resumenes del historial del vehiculo y creacion de presupuestos con IA.",
+    "provider": "Proveedor de IA",
+    "apiKey": "Clave API",
+    "apiKeyHint": "Su clave API de {provider}. Almacenada de forma segura y nunca compartida.",
+    "model": "Modelo",
+    "testConnection": "Probar conexion",
+    "testSuccess": "Conexion de IA exitosa!",
+    "testFailed": "Conexion fallida. Verifique su clave API y modelo.",
+    "saved": "Configuracion de IA guardada",
+    "failedSave": "Error al guardar la configuracion de IA",
+    "saveSettings": "Guardar configuracion",
+    "featuresTitle": "Funciones impulsadas por IA incluidas:",
+    "featureServiceNotes": "Generar automaticamente descripciones profesionales de servicio a partir de piezas y mano de obra",
+    "featureHistorySummary": "Resumen del historial de servicio del vehiculo con un clic",
+    "featureQuoteBuilder": "Crear presupuestos a partir de descripciones en texto libre"
   }
 }

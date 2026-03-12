@@ -105,7 +105,10 @@
     "publicPlaceholder": "Notizen sichtbar auf der Rechnung...",
     "internalPlaceholder": "Interne Notizen (nicht auf Rechnung angezeigt)...",
     "publicHelper": "Auf der Rechnung und in gemeinsamen Dokumenten angezeigt",
-    "internalHelper": "Nur für Ihr Team sichtbar"
+    "internalHelper": "Nur für Ihr Team sichtbar",
+    "aiWrite": "AI Schreiben",
+    "aiGenerated": "AI-Notizen erfolgreich generiert",
+    "aiGenerateFailed": "AI-Notizen konnten nicht generiert werden"
   },
   "invoice": {
     "title": "Rechnungszusammenfassung",

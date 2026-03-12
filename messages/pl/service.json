@@ -105,7 +105,10 @@
     "publicPlaceholder": "Notatki widoczne na fakturze...",
     "internalPlaceholder": "Notatki wewnętrzne (nie pokazywane na fakturze)...",
     "publicHelper": "Pokazane na fakturze i współdzielonych dokumentach",
-    "internalHelper": "Widoczne tylko dla Twojego zespołu"
+    "internalHelper": "Widoczne tylko dla Twojego zespołu",
+    "aiWrite": "AI Pisz",
+    "aiGenerated": "Notatki AI wygenerowane pomyślnie",
+    "aiGenerateFailed": "Nie udało się wygenerować notatek AI"
   },
   "invoice": {
     "title": "Podsumowanie Faktury",

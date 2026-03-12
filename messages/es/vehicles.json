@@ -62,7 +62,12 @@
     "vehicleDeleteError": "Error al eliminar vehiculo",
     "deleteTitle": "Eliminar vehiculo?",
     "deleteDescription": "Esto eliminara permanentemente {name} y todos los registros de servicio, notas y recordatorios asociados. Esta accion no se puede deshacer.",
-    "edit": "Editar"
+    "edit": "Editar",
+    "aiSummary": "AI Resumen",
+    "aiSummaryTitle": "Resumen del Historial de Servicio",
+    "aiSummaryEmpty": "No hay registros de servicio para resumir",
+    "aiSummaryError": "Error al generar el resumen",
+    "aiSummaryClose": "Cerrar"
   },
   "quotes": {
     "newQuote": "Nueva cotización",

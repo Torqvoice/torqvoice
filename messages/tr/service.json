@@ -105,7 +105,10 @@
     "publicPlaceholder": "Faturada görünür notlar...",
     "internalPlaceholder": "İç notlar (faturada gösterilmez)...",
     "publicHelper": "Faturada gösterilir ve paylaşılan belgelerde yer alır",
-    "internalHelper": "Yalnızca takımınız tarafından görülebilir"
+    "internalHelper": "Yalnızca takımınız tarafından görülebilir",
+    "aiWrite": "AI Yaz",
+    "aiGenerated": "AI notları başarıyla oluşturuldu",
+    "aiGenerateFailed": "AI notları oluşturulamadı"
   },
   "invoice": {
     "title": "Fatura Özeti",

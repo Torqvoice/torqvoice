@@ -62,7 +62,12 @@
     "vehicleDeleteError": "\u00c9chec de la suppression du v\u00e9hicule",
     "deleteTitle": "Supprimer le v\u00e9hicule\u00a0?",
     "deleteDescription": "Cela supprimera d\u00e9finitivement {name} ainsi que tous les dossiers de service, notes et rappels associ\u00e9s. Cette action est irr\u00e9versible.",
-    "edit": "Modifier"
+    "edit": "Modifier",
+    "aiSummary": "AI Résumé",
+    "aiSummaryTitle": "Résumé de l'historique de service",
+    "aiSummaryEmpty": "Aucun dossier de service à résumer",
+    "aiSummaryError": "Échec de la génération du résumé",
+    "aiSummaryClose": "Fermer"
   },
   "quotes": {
     "newQuote": "Nouveau devis",

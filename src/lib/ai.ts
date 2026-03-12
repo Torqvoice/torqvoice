@@ -1,0 +1,224 @@
+import "server-only";
+import { db } from "@/lib/db";
+import { AI_KEYS } from "@/features/ai/Schema/aiSettingsSchema";
+import OpenAI from "openai";
+
+interface AiConfig {
+  provider: string;
+  apiKey: string;
+  model: string;
+}
+
+async function getAiConfig(organizationId: string): Promise<AiConfig> {
+  const settings = await db.appSetting.findMany({
+    where: {
+      organizationId,
+      key: {
+        in: [
+          AI_KEYS.AI_ENABLED,
+          AI_KEYS.AI_PROVIDER,
+          AI_KEYS.AI_API_KEY,
+          AI_KEYS.AI_MODEL,
+        ],
+      },
+    },
+  });
+
+  const map = new Map(settings.map((s) => [s.key, s.value]));
+
+  if (map.get(AI_KEYS.AI_ENABLED) !== "true") {
+    throw new Error("AI is not enabled. Configure it in Settings → AI.");
+  }
+
+  const provider = map.get(AI_KEYS.AI_PROVIDER);
+  const apiKey = map.get(AI_KEYS.AI_API_KEY);
+  const model = map.get(AI_KEYS.AI_MODEL);
+
+  if (!provider || !apiKey || !model) {
+    throw new Error(
+      "AI is not fully configured. Set provider, API key, and model in Settings → AI.",
+    );
+  }
+
+  return { provider, apiKey, model };
+}
+
+function createClient(config: AiConfig): OpenAI {
+  if (config.provider === "anthropic") {
+    return new OpenAI({
+      apiKey: config.apiKey,
+      baseURL: "https://api.anthropic.com/v1/",
+      defaultHeaders: {
+        "anthropic-version": "2023-06-01",
+      },
+    });
+  }
+  return new OpenAI({ apiKey: config.apiKey });
+}
+
+async function chatCompletion(
+  organizationId: string,
+  systemPrompt: string,
+  userPrompt: string,
+): Promise<string> {
+  const config = await getAiConfig(organizationId);
+  const client = createClient(config);
+
+  const response = await client.chat.completions.create({
+    model: config.model,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+    temperature: 0.7,
+    max_tokens: 2000,
+  });
+
+  return response.choices[0]?.message?.content ?? "";
+}
+
+// ─── AI Feature Functions ────────────────────────────────────────────────────
+
+export interface ServiceContext {
+  vehicleMake: string;
+  vehicleModel: string;
+  vehicleYear: number;
+  licensePlate?: string | null;
+  serviceType: string;
+  serviceTitle: string;
+  parts: { name: string; quantity: number }[];
+  labor: { description: string; hours: number }[];
+}
+
+export async function generateServiceDescription(
+  organizationId: string,
+  context: ServiceContext,
+): Promise<string> {
+  const systemPrompt = `You are a professional automotive service writer. Generate a clear, professional service description for a customer-facing invoice. Be concise but thorough. Do not include pricing. Write in plain text, no markdown.`;
+
+  const partsStr =
+    context.parts.length > 0
+      ? context.parts.map((p) => `- ${p.name} (qty: ${p.quantity})`).join("\n")
+      : "No parts listed";
+
+  const laborStr =
+    context.labor.length > 0
+      ? context.labor
+          .map((l) => `- ${l.description} (${l.hours}h)`)
+          .join("\n")
+      : "No labor listed";
+
+  const userPrompt = `Vehicle: ${context.vehicleYear} ${context.vehicleMake} ${context.vehicleModel}${context.licensePlate ? ` (${context.licensePlate})` : ""}
+Service type: ${context.serviceType}
+Title: ${context.serviceTitle}
+
+Parts used:
+${partsStr}
+
+Labor performed:
+${laborStr}
+
+Write a professional service description and diagnostic notes for the invoice.`;
+
+  return chatCompletion(organizationId, systemPrompt, userPrompt);
+}
+
+export interface ServiceHistoryRecord {
+  title: string;
+  description: string | null;
+  serviceDate: Date | null;
+  type: string;
+  cost: number;
+  mileage: number | null;
+}
+
+export async function summarizeServiceHistory(
+  organizationId: string,
+  vehicle: { make: string; model: string; year: number; licensePlate?: string | null },
+  records: ServiceHistoryRecord[],
+): Promise<string> {
+  const systemPrompt = `You are an automotive service advisor. Summarize a vehicle's complete service history in a concise, useful format. Highlight major work, recurring issues, and predict likely upcoming maintenance needs. Write in plain text, no markdown headers — use simple line breaks and dashes for structure.`;
+
+  const recordsStr = records
+    .map(
+      (r) =>
+        `- ${r.serviceDate ? new Date(r.serviceDate).toISOString().slice(0, 10) : "Unknown date"}: ${r.title} (${r.type}) — Cost: ${r.cost}${r.mileage ? `, Mileage: ${r.mileage}` : ""}${r.description ? `\n  Notes: ${r.description}` : ""}`,
+    )
+    .join("\n");
+
+  const userPrompt = `Vehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ""}
+
+Service history (${records.length} records):
+${recordsStr || "No service records found."}
+
+Provide a concise summary including:
+- Overview of the vehicle's service history
+- Major work performed
+- Any recurring issues or patterns
+- Predicted upcoming maintenance needs`;
+
+  return chatCompletion(organizationId, systemPrompt, userPrompt);
+}
+
+export interface QuoteFromTextResult {
+  description: string;
+  parts: { name: string; quantity: number; estimatedPrice: number }[];
+  labor: { description: string; hours: number }[];
+}
+
+export async function buildQuoteFromText(
+  organizationId: string,
+  freeText: string,
+  vehicle?: { make: string; model: string; year: number } | null,
+  inventoryParts?: { name: string; unitCost: number; partNumber: string | null }[],
+): Promise<QuoteFromTextResult> {
+  const systemPrompt = `You are an automotive service advisor. Parse the technician's free-text description into structured quote line items. Return ONLY valid JSON with this exact schema — no other text:
+{
+  "description": "Professional quote description",
+  "parts": [{ "name": "Part name", "quantity": 1, "estimatedPrice": 0 }],
+  "labor": [{ "description": "Labor description", "hours": 1 }]
+}
+If inventory parts are provided, match against them and use their prices. Estimate reasonable prices for parts not in inventory. Be accurate with labor hour estimates.`;
+
+  const inventoryStr =
+    inventoryParts && inventoryParts.length > 0
+      ? `\n\nAvailable inventory (use these prices when matching):\n${inventoryParts.map((p) => `- ${p.name}${p.partNumber ? ` (${p.partNumber})` : ""}: ${p.unitCost}`).join("\n")}`
+      : "";
+
+  const vehicleStr = vehicle
+    ? `\nVehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model}`
+    : "";
+
+  const userPrompt = `${freeText}${vehicleStr}${inventoryStr}`;
+
+  const raw = await chatCompletion(organizationId, systemPrompt, userPrompt);
+
+  // Extract JSON from response (may be wrapped in code fences)
+  const jsonMatch = raw.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error("Failed to parse AI response into structured data");
+  }
+
+  const parsed = JSON.parse(jsonMatch[0]) as QuoteFromTextResult;
+
+  return {
+    description: parsed.description || "",
+    parts: Array.isArray(parsed.parts) ? parsed.parts : [],
+    labor: Array.isArray(parsed.labor) ? parsed.labor : [],
+  };
+}
+
+export async function testAiConnection(
+  organizationId: string,
+): Promise<boolean> {
+  const config = await getAiConfig(organizationId);
+  const client = createClient(config);
+
+  const response = await client.chat.completions.create({
+    model: config.model,
+    messages: [{ role: "user", content: "Say OK" }],
+    max_tokens: 5,
+  });
+
+  return !!response.choices[0]?.message?.content;
+}

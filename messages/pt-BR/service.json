@@ -105,7 +105,10 @@
     "publicPlaceholder": "Notas visíveis na fatura...",
     "internalPlaceholder": "Notas internas (não mostradas na fatura)...",
     "publicHelper": "Mostrado na fatura e documentos compartilhados",
-    "internalHelper": "Visível apenas para seu time"
+    "internalHelper": "Visível apenas para seu time",
+    "aiWrite": "AI Escrever",
+    "aiGenerated": "Notas AI geradas com sucesso",
+    "aiGenerateFailed": "Falha ao gerar notas AI"
   },
   "invoice": {
     "title": "Resumo da Fatura",

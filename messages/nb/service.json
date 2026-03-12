@@ -107,7 +107,10 @@
     "publicPlaceholder": "Notater synlig på fakturaen...",
     "internalPlaceholder": "Interne notater (vises ikke på fakturaen)...",
     "publicHelper": "Vist på fakturaen og delte dokumenter",
-    "internalHelper": "Bare synlig for ditt lag"
+    "internalHelper": "Bare synlig for ditt lag",
+    "aiWrite": "AI Skriv",
+    "aiGenerated": "AI-notater generert",
+    "aiGenerateFailed": "Kunne ikke generere AI-notater"
   },
   "invoice": {
     "title": "Fakturaoversikt",

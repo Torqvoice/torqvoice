@@ -66,6 +66,7 @@
         "title": "Konserwacja",
         "description": "Przewidywane interwaly serwisowe"
       },
+      "ai": { "title": "AI", "description": "Dostawca AI i funkcje" },
       "appearance": {
         "title": "Wyglad",
         "description": "Motyw i wyswietlanie"
@@ -944,5 +945,26 @@
     "upgradeAmountDue": "Kwota do zapłaty teraz",
     "upgradeSuccess": "Pomyślnie ulepszono do Enterprise!",
     "upgradeError": "Nie udało się ulepszyć subskrypcji"
+  },
+  "ai": {
+    "title": "Asystent AI",
+    "description": "Skonfiguruj AI do automatycznego generowania notatek serwisowych, podsumowywania historii pojazdu i tworzenia wycen z tekstu.",
+    "enableLabel": "Wlacz AI",
+    "enableHint": "Korzystaj z funkcji opartych na AI w calej aplikacji",
+    "disabledInfo": "Wlacz AI, aby korzystac z funkcji takich jak automatycznie generowane opisy serwisowe, podsumowania historii pojazdu i tworzenie wycen z pomoca AI.",
+    "provider": "Dostawca AI",
+    "apiKey": "Klucz API",
+    "apiKeyHint": "Twoj klucz API {provider}. Przechowywany bezpiecznie i nigdy nieudostepniany.",
+    "model": "Model",
+    "testConnection": "Testuj polaczenie",
+    "testSuccess": "Polaczenie AI udane!",
+    "testFailed": "Polaczenie nieudane. Sprawdz klucz API i model.",
+    "saved": "Ustawienia AI zapisane",
+    "failedSave": "Nie udalo sie zapisac ustawien AI",
+    "saveSettings": "Zapisz ustawienia",
+    "featuresTitle": "Zawarte funkcje AI:",
+    "featureServiceNotes": "Automatyczne generowanie profesjonalnych opisow serwisowych z czesci i robocizny",
+    "featureHistorySummary": "Podsumowanie historii serwisowej pojazdu jednym kliknieciem",
+    "featureQuoteBuilder": "Tworzenie wycen z opisow tekstowych"
   }
 }

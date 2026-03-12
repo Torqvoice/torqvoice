@@ -62,7 +62,12 @@
     "vehicleDeleteError": "Impossibile eliminare il veicolo",
     "deleteTitle": "Eliminare il veicolo?",
     "deleteDescription": "Questo eliminerà definitivamente {name} e tutti gli interventi, le note e i promemoria associati. Questa azione non può essere annullata.",
-    "edit": "Modifica"
+    "edit": "Modifica",
+    "aiSummary": "AI Riepilogo",
+    "aiSummaryTitle": "Riepilogo Cronologia Servizi",
+    "aiSummaryEmpty": "Nessun intervento da riepilogare",
+    "aiSummaryError": "Generazione del riepilogo non riuscita",
+    "aiSummaryClose": "Chiudi"
   },
   "quotes": {
     "newQuote": "Nuovo preventivo",

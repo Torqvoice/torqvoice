@@ -66,6 +66,7 @@
         "title": "Manutencao",
         "description": "Intervalos de servico previstos"
       },
+      "ai": { "title": "AI", "description": "Provedor de IA e recursos" },
       "appearance": {
         "title": "Aparencia",
         "description": "Tema e exibicao"
@@ -944,5 +945,26 @@
     "upgradeAmountDue": "Valor a pagar agora",
     "upgradeSuccess": "Atualizado para Enterprise com sucesso!",
     "upgradeError": "Falha ao atualizar a assinatura"
+  },
+  "ai": {
+    "title": "Assistente de IA",
+    "description": "Configure a IA para gerar automaticamente notas de servico, resumir o historico do veiculo e criar orcamentos a partir de texto.",
+    "enableLabel": "Ativar IA",
+    "enableHint": "Usar recursos de IA em toda a aplicacao",
+    "disabledInfo": "Ative a IA para usar recursos como descricoes de servico geradas automaticamente, resumos do historico do veiculo e criacao de orcamentos com IA.",
+    "provider": "Provedor de IA",
+    "apiKey": "Chave API",
+    "apiKeyHint": "Sua chave API {provider}. Armazenada com seguranca e nunca compartilhada.",
+    "model": "Modelo",
+    "testConnection": "Testar conexao",
+    "testSuccess": "Conexao de IA bem-sucedida!",
+    "testFailed": "Conexao falhou. Verifique sua chave API e modelo.",
+    "saved": "Configuracoes de IA salvas",
+    "failedSave": "Falha ao salvar configuracoes de IA",
+    "saveSettings": "Salvar configuracoes",
+    "featuresTitle": "Recursos de IA incluidos:",
+    "featureServiceNotes": "Gerar automaticamente descricoes profissionais de servico a partir de pecas e mao de obra",
+    "featureHistorySummary": "Resumo do historico de servico do veiculo com um clique",
+    "featureQuoteBuilder": "Criar orcamentos a partir de descricoes em texto livre"
   }
 }

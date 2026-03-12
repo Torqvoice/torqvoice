@@ -66,6 +66,7 @@
         "title": "Onderhoud",
         "description": "Voorspelde service-intervallen"
       },
+      "ai": { "title": "AI", "description": "AI-provider & functies" },
       "appearance": {
         "title": "Weergave",
         "description": "Thema en weergave"
@@ -944,5 +945,26 @@
     "upgradeAmountDue": "Nu te betalen bedrag",
     "upgradeSuccess": "Succesvol geüpgraded naar Enterprise!",
     "upgradeError": "Upgrade van abonnement mislukt"
+  },
+  "ai": {
+    "title": "AI-assistent",
+    "description": "Configureer AI om automatisch servicenotities te genereren, voertuiggeschiedenis samen te vatten en offertes uit tekst op te stellen.",
+    "enableLabel": "AI inschakelen",
+    "enableHint": "Gebruik AI-functies in de hele applicatie",
+    "disabledInfo": "Schakel AI in om functies te gebruiken zoals automatisch gegenereerde servicebeschrijvingen, samenvattingen van voertuiggeschiedenis en AI-gestuurde offerte-opbouw.",
+    "provider": "AI-provider",
+    "apiKey": "API-sleutel",
+    "apiKeyHint": "Uw {provider} API-sleutel. Veilig opgeslagen en nooit gedeeld.",
+    "model": "Model",
+    "testConnection": "Verbinding testen",
+    "testSuccess": "AI-verbinding geslaagd!",
+    "testFailed": "Verbinding mislukt. Controleer uw API-sleutel en model.",
+    "saved": "AI-instellingen opgeslagen",
+    "failedSave": "Opslaan van AI-instellingen mislukt",
+    "saveSettings": "Instellingen opslaan",
+    "featuresTitle": "Inbegrepen AI-functies:",
+    "featureServiceNotes": "Automatisch professionele servicebeschrijvingen genereren uit onderdelen en arbeid",
+    "featureHistorySummary": "Samenvatting van voertuig-servicegeschiedenis met een klik",
+    "featureQuoteBuilder": "Offertes opstellen uit vrije tekstbeschrijvingen"
   }
 }

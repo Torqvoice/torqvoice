@@ -105,7 +105,10 @@
     "publicPlaceholder": "Notes visibles sur la facture...",
     "internalPlaceholder": "Notes internes (non affichées sur la facture)...",
     "publicHelper": "Affichées sur la facture et les documents partagés",
-    "internalHelper": "Visibles uniquement pour votre équipe"
+    "internalHelper": "Visibles uniquement pour votre équipe",
+    "aiWrite": "AI Rédiger",
+    "aiGenerated": "Notes AI générées avec succès",
+    "aiGenerateFailed": "Échec de la génération des notes AI"
   },
   "invoice": {
     "title": "Résumé de la Facture",

@@ -76,6 +76,10 @@ export const SETTING_KEYS = {
   WORKBOARD_WORK_DAY_END: "workboard.workDayEnd",
   INVOICE_LAYOUT_CONFIG: "invoice.layoutConfig",
   QUOTE_LAYOUT_CONFIG: "quote.layoutConfig",
+  AI_PROVIDER: "ai.provider",
+  AI_API_KEY: "ai.apiKey",
+  AI_MODEL: "ai.model",
+  AI_ENABLED: "ai.enabled",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

@@ -62,6 +62,9 @@ import {
 } from "lucide-react";
 import { SharedLinkCard } from "@/components/shared-link-card";
 import { formatCurrency, getCurrencySymbol } from "@/lib/format";
+import { Sparkles } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { aiBuildQuoteFromText } from "@/features/ai/Actions/aiActions";
 
 const statusColors: Record<string, string> = {
   draft: "bg-gray-500/10 text-gray-500 border-gray-500/20",
@@ -179,6 +182,7 @@ export function QuotePageClient({
   documentAttachments = [],
   maxImages,
   maxDocuments,
+  aiEnabled = false,
 }: {
   quote: QuoteRecord;
   organizationId: string;
@@ -194,6 +198,7 @@ export function QuotePageClient({
   documentAttachments?: QuoteAttachment[];
   maxImages?: number;
   maxDocuments?: number;
+  aiEnabled?: boolean;
 }) {
   const cs = getCurrencySymbol(currencyCode);
   const router = useRouter();
@@ -227,6 +232,9 @@ export function QuotePageClient({
   // Dialog state
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showAiBuildDialog, setShowAiBuildDialog] = useState(false);
+  const [aiFreeText, setAiFreeText] = useState("");
+  const [aiBuilding, setAiBuilding] = useState(false);
   const [showConvertDialog, setShowConvertDialog] = useState(false);
   const [convertVehicleId, setConvertVehicleId] = useState(quote.vehicle?.id || "");
   const [converting, setConverting] = useState(false);
@@ -429,6 +437,55 @@ export function QuotePageClient({
     setResolving(false);
   };
 
+  const handleAiBuild = async () => {
+    if (!aiFreeText.trim()) return;
+    setAiBuilding(true);
+    try {
+      const result = await aiBuildQuoteFromText(aiFreeText.trim(), vehicleId || null);
+      if (result.success && result.data) {
+        const parsed = result.data as { description?: string; parts?: { name: string; quantity: number; estimatedPrice: number; partNumber?: string }[]; labor?: { description: string; hours: number }[] };
+        if (parsed.description) {
+          setDescription(parsed.description);
+        }
+        if (parsed.parts?.length) {
+          setPartItems((prev) => [
+            ...prev,
+            ...parsed.parts!.map((p) => ({
+              partNumber: p.partNumber || "",
+              name: p.name,
+              quantity: p.quantity,
+              unitPrice: p.estimatedPrice,
+              total: p.quantity * p.estimatedPrice,
+              excluded: false,
+            })),
+          ]);
+        }
+        if (parsed.labor?.length) {
+          setLaborItems((prev) => [
+            ...prev,
+            ...parsed.labor!.map((l) => ({
+              description: l.description,
+              hours: l.hours,
+              rate: defaultLaborRate,
+              total: l.hours * defaultLaborRate,
+              excluded: false,
+            })),
+          ]);
+        }
+        markDirty();
+        toast.success(t("page.aiBuildSuccess"));
+        setShowAiBuildDialog(false);
+        setAiFreeText("");
+      } else {
+        toast.error(result.error ?? t("page.aiBuildError"));
+      }
+    } catch {
+      toast.error(t("page.aiBuildError"));
+    } finally {
+      setAiBuilding(false);
+    }
+  };
+
   // --- Left column: Parts, Labor, Notes ---
   const leftColumn = (
     <div className="space-y-3">
@@ -436,9 +493,16 @@ export function QuotePageClient({
       <div className="rounded-lg border p-3 space-y-2">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold">{t("parts.title")}</h3>
-          <Button type="button" variant="outline" size="sm" onClick={() => { setPartItems([...partItems, emptyPart()]); markDirty(); }}>
-            <Plus className="mr-1 h-3.5 w-3.5" /> {t("parts.addPart")}
-          </Button>
+          <div className="flex items-center gap-2">
+            {aiEnabled && (
+              <Button type="button" variant="ghost" size="sm" className="gap-1.5 text-xs" onClick={() => setShowAiBuildDialog(true)}>
+                <Sparkles className="h-3.5 w-3.5" /> {t("page.aiBuild")}
+              </Button>
+            )}
+            <Button type="button" variant="outline" size="sm" onClick={() => { setPartItems([...partItems, emptyPart()]); markDirty(); }}>
+              <Plus className="mr-1 h-3.5 w-3.5" /> {t("parts.addPart")}
+            </Button>
+          </div>
         </div>
         {partItems.length > 0 && (
           <>
@@ -897,6 +961,34 @@ export function QuotePageClient({
                 {t("page.convert")}
               </Button>
               <Button type="button" variant="ghost" onClick={() => setShowConvertDialog(false)}>{t("page.cancel")}</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI Build Quote Dialog */}
+      <Dialog open={showAiBuildDialog} onOpenChange={setShowAiBuildDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              {t("page.aiBuildTitle")}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">{t("page.aiBuildDescription")}</p>
+            <Textarea
+              value={aiFreeText}
+              onChange={(e) => setAiFreeText(e.target.value)}
+              placeholder={t("page.aiBuildPlaceholder")}
+              rows={5}
+            />
+            <div className="flex gap-2">
+              <Button type="button" onClick={handleAiBuild} disabled={aiBuilding || !aiFreeText.trim()}>
+                {aiBuilding && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t("page.aiBuildGenerate")}
+              </Button>
+              <Button type="button" variant="ghost" onClick={() => setShowAiBuildDialog(false)}>{t("page.cancel")}</Button>
             </div>
           </div>
         </DialogContent>

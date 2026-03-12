@@ -66,6 +66,7 @@
         "title": "Maintenance",
         "description": "Intervalles de service predits"
       },
+      "ai": { "title": "AI", "description": "Fournisseur IA et fonctionnalites" },
       "appearance": {
         "title": "Apparence",
         "description": "Theme et affichage"
@@ -944,5 +945,26 @@
     "upgradeAmountDue": "Montant dû maintenant",
     "upgradeSuccess": "Mis à niveau vers Enterprise avec succès !",
     "upgradeError": "Échec de la mise à niveau de l'abonnement"
+  },
+  "ai": {
+    "title": "Assistant IA",
+    "description": "Configurez l'IA pour generer automatiquement des notes de service, resumer l'historique du vehicule et creer des devis a partir de texte.",
+    "enableLabel": "Activer l'IA",
+    "enableHint": "Utiliser les fonctionnalites alimentees par l'IA dans toute l'application",
+    "disabledInfo": "Activez l'IA pour utiliser des fonctionnalites telles que les descriptions de service generees automatiquement, les resumes d'historique de vehicule et la creation de devis assistee par IA.",
+    "provider": "Fournisseur IA",
+    "apiKey": "Cle API",
+    "apiKeyHint": "Votre cle API {provider}. Stockee en toute securite et jamais partagee.",
+    "model": "Modele",
+    "testConnection": "Tester la connexion",
+    "testSuccess": "Connexion IA reussie !",
+    "testFailed": "Echec de la connexion. Verifiez votre cle API et le modele.",
+    "saved": "Parametres IA enregistres",
+    "failedSave": "Echec de l'enregistrement des parametres IA",
+    "saveSettings": "Enregistrer les parametres",
+    "featuresTitle": "Fonctionnalites IA incluses :",
+    "featureServiceNotes": "Generation automatique de descriptions de service professionnelles a partir des pieces et de la main-d'oeuvre",
+    "featureHistorySummary": "Resume de l'historique de service du vehicule en un clic",
+    "featureQuoteBuilder": "Creer des devis a partir de descriptions en texte libre"
   }
 }

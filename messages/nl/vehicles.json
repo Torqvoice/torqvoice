@@ -62,7 +62,12 @@
     "vehicleDeleteError": "Verwijderen van voertuig mislukt",
     "deleteTitle": "Voertuig verwijderen?",
     "deleteDescription": "Hiermee wordt {name} permanent verwijderd, inclusief alle bijbehorende servicegegevens, notities en herinneringen. Deze actie kan niet ongedaan worden gemaakt.",
-    "edit": "Bewerken"
+    "edit": "Bewerken",
+    "aiSummary": "AI Samenvatting",
+    "aiSummaryTitle": "Samenvatting Servicehistorie",
+    "aiSummaryEmpty": "Geen servicegegevens om samen te vatten",
+    "aiSummaryError": "Samenvatting genereren mislukt",
+    "aiSummaryClose": "Sluiten"
   },
   "quotes": {
     "newQuote": "Nieuwe offerte",

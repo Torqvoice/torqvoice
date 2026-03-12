@@ -62,7 +62,12 @@
     "vehicleDeleteError": "Nie udało się usunąć pojazdu",
     "deleteTitle": "Usunąć pojazd?",
     "deleteDescription": "Spowoduje to trwałe usunięcie {name} wraz ze wszystkimi powiązanymi rekordami serwisowymi, notatkami i przypomnieniami. Tej operacji nie można cofnąć.",
-    "edit": "Edytuj"
+    "edit": "Edytuj",
+    "aiSummary": "AI Podsumowanie",
+    "aiSummaryTitle": "Podsumowanie historii serwisu",
+    "aiSummaryEmpty": "Brak rekordów serwisowych do podsumowania",
+    "aiSummaryError": "Nie udało się wygenerować podsumowania",
+    "aiSummaryClose": "Zamknij"
   },
   "quotes": {
     "newQuote": "Nowa wycena",

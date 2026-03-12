@@ -48,7 +48,14 @@
       "details": "Detalles",
       "images": "Imágenes",
       "documents": "Documentos"
-    }
+    },
+    "aiBuild": "AI Crear",
+    "aiBuildTitle": "Crear presupuesto con AI",
+    "aiBuildDescription": "Describa el trabajo necesario en texto simple y AI generará repuestos y mano de obra estructurados.",
+    "aiBuildPlaceholder": "ej. BMW 320d necesita pastillas de freno delanteras, discos y alineación. Aproximadamente 2 horas de mano de obra...",
+    "aiBuildGenerate": "Generar",
+    "aiBuildSuccess": "AI generó los elementos del presupuesto",
+    "aiBuildError": "Error al generar presupuesto desde texto"
   },
   "form": {
     "newQuote": "Nuevo presupuesto",

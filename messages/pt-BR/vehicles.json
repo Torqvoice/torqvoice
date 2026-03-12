@@ -62,7 +62,12 @@
     "vehicleDeleteError": "Falha ao excluir veículo",
     "deleteTitle": "Excluir veículo?",
     "deleteDescription": "Isso excluirá permanentemente {name} e todos os registros de serviço, notas e lembretes associados. Esta ação não pode ser desfeita.",
-    "edit": "Editar"
+    "edit": "Editar",
+    "aiSummary": "AI Resumo",
+    "aiSummaryTitle": "Resumo do Histórico de Serviços",
+    "aiSummaryEmpty": "Nenhum registro de serviço para resumir",
+    "aiSummaryError": "Falha ao gerar o resumo",
+    "aiSummaryClose": "Fechar"
   },
   "quotes": {
     "newQuote": "Novo orçamento",

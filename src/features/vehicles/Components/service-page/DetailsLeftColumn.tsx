@@ -15,6 +15,7 @@ interface DetailsLeftColumnProps {
   currencyCode: string
   defaultLaborRate: number
   inventoryParts: InventoryPartOption[]
+  aiEnabled?: boolean
 }
 
 export function DetailsLeftColumn({
@@ -24,6 +25,7 @@ export function DetailsLeftColumn({
   currencyCode,
   defaultLaborRate,
   inventoryParts,
+  aiEnabled,
 }: DetailsLeftColumnProps) {
   return (
     <div className="space-y-3">
@@ -44,7 +46,12 @@ export function DetailsLeftColumn({
         currencyCode={currencyCode}
         defaultLaborRate={defaultLaborRate}
       />
-      <NotesSection initialData={formState.initialData} onNotesChange={formState.handleNotesChange} />
+      <NotesSection
+        initialData={formState.initialData}
+        onNotesChange={formState.handleNotesChange}
+        serviceRecordId={record.id}
+        aiEnabled={aiEnabled}
+      />
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         <PaymentsSection
           payments={record.payments || []}

@@ -66,6 +66,7 @@
         "title": "Wartung",
         "description": "Vorhergesagte Serviceintervalle"
       },
+      "ai": { "title": "AI", "description": "KI-Anbieter & Funktionen" },
       "appearance": {
         "title": "Darstellung",
         "description": "Design & Anzeige"
@@ -944,5 +945,26 @@
     "upgradeAmountDue": "Jetzt fälliger Betrag",
     "upgradeSuccess": "Erfolgreich auf Enterprise upgegradet!",
     "upgradeError": "Abonnement konnte nicht upgegradet werden"
+  },
+  "ai": {
+    "title": "KI-Assistent",
+    "description": "Konfigurieren Sie KI, um automatisch Servicenotizen zu erstellen, Fahrzeughistorien zusammenzufassen und Angebote aus Text zu generieren.",
+    "enableLabel": "KI aktivieren",
+    "enableHint": "KI-gestutzte Funktionen in der gesamten Anwendung nutzen",
+    "disabledInfo": "Aktivieren Sie KI, um Funktionen wie automatisch generierte Servicebeschreibungen, Fahrzeughistorien-Zusammenfassungen und KI-gestutzten Angebotsbau zu nutzen.",
+    "provider": "KI-Anbieter",
+    "apiKey": "API-Schlussel",
+    "apiKeyHint": "Ihr {provider} API-Schlussel. Sicher gespeichert und niemals weitergegeben.",
+    "model": "Modell",
+    "testConnection": "Verbindung testen",
+    "testSuccess": "KI-Verbindung erfolgreich!",
+    "testFailed": "Verbindung fehlgeschlagen. Uberprufen Sie Ihren API-Schlussel und das Modell.",
+    "saved": "KI-Einstellungen gespeichert",
+    "failedSave": "KI-Einstellungen konnten nicht gespeichert werden",
+    "saveSettings": "Einstellungen speichern",
+    "featuresTitle": "Enthaltene KI-gestutzte Funktionen:",
+    "featureServiceNotes": "Automatische Erstellung professioneller Servicebeschreibungen aus Teilen und Arbeit",
+    "featureHistorySummary": "Zusammenfassung der Fahrzeug-Servicehistorie mit einem Klick",
+    "featureQuoteBuilder": "Angebote aus Freitextbeschreibungen erstellen"
   }
 }

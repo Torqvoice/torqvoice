@@ -66,6 +66,7 @@
         "title": "Manutenzione",
         "description": "Intervalli di servizio previsti"
       },
+      "ai": { "title": "AI", "description": "Provider IA e funzionalita" },
       "appearance": {
         "title": "Aspetto",
         "description": "Tema e visualizzazione"
@@ -944,5 +945,26 @@
     "upgradeAmountDue": "Importo dovuto ora",
     "upgradeSuccess": "Aggiornato a Enterprise con successo!",
     "upgradeError": "Aggiornamento dell'abbonamento non riuscito"
+  },
+  "ai": {
+    "title": "Assistente IA",
+    "description": "Configura l'IA per generare automaticamente note di servizio, riassumere la cronologia del veicolo e creare preventivi dal testo.",
+    "enableLabel": "Abilita IA",
+    "enableHint": "Usa le funzionalita basate sull'IA in tutta l'applicazione",
+    "disabledInfo": "Abilita l'IA per utilizzare funzionalita come descrizioni di servizio generate automaticamente, riassunti della cronologia del veicolo e creazione di preventivi assistita dall'IA.",
+    "provider": "Provider IA",
+    "apiKey": "Chiave API",
+    "apiKeyHint": "La tua chiave API {provider}. Conservata in modo sicuro e mai condivisa.",
+    "model": "Modello",
+    "testConnection": "Testa connessione",
+    "testSuccess": "Connessione IA riuscita!",
+    "testFailed": "Connessione fallita. Controlla la tua chiave API e il modello.",
+    "saved": "Impostazioni IA salvate",
+    "failedSave": "Salvataggio delle impostazioni IA non riuscito",
+    "saveSettings": "Salva impostazioni",
+    "featuresTitle": "Funzionalita IA incluse:",
+    "featureServiceNotes": "Generazione automatica di descrizioni di servizio professionali da ricambi e manodopera",
+    "featureHistorySummary": "Riepilogo della cronologia di servizio del veicolo con un clic",
+    "featureQuoteBuilder": "Crea preventivi da descrizioni in testo libero"
   }
 }

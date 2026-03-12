@@ -34,6 +34,7 @@ import {
   undismissMaintenance,
 } from '@/features/vehicles/Actions/dismissMaintenance'
 import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
+import { aiSummarizeVehicleHistory } from '@/features/ai/Actions/aiActions'
 import { formatCurrency } from '@/lib/format'
 import {
   AlertTriangle,
@@ -48,6 +49,7 @@ import {
   DollarSign,
   EyeOff,
   FileText,
+  Sparkles,
   Gauge,
   Loader2,
   MoreVertical,
@@ -202,6 +204,7 @@ export function VehicleDetailClient({
   inspections,
   inspectionTemplates,
   quotes = [],
+  aiEnabled = false,
 }: {
   vehicle: VehicleDetail
   customers: CustomerOption[]
@@ -231,6 +234,7 @@ export function VehicleDetailClient({
   }[]
   inspectionTemplates?: { id: string; name: string; isDefault: boolean }[]
   quotes?: QuoteRecord[]
+  aiEnabled?: boolean
 }) {
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
@@ -276,6 +280,9 @@ export function VehicleDetailClient({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showNewInspection, setShowNewInspection] = useState(false)
   const [isDismissPending, startDismissTransition] = useTransition()
+  const [showAiSummary, setShowAiSummary] = useState(false)
+  const [aiSummary, setAiSummary] = useState('')
+  const [aiSummaryLoading, setAiSummaryLoading] = useState(false)
 
   const handleDismissMaintenance = () => {
     startDismissTransition(async () => {
@@ -352,6 +359,26 @@ export function VehicleDetailClient({
       router.refresh()
     } else {
       modal.open('error', 'Error', result.error || t('unarchiveError'))
+    }
+  }
+
+  const handleAiSummary = async () => {
+    setAiSummaryLoading(true)
+    setShowAiSummary(true)
+    setAiSummary('')
+    try {
+      const result = await aiSummarizeVehicleHistory(vehicle.id)
+      if (result.success && result.data) {
+        setAiSummary(result.data)
+      } else {
+        toast.error(result.error ?? t('aiSummaryError'))
+        setShowAiSummary(false)
+      }
+    } catch {
+      toast.error(t('aiSummaryError'))
+      setShowAiSummary(false)
+    } finally {
+      setAiSummaryLoading(false)
     }
   }
 
@@ -619,6 +646,22 @@ export function VehicleDetailClient({
                 {t('purchased', { date: formatDate(new Date(vehicle.purchaseDate)) })}
               </span>
             </div>
+          )}
+          {aiEnabled && vehicle._count.serviceRecords > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 gap-1.5 text-xs"
+              onClick={handleAiSummary}
+              disabled={aiSummaryLoading}
+            >
+              {aiSummaryLoading ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="h-3.5 w-3.5" />
+              )}
+              {t('aiSummary')}
+            </Button>
           )}
         </div>
       </div>
@@ -1084,6 +1127,29 @@ export function VehicleDetailClient({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* AI Summary Dialog */}
+      <Dialog open={showAiSummary} onOpenChange={setShowAiSummary}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              {t('aiSummaryTitle')}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto">
+            {aiSummaryLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-sm">
+                {aiSummary}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Image lightbox */}
       {showImage && vehicle.imageUrl && (

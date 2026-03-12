@@ -62,7 +62,12 @@
     "vehicleDeleteError": "Araç silinemedi",
     "deleteTitle": "Araç silinsin mi?",
     "deleteDescription": "Bu işlem {name} aracını ve tüm ilişkili servis kayıtlarını, notları ve hatırlatıcıları kalıcı olarak silecektir. Bu işlem geri alınamaz.",
-    "edit": "Düzenle"
+    "edit": "Düzenle",
+    "aiSummary": "AI Özet",
+    "aiSummaryTitle": "Servis Geçmişi Özeti",
+    "aiSummaryEmpty": "Özetlenecek servis kaydı yok",
+    "aiSummaryError": "Özet oluşturulamadı",
+    "aiSummaryClose": "Kapat"
   },
   "quotes": {
     "newQuote": "Yeni teklif",
