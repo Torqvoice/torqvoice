@@ -1,5 +1,4 @@
 import { StyleSheet } from '@react-pdf/renderer'
-import './fonts'
 
 export const gray = '#6b7280'
 export const grayLight = '#f3f4f6'
