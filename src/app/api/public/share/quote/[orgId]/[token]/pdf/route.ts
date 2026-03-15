@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
+import "@/features/vehicles/Components/invoice-pdf/fonts";
 import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { QuotePDF } from "@/features/quotes/Components/QuotePDF";

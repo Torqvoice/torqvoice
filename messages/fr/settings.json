@@ -42,6 +42,10 @@
         "title": "Devise",
         "description": "Devise et taxes par defaut"
       },
+      "localization": {
+        "title": "Localisation",
+        "description": "Langue, devise, date et heure"
+      },
       "customFields": {
         "title": "Champs personnalises",
         "description": "Definir des champs de donnees personnalises"
@@ -66,7 +70,10 @@
         "title": "Maintenance",
         "description": "Intervalles de service predits"
       },
-      "ai": { "title": "AI", "description": "Fournisseur IA et fonctionnalites" },
+      "ai": {
+        "title": "AI",
+        "description": "Fournisseur IA et fonctionnalites"
+      },
       "appearance": {
         "title": "Apparence",
         "description": "Theme et affichage"
@@ -588,8 +595,16 @@
       "IDR": "Roupie indonesienne",
       "MYR": "Ringgit malaisien",
       "AED": "Dirham des EAU",
-      "SAR": "Riyal saoudien"
+      "SAR": "Riyal saoudien",
+      "RUB": "Rouble russe"
     }
+  },
+  "localization": {
+    "languageTitle": "Langue",
+    "languageDescription": "Choisissez la langue d'affichage de l'application.",
+    "language": "Langue",
+    "saved": "Paramètres de localisation enregistrés",
+    "saveSettings": "Enregistrer les paramètres"
   },
   "customFields": {
     "title": "Champs personnalisés",

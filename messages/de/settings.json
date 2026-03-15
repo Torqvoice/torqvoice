@@ -42,6 +42,10 @@
         "title": "Wahrung",
         "description": "Wahrungs- & Steuerstandards"
       },
+      "localization": {
+        "title": "Lokalisierung",
+        "description": "Sprache, Währung, Datum & Uhrzeit"
+      },
       "customFields": {
         "title": "Benutzerdefinierte Felder",
         "description": "Eigene Datenfelder definieren"
@@ -66,7 +70,10 @@
         "title": "Wartung",
         "description": "Vorhergesagte Serviceintervalle"
       },
-      "ai": { "title": "AI", "description": "KI-Anbieter & Funktionen" },
+      "ai": {
+        "title": "AI",
+        "description": "KI-Anbieter & Funktionen"
+      },
       "appearance": {
         "title": "Darstellung",
         "description": "Design & Anzeige"
@@ -588,8 +595,16 @@
       "IDR": "Indonesische Rupiah",
       "MYR": "Malaysischer Ringgit",
       "AED": "VAE-Dirham",
-      "SAR": "Saudi-Riyal"
+      "SAR": "Saudi-Riyal",
+      "RUB": "Russischer Rubel"
     }
+  },
+  "localization": {
+    "languageTitle": "Sprache",
+    "languageDescription": "Wählen Sie die Anzeigesprache der Anwendung.",
+    "language": "Sprache",
+    "saved": "Lokalisierungseinstellungen gespeichert",
+    "saveSettings": "Einstellungen speichern"
   },
   "customFields": {
     "title": "Benutzerdefinierte Felder",

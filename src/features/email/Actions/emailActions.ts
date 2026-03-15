@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { sendOrgMail, getOrgFromAddress } from "@/lib/email";
 import { withAuth } from "@/lib/with-auth";
 import { renderToBuffer } from "@react-pdf/renderer";
+import "@/features/vehicles/Components/invoice-pdf/fonts";
 import React from "react";
 import { readFile } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";

@@ -42,6 +42,10 @@
         "title": "Valuta",
         "description": "Standaardvaluta en belasting"
       },
+      "localization": {
+        "title": "Lokalisatie",
+        "description": "Taal, valuta, datum en tijd"
+      },
       "customFields": {
         "title": "Aangepaste velden",
         "description": "Eigen gegevensvelden definiëren"
@@ -66,7 +70,10 @@
         "title": "Onderhoud",
         "description": "Voorspelde service-intervallen"
       },
-      "ai": { "title": "AI", "description": "AI-provider & functies" },
+      "ai": {
+        "title": "AI",
+        "description": "AI-provider & functies"
+      },
       "appearance": {
         "title": "Weergave",
         "description": "Thema en weergave"
@@ -588,8 +595,16 @@
       "IDR": "Indonesische roepia",
       "MYR": "Maleisische ringgit",
       "AED": "VAE-dirham",
-      "SAR": "Saoedische riyal"
+      "SAR": "Saoedische riyal",
+      "RUB": "Russische roebel"
     }
+  },
+  "localization": {
+    "languageTitle": "Taal",
+    "languageDescription": "Kies de weergavetaal van de applicatie.",
+    "language": "Taal",
+    "saved": "Lokalisatie-instellingen opgeslagen",
+    "saveSettings": "Instellingen opslaan"
   },
   "customFields": {
     "title": "Aangepaste velden",

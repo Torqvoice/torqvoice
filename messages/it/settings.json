@@ -42,6 +42,10 @@
         "title": "Valuta",
         "description": "Valuta e imposte predefinite"
       },
+      "localization": {
+        "title": "Localizzazione",
+        "description": "Lingua, valuta, data e ora"
+      },
       "customFields": {
         "title": "Campi personalizzati",
         "description": "Definisci campi dati personalizzati"
@@ -66,7 +70,10 @@
         "title": "Manutenzione",
         "description": "Intervalli di servizio previsti"
       },
-      "ai": { "title": "AI", "description": "Provider IA e funzionalita" },
+      "ai": {
+        "title": "AI",
+        "description": "Provider IA e funzionalita"
+      },
       "appearance": {
         "title": "Aspetto",
         "description": "Tema e visualizzazione"
@@ -588,8 +595,16 @@
       "IDR": "Rupia indonesiana",
       "MYR": "Ringgit malese",
       "AED": "Dirham degli EAU",
-      "SAR": "Riyal saudita"
+      "SAR": "Riyal saudita",
+      "RUB": "Rublo russo"
     }
+  },
+  "localization": {
+    "languageTitle": "Lingua",
+    "languageDescription": "Scegli la lingua di visualizzazione dell'applicazione.",
+    "language": "Lingua",
+    "saved": "Impostazioni di localizzazione salvate",
+    "saveSettings": "Salva impostazioni"
   },
   "customFields": {
     "title": "Campi personalizzati",

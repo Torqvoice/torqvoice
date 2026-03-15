@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "Не удалось загрузить заказ-наряды"
+  },
+  "list": {
+    "searchPlaceholder": "Поиск заказ-нарядов...",
+    "newWorkOrder": "Новый заказ-наряд",
+    "selectVehicle": "Выберите транспортное средство",
+    "empty": "Заказ-наряды не найдены.",
+    "statusUpdated": "Статус обновлён",
+    "statusTabs": {
+      "all": "Все",
+      "active": "Активные",
+      "pending": "Ожидающие",
+      "inProgress": "В работе",
+      "waitingParts": "Ожидание запчастей",
+      "completed": "Завершённые"
+    },
+    "statusActions": {
+      "startWork": "Начать работу",
+      "waitingParts": "Ожидание запчастей",
+      "complete": "Завершить",
+      "resumeWork": "Возобновить работу",
+      "reopen": "Открыть заново"
+    },
+    "table": {
+      "invoice": "Счёт №",
+      "vehicle": "Транспортное средство",
+      "customer": "Клиент",
+      "title": "Название",
+      "status": "Статус",
+      "tech": "Механик",
+      "date": "Дата",
+      "total": "Итого"
+    },
+    "emailSubject": "Обновление статуса транспортного средства: {status}"
+  },
+  "vehiclePicker": {
+    "title": "Выберите транспортное средство для заказ-наряда",
+    "searchPlaceholder": "Поиск транспортных средств...",
+    "empty": "Транспортные средства не найдены.",
+    "emptySearch": "Нет транспортных средств, соответствующих поиску.",
+    "addNewVehicle": "Добавить новое транспортное средство",
+    "noPlate": "Без госномера",
+    "make": "Марка *",
+    "model": "Модель *",
+    "year": "Год *",
+    "licensePlate": "Госномер",
+    "customer": "Клиент",
+    "selectCustomer": "Выберите клиента (необязательно)",
+    "createNewCustomer": "Создать нового клиента",
+    "newCustomer": "Новый клиент",
+    "customerName": "Имя *",
+    "customerNamePlaceholder": "Имя клиента",
+    "phone": "Телефон",
+    "phonePlaceholder": "Номер телефона",
+    "creating": "Создание...",
+    "createAndContinue": "Создать и продолжить",
+    "invalidYear": "Введите корректный год",
+    "customerNameRequired": "Имя клиента обязательно",
+    "failedCreateCustomer": "Не удалось создать клиента",
+    "failedCreateVehicle": "Не удалось создать транспортное средство",
+    "somethingWentWrong": "Что-то пошло не так"
+  },
+  "notify": {
+    "title": "Уведомить {name}",
+    "description": "Отправить уведомление клиенту об этом обновлении.",
+    "sms": "SMS",
+    "email": "Эл. почта",
+    "noPhone": "(телефон не указан)",
+    "noEmail": "(эл. почта не указана)",
+    "notAvailable": "(недоступно)",
+    "skip": "Пропустить",
+    "send": "Отправить",
+    "smsSent": "SMS отправлено",
+    "emailSent": "Письмо отправлено",
+    "failedSms": "Не удалось отправить SMS",
+    "failedEmail": "Не удалось отправить письмо"
+  }
+}

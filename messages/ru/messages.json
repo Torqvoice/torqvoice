@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "SMS-сообщения",
+    "featureDescription": "Отправляйте и получайте SMS-сообщения с клиентами прямо из Torqvoice."
+  },
+  "notConfigured": {
+    "title": "SMS не настроены",
+    "description": "Настройте SMS-провайдера для отправки и получения сообщений с клиентами. Поддерживаются Twilio, Vonage и Telnyx.",
+    "goToSettings": "Перейти к настройкам SMS"
+  },
+  "threads": {
+    "title": "Беседы",
+    "empty": "Бесед пока нет. Отправьте SMS со страницы клиента, чтобы начать.",
+    "loadMore": "Загрузить ещё",
+    "selectConversation": "Выберите беседу",
+    "you": "Вы: ",
+    "deleteConversation": "Удалить беседу",
+    "deleteTitle": "Удалить беседу?",
+    "deleteDescription": "Все сообщения с {name} будут безвозвратно удалены. Это действие необратимо.",
+    "deleted": "Беседа удалена",
+    "deleteError": "Не удалось удалить беседу"
+  },
+  "conversation": {
+    "noPhone": "У {name} не указан номер телефона. Добавьте номер для начала переписки.",
+    "loadOlder": "Загрузить ранние",
+    "empty": "Сообщений пока нет. Отправьте первое сообщение {name}.",
+    "placeholder": "Сообщение для {name}...",
+    "deleteMessage": "Удалить сообщение",
+    "deleteTitle": "Удалить сообщение?",
+    "deleteDescription": "Это сообщение будет безвозвратно удалено из беседы. Это действие необратимо.",
+    "messageDeleted": "Сообщение удалено",
+    "deleteError": "Не удалось удалить сообщение",
+    "sendError": "Не удалось отправить SMS"
+  },
+  "sendDialog": {
+    "send": "Отправить {label}",
+    "message": "Сообщение",
+    "placeholder": "Введите сообщение...",
+    "characters": "{count} / 1600 символов",
+    "sendSms": "Отправить SMS",
+    "smsSent": "SMS отправлено",
+    "sentTo": "{label} отправлено {name} ({phone})",
+    "sendError": "Не удалось отправить SMS"
+  }
+}

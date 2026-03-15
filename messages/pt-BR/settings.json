@@ -42,6 +42,10 @@
         "title": "Moeda",
         "description": "Padroes de moeda e impostos"
       },
+      "localization": {
+        "title": "Localização",
+        "description": "Idioma, moeda, data e hora"
+      },
       "customFields": {
         "title": "Campos personalizados",
         "description": "Definir campos de dados personalizados"
@@ -66,7 +70,10 @@
         "title": "Manutencao",
         "description": "Intervalos de servico previstos"
       },
-      "ai": { "title": "AI", "description": "Provedor de IA e recursos" },
+      "ai": {
+        "title": "AI",
+        "description": "Provedor de IA e recursos"
+      },
       "appearance": {
         "title": "Aparencia",
         "description": "Tema e exibicao"
@@ -588,8 +595,16 @@
       "IDR": "Rupia indonesia",
       "MYR": "Ringgit malaio",
       "AED": "Dirham dos EAU",
-      "SAR": "Rial saudita"
+      "SAR": "Rial saudita",
+      "RUB": "Rublo russo"
     }
+  },
+  "localization": {
+    "languageTitle": "Idioma",
+    "languageDescription": "Escolha o idioma de exibição do aplicativo.",
+    "language": "Idioma",
+    "saved": "Configurações de localização salvas",
+    "saveSettings": "Salvar configurações"
   },
   "customFields": {
     "title": "Campos personalizados",

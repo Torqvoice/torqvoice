@@ -889,15 +889,15 @@ export function InvoiceView({
                         </div>
                         {balanceDue <= 0 ? (
                           <div className="rounded-lg bg-emerald-50 px-4 py-3 dark:bg-emerald-900/20">
-                            <div className="flex justify-between text-lg font-bold text-emerald-600">
-                              <span>{t('balanceDue')}</span>
-                              <span>{t('paidInFull')}</span>
+                            <div className="flex items-center justify-between gap-2 text-lg font-bold text-emerald-600">
+                              <span className="whitespace-nowrap">{t('balanceDue')}</span>
+                              <span className="whitespace-nowrap">{t('paidInFull')}</span>
                             </div>
                           </div>
                         ) : (
                           <div className="rounded-lg bg-amber-50 px-4 py-3 ring-2 ring-amber-400 dark:bg-amber-900/20 dark:ring-amber-600">
-                            <div className="flex justify-between text-lg font-bold">
-                              <span>{t('amountDue')}</span>
+                            <div className="flex items-center justify-between gap-2 text-lg font-bold">
+                              <span className="whitespace-nowrap">{t('amountDue')}</span>
                               <span className="text-amber-700 dark:text-amber-400">
                                 {formatCurrency(balanceDue, currencyCode)}
                               </span>
