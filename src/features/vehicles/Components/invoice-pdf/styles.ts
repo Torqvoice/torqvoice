@@ -95,7 +95,7 @@ export function createStyles(primary: string, font: string) {
     tableCell: { fontSize: 9 },
     tableCellBold: { fontSize: 9, fontFamily: resolvedBold },
     tableHeaderCell: { fontSize: 8, fontFamily: resolvedBold, color: primaryDark },
-    totalsBox: { marginTop: 16, marginLeft: 'auto', width: 220 },
+    totalsBox: { marginTop: 16, marginLeft: 'auto', width: 250 },
     totalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 },
     totalLabel: { fontSize: 10, color: gray },
     totalValue: { fontSize: 10 },
