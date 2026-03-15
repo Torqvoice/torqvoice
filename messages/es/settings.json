@@ -42,6 +42,10 @@
         "title": "Moneda",
         "description": "Valores predeterminados de moneda e impuestos"
       },
+      "localization": {
+        "title": "Localización",
+        "description": "Idioma, moneda, fecha y hora"
+      },
       "customFields": {
         "title": "Campos personalizados",
         "description": "Definir campos de datos personalizados"
@@ -66,7 +70,10 @@
         "title": "Mantenimiento",
         "description": "Intervalos de servicio predichos"
       },
-      "ai": { "title": "AI", "description": "Proveedor de IA y funciones" },
+      "ai": {
+        "title": "AI",
+        "description": "Proveedor de IA y funciones"
+      },
       "appearance": {
         "title": "Apariencia",
         "description": "Tema y visualizacion"
@@ -591,6 +598,13 @@
       "SAR": "Riyal saudi",
       "RUB": "Rublo ruso"
     }
+  },
+  "localization": {
+    "languageTitle": "Idioma",
+    "languageDescription": "Elija el idioma de visualización de la aplicación.",
+    "language": "Idioma",
+    "saved": "Configuración de localización guardada",
+    "saveSettings": "Guardar configuración"
   },
   "customFields": {
     "title": "Campos personalizados",

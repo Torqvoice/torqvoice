@@ -42,6 +42,10 @@
         "title": "Para Birimi",
         "description": "Para birimi & vergi varsayılanları"
       },
+      "localization": {
+        "title": "Yerelleştirme",
+        "description": "Dil, para birimi, tarih ve saat"
+      },
       "customFields": {
         "title": "Özel Alanlar",
         "description": "Özel veri alanları tanımlayın"
@@ -66,7 +70,10 @@
         "title": "Bakım",
         "description": "Öngörülen servis aralıkları"
       },
-      "ai": { "title": "AI", "description": "Yapay zeka saglayici ve ozellikler" },
+      "ai": {
+        "title": "AI",
+        "description": "Yapay zeka saglayici ve ozellikler"
+      },
       "appearance": {
         "title": "Görünüm",
         "description": "Tema & görüntüleme"
@@ -591,6 +598,13 @@
       "SAR": "Suudi Riyali",
       "RUB": "Rus Rublesi"
     }
+  },
+  "localization": {
+    "languageTitle": "Dil",
+    "languageDescription": "Uygulamanın görüntüleme dilini seçin.",
+    "language": "Dil",
+    "saved": "Yerelleştirme ayarları kaydedildi",
+    "saveSettings": "Ayarları kaydet"
   },
   "customFields": {
     "title": "Özel alanlar",

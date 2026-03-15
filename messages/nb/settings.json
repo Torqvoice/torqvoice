@@ -10,25 +10,86 @@
       "system": "System"
     },
     "items": {
-      "company": { "title": "Bedrift", "description": "Bedriftsdetaljer og merkevare" },
-      "subscription": { "title": "Abonnement", "description": "Plan og fakturering" },
-      "account": { "title": "Konto", "description": "Navn, e-post og passord" },
-      "team": { "title": "Team", "description": "Medlemmer og roller" },
-      "invoice": { "title": "Faktura og tilbud", "description": "Fakturainnstillinger, layout og egendefinerte felter" },
-      "templates": { "title": "Maler", "description": "Visuell stil, farger og skrifter" },
-      "payment": { "title": "Betaling", "description": "Betalingsvilkar og kontoer" },
-      "currency": { "title": "Valuta", "description": "Valuta- og avgiftsstandarder" },
-      "customFields": { "title": "Egendefinerte felter", "description": "Definer egne datafelter" },
-      "email": { "title": "E-post", "description": "E-postleverandor og sending" },
-      "sms": { "title": "SMS", "description": "SMS-leverandor og meldinger" },
-      "customerPortal": { "title": "Kundeportal", "description": "Kundeselvbetjeningsportal" },
-      "workshop": { "title": "Verksted", "description": "Tekniker- og arbeidsstandarder" },
-      "maintenance": { "title": "Vedlikehold", "description": "Predikerte serviceintervaller" },
-      "ai": { "title": "AI", "description": "AI-leverandor og funksjoner" },
-      "appearance": { "title": "Utseende", "description": "Tema og visning" },
-      "data": { "title": "Data", "description": "Eksporter og importer sikkerhetskopi" },
-      "license": { "title": "Lisens", "description": "White-label-lisens" },
-      "about": { "title": "Om", "description": "Versjon og informasjon" }
+      "company": {
+        "title": "Bedrift",
+        "description": "Bedriftsdetaljer og merkevare"
+      },
+      "subscription": {
+        "title": "Abonnement",
+        "description": "Plan og fakturering"
+      },
+      "account": {
+        "title": "Konto",
+        "description": "Navn, e-post og passord"
+      },
+      "team": {
+        "title": "Team",
+        "description": "Medlemmer og roller"
+      },
+      "invoice": {
+        "title": "Faktura og tilbud",
+        "description": "Fakturainnstillinger, layout og egendefinerte felter"
+      },
+      "templates": {
+        "title": "Maler",
+        "description": "Visuell stil, farger og skrifter"
+      },
+      "payment": {
+        "title": "Betaling",
+        "description": "Betalingsvilkar og kontoer"
+      },
+      "currency": {
+        "title": "Valuta",
+        "description": "Valuta- og avgiftsstandarder"
+      },
+      "localization": {
+        "title": "Lokalisering",
+        "description": "Språk, valuta, dato og tid"
+      },
+      "customFields": {
+        "title": "Egendefinerte felter",
+        "description": "Definer egne datafelter"
+      },
+      "email": {
+        "title": "E-post",
+        "description": "E-postleverandor og sending"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "SMS-leverandor og meldinger"
+      },
+      "customerPortal": {
+        "title": "Kundeportal",
+        "description": "Kundeselvbetjeningsportal"
+      },
+      "workshop": {
+        "title": "Verksted",
+        "description": "Tekniker- og arbeidsstandarder"
+      },
+      "maintenance": {
+        "title": "Vedlikehold",
+        "description": "Predikerte serviceintervaller"
+      },
+      "ai": {
+        "title": "AI",
+        "description": "AI-leverandor og funksjoner"
+      },
+      "appearance": {
+        "title": "Utseende",
+        "description": "Tema og visning"
+      },
+      "data": {
+        "title": "Data",
+        "description": "Eksporter og importer sikkerhetskopi"
+      },
+      "license": {
+        "title": "Lisens",
+        "description": "White-label-lisens"
+      },
+      "about": {
+        "title": "Om",
+        "description": "Versjon og informasjon"
+      }
     },
     "pro": "PRO"
   },
@@ -537,6 +598,13 @@
       "SAR": "Saudiarabiske riyal",
       "RUB": "Russisk rubel"
     }
+  },
+  "localization": {
+    "languageTitle": "Språk",
+    "languageDescription": "Velg visningsspråk for applikasjonen.",
+    "language": "Språk",
+    "saved": "Lokaliseringsinnstillinger lagret",
+    "saveSettings": "Lagre innstillinger"
   },
   "customFields": {
     "title": "Egendefinerte felter",

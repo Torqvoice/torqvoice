@@ -10,25 +10,86 @@
       "system": "Система"
     },
     "items": {
-      "company": { "title": "Компания", "description": "Данные компании и брендинг" },
-      "subscription": { "title": "Подписка", "description": "Тариф и оплата" },
-      "account": { "title": "Аккаунт", "description": "Имя, эл. почта и пароль" },
-      "team": { "title": "Команда", "description": "Участники и роли" },
-      "invoice": { "title": "Счета и предложения", "description": "Настройки счетов, макет и пользовательские поля" },
-      "templates": { "title": "Шаблоны", "description": "Визуальный стиль, цвета и шрифты" },
-      "payment": { "title": "Оплата", "description": "Условия оплаты и счета" },
-      "currency": { "title": "Валюта", "description": "Валюта и налоги по умолчанию" },
-      "customFields": { "title": "Пользовательские поля", "description": "Определение пользовательских полей данных" },
-      "email": { "title": "Эл. почта", "description": "Провайдер и отправка писем" },
-      "sms": { "title": "SMS", "description": "Провайдер SMS и сообщения" },
-      "customerPortal": { "title": "Портал клиента", "description": "Портал самообслуживания клиентов" },
-      "workshop": { "title": "Мастерская", "description": "Механики и ставки по умолчанию" },
-      "maintenance": { "title": "Техобслуживание", "description": "Прогнозируемые интервалы обслуживания" },
-      "ai": { "title": "ИИ", "description": "Провайдер ИИ и функции" },
-      "appearance": { "title": "Внешний вид", "description": "Тема и отображение" },
-      "data": { "title": "Данные", "description": "Экспорт и импорт резервных копий" },
-      "license": { "title": "Лицензия", "description": "White-label лицензия" },
-      "about": { "title": "О программе", "description": "Версия и информация" }
+      "company": {
+        "title": "Компания",
+        "description": "Данные компании и брендинг"
+      },
+      "subscription": {
+        "title": "Подписка",
+        "description": "Тариф и оплата"
+      },
+      "account": {
+        "title": "Аккаунт",
+        "description": "Имя, эл. почта и пароль"
+      },
+      "team": {
+        "title": "Команда",
+        "description": "Участники и роли"
+      },
+      "invoice": {
+        "title": "Счета и предложения",
+        "description": "Настройки счетов, макет и пользовательские поля"
+      },
+      "templates": {
+        "title": "Шаблоны",
+        "description": "Визуальный стиль, цвета и шрифты"
+      },
+      "payment": {
+        "title": "Оплата",
+        "description": "Условия оплаты и счета"
+      },
+      "currency": {
+        "title": "Валюта",
+        "description": "Валюта и налоги по умолчанию"
+      },
+      "localization": {
+        "title": "Локализация",
+        "description": "Язык, валюта, дата и время"
+      },
+      "customFields": {
+        "title": "Пользовательские поля",
+        "description": "Определение пользовательских полей данных"
+      },
+      "email": {
+        "title": "Эл. почта",
+        "description": "Провайдер и отправка писем"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "Провайдер SMS и сообщения"
+      },
+      "customerPortal": {
+        "title": "Портал клиента",
+        "description": "Портал самообслуживания клиентов"
+      },
+      "workshop": {
+        "title": "Мастерская",
+        "description": "Механики и ставки по умолчанию"
+      },
+      "maintenance": {
+        "title": "Техобслуживание",
+        "description": "Прогнозируемые интервалы обслуживания"
+      },
+      "ai": {
+        "title": "ИИ",
+        "description": "Провайдер ИИ и функции"
+      },
+      "appearance": {
+        "title": "Внешний вид",
+        "description": "Тема и отображение"
+      },
+      "data": {
+        "title": "Данные",
+        "description": "Экспорт и импорт резервных копий"
+      },
+      "license": {
+        "title": "Лицензия",
+        "description": "White-label лицензия"
+      },
+      "about": {
+        "title": "О программе",
+        "description": "Версия и информация"
+      }
     },
     "pro": "PRO"
   },
@@ -537,6 +598,13 @@
       "SAR": "Саудовский риял",
       "RUB": "Российский рубль"
     }
+  },
+  "localization": {
+    "languageTitle": "Язык",
+    "languageDescription": "Выберите язык отображения приложения.",
+    "language": "Язык",
+    "saved": "Настройки локализации сохранены",
+    "saveSettings": "Сохранить настройки"
   },
   "customFields": {
     "title": "Пользовательские поля",

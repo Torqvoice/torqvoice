@@ -42,6 +42,10 @@
         "title": "Waluta",
         "description": "Domyslna waluta i podatki"
       },
+      "localization": {
+        "title": "Lokalizacja",
+        "description": "Język, waluta, data i czas"
+      },
       "customFields": {
         "title": "Pola niestandardowe",
         "description": "Definiowanie wlasnych pol danych"
@@ -66,7 +70,10 @@
         "title": "Konserwacja",
         "description": "Przewidywane interwaly serwisowe"
       },
-      "ai": { "title": "AI", "description": "Dostawca AI i funkcje" },
+      "ai": {
+        "title": "AI",
+        "description": "Dostawca AI i funkcje"
+      },
       "appearance": {
         "title": "Wyglad",
         "description": "Motyw i wyswietlanie"
@@ -591,6 +598,13 @@
       "SAR": "Rial saudyjski",
       "RUB": "Rubel rosyjski"
     }
+  },
+  "localization": {
+    "languageTitle": "Język",
+    "languageDescription": "Wybierz język wyświetlania aplikacji.",
+    "language": "Język",
+    "saved": "Ustawienia lokalizacji zapisane",
+    "saveSettings": "Zapisz ustawienia"
   },
   "customFields": {
     "title": "Pola niestandardowe",
