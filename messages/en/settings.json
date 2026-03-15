@@ -534,7 +534,8 @@
       "IDR": "Indonesian Rupiah",
       "MYR": "Malaysian Ringgit",
       "AED": "UAE Dirham",
-      "SAR": "Saudi Riyal"
+      "SAR": "Saudi Riyal",
+      "RUB": "Russian Ruble"
     }
   },
   "customFields": {

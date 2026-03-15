@@ -1,0 +1,87 @@
+{
+  "searchPlaceholder": "Поиск запчастей...",
+  "categoryPlaceholder": "Категория",
+  "allCategories": "Все категории",
+  "applyMarkup": "Применить наценку",
+  "addPart": "Добавить запчасть",
+  "table": {
+    "partNumber": "Арт. №",
+    "name": "Название",
+    "category": "Категория",
+    "inStock": "В наличии",
+    "unitCost": "Себестоимость",
+    "sellPrice": "Цена продажи",
+    "supplier": "Поставщик",
+    "location": "Расположение",
+    "low": "Мало"
+  },
+  "empty": {
+    "noMatch": "Нет запчастей, соответствующих поиску.",
+    "noParts": "На складе пока нет запчастей."
+  },
+  "actions": {
+    "edit": "Редактировать",
+    "delete": "Удалить"
+  },
+  "deletePart": {
+    "title": "Удалить запчасть",
+    "description": "Удалить \"{name}\" со склада? Это действие необратимо.",
+    "confirm": "Удалить"
+  },
+  "markup": {
+    "title": "Применить наценку ко всем запчастям",
+    "multiplierLabel": "Множитель наценки",
+    "description": "Цена продажи будет установлена как себестоимость x {multiplier} для всех {count} запчастей.",
+    "percentage": "(наценка {percent}%)",
+    "cancel": "Отмена",
+    "apply": "Применить"
+  },
+  "errors": {
+    "multiplierPositive": "Множитель должен быть больше 0",
+    "deleteFailed": "Не удалось удалить запчасть",
+    "applyFailed": "Не удалось применить наценку",
+    "saveFailed": "Не удалось сохранить запчасть",
+    "error": "Ошибка"
+  },
+  "form": {
+    "editPart": "Редактировать запчасть",
+    "addNewPart": "Добавить новую запчасть",
+    "supplierLink": "Ссылка на поставщика",
+    "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "fetch": "Загрузить",
+    "fetchFailed": "Загрузка не удалась",
+    "fetchError": "Не удалось получить метаданные по URL",
+    "image": "Изображение",
+    "dropOrClick": "Перетащите или нажмите",
+    "replace": "Заменить",
+    "upload": "Загрузить",
+    "imageUploading": "Загрузка изображения...",
+    "imageUploaded": "Изображение загружено",
+    "imageUploadFailed": "Не удалось загрузить изображение",
+    "imageTypeError": "Допускаются только изображения JPEG, PNG, WebP и AVIF",
+    "imageSizeError": "Изображение должно быть менее 5МБ",
+    "partNumber": "Артикул",
+    "partNumberPlaceholder": "BRK-001",
+    "nameLabel": "Название *",
+    "namePlaceholder": "Комплект тормозных колодок",
+    "category": "Категория",
+    "categoryPlaceholder": "Тормоза",
+    "location": "Расположение",
+    "locationPlaceholder": "Полка А-3",
+    "quantity": "Количество",
+    "minQty": "Мин. кол-во",
+    "unitCost": "Себестоимость",
+    "sellPrice": "Цена продажи",
+    "supplier": "Поставщик",
+    "supplierPlaceholder": "ЗапчастиПро",
+    "supplierPhone": "Телефон поставщика",
+    "supplierPhonePlaceholder": "+7 (999) 123-45-67",
+    "supplierEmail": "Эл. почта поставщика",
+    "supplierEmailPlaceholder": "orders@autoparts.ru",
+    "description": "Описание",
+    "descriptionPlaceholder": "Описание запчасти...",
+    "cancel": "Отмена",
+    "saveChanges": "Сохранить изменения",
+    "addPart": "Добавить запчасть"
+  }
+}
