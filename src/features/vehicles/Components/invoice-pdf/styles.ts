@@ -1,4 +1,5 @@
 import { StyleSheet } from '@react-pdf/renderer'
+import './fonts'
 
 export const gray = '#6b7280'
 export const grayLight = '#f3f4f6'
@@ -21,20 +22,30 @@ export function darkenColor(hex: string, factor: number = 0.3) {
   return `rgb(${Math.round(r * (1 - factor))}, ${Math.round(g * (1 - factor))}, ${Math.round(b * (1 - factor))})`
 }
 
-export function getFontBold(font: string) {
-  const boldMap: Record<string, string> = {
-    'Times-Roman': 'Times-Bold',
-  }
-  return boldMap[font] || `${font}-Bold`
+// Map any built-in PDF font to the registered Roboto font so that
+// Cyrillic (and other non-Latin scripts) render correctly.
+// Users still see "Helvetica" / "Times-Roman" etc. in settings,
+// but the PDF always uses the Unicode-capable Roboto under the hood.
+function resolveFont(font: string): string {
+  return 'Roboto'
+}
+
+function resolveFontBold(font: string): string {
+  return 'Roboto-Bold'
+}
+
+export function getFontBold(_font: string) {
+  return resolveFontBold(_font)
 }
 
 export function createStyles(primary: string, font: string) {
   const primaryLight = lightenColor(primary)
   const primaryDark = darkenColor(primary)
-  const fontBold = getFontBold(font)
+  const resolved = resolveFont(font)
+  const resolvedBold = resolveFontBold(font)
 
   return StyleSheet.create({
-    page: { padding: 40, fontSize: 10, fontFamily: font, color: dark },
+    page: { padding: 40, fontSize: 10, fontFamily: resolved, color: dark },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -43,26 +54,26 @@ export function createStyles(primary: string, font: string) {
       borderBottomWidth: 3,
       borderBottomColor: primary,
     },
-    brandName: { fontSize: 22, fontFamily: fontBold, color: primary },
+    brandName: { fontSize: 22, fontFamily: resolvedBold, color: primary },
     brandSub: { fontSize: 9, color: gray, marginTop: 2 },
     brandContact: { fontSize: 8, color: gray, marginTop: 1 },
-    invoiceTitle: { fontSize: 18, fontFamily: fontBold, textAlign: 'right' as const },
+    invoiceTitle: { fontSize: 18, fontFamily: resolvedBold, textAlign: 'right' as const },
     invoiceNumber: { fontSize: 9, color: gray, textAlign: 'right' as const, marginTop: 4 },
     infoRow: { flexDirection: 'row', gap: 20, marginBottom: 20 },
     infoBox: { padding: 12, backgroundColor: grayLight, borderRadius: 4, marginBottom: 4 },
     infoLabel: {
       fontSize: 8,
-      fontFamily: fontBold,
+      fontFamily: resolvedBold,
       color: primary,
       textTransform: 'uppercase' as const,
       marginBottom: 6,
     },
     infoText: { fontSize: 10, marginBottom: 2 },
-    infoTextBold: { fontSize: 10, fontFamily: fontBold, marginBottom: 2 },
+    infoTextBold: { fontSize: 10, fontFamily: resolvedBold, marginBottom: 2 },
     infoTextSmall: { fontSize: 9, color: gray, marginBottom: 2 },
     sectionTitle: {
       fontSize: 12,
-      fontFamily: fontBold,
+      fontFamily: resolvedBold,
       marginBottom: 8,
       marginTop: 16,
       color: dark,
@@ -83,20 +94,20 @@ export function createStyles(primary: string, font: string) {
       borderBottomColor: '#e5e7eb',
     },
     tableCell: { fontSize: 9 },
-    tableCellBold: { fontSize: 9, fontFamily: fontBold },
-    tableHeaderCell: { fontSize: 8, fontFamily: fontBold, color: primaryDark },
+    tableCellBold: { fontSize: 9, fontFamily: resolvedBold },
+    tableHeaderCell: { fontSize: 8, fontFamily: resolvedBold, color: primaryDark },
     totalsBox: { marginTop: 16, marginLeft: 'auto', width: 220 },
     totalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 },
     totalLabel: { fontSize: 10, color: gray },
     totalValue: { fontSize: 10 },
     totalDivider: { borderTopWidth: 1, borderTopColor: primary, marginVertical: 4 },
     grandTotalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
-    grandTotalLabel: { fontSize: 14, fontFamily: fontBold },
-    grandTotalValue: { fontSize: 14, fontFamily: fontBold, color: primary },
+    grandTotalLabel: { fontSize: 14, fontFamily: resolvedBold },
+    grandTotalValue: { fontSize: 14, fontFamily: resolvedBold, color: primary },
     notesSection: { marginTop: 20, padding: 12, backgroundColor: grayLight, borderRadius: 4 },
     notesLabel: {
       fontSize: 8,
-      fontFamily: fontBold,
+      fontFamily: resolvedBold,
       color: primary,
       textTransform: 'uppercase' as const,
       marginBottom: 4,
