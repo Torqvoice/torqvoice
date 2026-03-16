@@ -226,6 +226,7 @@ export async function getInventoryPartsList() {
         id: true,
         partNumber: true,
         name: true,
+        description: true,
         unitCost: true,
         sellPrice: true,
         quantity: true,

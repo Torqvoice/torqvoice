@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 
 const SIDEBAR_MIN_W = 280
-const SIDEBAR_DEFAULT_PCT = 0.22 // 22% of viewport
 
 interface ServiceDetailContentProps {
   leftColumn: React.ReactNode
@@ -11,9 +10,7 @@ interface ServiceDetailContentProps {
 }
 
 export function ServiceDetailContent({ leftColumn, rightColumn }: ServiceDetailContentProps) {
-  const [sidebarWidth, setSidebarWidth] = useState(() =>
-    typeof window !== 'undefined' ? Math.max(SIDEBAR_MIN_W, window.innerWidth * SIDEBAR_DEFAULT_PCT) : 380
-  )
+  const [sidebarWidth, setSidebarWidth] = useState<number | null>(null)
   const [isDragging, setIsDragging] = useState(false)
 
   useEffect(() => {
@@ -55,12 +52,14 @@ export function ServiceDetailContent({ leftColumn, rightColumn }: ServiceDetailC
           onMouseDown={() => setIsDragging(true)}
         >
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-4 flex items-center justify-center rounded-sm border bg-background shadow-sm">
-            <svg width="6" height="14" viewBox="0 0 6 14" className="text-muted-foreground"><path d="M1 0v14M5 0v14" stroke="currentColor" strokeWidth="1" /></svg>
+            <svg width="6" height="14" viewBox="0 0 6 14" className="text-muted-foreground">
+              <path d="M1 0v14M5 0v14" stroke="currentColor" strokeWidth="1" />
+            </svg>
           </div>
         </div>
         <div
           className="shrink-0 overflow-y-auto overscroll-contain p-4 pl-2"
-          style={{ width: sidebarWidth }}
+          style={sidebarWidth != null ? { width: sidebarWidth } : { width: '22vw', minWidth: SIDEBAR_MIN_W }}
         >
           <div className="space-y-3 pb-40">{rightColumn}</div>
         </div>
