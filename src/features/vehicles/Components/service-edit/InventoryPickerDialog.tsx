@@ -99,15 +99,20 @@ export function InventoryPickerDialog({
                 onOpenChange(false)
               }}
             >
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="font-medium text-sm truncate">{ip.name}</span>
-                {ip.partNumber && (
-                  <span className="text-xs font-mono text-muted-foreground shrink-0">
-                    {ip.partNumber}
-                  </span>
-                )}
-                {ip.category && (
-                  <span className="text-xs text-muted-foreground shrink-0">{ip.category}</span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-sm truncate">{ip.name}</span>
+                  {ip.partNumber && (
+                    <span className="text-xs font-mono text-muted-foreground shrink-0">
+                      {ip.partNumber}
+                    </span>
+                  )}
+                  {ip.category && (
+                    <span className="text-xs text-muted-foreground shrink-0">{ip.category}</span>
+                  )}
+                </div>
+                {ip.description && (
+                  <p className="text-xs text-muted-foreground truncate">{ip.description}</p>
                 )}
               </div>
               <div className="flex items-center gap-3 shrink-0 text-xs text-muted-foreground">

@@ -8,6 +8,7 @@ export interface InventoryPartOption {
   id: string
   partNumber: string | null
   name: string
+  description: string | null
   unitCost: number
   sellPrice: number
   quantity: number
