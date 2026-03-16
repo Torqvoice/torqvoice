@@ -8,6 +8,8 @@ import { QueryProvider } from '@/lib/query-provider'
 import { GlassModal } from '@/components/glass-modal'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { PWAServiceWorker } from '@/components/pwa-service-worker'
+import { PostHogProvider } from '@/components/posthog-provider'
+import { isCloudMode } from '@/lib/features'
 import './globals.css'
 
 const geistSans = Geist({
@@ -94,18 +96,24 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
-        <NextIntlClientProvider messages={messages}>
-          <ThemeProvider defaultTheme="dark">
-            <QueryProvider>
-              <TooltipProvider>
-                {children}
-                <GlassModal />
-                <Toaster richColors position="bottom-right" />
-                <PWAServiceWorker />
-              </TooltipProvider>
-            </QueryProvider>
-          </ThemeProvider>
-        </NextIntlClientProvider>
+        <PostHogProvider
+          isCloud={isCloudMode()}
+          posthogKey={process.env.POSTHOG_KEY}
+          posthogHost={process.env.POSTHOG_HOST}
+        >
+          <NextIntlClientProvider messages={messages}>
+            <ThemeProvider defaultTheme="dark">
+              <QueryProvider>
+                <TooltipProvider>
+                  {children}
+                  <GlassModal />
+                  <Toaster richColors position="bottom-right" />
+                  <PWAServiceWorker />
+                </TooltipProvider>
+              </QueryProvider>
+            </ThemeProvider>
+          </NextIntlClientProvider>
+        </PostHogProvider>
       </body>
     </html>
   )
