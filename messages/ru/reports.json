@@ -145,22 +145,22 @@
     "taxCollected": "Собрано налога"
   },
   "days": {
-    "sunday": "Воскресенье",
     "monday": "Понедельник",
     "tuesday": "Вторник",
     "wednesday": "Среда",
     "thursday": "Четверг",
     "friday": "Пятница",
-    "saturday": "Суббота"
+    "saturday": "Суббота",
+    "sunday": "Воскресенье"
   },
   "daysShort": {
-    "sun": "Вс",
     "mon": "Пн",
     "tue": "Вт",
     "wed": "Ср",
     "thu": "Чт",
     "fri": "Пт",
-    "sat": "Сб"
+    "sat": "Сб",
+    "sun": "Вс"
   },
   "csvHeaders": {
     "month": "Месяц",
