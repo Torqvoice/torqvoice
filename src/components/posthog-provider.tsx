@@ -3,40 +3,34 @@
 'use client'
 
 import posthog from 'posthog-js'
-import { PostHogProvider as PHProvider, usePostHog } from 'posthog-js/react'
+import { PostHogProvider as PHProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
 
-function PostHogInit() {
-  const ph = usePostHog()
-
+export function PostHogProvider({
+  isCloud,
+  posthogKey,
+  posthogHost,
+  children,
+}: {
+  isCloud: boolean
+  posthogKey?: string
+  posthogHost?: string
+  children: React.ReactNode
+}) {
   useEffect(() => {
-    if (!ph.__loaded) {
-      posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-        api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
+    if (isCloud && posthogKey) {
+      posthog.init(posthogKey, {
+        api_host: posthogHost || 'https://us.i.posthog.com',
+        person_profiles: 'identified_only',
         capture_pageview: true,
         capture_pageleave: true,
       })
     }
-  }, [ph])
+  }, [isCloud, posthogKey, posthogHost])
 
-  return null
-}
-
-export function PostHogProvider({
-  isCloud,
-  children,
-}: {
-  isCloud: boolean
-  children: React.ReactNode
-}) {
-  if (!isCloud) {
-    return children
+  if (!isCloud || !posthogKey) {
+    return <>{children}</>
   }
 
-  return (
-    <PHProvider client={posthog}>
-      <PostHogInit />
-      {children}
-    </PHProvider>
-  )
+  return <PHProvider client={posthog}>{children}</PHProvider>
 }

@@ -96,7 +96,11 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
-        <PostHogProvider isCloud={isCloudMode()}>
+        <PostHogProvider
+          isCloud={isCloudMode()}
+          posthogKey={process.env.POSTHOG_KEY}
+          posthogHost={process.env.POSTHOG_HOST}
+        >
           <NextIntlClientProvider messages={messages}>
             <ThemeProvider defaultTheme="dark">
               <QueryProvider>
