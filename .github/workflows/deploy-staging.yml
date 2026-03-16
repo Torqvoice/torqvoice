@@ -35,7 +35,7 @@ jobs:
           mkdir -p $HOME/torqvoice-deploy/staging
           cd $HOME/torqvoice-deploy/staging
 
-          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_)' > .env
+          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_|NEXT_PUBLIC_POSTHOG_)' > .env
 
           cat > docker-compose.yml << 'COMPOSE'
           networks:
