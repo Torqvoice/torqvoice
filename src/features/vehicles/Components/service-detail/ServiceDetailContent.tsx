@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 
 const SIDEBAR_MIN_W = 280
-const SIDEBAR_DEFAULT_PCT = 0.22 // 22% of viewport
 
 interface ServiceDetailContentProps {
   leftColumn: React.ReactNode
