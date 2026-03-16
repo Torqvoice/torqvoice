@@ -33,7 +33,7 @@ jobs:
           mkdir -p $HOME/torqvoice-deploy/prod
           cd $HOME/torqvoice-deploy/prod
 
-          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_|NEXT_PUBLIC_POSTHOG_)' > .env
+          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_|POSTHOG_)' > .env
 
           cat > docker-compose.yml << 'COMPOSE'
           networks:
