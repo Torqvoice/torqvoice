@@ -1,0 +1,104 @@
+{
+  "recentActivity": "Последняя активность",
+  "noRecentActivity": "Нет недавней активности",
+  "unknownUser": "Пользователь",
+  "stats": {
+    "activeJobs": "Активные работы",
+    "pending": "Ожидающие",
+    "todaysRevenue": "Выручка за сегодня",
+    "totalCustomers": "Всего клиентов"
+  },
+  "customize": "Настроить",
+  "viewAll": "Показать все",
+  "showCards": "Показать карточки",
+  "cards": {
+    "maintenance": "Плановое ТО",
+    "reminders": "Предстоящие напоминания",
+    "inspections": "Осмотры",
+    "quoteRequests": "Запросы на предложения",
+    "quoteResponses": "Ответы на предложения",
+    "sms": "Последние сообщения",
+    "notifications": "Последние уведомления",
+    "recentCompleted": "Недавно завершённые",
+    "activeJobs": "Активные работы"
+  },
+  "maintenance": {
+    "title": "Прогнозируемое техобслуживание",
+    "description": "На основе истории обслуживания и расчётного ежедневного пробега",
+    "overdue": "Просрочено",
+    "approaching": "Приближается",
+    "estimated": "Прим. {mileage} {unit}",
+    "sinceLastService": "{mileage} {unit} с последнего обслуживания",
+    "certainty": "{percent}% уверенность",
+    "active": "Активные",
+    "dismissedTab": "Отклонённые",
+    "noActive": "Нет транспортных средств, требующих обслуживания.",
+    "dismissedOn": "Отклонено {date}",
+    "restore": "Восстановить"
+  },
+  "reminders": {
+    "title": "Предстоящие напоминания",
+    "overdue": "Просрочено",
+    "dueSoon": "Скоро срок",
+    "noData": "Нет предстоящих напоминаний."
+  },
+  "messages": {
+    "title": "Последние сообщения",
+    "viewAll": "Показать все",
+    "you": "Вы: ",
+    "noData": "Нет недавних сообщений."
+  },
+  "notifications": {
+    "title": "Последние уведомления",
+    "noData": "Нет недавних уведомлений."
+  },
+  "inspections": {
+    "title": "Осмотры",
+    "inProgress": "В процессе",
+    "completed": "Завершено",
+    "itemCount": "{inspected}/{total} пунктов",
+    "noData": "Нет осмотров."
+  },
+  "quoteRequests": {
+    "title": "Запросы на предложения",
+    "description": "Клиенты, запрашивающие предложения из общих осмотров",
+    "pending": "Ожидающие",
+    "createQuote": "Создать предложение",
+    "itemsRequested": "{count, plural, one {# пункт запрошен} few {# пункта запрошено} other {# пунктов запрошено}}",
+    "noData": "Нет ожидающих запросов на предложения."
+  },
+  "quoteResponses": {
+    "title": "Ответы клиентов на предложения",
+    "description": "Предложения, которые клиенты приняли или запросили изменения",
+    "accepted": "Принято",
+    "changesRequested": "Запрошены изменения",
+    "convertToWorkOrder": "Преобразовать в заказ-наряд",
+    "viewQuote": "Просмотреть предложение",
+    "noData": "Нет ответов от клиентов."
+  },
+  "recentCompleted": {
+    "title": "Недавно завершённые",
+    "date": "Дата",
+    "vehicle": "Транспортное средство",
+    "customer": "Клиент",
+    "serviceTitle": "Название",
+    "total": "Итого",
+    "empty": "Пока нет завершённых работ"
+  },
+  "activeJobsTable": {
+    "title": "Активные работы",
+    "vehicle": "Транспортное средство",
+    "customer": "Клиент",
+    "serviceTitle": "Название",
+    "status": "Статус",
+    "tech": "Механик",
+    "empty": "Нет активных работ"
+  },
+  "relativeTime": {
+    "now": "сейчас",
+    "minutes": "{count}м",
+    "hours": "{count}ч",
+    "days": "{count}д"
+  },
+  "error": "Не удалось загрузить панель управления"
+}

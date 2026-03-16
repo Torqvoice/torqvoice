@@ -1,0 +1,199 @@
+{
+  "title": "Отчёты и аналитика",
+  "tabs": {
+    "revenue": "Доход",
+    "services": "Обслуживания",
+    "customers": "Клиенты",
+    "inventory": "Склад",
+    "technicians": "Механики",
+    "parts": "Запчасти",
+    "jobAnalytics": "Аналитика работ",
+    "retention": "Удержание",
+    "tax": "Налоги"
+  },
+  "dateRange": {
+    "to": "до"
+  },
+  "actions": {
+    "refresh": "Обновить",
+    "csv": "CSV"
+  },
+  "revenue": {
+    "revenue": "Доход",
+    "collected": "Собрано",
+    "outstanding": "Задолженность",
+    "services": "Обслуживания",
+    "monthlyRevenue": "Ежемесячный доход",
+    "revenueByType": "Доход по типам",
+    "monthlyBreakdown": "Помесячная разбивка",
+    "tableHeaders": {
+      "month": "Месяц",
+      "revenue": "Доход",
+      "collected": "Собрано",
+      "count": "Количество"
+    }
+  },
+  "services": {
+    "totalServices": "Всего обслуживаний",
+    "byStatus": "По статусу",
+    "byType": "По типу"
+  },
+  "customers": {
+    "total": "Всего",
+    "active": "Активные",
+    "topCustomersBySpend": "Топ клиентов по затратам",
+    "topCustomers": "Топ клиентов",
+    "tableHeaders": {
+      "name": "Имя",
+      "company": "Компания",
+      "services": "Обслуживания",
+      "totalSpent": "Всего потрачено"
+    }
+  },
+  "inventory": {
+    "parts": "Запчасти",
+    "items": "Позиций",
+    "costValue": "Стоимость закупки",
+    "sellValue": "Стоимость продажи",
+    "potentialMargin": "Потенциальная маржа",
+    "lowStock": "Мало на складе",
+    "tableHeaders": {
+      "name": "Название",
+      "partNumber": "Арт. №",
+      "qty": "Кол-во",
+      "minQty": "Мин. кол-во"
+    }
+  },
+  "technicians": {
+    "totalJobs": "Всего работ",
+    "totalRevenue": "Общий доход",
+    "revenueByTechnician": "Доход по механикам",
+    "technicianBreakdown": "Разбивка по механикам",
+    "tableHeaders": {
+      "technician": "Механик",
+      "jobs": "Работы",
+      "revenue": "Доход",
+      "avgRevenue": "Средний доход",
+      "totalHours": "Всего часов",
+      "avgHours": "Среднее часов"
+    }
+  },
+  "parts": {
+    "partsUsed": "Использовано запчастей",
+    "partsRevenue": "Доход от запчастей",
+    "topPartsByUsage": "Топ запчастей по использованию",
+    "partsUsage": "Использование запчастей",
+    "tableHeaders": {
+      "partName": "Название запчасти",
+      "partNumber": "Арт. №",
+      "usageCount": "Раз использовано",
+      "totalQty": "Общее кол-во",
+      "revenue": "Доход"
+    }
+  },
+  "jobAnalytics": {
+    "totalJobs": "Всего работ",
+    "avgJobValue": "Средняя стоимость работы",
+    "jobsByDayOfWeek": "Работы по дням недели",
+    "serviceTypes": "Типы обслуживания",
+    "monthlyTrend": "Месячный тренд",
+    "serviceTypeBreakdown": "Разбивка по типам обслуживания",
+    "tableHeaders": {
+      "type": "Тип",
+      "count": "Количество",
+      "avgValue": "Средняя стоимость",
+      "avgHours": "Среднее часов"
+    }
+  },
+  "retention": {
+    "returning": "Вернувшиеся",
+    "new": "Новые",
+    "totalActive": "Всего активных",
+    "avgDaysBetween": "Средний интервал (дни)",
+    "topReturningCustomers": "Топ вернувшихся клиентов",
+    "returningCustomers": "Вернувшиеся клиенты",
+    "tableHeaders": {
+      "customer": "Клиент",
+      "company": "Компания",
+      "visits": "Визиты",
+      "totalSpent": "Всего потрачено",
+      "avgDaysBetween": "Средний интервал (дни)"
+    }
+  },
+  "tax": {
+    "totalTaxCollected": "Всего собрано налогов",
+    "taxableRevenue": "Налогооблагаемый доход",
+    "invoicesWithTax": "Счета с налогом",
+    "monthlyTaxCollected": "Ежемесячные налоги",
+    "taxByRate": "Налог по ставкам",
+    "monthlyBreakdown": "Помесячная разбивка",
+    "tableHeaders": {
+      "taxRate": "Ставка налога",
+      "taxCollected": "Собрано налога",
+      "invoices": "Счета",
+      "month": "Месяц",
+      "taxableAmount": "Налогооблагаемая сумма"
+    }
+  },
+  "charts": {
+    "revenue": "Доход",
+    "collected": "Собрано",
+    "count": "Количество",
+    "totalSpent": "Всего потрачено",
+    "jobs": "Работы",
+    "visits": "Визиты",
+    "taxCollected": "Собрано налога"
+  },
+  "days": {
+    "monday": "Понедельник",
+    "tuesday": "Вторник",
+    "wednesday": "Среда",
+    "thursday": "Четверг",
+    "friday": "Пятница",
+    "saturday": "Суббота",
+    "sunday": "Воскресенье"
+  },
+  "daysShort": {
+    "mon": "Пн",
+    "tue": "Вт",
+    "wed": "Ср",
+    "thu": "Чт",
+    "fri": "Пт",
+    "sat": "Сб",
+    "sun": "Вс"
+  },
+  "csvHeaders": {
+    "month": "Месяц",
+    "revenue": "Доход",
+    "collected": "Собрано",
+    "count": "Количество",
+    "category": "Категория",
+    "label": "Метка",
+    "name": "Имя",
+    "company": "Компания",
+    "services": "Обслуживания",
+    "totalSpent": "Всего потрачено",
+    "partNumber": "Арт. №",
+    "quantity": "Количество",
+    "minQuantity": "Мин. количество",
+    "unitCost": "Себестоимость",
+    "technician": "Механик",
+    "jobs": "Работы",
+    "totalRevenue": "Общий доход",
+    "avgRevenue": "Средний доход",
+    "totalHours": "Всего часов",
+    "avgHours": "Среднее часов",
+    "partName": "Название запчасти",
+    "usageCount": "Раз использовано",
+    "totalQty": "Общее кол-во",
+    "serviceType": "Тип обслуживания",
+    "avgValue": "Средняя стоимость",
+    "customer": "Клиент",
+    "visits": "Визиты",
+    "avgDaysBetweenVisits": "Средний интервал между визитами (дни)",
+    "taxCollected": "Собрано налога",
+    "taxableAmount": "Налогооблагаемая сумма",
+    "invoiceCount": "Количество счетов"
+  },
+  "empty": "Данные ещё не загружены. Нажмите «Обновить» для загрузки отчёта."
+}

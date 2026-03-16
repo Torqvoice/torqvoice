@@ -15,7 +15,6 @@ import {
 import {
   Banknote,
   Building2,
-  Coins,
   CreditCard,
   Database,
   FileText,
@@ -24,10 +23,8 @@ import {
   Info,
   Key,
   Layout,
-
   Mail,
   MessageSquare,
-  Palette,
   Sparkles,
   UserCog,
   UsersRound,
@@ -56,6 +53,7 @@ const settingsCategories: SettingsCategory[] = [
       { key: "subscription", href: "/settings/subscription", icon: CreditCard, cloudOnly: true },
       { key: "account", href: "/settings/account", icon: UserCog },
       { key: "team", href: "/settings/team", icon: UsersRound },
+      { key: "localization", href: "/settings/localization", icon: Globe },
     ],
   },
   {
@@ -64,7 +62,6 @@ const settingsCategories: SettingsCategory[] = [
       { key: "invoice", href: "/settings/invoice", icon: FileText },
       { key: "templates", href: "/settings/templates", icon: Layout, gate: "customTemplates" },
       { key: "payment", href: "/settings/payment", icon: Banknote, gate: "payments" },
-      { key: "currency", href: "/settings/currency", icon: Coins },
     ],
   },
   {
@@ -86,7 +83,6 @@ const settingsCategories: SettingsCategory[] = [
   {
     key: "system",
     items: [
-      { key: "appearance", href: "/settings/appearance", icon: Palette },
       { key: "data", href: "/settings/data", icon: Database },
       { key: "license", href: "/settings/license", icon: Key, selfHostedOnly: true },
       { key: "about", href: "/settings/about", icon: Info },

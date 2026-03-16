@@ -56,6 +56,7 @@ const CURRENCIES = [
   { code: "MYR", key: "MYR" },
   { code: "AED", key: "AED" },
   { code: "SAR", key: "SAR" },
+  { code: "RUB", key: "RUB" },
 ];
 
 export function CurrencySettings({ settings }: { settings: Record<string, string> }) {
