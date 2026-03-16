@@ -399,10 +399,10 @@ export async function updateServiceRecord(input: unknown) {
         await tx.servicePart.deleteMany({ where: { serviceRecordId: id } });
         if (partItems.length > 0) {
           await tx.servicePart.createMany({
-            data: partItems.map((p) => ({
-              ...p,
-              serviceRecordId: id,
-            })),
+            data: partItems.map((p) => {
+              const { inventoryPartId: _inv, ...partData } = p;
+              return { ...partData, serviceRecordId: id };
+            }),
           });
         }
       }
