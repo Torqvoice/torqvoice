@@ -27,8 +27,8 @@ jobs:
           STRIPE_PRO_PRICE_ID: ${{ secrets.CLOUD_STRIPE_PRO_PRICE_ID }}
           STRIPE_ENTERPRISE_PRICE_ID: ${{ secrets.CLOUD_STRIPE_ENTERPRISE_PRICE_ID }}
           DATA_PATH: ${{ secrets.DATA_PATH }}
-          NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
-          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
+          POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
         run: |
           mkdir -p $HOME/torqvoice-deploy/prod
           cd $HOME/torqvoice-deploy/prod
@@ -61,8 +61,8 @@ jobs:
                 STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
                 STRIPE_PRO_PRICE_ID: ${STRIPE_PRO_PRICE_ID}
                 STRIPE_ENTERPRISE_PRICE_ID: ${STRIPE_ENTERPRISE_PRICE_ID}
-                NEXT_PUBLIC_POSTHOG_HOST: ${NEXT_PUBLIC_POSTHOG_HOST}
-                NEXT_PUBLIC_POSTHOG_KEY: ${NEXT_PUBLIC_POSTHOG_KEY}
+                POSTHOG_HOST: ${POSTHOG_HOST}
+                POSTHOG_KEY: ${POSTHOG_KEY}
               networks:
                 - proxy
           COMPOSE
