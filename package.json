@@ -51,6 +51,7 @@
     "nodemailer": "^8.0.1",
     "openai": "^6.27.0",
     "pdf-lib": "^1.17.1",
+    "posthog-js": "^1.360.2",
     "postmark": "^4.0.5",
     "prisma": "^6.19.2",
     "qrcode.react": "^4.2.0",
