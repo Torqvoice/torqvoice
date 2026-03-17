@@ -1,53 +1,57 @@
 {
-  "searchPlaceholder": "Search labor packages...",
-  "addPackage": "Add Package",
+  "searchPlaceholder": "Søk i arbeidsmaler...",
+  "addPackage": "Legg til arbeidsmal",
   "table": {
-    "name": "Name",
-    "description": "Description",
-    "itemCount": "Items"
+    "name": "Navn",
+    "description": "Beskrivelse",
+    "itemCount": "Elementer"
   },
   "empty": {
-    "noMatch": "No packages match your search.",
-    "noPresets": "No labor packages yet. Click \"Add Package\" to create one."
+    "noMatch": "Ingen maler samsvarer med søket ditt.",
+    "noPresets": "Ingen arbeidsmaler ennå. Klikk på \"Legg til arbeidsmal\" for å opprette en."
   },
   "actions": {
-    "edit": "Edit",
-    "delete": "Delete"
+    "edit": "Rediger",
+    "delete": "Slett"
   },
   "deletePreset": {
-    "title": "Delete Labor Package",
-    "description": "This will permanently delete \"{name}\" and all its items. This cannot be undone.",
-    "confirm": "Delete"
+    "title": "Slett arbeidsmal",
+    "description": "Dette vil permanent slette \"{name}\" og alle tilhørende elementer. Dette kan ikke angres.",
+    "confirm": "Slett"
   },
   "form": {
-    "addPackage": "Add Labor Package",
-    "editPackage": "Edit Labor Package",
-    "nameLabel": "Package Name",
-    "namePlaceholder": "e.g. Oil Change",
-    "descriptionLabel": "Description",
-    "descriptionPlaceholder": "Optional description...",
-    "itemsTitle": "Labor Items",
-    "itemDescription": "Description",
-    "itemHours": "Hours",
-    "itemRate": "Rate",
-    "itemDescriptionPlaceholder": "Description *",
-    "addItem": "Add Item",
-    "cancel": "Cancel",
-    "create": "Create Package",
-    "saveChanges": "Save Changes"
+    "singleItem": "Enkelt element",
+    "package": "Pakke",
+    "addPackage": "Legg til arbeidsmal",
+    "editPackage": "Rediger arbeidsmal",
+    "singleNameLabel": "Navn",
+    "singleNamePlaceholder": "f.eks. Oljeskift",
+    "nameLabel": "Pakkenavn",
+    "namePlaceholder": "f.eks. Oljeskift-pakke",
+    "descriptionLabel": "Beskrivelse",
+    "descriptionPlaceholder": "Valgfri beskrivelse...",
+    "itemsTitle": "Arbeidselementer",
+    "itemDescription": "Beskrivelse",
+    "itemHours": "Timer",
+    "itemRate": "Timepris",
+    "itemDescriptionPlaceholder": "Beskrivelse *",
+    "addItem": "Legg til element",
+    "cancel": "Avbryt",
+    "create": "Opprett",
+    "saveChanges": "Lagre endringer"
   },
   "picker": {
-    "title": "Select Labor Package",
-    "search": "Search packages...",
-    "noPackages": "No labor packages found.",
-    "items": "{count} items",
-    "totalHours": "{hours}h total"
+    "title": "Velg arbeidsmal",
+    "search": "Søk i maler...",
+    "noPackages": "Ingen arbeidsmaler funnet.",
+    "items": "{count} elementer",
+    "totalHours": "{hours}t totalt"
   },
   "errors": {
-    "error": "Error",
-    "saveFailed": "Failed to save labor package",
-    "deleteFailed": "Failed to delete labor package",
-    "loadFailed": "Failed to load labor package",
-    "noItems": "At least one item is required"
+    "error": "Feil",
+    "saveFailed": "Kunne ikke lagre arbeidsmalen",
+    "deleteFailed": "Kunne ikke slette arbeidsmalen",
+    "loadFailed": "Kunne ikke laste arbeidsmalen",
+    "noItems": "Minst ett element er påkrevd"
   }
 }

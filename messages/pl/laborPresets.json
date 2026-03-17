@@ -1,53 +1,57 @@
 {
-  "searchPlaceholder": "Search labor packages...",
-  "addPackage": "Add Package",
+  "searchPlaceholder": "Szukaj szablonów robocizny...",
+  "addPackage": "Dodaj szablon robocizny",
   "table": {
-    "name": "Name",
-    "description": "Description",
-    "itemCount": "Items"
+    "name": "Nazwa",
+    "description": "Opis",
+    "itemCount": "Pozycje"
   },
   "empty": {
-    "noMatch": "No packages match your search.",
-    "noPresets": "No labor packages yet. Click \"Add Package\" to create one."
+    "noMatch": "Żadne szablony nie pasują do wyszukiwania.",
+    "noPresets": "Brak szablonów robocizny. Kliknij \"Dodaj szablon robocizny\", aby utworzyć nowy."
   },
   "actions": {
-    "edit": "Edit",
-    "delete": "Delete"
+    "edit": "Edytuj",
+    "delete": "Usuń"
   },
   "deletePreset": {
-    "title": "Delete Labor Package",
-    "description": "This will permanently delete \"{name}\" and all its items. This cannot be undone.",
-    "confirm": "Delete"
+    "title": "Usuń szablon robocizny",
+    "description": "Spowoduje to trwałe usunięcie \"{name}\" i wszystkich jego pozycji. Tej operacji nie można cofnąć.",
+    "confirm": "Usuń"
   },
   "form": {
-    "addPackage": "Add Labor Package",
-    "editPackage": "Edit Labor Package",
-    "nameLabel": "Package Name",
-    "namePlaceholder": "e.g. Oil Change",
-    "descriptionLabel": "Description",
-    "descriptionPlaceholder": "Optional description...",
-    "itemsTitle": "Labor Items",
-    "itemDescription": "Description",
-    "itemHours": "Hours",
-    "itemRate": "Rate",
-    "itemDescriptionPlaceholder": "Description *",
-    "addItem": "Add Item",
-    "cancel": "Cancel",
-    "create": "Create Package",
-    "saveChanges": "Save Changes"
+    "singleItem": "Pojedyncza pozycja",
+    "package": "Pakiet",
+    "addPackage": "Dodaj szablon robocizny",
+    "editPackage": "Edytuj szablon robocizny",
+    "singleNameLabel": "Nazwa",
+    "singleNamePlaceholder": "np. Wymiana oleju",
+    "nameLabel": "Nazwa pakietu",
+    "namePlaceholder": "np. Pakiet wymiany oleju",
+    "descriptionLabel": "Opis",
+    "descriptionPlaceholder": "Opcjonalny opis...",
+    "itemsTitle": "Pozycje robocizny",
+    "itemDescription": "Opis",
+    "itemHours": "Godziny",
+    "itemRate": "Stawka",
+    "itemDescriptionPlaceholder": "Opis *",
+    "addItem": "Dodaj pozycję",
+    "cancel": "Anuluj",
+    "create": "Utwórz",
+    "saveChanges": "Zapisz zmiany"
   },
   "picker": {
-    "title": "Select Labor Package",
-    "search": "Search packages...",
-    "noPackages": "No labor packages found.",
-    "items": "{count} items",
-    "totalHours": "{hours}h total"
+    "title": "Wybierz szablon robocizny",
+    "search": "Szukaj szablonów...",
+    "noPackages": "Nie znaleziono szablonów robocizny.",
+    "items": "{count} pozycji",
+    "totalHours": "{hours} godz. łącznie"
   },
   "errors": {
-    "error": "Error",
-    "saveFailed": "Failed to save labor package",
-    "deleteFailed": "Failed to delete labor package",
-    "loadFailed": "Failed to load labor package",
-    "noItems": "At least one item is required"
+    "error": "Błąd",
+    "saveFailed": "Nie udało się zapisać szablonu robocizny",
+    "deleteFailed": "Nie udało się usunąć szablonu robocizny",
+    "loadFailed": "Nie udało się załadować szablonu robocizny",
+    "noItems": "Wymagana jest co najmniej jedna pozycja"
   }
 }

@@ -8,7 +8,7 @@ export const laborPresetItemSchema = z.object({
 });
 
 export const createLaborPresetSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().optional(),
   description: z.string().optional(),
   items: z.array(laborPresetItemSchema).min(1, "At least one item is required"),
 });

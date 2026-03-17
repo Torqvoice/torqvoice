@@ -1,53 +1,57 @@
 {
-  "searchPlaceholder": "Search labor packages...",
-  "addPackage": "Add Package",
+  "searchPlaceholder": "Arbeitsvorlagen durchsuchen...",
+  "addPackage": "Arbeitsvorlage hinzufügen",
   "table": {
     "name": "Name",
-    "description": "Description",
-    "itemCount": "Items"
+    "description": "Beschreibung",
+    "itemCount": "Positionen"
   },
   "empty": {
-    "noMatch": "No packages match your search.",
-    "noPresets": "No labor packages yet. Click \"Add Package\" to create one."
+    "noMatch": "Keine Vorlagen entsprechen Ihrer Suche.",
+    "noPresets": "Noch keine Arbeitsvorlagen vorhanden. Klicken Sie auf \"Arbeitsvorlage hinzufügen\", um eine zu erstellen."
   },
   "actions": {
-    "edit": "Edit",
-    "delete": "Delete"
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
   },
   "deletePreset": {
-    "title": "Delete Labor Package",
-    "description": "This will permanently delete \"{name}\" and all its items. This cannot be undone.",
-    "confirm": "Delete"
+    "title": "Arbeitsvorlage löschen",
+    "description": "Dadurch werden \"{name}\" und alle zugehörigen Positionen dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
+    "confirm": "Löschen"
   },
   "form": {
-    "addPackage": "Add Labor Package",
-    "editPackage": "Edit Labor Package",
-    "nameLabel": "Package Name",
-    "namePlaceholder": "e.g. Oil Change",
-    "descriptionLabel": "Description",
-    "descriptionPlaceholder": "Optional description...",
-    "itemsTitle": "Labor Items",
-    "itemDescription": "Description",
-    "itemHours": "Hours",
-    "itemRate": "Rate",
-    "itemDescriptionPlaceholder": "Description *",
-    "addItem": "Add Item",
-    "cancel": "Cancel",
-    "create": "Create Package",
-    "saveChanges": "Save Changes"
+    "singleItem": "Einzelposition",
+    "package": "Paket",
+    "addPackage": "Arbeitsvorlage hinzufügen",
+    "editPackage": "Arbeitsvorlage bearbeiten",
+    "singleNameLabel": "Name",
+    "singleNamePlaceholder": "z. B. Ölwechsel",
+    "nameLabel": "Paketname",
+    "namePlaceholder": "z. B. Ölwechsel-Paket",
+    "descriptionLabel": "Beschreibung",
+    "descriptionPlaceholder": "Optionale Beschreibung...",
+    "itemsTitle": "Arbeitspositionen",
+    "itemDescription": "Beschreibung",
+    "itemHours": "Stunden",
+    "itemRate": "Stundensatz",
+    "itemDescriptionPlaceholder": "Beschreibung *",
+    "addItem": "Position hinzufügen",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "saveChanges": "Änderungen speichern"
   },
   "picker": {
-    "title": "Select Labor Package",
-    "search": "Search packages...",
-    "noPackages": "No labor packages found.",
-    "items": "{count} items",
-    "totalHours": "{hours}h total"
+    "title": "Arbeitsvorlage auswählen",
+    "search": "Vorlagen durchsuchen...",
+    "noPackages": "Keine Arbeitsvorlagen gefunden.",
+    "items": "{count} Positionen",
+    "totalHours": "{hours} Std. gesamt"
   },
   "errors": {
-    "error": "Error",
-    "saveFailed": "Failed to save labor package",
-    "deleteFailed": "Failed to delete labor package",
-    "loadFailed": "Failed to load labor package",
-    "noItems": "At least one item is required"
+    "error": "Fehler",
+    "saveFailed": "Arbeitsvorlage konnte nicht gespeichert werden",
+    "deleteFailed": "Arbeitsvorlage konnte nicht gelöscht werden",
+    "loadFailed": "Arbeitsvorlage konnte nicht geladen werden",
+    "noItems": "Mindestens eine Position ist erforderlich"
   }
 }

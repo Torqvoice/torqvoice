@@ -1,6 +1,6 @@
 {
   "searchPlaceholder": "Search labor packages...",
-  "addPackage": "Add Package",
+  "addPackage": "Add Labor Preset",
   "table": {
     "name": "Name",
     "description": "Description",
@@ -20,10 +20,14 @@
     "confirm": "Delete"
   },
   "form": {
-    "addPackage": "Add Labor Package",
-    "editPackage": "Edit Labor Package",
+    "singleItem": "Single Item",
+    "package": "Package",
+    "addPackage": "Add Labor Preset",
+    "editPackage": "Edit Labor Preset",
+    "singleNameLabel": "Name",
+    "singleNamePlaceholder": "e.g. Oil Change",
     "nameLabel": "Package Name",
-    "namePlaceholder": "e.g. Oil Change",
+    "namePlaceholder": "e.g. Oil Change Package",
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "Optional description...",
     "itemsTitle": "Labor Items",

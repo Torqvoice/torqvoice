@@ -1,53 +1,57 @@
 {
-  "searchPlaceholder": "Search labor packages...",
-  "addPackage": "Add Package",
+  "searchPlaceholder": "Pesquisar modelos de mão de obra...",
+  "addPackage": "Adicionar modelo de mão de obra",
   "table": {
-    "name": "Name",
-    "description": "Description",
-    "itemCount": "Items"
+    "name": "Nome",
+    "description": "Descrição",
+    "itemCount": "Itens"
   },
   "empty": {
-    "noMatch": "No packages match your search.",
-    "noPresets": "No labor packages yet. Click \"Add Package\" to create one."
+    "noMatch": "Nenhum modelo corresponde à sua pesquisa.",
+    "noPresets": "Nenhum modelo de mão de obra ainda. Clique em \"Adicionar modelo de mão de obra\" para criar um."
   },
   "actions": {
-    "edit": "Edit",
-    "delete": "Delete"
+    "edit": "Editar",
+    "delete": "Excluir"
   },
   "deletePreset": {
-    "title": "Delete Labor Package",
-    "description": "This will permanently delete \"{name}\" and all its items. This cannot be undone.",
-    "confirm": "Delete"
+    "title": "Excluir modelo de mão de obra",
+    "description": "Isso excluirá permanentemente \"{name}\" e todos os seus itens. Esta ação não pode ser desfeita.",
+    "confirm": "Excluir"
   },
   "form": {
-    "addPackage": "Add Labor Package",
-    "editPackage": "Edit Labor Package",
-    "nameLabel": "Package Name",
-    "namePlaceholder": "e.g. Oil Change",
-    "descriptionLabel": "Description",
-    "descriptionPlaceholder": "Optional description...",
-    "itemsTitle": "Labor Items",
-    "itemDescription": "Description",
-    "itemHours": "Hours",
-    "itemRate": "Rate",
-    "itemDescriptionPlaceholder": "Description *",
-    "addItem": "Add Item",
-    "cancel": "Cancel",
-    "create": "Create Package",
-    "saveChanges": "Save Changes"
+    "singleItem": "Item único",
+    "package": "Pacote",
+    "addPackage": "Adicionar modelo de mão de obra",
+    "editPackage": "Editar modelo de mão de obra",
+    "singleNameLabel": "Nome",
+    "singleNamePlaceholder": "ex. Troca de óleo",
+    "nameLabel": "Nome do pacote",
+    "namePlaceholder": "ex. Pacote de troca de óleo",
+    "descriptionLabel": "Descrição",
+    "descriptionPlaceholder": "Descrição opcional...",
+    "itemsTitle": "Itens de mão de obra",
+    "itemDescription": "Descrição",
+    "itemHours": "Horas",
+    "itemRate": "Tarifa",
+    "itemDescriptionPlaceholder": "Descrição *",
+    "addItem": "Adicionar item",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "saveChanges": "Salvar alterações"
   },
   "picker": {
-    "title": "Select Labor Package",
-    "search": "Search packages...",
-    "noPackages": "No labor packages found.",
-    "items": "{count} items",
-    "totalHours": "{hours}h total"
+    "title": "Selecionar modelo de mão de obra",
+    "search": "Pesquisar modelos...",
+    "noPackages": "Nenhum modelo de mão de obra encontrado.",
+    "items": "{count} itens",
+    "totalHours": "{hours}h no total"
   },
   "errors": {
-    "error": "Error",
-    "saveFailed": "Failed to save labor package",
-    "deleteFailed": "Failed to delete labor package",
-    "loadFailed": "Failed to load labor package",
-    "noItems": "At least one item is required"
+    "error": "Erro",
+    "saveFailed": "Falha ao salvar o modelo de mão de obra",
+    "deleteFailed": "Falha ao excluir o modelo de mão de obra",
+    "loadFailed": "Falha ao carregar o modelo de mão de obra",
+    "noItems": "Pelo menos um item é obrigatório"
   }
 }

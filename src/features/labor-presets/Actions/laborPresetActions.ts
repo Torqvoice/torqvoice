@@ -11,6 +11,8 @@ export async function getLaborPresetsPaginated(params: {
   page?: number;
   pageSize?: number;
   search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ userId, organizationId }) => {
     const page = params.page || 1;
@@ -29,10 +31,21 @@ export async function getLaborPresetsPaginated(params: {
       ];
     }
 
+    const dir = params.sortOrder || "desc";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const orderBy: any = (() => {
+      switch (params.sortBy) {
+        case "name": return { name: dir };
+        case "description": return { description: dir };
+        case "createdAt": return { createdAt: dir };
+        default: return { updatedAt: dir };
+      }
+    })();
+
     const [presets, total] = await Promise.all([
       db.laborPreset.findMany({
         where,
-        orderBy: { updatedAt: "desc" },
+        orderBy,
         skip,
         take: pageSize,
         include: {
@@ -68,9 +81,10 @@ export async function getLaborPreset(presetId: string) {
 export async function createLaborPreset(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const data = createLaborPresetSchema.parse(input);
+    const resolvedName = data.name?.trim() || data.items[0]?.description || "Untitled";
     const preset = await db.laborPreset.create({
       data: {
-        name: data.name,
+        name: resolvedName,
         description: data.description || undefined,
         userId,
         organizationId,
@@ -103,6 +117,10 @@ export async function updateLaborPreset(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const data = updateLaborPresetSchema.parse(input);
     const { id, items, ...updateData } = data;
+    // Resolve name from first item if not provided
+    if (updateData.name !== undefined) {
+      updateData.name = updateData.name?.trim() || items?.[0]?.description || "Untitled";
+    }
 
     const result = await db.$transaction(async (tx) => {
       // Delete old items

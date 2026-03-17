@@ -24,7 +24,7 @@ import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { LaborPresetForm } from "@/features/labor-presets/Components/LaborPresetForm";
 import { deleteLaborPreset, getLaborPreset } from "@/features/labor-presets/Actions/laborPresetActions";
-import { Loader2, MoreVertical, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, MoreVertical, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
 interface LaborPresetRow {
   id: string;
@@ -44,11 +44,15 @@ interface PaginatedData {
 export function LaborPresetsClient({
   data,
   search,
+  sortBy,
+  sortOrder,
   currencyCode = "USD",
   defaultLaborRate = 0,
 }: {
   data: PaginatedData;
   search: string;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
   currencyCode?: string;
   defaultLaborRate?: number;
 }) {
@@ -95,6 +99,21 @@ export function LaborPresetsClient({
     },
     [navigate, searchInput]
   );
+
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
+      navigate({ sortBy: column, sortOrder: newOrder });
+    },
+    [navigate, sortBy, sortOrder]
+  );
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
+    return sortOrder === "asc"
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />;
+  };
 
   const handleEdit = async (id: string) => {
     const result = await getLaborPreset(id);
@@ -149,8 +168,18 @@ export function LaborPresetsClient({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("table.name")}</TableHead>
-              <TableHead className="hidden sm:table-cell">{t("table.description")}</TableHead>
+              <TableHead>
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("name")}>
+                  {t("table.name")}
+                  <SortIcon column="name" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden sm:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("description")}>
+                  {t("table.description")}
+                  <SortIcon column="description" />
+                </button>
+              </TableHead>
               <TableHead>{t("table.itemCount")}</TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
@@ -212,6 +241,7 @@ export function LaborPresetsClient({
       />
 
       <LaborPresetForm
+        key={editPreset?.id ?? "new"}
         open={showForm}
         onOpenChange={(open) => {
           setShowForm(open);

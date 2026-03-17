@@ -1,53 +1,57 @@
 {
-  "searchPlaceholder": "Search labor packages...",
-  "addPackage": "Add Package",
+  "searchPlaceholder": "Поиск шаблонов работ...",
+  "addPackage": "Добавить шаблон",
   "table": {
-    "name": "Name",
-    "description": "Description",
-    "itemCount": "Items"
+    "name": "Название",
+    "description": "Описание",
+    "itemCount": "Позиции"
   },
   "empty": {
-    "noMatch": "No packages match your search.",
-    "noPresets": "No labor packages yet. Click \"Add Package\" to create one."
+    "noMatch": "Шаблоны не найдены.",
+    "noPresets": "Шаблонов работ пока нет. Нажмите «Добавить шаблон», чтобы создать."
   },
   "actions": {
-    "edit": "Edit",
-    "delete": "Delete"
+    "edit": "Редактировать",
+    "delete": "Удалить"
   },
   "deletePreset": {
-    "title": "Delete Labor Package",
-    "description": "This will permanently delete \"{name}\" and all its items. This cannot be undone.",
-    "confirm": "Delete"
+    "title": "Удалить шаблон",
+    "description": "Шаблон «{name}» и все его позиции будут удалены безвозвратно.",
+    "confirm": "Удалить"
   },
   "form": {
-    "addPackage": "Add Labor Package",
-    "editPackage": "Edit Labor Package",
-    "nameLabel": "Package Name",
-    "namePlaceholder": "e.g. Oil Change",
-    "descriptionLabel": "Description",
-    "descriptionPlaceholder": "Optional description...",
-    "itemsTitle": "Labor Items",
-    "itemDescription": "Description",
-    "itemHours": "Hours",
-    "itemRate": "Rate",
-    "itemDescriptionPlaceholder": "Description *",
-    "addItem": "Add Item",
-    "cancel": "Cancel",
-    "create": "Create Package",
-    "saveChanges": "Save Changes"
+    "singleItem": "Одна позиция",
+    "package": "Пакет",
+    "addPackage": "Добавить шаблон",
+    "editPackage": "Редактировать шаблон",
+    "singleNameLabel": "Название",
+    "singleNamePlaceholder": "напр. Замена масла",
+    "nameLabel": "Название пакета",
+    "namePlaceholder": "напр. Пакет замены масла",
+    "descriptionLabel": "Описание",
+    "descriptionPlaceholder": "Необязательное описание...",
+    "itemsTitle": "Позиции работ",
+    "itemDescription": "Описание",
+    "itemHours": "Часы",
+    "itemRate": "Ставка",
+    "itemDescriptionPlaceholder": "Описание *",
+    "addItem": "Добавить позицию",
+    "cancel": "Отмена",
+    "create": "Создать",
+    "saveChanges": "Сохранить"
   },
   "picker": {
-    "title": "Select Labor Package",
-    "search": "Search packages...",
-    "noPackages": "No labor packages found.",
-    "items": "{count} items",
-    "totalHours": "{hours}h total"
+    "title": "Выбрать шаблон работ",
+    "search": "Поиск шаблонов...",
+    "noPackages": "Шаблоны работ не найдены.",
+    "items": "{count} поз.",
+    "totalHours": "{hours}ч всего"
   },
   "errors": {
-    "error": "Error",
-    "saveFailed": "Failed to save labor package",
-    "deleteFailed": "Failed to delete labor package",
-    "loadFailed": "Failed to load labor package",
-    "noItems": "At least one item is required"
+    "error": "Ошибка",
+    "saveFailed": "Не удалось сохранить шаблон",
+    "deleteFailed": "Не удалось удалить шаблон",
+    "loadFailed": "Не удалось загрузить шаблон",
+    "noItems": "Необходима хотя бы одна позиция"
   }
 }

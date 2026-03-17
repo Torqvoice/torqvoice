@@ -7,7 +7,13 @@ import { PageHeader } from "@/components/page-header";
 export default async function LaborPresetsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; pageSize?: string; search?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    pageSize?: string;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }>;
 }) {
   const params = await searchParams;
   const [result, settingsResult] = await Promise.all([
@@ -15,6 +21,8 @@ export default async function LaborPresetsPage({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder as "asc" | "desc" | undefined,
     }),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.DEFAULT_LABOR_RATE]),
   ]);
@@ -43,6 +51,8 @@ export default async function LaborPresetsPage({
         <LaborPresetsClient
           data={result.data}
           search={params.search || ""}
+          sortBy={params.sortBy || "updatedAt"}
+          sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
           currencyCode={currencyCode}
           defaultLaborRate={defaultLaborRate}
         />

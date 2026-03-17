@@ -1,53 +1,57 @@
 {
-  "searchPlaceholder": "Search labor packages...",
-  "addPackage": "Add Package",
+  "searchPlaceholder": "Arbeidssjablonen zoeken...",
+  "addPackage": "Arbeidssjabloon toevoegen",
   "table": {
-    "name": "Name",
-    "description": "Description",
+    "name": "Naam",
+    "description": "Beschrijving",
     "itemCount": "Items"
   },
   "empty": {
-    "noMatch": "No packages match your search.",
-    "noPresets": "No labor packages yet. Click \"Add Package\" to create one."
+    "noMatch": "Geen sjablonen komen overeen met uw zoekopdracht.",
+    "noPresets": "Nog geen arbeidssjablonen. Klik op \"Arbeidssjabloon toevoegen\" om er een aan te maken."
   },
   "actions": {
-    "edit": "Edit",
-    "delete": "Delete"
+    "edit": "Bewerken",
+    "delete": "Verwijderen"
   },
   "deletePreset": {
-    "title": "Delete Labor Package",
-    "description": "This will permanently delete \"{name}\" and all its items. This cannot be undone.",
-    "confirm": "Delete"
+    "title": "Arbeidssjabloon verwijderen",
+    "description": "Hiermee worden \"{name}\" en alle bijbehorende items permanent verwijderd. Dit kan niet ongedaan worden gemaakt.",
+    "confirm": "Verwijderen"
   },
   "form": {
-    "addPackage": "Add Labor Package",
-    "editPackage": "Edit Labor Package",
-    "nameLabel": "Package Name",
-    "namePlaceholder": "e.g. Oil Change",
-    "descriptionLabel": "Description",
-    "descriptionPlaceholder": "Optional description...",
-    "itemsTitle": "Labor Items",
-    "itemDescription": "Description",
-    "itemHours": "Hours",
-    "itemRate": "Rate",
-    "itemDescriptionPlaceholder": "Description *",
-    "addItem": "Add Item",
-    "cancel": "Cancel",
-    "create": "Create Package",
-    "saveChanges": "Save Changes"
+    "singleItem": "Enkel item",
+    "package": "Pakket",
+    "addPackage": "Arbeidssjabloon toevoegen",
+    "editPackage": "Arbeidssjabloon bewerken",
+    "singleNameLabel": "Naam",
+    "singleNamePlaceholder": "bijv. Olieverversing",
+    "nameLabel": "Pakketnaam",
+    "namePlaceholder": "bijv. Olieverversing-pakket",
+    "descriptionLabel": "Beschrijving",
+    "descriptionPlaceholder": "Optionele beschrijving...",
+    "itemsTitle": "Arbeidsitems",
+    "itemDescription": "Beschrijving",
+    "itemHours": "Uren",
+    "itemRate": "Tarief",
+    "itemDescriptionPlaceholder": "Beschrijving *",
+    "addItem": "Item toevoegen",
+    "cancel": "Annuleren",
+    "create": "Aanmaken",
+    "saveChanges": "Wijzigingen opslaan"
   },
   "picker": {
-    "title": "Select Labor Package",
-    "search": "Search packages...",
-    "noPackages": "No labor packages found.",
+    "title": "Arbeidssjabloon selecteren",
+    "search": "Sjablonen zoeken...",
+    "noPackages": "Geen arbeidssjablonen gevonden.",
     "items": "{count} items",
-    "totalHours": "{hours}h total"
+    "totalHours": "{hours}u totaal"
   },
   "errors": {
-    "error": "Error",
-    "saveFailed": "Failed to save labor package",
-    "deleteFailed": "Failed to delete labor package",
-    "loadFailed": "Failed to load labor package",
-    "noItems": "At least one item is required"
+    "error": "Fout",
+    "saveFailed": "Kan arbeidssjabloon niet opslaan",
+    "deleteFailed": "Kan arbeidssjabloon niet verwijderen",
+    "loadFailed": "Kan arbeidssjabloon niet laden",
+    "noItems": "Minimaal één item is vereist"
   }
 }

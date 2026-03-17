@@ -1,53 +1,57 @@
 {
-  "searchPlaceholder": "Search labor packages...",
-  "addPackage": "Add Package",
+  "searchPlaceholder": "Cerca modelli di manodopera...",
+  "addPackage": "Aggiungi modello di manodopera",
   "table": {
-    "name": "Name",
-    "description": "Description",
-    "itemCount": "Items"
+    "name": "Nome",
+    "description": "Descrizione",
+    "itemCount": "Voci"
   },
   "empty": {
-    "noMatch": "No packages match your search.",
-    "noPresets": "No labor packages yet. Click \"Add Package\" to create one."
+    "noMatch": "Nessun modello corrisponde alla ricerca.",
+    "noPresets": "Nessun modello di manodopera ancora. Clicca su \"Aggiungi modello di manodopera\" per crearne uno."
   },
   "actions": {
-    "edit": "Edit",
-    "delete": "Delete"
+    "edit": "Modifica",
+    "delete": "Elimina"
   },
   "deletePreset": {
-    "title": "Delete Labor Package",
-    "description": "This will permanently delete \"{name}\" and all its items. This cannot be undone.",
-    "confirm": "Delete"
+    "title": "Elimina modello di manodopera",
+    "description": "Questo eliminerà permanentemente \"{name}\" e tutte le sue voci. Questa azione non può essere annullata.",
+    "confirm": "Elimina"
   },
   "form": {
-    "addPackage": "Add Labor Package",
-    "editPackage": "Edit Labor Package",
-    "nameLabel": "Package Name",
-    "namePlaceholder": "e.g. Oil Change",
-    "descriptionLabel": "Description",
-    "descriptionPlaceholder": "Optional description...",
-    "itemsTitle": "Labor Items",
-    "itemDescription": "Description",
-    "itemHours": "Hours",
-    "itemRate": "Rate",
-    "itemDescriptionPlaceholder": "Description *",
-    "addItem": "Add Item",
-    "cancel": "Cancel",
-    "create": "Create Package",
-    "saveChanges": "Save Changes"
+    "singleItem": "Voce singola",
+    "package": "Pacchetto",
+    "addPackage": "Aggiungi modello di manodopera",
+    "editPackage": "Modifica modello di manodopera",
+    "singleNameLabel": "Nome",
+    "singleNamePlaceholder": "es. Cambio olio",
+    "nameLabel": "Nome pacchetto",
+    "namePlaceholder": "es. Pacchetto cambio olio",
+    "descriptionLabel": "Descrizione",
+    "descriptionPlaceholder": "Descrizione facoltativa...",
+    "itemsTitle": "Voci di manodopera",
+    "itemDescription": "Descrizione",
+    "itemHours": "Ore",
+    "itemRate": "Tariffa",
+    "itemDescriptionPlaceholder": "Descrizione *",
+    "addItem": "Aggiungi voce",
+    "cancel": "Annulla",
+    "create": "Crea",
+    "saveChanges": "Salva modifiche"
   },
   "picker": {
-    "title": "Select Labor Package",
-    "search": "Search packages...",
-    "noPackages": "No labor packages found.",
-    "items": "{count} items",
-    "totalHours": "{hours}h total"
+    "title": "Seleziona modello di manodopera",
+    "search": "Cerca modelli...",
+    "noPackages": "Nessun modello di manodopera trovato.",
+    "items": "{count} voci",
+    "totalHours": "{hours}h in totale"
   },
   "errors": {
-    "error": "Error",
-    "saveFailed": "Failed to save labor package",
-    "deleteFailed": "Failed to delete labor package",
-    "loadFailed": "Failed to load labor package",
-    "noItems": "At least one item is required"
+    "error": "Errore",
+    "saveFailed": "Impossibile salvare il modello di manodopera",
+    "deleteFailed": "Impossibile eliminare il modello di manodopera",
+    "loadFailed": "Impossibile caricare il modello di manodopera",
+    "noItems": "È richiesta almeno una voce"
   }
 }

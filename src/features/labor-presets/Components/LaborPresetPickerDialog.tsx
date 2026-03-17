@@ -67,6 +67,7 @@ export function LaborPresetPickerDialog({
           {filtered.map((preset) => {
             const totalHours = preset.items.reduce((sum, i) => sum + i.hours, 0);
             const isExpanded = expandedId === preset.id;
+            const isSingleItem = preset.items.length === 1;
 
             return (
               <div key={preset.id} className="rounded-md border border-transparent hover:border-border">
@@ -87,21 +88,23 @@ export function LaborPresetPickerDialog({
                     )}
                   </div>
                   <div className="flex items-center gap-3 shrink-0 text-xs text-muted-foreground">
-                    <span>{t("items", { count: preset.items.length })}</span>
+                    {!isSingleItem && <span>{t("items", { count: preset.items.length })}</span>}
                     <span>{t("totalHours", { hours: totalHours.toFixed(1) })}</span>
-                    <button
-                      type="button"
-                      className="p-1 hover:text-foreground"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedId(isExpanded ? null : preset.id);
-                      }}
-                    >
-                      {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-                    </button>
+                    {!isSingleItem && (
+                      <button
+                        type="button"
+                        className="p-1 hover:text-foreground"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedId(isExpanded ? null : preset.id);
+                        }}
+                      >
+                        {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                      </button>
+                    )}
                   </div>
                 </button>
-                {isExpanded && (
+                {isExpanded && !isSingleItem && (
                   <div className="px-3 pb-2 space-y-0.5">
                     {preset.items.map((item, i) => (
                       <div key={i} className="flex items-center justify-between text-xs text-muted-foreground py-0.5 pl-2 border-l-2 border-muted">

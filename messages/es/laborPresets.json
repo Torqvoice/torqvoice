@@ -1,53 +1,57 @@
 {
-  "searchPlaceholder": "Search labor packages...",
-  "addPackage": "Add Package",
+  "searchPlaceholder": "Buscar plantillas de mano de obra...",
+  "addPackage": "Agregar plantilla de mano de obra",
   "table": {
-    "name": "Name",
-    "description": "Description",
-    "itemCount": "Items"
+    "name": "Nombre",
+    "description": "Descripción",
+    "itemCount": "Elementos"
   },
   "empty": {
-    "noMatch": "No packages match your search.",
-    "noPresets": "No labor packages yet. Click \"Add Package\" to create one."
+    "noMatch": "Ninguna plantilla coincide con su búsqueda.",
+    "noPresets": "Aún no hay plantillas de mano de obra. Haga clic en \"Agregar plantilla de mano de obra\" para crear una."
   },
   "actions": {
-    "edit": "Edit",
-    "delete": "Delete"
+    "edit": "Editar",
+    "delete": "Eliminar"
   },
   "deletePreset": {
-    "title": "Delete Labor Package",
-    "description": "This will permanently delete \"{name}\" and all its items. This cannot be undone.",
-    "confirm": "Delete"
+    "title": "Eliminar plantilla de mano de obra",
+    "description": "Esto eliminará permanentemente \"{name}\" y todos sus elementos. Esta acción no se puede deshacer.",
+    "confirm": "Eliminar"
   },
   "form": {
-    "addPackage": "Add Labor Package",
-    "editPackage": "Edit Labor Package",
-    "nameLabel": "Package Name",
-    "namePlaceholder": "e.g. Oil Change",
-    "descriptionLabel": "Description",
-    "descriptionPlaceholder": "Optional description...",
-    "itemsTitle": "Labor Items",
-    "itemDescription": "Description",
-    "itemHours": "Hours",
-    "itemRate": "Rate",
-    "itemDescriptionPlaceholder": "Description *",
-    "addItem": "Add Item",
-    "cancel": "Cancel",
-    "create": "Create Package",
-    "saveChanges": "Save Changes"
+    "singleItem": "Elemento individual",
+    "package": "Paquete",
+    "addPackage": "Agregar plantilla de mano de obra",
+    "editPackage": "Editar plantilla de mano de obra",
+    "singleNameLabel": "Nombre",
+    "singleNamePlaceholder": "ej. Cambio de aceite",
+    "nameLabel": "Nombre del paquete",
+    "namePlaceholder": "ej. Paquete de cambio de aceite",
+    "descriptionLabel": "Descripción",
+    "descriptionPlaceholder": "Descripción opcional...",
+    "itemsTitle": "Elementos de mano de obra",
+    "itemDescription": "Descripción",
+    "itemHours": "Horas",
+    "itemRate": "Tarifa",
+    "itemDescriptionPlaceholder": "Descripción *",
+    "addItem": "Agregar elemento",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "saveChanges": "Guardar cambios"
   },
   "picker": {
-    "title": "Select Labor Package",
-    "search": "Search packages...",
-    "noPackages": "No labor packages found.",
-    "items": "{count} items",
-    "totalHours": "{hours}h total"
+    "title": "Seleccionar plantilla de mano de obra",
+    "search": "Buscar plantillas...",
+    "noPackages": "No se encontraron plantillas de mano de obra.",
+    "items": "{count} elementos",
+    "totalHours": "{hours}h en total"
   },
   "errors": {
     "error": "Error",
-    "saveFailed": "Failed to save labor package",
-    "deleteFailed": "Failed to delete labor package",
-    "loadFailed": "Failed to load labor package",
-    "noItems": "At least one item is required"
+    "saveFailed": "Error al guardar la plantilla de mano de obra",
+    "deleteFailed": "Error al eliminar la plantilla de mano de obra",
+    "loadFailed": "Error al cargar la plantilla de mano de obra",
+    "noItems": "Se requiere al menos un elemento"
   }
 }
