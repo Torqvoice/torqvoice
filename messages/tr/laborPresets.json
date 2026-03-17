@@ -1,0 +1,57 @@
+{
+  "searchPlaceholder": "İşçilik şablonlarını ara...",
+  "addPackage": "İşçilik Şablonu Ekle",
+  "table": {
+    "name": "Ad",
+    "description": "Açıklama",
+    "itemCount": "Kalemler"
+  },
+  "empty": {
+    "noMatch": "Aramanızla eşleşen şablon bulunamadı.",
+    "noPresets": "Henüz işçilik şablonu yok. Bir tane oluşturmak için \"İşçilik Şablonu Ekle\"ye tıklayın."
+  },
+  "actions": {
+    "edit": "Düzenle",
+    "delete": "Sil"
+  },
+  "deletePreset": {
+    "title": "İşçilik Şablonunu Sil",
+    "description": "\"{name}\" ve tüm kalemleri kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
+    "confirm": "Sil"
+  },
+  "form": {
+    "singleItem": "Tekli Kalem",
+    "package": "Paket",
+    "addPackage": "İşçilik Şablonu Ekle",
+    "editPackage": "İşçilik Şablonunu Düzenle",
+    "singleNameLabel": "Ad",
+    "singleNamePlaceholder": "ör. Yağ Değişimi",
+    "nameLabel": "Paket Adı",
+    "namePlaceholder": "ör. Yağ Değişimi Paketi",
+    "descriptionLabel": "Açıklama",
+    "descriptionPlaceholder": "İsteğe bağlı açıklama...",
+    "itemsTitle": "İşçilik Kalemleri",
+    "itemDescription": "Açıklama",
+    "itemHours": "Saat",
+    "itemRate": "Ücret",
+    "itemDescriptionPlaceholder": "Açıklama *",
+    "addItem": "Kalem Ekle",
+    "cancel": "İptal",
+    "create": "Oluştur",
+    "saveChanges": "Değişiklikleri Kaydet"
+  },
+  "picker": {
+    "title": "İşçilik Şablonu Seç",
+    "search": "Şablonları ara...",
+    "noPackages": "İşçilik şablonu bulunamadı.",
+    "items": "{count} kalem",
+    "totalHours": "toplam {hours}s"
+  },
+  "errors": {
+    "error": "Hata",
+    "saveFailed": "İşçilik şablonu kaydedilemedi",
+    "deleteFailed": "İşçilik şablonu silinemedi",
+    "loadFailed": "İşçilik şablonu yüklenemedi",
+    "noItems": "En az bir kalem gereklidir"
+  }
+}

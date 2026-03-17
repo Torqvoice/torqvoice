@@ -66,6 +66,10 @@
         "title": "Officina",
         "description": "Tecnico e valori predefiniti manodopera"
       },
+      "laborPresets": {
+        "title": "Pacchetti manodopera",
+        "description": "Pacchetti di lavoro predefiniti"
+      },
       "maintenance": {
         "title": "Manutenzione",
         "description": "Intervalli di servizio previsti"

@@ -66,6 +66,10 @@
         "title": "Warsztat",
         "description": "Domyslne ustawienia technika i robocizny"
       },
+      "laborPresets": {
+        "title": "Pakiety robocizny",
+        "description": "Predefiniowane pakiety pracy"
+      },
       "maintenance": {
         "title": "Konserwacja",
         "description": "Przewidywane interwaly serwisowe"

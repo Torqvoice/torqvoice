@@ -66,6 +66,10 @@
         "title": "Oficina",
         "description": "Padroes de tecnico e mao de obra"
       },
+      "laborPresets": {
+        "title": "Pacotes de mao de obra",
+        "description": "Pacotes de trabalho predefinidos"
+      },
       "maintenance": {
         "title": "Manutencao",
         "description": "Intervalos de servico previstos"

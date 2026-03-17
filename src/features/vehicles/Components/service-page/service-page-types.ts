@@ -1,6 +1,7 @@
 import type { ServicePartInput, ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { ServiceDetail } from '../service-detail/types'
 import type { InitialData, InventoryPartOption } from '../service-edit/form-types'
+import type { LaborPresetOption } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 
 export interface BoardTechnicianOption {
   id: string
@@ -39,9 +40,10 @@ export interface ServicePageClientProps {
   maxImagesPerService: number
   maxDiagnosticsPerService: number
   maxDocumentsPerService: number
+  laborPresets?: LaborPresetOption[]
   smsEnabled?: boolean
   emailEnabled?: boolean
   aiEnabled?: boolean
 }
 
-export type { ServicePartInput, ServiceLaborInput, ServiceDetail, InitialData, InventoryPartOption }
+export type { ServicePartInput, ServiceLaborInput, ServiceDetail, InitialData, InventoryPartOption, LaborPresetOption }

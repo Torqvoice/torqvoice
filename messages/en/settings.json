@@ -66,6 +66,10 @@
         "title": "Workshop",
         "description": "Technician & labor defaults"
       },
+      "laborPresets": {
+        "title": "Labor Presets",
+        "description": "Predefined labor packages"
+      },
       "maintenance": {
         "title": "Maintenance",
         "description": "Predicted service intervals"

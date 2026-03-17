@@ -79,6 +79,7 @@
   "labor": {
     "title": "Arbeidskosten",
     "addLabor": "Arbeid toevoegen",
+    "fromPresets": "Uit sjablonen",
     "description": "Beschrijving",
     "hours": "Uren",
     "rate": "Tarief ({currency}/uur)",

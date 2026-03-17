@@ -66,6 +66,7 @@ export default getRequestConfig(async () => {
   const reminders = (await import(`../../messages/${locale}/reminders.json`)).default
   const audit = (await import(`../../messages/${locale}/audit.json`)).default
   const aiChat = (await import(`../../messages/${locale}/aiChat.json`)).default
+  const laborPresets = (await import(`../../messages/${locale}/laborPresets.json`)).default
 
   return {
     locale,
@@ -94,6 +95,7 @@ export default getRequestConfig(async () => {
       reminders,
       audit,
       aiChat,
+      laborPresets,
     },
   }
 })

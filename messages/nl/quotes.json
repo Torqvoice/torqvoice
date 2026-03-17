@@ -75,6 +75,7 @@
   "labor": {
     "title": "Arbeid",
     "addLabor": "Arbeid toevoegen",
+    "fromPresets": "Uit sjablonen",
     "description": "Omschrijving",
     "descriptionPlaceholder": "Omschrijving *",
     "hours": "Uren",

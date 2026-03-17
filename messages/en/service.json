@@ -81,6 +81,7 @@
   "labor": {
     "title": "Labor",
     "addLabor": "Add Labor",
+    "fromPresets": "From Presets",
     "description": "Description",
     "hours": "Hours",
     "rate": "Rate ({currency}/hr)",

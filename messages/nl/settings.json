@@ -66,6 +66,10 @@
         "title": "Werkplaats",
         "description": "Standaard technicus en arbeid"
       },
+      "laborPresets": {
+        "title": "Arbeidspakketten",
+        "description": "Voorgedefinieerde arbeidspakketten"
+      },
       "maintenance": {
         "title": "Onderhoud",
         "description": "Voorspelde service-intervallen"

@@ -75,6 +75,7 @@
   "labor": {
     "title": "İşçilik",
     "addLabor": "İşçilik Ekle",
+    "fromPresets": "Şablonlardan",
     "description": "Açıklama",
     "descriptionPlaceholder": "Açıklama *",
     "hours": "Saat",

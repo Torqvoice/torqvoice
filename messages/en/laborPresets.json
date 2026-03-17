@@ -1,0 +1,57 @@
+{
+  "searchPlaceholder": "Search labor packages...",
+  "addPackage": "Add Labor Preset",
+  "table": {
+    "name": "Name",
+    "description": "Description",
+    "itemCount": "Items"
+  },
+  "empty": {
+    "noMatch": "No packages match your search.",
+    "noPresets": "No labor packages yet. Click \"Add Package\" to create one."
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "deletePreset": {
+    "title": "Delete Labor Package",
+    "description": "This will permanently delete \"{name}\" and all its items. This cannot be undone.",
+    "confirm": "Delete"
+  },
+  "form": {
+    "singleItem": "Single Item",
+    "package": "Package",
+    "addPackage": "Add Labor Preset",
+    "editPackage": "Edit Labor Preset",
+    "singleNameLabel": "Name",
+    "singleNamePlaceholder": "e.g. Oil Change",
+    "nameLabel": "Package Name",
+    "namePlaceholder": "e.g. Oil Change Package",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Optional description...",
+    "itemsTitle": "Labor Items",
+    "itemDescription": "Description",
+    "itemHours": "Hours",
+    "itemRate": "Rate",
+    "itemDescriptionPlaceholder": "Description *",
+    "addItem": "Add Item",
+    "cancel": "Cancel",
+    "create": "Create Package",
+    "saveChanges": "Save Changes"
+  },
+  "picker": {
+    "title": "Select Labor Package",
+    "search": "Search packages...",
+    "noPackages": "No labor packages found.",
+    "items": "{count} items",
+    "totalHours": "{hours}h total"
+  },
+  "errors": {
+    "error": "Error",
+    "saveFailed": "Failed to save labor package",
+    "deleteFailed": "Failed to delete labor package",
+    "loadFailed": "Failed to load labor package",
+    "noItems": "At least one item is required"
+  }
+}

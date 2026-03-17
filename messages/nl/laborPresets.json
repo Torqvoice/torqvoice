@@ -1,0 +1,57 @@
+{
+  "searchPlaceholder": "Arbeidssjablonen zoeken...",
+  "addPackage": "Arbeidssjabloon toevoegen",
+  "table": {
+    "name": "Naam",
+    "description": "Beschrijving",
+    "itemCount": "Items"
+  },
+  "empty": {
+    "noMatch": "Geen sjablonen komen overeen met uw zoekopdracht.",
+    "noPresets": "Nog geen arbeidssjablonen. Klik op \"Arbeidssjabloon toevoegen\" om er een aan te maken."
+  },
+  "actions": {
+    "edit": "Bewerken",
+    "delete": "Verwijderen"
+  },
+  "deletePreset": {
+    "title": "Arbeidssjabloon verwijderen",
+    "description": "Hiermee worden \"{name}\" en alle bijbehorende items permanent verwijderd. Dit kan niet ongedaan worden gemaakt.",
+    "confirm": "Verwijderen"
+  },
+  "form": {
+    "singleItem": "Enkel item",
+    "package": "Pakket",
+    "addPackage": "Arbeidssjabloon toevoegen",
+    "editPackage": "Arbeidssjabloon bewerken",
+    "singleNameLabel": "Naam",
+    "singleNamePlaceholder": "bijv. Olieverversing",
+    "nameLabel": "Pakketnaam",
+    "namePlaceholder": "bijv. Olieverversing-pakket",
+    "descriptionLabel": "Beschrijving",
+    "descriptionPlaceholder": "Optionele beschrijving...",
+    "itemsTitle": "Arbeidsitems",
+    "itemDescription": "Beschrijving",
+    "itemHours": "Uren",
+    "itemRate": "Tarief",
+    "itemDescriptionPlaceholder": "Beschrijving *",
+    "addItem": "Item toevoegen",
+    "cancel": "Annuleren",
+    "create": "Aanmaken",
+    "saveChanges": "Wijzigingen opslaan"
+  },
+  "picker": {
+    "title": "Arbeidssjabloon selecteren",
+    "search": "Sjablonen zoeken...",
+    "noPackages": "Geen arbeidssjablonen gevonden.",
+    "items": "{count} items",
+    "totalHours": "{hours}u totaal"
+  },
+  "errors": {
+    "error": "Fout",
+    "saveFailed": "Kan arbeidssjabloon niet opslaan",
+    "deleteFailed": "Kan arbeidssjabloon niet verwijderen",
+    "loadFailed": "Kan arbeidssjabloon niet laden",
+    "noItems": "Minimaal één item is vereist"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "searchPlaceholder": "Rechercher des modèles de main-d'œuvre...",
+  "addPackage": "Ajouter un modèle de main-d'œuvre",
+  "table": {
+    "name": "Nom",
+    "description": "Description",
+    "itemCount": "Éléments"
+  },
+  "empty": {
+    "noMatch": "Aucun modèle ne correspond à votre recherche.",
+    "noPresets": "Aucun modèle de main-d'œuvre pour l'instant. Cliquez sur \"Ajouter un modèle de main-d'œuvre\" pour en créer un."
+  },
+  "actions": {
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  },
+  "deletePreset": {
+    "title": "Supprimer le modèle de main-d'œuvre",
+    "description": "Cela supprimera définitivement \"{name}\" et tous ses éléments. Cette action est irréversible.",
+    "confirm": "Supprimer"
+  },
+  "form": {
+    "singleItem": "Élément unique",
+    "package": "Forfait",
+    "addPackage": "Ajouter un modèle de main-d'œuvre",
+    "editPackage": "Modifier le modèle de main-d'œuvre",
+    "singleNameLabel": "Nom",
+    "singleNamePlaceholder": "ex. Vidange d'huile",
+    "nameLabel": "Nom du forfait",
+    "namePlaceholder": "ex. Forfait vidange d'huile",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Description facultative...",
+    "itemsTitle": "Éléments de main-d'œuvre",
+    "itemDescription": "Description",
+    "itemHours": "Heures",
+    "itemRate": "Tarif",
+    "itemDescriptionPlaceholder": "Description *",
+    "addItem": "Ajouter un élément",
+    "cancel": "Annuler",
+    "create": "Créer",
+    "saveChanges": "Enregistrer les modifications"
+  },
+  "picker": {
+    "title": "Sélectionner un modèle de main-d'œuvre",
+    "search": "Rechercher des modèles...",
+    "noPackages": "Aucun modèle de main-d'œuvre trouvé.",
+    "items": "{count} éléments",
+    "totalHours": "{hours}h au total"
+  },
+  "errors": {
+    "error": "Erreur",
+    "saveFailed": "Échec de l'enregistrement du modèle de main-d'œuvre",
+    "deleteFailed": "Échec de la suppression du modèle de main-d'œuvre",
+    "loadFailed": "Échec du chargement du modèle de main-d'œuvre",
+    "noItems": "Au moins un élément est requis"
+  }
+}

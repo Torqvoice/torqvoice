@@ -79,6 +79,7 @@
   "labor": {
     "title": "Arbeit",
     "addLabor": "Arbeit hinzufügen",
+    "fromPresets": "Aus Vorlagen",
     "description": "Beschreibung",
     "hours": "Stunden",
     "rate": "Satz ({currency}/Std.)",

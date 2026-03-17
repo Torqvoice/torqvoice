@@ -1,0 +1,57 @@
+{
+  "searchPlaceholder": "Pesquisar modelos de mão de obra...",
+  "addPackage": "Adicionar modelo de mão de obra",
+  "table": {
+    "name": "Nome",
+    "description": "Descrição",
+    "itemCount": "Itens"
+  },
+  "empty": {
+    "noMatch": "Nenhum modelo corresponde à sua pesquisa.",
+    "noPresets": "Nenhum modelo de mão de obra ainda. Clique em \"Adicionar modelo de mão de obra\" para criar um."
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Excluir"
+  },
+  "deletePreset": {
+    "title": "Excluir modelo de mão de obra",
+    "description": "Isso excluirá permanentemente \"{name}\" e todos os seus itens. Esta ação não pode ser desfeita.",
+    "confirm": "Excluir"
+  },
+  "form": {
+    "singleItem": "Item único",
+    "package": "Pacote",
+    "addPackage": "Adicionar modelo de mão de obra",
+    "editPackage": "Editar modelo de mão de obra",
+    "singleNameLabel": "Nome",
+    "singleNamePlaceholder": "ex. Troca de óleo",
+    "nameLabel": "Nome do pacote",
+    "namePlaceholder": "ex. Pacote de troca de óleo",
+    "descriptionLabel": "Descrição",
+    "descriptionPlaceholder": "Descrição opcional...",
+    "itemsTitle": "Itens de mão de obra",
+    "itemDescription": "Descrição",
+    "itemHours": "Horas",
+    "itemRate": "Tarifa",
+    "itemDescriptionPlaceholder": "Descrição *",
+    "addItem": "Adicionar item",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "saveChanges": "Salvar alterações"
+  },
+  "picker": {
+    "title": "Selecionar modelo de mão de obra",
+    "search": "Pesquisar modelos...",
+    "noPackages": "Nenhum modelo de mão de obra encontrado.",
+    "items": "{count} itens",
+    "totalHours": "{hours}h no total"
+  },
+  "errors": {
+    "error": "Erro",
+    "saveFailed": "Falha ao salvar o modelo de mão de obra",
+    "deleteFailed": "Falha ao excluir o modelo de mão de obra",
+    "loadFailed": "Falha ao carregar o modelo de mão de obra",
+    "noItems": "Pelo menos um item é obrigatório"
+  }
+}

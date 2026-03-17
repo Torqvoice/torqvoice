@@ -177,6 +177,11 @@ export function useQuoteFormState({
     markDirty();
   }, [defaultLaborRate, markDirty]);
 
+  const addLaborBulk = useCallback((items: QuoteLaborInput[]) => {
+    setLaborItems((prev) => [...prev, ...items]);
+    markDirty();
+  }, [markDirty]);
+
   const deletePart = useCallback((index: number) => {
     setPartItems((prev) => prev.filter((_, j) => j !== index));
     markDirty();
@@ -320,7 +325,7 @@ export function useQuoteFormState({
     partsSubtotal, laborSubtotal, subtotal, discountAmount, taxAmount, totalAmount,
     selectedVehicle, setSelectedVehicle, selectedCustomer, setSelectedCustomer,
     // Callbacks
-    markDirty, updatePart, updateLabor, addPart, addLabor, deletePart, deleteLabor,
+    markDirty, updatePart, updateLabor, addPart, addLabor, addLaborBulk, deletePart, deleteLabor,
     handleSubmit, handleDelete, handleDownloadPDF,
     handleConvert, handleResolveResponse, saveNow,
   };

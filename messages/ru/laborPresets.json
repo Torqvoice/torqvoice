@@ -1,0 +1,57 @@
+{
+  "searchPlaceholder": "Поиск шаблонов работ...",
+  "addPackage": "Добавить шаблон",
+  "table": {
+    "name": "Название",
+    "description": "Описание",
+    "itemCount": "Позиции"
+  },
+  "empty": {
+    "noMatch": "Шаблоны не найдены.",
+    "noPresets": "Шаблонов работ пока нет. Нажмите «Добавить шаблон», чтобы создать."
+  },
+  "actions": {
+    "edit": "Редактировать",
+    "delete": "Удалить"
+  },
+  "deletePreset": {
+    "title": "Удалить шаблон",
+    "description": "Шаблон «{name}» и все его позиции будут удалены безвозвратно.",
+    "confirm": "Удалить"
+  },
+  "form": {
+    "singleItem": "Одна позиция",
+    "package": "Пакет",
+    "addPackage": "Добавить шаблон",
+    "editPackage": "Редактировать шаблон",
+    "singleNameLabel": "Название",
+    "singleNamePlaceholder": "напр. Замена масла",
+    "nameLabel": "Название пакета",
+    "namePlaceholder": "напр. Пакет замены масла",
+    "descriptionLabel": "Описание",
+    "descriptionPlaceholder": "Необязательное описание...",
+    "itemsTitle": "Позиции работ",
+    "itemDescription": "Описание",
+    "itemHours": "Часы",
+    "itemRate": "Ставка",
+    "itemDescriptionPlaceholder": "Описание *",
+    "addItem": "Добавить позицию",
+    "cancel": "Отмена",
+    "create": "Создать",
+    "saveChanges": "Сохранить"
+  },
+  "picker": {
+    "title": "Выбрать шаблон работ",
+    "search": "Поиск шаблонов...",
+    "noPackages": "Шаблоны работ не найдены.",
+    "items": "{count} поз.",
+    "totalHours": "{hours}ч всего"
+  },
+  "errors": {
+    "error": "Ошибка",
+    "saveFailed": "Не удалось сохранить шаблон",
+    "deleteFailed": "Не удалось удалить шаблон",
+    "loadFailed": "Не удалось загрузить шаблон",
+    "noItems": "Необходима хотя бы одна позиция"
+  }
+}

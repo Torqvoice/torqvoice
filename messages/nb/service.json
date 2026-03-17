@@ -81,6 +81,7 @@
   "labor": {
     "title": "Arbeid",
     "addLabor": "Legg til arbeid",
+    "fromPresets": "Fra maler",
     "description": "Beskrivelse",
     "hours": "Timer",
     "rate": "Sats ({currency}/time)",

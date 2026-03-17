@@ -1,0 +1,57 @@
+{
+  "searchPlaceholder": "Szukaj szablonów robocizny...",
+  "addPackage": "Dodaj szablon robocizny",
+  "table": {
+    "name": "Nazwa",
+    "description": "Opis",
+    "itemCount": "Pozycje"
+  },
+  "empty": {
+    "noMatch": "Żadne szablony nie pasują do wyszukiwania.",
+    "noPresets": "Brak szablonów robocizny. Kliknij \"Dodaj szablon robocizny\", aby utworzyć nowy."
+  },
+  "actions": {
+    "edit": "Edytuj",
+    "delete": "Usuń"
+  },
+  "deletePreset": {
+    "title": "Usuń szablon robocizny",
+    "description": "Spowoduje to trwałe usunięcie \"{name}\" i wszystkich jego pozycji. Tej operacji nie można cofnąć.",
+    "confirm": "Usuń"
+  },
+  "form": {
+    "singleItem": "Pojedyncza pozycja",
+    "package": "Pakiet",
+    "addPackage": "Dodaj szablon robocizny",
+    "editPackage": "Edytuj szablon robocizny",
+    "singleNameLabel": "Nazwa",
+    "singleNamePlaceholder": "np. Wymiana oleju",
+    "nameLabel": "Nazwa pakietu",
+    "namePlaceholder": "np. Pakiet wymiany oleju",
+    "descriptionLabel": "Opis",
+    "descriptionPlaceholder": "Opcjonalny opis...",
+    "itemsTitle": "Pozycje robocizny",
+    "itemDescription": "Opis",
+    "itemHours": "Godziny",
+    "itemRate": "Stawka",
+    "itemDescriptionPlaceholder": "Opis *",
+    "addItem": "Dodaj pozycję",
+    "cancel": "Anuluj",
+    "create": "Utwórz",
+    "saveChanges": "Zapisz zmiany"
+  },
+  "picker": {
+    "title": "Wybierz szablon robocizny",
+    "search": "Szukaj szablonów...",
+    "noPackages": "Nie znaleziono szablonów robocizny.",
+    "items": "{count} pozycji",
+    "totalHours": "{hours} godz. łącznie"
+  },
+  "errors": {
+    "error": "Błąd",
+    "saveFailed": "Nie udało się zapisać szablonu robocizny",
+    "deleteFailed": "Nie udało się usunąć szablonu robocizny",
+    "loadFailed": "Nie udało się załadować szablonu robocizny",
+    "noItems": "Wymagana jest co najmniej jedna pozycja"
+  }
+}

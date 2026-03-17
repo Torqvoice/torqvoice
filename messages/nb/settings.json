@@ -66,6 +66,10 @@
         "title": "Verksted",
         "description": "Tekniker- og arbeidsstandarder"
       },
+      "laborPresets": {
+        "title": "Arbeidspakker",
+        "description": "Forhåndsdefinerte arbeidspakker"
+      },
       "maintenance": {
         "title": "Vedlikehold",
         "description": "Predikerte serviceintervaller"

@@ -1,6 +1,7 @@
 import { getQuote } from '@/features/quotes/Actions/quoteActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPresetActions'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { getFeatures } from '@/lib/features'
 import { PageHeader } from '@/components/page-header'
@@ -8,7 +9,7 @@ import { QuotePageClient } from '@/features/quotes/Components/QuotePageClient'
 
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [result, settingsResult, authContext] = await Promise.all([
+  const [result, settingsResult, presetsResult, authContext] = await Promise.all([
     getQuote(id),
     getSettings([
       SETTING_KEYS.CURRENCY_CODE,
@@ -16,6 +17,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       SETTING_KEYS.TAX_ENABLED,
       SETTING_KEYS.DEFAULT_LABOR_RATE,
     ]),
+    getLaborPresetsList(),
     getAuthContext(),
   ])
 
@@ -38,6 +40,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   const taxEnabled = settings[SETTING_KEYS.TAX_ENABLED] !== 'false'
   const defaultTaxRate = taxEnabled ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0 : 0
   const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
+  const laborPresets = presetsResult.success && presetsResult.data ? presetsResult.data : []
   const organizationId = authContext?.organizationId || ''
 
   // Separate attachments by category
@@ -62,6 +65,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         defaultTaxRate={defaultTaxRate}
         taxEnabled={taxEnabled}
         defaultLaborRate={defaultLaborRate}
+        laborPresets={laborPresets}
         smsEnabled={features?.sms ?? false}
         emailEnabled={features?.smtp ?? false}
       />

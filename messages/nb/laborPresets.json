@@ -1,0 +1,57 @@
+{
+  "searchPlaceholder": "Søk i arbeidsmaler...",
+  "addPackage": "Legg til arbeidsmal",
+  "table": {
+    "name": "Navn",
+    "description": "Beskrivelse",
+    "itemCount": "Elementer"
+  },
+  "empty": {
+    "noMatch": "Ingen maler samsvarer med søket ditt.",
+    "noPresets": "Ingen arbeidsmaler ennå. Klikk på \"Legg til arbeidsmal\" for å opprette en."
+  },
+  "actions": {
+    "edit": "Rediger",
+    "delete": "Slett"
+  },
+  "deletePreset": {
+    "title": "Slett arbeidsmal",
+    "description": "Dette vil permanent slette \"{name}\" og alle tilhørende elementer. Dette kan ikke angres.",
+    "confirm": "Slett"
+  },
+  "form": {
+    "singleItem": "Enkelt element",
+    "package": "Pakke",
+    "addPackage": "Legg til arbeidsmal",
+    "editPackage": "Rediger arbeidsmal",
+    "singleNameLabel": "Navn",
+    "singleNamePlaceholder": "f.eks. Oljeskift",
+    "nameLabel": "Pakkenavn",
+    "namePlaceholder": "f.eks. Oljeskift-pakke",
+    "descriptionLabel": "Beskrivelse",
+    "descriptionPlaceholder": "Valgfri beskrivelse...",
+    "itemsTitle": "Arbeidselementer",
+    "itemDescription": "Beskrivelse",
+    "itemHours": "Timer",
+    "itemRate": "Timepris",
+    "itemDescriptionPlaceholder": "Beskrivelse *",
+    "addItem": "Legg til element",
+    "cancel": "Avbryt",
+    "create": "Opprett",
+    "saveChanges": "Lagre endringer"
+  },
+  "picker": {
+    "title": "Velg arbeidsmal",
+    "search": "Søk i maler...",
+    "noPackages": "Ingen arbeidsmaler funnet.",
+    "items": "{count} elementer",
+    "totalHours": "{hours}t totalt"
+  },
+  "errors": {
+    "error": "Feil",
+    "saveFailed": "Kunne ikke lagre arbeidsmalen",
+    "deleteFailed": "Kunne ikke slette arbeidsmalen",
+    "loadFailed": "Kunne ikke laste arbeidsmalen",
+    "noItems": "Minst ett element er påkrevd"
+  }
+}

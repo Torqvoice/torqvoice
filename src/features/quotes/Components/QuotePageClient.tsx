@@ -31,6 +31,7 @@ import { getCurrencySymbol } from '@/lib/format'
 import type { QuoteAttachment, QuoteRecord, TabType } from './quote-page-types'
 import { statusColors } from './quote-page-types'
 import { useQuoteFormState } from './useQuoteFormState'
+import { LaborPresetPickerDialog, type LaborPresetOption } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import { QuotePartsEditor } from './QuotePartsEditor'
 import { QuoteLaborEditor } from './QuoteLaborEditor'
 import { QuoteNotesEditor } from './QuoteNotesEditor'
@@ -58,6 +59,7 @@ export function QuotePageClient({
   defaultTaxRate = 0,
   taxEnabled = true,
   defaultLaborRate = 0,
+  laborPresets = [],
   smsEnabled = false,
   emailEnabled = false,
   imageAttachments = [],
@@ -71,6 +73,7 @@ export function QuotePageClient({
   defaultTaxRate?: number
   taxEnabled?: boolean
   defaultLaborRate?: number
+  laborPresets?: LaborPresetOption[]
   smsEnabled?: boolean
   emailEnabled?: boolean
   imageAttachments?: QuoteAttachment[]
@@ -91,6 +94,22 @@ export function QuotePageClient({
     defaultLaborRate,
     t,
   })
+
+  const [showPresetPicker, setShowPresetPicker] = useState(false)
+
+  const handleSelectPreset = useCallback(
+    (preset: LaborPresetOption) => {
+      const newItems = preset.items.map((item) => ({
+        description: item.description,
+        hours: item.hours,
+        rate: item.rate > 0 ? item.rate : defaultLaborRate,
+        total: item.hours * (item.rate > 0 ? item.rate : defaultLaborRate),
+        excluded: false,
+      }))
+      state.addLaborBulk(newItems)
+    },
+    [defaultLaborRate, state]
+  )
 
   const handleDescriptionChange = useCallback(
     (v: string) => {
@@ -136,6 +155,8 @@ export function QuotePageClient({
         onUpdate={state.updateLabor}
         onDelete={state.deleteLabor}
         onAdd={state.addLabor}
+        hasPresets={laborPresets.length > 0}
+        onOpenPresets={() => setShowPresetPicker(true)}
         t={t}
       />
       <QuoteNotesEditor
@@ -344,6 +365,13 @@ export function QuotePageClient({
           </div>
         </div>
       )}
+
+      <LaborPresetPickerDialog
+        open={showPresetPicker}
+        onOpenChange={setShowPresetPicker}
+        laborPresets={laborPresets}
+        onSelectPreset={handleSelectPreset}
+      />
 
       {/* Dialogs */}
       <SendEmailDialog

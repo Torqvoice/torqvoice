@@ -79,6 +79,7 @@
   "labor": {
     "title": "Mão de Obra",
     "addLabor": "Adicionar Mão de Obra",
+    "fromPresets": "De modelos",
     "description": "Descrição",
     "hours": "Horas",
     "rate": "Taxa ({currency}/h)",

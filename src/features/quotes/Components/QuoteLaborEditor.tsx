@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2 } from "lucide-react";
+import { Layers, Plus, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import type { QuoteLaborInput } from "./quote-page-types";
 
@@ -44,6 +44,8 @@ interface QuoteLaborEditorProps {
   onUpdate: (index: number, field: keyof QuoteLaborInput, value: string | number | boolean) => void;
   onDelete: (index: number) => void;
   onAdd: () => void;
+  hasPresets?: boolean;
+  onOpenPresets?: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string;
 }
@@ -56,13 +58,23 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
   onUpdate,
   onDelete,
   onAdd,
+  hasPresets,
+  onOpenPresets,
   t,
 }: QuoteLaborEditorProps) {
   return (
     <div className="rounded-lg border p-3 space-y-2">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">{t("labor.title")}</h3>
-        <Button type="button" variant="outline" size="sm" onClick={onAdd}><Plus className="mr-1 h-3.5 w-3.5" /> {t("labor.addLabor")}</Button>
+        <div className="flex gap-2">
+          {hasPresets && onOpenPresets && (
+            <Button type="button" variant="outline" size="sm" onClick={onOpenPresets}>
+              <Layers className="mr-1 h-3.5 w-3.5" />
+              {t("labor.fromPresets")}
+            </Button>
+          )}
+          <Button type="button" variant="outline" size="sm" onClick={onAdd}><Plus className="mr-1 h-3.5 w-3.5" /> {t("labor.addLabor")}</Button>
+        </div>
       </div>
       {laborItems.length > 0 && (
         <>

@@ -66,6 +66,10 @@
         "title": "Atelier",
         "description": "Valeurs par defaut technicien et main-d'oeuvre"
       },
+      "laborPresets": {
+        "title": "Forfaits main-d'oeuvre",
+        "description": "Forfaits de travail predefinis"
+      },
       "maintenance": {
         "title": "Maintenance",
         "description": "Intervalles de service predits"

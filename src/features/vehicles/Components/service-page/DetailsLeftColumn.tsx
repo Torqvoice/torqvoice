@@ -15,6 +15,8 @@ interface DetailsLeftColumnProps {
   currencyCode: string
   defaultLaborRate: number
   inventoryParts: InventoryPartOption[]
+  hasPresets?: boolean
+  onOpenPresets?: () => void
   aiEnabled?: boolean
 }
 
@@ -25,6 +27,8 @@ export function DetailsLeftColumn({
   currencyCode,
   defaultLaborRate,
   inventoryParts,
+  hasPresets,
+  onOpenPresets,
   aiEnabled,
 }: DetailsLeftColumnProps) {
   return (
@@ -45,6 +49,8 @@ export function DetailsLeftColumn({
         laborSubtotal={formState.laborSubtotal}
         currencyCode={currencyCode}
         defaultLaborRate={defaultLaborRate}
+        hasPresets={hasPresets}
+        onOpenPresets={onOpenPresets}
       />
       <NotesSection
         initialData={formState.initialData}

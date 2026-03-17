@@ -1,0 +1,57 @@
+{
+  "searchPlaceholder": "Arbeitsvorlagen durchsuchen...",
+  "addPackage": "Arbeitsvorlage hinzufügen",
+  "table": {
+    "name": "Name",
+    "description": "Beschreibung",
+    "itemCount": "Positionen"
+  },
+  "empty": {
+    "noMatch": "Keine Vorlagen entsprechen Ihrer Suche.",
+    "noPresets": "Noch keine Arbeitsvorlagen vorhanden. Klicken Sie auf \"Arbeitsvorlage hinzufügen\", um eine zu erstellen."
+  },
+  "actions": {
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
+  },
+  "deletePreset": {
+    "title": "Arbeitsvorlage löschen",
+    "description": "Dadurch werden \"{name}\" und alle zugehörigen Positionen dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
+    "confirm": "Löschen"
+  },
+  "form": {
+    "singleItem": "Einzelposition",
+    "package": "Paket",
+    "addPackage": "Arbeitsvorlage hinzufügen",
+    "editPackage": "Arbeitsvorlage bearbeiten",
+    "singleNameLabel": "Name",
+    "singleNamePlaceholder": "z. B. Ölwechsel",
+    "nameLabel": "Paketname",
+    "namePlaceholder": "z. B. Ölwechsel-Paket",
+    "descriptionLabel": "Beschreibung",
+    "descriptionPlaceholder": "Optionale Beschreibung...",
+    "itemsTitle": "Arbeitspositionen",
+    "itemDescription": "Beschreibung",
+    "itemHours": "Stunden",
+    "itemRate": "Stundensatz",
+    "itemDescriptionPlaceholder": "Beschreibung *",
+    "addItem": "Position hinzufügen",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "saveChanges": "Änderungen speichern"
+  },
+  "picker": {
+    "title": "Arbeitsvorlage auswählen",
+    "search": "Vorlagen durchsuchen...",
+    "noPackages": "Keine Arbeitsvorlagen gefunden.",
+    "items": "{count} Positionen",
+    "totalHours": "{hours} Std. gesamt"
+  },
+  "errors": {
+    "error": "Fehler",
+    "saveFailed": "Arbeitsvorlage konnte nicht gespeichert werden",
+    "deleteFailed": "Arbeitsvorlage konnte nicht gelöscht werden",
+    "loadFailed": "Arbeitsvorlage konnte nicht geladen werden",
+    "noItems": "Mindestens eine Position ist erforderlich"
+  }
+}

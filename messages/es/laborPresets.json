@@ -1,0 +1,57 @@
+{
+  "searchPlaceholder": "Buscar plantillas de mano de obra...",
+  "addPackage": "Agregar plantilla de mano de obra",
+  "table": {
+    "name": "Nombre",
+    "description": "Descripción",
+    "itemCount": "Elementos"
+  },
+  "empty": {
+    "noMatch": "Ninguna plantilla coincide con su búsqueda.",
+    "noPresets": "Aún no hay plantillas de mano de obra. Haga clic en \"Agregar plantilla de mano de obra\" para crear una."
+  },
+  "actions": {
+    "edit": "Editar",
+    "delete": "Eliminar"
+  },
+  "deletePreset": {
+    "title": "Eliminar plantilla de mano de obra",
+    "description": "Esto eliminará permanentemente \"{name}\" y todos sus elementos. Esta acción no se puede deshacer.",
+    "confirm": "Eliminar"
+  },
+  "form": {
+    "singleItem": "Elemento individual",
+    "package": "Paquete",
+    "addPackage": "Agregar plantilla de mano de obra",
+    "editPackage": "Editar plantilla de mano de obra",
+    "singleNameLabel": "Nombre",
+    "singleNamePlaceholder": "ej. Cambio de aceite",
+    "nameLabel": "Nombre del paquete",
+    "namePlaceholder": "ej. Paquete de cambio de aceite",
+    "descriptionLabel": "Descripción",
+    "descriptionPlaceholder": "Descripción opcional...",
+    "itemsTitle": "Elementos de mano de obra",
+    "itemDescription": "Descripción",
+    "itemHours": "Horas",
+    "itemRate": "Tarifa",
+    "itemDescriptionPlaceholder": "Descripción *",
+    "addItem": "Agregar elemento",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "saveChanges": "Guardar cambios"
+  },
+  "picker": {
+    "title": "Seleccionar plantilla de mano de obra",
+    "search": "Buscar plantillas...",
+    "noPackages": "No se encontraron plantillas de mano de obra.",
+    "items": "{count} elementos",
+    "totalHours": "{hours}h en total"
+  },
+  "errors": {
+    "error": "Error",
+    "saveFailed": "Error al guardar la plantilla de mano de obra",
+    "deleteFailed": "Error al eliminar la plantilla de mano de obra",
+    "loadFailed": "Error al cargar la plantilla de mano de obra",
+    "noItems": "Se requiere al menos un elemento"
+  }
+}

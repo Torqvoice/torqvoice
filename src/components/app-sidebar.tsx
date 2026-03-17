@@ -50,6 +50,7 @@ import {
   FileText,
   History,
   Globe,
+  Layers,
   MessageSquare,
   LayoutDashboard,
   Loader2,
@@ -124,6 +125,7 @@ export function AppSidebar({
     { titleKey: 'sidebar.quotes' as const, url: '/quotes', icon: FileText, subject: 'quotes' },
     { titleKey: 'sidebar.billing' as const, url: '/billing', icon: Receipt, subject: 'billing' },
     { titleKey: 'sidebar.inventory' as const, url: '/inventory', icon: Package, subject: 'inventory' },
+    { titleKey: 'sidebar.laborPresets' as const, url: '/labor-presets', icon: Layers, subject: 'labor_presets' },
     ...(features?.reports !== false && canAccess('reports') ? [{ titleKey: 'sidebar.reports' as const, url: '/reports', icon: BarChart3, subject: 'reports' }] : []),
     { titleKey: 'sidebar.auditLog' as const, url: '/audit-log', icon: History, subject: 'settings' },
   ].filter((item) => canAccess(item.subject))

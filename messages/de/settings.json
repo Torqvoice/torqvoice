@@ -66,6 +66,10 @@
         "title": "Werkstatt",
         "description": "Techniker- & Arbeitsstandards"
       },
+      "laborPresets": {
+        "title": "Arbeitspakete",
+        "description": "Vordefinierte Arbeitspakete"
+      },
       "maintenance": {
         "title": "Wartung",
         "description": "Vorhergesagte Serviceintervalle"
