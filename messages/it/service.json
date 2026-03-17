@@ -79,7 +79,7 @@
   "labor": {
     "title": "Manodopera",
     "addLabor": "Aggiungi Manodopera",
-    "fromPresets": "From Presets",
+    "fromPresets": "Da modelli",
     "description": "Descrizione",
     "hours": "Ore",
     "rate": "Tariffa ({currency}/h)",

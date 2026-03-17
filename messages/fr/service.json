@@ -79,7 +79,7 @@
   "labor": {
     "title": "Main-d'œuvre",
     "addLabor": "Ajouter une Main-d'œuvre",
-    "fromPresets": "From Presets",
+    "fromPresets": "Depuis modèles",
     "description": "Description",
     "hours": "Heures",
     "rate": "Taux ({currency}/h)",

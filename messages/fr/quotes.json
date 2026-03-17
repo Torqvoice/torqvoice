@@ -75,7 +75,7 @@
   "labor": {
     "title": "Main-d'œuvre",
     "addLabor": "Ajouter de la main-d'œuvre",
-    "fromPresets": "From Presets",
+    "fromPresets": "Depuis modèles",
     "description": "Description",
     "descriptionPlaceholder": "Description *",
     "hours": "Heures",

@@ -75,7 +75,7 @@
   "labor": {
     "title": "Arbeitszeit",
     "addLabor": "Arbeitszeit hinzufügen",
-    "fromPresets": "From Presets",
+    "fromPresets": "Aus Vorlagen",
     "description": "Beschreibung",
     "descriptionPlaceholder": "Beschreibung *",
     "hours": "Stunden",

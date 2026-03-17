@@ -79,7 +79,7 @@
   "labor": {
     "title": "Praca",
     "addLabor": "Dodaj Pracę",
-    "fromPresets": "From Presets",
+    "fromPresets": "Z szablonów",
     "description": "Opis",
     "hours": "Godziny",
     "rate": "Stawka ({currency}/godz.)",

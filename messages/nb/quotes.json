@@ -75,7 +75,7 @@
   "labor": {
     "title": "Arbeid",
     "addLabor": "Legg til arbeid",
-    "fromPresets": "From Presets",
+    "fromPresets": "Fra maler",
     "description": "Beskrivelse",
     "descriptionPlaceholder": "Beskrivelse *",
     "hours": "Timer",

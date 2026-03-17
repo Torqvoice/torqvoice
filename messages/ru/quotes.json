@@ -75,7 +75,7 @@
   "labor": {
     "title": "Работа",
     "addLabor": "Добавить работу",
-    "fromPresets": "From Presets",
+    "fromPresets": "Из шаблонов",
     "description": "Описание",
     "descriptionPlaceholder": "Описание *",
     "hours": "Часы",
