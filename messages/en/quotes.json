@@ -75,6 +75,7 @@
   "labor": {
     "title": "Labor",
     "addLabor": "Add Labor",
+    "fromPresets": "From Presets",
     "description": "Description",
     "descriptionPlaceholder": "Description *",
     "hours": "Hours",

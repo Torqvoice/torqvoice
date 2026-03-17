@@ -368,6 +368,35 @@ model ServiceLabor {
   @@map("service_labor")
 }
 
+model LaborPreset {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  isArchived     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  userId         String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  items          LaborPresetItem[]
+
+  @@index([organizationId])
+  @@map("labor_presets")
+}
+
+model LaborPresetItem {
+  id          String @id @default(cuid())
+  description String
+  hours       Float  @default(0)
+  rate        Float  @default(0)
+  sortOrder   Int    @default(0)
+  presetId    String
+  preset      LaborPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+
+  @@index([presetId])
+  @@map("labor_preset_items")
+}
+
 model InventoryPart {
   id            String   @id @default(cuid())
   partNumber    String?
@@ -547,6 +576,7 @@ model Organization {
   customers              Customer[]
   quotes                 Quote[]
   inventoryParts         InventoryPart[]
+  laborPresets           LaborPreset[]
   customFieldDefinitions CustomFieldDefinition[]
   settings               AppSetting[]
   subscription           Subscription?

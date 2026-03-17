@@ -66,6 +66,10 @@
         "title": "Atölye",
         "description": "Teknisyen & işçilik varsayılanları"
       },
+      "laborPresets": {
+        "title": "İşçilik Paketleri",
+        "description": "Önceden tanımlı işçilik paketleri"
+      },
       "maintenance": {
         "title": "Bakım",
         "description": "Öngörülen servis aralıkları"

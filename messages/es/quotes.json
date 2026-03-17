@@ -75,6 +75,7 @@
   "labor": {
     "title": "Mano de obra",
     "addLabor": "Agregar mano de obra",
+    "fromPresets": "From Presets",
     "description": "Descripción",
     "descriptionPlaceholder": "Descripción *",
     "hours": "Horas",

@@ -15,6 +15,7 @@ export enum PermissionSubject {
   SERVICES = "services",
   BILLING = "billing",
   INVENTORY = "inventory",
+  LABOR_PRESETS = "labor_presets",
   INSPECTIONS = "inspections",
   REPORTS = "reports",
   SETTINGS = "settings",
@@ -107,6 +108,16 @@ export const permissionGroups: PermissionGroup[] = [
   {
     name: "Inventory",
     subject: PermissionSubject.INVENTORY,
+    permissions: [
+      { action: PermissionAction.CREATE, label: "Create" },
+      { action: PermissionAction.READ, label: "View" },
+      { action: PermissionAction.UPDATE, label: "Edit" },
+      { action: PermissionAction.DELETE, label: "Delete" },
+    ],
+  },
+  {
+    name: "Labor Presets",
+    subject: PermissionSubject.LABOR_PRESETS,
     permissions: [
       { action: PermissionAction.CREATE, label: "Create" },
       { action: PermissionAction.READ, label: "View" },

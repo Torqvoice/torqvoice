@@ -81,6 +81,7 @@
   "labor": {
     "title": "Работа",
     "addLabor": "Добавить работу",
+    "fromPresets": "From Presets",
     "description": "Описание",
     "hours": "Часы",
     "rate": "Ставка ({currency}/ч)",

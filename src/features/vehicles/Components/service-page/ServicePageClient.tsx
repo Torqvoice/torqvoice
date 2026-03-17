@@ -10,6 +10,8 @@ import { ImageCarousel } from '../service-detail/ImageCarousel'
 import { ShareDialog } from '../service-detail/ShareDialog'
 import { NotifyCustomerDialog } from '@/components/notify-customer-dialog'
 import { InventoryPickerDialog } from '../service-edit/InventoryPickerDialog'
+import { LaborPresetPickerDialog } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
+import type { LaborPresetOption } from './service-page-types'
 import { ServiceImagesManager } from '../service-images-manager'
 import { ServiceVideoManager } from '../service-video-manager'
 import { ServiceDocumentsManager } from '../service-documents-manager'
@@ -43,6 +45,7 @@ export function ServicePageClient({
   maxImagesPerService,
   maxDiagnosticsPerService,
   maxDocumentsPerService,
+  laborPresets = [],
   smsEnabled = false,
   emailEnabled = false,
   aiEnabled = false,
@@ -57,6 +60,16 @@ export function ServicePageClient({
     currentUserName,
     record,
   })
+
+  const handleSelectPreset = (preset: LaborPresetOption) => {
+    const newItems = preset.items.map((item) => ({
+      description: item.description,
+      hours: item.hours,
+      rate: item.rate > 0 ? item.rate : defaultLaborRate,
+      total: item.hours * (item.rate > 0 ? item.rate : defaultLaborRate),
+    }))
+    formState.dirtySetLaborItems((prev) => [...prev, ...newItems])
+  }
 
   const actions = useServiceActions({
     record,
@@ -101,6 +114,8 @@ export function ServicePageClient({
                 currencyCode={currencyCode}
                 defaultLaborRate={defaultLaborRate}
                 inventoryParts={inventoryParts}
+                hasPresets={laborPresets.length > 0}
+                onOpenPresets={() => formState.setShowPresetPicker(true)}
                 aiEnabled={aiEnabled}
               />
             }
@@ -157,6 +172,13 @@ export function ServicePageClient({
         inventoryParts={inventoryParts}
         currencyCode={currencyCode}
         onSelectPart={(part) => formState.dirtySetPartItems((prev) => [...prev, part])}
+      />
+
+      <LaborPresetPickerDialog
+        open={formState.showPresetPicker}
+        onOpenChange={formState.setShowPresetPicker}
+        laborPresets={laborPresets}
+        onSelectPreset={handleSelectPreset}
       />
 
       <ImageCarousel

@@ -66,6 +66,10 @@
         "title": "Taller",
         "description": "Valores predeterminados de tecnico y mano de obra"
       },
+      "laborPresets": {
+        "title": "Paquetes de mano de obra",
+        "description": "Paquetes de trabajo predefinidos"
+      },
       "maintenance": {
         "title": "Mantenimiento",
         "description": "Intervalos de servicio predichos"

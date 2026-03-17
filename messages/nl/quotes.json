@@ -75,6 +75,7 @@
   "labor": {
     "title": "Arbeid",
     "addLabor": "Arbeid toevoegen",
+    "fromPresets": "From Presets",
     "description": "Omschrijving",
     "descriptionPlaceholder": "Omschrijving *",
     "hours": "Uren",

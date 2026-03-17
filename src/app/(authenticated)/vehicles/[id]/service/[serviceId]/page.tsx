@@ -2,6 +2,7 @@ import { getServiceRecord } from "@/features/vehicles/Actions/serviceActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getInventoryPartsList } from "@/features/inventory/Actions/inventoryActions";
+import { getLaborPresetsList } from "@/features/labor-presets/Actions/laborPresetActions";
 
 import { getTechnicians } from "@/features/workboard/Actions/technicianActions";
 import { getAuthContext } from "@/lib/get-auth-context";
@@ -19,7 +20,7 @@ export default async function ServiceDetailPage({
 }) {
   const { id, serviceId } = await params;
 
-  const [result, settingsResult, inventoryResult, techniciansResult, authContext, session] =
+  const [result, settingsResult, inventoryResult, techniciansResult, presetsResult, authContext, session] =
     await Promise.all([
       getServiceRecord(serviceId),
       getSettings([
@@ -31,6 +32,7 @@ export default async function ServiceDetailPage({
       ]),
       getInventoryPartsList(),
       getTechnicians(),
+      getLaborPresetsList(),
       getAuthContext(),
       getCachedSession(),
     ]);
@@ -63,6 +65,8 @@ export default async function ServiceDetailPage({
     Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0;
   const inventoryParts =
     inventoryResult.success && inventoryResult.data ? inventoryResult.data : [];
+  const laborPresets =
+    presetsResult.success && presetsResult.data ? presetsResult.data : [];
   const initialVehicle = {
     id: record.vehicle.id,
     make: record.vehicle.make,
@@ -177,6 +181,7 @@ export default async function ServiceDetailPage({
         defaultLaborRate={defaultLaborRate}
         initialData={initialData}
         inventoryParts={inventoryParts}
+        laborPresets={laborPresets}
         initialVehicle={initialVehicle}
         boardTechnicians={boardTechnicians}
         currentUserName={currentUserName}

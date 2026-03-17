@@ -79,6 +79,7 @@
   "labor": {
     "title": "İşçilik",
     "addLabor": "İşçilik Ekle",
+    "fromPresets": "From Presets",
     "description": "Açıklama",
     "hours": "Saat",
     "rate": "Ücret ({currency}/sa)",

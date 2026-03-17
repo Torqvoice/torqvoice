@@ -75,6 +75,7 @@
   "labor": {
     "title": "Robocizna",
     "addLabor": "Dodaj robociznę",
+    "fromPresets": "From Presets",
     "description": "Opis",
     "descriptionPlaceholder": "Opis *",
     "hours": "Godziny",

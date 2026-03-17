@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus, Trash2 } from 'lucide-react'
+import { Layers, Plus, Trash2 } from 'lucide-react'
 import { formatCurrency, getCurrencySymbol } from '@/lib/format'
 import { useTranslations } from 'next-intl'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -16,6 +16,8 @@ interface LaborEditorProps {
   laborSubtotal: number
   currencyCode: string
   defaultLaborRate: number
+  hasPresets?: boolean
+  onOpenPresets?: () => void
 }
 
 export function LaborEditor({
@@ -25,6 +27,8 @@ export function LaborEditor({
   laborSubtotal,
   currencyCode,
   defaultLaborRate,
+  hasPresets,
+  onOpenPresets,
 }: LaborEditorProps) {
   const t = useTranslations('service.labor')
   const cs = getCurrencySymbol(currencyCode)
@@ -33,15 +37,23 @@ export function LaborEditor({
     <div className="rounded-lg border p-3 space-y-2">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">{t('title')}</h3>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setLaborItems((prev) => [...prev, makeEmptyLabor(defaultLaborRate)])}
-        >
-          <Plus className="mr-1 h-3.5 w-3.5" />
-          {t('addLabor')}
-        </Button>
+        <div className="flex gap-2">
+          {hasPresets && onOpenPresets && (
+            <Button type="button" variant="outline" size="sm" onClick={onOpenPresets}>
+              <Layers className="mr-1 h-3.5 w-3.5" />
+              {t('fromPresets')}
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setLaborItems((prev) => [...prev, makeEmptyLabor(defaultLaborRate)])}
+          >
+            <Plus className="mr-1 h-3.5 w-3.5" />
+            {t('addLabor')}
+          </Button>
+        </div>
       </div>
 
       {laborItems.length > 0 && (
