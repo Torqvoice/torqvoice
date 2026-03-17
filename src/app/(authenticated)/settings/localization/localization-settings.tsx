@@ -19,7 +19,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Calendar, Clock, Coins, Globe, Loader2, Moon, Palette, Save, Sun } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
+import { Calendar, Check, ChevronDown, Clock, Coins, Globe, Loader2, Moon, Palette, Save, Sun } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { formatCurrency, formatDate, formatDateTime, DEFAULT_DATE_FORMAT } from "@/lib/format";
 import { useTheme } from "@/components/theme-provider";
 import { setLocale } from "@/i18n/actions";
@@ -127,6 +130,8 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
   const { theme, setTheme } = useTheme();
   const currentLocale = useLocale();
   const [saving, setSaving] = useState(false);
+  const [currencyOpen, setCurrencyOpen] = useState(false);
+  const [timezoneOpen, setTimezoneOpen] = useState(false);
 
   // Currency & Tax
   const [currencyCode, setCurrencyCode] = useState(settings[SETTING_KEYS.CURRENCY_CODE] || "USD");
@@ -206,18 +211,34 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
             <div className="space-y-6">
               <div className="space-y-2">
                 <Label>{t("currency.currencyLabel")}</Label>
-                <Select value={currencyCode} onValueChange={setCurrencyCode}>
-                  <SelectTrigger className="w-64">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CURRENCIES.map((c) => (
-                      <SelectItem key={c.code} value={c.code}>
-                        {c.code} &mdash; {t("currency.currencies." + c.code)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={currencyOpen} onOpenChange={setCurrencyOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" role="combobox" aria-expanded={currencyOpen} className="w-64 justify-between font-normal">
+                      {currencyCode} &mdash; {t("currency.currencies." + currencyCode)}
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-64 p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder={t("currency.searchCurrency")} />
+                      <CommandList>
+                        <CommandEmpty>{t("currency.noCurrencyFound")}</CommandEmpty>
+                        <CommandGroup>
+                          {CURRENCIES.map((c) => (
+                            <CommandItem
+                              key={c.code}
+                              value={`${c.code} ${t("currency.currencies." + c.code)}`}
+                              onSelect={() => { setCurrencyCode(c.code); setCurrencyOpen(false); }}
+                            >
+                              <Check className={cn("mr-2 h-4 w-4", currencyCode === c.code ? "opacity-100" : "opacity-0")} />
+                              {c.code} &mdash; {t("currency.currencies." + c.code)}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 <p className="text-xs text-muted-foreground">
                   {t("currency.previewLabel", { value: formatCurrency(1234.56, currencyCode) })}
                 </p>
@@ -302,19 +323,41 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
 
               <div className="space-y-2">
                 <Label>{t("appearance.timezone")}</Label>
-                <Select value={timezone || "__auto__"} onValueChange={(v) => setTimezone(v === "__auto__" ? "" : v)}>
-                  <SelectTrigger className="w-72">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__auto__">{t("appearance.timezoneAuto")}</SelectItem>
-                    {TIMEZONE_OPTIONS.map((tz) => (
-                      <SelectItem key={tz} value={tz}>
-                        {tz.replace(/_/g, " ")}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={timezoneOpen} onOpenChange={setTimezoneOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" role="combobox" aria-expanded={timezoneOpen} className="w-72 justify-between font-normal">
+                      {timezone ? timezone.replace(/_/g, " ") : t("appearance.timezoneAuto")}
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-72 p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder={t("appearance.searchTimezone")} />
+                      <CommandList>
+                        <CommandEmpty>{t("appearance.noTimezoneFound")}</CommandEmpty>
+                        <CommandGroup>
+                          <CommandItem
+                            value={t("appearance.timezoneAuto")}
+                            onSelect={() => { setTimezone(""); setTimezoneOpen(false); }}
+                          >
+                            <Check className={cn("mr-2 h-4 w-4", !timezone ? "opacity-100" : "opacity-0")} />
+                            {t("appearance.timezoneAuto")}
+                          </CommandItem>
+                          {TIMEZONE_OPTIONS.map((tz) => (
+                            <CommandItem
+                              key={tz}
+                              value={tz.replace(/_/g, " ")}
+                              onSelect={() => { setTimezone(tz); setTimezoneOpen(false); }}
+                            >
+                              <Check className={cn("mr-2 h-4 w-4", timezone === tz ? "opacity-100" : "opacity-0")} />
+                              {tz.replace(/_/g, " ")}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 <p className="text-xs text-muted-foreground">
                   {t("appearance.timezoneHint")}
                 </p>
