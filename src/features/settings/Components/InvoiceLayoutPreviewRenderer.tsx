@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useMessages } from "next-intl";
 import { PDFViewer } from "@react-pdf/renderer";
+import "@/features/vehicles/Components/invoice-pdf/fonts.client";
 import { InvoicePDF } from "@/features/vehicles/Components/InvoicePDF";
 import { QuotePDF } from "@/features/quotes/Components/QuotePDF";
 import type { InvoiceLayoutPreviewProps } from "./InvoiceLayoutPreview";
