@@ -20,8 +20,8 @@ export default async function SettingsLayout({
 
   // Check if user has settings access and edit permission
   const isOwnerOrAdmin = data.role === "owner" || data.role === "admin" || data.role === "super_admin";
-  let canReadSettings = isOwnerOrAdmin;
-  let canEditSettings = isOwnerOrAdmin;
+  let canReadSettings = true;
+  let canEditSettings = true;
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId);
     // Members without a custom role have full access
