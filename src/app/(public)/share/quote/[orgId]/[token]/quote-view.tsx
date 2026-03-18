@@ -661,7 +661,7 @@ export function QuoteView({
             case 'general': {
               const generalCfs = layoutConfig
                 ? getCustomFieldsForSection(layoutConfig, 'general', customFields)
-                : getUnassignedCustomFields(layoutConfig ?? null, customFields);
+                : getUnassignedCustomFields(null, customFields);
               if (generalCfs.length === 0) return null;
               return (
                 <div key="general" className="mt-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
