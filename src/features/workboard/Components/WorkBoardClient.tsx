@@ -118,7 +118,15 @@ export function WorkBoardClient({
 
   const weekStart = store.weekStart || initialWeekStart;
   const days = getWeekDays(weekStart);
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }), useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }), useSensor(KeyboardSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 5 },
+    }),
+    useSensor(KeyboardSensor)
+  );
 
   const updateUrl = useCallback((newView: BoardView, newDate: string, newWeekStart: string) => {
     const params = new URLSearchParams(); params.set("view", newView); params.set("date", newDate); params.set("week", newWeekStart);
@@ -217,6 +225,12 @@ export function WorkBoardClient({
     <div className="w-48 opacity-90"><UnassignedJobOverlayCard job={activeDrag.unassignedJob.job} type={activeDrag.unassignedJob.type} /></div>
   ) : null;
 
+  const gridTemplateColumns = `140px ${days
+    .map((d) =>
+      d === toLocalDateString(new Date()) ? "minmax(0,2fr)" : "minmax(0,1fr)",
+    )
+    .join(" ")}`;
+
   return (
     <div className="flex flex-1 flex-col gap-4">
       <WorkBoardToolbar weekStart={weekStart} selectedDate={selectedDate} view={view} onPrevWeek={handlePrevWeek} onNextWeek={handleNextWeek} onPrevDay={handlePrevDay} onNextDay={handleNextDay} onToday={handleToday} onAddTech={() => { setEditingTech(null); setTechDialogOpen(true); }} onViewChange={setView} />
@@ -227,7 +241,7 @@ export function WorkBoardClient({
             {view === "day" ? (
               <DayTimeline date={selectedDate} technicians={store.technicians} assignments={store.jobs} workDayStart={boardSettings.workDayStart} workDayEnd={boardSettings.workDayEnd} onCardClick={handleCardClick} onTechClick={(t) => { setEditingTech(t); setTechDialogOpen(true); }} onCreateWorkOrder={handleCreateWorkOrder} />
             ) : (
-              <div className="min-w-[900px] grid gap-1" style={{ gridTemplateColumns: `140px ${days.map((d) => (d === toLocalDateString(new Date()) ? "minmax(0,2fr)" : "minmax(0,1fr)")).join(" ")}` }}>
+              <div className="min-w-[900px] grid gap-1" style={{ gridTemplateColumns }}>
                 <div />
                 {days.map((day) => {
                   const isToday = day === toLocalDateString(new Date());
