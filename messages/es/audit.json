@@ -81,6 +81,9 @@
     "auth_loginFailed": "Intento de inicio de sesión fallido",
     "auth_register": "Usuario registrado",
     "auth_passwordReset": "Restablecimiento de contraseña solicitado",
-    "auth_permissionDenied": "Permiso denegado"
+    "auth_permissionDenied": "Permiso denegado",
+    "labor_preset_create": "Preset de mano de obra creado",
+    "labor_preset_update": "Preset de mano de obra actualizado",
+    "labor_preset_delete": "Preset de mano de obra eliminado"
   }
 }

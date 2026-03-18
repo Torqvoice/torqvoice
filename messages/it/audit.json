@@ -81,6 +81,9 @@
     "auth_loginFailed": "Tentativo di accesso fallito",
     "auth_register": "Utente registrato",
     "auth_passwordReset": "Reimpostazione password richiesta",
-    "auth_permissionDenied": "Permesso negato"
+    "auth_permissionDenied": "Permesso negato",
+    "labor_preset_create": "Preset manodopera creato",
+    "labor_preset_update": "Preset manodopera aggiornato",
+    "labor_preset_delete": "Preset manodopera eliminato"
   }
 }

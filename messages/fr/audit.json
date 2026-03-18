@@ -81,6 +81,9 @@
     "auth_loginFailed": "Tentative de connexion échouée",
     "auth_register": "Utilisateur inscrit",
     "auth_passwordReset": "Réinitialisation du mot de passe demandée",
-    "auth_permissionDenied": "Permission refusée"
+    "auth_permissionDenied": "Permission refusée",
+    "labor_preset_create": "Préréglage de main-d'œuvre créé",
+    "labor_preset_update": "Préréglage de main-d'œuvre mis à jour",
+    "labor_preset_delete": "Préréglage de main-d'œuvre supprimé"
   }
 }

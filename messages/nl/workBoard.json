@@ -46,7 +46,11 @@
   "jobDetail": {
     "viewDetails": "Details weergeven",
     "remove": "Verwijderen",
-    "date": "Datum: {date}"
+    "endBeforeStart": "Eindtijd moet na de starttijd liggen",
+    "endTime": "Eindtijd",
+    "failedDuration": "Kan duur niet bijwerken",
+    "failedTimes": "Kan tijden niet bijwerken",
+    "startTime": "Starttijd"
   },
   "presenter": {
     "title": "Werkbord",

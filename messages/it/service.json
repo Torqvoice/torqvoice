@@ -6,7 +6,9 @@
     "deleteTitle": "Elimina Registro di Servizio",
     "deleteDescription": "Questo eliminerà permanentemente questo registro di servizio e tutti i dati associati. Non può essere annullato.",
     "deleted": "Registro di servizio eliminato",
-    "failedDelete": "Impossibile eliminare"
+    "failedDelete": "Impossibile eliminare",
+    "customFieldsInvalid": "Compila tutti i campi personalizzati obbligatori",
+    "customFieldsSaveFailed": "Impossibile salvare i campi personalizzati"
   },
   "header": {
     "tabs": {

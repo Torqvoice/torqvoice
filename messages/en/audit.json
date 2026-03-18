@@ -81,6 +81,9 @@
     "auth_loginFailed": "Failed Login Attempt",
     "auth_register": "User Registered",
     "auth_passwordReset": "Password Reset Requested",
-    "auth_permissionDenied": "Permission Denied"
+    "auth_permissionDenied": "Permission Denied",
+    "labor_preset_create": "Created Labor Preset",
+    "labor_preset_update": "Updated Labor Preset",
+    "labor_preset_delete": "Deleted Labor Preset"
   }
 }

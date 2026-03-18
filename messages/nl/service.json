@@ -6,7 +6,9 @@
     "deleteTitle": "Servicerecord verwijderen",
     "deleteDescription": "Dit zal dit servicerecord permanent verwijderen en alle bijbehorende gegevens. Dit kan niet ongedaan worden gemaakt.",
     "deleted": "Servicerecord verwijderd",
-    "failedDelete": "Verwijderen mislukt"
+    "failedDelete": "Verwijderen mislukt",
+    "customFieldsInvalid": "Vul alle verplichte aangepaste velden in",
+    "customFieldsSaveFailed": "Kan aangepaste velden niet opslaan"
   },
   "header": {
     "tabs": {

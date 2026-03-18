@@ -6,7 +6,9 @@
     "deleteTitle": "Servis Kaydını Sil",
     "deleteDescription": "Bu, bu servis kaydını ve ilişkili tüm verileri kalıcı olarak silecektir. Bu işlem geri alınamaz.",
     "deleted": "Servis kaydı silindi",
-    "failedDelete": "Silinemedi"
+    "failedDelete": "Silinemedi",
+    "customFieldsInvalid": "Lütfen tüm zorunlu özel alanları doldurun",
+    "customFieldsSaveFailed": "Özel alanlar kaydedilemedi"
   },
   "header": {
     "tabs": {

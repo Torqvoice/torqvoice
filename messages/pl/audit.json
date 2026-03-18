@@ -81,6 +81,9 @@
     "auth_loginFailed": "Nieudana próba logowania",
     "auth_register": "Użytkownik zarejestrowany",
     "auth_passwordReset": "Żądanie resetowania hasła",
-    "auth_permissionDenied": "Odmowa dostępu"
+    "auth_permissionDenied": "Odmowa dostępu",
+    "labor_preset_create": "Utworzono preset robocizny",
+    "labor_preset_update": "Zaktualizowano preset robocizny",
+    "labor_preset_delete": "Usunięto preset robocizny"
   }
 }

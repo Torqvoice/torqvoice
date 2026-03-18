@@ -81,6 +81,9 @@
     "auth_loginFailed": "Неудачная попытка входа",
     "auth_register": "Пользователь зарегистрировался",
     "auth_passwordReset": "Запрошен сброс пароля",
-    "auth_permissionDenied": "Доступ запрещён"
+    "auth_permissionDenied": "Доступ запрещён",
+    "labor_preset_create": "Создан шаблон работ",
+    "labor_preset_update": "Обновлён шаблон работ",
+    "labor_preset_delete": "Удалён шаблон работ"
   }
 }

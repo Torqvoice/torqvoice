@@ -46,7 +46,11 @@
   "jobDetail": {
     "viewDetails": "Ayrıntıları Görüntüle",
     "remove": "Kaldır",
-    "date": "Tarih: {date}"
+    "endBeforeStart": "Bitiş zamanı başlangıç zamanından sonra olmalıdır",
+    "endTime": "Bitiş Zamanı",
+    "failedDuration": "Süre güncellenemedi",
+    "failedTimes": "Zamanlar güncellenemedi",
+    "startTime": "Başlangıç Zamanı"
   },
   "presenter": {
     "title": "İş Panosu",

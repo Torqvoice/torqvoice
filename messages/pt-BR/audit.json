@@ -81,6 +81,9 @@
     "auth_loginFailed": "Tentativa de login falhada",
     "auth_register": "Usuário registrado",
     "auth_passwordReset": "Redefinição de senha solicitada",
-    "auth_permissionDenied": "Permissão negada"
+    "auth_permissionDenied": "Permissão negada",
+    "labor_preset_create": "Preset de mão de obra criado",
+    "labor_preset_update": "Preset de mão de obra atualizado",
+    "labor_preset_delete": "Preset de mão de obra excluído"
   }
 }

@@ -46,7 +46,11 @@
   "jobDetail": {
     "viewDetails": "Ver Detalles",
     "remove": "Eliminar",
-    "date": "Fecha: {date}"
+    "endBeforeStart": "La hora de fin debe ser posterior a la hora de inicio",
+    "endTime": "Hora de fin",
+    "failedDuration": "Error al actualizar la duración",
+    "failedTimes": "Error al actualizar los horarios",
+    "startTime": "Hora de inicio"
   },
   "presenter": {
     "title": "Tablero de Trabajo",

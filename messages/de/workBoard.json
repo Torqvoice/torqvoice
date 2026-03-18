@@ -46,7 +46,11 @@
   "jobDetail": {
     "viewDetails": "Details anzeigen",
     "remove": "Entfernen",
-    "date": "Datum: {date}"
+    "endBeforeStart": "Endzeit muss nach der Startzeit liegen",
+    "endTime": "Endzeit",
+    "failedDuration": "Dauer konnte nicht aktualisiert werden",
+    "failedTimes": "Zeiten konnten nicht aktualisiert werden",
+    "startTime": "Startzeit"
   },
   "presenter": {
     "title": "Arbeitsboard",
