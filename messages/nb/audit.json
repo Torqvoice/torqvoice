@@ -81,6 +81,9 @@
     "auth_loginFailed": "Mislykket påloggingsforsøk",
     "auth_register": "Bruker registrert",
     "auth_passwordReset": "Passord-tilbakestilling forespurt",
-    "auth_permissionDenied": "Tilgang nektet"
+    "auth_permissionDenied": "Tilgang nektet",
+    "labor_preset_create": "Opprettet arbeidspreset",
+    "labor_preset_update": "Oppdaterte arbeidspreset",
+    "labor_preset_delete": "Slettet arbeidspreset"
   }
 }

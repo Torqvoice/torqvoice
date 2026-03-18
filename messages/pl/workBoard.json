@@ -46,7 +46,11 @@
   "jobDetail": {
     "viewDetails": "Wyświetl Szczegóły",
     "remove": "Usuń",
-    "date": "Data: {date}"
+    "endBeforeStart": "Czas zakończenia musi być po czasie rozpoczęcia",
+    "endTime": "Czas zakończenia",
+    "failedDuration": "Nie udało się zaktualizować czasu trwania",
+    "failedTimes": "Nie udało się zaktualizować godzin",
+    "startTime": "Czas rozpoczęcia"
   },
   "presenter": {
     "title": "Tablica Pracy",

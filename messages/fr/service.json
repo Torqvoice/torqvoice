@@ -6,7 +6,9 @@
     "deleteTitle": "Supprimer le Dossier de Service",
     "deleteDescription": "Cela supprimera définitivement ce dossier de service et toutes les données associées. Cette action ne peut pas être annulée.",
     "deleted": "Dossier de service supprimé",
-    "failedDelete": "Impossible de supprimer"
+    "failedDelete": "Impossible de supprimer",
+    "customFieldsInvalid": "Veuillez remplir tous les champs personnalisés obligatoires",
+    "customFieldsSaveFailed": "Échec de l'enregistrement des champs personnalisés"
   },
   "header": {
     "tabs": {

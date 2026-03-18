@@ -81,6 +81,9 @@
     "auth_loginFailed": "Mislukte inlogpoging",
     "auth_register": "Gebruiker geregistreerd",
     "auth_passwordReset": "Wachtwoord reset aangevraagd",
-    "auth_permissionDenied": "Toegang geweigerd"
+    "auth_permissionDenied": "Toegang geweigerd",
+    "labor_preset_create": "Arbeidspreset aangemaakt",
+    "labor_preset_update": "Arbeidspreset bijgewerkt",
+    "labor_preset_delete": "Arbeidspreset verwijderd"
   }
 }

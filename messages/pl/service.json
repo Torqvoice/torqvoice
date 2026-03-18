@@ -6,7 +6,9 @@
     "deleteTitle": "Usuń Rekord Serwisu",
     "deleteDescription": "Spowoduje to trwałe usunięcie tego rekordu serwisu i wszystkich związanych danych. Nie można tego cofnąć.",
     "deleted": "Rekord serwisu usunięty",
-    "failedDelete": "Nie udało się usunąć"
+    "failedDelete": "Nie udało się usunąć",
+    "customFieldsInvalid": "Proszę wypełnić wszystkie wymagane pola niestandardowe",
+    "customFieldsSaveFailed": "Nie udało się zapisać pól niestandardowych"
   },
   "header": {
     "tabs": {

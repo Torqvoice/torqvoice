@@ -46,7 +46,11 @@
   "jobDetail": {
     "viewDetails": "Visualizza Dettagli",
     "remove": "Rimuovi",
-    "date": "Data: {date}"
+    "endBeforeStart": "L'ora di fine deve essere successiva all'ora di inizio",
+    "endTime": "Ora di fine",
+    "failedDuration": "Impossibile aggiornare la durata",
+    "failedTimes": "Impossibile aggiornare gli orari",
+    "startTime": "Ora di inizio"
   },
   "presenter": {
     "title": "Lavagna di Lavoro",

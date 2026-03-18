@@ -81,6 +81,9 @@
     "auth_loginFailed": "Fehlgeschlagener Anmeldeversuch",
     "auth_register": "Benutzer registriert",
     "auth_passwordReset": "Passwort-Zurücksetzung angefordert",
-    "auth_permissionDenied": "Zugriff verweigert"
+    "auth_permissionDenied": "Zugriff verweigert",
+    "labor_preset_create": "Arbeitspreset erstellt",
+    "labor_preset_update": "Arbeitspreset aktualisiert",
+    "labor_preset_delete": "Arbeitspreset gelöscht"
   }
 }

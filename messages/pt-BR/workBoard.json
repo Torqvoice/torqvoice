@@ -46,7 +46,11 @@
   "jobDetail": {
     "viewDetails": "Ver Detalhes",
     "remove": "Remover",
-    "date": "Data: {date}"
+    "endBeforeStart": "O horário de término deve ser após o horário de início",
+    "endTime": "Horário de término",
+    "failedDuration": "Falha ao atualizar a duração",
+    "failedTimes": "Falha ao atualizar os horários",
+    "startTime": "Horário de início"
   },
   "presenter": {
     "title": "Quadro de Trabalho",

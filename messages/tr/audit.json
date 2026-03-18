@@ -81,6 +81,9 @@
     "auth_loginFailed": "Başarısız giriş denemesi",
     "auth_register": "Kullanıcı kaydoldu",
     "auth_passwordReset": "Şifre sıfırlama talep edildi",
-    "auth_permissionDenied": "İzin reddedildi"
+    "auth_permissionDenied": "İzin reddedildi",
+    "labor_preset_create": "İşçilik ön ayarı oluşturuldu",
+    "labor_preset_update": "İşçilik ön ayarı güncellendi",
+    "labor_preset_delete": "İşçilik ön ayarı silindi"
   }
 }

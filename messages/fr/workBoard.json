@@ -46,7 +46,11 @@
   "jobDetail": {
     "viewDetails": "Voir les Détails",
     "remove": "Supprimer",
-    "date": "Date: {date}"
+    "endBeforeStart": "L'heure de fin doit être après l'heure de début",
+    "endTime": "Heure de fin",
+    "failedDuration": "Échec de la mise à jour de la durée",
+    "failedTimes": "Échec de la mise à jour des horaires",
+    "startTime": "Heure de début"
   },
   "presenter": {
     "title": "Tableau de Bord des Travaux",
