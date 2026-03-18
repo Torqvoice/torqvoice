@@ -23,7 +23,6 @@ import { useConfirm } from "@/components/confirm-dialog";
 import {
   createOrganization,
   inviteMember,
-  updateMemberRole,
   removeMember,
 } from "@/features/team/Actions/teamActions";
 import { sendInvitation } from "@/features/team/Actions/sendInvitation";
@@ -289,16 +288,6 @@ export function TeamSettings({
       router.refresh();
     } else {
       modal.open("error", "Error", result.error || t('team.failedCancelInvitation'));
-    }
-  };
-
-  const handleRoleChange = async (memberId: string, role: string) => {
-    const result = await updateMemberRole({ memberId, role });
-    if (result.success) {
-      toast.success(t('team.memberRoleUpdated'));
-      router.refresh();
-    } else {
-      modal.open("error", "Error", result.error || t('team.failedUpdateRole'));
     }
   };
 

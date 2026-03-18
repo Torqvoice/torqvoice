@@ -236,7 +236,7 @@ export function DashboardClient({
   const [dismissingId, setDismissingId] = useState<string | null>(null);
   const [maintenanceTab, setMaintenanceTab] = useState<"active" | "dismissed">("active");
   const [restoringId, setRestoringId] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const { toggleCard, isVisible, visibleCount, totalCount } = useDashboardVisibility(smsEnabled ? "notifications" : "sms");
 
   const formatRelativeTime = (date: string | Date) => {

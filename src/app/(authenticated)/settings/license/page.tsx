@@ -34,7 +34,6 @@ export default async function LicensePage() {
     <LicenseSettings
       initialKey={map.get(SETTING_KEYS.LICENSE_KEY) || ""}
       initialValid={map.get(SETTING_KEYS.LICENSE_VALID) === "true"}
-      initialPlan={map.get(SETTING_KEYS.LICENSE_PLAN) || "free"}
       initialCheckedAt={map.get(SETTING_KEYS.LICENSE_CHECKED_AT) || ""}
     />
   );

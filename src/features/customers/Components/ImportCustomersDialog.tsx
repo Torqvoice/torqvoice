@@ -303,7 +303,6 @@ export function ImportCustomersDialog({
   };
 
   const dupCount = Object.keys(duplicates).length;
-  const exactCount = Object.values(duplicates).filter((d) => d.isExact).length;
   const newCount = rows.length - dupCount;
   const mergeCount = Object.entries(dupActions).filter(([, a]) => a === "merge").length;
   const skipCount = Object.entries(dupActions).filter(([, a]) => a === "skip").length;

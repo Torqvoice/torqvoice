@@ -24,7 +24,7 @@ import { JobDetailPopover } from "./JobDetailPopover";
 import { BoardJobCard } from "./BoardJobCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Users, Wrench, ClipboardCheck } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
 import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
 import { getCustomersList } from "@/features/customers/Actions/customerActions";
@@ -84,7 +84,6 @@ export function WorkBoardClient({
 }) {
   const store = useWorkBoardStore();
   const t = useTranslations("workBoard.board");
-  const locale = useLocale();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
