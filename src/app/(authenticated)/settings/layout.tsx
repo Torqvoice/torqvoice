@@ -24,11 +24,8 @@ export default async function SettingsLayout({
   let canEditSettings = true;
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId);
-    // Members without a custom role have full access
-    if (!membership?.roleId) {
-      canReadSettings = true;
-      canEditSettings = true;
-    } else {
+    // Members with a custom role have restricted access based on permissions
+    if (membership?.roleId) {
       const userPermissions = membership?.customRole?.permissions ?? [];
       canReadSettings = hasPermission(userPermissions, {
         action: PermissionAction.READ,
@@ -40,6 +37,7 @@ export default async function SettingsLayout({
       });
       if (!canReadSettings) redirect("/");
     }
+    // Members without a custom role keep full access (defaults to true)
   }
 
   const features = await getFeatures(data.organizationId);
