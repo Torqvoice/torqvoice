@@ -47,7 +47,7 @@ export function AccountSettings({
     if (session?.user?.email) setEmail(session.user.email)
   }, [session?.user?.name, session?.user?.email])
 
-  const [emailVerified, setEmailVerified] = useState(initialEmailVerified)
+  const emailVerified = initialEmailVerified
   const [sendingVerification, setSendingVerification] = useState(false)
   const [verificationCooldown, startVerificationCooldown] = useCooldown('account-verify-email', 60)
   const [savingProfile, setSavingProfile] = useState(false)

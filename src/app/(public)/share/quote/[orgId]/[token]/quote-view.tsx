@@ -77,15 +77,6 @@ function isSectionVisible(config: InvoiceLayoutConfig | undefined, sectionId: st
   return section?.visible ?? true;
 }
 
-function isFieldVisible(config: InvoiceLayoutConfig | undefined, sectionId: string, fieldId: string): boolean {
-  if (!config) return true;
-  const section = config.sections.find(s => s.id === sectionId);
-  if (!section?.visible) return false;
-  if (!section.fields) return true;
-  const field = section.fields.find(f => f.id === fieldId);
-  return field?.visible ?? true;
-}
-
 function getSectionOrder(config: InvoiceLayoutConfig | undefined): string[] {
   if (!config) return ['header', 'customer', 'vehicle', 'service', 'parts_table', 'labor_table', 'totals', 'general', 'notes', 'diagnostic_notes', 'bank_account', 'footer'];
   return [...config.sections].sort((a, b) => a.order - b.order).map(s => s.id);

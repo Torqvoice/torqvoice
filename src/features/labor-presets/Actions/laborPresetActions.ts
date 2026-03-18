@@ -122,7 +122,7 @@ export async function updateLaborPreset(input: unknown) {
       updateData.name = updateData.name?.trim() || items?.[0]?.description || "Untitled";
     }
 
-    const result = await db.$transaction(async (tx) => {
+    await db.$transaction(async (tx) => {
       // Delete old items
       await tx.laborPresetItem.deleteMany({ where: { presetId: id } });
 

@@ -102,14 +102,6 @@ const statusTemplateKeys: Record<string, string> = {
   "completed": SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
 };
 
-const statusActionI18nMap: Record<string, string> = {
-  "startWork": "startWork",
-  "waitingParts": "waitingParts",
-  "complete": "complete",
-  "resumeWork": "resumeWork",
-  "reopen": "reopen",
-};
-
 const statusTransitions: Record<string, { actionKey: string; target: string }[]> = {
   pending: [
     { actionKey: "startWork", target: "in-progress" },

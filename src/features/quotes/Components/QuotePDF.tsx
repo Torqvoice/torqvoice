@@ -122,11 +122,6 @@ export function QuotePDF({
   const sections = layoutConfig?.sections ?? []
   const sectionMap = new Map<string, InvoiceSection>(sections.map((s) => [s.id, s]))
 
-  const isSectionVisible = (id: string): boolean => {
-    const s = sectionMap.get(id)
-    return s ? s.visible : true // default visible when no config
-  }
-
   const getVisibleFieldsForSection = (sectionId: string): Set<string> | null => {
     const section = sectionMap.get(sectionId)
     if (!section?.fields) return null

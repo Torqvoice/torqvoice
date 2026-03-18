@@ -15,19 +15,16 @@ import { validateLicense } from '../Actions/validateLicense'
 export function LicenseSettings({
   initialKey,
   initialValid,
-  initialPlan,
   initialCheckedAt,
 }: {
   initialKey: string
   initialValid: boolean
-  initialPlan: string
   initialCheckedAt: string
 }) {
   const router = useRouter()
   const t = useTranslations('settings')
   const [licenseKey, setLicenseKey] = useState(initialKey)
   const [licenseValid, setLicenseValid] = useState(initialValid)
-  const [licensePlan, setLicensePlan] = useState(initialPlan)
   const [isValidating, setIsValidating] = useState(false)
 
   const handleValidateLicense = async () => {
@@ -36,9 +33,6 @@ export function LicenseSettings({
       const result = await validateLicense(licenseKey)
       if (result.success && result.data) {
         setLicenseValid(result.data.valid)
-        if (result.data.plan) {
-          setLicensePlan(result.data.plan)
-        }
         if (result.data.valid) {
           toast.success(t('license.validated'))
         } else {

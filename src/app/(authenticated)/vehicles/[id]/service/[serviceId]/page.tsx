@@ -110,7 +110,6 @@ export default async function ServiceDetailPage({
       : Promise.resolve([]),
   ]);
 
-  const teamMembers = members.map((m) => ({ id: m.id, name: m.user.name }));
   const currentUserName = currentUser?.name || "";
   const aiSettingsMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]));
   const aiEnabled = features?.ai === true && aiSettingsMap[SETTING_KEYS.AI_ENABLED] === "true" && !!aiSettingsMap[SETTING_KEYS.AI_API_KEY];
@@ -164,8 +163,6 @@ export default async function ServiceDetailPage({
   const documentAttachments = allAttachments
     .filter((a) => a.category === "document" || a.category === "diagnostic")
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }));
-
-  const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`;
 
   return (
     <div className="flex h-svh flex-col overflow-hidden">

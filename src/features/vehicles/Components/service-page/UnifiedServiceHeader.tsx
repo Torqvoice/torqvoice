@@ -63,8 +63,6 @@ export function UnifiedServiceHeader({
   onShowShare,
 }: UnifiedServiceHeaderProps) {
   const t = useTranslations('service.header')
-  const tc = useTranslations('common.buttons')
-
   const tabs: { label: string; value: ServiceTab }[] = [
     { label: t('tabs.details'), value: 'details' },
     { label: t('tabs.images'), value: 'images' },

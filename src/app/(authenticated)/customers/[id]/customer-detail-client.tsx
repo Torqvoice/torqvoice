@@ -95,7 +95,6 @@ export function CustomerDetailClient({
   smsNextCursor?: string | null;
 }) {
   const t = useTranslations("customers.detail");
-  const ts = useTranslations("customers.serviceRequests");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showEditForm, setShowEditForm] = useState(false);
