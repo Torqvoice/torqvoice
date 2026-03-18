@@ -60,7 +60,7 @@ interface CustomerRenderCtx {
 }
 
 function renderCustomerField(fieldId: string, ctx: CustomerRenderCtx): React.ReactNode {
-  const { data, styles, labels } = ctx
+  const { data, styles } = ctx
   const c = data.vehicle.customer
   if (!c) return null
 

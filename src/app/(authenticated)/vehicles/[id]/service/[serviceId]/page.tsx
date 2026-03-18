@@ -85,13 +85,7 @@ export default async function ServiceDetailPage({
     : null;
   const orgId = membership?.organizationId;
 
-  const [members, currentUser, features, aiSettings] = await Promise.all([
-    orgId
-      ? db.organizationMember.findMany({
-          where: { organizationId: orgId },
-          select: { id: true, user: { select: { name: true } } },
-        })
-      : Promise.resolve([]),
+  const [currentUser, features, aiSettings] = await Promise.all([
     session?.user?.id
       ? db.user.findUnique({
           where: { id: session.user.id },
