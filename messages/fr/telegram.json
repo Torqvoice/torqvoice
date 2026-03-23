@@ -53,5 +53,10 @@
     "label": "Afficher le code QR sur les factures",
     "description": "Afficher un code QR Telegram sur les factures numériques partagées pour que les clients puissent se connecter."
   },
-  "helpLink": "En savoir plus"
+  "helpLink": "En savoir plus",
+  "enable": {
+    "label": "Activer Telegram",
+    "hint": "Afficher Telegram dans la barre latérale et sur les pages clients.",
+    "disabledInfo": "Telegram est actuellement désactivé. Activez-le pour commencer à envoyer et recevoir des messages via Telegram."
+  }
 }

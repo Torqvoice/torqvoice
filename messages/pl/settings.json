@@ -401,7 +401,8 @@
       "diagnostic_notes": "Notatki diagnostyczne",
       "bank_account": "Konto bankowe",
       "footer": "Stopka",
-      "general": "Ogólne"
+      "general": "Ogólne",
+      "telegram_qr": "QR Telegrama"
     },
     "fields": {
       "customer_name": "Nazwa klienta",

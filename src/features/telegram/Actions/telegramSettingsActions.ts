@@ -56,8 +56,9 @@ export async function setTelegramSettings(settings: { botToken: string }) {
       // Register webhook with Telegram
       await setTelegramWebhook(settings.botToken, webhookUrl, webhookSecret);
 
-      // Save all settings via upsert
+      // Save all settings via upsert (auto-enable when connecting)
       const entries: Record<string, string> = {
+        [ORG_TELEGRAM_KEYS.TELEGRAM_ENABLED]: "true",
         [ORG_TELEGRAM_KEYS.TELEGRAM_BOT_TOKEN]: settings.botToken,
         [ORG_TELEGRAM_KEYS.TELEGRAM_BOT_USERNAME]: botInfo.username,
         [ORG_TELEGRAM_KEYS.TELEGRAM_WEBHOOK_SECRET]: webhookSecret,

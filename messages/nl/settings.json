@@ -401,7 +401,8 @@
       "diagnostic_notes": "Diagnostische notities",
       "bank_account": "Bankrekening",
       "footer": "Voettekst",
-      "general": "Algemeen"
+      "general": "Algemeen",
+      "telegram_qr": "Telegram-QR"
     },
     "fields": {
       "customer_name": "Klantnaam",

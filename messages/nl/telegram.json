@@ -53,5 +53,10 @@
     "label": "QR-code op facturen tonen",
     "description": "Een Telegram QR-code weergeven op gedeelde digitale facturen zodat klanten verbinding kunnen maken."
   },
-  "helpLink": "Meer informatie"
+  "helpLink": "Meer informatie",
+  "enable": {
+    "label": "Telegram inschakelen",
+    "hint": "Telegram tonen in de zijbalk en op klantpagina's.",
+    "disabledInfo": "Telegram is momenteel uitgeschakeld. Schakel het in om berichten via Telegram te verzenden en ontvangen."
+  }
 }

@@ -75,6 +75,7 @@ interface InvoiceLayoutEditorProps {
   onChange: (config: InvoiceLayoutConfig) => void;
   documentType: "invoice" | "quote";
   customFields?: FieldDef[];
+  hiddenSections?: Set<string>;
 }
 
 // ---------------------------------------------------------------------------
@@ -544,6 +545,7 @@ export function InvoiceLayoutEditor({
   onChange,
   documentType,
   customFields,
+  hiddenSections,
 }: InvoiceLayoutEditorProps) {
   const t = useTranslations('settings');
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
@@ -558,8 +560,10 @@ export function InvoiceLayoutEditor({
   );
 
   const sortedSections = useMemo(
-    () => [...config.sections].sort((a, b) => a.order - b.order),
-    [config.sections],
+    () => [...config.sections]
+      .filter((s) => !hiddenSections?.has(s.id))
+      .sort((a, b) => a.order - b.order),
+    [config.sections, hiddenSections],
   );
 
   const availableCustomFields = useMemo(() => {

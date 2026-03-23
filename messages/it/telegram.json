@@ -53,5 +53,10 @@
     "label": "Mostra codice QR sulle fatture",
     "description": "Visualizza un codice QR Telegram sulle fatture digitali condivise in modo che i clienti possano connettersi."
   },
-  "helpLink": "Scopri di più"
+  "helpLink": "Scopri di più",
+  "enable": {
+    "label": "Attiva Telegram",
+    "hint": "Mostra Telegram nella barra laterale e nelle pagine dei clienti.",
+    "disabledInfo": "Telegram è attualmente disattivato. Attivalo per iniziare a inviare e ricevere messaggi tramite Telegram."
+  }
 }

@@ -1015,6 +1015,18 @@ export function InvoiceView({
               )
             }
 
+            case 'telegram_qr':
+              if (!telegramBotLink) return null
+              return (
+                <div key="telegram_qr" className="mt-4 border-t pt-4 flex flex-col items-center gap-2">
+                  <p className="text-sm font-medium text-foreground">{tc('telegramConnect')}</p>
+                  <div className="rounded-lg bg-white p-2">
+                    <QRCodeSVG value={telegramBotLink} size={100} />
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center">{tc('telegramScan')}</p>
+                </div>
+              )
+
             case 'footer':
               if (!invoiceSettings?.footerNote) return null
               return (
@@ -1135,18 +1147,6 @@ export function InvoiceView({
             )
           })()}
       </div>
-
-      {telegramBotLink && (
-        <div className="mt-4 border-t pt-4 flex flex-col items-center gap-2">
-          <p className="text-sm font-medium text-foreground">{tc('telegramConnect')}</p>
-          <div className="rounded-lg bg-white p-2">
-            <QRCodeSVG value={telegramBotLink} size={100} />
-          </div>
-          <p className="text-xs text-muted-foreground text-center">
-            {tc('telegramScan')}
-          </p>
-        </div>
-      )}
 
       {portalUrl && (
         <div className="mt-3 border-t pt-3 text-center">

@@ -401,7 +401,8 @@
       "diagnostic_notes": "Teşhis notları",
       "bank_account": "Banka hesabı",
       "footer": "Alt bilgi",
-      "general": "Genel"
+      "general": "Genel",
+      "telegram_qr": "Telegram QR"
     },
     "fields": {
       "customer_name": "Müşteri adı",

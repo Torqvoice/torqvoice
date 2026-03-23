@@ -401,7 +401,8 @@
       "diagnostic_notes": "Notas de diagnóstico",
       "bank_account": "Conta bancária",
       "footer": "Rodapé",
-      "general": "Geral"
+      "general": "Geral",
+      "telegram_qr": "QR do Telegram"
     },
     "fields": {
       "customer_name": "Nome do cliente",

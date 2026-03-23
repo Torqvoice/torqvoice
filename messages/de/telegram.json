@@ -53,5 +53,10 @@
     "label": "QR-Code auf Rechnungen anzeigen",
     "description": "Einen Telegram-QR-Code auf geteilten digitalen Rechnungen anzeigen, damit Kunden sich verbinden können."
   },
-  "helpLink": "Mehr erfahren"
+  "helpLink": "Mehr erfahren",
+  "enable": {
+    "label": "Telegram aktivieren",
+    "hint": "Telegram in der Seitenleiste und auf Kundenseiten anzeigen.",
+    "disabledInfo": "Telegram ist derzeit deaktiviert. Aktivieren Sie es, um Nachrichten über Telegram zu senden und zu empfangen."
+  }
 }

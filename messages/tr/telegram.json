@@ -53,5 +53,10 @@
     "label": "Faturalarda QR kodu göster",
     "description": "Müşterilerin bağlanabilmesi için paylaşılan dijital faturalarda bir Telegram QR kodu görüntüleyin."
   },
-  "helpLink": "Daha fazla bilgi"
+  "helpLink": "Daha fazla bilgi",
+  "enable": {
+    "label": "Telegram'ı Etkinleştir",
+    "hint": "Telegram'ı kenar çubuğunda ve müşteri sayfalarında göster.",
+    "disabledInfo": "Telegram şu anda devre dışı. Telegram üzerinden mesaj gönderip almaya başlamak için etkinleştirin."
+  }
 }

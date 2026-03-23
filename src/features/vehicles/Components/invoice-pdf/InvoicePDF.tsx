@@ -53,6 +53,8 @@ export function InvoicePDF({
   template,
   torqvoiceLogoDataUri,
   portalUrl,
+  telegramQrDataUri,
+  telegramLabel,
   labels = {},
 }: {
   data: InvoiceData
@@ -66,6 +68,8 @@ export function InvoicePDF({
   template?: TemplateConfig
   torqvoiceLogoDataUri?: string
   portalUrl?: string
+  telegramQrDataUri?: string
+  telegramLabel?: string
   labels?: Record<string, string>
 }) {
   const primaryColor = template?.primaryColor || '#d97706'
@@ -255,6 +259,17 @@ export function InvoicePDF({
         dueDate={dueDate}
       />
     ),
+
+    telegram_qr: telegramQrDataUri ? (
+      <View style={{ alignItems: 'center', marginTop: 14, paddingTop: 10 }}>
+        <View style={{ alignItems: 'center', backgroundColor: '#fafafa', borderRadius: 6, padding: 10, paddingBottom: 6 }}>
+          <Image src={telegramQrDataUri} style={{ width: 56, height: 56 }} />
+          <Text style={{ fontSize: 6.5, color: gray[500], marginTop: 4, fontFamily }}>
+            {telegramLabel || 'Chat with us on Telegram'}
+          </Text>
+        </View>
+      </View>
+    ) : null,
 
     footer: (
       <Footer

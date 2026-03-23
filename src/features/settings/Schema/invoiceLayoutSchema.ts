@@ -65,6 +65,7 @@ export const BUILTIN_SECTIONS = [
   { id: "diagnostic_notes", name: "Diagnostic Notes" },
   { id: "bank_account", name: "Bank Account" },
   { id: "footer", name: "Footer" },
+  { id: "telegram_qr", name: "Telegram QR" },
   { id: "general", name: "General" },
 ] as const;
 
@@ -146,6 +147,7 @@ export const FULL_WIDTH_ONLY_SECTIONS = new Set<string>([
   "labor_table",
   "totals",
   "footer",
+  "telegram_qr",
 ]);
 
 /** Default column assignment for column-eligible sections */
@@ -185,7 +187,7 @@ export function getDefaultInvoiceLayout(): InvoiceLayoutConfig {
       const column = DEFAULT_COLUMN[s.id];
       return {
         id: s.id,
-        visible: s.id !== "general", // general hidden by default (no fields)
+        visible: s.id !== "general" && s.id !== "telegram_qr", // general and telegram_qr hidden by default
         order: index,
         ...(column ? { column } : {}),
         ...(fields ? { fields } : {}),

@@ -7,6 +7,7 @@ import { getTelegramConversation } from "@/features/telegram/Actions/telegramAct
 import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures } from "@/lib/features";
 import { getOrgTelegramBotUsername } from "@/lib/telegram";
+import { db } from "@/lib/db";
 import { CustomerDetailClient } from "./customer-detail-client";
 import { PageHeader } from "@/components/page-header";
 
@@ -48,7 +49,14 @@ export default async function CustomerDetailPage({
   if (layoutData.status === "ok") {
     const features = await getFeatures(layoutData.organizationId);
     smsEnabled = features.sms;
-    telegramEnabled = features.telegram;
+
+    if (features.telegram) {
+      const tgEnabledSetting = await db.appSetting.findUnique({
+        where: { organizationId_key: { organizationId: layoutData.organizationId, key: "telegram.enabled" } },
+        select: { value: true },
+      });
+      telegramEnabled = tgEnabledSetting?.value === "true";
+    }
 
     if (smsEnabled && result.data.phone) {
       const convResult = await getConversation(id);

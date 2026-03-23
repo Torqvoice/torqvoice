@@ -1,6 +1,4 @@
 import { getTelegramSettings } from "@/features/telegram/Actions/telegramSettingsActions";
-import { getSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { TelegramSettingsForm } from "@/features/telegram/Components/TelegramSettingsForm";
@@ -25,12 +23,9 @@ export default async function TelegramSettingsPage() {
     );
   }
 
-  const [result, qrResult] = await Promise.all([
-    getTelegramSettings(),
-    getSettings([SETTING_KEYS.TELEGRAM_SHOW_QR_ON_INVOICE]),
-  ]);
+  const result = await getTelegramSettings();
   const settings = result.success && result.data ? result.data : {};
-  const showQrOnInvoice = qrResult.success && qrResult.data?.[SETTING_KEYS.TELEGRAM_SHOW_QR_ON_INVOICE] === "true";
+  const telegramEnabled = settings["telegram.enabled"] === "true";
 
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ||
@@ -38,5 +33,5 @@ export default async function TelegramSettingsPage() {
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3000");
 
-  return <TelegramSettingsForm initial={settings} appUrl={appUrl} showQrOnInvoice={showQrOnInvoice} />;
+  return <TelegramSettingsForm initial={settings} appUrl={appUrl} initialEnabled={telegramEnabled} />;
 }

@@ -401,7 +401,8 @@
       "diagnostic_notes": "Diagnostic Notes",
       "bank_account": "Bank Account",
       "footer": "Footer",
-      "general": "General"
+      "general": "General",
+      "telegram_qr": "Telegram QR"
     },
     "fields": {
       "customer_name": "Customer Name",

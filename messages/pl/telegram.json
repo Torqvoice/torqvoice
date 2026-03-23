@@ -53,5 +53,10 @@
     "label": "Pokaż kod QR na fakturach",
     "description": "Wyświetl kod QR Telegrama na udostępnionych fakturach cyfrowych, aby klienci mogli się połączyć."
   },
-  "helpLink": "Dowiedz się więcej"
+  "helpLink": "Dowiedz się więcej",
+  "enable": {
+    "label": "Włącz Telegram",
+    "hint": "Pokaż Telegram na pasku bocznym i na stronach klientów.",
+    "disabledInfo": "Telegram jest obecnie wyłączony. Włącz go, aby zacząć wysyłać i odbierać wiadomości przez Telegram."
+  }
 }

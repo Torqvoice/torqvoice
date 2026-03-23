@@ -53,5 +53,10 @@
     "label": "Vis QR-kode på fakturaer",
     "description": "Vis en Telegram QR-kode på delte digitale fakturaer slik at kunder kan koble til."
   },
-  "helpLink": "Les mer"
+  "helpLink": "Les mer",
+  "enable": {
+    "label": "Aktiver Telegram",
+    "hint": "Vis Telegram i sidefeltet og på kundesider.",
+    "disabledInfo": "Telegram er for øyeblikket deaktivert. Aktiver for å begynne å sende og motta meldinger via Telegram."
+  }
 }
