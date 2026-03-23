@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Mensagens do Telegram",
+    "featureDescription": "Envie e receba mensagens do Telegram com seus clientes diretamente do Torqvoice."
+  },
+  "notConfigured": {
+    "title": "Telegram não configurado",
+    "description": "Configure um bot do Telegram para enviar e receber mensagens com seus clientes. Crie um bot pelo @BotFather e configure nas configurações.",
+    "goToSettings": "Ir para configurações do Telegram"
+  },
+  "threads": {
+    "title": "Conversas",
+    "empty": "Nenhuma conversa do Telegram ainda. Os clientes podem iniciar um chat enviando uma mensagem ao seu bot.",
+    "loadMore": "Carregar mais",
+    "selectConversation": "Selecionar conversa",
+    "you": "Você: ",
+    "deleteConversation": "Excluir conversa",
+    "deleteTitle": "Excluir conversa?",
+    "deleteDescription": "Isso excluirá permanentemente todas as mensagens do Telegram com {name}. Esta ação não pode ser desfeita.",
+    "deleted": "Conversa excluída",
+    "deleteError": "Falha ao excluir conversa"
+  },
+  "conversation": {
+    "notLinked": "Este cliente ainda não se conectou ao seu bot do Telegram. Compartilhe o link do bot para conectá-lo.",
+    "loadOlder": "Carregar anteriores",
+    "empty": "Nenhuma mensagem ainda. Envie a primeira mensagem para {name}.",
+    "placeholder": "Mensagem para {name}...",
+    "deleteMessage": "Excluir mensagem",
+    "deleteTitle": "Excluir mensagem?",
+    "deleteDescription": "Isso excluirá permanentemente esta mensagem. Esta ação não pode ser desfeita.",
+    "messageDeleted": "Mensagem excluída",
+    "deleteError": "Falha ao excluir mensagem",
+    "sendError": "Falha ao enviar mensagem"
+  },
+  "sendDialog": {
+    "send": "Enviar {label}",
+    "message": "Mensagem",
+    "placeholder": "Digite sua mensagem...",
+    "characters": "{count} / 4096 caracteres",
+    "sendTelegram": "Enviar mensagem",
+    "messageSent": "Mensagem enviada",
+    "sentTo": "Mensagem enviada para {name} via Telegram",
+    "sendError": "Falha ao enviar mensagem"
+  }
+}

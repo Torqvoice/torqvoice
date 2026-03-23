@@ -58,6 +58,10 @@
         "title": "SMS",
         "description": "Provedor SMS e mensagens"
       },
+      "telegram": {
+        "title": "Telegram",
+        "description": "Telegram bot & messaging"
+      },
       "customerPortal": {
         "title": "Portal do cliente",
         "description": "Portal de autoatendimento do cliente"
@@ -397,7 +401,8 @@
       "diagnostic_notes": "Notas de diagnóstico",
       "bank_account": "Conta bancária",
       "footer": "Rodapé",
-      "general": "Geral"
+      "general": "Geral",
+      "telegram_qr": "QR do Telegram"
     },
     "fields": {
       "customer_name": "Nome do cliente",

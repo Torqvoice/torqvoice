@@ -1,0 +1,62 @@
+{
+  "title": "Ustawienia Telegrama",
+  "description": "Skonfiguruj bota Telegrama do wysyłania i odbierania wiadomości z klientami.",
+  "botToken": {
+    "label": "Token bota",
+    "placeholder": "Wprowadź token od @BotFather",
+    "help": "Utwórz bota przez @BotFather na Telegramie, aby uzyskać token."
+  },
+  "botUsername": {
+    "label": "Nazwa użytkownika bota",
+    "notConnected": "Nie połączono"
+  },
+  "webhook": {
+    "label": "URL webhooka",
+    "description": "Ten URL jest konfigurowany automatycznie po zapisaniu tokena bota."
+  },
+  "deepLink": {
+    "title": "Link połączenia klienta",
+    "description": "Udostępnij ten link klientom, aby mogli połączyć się z botem. Zastąp symbol zastępczy ID klienta rzeczywistym ID.",
+    "copied": "Link skopiowany!"
+  },
+  "test": {
+    "title": "Wiadomość testowa",
+    "chatId": "ID czatu",
+    "chatIdPlaceholder": "Wprowadź ID czatu Telegrama",
+    "message": "Wiadomość",
+    "messagePlaceholder": "Wpisz wiadomość testową...",
+    "send": "Wyślij test",
+    "success": "Wiadomość testowa wysłana!",
+    "error": "Nie udało się wysłać wiadomości testowej"
+  },
+  "save": "Zapisz ustawienia",
+  "saving": "Zapisywanie...",
+  "saved": "Ustawienia Telegrama zapisane",
+  "saveError": "Nie udało się zapisać ustawień",
+  "disconnect": {
+    "button": "Odłącz bota",
+    "title": "Odłączyć bota Telegrama?",
+    "description": "Spowoduje to usunięcie konfiguracji bota i zatrzymanie odbierania wiadomości. Istniejąca historia rozmów zostanie zachowana.",
+    "success": "Bot Telegrama odłączony",
+    "error": "Nie udało się odłączyć"
+  },
+  "qr": {
+    "title": "Połącz na Telegramie",
+    "description": "Zeskanuj ten kod QR, aby porozmawiać z nami na Telegramie.",
+    "copyLink": "Kopiuj link",
+    "copied": "Link skopiowany!",
+    "sendEmail": "Wyślij e-mailem",
+    "emailSubject": "Połącz się z nami na Telegramie",
+    "emailBody": "Cześć {name},\n\nTeraz możesz rozmawiać z nami na Telegramie, aby otrzymywać aktualizacje dotyczące Twojego pojazdu.\n\nKliknij ten link: {link}\n\nDziękujemy!"
+  },
+  "invoiceQr": {
+    "label": "Pokaż kod QR na fakturach",
+    "description": "Wyświetl kod QR Telegrama na udostępnionych fakturach cyfrowych, aby klienci mogli się połączyć."
+  },
+  "helpLink": "Dowiedz się więcej",
+  "enable": {
+    "label": "Włącz Telegram",
+    "hint": "Pokaż Telegram na pasku bocznym i na stronach klientów.",
+    "disabledInfo": "Telegram jest obecnie wyłączony. Włącz go, aby zacząć wysyłać i odbierać wiadomości przez Telegram."
+  }
+}

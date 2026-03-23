@@ -223,6 +223,17 @@ export async function GET(
       ? `${appUrl}/portal/${portalSlug || ctx.organizationId}`
       : undefined;
 
+    // Generate Telegram QR if the telegram_qr section is visible in layout
+    let telegramQrDataUri: string | undefined;
+    const telegramBotUsername = settingsMap["telegram.botUsername"];
+    const telegramQrVisible = layoutConfig.sections.some(
+      (s) => s.id === "telegram_qr" && s.visible
+    );
+    if (telegramBotUsername && telegramQrVisible) {
+      const { generateQrDataUri } = await import("@/lib/qr");
+      telegramQrDataUri = await generateQrDataUri(`https://t.me/${telegramBotUsername}`, 200);
+    }
+
     const element = React.createElement(InvoicePDF, {
       data: { ...record, customFields },
       workshop: {
@@ -240,6 +251,8 @@ export async function GET(
       template,
       torqvoiceLogoDataUri,
       portalUrl,
+      telegramQrDataUri,
+      telegramLabel: labels?.telegramConnect || "Chat with us on Telegram",
       labels,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;

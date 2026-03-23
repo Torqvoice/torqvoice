@@ -151,6 +151,8 @@
     "poweredBy": "Destekleyen",
     "termsOfSale": "Satış Koşulları",
     "portalMessage": "Araçlarınızı, faturalarınızı ve daha fazlasını görüntüleyin:",
-    "customerPortal": "müşteri portalı"
+    "customerPortal": "müşteri portalı",
+    "telegramConnect": "Telegram'da bizimle sohbet edin",
+    "telegramScan": "Güncellemeler ve destek için Telegram'da bize mesaj göndermek üzere bu QR kodunu tarayın."
   }
 }

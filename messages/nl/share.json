@@ -151,6 +151,8 @@
     "poweredBy": "Mogelijk gemaakt door",
     "termsOfSale": "Verkoopvoorwaarden",
     "portalMessage": "Bekijk uw voertuigen, facturen en meer in uw",
-    "customerPortal": "klantenportaal"
+    "customerPortal": "klantenportaal",
+    "telegramConnect": "Chat met ons op Telegram",
+    "telegramScan": "Scan deze QR-code om ons een bericht te sturen op Telegram voor updates en ondersteuning."
   }
 }

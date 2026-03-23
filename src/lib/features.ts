@@ -15,6 +15,7 @@ export type PlanFeatures = {
   payments: boolean
   customFields: boolean
   sms: boolean
+  telegram: boolean
   brandingRemoved: boolean
   customPlatformName: boolean
   maxImagesPerService: number
@@ -37,6 +38,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     payments: false,
     customFields: false,
     sms: false,
+    telegram: false,
     brandingRemoved: false,
     customPlatformName: false,
     maxImagesPerService: 5,
@@ -57,6 +59,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     payments: true,
     customFields: true,
     sms: true,
+    telegram: true,
     brandingRemoved: true,
     customPlatformName: true,
     maxImagesPerService: 30,
@@ -77,6 +80,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     payments: true,
     customFields: true,
     sms: true,
+    telegram: true,
     brandingRemoved: true,
     customPlatformName: true,
     maxImagesPerService: 100,
@@ -97,6 +101,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     payments: true,
     customFields: true,
     sms: true,
+    telegram: true,
     brandingRemoved: true,
     customPlatformName: true,
     maxImagesPerService: 999999,

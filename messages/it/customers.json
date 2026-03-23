@@ -32,7 +32,9 @@
     "tabs": {
       "vehicles": "Veicoli ({count})",
       "messages": "Messaggi",
-      "requests": "Richieste ({count})"
+      "requests": "Richieste ({count})",
+      "sms": "SMS",
+      "telegram": "Telegram"
     },
     "vehicleTable": {
       "plate": "Targa",

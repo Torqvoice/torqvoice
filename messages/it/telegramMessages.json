@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Messaggi Telegram",
+    "featureDescription": "Invia e ricevi messaggi Telegram con i tuoi clienti direttamente da Torqvoice."
+  },
+  "notConfigured": {
+    "title": "Telegram non configurato",
+    "description": "Configura un bot Telegram per inviare e ricevere messaggi con i tuoi clienti. Crea un bot tramite @BotFather e configuralo nelle impostazioni.",
+    "goToSettings": "Vai alle impostazioni Telegram"
+  },
+  "threads": {
+    "title": "Conversazioni",
+    "empty": "Nessuna conversazione Telegram ancora. I clienti possono iniziare a chattare inviando un messaggio al tuo bot.",
+    "loadMore": "Carica altri",
+    "selectConversation": "Seleziona una conversazione",
+    "you": "Tu: ",
+    "deleteConversation": "Elimina conversazione",
+    "deleteTitle": "Eliminare la conversazione?",
+    "deleteDescription": "Questo eliminerà permanentemente tutti i messaggi Telegram con {name}. Questa azione non può essere annullata.",
+    "deleted": "Conversazione eliminata",
+    "deleteError": "Eliminazione conversazione fallita"
+  },
+  "conversation": {
+    "notLinked": "Questo cliente non si è ancora connesso al tuo bot Telegram. Condividi il link del bot per connetterlo.",
+    "loadOlder": "Carica precedenti",
+    "empty": "Nessun messaggio ancora. Invia il primo messaggio a {name}.",
+    "placeholder": "Messaggio a {name}...",
+    "deleteMessage": "Elimina messaggio",
+    "deleteTitle": "Eliminare il messaggio?",
+    "deleteDescription": "Questo eliminerà permanentemente questo messaggio. Questa azione non può essere annullata.",
+    "messageDeleted": "Messaggio eliminato",
+    "deleteError": "Eliminazione messaggio fallita",
+    "sendError": "Invio messaggio fallito"
+  },
+  "sendDialog": {
+    "send": "Invia {label}",
+    "message": "Messaggio",
+    "placeholder": "Scrivi il tuo messaggio...",
+    "characters": "{count} / 4096 caratteri",
+    "sendTelegram": "Invia messaggio",
+    "messageSent": "Messaggio inviato",
+    "sentTo": "Messaggio inviato a {name} tramite Telegram",
+    "sendError": "Invio messaggio fallito"
+  }
+}

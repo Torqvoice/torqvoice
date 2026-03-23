@@ -25,6 +25,7 @@ import {
   Layout,
   Mail,
   MessageSquare,
+  Send,
   Sparkles,
   UserCog,
   UsersRound,
@@ -69,6 +70,7 @@ const settingsCategories: SettingsCategory[] = [
     items: [
       { key: 'email', href: '/settings/email', icon: Mail, gate: 'smtp' },
       { key: 'sms', href: '/settings/sms', icon: MessageSquare, gate: 'sms' },
+      { key: 'telegram', href: '/settings/telegram', icon: Send, gate: 'telegram' },
       {
         key: 'customerPortal',
         href: '/settings/customer-portal',

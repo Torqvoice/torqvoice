@@ -1,0 +1,62 @@
+{
+  "title": "Telegram-Einstellungen",
+  "description": "Konfigurieren Sie Ihren Telegram-Bot zum Senden und Empfangen von Nachrichten mit Kunden.",
+  "botToken": {
+    "label": "Bot-Token",
+    "placeholder": "Bot-Token von @BotFather eingeben",
+    "help": "Erstellen Sie einen Bot über @BotFather auf Telegram, um Ihr Token zu erhalten."
+  },
+  "botUsername": {
+    "label": "Bot-Benutzername",
+    "notConnected": "Nicht verbunden"
+  },
+  "webhook": {
+    "label": "Webhook-URL",
+    "description": "Diese URL wird automatisch konfiguriert, wenn Sie Ihr Bot-Token speichern."
+  },
+  "deepLink": {
+    "title": "Kunden-Verbindungslink",
+    "description": "Teilen Sie diesen Link mit Kunden, damit sie sich mit Ihrem Bot verbinden können. Ersetzen Sie den Kunden-ID-Platzhalter durch die tatsächliche Kunden-ID.",
+    "copied": "Link kopiert!"
+  },
+  "test": {
+    "title": "Testnachricht",
+    "chatId": "Chat-ID",
+    "chatIdPlaceholder": "Telegram Chat-ID eingeben",
+    "message": "Nachricht",
+    "messagePlaceholder": "Testnachricht eingeben...",
+    "send": "Test senden",
+    "success": "Testnachricht gesendet!",
+    "error": "Testnachricht konnte nicht gesendet werden"
+  },
+  "save": "Einstellungen speichern",
+  "saving": "Speichern...",
+  "saved": "Telegram-Einstellungen gespeichert",
+  "saveError": "Einstellungen konnten nicht gespeichert werden",
+  "disconnect": {
+    "button": "Bot trennen",
+    "title": "Telegram-Bot trennen?",
+    "description": "Dies entfernt die Bot-Konfiguration und stoppt den Nachrichtenempfang. Der bestehende Nachrichtenverlauf bleibt erhalten.",
+    "success": "Telegram-Bot getrennt",
+    "error": "Trennung fehlgeschlagen"
+  },
+  "qr": {
+    "title": "Auf Telegram verbinden",
+    "description": "Scannen Sie diesen QR-Code, um mit uns auf Telegram zu chatten.",
+    "copyLink": "Link kopieren",
+    "copied": "Link kopiert!",
+    "sendEmail": "Per E-Mail senden",
+    "emailSubject": "Verbinden Sie sich mit uns auf Telegram",
+    "emailBody": "Hallo {name},\n\nSie können jetzt mit uns auf Telegram chatten, um Updates zu Ihrem Fahrzeug zu erhalten.\n\nKlicken Sie auf diesen Link: {link}\n\nVielen Dank!"
+  },
+  "invoiceQr": {
+    "label": "QR-Code auf Rechnungen anzeigen",
+    "description": "Einen Telegram-QR-Code auf geteilten digitalen Rechnungen anzeigen, damit Kunden sich verbinden können."
+  },
+  "helpLink": "Mehr erfahren",
+  "enable": {
+    "label": "Telegram aktivieren",
+    "hint": "Telegram in der Seitenleiste und auf Kundenseiten anzeigen.",
+    "disabledInfo": "Telegram ist derzeit deaktiviert. Aktivieren Sie es, um Nachrichten über Telegram zu senden und zu empfangen."
+  }
+}

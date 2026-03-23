@@ -38,6 +38,24 @@ export default async function DashboardLayout({
   const features = await getFeatures(data.organizationId);
   const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved;
 
+  // Check user-level messaging enabled settings
+  let smsEnabled = false;
+  let telegramEnabled = false;
+  if (features.sms) {
+    const smsSetting = await db.appSetting.findUnique({
+      where: { organizationId_key: { organizationId: data.organizationId, key: "sms.provider" } },
+      select: { value: true },
+    });
+    smsEnabled = !!smsSetting?.value;
+  }
+  if (features.telegram) {
+    const tgSetting = await db.appSetting.findUnique({
+      where: { organizationId_key: { organizationId: data.organizationId, key: "telegram.enabled" } },
+      select: { value: true },
+    });
+    telegramEnabled = tgSetting?.value === "true";
+  }
+
   // Determine which subjects the user can access (for sidebar visibility)
   const isOwnerOrAdmin = data.role === "owner" || data.role === "admin" || data.role === "super_admin";
   const allSubjects = Object.values(PermissionSubject);
@@ -78,6 +96,8 @@ export default async function DashboardLayout({
           activeOrgId={data.organizationId}
           isSuperAdmin={data.isSuperAdmin}
           features={features}
+          smsEnabled={smsEnabled}
+          telegramEnabled={telegramEnabled}
           visibleSubjects={visibleSubjects}
           isAdminOrOwner={isOwnerOrAdmin}
         />

@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Сообщения Telegram",
+    "featureDescription": "Отправляйте и получайте сообщения Telegram с клиентами прямо из Torqvoice."
+  },
+  "notConfigured": {
+    "title": "Telegram не настроен",
+    "description": "Настройте бота Telegram для отправки и получения сообщений с клиентами. Создайте бота через @BotFather и настройте в параметрах.",
+    "goToSettings": "Перейти к настройкам Telegram"
+  },
+  "threads": {
+    "title": "Разговоры",
+    "empty": "Пока нет разговоров в Telegram. Клиенты могут начать чат, отправив сообщение вашему боту.",
+    "loadMore": "Загрузить ещё",
+    "selectConversation": "Выберите разговор",
+    "you": "Вы: ",
+    "deleteConversation": "Удалить разговор",
+    "deleteTitle": "Удалить разговор?",
+    "deleteDescription": "Все сообщения Telegram с {name} будут удалены навсегда. Это действие нельзя отменить.",
+    "deleted": "Разговор удалён",
+    "deleteError": "Не удалось удалить разговор"
+  },
+  "conversation": {
+    "notLinked": "Этот клиент ещё не подключился к вашему боту Telegram. Поделитесь ссылкой на бота для подключения.",
+    "loadOlder": "Загрузить старые",
+    "empty": "Пока нет сообщений. Отправьте первое сообщение {name}.",
+    "placeholder": "Сообщение для {name}...",
+    "deleteMessage": "Удалить сообщение",
+    "deleteTitle": "Удалить сообщение?",
+    "deleteDescription": "Это сообщение будет удалено навсегда. Это действие нельзя отменить.",
+    "messageDeleted": "Сообщение удалено",
+    "deleteError": "Не удалось удалить сообщение",
+    "sendError": "Не удалось отправить сообщение"
+  },
+  "sendDialog": {
+    "send": "Отправить {label}",
+    "message": "Сообщение",
+    "placeholder": "Введите сообщение...",
+    "characters": "{count} / 4096 символов",
+    "sendTelegram": "Отправить сообщение",
+    "messageSent": "Сообщение отправлено",
+    "sentTo": "Сообщение отправлено {name} через Telegram",
+    "sendError": "Не удалось отправить сообщение"
+  }
+}

@@ -151,6 +151,8 @@
     "poweredBy": "Desenvolvido por",
     "termsOfSale": "Termos de Venda",
     "portalMessage": "Veja seus veículos, faturas e muito mais em seu",
-    "customerPortal": "portal do cliente"
+    "customerPortal": "portal do cliente",
+    "telegramConnect": "Fale conosco no Telegram",
+    "telegramScan": "Escaneie este código QR para nos enviar uma mensagem no Telegram para atualizações e suporte."
   }
 }

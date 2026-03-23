@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Telegram-Nachrichten",
+    "featureDescription": "Senden und empfangen Sie Telegram-Nachrichten mit Ihren Kunden direkt aus Torqvoice."
+  },
+  "notConfigured": {
+    "title": "Telegram nicht konfiguriert",
+    "description": "Richten Sie einen Telegram-Bot ein, um Nachrichten mit Ihren Kunden zu senden und zu empfangen. Erstellen Sie einen Bot über @BotFather und konfigurieren Sie ihn in den Einstellungen.",
+    "goToSettings": "Zu Telegram-Einstellungen"
+  },
+  "threads": {
+    "title": "Gespräche",
+    "empty": "Noch keine Telegram-Gespräche. Kunden können einen Chat starten, indem sie Ihrem Bot eine Nachricht senden.",
+    "loadMore": "Mehr laden",
+    "selectConversation": "Gespräch auswählen",
+    "you": "Sie: ",
+    "deleteConversation": "Gespräch löschen",
+    "deleteTitle": "Gespräch löschen?",
+    "deleteDescription": "Dies löscht alle Telegram-Nachrichten mit {name} dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleted": "Gespräch gelöscht",
+    "deleteError": "Gespräch konnte nicht gelöscht werden"
+  },
+  "conversation": {
+    "notLinked": "Dieser Kunde hat sich noch nicht mit Ihrem Telegram-Bot verbunden. Teilen Sie den Bot-Link, um ihn zu verbinden.",
+    "loadOlder": "Ältere laden",
+    "empty": "Noch keine Nachrichten. Senden Sie die erste Nachricht an {name}.",
+    "placeholder": "Nachricht an {name}...",
+    "deleteMessage": "Nachricht löschen",
+    "deleteTitle": "Nachricht löschen?",
+    "deleteDescription": "Dies löscht diese Nachricht dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "messageDeleted": "Nachricht gelöscht",
+    "deleteError": "Nachricht konnte nicht gelöscht werden",
+    "sendError": "Nachricht konnte nicht gesendet werden"
+  },
+  "sendDialog": {
+    "send": "{label} senden",
+    "message": "Nachricht",
+    "placeholder": "Nachricht eingeben...",
+    "characters": "{count} / 4096 Zeichen",
+    "sendTelegram": "Nachricht senden",
+    "messageSent": "Nachricht gesendet",
+    "sentTo": "Nachricht an {name} via Telegram gesendet",
+    "sendError": "Nachricht konnte nicht gesendet werden"
+  }
+}

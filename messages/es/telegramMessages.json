@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Mensajes de Telegram",
+    "featureDescription": "Envía y recibe mensajes de Telegram con tus clientes directamente desde Torqvoice."
+  },
+  "notConfigured": {
+    "title": "Telegram no configurado",
+    "description": "Configura un bot de Telegram para enviar y recibir mensajes con tus clientes. Crea un bot a través de @BotFather y configúralo en ajustes.",
+    "goToSettings": "Ir a ajustes de Telegram"
+  },
+  "threads": {
+    "title": "Conversaciones",
+    "empty": "Aún no hay conversaciones de Telegram. Los clientes pueden iniciar un chat enviando un mensaje a tu bot.",
+    "loadMore": "Cargar más",
+    "selectConversation": "Seleccionar conversación",
+    "you": "Tú: ",
+    "deleteConversation": "Eliminar conversación",
+    "deleteTitle": "¿Eliminar conversación?",
+    "deleteDescription": "Esto eliminará permanentemente todos los mensajes de Telegram con {name}. Esta acción no se puede deshacer.",
+    "deleted": "Conversación eliminada",
+    "deleteError": "No se pudo eliminar la conversación"
+  },
+  "conversation": {
+    "notLinked": "Este cliente aún no se ha conectado a tu bot de Telegram. Comparte el enlace del bot para conectarlo.",
+    "loadOlder": "Cargar anteriores",
+    "empty": "Aún no hay mensajes. Envía el primer mensaje a {name}.",
+    "placeholder": "Mensaje a {name}...",
+    "deleteMessage": "Eliminar mensaje",
+    "deleteTitle": "¿Eliminar mensaje?",
+    "deleteDescription": "Esto eliminará permanentemente este mensaje. Esta acción no se puede deshacer.",
+    "messageDeleted": "Mensaje eliminado",
+    "deleteError": "No se pudo eliminar el mensaje",
+    "sendError": "No se pudo enviar el mensaje"
+  },
+  "sendDialog": {
+    "send": "Enviar {label}",
+    "message": "Mensaje",
+    "placeholder": "Escribe tu mensaje...",
+    "characters": "{count} / 4096 caracteres",
+    "sendTelegram": "Enviar mensaje",
+    "messageSent": "Mensaje enviado",
+    "sentTo": "Mensaje enviado a {name} vía Telegram",
+    "sendError": "No se pudo enviar el mensaje"
+  }
+}

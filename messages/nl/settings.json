@@ -58,6 +58,10 @@
         "title": "SMS",
         "description": "SMS-provider en berichten"
       },
+      "telegram": {
+        "title": "Telegram",
+        "description": "Telegram bot & messaging"
+      },
       "customerPortal": {
         "title": "Klantenportaal",
         "description": "Selfservice klantenportaal"
@@ -397,7 +401,8 @@
       "diagnostic_notes": "Diagnostische notities",
       "bank_account": "Bankrekening",
       "footer": "Voettekst",
-      "general": "Algemeen"
+      "general": "Algemeen",
+      "telegram_qr": "Telegram-QR"
     },
     "fields": {
       "customer_name": "Klantnaam",

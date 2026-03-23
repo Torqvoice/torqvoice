@@ -58,6 +58,10 @@
         "title": "SMS",
         "description": "Провайдер SMS и сообщения"
       },
+      "telegram": {
+        "title": "Telegram",
+        "description": "Telegram bot & messaging"
+      },
       "customerPortal": {
         "title": "Портал клиента",
         "description": "Портал самообслуживания клиентов"
@@ -397,7 +401,8 @@
       "diagnostic_notes": "Диагностические заметки",
       "bank_account": "Банковский счёт",
       "footer": "Подвал",
-      "general": "Общие"
+      "general": "Общие",
+      "telegram_qr": "QR Telegram"
     },
     "fields": {
       "customer_name": "Имя клиента",
@@ -683,13 +688,13 @@
     "workDayStart": "Начало рабочего дня",
     "workDayEnd": "Конец рабочего дня",
     "weekDays": {
+      "0": "Воскресенье",
       "1": "Понедельник",
       "2": "Вторник",
       "3": "Среда",
       "4": "Четверг",
       "5": "Пятница",
-      "6": "Суббота",
-      "0": "Воскресенье"
+      "6": "Суббота"
     }
   },
   "maintenance": {

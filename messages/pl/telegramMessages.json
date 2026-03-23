@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Wiadomości Telegram",
+    "featureDescription": "Wysyłaj i odbieraj wiadomości Telegram z klientami bezpośrednio z Torqvoice."
+  },
+  "notConfigured": {
+    "title": "Telegram nie skonfigurowany",
+    "description": "Skonfiguruj bota Telegram, aby wysyłać i odbierać wiadomości z klientami. Utwórz bota przez @BotFather i skonfiguruj w ustawieniach.",
+    "goToSettings": "Przejdź do ustawień Telegrama"
+  },
+  "threads": {
+    "title": "Rozmowy",
+    "empty": "Brak rozmów Telegram. Klienci mogą rozpocząć czat, wysyłając wiadomość do Twojego bota.",
+    "loadMore": "Załaduj więcej",
+    "selectConversation": "Wybierz rozmowę",
+    "you": "Ty: ",
+    "deleteConversation": "Usuń rozmowę",
+    "deleteTitle": "Usunąć rozmowę?",
+    "deleteDescription": "Spowoduje to trwałe usunięcie wszystkich wiadomości Telegram z {name}. Tej akcji nie można cofnąć.",
+    "deleted": "Rozmowa usunięta",
+    "deleteError": "Nie udało się usunąć rozmowy"
+  },
+  "conversation": {
+    "notLinked": "Ten klient nie połączył się jeszcze z Twoim botem Telegram. Udostępnij link do bota, aby go połączyć.",
+    "loadOlder": "Załaduj starsze",
+    "empty": "Brak wiadomości. Wyślij pierwszą wiadomość do {name}.",
+    "placeholder": "Wiadomość do {name}...",
+    "deleteMessage": "Usuń wiadomość",
+    "deleteTitle": "Usunąć wiadomość?",
+    "deleteDescription": "Spowoduje to trwałe usunięcie tej wiadomości. Tej akcji nie można cofnąć.",
+    "messageDeleted": "Wiadomość usunięta",
+    "deleteError": "Nie udało się usunąć wiadomości",
+    "sendError": "Nie udało się wysłać wiadomości"
+  },
+  "sendDialog": {
+    "send": "Wyślij {label}",
+    "message": "Wiadomość",
+    "placeholder": "Wpisz wiadomość...",
+    "characters": "{count} / 4096 znaków",
+    "sendTelegram": "Wyślij wiadomość",
+    "messageSent": "Wiadomość wysłana",
+    "sentTo": "Wiadomość wysłana do {name} przez Telegram",
+    "sendError": "Nie udało się wysłać wiadomości"
+  }
+}

@@ -32,7 +32,9 @@
     "tabs": {
       "vehicles": "Vehículos ({count})",
       "messages": "Mensajes",
-      "requests": "Solicitudes ({count})"
+      "requests": "Solicitudes ({count})",
+      "sms": "SMS",
+      "telegram": "Telegram"
     },
     "vehicleTable": {
       "plate": "Placa",

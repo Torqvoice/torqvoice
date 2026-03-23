@@ -1,0 +1,62 @@
+{
+  "title": "Telegram-innstillinger",
+  "description": "Konfigurer Telegram-boten din for å sende og motta meldinger med kunder.",
+  "botToken": {
+    "label": "Bot-token",
+    "placeholder": "Skriv inn bot-tokenet fra @BotFather",
+    "help": "Opprett en bot via @BotFather på Telegram for å få tokenet ditt."
+  },
+  "botUsername": {
+    "label": "Bot-brukernavn",
+    "notConnected": "Ikke tilkoblet"
+  },
+  "webhook": {
+    "label": "Webhook-URL",
+    "description": "Denne URL-en konfigureres automatisk når du lagrer bot-tokenet."
+  },
+  "deepLink": {
+    "title": "Kundetilkoblingslenke",
+    "description": "Del denne lenken med kunder slik at de kan koble til boten din. Erstatt kunde-ID-plassholderen med den faktiske kunde-ID-en.",
+    "copied": "Lenke kopiert!"
+  },
+  "test": {
+    "title": "Testmelding",
+    "chatId": "Chat-ID",
+    "chatIdPlaceholder": "Skriv inn en Telegram chat-ID",
+    "message": "Melding",
+    "messagePlaceholder": "Skriv en testmelding...",
+    "send": "Send test",
+    "success": "Testmelding sendt!",
+    "error": "Kunne ikke sende testmelding"
+  },
+  "save": "Lagre innstillinger",
+  "saving": "Lagrer...",
+  "saved": "Telegram-innstillinger lagret",
+  "saveError": "Kunne ikke lagre innstillinger",
+  "disconnect": {
+    "button": "Koble fra bot",
+    "title": "Koble fra Telegram-boten?",
+    "description": "Dette fjerner bot-konfigurasjonen og stopper mottak av meldinger. Eksisterende samtalehistorikk beholdes.",
+    "success": "Telegram-bot frakoblet",
+    "error": "Kunne ikke koble fra"
+  },
+  "qr": {
+    "title": "Koble til på Telegram",
+    "description": "Skann denne QR-koden for å chatte med oss på Telegram.",
+    "copyLink": "Kopier lenke",
+    "copied": "Lenke kopiert!",
+    "sendEmail": "Send på e-post",
+    "emailSubject": "Koble til oss på Telegram",
+    "emailBody": "Hei {name},\n\nDu kan nå chatte med oss på Telegram for oppdateringer om kjøretøyet ditt.\n\nKlikk på denne lenken: {link}\n\nTakk!"
+  },
+  "invoiceQr": {
+    "label": "Vis QR-kode på fakturaer",
+    "description": "Vis en Telegram QR-kode på delte digitale fakturaer slik at kunder kan koble til."
+  },
+  "helpLink": "Les mer",
+  "enable": {
+    "label": "Aktiver Telegram",
+    "hint": "Vis Telegram i sidefeltet og på kundesider.",
+    "disabledInfo": "Telegram er for øyeblikket deaktivert. Aktiver for å begynne å sende og motta meldinger via Telegram."
+  }
+}

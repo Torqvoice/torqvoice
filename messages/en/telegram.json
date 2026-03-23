@@ -1,0 +1,62 @@
+{
+  "title": "Telegram Settings",
+  "description": "Configure your Telegram bot to send and receive messages with customers.",
+  "botToken": {
+    "label": "Bot Token",
+    "placeholder": "Enter your bot token from @BotFather",
+    "help": "Create a bot via @BotFather on Telegram to get your token."
+  },
+  "botUsername": {
+    "label": "Bot Username",
+    "notConnected": "Not connected"
+  },
+  "webhook": {
+    "label": "Webhook URL",
+    "description": "This URL is automatically configured when you save your bot token."
+  },
+  "deepLink": {
+    "title": "Customer Connection Link",
+    "description": "Share this link with customers so they can connect to your bot. Replace the customer ID placeholder with the actual customer ID.",
+    "copied": "Link copied!"
+  },
+  "test": {
+    "title": "Test Message",
+    "chatId": "Chat ID",
+    "chatIdPlaceholder": "Enter a Telegram chat ID",
+    "message": "Message",
+    "messagePlaceholder": "Type a test message...",
+    "send": "Send Test",
+    "success": "Test message sent!",
+    "error": "Failed to send test message"
+  },
+  "save": "Save Settings",
+  "saving": "Saving...",
+  "saved": "Telegram settings saved",
+  "saveError": "Failed to save settings",
+  "disconnect": {
+    "button": "Disconnect Bot",
+    "title": "Disconnect Telegram bot?",
+    "description": "This will remove the bot configuration and stop receiving messages. Existing conversation history will be preserved.",
+    "success": "Telegram bot disconnected",
+    "error": "Failed to disconnect"
+  },
+  "qr": {
+    "title": "Connect on Telegram",
+    "description": "Scan this QR code to chat with us on Telegram.",
+    "copyLink": "Copy link",
+    "copied": "Link copied!",
+    "sendEmail": "Send by email",
+    "emailSubject": "Connect with us on Telegram",
+    "emailBody": "Hi {name},\n\nYou can now chat with us on Telegram for updates on your vehicle.\n\nClick this link to connect: {link}\n\nThank you!"
+  },
+  "invoiceQr": {
+    "label": "Show QR code on invoices",
+    "description": "Display a Telegram QR code on shared digital invoices so customers can connect."
+  },
+  "helpLink": "Learn more",
+  "enable": {
+    "label": "Enable Telegram",
+    "hint": "Show Telegram in the sidebar and on customer pages.",
+    "disabledInfo": "Telegram is currently disabled. Enable it to start sending and receiving messages via Telegram."
+  }
+}

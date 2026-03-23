@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Telegram-berichten",
+    "featureDescription": "Verstuur en ontvang Telegram-berichten met je klanten rechtstreeks vanuit Torqvoice."
+  },
+  "notConfigured": {
+    "title": "Telegram niet geconfigureerd",
+    "description": "Stel een Telegram-bot in om berichten te versturen en ontvangen met je klanten. Maak een bot aan via @BotFather en configureer in instellingen.",
+    "goToSettings": "Ga naar Telegram-instellingen"
+  },
+  "threads": {
+    "title": "Gesprekken",
+    "empty": "Nog geen Telegram-gesprekken. Klanten kunnen een chat starten door een bericht te sturen naar je bot.",
+    "loadMore": "Meer laden",
+    "selectConversation": "Selecteer een gesprek",
+    "you": "Jij: ",
+    "deleteConversation": "Gesprek verwijderen",
+    "deleteTitle": "Gesprek verwijderen?",
+    "deleteDescription": "Dit verwijdert alle Telegram-berichten met {name} permanent. Deze actie kan niet ongedaan worden gemaakt.",
+    "deleted": "Gesprek verwijderd",
+    "deleteError": "Gesprek verwijderen mislukt"
+  },
+  "conversation": {
+    "notLinked": "Deze klant heeft nog geen verbinding gemaakt met je Telegram-bot. Deel de botlink om ze te verbinden.",
+    "loadOlder": "Oudere laden",
+    "empty": "Nog geen berichten. Stuur het eerste bericht naar {name}.",
+    "placeholder": "Bericht aan {name}...",
+    "deleteMessage": "Bericht verwijderen",
+    "deleteTitle": "Bericht verwijderen?",
+    "deleteDescription": "Dit verwijdert dit bericht permanent. Deze actie kan niet ongedaan worden gemaakt.",
+    "messageDeleted": "Bericht verwijderd",
+    "deleteError": "Bericht verwijderen mislukt",
+    "sendError": "Bericht versturen mislukt"
+  },
+  "sendDialog": {
+    "send": "{label} versturen",
+    "message": "Bericht",
+    "placeholder": "Typ je bericht...",
+    "characters": "{count} / 4096 tekens",
+    "sendTelegram": "Bericht versturen",
+    "messageSent": "Bericht verstuurd",
+    "sentTo": "Bericht verstuurd naar {name} via Telegram",
+    "sendError": "Bericht versturen mislukt"
+  }
+}

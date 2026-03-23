@@ -1,0 +1,62 @@
+{
+  "title": "Telegram Ayarları",
+  "description": "Müşterilerle mesaj göndermek ve almak için Telegram botunuzu yapılandırın.",
+  "botToken": {
+    "label": "Bot Token",
+    "placeholder": "@BotFather'dan aldığınız bot tokenini girin",
+    "help": "Tokeninizi almak için Telegram'da @BotFather üzerinden bir bot oluşturun."
+  },
+  "botUsername": {
+    "label": "Bot Kullanıcı Adı",
+    "notConnected": "Bağlı değil"
+  },
+  "webhook": {
+    "label": "Webhook URL'si",
+    "description": "Bu URL, bot tokeninizi kaydettiğinizde otomatik olarak yapılandırılır."
+  },
+  "deepLink": {
+    "title": "Müşteri Bağlantı Linki",
+    "description": "Müşterilerin botunuza bağlanabilmesi için bu linki paylaşın. Müşteri kimliği yer tutucusunu gerçek müşteri kimliğiyle değiştirin.",
+    "copied": "Link kopyalandı!"
+  },
+  "test": {
+    "title": "Test Mesajı",
+    "chatId": "Sohbet Kimliği",
+    "chatIdPlaceholder": "Telegram sohbet kimliği girin",
+    "message": "Mesaj",
+    "messagePlaceholder": "Test mesajı yazın...",
+    "send": "Test gönder",
+    "success": "Test mesajı gönderildi!",
+    "error": "Test mesajı gönderilemedi"
+  },
+  "save": "Ayarları kaydet",
+  "saving": "Kaydediliyor...",
+  "saved": "Telegram ayarları kaydedildi",
+  "saveError": "Ayarlar kaydedilemedi",
+  "disconnect": {
+    "button": "Botu bağlantısını kes",
+    "title": "Telegram botu bağlantısı kesilsin mi?",
+    "description": "Bu, bot yapılandırmasını kaldıracak ve mesaj almayı durduracaktır. Mevcut sohbet geçmişi korunacaktır.",
+    "success": "Telegram botu bağlantısı kesildi",
+    "error": "Bağlantı kesilemedi"
+  },
+  "qr": {
+    "title": "Telegram'da Bağlan",
+    "description": "Telegram'da bizimle sohbet etmek için bu QR kodunu tarayın.",
+    "copyLink": "Bağlantıyı kopyala",
+    "copied": "Bağlantı kopyalandı!",
+    "sendEmail": "E-posta ile gönder",
+    "emailSubject": "Telegram'da bizimle bağlanın",
+    "emailBody": "Merhaba {name},\n\nArtık aracınızla ilgili güncellemeler için Telegram'da bizimle sohbet edebilirsiniz.\n\nBu bağlantıya tıklayın: {link}\n\nTeşekkürler!"
+  },
+  "invoiceQr": {
+    "label": "Faturalarda QR kodu göster",
+    "description": "Müşterilerin bağlanabilmesi için paylaşılan dijital faturalarda bir Telegram QR kodu görüntüleyin."
+  },
+  "helpLink": "Daha fazla bilgi",
+  "enable": {
+    "label": "Telegram'ı Etkinleştir",
+    "hint": "Telegram'ı kenar çubuğunda ve müşteri sayfalarında göster.",
+    "disabledInfo": "Telegram şu anda devre dışı. Telegram üzerinden mesaj gönderip almaya başlamak için etkinleştirin."
+  }
+}

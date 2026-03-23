@@ -70,6 +70,13 @@ export const SETTING_KEYS = {
   SMS_TEMPLATE_STATUS_READY: "sms.template.statusReady",
   SMS_TEMPLATE_STATUS_COMPLETED: "sms.template.statusCompleted",
   SMS_TEMPLATE_PAYMENT_RECEIVED: "sms.template.paymentReceived",
+  // Telegram templates
+  TELEGRAM_TEMPLATE_INVOICE_READY: "telegram.template.invoiceReady",
+  TELEGRAM_TEMPLATE_QUOTE_READY: "telegram.template.quoteReady",
+  TELEGRAM_TEMPLATE_STATUS_IN_PROGRESS: "telegram.template.statusInProgress",
+  TELEGRAM_TEMPLATE_STATUS_COMPLETED: "telegram.template.statusCompleted",
+  TELEGRAM_TEMPLATE_PAYMENT_RECEIVED: "telegram.template.paymentReceived",
+  TELEGRAM_SHOW_QR_ON_INVOICE: "telegram.showQrOnInvoice",
   PORTAL_ENABLED: "portal.enabled",
   WORKBOARD_WEEK_START_DAY: "workboard.weekStartDay",
   WORKBOARD_WORK_DAY_START: "workboard.workDayStart",

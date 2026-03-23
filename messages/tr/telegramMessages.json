@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Telegram Mesajları",
+    "featureDescription": "Torqvoice üzerinden müşterilerinizle doğrudan Telegram mesajları gönderin ve alın."
+  },
+  "notConfigured": {
+    "title": "Telegram yapılandırılmadı",
+    "description": "Müşterilerinizle mesaj göndermek ve almak için bir Telegram botu kurun. @BotFather üzerinden bir bot oluşturun ve ayarlarda yapılandırın.",
+    "goToSettings": "Telegram ayarlarına git"
+  },
+  "threads": {
+    "title": "Sohbetler",
+    "empty": "Henüz Telegram sohbeti yok. Müşteriler botunuza mesaj göndererek sohbet başlatabilir.",
+    "loadMore": "Daha fazla yükle",
+    "selectConversation": "Bir sohbet seçin",
+    "you": "Siz: ",
+    "deleteConversation": "Sohbeti sil",
+    "deleteTitle": "Sohbet silinsin mi?",
+    "deleteDescription": "{name} ile tüm Telegram mesajları kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
+    "deleted": "Sohbet silindi",
+    "deleteError": "Sohbet silinemedi"
+  },
+  "conversation": {
+    "notLinked": "Bu müşteri henüz Telegram botunuza bağlanmadı. Bağlamak için bot linkini paylaşın.",
+    "loadOlder": "Eskileri yükle",
+    "empty": "Henüz mesaj yok. {name} kişisine ilk mesajı gönderin.",
+    "placeholder": "{name} kişisine mesaj...",
+    "deleteMessage": "Mesajı sil",
+    "deleteTitle": "Mesaj silinsin mi?",
+    "deleteDescription": "Bu mesaj kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
+    "messageDeleted": "Mesaj silindi",
+    "deleteError": "Mesaj silinemedi",
+    "sendError": "Mesaj gönderilemedi"
+  },
+  "sendDialog": {
+    "send": "{label} gönder",
+    "message": "Mesaj",
+    "placeholder": "Mesajınızı yazın...",
+    "characters": "{count} / 4096 karakter",
+    "sendTelegram": "Mesaj gönder",
+    "messageSent": "Mesaj gönderildi",
+    "sentTo": "{name} kişisine Telegram ile mesaj gönderildi",
+    "sendError": "Mesaj gönderilemedi"
+  }
+}

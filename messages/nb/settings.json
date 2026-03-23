@@ -58,6 +58,10 @@
         "title": "SMS",
         "description": "SMS-leverandor og meldinger"
       },
+      "telegram": {
+        "title": "Telegram",
+        "description": "Telegram bot & messaging"
+      },
       "customerPortal": {
         "title": "Kundeportal",
         "description": "Kundeselvbetjeningsportal"
@@ -397,7 +401,8 @@
       "diagnostic_notes": "Diagnostiske notater",
       "bank_account": "Bankkonto",
       "footer": "Bunntekst",
-      "general": "Generelt"
+      "general": "Generelt",
+      "telegram_qr": "Telegram QR"
     },
     "fields": {
       "customer_name": "Kundenavn",

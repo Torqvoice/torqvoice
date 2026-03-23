@@ -97,6 +97,7 @@ export default async function PublicInvoicePage({
             "workshop.timezone",
             "portal.enabled",
             "invoice.layoutConfig",
+            "telegram.botUsername",
           ],
         },
       },
@@ -183,6 +184,9 @@ export default async function PublicInvoicePage({
     ? `${appUrl}/portal/${portalSlug || orgId}`
     : undefined;
 
+  const telegramBotUsername = settingsMap["telegram.botUsername"] || "";
+  const telegramBotLink = telegramBotUsername ? `https://t.me/${telegramBotUsername}` : undefined;
+
   return (
     <InvoiceView
       record={publicRecord}
@@ -205,6 +209,7 @@ export default async function PublicInvoicePage({
       portalUrl={portalUrl}
       layoutConfig={layoutConfig}
       customFields={customFields}
+      telegramBotLink={telegramBotLink}
     />
   );
 }

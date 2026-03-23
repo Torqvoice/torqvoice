@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useMessages } from "next-intl";
 import { PDFViewer } from "@react-pdf/renderer";
 import "@/features/vehicles/Components/invoice-pdf/fonts.client";
@@ -241,6 +241,20 @@ export function InvoiceLayoutPreviewRenderer({
 
   const isQuote = documentType === "quote";
 
+  // Generate dummy Telegram QR for preview if section is visible
+  const telegramQrVisible = config.sections.some(
+    (s) => s.id === "telegram_qr" && s.visible
+  );
+  const [telegramQrDataUri, setTelegramQrDataUri] = useState<string | undefined>();
+  useEffect(() => {
+    if (!telegramQrVisible) { setTelegramQrDataUri(undefined); return; }
+    import("qrcode").then((QRCode) => {
+      QRCode.toDataURL("https://t.me/example_bot", { width: 200, margin: 1 }).then(
+        (uri) => setTelegramQrDataUri(uri)
+      );
+    });
+  }, [telegramQrVisible]);
+
   return (
     <div className="rounded-lg shadow-sm overflow-hidden bg-gray-100">
       <PDFViewer
@@ -268,6 +282,8 @@ export function InvoiceLayoutPreviewRenderer({
             invoiceSettings={DUMMY_INVOICE_SETTINGS}
             logoDataUri={logoUrl || undefined}
             template={templateConfig}
+            telegramQrDataUri={telegramQrDataUri}
+            telegramLabel="Chat with us on Telegram"
             labels={labels}
           />
         )}

@@ -32,7 +32,9 @@
     "tabs": {
       "vehicles": "Транспортные средства ({count})",
       "messages": "Сообщения",
-      "requests": "Заявки ({count})"
+      "requests": "Заявки ({count})",
+      "sms": "SMS",
+      "telegram": "Telegram"
     },
     "vehicleTable": {
       "plate": "Госномер",

@@ -1,0 +1,62 @@
+{
+  "title": "Telegram-instellingen",
+  "description": "Configureer je Telegram-bot om berichten te versturen en ontvangen met klanten.",
+  "botToken": {
+    "label": "Bot-token",
+    "placeholder": "Voer je bot-token van @BotFather in",
+    "help": "Maak een bot aan via @BotFather op Telegram om je token te krijgen."
+  },
+  "botUsername": {
+    "label": "Bot-gebruikersnaam",
+    "notConnected": "Niet verbonden"
+  },
+  "webhook": {
+    "label": "Webhook-URL",
+    "description": "Deze URL wordt automatisch geconfigureerd wanneer je je bot-token opslaat."
+  },
+  "deepLink": {
+    "title": "Klantverbindingslink",
+    "description": "Deel deze link met klanten zodat ze verbinding kunnen maken met je bot. Vervang de klant-ID-plaatshouder door het echte klant-ID.",
+    "copied": "Link gekopieerd!"
+  },
+  "test": {
+    "title": "Testbericht",
+    "chatId": "Chat-ID",
+    "chatIdPlaceholder": "Voer een Telegram chat-ID in",
+    "message": "Bericht",
+    "messagePlaceholder": "Typ een testbericht...",
+    "send": "Test verzenden",
+    "success": "Testbericht verzonden!",
+    "error": "Testbericht verzenden mislukt"
+  },
+  "save": "Instellingen opslaan",
+  "saving": "Opslaan...",
+  "saved": "Telegram-instellingen opgeslagen",
+  "saveError": "Instellingen opslaan mislukt",
+  "disconnect": {
+    "button": "Bot ontkoppelen",
+    "title": "Telegram-bot ontkoppelen?",
+    "description": "Dit verwijdert de botconfiguratie en stopt het ontvangen van berichten. Bestaande gespreksgeschiedenis blijft bewaard.",
+    "success": "Telegram-bot ontkoppeld",
+    "error": "Ontkoppelen mislukt"
+  },
+  "qr": {
+    "title": "Verbinden op Telegram",
+    "description": "Scan deze QR-code om met ons te chatten op Telegram.",
+    "copyLink": "Link kopiëren",
+    "copied": "Link gekopieerd!",
+    "sendEmail": "Per e-mail verzenden",
+    "emailSubject": "Verbind met ons op Telegram",
+    "emailBody": "Hallo {name},\n\nU kunt nu met ons chatten op Telegram voor updates over uw voertuig.\n\nKlik op deze link: {link}\n\nBedankt!"
+  },
+  "invoiceQr": {
+    "label": "QR-code op facturen tonen",
+    "description": "Een Telegram QR-code weergeven op gedeelde digitale facturen zodat klanten verbinding kunnen maken."
+  },
+  "helpLink": "Meer informatie",
+  "enable": {
+    "label": "Telegram inschakelen",
+    "hint": "Telegram tonen in de zijbalk en op klantpagina's.",
+    "disabledInfo": "Telegram is momenteel uitgeschakeld. Schakel het in om berichten via Telegram te verzenden en ontvangen."
+  }
+}

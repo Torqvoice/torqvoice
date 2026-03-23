@@ -58,6 +58,10 @@
         "title": "SMS",
         "description": "SMS-Anbieter & Nachrichten"
       },
+      "telegram": {
+        "title": "Telegram",
+        "description": "Telegram bot & messaging"
+      },
       "customerPortal": {
         "title": "Kundenportal",
         "description": "Kunden-Self-Service-Portal"
@@ -397,7 +401,8 @@
       "diagnostic_notes": "Diagnosenotizen",
       "bank_account": "Bankkonto",
       "footer": "Fußzeile",
-      "general": "Allgemein"
+      "general": "Allgemein",
+      "telegram_qr": "Telegram-QR"
     },
     "fields": {
       "customer_name": "Kundenname",

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -47,6 +47,7 @@ interface InvoiceSettingsProps {
   initialQuoteLayout?: InvoiceLayoutConfig
   customFields: FieldDef[]
   customFieldsEnabled: boolean
+  telegramEnabled?: boolean
 }
 
 export function InvoiceSettings({
@@ -55,6 +56,7 @@ export function InvoiceSettings({
   initialQuoteLayout,
   customFields,
   customFieldsEnabled,
+  telegramEnabled = false,
 }: InvoiceSettingsProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -85,6 +87,13 @@ export function InvoiceSettings({
   )
   const [dueDays, setDueDays] = useState(settings[SETTING_KEYS.INVOICE_DUE_DAYS] || '14')
   const [footerNote, setFooterNote] = useState(settings[SETTING_KEYS.INVOICE_FOOTER_NOTE] || '')
+
+  // Sections to hide from layout editor when features are disabled
+  const hiddenLayoutSections = useMemo(() => {
+    const hidden = new Set<string>()
+    if (!telegramEnabled) hidden.add('telegram_qr')
+    return hidden
+  }, [telegramEnabled])
 
   // Layout tab state
   const [invoiceLayout, setInvoiceLayout] = useState(
@@ -336,6 +345,7 @@ export function InvoiceSettings({
                   onChange={layoutDocType === 'invoice' ? setInvoiceLayout : setQuoteLayout}
                   documentType={layoutDocType}
                   customFields={customFields}
+                  hiddenSections={hiddenLayoutSections}
                 />
                 <div className="hidden xl:block pr-2">
                   <div className="sticky top-6 space-y-2">
@@ -343,7 +353,11 @@ export function InvoiceSettings({
                       {t('invoice.preview')}
                     </p>
                     <InvoiceLayoutPreview
-                      config={layoutDocType === 'invoice' ? invoiceLayout : quoteLayout}
+                      config={{
+                        sections: (layoutDocType === 'invoice' ? invoiceLayout : quoteLayout).sections.map(
+                          (s) => hiddenLayoutSections.has(s.id) ? { ...s, visible: false } : s
+                        ),
+                      }}
                       documentType={layoutDocType}
                       customFields={customFields}
                       template={layoutDocType === 'invoice' ? invoiceTemplate : quoteTemplate}
