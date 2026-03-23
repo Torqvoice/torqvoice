@@ -137,7 +137,13 @@
     "createCompany": "Şirket Oluştur",
     "settingsSaved": "Şirket ayarları kaydedildi",
     "failedSave": "Ayarlar kaydedilemedi",
-    "companyCreated": "Şirket başarıyla oluşturuldu"
+    "companyCreated": "Şirket başarıyla oluşturuldu",
+    "serviceType": "Hizmet Türü",
+    "serviceTypeDescription": "Atölyenizin sunduğu hizmet türünü seçin. Bu, uygulama genelinde alan etiketlerini değiştirir.",
+    "automotive": "Otomotiv",
+    "automotiveDescription": "Arabalar, kamyonlar ve diğer kara taşıtları",
+    "boatService": "Tekne Servisi",
+    "boatServiceDescription": "Tekneler, yatlar ve deniz taşıtları"
   },
   "account": {
     "profileTitle": "Profil",

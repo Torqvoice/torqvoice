@@ -137,7 +137,13 @@
     "createCompany": "Crea azienda",
     "settingsSaved": "Impostazioni aziendali salvate",
     "failedSave": "Salvataggio impostazioni non riuscito",
-    "companyCreated": "Azienda creata con successo"
+    "companyCreated": "Azienda creata con successo",
+    "serviceType": "Tipo di Servizio",
+    "serviceTypeDescription": "Seleziona il tipo di servizio offerto dalla tua officina. Questo cambia le etichette dei campi in tutta l'applicazione.",
+    "automotive": "Automobilistico",
+    "automotiveDescription": "Auto, camion e altri veicoli stradali",
+    "boatService": "Servizio Nautico",
+    "boatServiceDescription": "Barche, yacht e imbarcazioni"
   },
   "account": {
     "profileTitle": "Profilo",

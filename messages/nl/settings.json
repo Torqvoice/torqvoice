@@ -137,7 +137,13 @@
     "createCompany": "Bedrijf aanmaken",
     "settingsSaved": "Bedrijfsinstellingen opgeslagen",
     "failedSave": "Instellingen opslaan mislukt",
-    "companyCreated": "Bedrijf succesvol aangemaakt"
+    "companyCreated": "Bedrijf succesvol aangemaakt",
+    "serviceType": "Servicetype",
+    "serviceTypeDescription": "Selecteer het type service dat uw werkplaats biedt. Dit verandert de veldlabels in de hele applicatie.",
+    "automotive": "Auto",
+    "automotiveDescription": "Auto's, vrachtwagens en andere wegvoertuigen",
+    "boatService": "Bootservice",
+    "boatServiceDescription": "Boten, jachten en vaartuigen"
   },
   "account": {
     "profileTitle": "Profiel",

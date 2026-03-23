@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { getVehiclesPaginated } from "@/features/vehicles/Actions/vehicleActions";
 import { getCustomersList } from "@/features/customers/Actions/customerActions";
+import { getSettings } from "@/features/settings/Actions/settingsActions";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { VehiclesClient } from "./vehicles-client";
 import { PageHeader } from "@/components/page-header";
 
@@ -15,7 +17,7 @@ export default async function VehiclesPage({
   const cookieStore = await cookies();
   const viewCookie = cookieStore.get("torqvoice-vehicles-view")?.value;
   const initialView = viewCookie === "grid" ? "grid" : viewCookie === "grid6" ? "grid6" : "table";
-  const [result, customersResult] = await Promise.all([
+  const [result, customersResult, serviceTypeResult] = await Promise.all([
     getVehiclesPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
@@ -23,7 +25,10 @@ export default async function VehiclesPage({
       archived: isArchived,
     }),
     getCustomersList(),
+    getSettings([SETTING_KEYS.SERVICE_TYPE]),
   ]);
+
+  const serviceType = (serviceTypeResult.success && serviceTypeResult.data?.[SETTING_KEYS.SERVICE_TYPE]) || "automotive";
 
   if (!result.success || !result.data) {
     return (
@@ -49,6 +54,7 @@ export default async function VehiclesPage({
           initialView={initialView}
           isArchived={isArchived}
           archivedCount={result.data.archivedCount}
+          serviceType={serviceType as "automotive" | "boat"}
         />
       </div>
     </>

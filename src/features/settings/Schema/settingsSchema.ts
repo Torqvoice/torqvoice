@@ -87,6 +87,7 @@ export const SETTING_KEYS = {
   AI_API_KEY: "ai.apiKey",
   AI_MODEL: "ai.model",
   AI_ENABLED: "ai.enabled",
+  SERVICE_TYPE: "workshop.serviceType",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

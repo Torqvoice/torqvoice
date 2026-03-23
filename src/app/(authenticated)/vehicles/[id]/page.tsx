@@ -38,7 +38,7 @@ export default async function VehicleDetailPage({
     getCustomersList(),
     getServiceRecordsPaginated(id, { page, pageSize, search, type }),
     getNotesPaginated(id, { page: notesPage, pageSize: notesPageSize }),
-    getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
+    getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM, SETTING_KEYS.SERVICE_TYPE]),
     getSettings([
       SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED,
       SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL,
@@ -73,6 +73,7 @@ export default async function VehicleDetailPage({
   const currencySettings = settingsResult.success && settingsResult.data ? settingsResult.data : {};
   const currencyCode = currencySettings[SETTING_KEYS.CURRENCY_CODE] || "USD";
   const unitSystem = (currencySettings[SETTING_KEYS.UNIT_SYSTEM] || "imperial") as "metric" | "imperial";
+  const serviceType = (currencySettings[SETTING_KEYS.SERVICE_TYPE] || "automotive") as "automotive" | "boat";
 
   const maintenanceSettings = maintenanceSettingsResult.success && maintenanceSettingsResult.data
     ? maintenanceSettingsResult.data
@@ -145,7 +146,7 @@ export default async function VehicleDetailPage({
           paginatedServices={paginatedServices}
           paginatedNotes={paginatedNotes}
           serviceSearch={search}
-          serviceType={type}
+          serviceRecordType={type}
           currencyCode={currencyCode}
           unitSystem={unitSystem}
           predictionData={predictionData}
@@ -153,6 +154,7 @@ export default async function VehicleDetailPage({
           inspectionTemplates={templatesResult.success && templatesResult.data ? templatesResult.data : []}
           quotes={quotesResult.success && quotesResult.data ? quotesResult.data : []}
           aiEnabled={aiEnabled}
+          serviceType={serviceType}
         />
       </div>
     </>
