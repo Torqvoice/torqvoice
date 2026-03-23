@@ -83,6 +83,8 @@ export function AppSidebar({
   activeOrgId,
   isSuperAdmin,
   features,
+  smsEnabled = false,
+  telegramEnabled = false,
   isAdminOrOwner = false,
   visibleSubjects,
   ...props
@@ -92,6 +94,8 @@ export function AppSidebar({
   activeOrgId?: string
   isSuperAdmin?: boolean
   features?: PlanFeatures
+  smsEnabled?: boolean
+  telegramEnabled?: boolean
   isAdminOrOwner?: boolean
   visibleSubjects?: string[]
 }) {
@@ -110,8 +114,8 @@ export function AppSidebar({
 
   const clientItems = [
     { titleKey: 'sidebar.customers' as const, url: '/customers', icon: Users, subject: 'customers' },
-    ...(features?.sms ? [{ titleKey: 'sidebar.smsMessages' as const, url: '/messages', icon: MessageSquare, subject: 'customers' }] : []),
-    ...(features?.telegram ? [{ titleKey: 'sidebar.telegram' as const, url: '/telegram', icon: Send, subject: 'customers' }] : []),
+    ...(smsEnabled ? [{ titleKey: 'sidebar.smsMessages' as const, url: '/messages', icon: MessageSquare, subject: 'customers' }] : []),
+    ...(telegramEnabled ? [{ titleKey: 'sidebar.telegram' as const, url: '/telegram', icon: Send, subject: 'customers' }] : []),
   ].filter((item) => canAccess(item.subject))
 
   const workshopItems = [

@@ -1,45 +1,45 @@
 {
   "page": {
-    "featureName": "Telegram Messaging",
-    "featureDescription": "Send and receive Telegram messages with your customers directly from Torqvoice."
+    "featureName": "Telegram-meldinger",
+    "featureDescription": "Send og motta Telegram-meldinger med kundene dine direkte fra Torqvoice."
   },
   "notConfigured": {
-    "title": "Telegram Not Configured",
-    "description": "Set up a Telegram bot to send and receive messages with your customers. Create a bot via @BotFather and configure it in settings.",
-    "goToSettings": "Go to Telegram Settings"
+    "title": "Telegram er ikke konfigurert",
+    "description": "Sett opp en Telegram-bot for å sende og motta meldinger med kundene dine. Opprett en bot via @BotFather og konfigurer i innstillingene.",
+    "goToSettings": "Gå til Telegram-innstillinger"
   },
   "threads": {
-    "title": "Conversations",
-    "empty": "No Telegram conversations yet. Customers can start chatting by messaging your bot.",
-    "loadMore": "Load more",
-    "selectConversation": "Select a conversation",
-    "you": "You: ",
-    "deleteConversation": "Delete conversation",
-    "deleteTitle": "Delete conversation?",
-    "deleteDescription": "This will permanently delete all Telegram messages with {name}. This action cannot be undone.",
-    "deleted": "Conversation deleted",
-    "deleteError": "Failed to delete conversation"
+    "title": "Samtaler",
+    "empty": "Ingen Telegram-samtaler ennå. Kunder kan starte en chat ved å sende melding til boten din.",
+    "loadMore": "Last inn flere",
+    "selectConversation": "Velg en samtale",
+    "you": "Du: ",
+    "deleteConversation": "Slett samtale",
+    "deleteTitle": "Slette samtale?",
+    "deleteDescription": "Dette vil permanent slette alle Telegram-meldinger med {name}. Denne handlingen kan ikke angres.",
+    "deleted": "Samtale slettet",
+    "deleteError": "Kunne ikke slette samtale"
   },
   "conversation": {
-    "notLinked": "This customer hasn't connected to your Telegram bot yet. Share the bot link to connect them.",
-    "loadOlder": "Load older",
-    "empty": "No messages yet. Send the first message to {name}.",
-    "placeholder": "Message {name}...",
-    "deleteMessage": "Delete message",
-    "deleteTitle": "Delete message?",
-    "deleteDescription": "This will permanently delete this message. This action cannot be undone.",
-    "messageDeleted": "Message deleted",
-    "deleteError": "Failed to delete message",
-    "sendError": "Failed to send message"
+    "notLinked": "Denne kunden har ikke koblet seg til Telegram-boten din ennå. Del bot-lenken for å koble dem til.",
+    "loadOlder": "Last eldre",
+    "empty": "Ingen meldinger ennå. Send den første meldingen til {name}.",
+    "placeholder": "Melding til {name}...",
+    "deleteMessage": "Slett melding",
+    "deleteTitle": "Slette melding?",
+    "deleteDescription": "Dette vil permanent slette denne meldingen. Denne handlingen kan ikke angres.",
+    "messageDeleted": "Melding slettet",
+    "deleteError": "Kunne ikke slette melding",
+    "sendError": "Kunne ikke sende melding"
   },
   "sendDialog": {
     "send": "Send {label}",
-    "message": "Message",
-    "placeholder": "Type your message...",
-    "characters": "{count} / 4096 characters",
-    "sendTelegram": "Send Message",
-    "messageSent": "Message Sent",
-    "sentTo": "Message sent to {name} via Telegram",
-    "sendError": "Failed to send message"
+    "message": "Melding",
+    "placeholder": "Skriv meldingen din...",
+    "characters": "{count} / 4096 tegn",
+    "sendTelegram": "Send melding",
+    "messageSent": "Melding sendt",
+    "sentTo": "Melding sendt til {name} via Telegram",
+    "sendError": "Kunne ikke sende melding"
   }
 }

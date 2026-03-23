@@ -1,56 +1,57 @@
 {
-  "title": "Telegram Settings",
-  "description": "Configure your Telegram bot to send and receive messages with customers.",
+  "title": "Impostazioni Telegram",
+  "description": "Configura il tuo bot Telegram per inviare e ricevere messaggi con i clienti.",
   "botToken": {
-    "label": "Bot Token",
-    "placeholder": "Enter your bot token from @BotFather",
-    "help": "Create a bot via @BotFather on Telegram to get your token."
+    "label": "Token del bot",
+    "placeholder": "Inserisci il token da @BotFather",
+    "help": "Crea un bot tramite @BotFather su Telegram per ottenere il tuo token."
   },
   "botUsername": {
-    "label": "Bot Username",
-    "notConnected": "Not connected"
+    "label": "Nome utente del bot",
+    "notConnected": "Non connesso"
   },
   "webhook": {
-    "label": "Webhook URL",
-    "description": "This URL is automatically configured when you save your bot token."
+    "label": "URL del webhook",
+    "description": "Questo URL viene configurato automaticamente quando salvi il token del bot."
   },
   "deepLink": {
-    "title": "Customer Connection Link",
-    "description": "Share this link with customers so they can connect to your bot. Replace the customer ID placeholder with the actual customer ID.",
-    "copied": "Link copied!"
+    "title": "Link di connessione cliente",
+    "description": "Condividi questo link con i clienti per connettersi al tuo bot. Sostituisci il segnaposto dell'ID cliente con l'ID reale.",
+    "copied": "Link copiato!"
   },
   "test": {
-    "title": "Test Message",
-    "chatId": "Chat ID",
-    "chatIdPlaceholder": "Enter a Telegram chat ID",
-    "message": "Message",
-    "messagePlaceholder": "Type a test message...",
-    "send": "Send Test",
-    "success": "Test message sent!",
-    "error": "Failed to send test message"
+    "title": "Messaggio di prova",
+    "chatId": "ID chat",
+    "chatIdPlaceholder": "Inserisci un ID chat di Telegram",
+    "message": "Messaggio",
+    "messagePlaceholder": "Scrivi un messaggio di prova...",
+    "send": "Invia prova",
+    "success": "Messaggio di prova inviato!",
+    "error": "Invio messaggio di prova fallito"
   },
-  "save": "Save Settings",
-  "saving": "Saving...",
-  "saved": "Telegram settings saved",
-  "saveError": "Failed to save settings",
+  "save": "Salva impostazioni",
+  "saving": "Salvataggio...",
+  "saved": "Impostazioni Telegram salvate",
+  "saveError": "Salvataggio impostazioni fallito",
   "disconnect": {
-    "button": "Disconnect Bot",
-    "title": "Disconnect Telegram bot?",
-    "description": "This will remove the bot configuration and stop receiving messages. Existing conversation history will be preserved.",
-    "success": "Telegram bot disconnected",
-    "error": "Failed to disconnect"
+    "button": "Disconnetti bot",
+    "title": "Disconnettere il bot Telegram?",
+    "description": "Questo rimuoverà la configurazione del bot e interromperà la ricezione dei messaggi. La cronologia delle conversazioni esistente verrà conservata.",
+    "success": "Bot Telegram disconnesso",
+    "error": "Disconnessione fallita"
   },
   "qr": {
-    "title": "Connect on Telegram",
-    "description": "Scan this QR code to chat with us on Telegram.",
-    "copyLink": "Copy link",
-    "copied": "Link copied!",
-    "sendEmail": "Send by email",
-    "emailSubject": "Connect with us on Telegram",
-    "emailBody": "Hi {name},\n\nYou can now chat with us on Telegram for updates on your vehicle.\n\nClick this link to connect: {link}\n\nThank you!"
+    "title": "Connetti su Telegram",
+    "description": "Scansiona questo codice QR per chattare con noi su Telegram.",
+    "copyLink": "Copia link",
+    "copied": "Link copiato!",
+    "sendEmail": "Invia per email",
+    "emailSubject": "Connettiti con noi su Telegram",
+    "emailBody": "Ciao {name},\n\nOra puoi chattare con noi su Telegram per aggiornamenti sul tuo veicolo.\n\nClicca su questo link: {link}\n\nGrazie!"
   },
   "invoiceQr": {
-    "label": "Show QR code on invoices",
-    "description": "Display a Telegram QR code on shared digital invoices so customers can connect."
-  }
+    "label": "Mostra codice QR sulle fatture",
+    "description": "Visualizza un codice QR Telegram sulle fatture digitali condivise in modo che i clienti possano connettersi."
+  },
+  "helpLink": "Scopri di più"
 }

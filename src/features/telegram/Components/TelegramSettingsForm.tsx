@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, Copy, Check, Eye, EyeOff } from "lucide-react";
+import { ExternalLink, Loader2, Copy, Check, Eye, EyeOff } from "lucide-react";
 import { setTelegramSettings } from "../Actions/telegramSettingsActions";
 import { setSettings } from "@/features/settings/Actions/settingsActions";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "@/app/(authenticated)/settings/read-only-guard";
@@ -51,7 +51,18 @@ export function TelegramSettingsForm({ initial, appUrl, showQrOnInvoice: initial
         <Card>
           <CardHeader>
             <CardTitle>{t("title")}</CardTitle>
-            <CardDescription>{t("description")}</CardDescription>
+            <CardDescription>
+              {t("description")}{" "}
+              <a
+                href="https://torqvoice.com/docs/configuration#telegram"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+              >
+                {t("helpLink")}
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">

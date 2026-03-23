@@ -1,56 +1,57 @@
 {
-  "title": "Telegram Settings",
-  "description": "Configure your Telegram bot to send and receive messages with customers.",
+  "title": "Telegram-innstillinger",
+  "description": "Konfigurer Telegram-boten din for å sende og motta meldinger med kunder.",
   "botToken": {
-    "label": "Bot Token",
-    "placeholder": "Enter your bot token from @BotFather",
-    "help": "Create a bot via @BotFather on Telegram to get your token."
+    "label": "Bot-token",
+    "placeholder": "Skriv inn bot-tokenet fra @BotFather",
+    "help": "Opprett en bot via @BotFather på Telegram for å få tokenet ditt."
   },
   "botUsername": {
-    "label": "Bot Username",
-    "notConnected": "Not connected"
+    "label": "Bot-brukernavn",
+    "notConnected": "Ikke tilkoblet"
   },
   "webhook": {
-    "label": "Webhook URL",
-    "description": "This URL is automatically configured when you save your bot token."
+    "label": "Webhook-URL",
+    "description": "Denne URL-en konfigureres automatisk når du lagrer bot-tokenet."
   },
   "deepLink": {
-    "title": "Customer Connection Link",
-    "description": "Share this link with customers so they can connect to your bot. Replace the customer ID placeholder with the actual customer ID.",
-    "copied": "Link copied!"
+    "title": "Kundetilkoblingslenke",
+    "description": "Del denne lenken med kunder slik at de kan koble til boten din. Erstatt kunde-ID-plassholderen med den faktiske kunde-ID-en.",
+    "copied": "Lenke kopiert!"
   },
   "test": {
-    "title": "Test Message",
-    "chatId": "Chat ID",
-    "chatIdPlaceholder": "Enter a Telegram chat ID",
-    "message": "Message",
-    "messagePlaceholder": "Type a test message...",
-    "send": "Send Test",
-    "success": "Test message sent!",
-    "error": "Failed to send test message"
+    "title": "Testmelding",
+    "chatId": "Chat-ID",
+    "chatIdPlaceholder": "Skriv inn en Telegram chat-ID",
+    "message": "Melding",
+    "messagePlaceholder": "Skriv en testmelding...",
+    "send": "Send test",
+    "success": "Testmelding sendt!",
+    "error": "Kunne ikke sende testmelding"
   },
-  "save": "Save Settings",
-  "saving": "Saving...",
-  "saved": "Telegram settings saved",
-  "saveError": "Failed to save settings",
+  "save": "Lagre innstillinger",
+  "saving": "Lagrer...",
+  "saved": "Telegram-innstillinger lagret",
+  "saveError": "Kunne ikke lagre innstillinger",
   "disconnect": {
-    "button": "Disconnect Bot",
-    "title": "Disconnect Telegram bot?",
-    "description": "This will remove the bot configuration and stop receiving messages. Existing conversation history will be preserved.",
-    "success": "Telegram bot disconnected",
-    "error": "Failed to disconnect"
+    "button": "Koble fra bot",
+    "title": "Koble fra Telegram-boten?",
+    "description": "Dette fjerner bot-konfigurasjonen og stopper mottak av meldinger. Eksisterende samtalehistorikk beholdes.",
+    "success": "Telegram-bot frakoblet",
+    "error": "Kunne ikke koble fra"
   },
   "qr": {
-    "title": "Connect on Telegram",
-    "description": "Scan this QR code to chat with us on Telegram.",
-    "copyLink": "Copy link",
-    "copied": "Link copied!",
-    "sendEmail": "Send by email",
-    "emailSubject": "Connect with us on Telegram",
-    "emailBody": "Hi {name},\n\nYou can now chat with us on Telegram for updates on your vehicle.\n\nClick this link to connect: {link}\n\nThank you!"
+    "title": "Koble til på Telegram",
+    "description": "Skann denne QR-koden for å chatte med oss på Telegram.",
+    "copyLink": "Kopier lenke",
+    "copied": "Lenke kopiert!",
+    "sendEmail": "Send på e-post",
+    "emailSubject": "Koble til oss på Telegram",
+    "emailBody": "Hei {name},\n\nDu kan nå chatte med oss på Telegram for oppdateringer om kjøretøyet ditt.\n\nKlikk på denne lenken: {link}\n\nTakk!"
   },
   "invoiceQr": {
-    "label": "Show QR code on invoices",
-    "description": "Display a Telegram QR code on shared digital invoices so customers can connect."
-  }
+    "label": "Vis QR-kode på fakturaer",
+    "description": "Vis en Telegram QR-kode på delte digitale fakturaer slik at kunder kan koble til."
+  },
+  "helpLink": "Les mer"
 }

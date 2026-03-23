@@ -1,45 +1,45 @@
 {
   "page": {
-    "featureName": "Telegram Messaging",
-    "featureDescription": "Send and receive Telegram messages with your customers directly from Torqvoice."
+    "featureName": "Telegram Mesajları",
+    "featureDescription": "Torqvoice üzerinden müşterilerinizle doğrudan Telegram mesajları gönderin ve alın."
   },
   "notConfigured": {
-    "title": "Telegram Not Configured",
-    "description": "Set up a Telegram bot to send and receive messages with your customers. Create a bot via @BotFather and configure it in settings.",
-    "goToSettings": "Go to Telegram Settings"
+    "title": "Telegram yapılandırılmadı",
+    "description": "Müşterilerinizle mesaj göndermek ve almak için bir Telegram botu kurun. @BotFather üzerinden bir bot oluşturun ve ayarlarda yapılandırın.",
+    "goToSettings": "Telegram ayarlarına git"
   },
   "threads": {
-    "title": "Conversations",
-    "empty": "No Telegram conversations yet. Customers can start chatting by messaging your bot.",
-    "loadMore": "Load more",
-    "selectConversation": "Select a conversation",
-    "you": "You: ",
-    "deleteConversation": "Delete conversation",
-    "deleteTitle": "Delete conversation?",
-    "deleteDescription": "This will permanently delete all Telegram messages with {name}. This action cannot be undone.",
-    "deleted": "Conversation deleted",
-    "deleteError": "Failed to delete conversation"
+    "title": "Sohbetler",
+    "empty": "Henüz Telegram sohbeti yok. Müşteriler botunuza mesaj göndererek sohbet başlatabilir.",
+    "loadMore": "Daha fazla yükle",
+    "selectConversation": "Bir sohbet seçin",
+    "you": "Siz: ",
+    "deleteConversation": "Sohbeti sil",
+    "deleteTitle": "Sohbet silinsin mi?",
+    "deleteDescription": "{name} ile tüm Telegram mesajları kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
+    "deleted": "Sohbet silindi",
+    "deleteError": "Sohbet silinemedi"
   },
   "conversation": {
-    "notLinked": "This customer hasn't connected to your Telegram bot yet. Share the bot link to connect them.",
-    "loadOlder": "Load older",
-    "empty": "No messages yet. Send the first message to {name}.",
-    "placeholder": "Message {name}...",
-    "deleteMessage": "Delete message",
-    "deleteTitle": "Delete message?",
-    "deleteDescription": "This will permanently delete this message. This action cannot be undone.",
-    "messageDeleted": "Message deleted",
-    "deleteError": "Failed to delete message",
-    "sendError": "Failed to send message"
+    "notLinked": "Bu müşteri henüz Telegram botunuza bağlanmadı. Bağlamak için bot linkini paylaşın.",
+    "loadOlder": "Eskileri yükle",
+    "empty": "Henüz mesaj yok. {name} kişisine ilk mesajı gönderin.",
+    "placeholder": "{name} kişisine mesaj...",
+    "deleteMessage": "Mesajı sil",
+    "deleteTitle": "Mesaj silinsin mi?",
+    "deleteDescription": "Bu mesaj kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
+    "messageDeleted": "Mesaj silindi",
+    "deleteError": "Mesaj silinemedi",
+    "sendError": "Mesaj gönderilemedi"
   },
   "sendDialog": {
-    "send": "Send {label}",
-    "message": "Message",
-    "placeholder": "Type your message...",
-    "characters": "{count} / 4096 characters",
-    "sendTelegram": "Send Message",
-    "messageSent": "Message Sent",
-    "sentTo": "Message sent to {name} via Telegram",
-    "sendError": "Failed to send message"
+    "send": "{label} gönder",
+    "message": "Mesaj",
+    "placeholder": "Mesajınızı yazın...",
+    "characters": "{count} / 4096 karakter",
+    "sendTelegram": "Mesaj gönder",
+    "messageSent": "Mesaj gönderildi",
+    "sentTo": "{name} kişisine Telegram ile mesaj gönderildi",
+    "sendError": "Mesaj gönderilemedi"
   }
 }

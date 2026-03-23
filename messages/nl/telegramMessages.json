@@ -1,45 +1,45 @@
 {
   "page": {
-    "featureName": "Telegram Messaging",
-    "featureDescription": "Send and receive Telegram messages with your customers directly from Torqvoice."
+    "featureName": "Telegram-berichten",
+    "featureDescription": "Verstuur en ontvang Telegram-berichten met je klanten rechtstreeks vanuit Torqvoice."
   },
   "notConfigured": {
-    "title": "Telegram Not Configured",
-    "description": "Set up a Telegram bot to send and receive messages with your customers. Create a bot via @BotFather and configure it in settings.",
-    "goToSettings": "Go to Telegram Settings"
+    "title": "Telegram niet geconfigureerd",
+    "description": "Stel een Telegram-bot in om berichten te versturen en ontvangen met je klanten. Maak een bot aan via @BotFather en configureer in instellingen.",
+    "goToSettings": "Ga naar Telegram-instellingen"
   },
   "threads": {
-    "title": "Conversations",
-    "empty": "No Telegram conversations yet. Customers can start chatting by messaging your bot.",
-    "loadMore": "Load more",
-    "selectConversation": "Select a conversation",
-    "you": "You: ",
-    "deleteConversation": "Delete conversation",
-    "deleteTitle": "Delete conversation?",
-    "deleteDescription": "This will permanently delete all Telegram messages with {name}. This action cannot be undone.",
-    "deleted": "Conversation deleted",
-    "deleteError": "Failed to delete conversation"
+    "title": "Gesprekken",
+    "empty": "Nog geen Telegram-gesprekken. Klanten kunnen een chat starten door een bericht te sturen naar je bot.",
+    "loadMore": "Meer laden",
+    "selectConversation": "Selecteer een gesprek",
+    "you": "Jij: ",
+    "deleteConversation": "Gesprek verwijderen",
+    "deleteTitle": "Gesprek verwijderen?",
+    "deleteDescription": "Dit verwijdert alle Telegram-berichten met {name} permanent. Deze actie kan niet ongedaan worden gemaakt.",
+    "deleted": "Gesprek verwijderd",
+    "deleteError": "Gesprek verwijderen mislukt"
   },
   "conversation": {
-    "notLinked": "This customer hasn't connected to your Telegram bot yet. Share the bot link to connect them.",
-    "loadOlder": "Load older",
-    "empty": "No messages yet. Send the first message to {name}.",
-    "placeholder": "Message {name}...",
-    "deleteMessage": "Delete message",
-    "deleteTitle": "Delete message?",
-    "deleteDescription": "This will permanently delete this message. This action cannot be undone.",
-    "messageDeleted": "Message deleted",
-    "deleteError": "Failed to delete message",
-    "sendError": "Failed to send message"
+    "notLinked": "Deze klant heeft nog geen verbinding gemaakt met je Telegram-bot. Deel de botlink om ze te verbinden.",
+    "loadOlder": "Oudere laden",
+    "empty": "Nog geen berichten. Stuur het eerste bericht naar {name}.",
+    "placeholder": "Bericht aan {name}...",
+    "deleteMessage": "Bericht verwijderen",
+    "deleteTitle": "Bericht verwijderen?",
+    "deleteDescription": "Dit verwijdert dit bericht permanent. Deze actie kan niet ongedaan worden gemaakt.",
+    "messageDeleted": "Bericht verwijderd",
+    "deleteError": "Bericht verwijderen mislukt",
+    "sendError": "Bericht versturen mislukt"
   },
   "sendDialog": {
-    "send": "Send {label}",
-    "message": "Message",
-    "placeholder": "Type your message...",
-    "characters": "{count} / 4096 characters",
-    "sendTelegram": "Send Message",
-    "messageSent": "Message Sent",
-    "sentTo": "Message sent to {name} via Telegram",
-    "sendError": "Failed to send message"
+    "send": "{label} versturen",
+    "message": "Bericht",
+    "placeholder": "Typ je bericht...",
+    "characters": "{count} / 4096 tekens",
+    "sendTelegram": "Bericht versturen",
+    "messageSent": "Bericht verstuurd",
+    "sentTo": "Bericht verstuurd naar {name} via Telegram",
+    "sendError": "Bericht versturen mislukt"
   }
 }

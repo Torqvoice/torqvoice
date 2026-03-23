@@ -1,45 +1,45 @@
 {
   "page": {
-    "featureName": "Telegram Messaging",
-    "featureDescription": "Send and receive Telegram messages with your customers directly from Torqvoice."
+    "featureName": "Mensagens do Telegram",
+    "featureDescription": "Envie e receba mensagens do Telegram com seus clientes diretamente do Torqvoice."
   },
   "notConfigured": {
-    "title": "Telegram Not Configured",
-    "description": "Set up a Telegram bot to send and receive messages with your customers. Create a bot via @BotFather and configure it in settings.",
-    "goToSettings": "Go to Telegram Settings"
+    "title": "Telegram não configurado",
+    "description": "Configure um bot do Telegram para enviar e receber mensagens com seus clientes. Crie um bot pelo @BotFather e configure nas configurações.",
+    "goToSettings": "Ir para configurações do Telegram"
   },
   "threads": {
-    "title": "Conversations",
-    "empty": "No Telegram conversations yet. Customers can start chatting by messaging your bot.",
-    "loadMore": "Load more",
-    "selectConversation": "Select a conversation",
-    "you": "You: ",
-    "deleteConversation": "Delete conversation",
-    "deleteTitle": "Delete conversation?",
-    "deleteDescription": "This will permanently delete all Telegram messages with {name}. This action cannot be undone.",
-    "deleted": "Conversation deleted",
-    "deleteError": "Failed to delete conversation"
+    "title": "Conversas",
+    "empty": "Nenhuma conversa do Telegram ainda. Os clientes podem iniciar um chat enviando uma mensagem ao seu bot.",
+    "loadMore": "Carregar mais",
+    "selectConversation": "Selecionar conversa",
+    "you": "Você: ",
+    "deleteConversation": "Excluir conversa",
+    "deleteTitle": "Excluir conversa?",
+    "deleteDescription": "Isso excluirá permanentemente todas as mensagens do Telegram com {name}. Esta ação não pode ser desfeita.",
+    "deleted": "Conversa excluída",
+    "deleteError": "Falha ao excluir conversa"
   },
   "conversation": {
-    "notLinked": "This customer hasn't connected to your Telegram bot yet. Share the bot link to connect them.",
-    "loadOlder": "Load older",
-    "empty": "No messages yet. Send the first message to {name}.",
-    "placeholder": "Message {name}...",
-    "deleteMessage": "Delete message",
-    "deleteTitle": "Delete message?",
-    "deleteDescription": "This will permanently delete this message. This action cannot be undone.",
-    "messageDeleted": "Message deleted",
-    "deleteError": "Failed to delete message",
-    "sendError": "Failed to send message"
+    "notLinked": "Este cliente ainda não se conectou ao seu bot do Telegram. Compartilhe o link do bot para conectá-lo.",
+    "loadOlder": "Carregar anteriores",
+    "empty": "Nenhuma mensagem ainda. Envie a primeira mensagem para {name}.",
+    "placeholder": "Mensagem para {name}...",
+    "deleteMessage": "Excluir mensagem",
+    "deleteTitle": "Excluir mensagem?",
+    "deleteDescription": "Isso excluirá permanentemente esta mensagem. Esta ação não pode ser desfeita.",
+    "messageDeleted": "Mensagem excluída",
+    "deleteError": "Falha ao excluir mensagem",
+    "sendError": "Falha ao enviar mensagem"
   },
   "sendDialog": {
-    "send": "Send {label}",
-    "message": "Message",
-    "placeholder": "Type your message...",
-    "characters": "{count} / 4096 characters",
-    "sendTelegram": "Send Message",
-    "messageSent": "Message Sent",
-    "sentTo": "Message sent to {name} via Telegram",
-    "sendError": "Failed to send message"
+    "send": "Enviar {label}",
+    "message": "Mensagem",
+    "placeholder": "Digite sua mensagem...",
+    "characters": "{count} / 4096 caracteres",
+    "sendTelegram": "Enviar mensagem",
+    "messageSent": "Mensagem enviada",
+    "sentTo": "Mensagem enviada para {name} via Telegram",
+    "sendError": "Falha ao enviar mensagem"
   }
 }

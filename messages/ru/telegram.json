@@ -1,56 +1,57 @@
 {
-  "title": "Telegram Settings",
-  "description": "Configure your Telegram bot to send and receive messages with customers.",
+  "title": "Настройки Telegram",
+  "description": "Настройте бота Telegram для отправки и получения сообщений с клиентами.",
   "botToken": {
-    "label": "Bot Token",
-    "placeholder": "Enter your bot token from @BotFather",
-    "help": "Create a bot via @BotFather on Telegram to get your token."
+    "label": "Токен бота",
+    "placeholder": "Введите токен от @BotFather",
+    "help": "Создайте бота через @BotFather в Telegram, чтобы получить токен."
   },
   "botUsername": {
-    "label": "Bot Username",
-    "notConnected": "Not connected"
+    "label": "Имя пользователя бота",
+    "notConnected": "Не подключен"
   },
   "webhook": {
-    "label": "Webhook URL",
-    "description": "This URL is automatically configured when you save your bot token."
+    "label": "URL вебхука",
+    "description": "Этот URL настраивается автоматически при сохранении токена бота."
   },
   "deepLink": {
-    "title": "Customer Connection Link",
-    "description": "Share this link with customers so they can connect to your bot. Replace the customer ID placeholder with the actual customer ID.",
-    "copied": "Link copied!"
+    "title": "Ссылка для подключения клиента",
+    "description": "Поделитесь этой ссылкой с клиентами, чтобы они подключились к вашему боту. Замените заполнитель ID клиента на реальный ID.",
+    "copied": "Ссылка скопирована!"
   },
   "test": {
-    "title": "Test Message",
-    "chatId": "Chat ID",
-    "chatIdPlaceholder": "Enter a Telegram chat ID",
-    "message": "Message",
-    "messagePlaceholder": "Type a test message...",
-    "send": "Send Test",
-    "success": "Test message sent!",
-    "error": "Failed to send test message"
+    "title": "Тестовое сообщение",
+    "chatId": "ID чата",
+    "chatIdPlaceholder": "Введите ID чата Telegram",
+    "message": "Сообщение",
+    "messagePlaceholder": "Введите тестовое сообщение...",
+    "send": "Отправить тест",
+    "success": "Тестовое сообщение отправлено!",
+    "error": "Не удалось отправить тестовое сообщение"
   },
-  "save": "Save Settings",
-  "saving": "Saving...",
-  "saved": "Telegram settings saved",
-  "saveError": "Failed to save settings",
+  "save": "Сохранить настройки",
+  "saving": "Сохранение...",
+  "saved": "Настройки Telegram сохранены",
+  "saveError": "Не удалось сохранить настройки",
   "disconnect": {
-    "button": "Disconnect Bot",
-    "title": "Disconnect Telegram bot?",
-    "description": "This will remove the bot configuration and stop receiving messages. Existing conversation history will be preserved.",
-    "success": "Telegram bot disconnected",
-    "error": "Failed to disconnect"
+    "button": "Отключить бота",
+    "title": "Отключить бота Telegram?",
+    "description": "Это удалит конфигурацию бота и прекратит получение сообщений. Существующая история переписки будет сохранена.",
+    "success": "Бот Telegram отключен",
+    "error": "Не удалось отключить"
   },
   "qr": {
-    "title": "Connect on Telegram",
-    "description": "Scan this QR code to chat with us on Telegram.",
-    "copyLink": "Copy link",
-    "copied": "Link copied!",
-    "sendEmail": "Send by email",
-    "emailSubject": "Connect with us on Telegram",
-    "emailBody": "Hi {name},\n\nYou can now chat with us on Telegram for updates on your vehicle.\n\nClick this link to connect: {link}\n\nThank you!"
+    "title": "Подключить Telegram",
+    "description": "Отсканируйте этот QR-код, чтобы общаться с нами в Telegram.",
+    "copyLink": "Копировать ссылку",
+    "copied": "Ссылка скопирована!",
+    "sendEmail": "Отправить по email",
+    "emailSubject": "Свяжитесь с нами в Telegram",
+    "emailBody": "Здравствуйте, {name}!\n\nТеперь вы можете общаться с нами в Telegram для получения обновлений о вашем автомобиле.\n\nНажмите на эту ссылку: {link}\n\nСпасибо!"
   },
   "invoiceQr": {
-    "label": "Show QR code on invoices",
-    "description": "Display a Telegram QR code on shared digital invoices so customers can connect."
-  }
+    "label": "Показывать QR-код на счетах",
+    "description": "Отображать QR-код Telegram на общих цифровых счетах, чтобы клиенты могли подключиться."
+  },
+  "helpLink": "Подробнее"
 }

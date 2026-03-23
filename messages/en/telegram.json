@@ -52,5 +52,6 @@
   "invoiceQr": {
     "label": "Show QR code on invoices",
     "description": "Display a Telegram QR code on shared digital invoices so customers can connect."
-  }
+  },
+  "helpLink": "Learn more"
 }

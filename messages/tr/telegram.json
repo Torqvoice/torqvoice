@@ -1,56 +1,57 @@
 {
-  "title": "Telegram Settings",
-  "description": "Configure your Telegram bot to send and receive messages with customers.",
+  "title": "Telegram Ayarları",
+  "description": "Müşterilerle mesaj göndermek ve almak için Telegram botunuzu yapılandırın.",
   "botToken": {
     "label": "Bot Token",
-    "placeholder": "Enter your bot token from @BotFather",
-    "help": "Create a bot via @BotFather on Telegram to get your token."
+    "placeholder": "@BotFather'dan aldığınız bot tokenini girin",
+    "help": "Tokeninizi almak için Telegram'da @BotFather üzerinden bir bot oluşturun."
   },
   "botUsername": {
-    "label": "Bot Username",
-    "notConnected": "Not connected"
+    "label": "Bot Kullanıcı Adı",
+    "notConnected": "Bağlı değil"
   },
   "webhook": {
-    "label": "Webhook URL",
-    "description": "This URL is automatically configured when you save your bot token."
+    "label": "Webhook URL'si",
+    "description": "Bu URL, bot tokeninizi kaydettiğinizde otomatik olarak yapılandırılır."
   },
   "deepLink": {
-    "title": "Customer Connection Link",
-    "description": "Share this link with customers so they can connect to your bot. Replace the customer ID placeholder with the actual customer ID.",
-    "copied": "Link copied!"
+    "title": "Müşteri Bağlantı Linki",
+    "description": "Müşterilerin botunuza bağlanabilmesi için bu linki paylaşın. Müşteri kimliği yer tutucusunu gerçek müşteri kimliğiyle değiştirin.",
+    "copied": "Link kopyalandı!"
   },
   "test": {
-    "title": "Test Message",
-    "chatId": "Chat ID",
-    "chatIdPlaceholder": "Enter a Telegram chat ID",
-    "message": "Message",
-    "messagePlaceholder": "Type a test message...",
-    "send": "Send Test",
-    "success": "Test message sent!",
-    "error": "Failed to send test message"
+    "title": "Test Mesajı",
+    "chatId": "Sohbet Kimliği",
+    "chatIdPlaceholder": "Telegram sohbet kimliği girin",
+    "message": "Mesaj",
+    "messagePlaceholder": "Test mesajı yazın...",
+    "send": "Test gönder",
+    "success": "Test mesajı gönderildi!",
+    "error": "Test mesajı gönderilemedi"
   },
-  "save": "Save Settings",
-  "saving": "Saving...",
-  "saved": "Telegram settings saved",
-  "saveError": "Failed to save settings",
+  "save": "Ayarları kaydet",
+  "saving": "Kaydediliyor...",
+  "saved": "Telegram ayarları kaydedildi",
+  "saveError": "Ayarlar kaydedilemedi",
   "disconnect": {
-    "button": "Disconnect Bot",
-    "title": "Disconnect Telegram bot?",
-    "description": "This will remove the bot configuration and stop receiving messages. Existing conversation history will be preserved.",
-    "success": "Telegram bot disconnected",
-    "error": "Failed to disconnect"
+    "button": "Botu bağlantısını kes",
+    "title": "Telegram botu bağlantısı kesilsin mi?",
+    "description": "Bu, bot yapılandırmasını kaldıracak ve mesaj almayı durduracaktır. Mevcut sohbet geçmişi korunacaktır.",
+    "success": "Telegram botu bağlantısı kesildi",
+    "error": "Bağlantı kesilemedi"
   },
   "qr": {
-    "title": "Connect on Telegram",
-    "description": "Scan this QR code to chat with us on Telegram.",
-    "copyLink": "Copy link",
-    "copied": "Link copied!",
-    "sendEmail": "Send by email",
-    "emailSubject": "Connect with us on Telegram",
-    "emailBody": "Hi {name},\n\nYou can now chat with us on Telegram for updates on your vehicle.\n\nClick this link to connect: {link}\n\nThank you!"
+    "title": "Telegram'da Bağlan",
+    "description": "Telegram'da bizimle sohbet etmek için bu QR kodunu tarayın.",
+    "copyLink": "Bağlantıyı kopyala",
+    "copied": "Bağlantı kopyalandı!",
+    "sendEmail": "E-posta ile gönder",
+    "emailSubject": "Telegram'da bizimle bağlanın",
+    "emailBody": "Merhaba {name},\n\nArtık aracınızla ilgili güncellemeler için Telegram'da bizimle sohbet edebilirsiniz.\n\nBu bağlantıya tıklayın: {link}\n\nTeşekkürler!"
   },
   "invoiceQr": {
-    "label": "Show QR code on invoices",
-    "description": "Display a Telegram QR code on shared digital invoices so customers can connect."
-  }
+    "label": "Faturalarda QR kodu göster",
+    "description": "Müşterilerin bağlanabilmesi için paylaşılan dijital faturalarda bir Telegram QR kodu görüntüleyin."
+  },
+  "helpLink": "Daha fazla bilgi"
 }
