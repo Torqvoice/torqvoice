@@ -143,6 +143,7 @@
       "type": "Typ",
       "status": "Status",
       "mileage": "Przebieg",
+      "mileageBoat": "Godziny Pracy",
       "technician": "Technik",
       "files": "Pliki",
       "total": "Suma"

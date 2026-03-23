@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { db } from "@/lib/db";
 
 export default async function PortalVehicleDetailPage({
   params,
@@ -16,7 +17,14 @@ export default async function PortalVehicleDetailPage({
 }) {
   const { orgId, vehicleId } = await params;
   const t = await getTranslations('portal.vehicles');
-  const result = await getPortalVehicleDetail(vehicleId);
+  const [result, serviceTypeSetting] = await Promise.all([
+    getPortalVehicleDetail(vehicleId),
+    db.appSetting.findUnique({
+      where: { organizationId_key: { organizationId: orgId, key: "workshop.serviceType" } },
+      select: { value: true },
+    }),
+  ]);
+  const serviceType = (serviceTypeSetting?.value || "automotive") as "automotive" | "boat";
 
   if (!result.success || !result.data) {
     return (
@@ -47,10 +55,10 @@ export default async function PortalVehicleDetailPage({
               {v.year} {v.make} {v.model}
             </h1>
             <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
-              {v.licensePlate && <span>{t('plate', { plate: v.licensePlate })}</span>}
-              {v.vin && <span>{t('vin', { vin: v.vin })}</span>}
+              {v.licensePlate && <span>{serviceType === 'boat' ? `Reg: ${v.licensePlate}` : t('plate', { plate: v.licensePlate })}</span>}
+              {v.vin && <span>{serviceType === 'boat' ? `HIN: ${v.vin}` : t('vin', { vin: v.vin })}</span>}
               {v.mileage > 0 && (
-                <span>{v.mileage.toLocaleString()} mi</span>
+                <span>{serviceType === 'boat' ? `${v.mileage.toLocaleString()} hrs` : `${v.mileage.toLocaleString()} mi`}</span>
               )}
               {v.color && <span>{v.color}</span>}
             </div>

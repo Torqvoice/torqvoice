@@ -83,6 +83,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useTranslations } from 'next-intl'
+import { useServiceType } from '@/components/service-type-context'
 
 interface CustomerOption {
   id: string
@@ -202,7 +203,6 @@ export function VehicleDetailClient({
   serviceRecordType,
   currencyCode = 'USD',
   unitSystem = 'imperial',
-  serviceType = 'automotive',
   predictionData,
   inspections,
   inspectionTemplates,
@@ -217,7 +217,6 @@ export function VehicleDetailClient({
   serviceRecordType: string
   currencyCode?: string
   unitSystem?: 'metric' | 'imperial'
-  serviceType?: 'automotive' | 'boat'
   predictionData?: {
     predictedMileage: number
     avgPerDay: number
@@ -240,6 +239,7 @@ export function VehicleDetailClient({
   quotes?: QuoteRecord[]
   aiEnabled?: boolean
 }) {
+  const serviceType = useServiceType()
   const isBoat = serviceType === 'boat'
   const distUnit = isBoat ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
@@ -1350,7 +1350,6 @@ export function VehicleDetailClient({
         onOpenChange={setShowEditForm}
         vehicle={vehicle}
         customers={customers}
-        serviceType={serviceType}
       />
       <NoteForm
         vehicleId={vehicle.id}

@@ -7,6 +7,7 @@ import "@/features/vehicles/Components/invoice-pdf/fonts.client";
 import { InvoicePDF } from "@/features/vehicles/Components/InvoicePDF";
 import { QuotePDF } from "@/features/quotes/Components/QuotePDF";
 import type { InvoiceLayoutPreviewProps } from "./InvoiceLayoutPreview";
+import { useServiceType } from "@/components/service-type-context";
 
 // ---------------------------------------------------------------------------
 // Dummy data matching InvoiceData type exactly
@@ -197,15 +198,27 @@ export function InvoiceLayoutPreviewRenderer({
   logoUrl,
 }: InvoiceLayoutPreviewProps) {
   const messages = useMessages();
+  const serviceType = useServiceType();
 
   const labels = useMemo(() => {
     const pdf = (messages?.pdf ?? {}) as Record<string, Record<string, string>>;
     const namespace = documentType === "quote" ? "quote" : "invoice";
-    return {
+    const baseLabels = {
       ...(pdf[namespace] ?? {}),
       ...(pdf.common ?? {}),
     };
-  }, [messages, documentType]);
+    // Override labels for boat service type
+    if (serviceType === "boat") {
+      const ns = pdf[namespace] ?? {};
+      if (ns.mileageBoat) baseLabels.mileage = ns.mileageBoat;
+      if (ns.vinBoat) baseLabels.vin = ns.vinBoat;
+      if (ns.plateBoat) baseLabels.plate = ns.plateBoat;
+      if (ns.vehicleBoat) baseLabels.vehicle = ns.vehicleBoat;
+      baseLabels.km = "hrs";
+      baseLabels.mi = "hrs";
+    }
+    return baseLabels;
+  }, [messages, documentType, serviceType]);
 
   const dummyCf = useMemo(
     () => buildDummyCustomFields(customFields),

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useServiceType } from "@/components/service-type-context";
 import { Building2, Car, Mail, MapPin, Phone, Users } from "lucide-react";
 import { CustomFieldsForm } from "@/features/custom-fields/Components/CustomFieldsForm";
 import type { Vehicle } from "./types";
@@ -22,6 +23,7 @@ export function ServiceSidebar({
   mileage,
 }: ServiceSidebarProps) {
   const t = useTranslations("service.sidebar");
+  const serviceType = useServiceType();
   return (
     <>
       {/* Vehicle Info */}
@@ -37,11 +39,11 @@ export function ServiceSidebar({
           <p className="font-mono text-xs text-muted-foreground">{vehicle.licensePlate}</p>
         )}
         {vehicle.vin && (
-          <p className="font-mono text-xs text-muted-foreground">{t("vin", { vin: vehicle.vin })}</p>
+          <p className="font-mono text-xs text-muted-foreground">{serviceType === 'boat' ? `HIN: ${vehicle.vin}` : t("vin", { vin: vehicle.vin })}</p>
         )}
         {mileage && (
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {t("mileageAtService", { mileage: mileage.toLocaleString(), unit: distUnit })}
+            {serviceType === 'boat' ? t("engineHoursAtService", { mileage: mileage.toLocaleString(), unit: distUnit }) : t("mileageAtService", { mileage: mileage.toLocaleString(), unit: distUnit })}
           </p>
         )}
       </div>

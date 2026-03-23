@@ -36,6 +36,7 @@
     "date": "Datum",
     "type": "Type",
     "mileage": "Kilometerstand",
+    "mileageBoat": "Motoruren",
     "status": "Status",
     "technician": "Technicus",
     "invoiceNumber": "Factuurnummer",
@@ -195,6 +196,7 @@
     "customer": "Klant",
     "vin": "VIN: {vin}",
     "mileageAtService": "Kilometerstand bij service: {mileage} {unit}",
+    "engineHoursAtService": "Motoruren bij service: {mileage} {unit}",
     "sharedLink": {
       "title": "Gedeelde link",
       "sharedOn": "Gedeeld op {date}",

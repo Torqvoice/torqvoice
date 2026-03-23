@@ -40,6 +40,7 @@
       "plate": "Plaka",
       "vehicle": "Araç",
       "mileage": "Kilometre",
+      "mileageBoat": "Motor Saatleri",
       "services": "Servisler"
     },
     "noVehicles": "Bu müşteriye atanmış araç yok"

@@ -63,6 +63,7 @@ export default async function PublicInspectionPage({
             "workshop.currencyCode",
             "workshop.dateFormat",
             "workshop.timezone",
+            "workshop.serviceType",
             "invoice.primaryColor",
             "portal.enabled",
           ],
@@ -141,6 +142,7 @@ export default async function PublicInspectionPage({
       hasExistingQuoteRequest={!!existingRequest}
       quoteShareUrl={quoteShareUrl}
       portalUrl={portalUrl}
+      serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "boat"}
     />
   );
 }

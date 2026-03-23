@@ -17,6 +17,7 @@ import { Check, ChevronsUpDown, Loader2, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useServiceType } from "@/components/service-type-context";
 import { createInspection } from "../Actions/inspectionActions";
 import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
 
@@ -46,6 +47,7 @@ export function NewInspectionDialog({
   preselectedVehicleId?: string;
 }) {
   const router = useRouter();
+  const serviceType = useServiceType();
   const [isPending, startTransition] = useTransition();
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
   const [loadingVehicles, setLoadingVehicles] = useState(false);
@@ -193,12 +195,12 @@ export function NewInspectionDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Mileage (optional)</Label>
+            <Label>{serviceType === 'boat' ? 'Engine Hours' : 'Mileage'} (optional)</Label>
             <Input
               type="number"
               value={mileage}
               onChange={(e) => setMileage(e.target.value)}
-              placeholder="Current mileage"
+              placeholder={serviceType === 'boat' ? "Current engine hours" : "Current mileage"}
               min={0}
             />
           </div>

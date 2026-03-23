@@ -12,6 +12,7 @@ import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { OnlineTracker } from "@/components/online-tracker";
 import { InstallBanner } from "@/components/pwa-install-prompt";
+import { ServiceTypeProvider } from "@/components/service-type-context";
 import { db } from "@/lib/db";
 
 export default async function DashboardLayout({
@@ -76,6 +77,7 @@ export default async function DashboardLayout({
   }
 
   return (
+    <ServiceTypeProvider serviceType={data.serviceType}>
     <WhiteLabelCtaProvider show={showWhiteLabelCta}>
     <SidebarProvider
       style={
@@ -110,5 +112,6 @@ export default async function DashboardLayout({
       </DateSettingsProvider>
     </SidebarProvider>
     </WhiteLabelCtaProvider>
+    </ServiceTypeProvider>
   );
 }

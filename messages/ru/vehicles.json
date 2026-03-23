@@ -143,6 +143,7 @@
       "type": "Тип",
       "status": "Статус",
       "mileage": "Пробег",
+      "mileageBoat": "Моточасы",
       "technician": "Механик",
       "files": "Файлы",
       "total": "Итого"

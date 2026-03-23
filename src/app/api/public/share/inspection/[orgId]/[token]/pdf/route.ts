@@ -66,6 +66,17 @@ export async function GET(
     const settingsMap: Record<string, string> = {};
     for (const s of settings) settingsMap[s.key] = s.value;
 
+    // Override labels for boat service type
+    const serviceType = settingsMap["workshop.serviceType"] || "automotive";
+    if (serviceType === "boat") {
+      if (pdfMessages.inspection.mileageBoat) labels.mileage = pdfMessages.inspection.mileageBoat;
+      if (pdfMessages.inspection.vinBoat) labels.vin = pdfMessages.inspection.vinBoat;
+      if (pdfMessages.inspection.plateBoat) labels.plate = pdfMessages.inspection.plateBoat;
+      if (pdfMessages.inspection.vehicleBoat) labels.vehicle = pdfMessages.inspection.vehicleBoat;
+      if (pdfMessages.inspection.titleBoat) labels.title = pdfMessages.inspection.titleBoat;
+      if (pdfMessages.inspection.footerTextBoat) labels.footerText = pdfMessages.inspection.footerTextBoat;
+    }
+
     let logoDataUri: string | undefined;
     const logoPath = settingsMap["workshop.logo"];
     if (logoPath) {

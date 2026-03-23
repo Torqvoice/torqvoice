@@ -46,6 +46,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useServiceType } from '@/components/service-type-context'
 
 interface Vehicle {
   id: string
@@ -89,7 +90,6 @@ export function VehiclesClient({
   initialView = 'table',
   isArchived = false,
   archivedCount = 0,
-  serviceType = 'automotive',
 }: {
   data: PaginatedData
   customers: CustomerOption[]
@@ -97,8 +97,8 @@ export function VehiclesClient({
   initialView?: 'table' | 'grid' | 'grid6'
   isArchived?: boolean
   archivedCount?: number
-  serviceType?: 'automotive' | 'boat'
 }) {
+  const serviceType = useServiceType()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -488,7 +488,6 @@ export function VehiclesClient({
         }}
         vehicle={editVehicle ?? undefined}
         customers={customers}
-        serviceType={serviceType}
       />
 
       <ArchiveVehicleDialog

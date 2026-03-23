@@ -95,6 +95,7 @@ export default async function PublicInvoicePage({
             "payment.termsOfSaleUrl",
             "workshop.dateFormat",
             "workshop.timezone",
+            "workshop.serviceType",
             "portal.enabled",
             "invoice.layoutConfig",
             "telegram.botUsername",
@@ -210,6 +211,7 @@ export default async function PublicInvoicePage({
       layoutConfig={layoutConfig}
       customFields={customFields}
       telegramBotLink={telegramBotLink}
+      serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "boat"}
     />
   );
 }

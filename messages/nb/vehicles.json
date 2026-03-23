@@ -143,6 +143,7 @@
       "type": "Type",
       "status": "Status",
       "mileage": "Kilometerstand",
+      "mileageBoat": "Motortimer",
       "technician": "Mekaniker",
       "files": "Filer",
       "total": "Totalt"

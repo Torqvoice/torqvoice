@@ -39,6 +39,7 @@ import { Camera, Check, ChevronsUpDown, Loader2, Plus, X } from "lucide-react";
 import { compressImage } from "@/lib/compress-image";
 import { CustomerForm } from "@/features/customers/Components/CustomerForm";
 import { useTranslations } from "next-intl";
+import { useServiceType } from "@/components/service-type-context";
 import type { CreateVehicleInput } from "../Schema/vehicleSchema";
 
 interface VehicleFormProps {
@@ -60,10 +61,10 @@ interface VehicleFormProps {
     customerId?: string | null;
   };
   customers?: { id: string; name: string; company: string | null }[];
-  serviceType?: "automotive" | "boat";
 }
 
-export function VehicleForm({ open, onOpenChange, vehicle, customers, serviceType = "automotive" }: VehicleFormProps) {
+export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleFormProps) {
+  const serviceType = useServiceType();
   const isBoat = serviceType === "boat";
   const router = useRouter();
   const modal = useGlassModal();

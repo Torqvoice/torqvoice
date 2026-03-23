@@ -192,6 +192,7 @@ export function InvoiceView({
   layoutConfig,
   customFields = [],
   telegramBotLink,
+  serviceType = "automotive",
 }: {
   record: InvoiceRecord
   workshop: { name: string; address: string; phone: string; email: string }
@@ -214,6 +215,7 @@ export function InvoiceView({
   layoutConfig?: InvoiceLayoutConfig
   customFields?: CustomField[]
   telegramBotLink?: string
+  serviceType?: "automotive" | "boat"
 }) {
   const t = useTranslations('share.invoice')
   const tc = useTranslations('share.common')
@@ -722,9 +724,9 @@ export function InvoiceView({
                     if (!show(fid)) return null
                     switch (fid) {
                       case 'vehicle_name': return <p key={fid} className="font-semibold">{vehicleName}</p>
-                      case 'vin': return record.vehicle.vin ? <p key={fid} className="text-sm text-gray-500">{t('vin', { vin: record.vehicle.vin })}</p> : null
-                      case 'license_plate': return record.vehicle.licensePlate ? <p key={fid} className="text-sm text-gray-500">{t('plate', { plate: record.vehicle.licensePlate })}</p> : null
-                      case 'mileage': return record.vehicle.mileage > 0 ? <p key={fid} className="text-sm text-gray-500">{record.vehicle.mileage}</p> : null
+                      case 'vin': return record.vehicle.vin ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'boat' ? `HIN: ${record.vehicle.vin}` : t('vin', { vin: record.vehicle.vin })}</p> : null
+                      case 'license_plate': return record.vehicle.licensePlate ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'boat' ? `Reg: ${record.vehicle.licensePlate}` : t('plate', { plate: record.vehicle.licensePlate })}</p> : null
+                      case 'mileage': return record.vehicle.mileage > 0 ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'boat' ? `Engine Hours: ${record.vehicle.mileage.toLocaleString()}` : record.vehicle.mileage.toLocaleString()}</p> : null
                       default: return null
                     }
                   }

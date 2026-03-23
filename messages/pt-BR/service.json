@@ -36,6 +36,7 @@
     "date": "Data",
     "type": "Tipo",
     "mileage": "Quilometragem",
+    "mileageBoat": "Horas de Motor",
     "status": "Status",
     "technician": "Técnico",
     "invoiceNumber": "Número da Fatura",
@@ -195,6 +196,7 @@
     "customer": "Cliente",
     "vin": "VIN: {vin}",
     "mileageAtService": "Quilometragem no serviço: {mileage} {unit}",
+    "engineHoursAtService": "Horas de motor no serviço: {mileage} {unit}",
     "sharedLink": {
       "title": "Link compartilhado",
       "sharedOn": "Compartilhado em {date}",

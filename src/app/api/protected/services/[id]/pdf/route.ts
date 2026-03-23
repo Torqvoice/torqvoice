@@ -98,6 +98,18 @@ export async function GET(
     const settingsMap: Record<string, string> = {};
     for (const s of settings) settingsMap[s.key] = s.value;
 
+    // Override labels for boat service type
+    const serviceType = settingsMap["workshop.serviceType"] || "automotive";
+    if (serviceType === "boat") {
+      if (pdfMessages.invoice.mileageBoat) labels.mileage = pdfMessages.invoice.mileageBoat;
+      if (pdfMessages.invoice.vinBoat) labels.vin = pdfMessages.invoice.vinBoat;
+      if (pdfMessages.invoice.plateBoat) labels.plate = pdfMessages.invoice.plateBoat;
+      if (pdfMessages.invoice.vehicleBoat) labels.vehicle = pdfMessages.invoice.vehicleBoat;
+      // Override unit labels for engine hours
+      labels.km = "hrs";
+      labels.mi = "hrs";
+    }
+
     // Load image attachments as base64 data URIs for PDF embedding
     const imageAttachments: { fileName: string; dataUri: string; description?: string }[] = [];
     const otherAttachments: { fileName: string; fileType: string }[] = [];

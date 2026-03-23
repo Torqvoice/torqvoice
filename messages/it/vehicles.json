@@ -143,6 +143,7 @@
       "type": "Tipo",
       "status": "Stato",
       "mileage": "Chilometraggio",
+      "mileageBoat": "Ore Motore",
       "technician": "Tecnico",
       "files": "File",
       "total": "Totale"

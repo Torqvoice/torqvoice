@@ -143,6 +143,7 @@
       "type": "Tür",
       "status": "Durum",
       "mileage": "Kilometre",
+      "mileageBoat": "Motor Saatleri",
       "technician": "Teknisyen",
       "files": "Dosyalar",
       "total": "Toplam"
