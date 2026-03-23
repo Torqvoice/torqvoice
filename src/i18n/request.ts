@@ -67,6 +67,8 @@ export default getRequestConfig(async () => {
   const audit = (await import(`../../messages/${locale}/audit.json`)).default
   const aiChat = (await import(`../../messages/${locale}/aiChat.json`)).default
   const laborPresets = (await import(`../../messages/${locale}/laborPresets.json`)).default
+  const telegram = (await import(`../../messages/${locale}/telegram.json`)).default
+  const telegramMessages = (await import(`../../messages/${locale}/telegramMessages.json`)).default
 
   return {
     locale,
@@ -96,6 +98,8 @@ export default getRequestConfig(async () => {
       audit,
       aiChat,
       laborPresets,
+      telegram,
+      telegramMessages,
     },
   }
 })

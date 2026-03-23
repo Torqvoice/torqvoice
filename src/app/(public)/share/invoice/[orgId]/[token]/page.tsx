@@ -97,6 +97,8 @@ export default async function PublicInvoicePage({
             "workshop.timezone",
             "portal.enabled",
             "invoice.layoutConfig",
+            "telegram.showQrOnInvoice",
+            "telegram.botUsername",
           ],
         },
       },
@@ -183,6 +185,10 @@ export default async function PublicInvoicePage({
     ? `${appUrl}/portal/${portalSlug || orgId}`
     : undefined;
 
+  const telegramBotUsername = settingsMap["telegram.botUsername"] || "";
+  const showTelegramQr = settingsMap["telegram.showQrOnInvoice"] === "true" && !!telegramBotUsername;
+  const telegramBotLink = showTelegramQr ? `https://t.me/${telegramBotUsername}` : undefined;
+
   return (
     <InvoiceView
       record={publicRecord}
@@ -205,6 +211,7 @@ export default async function PublicInvoicePage({
       portalUrl={portalUrl}
       layoutConfig={layoutConfig}
       customFields={customFields}
+      telegramBotLink={telegramBotLink}
     />
   );
 }

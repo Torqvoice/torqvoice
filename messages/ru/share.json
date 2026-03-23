@@ -151,6 +151,8 @@
     "poweredBy": "Работает на",
     "termsOfSale": "Условия продажи",
     "portalMessage": "Просматривайте свои транспортные средства, счета и многое другое на вашем",
-    "customerPortal": "портале клиента"
+    "customerPortal": "портале клиента",
+    "telegramConnect": "Chat with us on Telegram",
+    "telegramScan": "Scan this QR code to message us on Telegram for updates and support."
   }
 }

@@ -52,6 +52,7 @@ import {
   Globe,
   Layers,
   MessageSquare,
+  Send,
   LayoutDashboard,
   Loader2,
   LogOut,
@@ -109,7 +110,8 @@ export function AppSidebar({
 
   const clientItems = [
     { titleKey: 'sidebar.customers' as const, url: '/customers', icon: Users, subject: 'customers' },
-    { titleKey: 'sidebar.messages' as const, url: '/messages', icon: MessageSquare, subject: 'customers' },
+    ...(features?.sms ? [{ titleKey: 'sidebar.smsMessages' as const, url: '/messages', icon: MessageSquare, subject: 'customers' }] : []),
+    ...(features?.telegram ? [{ titleKey: 'sidebar.telegram' as const, url: '/telegram', icon: Send, subject: 'customers' }] : []),
   ].filter((item) => canAccess(item.subject))
 
   const workshopItems = [

@@ -29,6 +29,7 @@ import {
   Pencil,
   Phone,
   Plus,
+  Send,
   Users,
   Wrench,
   X,
@@ -36,9 +37,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { SmsConversation } from "@/features/sms/Components/SmsConversation";
+import { TelegramConversation } from "@/features/telegram/Components/TelegramConversation";
 import { CustomerForm } from "@/features/customers/Components/CustomerForm";
 import { updateServiceRequest, createWorkOrderFromRequest } from "@/features/customers/Actions/customerActions";
 import { SendSmsDialog } from "@/features/sms/Components/SendSmsDialog";
+import { TelegramQrCode } from "@/features/telegram/Components/TelegramQrCode";
 import { toast } from "sonner";
 
 interface ServiceRequestItem {
@@ -87,12 +90,22 @@ export function CustomerDetailClient({
   smsEnabled = false,
   smsMessages = [],
   smsNextCursor = null,
+  telegramEnabled = false,
+  telegramBotUsername = null,
+  telegramMessages = [],
+  telegramNextCursor = null,
+  telegramChatId = null,
 }: {
   customer: CustomerDetail;
   unitSystem?: "metric" | "imperial";
   smsEnabled?: boolean;
   smsMessages?: SmsMessage[];
   smsNextCursor?: string | null;
+  telegramEnabled?: boolean;
+  telegramBotUsername?: string | null;
+  telegramMessages?: { id: string; direction: string; body: string; status: string; createdAt: string | Date; chatId: string }[];
+  telegramNextCursor?: string | null;
+  telegramChatId?: string | null;
 }) {
   const t = useTranslations("customers.detail");
   const router = useRouter();
@@ -101,13 +114,17 @@ export function CustomerDetailClient({
 
   const tabParam = searchParams.get("tab");
   const activeTab =
-    tabParam === "messages" && smsEnabled
-      ? "messages"
-      : tabParam === "requests"
-        ? "requests"
-        : "vehicles";
+    tabParam === "sms" && smsEnabled
+      ? "sms"
+      : tabParam === "telegram" && telegramEnabled
+        ? "telegram"
+        : tabParam === "messages" && smsEnabled
+          ? "sms"
+          : tabParam === "requests"
+            ? "requests"
+            : "vehicles";
 
-  const setActiveTab = (tab: "vehicles" | "messages" | "requests") => {
+  const setActiveTab = (tab: "vehicles" | "sms" | "telegram" | "requests") => {
     const params = new URLSearchParams(searchParams.toString());
     if (tab === "vehicles") {
       params.delete("tab");
@@ -186,10 +203,20 @@ export function CustomerDetailClient({
               </p>
             )}
           </div>
-          <Button variant="outline" size="sm" onClick={() => setShowEditForm(true)}>
-            <Pencil className="mr-1 h-3.5 w-3.5" />
-            {t("editCustomer")}
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            {telegramBotUsername && (
+              <TelegramQrCode
+                botUsername={telegramBotUsername}
+                customerId={customer.id}
+                customerName={customer.name}
+                customerEmail={customer.email}
+              />
+            )}
+            <Button variant="outline" size="sm" onClick={() => setShowEditForm(true)}>
+              <Pencil className="mr-1 h-3.5 w-3.5" />
+              {t("editCustomer")}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -212,16 +239,31 @@ export function CustomerDetailClient({
           {smsEnabled && (
             <button
               type="button"
-              onClick={() => setActiveTab("messages")}
+              onClick={() => setActiveTab("sms")}
               className={cn(
                 "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors",
-                activeTab === "messages"
+                activeTab === "sms"
                   ? "border-primary text-primary"
                   : "border-transparent text-muted-foreground hover:text-foreground",
               )}
             >
               <MessageSquare className="h-4 w-4" />
-              {t("tabs.messages")}
+              {t("tabs.sms")}
+            </button>
+          )}
+          {telegramEnabled && (
+            <button
+              type="button"
+              onClick={() => setActiveTab("telegram")}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors",
+                activeTab === "telegram"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <Send className="h-4 w-4" />
+              {t("tabs.telegram")}
             </button>
           )}
           {(customer.serviceRequests?.length ?? 0) > 0 && (
@@ -289,7 +331,7 @@ export function CustomerDetailClient({
           </>
         )}
 
-        {activeTab === "messages" && smsEnabled && (
+        {activeTab === "sms" && smsEnabled && (
           <Card>
             <CardContent className="p-0">
               <SmsConversation
@@ -298,6 +340,20 @@ export function CustomerDetailClient({
                 customerPhone={customer.phone}
                 initialMessages={smsMessages}
                 initialNextCursor={smsNextCursor}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === "telegram" && telegramEnabled && (
+          <Card>
+            <CardContent className="p-0">
+              <TelegramConversation
+                customerId={customer.id}
+                customerName={customer.name}
+                telegramChatId={telegramChatId}
+                initialMessages={telegramMessages}
+                initialNextCursor={telegramNextCursor}
               />
             </CardContent>
           </Card>

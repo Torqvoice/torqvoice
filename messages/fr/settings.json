@@ -58,6 +58,10 @@
         "title": "SMS",
         "description": "Fournisseur SMS et messagerie"
       },
+      "telegram": {
+        "title": "Telegram",
+        "description": "Telegram bot & messaging"
+      },
       "customerPortal": {
         "title": "Portail client",
         "description": "Portail libre-service client"

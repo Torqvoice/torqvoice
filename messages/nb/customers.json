@@ -32,7 +32,9 @@
     "tabs": {
       "vehicles": "Kjøretøy ({count})",
       "messages": "Meldinger",
-      "requests": "Forespørsler ({count})"
+      "requests": "Forespørsler ({count})",
+      "sms": "SMS",
+      "telegram": "Telegram"
     },
     "vehicleTable": {
       "plate": "Registreringsnummer",

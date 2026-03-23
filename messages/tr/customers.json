@@ -32,7 +32,9 @@
     "tabs": {
       "vehicles": "Araçlar ({count})",
       "messages": "Mesajlar",
-      "requests": "Talepler ({count})"
+      "requests": "Talepler ({count})",
+      "sms": "SMS",
+      "telegram": "Telegram"
     },
     "vehicleTable": {
       "plate": "Plaka",

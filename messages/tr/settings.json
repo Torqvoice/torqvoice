@@ -58,6 +58,10 @@
         "title": "SMS",
         "description": "SMS sağlayıcı & mesajlaşma"
       },
+      "telegram": {
+        "title": "Telegram",
+        "description": "Telegram bot & messaging"
+      },
       "customerPortal": {
         "title": "Müşteri Portalı",
         "description": "Müşteri self-servis portalı"

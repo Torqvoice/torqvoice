@@ -130,27 +130,27 @@ model Passkey {
 }
 
 model Vehicle {
-  id                     String    @id @default(cuid())
+  id                     String               @id @default(cuid())
   make                   String
   model                  String
   year                   Int
   vin                    String?
   licensePlate           String?
   color                  String?
-  mileage                Int       @default(0)
-  fuelType               String?   @default("gasoline")
-  transmission           String?   @default("automatic")
+  mileage                Int                  @default(0)
+  fuelType               String?              @default("gasoline")
+  transmission           String?              @default("automatic")
   engineSize             String?
   purchaseDate           DateTime?
   purchasePrice          Float?
   imageUrl               String?
-  isArchived             Boolean   @default(false)
+  isArchived             Boolean              @default(false)
   archiveReason          String?
-  maintenanceDismissed   Boolean   @default(false)
+  maintenanceDismissed   Boolean              @default(false)
   maintenanceDismissedAt DateTime?
-  aiMessages AiGeneratedMessage[]
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  aiMessages             AiGeneratedMessage[]
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -277,15 +277,16 @@ model Reminder {
 }
 
 model Customer {
-  id        String   @id @default(cuid())
-  name      String
-  email     String?
-  phone     String?
-  address   String?
-  company   String?
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  email          String?
+  phone          String?
+  address        String?
+  company        String?
+  notes          String?
+  telegramChatId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -296,6 +297,7 @@ model Customer {
   vehicles         Vehicle[]
   quotes           Quote[]
   smsMessages      SmsMessage[]
+  telegramMessages TelegramMessage[]
   customerSessions CustomerSession[]
   serviceRequests  ServiceRequest[]
 
@@ -369,15 +371,15 @@ model ServiceLabor {
 }
 
 model LaborPreset {
-  id             String   @id @default(cuid())
+  id             String            @id @default(cuid())
   name           String
   description    String?
-  isArchived     Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  isArchived     Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   userId         String
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   items          LaborPresetItem[]
 
   @@index([organizationId])
@@ -385,11 +387,11 @@ model LaborPreset {
 }
 
 model LaborPresetItem {
-  id          String @id @default(cuid())
+  id          String      @id @default(cuid())
   description String
-  hours       Float  @default(0)
-  rate        Float  @default(0)
-  sortOrder   Int    @default(0)
+  hours       Float       @default(0)
+  rate        Float       @default(0)
+  sortOrder   Int         @default(0)
   presetId    String
   preset      LaborPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
 
@@ -583,6 +585,7 @@ model Organization {
   invitations            TeamInvitation[]
   inspectionTemplates    InspectionTemplate[]
   smsMessages            SmsMessage[]
+  telegramMessages       TelegramMessage[]
   technicians            Technician[]
   auditLogs              AuditLog[]
 
@@ -913,6 +916,30 @@ model SmsMessage {
   @@map("sms_messages")
 }
 
+model TelegramMessage {
+  id                String   @id @default(cuid())
+  direction         String // "inbound" | "outbound"
+  chatId            String // Telegram chat ID
+  body              String
+  status            String   @default("queued") // queued | sent | delivered | failed | received
+  telegramMessageId String? // Telegram's message ID for tracking
+  errorMessage      String?
+  relatedEntityType String?
+  relatedEntityId   String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, customerId, createdAt(sort: Desc)])
+  @@index([organizationId, chatId, createdAt(sort: Desc)])
+  @@map("telegram_messages")
+}
+
 model Technician {
   id            String  @id @default(cuid())
   name          String
@@ -937,21 +964,21 @@ model Technician {
 }
 
 model AuditLog {
-  id              String   @id @default(cuid())
-  timestamp       DateTime @default(now())
-  action          String
-  entity          String?
-  entityId        String?
-  message         String?
-  metadata        Json?
-  ip              String?
-  userAgent       String?
+  id        String   @id @default(cuid())
+  timestamp DateTime @default(now())
+  action    String
+  entity    String?
+  entityId  String?
+  message   String?
+  metadata  Json?
+  ip        String?
+  userAgent String?
 
-  userId          String?
-  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  organizationId  String?
-  organization    Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
 
   @@index([organizationId, timestamp(sort: Desc)])
   @@index([userId, timestamp(sort: Desc)])
@@ -1010,7 +1037,7 @@ model ServiceRequest {
 model AiGeneratedMessage {
   id        String   @id @default(cuid())
   vehicleId String
-  type      String   // "summary" | "common_issues" | etc.
+  type      String // "summary" | "common_issues" | etc.
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1038,7 +1065,7 @@ model AiChat {
 
 model AiChatMessage {
   id        String   @id @default(cuid())
-  role      String   // "user" | "assistant"
+  role      String // "user" | "assistant"
   content   String
   createdAt DateTime @default(now())
 

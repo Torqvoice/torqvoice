@@ -3,8 +3,10 @@ import { getCustomer } from "@/features/customers/Actions/customerActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getConversation } from "@/features/sms/Actions/smsActions";
+import { getTelegramConversation } from "@/features/telegram/Actions/telegramActions";
 import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures } from "@/lib/features";
+import { getOrgTelegramBotUsername } from "@/lib/telegram";
 import { CustomerDetailClient } from "./customer-detail-client";
 import { PageHeader } from "@/components/page-header";
 
@@ -34,20 +36,34 @@ export default async function CustomerDetailPage({
     );
   }
 
-  // Load SMS features and conversation if SMS is enabled
+  // Load SMS/Telegram features and conversation if enabled
   let smsEnabled = false;
+  let telegramBotUsername: string | null = null;
+  let telegramEnabled = false;
   let smsMessages: { id: string; direction: string; body: string; status: string; createdAt: string | Date; fromNumber: string; toNumber: string }[] = [];
   let smsNextCursor: string | null = null;
+  let telegramMessages: { id: string; direction: string; body: string; status: string; createdAt: string | Date; chatId: string }[] = [];
+  let telegramNextCursor: string | null = null;
 
   if (layoutData.status === "ok") {
     const features = await getFeatures(layoutData.organizationId);
     smsEnabled = features.sms;
+    telegramEnabled = features.telegram;
 
     if (smsEnabled && result.data.phone) {
       const convResult = await getConversation(id);
       if (convResult.success && convResult.data) {
         smsMessages = convResult.data.messages;
         smsNextCursor = convResult.data.nextCursor;
+      }
+    }
+
+    if (telegramEnabled) {
+      telegramBotUsername = await getOrgTelegramBotUsername(layoutData.organizationId);
+      const tgResult = await getTelegramConversation(id);
+      if (tgResult.success && tgResult.data) {
+        telegramMessages = tgResult.data.messages;
+        telegramNextCursor = tgResult.data.nextCursor;
       }
     }
   }
@@ -62,6 +78,11 @@ export default async function CustomerDetailPage({
           smsEnabled={smsEnabled}
           smsMessages={smsMessages}
           smsNextCursor={smsNextCursor}
+          telegramEnabled={telegramEnabled}
+          telegramBotUsername={telegramBotUsername}
+          telegramMessages={telegramMessages}
+          telegramNextCursor={telegramNextCursor}
+          telegramChatId={result.data.telegramChatId ?? null}
         />
       </div>
     </>

@@ -32,7 +32,9 @@
     "tabs": {
       "vehicles": "Voertuigen ({count})",
       "messages": "Berichten",
-      "requests": "Aanvragen ({count})"
+      "requests": "Aanvragen ({count})",
+      "sms": "SMS",
+      "telegram": "Telegram"
     },
     "vehicleTable": {
       "plate": "Kenteken",
