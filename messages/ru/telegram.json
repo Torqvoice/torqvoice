@@ -44,7 +44,10 @@
     "title": "Connect on Telegram",
     "description": "Scan this QR code to chat with us on Telegram.",
     "copyLink": "Copy link",
-    "copied": "Link copied!"
+    "copied": "Link copied!",
+    "sendEmail": "Send by email",
+    "emailSubject": "Connect with us on Telegram",
+    "emailBody": "Hi {name},\n\nYou can now chat with us on Telegram for updates on your vehicle.\n\nClick this link to connect: {link}\n\nThank you!"
   },
   "invoiceQr": {
     "label": "Show QR code on invoices",
