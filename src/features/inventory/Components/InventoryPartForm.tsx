@@ -16,7 +16,8 @@ import {
 import { toast } from "sonner";
 import { useGlassModal } from "@/components/glass-modal";
 import { createInventoryPart, updateInventoryPart } from "../Actions/inventoryActions";
-import { Camera, ExternalLink, ImageIcon, Loader2, Upload, X } from "lucide-react";
+import { aiAnalyzePartImage } from "../Actions/aiAnalyzePartImage";
+import { Camera, ExternalLink, ImageIcon, Loader2, Sparkles, Upload, X } from "lucide-react";
 import { compressImage } from "@/lib/compress-image";
 
 interface InventoryPartFormProps {
@@ -51,6 +52,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [supplierUrl, setSupplierUrl] = useState(part?.supplierUrl ?? "");
   const [imageUrl, setImageUrl] = useState(part?.imageUrl ?? "");
   const [dragOver, setDragOver] = useState(false);
@@ -170,6 +172,42 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
       setFetching(false);
     }
   }, [supplierUrl, imageUrl, modal]);
+
+  const handleAiAnalyze = useCallback(async () => {
+    if (!imageUrl) return;
+    setAnalyzing(true);
+    const toastId = toast.loading(t('form.aiAnalyzing'));
+    try {
+      const result = await aiAnalyzePartImage(imageUrl);
+      if (!result.success || !result.data) {
+        toast.error(result.error || t('form.aiAnalyzeFailed'), { id: toastId });
+        return;
+      }
+      const data = result.data;
+      const form = formRef.current;
+      if (!form) return;
+
+      const setIfEmpty = (name: string, value: string | undefined) => {
+        if (!value) return;
+        const input = form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement | null;
+        if (input && !input.value) {
+          input.value = value;
+        }
+      };
+
+      setIfEmpty("name", data.name);
+      setIfEmpty("partNumber", data.partNumber);
+      setIfEmpty("barcode", data.barcode);
+      setIfEmpty("category", data.category);
+      setIfEmpty("description", data.description);
+      setIfEmpty("supplier", data.supplier);
+      toast.success(t('form.aiAnalyzeSuccess'), { id: toastId });
+    } catch {
+      toast.error(t('form.aiAnalyzeFailed'), { id: toastId });
+    } finally {
+      setAnalyzing(false);
+    }
+  }, [imageUrl, t]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -350,6 +388,23 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                   {imageUrl ? t('form.replace') : t('form.upload')}
                 </Button>
               </div>
+              {imageUrl && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-1 w-full text-xs"
+                  onClick={handleAiAnalyze}
+                  disabled={analyzing}
+                >
+                  {analyzing ? (
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                  ) : (
+                    <Sparkles className="mr-1 h-3 w-3" />
+                  )}
+                  {t('form.aiAnalyze')}
+                </Button>
+              )}
             </div>
 
             {/* Fields */}

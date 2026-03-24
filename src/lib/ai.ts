@@ -84,6 +84,34 @@ async function chatCompletion(
   return response.choices[0]?.message?.content ?? "";
 }
 
+export async function visionCompletion(
+  organizationId: string,
+  systemPrompt: string,
+  userText: string,
+  imageUrl: string,
+): Promise<string> {
+  const config = await getAiConfig(organizationId);
+  const client = createClient(config);
+
+  const response = await client.chat.completions.create({
+    model: config.model,
+    messages: [
+      { role: "system", content: systemPrompt },
+      {
+        role: "user",
+        content: [
+          { type: "text", text: userText },
+          { type: "image_url", image_url: { url: imageUrl } },
+        ],
+      },
+    ],
+    temperature: 0.3,
+    max_tokens: 1000,
+  });
+
+  return response.choices[0]?.message?.content ?? "";
+}
+
 // ─── AI Feature Functions ────────────────────────────────────────────────────
 
 export interface ServiceContext {
