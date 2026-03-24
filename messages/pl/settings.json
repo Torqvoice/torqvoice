@@ -137,7 +137,13 @@
     "createCompany": "Utworz firme",
     "settingsSaved": "Ustawienia firmy zapisane",
     "failedSave": "Nie udalo sie zapisac ustawien",
-    "companyCreated": "Firma utworzona pomyslnie"
+    "companyCreated": "Firma utworzona pomyslnie",
+    "serviceType": "Typ Usługi",
+    "serviceTypeDescription": "Wybierz typ usługi oferowanej przez Twój warsztat. Zmienia to etykiety pól w całej aplikacji.",
+    "automotive": "Motoryzacja",
+    "automotiveDescription": "Samochody, ciężarówki i inne pojazdy drogowe",
+    "boatService": "Serwis Łodzi",
+    "boatServiceDescription": "Łodzie, jachty i jednostki pływające"
   },
   "account": {
     "profileTitle": "Profil",

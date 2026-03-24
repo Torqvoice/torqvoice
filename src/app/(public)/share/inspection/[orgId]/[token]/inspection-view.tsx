@@ -51,6 +51,7 @@ export function InspectionView({
   hasExistingQuoteRequest,
   quoteShareUrl,
   portalUrl,
+  serviceType = "automotive",
 }: {
   inspection: InspectionRecord;
   workshop: { name: string; address: string; phone: string; email: string };
@@ -64,6 +65,7 @@ export function InspectionView({
   hasExistingQuoteRequest: boolean;
   quoteShareUrl?: string;
   portalUrl?: string;
+  serviceType?: "automotive" | "boat";
 }) {
   const t = useTranslations('share.inspection');
   const tc = useTranslations('share.common');
@@ -238,13 +240,13 @@ export function InspectionView({
             {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
           </p>
           {inspection.vehicle.vin && (
-            <p className="text-sm text-gray-500">{t('vin', { vin: inspection.vehicle.vin })}</p>
+            <p className="text-sm text-gray-500">{serviceType === 'boat' ? `HIN: ${inspection.vehicle.vin}` : t('vin', { vin: inspection.vehicle.vin })}</p>
           )}
           {inspection.vehicle.licensePlate && (
-            <p className="text-sm text-gray-500">{t('plate', { plate: inspection.vehicle.licensePlate })}</p>
+            <p className="text-sm text-gray-500">{serviceType === 'boat' ? `Reg: ${inspection.vehicle.licensePlate}` : t('plate', { plate: inspection.vehicle.licensePlate })}</p>
           )}
           {inspection.mileage && (
-            <p className="text-sm text-gray-500">{t('mileage', { mileage: inspection.mileage.toLocaleString() })}</p>
+            <p className="text-sm text-gray-500">{t(serviceType === 'boat' ? 'mileageBoat' : 'mileage', { mileage: inspection.mileage.toLocaleString() })}</p>
           )}
         </div>
         {inspection.vehicle.customer && (

@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { updateInspectionItem, completeInspection, deleteInspection } from "../Actions/inspectionActions";
 import { createQuote } from "@/features/quotes/Actions/quoteActions";
 import { InspectionShareDialog } from "./InspectionShareDialog";
+import { useServiceType } from "@/components/service-type-context";
 
 type Condition = "pass" | "fail" | "attention" | "not_inspected";
 
@@ -421,6 +422,7 @@ export function InspectionPageClient({
 }) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
+  const serviceType = useServiceType();
   const [isPending, startTransition] = useTransition();
   const [showCompleteDialog, setShowCompleteDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -599,7 +601,7 @@ export function InspectionPageClient({
               {inspection.mileage && (
                 <>
                   <span>&middot;</span>
-                  <span>{inspection.mileage.toLocaleString()} mi</span>
+                  <span>{inspection.mileage.toLocaleString()} {serviceType === 'boat' ? 'hrs' : 'mi'}</span>
                 </>
               )}
               {inspection.vehicle.licensePlate && (

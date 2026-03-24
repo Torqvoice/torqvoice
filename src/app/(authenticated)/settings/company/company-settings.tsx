@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { setSettings, setSetting } from "@/features/settings/Actions/settingsActions";
 import { renameOrganization } from "@/features/team/Actions/renameOrganization";
@@ -18,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Building2, ImageIcon, Loader2, Plus, Save, Trash2, Upload } from "lucide-react";
 import { createNewOrganization } from "@/features/team/Actions/createNewOrganization";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
+import { ServiceTypeSelector } from "./service-type-selector";
 
 export function CompanySettings({ settings, organizationName }: { settings: Record<string, string>; organizationName: string }) {
   const router = useRouter();
@@ -30,6 +30,7 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
   const [orgNumber, setOrgNumber] = useState(settings[SETTING_KEYS.INVOICE_ORG_NUMBER] || "");
   const [logoUrl, setLogoUrl] = useState(settings[SETTING_KEYS.COMPANY_LOGO] || "");
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [serviceType, setServiceType] = useState(settings[SETTING_KEYS.SERVICE_TYPE] || "automotive");
   const [showCreateOrg, setShowCreateOrg] = useState(false);
   const [newOrgName, setNewOrgName] = useState("");
   const [creatingOrg, setCreatingOrg] = useState(false);
@@ -43,6 +44,7 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
         [SETTING_KEYS.WORKSHOP_PHONE]: workshopPhone,
         [SETTING_KEYS.WORKSHOP_EMAIL]: workshopEmail,
         [SETTING_KEYS.INVOICE_ORG_NUMBER]: orgNumber,
+        [SETTING_KEYS.SERVICE_TYPE]: serviceType,
       }),
     ]);
     setSaving(false);
@@ -160,21 +162,21 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
             <Label htmlFor="workshopAddress" className="text-xs">{t('company.address')}</Label>
             <Textarea id="workshopAddress" placeholder={t('company.addressPlaceholder')} rows={2} value={workshopAddress} onChange={(e) => setWorkshopAddress(e.target.value)} />
           </div>
-          <SaveButton>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <Button size="sm" onClick={handleSave} disabled={saving}>
-                {saving ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Save className="mr-1.5 h-3.5 w-3.5" />}
-                {t('company.saveCompany')}
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => setShowCreateOrg(true)}>
-                <Plus className="mr-1.5 h-3.5 w-3.5" />
-                {t('company.addNewCompany')}
-              </Button>
-            </div>
-          </SaveButton>
         </CardContent>
       </Card>
+      <ServiceTypeSelector serviceType={serviceType} onServiceTypeChange={setServiceType} />
+      <SaveButton>
+        <div className="flex items-center justify-between">
+          <Button size="sm" onClick={handleSave} disabled={saving}>
+            {saving ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Save className="mr-1.5 h-3.5 w-3.5" />}
+            {t('company.saveCompany')}
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setShowCreateOrg(true)}>
+            <Plus className="mr-1.5 h-3.5 w-3.5" />
+            {t('company.addNewCompany')}
+          </Button>
+        </div>
+      </SaveButton>
       </ReadOnlyWrapper>
       <Dialog open={showCreateOrg} onOpenChange={setShowCreateOrg}>
         <DialogContent className="sm:max-w-md">

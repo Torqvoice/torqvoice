@@ -74,6 +74,7 @@ export default async function PublicQuotePage({
             "invoice.headerStyle",
             "portal.enabled",
             "quote.layoutConfig",
+            "workshop.serviceType",
           ],
         },
       },
@@ -172,6 +173,7 @@ export default async function PublicQuotePage({
       documentAttachments={documentAttachments}
       layoutConfig={layoutConfig}
       customFields={customFields}
+      serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "boat"}
     />
   );
 }

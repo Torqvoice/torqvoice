@@ -83,6 +83,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useTranslations } from 'next-intl'
+import { useServiceType } from '@/components/service-type-context'
 
 interface CustomerOption {
   id: string
@@ -199,7 +200,7 @@ export function VehicleDetailClient({
   paginatedServices,
   paginatedNotes,
   serviceSearch,
-  serviceType,
+  serviceRecordType,
   currencyCode = 'USD',
   unitSystem = 'imperial',
   predictionData,
@@ -213,7 +214,7 @@ export function VehicleDetailClient({
   paginatedServices: PaginatedServices
   paginatedNotes: PaginatedNotes
   serviceSearch: string
-  serviceType: string
+  serviceRecordType: string
   currencyCode?: string
   unitSystem?: 'metric' | 'imperial'
   predictionData?: {
@@ -238,7 +239,9 @@ export function VehicleDetailClient({
   quotes?: QuoteRecord[]
   aiEnabled?: boolean
 }) {
-  const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
+  const serviceType = useServiceType()
+  const isBoat = serviceType === 'boat'
+  const distUnit = isBoat ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
   const searchParams = useSearchParams()
   const { formatDate } = useFormatDate()
@@ -576,7 +579,7 @@ export function VehicleDetailClient({
                     <div className="flex cursor-help items-center gap-1.5">
                       <TrendingUp className="h-3.5 w-3.5" />
                       <span className="text-xs">
-                        {unitSystem === 'metric' ? t('predictedKm') : t('predictedMileage')}
+                        {isBoat ? t('predictedHours') : unitSystem === 'metric' ? t('predictedKm') : t('predictedMileage')}
                       </span>
                       <span className="font-semibold text-foreground">
                         ~{predictionData.predictedMileage.toLocaleString()}
@@ -1032,7 +1035,7 @@ export function VehicleDetailClient({
             pageSize={paginatedServices.pageSize}
             totalPages={paginatedServices.totalPages}
             search={serviceSearch}
-            type={serviceType}
+            type={serviceRecordType}
             currencyCode={currencyCode}
           />
         </TabsContent>

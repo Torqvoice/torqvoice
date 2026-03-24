@@ -109,6 +109,7 @@
     "vin": "VIN: {vin}",
     "plate": "Placa: {plate}",
     "mileage": "Quilometragem: {mileage}",
+    "mileageBoat": "Horas de Motor: {mileage}",
     "inspected": "inspecionado",
     "pass": "Aprovado",
     "fail": "Reprovado",

@@ -42,6 +42,7 @@ import { CustomerForm } from "@/features/customers/Components/CustomerForm";
 import { updateServiceRequest, createWorkOrderFromRequest } from "@/features/customers/Actions/customerActions";
 import { SendSmsDialog } from "@/features/sms/Components/SendSmsDialog";
 import { TelegramQrCode } from "@/features/telegram/Components/TelegramQrCode";
+import { useServiceType } from "@/components/service-type-context";
 import { toast } from "sonner";
 
 interface ServiceRequestItem {
@@ -108,6 +109,7 @@ export function CustomerDetailClient({
   telegramChatId?: string | null;
 }) {
   const t = useTranslations("customers.detail");
+  const serviceType = useServiceType();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showEditForm, setShowEditForm] = useState(false);
@@ -301,7 +303,7 @@ export function CustomerDetailClient({
                     <TableRow>
                       <TableHead className="w-[120px]">{t("vehicleTable.plate")}</TableHead>
                       <TableHead>{t("vehicleTable.vehicle")}</TableHead>
-                      <TableHead className="hidden sm:table-cell w-[100px] text-right">{t("vehicleTable.mileage")}</TableHead>
+                      <TableHead className="hidden sm:table-cell w-[100px] text-right">{serviceType === 'boat' ? t("vehicleTable.mileageBoat") : t("vehicleTable.mileage")}</TableHead>
                       <TableHead className="w-[80px] text-center">{t("vehicleTable.services")}</TableHead>
                     </TableRow>
                   </TableHeader>

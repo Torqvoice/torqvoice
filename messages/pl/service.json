@@ -36,6 +36,7 @@
     "date": "Data",
     "type": "Typ",
     "mileage": "Przebieg",
+    "mileageBoat": "Godziny Pracy",
     "status": "Status",
     "technician": "Technik",
     "invoiceNumber": "Numer Faktury",
@@ -195,6 +196,7 @@
     "customer": "Klient",
     "vin": "VIN: {vin}",
     "mileageAtService": "Przebieg w chwili serwisu: {mileage} {unit}",
+    "engineHoursAtService": "Godziny pracy przy serwisie: {mileage} {unit}",
     "sharedLink": {
       "title": "Udostępniony link",
       "sharedOn": "Udostępniono {date}",

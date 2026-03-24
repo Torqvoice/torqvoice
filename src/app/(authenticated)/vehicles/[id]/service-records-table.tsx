@@ -35,6 +35,7 @@ import {
   Search,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useServiceType } from "@/components/service-type-context";
 
 interface ServiceRecordRow {
   id: string;
@@ -84,6 +85,7 @@ export function ServiceRecordsTable({
   const [searchInput, setSearchInput] = useState(search);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const t = useTranslations("vehicles.services");
+  const serviceType = useServiceType();
 
   const createUrl = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -181,7 +183,7 @@ export function ServiceRecordsTable({
               <TableHead>{t("table.title")}</TableHead>
               <TableHead className="w-[100px]">{t("table.type")}</TableHead>
               <TableHead className="w-[100px]">{t("table.status")}</TableHead>
-              <TableHead className="w-[100px] text-right">{t("table.mileage")}</TableHead>
+              <TableHead className="w-[100px] text-right">{serviceType === 'boat' ? t("table.mileageBoat") : t("table.mileage")}</TableHead>
               <TableHead className="hidden w-[120px] sm:table-cell">{t("table.technician")}</TableHead>
               <TableHead className="w-[50px] text-center">{t("table.files")}</TableHead>
               <TableHead className="w-[100px] text-right">{t("table.total")}</TableHead>

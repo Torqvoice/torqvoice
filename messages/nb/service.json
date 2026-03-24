@@ -36,6 +36,7 @@
     "date": "Dato",
     "type": "Type",
     "mileage": "Kilometerstand",
+    "mileageBoat": "Motortimer",
     "status": "Status",
     "technician": "Tekniker",
     "invoiceNumber": "Fakturanummer",
@@ -195,6 +196,7 @@
     "customer": "Kunde",
     "vin": "VIN: {vin}",
     "mileageAtService": "Kilometerstand ved service: {mileage} {unit}",
+    "engineHoursAtService": "Motortimer ved service: {mileage} {unit}",
     "sharedLink": {
       "title": "Delt lenke",
       "sharedOn": "Delt {date}",

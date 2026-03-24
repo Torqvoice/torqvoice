@@ -46,6 +46,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useServiceType } from '@/components/service-type-context'
 
 interface Vehicle {
   id: string
@@ -97,6 +98,7 @@ export function VehiclesClient({
   isArchived?: boolean
   archivedCount?: number
 }) {
+  const serviceType = useServiceType()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -272,7 +274,7 @@ export function VehiclesClient({
                 <TableHead className="w-[120px]">{t('table.plate')}</TableHead>
                 <TableHead>{t('table.vehicle')}</TableHead>
                 <TableHead className="hidden sm:table-cell">{t('table.customer')}</TableHead>
-                <TableHead className="hidden md:table-cell w-[100px] text-right">{t('table.mileage')}</TableHead>
+                <TableHead className="hidden md:table-cell w-[100px] text-right">{serviceType === 'boat' ? t('table.mileageBoat') : t('table.mileage')}</TableHead>
                 <TableHead className="w-[80px] text-center">{t('table.services')}</TableHead>
                 <TableHead className="w-[50px]" />
               </TableRow>

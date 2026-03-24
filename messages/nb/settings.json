@@ -137,7 +137,13 @@
     "createCompany": "Opprett bedrift",
     "settingsSaved": "Bedriftsinnstillinger lagret",
     "failedSave": "Kunne ikke lagre innstillinger",
-    "companyCreated": "Bedrift opprettet"
+    "companyCreated": "Bedrift opprettet",
+    "serviceType": "Tjenestetype",
+    "serviceTypeDescription": "Velg typen tjeneste verkstedet ditt tilbyr. Dette endrer feltetiketter i hele applikasjonen.",
+    "automotive": "Bil",
+    "automotiveDescription": "Biler, lastebiler og andre kjøretøy",
+    "boatService": "Båtservice",
+    "boatServiceDescription": "Båter, yachter og fartøy"
   },
   "account": {
     "profileTitle": "Profil",

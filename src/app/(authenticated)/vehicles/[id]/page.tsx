@@ -145,7 +145,7 @@ export default async function VehicleDetailPage({
           paginatedServices={paginatedServices}
           paginatedNotes={paginatedNotes}
           serviceSearch={search}
-          serviceType={type}
+          serviceRecordType={type}
           currencyCode={currencyCode}
           unitSystem={unitSystem}
           predictionData={predictionData}

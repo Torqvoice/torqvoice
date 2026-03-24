@@ -137,7 +137,13 @@
     "createCompany": "Crear empresa",
     "settingsSaved": "Configuracion de empresa guardada",
     "failedSave": "Error al guardar la configuracion",
-    "companyCreated": "Empresa creada exitosamente"
+    "companyCreated": "Empresa creada exitosamente",
+    "serviceType": "Tipo de Servicio",
+    "serviceTypeDescription": "Seleccione el tipo de servicio que ofrece su taller. Esto cambia las etiquetas de los campos en toda la aplicación.",
+    "automotive": "Automotriz",
+    "automotiveDescription": "Coches, camiones y otros vehículos de carretera",
+    "boatService": "Servicio Náutico",
+    "boatServiceDescription": "Barcos, yates y embarcaciones"
   },
   "account": {
     "profileTitle": "Perfil",

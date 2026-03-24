@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/select'
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
+import { useServiceType } from '@/components/service-type-context'
 import type { InitialData } from './form-types'
 import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
 
@@ -50,6 +51,7 @@ export function BasicInfoSection({
   initialVehicle,
 }: BasicInfoSectionProps) {
   const t = useTranslations('service.basicInfo')
+  const serviceType = useServiceType()
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
@@ -153,7 +155,7 @@ export function BasicInfoSection({
 
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1">
-          <Label htmlFor="mileage" className="text-xs">{t('mileage')}</Label>
+          <Label htmlFor="mileage" className="text-xs">{serviceType === 'boat' ? t('mileageBoat') : t('mileage')}</Label>
           <Input
             id="mileage"
             name="mileage"

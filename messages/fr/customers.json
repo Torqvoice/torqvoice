@@ -40,6 +40,7 @@
       "plate": "Plaque",
       "vehicle": "Véhicule",
       "mileage": "Kilométrage",
+      "mileageBoat": "Heures Moteur",
       "services": "Services"
     },
     "noVehicles": "Aucun véhicule associé à ce client"
