@@ -78,7 +78,7 @@ export function BarcodeScannerDialog({
         const onSuccess = (decodedText: string) => {
           if (mounted) handleScan(decodedText)
         }
-        const onError = () => {}
+        const onError = () => { /* expected: fires on each frame without a match */ }
 
         try {
           // Try rear camera first (mobile)
@@ -114,13 +114,15 @@ export function BarcodeScannerDialog({
     return () => {
       mounted = false
       clearTimeout(timer)
-      if (scanner && running) {
-        scanner
-          .stop()
-          .then(() => scanner.clear())
-          .catch(() => {})
-      }
+      const inst = html5QrRef.current
       html5QrRef.current = null
+      if (inst) {
+        const state = inst.getState?.()
+        // State 2 = SCANNING, State 3 = PAUSED
+        if (state === 2 || state === 3) {
+          inst.stop().then(() => inst.clear()).catch(() => { /* scanner already stopped */ })
+        }
+      }
     }
   }, [open, showManual, handleScan])
 
