@@ -71,8 +71,8 @@ export function BarcodeScannerDialog({
         const scanConfig = {
           fps: 15,
           qrbox: (viewfinderWidth: number, viewfinderHeight: number) => ({
-            width: Math.floor(viewfinderWidth * 0.85),
-            height: Math.floor(viewfinderHeight * 0.3),
+            width: Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.8),
+            height: Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.3),
           }),
         }
         const onSuccess = (decodedText: string) => {
