@@ -23,6 +23,7 @@ interface InventoryPartFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   markupMultiplier?: number;
+  initialBarcode?: string;
   part?: {
     id: string;
     partNumber: string | null;
@@ -43,7 +44,7 @@ interface InventoryPartFormProps {
   };
 }
 
-export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }: InventoryPartFormProps) {
+export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, initialBarcode }: InventoryPartFormProps) {
   const router = useRouter();
   const modal = useGlassModal();
   const t = useTranslations('inventory');
@@ -361,7 +362,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
                     id="barcode"
                     name="barcode"
                     placeholder={t('form.barcodePlaceholder')}
-                    defaultValue={part?.barcode ?? ""}
+                    defaultValue={part?.barcode ?? initialBarcode ?? ""}
                   />
                 </div>
                 <div className="space-y-2">

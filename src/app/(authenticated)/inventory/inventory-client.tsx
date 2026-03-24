@@ -414,13 +414,18 @@ export function InventoryClient({
       />
 
       <InventoryPartForm
+        key={editPart?.id ?? scannedBarcode ?? 'new'}
         open={showForm}
         onOpenChange={(open) => {
           setShowForm(open);
-          if (!open) setEditPart(null);
+          if (!open) {
+            setEditPart(null);
+            setScannedBarcode('');
+          }
         }}
         part={editPart ?? undefined}
         markupMultiplier={initialMarkup}
+        initialBarcode={!editPart ? scannedBarcode : undefined}
       />
 
       {/* Bulk Markup Dialog */}
@@ -479,9 +484,8 @@ export function InventoryClient({
         }}
         onCreatePart={(barcode) => {
           setEditPart(null);
+          setScannedBarcode(barcode);
           setShowForm(true);
-          // The form will open empty — user fills in details
-          // TODO: pre-fill barcode in form
         }}
       />
     </div>
