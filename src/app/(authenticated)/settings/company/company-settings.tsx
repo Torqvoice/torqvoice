@@ -163,22 +163,21 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
             <Label htmlFor="workshopAddress" className="text-xs">{t('company.address')}</Label>
             <Textarea id="workshopAddress" placeholder={t('company.addressPlaceholder')} rows={2} value={workshopAddress} onChange={(e) => setWorkshopAddress(e.target.value)} />
           </div>
-          <SaveButton>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <Button size="sm" onClick={handleSave} disabled={saving}>
-                {saving ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Save className="mr-1.5 h-3.5 w-3.5" />}
-                {t('company.saveCompany')}
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => setShowCreateOrg(true)}>
-                <Plus className="mr-1.5 h-3.5 w-3.5" />
-                {t('company.addNewCompany')}
-              </Button>
-            </div>
-          </SaveButton>
         </CardContent>
       </Card>
       <ServiceTypeSelector serviceType={serviceType} onServiceTypeChange={setServiceType} />
+      <SaveButton>
+        <div className="flex items-center justify-between">
+          <Button size="sm" onClick={handleSave} disabled={saving}>
+            {saving ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Save className="mr-1.5 h-3.5 w-3.5" />}
+            {t('company.saveCompany')}
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setShowCreateOrg(true)}>
+            <Plus className="mr-1.5 h-3.5 w-3.5" />
+            {t('company.addNewCompany')}
+          </Button>
+        </div>
+      </SaveButton>
       </ReadOnlyWrapper>
       <Dialog open={showCreateOrg} onOpenChange={setShowCreateOrg}>
         <DialogContent className="sm:max-w-md">
