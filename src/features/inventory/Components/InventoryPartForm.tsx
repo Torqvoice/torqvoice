@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 import { useGlassModal } from "@/components/glass-modal";
 import { createInventoryPart, updateInventoryPart } from "../Actions/inventoryActions";
-import { ExternalLink, ImageIcon, Loader2, Upload, X } from "lucide-react";
+import { Camera, ExternalLink, ImageIcon, Loader2, Upload, X } from "lucide-react";
 import { compressImage } from "@/lib/compress-image";
 
 interface InventoryPartFormProps {
@@ -56,6 +56,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
   const [dragOver, setDragOver] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const uploadFile = useCallback(async (file: File) => {
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
@@ -264,13 +265,13 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
             </div>
           </div>
 
-          {/* Two-column layout: image left, fields right */}
-          <div className="flex gap-5">
+          {/* Image + fields: stacked on mobile, side-by-side on sm+ */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:gap-5">
             {/* Image area */}
-            <div className="flex-shrink-0 w-44">
+            <div className="flex-shrink-0 sm:w-44">
               <Label className="mb-2 block">{t('form.image')}</Label>
               <div
-                className={`relative h-44 w-44 overflow-hidden rounded-lg border-2 border-dashed bg-muted transition-colors ${
+                className={`relative h-36 w-full overflow-hidden rounded-lg border-2 border-dashed bg-muted transition-colors sm:h-44 sm:w-44 ${
                   dragOver ? "border-primary bg-primary/5" : "border-muted-foreground/25"
                 }`}
                 onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -309,6 +310,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                   </button>
                 )}
               </div>
+              {/* Hidden file inputs */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -316,37 +318,43 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                 className="hidden"
                 onChange={handleFileChange}
               />
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/jpeg,image/png"
+                capture="environment"
+                className="hidden"
+                onChange={handleFileChange}
+              />
               <div className="mt-2 flex gap-1">
-                {imageUrl ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 text-xs"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Upload className="mr-1 h-3 w-3" />
-                    {t('form.replace')}
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 text-xs"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploading}
-                  >
-                    <Upload className="mr-1 h-3 w-3" />
-                    {t('form.upload')}
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 text-xs"
+                  onClick={() => cameraInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  <Camera className="mr-1 h-3 w-3" />
+                  {t('form.camera')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 text-xs"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  <Upload className="mr-1 h-3 w-3" />
+                  {imageUrl ? t('form.replace') : t('form.upload')}
+                </Button>
               </div>
             </div>
 
             {/* Fields */}
             <div className="flex-1 space-y-4">
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="partNumber">{t('form.partNumber')}</Label>
                   <Input
@@ -377,7 +385,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="category">{t('form.category')}</Label>
                   <Input
@@ -398,7 +406,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="quantity">{t('form.quantity')}</Label>
                   <Input
@@ -455,7 +463,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="supplier">{t('form.supplier')}</Label>
               <Input

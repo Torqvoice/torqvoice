@@ -68,6 +68,7 @@
     "dropOrClick": "Drop image or click",
     "replace": "Replace",
     "upload": "Upload",
+    "camera": "Camera",
     "imageUploading": "Uploading image...",
     "imageUploaded": "Image uploaded",
     "imageUploadFailed": "Could not upload image",
