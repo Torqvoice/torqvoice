@@ -13,7 +13,8 @@
     "sellPrice": "Preço de venda",
     "supplier": "Fornecedor",
     "location": "Localização",
-    "low": "Baixo"
+    "low": "Baixo",
+    "barcode": "Código de barras"
   },
   "empty": {
     "noMatch": "Nenhuma peça corresponde à sua busca.",
@@ -43,6 +44,17 @@
     "saveFailed": "Não foi possível salvar a peça",
     "error": "Erro"
   },
+  "scanBarcode": "Escanear",
+  "barcodeScan": {
+    "title": "Peça escaneada",
+    "notFound": "Nenhuma peça encontrada para o código \"{barcode}\"",
+    "createNew": "Criar nova peça",
+    "addStock": "Adicionar ao estoque",
+    "editPart": "Editar peça",
+    "currentStock": "Estoque atual: {quantity}",
+    "addedStock": "{amount} adicionados ao estoque",
+    "customAmount": "Qtd..."
+  },
   "form": {
     "editPart": "Editar peça",
     "addNewPart": "Adicionar nova peça",
@@ -62,6 +74,8 @@
     "imageSizeError": "A imagem deve ter menos de 5 MB",
     "partNumber": "Número da peça",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Código de barras",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Nome *",
     "namePlaceholder": "Jogo de pastilhas de freio",
     "category": "Categoria",

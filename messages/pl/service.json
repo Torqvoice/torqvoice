@@ -77,7 +77,11 @@
     "inventoryTitle": "Wybierz Część z Magazynu",
     "searchInventory": "Szukaj w magazynie...",
     "inStock": "{quantity} w magazynie",
-    "noInventory": "Brak części w magazynie."
+    "noInventory": "Brak części w magazynie.",
+    "scanBarcode": "Skanuj",
+    "scanTitle": "Skanuj kod kreskowy",
+    "partFound": "Dodano \"{name}\" z magazynu",
+    "partNotFound": "Nie znaleziono części dla kodu kreskowego \"{barcode}\""
   },
   "labor": {
     "title": "Praca",

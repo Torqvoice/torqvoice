@@ -3,6 +3,7 @@ import { z } from "zod";
 export const createInventoryPartSchema = z.object({
   name: z.string().min(1, "Part name is required"),
   partNumber: z.string().optional(),
+  barcode: z.string().optional(),
   description: z.string().optional(),
   category: z.string().optional(),
   quantity: z.coerce.number().int().min(0, "Quantity must be 0 or more").default(0),

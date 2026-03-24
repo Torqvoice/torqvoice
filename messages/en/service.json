@@ -77,7 +77,11 @@
     "inventoryTitle": "Select Part from Inventory",
     "searchInventory": "Search inventory...",
     "inStock": "{quantity} in stock",
-    "noInventory": "No inventory parts found."
+    "noInventory": "No inventory parts found.",
+    "scanBarcode": "Scan",
+    "scanTitle": "Scan Barcode",
+    "partFound": "Added \"{name}\" from inventory",
+    "partNotFound": "No part found for barcode \"{barcode}\""
   },
   "labor": {
     "title": "Labor",

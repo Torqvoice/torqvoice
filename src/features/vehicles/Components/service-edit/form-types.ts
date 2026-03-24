@@ -7,6 +7,7 @@ import type {
 export interface InventoryPartOption {
   id: string
   partNumber: string | null
+  barcode: string | null
   name: string
   description: string | null
   unitCost: number

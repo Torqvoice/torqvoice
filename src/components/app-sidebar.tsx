@@ -210,7 +210,7 @@ export function AppSidebar({
                       width={38}
                       height={38}
                       unoptimized
-                      className="object-contain"
+                      className="h-auto w-auto object-contain"
                     />
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none">

@@ -13,7 +13,8 @@
     "sellPrice": "Цена продажи",
     "supplier": "Поставщик",
     "location": "Расположение",
-    "low": "Мало"
+    "low": "Мало",
+    "barcode": "Штрихкод"
   },
   "empty": {
     "noMatch": "Нет запчастей, соответствующих поиску.",
@@ -43,6 +44,17 @@
     "saveFailed": "Не удалось сохранить запчасть",
     "error": "Ошибка"
   },
+  "scanBarcode": "Сканировать",
+  "barcodeScan": {
+    "title": "Отсканированная деталь",
+    "notFound": "Деталь для штрихкода \"{barcode}\" не найдена",
+    "createNew": "Создать новую деталь",
+    "addStock": "Добавить на склад",
+    "editPart": "Редактировать деталь",
+    "currentStock": "Текущий запас: {quantity}",
+    "addedStock": "{amount} добавлено на склад",
+    "customAmount": "Кол-во..."
+  },
   "form": {
     "editPart": "Редактировать запчасть",
     "addNewPart": "Добавить новую запчасть",
@@ -62,6 +74,8 @@
     "imageSizeError": "Изображение должно быть менее 5МБ",
     "partNumber": "Артикул",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Штрихкод",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Название *",
     "namePlaceholder": "Комплект тормозных колодок",
     "category": "Категория",

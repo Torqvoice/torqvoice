@@ -402,6 +402,7 @@ model LaborPresetItem {
 model InventoryPart {
   id            String   @id @default(cuid())
   partNumber    String?
+  barcode       String?
   name          String
   description   String?
   category      String?

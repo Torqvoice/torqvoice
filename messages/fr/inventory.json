@@ -13,7 +13,8 @@
     "sellPrice": "Prix de vente",
     "supplier": "Fournisseur",
     "location": "Emplacement",
-    "low": "Bas"
+    "low": "Bas",
+    "barcode": "Code-barres"
   },
   "empty": {
     "noMatch": "Aucune pièce ne correspond à votre recherche.",
@@ -43,6 +44,17 @@
     "saveFailed": "Impossible d'enregistrer la pièce",
     "error": "Erreur"
   },
+  "scanBarcode": "Scanner",
+  "barcodeScan": {
+    "title": "Pièce scannée",
+    "notFound": "Aucune pièce trouvée pour le code-barres \"{barcode}\"",
+    "createNew": "Créer une nouvelle pièce",
+    "addStock": "Ajouter au stock",
+    "editPart": "Modifier la pièce",
+    "currentStock": "Stock actuel : {quantity}",
+    "addedStock": "{amount} ajoutés au stock",
+    "customAmount": "Qté..."
+  },
   "form": {
     "editPart": "Modifier la pièce",
     "addNewPart": "Ajouter une nouvelle pièce",
@@ -62,6 +74,8 @@
     "imageSizeError": "L'image doit faire moins de 5 Mo",
     "partNumber": "Numéro de pièce",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Code-barres",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Nom *",
     "namePlaceholder": "Jeu de plaquettes de frein",
     "category": "Catégorie",

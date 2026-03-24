@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
 import { useTranslations } from 'next-intl'
@@ -10,6 +10,10 @@ import { ImageCarousel } from '../service-detail/ImageCarousel'
 import { ShareDialog } from '../service-detail/ShareDialog'
 import { NotifyCustomerDialog } from '@/components/notify-customer-dialog'
 import { InventoryPickerDialog } from '../service-edit/InventoryPickerDialog'
+import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
+import { useHardwareScanner } from '@/hooks/use-hardware-scanner'
+import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode'
+import { toast } from 'sonner'
 import { LaborPresetPickerDialog } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import type { LaborPresetOption } from './service-page-types'
 import { ServiceImagesManager } from '../service-images-manager'
@@ -60,6 +64,27 @@ export function ServicePageClient({
     currentUserName,
     record,
   })
+
+  const handleBarcodeScan = useCallback(async (barcode: string) => {
+    const result = await lookupPartByBarcode(barcode)
+    if (result.success && result.data) {
+      const part = result.data
+      const price = part.sellPrice > 0 ? part.sellPrice : part.unitCost
+      formState.dirtySetPartItems((prev) => [...prev, {
+        partNumber: part.partNumber || '',
+        name: part.name,
+        quantity: 1,
+        unitPrice: price,
+        total: price,
+        inventoryPartId: part.id,
+      }])
+      toast.success(t('parts.partFound', { name: part.name }))
+    } else {
+      toast.error(t('parts.partNotFound', { barcode }))
+    }
+  }, [formState, t])
+
+  useHardwareScanner({ onScan: handleBarcodeScan, enabled: activeTab === 'details' })
 
   const handleSelectPreset = (preset: LaborPresetOption) => {
     const newItems = preset.items.map((item) => ({
@@ -116,6 +141,7 @@ export function ServicePageClient({
                 inventoryParts={inventoryParts}
                 hasPresets={laborPresets.length > 0}
                 onOpenPresets={() => formState.setShowPresetPicker(true)}
+                onScanBarcode={() => formState.setShowBarcodeScanner(true)}
                 aiEnabled={aiEnabled}
               />
             }
@@ -179,6 +205,13 @@ export function ServicePageClient({
         onOpenChange={formState.setShowPresetPicker}
         laborPresets={laborPresets}
         onSelectPreset={handleSelectPreset}
+      />
+
+      <BarcodeScannerDialog
+        open={formState.showBarcodeScanner}
+        onOpenChange={formState.setShowBarcodeScanner}
+        onScan={handleBarcodeScan}
+        title={t('parts.scanTitle')}
       />
 
       <ImageCarousel

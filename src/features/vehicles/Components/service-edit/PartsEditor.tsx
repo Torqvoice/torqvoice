@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Package, Plus, Trash2 } from 'lucide-react'
+import { Package, Plus, ScanBarcode, Trash2 } from 'lucide-react'
 import { formatCurrency } from '@/lib/format'
 import { useTranslations } from 'next-intl'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -17,6 +17,7 @@ interface PartsEditorProps {
   currencyCode: string
   hasInventory: boolean
   onOpenInventory: () => void
+  onScanBarcode?: () => void
 }
 
 export function PartsEditor({
@@ -27,6 +28,7 @@ export function PartsEditor({
   currencyCode,
   hasInventory,
   onOpenInventory,
+  onScanBarcode,
 }: PartsEditorProps) {
   const t = useTranslations('service.parts')
 
@@ -39,6 +41,12 @@ export function PartsEditor({
             <Button type="button" variant="outline" size="sm" onClick={onOpenInventory}>
               <Package className="mr-1 h-3.5 w-3.5" />
               {t('fromInventory')}
+            </Button>
+          )}
+          {onScanBarcode && (
+            <Button type="button" variant="outline" size="sm" onClick={onScanBarcode}>
+              <ScanBarcode className="mr-1 h-3.5 w-3.5" />
+              {t('scanBarcode')}
             </Button>
           )}
           <Button

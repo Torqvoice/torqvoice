@@ -77,7 +77,11 @@
     "inventoryTitle": "Seleccionar Pieza del Inventario",
     "searchInventory": "Buscar en inventario...",
     "inStock": "{quantity} en stock",
-    "noInventory": "No se encontraron piezas de inventario."
+    "noInventory": "No se encontraron piezas de inventario.",
+    "scanBarcode": "Escanear",
+    "scanTitle": "Escanear código de barras",
+    "partFound": "\"{name}\" añadido del inventario",
+    "partNotFound": "No se encontró pieza para el código de barras \"{barcode}\""
   },
   "labor": {
     "title": "Mano de Obra",

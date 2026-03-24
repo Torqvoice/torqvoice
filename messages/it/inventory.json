@@ -13,7 +13,8 @@
     "sellPrice": "Prezzo di vendita",
     "supplier": "Fornitore",
     "location": "Posizione",
-    "low": "Basso"
+    "low": "Basso",
+    "barcode": "Codice a barre"
   },
   "empty": {
     "noMatch": "Nessun ricambio corrisponde alla ricerca.",
@@ -43,6 +44,17 @@
     "saveFailed": "Impossibile salvare il ricambio",
     "error": "Errore"
   },
+  "scanBarcode": "Scansiona",
+  "barcodeScan": {
+    "title": "Pezzo scansionato",
+    "notFound": "Nessun pezzo trovato per il codice \"{barcode}\"",
+    "createNew": "Crea nuovo pezzo",
+    "addStock": "Aggiungi allo stock",
+    "editPart": "Modifica pezzo",
+    "currentStock": "Stock attuale: {quantity}",
+    "addedStock": "{amount} aggiunti allo stock",
+    "customAmount": "Qtà..."
+  },
   "form": {
     "editPart": "Modifica ricambio",
     "addNewPart": "Aggiungi nuovo ricambio",
@@ -62,6 +74,8 @@
     "imageSizeError": "L'immagine deve essere inferiore a 5 MB",
     "partNumber": "Numero ricambio",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Codice a barre",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Nome *",
     "namePlaceholder": "Kit pastiglie freno",
     "category": "Categoria",

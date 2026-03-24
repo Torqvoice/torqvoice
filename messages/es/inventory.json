@@ -13,7 +13,8 @@
     "sellPrice": "Precio de venta",
     "supplier": "Proveedor",
     "location": "Ubicación",
-    "low": "Bajo"
+    "low": "Bajo",
+    "barcode": "Código de barras"
   },
   "empty": {
     "noMatch": "Ninguna pieza coincide con su búsqueda.",
@@ -43,6 +44,17 @@
     "saveFailed": "No se pudo guardar la pieza",
     "error": "Error"
   },
+  "scanBarcode": "Escanear",
+  "barcodeScan": {
+    "title": "Pieza escaneada",
+    "notFound": "No se encontró pieza para el código \"{barcode}\"",
+    "createNew": "Crear pieza nueva",
+    "addStock": "Agregar al stock",
+    "editPart": "Editar pieza",
+    "currentStock": "Stock actual: {quantity}",
+    "addedStock": "{amount} agregados al stock",
+    "customAmount": "Cant..."
+  },
   "form": {
     "editPart": "Editar pieza",
     "addNewPart": "Añadir nueva pieza",
@@ -62,6 +74,8 @@
     "imageSizeError": "La imagen debe ser menor de 5 MB",
     "partNumber": "Número de pieza",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Código de barras",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Nombre *",
     "namePlaceholder": "Juego de pastillas de freno",
     "category": "Categoría",

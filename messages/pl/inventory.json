@@ -13,7 +13,8 @@
     "sellPrice": "Cena sprzedaży",
     "supplier": "Dostawca",
     "location": "Lokalizacja",
-    "low": "Niski"
+    "low": "Niski",
+    "barcode": "Kod kreskowy"
   },
   "empty": {
     "noMatch": "Żadne części nie pasują do wyszukiwania.",
@@ -43,6 +44,17 @@
     "saveFailed": "Nie udało się zapisać części",
     "error": "Błąd"
   },
+  "scanBarcode": "Skanuj",
+  "barcodeScan": {
+    "title": "Zeskanowana część",
+    "notFound": "Nie znaleziono części dla kodu \"{barcode}\"",
+    "createNew": "Utwórz nową część",
+    "addStock": "Dodaj do stanu",
+    "editPart": "Edytuj część",
+    "currentStock": "Aktualny stan: {quantity}",
+    "addedStock": "Dodano {amount} do stanu",
+    "customAmount": "Ilość..."
+  },
   "form": {
     "editPart": "Edytuj część",
     "addNewPart": "Dodaj nową część",
@@ -62,6 +74,8 @@
     "imageSizeError": "Zdjęcie musi mieć mniej niż 5 MB",
     "partNumber": "Numer części",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Kod kreskowy",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Nazwa *",
     "namePlaceholder": "Klocki hamulcowe",
     "category": "Kategoria",

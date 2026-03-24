@@ -13,7 +13,8 @@
     "sellPrice": "Verkoopprijs",
     "supplier": "Leverancier",
     "location": "Locatie",
-    "low": "Laag"
+    "low": "Laag",
+    "barcode": "Barcode"
   },
   "empty": {
     "noMatch": "Geen onderdelen gevonden voor uw zoekopdracht.",
@@ -43,6 +44,17 @@
     "saveFailed": "Kan onderdeel niet opslaan",
     "error": "Fout"
   },
+  "scanBarcode": "Scannen",
+  "barcodeScan": {
+    "title": "Gescand onderdeel",
+    "notFound": "Geen onderdeel gevonden voor barcode \"{barcode}\"",
+    "createNew": "Nieuw onderdeel aanmaken",
+    "addStock": "Toevoegen aan voorraad",
+    "editPart": "Onderdeel bewerken",
+    "currentStock": "Huidige voorraad: {quantity}",
+    "addedStock": "{amount} toegevoegd aan voorraad",
+    "customAmount": "Aantal..."
+  },
   "form": {
     "editPart": "Onderdeel bewerken",
     "addNewPart": "Nieuw onderdeel toevoegen",
@@ -62,6 +74,8 @@
     "imageSizeError": "De afbeelding mag maximaal 5 MB zijn",
     "partNumber": "Onderdeelnummer",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Barcode",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Naam *",
     "namePlaceholder": "Remblokkenset",
     "category": "Categorie",

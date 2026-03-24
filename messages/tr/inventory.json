@@ -13,7 +13,8 @@
     "sellPrice": "Satış fiyatı",
     "supplier": "Tedarikçi",
     "location": "Konum",
-    "low": "Düşük"
+    "low": "Düşük",
+    "barcode": "Barkod"
   },
   "empty": {
     "noMatch": "Aramanızla eşleşen parça bulunamadı.",
@@ -43,6 +44,17 @@
     "saveFailed": "Parça kaydedilemedi",
     "error": "Hata"
   },
+  "scanBarcode": "Tara",
+  "barcodeScan": {
+    "title": "Taranan parça",
+    "notFound": "\"{barcode}\" barkodu için parça bulunamadı",
+    "createNew": "Yeni parça oluştur",
+    "addStock": "Stoka ekle",
+    "editPart": "Parçayı düzenle",
+    "currentStock": "Mevcut stok: {quantity}",
+    "addedStock": "Stoka {amount} eklendi",
+    "customAmount": "Adet..."
+  },
   "form": {
     "editPart": "Parçayı düzenle",
     "addNewPart": "Yeni parça ekle",
@@ -62,6 +74,8 @@
     "imageSizeError": "Görsel 5 MB'den küçük olmalıdır",
     "partNumber": "Parça numarası",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Barkod",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Ad *",
     "namePlaceholder": "Fren balatası seti",
     "category": "Kategori",

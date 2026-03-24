@@ -13,7 +13,8 @@
     "sellPrice": "Verkaufspreis",
     "supplier": "Lieferant",
     "location": "Lagerort",
-    "low": "Niedrig"
+    "low": "Niedrig",
+    "barcode": "Barcode"
   },
   "empty": {
     "noMatch": "Keine Teile entsprechen Ihrer Suche.",
@@ -43,6 +44,17 @@
     "saveFailed": "Teil konnte nicht gespeichert werden",
     "error": "Fehler"
   },
+  "scanBarcode": "Scannen",
+  "barcodeScan": {
+    "title": "Gescanntes Teil",
+    "notFound": "Kein Teil für Barcode \"{barcode}\" gefunden",
+    "createNew": "Neues Teil anlegen",
+    "addStock": "Bestand auffüllen",
+    "editPart": "Teil bearbeiten",
+    "currentStock": "Aktueller Bestand: {quantity}",
+    "addedStock": "{amount} zum Bestand hinzugefügt",
+    "customAmount": "Menge..."
+  },
   "form": {
     "editPart": "Teil bearbeiten",
     "addNewPart": "Neues Teil hinzufügen",
@@ -62,6 +74,8 @@
     "imageSizeError": "Das Bild darf maximal 5 MB groß sein",
     "partNumber": "Teilenummer",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Barcode",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Name *",
     "namePlaceholder": "Bremsbelagsatz",
     "category": "Kategorie",

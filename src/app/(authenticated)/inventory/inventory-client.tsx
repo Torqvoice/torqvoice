@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useCallback, useTransition } from "react";
+import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog';
+import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog';
+import { useHardwareScanner } from '@/hooks/use-hardware-scanner';
+import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode';
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -48,6 +52,7 @@ import {
   Pencil,
   Percent,
   Plus,
+  ScanBarcode,
   Search,
   Trash2,
 } from "lucide-react";
@@ -56,6 +61,7 @@ import { formatCurrency } from "@/lib/format";
 interface InventoryPart {
   id: string;
   partNumber: string | null;
+  barcode: string | null;
   name: string;
   description: string | null;
   category: string | null;
@@ -105,8 +111,32 @@ export function InventoryClient({
   const [showMarkup, setShowMarkup] = useState(false);
   const [markupValue, setMarkupValue] = useState(String(initialMarkup));
   const [applyingMarkup, setApplyingMarkup] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [scannedPart, setScannedPart] = useState<{
+    id: string;
+    name: string;
+    partNumber: string | null;
+    barcode: string | null;
+    quantity: number;
+    category: string | null;
+  } | null>(null);
+  const [scannedBarcode, setScannedBarcode] = useState('');
+  const [showScanActions, setShowScanActions] = useState(false);
   const modal = useGlassModal();
   const confirm = useConfirm();
+
+  const handleBarcodeScan = useCallback(async (barcode: string) => {
+    const result = await lookupPartByBarcode(barcode);
+    setScannedBarcode(barcode);
+    if (result.success && result.data) {
+      setScannedPart(result.data);
+    } else {
+      setScannedPart(null);
+    }
+    setShowScanActions(true);
+  }, []);
+
+  useHardwareScanner({ onScan: handleBarcodeScan });
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -210,6 +240,10 @@ export function InventoryClient({
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
         <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => setShowScanner(true)}>
+            <ScanBarcode className="mr-1 h-3.5 w-3.5" />
+            {t('scanBarcode')}
+          </Button>
           <Button size="sm" variant="outline" onClick={() => setShowMarkup(true)}>
             <Percent className="mr-1 h-3.5 w-3.5" />
             {t('applyMarkup')}
@@ -227,6 +261,7 @@ export function InventoryClient({
           <TableHeader>
             <TableRow>
               <TableHead>{t('table.partNumber')}</TableHead>
+              <TableHead className="hidden lg:table-cell">{t('table.barcode')}</TableHead>
               <TableHead>{t('table.name')}</TableHead>
               <TableHead className="hidden sm:table-cell">{t('table.category')}</TableHead>
               <TableHead>{t('table.inStock')}</TableHead>
@@ -240,7 +275,7 @@ export function InventoryClient({
           <TableBody>
             {data.parts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={10} className="h-32 text-center text-muted-foreground">
                   {search || category ? t('empty.noMatch') : t('empty.noParts')}
                 </TableCell>
               </TableRow>
@@ -259,6 +294,13 @@ export function InventoryClient({
                     <TableCell>
                       {part.partNumber ? (
                         <span className="font-mono text-sm">{part.partNumber}</span>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {part.barcode ? (
+                        <span className="font-mono text-sm">{part.barcode}</span>
                       ) : (
                         <span className="text-muted-foreground">-</span>
                       )}
@@ -372,13 +414,18 @@ export function InventoryClient({
       />
 
       <InventoryPartForm
+        key={editPart?.id ?? scannedBarcode ?? 'new'}
         open={showForm}
         onOpenChange={(open) => {
           setShowForm(open);
-          if (!open) setEditPart(null);
+          if (!open) {
+            setEditPart(null);
+            setScannedBarcode('');
+          }
         }}
         part={editPart ?? undefined}
         markupMultiplier={initialMarkup}
+        initialBarcode={!editPart ? scannedBarcode : undefined}
       />
 
       {/* Bulk Markup Dialog */}
@@ -415,6 +462,32 @@ export function InventoryClient({
           </div>
         </MarkupDialogContent>
       </MarkupDialog>
+
+      <BarcodeScannerDialog
+        open={showScanner}
+        onOpenChange={setShowScanner}
+        onScan={handleBarcodeScan}
+        title={t('scanBarcode')}
+      />
+
+      <BarcodeScanActionDialog
+        open={showScanActions}
+        onOpenChange={setShowScanActions}
+        part={scannedPart}
+        barcode={scannedBarcode}
+        onEditPart={(partId) => {
+          const part = data.parts.find((p) => p.id === partId);
+          if (part) {
+            setEditPart(part);
+            setShowForm(true);
+          }
+        }}
+        onCreatePart={(barcode) => {
+          setEditPart(null);
+          setScannedBarcode(barcode);
+          setShowForm(true);
+        }}
+      />
     </div>
   );
 }

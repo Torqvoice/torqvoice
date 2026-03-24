@@ -13,7 +13,8 @@
     "sellPrice": "Salgspris",
     "supplier": "Leverandør",
     "location": "Plassering",
-    "low": "Lav"
+    "low": "Lav",
+    "barcode": "Strekkode"
   },
   "empty": {
     "noMatch": "Ingen deler samsvarer med søket ditt.",
@@ -43,6 +44,17 @@
     "saveFailed": "Kunne ikke lagre delen",
     "error": "Feil"
   },
+  "scanBarcode": "Skann",
+  "barcodeScan": {
+    "title": "Skannet del",
+    "notFound": "Ingen del funnet for strekkode \"{barcode}\"",
+    "createNew": "Opprett ny del",
+    "addStock": "Legg til på lager",
+    "editPart": "Rediger del",
+    "currentStock": "Nåværende beholdning: {quantity}",
+    "addedStock": "{amount} lagt til på lager",
+    "customAmount": "Antall..."
+  },
   "form": {
     "editPart": "Rediger del",
     "addNewPart": "Legg til ny del",
@@ -62,6 +74,8 @@
     "imageSizeError": "Bildet må være under 5 MB",
     "partNumber": "Delenummer",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Strekkode",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Navn *",
     "namePlaceholder": "Bremseklosssett",
     "category": "Kategori",
