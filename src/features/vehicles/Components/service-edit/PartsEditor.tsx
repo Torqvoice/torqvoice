@@ -36,17 +36,17 @@ export function PartsEditor({
     <div className="rounded-lg border p-3 space-y-2">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">{t('title')}</h3>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           {hasInventory && (
             <Button type="button" variant="outline" size="sm" onClick={onOpenInventory}>
-              <Package className="mr-1 h-3.5 w-3.5" />
-              {t('fromInventory')}
+              <Package className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">{t('fromInventory')}</span>
             </Button>
           )}
           {onScanBarcode && (
             <Button type="button" variant="outline" size="sm" onClick={onScanBarcode}>
-              <ScanBarcode className="mr-1 h-3.5 w-3.5" />
-              {t('scanBarcode')}
+              <ScanBarcode className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">{t('scanBarcode')}</span>
             </Button>
           )}
           <Button
@@ -55,8 +55,8 @@ export function PartsEditor({
             size="sm"
             onClick={() => setPartItems((prev) => [...prev, emptyPart()])}
           >
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            {t('addPart')}
+            <Plus className="h-3.5 w-3.5 sm:mr-1" />
+            <span className="hidden sm:inline">{t('addPart')}</span>
           </Button>
         </div>
       </div>

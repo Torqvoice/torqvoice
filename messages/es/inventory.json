@@ -53,7 +53,8 @@
     "editPart": "Editar pieza",
     "currentStock": "Stock actual: {quantity}",
     "addedStock": "{amount} agregados al stock",
-    "customAmount": "Cant..."
+    "customAmount": "Cant...",
+    "scanParts": "Escanear piezas"
   },
   "form": {
     "editPart": "Editar pieza",

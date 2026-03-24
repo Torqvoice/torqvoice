@@ -53,7 +53,8 @@
     "editPart": "Parçayı düzenle",
     "currentStock": "Mevcut stok: {quantity}",
     "addedStock": "Stoka {amount} eklendi",
-    "customAmount": "Adet..."
+    "customAmount": "Adet...",
+    "scanParts": "Parça tara"
   },
   "form": {
     "editPart": "Parçayı düzenle",

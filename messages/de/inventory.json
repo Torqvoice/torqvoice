@@ -53,7 +53,8 @@
     "editPart": "Teil bearbeiten",
     "currentStock": "Aktueller Bestand: {quantity}",
     "addedStock": "{amount} zum Bestand hinzugefügt",
-    "customAmount": "Menge..."
+    "customAmount": "Menge...",
+    "scanParts": "Teile scannen"
   },
   "form": {
     "editPart": "Teil bearbeiten",

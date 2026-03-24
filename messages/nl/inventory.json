@@ -53,7 +53,8 @@
     "editPart": "Onderdeel bewerken",
     "currentStock": "Huidige voorraad: {quantity}",
     "addedStock": "{amount} toegevoegd aan voorraad",
-    "customAmount": "Aantal..."
+    "customAmount": "Aantal...",
+    "scanParts": "Onderdelen scannen"
   },
   "form": {
     "editPart": "Onderdeel bewerken",

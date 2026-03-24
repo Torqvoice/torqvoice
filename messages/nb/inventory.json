@@ -53,7 +53,8 @@
     "editPart": "Rediger del",
     "currentStock": "Nåværende beholdning: {quantity}",
     "addedStock": "{amount} lagt til på lager",
-    "customAmount": "Antall..."
+    "customAmount": "Antall...",
+    "scanParts": "Skann deler"
   },
   "form": {
     "editPart": "Rediger del",

@@ -53,7 +53,8 @@
     "editPart": "Editar peça",
     "currentStock": "Estoque atual: {quantity}",
     "addedStock": "{amount} adicionados ao estoque",
-    "customAmount": "Qtd..."
+    "customAmount": "Qtd...",
+    "scanParts": "Escanear peças"
   },
   "form": {
     "editPart": "Editar peça",

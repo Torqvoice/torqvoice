@@ -53,7 +53,8 @@
     "editPart": "Edit Part",
     "currentStock": "Current stock: {quantity}",
     "addedStock": "Added {amount} to stock",
-    "customAmount": "Qty..."
+    "customAmount": "Qty...",
+    "scanParts": "Scan Parts"
   },
   "form": {
     "editPart": "Edit Part",

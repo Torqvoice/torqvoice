@@ -53,7 +53,8 @@
     "editPart": "Modifica pezzo",
     "currentStock": "Stock attuale: {quantity}",
     "addedStock": "{amount} aggiunti allo stock",
-    "customAmount": "Qtà..."
+    "customAmount": "Qtà...",
+    "scanParts": "Scansiona ricambi"
   },
   "form": {
     "editPart": "Modifica ricambio",
