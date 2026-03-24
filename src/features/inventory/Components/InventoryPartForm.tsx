@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { useGlassModal } from "@/components/glass-modal";
 import { createInventoryPart, updateInventoryPart } from "../Actions/inventoryActions";
 import { aiAnalyzePartImage } from "../Actions/aiAnalyzePartImage";
-import { Camera, ExternalLink, ImageIcon, Loader2, Sparkles, Upload, X } from "lucide-react";
+import { Camera, ExternalLink, ImageIcon, Loader2, Plus, Sparkles, Upload, X } from "lucide-react";
 import { compressImage } from "@/lib/compress-image";
 
 interface InventoryPartFormProps {
@@ -41,6 +41,7 @@ interface InventoryPartFormProps {
     supplierEmail: string | null;
     supplierUrl: string | null;
     imageUrl: string | null;
+    gallery: { id?: string; url: string; fileName?: string | null; description?: string | null; sortOrder: number }[];
     location: string | null;
   };
 }
@@ -54,7 +55,11 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
   const [uploading, setUploading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [supplierUrl, setSupplierUrl] = useState(part?.supplierUrl ?? "");
-  const [imageUrl, setImageUrl] = useState(part?.imageUrl ?? "");
+  const [gallery, setGallery] = useState<{ id?: string; url: string; fileName?: string | null; description?: string | null; sortOrder: number }[]>(() => {
+    if (part?.gallery && part.gallery.length > 0) return part.gallery;
+    if (part?.imageUrl) return [{ url: part.imageUrl, sortOrder: 0 }];
+    return [];
+  });
   const [dragOver, setDragOver] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -87,7 +92,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
         return;
       }
       const { url } = await res.json();
-      setImageUrl(url);
+      setGallery((prev) => [...prev, { url, sortOrder: prev.length }]);
       toast.success(t('form.imageUploaded'), { id: toastId });
     } catch {
       toast.error(t('form.imageUploadFailed'), { id: toastId });
@@ -98,8 +103,12 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) uploadFile(file);
+      const files = e.target.files;
+      if (files) {
+        for (const file of Array.from(files)) {
+          uploadFile(file);
+        }
+      }
       e.target.value = "";
     },
     [uploadFile]
@@ -163,22 +172,40 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
           unitCostInput.value = String(metadata.unitCost);
         }
       }
-      if (metadata.imageUrl && !imageUrl) {
-        setImageUrl(metadata.imageUrl);
+      if (metadata.imageUrl && gallery.length === 0) {
+        setGallery([{ url: metadata.imageUrl, sortOrder: 0 }]);
       }
     } catch {
       modal.open("error", t('form.fetchFailed'), t('form.fetchError'));
     } finally {
       setFetching(false);
     }
-  }, [supplierUrl, imageUrl, modal]);
+  }, [supplierUrl, gallery, modal]);
 
   const handleAiAnalyze = useCallback(async () => {
-    if (!imageUrl) return;
+    if (gallery.length === 0) return;
     setAnalyzing(true);
     const toastId = toast.loading(t('form.aiAnalyzing'));
     try {
-      const result = await aiAnalyzePartImage(imageUrl);
+      // Convert images to JPEG base64 on client (AI APIs require supported formats)
+      const dataUris = await Promise.all(gallery.map(g =>
+        new Promise<string>((resolve) => {
+          const img = new window.Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) { resolve(g.url); return; }
+            ctx.drawImage(img, 0, 0);
+            resolve(canvas.toDataURL("image/jpeg", 0.85));
+          };
+          img.onerror = () => resolve(g.url);
+          img.src = g.url;
+        })
+      ));
+      const result = await aiAnalyzePartImage(dataUris);
       if (!result.success || !result.data) {
         toast.error(result.error || t('form.aiAnalyzeFailed'), { id: toastId });
         return;
@@ -207,7 +234,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
     } finally {
       setAnalyzing(false);
     }
-  }, [imageUrl, t]);
+  }, [gallery, t]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -228,7 +255,13 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
       supplierPhone: (formData.get("supplierPhone") as string) || undefined,
       supplierEmail: (formData.get("supplierEmail") as string) || undefined,
       supplierUrl: supplierUrl || undefined,
-      imageUrl: imageUrl || undefined,
+      gallery: gallery.map((g, i) => ({
+        id: g.id,
+        url: g.url,
+        fileName: g.fileName || undefined,
+        description: g.description || undefined,
+        sortOrder: i,
+      })),
       location: (formData.get("location") as string) || undefined,
     };
 
@@ -249,7 +282,13 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
   const handleOpenChange = (isOpen: boolean) => {
     if (isOpen) {
       setSupplierUrl(part?.supplierUrl ?? "");
-      setImageUrl(part?.imageUrl ?? "");
+      if (part?.gallery && part.gallery.length > 0) {
+        setGallery(part.gallery);
+      } else if (part?.imageUrl) {
+        setGallery([{ url: part.imageUrl, sortOrder: 0 }]);
+      } else {
+        setGallery([]);
+      }
     }
     onOpenChange(isOpen);
   };
@@ -306,53 +345,65 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
           {/* Image + fields: stacked on mobile, side-by-side on sm+ */}
           <div className="flex flex-col gap-4 sm:flex-row sm:gap-5">
             {/* Image area */}
-            <div className="flex-shrink-0 sm:w-44">
+            <div className={`flex-shrink-0 ${gallery.length > 0 ? "sm:w-52" : "sm:w-44"}`}>
               <Label className="mb-2 block">{t('form.image')}</Label>
-              <div
-                className={`relative h-36 w-full overflow-hidden rounded-lg border-2 border-dashed bg-muted transition-colors sm:h-44 sm:w-44 ${
-                  dragOver ? "border-primary bg-primary/5" : "border-muted-foreground/25"
-                }`}
-                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                onDragLeave={() => setDragOver(false)}
-                onDrop={handleDrop}
-              >
-                {imageUrl ? (
-                  <>
-                    <img
-                      src={imageUrl}
-                      alt="Part"
-                      className="h-full w-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setImageUrl("")}
-                      className="absolute right-1 top-1 rounded-full bg-background/80 p-0.5 text-muted-foreground hover:text-foreground"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    type="button"
+              {gallery.length > 0 ? (
+                <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-2">
+                  {gallery.map((g, i) => (
+                    <div key={g.url} className="relative aspect-square overflow-hidden rounded-lg border bg-muted">
+                      <img src={g.url} alt={`Part ${i + 1}`} className="h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setGallery((prev) => prev.filter((_, j) => j !== i))}
+                        className="absolute right-0.5 top-0.5 rounded-full bg-background/80 p-0.5 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {/* Add more */}
+                  <div
+                    className={`flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted transition-colors ${
+                      dragOver ? "border-primary bg-primary/5" : "border-muted-foreground/25"
+                    }`}
+                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex h-full w-full flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
                   >
                     {uploading ? (
-                      <Loader2 className="h-8 w-8 animate-spin" />
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                     ) : (
-                      <>
-                        <ImageIcon className="h-8 w-8" />
-                        <span className="text-xs">{t('form.dropOrClick')}</span>
-                      </>
+                      <Plus className="h-6 w-6 text-muted-foreground" />
                     )}
-                  </button>
-                )}
-              </div>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={`flex h-36 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted transition-colors sm:h-44 ${
+                    dragOver ? "border-primary bg-primary/5" : "border-muted-foreground/25"
+                  }`}
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {uploading ? (
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  ) : (
+                    <>
+                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                      <span className="mt-2 text-xs text-muted-foreground">{t('form.dropOrClick')}</span>
+                    </>
+                  )}
+                </div>
+              )}
               {/* Hidden file inputs */}
               <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/avif"
+                multiple
                 className="hidden"
                 onChange={handleFileChange}
               />
@@ -385,10 +436,10 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                   disabled={uploading}
                 >
                   <Upload className="mr-1 h-3 w-3" />
-                  {imageUrl ? t('form.replace') : t('form.upload')}
+                  {t('form.upload')}
                 </Button>
               </div>
-              {imageUrl && (
+              {gallery.length > 0 && (
                 <Button
                   type="button"
                   variant="outline"

@@ -88,22 +88,22 @@ export async function visionCompletion(
   organizationId: string,
   systemPrompt: string,
   userText: string,
-  imageUrl: string,
+  imageUrls: string | string[],
 ): Promise<string> {
   const config = await getAiConfig(organizationId);
   const client = createClient(config);
+
+  const urls = Array.isArray(imageUrls) ? imageUrls : [imageUrls];
+  const content: Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }> = [
+    { type: "text", text: userText },
+    ...urls.map((url) => ({ type: "image_url" as const, image_url: { url } })),
+  ];
 
   const response = await client.chat.completions.create({
     model: config.model,
     messages: [
       { role: "system", content: systemPrompt },
-      {
-        role: "user",
-        content: [
-          { type: "text", text: userText },
-          { type: "image_url", image_url: { url: imageUrl } },
-        ],
-      },
+      { role: "user", content },
     ],
     temperature: 0.3,
     max_tokens: 1000,

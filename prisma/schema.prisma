@@ -426,8 +426,25 @@ model InventoryPart {
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  gallery StoredImage[] @relation("InventoryPartImages")
+
   @@index([organizationId])
   @@map("inventory_parts")
+}
+
+model StoredImage {
+  id          String   @id @default(cuid())
+  url         String
+  fileName    String?
+  description String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  inventoryPartId String?
+  inventoryPart   InventoryPart? @relation("InventoryPartImages", fields: [inventoryPartId], references: [id], onDelete: Cascade)
+
+  @@index([inventoryPartId])
+  @@map("stored_images")
 }
 
 model Quote {

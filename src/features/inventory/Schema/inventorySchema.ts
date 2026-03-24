@@ -14,7 +14,13 @@ export const createInventoryPartSchema = z.object({
   supplierPhone: z.string().optional(),
   supplierEmail: z.string().optional(),
   supplierUrl: z.string().url().optional().or(z.literal("")),
-  imageUrl: z.string().url().optional().or(z.literal("")),
+  gallery: z.array(z.object({
+    id: z.string().optional(),
+    url: z.string(),
+    fileName: z.string().optional(),
+    description: z.string().optional(),
+    sortOrder: z.number().int().default(0),
+  })).optional().default([]),
   location: z.string().optional(),
 });
 
