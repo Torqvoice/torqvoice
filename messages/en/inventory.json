@@ -12,9 +12,9 @@
     "unitCost": "Unit Cost",
     "sellPrice": "Sell Price",
     "supplier": "Supplier",
-    "barcode": "Barcode",
     "location": "Location",
-    "low": "Low"
+    "low": "Low",
+    "barcode": "Barcode"
   },
   "empty": {
     "noMatch": "No parts match your search.",
@@ -43,6 +43,17 @@
     "applyFailed": "Failed to apply markup",
     "saveFailed": "Failed to save part",
     "error": "Error"
+  },
+  "scanBarcode": "Scan",
+  "barcodeScan": {
+    "title": "Scanned Part",
+    "notFound": "No part found for barcode \"{barcode}\"",
+    "createNew": "Create New Part",
+    "addStock": "Add to Stock",
+    "editPart": "Edit Part",
+    "currentStock": "Current stock: {quantity}",
+    "addedStock": "Added {amount} to stock",
+    "customAmount": "Qty..."
   },
   "form": {
     "editPart": "Edit Part",

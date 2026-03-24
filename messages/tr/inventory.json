@@ -12,9 +12,9 @@
     "unitCost": "Birim maliyet",
     "sellPrice": "Satış fiyatı",
     "supplier": "Tedarikçi",
-    "barcode": "Barkod",
     "location": "Konum",
-    "low": "Düşük"
+    "low": "Düşük",
+    "barcode": "Barkod"
   },
   "empty": {
     "noMatch": "Aramanızla eşleşen parça bulunamadı.",
@@ -43,6 +43,17 @@
     "applyFailed": "Kâr marjı uygulanamadı",
     "saveFailed": "Parça kaydedilemedi",
     "error": "Hata"
+  },
+  "scanBarcode": "Tara",
+  "barcodeScan": {
+    "title": "Taranan parça",
+    "notFound": "\"{barcode}\" barkodu için parça bulunamadı",
+    "createNew": "Yeni parça oluştur",
+    "addStock": "Stoka ekle",
+    "editPart": "Parçayı düzenle",
+    "currentStock": "Mevcut stok: {quantity}",
+    "addedStock": "Stoka {amount} eklendi",
+    "customAmount": "Adet..."
   },
   "form": {
     "editPart": "Parçayı düzenle",

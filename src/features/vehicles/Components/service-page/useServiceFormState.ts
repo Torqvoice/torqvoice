@@ -28,6 +28,7 @@ export function useServiceFormState({
   const [discountType, setDiscountType] = useState<string>(initialData.discountType || 'none')
   const [discountValue, setDiscountValue] = useState(initialData.discountValue ?? 0)
   const [showInventoryPicker, setShowInventoryPicker] = useState(false)
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false)
   const [showPresetPicker, setShowPresetPicker] = useState(false)
 
   // Autosave state
@@ -182,6 +183,7 @@ export function useServiceFormState({
     partItems, laborItems,
     taxRate, discountType, discountValue,
     showInventoryPicker, setShowInventoryPicker,
+    showBarcodeScanner, setShowBarcodeScanner,
     showPresetPicker, setShowPresetPicker,
     // Autosave
     hasUnsavedChanges, setHasUnsavedChanges, showSaved,

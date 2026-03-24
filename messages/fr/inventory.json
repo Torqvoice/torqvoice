@@ -12,9 +12,9 @@
     "unitCost": "Coût unitaire",
     "sellPrice": "Prix de vente",
     "supplier": "Fournisseur",
-    "barcode": "Code-barres",
     "location": "Emplacement",
-    "low": "Bas"
+    "low": "Bas",
+    "barcode": "Code-barres"
   },
   "empty": {
     "noMatch": "Aucune pièce ne correspond à votre recherche.",
@@ -43,6 +43,17 @@
     "applyFailed": "Impossible d'appliquer la marge",
     "saveFailed": "Impossible d'enregistrer la pièce",
     "error": "Erreur"
+  },
+  "scanBarcode": "Scanner",
+  "barcodeScan": {
+    "title": "Pièce scannée",
+    "notFound": "Aucune pièce trouvée pour le code-barres \"{barcode}\"",
+    "createNew": "Créer une nouvelle pièce",
+    "addStock": "Ajouter au stock",
+    "editPart": "Modifier la pièce",
+    "currentStock": "Stock actuel : {quantity}",
+    "addedStock": "{amount} ajoutés au stock",
+    "customAmount": "Qté..."
   },
   "form": {
     "editPart": "Modifier la pièce",

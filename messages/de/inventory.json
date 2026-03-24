@@ -12,9 +12,9 @@
     "unitCost": "Stückkosten",
     "sellPrice": "Verkaufspreis",
     "supplier": "Lieferant",
-    "barcode": "Barcode",
     "location": "Lagerort",
-    "low": "Niedrig"
+    "low": "Niedrig",
+    "barcode": "Barcode"
   },
   "empty": {
     "noMatch": "Keine Teile entsprechen Ihrer Suche.",
@@ -43,6 +43,17 @@
     "applyFailed": "Aufschlag konnte nicht angewendet werden",
     "saveFailed": "Teil konnte nicht gespeichert werden",
     "error": "Fehler"
+  },
+  "scanBarcode": "Scannen",
+  "barcodeScan": {
+    "title": "Gescanntes Teil",
+    "notFound": "Kein Teil für Barcode \"{barcode}\" gefunden",
+    "createNew": "Neues Teil anlegen",
+    "addStock": "Bestand auffüllen",
+    "editPart": "Teil bearbeiten",
+    "currentStock": "Aktueller Bestand: {quantity}",
+    "addedStock": "{amount} zum Bestand hinzugefügt",
+    "customAmount": "Menge..."
   },
   "form": {
     "editPart": "Teil bearbeiten",

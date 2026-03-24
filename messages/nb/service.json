@@ -77,7 +77,11 @@
     "inventoryTitle": "Velg del fra beholdning",
     "searchInventory": "Søk beholdning...",
     "inStock": "{quantity} på lager",
-    "noInventory": "Ingen beholdningsdeler funnet."
+    "noInventory": "Ingen beholdningsdeler funnet.",
+    "scanBarcode": "Skann",
+    "scanTitle": "Skann strekkode",
+    "partFound": "\"{name}\" lagt til fra lageret",
+    "partNotFound": "Ingen del funnet for strekkode \"{barcode}\""
   },
   "labor": {
     "title": "Arbeid",

@@ -77,7 +77,11 @@
     "inventoryTitle": "Seleziona Pezzo da Inventario",
     "searchInventory": "Cerca inventario...",
     "inStock": "{quantity} in magazzino",
-    "noInventory": "Nessun pezzo inventario trovato."
+    "noInventory": "Nessun pezzo inventario trovato.",
+    "scanBarcode": "Scansiona",
+    "scanTitle": "Scansiona codice a barre",
+    "partFound": "\"{name}\" aggiunto dall'inventario",
+    "partNotFound": "Nessun pezzo trovato per il codice a barre \"{barcode}\""
   },
   "labor": {
     "title": "Manodopera",

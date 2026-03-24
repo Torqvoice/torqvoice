@@ -12,9 +12,9 @@
     "unitCost": "Custo unitário",
     "sellPrice": "Preço de venda",
     "supplier": "Fornecedor",
-    "barcode": "Código de barras",
     "location": "Localização",
-    "low": "Baixo"
+    "low": "Baixo",
+    "barcode": "Código de barras"
   },
   "empty": {
     "noMatch": "Nenhuma peça corresponde à sua busca.",
@@ -43,6 +43,17 @@
     "applyFailed": "Não foi possível aplicar a margem",
     "saveFailed": "Não foi possível salvar a peça",
     "error": "Erro"
+  },
+  "scanBarcode": "Escanear",
+  "barcodeScan": {
+    "title": "Peça escaneada",
+    "notFound": "Nenhuma peça encontrada para o código \"{barcode}\"",
+    "createNew": "Criar nova peça",
+    "addStock": "Adicionar ao estoque",
+    "editPart": "Editar peça",
+    "currentStock": "Estoque atual: {quantity}",
+    "addedStock": "{amount} adicionados ao estoque",
+    "customAmount": "Qtd..."
   },
   "form": {
     "editPart": "Editar peça",

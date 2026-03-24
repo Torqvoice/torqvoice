@@ -17,6 +17,7 @@ interface DetailsLeftColumnProps {
   inventoryParts: InventoryPartOption[]
   hasPresets?: boolean
   onOpenPresets?: () => void
+  onScanBarcode?: () => void
   aiEnabled?: boolean
 }
 
@@ -29,6 +30,7 @@ export function DetailsLeftColumn({
   inventoryParts,
   hasPresets,
   onOpenPresets,
+  onScanBarcode,
   aiEnabled,
 }: DetailsLeftColumnProps) {
   return (
@@ -41,6 +43,7 @@ export function DetailsLeftColumn({
         currencyCode={currencyCode}
         hasInventory={inventoryParts.length > 0}
         onOpenInventory={() => formState.setShowInventoryPicker(true)}
+        onScanBarcode={onScanBarcode}
       />
       <LaborEditor
         laborItems={formState.laborItems}

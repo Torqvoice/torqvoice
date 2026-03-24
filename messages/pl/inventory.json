@@ -12,9 +12,9 @@
     "unitCost": "Koszt jedn.",
     "sellPrice": "Cena sprzedaży",
     "supplier": "Dostawca",
-    "barcode": "Kod kreskowy",
     "location": "Lokalizacja",
-    "low": "Niski"
+    "low": "Niski",
+    "barcode": "Kod kreskowy"
   },
   "empty": {
     "noMatch": "Żadne części nie pasują do wyszukiwania.",
@@ -43,6 +43,17 @@
     "applyFailed": "Nie udało się zastosować marży",
     "saveFailed": "Nie udało się zapisać części",
     "error": "Błąd"
+  },
+  "scanBarcode": "Skanuj",
+  "barcodeScan": {
+    "title": "Zeskanowana część",
+    "notFound": "Nie znaleziono części dla kodu \"{barcode}\"",
+    "createNew": "Utwórz nową część",
+    "addStock": "Dodaj do stanu",
+    "editPart": "Edytuj część",
+    "currentStock": "Aktualny stan: {quantity}",
+    "addedStock": "Dodano {amount} do stanu",
+    "customAmount": "Ilość..."
   },
   "form": {
     "editPart": "Edytuj część",

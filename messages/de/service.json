@@ -77,7 +77,11 @@
     "inventoryTitle": "Teil aus Bestand auswählen",
     "searchInventory": "Bestand durchsuchen...",
     "inStock": "{quantity} auf Lager",
-    "noInventory": "Keine Bestandteile gefunden."
+    "noInventory": "Keine Bestandteile gefunden.",
+    "scanBarcode": "Scannen",
+    "scanTitle": "Barcode scannen",
+    "partFound": "\"{name}\" aus dem Lager hinzugefügt",
+    "partNotFound": "Kein Teil für Barcode \"{barcode}\" gefunden"
   },
   "labor": {
     "title": "Arbeit",

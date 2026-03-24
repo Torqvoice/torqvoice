@@ -12,9 +12,9 @@
     "unitCost": "Kostprijs",
     "sellPrice": "Verkoopprijs",
     "supplier": "Leverancier",
-    "barcode": "Barcode",
     "location": "Locatie",
-    "low": "Laag"
+    "low": "Laag",
+    "barcode": "Barcode"
   },
   "empty": {
     "noMatch": "Geen onderdelen gevonden voor uw zoekopdracht.",
@@ -43,6 +43,17 @@
     "applyFailed": "Kan opslag niet toepassen",
     "saveFailed": "Kan onderdeel niet opslaan",
     "error": "Fout"
+  },
+  "scanBarcode": "Scannen",
+  "barcodeScan": {
+    "title": "Gescand onderdeel",
+    "notFound": "Geen onderdeel gevonden voor barcode \"{barcode}\"",
+    "createNew": "Nieuw onderdeel aanmaken",
+    "addStock": "Toevoegen aan voorraad",
+    "editPart": "Onderdeel bewerken",
+    "currentStock": "Huidige voorraad: {quantity}",
+    "addedStock": "{amount} toegevoegd aan voorraad",
+    "customAmount": "Aantal..."
   },
   "form": {
     "editPart": "Onderdeel bewerken",

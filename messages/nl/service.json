@@ -77,7 +77,11 @@
     "inventoryTitle": "Onderdeel uit voorraad selecteren",
     "searchInventory": "Voorraad zoeken...",
     "inStock": "{quantity} in voorraad",
-    "noInventory": "Geen voorraadarticelen gevonden."
+    "noInventory": "Geen voorraadarticelen gevonden.",
+    "scanBarcode": "Scannen",
+    "scanTitle": "Barcode scannen",
+    "partFound": "\"{name}\" toegevoegd uit voorraad",
+    "partNotFound": "Geen onderdeel gevonden voor barcode \"{barcode}\""
   },
   "labor": {
     "title": "Arbeidskosten",

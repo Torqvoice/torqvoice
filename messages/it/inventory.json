@@ -12,9 +12,9 @@
     "unitCost": "Costo unitario",
     "sellPrice": "Prezzo di vendita",
     "supplier": "Fornitore",
-    "barcode": "Codice a barre",
     "location": "Posizione",
-    "low": "Basso"
+    "low": "Basso",
+    "barcode": "Codice a barre"
   },
   "empty": {
     "noMatch": "Nessun ricambio corrisponde alla ricerca.",
@@ -43,6 +43,17 @@
     "applyFailed": "Impossibile applicare il ricarico",
     "saveFailed": "Impossibile salvare il ricambio",
     "error": "Errore"
+  },
+  "scanBarcode": "Scansiona",
+  "barcodeScan": {
+    "title": "Pezzo scansionato",
+    "notFound": "Nessun pezzo trovato per il codice \"{barcode}\"",
+    "createNew": "Crea nuovo pezzo",
+    "addStock": "Aggiungi allo stock",
+    "editPart": "Modifica pezzo",
+    "currentStock": "Stock attuale: {quantity}",
+    "addedStock": "{amount} aggiunti allo stock",
+    "customAmount": "Qtà..."
   },
   "form": {
     "editPart": "Modifica ricambio",

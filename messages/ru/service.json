@@ -77,7 +77,11 @@
     "inventoryTitle": "Выбор запчасти со склада",
     "searchInventory": "Поиск на складе...",
     "inStock": "{quantity} в наличии",
-    "noInventory": "Запчасти на складе не найдены."
+    "noInventory": "Запчасти на складе не найдены.",
+    "scanBarcode": "Сканировать",
+    "scanTitle": "Сканировать штрихкод",
+    "partFound": "\"{name}\" добавлено из склада",
+    "partNotFound": "Деталь для штрихкода \"{barcode}\" не найдена"
   },
   "labor": {
     "title": "Работа",

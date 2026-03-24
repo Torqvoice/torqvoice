@@ -12,9 +12,9 @@
     "unitCost": "Enhetskostnad",
     "sellPrice": "Salgspris",
     "supplier": "Leverandør",
-    "barcode": "Strekkode",
     "location": "Plassering",
-    "low": "Lav"
+    "low": "Lav",
+    "barcode": "Strekkode"
   },
   "empty": {
     "noMatch": "Ingen deler samsvarer med søket ditt.",
@@ -43,6 +43,17 @@
     "applyFailed": "Kunne ikke bruke påslaget",
     "saveFailed": "Kunne ikke lagre delen",
     "error": "Feil"
+  },
+  "scanBarcode": "Skann",
+  "barcodeScan": {
+    "title": "Skannet del",
+    "notFound": "Ingen del funnet for strekkode \"{barcode}\"",
+    "createNew": "Opprett ny del",
+    "addStock": "Legg til på lager",
+    "editPart": "Rediger del",
+    "currentStock": "Nåværende beholdning: {quantity}",
+    "addedStock": "{amount} lagt til på lager",
+    "customAmount": "Antall..."
   },
   "form": {
     "editPart": "Rediger del",

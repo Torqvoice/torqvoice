@@ -77,7 +77,11 @@
     "inventoryTitle": "Stoktan Parça Seç",
     "searchInventory": "Stokte ara...",
     "inStock": "{quantity} stokta",
-    "noInventory": "Stok parçası bulunamadı."
+    "noInventory": "Stok parçası bulunamadı.",
+    "scanBarcode": "Tara",
+    "scanTitle": "Barkod tara",
+    "partFound": "\"{name}\" envanterden eklendi",
+    "partNotFound": "\"{barcode}\" barkodu için parça bulunamadı"
   },
   "labor": {
     "title": "İşçilik",
