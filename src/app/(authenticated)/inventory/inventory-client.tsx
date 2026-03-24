@@ -210,7 +210,7 @@ export function InventoryClient({
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         <div className="flex flex-1 items-center gap-2">
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -225,7 +225,7 @@ export function InventoryClient({
             value={category || "all"}
             onValueChange={(v) => navigate({ category: v === "all" ? undefined : v })}
           >
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-[120px] sm:w-[150px]">
               <SelectValue placeholder={t('categoryPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
@@ -239,19 +239,21 @@ export function InventoryClient({
           </Select>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-2">
           <Button size="sm" variant="outline" onClick={() => setShowScanner(true)}>
-            <ScanBarcode className="mr-1 h-3.5 w-3.5" />
-            {t('scanBarcode')}
+            <ScanBarcode className="h-3.5 w-3.5 sm:mr-1" />
+            <span className="hidden sm:inline">{t('scanBarcode')}</span>
           </Button>
-          <Button size="sm" variant="outline" onClick={() => setShowMarkup(true)}>
-            <Percent className="mr-1 h-3.5 w-3.5" />
-            {t('applyMarkup')}
-          </Button>
-          <Button size="sm" onClick={() => setShowForm(true)}>
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            {t('addPart')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => setShowMarkup(true)}>
+              <Percent className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">{t('applyMarkup')}</span>
+            </Button>
+            <Button size="sm" onClick={() => setShowForm(true)}>
+              <Plus className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">{t('addPart')}</span>
+            </Button>
+          </div>
         </div>
       </div>
 
