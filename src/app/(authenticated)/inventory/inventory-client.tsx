@@ -443,6 +443,10 @@ export function InventoryClient({
         part={editPart ?? undefined}
         markupMultiplier={initialMarkup}
         initialBarcode={!editPart ? scannedBarcode : undefined}
+        onViewImages={(urls, startIndex) => {
+          setGalleryImages(urls);
+          setGalleryIndex(startIndex);
+        }}
       />
 
       {/* Bulk Markup Dialog */}

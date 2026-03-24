@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -25,6 +26,7 @@ interface InventoryPartFormProps {
   onOpenChange: (open: boolean) => void;
   markupMultiplier?: number;
   initialBarcode?: string;
+  onViewImages?: (urls: string[], startIndex: number) => void;
   part?: {
     id: string;
     partNumber: string | null;
@@ -46,7 +48,7 @@ interface InventoryPartFormProps {
   };
 }
 
-export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, initialBarcode }: InventoryPartFormProps) {
+export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, initialBarcode, onViewImages }: InventoryPartFormProps) {
   const router = useRouter();
   const modal = useGlassModal();
   const t = useTranslations('inventory');
@@ -193,13 +195,20 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
           const img = new window.Image();
           img.crossOrigin = "anonymous";
           img.onload = () => {
+            const maxEdge = 1024;
+            let { naturalWidth: w, naturalHeight: h } = img;
+            if (w > maxEdge || h > maxEdge) {
+              const scale = maxEdge / Math.max(w, h);
+              w = Math.round(w * scale);
+              h = Math.round(h * scale);
+            }
             const canvas = document.createElement("canvas");
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
+            canvas.width = w;
+            canvas.height = h;
             const ctx = canvas.getContext("2d");
             if (!ctx) { resolve(g.url); return; }
-            ctx.drawImage(img, 0, 0);
-            resolve(canvas.toDataURL("image/jpeg", 0.85));
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL("image/jpeg", 0.7));
           };
           img.onerror = () => resolve(g.url);
           img.src = g.url;
@@ -300,6 +309,9 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
           <DialogTitle>
             {part ? t('form.editPart') : t('form.addNewPart')}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {part ? t('form.editPart') : t('form.addNewPart')}
+          </DialogDescription>
         </DialogHeader>
 
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
@@ -350,11 +362,15 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
               {gallery.length > 0 ? (
                 <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-2">
                   {gallery.map((g, i) => (
-                    <div key={g.url} className="relative aspect-square overflow-hidden rounded-lg border bg-muted">
+                    <div
+                      key={g.url}
+                      className="relative aspect-square overflow-hidden rounded-lg border bg-muted cursor-pointer"
+                      onClick={() => { onOpenChange(false); onViewImages?.(gallery.map(img => img.url), i); }}
+                    >
                       <img src={g.url} alt={`Part ${i + 1}`} className="h-full w-full object-cover" />
                       <button
                         type="button"
-                        onClick={() => setGallery((prev) => prev.filter((_, j) => j !== i))}
+                        onClick={(e) => { e.stopPropagation(); setGallery((prev) => prev.filter((_, j) => j !== i)); }}
                         className="absolute right-0.5 top-0.5 rounded-full bg-background/80 p-0.5 text-muted-foreground hover:text-foreground"
                       >
                         <X className="h-3 w-3" />
