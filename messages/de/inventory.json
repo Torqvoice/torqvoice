@@ -12,6 +12,7 @@
     "unitCost": "Stückkosten",
     "sellPrice": "Verkaufspreis",
     "supplier": "Lieferant",
+    "barcode": "Barcode",
     "location": "Lagerort",
     "low": "Niedrig"
   },
@@ -62,6 +63,8 @@
     "imageSizeError": "Das Bild darf maximal 5 MB groß sein",
     "partNumber": "Teilenummer",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Barcode",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Name *",
     "namePlaceholder": "Bremsbelagsatz",
     "category": "Kategorie",

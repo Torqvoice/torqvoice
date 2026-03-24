@@ -12,6 +12,7 @@
     "unitCost": "Coût unitaire",
     "sellPrice": "Prix de vente",
     "supplier": "Fournisseur",
+    "barcode": "Code-barres",
     "location": "Emplacement",
     "low": "Bas"
   },
@@ -62,6 +63,8 @@
     "imageSizeError": "L'image doit faire moins de 5 Mo",
     "partNumber": "Numéro de pièce",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Code-barres",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Nom *",
     "namePlaceholder": "Jeu de plaquettes de frein",
     "category": "Catégorie",

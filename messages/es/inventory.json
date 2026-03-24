@@ -12,6 +12,7 @@
     "unitCost": "Coste unitario",
     "sellPrice": "Precio de venta",
     "supplier": "Proveedor",
+    "barcode": "Código de barras",
     "location": "Ubicación",
     "low": "Bajo"
   },
@@ -62,6 +63,8 @@
     "imageSizeError": "La imagen debe ser menor de 5 MB",
     "partNumber": "Número de pieza",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Código de barras",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Nombre *",
     "namePlaceholder": "Juego de pastillas de freno",
     "category": "Categoría",

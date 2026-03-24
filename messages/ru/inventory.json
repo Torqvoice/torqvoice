@@ -12,6 +12,7 @@
     "unitCost": "Себестоимость",
     "sellPrice": "Цена продажи",
     "supplier": "Поставщик",
+    "barcode": "Штрихкод",
     "location": "Расположение",
     "low": "Мало"
   },
@@ -62,6 +63,8 @@
     "imageSizeError": "Изображение должно быть менее 5МБ",
     "partNumber": "Артикул",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Штрихкод",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Название *",
     "namePlaceholder": "Комплект тормозных колодок",
     "category": "Категория",

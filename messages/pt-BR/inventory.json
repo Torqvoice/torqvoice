@@ -12,6 +12,7 @@
     "unitCost": "Custo unitário",
     "sellPrice": "Preço de venda",
     "supplier": "Fornecedor",
+    "barcode": "Código de barras",
     "location": "Localização",
     "low": "Baixo"
   },
@@ -62,6 +63,8 @@
     "imageSizeError": "A imagem deve ter menos de 5 MB",
     "partNumber": "Número da peça",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Código de barras",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Nome *",
     "namePlaceholder": "Jogo de pastilhas de freio",
     "category": "Categoria",

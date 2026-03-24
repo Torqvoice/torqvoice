@@ -12,6 +12,7 @@
     "unitCost": "Birim maliyet",
     "sellPrice": "Satış fiyatı",
     "supplier": "Tedarikçi",
+    "barcode": "Barkod",
     "location": "Konum",
     "low": "Düşük"
   },
@@ -62,6 +63,8 @@
     "imageSizeError": "Görsel 5 MB'den küçük olmalıdır",
     "partNumber": "Parça numarası",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Barkod",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Ad *",
     "namePlaceholder": "Fren balatası seti",
     "category": "Kategori",

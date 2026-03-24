@@ -12,6 +12,7 @@
     "unitCost": "Unit Cost",
     "sellPrice": "Sell Price",
     "supplier": "Supplier",
+    "barcode": "Barcode",
     "location": "Location",
     "low": "Low"
   },
@@ -62,6 +63,8 @@
     "imageSizeError": "Image must be under 5MB",
     "partNumber": "Part Number",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Barcode",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Name *",
     "namePlaceholder": "Brake Pad Set",
     "category": "Category",

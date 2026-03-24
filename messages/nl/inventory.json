@@ -12,6 +12,7 @@
     "unitCost": "Kostprijs",
     "sellPrice": "Verkoopprijs",
     "supplier": "Leverancier",
+    "barcode": "Barcode",
     "location": "Locatie",
     "low": "Laag"
   },
@@ -62,6 +63,8 @@
     "imageSizeError": "De afbeelding mag maximaal 5 MB zijn",
     "partNumber": "Onderdeelnummer",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Barcode",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Naam *",
     "namePlaceholder": "Remblokkenset",
     "category": "Categorie",

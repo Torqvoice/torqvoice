@@ -26,6 +26,7 @@ interface InventoryPartFormProps {
   part?: {
     id: string;
     partNumber: string | null;
+    barcode: string | null;
     name: string;
     description: string | null;
     category: string | null;
@@ -149,6 +150,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
       setIfEmpty("name", metadata.name);
       setIfEmpty("description", metadata.description);
       setIfEmpty("partNumber", metadata.partNumber);
+      setIfEmpty("barcode", metadata.barcode);
       setIfEmpty("supplier", metadata.supplier);
       setIfEmpty("category", metadata.category);
       if (metadata.unitCost !== undefined) {
@@ -175,6 +177,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
     const data = {
       name: formData.get("name") as string,
       partNumber: (formData.get("partNumber") as string) || undefined,
+      barcode: (formData.get("barcode") as string) || undefined,
       description: (formData.get("description") as string) || undefined,
       category: (formData.get("category") as string) || undefined,
       quantity: Number(formData.get("quantity")) || 0,
@@ -342,7 +345,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
 
             {/* Fields */}
             <div className="flex-1 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="partNumber">{t('form.partNumber')}</Label>
                   <Input
@@ -350,6 +353,15 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier }
                     name="partNumber"
                     placeholder={t('form.partNumberPlaceholder')}
                     defaultValue={part?.partNumber ?? ""}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="barcode">{t('form.barcode')}</Label>
+                  <Input
+                    id="barcode"
+                    name="barcode"
+                    placeholder={t('form.barcodePlaceholder')}
+                    defaultValue={part?.barcode ?? ""}
                   />
                 </div>
                 <div className="space-y-2">

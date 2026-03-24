@@ -12,6 +12,7 @@
     "unitCost": "Koszt jedn.",
     "sellPrice": "Cena sprzedaży",
     "supplier": "Dostawca",
+    "barcode": "Kod kreskowy",
     "location": "Lokalizacja",
     "low": "Niski"
   },
@@ -62,6 +63,8 @@
     "imageSizeError": "Zdjęcie musi mieć mniej niż 5 MB",
     "partNumber": "Numer części",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Kod kreskowy",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Nazwa *",
     "namePlaceholder": "Klocki hamulcowe",
     "category": "Kategoria",

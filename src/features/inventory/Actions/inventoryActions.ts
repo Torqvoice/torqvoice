@@ -30,6 +30,7 @@ export async function getInventoryPartsPaginated(params: {
       where.OR = [
         { name: { contains: q, mode } },
         { partNumber: { contains: q, mode } },
+        { barcode: { contains: q, mode } },
         { description: { contains: q, mode } },
         { supplier: { contains: q, mode } },
         { location: { contains: q, mode } },
@@ -77,6 +78,7 @@ export async function createInventoryPart(input: unknown) {
       data: {
         ...data,
         partNumber: data.partNumber || undefined,
+        barcode: data.barcode || undefined,
         description: data.description || undefined,
         category: data.category || undefined,
         supplier: data.supplier || undefined,
@@ -128,6 +130,7 @@ export async function updateInventoryPart(input: unknown) {
       data: {
         ...updateData,
         partNumber: updateData.partNumber !== undefined ? (updateData.partNumber || null) : undefined,
+        barcode: updateData.barcode !== undefined ? (updateData.barcode || null) : undefined,
         description: updateData.description !== undefined ? (updateData.description || null) : undefined,
         category: updateData.category !== undefined ? (updateData.category || null) : undefined,
         supplier: updateData.supplier !== undefined ? (updateData.supplier || null) : undefined,
@@ -225,6 +228,7 @@ export async function getInventoryPartsList() {
       select: {
         id: true,
         partNumber: true,
+        barcode: true,
         name: true,
         description: true,
         unitCost: true,

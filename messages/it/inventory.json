@@ -12,6 +12,7 @@
     "unitCost": "Costo unitario",
     "sellPrice": "Prezzo di vendita",
     "supplier": "Fornitore",
+    "barcode": "Codice a barre",
     "location": "Posizione",
     "low": "Basso"
   },
@@ -62,6 +63,8 @@
     "imageSizeError": "L'immagine deve essere inferiore a 5 MB",
     "partNumber": "Numero ricambio",
     "partNumberPlaceholder": "BRK-001",
+    "barcode": "Codice a barre",
+    "barcodePlaceholder": "123456789012",
     "nameLabel": "Nome *",
     "namePlaceholder": "Kit pastiglie freno",
     "category": "Categoria",

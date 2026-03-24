@@ -37,6 +37,7 @@ export function InventoryPickerDialog({
     return (
       p.name.toLowerCase().includes(q) ||
       (p.partNumber && p.partNumber.toLowerCase().includes(q)) ||
+      (p.barcode && p.barcode.toLowerCase().includes(q)) ||
       (p.category && p.category.toLowerCase().includes(q))
     )
   })
@@ -105,6 +106,11 @@ export function InventoryPickerDialog({
                   {ip.partNumber && (
                     <span className="text-xs font-mono text-muted-foreground shrink-0">
                       {ip.partNumber}
+                    </span>
+                  )}
+                  {ip.barcode && (
+                    <span className="text-xs font-mono text-muted-foreground shrink-0">
+                      {ip.barcode}
                     </span>
                   )}
                   {ip.category && (

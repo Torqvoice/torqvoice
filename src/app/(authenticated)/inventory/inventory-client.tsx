@@ -56,6 +56,7 @@ import { formatCurrency } from "@/lib/format";
 interface InventoryPart {
   id: string;
   partNumber: string | null;
+  barcode: string | null;
   name: string;
   description: string | null;
   category: string | null;
@@ -227,6 +228,7 @@ export function InventoryClient({
           <TableHeader>
             <TableRow>
               <TableHead>{t('table.partNumber')}</TableHead>
+              <TableHead className="hidden lg:table-cell">{t('table.barcode')}</TableHead>
               <TableHead>{t('table.name')}</TableHead>
               <TableHead className="hidden sm:table-cell">{t('table.category')}</TableHead>
               <TableHead>{t('table.inStock')}</TableHead>
@@ -240,7 +242,7 @@ export function InventoryClient({
           <TableBody>
             {data.parts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={10} className="h-32 text-center text-muted-foreground">
                   {search || category ? t('empty.noMatch') : t('empty.noParts')}
                 </TableCell>
               </TableRow>
@@ -259,6 +261,13 @@ export function InventoryClient({
                     <TableCell>
                       {part.partNumber ? (
                         <span className="font-mono text-sm">{part.partNumber}</span>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {part.barcode ? (
+                        <span className="font-mono text-sm">{part.barcode}</span>
                       ) : (
                         <span className="text-muted-foreground">-</span>
                       )}
