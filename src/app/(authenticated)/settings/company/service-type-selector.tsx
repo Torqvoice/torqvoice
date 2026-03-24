@@ -2,8 +2,14 @@
 
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Car, Anchor } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface ServiceTypeSelectorProps {
   serviceType: string;
@@ -24,34 +30,25 @@ export function ServiceTypeSelector({ serviceType, onServiceTypeChange }: Servic
         </p>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => onServiceTypeChange("automotive")}
-            className={cn(
-              "flex flex-col items-center gap-2 rounded-lg border p-4 transition-colors hover:bg-muted/50",
-              serviceType === "automotive"
-                ? "border-primary bg-primary/5"
-                : "border-border"
-            )}
-          >
-            <Car className="h-6 w-6" />
-            <span className="text-sm font-medium">{t("company.automotive")}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onServiceTypeChange("boat")}
-            className={cn(
-              "flex flex-col items-center gap-2 rounded-lg border p-4 transition-colors hover:bg-muted/50",
-              serviceType === "boat"
-                ? "border-primary bg-primary/5"
-                : "border-border"
-            )}
-          >
-            <Anchor className="h-6 w-6" />
-            <span className="text-sm font-medium">{t("company.boatService")}</span>
-          </button>
-        </div>
+        <Select value={serviceType || "automotive"} onValueChange={onServiceTypeChange}>
+          <SelectTrigger className="w-full sm:w-64">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="automotive">
+              <span className="flex items-center gap-2">
+                <Car className="h-4 w-4" />
+                {t("company.automotive")}
+              </span>
+            </SelectItem>
+            <SelectItem value="boat">
+              <span className="flex items-center gap-2">
+                <Anchor className="h-4 w-4" />
+                {t("company.boatService")}
+              </span>
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </CardContent>
     </Card>
   );

@@ -102,7 +102,6 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
     <div className="space-y-4">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-      <ServiceTypeSelector serviceType={serviceType} onServiceTypeChange={setServiceType} />
       <Card className="border-0 shadow-sm">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -179,6 +178,7 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
           </SaveButton>
         </CardContent>
       </Card>
+      <ServiceTypeSelector serviceType={serviceType} onServiceTypeChange={setServiceType} />
       </ReadOnlyWrapper>
       <Dialog open={showCreateOrg} onOpenChange={setShowCreateOrg}>
         <DialogContent className="sm:max-w-md">
