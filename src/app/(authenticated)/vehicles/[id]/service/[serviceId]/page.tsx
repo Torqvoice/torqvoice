@@ -128,6 +128,7 @@ export default async function ServiceDetailPage({
       quantity: p.quantity,
       unitPrice: p.unitPrice,
       total: p.total,
+      unitCost: p.unitCost ?? 0,
     })),
     laborItems: record.laborItems.map((l) => ({
       description: l.description,

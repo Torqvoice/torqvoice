@@ -203,7 +203,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
     const h = (key: string) => t(`csvHeaders.${key}`);
     switch (activeTab) {
       case "revenue":
-        if (revenueData) exportRevenueCsv(revenueData, currencyCode, [h("month"), h("revenue"), h("collected"), h("count")]);
+        if (revenueData) exportRevenueCsv(revenueData, currencyCode, [h("month"), h("revenue"), h("collected"), h("count"), h("partsCost"), h("netProfit")]);
         break;
       case "services":
         if (serviceData) exportServicesCsv(serviceData, [h("category"), h("label"), h("count")]);
@@ -332,7 +332,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
         {!loading && revenueData && (
           <div className="space-y-4">
             {/* Summary cards */}
-            <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
               <Card className="border-0 shadow-sm">
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
@@ -385,6 +385,32 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                   </div>
                 </CardContent>
               </Card>
+              <Card className="border-0 shadow-sm">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-orange-500/10">
+                    <Package className="h-4 w-4 text-orange-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">{t("revenue.partsCost")}</p>
+                    <p className="text-lg font-semibold truncate">
+                      {fmtCurrency(revenueData.summary.totalPartsCost)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-sm">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-green-500/10">
+                    <TrendingUp className="h-4 w-4 text-green-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">{t("revenue.netProfit")}</p>
+                    <p className="text-lg font-semibold truncate">
+                      {fmtCurrency(revenueData.summary.netProfit)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Charts */}
@@ -397,7 +423,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                   <RevenueBarChart
                     data={revenueData.monthly}
                     formatCurrency={fmtCurrency}
-                    labels={{ revenue: t("charts.revenue"), collected: t("charts.collected") }}
+                    labels={{ revenue: t("charts.revenue"), collected: t("charts.collected"), netProfit: t("revenue.netProfit") }}
                   />
                 </CardContent>
               </Card>
@@ -424,6 +450,8 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                         <TableHead>{t("revenue.tableHeaders.month")}</TableHead>
                         <TableHead className="text-right">{t("revenue.tableHeaders.revenue")}</TableHead>
                         <TableHead className="text-right">{t("revenue.tableHeaders.collected")}</TableHead>
+                        <TableHead className="text-right">{t("revenue.tableHeaders.partsCost")}</TableHead>
+                        <TableHead className="text-right">{t("revenue.tableHeaders.netProfit")}</TableHead>
                         <TableHead className="text-right">{t("revenue.tableHeaders.count")}</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -436,6 +464,12 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                           </TableCell>
                           <TableCell className="text-right text-sm">
                             {fmtCurrency(row.collected)}
+                          </TableCell>
+                          <TableCell className="text-right text-sm">
+                            {fmtCurrency(row.partsCost)}
+                          </TableCell>
+                          <TableCell className="text-right text-sm">
+                            {fmtCurrency(row.netProfit)}
                           </TableCell>
                           <TableCell className="text-right text-sm">{row.count}</TableCell>
                         </TableRow>

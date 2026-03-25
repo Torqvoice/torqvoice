@@ -23,6 +23,8 @@
     "collected": "Incassato",
     "outstanding": "In sospeso",
     "services": "Servizi",
+    "partsCost": "Costo ricambi",
+    "netProfit": "Utile netto",
     "monthlyRevenue": "Ricavi Mensili",
     "revenueByType": "Ricavi per Tipo",
     "monthlyBreakdown": "Riepilogo Mensile",
@@ -30,6 +32,8 @@
       "month": "Mese",
       "revenue": "Ricavi",
       "collected": "Incassato",
+      "partsCost": "Costo ricambi",
+      "netProfit": "Utile netto",
       "count": "Conteggio"
     }
   },

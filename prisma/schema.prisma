@@ -342,12 +342,14 @@ model ServiceAttachment {
 }
 
 model ServicePart {
-  id         String  @id @default(cuid())
-  partNumber String?
-  name       String
-  quantity   Float   @default(1)
-  unitPrice  Float   @default(0)
-  total      Float   @default(0)
+  id              String  @id @default(cuid())
+  partNumber      String?
+  name            String
+  quantity        Float   @default(1)
+  unitPrice       Float   @default(0)
+  total           Float   @default(0)
+  unitCost        Float   @default(0)
+  inventoryPartId String?
 
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)

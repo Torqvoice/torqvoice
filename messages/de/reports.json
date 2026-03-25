@@ -23,6 +23,8 @@
     "collected": "Eingezogen",
     "outstanding": "Ausstehend",
     "services": "Dienstleistungen",
+    "partsCost": "Teilekosten",
+    "netProfit": "Nettogewinn",
     "monthlyRevenue": "Monatlicher Umsatz",
     "revenueByType": "Umsatz nach Typ",
     "monthlyBreakdown": "Monatliche Aufschlüsselung",
@@ -30,6 +32,8 @@
       "month": "Monat",
       "revenue": "Umsatz",
       "collected": "Eingezogen",
+      "partsCost": "Teilekosten",
+      "netProfit": "Nettogewinn",
       "count": "Anzahl"
     }
   },

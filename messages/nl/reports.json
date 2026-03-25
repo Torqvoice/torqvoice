@@ -23,6 +23,8 @@
     "collected": "Geïnd",
     "outstanding": "Openstaand",
     "services": "Diensten",
+    "partsCost": "Onderdeelkosten",
+    "netProfit": "Nettowinst",
     "monthlyRevenue": "Maandelijkse Omzet",
     "revenueByType": "Omzet per Type",
     "monthlyBreakdown": "Maandelijks Overzicht",
@@ -30,6 +32,8 @@
       "month": "Maand",
       "revenue": "Omzet",
       "collected": "Geïnd",
+      "partsCost": "Onderdeelkosten",
+      "netProfit": "Nettowinst",
       "count": "Aantal"
     }
   },

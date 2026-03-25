@@ -23,6 +23,8 @@
     "collected": "Collected",
     "outstanding": "Outstanding",
     "services": "Services",
+    "partsCost": "Parts Cost",
+    "netProfit": "Net Profit",
     "monthlyRevenue": "Monthly Revenue",
     "revenueByType": "Revenue by Type",
     "monthlyBreakdown": "Monthly Breakdown",
@@ -30,6 +32,8 @@
       "month": "Month",
       "revenue": "Revenue",
       "collected": "Collected",
+      "partsCost": "Parts Cost",
+      "netProfit": "Net Profit",
       "count": "Count"
     }
   },

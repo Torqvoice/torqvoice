@@ -23,6 +23,8 @@
     "collected": "Cobrado",
     "outstanding": "Pendiente",
     "services": "Servicios",
+    "partsCost": "Coste de piezas",
+    "netProfit": "Beneficio neto",
     "monthlyRevenue": "Ingresos Mensuales",
     "revenueByType": "Ingresos por Tipo",
     "monthlyBreakdown": "Desglose Mensual",
@@ -30,6 +32,8 @@
       "month": "Mes",
       "revenue": "Ingresos",
       "collected": "Cobrado",
+      "partsCost": "Coste de piezas",
+      "netProfit": "Beneficio neto",
       "count": "Cantidad"
     }
   },

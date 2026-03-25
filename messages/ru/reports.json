@@ -23,6 +23,8 @@
     "collected": "Собрано",
     "outstanding": "Задолженность",
     "services": "Обслуживания",
+    "partsCost": "Стоимость запчастей",
+    "netProfit": "Чистая прибыль",
     "monthlyRevenue": "Ежемесячный доход",
     "revenueByType": "Доход по типам",
     "monthlyBreakdown": "Помесячная разбивка",
@@ -30,6 +32,8 @@
       "month": "Месяц",
       "revenue": "Доход",
       "collected": "Собрано",
+      "partsCost": "Стоимость запчастей",
+      "netProfit": "Чистая прибыль",
       "count": "Количество"
     }
   },

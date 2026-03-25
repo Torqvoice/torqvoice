@@ -41,7 +41,7 @@ function downloadCsv(
 export function exportRevenueCsv(
   data: RevenueReport,
   currencyCode: string,
-  headers: [string, string, string, string] = ["Month", "Revenue", "Collected", "Count"],
+  headers: [string, string, string, string, string, string] = ["Month", "Revenue", "Collected", "Count", "Parts Cost", "Net Profit"],
 ) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const rows = data.monthly.map((m) => ({
@@ -49,8 +49,10 @@ export function exportRevenueCsv(
     revenue: fmt(m.revenue),
     collected: fmt(m.collected),
     count: m.count,
+    partsCost: fmt(m.partsCost),
+    netProfit: fmt(m.netProfit),
   }));
-  downloadCsv("revenue-report.csv", headers, rows, ["month", "revenue", "collected", "count"]);
+  downloadCsv("revenue-report.csv", headers, rows, ["month", "revenue", "collected", "count", "partsCost", "netProfit"]);
 }
 
 export function exportServicesCsv(

@@ -23,6 +23,8 @@
     "collected": "Tahsil Edilen",
     "outstanding": "Bekleyen",
     "services": "Hizmetler",
+    "partsCost": "Parça maliyeti",
+    "netProfit": "Net kâr",
     "monthlyRevenue": "Aylık Gelir",
     "revenueByType": "Türe Göre Gelir",
     "monthlyBreakdown": "Aylık Döküm",
@@ -30,6 +32,8 @@
       "month": "Ay",
       "revenue": "Gelir",
       "collected": "Tahsil Edilen",
+      "partsCost": "Parça maliyeti",
+      "netProfit": "Net kâr",
       "count": "Adet"
     }
   },

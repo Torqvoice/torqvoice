@@ -72,6 +72,7 @@ export const emptyPart = (): ServicePartInput => ({
   quantity: 1,
   unitPrice: 0,
   total: 0,
+  unitCost: 0,
 })
 
 export const makeEmptyLabor = (defaultRate: number): ServiceLaborInput => ({

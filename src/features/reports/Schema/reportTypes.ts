@@ -3,6 +3,8 @@ export interface MonthlyRevenue {
   revenue: number;
   collected: number;
   count: number;
+  partsCost: number;
+  netProfit: number;
 }
 
 export interface RevenueByType {
@@ -16,6 +18,8 @@ export interface RevenueSummary {
   totalCollected: number;
   outstanding: number;
   totalCount: number;
+  totalPartsCost: number;
+  netProfit: number;
 }
 
 export interface RevenueReport {

@@ -23,6 +23,8 @@
     "collected": "Encaissé",
     "outstanding": "En attente",
     "services": "Services",
+    "partsCost": "Coût des pièces",
+    "netProfit": "Bénéfice net",
     "monthlyRevenue": "Revenus Mensuels",
     "revenueByType": "Revenus par Type",
     "monthlyBreakdown": "Répartition Mensuelle",
@@ -30,6 +32,8 @@
       "month": "Mois",
       "revenue": "Revenus",
       "collected": "Encaissé",
+      "partsCost": "Coût des pièces",
+      "netProfit": "Bénéfice net",
       "count": "Nombre"
     }
   },

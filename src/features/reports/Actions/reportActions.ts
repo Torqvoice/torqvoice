@@ -25,15 +25,17 @@ export async function getRevenueReport(params: {
         type: true,
         manuallyPaid: true,
         payments: { select: { amount: true } },
+        partItems: { select: { unitCost: true, quantity: true } },
       },
       orderBy: { serviceDate: "asc" },
     });
 
     // Monthly breakdown
-    const monthly: Record<string, { revenue: number; collected: number; count: number }> = {};
+    const monthly: Record<string, { revenue: number; collected: number; count: number; partsCost: number }> = {};
     let totalRevenue = 0;
     let totalCollected = 0;
     let totalCount = 0;
+    let totalPartsCost = 0;
 
     // Type breakdown
     const byType: Record<string, { revenue: number; count: number }> = {};
@@ -41,16 +43,19 @@ export async function getRevenueReport(params: {
     for (const r of records) {
       const total = r.totalAmount > 0 ? r.totalAmount : r.cost;
       const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0);
+      const partsCost = r.partItems.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
       const month = `${r.serviceDate.getFullYear()}-${String(r.serviceDate.getMonth() + 1).padStart(2, "0")}`;
 
-      if (!monthly[month]) monthly[month] = { revenue: 0, collected: 0, count: 0 };
+      if (!monthly[month]) monthly[month] = { revenue: 0, collected: 0, count: 0, partsCost: 0 };
       monthly[month].revenue += total;
       monthly[month].collected += paid;
       monthly[month].count += 1;
+      monthly[month].partsCost += partsCost;
 
       totalRevenue += total;
       totalCollected += paid;
       totalCount += 1;
+      totalPartsCost += partsCost;
 
       if (!byType[r.type]) byType[r.type] = { revenue: 0, count: 0 };
       byType[r.type].revenue += total;
@@ -58,9 +63,20 @@ export async function getRevenueReport(params: {
     }
 
     return {
-      monthly: Object.entries(monthly).map(([month, data]) => ({ month, ...data })),
+      monthly: Object.entries(monthly).map(([month, data]) => ({
+        month,
+        ...data,
+        netProfit: data.revenue - data.partsCost,
+      })),
       byType: Object.entries(byType).map(([type, data]) => ({ type, ...data })),
-      summary: { totalRevenue, totalCollected, outstanding: totalRevenue - totalCollected, totalCount },
+      summary: {
+        totalRevenue,
+        totalCollected,
+        outstanding: totalRevenue - totalCollected,
+        totalCount,
+        totalPartsCost,
+        netProfit: totalRevenue - totalPartsCost,
+      },
     };
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] });
 }

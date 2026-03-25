@@ -23,6 +23,8 @@
     "collected": "Innkrevd",
     "outstanding": "Utestående",
     "services": "Tjenester",
+    "partsCost": "Delekostnad",
+    "netProfit": "Nettoresultat",
     "monthlyRevenue": "Månedlige Inntekter",
     "revenueByType": "Inntekter etter Type",
     "monthlyBreakdown": "Månedlig Oversikt",
@@ -30,6 +32,8 @@
       "month": "Måned",
       "revenue": "Inntekter",
       "collected": "Innkrevd",
+      "partsCost": "Delekostnad",
+      "netProfit": "Nettoresultat",
       "count": "Antall"
     }
   },
