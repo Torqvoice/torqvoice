@@ -19,6 +19,11 @@ vi.mock("@/lib/resolve-upload-path", () => ({
   resolveUploadPath: vi.fn((url: string) => `/uploads/${url}`),
 }));
 
+vi.mock("fs/promises", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("fs/promises")>();
+  return { ...actual, default: actual, unlink: vi.fn().mockResolvedValue(undefined) };
+});
+
 vi.mock("@/lib/features", () => ({
   getFeatures: vi.fn().mockResolvedValue({ maxCustomers: 1000 }),
   FeatureGatedError: class FeatureGatedError extends Error {
@@ -41,6 +46,11 @@ vi.mock("@/lib/db", () => ({
       updateMany: vi.fn(),
       deleteMany: vi.fn(),
       update: vi.fn(),
+    },
+    storedImage: {
+      findMany: vi.fn().mockResolvedValue([]),
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
+      createMany: vi.fn().mockResolvedValue({ count: 0 }),
     },
   },
 }));
@@ -103,6 +113,10 @@ const ORG_A_PART = {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  // Re-set storedImage defaults after reset (used by inventory gallery operations)
+  vi.mocked(db.storedImage.findMany).mockResolvedValue([]);
+  vi.mocked(db.storedImage.deleteMany).mockResolvedValue({ count: 0 } as any);
+  vi.mocked(db.storedImage.createMany).mockResolvedValue({ count: 0 } as any);
 });
 
 // ---------------------------------------------------------------------------
@@ -365,7 +379,7 @@ describe("deleteInventoryPart — cross-org isolation", () => {
 
   it("successfully deletes the caller's own inventory part", async () => {
     setupOrgAOwner();
-    vi.mocked(db.inventoryPart.findFirst).mockResolvedValue({ imageUrl: null } as any);
+    vi.mocked(db.inventoryPart.findFirst).mockResolvedValue({ imageUrl: null, gallery: [] } as any);
     vi.mocked(db.inventoryPart.deleteMany).mockResolvedValue({ count: 1 } as any);
 
     const result = await deleteInventoryPart("part-a");
