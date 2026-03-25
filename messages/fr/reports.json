@@ -23,6 +23,14 @@
     "collected": "Encaissé",
     "outstanding": "En attente",
     "services": "Services",
+    "partsCost": "Coût des pièces",
+    "netProfit": "Bénéfice net",
+    "revenueDesc": "Total facturé pour tous les services terminés",
+    "collectedDesc": "Paiements reçus des clients",
+    "outstandingDesc": "Facturé mais pas encore encaissé",
+    "servicesDesc": "Total des ordres de travail terminés",
+    "partsCostDesc": "Coût d'achat des pièces utilisées",
+    "netProfitDesc": "Chiffre d'affaires moins coût des pièces",
     "monthlyRevenue": "Revenus Mensuels",
     "revenueByType": "Revenus par Type",
     "monthlyBreakdown": "Répartition Mensuelle",
@@ -30,6 +38,8 @@
       "month": "Mois",
       "revenue": "Revenus",
       "collected": "Encaissé",
+      "partsCost": "Coût des pièces",
+      "netProfit": "Bénéfice net",
       "count": "Nombre"
     }
   },

@@ -23,6 +23,14 @@
     "collected": "Cobrado",
     "outstanding": "Pendiente",
     "services": "Servicios",
+    "partsCost": "Coste de piezas",
+    "netProfit": "Beneficio neto",
+    "revenueDesc": "Total facturado de todos los servicios completados",
+    "collectedDesc": "Pagos recibidos de clientes",
+    "outstandingDesc": "Facturado pero aún no cobrado",
+    "servicesDesc": "Total de órdenes de trabajo completadas",
+    "partsCostDesc": "Coste de compra de piezas usadas en servicios",
+    "netProfitDesc": "Ingresos menos coste de piezas",
     "monthlyRevenue": "Ingresos Mensuales",
     "revenueByType": "Ingresos por Tipo",
     "monthlyBreakdown": "Desglose Mensual",
@@ -30,6 +38,8 @@
       "month": "Mes",
       "revenue": "Ingresos",
       "collected": "Cobrado",
+      "partsCost": "Coste de piezas",
+      "netProfit": "Beneficio neto",
       "count": "Cantidad"
     }
   },

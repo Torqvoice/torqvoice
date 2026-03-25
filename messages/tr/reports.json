@@ -23,6 +23,14 @@
     "collected": "Tahsil Edilen",
     "outstanding": "Bekleyen",
     "services": "Hizmetler",
+    "partsCost": "Parça maliyeti",
+    "netProfit": "Net kâr",
+    "revenueDesc": "Tamamlanan tüm servislerden toplam fatura",
+    "collectedDesc": "Müşterilerden alınan ödemeler",
+    "outstandingDesc": "Faturalandırılmış ancak henüz ödenmemiş",
+    "servicesDesc": "Toplam tamamlanan iş emirleri",
+    "partsCostDesc": "Servislerde kullanılan parçaların alış maliyeti",
+    "netProfitDesc": "Gelir eksi parça maliyeti",
     "monthlyRevenue": "Aylık Gelir",
     "revenueByType": "Türe Göre Gelir",
     "monthlyBreakdown": "Aylık Döküm",
@@ -30,6 +38,8 @@
       "month": "Ay",
       "revenue": "Gelir",
       "collected": "Tahsil Edilen",
+      "partsCost": "Parça maliyeti",
+      "netProfit": "Net kâr",
       "count": "Adet"
     }
   },

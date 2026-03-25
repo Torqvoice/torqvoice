@@ -23,6 +23,14 @@
     "collected": "Zebrano",
     "outstanding": "Zaległe",
     "services": "Usługi",
+    "partsCost": "Koszt części",
+    "netProfit": "Zysk netto",
+    "revenueDesc": "Łączna kwota faktur ze wszystkich usług",
+    "collectedDesc": "Płatności otrzymane od klientów",
+    "outstandingDesc": "Zafakturowane, ale jeszcze nieopłacone",
+    "servicesDesc": "Łączna liczba zrealizowanych zleceń",
+    "partsCostDesc": "Koszt zakupu części użytych w usługach",
+    "netProfitDesc": "Przychód minus koszt części",
     "monthlyRevenue": "Przychody Miesięczne",
     "revenueByType": "Przychody wg Typu",
     "monthlyBreakdown": "Zestawienie Miesięczne",
@@ -30,6 +38,8 @@
       "month": "Miesiąc",
       "revenue": "Przychody",
       "collected": "Zebrano",
+      "partsCost": "Koszt części",
+      "netProfit": "Zysk netto",
       "count": "Ilość"
     }
   },

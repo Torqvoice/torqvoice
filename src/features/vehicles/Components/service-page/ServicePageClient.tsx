@@ -76,6 +76,7 @@ export function ServicePageClient({
         quantity: 1,
         unitPrice: price,
         total: price,
+        unitCost: part.unitCost,
         inventoryPartId: part.id,
       }])
       toast.success(t('parts.partFound', { name: part.name }))

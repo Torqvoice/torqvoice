@@ -29,7 +29,7 @@ const CHART_COLORS = [
 interface RevenueBarChartProps {
   data: MonthlyRevenue[];
   formatCurrency: (value: number) => string;
-  labels?: { revenue: string; collected: string };
+  labels?: { revenue: string; collected: string; netProfit?: string };
 }
 
 export function RevenueBarChart({ data, formatCurrency, labels }: RevenueBarChartProps) {
@@ -60,6 +60,7 @@ export function RevenueBarChart({ data, formatCurrency, labels }: RevenueBarChar
         />
         <Bar dataKey="revenue" name={labels?.revenue ?? "Revenue"} fill="#3b82f6" radius={[4, 4, 0, 0]} />
         <Bar dataKey="collected" name={labels?.collected ?? "Collected"} fill="#10b981" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="netProfit" name={labels?.netProfit ?? "Net Profit"} fill="#10b981" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

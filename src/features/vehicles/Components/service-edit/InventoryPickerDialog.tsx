@@ -95,6 +95,7 @@ export function InventoryPickerDialog({
                   quantity: 1,
                   unitPrice: price,
                   total: price,
+                  unitCost: ip.unitCost,
                   inventoryPartId: ip.id,
                 })
                 onOpenChange(false)

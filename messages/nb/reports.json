@@ -23,6 +23,14 @@
     "collected": "Innkrevd",
     "outstanding": "Utestående",
     "services": "Tjenester",
+    "partsCost": "Delekostnad",
+    "netProfit": "Nettoresultat",
+    "revenueDesc": "Totalt fakturert fra alle fullførte tjenester",
+    "collectedDesc": "Betalinger mottatt fra kunder",
+    "outstandingDesc": "Fakturert men ikke betalt ennå",
+    "servicesDesc": "Totalt fullførte arbeidsordrer",
+    "partsCostDesc": "Innkjøpskostnad for deler brukt i tjenester",
+    "netProfitDesc": "Inntekt minus delekostnad",
     "monthlyRevenue": "Månedlige Inntekter",
     "revenueByType": "Inntekter etter Type",
     "monthlyBreakdown": "Månedlig Oversikt",
@@ -30,6 +38,8 @@
       "month": "Måned",
       "revenue": "Inntekter",
       "collected": "Innkrevd",
+      "partsCost": "Delekostnad",
+      "netProfit": "Nettoresultat",
       "count": "Antall"
     }
   },

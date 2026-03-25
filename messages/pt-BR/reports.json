@@ -23,6 +23,14 @@
     "collected": "Recebido",
     "outstanding": "Pendente",
     "services": "Serviços",
+    "partsCost": "Custo de peças",
+    "netProfit": "Lucro líquido",
+    "revenueDesc": "Total faturado de todos os serviços concluídos",
+    "collectedDesc": "Pagamentos recebidos de clientes",
+    "outstandingDesc": "Faturado mas ainda não pago",
+    "servicesDesc": "Total de ordens de serviço concluídas",
+    "partsCostDesc": "Custo de compra das peças usadas nos serviços",
+    "netProfitDesc": "Receita menos custo de peças",
     "monthlyRevenue": "Receita Mensal",
     "revenueByType": "Receita por Tipo",
     "monthlyBreakdown": "Detalhamento Mensal",
@@ -30,6 +38,8 @@
       "month": "Mês",
       "revenue": "Receita",
       "collected": "Recebido",
+      "partsCost": "Custo de peças",
+      "netProfit": "Lucro líquido",
       "count": "Quantidade"
     }
   },

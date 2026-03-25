@@ -270,21 +270,16 @@ export async function createServiceRecord(input: unknown) {
       });
 
       if (partItems && partItems.length > 0) {
-        await tx.servicePart.createMany({
-          data: partItems.map((p) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { inventoryPartId: _inv, ...partData } = p;
-            return { ...partData, serviceRecordId: created.id };
-          }),
-        });
-
-        // Deduct inventory stock for parts sourced from inventory
+        // Enrich parts with unitCost from inventory and deduct stock
+        const enrichedParts = [];
         for (const p of partItems) {
+          let resolvedUnitCost = p.unitCost ?? 0;
           if (p.inventoryPartId) {
             const invPart = await tx.inventoryPart.findFirst({
               where: { id: p.inventoryPartId, organizationId },
             });
             if (invPart) {
+              resolvedUnitCost = invPart.unitCost ?? resolvedUnitCost;
               const newQty = invPart.quantity - Math.ceil(p.quantity);
               await tx.inventoryPart.update({
                 where: { id: p.inventoryPartId },
@@ -292,7 +287,19 @@ export async function createServiceRecord(input: unknown) {
               });
             }
           }
+          enrichedParts.push({
+            partNumber: p.partNumber,
+            name: p.name,
+            quantity: p.quantity,
+            unitPrice: p.unitPrice,
+            total: p.total,
+            unitCost: resolvedUnitCost,
+            inventoryPartId: p.inventoryPartId || null,
+            serviceRecordId: created.id,
+          });
         }
+
+        await tx.servicePart.createMany({ data: enrichedParts });
       }
 
       if (laborItems && laborItems.length > 0) {
@@ -399,10 +406,16 @@ export async function updateServiceRecord(input: unknown) {
         await tx.servicePart.deleteMany({ where: { serviceRecordId: id } });
         if (partItems.length > 0) {
           await tx.servicePart.createMany({
-            data: partItems.map((p) => {
-              const { inventoryPartId: _inv, ...partData } = p;
-              return { ...partData, serviceRecordId: id };
-            }),
+            data: partItems.map((p) => ({
+              partNumber: p.partNumber,
+              name: p.name,
+              quantity: p.quantity,
+              unitPrice: p.unitPrice,
+              total: p.total,
+              unitCost: p.unitCost ?? 0,
+              inventoryPartId: p.inventoryPartId || null,
+              serviceRecordId: id,
+            })),
           });
         }
       }

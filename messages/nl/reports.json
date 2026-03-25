@@ -23,6 +23,14 @@
     "collected": "Geïnd",
     "outstanding": "Openstaand",
     "services": "Diensten",
+    "partsCost": "Onderdeelkosten",
+    "netProfit": "Nettowinst",
+    "revenueDesc": "Totaal gefactureerd van alle voltooide diensten",
+    "collectedDesc": "Ontvangen betalingen van klanten",
+    "outstandingDesc": "Gefactureerd maar nog niet betaald",
+    "servicesDesc": "Totaal voltooide werkorders",
+    "partsCostDesc": "Inkoopkosten van gebruikte onderdelen",
+    "netProfitDesc": "Omzet minus onderdeelkosten",
     "monthlyRevenue": "Maandelijkse Omzet",
     "revenueByType": "Omzet per Type",
     "monthlyBreakdown": "Maandelijks Overzicht",
@@ -30,6 +38,8 @@
       "month": "Maand",
       "revenue": "Omzet",
       "collected": "Geïnd",
+      "partsCost": "Onderdeelkosten",
+      "netProfit": "Nettowinst",
       "count": "Aantal"
     }
   },

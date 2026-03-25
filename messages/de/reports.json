@@ -23,6 +23,14 @@
     "collected": "Eingezogen",
     "outstanding": "Ausstehend",
     "services": "Dienstleistungen",
+    "partsCost": "Teilekosten",
+    "netProfit": "Nettogewinn",
+    "revenueDesc": "Gesamtbetrag aller abgeschlossenen Aufträge",
+    "collectedDesc": "Erhaltene Zahlungen von Kunden",
+    "outstandingDesc": "In Rechnung gestellt, aber noch nicht bezahlt",
+    "servicesDesc": "Abgeschlossene Arbeitsaufträge gesamt",
+    "partsCostDesc": "Einkaufskosten der verwendeten Teile",
+    "netProfitDesc": "Umsatz abzüglich Teilekosten",
     "monthlyRevenue": "Monatlicher Umsatz",
     "revenueByType": "Umsatz nach Typ",
     "monthlyBreakdown": "Monatliche Aufschlüsselung",
@@ -30,6 +38,8 @@
       "month": "Monat",
       "revenue": "Umsatz",
       "collected": "Eingezogen",
+      "partsCost": "Teilekosten",
+      "netProfit": "Nettogewinn",
       "count": "Anzahl"
     }
   },

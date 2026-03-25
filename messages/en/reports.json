@@ -23,6 +23,14 @@
     "collected": "Collected",
     "outstanding": "Outstanding",
     "services": "Services",
+    "partsCost": "Parts Cost",
+    "netProfit": "Net Profit",
+    "revenueDesc": "Total invoiced from all completed services",
+    "collectedDesc": "Payments received from customers",
+    "outstandingDesc": "Invoiced but not yet paid",
+    "servicesDesc": "Total completed work orders",
+    "partsCostDesc": "Purchase cost of parts used in services",
+    "netProfitDesc": "Revenue minus parts cost",
     "monthlyRevenue": "Monthly Revenue",
     "revenueByType": "Revenue by Type",
     "monthlyBreakdown": "Monthly Breakdown",
@@ -30,6 +38,8 @@
       "month": "Month",
       "revenue": "Revenue",
       "collected": "Collected",
+      "partsCost": "Parts Cost",
+      "netProfit": "Net Profit",
       "count": "Count"
     }
   },
