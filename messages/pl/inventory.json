@@ -53,7 +53,8 @@
     "editPart": "Edytuj część",
     "currentStock": "Aktualny stan: {quantity}",
     "addedStock": "Dodano {amount} do stanu",
-    "customAmount": "Ilość..."
+    "customAmount": "Ilość...",
+    "scanParts": "Skanuj części"
   },
   "form": {
     "editPart": "Edytuj część",
@@ -67,6 +68,11 @@
     "dropOrClick": "Upuść zdjęcie lub kliknij",
     "replace": "Zamień",
     "upload": "Prześlij",
+    "camera": "Aparat",
+    "aiAnalyze": "AI Autouzupełnianie",
+    "aiAnalyzing": "Analizowanie zdjęcia...",
+    "aiAnalyzeSuccess": "Pola uzupełnione ze zdjęcia",
+    "aiAnalyzeFailed": "Nie udało się przeanalizować zdjęcia",
     "imageUploading": "Przesyłanie zdjęcia...",
     "imageUploaded": "Zdjęcie przesłane",
     "imageUploadFailed": "Nie udało się przesłać zdjęcia",

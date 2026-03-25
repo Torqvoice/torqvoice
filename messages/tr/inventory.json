@@ -53,7 +53,8 @@
     "editPart": "Parçayı düzenle",
     "currentStock": "Mevcut stok: {quantity}",
     "addedStock": "Stoka {amount} eklendi",
-    "customAmount": "Adet..."
+    "customAmount": "Adet...",
+    "scanParts": "Parça tara"
   },
   "form": {
     "editPart": "Parçayı düzenle",
@@ -67,6 +68,11 @@
     "dropOrClick": "Görsel bırakın veya tıklayın",
     "replace": "Değiştir",
     "upload": "Yükle",
+    "camera": "Kamera",
+    "aiAnalyze": "AI Otomatik Doldur",
+    "aiAnalyzing": "Görsel analiz ediliyor...",
+    "aiAnalyzeSuccess": "Alanlar görselden dolduruldu",
+    "aiAnalyzeFailed": "Görsel analiz edilemedi",
     "imageUploading": "Görsel yükleniyor...",
     "imageUploaded": "Görsel yüklendi",
     "imageUploadFailed": "Görsel yüklenemedi",

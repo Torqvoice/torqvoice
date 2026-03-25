@@ -47,6 +47,7 @@ export async function getInventoryPartsPaginated(params: {
         orderBy: { updatedAt: "desc" },
         skip,
         take: pageSize,
+        include: { gallery: { orderBy: { sortOrder: "asc" } } },
       }),
       db.inventoryPart.count({ where }),
     ]);
@@ -65,6 +66,7 @@ export async function getInventoryPart(partId: string) {
   return withAuth(async ({ userId, organizationId }) => {
     const part = await db.inventoryPart.findFirst({
       where: { id: partId, organizationId },
+      include: { gallery: { orderBy: { sortOrder: "asc" } } },
     });
     if (!part) throw new Error("Part not found");
     return part;
@@ -74,23 +76,37 @@ export async function getInventoryPart(partId: string) {
 export async function createInventoryPart(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const data = createInventoryPartSchema.parse(input);
+    const { gallery, ...rest } = data;
     const part = await db.inventoryPart.create({
       data: {
-        ...data,
-        partNumber: data.partNumber || undefined,
-        barcode: data.barcode || undefined,
-        description: data.description || undefined,
-        category: data.category || undefined,
-        supplier: data.supplier || undefined,
-        supplierPhone: data.supplierPhone || undefined,
-        supplierEmail: data.supplierEmail || undefined,
-        supplierUrl: data.supplierUrl || undefined,
-        imageUrl: data.imageUrl || undefined,
-        location: data.location || undefined,
+        ...rest,
+        partNumber: rest.partNumber || undefined,
+        barcode: rest.barcode || undefined,
+        description: rest.description || undefined,
+        category: rest.category || undefined,
+        supplier: rest.supplier || undefined,
+        supplierPhone: rest.supplierPhone || undefined,
+        supplierEmail: rest.supplierEmail || undefined,
+        supplierUrl: rest.supplierUrl || undefined,
+        imageUrl: gallery?.[0]?.url || undefined,
+        location: rest.location || undefined,
         userId,
         organizationId,
       },
     });
+
+    if (gallery && gallery.length > 0) {
+      await db.storedImage.createMany({
+        data: gallery.map((img, i) => ({
+          url: img.url,
+          fileName: img.fileName || null,
+          description: img.description || null,
+          sortOrder: i,
+          inventoryPartId: part.id,
+        })),
+      });
+    }
+
     revalidatePath("/inventory");
     return part;
   }, {
@@ -108,21 +124,36 @@ export async function createInventoryPart(input: unknown) {
 export async function updateInventoryPart(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const data = updateInventoryPartSchema.parse(input);
-    const { id, ...updateData } = data;
+    const { id, gallery: galleryData, ...updateData } = data;
 
-    // If image is being changed, delete the old file
-    if (updateData.imageUrl !== undefined) {
-      const existing = await db.inventoryPart.findFirst({
-        where: { id, organizationId },
-        select: { imageUrl: true },
-      });
-      if (existing?.imageUrl && existing.imageUrl !== updateData.imageUrl) {
-        try {
-          await unlink(resolveUploadPath(existing.imageUrl));
-        } catch {
-          // Old file may already be gone
+    // Handle gallery updates
+    if (galleryData !== undefined) {
+      // Clean up old files that are no longer in the gallery
+      const existingImages = await db.storedImage.findMany({ where: { inventoryPartId: id } });
+      const newUrls = new Set(galleryData.map(g => g.url));
+      for (const old of existingImages) {
+        if (!newUrls.has(old.url)) {
+          try { await unlink(resolveUploadPath(old.url)); } catch { /* already gone */ }
         }
       }
+      // Replace all gallery records
+      await db.storedImage.deleteMany({ where: { inventoryPartId: id } });
+      if (galleryData.length > 0) {
+        await db.storedImage.createMany({
+          data: galleryData.map((img, i) => ({
+            url: img.url,
+            fileName: img.fileName || null,
+            description: img.description || null,
+            sortOrder: i,
+            inventoryPartId: id,
+          })),
+        });
+      }
+      // Update imageUrl for backward compat
+      await db.inventoryPart.updateMany({
+        where: { id, organizationId },
+        data: { imageUrl: galleryData[0]?.url || null },
+      });
     }
 
     const result = await db.inventoryPart.updateMany({
@@ -159,7 +190,7 @@ export async function deleteInventoryPart(partId: string) {
   return withAuth(async ({ userId, organizationId }) => {
     const part = await db.inventoryPart.findFirst({
       where: { id: partId, organizationId },
-      select: { imageUrl: true },
+      select: { imageUrl: true, gallery: { select: { url: true } } },
     });
 
     const result = await db.inventoryPart.deleteMany({
@@ -167,11 +198,15 @@ export async function deleteInventoryPart(partId: string) {
     });
     if (result.count === 0) throw new Error("Part not found");
 
-    if (part?.imageUrl) {
-      try {
-        await unlink(resolveUploadPath(part.imageUrl));
-      } catch {
-        // File may already be gone
+    if (part) {
+      const allUrls = [
+        part.imageUrl,
+        ...part.gallery.map(g => g.url),
+      ].filter(Boolean) as string[];
+      // Deduplicate URLs before deleting files
+      const uniqueUrls = [...new Set(allUrls)];
+      for (const url of uniqueUrls) {
+        try { await unlink(resolveUploadPath(url)); } catch { /* already gone */ }
       }
     }
 
@@ -235,6 +270,7 @@ export async function getInventoryPartsList() {
         sellPrice: true,
         quantity: true,
         category: true,
+        gallery: { select: { id: true, url: true, sortOrder: true }, orderBy: { sortOrder: "asc" } },
       },
       orderBy: { name: "asc" },
     });

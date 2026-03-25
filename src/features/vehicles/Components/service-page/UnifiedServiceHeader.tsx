@@ -108,30 +108,30 @@ export function UnifiedServiceHeader({
               )}
               <Button type="submit" form="service-record-form" size="sm" disabled={saving} variant={hasUnsavedChanges ? "default" : "outline"} className={hasUnsavedChanges ? "animate-pulse" : ""}>
                 {saving ? (
-                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin sm:mr-1" />
                 ) : (
-                  <Save className="mr-1 h-3.5 w-3.5" />
+                  <Save className="h-3.5 w-3.5 sm:mr-1" />
                 )}
-                {t('save')}
+                <span className="hidden sm:inline">{t('save')}</span>
               </Button>
             </>
           )}
           <ButtonGroup>
             <Button variant="outline" size="sm" onClick={onDownloadPDF} disabled={downloading}>
               {downloading ? (
-                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin sm:mr-1" />
               ) : (
-                <Download className="mr-1 h-3.5 w-3.5" />
+                <Download className="h-3.5 w-3.5 sm:mr-1" />
               )}
-              {t('pdf')}
+              <span className="hidden sm:inline">{t('pdf')}</span>
             </Button>
             <Button variant="outline" size="sm" onClick={onShowEmail}>
-              <Mail className="mr-1 h-3.5 w-3.5" />
-              {t('email')}
+              <Mail className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">{t('email')}</span>
             </Button>
             <Button variant="outline" size="sm" onClick={onShowShare}>
-              <Globe className="mr-1 h-3.5 w-3.5" />
-              {t('share')}
+              <Globe className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">{t('share')}</span>
             </Button>
             <Button
               variant="outline"
@@ -139,8 +139,8 @@ export function UnifiedServiceHeader({
               className="text-destructive hover:bg-destructive/10"
               onClick={onDelete}
             >
-              <Trash2 className="mr-1 h-3.5 w-3.5" />
-              {t('delete')}
+              <Trash2 className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">{t('delete')}</span>
             </Button>
           </ButtonGroup>
         </div>

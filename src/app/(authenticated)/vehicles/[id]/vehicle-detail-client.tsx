@@ -563,7 +563,7 @@ export function VehicleDetailClient({
         </div>
 
         {/* Quick stats */}
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Gauge className="h-3.5 w-3.5" />
             <span className="font-semibold text-foreground">
@@ -975,8 +975,8 @@ export function VehicleDetailClient({
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="services" className="gap-1.5">
-            <Wrench className="h-3.5 w-3.5" />
-            {t('tabs.services')}
+            <Wrench className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.services')}</span>
             {vehicle._count.serviceRecords > 0 && (
               <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                 {vehicle._count.serviceRecords}
@@ -984,8 +984,8 @@ export function VehicleDetailClient({
             )}
           </TabsTrigger>
           <TabsTrigger value="quotes" className="gap-1.5">
-            <FileText className="h-3.5 w-3.5" />
-            {t('tabs.quotes')}
+            <FileText className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.quotes')}</span>
             {quotes.length > 0 && (
               <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                 {quotes.length}
@@ -993,8 +993,8 @@ export function VehicleDetailClient({
             )}
           </TabsTrigger>
           <TabsTrigger value="inspections" className="gap-1.5">
-            <ClipboardCheck className="h-3.5 w-3.5" />
-            {t('tabs.inspections')}
+            <ClipboardCheck className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.inspections')}</span>
             {inspections && inspections.length > 0 && (
               <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                 {inspections.length}
@@ -1002,8 +1002,8 @@ export function VehicleDetailClient({
             )}
           </TabsTrigger>
           <TabsTrigger value="notes" className="gap-1.5">
-            <StickyNote className="h-3.5 w-3.5" />
-            {t('tabs.notes')}
+            <StickyNote className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.notes')}</span>
             {vehicle._count.notes > 0 && (
               <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                 {vehicle._count.notes}
@@ -1011,8 +1011,8 @@ export function VehicleDetailClient({
             )}
           </TabsTrigger>
           <TabsTrigger value="reminders" className="gap-1.5">
-            <Bell className="h-3.5 w-3.5" />
-            {t('tabs.reminders')}
+            <Bell className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.reminders')}</span>
             {overdueCount > 0 ? (
               <Badge variant="destructive" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                 {overdueCount}

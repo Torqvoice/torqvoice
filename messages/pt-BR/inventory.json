@@ -53,7 +53,8 @@
     "editPart": "Editar peça",
     "currentStock": "Estoque atual: {quantity}",
     "addedStock": "{amount} adicionados ao estoque",
-    "customAmount": "Qtd..."
+    "customAmount": "Qtd...",
+    "scanParts": "Escanear peças"
   },
   "form": {
     "editPart": "Editar peça",
@@ -67,6 +68,11 @@
     "dropOrClick": "Arraste uma imagem ou clique",
     "replace": "Substituir",
     "upload": "Enviar",
+    "camera": "Câmera",
+    "aiAnalyze": "IA Preenchimento",
+    "aiAnalyzing": "Analisando imagem...",
+    "aiAnalyzeSuccess": "Campos preenchidos a partir da imagem",
+    "aiAnalyzeFailed": "Não foi possível analisar a imagem",
     "imageUploading": "Enviando imagem...",
     "imageUploaded": "Imagem enviada",
     "imageUploadFailed": "Não foi possível enviar a imagem",

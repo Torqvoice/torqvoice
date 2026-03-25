@@ -53,7 +53,8 @@
     "editPart": "Modifica pezzo",
     "currentStock": "Stock attuale: {quantity}",
     "addedStock": "{amount} aggiunti allo stock",
-    "customAmount": "Qtà..."
+    "customAmount": "Qtà...",
+    "scanParts": "Scansiona ricambi"
   },
   "form": {
     "editPart": "Modifica ricambio",
@@ -67,6 +68,11 @@
     "dropOrClick": "Trascina un'immagine o clicca",
     "replace": "Sostituisci",
     "upload": "Carica",
+    "camera": "Fotocamera",
+    "aiAnalyze": "IA Compilazione automatica",
+    "aiAnalyzing": "Analisi dell'immagine...",
+    "aiAnalyzeSuccess": "Campi compilati dall'immagine",
+    "aiAnalyzeFailed": "Impossibile analizzare l'immagine",
     "imageUploading": "Caricamento immagine...",
     "imageUploaded": "Immagine caricata",
     "imageUploadFailed": "Impossibile caricare l'immagine",

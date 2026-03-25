@@ -53,7 +53,8 @@
     "editPart": "Onderdeel bewerken",
     "currentStock": "Huidige voorraad: {quantity}",
     "addedStock": "{amount} toegevoegd aan voorraad",
-    "customAmount": "Aantal..."
+    "customAmount": "Aantal...",
+    "scanParts": "Onderdelen scannen"
   },
   "form": {
     "editPart": "Onderdeel bewerken",
@@ -67,6 +68,11 @@
     "dropOrClick": "Sleep afbeelding of klik",
     "replace": "Vervangen",
     "upload": "Uploaden",
+    "camera": "Camera",
+    "aiAnalyze": "AI Automatisch invullen",
+    "aiAnalyzing": "Afbeelding analyseren...",
+    "aiAnalyzeSuccess": "Velden ingevuld vanuit afbeelding",
+    "aiAnalyzeFailed": "Kan afbeelding niet analyseren",
     "imageUploading": "Afbeelding uploaden...",
     "imageUploaded": "Afbeelding geüpload",
     "imageUploadFailed": "Kan afbeelding niet uploaden",

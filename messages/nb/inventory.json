@@ -53,7 +53,8 @@
     "editPart": "Rediger del",
     "currentStock": "Nåværende beholdning: {quantity}",
     "addedStock": "{amount} lagt til på lager",
-    "customAmount": "Antall..."
+    "customAmount": "Antall...",
+    "scanParts": "Skann deler"
   },
   "form": {
     "editPart": "Rediger del",
@@ -67,6 +68,11 @@
     "dropOrClick": "Slipp bilde eller klikk",
     "replace": "Erstatt",
     "upload": "Last opp",
+    "camera": "Kamera",
+    "aiAnalyze": "KI Autofyll",
+    "aiAnalyzing": "Analyserer bilde...",
+    "aiAnalyzeSuccess": "Felter fylt ut fra bilde",
+    "aiAnalyzeFailed": "Kunne ikke analysere bildet",
     "imageUploading": "Laster opp bilde...",
     "imageUploaded": "Bilde lastet opp",
     "imageUploadFailed": "Kunne ikke laste opp bildet",

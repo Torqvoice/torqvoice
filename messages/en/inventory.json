@@ -53,7 +53,8 @@
     "editPart": "Edit Part",
     "currentStock": "Current stock: {quantity}",
     "addedStock": "Added {amount} to stock",
-    "customAmount": "Qty..."
+    "customAmount": "Qty...",
+    "scanParts": "Scan Parts"
   },
   "form": {
     "editPart": "Edit Part",
@@ -67,6 +68,11 @@
     "dropOrClick": "Drop image or click",
     "replace": "Replace",
     "upload": "Upload",
+    "camera": "Camera",
+    "aiAnalyze": "AI Auto-fill",
+    "aiAnalyzing": "Analyzing image...",
+    "aiAnalyzeSuccess": "Fields auto-filled from image",
+    "aiAnalyzeFailed": "Could not analyze image",
     "imageUploading": "Uploading image...",
     "imageUploaded": "Image uploaded",
     "imageUploadFailed": "Could not upload image",

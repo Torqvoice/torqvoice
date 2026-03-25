@@ -53,7 +53,8 @@
     "editPart": "Modifier la pièce",
     "currentStock": "Stock actuel : {quantity}",
     "addedStock": "{amount} ajoutés au stock",
-    "customAmount": "Qté..."
+    "customAmount": "Qté...",
+    "scanParts": "Scanner des pièces"
   },
   "form": {
     "editPart": "Modifier la pièce",
@@ -67,6 +68,11 @@
     "dropOrClick": "Déposez une image ou cliquez",
     "replace": "Remplacer",
     "upload": "Télécharger",
+    "camera": "Caméra",
+    "aiAnalyze": "IA Auto-remplir",
+    "aiAnalyzing": "Analyse de l'image...",
+    "aiAnalyzeSuccess": "Champs remplis depuis l'image",
+    "aiAnalyzeFailed": "Impossible d'analyser l'image",
     "imageUploading": "Téléchargement de l'image...",
     "imageUploaded": "Image téléchargée",
     "imageUploadFailed": "Impossible de télécharger l'image",

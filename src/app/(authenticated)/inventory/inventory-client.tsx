@@ -51,10 +51,13 @@ import {
   MoreVertical,
   Pencil,
   Percent,
+  ChevronLeft,
+  ChevronRight,
   Plus,
   ScanBarcode,
   Search,
   Trash2,
+  X,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 
@@ -74,6 +77,7 @@ interface InventoryPart {
   supplierEmail: string | null;
   supplierUrl: string | null;
   imageUrl: string | null;
+  gallery: { id: string; url: string; fileName: string | null; description: string | null; sortOrder: number }[];
   location: string | null;
 }
 
@@ -112,6 +116,8 @@ export function InventoryClient({
   const [markupValue, setMarkupValue] = useState(String(initialMarkup));
   const [applyingMarkup, setApplyingMarkup] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
   const [scannedPart, setScannedPart] = useState<{
     id: string;
     name: string;
@@ -210,7 +216,7 @@ export function InventoryClient({
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         <div className="flex flex-1 items-center gap-2">
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -225,7 +231,7 @@ export function InventoryClient({
             value={category || "all"}
             onValueChange={(v) => navigate({ category: v === "all" ? undefined : v })}
           >
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-[120px] sm:w-[150px]">
               <SelectValue placeholder={t('categoryPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
@@ -239,19 +245,21 @@ export function InventoryClient({
           </Select>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-2">
           <Button size="sm" variant="outline" onClick={() => setShowScanner(true)}>
-            <ScanBarcode className="mr-1 h-3.5 w-3.5" />
-            {t('scanBarcode')}
+            <ScanBarcode className="h-3.5 w-3.5 sm:mr-1" />
+            <span className="hidden sm:inline">{t('scanBarcode')}</span>
           </Button>
-          <Button size="sm" variant="outline" onClick={() => setShowMarkup(true)}>
-            <Percent className="mr-1 h-3.5 w-3.5" />
-            {t('applyMarkup')}
-          </Button>
-          <Button size="sm" onClick={() => setShowForm(true)}>
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            {t('addPart')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => setShowMarkup(true)}>
+              <Percent className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">{t('applyMarkup')}</span>
+            </Button>
+            <Button size="sm" onClick={() => setShowForm(true)}>
+              <Plus className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">{t('addPart')}</span>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -307,11 +315,20 @@ export function InventoryClient({
                     </TableCell>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
-                        {part.imageUrl && (
+                        {(part.gallery[0]?.url || part.imageUrl) && (
                           <img
-                            src={part.imageUrl}
+                            src={part.gallery[0]?.url || part.imageUrl!}
                             alt={part.name}
-                            className="h-8 w-8 rounded object-cover"
+                            className="h-8 w-8 cursor-pointer rounded object-cover hover:opacity-80"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const imgs = part.gallery.length > 0
+                                ? part.gallery.map(g => g.url)
+                                : part.imageUrl ? [part.imageUrl] : [];
+                              if (imgs.length === 0) return;
+                              setGalleryImages(imgs);
+                              setGalleryIndex(0);
+                            }}
                           />
                         )}
                         {part.name}
@@ -426,6 +443,10 @@ export function InventoryClient({
         part={editPart ?? undefined}
         markupMultiplier={initialMarkup}
         initialBarcode={!editPart ? scannedBarcode : undefined}
+        onViewImages={(urls, startIndex) => {
+          setGalleryImages(urls);
+          setGalleryIndex(startIndex);
+        }}
       />
 
       {/* Bulk Markup Dialog */}
@@ -488,6 +509,51 @@ export function InventoryClient({
           setShowForm(true);
         }}
       />
+
+      {galleryIndex !== null && galleryImages.length > 0 && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+          onClick={() => setGalleryIndex(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setGalleryIndex(null)}
+            className="absolute top-3 right-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          {galleryImages.length > 1 && (
+            <div className="absolute top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm font-medium text-white">
+              {galleryIndex + 1} / {galleryImages.length}
+            </div>
+          )}
+          {galleryIndex > 0 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setGalleryIndex(galleryIndex - 1); }}
+              className="absolute left-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 sm:left-4 sm:h-12 sm:w-12"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+          )}
+          {galleryIndex < galleryImages.length - 1 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setGalleryIndex(galleryIndex + 1); }}
+              className="absolute right-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 sm:right-4 sm:h-12 sm:w-12"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          )}
+          <img
+            src={galleryImages[galleryIndex]}
+            alt={`Image ${galleryIndex + 1}`}
+            className="max-h-[85vh] max-w-[90vw] object-contain"
+            draggable={false}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

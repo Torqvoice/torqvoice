@@ -12,6 +12,7 @@ import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { OnlineTracker } from "@/components/online-tracker";
 import { InstallBanner } from "@/components/pwa-install-prompt";
+import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { ServiceTypeProvider } from "@/components/service-type-context";
 import { db } from "@/lib/db";
 
@@ -103,7 +104,10 @@ export default async function DashboardLayout({
           visibleSubjects={visibleSubjects}
           isAdminOrOwner={isOwnerOrAdmin}
         />
-        <SidebarInset>{children}</SidebarInset>
+        <SidebarInset>
+          <div className="pb-14 md:pb-0">{children}</div>
+        </SidebarInset>
+        <MobileBottomNav />
         <SearchCommand />
         {isOwnerOrAdmin && <NotificationInitializer />}
         <OnlineTracker />

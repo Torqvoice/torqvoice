@@ -53,7 +53,8 @@
     "editPart": "Редактировать деталь",
     "currentStock": "Текущий запас: {quantity}",
     "addedStock": "{amount} добавлено на склад",
-    "customAmount": "Кол-во..."
+    "customAmount": "Кол-во...",
+    "scanParts": "Сканировать детали"
   },
   "form": {
     "editPart": "Редактировать запчасть",
@@ -67,6 +68,11 @@
     "dropOrClick": "Перетащите или нажмите",
     "replace": "Заменить",
     "upload": "Загрузить",
+    "camera": "Камера",
+    "aiAnalyze": "ИИ Автозаполнение",
+    "aiAnalyzing": "Анализ изображения...",
+    "aiAnalyzeSuccess": "Поля заполнены из изображения",
+    "aiAnalyzeFailed": "Не удалось проанализировать изображение",
     "imageUploading": "Загрузка изображения...",
     "imageUploaded": "Изображение загружено",
     "imageUploadFailed": "Не удалось загрузить изображение",
