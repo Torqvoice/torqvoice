@@ -343,6 +343,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(revenueData.summary.totalRevenue)}
                     </p>
+                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.revenueDesc")}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -356,6 +357,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(revenueData.summary.totalCollected)}
                     </p>
+                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.collectedDesc")}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -369,6 +371,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(revenueData.summary.outstanding)}
                     </p>
+                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.outstandingDesc")}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -382,6 +385,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <p className="text-lg font-semibold">
                       {revenueData.summary.totalCount}
                     </p>
+                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.servicesDesc")}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -395,6 +399,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(revenueData.summary.totalPartsCost)}
                     </p>
+                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.partsCostDesc")}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -408,6 +413,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(revenueData.summary.netProfit)}
                     </p>
+                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.netProfitDesc")}</p>
                   </div>
                 </CardContent>
               </Card>
