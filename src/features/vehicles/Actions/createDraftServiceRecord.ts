@@ -26,6 +26,7 @@ export async function createDraftServiceRecord(
                 "workshop.invoicePrefix",
                 "workshop.invoiceStartNumber",
                 "workshop.defaultTechnician",
+                "workshop.defaultTechnicianId",
                 "workboard.workDayStart",
               ],
             },
@@ -46,16 +47,30 @@ export async function createDraftServiceRecord(
       const shopName = org?.name || undefined;
       let techName = currentUser?.name || undefined;
 
-      // If no technician specified, look up the default technician from settings
+      // Resolve technician: explicit param > default setting by ID > legacy default by name
       let resolvedTechId = technicianId;
-      if (!resolvedTechId && settingsMap["workshop.defaultTechnician"]) {
-        const defaultTech = await db.technician.findFirst({
-          where: { organizationId, name: settingsMap["workshop.defaultTechnician"], isActive: true },
-          select: { id: true, name: true },
-        });
-        if (defaultTech) {
-          resolvedTechId = defaultTech.id;
-          techName = defaultTech.name;
+      if (!resolvedTechId) {
+        const defaultId = settingsMap["workshop.defaultTechnicianId"];
+        if (defaultId) {
+          const defaultTech = await db.technician.findFirst({
+            where: { id: defaultId, organizationId, isActive: true },
+            select: { id: true, name: true },
+          });
+          if (defaultTech) {
+            resolvedTechId = defaultTech.id;
+            techName = defaultTech.name;
+          }
+        }
+        // Legacy fallback: look up by name
+        if (!resolvedTechId && settingsMap["workshop.defaultTechnician"]) {
+          const defaultTech = await db.technician.findFirst({
+            where: { organizationId, name: settingsMap["workshop.defaultTechnician"], isActive: true },
+            select: { id: true, name: true },
+          });
+          if (defaultTech) {
+            resolvedTechId = defaultTech.id;
+            techName = defaultTech.name;
+          }
         }
       }
 

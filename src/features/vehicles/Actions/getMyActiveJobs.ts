@@ -27,24 +27,15 @@ export async function getMyActiveJobs() {
         select: { id: true },
       });
 
+      if (myTechnicians.length === 0) return [];
+
       const techIds = myTechnicians.map((t) => t.id);
-
-      // Also try matching by techName as fallback for unlinked records
-      const user = await db.user.findUnique({
-        where: { id: userId },
-        select: { name: true },
-      });
-
-      if (techIds.length === 0 && !user?.name) return [];
 
       const records = await db.serviceRecord.findMany({
         where: {
           vehicle: { organizationId },
           status: { in: ["in-progress", "pending", "waiting-parts"] },
-          OR: [
-            ...(techIds.length > 0 ? [{ technicianId: { in: techIds } }] : []),
-            ...(user?.name ? [{ techName: user.name, technicianId: null }] : []),
-          ],
+          technicianId: { in: techIds },
         },
         select: {
           id: true,

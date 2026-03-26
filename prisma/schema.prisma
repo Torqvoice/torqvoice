@@ -969,7 +969,6 @@ model Technician {
   sortOrder     Int     @default(0)
   dailyCapacity Int     @default(480)
 
-  memberId String?
   userId   String?
   user     User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 

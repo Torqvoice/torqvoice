@@ -253,7 +253,7 @@ export async function POST(request: NextRequest) {
               isActive: t.isActive !== false,
               sortOrder: (t.sortOrder as number) || 0,
               dailyCapacity: (t.dailyCapacity as number) || 480,
-              memberId: (t.memberId as string) || null,
+              userId: (t.userId as string) || (t.memberId as string) || null,
               createdAt: t.createdAt
                 ? new Date(t.createdAt as string)
                 : undefined,

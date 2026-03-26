@@ -141,7 +141,7 @@ export async function createInspection(input: unknown) {
 
     // Look up technician linked to current user
     const technician = await db.technician.findFirst({
-      where: { memberId: userId, organizationId, isActive: true },
+      where: { userId, organizationId, isActive: true },
       select: { id: true },
     });
 

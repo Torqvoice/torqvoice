@@ -20,6 +20,7 @@ export const SETTING_KEYS = {
   INVOICE_DUE_DAYS: "invoice.dueDays",
   UNIT_SYSTEM: "workshop.unitSystem",
   DEFAULT_TECHNICIAN: "workshop.defaultTechnician",
+  DEFAULT_TECHNICIAN_ID: "workshop.defaultTechnicianId",
   DEFAULT_LABOR_RATE: "workshop.defaultLaborRate",
   QUOTE_PREFIX: "workshop.quotePrefix",
   QUOTE_VALID_DAYS: "workshop.quoteValidDays",

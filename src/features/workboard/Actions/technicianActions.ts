@@ -23,7 +23,6 @@ export async function getTechnicians() {
           isActive: true,
           sortOrder: true,
           dailyCapacity: true,
-          memberId: true,
           userId: true,
           organizationId: true,
           createdAt: true,
@@ -54,7 +53,6 @@ export async function createTechnician(input: unknown) {
         data: {
           name: data.name,
           color: data.color,
-          memberId: data.memberId || null,
           userId: data.userId || null,
           sortOrder: (maxOrder._max.sortOrder ?? -1) + 1,
           organizationId,
@@ -95,6 +93,14 @@ export async function updateTechnician(input: unknown) {
         where: { id, organizationId },
         data: updates,
       });
+
+      // Sync denormalized techName on related service records when name changes
+      if (updates.name) {
+        await db.serviceRecord.updateMany({
+          where: { technicianId: id },
+          data: { techName: updates.name },
+        });
+      }
 
       notificationBus.emit("workboard", {
         type: "technician_updated",

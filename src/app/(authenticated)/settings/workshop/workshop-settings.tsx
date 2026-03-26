@@ -43,8 +43,8 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
   const t = useTranslations('settings');
   const [saving, setSaving] = useState(false);
 
-  const [defaultTechnician, setDefaultTechnician] = useState(
-    settings[SETTING_KEYS.DEFAULT_TECHNICIAN] || ""
+  const [defaultTechnicianId, setDefaultTechnicianId] = useState(
+    settings[SETTING_KEYS.DEFAULT_TECHNICIAN_ID] || ""
   );
   const [technicians, setTechnicians] = useState<TechnicianOption[]>(initialTechnicians);
   const [techOpen, setTechOpen] = useState(false);
@@ -68,8 +68,10 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
     settings[SETTING_KEYS.WORKBOARD_WORK_DAY_END] || "15:00"
   );
 
-  const handleTechSelect = (techName: string) => {
-    setDefaultTechnician(techName);
+  const selectedTechName = technicians.find((t) => t.id === defaultTechnicianId)?.name || "";
+
+  const handleTechSelect = (techId: string) => {
+    setDefaultTechnicianId(techId);
     setTechOpen(false);
   };
 
@@ -84,7 +86,7 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
       setTechSearch('');
       setNewTechName('');
       setShowNewInput(false);
-      handleTechSelect(newTech.name);
+      handleTechSelect(newTech.id);
     } else {
       toast.error(t('workshop.failedCreateTech'));
     }
@@ -96,7 +98,8 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
   const handleSave = async () => {
     setSaving(true);
     await setSettings({
-      [SETTING_KEYS.DEFAULT_TECHNICIAN]: defaultTechnician,
+      [SETTING_KEYS.DEFAULT_TECHNICIAN_ID]: defaultTechnicianId,
+      [SETTING_KEYS.DEFAULT_TECHNICIAN]: selectedTechName,
       [SETTING_KEYS.DEFAULT_LABOR_RATE]: defaultLaborRate,
       [SETTING_KEYS.UNIT_SYSTEM]: unitSystem,
       [SETTING_KEYS.WORKBOARD_WEEK_START_DAY]: weekStartDay,
@@ -134,7 +137,7 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
                     className="w-full justify-between font-normal"
                   >
                     <span className="truncate">
-                      {defaultTechnician || t('workshop.technicianPlaceholder')}
+                      {selectedTechName || t('workshop.technicianPlaceholder')}
                     </span>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
@@ -153,12 +156,12 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
                           <CommandItem
                             key={tech.id}
                             value={tech.name}
-                            onSelect={() => handleTechSelect(tech.name)}
+                            onSelect={() => handleTechSelect(tech.id)}
                           >
                             <Check
                               className={cn(
                                 'mr-2 h-4 w-4',
-                                defaultTechnician === tech.name ? 'opacity-100' : 'opacity-0',
+                                defaultTechnicianId === tech.id ? 'opacity-100' : 'opacity-0',
                               )}
                             />
                             {tech.name}
