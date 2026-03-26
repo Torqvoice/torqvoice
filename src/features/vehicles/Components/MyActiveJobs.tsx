@@ -176,7 +176,7 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
   return (
     <>
       <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-3">
+        <CardHeader className="px-4 pb-1 pt-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <Wrench className="h-4 w-4" />
             {t("title")}
@@ -195,7 +195,7 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
               return (
                 <div
                   key={job.id}
-                  className="px-5 py-3"
+                  className="px-4 py-2"
                 >
                   <div className="flex items-center justify-between">
                     <div
