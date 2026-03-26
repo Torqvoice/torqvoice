@@ -288,5 +288,7 @@
     "endBeforeStart": "Eindtijd moet na de starttijd zijn",
     "failedUpdate": "Planning bijwerken mislukt",
     "splitCreated": "Taak beslaat meerdere dagen — vervolg aangemaakt voor de volgende dag"
+    "platformUsers": "Platform Users",
+    "customTechnicians": "Custom"
   }
 }

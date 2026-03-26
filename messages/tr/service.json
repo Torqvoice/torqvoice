@@ -288,5 +288,7 @@
     "endBeforeStart": "Bitiş saati başlangıç saatinden sonra olmalıdır",
     "failedUpdate": "Zamanlama güncellenemedi",
     "splitCreated": "İş birden fazla güne yayılıyor — sonraki gün için devam oluşturuldu"
+    "platformUsers": "Platform Users",
+    "customTechnicians": "Custom"
   }
 }

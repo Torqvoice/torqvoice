@@ -4,7 +4,7 @@ import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getInventoryPartsList } from "@/features/inventory/Actions/inventoryActions";
 import { getLaborPresetsList } from "@/features/labor-presets/Actions/laborPresetActions";
 
-import { getTechnicians } from "@/features/workboard/Actions/technicianActions";
+import { getTechnicians, getOrgMembers } from "@/features/workboard/Actions/technicianActions";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { getFeatures } from "@/lib/features";
 import { db } from "@/lib/db";
@@ -20,7 +20,7 @@ export default async function ServiceDetailPage({
 }) {
   const { id, serviceId } = await params;
 
-  const [result, settingsResult, inventoryResult, techniciansResult, presetsResult, authContext, session] =
+  const [result, settingsResult, inventoryResult, techniciansResult, presetsResult, authContext, session, orgMembersResult] =
     await Promise.all([
       getServiceRecord(serviceId),
       getSettings([
@@ -35,6 +35,7 @@ export default async function ServiceDetailPage({
       getLaborPresetsList(),
       getAuthContext(),
       getCachedSession(),
+      getOrgMembers(),
     ]);
 
   if (!result.success || !result.data) {
@@ -76,7 +77,7 @@ export default async function ServiceDetailPage({
   };
   const boardTechnicians = (
     techniciansResult.success && techniciansResult.data ? techniciansResult.data : []
-  ).map((t) => ({ id: t.id, name: t.name }));
+  ).map((t) => ({ id: t.id, name: t.name, userId: t.userId }));
   const organizationId = authContext?.organizationId || "";
 
   // Fetch team members and features
@@ -176,6 +177,7 @@ export default async function ServiceDetailPage({
         laborPresets={laborPresets}
         initialVehicle={initialVehicle}
         boardTechnicians={boardTechnicians}
+        orgMembers={orgMembersResult.success && orgMembersResult.data ? orgMembersResult.data : []}
         currentUserName={currentUserName}
         imageAttachmentsForManager={imageAttachmentsForManager}
         videoAttachments={videoAttachments}

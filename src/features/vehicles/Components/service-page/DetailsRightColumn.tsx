@@ -9,7 +9,7 @@ import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
 import type { ServiceDetail } from '../service-detail/types'
-import type { BoardTechnicianOption } from './service-page-types'
+import type { BoardTechnicianOption, OrgMemberOption } from './service-page-types'
 
 interface DetailsRightColumnProps {
   formState: ReturnType<typeof useServiceFormState>
@@ -21,6 +21,7 @@ interface DetailsRightColumnProps {
   taxEnabled: boolean
   initialVehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null }
   boardTechnicians: BoardTechnicianOption[]
+  orgMembers?: OrgMemberOption[]
 }
 
 export function DetailsRightColumn({
@@ -33,6 +34,7 @@ export function DetailsRightColumn({
   taxEnabled,
   initialVehicle,
   boardTechnicians,
+  orgMembers,
 }: DetailsRightColumnProps) {
   const router = useRouter()
 
@@ -69,6 +71,7 @@ export function DetailsRightColumn({
       <ScheduleTimesSection
         serviceRecordId={record.id}
         technicians={boardTechnicians}
+        orgMembers={orgMembers}
         initialStartDateTime={formState.initialData.startDateTime}
         initialEndDateTime={formState.initialData.endDateTime}
         initialTechnicianId={record.technicianId}

@@ -42,6 +42,7 @@ export function ServicePageClient({
   inventoryParts,
   initialVehicle,
   boardTechnicians = [],
+  orgMembers = [],
   currentUserName,
   imageAttachmentsForManager,
   videoAttachments,
@@ -157,6 +158,7 @@ export function ServicePageClient({
                 taxEnabled={taxEnabled}
                 initialVehicle={initialVehicle}
                 boardTechnicians={boardTechnicians}
+                orgMembers={orgMembers}
               />
             }
           />

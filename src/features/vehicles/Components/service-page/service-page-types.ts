@@ -6,6 +6,13 @@ import type { LaborPresetOption } from '@/features/labor-presets/Components/Labo
 export interface BoardTechnicianOption {
   id: string
   name: string
+  userId?: string | null
+}
+
+export interface OrgMemberOption {
+  id: string
+  name: string | null
+  email: string
 }
 
 export interface Attachment {
@@ -33,6 +40,7 @@ export interface ServicePageClientProps {
   inventoryParts: InventoryPartOption[]
   initialVehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null }
   boardTechnicians?: BoardTechnicianOption[]
+  orgMembers?: OrgMemberOption[]
   currentUserName: string
   imageAttachmentsForManager: Attachment[]
   videoAttachments: Attachment[]

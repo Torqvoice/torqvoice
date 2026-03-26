@@ -11,7 +11,9 @@ import { getFeatures } from "@/lib/features";
 import { getRecentSmsThreads } from "@/features/sms/Actions/smsActions";
 import { getNotifications } from "@/features/notifications/Actions/notificationActions";
 import { getRecentAuditLogs } from "@/features/audit/Actions/auditActions";
+import { getMyActiveJobs } from "@/features/vehicles/Actions/getMyActiveJobs";
 import { DashboardClient } from "./dashboard-client";
+import { MyActiveJobs } from "@/features/vehicles/Components/MyActiveJobs";
 import { PageHeader } from "@/components/page-header";
 
 export default async function DashboardPage() {
@@ -19,7 +21,7 @@ export default async function DashboardPage() {
   const features = auth ? await getFeatures(auth.organizationId) : null;
   const smsEnabled = features?.sms ?? false;
 
-  const [result, settingsResult, remindersResult, maintenanceResult, dismissedMaintenanceResult, inProgressResult, completedResult, quoteRequestsResult, quoteResponsesResult, smsResult, notificationsResult, auditLogsResult] = await Promise.all([
+  const [result, settingsResult, remindersResult, maintenanceResult, dismissedMaintenanceResult, inProgressResult, completedResult, quoteRequestsResult, quoteResponsesResult, smsResult, notificationsResult, auditLogsResult, myJobsResult] = await Promise.all([
     getDashboardStats(),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
     getUpcomingReminders(),
@@ -32,6 +34,7 @@ export default async function DashboardPage() {
     smsEnabled ? getRecentSmsThreads(0, 5) : Promise.resolve(null),
     getNotifications(),
     getRecentAuditLogs(10),
+    getMyActiveJobs(),
   ]);
 
   if (!result.success || !result.data) {
@@ -55,10 +58,13 @@ export default async function DashboardPage() {
   const notifications = notificationsResult.success && notificationsResult.data ? notificationsResult.data.notifications : [];
   const recentAuditLogs = auditLogsResult.success && auditLogsResult.data ? auditLogsResult.data : [];
 
+  const myJobs = myJobsResult.success && myJobsResult.data ? myJobsResult.data : [];
+
   return (
     <>
       <PageHeader />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <MyActiveJobs jobs={myJobs} />
         <DashboardClient
           stats={result.data}
           currencyCode={currencyCode}

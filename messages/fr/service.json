@@ -288,5 +288,7 @@
     "endBeforeStart": "L'heure de fin doit être après l'heure de début",
     "failedUpdate": "Impossible de mettre à jour le planning",
     "splitCreated": "Le travail s'étend sur plusieurs jours — suite créée pour le jour suivant"
+    "platformUsers": "Platform Users",
+    "customTechnicians": "Custom"
   }
 }

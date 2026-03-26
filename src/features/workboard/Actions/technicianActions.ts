@@ -16,6 +16,19 @@ export async function getTechnicians() {
       const technicians = await db.technician.findMany({
         where: { organizationId, isActive: true },
         orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          name: true,
+          color: true,
+          isActive: true,
+          sortOrder: true,
+          dailyCapacity: true,
+          memberId: true,
+          userId: true,
+          organizationId: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
       return technicians;
     },
@@ -42,6 +55,7 @@ export async function createTechnician(input: unknown) {
           name: data.name,
           color: data.color,
           memberId: data.memberId || null,
+          userId: data.userId || null,
           sortOrder: (maxOrder._max.sortOrder ?? -1) + 1,
           organizationId,
         },

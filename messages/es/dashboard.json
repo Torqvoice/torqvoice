@@ -1,4 +1,10 @@
 {
+  "myJobs": {
+    "title": "My Active Jobs",
+    "description": "Work orders assigned to you. Tap the camera to quickly add photos.",
+    "uploadFailed": "Failed to upload image",
+    "uploadSuccess": "{count} image(s) uploaded"
+  },
   "recentActivity": "Actividad reciente",
   "noRecentActivity": "Sin actividad reciente",
   "unknownUser": "Usuario",

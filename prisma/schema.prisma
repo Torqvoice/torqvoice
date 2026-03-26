@@ -34,6 +34,7 @@ model User {
   passkeys               Passkey[]
   organizationMembers    OrganizationMember[]
   auditLogs              AuditLog[]
+  technicians            Technician[]
 
   @@map("users")
 }
@@ -969,6 +970,8 @@ model Technician {
   dailyCapacity Int     @default(480)
 
   memberId String?
+  userId   String?
+  user     User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)

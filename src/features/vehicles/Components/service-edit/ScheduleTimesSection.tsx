@@ -30,11 +30,19 @@ const HOUR_PRESETS = [1, 2, 4, 5, 7]
 interface Technician {
   id: string
   name: string
+  userId?: string | null
+}
+
+interface OrgMember {
+  id: string
+  name: string | null
+  email: string
 }
 
 interface ScheduleTimesSectionProps {
   serviceRecordId: string
   technicians?: Technician[]
+  orgMembers?: OrgMember[]
   initialStartDateTime?: string | null
   initialEndDateTime?: string | null
   initialTechnicianId?: string | null
@@ -44,6 +52,7 @@ interface ScheduleTimesSectionProps {
 export function ScheduleTimesSection({
   serviceRecordId,
   technicians: initialTechnicians = [],
+  orgMembers = [],
   initialStartDateTime,
   initialEndDateTime,
   initialTechnicianId,
@@ -107,6 +116,19 @@ export function ScheduleTimesSection({
     }
   }
 
+  const handleMemberSelect = async (member: OrgMember) => {
+    setCreating(true)
+    const res = await createTechnician({ name: member.name!, userId: member.id })
+    setCreating(false)
+    if (res.success && res.data) {
+      const newTech = { id: res.data.id, name: res.data.name, userId: member.id }
+      setTechnicians((prev) => [...prev, newTech])
+      handleTechSelect(newTech.id)
+    } else {
+      toast.error(t('failedCreate'))
+    }
+  }
+
   const doCreateTechnician = async (name: string) => {
     if (!name.trim()) return
     setCreating(true)
@@ -125,6 +147,15 @@ export function ScheduleTimesSection({
   }
 
   const selectedTechName = technicians.find((t) => t.id === selectedTechId)?.name
+
+  // Platform users that already have a linked technician
+  const linkedUserIds = new Set(technicians.filter((t) => t.userId).map((t) => t.userId!))
+  // Platform users without a technician record yet
+  const unlinkedMembers = orgMembers.filter((m) => m.name && !linkedUserIds.has(m.id))
+  // Technicians linked to platform users
+  const linkedTechnicians = technicians.filter((t) => t.userId)
+  // Custom technicians (not linked to any platform user)
+  const customTechnicians = technicians.filter((t) => !t.userId)
 
   const searchLower = techSearch.toLowerCase()
   const exactMatch = technicians.some((t) => t.name.toLowerCase() === searchLower)
@@ -165,23 +196,58 @@ export function ScheduleTimesSection({
               />
               <CommandList className="max-h-60 overflow-y-auto">
                 <CommandEmpty className="p-0" />
-                <CommandGroup>
-                  {technicians.map((tech) => (
-                    <CommandItem
-                      key={tech.id}
-                      value={tech.name}
-                      onSelect={() => handleTechSelect(tech.id)}
-                    >
-                      <Check
-                        className={cn(
-                          'mr-2 h-4 w-4',
-                          selectedTechId === tech.id ? 'opacity-100' : 'opacity-0',
-                        )}
-                      />
-                      {tech.name}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
+                {/* Platform users (linked technicians + unlinked org members) */}
+                {(linkedTechnicians.length > 0 || unlinkedMembers.length > 0) && (
+                  <CommandGroup heading={t('platformUsers')}>
+                    {linkedTechnicians.map((tech) => (
+                      <CommandItem
+                        key={tech.id}
+                        value={tech.name}
+                        onSelect={() => handleTechSelect(tech.id)}
+                      >
+                        <Check
+                          className={cn(
+                            'mr-2 h-4 w-4',
+                            selectedTechId === tech.id ? 'opacity-100' : 'opacity-0',
+                          )}
+                        />
+                        {tech.name}
+                      </CommandItem>
+                    ))}
+                    {unlinkedMembers.map((member) => (
+                      <CommandItem
+                        key={`member-${member.id}`}
+                        value={member.name!}
+                        onSelect={() => handleMemberSelect(member)}
+                        disabled={creating}
+                      >
+                        <Check className="mr-2 h-4 w-4 opacity-0" />
+                        {member.name}
+                        <span className="ml-auto text-[10px] text-muted-foreground">{member.email}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+                {/* Custom technicians (not linked to platform users) */}
+                {customTechnicians.length > 0 && (
+                  <CommandGroup heading={t('customTechnicians')}>
+                    {customTechnicians.map((tech) => (
+                      <CommandItem
+                        key={tech.id}
+                        value={tech.name}
+                        onSelect={() => handleTechSelect(tech.id)}
+                      >
+                        <Check
+                          className={cn(
+                            'mr-2 h-4 w-4',
+                            selectedTechId === tech.id ? 'opacity-100' : 'opacity-0',
+                          )}
+                        />
+                        {tech.name}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
                 {techSearch.trim() && !exactMatch && (
                   <CommandGroup>
                     <CommandItem
