@@ -27,7 +27,7 @@ export default function TermsOfServicePage() {
           </div>
           <h1 className="mt-4 text-2xl font-bold">Terms of Service</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Last updated: February 2026
+            Last updated: March 2026
           </p>
         </div>
 
@@ -187,7 +187,66 @@ export default function TermsOfServicePage() {
 
           <section>
             <h2 className="mb-2 text-base font-semibold text-foreground">
-              8. Financial and Legal Disclaimer
+              8. Third-Party Services and AI
+            </h2>
+            <p>
+              The Service may integrate with third-party services, including but
+              not limited to:
+            </p>
+            <ul className="mt-2 list-disc space-y-1 pl-6">
+              <li>
+                <strong>AI Providers</strong> (OpenAI, Anthropic): If you enable
+                AI features, data including service descriptions, vehicle
+                information, part details, and uploaded images may be sent to
+                these providers for processing. You are responsible for
+                reviewing and complying with their respective terms of service
+                and privacy policies. Torqvoice does not control how these
+                providers process, store, or use the data sent to them.
+              </li>
+              <li>
+                <strong>Payment Providers</strong> (Stripe, Vipps, PayPal): If
+                you enable online payments, customer payment information is
+                processed directly by these providers. Torqvoice does not store
+                credit card numbers or bank account details. You are responsible
+                for compliance with PCI-DSS and applicable payment regulations.
+              </li>
+              <li>
+                <strong>Messaging Services</strong> (Telegram, SMS, Email): If
+                you enable messaging integrations, customer contact information
+                and message content may be transmitted through these services.
+              </li>
+            </ul>
+            <p className="mt-2">
+              Torqvoice is not responsible for the practices, content, or
+              availability of any third-party service. Your use of third-party
+              integrations is at your own risk and subject to those
+              providers&apos; terms.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="mb-2 text-base font-semibold text-foreground">
+              9. Uploaded Content and Files
+            </h2>
+            <p>
+              You may upload files, images, documents, and other content to the
+              Service. You retain ownership of all uploaded content. By
+              uploading content, you represent that you have the right to do so
+              and that the content does not violate any third-party rights.
+              Torqvoice is not responsible for the content you upload and does
+              not monitor uploaded files for legality or appropriateness.
+            </p>
+            <p className="mt-2">
+              For self-hosted instances, all uploaded files are stored on your
+              own server infrastructure. For cloud-hosted instances, files are
+              stored on our servers and may be deleted when you delete your
+              account or the associated records.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="mb-2 text-base font-semibold text-foreground">
+              10. Financial and Legal Disclaimer
             </h2>
             <p>
               The Service is a tool to assist with workshop management. It does
@@ -203,7 +262,7 @@ export default function TermsOfServicePage() {
 
           <section>
             <h2 className="mb-2 text-base font-semibold text-foreground">
-              9. Service Availability
+              11. Service Availability
             </h2>
             <p>
               Torqvoice reserves the right to modify, suspend, or discontinue
@@ -215,7 +274,7 @@ export default function TermsOfServicePage() {
 
           <section>
             <h2 className="mb-2 text-base font-semibold text-foreground">
-              10. Account Termination
+              12. Account Termination
             </h2>
             <p>
               We may terminate or suspend your account and access to the Service
@@ -228,7 +287,7 @@ export default function TermsOfServicePage() {
 
           <section>
             <h2 className="mb-2 text-base font-semibold text-foreground">
-              11. Changes to Terms
+              13. Changes to Terms
             </h2>
             <p>
               We reserve the right to modify these Terms at any time. Changes
@@ -241,7 +300,7 @@ export default function TermsOfServicePage() {
 
           <section>
             <h2 className="mb-2 text-base font-semibold text-foreground">
-              12. Governing Law
+              14. Governing Law
             </h2>
             <p>
               These Terms shall be governed by and construed in accordance with
@@ -252,7 +311,7 @@ export default function TermsOfServicePage() {
 
           <section>
             <h2 className="mb-2 text-base font-semibold text-foreground">
-              13. Severability
+              15. Severability
             </h2>
             <p>
               If any provision of these Terms is held to be unenforceable or
@@ -265,7 +324,7 @@ export default function TermsOfServicePage() {
 
           <section>
             <h2 className="mb-2 text-base font-semibold text-foreground">
-              14. Entire Agreement
+              16. Entire Agreement
             </h2>
             <p>
               These Terms constitute the entire agreement between you and

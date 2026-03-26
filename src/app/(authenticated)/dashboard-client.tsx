@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useFormatDate } from "@/lib/use-format-date";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -271,48 +272,38 @@ export function DashboardClient({
   return (
     <div className="space-y-4">
       {/* Quick stats row */}
-      <div className={`grid grid-cols-2 gap-3 ${stats.isAdmin ? "sm:grid-cols-4" : "sm:grid-cols-2"}`}>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <ClipboardList className="h-4 w-4" />
-              <span className="text-xs font-medium">{t("stats.activeJobs")}</span>
-            </div>
-            <p className="mt-1 text-2xl font-bold">{stats.activeJobs}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span className="text-xs font-medium">{t("stats.pending")}</span>
-            </div>
-            <p className="mt-1 text-2xl font-bold">{stats.pendingJobs}</p>
-          </CardContent>
-        </Card>
+      <div className={`grid grid-cols-2 gap-2 ${stats.isAdmin ? "sm:grid-cols-4" : "sm:grid-cols-2"}`}>
+        <Link href="/work-orders?status=active" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] text-muted-foreground">{t("stats.activeJobs")}</span>
+            <ClipboardList className="h-3.5 w-3.5 text-muted-foreground/50" />
+          </div>
+          <p className="text-lg font-bold">{stats.activeJobs}</p>
+        </Link>
+        <Link href="/work-orders?status=pending" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] text-muted-foreground">{t("stats.pending")}</span>
+            <Clock className="h-3.5 w-3.5 text-muted-foreground/50" />
+          </div>
+          <p className="text-lg font-bold">{stats.pendingJobs}</p>
+        </Link>
         {stats.isAdmin && (
-          <Card className="border-0 shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <DollarSign className="h-4 w-4" />
-                <span className="text-xs font-medium">{t("stats.todaysRevenue")}</span>
-              </div>
-              <p className="mt-1 text-2xl font-bold">
-                {formatCurrency(stats.todayRevenue, currencyCode)}
-              </p>
-            </CardContent>
-          </Card>
+          <Link href="/reports" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-muted-foreground">{t("stats.todaysRevenue")}</span>
+              <DollarSign className="h-3.5 w-3.5 text-muted-foreground/50" />
+            </div>
+            <p className="text-lg font-bold">{formatCurrency(stats.todayRevenue, currencyCode)}</p>
+          </Link>
         )}
         {stats.isAdmin && (
-          <Card className="border-0 shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Users className="h-4 w-4" />
-                <span className="text-xs font-medium">{t("stats.totalCustomers")}</span>
-              </div>
-              <p className="mt-1 text-2xl font-bold">{stats.totalCustomers}</p>
-            </CardContent>
-          </Card>
+          <Link href="/customers" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-muted-foreground">{t("stats.totalCustomers")}</span>
+              <Users className="h-3.5 w-3.5 text-muted-foreground/50" />
+            </div>
+            <p className="text-lg font-bold">{stats.totalCustomers}</p>
+          </Link>
         )}
       </div>
 
