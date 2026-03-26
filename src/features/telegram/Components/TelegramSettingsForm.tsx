@@ -71,7 +71,7 @@ export function TelegramSettingsForm({
             <CardDescription>
               {t("description")}{" "}
               <a
-                href="https://torqvoice.com/docs/configuration#telegram"
+                href="https://torqvoice.com/docs/integrations/telegram"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 font-medium text-primary hover:underline"

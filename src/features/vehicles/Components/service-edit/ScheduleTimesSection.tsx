@@ -172,9 +172,19 @@ export function ScheduleTimesSection({
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
-      <div className="flex items-center gap-2">
-        <Clock className="h-4 w-4 text-muted-foreground" />
-        <h3 className="text-sm font-semibold">{t('title')}</h3>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-semibold">{t('title')}</h3>
+        </div>
+        <a
+          href="https://torqvoice.com/docs/configuration/work-orders/technician-assignment"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+        >
+          {t('readMore')} →
+        </a>
       </div>
 
       <div className="space-y-1">
@@ -376,6 +386,7 @@ export function ScheduleTimesSection({
           ))}
         </div>
       </div>
+
     </div>
   )
 }

@@ -298,6 +298,7 @@
     "failedUpdate": "Planning bijwerken mislukt",
     "splitCreated": "Taak beslaat meerdere dagen — vervolg aangemaakt voor de volgende dag",
     "platformUsers": "Platform Users",
-    "customTechnicians": "Custom"
+    "customTechnicians": "Custom",
+    "readMore": "Read More"
   }
 }

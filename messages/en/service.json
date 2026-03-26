@@ -298,6 +298,7 @@
     "failedUpdate": "Failed to update schedule times",
     "splitCreated": "Job spans multiple days — continuation created for next day",
     "platformUsers": "Platform Users",
-    "customTechnicians": "Custom"
+    "customTechnicians": "Custom",
+    "readMore": "Read More"
   }
 }

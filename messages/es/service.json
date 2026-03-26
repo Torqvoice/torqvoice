@@ -298,6 +298,7 @@
     "failedUpdate": "Error al actualizar el horario",
     "splitCreated": "El trabajo abarca varios días — continuación creada para el día siguiente",
     "platformUsers": "Platform Users",
-    "customTechnicians": "Custom"
+    "customTechnicians": "Custom",
+    "readMore": "Read More"
   }
 }
