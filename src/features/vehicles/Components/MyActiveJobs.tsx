@@ -16,15 +16,14 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from '@/components/ui/drawer'
 import { toast } from 'sonner'
 import { compressImage } from '@/lib/compress-image'
 import { addServiceAttachment } from '@/features/vehicles/Actions/addServiceAttachment'
@@ -75,7 +74,7 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
     sellPrice: number
     unitCost: number
   } | null>(null)
-  const [addQty, setAddQty] = useState('1')
+  const [addQty, setAddQty] = useState(1)
   const [addingPart, setAddingPart] = useState(false)
   const [partCounts, setPartCounts] = useState<Record<string, number>>(() =>
     Object.fromEntries(jobs.map((j) => [j.id, j.partCount]))
@@ -126,7 +125,7 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
       setPendingBarcode(barcode)
       if (result.success && result.data) {
         setScannedPart(result.data)
-        setAddQty('1')
+        setAddQty(1)
         setShowAddDialog(true)
       } else {
         // Part not found — offer to create it
@@ -145,7 +144,7 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
         const result = await lookupPartByBarcode(pendingBarcode)
         if (result.success && result.data) {
           setScannedPart(result.data)
-          setAddQty('1')
+          setAddQty(1)
           setShowAddDialog(true)
         }
         setPendingBarcode('')
@@ -358,60 +357,70 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
         title={t('scanPart')}
       />
 
-      {/* Quantity selection dialog when part is found */}
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>{t('scanPart')}</DialogTitle>
-          </DialogHeader>
+      {/* Quantity selection drawer when part is found */}
+      <Drawer open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>{t('scanPart')}</DrawerTitle>
+          </DrawerHeader>
           {scannedPart && (
-            <div className="space-y-4">
-              <div className="rounded-lg border p-3">
-                <p className="font-medium">{scannedPart.name}</p>
-                <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-                  {scannedPart.partNumber && <span className="font-mono">{scannedPart.partNumber}</span>}
-                  {scannedPart.category && <Badge variant="secondary" className="text-xs">{scannedPart.category}</Badge>}
+            <div className="px-4">
+              <div className="flex items-center gap-3 rounded-lg border p-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                  <Package className="h-5 w-5 text-primary" />
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium truncate">{scannedPart.name}</p>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    {scannedPart.partNumber && <span className="font-mono text-xs">{scannedPart.partNumber}</span>}
+                    {scannedPart.category && <Badge variant="secondary" className="text-[10px]">{scannedPart.category}</Badge>}
+                  </div>
+                </div>
+                <div className="text-right text-sm text-muted-foreground shrink-0">
                   {t('inStock', { quantity: scannedPart.quantity })}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">{t('quantity')}</Label>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => setAddQty('1')} disabled={addingPart}>
-                    1
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => setAddQty('5')} disabled={addingPart}>
-                    5
-                  </Button>
-                  <Input
-                    type="number"
-                    min="1"
-                    value={addQty}
-                    onChange={(e) => setAddQty(e.target.value)}
-                    className="h-8 flex-1"
-                  />
                 </div>
               </div>
 
-              <Button
-                className="w-full"
-                onClick={() => handleAddPartToJob(parseInt(addQty, 10) || 1)}
-                disabled={addingPart}
-              >
-                {addingPart ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Plus className="mr-2 h-4 w-4" />
-                )}
-                {t('addToJob', { qty: parseInt(addQty, 10) || 1 })}
-              </Button>
+              <div className="flex items-center justify-center gap-4 py-6">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-full text-lg"
+                  onClick={() => setAddQty(Math.max(1, addQty - 1))}
+                  disabled={addingPart || addQty <= 1}
+                >
+                  -
+                </Button>
+                <span className="w-16 text-center text-3xl font-semibold tabular-nums">{addQty}</span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-full text-lg"
+                  onClick={() => setAddQty(addQty + 1)}
+                  disabled={addingPart}
+                >
+                  +
+                </Button>
+              </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+          <DrawerFooter>
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={() => handleAddPartToJob(addQty)}
+              disabled={addingPart}
+            >
+              {addingPart ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="mr-2 h-4 w-4" />
+              )}
+              {t('addToJob', { qty: addQty })}
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
 
       {/* Full part form for creating new parts */}
       <InventoryPartForm
