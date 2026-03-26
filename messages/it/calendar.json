@@ -36,6 +36,12 @@
     "quotes": "Preventivi"
   },
   "selectVehicle": "Seleziona veicolo per ordine di lavoro",
+  "dateChoice": {
+    "title": "Work Order Date",
+    "description": "You have {selectedDate} selected. Which date should this work order be for?",
+    "useSelected": "Use {date}",
+    "useToday": "Use today"
+  },
   "more": "+ {count} altri",
   "events": {
     "status": {

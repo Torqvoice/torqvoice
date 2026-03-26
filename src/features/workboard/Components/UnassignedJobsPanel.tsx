@@ -4,15 +4,22 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useDroppable } from "@dnd-kit/core";
 import { useWorkBoardStore } from "../store/workboardStore";
 import { UnassignedJobCard } from "./BoardJobCard";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 export function UnassignedJobsPanel() {
   const serviceRecords = useWorkBoardStore((s) => s.unassignedServiceRecords);
   const inspections = useWorkBoardStore((s) => s.unassignedInspections);
   const [search, setSearch] = useState("");
   const t = useTranslations("workBoard.unassigned");
+
+  const { isOver, setNodeRef } = useDroppable({
+    id: "unassigned-drop",
+    data: { unassigned: true },
+  });
 
   const lowerSearch = search.toLowerCase();
 
@@ -39,7 +46,13 @@ export function UnassignedJobsPanel() {
   const totalCount = filteredSR.length + filteredInsp.length;
 
   return (
-    <div className="flex w-64 shrink-0 flex-col rounded-lg border bg-muted/30">
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "flex w-64 shrink-0 flex-col rounded-lg border bg-muted/30 transition-colors",
+        isOver && "ring-2 ring-primary/50 bg-primary/5"
+      )}
+    >
       <div className="border-b p-3">
         <h3 className="mb-2 text-sm font-semibold">
           {t("title", { count: totalCount })}

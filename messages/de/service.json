@@ -296,6 +296,9 @@
     "failedAssign": "Zuweisung fehlgeschlagen",
     "endBeforeStart": "Endzeit muss nach der Startzeit liegen",
     "failedUpdate": "Zeitplan konnte nicht aktualisiert werden",
-    "splitCreated": "Auftrag erstreckt sich über mehrere Tage — Fortsetzung für den nächsten Tag erstellt"
+    "splitCreated": "Auftrag erstreckt sich über mehrere Tage — Fortsetzung für den nächsten Tag erstellt",
+    "platformUsers": "Platform Users",
+    "customTechnicians": "Custom",
+    "readMore": "Read More"
   }
 }

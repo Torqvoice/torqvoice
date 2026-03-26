@@ -102,9 +102,19 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
       <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Banknote className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('payment.detailsTitle')}</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between pb-4">
+          <div className="flex items-center gap-3">
+            <Banknote className="h-5 w-5 text-muted-foreground" />
+            <CardTitle className="text-lg">{t('payment.detailsTitle')}</CardTitle>
+          </div>
+          <a
+            href="https://torqvoice.com/docs/configuration/payment-providers"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {t('payment.readMore')} →
+          </a>
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm text-muted-foreground">

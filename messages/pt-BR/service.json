@@ -296,6 +296,9 @@
     "failedAssign": "Falha ao atribuir",
     "endBeforeStart": "A hora de término deve ser após a hora de início",
     "failedUpdate": "Falha ao atualizar o agendamento",
-    "splitCreated": "O trabalho abrange vários dias — continuação criada para o dia seguinte"
+    "splitCreated": "O trabalho abrange vários dias — continuação criada para o dia seguinte",
+    "platformUsers": "Platform Users",
+    "customTechnicians": "Custom",
+    "readMore": "Read More"
   }
 }

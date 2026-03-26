@@ -118,6 +118,7 @@
     "uploadingLogo": "Laster opp logo...",
     "logoUpdated": "Logo oppdatert",
     "failedUploadLogo": "Kunne ikke laste opp logo",
+    "readMore": "Read More",
     "detailsTitle": "Bedriftsdetaljer",
     "shopName": "Bedrift / Verkstednavn",
     "shopNamePlaceholder": "Hansens Bilverksted",
@@ -996,6 +997,7 @@
   },
   "ai": {
     "title": "AI-assistent",
+    "readMore": "Read More",
     "description": "Konfigurer AI for automatisk generering av servicenotater og oppsummering av kjøretøyhistorikk.",
     "enableLabel": "Aktiver AI",
     "enableHint": "Bruk AI-drevne funksjoner i applikasjonen",

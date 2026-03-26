@@ -296,6 +296,9 @@
     "failedAssign": "Przypisanie nie powiodło się",
     "endBeforeStart": "Czas zakończenia musi być po czasie rozpoczęcia",
     "failedUpdate": "Nie udało się zaktualizować harmonogramu",
-    "splitCreated": "Zadanie obejmuje wiele dni — kontynuacja utworzona na następny dzień"
+    "splitCreated": "Zadanie obejmuje wiele dni — kontynuacja utworzona na następny dzień",
+    "platformUsers": "Platform Users",
+    "customTechnicians": "Custom",
+    "readMore": "Read More"
   }
 }

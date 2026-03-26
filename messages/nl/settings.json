@@ -118,6 +118,7 @@
     "uploadingLogo": "Logo uploaden...",
     "logoUpdated": "Logo bijgewerkt",
     "failedUploadLogo": "Logo uploaden mislukt",
+    "readMore": "Read More",
     "detailsTitle": "Bedrijfsgegevens",
     "shopName": "Bedrijfs-/werkplaatsnaam",
     "shopNamePlaceholder": "Jansens Autogarage",
@@ -996,6 +997,7 @@
   },
   "ai": {
     "title": "AI-assistent",
+    "readMore": "Read More",
     "description": "Configureer AI om automatisch servicenotities te genereren en voertuiggeschiedenis samen te vatten.",
     "enableLabel": "AI inschakelen",
     "enableHint": "Gebruik AI-functies in de hele applicatie",

@@ -16,6 +16,18 @@ export async function getTechnicians() {
       const technicians = await db.technician.findMany({
         where: { organizationId, isActive: true },
         orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          name: true,
+          color: true,
+          isActive: true,
+          sortOrder: true,
+          dailyCapacity: true,
+          userId: true,
+          organizationId: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
       return technicians;
     },
@@ -32,6 +44,14 @@ export async function createTechnician(input: unknown) {
     async ({ organizationId }) => {
       const data = createTechnicianSchema.parse(input);
 
+      // If userId provided, return existing technician instead of creating duplicate
+      if (data.userId) {
+        const existing = await db.technician.findFirst({
+          where: { userId: data.userId, organizationId },
+        });
+        if (existing) return existing;
+      }
+
       const maxOrder = await db.technician.aggregate({
         where: { organizationId },
         _max: { sortOrder: true },
@@ -41,7 +61,7 @@ export async function createTechnician(input: unknown) {
         data: {
           name: data.name,
           color: data.color,
-          memberId: data.memberId || null,
+          userId: data.userId || null,
           sortOrder: (maxOrder._max.sortOrder ?? -1) + 1,
           organizationId,
         },
@@ -77,10 +97,28 @@ export async function updateTechnician(input: unknown) {
       const data = updateTechnicianSchema.parse(input);
       const { id, ...updates } = data;
 
+      // Prevent linking a user that's already linked to another technician
+      if (updates.userId) {
+        const existing = await db.technician.findFirst({
+          where: { userId: updates.userId, organizationId, id: { not: id } },
+        });
+        if (existing) {
+          throw new Error(`This user is already linked to technician "${existing.name}"`);
+        }
+      }
+
       const technician = await db.technician.updateMany({
         where: { id, organizationId },
         data: updates,
       });
+
+      // Sync denormalized techName on related service records when name changes
+      if (updates.name) {
+        await db.serviceRecord.updateMany({
+          where: { technicianId: id },
+          data: { techName: updates.name },
+        });
+      }
 
       notificationBus.emit("workboard", {
         type: "technician_updated",

@@ -181,29 +181,33 @@ export async function getTechnicianReport(params: {
       where: {
         vehicle: { organizationId },
         serviceDate: { gte: start, lte: end },
-        techName: { not: null },
+        OR: [{ technicianId: { not: null } }, { techName: { not: null } }],
       },
       select: {
         techName: true,
+        technicianId: true,
+        technician: { select: { name: true } },
         totalAmount: true,
         cost: true,
         laborItems: { select: { hours: true } },
       },
     });
 
-    const byTech: Record<string, { jobCount: number; totalRevenue: number; totalLaborHours: number }> = {};
+    // Group by technicianId (canonical) with techName fallback for legacy records
+    const byTech: Record<string, { techName: string; jobCount: number; totalRevenue: number; totalLaborHours: number }> = {};
 
     for (const r of records) {
-      const tech = r.techName || "Unassigned";
-      if (!byTech[tech]) byTech[tech] = { jobCount: 0, totalRevenue: 0, totalLaborHours: 0 };
-      byTech[tech].jobCount += 1;
-      byTech[tech].totalRevenue += r.totalAmount > 0 ? r.totalAmount : r.cost;
-      byTech[tech].totalLaborHours += r.laborItems.reduce((s, l) => s + l.hours, 0);
+      const key = r.technicianId || `name:${r.techName}`;
+      const displayName = r.technician?.name || r.techName || "Unassigned";
+      if (!byTech[key]) byTech[key] = { techName: displayName, jobCount: 0, totalRevenue: 0, totalLaborHours: 0 };
+      byTech[key].jobCount += 1;
+      byTech[key].totalRevenue += r.totalAmount > 0 ? r.totalAmount : r.cost;
+      byTech[key].totalLaborHours += r.laborItems.reduce((s, l) => s + l.hours, 0);
     }
 
-    const technicians = Object.entries(byTech)
-      .map(([techName, data]) => ({
-        techName,
+    const technicians = Object.values(byTech)
+      .map((data) => ({
+        techName: data.techName,
         jobCount: data.jobCount,
         totalRevenue: data.totalRevenue,
         avgRevenue: data.jobCount > 0 ? data.totalRevenue / data.jobCount : 0,

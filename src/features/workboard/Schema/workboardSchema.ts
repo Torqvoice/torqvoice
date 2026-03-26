@@ -6,7 +6,7 @@ export const createTechnicianSchema = z.object({
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color")
     .default("#3b82f6"),
-  memberId: z.string().optional(),
+  userId: z.string().optional(),
 });
 
 export const updateTechnicianSchema = z.object({
@@ -19,7 +19,7 @@ export const updateTechnicianSchema = z.object({
   isActive: z.boolean().optional(),
   sortOrder: z.number().int().min(0).optional(),
   dailyCapacity: z.number().int().min(60).max(720).optional(),
-  memberId: z.string().nullable().optional(),
+  userId: z.string().nullable().optional(),
 });
 
 export const assignTechnicianSchema = z.object({

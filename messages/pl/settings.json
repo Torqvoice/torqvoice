@@ -118,6 +118,7 @@
     "uploadingLogo": "Przesylanie logo...",
     "logoUpdated": "Logo zaktualizowane",
     "failedUploadLogo": "Nie udalo sie przeslac logo",
+    "readMore": "Read More",
     "detailsTitle": "Dane firmy",
     "shopName": "Nazwa firmy / warsztatu",
     "shopNamePlaceholder": "Warsztat Samochodowy Kowalski",
@@ -996,6 +997,7 @@
   },
   "ai": {
     "title": "Asystent AI",
+    "readMore": "Read More",
     "description": "Skonfiguruj AI do automatycznego generowania notatek serwisowych i podsumowywania historii pojazdu.",
     "enableLabel": "Wlacz AI",
     "enableHint": "Korzystaj z funkcji opartych na AI w calej aplikacji",

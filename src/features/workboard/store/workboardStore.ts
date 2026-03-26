@@ -34,7 +34,7 @@ export type Technician = {
   isActive: boolean;
   sortOrder: number;
   dailyCapacity: number;
-  memberId: string | null;
+  userId: string | null;
   organizationId: string;
 };
 

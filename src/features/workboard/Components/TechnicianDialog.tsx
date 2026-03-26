@@ -49,7 +49,7 @@ export function TechnicianDialog({
 }) {
   const [name, setName] = useState("");
   const [color, setColor] = useState(PRESET_COLORS[0]);
-  const [memberId, setMemberId] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
   const [members, setMembers] = useState<OrgMember[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -63,11 +63,11 @@ export function TechnicianDialog({
       if (technician) {
         setName(technician.name);
         setColor(technician.color);
-        setMemberId(technician.memberId || "");
+        setUserId(technician.userId || "");
       } else {
         setName("");
         setColor(PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)]);
-        setMemberId("");
+        setUserId("");
       }
       // Fetch org members
       getOrgMembers().then((res) => {
@@ -86,7 +86,7 @@ export function TechnicianDialog({
         id: technician.id,
         name: name.trim(),
         color,
-        memberId: memberId && memberId !== "none" ? memberId : null,
+        userId: userId && userId !== "none" ? userId : null,
       });
       if (res.success) {
         // Update store
@@ -94,7 +94,7 @@ export function TechnicianDialog({
         store.setTechnicians(
           store.technicians.map((t) =>
             t.id === technician.id
-              ? { ...t, name: name.trim(), color, memberId: memberId || null }
+              ? { ...t, name: name.trim(), color, userId: userId || null }
               : t,
           ),
         );
@@ -104,7 +104,7 @@ export function TechnicianDialog({
       const res = await createTechnician({
         name: name.trim(),
         color,
-        memberId: memberId && memberId !== "none" ? memberId : undefined,
+        userId: userId && userId !== "none" ? userId : undefined,
       });
       if (res.success && res.data) {
         addTechnician(res.data as Technician);
@@ -155,7 +155,7 @@ export function TechnicianDialog({
 
           <div className="space-y-2">
             <Label htmlFor="tech-member">{t("linkMember")}</Label>
-            <Select value={memberId} onValueChange={setMemberId}>
+            <Select value={userId} onValueChange={setUserId}>
               <SelectTrigger id="tech-member">
                 <SelectValue placeholder={t("standalone")} />
               </SelectTrigger>

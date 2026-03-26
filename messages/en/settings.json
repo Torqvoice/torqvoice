@@ -529,6 +529,7 @@
     }
   },
   "payment": {
+    "readMore": "Read More",
     "detailsTitle": "Payment Details",
     "detailsDescription": "Bank account and payment terms shown on invoices.",
     "bankAccount": "Bank Account (IBAN / Til Konto)",
@@ -996,6 +997,7 @@
   },
   "ai": {
     "title": "AI Assistant",
+    "readMore": "Read More",
     "description": "Configure AI to auto-generate service notes and summarize vehicle history.",
     "enableLabel": "Enable AI",
     "enableHint": "Use AI-powered features throughout the application",

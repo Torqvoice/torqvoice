@@ -296,6 +296,9 @@
     "failedAssign": "Не удалось назначить",
     "endBeforeStart": "Время окончания должно быть позже времени начала",
     "failedUpdate": "Не удалось обновить время в расписании",
-    "splitCreated": "Работа занимает несколько дней — создано продолжение на следующий день"
+    "splitCreated": "Работа занимает несколько дней — создано продолжение на следующий день",
+    "platformUsers": "Platform Users",
+    "customTechnicians": "Custom",
+    "readMore": "Read More"
   }
 }

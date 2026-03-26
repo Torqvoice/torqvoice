@@ -296,6 +296,9 @@
     "failedAssign": "Kunne ikke tilordne",
     "endBeforeStart": "Sluttid må være etter starttid",
     "failedUpdate": "Kunne ikke oppdatere tidsplan",
-    "splitCreated": "Jobben går over flere dager — fortsettelse opprettet for neste dag"
+    "splitCreated": "Jobben går over flere dager — fortsettelse opprettet for neste dag",
+    "platformUsers": "Platform Users",
+    "customTechnicians": "Custom",
+    "readMore": "Read More"
   }
 }
