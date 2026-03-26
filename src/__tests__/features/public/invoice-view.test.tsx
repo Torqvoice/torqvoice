@@ -152,7 +152,7 @@ describe("InvoiceView", () => {
         },
       };
       render(<InvoiceView {...props} />);
-      expect(screen.getByText("Labor")).toBeInTheDocument();
+      expect(screen.getByText("Labor & Services")).toBeInTheDocument();
       expect(screen.getByText("Brake Replacement")).toBeInTheDocument();
     });
 
