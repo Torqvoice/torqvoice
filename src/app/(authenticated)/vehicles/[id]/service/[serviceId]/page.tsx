@@ -136,6 +136,7 @@ export default async function ServiceDetailPage({
       hours: l.hours,
       rate: l.rate,
       total: l.total,
+      pricingType: (l.pricingType as 'hourly' | 'service') || 'hourly',
     })),
     attachments: [],
     subtotal: record.subtotal,

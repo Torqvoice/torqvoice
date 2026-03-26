@@ -53,6 +53,7 @@ interface InvoiceRecord {
     hours: number
     rate: number
     total: number
+    pricingType?: string
   }[]
   payments: {
     amount: number
@@ -825,7 +826,7 @@ export function InvoiceView({
                       <thead>
                         <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
                           <th className="p-2 font-medium">{t('description')}</th>
-                          <th className="p-2 text-right font-medium">{t('hours')}</th>
+                          <th className="p-2 text-right font-medium">{t('qtyOrHours')}</th>
                           <th className="p-2 text-right font-medium">{t('rate')}</th>
                           <th className="p-2 text-right font-medium">{t('total')}</th>
                         </tr>
@@ -834,8 +835,8 @@ export function InvoiceView({
                         {record.laborItems.map((l, i) => (
                           <tr key={i}>
                             <td className="p-2">{l.description}</td>
-                            <td className="p-2 text-right">{l.hours}</td>
-                            <td className="p-2 text-right">{t('ratePerHour', { rate: formatCurrency(l.rate, currencyCode) })}</td>
+                            <td className="p-2 text-right">{l.pricingType === 'service' ? `${l.hours} ${t('unit')}` : `${l.hours} ${t('hrs')}`}</td>
+                            <td className="p-2 text-right">{l.pricingType === 'service' ? formatCurrency(l.rate, currencyCode) : t('ratePerHour', { rate: formatCurrency(l.rate, currencyCode) })}</td>
                             <td className="p-2 text-right font-medium">
                               {formatCurrency(l.total, currencyCode)}
                             </td>

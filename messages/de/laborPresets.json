@@ -38,14 +38,19 @@
     "addItem": "Position hinzufügen",
     "cancel": "Abbrechen",
     "create": "Erstellen",
-    "saveChanges": "Änderungen speichern"
+    "saveChanges": "Änderungen speichern",
+    "itemQty": "Qty",
+    "itemQtyOrHours": "Unit / Hours",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC"
   },
   "picker": {
     "title": "Arbeitsvorlage auswählen",
     "search": "Vorlagen durchsuchen...",
     "noPackages": "Keine Arbeitsvorlagen gefunden.",
     "items": "{count} Positionen",
-    "totalHours": "{hours} Std. gesamt"
+    "totalHours": "{hours} Std. gesamt",
+    "totalUnits": "{units} unit(s)"
   },
   "errors": {
     "error": "Fehler",

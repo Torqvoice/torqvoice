@@ -21,6 +21,8 @@
     "total": "Totalt",
     "labor": "Arbeid",
     "hours": "Timer",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Sats",
     "ratePerHour": "{rate}/t",
     "subtotal": "Delsum",
@@ -44,7 +46,8 @@
     "viewPortal": "Se portalen din: {url}",
     "professionalWorkshop": "Profesjonell verkstedadministrasjon",
     "tel": "Tlf: {phone}",
-    "org": "Org: {org}"
+    "org": "Org: {org}",
+    "qtyOrHours": "Unit / Hours"
   },
   "quote": {
     "title": "TILBUD",
@@ -61,6 +64,8 @@
     "total": "Totalt",
     "labor": "Arbeid",
     "hours": "Timer",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Sats",
     "ratePerHour": "{rate}/t",
     "subtotal": "Delsum",
@@ -74,7 +79,8 @@
     "validityFooterUntil": "Dette tilbudet er gyldig til {date}",
     "validityFooter30": "Dette tilbudet er gyldig i 30 dager",
     "viewPortal": "Se portalen din: {url}",
-    "tel": "Tlf: {phone}"
+    "tel": "Tlf: {phone}",
+    "qtyOrHours": "Unit / Hours"
   },
   "inspection": {
     "title": "KJØRETØYKONTROLL",

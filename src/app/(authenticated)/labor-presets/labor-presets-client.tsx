@@ -31,6 +31,7 @@ interface LaborPresetRow {
   name: string;
   description: string | null;
   _count: { items: number };
+  items: { hours: number; pricingType: string }[];
 }
 
 interface PaginatedData {
@@ -67,7 +68,7 @@ export function LaborPresetsClient({
     id: string;
     name: string;
     description: string | null;
-    items: { description: string; hours: number; rate: number; sortOrder: number }[];
+    items: { description: string; hours: number; rate: number; pricingType?: string; sortOrder: number }[];
   } | null>(null);
   const modal = useGlassModal();
   const confirm = useConfirm();
@@ -181,13 +182,14 @@ export function LaborPresetsClient({
                 </button>
               </TableHead>
               <TableHead>{t("table.itemCount")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("table.type")}</TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.presets.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
                   {search ? t("empty.noMatch") : t("empty.noPresets")}
                 </TableCell>
               </TableRow>
@@ -203,6 +205,28 @@ export function LaborPresetsClient({
                     {preset.description || "-"}
                   </TableCell>
                   <TableCell>{preset._count.items}</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {(() => {
+                      const hourlyItems = preset.items.filter((i) => i.pricingType !== "service");
+                      const serviceItems = preset.items.filter((i) => i.pricingType === "service");
+                      const totalHours = hourlyItems.reduce((sum, i) => sum + i.hours, 0);
+                      const totalUnits = serviceItems.reduce((sum, i) => sum + i.hours, 0);
+                      return (
+                        <div className="flex gap-1.5">
+                          {totalHours > 0 && (
+                            <span className="inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium border-emerald-500/30 bg-emerald-500/10 text-emerald-600">
+                              {totalHours} {t("table.hrs")}
+                            </span>
+                          )}
+                          {totalUnits > 0 && (
+                            <span className="inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium border-blue-500/30 bg-blue-500/10 text-blue-600">
+                              {totalUnits} {t("table.units")}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

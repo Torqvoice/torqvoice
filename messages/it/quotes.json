@@ -81,7 +81,16 @@
     "hours": "Ore",
     "rate": "Tariffa ({currency}/ora)",
     "total": "Totale",
-    "subtotal": "Subtotale manodopera: {amount}"
+    "subtotal": "Subtotale manodopera: {amount}",
+    "addService": "Add Service",
+    "qty": "Qty",
+    "qtyOrHours": "Unit / Hours",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC",
+    "switchToHourly": "Switch to hourly pricing",
+    "switchToService": "Switch to service pricing",
+    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
   },
   "notes": {
     "title": "Note",

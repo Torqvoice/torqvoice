@@ -3,11 +3,11 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Layers, Plus, Trash2 } from 'lucide-react'
+import { Layers, Plus, Trash2, Wrench } from 'lucide-react'
 import { formatCurrency, getCurrencySymbol } from '@/lib/format'
 import { useTranslations } from 'next-intl'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
-import { makeEmptyLabor } from './form-types'
+import { makeEmptyLabor, makeEmptyService } from './form-types'
 
 interface LaborEditorProps {
   laborItems: ServiceLaborInput[]
@@ -53,6 +53,15 @@ export function LaborEditor({
             <Plus className="mr-1 h-3.5 w-3.5" />
             {t('addLabor')}
           </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setLaborItems((prev) => [...prev, makeEmptyService()])}
+          >
+            <Wrench className="mr-1 h-3.5 w-3.5" />
+            {t('addService')}
+          </Button>
         </div>
       </div>
 
@@ -60,51 +69,69 @@ export function LaborEditor({
         <>
           <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
             <span>{t('description')}</span>
-            <span>{t('hours')}</span>
+            <span>{t('qtyOrHours')}</span>
             <span>{t('rate', { currency: cs })}</span>
             <span>{t('total')}</span>
             <span />
           </div>
-          {laborItems.map((labor, i) => (
-            <div
-              key={i}
-              className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]"
-            >
-              <Textarea
-                placeholder={t('descriptionPlaceholder')}
-                value={labor.description}
-                onChange={(e) => updateLabor(i, 'description', e.target.value)}
-                rows={1}
-                className="col-span-2 min-h-9 resize-none sm:col-span-1"
-              />
-              <Input
-                type="number"
-                min="0"
-                step="any"
-                value={labor.hours}
-                onChange={(e) => updateLabor(i, 'hours', e.target.value)}
-              />
-              <Input
-                type="number"
-                min="0"
-                step="0.01"
-                value={labor.rate}
-                onChange={(e) => updateLabor(i, 'rate', e.target.value)}
-              />
-              <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
-                {formatCurrency(labor.total, currencyCode)}
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 text-muted-foreground hover:text-destructive"
-                onClick={() => setLaborItems((prev) => prev.filter((_, j) => j !== i))}
+          {laborItems.map((labor, i) => {
+            const isService = labor.pricingType === 'service'
+            return (
+              <div
+                key={i}
+                className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]"
               >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
+                <div className="col-span-2 flex gap-2 sm:col-span-1">
+                  <Textarea
+                    placeholder={t('descriptionPlaceholder')}
+                    value={labor.description}
+                    onChange={(e) => updateLabor(i, 'description', e.target.value)}
+                    rows={1}
+                    className="min-h-9 flex-1 resize-none"
+                  />
+                  <button
+                    type="button"
+                    className={`shrink-0 rounded-md border px-2 text-[10px] font-medium transition-all ${
+                      isService
+                        ? 'border-blue-500/30 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 hover:border-blue-500/50'
+                        : 'border-muted text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20'
+                    }`}
+                    onClick={() => updateLabor(i, 'pricingType', isService ? 'hourly' : 'service')}
+                    title={isService ? t('switchToHourlyHint') : t('switchToServiceHint')}
+                  >
+                    {isService ? t('serviceTag') : t('hourlyTag')}
+                  </button>
+                </div>
+                <Input
+                  type="number"
+                  min="0"
+                  step={isService ? '1' : 'any'}
+                  placeholder={isService ? t('qty') : t('hours')}
+                  value={labor.hours}
+                  onChange={(e) => updateLabor(i, 'hours', e.target.value)}
+                />
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={labor.rate}
+                  onChange={(e) => updateLabor(i, 'rate', e.target.value)}
+                />
+                <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
+                  {formatCurrency(labor.total, currencyCode)}
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                  onClick={() => setLaborItems((prev) => prev.filter((_, j) => j !== i))}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            )
+          })}
           <button
             type="button"
             className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
@@ -121,14 +148,24 @@ export function LaborEditor({
       )}
 
       {laborItems.length === 0 && (
-        <button
-          type="button"
-          className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
-          onClick={() => setLaborItems((prev) => [...prev, makeEmptyLabor(defaultLaborRate)])}
-        >
-          <Plus className="mr-1 h-4 w-4" />
-          <span className="text-sm">{t('addLabor')}</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="flex flex-1 items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
+            onClick={() => setLaborItems((prev) => [...prev, makeEmptyLabor(defaultLaborRate)])}
+          >
+            <Plus className="mr-1 h-4 w-4" />
+            <span className="text-sm">{t('addLabor')}</span>
+          </button>
+          <button
+            type="button"
+            className="flex flex-1 items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
+            onClick={() => setLaborItems((prev) => [...prev, makeEmptyService()])}
+          >
+            <Wrench className="mr-1 h-4 w-4" />
+            <span className="text-sm">{t('addService')}</span>
+          </button>
+        </div>
       )}
     </div>
   )

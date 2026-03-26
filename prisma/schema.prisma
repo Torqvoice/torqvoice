@@ -365,6 +365,7 @@ model ServiceLabor {
   hours       Float  @default(0)
   rate        Float  @default(0)
   total       Float  @default(0)
+  pricingType String @default("hourly")
 
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
@@ -394,6 +395,7 @@ model LaborPresetItem {
   description String
   hours       Float       @default(0)
   rate        Float       @default(0)
+  pricingType String      @default("hourly")
   sortOrder   Int         @default(0)
   presetId    String
   preset      LaborPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
@@ -537,6 +539,7 @@ model QuoteLabor {
   hours       Float   @default(0)
   rate        Float   @default(0)
   total       Float   @default(0)
+  pricingType String  @default("hourly")
   excluded    Boolean @default(false)
 
   quoteId String
@@ -776,6 +779,7 @@ model RecurringLabor {
   description String
   hours       Float  @default(0)
   rate        Float  @default(0)
+  pricingType String @default("hourly")
 
   recurringInvoiceId String
   recurringInvoice   RecurringInvoice @relation(fields: [recurringInvoiceId], references: [id], onDelete: Cascade)

@@ -4,6 +4,7 @@ export const laborPresetItemSchema = z.object({
   description: z.string().min(1, "Description is required"),
   hours: z.coerce.number().min(0, "Hours must be 0 or more").default(0),
   rate: z.coerce.number().min(0, "Rate must be 0 or more").default(0),
+  pricingType: z.enum(["hourly", "service"]).default("hourly"),
   sortOrder: z.coerce.number().int().min(0).default(0),
 });
 
