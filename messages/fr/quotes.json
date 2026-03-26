@@ -81,7 +81,14 @@
     "hours": "Heures",
     "rate": "Tarif ({currency}/h)",
     "total": "Total",
-    "subtotal": "Sous-total main-d'œuvre : {amount}"
+    "subtotal": "Sous-total main-d'œuvre : {amount}",
+    "addService": "Add Service",
+    "qty": "Qty",
+    "qtyOrHours": "Qty / Hours",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC",
+    "switchToHourly": "Switch to hourly pricing",
+    "switchToService": "Switch to service pricing"
   },
   "notes": {
     "title": "Notes",

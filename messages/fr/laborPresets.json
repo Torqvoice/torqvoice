@@ -38,14 +38,19 @@
     "addItem": "Ajouter un élément",
     "cancel": "Annuler",
     "create": "Créer",
-    "saveChanges": "Enregistrer les modifications"
+    "saveChanges": "Enregistrer les modifications",
+    "itemQty": "Qty",
+    "itemQtyOrHours": "Qty / Hours",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC"
   },
   "picker": {
     "title": "Sélectionner un modèle de main-d'œuvre",
     "search": "Rechercher des modèles...",
     "noPackages": "Aucun modèle de main-d'œuvre trouvé.",
     "items": "{count} éléments",
-    "totalHours": "{hours}h au total"
+    "totalHours": "{hours}h au total",
+    "totalUnits": "{units} unit(s)"
   },
   "errors": {
     "error": "Erreur",

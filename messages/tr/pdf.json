@@ -44,7 +44,8 @@
     "viewPortal": "Portalınızı görüntüleyin: {url}",
     "professionalWorkshop": "Profesyonel Atölye Yönetimi",
     "tel": "Tel: {phone}",
-    "org": "Org: {org}"
+    "org": "Org: {org}",
+    "qtyOrHours": "Qty / Hours"
   },
   "quote": {
     "title": "TEKLİF",
@@ -74,7 +75,8 @@
     "validityFooterUntil": "Bu teklif {date} tarihine kadar geçerlidir",
     "validityFooter30": "Bu teklif 30 gün süreyle geçerlidir",
     "viewPortal": "Portalınızı görüntüleyin: {url}",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "qtyOrHours": "Qty / Hours"
   },
   "inspection": {
     "title": "ARAÇ MUAYENESİ",

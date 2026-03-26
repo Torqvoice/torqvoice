@@ -44,7 +44,8 @@
     "viewPortal": "Consultez votre portail : {url}",
     "professionalWorkshop": "Gestion professionnelle d'atelier",
     "tel": "Tél. : {phone}",
-    "org": "Org. : {org}"
+    "org": "Org. : {org}",
+    "qtyOrHours": "Qty / Hours"
   },
   "quote": {
     "title": "DEVIS",
@@ -74,7 +75,8 @@
     "validityFooterUntil": "Ce devis est valable jusqu'au {date}",
     "validityFooter30": "Ce devis est valable 30 jours",
     "viewPortal": "Consultez votre portail : {url}",
-    "tel": "Tél. : {phone}"
+    "tel": "Tél. : {phone}",
+    "qtyOrHours": "Qty / Hours"
   },
   "inspection": {
     "title": "INSPECTION DU VÉHICULE",

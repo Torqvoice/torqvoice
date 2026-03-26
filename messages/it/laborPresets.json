@@ -38,14 +38,19 @@
     "addItem": "Aggiungi voce",
     "cancel": "Annulla",
     "create": "Crea",
-    "saveChanges": "Salva modifiche"
+    "saveChanges": "Salva modifiche",
+    "itemQty": "Qty",
+    "itemQtyOrHours": "Qty / Hours",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC"
   },
   "picker": {
     "title": "Seleziona modello di manodopera",
     "search": "Cerca modelli...",
     "noPackages": "Nessun modello di manodopera trovato.",
     "items": "{count} voci",
-    "totalHours": "{hours}h in totale"
+    "totalHours": "{hours}h in totale",
+    "totalUnits": "{units} unit(s)"
   },
   "errors": {
     "error": "Errore",

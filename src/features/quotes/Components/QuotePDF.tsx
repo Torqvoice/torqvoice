@@ -39,7 +39,7 @@ interface QuoteData {
     total: number
     excluded?: boolean
   }[]
-  laborItems: { description: string; hours: number; rate: number; total: number; excluded?: boolean }[]
+  laborItems: { description: string; hours: number; rate: number; total: number; pricingType?: string; excluded?: boolean }[]
   customer: {
     name: string
     email: string | null
@@ -471,7 +471,7 @@ export function QuotePDF({
           <View style={styles.tableHeader}>
             <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.description || 'Description'}</Text>
             <Text style={{ ...styles.tableHeaderCell, width: '15%', textAlign: 'right' }}>
-              {labels.hours || 'Hours'}
+              {labels.qtyOrHours || labels.hours || 'Qty / Hours'}
             </Text>
             <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
               {labels.rate || 'Rate'}
@@ -480,20 +480,27 @@ export function QuotePDF({
               {labels.total || 'Total'}
             </Text>
           </View>
-          {data.laborItems.map((l, i) => (
-            <View key={i} style={{ ...styles.tableRow, ...(l.excluded ? { opacity: 0.5 } : {}) }}>
-              <Text style={{ ...styles.tableCell, width: '45%', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>{l.description}</Text>
-              <Text style={{ ...styles.tableCell, width: '15%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                {l.hours}
-              </Text>
-              <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                {labels.ratePerHour ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(l.rate, currencyCode) }) : `${formatCurrency(l.rate, currencyCode)}/hr`}
-              </Text>
-              <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                {formatCurrency(l.total, currencyCode)}
-              </Text>
-            </View>
-          ))}
+          {data.laborItems.map((l, i) => {
+            const isService = l.pricingType === 'service'
+            return (
+              <View key={i} style={{ ...styles.tableRow, ...(l.excluded ? { opacity: 0.5 } : {}) }}>
+                <Text style={{ ...styles.tableCell, width: '45%', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>{l.description}</Text>
+                <Text style={{ ...styles.tableCell, width: '15%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                  {l.hours}
+                </Text>
+                <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                  {isService
+                    ? formatCurrency(l.rate, currencyCode)
+                    : labels.ratePerHour
+                      ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(l.rate, currencyCode) })
+                      : `${formatCurrency(l.rate, currencyCode)}/hr`}
+                </Text>
+                <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                  {formatCurrency(l.total, currencyCode)}
+                </Text>
+              </View>
+            )
+          })}
         </View>
       </View>
     )

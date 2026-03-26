@@ -73,15 +73,22 @@
     "subtotal": "Parts Subtotal: {amount}"
   },
   "labor": {
-    "title": "Labor",
+    "title": "Labor & Services",
     "addLabor": "Add Labor",
+    "addService": "Add Service",
     "fromPresets": "From Presets",
     "description": "Description",
     "descriptionPlaceholder": "Description *",
     "hours": "Hours",
+    "qty": "Qty",
+    "qtyOrHours": "Qty / Hours",
     "rate": "Rate ({currency}/hr)",
     "total": "Total",
-    "subtotal": "Labor Subtotal: {amount}"
+    "subtotal": "Labor Subtotal: {amount}",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC",
+    "switchToHourly": "Switch to hourly pricing",
+    "switchToService": "Switch to service pricing"
   },
   "notes": {
     "title": "Notes",

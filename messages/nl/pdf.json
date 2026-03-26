@@ -44,7 +44,8 @@
     "viewPortal": "Bekijk uw portaal: {url}",
     "professionalWorkshop": "Professioneel werkplaatsbeheer",
     "tel": "Tel: {phone}",
-    "org": "KvK: {org}"
+    "org": "KvK: {org}",
+    "qtyOrHours": "Qty / Hours"
   },
   "quote": {
     "title": "OFFERTE",
@@ -74,7 +75,8 @@
     "validityFooterUntil": "Deze offerte is geldig tot {date}",
     "validityFooter30": "Deze offerte is 30 dagen geldig",
     "viewPortal": "Bekijk uw portaal: {url}",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "qtyOrHours": "Qty / Hours"
   },
   "inspection": {
     "title": "VOERTUIGINSPECTIE",

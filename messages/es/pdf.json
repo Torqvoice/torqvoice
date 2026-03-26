@@ -44,7 +44,8 @@
     "viewPortal": "Ver su portal: {url}",
     "professionalWorkshop": "Gestión profesional de talleres",
     "tel": "Tel: {phone}",
-    "org": "Org: {org}"
+    "org": "Org: {org}",
+    "qtyOrHours": "Qty / Hours"
   },
   "quote": {
     "title": "PRESUPUESTO",
@@ -74,7 +75,8 @@
     "validityFooterUntil": "Este presupuesto es válido hasta el {date}",
     "validityFooter30": "Este presupuesto es válido por 30 días",
     "viewPortal": "Ver su portal: {url}",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "qtyOrHours": "Qty / Hours"
   },
   "inspection": {
     "title": "INSPECCIÓN DE VEHÍCULO",

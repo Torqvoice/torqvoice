@@ -8,7 +8,7 @@ import { useConfirm } from "@/components/confirm-dialog";
 import { updateQuote, deleteQuote, convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from "./quote-page-types";
-import { emptyPart, makeEmptyLabor } from "./quote-page-types";
+import { emptyPart, makeEmptyLabor, makeEmptyService } from "./quote-page-types";
 
 interface SelectedVehicle {
   id: string;
@@ -59,7 +59,7 @@ export function useQuoteFormState({
     quote.partItems.map((p) => ({ partNumber: p.partNumber || "", name: p.name, quantity: p.quantity, unitPrice: p.unitPrice, total: p.total, excluded: p.excluded ?? false }))
   );
   const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(
-    quote.laborItems.map((l) => ({ description: l.description, hours: l.hours, rate: l.rate, total: l.total, excluded: l.excluded ?? false }))
+    quote.laborItems.map((l) => ({ description: l.description, hours: l.hours, rate: l.rate, total: l.total, pricingType: (l.pricingType as "hourly" | "service") || "hourly", excluded: l.excluded ?? false }))
   );
   const [taxRate, setTaxRate] = useState(quote.taxRate ?? defaultTaxRate);
   const [discountType, setDiscountType] = useState<string>(quote.discountType || "none");
@@ -176,6 +176,11 @@ export function useQuoteFormState({
     setLaborItems((prev) => [...prev, makeEmptyLabor(defaultLaborRate)]);
     markDirty();
   }, [defaultLaborRate, markDirty]);
+
+  const addService = useCallback(() => {
+    setLaborItems((prev) => [...prev, makeEmptyService()]);
+    markDirty();
+  }, [markDirty]);
 
   const addLaborBulk = useCallback((items: QuoteLaborInput[]) => {
     setLaborItems((prev) => [...prev, ...items]);
@@ -325,7 +330,7 @@ export function useQuoteFormState({
     partsSubtotal, laborSubtotal, subtotal, discountAmount, taxAmount, totalAmount,
     selectedVehicle, setSelectedVehicle, selectedCustomer, setSelectedCustomer,
     // Callbacks
-    markDirty, updatePart, updateLabor, addPart, addLabor, addLaborBulk, deletePart, deleteLabor,
+    markDirty, updatePart, updateLabor, addPart, addLabor, addService, addLaborBulk, deletePart, deleteLabor,
     handleSubmit, handleDelete, handleDownloadPDF,
     handleConvert, handleResolveResponse, saveNow,
   };

@@ -17,10 +17,13 @@ import { useGlassModal } from "@/components/glass-modal";
 import { createLaborPreset, updateLaborPreset } from "../Actions/laborPresetActions";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 
+type PricingType = "hourly" | "service";
+
 interface PresetItem {
   description: string;
   hours: number;
   rate: number;
+  pricingType: PricingType;
 }
 
 interface SingleItem {
@@ -28,13 +31,14 @@ interface SingleItem {
   description: string;
   hours: number;
   rate: number;
+  pricingType: PricingType;
 }
 
 interface LaborPresetData {
   id: string;
   name: string;
   description: string | null;
-  items: { description: string; hours: number; rate: number; sortOrder: number }[];
+  items: { description: string; hours: number; rate: number; pricingType?: string; sortOrder: number }[];
 }
 
 type PresetMode = "single" | "package";
@@ -52,6 +56,22 @@ function detectMode(preset?: LaborPresetData): PresetMode {
   return "package";
 }
 
+function PricingTypeToggle({ value, onChange, tHourly, tService }: { value: PricingType; onChange: (v: PricingType) => void; tHourly: string; tService: string }) {
+  return (
+    <button
+      type="button"
+      className={`shrink-0 rounded-md border px-2 text-[10px] font-medium transition-colors ${
+        value === "service"
+          ? "border-blue-500/30 bg-blue-500/10 text-blue-600"
+          : "border-muted text-muted-foreground hover:text-foreground"
+      }`}
+      onClick={() => onChange(value === "service" ? "hourly" : "service")}
+    >
+      {value === "service" ? tService : tHourly}
+    </button>
+  );
+}
+
 export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate = 0 }: LaborPresetFormProps) {
   const router = useRouter();
   const modal = useGlassModal();
@@ -63,17 +83,17 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
   const [name, setName] = useState(preset?.name ?? "");
   const [description, setDescription] = useState(preset?.description ?? "");
   const [items, setItems] = useState<PresetItem[]>(
-    preset?.items.map((i) => ({ description: i.description, hours: i.hours, rate: i.rate })) ?? [
-      { description: "", hours: 0, rate: defaultLaborRate },
+    preset?.items.map((i) => ({ description: i.description, hours: i.hours, rate: i.rate, pricingType: (i.pricingType as PricingType) || "hourly" })) ?? [
+      { description: "", hours: 0, rate: defaultLaborRate, pricingType: "hourly" },
     ]
   );
 
   // Single item mode state
   const [singleItems, setSingleItems] = useState<SingleItem[]>(() => {
     if (preset && detectMode(preset) === "single") {
-      return [{ name: preset.items[0].description, description: preset.description ?? "", hours: preset.items[0].hours, rate: preset.items[0].rate }];
+      return [{ name: preset.items[0].description, description: preset.description ?? "", hours: preset.items[0].hours, rate: preset.items[0].rate, pricingType: (preset.items[0].pricingType as PricingType) || "hourly" }];
     }
-    return [{ name: "", description: "", hours: 0, rate: defaultLaborRate }];
+    return [{ name: "", description: "", hours: 0, rate: defaultLaborRate, pricingType: "hourly" }];
   });
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -83,14 +103,14 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
       setName(preset?.name ?? "");
       setDescription(preset?.description ?? "");
       setItems(
-        preset?.items.map((i) => ({ description: i.description, hours: i.hours, rate: i.rate })) ?? [
-          { description: "", hours: 0, rate: defaultLaborRate },
+        preset?.items.map((i) => ({ description: i.description, hours: i.hours, rate: i.rate, pricingType: (i.pricingType as PricingType) || "hourly" })) ?? [
+          { description: "", hours: 0, rate: defaultLaborRate, pricingType: "hourly" },
         ]
       );
       if (detectedMode === "single" && preset) {
-        setSingleItems([{ name: preset.items[0].description, description: preset.description ?? "", hours: preset.items[0].hours, rate: preset.items[0].rate }]);
+        setSingleItems([{ name: preset.items[0].description, description: preset.description ?? "", hours: preset.items[0].hours, rate: preset.items[0].rate, pricingType: (preset.items[0].pricingType as PricingType) || "hourly" }]);
       } else {
-        setSingleItems([{ name: "", description: "", hours: 0, rate: defaultLaborRate }]);
+        setSingleItems([{ name: "", description: "", hours: 0, rate: defaultLaborRate, pricingType: "hourly" }]);
       }
     }
     onOpenChange(isOpen);
@@ -110,7 +130,7 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
   };
 
   const addItem = () => {
-    setItems((prev) => [...prev, { description: "", hours: 0, rate: defaultLaborRate }]);
+    setItems((prev) => [...prev, { description: "", hours: 0, rate: defaultLaborRate, pricingType: "hourly" }]);
   };
 
   const removeItem = (index: number) => {
@@ -127,7 +147,7 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
   };
 
   const addSingleItem = () => {
-    setSingleItems((prev) => [...prev, { name: "", description: "", hours: 0, rate: defaultLaborRate }]);
+    setSingleItems((prev) => [...prev, { name: "", description: "", hours: 0, rate: defaultLaborRate, pricingType: "hourly" }]);
   };
 
   const removeSingleItem = (index: number) => {
@@ -153,7 +173,7 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
           id: preset.id,
           name: "",
           description: item.description || undefined,
-          items: [{ description: item.name, hours: Number(item.hours) || 0, rate: Number(item.rate) || 0, sortOrder: 0 }],
+          items: [{ description: item.name, hours: Number(item.hours) || 0, rate: Number(item.rate) || 0, pricingType: item.pricingType, sortOrder: 0 }],
         });
         if (result.success) {
           onOpenChange(false);
@@ -168,7 +188,7 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
           const result = await createLaborPreset({
             name: "",
             description: item.description || undefined,
-            items: [{ description: item.name, hours: Number(item.hours) || 0, rate: Number(item.rate) || 0, sortOrder: 0 }],
+            items: [{ description: item.name, hours: Number(item.hours) || 0, rate: Number(item.rate) || 0, pricingType: item.pricingType, sortOrder: 0 }],
           });
           if (!result.success) {
             modal.open("error", t("errors.error"), result.error || t("errors.saveFailed"));
@@ -197,6 +217,7 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
           description: item.description,
           hours: Number(item.hours) || 0,
           rate: Number(item.rate) || 0,
+          pricingType: item.pricingType,
           sortOrder: index,
         })),
       };
@@ -256,7 +277,7 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
             <div className="space-y-2">
               <div className="hidden grid-cols-[2fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
                 <span>{t("form.singleNameLabel")}</span>
-                <span>{t("form.itemHours")}</span>
+                <span>{t("form.itemQtyOrHours")}</span>
                 <span>{t("form.itemRate")}</span>
                 <span />
               </div>
@@ -264,16 +285,25 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
               {singleItems.map((item, i) => (
                 <div key={i} className="space-y-2">
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_auto]">
-                    <Input
-                      placeholder={t("form.singleNamePlaceholder")}
-                      value={item.name}
-                      onChange={(e) => updateSingleItem(i, "name", e.target.value)}
-                      className="col-span-2 sm:col-span-1"
-                    />
+                    <div className="col-span-2 flex gap-2 sm:col-span-1">
+                      <Input
+                        placeholder={t("form.singleNamePlaceholder")}
+                        value={item.name}
+                        onChange={(e) => updateSingleItem(i, "name", e.target.value)}
+                        className="flex-1"
+                      />
+                      <PricingTypeToggle
+                        value={item.pricingType}
+                        onChange={(v) => updateSingleItem(i, "pricingType", v)}
+                        tHourly={t("form.hourlyTag")}
+                        tService={t("form.serviceTag")}
+                      />
+                    </div>
                     <Input
                       type="number"
                       min="0"
-                      step="any"
+                      step={item.pricingType === "service" ? "1" : "any"}
+                      placeholder={item.pricingType === "service" ? t("form.itemQty") : t("form.itemHours")}
                       value={item.hours}
                       onChange={(e) => updateSingleItem(i, "hours", e.target.value)}
                     />
@@ -347,23 +377,32 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
 
                 <div className="hidden grid-cols-[2fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
                   <span>{t("form.itemDescription")}</span>
-                  <span>{t("form.itemHours")}</span>
+                  <span>{t("form.itemQtyOrHours")}</span>
                   <span>{t("form.itemRate")}</span>
                   <span />
                 </div>
 
                 {items.map((item, i) => (
                   <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_auto]">
-                    <Input
-                      placeholder={t("form.itemDescriptionPlaceholder")}
-                      value={item.description}
-                      onChange={(e) => updateItem(i, "description", e.target.value)}
-                      className="col-span-2 sm:col-span-1"
-                    />
+                    <div className="col-span-2 flex gap-2 sm:col-span-1">
+                      <Input
+                        placeholder={t("form.itemDescriptionPlaceholder")}
+                        value={item.description}
+                        onChange={(e) => updateItem(i, "description", e.target.value)}
+                        className="flex-1"
+                      />
+                      <PricingTypeToggle
+                        value={item.pricingType}
+                        onChange={(v) => updateItem(i, "pricingType", v)}
+                        tHourly={t("form.hourlyTag")}
+                        tService={t("form.serviceTag")}
+                      />
+                    </div>
                     <Input
                       type="number"
                       min="0"
-                      step="any"
+                      step={item.pricingType === "service" ? "1" : "any"}
+                      placeholder={item.pricingType === "service" ? t("form.itemQty") : t("form.itemHours")}
                       value={item.hours}
                       onChange={(e) => updateItem(i, "hours", e.target.value)}
                     />

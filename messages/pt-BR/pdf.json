@@ -44,7 +44,8 @@
     "viewPortal": "Acesse seu portal: {url}",
     "professionalWorkshop": "Gestão Profissional de Oficina",
     "tel": "Tel: {phone}",
-    "org": "CNPJ: {org}"
+    "org": "CNPJ: {org}",
+    "qtyOrHours": "Qty / Hours"
   },
   "quote": {
     "title": "ORÇAMENTO",
@@ -74,7 +75,8 @@
     "validityFooterUntil": "Este orçamento é válido até {date}",
     "validityFooter30": "Este orçamento é válido por 30 dias",
     "viewPortal": "Acesse seu portal: {url}",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "qtyOrHours": "Qty / Hours"
   },
   "inspection": {
     "title": "INSPEÇÃO VEICULAR",

@@ -38,14 +38,19 @@
     "addItem": "Dodaj pozycję",
     "cancel": "Anuluj",
     "create": "Utwórz",
-    "saveChanges": "Zapisz zmiany"
+    "saveChanges": "Zapisz zmiany",
+    "itemQty": "Qty",
+    "itemQtyOrHours": "Qty / Hours",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC"
   },
   "picker": {
     "title": "Wybierz szablon robocizny",
     "search": "Szukaj szablonów...",
     "noPackages": "Nie znaleziono szablonów robocizny.",
     "items": "{count} pozycji",
-    "totalHours": "{hours} godz. łącznie"
+    "totalHours": "{hours} godz. łącznie",
+    "totalUnits": "{units} unit(s)"
   },
   "errors": {
     "error": "Błąd",

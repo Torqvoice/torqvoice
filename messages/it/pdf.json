@@ -44,7 +44,8 @@
     "viewPortal": "Visualizza il tuo portale: {url}",
     "professionalWorkshop": "Gestione Officina Professionale",
     "tel": "Tel: {phone}",
-    "org": "Org: {org}"
+    "org": "Org: {org}",
+    "qtyOrHours": "Qty / Hours"
   },
   "quote": {
     "title": "PREVENTIVO",
@@ -74,7 +75,8 @@
     "validityFooterUntil": "Questo preventivo è valido fino al {date}",
     "validityFooter30": "Questo preventivo è valido per 30 giorni",
     "viewPortal": "Visualizza il tuo portale: {url}",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "qtyOrHours": "Qty / Hours"
   },
   "inspection": {
     "title": "ISPEZIONE VEICOLO",

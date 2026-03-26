@@ -33,19 +33,24 @@
     "itemsTitle": "Labor Items",
     "itemDescription": "Description",
     "itemHours": "Hours",
+    "itemQty": "Qty",
+    "itemQtyOrHours": "Qty / Hours",
     "itemRate": "Rate",
     "itemDescriptionPlaceholder": "Description *",
     "addItem": "Add Item",
     "cancel": "Cancel",
     "create": "Create Package",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC"
   },
   "picker": {
     "title": "Select Labor Package",
     "search": "Search packages...",
     "noPackages": "No labor packages found.",
     "items": "{count} items",
-    "totalHours": "{hours}h total"
+    "totalHours": "{hours}h total",
+    "totalUnits": "{units} unit(s)"
   },
   "errors": {
     "error": "Error",

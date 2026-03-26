@@ -44,7 +44,8 @@
     "viewPortal": "Ihr Portal ansehen: {url}",
     "professionalWorkshop": "Professionelle Werkstattverwaltung",
     "tel": "Tel: {phone}",
-    "org": "Org: {org}"
+    "org": "Org: {org}",
+    "qtyOrHours": "Qty / Hours"
   },
   "quote": {
     "title": "ANGEBOT",
@@ -74,7 +75,8 @@
     "validityFooterUntil": "Dieses Angebot ist gültig bis {date}",
     "validityFooter30": "Dieses Angebot ist 30 Tage gültig",
     "viewPortal": "Ihr Portal ansehen: {url}",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "qtyOrHours": "Qty / Hours"
   },
   "inspection": {
     "title": "FAHRZEUGINSPEKTION",

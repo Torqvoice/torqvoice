@@ -107,7 +107,7 @@ export function processRecurringInvoices() {
                 },
                 laborItems: {
                   create: ri.templateLabor.map((l) => ({
-                    description: l.description, hours: l.hours, rate: l.rate, total: l.hours * l.rate,
+                    description: l.description, hours: l.hours, rate: l.rate, total: l.hours * l.rate, pricingType: l.pricingType || "hourly",
                   })),
                 },
               },

@@ -38,14 +38,19 @@
     "addItem": "Item toevoegen",
     "cancel": "Annuleren",
     "create": "Aanmaken",
-    "saveChanges": "Wijzigingen opslaan"
+    "saveChanges": "Wijzigingen opslaan",
+    "itemQty": "Qty",
+    "itemQtyOrHours": "Qty / Hours",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC"
   },
   "picker": {
     "title": "Arbeidssjabloon selecteren",
     "search": "Sjablonen zoeken...",
     "noPackages": "Geen arbeidssjablonen gevonden.",
     "items": "{count} items",
-    "totalHours": "{hours}u totaal"
+    "totalHours": "{hours}u totaal",
+    "totalUnits": "{units} unit(s)"
   },
   "errors": {
     "error": "Fout",

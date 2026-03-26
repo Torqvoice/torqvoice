@@ -38,14 +38,19 @@
     "addItem": "Добавить позицию",
     "cancel": "Отмена",
     "create": "Создать",
-    "saveChanges": "Сохранить"
+    "saveChanges": "Сохранить",
+    "itemQty": "Qty",
+    "itemQtyOrHours": "Qty / Hours",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC"
   },
   "picker": {
     "title": "Выбрать шаблон работ",
     "search": "Поиск шаблонов...",
     "noPackages": "Шаблоны работ не найдены.",
     "items": "{count} поз.",
-    "totalHours": "{hours}ч всего"
+    "totalHours": "{hours}ч всего",
+    "totalUnits": "{units} unit(s)"
   },
   "errors": {
     "error": "Ошибка",

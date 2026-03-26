@@ -92,7 +92,14 @@
     "rate": "Ücret ({currency}/sa)",
     "total": "Toplam",
     "descriptionPlaceholder": "Açıklama *",
-    "subtotal": "İşçilik Ara Toplamı: {amount}"
+    "subtotal": "İşçilik Ara Toplamı: {amount}",
+    "addService": "Add Service",
+    "qty": "Qty",
+    "qtyOrHours": "Qty / Hours",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC",
+    "switchToHourly": "Switch to hourly pricing",
+    "switchToService": "Switch to service pricing"
   },
   "totals": {
     "title": "Toplamlar",

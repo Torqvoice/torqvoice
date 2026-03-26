@@ -44,7 +44,8 @@
     "viewPortal": "Ваш портал: {url}",
     "professionalWorkshop": "Профессиональное управление мастерской",
     "tel": "Тел: {phone}",
-    "org": "Орг: {org}"
+    "org": "Орг: {org}",
+    "qtyOrHours": "Qty / Hours"
   },
   "quote": {
     "title": "КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ",
@@ -74,7 +75,8 @@
     "validityFooterUntil": "Это предложение действительно до {date}",
     "validityFooter30": "Это предложение действительно 30 дней",
     "viewPortal": "Ваш портал: {url}",
-    "tel": "Тел: {phone}"
+    "tel": "Тел: {phone}",
+    "qtyOrHours": "Qty / Hours"
   },
   "inspection": {
     "title": "ОСМОТР ТРАНСПОРТНОГО СРЕДСТВА",

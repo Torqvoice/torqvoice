@@ -67,7 +67,7 @@ export function LaborPresetsClient({
     id: string;
     name: string;
     description: string | null;
-    items: { description: string; hours: number; rate: number; sortOrder: number }[];
+    items: { description: string; hours: number; rate: number; pricingType?: string; sortOrder: number }[];
   } | null>(null);
   const modal = useGlassModal();
   const confirm = useConfirm();

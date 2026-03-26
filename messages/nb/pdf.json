@@ -44,7 +44,8 @@
     "viewPortal": "Se portalen din: {url}",
     "professionalWorkshop": "Profesjonell verkstedadministrasjon",
     "tel": "Tlf: {phone}",
-    "org": "Org: {org}"
+    "org": "Org: {org}",
+    "qtyOrHours": "Qty / Hours"
   },
   "quote": {
     "title": "TILBUD",
@@ -74,7 +75,8 @@
     "validityFooterUntil": "Dette tilbudet er gyldig til {date}",
     "validityFooter30": "Dette tilbudet er gyldig i 30 dager",
     "viewPortal": "Se portalen din: {url}",
-    "tel": "Tlf: {phone}"
+    "tel": "Tlf: {phone}",
+    "qtyOrHours": "Qty / Hours"
   },
   "inspection": {
     "title": "KJØRETØYKONTROLL",
