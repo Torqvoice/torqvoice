@@ -74,12 +74,20 @@ export function LaborPresetPickerDialog({
 
             return (
               <div key={preset.id} className="rounded-md border border-transparent hover:border-border">
-                <button
-                  type="button"
-                  className="w-full text-left rounded-md px-2.5 py-2 hover:bg-accent transition-colors flex items-center justify-between gap-4"
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="w-full text-left rounded-md px-2.5 py-2 hover:bg-accent transition-colors flex items-center justify-between gap-4 cursor-pointer"
                   onClick={() => {
                     onSelectPreset(preset);
                     onOpenChange(false);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onSelectPreset(preset);
+                      onOpenChange(false);
+                    }
                   }}
                 >
                   <div className="min-w-0 flex-1">
@@ -107,7 +115,7 @@ export function LaborPresetPickerDialog({
                       </button>
                     )}
                   </div>
-                </button>
+                </div>
                 {isExpanded && !isSingleItem && (
                   <div className="px-3 pb-2 space-y-0.5">
                     {preset.items.map((item, i) => (
