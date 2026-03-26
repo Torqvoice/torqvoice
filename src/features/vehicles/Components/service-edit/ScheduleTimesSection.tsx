@@ -117,6 +117,12 @@ export function ScheduleTimesSection({
   }
 
   const handleMemberSelect = async (member: OrgMember) => {
+    // Check if a technician already exists for this user
+    const existing = technicians.find((t) => t.userId === member.id)
+    if (existing) {
+      handleTechSelect(existing.id)
+      return
+    }
     setCreating(true)
     const res = await createTechnician({ name: member.name!, userId: member.id })
     setCreating(false)
