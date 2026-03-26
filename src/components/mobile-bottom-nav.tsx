@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -28,11 +28,12 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
+import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog'
+import { InventoryPartForm } from '@/features/inventory/Components/InventoryPartForm'
 import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode'
-import { adjustInventoryStock } from '@/features/inventory/Actions/inventoryActions'
+import { getInventoryPart } from '@/features/inventory/Actions/inventoryActions'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
-import { toast } from 'sonner'
 
 const primaryItems = [
   { href: '/vehicles', icon: Car, labelKey: 'vehicles' },
@@ -60,22 +61,33 @@ export function MobileBottomNav() {
   const tScan = useTranslations('inventory.barcodeScan')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [scannerOpen, setScannerOpen] = useState(false)
+  const [scannedPart, setScannedPart] = useState<{
+    id: string
+    name: string
+    partNumber: string | null
+    barcode: string | null
+    quantity: number
+    category: string | null
+  } | null>(null)
+  const [scannedBarcode, setScannedBarcode] = useState('')
+  const [showScanActions, setShowScanActions] = useState(false)
+  const [showPartForm, setShowPartForm] = useState(false)
+  const [editPartData, setEditPartData] = useState<Parameters<typeof InventoryPartForm>[0]['part']>(undefined)
 
   const isMoreActive = drawerItems.some(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   )
 
-  const handleBarcodeScan = async (barcode: string) => {
+  const handleBarcodeScan = useCallback(async (barcode: string) => {
     const result = await lookupPartByBarcode(barcode)
+    setScannedBarcode(barcode)
     if (result.success && result.data) {
-      const part = result.data
-      await adjustInventoryStock({ id: part.id, adjustment: 1 })
-      toast.success(tScan('addedStock', { amount: 1 }))
-      router.refresh()
+      setScannedPart(result.data)
     } else {
-      toast.error(tScan('notFound', { barcode }))
+      setScannedPart(null)
     }
-  }
+    setShowScanActions(true)
+  }, [])
 
   return (
     <>
@@ -162,6 +174,46 @@ export function MobileBottomNav() {
         open={scannerOpen}
         onOpenChange={setScannerOpen}
         onScan={handleBarcodeScan}
+      />
+
+      <BarcodeScanActionDialog
+        open={showScanActions}
+        onOpenChange={(open) => {
+          setShowScanActions(open)
+          if (!open) router.refresh()
+        }}
+        part={scannedPart}
+        barcode={scannedBarcode}
+        onEditPart={async (partId) => {
+          const result = await getInventoryPart(partId)
+          if (result.success && result.data) {
+            setEditPartData(result.data)
+          }
+          setShowScanActions(false)
+          setShowPartForm(true)
+        }}
+        onCreatePart={(barcode) => {
+          setScannedBarcode(barcode)
+          setScannedPart(null)
+          setShowScanActions(false)
+          setShowPartForm(true)
+        }}
+      />
+
+      <InventoryPartForm
+        key={editPartData?.id ?? scannedBarcode ?? 'mobile-new'}
+        open={showPartForm}
+        onOpenChange={(open) => {
+          setShowPartForm(open)
+          if (!open) {
+            setScannedBarcode('')
+            setScannedPart(null)
+            setEditPartData(undefined)
+            router.refresh()
+          }
+        }}
+        part={editPartData}
+        initialBarcode={!editPartData ? scannedBarcode : undefined}
       />
     </>
   )
