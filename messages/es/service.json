@@ -296,7 +296,7 @@
     "failedAssign": "Error al asignar",
     "endBeforeStart": "La hora de fin debe ser posterior a la hora de inicio",
     "failedUpdate": "Error al actualizar el horario",
-    "splitCreated": "El trabajo abarca varios días — continuación creada para el día siguiente"
+    "splitCreated": "El trabajo abarca varios días — continuación creada para el día siguiente",
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom"
   }

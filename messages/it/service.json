@@ -296,7 +296,7 @@
     "failedAssign": "Assegnazione fallita",
     "endBeforeStart": "L'ora di fine deve essere dopo l'ora di inizio",
     "failedUpdate": "Impossibile aggiornare la pianificazione",
-    "splitCreated": "Il lavoro si estende su più giorni — continuazione creata per il giorno successivo"
+    "splitCreated": "Il lavoro si estende su più giorni — continuazione creata per il giorno successivo",
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom"
   }
