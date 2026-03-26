@@ -31,9 +31,9 @@ END $$;
 -- Step 5: Backfill technicianId on service records where techName matches but technicianId is null
 UPDATE "service_records" sr
 SET "technicianId" = t."id"
-FROM "technicians" t
-JOIN "vehicles" v ON sr."vehicleId" = v."id"
-WHERE sr."technicianId" IS NULL
+FROM "technicians" t, "vehicles" v
+WHERE v."id" = sr."vehicleId"
+  AND sr."technicianId" IS NULL
   AND sr."techName" IS NOT NULL
   AND t."name" = sr."techName"
   AND t."organizationId" = v."organizationId"
