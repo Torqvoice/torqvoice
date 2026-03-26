@@ -102,11 +102,11 @@ describe("createInspection — technician lookup", () => {
 
     await createInspection({ vehicleId: VEHICLE_ID, templateId: TEMPLATE_ID });
 
-    // Technician must be looked up by memberId, not used directly as technicianId
+    // Technician must be looked up by userId, not used directly as technicianId
     expect(vi.mocked(db.technician.findFirst)).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          memberId: USER_ID,
+          userId: USER_ID,
           organizationId: ORG,
           isActive: true,
         }),
