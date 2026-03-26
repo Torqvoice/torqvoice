@@ -14,8 +14,11 @@ import {
   FileText,
   History,
   Layers,
+  Loader2,
   Menu,
   Package,
+  Pencil,
+  Plus,
   Receipt,
   ScanBarcode,
   Settings,
@@ -26,14 +29,17 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
+  DrawerFooter,
 } from '@/components/ui/drawer'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
-import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog'
 import { InventoryPartForm } from '@/features/inventory/Components/InventoryPartForm'
 import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode'
-import { getInventoryPart } from '@/features/inventory/Actions/inventoryActions'
+import { adjustInventoryStock, getInventoryPart } from '@/features/inventory/Actions/inventoryActions'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 const primaryItems = [
   { href: '/vehicles', icon: Car, labelKey: 'vehicles' },
@@ -73,6 +79,8 @@ export function MobileBottomNav() {
   const [showScanActions, setShowScanActions] = useState(false)
   const [showPartForm, setShowPartForm] = useState(false)
   const [editPartData, setEditPartData] = useState<Parameters<typeof InventoryPartForm>[0]['part']>(undefined)
+  const [addQty, setAddQty] = useState(1)
+  const [addingStock, setAddingStock] = useState(false)
 
   const isMoreActive = drawerItems.some(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
@@ -81,6 +89,7 @@ export function MobileBottomNav() {
   const handleBarcodeScan = useCallback(async (barcode: string) => {
     const result = await lookupPartByBarcode(barcode)
     setScannedBarcode(barcode)
+    setAddQty(1)
     if (result.success && result.data) {
       setScannedPart(result.data)
     } else {
@@ -176,29 +185,116 @@ export function MobileBottomNav() {
         onScan={handleBarcodeScan}
       />
 
-      <BarcodeScanActionDialog
-        open={showScanActions}
-        onOpenChange={(open) => {
-          setShowScanActions(open)
-          if (!open) router.refresh()
-        }}
-        part={scannedPart}
-        barcode={scannedBarcode}
-        onEditPart={async (partId) => {
-          const result = await getInventoryPart(partId)
-          if (result.success && result.data) {
-            setEditPartData(result.data)
-          }
-          setShowScanActions(false)
-          setShowPartForm(true)
-        }}
-        onCreatePart={(barcode) => {
-          setScannedBarcode(barcode)
-          setScannedPart(null)
-          setShowScanActions(false)
-          setShowPartForm(true)
-        }}
-      />
+      <Drawer open={showScanActions} onOpenChange={(open) => {
+        setShowScanActions(open)
+        if (!open) router.refresh()
+      }}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>{tScan('title')}</DrawerTitle>
+          </DrawerHeader>
+          {scannedPart ? (
+            <div className="px-4">
+              <div className="flex items-center gap-3 rounded-lg border p-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                  <Package className="h-5 w-5 text-primary" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium truncate">{scannedPart.name}</p>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    {scannedPart.partNumber && <span className="font-mono text-xs">{scannedPart.partNumber}</span>}
+                    {scannedPart.category && <Badge variant="secondary" className="text-[10px]">{scannedPart.category}</Badge>}
+                  </div>
+                </div>
+                <div className="text-right text-sm text-muted-foreground shrink-0">
+                  {tScan('currentStock', { quantity: scannedPart.quantity })}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-center gap-4 py-6">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-full text-lg"
+                  onClick={() => setAddQty(Math.max(1, addQty - 1))}
+                  disabled={addingStock || addQty <= 1}
+                >
+                  -
+                </Button>
+                <span className="w-16 text-center text-3xl font-semibold tabular-nums">{addQty}</span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-full text-lg"
+                  onClick={() => setAddQty(addQty + 1)}
+                  disabled={addingStock}
+                >
+                  +
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="px-4">
+              <div className="flex flex-col items-center rounded-lg border border-dashed p-6">
+                <Package className="h-8 w-8 text-muted-foreground" />
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {tScan('notFound', { barcode: scannedBarcode })}
+                </p>
+              </div>
+            </div>
+          )}
+          <DrawerFooter>
+            {scannedPart ? (
+              <div className="flex gap-2">
+                <Button
+                  size="lg"
+                  className="flex-1"
+                  onClick={async () => {
+                    setAddingStock(true)
+                    const result = await adjustInventoryStock({ id: scannedPart.id, adjustment: addQty })
+                    setAddingStock(false)
+                    if (result.success) {
+                      toast.success(tScan('addedStock', { amount: addQty }))
+                      setShowScanActions(false)
+                      router.refresh()
+                    }
+                  }}
+                  disabled={addingStock}
+                >
+                  {addingStock ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+                  {tScan('addStock')} (+{addQty})
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={async () => {
+                    const result = await getInventoryPart(scannedPart.id)
+                    if (result.success && result.data) {
+                      setEditPartData(result.data)
+                    }
+                    setShowScanActions(false)
+                    setShowPartForm(true)
+                  }}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button
+                size="lg"
+                className="w-full"
+                onClick={() => {
+                  setShowScanActions(false)
+                  setShowPartForm(true)
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {tScan('createNew')}
+              </Button>
+            )}
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
 
       <InventoryPartForm
         key={editPartData?.id ?? scannedBarcode ?? 'mobile-new'}
