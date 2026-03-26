@@ -118,6 +118,7 @@
     "uploadingLogo": "Telechargement du logo...",
     "logoUpdated": "Logo mis a jour",
     "failedUploadLogo": "Echec du telechargement du logo",
+    "readMore": "Read More",
     "detailsTitle": "Details de l'entreprise",
     "shopName": "Nom de l'entreprise / atelier",
     "shopNamePlaceholder": "Garage Auto Martin",
@@ -996,6 +997,7 @@
   },
   "ai": {
     "title": "Assistant IA",
+    "readMore": "Read More",
     "description": "Configurez l'IA pour generer automatiquement des notes de service et resumer l'historique du vehicule.",
     "enableLabel": "Activer l'IA",
     "enableHint": "Utiliser les fonctionnalites alimentees par l'IA dans toute l'application",

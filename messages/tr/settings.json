@@ -118,6 +118,7 @@
     "uploadingLogo": "Logo yükleniyor...",
     "logoUpdated": "Logo güncellendi",
     "failedUploadLogo": "Logo yüklenemedi",
+    "readMore": "Read More",
     "detailsTitle": "Şirket Bilgileri",
     "shopName": "Şirket / Atölye Adı",
     "shopNamePlaceholder": "Ali'nin Oto Tamir",
@@ -996,6 +997,7 @@
   },
   "ai": {
     "title": "Yapay Zeka Asistani",
+    "readMore": "Read More",
     "description": "Servis notlarini otomatik olusturmak ve arac gecmisini ozetlemek icin yapay zekayi yapilandirin.",
     "enableLabel": "Yapay zekayi etkinlestir",
     "enableHint": "Uygulama genelinde yapay zeka destekli ozellikleri kullanin",

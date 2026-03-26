@@ -118,6 +118,7 @@
     "uploadingLogo": "Logo wird hochgeladen...",
     "logoUpdated": "Logo aktualisiert",
     "failedUploadLogo": "Logo-Upload fehlgeschlagen",
+    "readMore": "Read More",
     "detailsTitle": "Firmendetails",
     "shopName": "Firmen-/Werkstattname",
     "shopNamePlaceholder": "Meiers Autowerkstatt",
@@ -996,6 +997,7 @@
   },
   "ai": {
     "title": "KI-Assistent",
+    "readMore": "Read More",
     "description": "Konfigurieren Sie KI, um automatisch Servicenotizen zu erstellen und Fahrzeughistorien zusammenzufassen.",
     "enableLabel": "KI aktivieren",
     "enableHint": "KI-gestutzte Funktionen in der gesamten Anwendung nutzen",

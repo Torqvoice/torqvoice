@@ -158,10 +158,20 @@ export function AiSettingsForm({
       <ReadOnlyWrapper>
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5" />
-              {t("ai.title")}
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5" />
+                {t("ai.title")}
+              </CardTitle>
+              <a
+                href="https://torqvoice.com/docs/integrations/ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {t("ai.readMore")} →
+              </a>
+            </div>
             <CardDescription>{t("ai.description")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">

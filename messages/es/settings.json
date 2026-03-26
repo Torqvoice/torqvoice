@@ -118,6 +118,7 @@
     "uploadingLogo": "Subiendo logo...",
     "logoUpdated": "Logo actualizado",
     "failedUploadLogo": "Error al subir el logo",
+    "readMore": "Read More",
     "detailsTitle": "Datos de la empresa",
     "shopName": "Nombre de la empresa / taller",
     "shopNamePlaceholder": "Taller Mecanico Lopez",
@@ -996,6 +997,7 @@
   },
   "ai": {
     "title": "Asistente de IA",
+    "readMore": "Read More",
     "description": "Configure la IA para generar automaticamente notas de servicio y resumir el historial del vehiculo.",
     "enableLabel": "Habilitar IA",
     "enableHint": "Usar funciones impulsadas por IA en toda la aplicacion",

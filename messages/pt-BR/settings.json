@@ -118,6 +118,7 @@
     "uploadingLogo": "Enviando logo...",
     "logoUpdated": "Logo atualizado",
     "failedUploadLogo": "Falha ao enviar o logo",
+    "readMore": "Read More",
     "detailsTitle": "Detalhes da empresa",
     "shopName": "Nome da empresa / oficina",
     "shopNamePlaceholder": "Auto Mecanica Silva",
@@ -996,6 +997,7 @@
   },
   "ai": {
     "title": "Assistente de IA",
+    "readMore": "Read More",
     "description": "Configure a IA para gerar automaticamente notas de servico e resumir o historico do veiculo.",
     "enableLabel": "Ativar IA",
     "enableHint": "Usar recursos de IA em toda a aplicacao",

@@ -118,6 +118,7 @@
     "uploadingLogo": "Caricamento logo...",
     "logoUpdated": "Logo aggiornato",
     "failedUploadLogo": "Caricamento logo non riuscito",
+    "readMore": "Read More",
     "detailsTitle": "Dettagli aziendali",
     "shopName": "Nome azienda / officina",
     "shopNamePlaceholder": "Autofficina di Mario",
@@ -996,6 +997,7 @@
   },
   "ai": {
     "title": "Assistente IA",
+    "readMore": "Read More",
     "description": "Configura l'IA per generare automaticamente note di servizio e riassumere la cronologia del veicolo.",
     "enableLabel": "Abilita IA",
     "enableHint": "Usa le funzionalita basate sull'IA in tutta l'applicazione",
