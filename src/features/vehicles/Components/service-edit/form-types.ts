@@ -80,4 +80,13 @@ export const makeEmptyLabor = (defaultRate: number): ServiceLaborInput => ({
   hours: 0,
   rate: defaultRate,
   total: 0,
+  pricingType: 'hourly',
+})
+
+export const makeEmptyService = (): ServiceLaborInput => ({
+  description: '',
+  hours: 1,
+  rate: 0,
+  total: 0,
+  pricingType: 'service',
 })

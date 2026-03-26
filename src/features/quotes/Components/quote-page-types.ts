@@ -40,7 +40,7 @@ export interface QuoteRecord {
   createdAt: Date;
   updatedAt: Date;
   partItems: { id: string; partNumber: string | null; name: string; quantity: number; unitPrice: number; total: number; excluded?: boolean }[];
-  laborItems: { id: string; description: string; hours: number; rate: number; total: number; excluded?: boolean }[];
+  laborItems: { id: string; description: string; hours: number; rate: number; total: number; pricingType?: string; excluded?: boolean }[];
   customer: { id: string; name: string; email: string | null; phone: string | null; address: string | null; company: string | null } | null;
   vehicle: { id: string; make: string; model: string; year: number; vin: string | null; licensePlate: string | null; mileage: number } | null;
 }
@@ -69,5 +69,15 @@ export const makeEmptyLabor = (defaultRate: number): QuoteLaborInput => ({
   hours: 0,
   rate: defaultRate,
   total: 0,
+  pricingType: "hourly",
+  excluded: false,
+});
+
+export const makeEmptyService = (): QuoteLaborInput => ({
+  description: "",
+  hours: 1,
+  rate: 0,
+  total: 0,
+  pricingType: "service",
   excluded: false,
 });

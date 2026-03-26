@@ -4,7 +4,10 @@
   "table": {
     "name": "Naam",
     "description": "Beschrijving",
-    "itemCount": "Items"
+    "itemCount": "Items",
+    "type": "Type",
+    "hrs": "hrs",
+    "units": "unit(s)"
   },
   "empty": {
     "noMatch": "Geen sjablonen komen overeen met uw zoekopdracht.",
@@ -38,14 +41,19 @@
     "addItem": "Item toevoegen",
     "cancel": "Annuleren",
     "create": "Aanmaken",
-    "saveChanges": "Wijzigingen opslaan"
+    "saveChanges": "Wijzigingen opslaan",
+    "itemQty": "Qty",
+    "itemQtyOrHours": "Unit / Hours",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC"
   },
   "picker": {
     "title": "Arbeidssjabloon selecteren",
     "search": "Sjablonen zoeken...",
     "noPackages": "Geen arbeidssjablonen gevonden.",
     "items": "{count} items",
-    "totalHours": "{hours}u totaal"
+    "totalHours": "{hours}u totaal",
+    "totalUnits": "{units} unit(s)"
   },
   "errors": {
     "error": "Fout",

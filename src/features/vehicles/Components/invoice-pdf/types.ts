@@ -42,6 +42,7 @@ export interface InvoiceData {
     hours: number
     rate: number
     total: number
+    pricingType?: string
   }[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>;
   vehicle: {

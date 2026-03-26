@@ -102,8 +102,9 @@ export function QuotePageClient({
       const newItems = preset.items.map((item) => ({
         description: item.description,
         hours: item.hours,
-        rate: item.rate > 0 ? item.rate : defaultLaborRate,
-        total: item.hours * (item.rate > 0 ? item.rate : defaultLaborRate),
+        rate: item.rate > 0 ? item.rate : (item.pricingType === 'service' ? 0 : defaultLaborRate),
+        total: item.hours * (item.rate > 0 ? item.rate : (item.pricingType === 'service' ? 0 : defaultLaborRate)),
+        pricingType: (item.pricingType as "hourly" | "service") || "hourly",
         excluded: false,
       }))
       state.addLaborBulk(newItems)
@@ -155,6 +156,7 @@ export function QuotePageClient({
         onUpdate={state.updateLabor}
         onDelete={state.deleteLabor}
         onAdd={state.addLabor}
+        onAddService={state.addService}
         hasPresets={laborPresets.length > 0}
         onOpenPresets={() => setShowPresetPicker(true)}
         t={t}

@@ -4,7 +4,10 @@
   "table": {
     "name": "Name",
     "description": "Description",
-    "itemCount": "Items"
+    "itemCount": "Items",
+    "type": "Type",
+    "hrs": "hrs",
+    "units": "unit(s)"
   },
   "empty": {
     "noMatch": "No packages match your search.",
@@ -33,19 +36,24 @@
     "itemsTitle": "Labor Items",
     "itemDescription": "Description",
     "itemHours": "Hours",
+    "itemQty": "Qty",
+    "itemQtyOrHours": "Unit / Hours",
     "itemRate": "Rate",
     "itemDescriptionPlaceholder": "Description *",
     "addItem": "Add Item",
     "cancel": "Cancel",
     "create": "Create Package",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC"
   },
   "picker": {
     "title": "Select Labor Package",
     "search": "Search packages...",
     "noPackages": "No labor packages found.",
     "items": "{count} items",
-    "totalHours": "{hours}h total"
+    "totalHours": "{hours}h total",
+    "totalUnits": "{units} unit(s)"
   },
   "errors": {
     "error": "Error",

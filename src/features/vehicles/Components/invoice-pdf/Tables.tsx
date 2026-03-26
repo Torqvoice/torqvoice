@@ -62,24 +62,33 @@ export function LaborTable({ data, currencyCode, styles, labels }: TablesProps) 
       <View style={styles.table}>
         <View style={styles.tableHeader}>
           <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.description || 'Description'}</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '15%', textAlign: 'right' }}>{labels.hours || 'Hours'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '15%', textAlign: 'right' }}>{labels.qtyOrHours || labels.hours || 'Qty / Hours'}</Text>
           <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>{labels.rate || 'Rate'}</Text>
           <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>{labels.total || 'Total'}</Text>
         </View>
-        {data.laborItems.map((labor, i) => (
-          <View key={i} style={styles.tableRow}>
-            <Text style={{ ...styles.tableCell, width: '45%' }}>{labor.description}</Text>
-            <Text style={{ ...styles.tableCell, width: '15%', textAlign: 'right' }}>
-              {labor.hours}
-            </Text>
-            <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right' }}>
-              {labels.ratePerHour ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(labor.rate, currencyCode) }) : `${formatCurrency(labor.rate, currencyCode)}/hr`}
-            </Text>
-            <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
-              {formatCurrency(labor.total, currencyCode)}
-            </Text>
-          </View>
-        ))}
+        {data.laborItems.map((labor, i) => {
+          const isService = labor.pricingType === 'service'
+          return (
+            <View key={i} style={styles.tableRow}>
+              <Text style={{ ...styles.tableCell, width: '45%' }}>{labor.description}</Text>
+              <Text style={{ ...styles.tableCell, width: '15%', textAlign: 'right' }}>
+                {isService
+                  ? `${labor.hours} ${labels.unit || 'unit'}`
+                  : `${labor.hours} ${labels.hrs || 'hrs'}`}
+              </Text>
+              <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right' }}>
+                {isService
+                  ? formatCurrency(labor.rate, currencyCode)
+                  : labels.ratePerHour
+                    ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(labor.rate, currencyCode) })
+                    : `${formatCurrency(labor.rate, currencyCode)}/hr`}
+              </Text>
+              <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
+                {formatCurrency(labor.total, currencyCode)}
+              </Text>
+            </View>
+          )
+        })}
       </View>
     </View>
   )

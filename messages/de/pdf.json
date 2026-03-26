@@ -21,6 +21,8 @@
     "total": "Gesamt",
     "labor": "Arbeitsleistung",
     "hours": "Stunden",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Stundensatz",
     "ratePerHour": "{rate}/Std.",
     "subtotal": "Zwischensumme",
@@ -44,7 +46,8 @@
     "viewPortal": "Ihr Portal ansehen: {url}",
     "professionalWorkshop": "Professionelle Werkstattverwaltung",
     "tel": "Tel: {phone}",
-    "org": "Org: {org}"
+    "org": "Org: {org}",
+    "qtyOrHours": "Unit / Hours"
   },
   "quote": {
     "title": "ANGEBOT",
@@ -61,6 +64,8 @@
     "total": "Gesamt",
     "labor": "Arbeitsleistung",
     "hours": "Stunden",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Stundensatz",
     "ratePerHour": "{rate}/Std.",
     "subtotal": "Zwischensumme",
@@ -74,7 +79,8 @@
     "validityFooterUntil": "Dieses Angebot ist gültig bis {date}",
     "validityFooter30": "Dieses Angebot ist 30 Tage gültig",
     "viewPortal": "Ihr Portal ansehen: {url}",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "qtyOrHours": "Unit / Hours"
   },
   "inspection": {
     "title": "FAHRZEUGINSPEKTION",

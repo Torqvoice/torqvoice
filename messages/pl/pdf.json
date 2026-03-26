@@ -21,6 +21,8 @@
     "total": "Suma",
     "labor": "Robocizna",
     "hours": "Godziny",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Stawka",
     "ratePerHour": "{rate}/godz.",
     "subtotal": "Suma częściowa",
@@ -44,7 +46,8 @@
     "viewPortal": "Zobacz swój portal: {url}",
     "professionalWorkshop": "Profesjonalne zarządzanie warsztatem",
     "tel": "Tel: {phone}",
-    "org": "Org: {org}"
+    "org": "Org: {org}",
+    "qtyOrHours": "Unit / Hours"
   },
   "quote": {
     "title": "WYCENA",
@@ -61,6 +64,8 @@
     "total": "Suma",
     "labor": "Robocizna",
     "hours": "Godziny",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Stawka",
     "ratePerHour": "{rate}/godz.",
     "subtotal": "Suma częściowa",
@@ -74,7 +79,8 @@
     "validityFooterUntil": "Ta wycena jest ważna do {date}",
     "validityFooter30": "Ta wycena jest ważna przez 30 dni",
     "viewPortal": "Zobacz swój portal: {url}",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "qtyOrHours": "Unit / Hours"
   },
   "inspection": {
     "title": "INSPEKCJA POJAZDU",

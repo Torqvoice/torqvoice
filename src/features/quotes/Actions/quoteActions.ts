@@ -368,6 +368,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             hours: l.hours,
             rate: l.rate,
             total: l.total,
+            pricingType: l.pricingType || "hourly",
             serviceRecordId: created.id,
           })),
         });
