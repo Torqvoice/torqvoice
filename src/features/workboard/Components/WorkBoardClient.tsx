@@ -13,6 +13,7 @@ import {
   assignTechnician,
   moveJob,
   unassignJob,
+  updateServiceTimes,
 } from "../Actions/boardActions";
 import { WorkBoardToolbar, type BoardView } from "./WorkBoardToolbar";
 import { DayTimeline } from "./DayTimeline";
@@ -174,11 +175,35 @@ export function WorkBoardClient({
 
     if (activeData?.job && activeData.job.type) {
       const job = activeData.job as WorkBoardJob;
-      if (job.technicianId === overData.technicianId) return;
-      store.optimisticMove(job.id, overData.technicianId);
-      const res = await moveJob({ id: job.id, technicianId: overData.technicianId, sortOrder: 0, type: job.type });
-      if (!res.success) { toast.error(t("failedMove"), { description: res.error }); store.optimisticMove(job.id, job.technicianId!); }
-      else if (res.data) store.updateJob(res.data as WorkBoardJob);
+      const dropDate = overData.date;
+      const jobDate = job.startDateTime ? job.startDateTime.split("T")[0] : null;
+      const sameTech = job.technicianId === overData.technicianId;
+      const sameDay = dropDate && jobDate && dropDate === jobDate;
+
+      if (sameTech && sameDay) return;
+
+      // Move to different tech if needed
+      if (!sameTech) {
+        store.optimisticMove(job.id, overData.technicianId);
+        const res = await moveJob({ id: job.id, technicianId: overData.technicianId, sortOrder: 0, type: job.type });
+        if (!res.success) { toast.error(t("failedMove"), { description: res.error }); store.optimisticMove(job.id, job.technicianId!); return; }
+        else if (res.data) store.updateJob(res.data as WorkBoardJob);
+      }
+
+      // Update dates if dropped on a different day
+      if (!sameDay && dropDate) {
+        const oldStart = job.startDateTime ? new Date(job.startDateTime) : null;
+        const oldEnd = job.endDateTime ? new Date(job.endDateTime) : null;
+        const duration = oldStart && oldEnd ? oldEnd.getTime() - oldStart.getTime() : 60 * 60 * 1000;
+        const timeOfDay = oldStart
+          ? `${String(oldStart.getHours()).padStart(2, "0")}:${String(oldStart.getMinutes()).padStart(2, "0")}`
+          : boardSettings.workDayStart;
+        const newStart = new Date(dropDate + "T" + timeOfDay + ":00");
+        const newEnd = new Date(newStart.getTime() + duration);
+        store.updateServiceTimes(job.id, newStart.toISOString(), newEnd.toISOString());
+        const timeRes = await updateServiceTimes({ id: job.id, startDateTime: newStart, endDateTime: newEnd });
+        if (!timeRes.success) { toast.error(t("failedMove"), { description: timeRes.error }); }
+      }
       return;
     }
 
