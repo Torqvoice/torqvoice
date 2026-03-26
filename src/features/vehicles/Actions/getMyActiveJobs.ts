@@ -16,6 +16,7 @@ export interface MyActiveJob {
     licensePlate: string | null;
   };
   imageCount: number;
+  partCount: number;
 }
 
 export async function getMyActiveJobs() {
@@ -55,6 +56,7 @@ export async function getMyActiveJobs() {
               attachments: {
                 where: { category: "image" },
               },
+              partItems: true,
             },
           },
         },
@@ -69,6 +71,7 @@ export async function getMyActiveJobs() {
         vehicleId: r.vehicleId,
         vehicle: r.vehicle,
         imageCount: r._count.attachments,
+        partCount: r._count.partItems,
       }));
     },
     {

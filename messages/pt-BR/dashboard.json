@@ -1,9 +1,26 @@
 {
   "myJobs": {
     "title": "My Active Jobs",
-    "description": "Work orders assigned to you. Tap the camera to quickly add photos.",
+    "description": "Work orders assigned to you.",
     "uploadFailed": "Failed to upload image",
-    "uploadSuccess": "{count} image(s) uploaded"
+    "uploadSuccess": "{count} image(s) uploaded",
+    "takePhoto": "Take photo",
+    "scanPart": "Scan part",
+    "partAdded": "Added \"{name}\" to work order",
+    "partAddFailed": "Failed to add part",
+    "createPart": {
+      "title": "Part Not Found",
+      "description": "No part found for barcode \"{barcode}\". Create a new one?",
+      "name": "Part Name",
+      "namePlaceholder": "e.g. Oil Filter",
+      "partNumber": "Part Number",
+      "partNumberPlaceholder": "e.g. OF-1234",
+      "cost": "Cost",
+      "sellPrice": "Sell Price",
+      "cancel": "Cancel",
+      "create": "Create & Add",
+      "failed": "Failed to create part"
+    }
   },
   "recentActivity": "Atividade recente",
   "noRecentActivity": "Nenhuma atividade recente",
