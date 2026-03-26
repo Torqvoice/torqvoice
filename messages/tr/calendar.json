@@ -36,6 +36,12 @@
     "quotes": "Teklifler"
   },
   "selectVehicle": "\u0130\u015f emri i\u00e7in ara\u00e7 se\u00e7in",
+  "dateChoice": {
+    "title": "Work Order Date",
+    "description": "You have {selectedDate} selected. Which date should this work order be for?",
+    "useSelected": "Use {date}",
+    "useToday": "Use today"
+  },
   "more": "+ {count} daha",
   "events": {
     "status": {

@@ -36,6 +36,12 @@
     "quotes": "Quotes"
   },
   "selectVehicle": "Select Vehicle for Work Order",
+  "dateChoice": {
+    "title": "Work Order Date",
+    "description": "You have {selectedDate} selected. Which date should this work order be for?",
+    "useSelected": "Use {date}",
+    "useToday": "Use today"
+  },
   "more": "+ {count} more",
   "events": {
     "status": {

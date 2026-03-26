@@ -20,6 +20,13 @@ import { toLocalDateStr } from "./calendar-utils";
 import { getCalendarEvents } from "../Actions/calendarActions";
 import type { CalendarEvent } from "../Actions/calendarActions";
 import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { CalendarDays } from "lucide-react";
 
 interface Vehicle {
   id: string;
@@ -104,8 +111,25 @@ export default function CalendarClient({
 
   // Vehicle picker
   const [showPicker, setShowPicker] = useState(false);
+  const [showDateChoice, setShowDateChoice] = useState(false);
+  const [workOrderDate, setWorkOrderDate] = useState<string | undefined>(undefined);
 
   const selectedDateStr = toLocalDateStr(selectedDate);
+
+  const handleNewWorkOrder = useCallback(() => {
+    if (selectedDateStr !== todayStr) {
+      setShowDateChoice(true);
+    } else {
+      setWorkOrderDate(undefined);
+      setShowPicker(true);
+    }
+  }, [selectedDateStr, todayStr]);
+
+  const handleDateChoice = useCallback((useSelectedDate: boolean) => {
+    setShowDateChoice(false);
+    setWorkOrderDate(useSelectedDate ? selectedDateStr : undefined);
+    setShowPicker(true);
+  }, [selectedDateStr]);
 
   const filteredEvents = useMemo(() => {
     return events.filter((e) => {
@@ -258,7 +282,7 @@ export default function CalendarClient({
                   </Button>
                   <Button
                     size="sm"
-                    onClick={() => setShowPicker(true)}
+                    onClick={handleNewWorkOrder}
                   >
                     <Plus className="h-4 w-4 mr-1" />
                     {t('workOrder')}
@@ -339,12 +363,37 @@ export default function CalendarClient({
         </div>
       </div>
 
+      <Dialog open={showDateChoice} onOpenChange={setShowDateChoice}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t('dateChoice.title')}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {t('dateChoice.description', {
+              selectedDate: selectedDate.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+            })}
+          </p>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button onClick={() => handleDateChoice(true)}>
+              <CalendarDays className="h-4 w-4 mr-2" />
+              {t('dateChoice.useSelected', {
+                date: selectedDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+              })}
+            </Button>
+            <Button variant="outline" onClick={() => handleDateChoice(false)}>
+              {t('dateChoice.useToday')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <VehiclePickerDialog
         open={showPicker}
         onOpenChange={setShowPicker}
         vehicles={vehicles}
         customers={customers}
         title={t('selectVehicle')}
+        redirectQuery={workOrderDate ? { boardDate: workOrderDate } : undefined}
       />
     </div>
   );
