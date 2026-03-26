@@ -46,6 +46,8 @@ jobs:
             torqvoice-app-staging:
               container_name: torqvoice-app-staging
               image: ghcr.io/torqvoice/torqvoice:${APP_TAG:-latest}
+              ports:
+                - "127.0.0.1:5432:5432"
               restart: unless-stopped
               volumes:
                 - ${DATA_PATH}/torqvoice_staging_data:/app/data
