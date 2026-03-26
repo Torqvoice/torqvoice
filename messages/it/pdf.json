@@ -21,6 +21,8 @@
     "total": "Totale",
     "labor": "Manodopera",
     "hours": "Ore",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Tariffa",
     "ratePerHour": "{rate}/ora",
     "subtotal": "Subtotale",
@@ -45,7 +47,7 @@
     "professionalWorkshop": "Gestione Officina Professionale",
     "tel": "Tel: {phone}",
     "org": "Org: {org}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "quote": {
     "title": "PREVENTIVO",
@@ -62,6 +64,8 @@
     "total": "Totale",
     "labor": "Manodopera",
     "hours": "Ore",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Tariffa",
     "ratePerHour": "{rate}/ora",
     "subtotal": "Subtotale",
@@ -76,7 +80,7 @@
     "validityFooter30": "Questo preventivo è valido per 30 giorni",
     "viewPortal": "Visualizza il tuo portale: {url}",
     "tel": "Tel: {phone}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "inspection": {
     "title": "ISPEZIONE VEICOLO",

@@ -21,6 +21,8 @@
     "total": "Totaal",
     "labor": "Arbeid",
     "hours": "Uren",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Tarief",
     "ratePerHour": "{rate}/uur",
     "subtotal": "Subtotaal",
@@ -45,7 +47,7 @@
     "professionalWorkshop": "Professioneel werkplaatsbeheer",
     "tel": "Tel: {phone}",
     "org": "KvK: {org}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "quote": {
     "title": "OFFERTE",
@@ -62,6 +64,8 @@
     "total": "Totaal",
     "labor": "Arbeid",
     "hours": "Uren",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Tarief",
     "ratePerHour": "{rate}/uur",
     "subtotal": "Subtotaal",
@@ -76,7 +80,7 @@
     "validityFooter30": "Deze offerte is 30 dagen geldig",
     "viewPortal": "Bekijk uw portaal: {url}",
     "tel": "Tel: {phone}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "inspection": {
     "title": "VOERTUIGINSPECTIE",

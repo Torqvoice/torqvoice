@@ -40,7 +40,7 @@
     "create": "Criar",
     "saveChanges": "Salvar alterações",
     "itemQty": "Qty",
-    "itemQtyOrHours": "Qty / Hours",
+    "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
     "serviceTag": "SVC"
   },

@@ -21,6 +21,8 @@
     "total": "Toplam",
     "labor": "İşçilik",
     "hours": "Saat",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Ücret",
     "ratePerHour": "{rate}/sa",
     "subtotal": "Ara Toplam",
@@ -45,7 +47,7 @@
     "professionalWorkshop": "Profesyonel Atölye Yönetimi",
     "tel": "Tel: {phone}",
     "org": "Org: {org}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "quote": {
     "title": "TEKLİF",
@@ -62,6 +64,8 @@
     "total": "Toplam",
     "labor": "İşçilik",
     "hours": "Saat",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Ücret",
     "ratePerHour": "{rate}/sa",
     "subtotal": "Ara Toplam",
@@ -76,7 +80,7 @@
     "validityFooter30": "Bu teklif 30 gün süreyle geçerlidir",
     "viewPortal": "Portalınızı görüntüleyin: {url}",
     "tel": "Tel: {phone}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "inspection": {
     "title": "ARAÇ MUAYENESİ",

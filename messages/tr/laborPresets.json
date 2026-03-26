@@ -40,7 +40,7 @@
     "create": "Oluştur",
     "saveChanges": "Değişiklikleri Kaydet",
     "itemQty": "Qty",
-    "itemQtyOrHours": "Qty / Hours",
+    "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
     "serviceTag": "SVC"
   },

@@ -21,6 +21,8 @@
     "total": "Total",
     "labor": "Mano de obra",
     "hours": "Horas",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Tarifa",
     "ratePerHour": "{rate}/h",
     "subtotal": "Subtotal",
@@ -45,7 +47,7 @@
     "professionalWorkshop": "Gestión profesional de talleres",
     "tel": "Tel: {phone}",
     "org": "Org: {org}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "quote": {
     "title": "PRESUPUESTO",
@@ -62,6 +64,8 @@
     "total": "Total",
     "labor": "Mano de obra",
     "hours": "Horas",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Tarifa",
     "ratePerHour": "{rate}/h",
     "subtotal": "Subtotal",
@@ -76,7 +80,7 @@
     "validityFooter30": "Este presupuesto es válido por 30 días",
     "viewPortal": "Ver su portal: {url}",
     "tel": "Tel: {phone}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "inspection": {
     "title": "INSPECCIÓN DE VEHÍCULO",

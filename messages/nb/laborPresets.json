@@ -40,7 +40,7 @@
     "create": "Opprett",
     "saveChanges": "Lagre endringer",
     "itemQty": "Qty",
-    "itemQtyOrHours": "Qty / Hours",
+    "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
     "serviceTag": "SVC"
   },

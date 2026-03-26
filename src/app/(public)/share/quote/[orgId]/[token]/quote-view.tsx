@@ -590,7 +590,7 @@ export function QuoteView({
                         {quote.laborItems.map((l, i) => (
                           <tr key={i} className={l.excluded ? "line-through text-gray-400" : ""}>
                             <td className="p-2">{l.description}</td>
-                            <td className="p-2 text-right">{l.hours}</td>
+                            <td className="p-2 text-right">{l.pricingType === 'service' ? `${l.hours} ${t('unit')}` : `${l.hours} ${t('hrs')}`}</td>
                             <td className="p-2 text-right">{l.pricingType === 'service' ? formatCurrency(l.rate, currencyCode) : t('ratePerHour', { rate: formatCurrency(l.rate, currencyCode) })}</td>
                             <td className="p-2 text-right font-medium">{formatCurrency(l.total, currencyCode)}</td>
                           </tr>

@@ -91,13 +91,13 @@ export function LaborEditor({
                   />
                   <button
                     type="button"
-                    className={`shrink-0 rounded-md border px-2 text-[10px] font-medium transition-colors ${
+                    className={`shrink-0 rounded-md border px-2 text-[10px] font-medium transition-all ${
                       isService
-                        ? 'border-blue-500/30 bg-blue-500/10 text-blue-600'
-                        : 'border-muted text-muted-foreground hover:text-foreground'
+                        ? 'border-blue-500/30 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 hover:border-blue-500/50'
+                        : 'border-muted text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20'
                     }`}
                     onClick={() => updateLabor(i, 'pricingType', isService ? 'hourly' : 'service')}
-                    title={isService ? t('switchToHourly') : t('switchToService')}
+                    title={isService ? t('switchToHourlyHint') : t('switchToServiceHint')}
                   >
                     {isService ? t('serviceTag') : t('hourlyTag')}
                   </button>

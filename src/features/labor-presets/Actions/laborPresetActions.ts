@@ -50,6 +50,7 @@ export async function getLaborPresetsPaginated(params: {
         take: pageSize,
         include: {
           _count: { select: { items: true } },
+          items: { select: { hours: true, pricingType: true } },
         },
       }),
       db.laborPreset.count({ where }),

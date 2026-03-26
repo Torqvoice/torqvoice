@@ -21,6 +21,8 @@
     "total": "Итого",
     "labor": "Работа",
     "hours": "Часы",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Ставка",
     "ratePerHour": "{rate}/ч",
     "subtotal": "Подитог",
@@ -45,7 +47,7 @@
     "professionalWorkshop": "Профессиональное управление мастерской",
     "tel": "Тел: {phone}",
     "org": "Орг: {org}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "quote": {
     "title": "КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ",
@@ -62,6 +64,8 @@
     "total": "Итого",
     "labor": "Работа",
     "hours": "Часы",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Ставка",
     "ratePerHour": "{rate}/ч",
     "subtotal": "Подитог",
@@ -76,7 +80,7 @@
     "validityFooter30": "Это предложение действительно 30 дней",
     "viewPortal": "Ваш портал: {url}",
     "tel": "Тел: {phone}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "inspection": {
     "title": "ОСМОТР ТРАНСПОРТНОГО СРЕДСТВА",

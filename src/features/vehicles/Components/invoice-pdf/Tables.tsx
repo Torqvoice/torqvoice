@@ -72,7 +72,9 @@ export function LaborTable({ data, currencyCode, styles, labels }: TablesProps) 
             <View key={i} style={styles.tableRow}>
               <Text style={{ ...styles.tableCell, width: '45%' }}>{labor.description}</Text>
               <Text style={{ ...styles.tableCell, width: '15%', textAlign: 'right' }}>
-                {labor.hours}
+                {isService
+                  ? `${labor.hours} ${labels.unit || 'unit'}`
+                  : `${labor.hours} ${labels.hrs || 'hrs'}`}
               </Text>
               <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right' }}>
                 {isService

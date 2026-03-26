@@ -4,7 +4,10 @@
   "table": {
     "name": "Naam",
     "description": "Beschrijving",
-    "itemCount": "Items"
+    "itemCount": "Items",
+    "type": "Type",
+    "hrs": "hrs",
+    "units": "unit(s)"
   },
   "empty": {
     "noMatch": "Geen sjablonen komen overeen met uw zoekopdracht.",
@@ -40,7 +43,7 @@
     "create": "Aanmaken",
     "saveChanges": "Wijzigingen opslaan",
     "itemQty": "Qty",
-    "itemQtyOrHours": "Qty / Hours",
+    "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
     "serviceTag": "SVC"
   },

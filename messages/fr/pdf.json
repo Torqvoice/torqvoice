@@ -21,6 +21,8 @@
     "total": "Total",
     "labor": "Main-d'œuvre",
     "hours": "Heures",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Taux",
     "ratePerHour": "{rate}/h",
     "subtotal": "Sous-total",
@@ -45,7 +47,7 @@
     "professionalWorkshop": "Gestion professionnelle d'atelier",
     "tel": "Tél. : {phone}",
     "org": "Org. : {org}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "quote": {
     "title": "DEVIS",
@@ -62,6 +64,8 @@
     "total": "Total",
     "labor": "Main-d'œuvre",
     "hours": "Heures",
+    "hrs": "hrs",
+    "unit": "unit",
     "rate": "Taux",
     "ratePerHour": "{rate}/h",
     "subtotal": "Sous-total",
@@ -76,7 +80,7 @@
     "validityFooter30": "Ce devis est valable 30 jours",
     "viewPortal": "Consultez votre portail : {url}",
     "tel": "Tél. : {phone}",
-    "qtyOrHours": "Qty / Hours"
+    "qtyOrHours": "Unit / Hours"
   },
   "inspection": {
     "title": "INSPECTION DU VÉHICULE",

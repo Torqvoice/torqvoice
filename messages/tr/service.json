@@ -95,11 +95,13 @@
     "subtotal": "İşçilik Ara Toplamı: {amount}",
     "addService": "Add Service",
     "qty": "Qty",
-    "qtyOrHours": "Qty / Hours",
+    "qtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
-    "switchToService": "Switch to service pricing"
+    "switchToService": "Switch to service pricing",
+    "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
   },
   "totals": {
     "title": "Toplamlar",

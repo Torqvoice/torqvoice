@@ -4,7 +4,10 @@
   "table": {
     "name": "Name",
     "description": "Description",
-    "itemCount": "Items"
+    "itemCount": "Items",
+    "type": "Type",
+    "hrs": "hrs",
+    "units": "unit(s)"
   },
   "empty": {
     "noMatch": "No packages match your search.",
@@ -34,7 +37,7 @@
     "itemDescription": "Description",
     "itemHours": "Hours",
     "itemQty": "Qty",
-    "itemQtyOrHours": "Qty / Hours",
+    "itemQtyOrHours": "Unit / Hours",
     "itemRate": "Rate",
     "itemDescriptionPlaceholder": "Description *",
     "addItem": "Add Item",

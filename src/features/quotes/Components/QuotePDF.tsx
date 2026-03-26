@@ -486,7 +486,9 @@ export function QuotePDF({
               <View key={i} style={{ ...styles.tableRow, ...(l.excluded ? { opacity: 0.5 } : {}) }}>
                 <Text style={{ ...styles.tableCell, width: '45%', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>{l.description}</Text>
                 <Text style={{ ...styles.tableCell, width: '15%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                  {l.hours}
+                  {isService
+                    ? `${l.hours} ${labels.unit || 'unit'}`
+                    : `${l.hours} ${labels.hrs || 'hrs'}`}
                 </Text>
                 <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
                   {isService
