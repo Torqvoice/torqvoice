@@ -943,7 +943,7 @@ export function DashboardClient({
                 {quoteResponses.map((resp) => (
                   <div
                     key={resp.id}
-                    className="flex items-center justify-between px-5 py-3"
+                    className="flex items-center justify-between px-5 py-3 overflow-hidden"
                   >
                     <div
                       className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
@@ -970,7 +970,7 @@ export function DashboardClient({
                         </p>
                       </div>
                     </div>
-                    <div className="shrink-0 ml-3 flex items-center gap-1.5">
+                    <div className="shrink-0 ml-3 flex flex-wrap items-center gap-1.5 max-w-[50%] justify-end sm:max-w-none sm:flex-nowrap">
                       {resp.status === "accepted" ? (
                         <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px]">
                           {t("quoteResponses.accepted")}
@@ -995,7 +995,8 @@ export function DashboardClient({
                           }}
                         >
                           <ArrowRight className="mr-1 h-3 w-3" />
-                          {t("quoteResponses.convertToWorkOrder")}
+                          <span className="hidden sm:inline">{t("quoteResponses.convertToWorkOrder")}</span>
+                          <span className="sm:hidden">{t("quoteResponses.convert")}</span>
                         </Button>
                       )}
                       <Button
@@ -1004,7 +1005,8 @@ export function DashboardClient({
                         className="h-7 text-xs"
                         onClick={() => router.push(`/quotes/${resp.id}`)}
                       >
-                        {t("quoteResponses.viewQuote")}
+                        <span className="hidden sm:inline">{t("quoteResponses.viewQuote")}</span>
+                        <span className="sm:hidden">{t("quoteResponses.view")}</span>
                       </Button>
                       <Button
                         variant="ghost"

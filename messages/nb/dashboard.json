@@ -73,7 +73,9 @@
     "accepted": "Akseptert",
     "changesRequested": "Endringer forespurt",
     "convertToWorkOrder": "Konverter til arbeidsordre",
+    "convert": "Convert",
     "viewQuote": "Vis tilbud",
+    "view": "View",
     "noData": "Ingen kundesvar."
   },
   "recentCompleted": {

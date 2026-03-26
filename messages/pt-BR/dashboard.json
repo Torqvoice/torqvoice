@@ -73,7 +73,9 @@
     "accepted": "Aceito",
     "changesRequested": "Alterações Solicitadas",
     "convertToWorkOrder": "Converter em Ordem de Serviço",
+    "convert": "Convert",
     "viewQuote": "Ver Orçamento",
+    "view": "View",
     "noData": "Nenhuma resposta de cliente."
   },
   "recentCompleted": {

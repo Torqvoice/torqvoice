@@ -73,7 +73,9 @@
     "accepted": "Принято",
     "changesRequested": "Запрошены изменения",
     "convertToWorkOrder": "Преобразовать в заказ-наряд",
+    "convert": "Convert",
     "viewQuote": "Просмотреть предложение",
+    "view": "View",
     "noData": "Нет ответов от клиентов."
   },
   "recentCompleted": {

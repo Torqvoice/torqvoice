@@ -73,7 +73,9 @@
     "accepted": "Zaakceptowane",
     "changesRequested": "Zgłoszono zmiany",
     "convertToWorkOrder": "Przekształć w zlecenie",
+    "convert": "Convert",
     "viewQuote": "Pokaż wycenę",
+    "view": "View",
     "noData": "Brak odpowiedzi klientów."
   },
   "recentCompleted": {

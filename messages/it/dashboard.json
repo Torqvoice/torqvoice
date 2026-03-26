@@ -73,7 +73,9 @@
     "accepted": "Accettato",
     "changesRequested": "Modifiche richieste",
     "convertToWorkOrder": "Converti in ordine di lavoro",
+    "convert": "Convert",
     "viewQuote": "Visualizza preventivo",
+    "view": "View",
     "noData": "Nessuna risposta dai clienti."
   },
   "recentCompleted": {

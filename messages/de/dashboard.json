@@ -73,7 +73,9 @@
     "accepted": "Angenommen",
     "changesRequested": "Änderungen gewünscht",
     "convertToWorkOrder": "In Arbeitsauftrag umwandeln",
+    "convert": "Convert",
     "viewQuote": "Angebot anzeigen",
+    "view": "View",
     "noData": "Keine Kundenantworten."
   },
   "recentCompleted": {

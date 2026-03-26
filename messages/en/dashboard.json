@@ -73,7 +73,9 @@
     "accepted": "Accepted",
     "changesRequested": "Changes Requested",
     "convertToWorkOrder": "Convert to Work Order",
+    "convert": "Convert",
     "viewQuote": "View Quote",
+    "view": "View",
     "noData": "No customer responses."
   },
   "recentCompleted": {

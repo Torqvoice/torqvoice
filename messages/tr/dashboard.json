@@ -73,7 +73,9 @@
     "accepted": "Kabul Edildi",
     "changesRequested": "Değişiklik Talep Edildi",
     "convertToWorkOrder": "İş Emrine Dönüştür",
+    "convert": "Convert",
     "viewQuote": "Teklifi Görüntüle",
+    "view": "View",
     "noData": "Müşteri yanıtı yok."
   },
   "recentCompleted": {
