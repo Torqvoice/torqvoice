@@ -144,8 +144,8 @@ describe("QuoteView", () => {
         },
       };
       render(<QuoteView {...props} />);
-      // "Labor" appears in both the table header and the totals row
-      expect(screen.getAllByText("Labor").length).toBeGreaterThanOrEqual(1);
+      // "Labor & Services" appears in both the table header and the totals row
+      expect(screen.getAllByText("Labor & Services").length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText("Labor - Oil Change")).toBeInTheDocument();
     });
 
