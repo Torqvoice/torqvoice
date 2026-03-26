@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { authClient, signOut, useSession } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
-import { Gauge, Loader2, Mail, LogOut } from 'lucide-react'
+import { Loader2, Mail, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCooldown } from '@/hooks/use-cooldown'
 
@@ -88,11 +89,15 @@ export default function VerifyEmailPage() {
 
       <div className="glass relative z-10 w-full max-w-md rounded-2xl p-8 shadow-2xl">
         <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
-            <Gauge className="h-5 w-5 text-primary" />
-            <span className="gradient-text text-sm font-bold tracking-wider uppercase">
-              {tc('brandName')}
-            </span>
+          <div className="mb-4 inline-flex items-center gap-2">
+            <Image
+              src="/torqvoice_app_logo.png"
+              alt={tc('brandName')}
+              width={48}
+              height={44}
+              className="h-11 w-auto"
+              priority
+            />
           </div>
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <Mail className="h-8 w-8 text-primary" />

@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Gauge, Loader2, ArrowLeft } from 'lucide-react'
+import { Loader2, ArrowLeft } from 'lucide-react'
 
 export default function ForgotPasswordPage() {
   const t = useTranslations('auth.forgotPassword')
@@ -42,11 +43,15 @@ export default function ForgotPasswordPage() {
 
       <div className="glass relative z-10 w-full max-w-md rounded-2xl p-8 shadow-2xl">
         <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
-            <Gauge className="h-5 w-5 text-primary" />
-            <span className="gradient-text text-sm font-bold tracking-wider uppercase">
-              {tc('brandName')}
-            </span>
+          <div className="mb-4 inline-flex items-center gap-2">
+            <Image
+              src="/torqvoice_app_logo.png"
+              alt={tc('brandName')}
+              width={48}
+              height={44}
+              className="h-11 w-auto"
+              priority
+            />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
