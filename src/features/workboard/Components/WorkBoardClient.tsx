@@ -169,9 +169,22 @@ export function WorkBoardClient({
     setActiveDrag(null);
     const { active, over } = event;
     if (!over) return;
-    const overData = over.data.current as { technicianId: string; date: string } | undefined;
-    if (!overData?.technicianId) return;
+    const overData = over.data.current as { technicianId?: string; date?: string; unassigned?: boolean } | undefined;
+    if (!overData) return;
     const activeData = active.data.current;
+
+    // Drop assigned job onto unassigned panel
+    if (overData.unassigned && activeData?.job && activeData.job.type) {
+      const job = activeData.job as WorkBoardJob;
+      if (!job.technicianId) return;
+      store.removeJob(job.id);
+      const res = await unassignJob({ id: job.id, type: job.type });
+      if (!res.success) { toast.error(t("failedRemove"), { description: res.error }); store.addJob(job); }
+      else { const unRes = await getUnassignedJobs(); if (unRes.success && unRes.data) store.setUnassigned(unRes.data.serviceRecords as Parameters<typeof store.setUnassigned>[0], unRes.data.inspections as Parameters<typeof store.setUnassigned>[1]); }
+      return;
+    }
+
+    if (!overData.technicianId) return;
 
     if (activeData?.job && activeData.job.type) {
       const job = activeData.job as WorkBoardJob;
