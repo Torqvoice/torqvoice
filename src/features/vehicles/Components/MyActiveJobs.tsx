@@ -10,18 +10,28 @@ import {
   Wrench,
   Clock,
   Pause,
+  Plus,
   ScanBarcode,
   Package,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { compressImage } from '@/lib/compress-image'
 import { addServiceAttachment } from '@/features/vehicles/Actions/addServiceAttachment'
 import { addPartToServiceRecord } from '@/features/vehicles/Actions/addPartToServiceRecord'
 import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode'
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
-import { CreatePartDialog } from './CreatePartDialog'
+import { InventoryPartForm } from '@/features/inventory/Components/InventoryPartForm'
 import type { MyActiveJob } from '@/features/vehicles/Actions/getMyActiveJobs'
 
 interface MyActiveJobsProps {
@@ -52,8 +62,21 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
   // Barcode scanner state
   const [scannerOpen, setScannerOpen] = useState(false)
   const [scanJobId, setScanJobId] = useState<string | null>(null)
-  const [createPartOpen, setCreatePartOpen] = useState(false)
   const [pendingBarcode, setPendingBarcode] = useState('')
+  const [showPartForm, setShowPartForm] = useState(false)
+  const [showAddDialog, setShowAddDialog] = useState(false)
+  const [scannedPart, setScannedPart] = useState<{
+    id: string
+    name: string
+    partNumber: string | null
+    barcode: string | null
+    quantity: number
+    category: string | null
+    sellPrice: number
+    unitCost: number
+  } | null>(null)
+  const [addQty, setAddQty] = useState('1')
+  const [addingPart, setAddingPart] = useState(false)
   const [partCounts, setPartCounts] = useState<Record<string, number>>(() =>
     Object.fromEntries(jobs.map((j) => [j.id, j.partCount]))
   )
@@ -69,72 +92,67 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
     setScannerOpen(true)
   }
 
+  const handleAddPartToJob = async (qty: number) => {
+    if (!scannedPart || !scanJobId) return
+    setAddingPart(true)
+    const price = scannedPart.sellPrice > 0 ? scannedPart.sellPrice : scannedPart.unitCost
+    const addResult = await addPartToServiceRecord({
+      serviceRecordId: scanJobId,
+      partNumber: scannedPart.partNumber || undefined,
+      name: scannedPart.name,
+      quantity: qty,
+      unitPrice: price,
+      total: price * qty,
+      unitCost: scannedPart.unitCost,
+      inventoryPartId: scannedPart.id,
+    })
+    setAddingPart(false)
+    if (addResult.success) {
+      toast.success(t('partAdded', { name: scannedPart.name }))
+      setPartCounts((prev) => ({ ...prev, [scanJobId]: (prev[scanJobId] || 0) + qty }))
+      setShowAddDialog(false)
+      router.refresh()
+    } else {
+      toast.error(addResult.error || t('partAddFailed'))
+    }
+  }
+
   const handleBarcodeScan = useCallback(
     async (barcode: string) => {
       if (!scanJobId) return
       setScannerOpen(false)
 
       const result = await lookupPartByBarcode(barcode)
+      setPendingBarcode(barcode)
       if (result.success && result.data) {
-        const part = result.data
-        const price = part.sellPrice > 0 ? part.sellPrice : part.unitCost
-        const addResult = await addPartToServiceRecord({
-          serviceRecordId: scanJobId,
-          partNumber: part.partNumber || undefined,
-          name: part.name,
-          quantity: 1,
-          unitPrice: price,
-          total: price,
-          unitCost: part.unitCost,
-          inventoryPartId: part.id,
-        })
-        if (addResult.success) {
-          toast.success(t('partAdded', { name: part.name }))
-          setPartCounts((prev) => ({ ...prev, [scanJobId]: (prev[scanJobId] || 0) + 1 }))
-          router.refresh()
-        } else {
-          toast.error(addResult.error || t('partAddFailed'))
-        }
+        setScannedPart(result.data)
+        setAddQty('1')
+        setShowAddDialog(true)
       } else {
         // Part not found — offer to create it
-        setPendingBarcode(barcode)
-        setCreatePartOpen(true)
+        setScannedPart(null)
+        setShowPartForm(true)
       }
     },
-    [scanJobId, t, router]
+    [scanJobId]
   )
 
-  const handlePartCreated = useCallback(
-    async (part: {
-      id: string
-      name: string
-      partNumber: string | null
-      sellPrice: number
-      unitCost: number
-    }) => {
-      if (!scanJobId) return
-      setCreatePartOpen(false)
-
-      const price = part.sellPrice > 0 ? part.sellPrice : part.unitCost
-      const addResult = await addPartToServiceRecord({
-        serviceRecordId: scanJobId,
-        partNumber: part.partNumber || undefined,
-        name: part.name,
-        quantity: 1,
-        unitPrice: price,
-        total: price,
-        unitCost: part.unitCost,
-        inventoryPartId: part.id,
-      })
-      if (addResult.success) {
-        toast.success(t('partAdded', { name: part.name }))
-        setPartCounts((prev) => ({ ...prev, [scanJobId]: (prev[scanJobId] || 0) + 1 }))
+  const handlePartFormClose = useCallback(
+    async (open: boolean) => {
+      setShowPartForm(open)
+      if (!open && pendingBarcode && scanJobId) {
+        // After creating a part, look it up and add to job
+        const result = await lookupPartByBarcode(pendingBarcode)
+        if (result.success && result.data) {
+          setScannedPart(result.data)
+          setAddQty('1')
+          setShowAddDialog(true)
+        }
+        setPendingBarcode('')
         router.refresh()
-      } else {
-        toast.error(addResult.error || t('partAddFailed'))
       }
     },
-    [scanJobId, t, router]
+    [pendingBarcode, scanJobId, router]
   )
 
   const handleFileSelect = async (jobId: string, files: FileList | null) => {
@@ -340,11 +358,67 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
         title={t('scanPart')}
       />
 
-      <CreatePartDialog
-        open={createPartOpen}
-        onOpenChange={setCreatePartOpen}
-        barcode={pendingBarcode}
-        onCreated={handlePartCreated}
+      {/* Quantity selection dialog when part is found */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t('scanPart')}</DialogTitle>
+          </DialogHeader>
+          {scannedPart && (
+            <div className="space-y-4">
+              <div className="rounded-lg border p-3">
+                <p className="font-medium">{scannedPart.name}</p>
+                <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+                  {scannedPart.partNumber && <span className="font-mono">{scannedPart.partNumber}</span>}
+                  {scannedPart.category && <Badge variant="secondary" className="text-xs">{scannedPart.category}</Badge>}
+                </div>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {t('inStock', { quantity: scannedPart.quantity })}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">{t('quantity')}</Label>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => setAddQty('1')} disabled={addingPart}>
+                    1
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => setAddQty('5')} disabled={addingPart}>
+                    5
+                  </Button>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={addQty}
+                    onChange={(e) => setAddQty(e.target.value)}
+                    className="h-8 flex-1"
+                  />
+                </div>
+              </div>
+
+              <Button
+                className="w-full"
+                onClick={() => handleAddPartToJob(parseInt(addQty, 10) || 1)}
+                disabled={addingPart}
+              >
+                {addingPart ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Plus className="mr-2 h-4 w-4" />
+                )}
+                {t('addToJob', { qty: parseInt(addQty, 10) || 1 })}
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Full part form for creating new parts */}
+      <InventoryPartForm
+        key={pendingBarcode || 'job-new'}
+        open={showPartForm}
+        onOpenChange={handlePartFormClose}
+        initialBarcode={pendingBarcode}
       />
     </>
   )

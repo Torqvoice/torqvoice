@@ -8,6 +8,9 @@
     "scanPart": "Scan part",
     "partAdded": "Added \"{name}\" to work order",
     "partAddFailed": "Failed to add part",
+    "inStock": "Op voorraad: {quantity}",
+    "quantity": "Aantal",
+    "addToJob": "{qty} toevoegen aan klus",
     "createPart": {
       "title": "Part Not Found",
       "description": "No part found for barcode \"{barcode}\". Create a new one?",
