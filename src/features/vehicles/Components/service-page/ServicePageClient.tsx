@@ -27,7 +27,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { CalendarIcon, AlertTriangle } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { updateServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { LaborPresetPickerDialog } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import type { LaborPresetOption } from './service-page-types'

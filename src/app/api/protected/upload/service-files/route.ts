@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
     await writeFile(tempPath, bytes);
 
     const compressed = await compressVideo(tempPath, finalPath);
-    await unlink(tempPath).catch(() => {});
+    await unlink(tempPath).catch(() => { /* temp file cleanup */ });
 
     if (!compressed) {
       // Fallback: save original as-is
