@@ -39,7 +39,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 RUN npm install @prisma/client@6.19.2 prisma@6.19.2 @prisma/adapter-pg@6.19.2 pg && \
     chown -R nextjs:nodejs /app/node_modules
 
-RUN apk add --no-cache bash
+RUN apk add --no-cache bash ffmpeg
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma

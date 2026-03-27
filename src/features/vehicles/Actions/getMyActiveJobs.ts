@@ -16,6 +16,7 @@ export interface MyActiveJob {
     licensePlate: string | null;
   };
   imageCount: number;
+  videoCount: number;
   partCount: number;
 }
 
@@ -51,11 +52,11 @@ export async function getMyActiveJobs() {
               licensePlate: true,
             },
           },
+          attachments: {
+            select: { category: true },
+          },
           _count: {
             select: {
-              attachments: {
-                where: { category: "image" },
-              },
               partItems: true,
             },
           },
@@ -70,7 +71,8 @@ export async function getMyActiveJobs() {
         status: r.status,
         vehicleId: r.vehicleId,
         vehicle: r.vehicle,
-        imageCount: r._count.attachments,
+        imageCount: r.attachments.filter((a) => a.category === "image").length,
+        videoCount: r.attachments.filter((a) => a.category === "video").length,
         partCount: r._count.partItems,
       }));
     },

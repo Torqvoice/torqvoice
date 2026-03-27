@@ -7,6 +7,7 @@ import {
   Camera,
   ImageIcon,
   Loader2,
+  Video,
   Wrench,
   Clock,
   Pause,
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { ButtonGroup } from '@/components/ui/button-group'
 import { Badge } from '@/components/ui/badge'
 import {
   Drawer,
@@ -52,11 +54,15 @@ const STATUS_COLOR: Record<string, string> = {
 export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
   const t = useTranslations('dashboard.myJobs')
   const router = useRouter()
-  const [uploading, setUploading] = useState<string | null>(null)
+  const [uploading, setUploading] = useState<{ jobId: string; type: 'photo' | 'video' } | null>(null)
   const [imageCounts, setImageCounts] = useState<Record<string, number>>(() =>
     Object.fromEntries(jobs.map((j) => [j.id, j.imageCount]))
   )
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
+  const videoInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
+  const [videoCounts, setVideoCounts] = useState<Record<string, number>>(() =>
+    Object.fromEntries(jobs.map((j) => [j.id, j.videoCount]))
+  )
 
   // Barcode scanner state
   const [scannerOpen, setScannerOpen] = useState(false)
@@ -156,7 +162,7 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
 
   const handleFileSelect = async (jobId: string, files: FileList | null) => {
     if (!files || files.length === 0) return
-    setUploading(jobId)
+    setUploading({ jobId, type: 'photo' })
 
     let uploaded = 0
     for (let i = 0; i < files.length; i++) {
@@ -211,6 +217,62 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
     if (input) input.value = ''
   }
 
+  const handleVideoSelect = async (jobId: string, files: FileList | null) => {
+    if (!files || files.length === 0) return
+    setUploading({ jobId, type: 'video' })
+
+    let uploaded = 0
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      if (!file.type.startsWith('video/')) continue
+
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const res = await fetch('/api/protected/upload/service-files', {
+          method: 'POST',
+          body: formData,
+        })
+
+        if (!res.ok) {
+          const err = await res.json()
+          toast.error(err.error || t('uploadFailed'))
+          continue
+        }
+
+        const data = await res.json()
+        await addServiceAttachment({
+          serviceRecordId: jobId,
+          attachment: {
+            fileName: data.fileName,
+            fileUrl: data.url,
+            fileType: data.fileType,
+            fileSize: data.fileSize,
+            category: 'video',
+            includeInInvoice: false,
+          },
+        })
+        uploaded++
+      } catch {
+        toast.error(t('uploadFailed'))
+      }
+    }
+
+    if (uploaded > 0) {
+      toast.success(t('videoUploadSuccess', { count: uploaded }))
+      setVideoCounts((prev) => ({
+        ...prev,
+        [jobId]: (prev[jobId] || 0) + uploaded,
+      }))
+      router.refresh()
+    }
+
+    setUploading(null)
+    const vinput = videoInputRefs.current[jobId]
+    if (vinput) vinput.value = ''
+  }
+
   return (
     <>
       <Card className="border-0 shadow-sm">
@@ -226,8 +288,11 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
             {jobs.map((job) => {
               const StatusIcon = STATUS_ICON[job.status] || Wrench
               const statusColor = STATUS_COLOR[job.status] || 'bg-muted text-muted-foreground'
-              const isUploading = uploading === job.id
+              const isUploadingPhoto = uploading?.jobId === job.id && uploading.type === 'photo'
+              const isUploadingVideo = uploading?.jobId === job.id && uploading.type === 'video'
+              const isUploading = uploading?.jobId === job.id
               const imgCount = imageCounts[job.id] || 0
+              const vidCount = videoCounts[job.id] || 0
               const prtCount = partCounts[job.id] || 0
 
               return (
@@ -259,6 +324,12 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                             {imgCount}
                           </span>
                         )}
+                        {vidCount > 0 && (
+                          <span className="flex items-center gap-0.5">
+                            <Video className="h-3 w-3" />
+                            {vidCount}
+                          </span>
+                        )}
                         {prtCount > 0 && (
                           <span className="flex items-center gap-0.5">
                             <Package className="h-3 w-3" />
@@ -273,12 +344,26 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                         disabled={isUploading}
                         onClick={() => handleCameraClick(job.id)}
                       >
-                        {isUploading ? (
+                        {isUploadingPhoto ? (
                           <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
                         ) : (
                           <Camera className="mr-1.5 h-4 w-4" />
                         )}
                         {t('addPhoto')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9"
+                        disabled={isUploading}
+                        onClick={() => videoInputRefs.current[job.id]?.click()}
+                      >
+                        {isUploadingVideo ? (
+                          <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                        ) : (
+                          <Video className="mr-1.5 h-4 w-4" />
+                        )}
+                        {t('addVideo')}
                       </Button>
                       <Button
                         variant="outline"
@@ -298,6 +383,12 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                           {imgCount}
                         </span>
                       )}
+                      {vidCount > 0 && (
+                        <span className="flex items-center gap-0.5">
+                          <Video className="h-3 w-3" />
+                          {vidCount}
+                        </span>
+                      )}
                       {prtCount > 0 && (
                         <span className="flex items-center gap-0.5">
                           <Package className="h-3 w-3" />
@@ -307,30 +398,46 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                     </div>
                   </div>
                   {/* Mobile: action buttons on second line */}
-                  <div className="flex gap-2 mt-2 sm:hidden">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 h-9"
-                      disabled={isUploading}
-                      onClick={() => handleCameraClick(job.id)}
-                    >
-                      {isUploading ? (
-                        <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
-                      ) : (
-                        <Camera className="mr-1.5 h-4 w-4" />
-                      )}
-                      {t('takePhoto')}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 h-9"
-                      onClick={() => handleScanClick(job.id)}
-                    >
-                      <ScanBarcode className="mr-1.5 h-4 w-4" />
-                      {t('scanPart')}
-                    </Button>
+                  <div className="mt-2 sm:hidden">
+                    <ButtonGroup className="w-full">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 h-9"
+                        disabled={isUploading}
+                        onClick={() => handleCameraClick(job.id)}
+                      >
+                        {isUploadingPhoto ? (
+                          <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Camera className="mr-1 h-3.5 w-3.5" />
+                        )}
+                        {t('photo')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 h-9"
+                        disabled={isUploading}
+                        onClick={() => videoInputRefs.current[job.id]?.click()}
+                      >
+                        {isUploadingVideo ? (
+                          <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Video className="mr-1 h-3.5 w-3.5" />
+                        )}
+                        {t('video')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 h-9"
+                        onClick={() => handleScanClick(job.id)}
+                      >
+                        <ScanBarcode className="mr-1 h-3.5 w-3.5" />
+                        {t('parts')}
+                      </Button>
+                    </ButtonGroup>
                   </div>
                   <input
                     ref={(el) => {
@@ -342,6 +449,16 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                     multiple
                     className="hidden"
                     onChange={(e) => handleFileSelect(job.id, e.target.files)}
+                  />
+                  <input
+                    ref={(el) => {
+                      videoInputRefs.current[job.id] = el
+                    }}
+                    type="file"
+                    accept="video/*"
+                    capture="environment"
+                    className="hidden"
+                    onChange={(e) => handleVideoSelect(job.id, e.target.files)}
                   />
                 </div>
               )
