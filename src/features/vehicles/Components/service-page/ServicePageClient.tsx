@@ -96,6 +96,14 @@ export function ServicePageClient({
     return invoiceExpired || dueExpired
   }, [initialData.invoiceDate, initialData.invoiceDueDate])
 
+  const formState = useServiceFormState({
+    vehicleId,
+    initialData,
+    defaultTaxRate,
+    currentUserName,
+    record,
+  })
+
   const checkDates = useCallback(async () => {
     if (!areDatesExpired || formState.paymentStatus === 'paid') return true
     // Show current (expired) dates so user sees what's wrong
@@ -105,15 +113,7 @@ export function ServicePageClient({
     return new Promise<boolean>((resolve) => {
       dateCheckResolveRef.current = resolve
     })
-  }, [areDatesExpired, defaultDueDays])
-
-  const formState = useServiceFormState({
-    vehicleId,
-    initialData,
-    defaultTaxRate,
-    currentUserName,
-    record,
-  })
+  }, [areDatesExpired, formState.paymentStatus, initialData.invoiceDate, initialData.invoiceDueDate])
 
   const handleBarcodeScan = useCallback(async (barcode: string) => {
     const result = await lookupPartByBarcode(barcode)

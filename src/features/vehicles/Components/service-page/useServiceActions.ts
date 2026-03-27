@@ -228,6 +228,7 @@ export function useServiceActions({
     const result = await toggleManuallyPaid(record.id)
     setPaymentLoading(false)
     if (result.success) {
+      formState.setLocalManuallyPaid(!!result.data?.manuallyPaid)
       toast.success(result.data?.manuallyPaid ? t('payments.markedPaid') : t('payments.markedUnpaid'))
       router.refresh()
       if (result.data?.manuallyPaid && record.vehicle.customer) {

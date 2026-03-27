@@ -14,8 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { CalendarIcon, Check, Loader2, X } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { CalendarIcon, Check, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { InitialData } from './form-types'
 
@@ -66,20 +65,18 @@ export function InvoiceDetailsSection({
         <h3 className="text-sm font-semibold">{t('invoiceDetails')}</h3>
         <Button
           type="button"
-          variant={paymentStatus === 'paid' ? 'outline' : 'default'}
+          variant="outline"
           size="sm"
-          className="h-7 text-xs"
+          className={cn('h-7 text-xs', paymentStatus === 'paid' && 'border-green-300 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800')}
           onClick={onTogglePaid}
           disabled={paymentLoading}
         >
           {paymentLoading ? (
             <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-          ) : paymentStatus === 'paid' ? (
-            <X className="mr-1 h-3 w-3" />
           ) : (
             <Check className="mr-1 h-3 w-3" />
           )}
-          {paymentStatus === 'paid' ? t('markUnpaid') : t('markPaid')}
+          {paymentStatus === 'paid' ? t('paid') : t('markPaid')}
         </Button>
       </div>
 
