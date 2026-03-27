@@ -72,10 +72,23 @@ export function ServicePageClient({
   aiEnabled = false,
   defaultDueDays = 0,
   statusReports = [],
+  initialTab,
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<ServiceTab>('details')
+
+  const validTabs: ServiceTab[] = ['details', 'images', 'video', 'documents', 'statusReports']
+  const resolvedInitialTab = initialTab && validTabs.includes(initialTab as ServiceTab) ? (initialTab as ServiceTab) : 'details'
+
+  const [activeTab, setActiveTab] = useState<ServiceTab>(resolvedInitialTab)
+
+  const handleTabChange = useCallback((tab: ServiceTab) => {
+    setActiveTab(tab)
+    const url = new URL(window.location.href)
+    if (tab === 'details') url.searchParams.delete('tab')
+    else url.searchParams.set('tab', tab)
+    window.history.replaceState(null, '', url.pathname + url.search)
+  }, [])
 
   // Date check dialog state
   const [showDateCheck, setShowDateCheck] = useState(false)
@@ -166,7 +179,7 @@ export function ServicePageClient({
         status={formState.status}
         paymentStatus={formState.paymentStatus}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
         tabCounts={{
           images: imageAttachmentsForManager.length,
           video: videoAttachments.length,
@@ -372,7 +385,7 @@ export function ServicePageClient({
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal h-9 text-sm">
                     <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                    {formatDate(pendingInvoiceDate)}
+                    <span suppressHydrationWarning>{formatDate(pendingInvoiceDate)}</span>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -387,7 +400,7 @@ export function ServicePageClient({
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start text-left font-normal h-9 text-sm">
                     <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                    {formatDate(pendingDueDate)}
+                    <span suppressHydrationWarning>{formatDate(pendingDueDate)}</span>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

@@ -71,7 +71,17 @@
     "created": "Criado",
     "delete": "Excluir",
     "deleteConfirm": "Tem certeza de que deseja excluir este relatório de status?",
-    "deleted": "Relatório de status excluído"
+    "deleted": "Relatório de status excluído",
+    "deleteTitle": "Excluir relatório de status",
+    "deleteFailed": "Falha ao excluir relatório de status",
+    "cancel": "Cancelar",
+  "feedback": "Comentário",
+  "hasComment": "Recebido",
+  "noFeedback": "Sem comentários ainda",
+  "sentAt": "Enviado",
+  "sentVia": "Enviado por",
+  "messageLabel": "Mensagem",
+  "videoLabel": "Vídeo"
   },
   "notify": {
     "defaultMessage": "Olá {name}, temos uma atualização de status do seu {vehicle}. Veja aqui: {url}",

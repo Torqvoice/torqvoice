@@ -43,14 +43,12 @@ export function StatusReportView({
   const vehicleLabel = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
 
   async function handleSubmitFeedback() {
-    if (!feedback.trim()) return;
+    if (!feedback.trim() || submitting) return;
     setSubmitting(true);
     try {
       await submitStatusReportFeedback({ token, feedback: feedback.trim() });
       setSubmitted(true);
     } catch {
-      // Allow retry on failure
-    } finally {
       setSubmitting(false);
     }
   }
@@ -146,12 +144,7 @@ export function StatusReportView({
             {submitted ? (
               <div className="flex items-start gap-3 rounded-lg bg-green-50 p-4">
                 <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
-                <div>
-                  <p className="font-medium text-green-800">Thank you for your feedback!</p>
-                  <p className="mt-1 text-sm text-green-700 whitespace-pre-wrap">
-                    {report.customerFeedback || feedback}
-                  </p>
-                </div>
+                <p className="font-medium text-green-800">Thank you for your feedback!</p>
               </div>
             ) : (
               <div className="space-y-3">

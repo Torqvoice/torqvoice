@@ -71,7 +71,17 @@
     "created": "Creado",
     "delete": "Eliminar",
     "deleteConfirm": "¿Está seguro de que desea eliminar este informe de estado?",
-    "deleted": "Informe de estado eliminado"
+    "deleted": "Informe de estado eliminado",
+    "deleteTitle": "Eliminar informe de estado",
+    "deleteFailed": "No se pudo eliminar el informe de estado",
+    "cancel": "Cancelar",
+  "feedback": "Comentario",
+  "hasComment": "Recibido",
+  "noFeedback": "Sin comentarios aún",
+  "sentAt": "Enviado",
+  "sentVia": "Enviado por",
+  "messageLabel": "Mensaje",
+  "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Hola {name}, tenemos una actualización de estado de su {vehicle}. Véala aquí: {url}",

@@ -71,7 +71,17 @@
     "created": "Utworzono",
     "delete": "Usuń",
     "deleteConfirm": "Czy na pewno chcesz usunąć ten raport statusu?",
-    "deleted": "Raport statusu usunięty"
+    "deleted": "Raport statusu usunięty",
+    "deleteTitle": "Usuń raport statusu",
+    "deleteFailed": "Nie udało się usunąć raportu statusu",
+    "cancel": "Anuluj",
+  "feedback": "Komentarz",
+  "hasComment": "Otrzymano",
+  "noFeedback": "Brak komentarzy",
+  "sentAt": "Wysłano",
+  "sentVia": "Wysłano przez",
+  "messageLabel": "Wiadomość",
+  "videoLabel": "Wideo"
   },
   "notify": {
     "defaultMessage": "Witaj {name}, mamy aktualizację statusu Twojego {vehicle}. Zobacz tutaj: {url}",

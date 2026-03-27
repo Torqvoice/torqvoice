@@ -71,7 +71,17 @@
     "created": "Created",
     "delete": "Delete",
     "deleteConfirm": "Are you sure you want to delete this status report?",
-    "deleted": "Status report deleted"
+    "deleted": "Status report deleted",
+    "deleteTitle": "Delete Status Report",
+    "deleteFailed": "Failed to delete status report",
+    "cancel": "Cancel",
+  "feedback": "Feedback",
+  "hasComment": "Received",
+  "noFeedback": "No feedback yet",
+  "sentAt": "Sent",
+  "sentVia": "Sent via",
+  "messageLabel": "Message",
+  "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Hi {name}, we have a status update on your {vehicle}. View it here: {url}",

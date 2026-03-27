@@ -54,7 +54,8 @@ export interface ServicePageClientProps {
   telegramEnabled?: boolean
   aiEnabled?: boolean
   defaultDueDays?: number
-  statusReports?: { id: string; title: string | null; status: string; videoUrl: string | null; createdAt: string; publicToken: string; expiresAt: string | null }[]
+  statusReports?: { id: string; title: string | null; message: string | null; status: string; videoUrl: string | null; createdAt: string; publicToken: string; expiresAt: string | null; customerFeedback: string | null; feedbackAt: string | null; sentVia: string | null; sentAt: string | null }[]
+  initialTab?: string
 }
 
 export type { ServicePartInput, ServiceLaborInput, ServiceDetail, InitialData, InventoryPartOption, LaborPresetOption }

@@ -19,11 +19,16 @@ export async function getStatusReportsForService(serviceRecordId: string) {
         select: {
           id: true,
           title: true,
+          message: true,
           status: true,
           videoUrl: true,
           createdAt: true,
           publicToken: true,
           expiresAt: true,
+          customerFeedback: true,
+          feedbackAt: true,
+          sentVia: true,
+          sentAt: true,
         },
         orderBy: { createdAt: "desc" },
       });

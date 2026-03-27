@@ -71,7 +71,17 @@
     "created": "Opprettet",
     "delete": "Slett",
     "deleteConfirm": "Er du sikker på at du vil slette denne statusrapporten?",
-    "deleted": "Statusrapport slettet"
+    "deleted": "Statusrapport slettet",
+    "deleteTitle": "Slett statusrapport",
+    "deleteFailed": "Kunne ikke slette statusrapport",
+    "cancel": "Avbryt",
+  "feedback": "Tilbakemelding",
+  "hasComment": "Mottatt",
+  "noFeedback": "Ingen tilbakemelding ennå",
+  "sentAt": "Sendt",
+  "sentVia": "Sendt via",
+  "messageLabel": "Melding",
+  "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Hei {name}, vi har en statusoppdatering på din {vehicle}. Se den her: {url}",

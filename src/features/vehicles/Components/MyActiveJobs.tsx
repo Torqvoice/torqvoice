@@ -40,6 +40,9 @@ import type { MyActiveJob } from '@/features/vehicles/Actions/getMyActiveJobs'
 
 interface MyActiveJobsProps {
   jobs: MyActiveJob[]
+  smsEnabled: boolean
+  emailEnabled: boolean
+  telegramEnabled: boolean
 }
 
 const STATUS_ICON: Record<string, typeof Wrench> = {
@@ -54,7 +57,7 @@ const STATUS_COLOR: Record<string, string> = {
   'waiting-parts': 'bg-orange-500/10 text-orange-600',
 }
 
-export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
+export function MyActiveJobs({ jobs, smsEnabled, emailEnabled, telegramEnabled }: MyActiveJobsProps) {
   const t = useTranslations('dashboard.myJobs')
   const router = useRouter()
   const [uploading, setUploading] = useState<{ jobId: string; type: 'photo' | 'video' } | null>(null)
@@ -584,9 +587,9 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
             serviceRecordId={statusReportJobId}
             vehicleName={`${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}`}
             customer={job.customer}
-            smsEnabled={false}
-            emailEnabled={true}
-            telegramEnabled={false}
+            smsEnabled={smsEnabled}
+            emailEnabled={emailEnabled}
+            telegramEnabled={telegramEnabled}
             onCreated={(reportId) => {
               const currentJobId = statusReportJobId
               setStatusReportJobId(null)
@@ -608,9 +611,9 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
             onOpenChange={(open) => { if (!open) { setSendReportId(null); setSendReportJobId(null) } }}
             reportId={sendReportId}
             customer={job.customer}
-            smsEnabled={false}
-            emailEnabled={true}
-            telegramEnabled={false}
+            smsEnabled={smsEnabled}
+            emailEnabled={emailEnabled}
+            telegramEnabled={telegramEnabled}
           />
         )
       })()}

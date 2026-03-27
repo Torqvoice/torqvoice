@@ -64,7 +64,7 @@ export default async function DashboardPage() {
     <>
       <PageHeader />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <MyActiveJobs jobs={myJobs} />
+        <MyActiveJobs jobs={myJobs} smsEnabled={features?.sms ?? false} emailEnabled={features?.smtp ?? false} telegramEnabled={features?.telegram ?? false} />
         <DashboardClient
           stats={result.data}
           currencyCode={currencyCode}

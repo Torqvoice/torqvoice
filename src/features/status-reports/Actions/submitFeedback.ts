@@ -30,11 +30,12 @@ export async function submitStatusReportFeedback(input: unknown) {
 
   if (!report) throw new Error("Status report not found");
   if (report.expiresAt && report.expiresAt < new Date()) throw new Error("This status report has expired");
+  if (report.customerFeedback) throw new Error("Feedback has already been submitted");
 
   await db.statusReport.update({
     where: { id: report.id },
     data: {
-      customerFeedback: data.feedback,
+      customerFeedback: data.feedback.slice(0, 2000),
       feedbackAt: new Date(),
     },
   });
@@ -51,7 +52,7 @@ export async function submitStatusReportFeedback(input: unknown) {
     message: `${customerName} responded to the status report for ${vehicleName}: "${data.feedback.length > 100 ? data.feedback.slice(0, 100) + "..." : data.feedback}"`,
     entityType: "ServiceRecord",
     entityId: report.serviceRecord.id,
-    entityUrl: `/vehicles/${report.serviceRecord.vehicleId}/service/${report.serviceRecord.id}`,
+    entityUrl: `/vehicles/${report.serviceRecord.vehicleId}/service/${report.serviceRecord.id}?tab=statusReports`,
   });
 
   return { success: true };

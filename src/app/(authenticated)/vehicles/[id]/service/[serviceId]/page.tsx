@@ -16,10 +16,14 @@ import { getTranslations } from "next-intl/server";
 
 export default async function ServiceDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string; serviceId: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { id, serviceId } = await params;
+  const sp = await searchParams;
+  const initialTab = typeof sp.tab === "string" ? sp.tab : undefined;
 
   const [result, settingsResult, inventoryResult, techniciansResult, presetsResult, authContext, session, orgMembersResult, statusReportsResult] =
     await Promise.all([
@@ -178,6 +182,7 @@ export default async function ServiceDetailPage({
         record={result.data}
         vehicleId={id}
         organizationId={organizationId}
+        initialTab={initialTab}
         currencyCode={currencyCode}
         unitSystem={unitSystem}
         defaultTaxRate={defaultTaxRate}
@@ -201,7 +206,7 @@ export default async function ServiceDetailPage({
         telegramEnabled={features?.telegram ?? false}
         aiEnabled={aiEnabled}
         defaultDueDays={defaultDueDays}
-        statusReports={(statusReportsResult.success && statusReportsResult.data ? statusReportsResult.data : []).map(r => ({ ...r, createdAt: r.createdAt.toISOString(), expiresAt: r.expiresAt?.toISOString() || null }))}
+        statusReports={(statusReportsResult.success && statusReportsResult.data ? statusReportsResult.data : []).map(r => ({ ...r, createdAt: r.createdAt.toISOString(), expiresAt: r.expiresAt?.toISOString() || null, feedbackAt: r.feedbackAt?.toISOString() || null, sentAt: r.sentAt?.toISOString() || null }))}
       />
     </div>
   );
