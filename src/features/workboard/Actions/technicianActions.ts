@@ -174,6 +174,38 @@ export async function deleteTechnician(id: string) {
   );
 }
 
+export async function assignTechToUnassignedWorkOrders(technicianId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const technician = await db.technician.findFirst({
+        where: { id: technicianId, organizationId, isActive: true },
+        select: { id: true, name: true },
+      });
+
+      if (!technician) throw new Error("Technician not found");
+
+      const result = await db.serviceRecord.updateMany({
+        where: {
+          vehicle: { organizationId },
+          technicianId: null,
+        },
+        data: {
+          technicianId: technician.id,
+          techName: technician.name,
+        },
+      });
+
+      revalidatePath("/work-board");
+      return { updated: result.count };
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+      ],
+    },
+  );
+}
+
 export async function getOrgMembers() {
   return withAuth(async ({ organizationId }) => {
     const members = await db.organizationMember.findMany({

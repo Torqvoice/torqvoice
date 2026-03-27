@@ -312,6 +312,7 @@
     "splitCreated": "Работа занимает несколько дней — создано продолжение на следующий день",
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
-    "readMore": "Read More"
+    "readMore": "Подробнее",
+    "setDefaults": "Настройки по умолчанию"
   }
 }
