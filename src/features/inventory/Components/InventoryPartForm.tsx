@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useGlassModal } from "@/components/glass-modal";
-import { createInventoryPart, updateInventoryPart } from "../Actions/inventoryActions";
+import { createInventoryPart, updateInventoryPart, deleteOrphanedUploads } from "../Actions/inventoryActions";
 import { aiAnalyzePartImage } from "../Actions/aiAnalyzePartImage";
 import { Camera, ExternalLink, ImageIcon, Loader2, Plus, Sparkles, Upload, X } from "lucide-react";
 import { compressImage } from "@/lib/compress-image";
@@ -66,6 +66,21 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const uploadedUrlsRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    if (open) {
+      uploadedUrlsRef.current = [];
+      setSupplierUrl(part?.supplierUrl ?? "");
+      if (part?.gallery && part.gallery.length > 0) {
+        setGallery(part.gallery);
+      } else if (part?.imageUrl) {
+        setGallery([{ url: part.imageUrl, sortOrder: 0 }]);
+      } else {
+        setGallery([]);
+      }
+    }
+  }, [open]);
 
   const uploadFile = useCallback(async (file: File) => {
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
@@ -94,6 +109,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
         return;
       }
       const { url } = await res.json();
+      uploadedUrlsRef.current.push(url);
       setGallery((prev) => [...prev, { url, sortOrder: prev.length }]);
       toast.success(t('form.imageUploaded'), { id: toastId });
     } catch {
@@ -279,6 +295,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
       : await createInventoryPart(data);
 
     if (result.success) {
+      uploadedUrlsRef.current = [];
       onOpenChange(false);
       router.refresh();
     } else {
@@ -289,15 +306,12 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
   };
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (isOpen) {
-      setSupplierUrl(part?.supplierUrl ?? "");
-      if (part?.gallery && part.gallery.length > 0) {
-        setGallery(part.gallery);
-      } else if (part?.imageUrl) {
-        setGallery([{ url: part.imageUrl, sortOrder: 0 }]);
-      } else {
-        setGallery([]);
+    if (!isOpen) {
+      // Clean up all images uploaded during this session (they won't be saved)
+      if (uploadedUrlsRef.current.length > 0) {
+        deleteOrphanedUploads(uploadedUrlsRef.current);
       }
+      uploadedUrlsRef.current = [];
     }
     onOpenChange(isOpen);
   };
@@ -631,7 +645,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => handleOpenChange(false)}
             >
               {t('form.cancel')}
             </Button>

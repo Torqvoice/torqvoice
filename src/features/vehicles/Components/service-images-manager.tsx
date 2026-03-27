@@ -12,6 +12,7 @@ import { compressImage } from "@/lib/compress-image";
 import { addServiceAttachment } from "@/features/vehicles/Actions/addServiceAttachment";
 import { updateServiceAttachment } from "@/features/vehicles/Actions/updateServiceAttachment";
 import { deleteServiceAttachment } from "@/features/vehicles/Actions/serviceActions";
+import { ImageCarousel } from "@/features/vehicles/Components/service-detail/ImageCarousel";
 
 interface Attachment {
   id: string;
@@ -39,6 +40,7 @@ export function ServiceImagesManager({
   const [images, setImages] = useState<Attachment[]>(initialImages);
   const atLimit = maxImages !== undefined && images.length >= maxImages;
   const [uploading, setUploading] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = useCallback(
@@ -251,7 +253,8 @@ export function ServiceImagesManager({
                   <img
                     src={file.fileUrl}
                     alt={file.description || file.fileName}
-                    className="aspect-square w-full object-cover"
+                    className="aspect-square w-full cursor-pointer object-cover"
+                    onClick={() => setCarouselIndex(images.indexOf(file))}
                   />
                   <Button
                     type="button"
@@ -291,6 +294,16 @@ export function ServiceImagesManager({
           </div>
         )}
       </CardContent>
+
+      <ImageCarousel
+        images={images.map((img) => ({
+          ...img,
+          createdAt: new Date(),
+        }))}
+        currentIndex={carouselIndex}
+        onClose={() => setCarouselIndex(null)}
+        onChangeIndex={setCarouselIndex}
+      />
     </Card>
   );
 }
