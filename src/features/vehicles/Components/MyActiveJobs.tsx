@@ -268,26 +268,26 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                       </div>
                       <Button
                         variant="outline"
-                        size="icon"
-                        className="h-9 w-9"
+                        size="sm"
+                        className="h-9"
                         disabled={isUploading}
                         onClick={() => handleCameraClick(job.id)}
-                        title={t('takePhoto')}
                       >
                         {isUploading ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
                         ) : (
-                          <Camera className="h-4 w-4" />
+                          <Camera className="mr-1.5 h-4 w-4" />
                         )}
+                        {t('addPhoto')}
                       </Button>
                       <Button
                         variant="outline"
-                        size="icon"
-                        className="h-9 w-9"
+                        size="sm"
+                        className="h-9"
                         onClick={() => handleScanClick(job.id)}
-                        title={t('scanPart')}
                       >
-                        <ScanBarcode className="h-4 w-4" />
+                        <ScanBarcode className="mr-1.5 h-4 w-4" />
+                        {t('scanPart')}
                       </Button>
                     </div>
                     {/* Mobile: counters only */}
