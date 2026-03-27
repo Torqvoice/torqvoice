@@ -1,15 +1,17 @@
 {
   "title": "Rapporten & Analyses",
   "tabs": {
+    "financial": "Financiële Rapporten",
     "revenue": "Omzet",
+    "pastDueInvoices": "Achterstallige Facturen",
+    "tax": "Belasting",
     "services": "Diensten",
     "customers": "Klanten",
     "inventory": "Voorraad",
     "technicians": "Technici",
     "parts": "Onderdelen",
     "jobAnalytics": "Opdrachtanalyse",
-    "retention": "Klantbehoud",
-    "tax": "Belasting"
+    "retention": "Klantbehoud"
   },
   "dateRange": {
     "to": "tot"
@@ -41,6 +43,33 @@
       "partsCost": "Onderdeelkosten",
       "netProfit": "Nettowinst",
       "count": "Aantal"
+    }
+  },
+  "pastDueInvoices": {
+    "totalPastDue": "Totaal achterstallig",
+    "totalAmountDue": "Totaal verschuldigd bedrag",
+    "over30Days": "Meer dan 30 dagen",
+    "over60Days": "Meer dan 60 dagen",
+    "over90Days": "Meer dan 90 dagen",
+    "totalPastDueDesc": "Facturen met onbetaald saldo na vervaldatum",
+    "totalAmountDueDesc": "Totaal openstaand bedrag van alle achterstallige facturen",
+    "filterByAge": "Filteren op ouderdom",
+    "allPastDue": "Alle achterstallige",
+    "30plus": "30+ dagen",
+    "60plus": "60+ dagen",
+    "90plus": "90+ dagen",
+    "pastDueInvoicesList": "Achterstallige Facturen",
+    "noInvoices": "Geen achterstallige facturen gevonden.",
+    "tableHeaders": {
+      "customer": "Klant",
+      "company": "Bedrijf",
+      "invoiceNumber": "Factuurnr.",
+      "vehicle": "Voertuig",
+      "totalAmount": "Totaalbedrag",
+      "amountPaid": "Betaald Bedrag",
+      "amountDue": "Verschuldigd Bedrag",
+      "dueDate": "Vervaldatum",
+      "daysPastDue": "Dagen Achterstallig"
     }
   },
   "services": {
@@ -203,7 +232,15 @@
     "avgDaysBetweenVisits": "Gem. Dagen Tussen Bezoeken",
     "taxCollected": "Geïnde Belasting",
     "taxableAmount": "Belastbaar Bedrag",
-    "invoiceCount": "Aantal Facturen"
+    "invoiceCount": "Aantal Facturen",
+    "invoiceNumber": "Factuurnr.",
+    "totalAmount": "Totaalbedrag",
+    "amountPaid": "Betaald Bedrag",
+    "amountDue": "Verschuldigd Bedrag",
+    "dueDate": "Vervaldatum",
+    "daysPastDue": "Dagen Achterstallig",
+    "partsCost": "Onderdeelkosten",
+    "netProfit": "Nettowinst"
   },
   "empty": "Nog geen gegevens geladen. Klik op Vernieuwen om het rapport te laden."
 }

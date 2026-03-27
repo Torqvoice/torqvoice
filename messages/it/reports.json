@@ -1,15 +1,17 @@
 {
   "title": "Report e Analisi",
   "tabs": {
+    "financial": "Report Finanziari",
     "revenue": "Ricavi",
+    "pastDueInvoices": "Fatture Scadute",
+    "tax": "Tasse",
     "services": "Servizi",
     "customers": "Clienti",
     "inventory": "Inventario",
     "technicians": "Tecnici",
     "parts": "Ricambi",
     "jobAnalytics": "Analisi Lavori",
-    "retention": "Fidelizzazione",
-    "tax": "Tasse"
+    "retention": "Fidelizzazione"
   },
   "dateRange": {
     "to": "a"
@@ -41,6 +43,33 @@
       "partsCost": "Costo ricambi",
       "netProfit": "Utile netto",
       "count": "Conteggio"
+    }
+  },
+  "pastDueInvoices": {
+    "totalPastDue": "Totale scadute",
+    "totalAmountDue": "Importo totale dovuto",
+    "over30Days": "Oltre 30 giorni",
+    "over60Days": "Oltre 60 giorni",
+    "over90Days": "Oltre 90 giorni",
+    "totalPastDueDesc": "Fatture con saldo non pagato oltre la data di scadenza",
+    "totalAmountDueDesc": "Importo totale in sospeso di tutte le fatture scadute",
+    "filterByAge": "Filtra per anzianità",
+    "allPastDue": "Tutte le scadute",
+    "30plus": "30+ giorni",
+    "60plus": "60+ giorni",
+    "90plus": "90+ giorni",
+    "pastDueInvoicesList": "Fatture Scadute",
+    "noInvoices": "Nessuna fattura scaduta trovata.",
+    "tableHeaders": {
+      "customer": "Cliente",
+      "company": "Azienda",
+      "invoiceNumber": "N. Fattura",
+      "vehicle": "Veicolo",
+      "totalAmount": "Importo Totale",
+      "amountPaid": "Importo Pagato",
+      "amountDue": "Importo Dovuto",
+      "dueDate": "Data di Scadenza",
+      "daysPastDue": "Giorni di Ritardo"
     }
   },
   "services": {
@@ -203,7 +232,15 @@
     "avgDaysBetweenVisits": "Media Giorni Tra Visite",
     "taxCollected": "Tassa Riscossa",
     "taxableAmount": "Importo Tassabile",
-    "invoiceCount": "Numero Fatture"
+    "invoiceCount": "Numero Fatture",
+    "invoiceNumber": "N. Fattura",
+    "totalAmount": "Importo Totale",
+    "amountPaid": "Importo Pagato",
+    "amountDue": "Importo Dovuto",
+    "dueDate": "Data di Scadenza",
+    "daysPastDue": "Giorni di Ritardo",
+    "partsCost": "Costo ricambi",
+    "netProfit": "Utile netto"
   },
   "empty": "Nessun dato caricato. Clicca su Aggiorna per caricare il report."
 }

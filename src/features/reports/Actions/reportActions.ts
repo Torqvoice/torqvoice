@@ -492,6 +492,100 @@ export async function getInventoryReport() {
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] });
 }
 
+export async function getPastDueInvoicesReport() {
+  return withAuth(async ({ organizationId }) => {
+    const now = new Date();
+
+    const records = await db.serviceRecord.findMany({
+      where: {
+        vehicle: { organizationId },
+        invoiceDueDate: { lt: now },
+        status: { not: "cancelled" },
+      },
+      select: {
+        id: true,
+        invoiceNumber: true,
+        invoiceDueDate: true,
+        totalAmount: true,
+        cost: true,
+        manuallyPaid: true,
+        payments: { select: { amount: true } },
+        vehicle: {
+          select: {
+            year: true,
+            make: true,
+            model: true,
+            customer: { select: { name: true, company: true } },
+          },
+        },
+      },
+      orderBy: { invoiceDueDate: "asc" },
+    });
+
+    const invoices: {
+      id: string;
+      invoiceNumber: string | null;
+      customerName: string;
+      customerCompany: string | null;
+      vehicleInfo: string;
+      totalAmount: number;
+      amountPaid: number;
+      amountDue: number;
+      dueDate: string;
+      daysPastDue: number;
+    }[] = [];
+
+    let totalAmountDue = 0;
+    let over30 = 0;
+    let over60 = 0;
+    let over90 = 0;
+
+    for (const r of records) {
+      const total = r.totalAmount > 0 ? r.totalAmount : r.cost;
+      const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0);
+      const amountDue = total - paid;
+
+      if (amountDue <= 0) continue;
+
+      const dueDate = r.invoiceDueDate!;
+      const daysPastDue = Math.floor((now.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+
+      const vehicleParts = [r.vehicle.year, r.vehicle.make, r.vehicle.model].filter(Boolean);
+      const vehicleInfo = vehicleParts.length > 0 ? vehicleParts.join(" ") : "N/A";
+
+      invoices.push({
+        id: r.id,
+        invoiceNumber: r.invoiceNumber,
+        customerName: r.vehicle.customer?.name ?? "Unknown",
+        customerCompany: r.vehicle.customer?.company ?? null,
+        vehicleInfo,
+        totalAmount: total,
+        amountPaid: paid,
+        amountDue,
+        dueDate: dueDate.toISOString().split("T")[0],
+        daysPastDue,
+      });
+
+      totalAmountDue += amountDue;
+      if (daysPastDue > 30) over30++;
+      if (daysPastDue > 60) over60++;
+      if (daysPastDue > 90) over90++;
+    }
+
+    return {
+      invoices,
+      summary: {
+        totalPastDue: invoices.length,
+        totalAmountDue,
+        totalInvoices: invoices.length,
+        over30,
+        over60,
+        over90,
+      },
+    };
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] });
+}
+
 export async function getTaxReport(params: {
   startDate?: string;
   endDate?: string;

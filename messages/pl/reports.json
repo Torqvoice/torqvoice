@@ -1,15 +1,17 @@
 {
   "title": "Raporty i Analizy",
   "tabs": {
+    "financial": "Raporty Finansowe",
     "revenue": "Przychody",
+    "pastDueInvoices": "Przeterminowane Faktury",
+    "tax": "Podatki",
     "services": "Usługi",
     "customers": "Klienci",
     "inventory": "Magazyn",
     "technicians": "Technicy",
     "parts": "Części",
     "jobAnalytics": "Analiza Zleceń",
-    "retention": "Utrzymanie Klientów",
-    "tax": "Podatki"
+    "retention": "Utrzymanie Klientów"
   },
   "dateRange": {
     "to": "do"
@@ -41,6 +43,33 @@
       "partsCost": "Koszt części",
       "netProfit": "Zysk netto",
       "count": "Ilość"
+    }
+  },
+  "pastDueInvoices": {
+    "totalPastDue": "Łącznie przeterminowanych",
+    "totalAmountDue": "Łączna kwota zaległa",
+    "over30Days": "Ponad 30 dni",
+    "over60Days": "Ponad 60 dni",
+    "over90Days": "Ponad 90 dni",
+    "totalPastDueDesc": "Faktury z nieopłaconym saldem po terminie płatności",
+    "totalAmountDueDesc": "Łączna zaległa kwota ze wszystkich przeterminowanych faktur",
+    "filterByAge": "Filtruj wg okresu",
+    "allPastDue": "Wszystkie przeterminowane",
+    "30plus": "30+ dni",
+    "60plus": "60+ dni",
+    "90plus": "90+ dni",
+    "pastDueInvoicesList": "Przeterminowane Faktury",
+    "noInvoices": "Nie znaleziono przeterminowanych faktur.",
+    "tableHeaders": {
+      "customer": "Klient",
+      "company": "Firma",
+      "invoiceNumber": "Nr Faktury",
+      "vehicle": "Pojazd",
+      "totalAmount": "Kwota Całkowita",
+      "amountPaid": "Kwota Zapłacona",
+      "amountDue": "Kwota Zaległa",
+      "dueDate": "Termin Płatności",
+      "daysPastDue": "Dni Przeterminowania"
     }
   },
   "services": {
@@ -203,7 +232,15 @@
     "avgDaysBetweenVisits": "Śr. Dni Między Wizytami",
     "taxCollected": "Zebrany Podatek",
     "taxableAmount": "Kwota Opodatkowana",
-    "invoiceCount": "Liczba Faktur"
+    "invoiceCount": "Liczba Faktur",
+    "invoiceNumber": "Nr Faktury",
+    "totalAmount": "Kwota Całkowita",
+    "amountPaid": "Kwota Zapłacona",
+    "amountDue": "Kwota Zaległa",
+    "dueDate": "Termin Płatności",
+    "daysPastDue": "Dni Przeterminowania",
+    "partsCost": "Koszt części",
+    "netProfit": "Zysk netto"
   },
   "empty": "Nie załadowano jeszcze danych. Kliknij Odśwież, aby załadować raport."
 }

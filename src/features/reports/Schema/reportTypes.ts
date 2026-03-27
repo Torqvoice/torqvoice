@@ -150,6 +150,31 @@ export interface CustomerRetentionReport {
   topReturning: RetentionCustomer[];
 }
 
+export interface PastDueInvoice {
+  id: string;
+  invoiceNumber: string | null;
+  customerName: string;
+  customerCompany: string | null;
+  vehicleInfo: string;
+  totalAmount: number;
+  amountPaid: number;
+  amountDue: number;
+  dueDate: string;
+  daysPastDue: number;
+}
+
+export interface PastDueInvoicesReport {
+  invoices: PastDueInvoice[];
+  summary: {
+    totalPastDue: number;
+    totalAmountDue: number;
+    totalInvoices: number;
+    over30: number;
+    over60: number;
+    over90: number;
+  };
+}
+
 export interface MonthlyTax {
   month: string;
   taxCollected: number;

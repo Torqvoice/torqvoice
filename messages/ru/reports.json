@@ -1,15 +1,17 @@
 {
   "title": "Отчёты и аналитика",
   "tabs": {
+    "financial": "Финансовые отчёты",
     "revenue": "Доход",
+    "pastDueInvoices": "Просроченные счета",
+    "tax": "Налоги",
     "services": "Обслуживания",
     "customers": "Клиенты",
     "inventory": "Склад",
     "technicians": "Механики",
     "parts": "Запчасти",
     "jobAnalytics": "Аналитика работ",
-    "retention": "Удержание",
-    "tax": "Налоги"
+    "retention": "Удержание"
   },
   "dateRange": {
     "to": "до"
@@ -41,6 +43,33 @@
       "partsCost": "Стоимость запчастей",
       "netProfit": "Чистая прибыль",
       "count": "Количество"
+    }
+  },
+  "pastDueInvoices": {
+    "totalPastDue": "Всего просроченных",
+    "totalAmountDue": "Общая сумма задолженности",
+    "over30Days": "Более 30 дней",
+    "over60Days": "Более 60 дней",
+    "over90Days": "Более 90 дней",
+    "totalPastDueDesc": "Счета с неоплаченным остатком после даты оплаты",
+    "totalAmountDueDesc": "Общая сумма задолженности по всем просроченным счетам",
+    "filterByAge": "Фильтр по сроку",
+    "allPastDue": "Все просроченные",
+    "30plus": "30+ дней",
+    "60plus": "60+ дней",
+    "90plus": "90+ дней",
+    "pastDueInvoicesList": "Просроченные Счета",
+    "noInvoices": "Просроченные счета не найдены.",
+    "tableHeaders": {
+      "customer": "Клиент",
+      "company": "Компания",
+      "invoiceNumber": "№ Счёта",
+      "vehicle": "Транспорт",
+      "totalAmount": "Общая сумма",
+      "amountPaid": "Оплачено",
+      "amountDue": "Задолженность",
+      "dueDate": "Срок оплаты",
+      "daysPastDue": "Дней просрочки"
     }
   },
   "services": {
@@ -203,7 +232,15 @@
     "avgDaysBetweenVisits": "Средний интервал между визитами (дни)",
     "taxCollected": "Собрано налога",
     "taxableAmount": "Налогооблагаемая сумма",
-    "invoiceCount": "Количество счетов"
+    "invoiceCount": "Количество счетов",
+    "invoiceNumber": "№ Счёта",
+    "totalAmount": "Общая сумма",
+    "amountPaid": "Оплачено",
+    "amountDue": "Задолженность",
+    "dueDate": "Срок оплаты",
+    "daysPastDue": "Дней просрочки",
+    "partsCost": "Стоимость запчастей",
+    "netProfit": "Чистая прибыль"
   },
   "empty": "Данные ещё не загружены. Нажмите «Обновить» для загрузки отчёта."
 }

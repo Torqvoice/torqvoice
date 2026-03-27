@@ -21,6 +21,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Loader2,
   BarChart3,
   Package,
@@ -34,6 +41,9 @@ import {
   CalendarDays,
   UserCheck,
   Receipt,
+  Clock,
+  ArrowUpDown,
+  Landmark,
 } from "lucide-react";
 import {
   getRevenueReport,
@@ -45,6 +55,7 @@ import {
   getJobAnalyticsReport,
   getCustomerRetentionReport,
   getTaxReport,
+  getPastDueInvoicesReport,
 } from "@/features/reports/Actions/reportActions";
 import { formatCurrency } from "@/lib/format";
 import type {
@@ -57,6 +68,7 @@ import type {
   JobAnalyticsReport,
   CustomerRetentionReport,
   TaxReport,
+  PastDueInvoicesReport,
 } from "@/features/reports/Schema/reportTypes";
 import { RevenueBarChart, RevenueTypeDonut } from "@/features/reports/Components/RevenueCharts";
 import { ServiceStatusChart, ServiceTypeDonut } from "@/features/reports/Components/ServiceCharts";
@@ -76,9 +88,13 @@ import {
   exportJobAnalyticsCsv,
   exportRetentionCsv,
   exportTaxCsv,
+  exportPastDueInvoicesCsv,
 } from "@/features/reports/Components/csv-export";
 
-type ReportTab = "revenue" | "services" | "customers" | "inventory" | "technicians" | "parts" | "job-analytics" | "retention" | "tax";
+type ReportTab = "financial" | "services" | "customers" | "inventory" | "technicians" | "parts" | "job-analytics" | "retention";
+type FinancialSubTab = "revenue" | "past-due-invoices" | "tax";
+type PastDueSortKey = "customerName" | "amountDue" | "daysPastDue";
+type PastDueSortDir = "asc" | "desc";
 
 interface ReportsClientProps {
   currencyCode: string;
@@ -90,10 +106,16 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
   const defaultStart = `${currentYear}-01-01`;
   const defaultEnd = new Date().toISOString().split("T")[0];
 
-  const [activeTab, setActiveTab] = useState<ReportTab>("revenue");
+  const [activeTab, setActiveTab] = useState<ReportTab>("financial");
+  const [financialSubTab, setFinancialSubTab] = useState<FinancialSubTab>("revenue");
   const [startDate, setStartDate] = useState(defaultStart);
   const [endDate, setEndDate] = useState(defaultEnd);
   const [loading, setLoading] = useState(false);
+
+  // Past due invoices state
+  const [pastDueFilter, setPastDueFilter] = useState<string>("all");
+  const [pastDueSortKey, setPastDueSortKey] = useState<PastDueSortKey>("daysPastDue");
+  const [pastDueSortDir, setPastDueSortDir] = useState<PastDueSortDir>("desc");
 
   const [revenueData, setRevenueData] = useState<RevenueReport | null>(null);
   const [serviceData, setServiceData] = useState<ServiceReport | null>(null);
@@ -104,14 +126,17 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
   const [jobAnalyticsData, setJobAnalyticsData] = useState<JobAnalyticsReport | null>(null);
   const [retentionData, setRetentionData] = useState<CustomerRetentionReport | null>(null);
   const [taxData, setTaxData] = useState<TaxReport | null>(null);
+  const [pastDueData, setPastDueData] = useState<PastDueInvoicesReport | null>(null);
 
   const fmtCurrency = useCallback(
     (value: number) => formatCurrency(value, currencyCode),
     [currencyCode],
   );
 
+  type FetchableReport = ReportTab | FinancialSubTab;
+
   const fetchReport = useCallback(
-    async (type: ReportTab) => {
+    async (type: FetchableReport) => {
       setLoading(true);
       try {
         const dateParams = { startDate, endDate };
@@ -119,6 +144,16 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
           case "revenue": {
             const result = await getRevenueReport(dateParams);
             if (result.success && result.data) setRevenueData(result.data);
+            break;
+          }
+          case "past-due-invoices": {
+            const result = await getPastDueInvoicesReport();
+            if (result.success && result.data) setPastDueData(result.data);
+            break;
+          }
+          case "tax": {
+            const result = await getTaxReport(dateParams);
+            if (result.success && result.data) setTaxData(result.data);
             break;
           }
           case "services": {
@@ -156,11 +191,6 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
             if (result.success && result.data) setRetentionData(result.data);
             break;
           }
-          case "tax": {
-            const result = await getTaxReport(dateParams);
-            if (result.success && result.data) setTaxData(result.data);
-            break;
-          }
         }
       } catch (error) {
         console.error("Failed to fetch report:", error);
@@ -179,8 +209,105 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
   const handleTabChange = (value: string) => {
     const tab = value as ReportTab;
     setActiveTab(tab);
-    const dataMap: Record<ReportTab, unknown> = {
+    if (tab === "financial") {
+      // Fetch the current financial sub-tab if not loaded
+      const subDataMap: Record<FinancialSubTab, unknown> = {
+        revenue: revenueData,
+        "past-due-invoices": pastDueData,
+        tax: taxData,
+      };
+      if (!subDataMap[financialSubTab]) {
+        fetchReport(financialSubTab);
+      }
+    } else {
+      const dataMap: Record<string, unknown> = {
+        services: serviceData,
+        customers: customerData,
+        inventory: inventoryData,
+        technicians: technicianData,
+        parts: partsData,
+        "job-analytics": jobAnalyticsData,
+        retention: retentionData,
+      };
+      if (!dataMap[tab]) {
+        fetchReport(tab);
+      }
+    }
+  };
+
+  const handleFinancialSubTabChange = (value: string) => {
+    const subTab = value as FinancialSubTab;
+    setFinancialSubTab(subTab);
+    const subDataMap: Record<FinancialSubTab, unknown> = {
       revenue: revenueData,
+      "past-due-invoices": pastDueData,
+      tax: taxData,
+    };
+    if (!subDataMap[subTab]) {
+      fetchReport(subTab);
+    }
+  };
+
+  const handleRefresh = () => {
+    if (activeTab === "financial") {
+      fetchReport(financialSubTab);
+    } else {
+      fetchReport(activeTab);
+    }
+  };
+
+  const handleExport = () => {
+    const h = (key: string) => t(`csvHeaders.${key}`);
+    if (activeTab === "financial") {
+      switch (financialSubTab) {
+        case "revenue":
+          if (revenueData) exportRevenueCsv(revenueData, currencyCode, [h("month"), h("revenue"), h("collected"), h("count"), h("partsCost"), h("netProfit")]);
+          break;
+        case "past-due-invoices":
+          if (pastDueData) exportPastDueInvoicesCsv(pastDueData, currencyCode, [h("customer"), h("company"), h("invoiceNumber"), h("totalAmount"), h("amountPaid"), h("amountDue"), h("dueDate"), h("daysPastDue")]);
+          break;
+        case "tax":
+          if (taxData) exportTaxCsv(taxData, currencyCode, [h("month"), h("taxCollected"), h("taxableAmount"), h("invoiceCount")]);
+          break;
+      }
+    } else {
+      switch (activeTab) {
+        case "services":
+          if (serviceData) exportServicesCsv(serviceData, [h("category"), h("label"), h("count")]);
+          break;
+        case "customers":
+          if (customerData) exportCustomersCsv(customerData, currencyCode, [h("name"), h("company"), h("services"), h("totalSpent")]);
+          break;
+        case "inventory":
+          if (inventoryData) exportInventoryCsv(inventoryData, currencyCode, [h("name"), h("partNumber"), h("quantity"), h("minQuantity"), h("unitCost")]);
+          break;
+        case "technicians":
+          if (technicianData) exportTechniciansCsv(technicianData, currencyCode, [h("technician"), h("jobs"), h("totalRevenue"), h("avgRevenue"), h("totalHours"), h("avgHours")]);
+          break;
+        case "parts":
+          if (partsData) exportPartsCsv(partsData, currencyCode, [h("partName"), h("partNumber"), h("usageCount"), h("totalQty"), h("totalRevenue")]);
+          break;
+        case "job-analytics":
+          if (jobAnalyticsData) exportJobAnalyticsCsv(jobAnalyticsData, currencyCode, [h("serviceType"), h("count"), h("avgValue"), h("avgHours")]);
+          break;
+        case "retention":
+          if (retentionData) exportRetentionCsv(retentionData, currencyCode, [h("customer"), h("company"), h("visits"), h("totalSpent"), h("avgDaysBetweenVisits")]);
+          break;
+      }
+    }
+  };
+
+  // Determine if we have data for the current view
+  const hasData = (() => {
+    if (activeTab === "financial") {
+      const subDataMap: Record<FinancialSubTab, unknown> = {
+        revenue: revenueData,
+        "past-due-invoices": pastDueData,
+        tax: taxData,
+      };
+      return !!subDataMap[financialSubTab];
+    }
+    const dataMap: Record<string, unknown> = {
       services: serviceData,
       customers: customerData,
       inventory: inventoryData,
@@ -188,73 +315,45 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
       parts: partsData,
       "job-analytics": jobAnalyticsData,
       retention: retentionData,
-      tax: taxData,
     };
-    if (!dataMap[tab]) {
-      fetchReport(tab);
+    return !!dataMap[activeTab];
+  })();
+
+  const showDateRange = activeTab !== "inventory" && !(activeTab === "financial" && financialSubTab === "past-due-invoices");
+
+  // Past due invoice sorting and filtering
+  const sortedFilteredPastDue = pastDueData ? (() => {
+    let filtered = pastDueData.invoices;
+    if (pastDueFilter === "30") filtered = filtered.filter((inv) => inv.daysPastDue > 30);
+    else if (pastDueFilter === "60") filtered = filtered.filter((inv) => inv.daysPastDue > 60);
+    else if (pastDueFilter === "90") filtered = filtered.filter((inv) => inv.daysPastDue > 90);
+
+    return [...filtered].sort((a, b) => {
+      let cmp = 0;
+      if (pastDueSortKey === "customerName") cmp = a.customerName.localeCompare(b.customerName);
+      else if (pastDueSortKey === "amountDue") cmp = a.amountDue - b.amountDue;
+      else if (pastDueSortKey === "daysPastDue") cmp = a.daysPastDue - b.daysPastDue;
+      return pastDueSortDir === "asc" ? cmp : -cmp;
+    });
+  })() : [];
+
+  const toggleSort = (key: PastDueSortKey) => {
+    if (pastDueSortKey === key) {
+      setPastDueSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setPastDueSortKey(key);
+      setPastDueSortDir("desc");
     }
   };
-
-  const handleRefresh = () => {
-    fetchReport(activeTab);
-  };
-
-  const handleExport = () => {
-    const h = (key: string) => t(`csvHeaders.${key}`);
-    switch (activeTab) {
-      case "revenue":
-        if (revenueData) exportRevenueCsv(revenueData, currencyCode, [h("month"), h("revenue"), h("collected"), h("count"), h("partsCost"), h("netProfit")]);
-        break;
-      case "services":
-        if (serviceData) exportServicesCsv(serviceData, [h("category"), h("label"), h("count")]);
-        break;
-      case "customers":
-        if (customerData) exportCustomersCsv(customerData, currencyCode, [h("name"), h("company"), h("services"), h("totalSpent")]);
-        break;
-      case "inventory":
-        if (inventoryData) exportInventoryCsv(inventoryData, currencyCode, [h("name"), h("partNumber"), h("quantity"), h("minQuantity"), h("unitCost")]);
-        break;
-      case "technicians":
-        if (technicianData) exportTechniciansCsv(technicianData, currencyCode, [h("technician"), h("jobs"), h("totalRevenue"), h("avgRevenue"), h("totalHours"), h("avgHours")]);
-        break;
-      case "parts":
-        if (partsData) exportPartsCsv(partsData, currencyCode, [h("partName"), h("partNumber"), h("usageCount"), h("totalQty"), h("totalRevenue")]);
-        break;
-      case "job-analytics":
-        if (jobAnalyticsData) exportJobAnalyticsCsv(jobAnalyticsData, currencyCode, [h("serviceType"), h("count"), h("avgValue"), h("avgHours")]);
-        break;
-      case "retention":
-        if (retentionData) exportRetentionCsv(retentionData, currencyCode, [h("customer"), h("company"), h("visits"), h("totalSpent"), h("avgDaysBetweenVisits")]);
-        break;
-      case "tax":
-        if (taxData) exportTaxCsv(taxData, currencyCode, [h("month"), h("taxCollected"), h("taxableAmount"), h("invoiceCount")]);
-        break;
-    }
-  };
-
-  const dataMap: Record<ReportTab, unknown> = {
-    revenue: revenueData,
-    services: serviceData,
-    customers: customerData,
-    inventory: inventoryData,
-    technicians: technicianData,
-    parts: partsData,
-    "job-analytics": jobAnalyticsData,
-    retention: retentionData,
-    tax: taxData,
-  };
-  const hasData = !!dataMap[activeTab];
-
-  const showDateRange = activeTab !== "inventory";
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
       {/* Tab bar with date range and actions */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <TabsList className="flex-wrap h-auto">
-          <TabsTrigger value="revenue" className="gap-1.5">
-            <DollarSign className="h-4 w-4" />
-            {t("tabs.revenue")}
+          <TabsTrigger value="financial" className="gap-1.5">
+            <Landmark className="h-4 w-4" />
+            {t("tabs.financial")}
           </TabsTrigger>
           <TabsTrigger value="services" className="gap-1.5">
             <BarChart3 className="h-4 w-4" />
@@ -283,10 +382,6 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
           <TabsTrigger value="retention" className="gap-1.5">
             <UserCheck className="h-4 w-4" />
             {t("tabs.retention")}
-          </TabsTrigger>
-          <TabsTrigger value="tax" className="gap-1.5">
-            <Receipt className="h-4 w-4" />
-            {t("tabs.tax")}
           </TabsTrigger>
         </TabsList>
 
@@ -327,167 +422,474 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
         </div>
       )}
 
-      {/* Revenue Tab */}
-      <TabsContent value="revenue">
-        {!loading && revenueData && (
-          <div className="space-y-4">
-            {/* Summary cards */}
-            <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
-              <Card className="border-0 shadow-sm">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
-                    <DollarSign className="h-4 w-4 text-blue-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("revenue.revenue")}</p>
-                    <p className="text-lg font-semibold truncate">
-                      {fmtCurrency(revenueData.summary.totalRevenue)}
-                    </p>
-                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.revenueDesc")}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
-                    <TrendingUp className="h-4 w-4 text-emerald-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("revenue.collected")}</p>
-                    <p className="text-lg font-semibold truncate">
-                      {fmtCurrency(revenueData.summary.totalCollected)}
-                    </p>
-                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.collectedDesc")}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
-                    <AlertTriangle className="h-4 w-4 text-amber-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("revenue.outstanding")}</p>
-                    <p className="text-lg font-semibold truncate">
-                      {fmtCurrency(revenueData.summary.outstanding)}
-                    </p>
-                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.outstandingDesc")}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
-                    <BarChart3 className="h-4 w-4 text-violet-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("revenue.services")}</p>
-                    <p className="text-lg font-semibold">
-                      {revenueData.summary.totalCount}
-                    </p>
-                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.servicesDesc")}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-orange-500/10">
-                    <Package className="h-4 w-4 text-orange-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("revenue.partsCost")}</p>
-                    <p className="text-lg font-semibold truncate">
-                      {fmtCurrency(revenueData.summary.totalPartsCost)}
-                    </p>
-                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.partsCostDesc")}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-green-500/10">
-                    <TrendingUp className="h-4 w-4 text-green-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("revenue.netProfit")}</p>
-                    <p className="text-lg font-semibold truncate">
-                      {fmtCurrency(revenueData.summary.netProfit)}
-                    </p>
-                    <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.netProfitDesc")}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+      {/* Financial Reports Tab */}
+      <TabsContent value="financial">
+        <Tabs value={financialSubTab} onValueChange={handleFinancialSubTabChange} className="space-y-4">
+          <TabsList variant="line">
+            <TabsTrigger value="revenue" className="gap-1.5">
+              <DollarSign className="h-4 w-4" />
+              {t("tabs.revenue")}
+            </TabsTrigger>
+            <TabsTrigger value="past-due-invoices" className="gap-1.5">
+              <Clock className="h-4 w-4" />
+              {t("tabs.pastDueInvoices")}
+            </TabsTrigger>
+            <TabsTrigger value="tax" className="gap-1.5">
+              <Receipt className="h-4 w-4" />
+              {t("tabs.tax")}
+            </TabsTrigger>
+          </TabsList>
 
-            {/* Charts */}
-            <div className="grid gap-4 lg:grid-cols-5">
-              <Card className="border-0 shadow-sm lg:col-span-3">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("revenue.monthlyRevenue")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <RevenueBarChart
-                    data={revenueData.monthly}
-                    formatCurrency={fmtCurrency}
-                    labels={{ revenue: t("charts.revenue"), collected: t("charts.collected"), netProfit: t("revenue.netProfit") }}
-                  />
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm lg:col-span-2">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("revenue.revenueByType")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <RevenueTypeDonut data={revenueData.byType} formatCurrency={fmtCurrency} />
-                </CardContent>
-              </Card>
-            </div>
+          {/* Revenue Sub-Tab */}
+          <TabsContent value="revenue">
+            {!loading && revenueData && (
+              <div className="space-y-4">
+                <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
+                        <DollarSign className="h-4 w-4 text-blue-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("revenue.revenue")}</p>
+                        <p className="text-lg font-semibold truncate">
+                          {fmtCurrency(revenueData.summary.totalRevenue)}
+                        </p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.revenueDesc")}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
+                        <TrendingUp className="h-4 w-4 text-emerald-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("revenue.collected")}</p>
+                        <p className="text-lg font-semibold truncate">
+                          {fmtCurrency(revenueData.summary.totalCollected)}
+                        </p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.collectedDesc")}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
+                        <AlertTriangle className="h-4 w-4 text-amber-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("revenue.outstanding")}</p>
+                        <p className="text-lg font-semibold truncate">
+                          {fmtCurrency(revenueData.summary.outstanding)}
+                        </p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.outstandingDesc")}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
+                        <BarChart3 className="h-4 w-4 text-violet-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("revenue.services")}</p>
+                        <p className="text-lg font-semibold">
+                          {revenueData.summary.totalCount}
+                        </p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.servicesDesc")}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-orange-500/10">
+                        <Package className="h-4 w-4 text-orange-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("revenue.partsCost")}</p>
+                        <p className="text-lg font-semibold truncate">
+                          {fmtCurrency(revenueData.summary.totalPartsCost)}
+                        </p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.partsCostDesc")}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-green-500/10">
+                        <TrendingUp className="h-4 w-4 text-green-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("revenue.netProfit")}</p>
+                        <p className="text-lg font-semibold truncate">
+                          {fmtCurrency(revenueData.summary.netProfit)}
+                        </p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.netProfitDesc")}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
 
-            {/* Monthly table */}
-            {revenueData.monthly.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("revenue.monthlyBreakdown")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("revenue.tableHeaders.month")}</TableHead>
-                        <TableHead className="text-right">{t("revenue.tableHeaders.revenue")}</TableHead>
-                        <TableHead className="text-right">{t("revenue.tableHeaders.collected")}</TableHead>
-                        <TableHead className="text-right">{t("revenue.tableHeaders.partsCost")}</TableHead>
-                        <TableHead className="text-right">{t("revenue.tableHeaders.netProfit")}</TableHead>
-                        <TableHead className="text-right">{t("revenue.tableHeaders.count")}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {revenueData.monthly.map((row) => (
-                        <TableRow key={row.month}>
-                          <TableCell className="text-sm">{row.month}</TableCell>
-                          <TableCell className="text-right text-sm">
-                            {fmtCurrency(row.revenue)}
-                          </TableCell>
-                          <TableCell className="text-right text-sm">
-                            {fmtCurrency(row.collected)}
-                          </TableCell>
-                          <TableCell className="text-right text-sm">
-                            {fmtCurrency(row.partsCost)}
-                          </TableCell>
-                          <TableCell className="text-right text-sm">
-                            {fmtCurrency(row.netProfit)}
-                          </TableCell>
-                          <TableCell className="text-right text-sm">{row.count}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
+                <div className="grid gap-4 lg:grid-cols-5">
+                  <Card className="border-0 shadow-sm lg:col-span-3">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">{t("revenue.monthlyRevenue")}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <RevenueBarChart
+                        data={revenueData.monthly}
+                        formatCurrency={fmtCurrency}
+                        labels={{ revenue: t("charts.revenue"), collected: t("charts.collected"), netProfit: t("revenue.netProfit") }}
+                      />
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm lg:col-span-2">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">{t("revenue.revenueByType")}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <RevenueTypeDonut data={revenueData.byType} formatCurrency={fmtCurrency} />
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {revenueData.monthly.length > 0 && (
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">{t("revenue.monthlyBreakdown")}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{t("revenue.tableHeaders.month")}</TableHead>
+                            <TableHead className="text-right">{t("revenue.tableHeaders.revenue")}</TableHead>
+                            <TableHead className="text-right">{t("revenue.tableHeaders.collected")}</TableHead>
+                            <TableHead className="text-right">{t("revenue.tableHeaders.partsCost")}</TableHead>
+                            <TableHead className="text-right">{t("revenue.tableHeaders.netProfit")}</TableHead>
+                            <TableHead className="text-right">{t("revenue.tableHeaders.count")}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {revenueData.monthly.map((row) => (
+                            <TableRow key={row.month}>
+                              <TableCell className="text-sm">{row.month}</TableCell>
+                              <TableCell className="text-right text-sm">
+                                {fmtCurrency(row.revenue)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm">
+                                {fmtCurrency(row.collected)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm">
+                                {fmtCurrency(row.partsCost)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm">
+                                {fmtCurrency(row.netProfit)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm">{row.count}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
             )}
-          </div>
-        )}
-        {!loading && !revenueData && <EmptyState message={t("empty")} />}
+            {!loading && !revenueData && <EmptyState message={t("empty")} />}
+          </TabsContent>
+
+          {/* Past Due Invoices Sub-Tab */}
+          <TabsContent value="past-due-invoices">
+            {!loading && pastDueData && (
+              <div className="space-y-4">
+                {/* Summary cards */}
+                <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-red-500/10">
+                        <AlertTriangle className="h-4 w-4 text-red-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("pastDueInvoices.totalPastDue")}</p>
+                        <p className="text-lg font-semibold">{pastDueData.summary.totalPastDue}</p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("pastDueInvoices.totalPastDueDesc")}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
+                        <DollarSign className="h-4 w-4 text-amber-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("pastDueInvoices.totalAmountDue")}</p>
+                        <p className="text-lg font-semibold truncate">{fmtCurrency(pastDueData.summary.totalAmountDue)}</p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("pastDueInvoices.totalAmountDueDesc")}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-orange-500/10">
+                        <Clock className="h-4 w-4 text-orange-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("pastDueInvoices.over30Days")}</p>
+                        <p className="text-lg font-semibold">{pastDueData.summary.over30}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-red-500/10">
+                        <Clock className="h-4 w-4 text-red-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("pastDueInvoices.over60Days")}</p>
+                        <p className="text-lg font-semibold">{pastDueData.summary.over60}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-red-600/10">
+                        <Clock className="h-4 w-4 text-red-600" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("pastDueInvoices.over90Days")}</p>
+                        <p className="text-lg font-semibold">{pastDueData.summary.over90}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Filter and table */}
+                <Card className="border-0 shadow-sm">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium">{t("pastDueInvoices.pastDueInvoicesList")}</CardTitle>
+                      <Select value={pastDueFilter} onValueChange={setPastDueFilter}>
+                        <SelectTrigger className="w-[160px] h-8 text-sm">
+                          <SelectValue placeholder={t("pastDueInvoices.filterByAge")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">{t("pastDueInvoices.allPastDue")}</SelectItem>
+                          <SelectItem value="30">{t("pastDueInvoices.30plus")}</SelectItem>
+                          <SelectItem value="60">{t("pastDueInvoices.60plus")}</SelectItem>
+                          <SelectItem value="90">{t("pastDueInvoices.90plus")}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {sortedFilteredPastDue.length > 0 ? (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>
+                              <button
+                                type="button"
+                                className="flex items-center gap-1 hover:text-foreground"
+                                onClick={() => toggleSort("customerName")}
+                              >
+                                {t("pastDueInvoices.tableHeaders.customer")}
+                                <ArrowUpDown className="h-3 w-3" />
+                              </button>
+                            </TableHead>
+                            <TableHead className="hidden md:table-cell">{t("pastDueInvoices.tableHeaders.company")}</TableHead>
+                            <TableHead className="hidden lg:table-cell">{t("pastDueInvoices.tableHeaders.invoiceNumber")}</TableHead>
+                            <TableHead className="hidden lg:table-cell">{t("pastDueInvoices.tableHeaders.vehicle")}</TableHead>
+                            <TableHead className="text-right">
+                              <button
+                                type="button"
+                                className="flex items-center gap-1 ml-auto hover:text-foreground"
+                                onClick={() => toggleSort("amountDue")}
+                              >
+                                {t("pastDueInvoices.tableHeaders.amountDue")}
+                                <ArrowUpDown className="h-3 w-3" />
+                              </button>
+                            </TableHead>
+                            <TableHead className="text-right hidden sm:table-cell">{t("pastDueInvoices.tableHeaders.totalAmount")}</TableHead>
+                            <TableHead className="text-right hidden sm:table-cell">{t("pastDueInvoices.tableHeaders.amountPaid")}</TableHead>
+                            <TableHead className="text-right hidden md:table-cell">{t("pastDueInvoices.tableHeaders.dueDate")}</TableHead>
+                            <TableHead className="text-right">
+                              <button
+                                type="button"
+                                className="flex items-center gap-1 ml-auto hover:text-foreground"
+                                onClick={() => toggleSort("daysPastDue")}
+                              >
+                                {t("pastDueInvoices.tableHeaders.daysPastDue")}
+                                <ArrowUpDown className="h-3 w-3" />
+                              </button>
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {sortedFilteredPastDue.map((inv) => (
+                            <TableRow key={inv.id}>
+                              <TableCell className="text-sm font-medium">{inv.customerName}</TableCell>
+                              <TableCell className="text-sm hidden md:table-cell">{inv.customerCompany ?? "-"}</TableCell>
+                              <TableCell className="text-sm hidden lg:table-cell">{inv.invoiceNumber ?? "-"}</TableCell>
+                              <TableCell className="text-sm hidden lg:table-cell">{inv.vehicleInfo}</TableCell>
+                              <TableCell className="text-right text-sm font-medium text-red-600 dark:text-red-400">
+                                {fmtCurrency(inv.amountDue)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm hidden sm:table-cell">{fmtCurrency(inv.totalAmount)}</TableCell>
+                              <TableCell className="text-right text-sm hidden sm:table-cell">{fmtCurrency(inv.amountPaid)}</TableCell>
+                              <TableCell className="text-right text-sm hidden md:table-cell">{inv.dueDate}</TableCell>
+                              <TableCell className="text-right">
+                                <Badge
+                                  variant={inv.daysPastDue > 90 ? "destructive" : inv.daysPastDue > 60 ? "destructive" : inv.daysPastDue > 30 ? "outline" : "secondary"}
+                                  className={inv.daysPastDue > 60 ? "" : inv.daysPastDue > 30 ? "border-amber-500 text-amber-600 dark:text-amber-400" : ""}
+                                >
+                                  {inv.daysPastDue}d
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    ) : (
+                      <p className="text-sm text-muted-foreground text-center py-8">
+                        {t("pastDueInvoices.noInvoices")}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+            {!loading && !pastDueData && <EmptyState message={t("empty")} />}
+          </TabsContent>
+
+          {/* Tax Sub-Tab */}
+          <TabsContent value="tax">
+            {!loading && taxData && (
+              <div className="space-y-4">
+                <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
+                        <Receipt className="h-4 w-4 text-amber-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("tax.totalTaxCollected")}</p>
+                        <p className="text-lg font-semibold truncate">
+                          {fmtCurrency(taxData.summary.totalTaxCollected)}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
+                        <DollarSign className="h-4 w-4 text-blue-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("tax.taxableRevenue")}</p>
+                        <p className="text-lg font-semibold truncate">
+                          {fmtCurrency(taxData.summary.totalTaxableAmount)}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
+                        <BarChart3 className="h-4 w-4 text-violet-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("tax.invoicesWithTax")}</p>
+                        <p className="text-lg font-semibold">{taxData.summary.totalInvoices}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {taxData.monthly.length > 0 && (
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">{t("tax.monthlyTaxCollected")}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <TaxBarChart
+                        data={taxData.monthly}
+                        formatCurrency={fmtCurrency}
+                        labels={{ taxCollected: t("charts.taxCollected") }}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
+
+                {taxData.byRate.length > 0 && (
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">{t("tax.taxByRate")}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{t("tax.tableHeaders.taxRate")}</TableHead>
+                            <TableHead className="text-right">{t("tax.tableHeaders.taxCollected")}</TableHead>
+                            <TableHead className="text-right">{t("tax.tableHeaders.invoices")}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {taxData.byRate.map((row) => (
+                            <TableRow key={row.taxRate}>
+                              <TableCell className="text-sm font-medium">{row.taxRate}%</TableCell>
+                              <TableCell className="text-right text-sm">
+                                {fmtCurrency(row.taxCollected)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm">{row.invoiceCount}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {taxData.monthly.length > 0 && (
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">{t("tax.monthlyBreakdown")}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{t("tax.tableHeaders.month")}</TableHead>
+                            <TableHead className="text-right">{t("tax.tableHeaders.taxCollected")}</TableHead>
+                            <TableHead className="text-right">{t("tax.tableHeaders.taxableAmount")}</TableHead>
+                            <TableHead className="text-right">{t("tax.tableHeaders.invoices")}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {taxData.monthly.map((row) => (
+                            <TableRow key={row.month}>
+                              <TableCell className="text-sm">{row.month}</TableCell>
+                              <TableCell className="text-right text-sm">
+                                {fmtCurrency(row.taxCollected)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm">
+                                {fmtCurrency(row.taxableAmount)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm">{row.invoiceCount}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+            {!loading && !taxData && <EmptyState message={t("empty")} />}
+          </TabsContent>
+        </Tabs>
       </TabsContent>
 
       {/* Services Tab */}
@@ -1081,133 +1483,6 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
           </div>
         )}
         {!loading && !retentionData && <EmptyState message={t("empty")} />}
-      </TabsContent>
-
-      {/* Tax Tab */}
-      <TabsContent value="tax">
-        {!loading && taxData && (
-          <div className="space-y-4">
-            <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
-              <Card className="border-0 shadow-sm">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
-                    <Receipt className="h-4 w-4 text-amber-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("tax.totalTaxCollected")}</p>
-                    <p className="text-lg font-semibold truncate">
-                      {fmtCurrency(taxData.summary.totalTaxCollected)}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
-                    <DollarSign className="h-4 w-4 text-blue-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("tax.taxableRevenue")}</p>
-                    <p className="text-lg font-semibold truncate">
-                      {fmtCurrency(taxData.summary.totalTaxableAmount)}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
-                    <BarChart3 className="h-4 w-4 text-violet-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("tax.invoicesWithTax")}</p>
-                    <p className="text-lg font-semibold">{taxData.summary.totalInvoices}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {taxData.monthly.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("tax.monthlyTaxCollected")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <TaxBarChart
-                    data={taxData.monthly}
-                    formatCurrency={fmtCurrency}
-                    labels={{ taxCollected: t("charts.taxCollected") }}
-                  />
-                </CardContent>
-              </Card>
-            )}
-
-            {taxData.byRate.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("tax.taxByRate")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("tax.tableHeaders.taxRate")}</TableHead>
-                        <TableHead className="text-right">{t("tax.tableHeaders.taxCollected")}</TableHead>
-                        <TableHead className="text-right">{t("tax.tableHeaders.invoices")}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {taxData.byRate.map((row) => (
-                        <TableRow key={row.taxRate}>
-                          <TableCell className="text-sm font-medium">{row.taxRate}%</TableCell>
-                          <TableCell className="text-right text-sm">
-                            {fmtCurrency(row.taxCollected)}
-                          </TableCell>
-                          <TableCell className="text-right text-sm">{row.invoiceCount}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            )}
-
-            {taxData.monthly.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("tax.monthlyBreakdown")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("tax.tableHeaders.month")}</TableHead>
-                        <TableHead className="text-right">{t("tax.tableHeaders.taxCollected")}</TableHead>
-                        <TableHead className="text-right">{t("tax.tableHeaders.taxableAmount")}</TableHead>
-                        <TableHead className="text-right">{t("tax.tableHeaders.invoices")}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {taxData.monthly.map((row) => (
-                        <TableRow key={row.month}>
-                          <TableCell className="text-sm">{row.month}</TableCell>
-                          <TableCell className="text-right text-sm">
-                            {fmtCurrency(row.taxCollected)}
-                          </TableCell>
-                          <TableCell className="text-right text-sm">
-                            {fmtCurrency(row.taxableAmount)}
-                          </TableCell>
-                          <TableCell className="text-right text-sm">{row.invoiceCount}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
-        {!loading && !taxData && <EmptyState message={t("empty")} />}
       </TabsContent>
     </Tabs>
   );
