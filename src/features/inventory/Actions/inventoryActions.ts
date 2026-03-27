@@ -303,3 +303,18 @@ export async function applyMarkupToAll(input: unknown) {
     return { updated: parts.length };
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }] });
 }
+
+export async function deleteOrphanedUploads(fileUrls: string[]) {
+  return withAuth(async ({ organizationId }) => {
+    for (const url of fileUrls) {
+      // Only allow deleting files belonging to this org's inventory folder
+      if (!url.includes(`/${organizationId}/inventory/`)) continue;
+      try {
+        await unlink(resolveUploadPath(url));
+      } catch {
+        // File may already be gone — ignore
+      }
+    }
+    return { success: true };
+  });
+}
