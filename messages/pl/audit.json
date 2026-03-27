@@ -87,6 +87,7 @@
     "labor_preset_delete": "Usunięto preset robocizny",
     "statusReport_create": "Utworzono raport statusu",
     "statusReport_send": "Wysłano raport statusu",
+    "statusReport_delete": "Usunięto raport statusu",
     "telegram_send": "Wysłano wiadomość Telegram"
   }
 }

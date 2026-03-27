@@ -87,6 +87,7 @@
     "labor_preset_delete": "Arbeidspreset verwijderd",
     "statusReport_create": "Statusrapport aangemaakt",
     "statusReport_send": "Statusrapport verzonden",
+    "statusReport_delete": "Statusrapport verwijderd",
     "telegram_send": "Telegram-bericht verzonden"
   }
 }

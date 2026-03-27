@@ -66,10 +66,16 @@
     "sent": "Sent",
     "viewed": "Viewed",
     "expires": "Expires",
-    "expired": "Expired"
+    "expired": "Expired",
+    "statusLabel": "Status",
+    "created": "Created",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this status report?",
+    "deleted": "Status report deleted"
   },
   "notify": {
     "defaultMessage": "Hi {name}, we have a status update on your {vehicle}. View it here: {url}",
-    "emailSubject": "Vehicle Status Update - {vehicle}"
+    "emailSubject": "Vehicle Status Update - {vehicle}",
+    "viewReport": "View the report here: {url}"
   }
 }

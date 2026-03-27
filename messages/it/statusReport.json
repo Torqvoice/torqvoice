@@ -66,10 +66,16 @@
     "sent": "Inviato",
     "viewed": "Visualizzato",
     "expires": "Scade",
-    "expired": "Scaduto"
+    "expired": "Scaduto",
+    "statusLabel": "Stato",
+    "created": "Creato",
+    "delete": "Elimina",
+    "deleteConfirm": "Sei sicuro di voler eliminare questo rapporto di stato?",
+    "deleted": "Rapporto di stato eliminato"
   },
   "notify": {
     "defaultMessage": "Ciao {name}, abbiamo un aggiornamento sullo stato del suo {vehicle}. Visualizzalo qui: {url}",
-    "emailSubject": "Aggiornamento stato veicolo - {vehicle}"
+    "emailSubject": "Aggiornamento stato veicolo - {vehicle}",
+  "viewReport": "Visualizza il rapporto qui: {url}"
   }
 }

@@ -66,10 +66,16 @@
     "sent": "Enviado",
     "viewed": "Visualizado",
     "expires": "Expira",
-    "expired": "Expirado"
+    "expired": "Expirado",
+    "statusLabel": "Status",
+    "created": "Criado",
+    "delete": "Excluir",
+    "deleteConfirm": "Tem certeza de que deseja excluir este relatório de status?",
+    "deleted": "Relatório de status excluído"
   },
   "notify": {
     "defaultMessage": "Olá {name}, temos uma atualização de status do seu {vehicle}. Veja aqui: {url}",
-    "emailSubject": "Atualização de status do veículo - {vehicle}"
+    "emailSubject": "Atualização de status do veículo - {vehicle}",
+  "viewReport": "Veja o relatório aqui: {url}"
   }
 }

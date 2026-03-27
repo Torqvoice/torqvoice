@@ -87,6 +87,7 @@
     "labor_preset_delete": "İşçilik ön ayarı silindi",
     "statusReport_create": "Durum raporu oluşturuldu",
     "statusReport_send": "Durum raporu gönderildi",
+    "statusReport_delete": "Durum raporu silindi",
     "telegram_send": "Telegram mesajı gönderildi"
   }
 }

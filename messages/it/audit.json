@@ -87,6 +87,7 @@
     "labor_preset_delete": "Preset manodopera eliminato",
     "statusReport_create": "Rapporto di stato creato",
     "statusReport_send": "Rapporto di stato inviato",
+    "statusReport_delete": "Rapporto di stato eliminato",
     "telegram_send": "Messaggio Telegram inviato"
   }
 }

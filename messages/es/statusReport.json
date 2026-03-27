@@ -66,10 +66,16 @@
     "sent": "Enviado",
     "viewed": "Visto",
     "expires": "Expira",
-    "expired": "Expirado"
+    "expired": "Expirado",
+    "statusLabel": "Estado",
+    "created": "Creado",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Está seguro de que desea eliminar este informe de estado?",
+    "deleted": "Informe de estado eliminado"
   },
   "notify": {
     "defaultMessage": "Hola {name}, tenemos una actualización de estado de su {vehicle}. Véala aquí: {url}",
-    "emailSubject": "Actualización de estado del vehículo - {vehicle}"
+    "emailSubject": "Actualización de estado del vehículo - {vehicle}",
+  "viewReport": "Ver el informe aquí: {url}"
   }
 }

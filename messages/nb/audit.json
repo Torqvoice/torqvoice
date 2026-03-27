@@ -87,6 +87,7 @@
     "labor_preset_delete": "Slettet arbeidspreset",
     "statusReport_create": "Opprettet statusrapport",
     "statusReport_send": "Sendt statusrapport",
+    "statusReport_delete": "Slettet statusrapport",
     "telegram_send": "Sendt Telegram-melding"
   }
 }

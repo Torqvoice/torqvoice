@@ -87,6 +87,7 @@
     "labor_preset_delete": "Preset de mano de obra eliminado",
     "statusReport_create": "Informe de estado creado",
     "statusReport_send": "Informe de estado enviado",
+    "statusReport_delete": "Informe de estado eliminado",
     "telegram_send": "Mensaje de Telegram enviado"
   }
 }

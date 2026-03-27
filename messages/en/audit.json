@@ -87,6 +87,7 @@
     "labor_preset_delete": "Deleted Labor Preset",
     "statusReport_create": "Created Status Report",
     "statusReport_send": "Sent Status Report",
+    "statusReport_delete": "Deleted Status Report",
     "telegram_send": "Sent Telegram Message"
   }
 }

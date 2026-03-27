@@ -87,6 +87,7 @@
     "labor_preset_delete": "Préréglage de main-d'œuvre supprimé",
     "statusReport_create": "Rapport d'état créé",
     "statusReport_send": "Rapport d'état envoyé",
+    "statusReport_delete": "Rapport d'état supprimé",
     "telegram_send": "Message Telegram envoyé"
   }
 }

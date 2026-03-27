@@ -87,6 +87,7 @@
     "labor_preset_delete": "Удалён шаблон работ",
     "statusReport_create": "Создан отчёт о состоянии",
     "statusReport_send": "Отправлен отчёт о состоянии",
+    "statusReport_delete": "Удалён отчёт о состоянии",
     "telegram_send": "Отправлено сообщение в Telegram"
   }
 }

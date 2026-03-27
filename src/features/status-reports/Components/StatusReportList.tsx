@@ -3,13 +3,22 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Plus, Copy, Send, ExternalLink, FileVideo } from "lucide-react";
+import { Plus, Copy, Send, ExternalLink, FileVideo, Video, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { toast } from "sonner";
 import { CreateStatusReportDialog } from "./CreateStatusReportDialog";
 import { SendStatusReportDialog } from "./SendStatusReportDialog";
+import { deleteStatusReport } from "../Actions/deleteStatusReport";
 
 interface StatusReportSummary {
   id: string;
@@ -59,6 +68,7 @@ export function StatusReportList({
   const router = useRouter();
   const [showCreate, setShowCreate] = useState(false);
   const [sendReportId, setSendReportId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   function copyLink(publicToken: string) {
     const url = `${window.location.origin}/share/status-report/${organizationId}/${publicToken}`;
@@ -70,9 +80,27 @@ export function StatusReportList({
     window.open(`/share/status-report/${organizationId}/${publicToken}`, "_blank");
   }
 
+  async function handleDelete(reportId: string) {
+    if (!confirm(t("deleteConfirm"))) return;
+    setDeleting(reportId);
+    try {
+      const result = await deleteStatusReport(reportId);
+      if (result.success) {
+        toast.success(t("deleted"));
+        router.refresh();
+      } else {
+        toast.error(result.error || "Failed to delete");
+      }
+    } catch {
+      toast.error("Failed to delete");
+    } finally {
+      setDeleting(null);
+    }
+  }
+
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium">{t("title")}</h3>
           <Button size="sm" onClick={() => setShowCreate(true)}>
@@ -90,48 +118,75 @@ export function StatusReportList({
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-2">
-            {initialReports.map((report) => (
-              <Card key={report.id}>
-                <CardContent className="flex items-center justify-between gap-3 py-3">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="truncate text-sm font-medium">
-                        {report.title || t("title")}
-                      </p>
-                      <Badge variant="outline" className={`shrink-0 text-[10px] ${STATUS_VARIANT[report.status] || ""}`}>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[40%]">{t("title")}</TableHead>
+                  <TableHead>{t("statusLabel")}</TableHead>
+                  <TableHead className="hidden sm:table-cell">{t("created")}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t("expires")}</TableHead>
+                  <TableHead className="text-right" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {initialReports.map((report) => (
+                  <TableRow key={report.id}>
+                    <TableCell className="py-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        {report.videoUrl && <Video className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
+                        <span className="truncate text-sm font-medium">{report.title || t("title")}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <Badge variant="outline" className={`text-[10px] ${STATUS_VARIANT[report.status] || ""}`}>
                         {t(report.status as "draft" | "published" | "sent" | "viewed")}
                       </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
+                    </TableCell>
+                    <TableCell className="py-2 text-xs text-muted-foreground hidden sm:table-cell">
                       {new Date(report.createdAt).toLocaleDateString(undefined, {
-                        year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+                        month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
                       })}
-                    </p>
-                    {report.expiresAt && (
-                      <p className="text-xs text-muted-foreground">
-                        {t("expires")}: {new Date(report.expiresAt).toLocaleDateString(undefined, {
-                          year: "numeric", month: "short", day: "numeric",
-                        })}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex shrink-0 items-center gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyLink(report.publicToken)}>
-                      <Copy className="h-3.5 w-3.5" />
-                    </Button>
-                    {customer && (
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendReportId(report.id)}>
-                        <Send className="h-3.5 w-3.5" />
-                      </Button>
-                    )}
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openReport(report.publicToken)}>
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    </TableCell>
+                    <TableCell className="py-2 text-xs text-muted-foreground hidden md:table-cell">
+                      {report.expiresAt
+                        ? new Date(report.expiresAt).toLocaleDateString(undefined, {
+                            month: "short", day: "numeric", year: "numeric",
+                          })
+                        : "-"}
+                    </TableCell>
+                    <TableCell className="py-2 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => copyLink(report.publicToken)}>
+                          <Copy className="h-3.5 w-3.5" />
+                          <span className="hidden xl:inline ml-1.5">{t("copyLink")}</span>
+                        </Button>
+                        {customer && (
+                          <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => setSendReportId(report.id)}>
+                            <Send className="h-3.5 w-3.5" />
+                            <span className="hidden xl:inline ml-1.5">{t("send")}</span>
+                          </Button>
+                        )}
+                        <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => openReport(report.publicToken)}>
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          <span className="hidden xl:inline ml-1.5">{t("view")}</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-destructive hover:text-destructive"
+                          disabled={deleting === report.id}
+                          onClick={() => handleDelete(report.id)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span className="hidden xl:inline ml-1.5">{t("delete")}</span>
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         )}
       </div>
@@ -146,15 +201,15 @@ export function StatusReportList({
         emailEnabled={emailEnabled}
         telegramEnabled={telegramEnabled}
         onCreated={(reportId) => {
-          router.refresh();
           if (customer) setSendReportId(reportId);
+          else router.refresh();
         }}
       />
 
       {sendReportId && customer && (
         <SendStatusReportDialog
           open={!!sendReportId}
-          onOpenChange={(open) => { if (!open) setSendReportId(null); }}
+          onOpenChange={(open) => { if (!open) { setSendReportId(null); router.refresh(); } }}
           reportId={sendReportId}
           customer={customer}
           smsEnabled={smsEnabled}

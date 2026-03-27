@@ -66,10 +66,16 @@
     "sent": "Gönderildi",
     "viewed": "Görüntülendi",
     "expires": "Son kullanma",
-    "expired": "Süresi dolmuş"
+    "expired": "Süresi dolmuş",
+    "statusLabel": "Durum",
+    "created": "Oluşturuldu",
+    "delete": "Sil",
+    "deleteConfirm": "Bu durum raporunu silmek istediğinizden emin misiniz?",
+    "deleted": "Durum raporu silindi"
   },
   "notify": {
     "defaultMessage": "Merhaba {name}, {vehicle} aracınız hakkında bir durum güncellemesi var. Buradan görüntüleyin: {url}",
-    "emailSubject": "Araç Durum Güncellemesi - {vehicle}"
+    "emailSubject": "Araç Durum Güncellemesi - {vehicle}",
+  "viewReport": "Raporu buradan görüntüleyin: {url}"
   }
 }
