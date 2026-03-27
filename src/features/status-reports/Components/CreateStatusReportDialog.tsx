@@ -6,12 +6,17 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Drawer, DrawerContent, DrawerHeader, DrawerTitle,
+  DrawerDescription, DrawerFooter,
+} from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Camera, Loader2, Upload, Video, Send, X } from "lucide-react";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { createStatusReport } from "../Actions/createStatusReport";
 
 interface CreateStatusReportDialogProps {
@@ -36,6 +41,7 @@ export function CreateStatusReportDialog({
   open, onOpenChange, serviceRecordId, vehicleName, onCreated,
 }: CreateStatusReportDialogProps) {
   const t = useTranslations("statusReport.create");
+  const isMobile = useIsMobile();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const captureInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState("");
@@ -117,6 +123,109 @@ export function CreateStatusReportDialog({
     }
   }
 
+  const formContent = (
+    <div className="space-y-4">
+      {videoUrl ? (
+        <div className="relative overflow-hidden rounded-lg border">
+          <video src={videoUrl} controls preload="metadata" playsInline className="w-full max-h-56" />
+          <div className="flex items-center justify-between p-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Video className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <span className="truncate text-sm">{videoFileName}</span>
+            </div>
+            <Button type="button" variant="ghost" size="icon" className="h-7 w-7 shrink-0"
+              onClick={() => { setVideoUrl(null); setVideoFileName(null); }}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      ) : uploading ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8">
+          <Loader2 className="mb-2 h-8 w-8 animate-spin text-muted-foreground/50" />
+          <p className="text-sm font-medium">{t("uploading")} {uploadProgress}%</p>
+        </div>
+      ) : (
+        <div
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+          className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
+        >
+          <Video className="mb-3 h-8 w-8 text-muted-foreground/50" />
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={() => captureInputRef.current?.click()}>
+              <Camera className="mr-1.5 h-4 w-4" />
+              {t("record")}
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+              <Upload className="mr-1.5 h-4 w-4" />
+              {t("uploadFile")}
+            </Button>
+          </div>
+          <input ref={captureInputRef} type="file" accept="video/*" capture="environment" className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) { handleFileUpload(f); e.target.value = ""; } }} />
+          <input ref={fileInputRef} type="file" accept="video/*" className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) { handleFileUpload(f); e.target.value = ""; } }} />
+        </div>
+      )}
+
+      <div className="space-y-1.5">
+        <Label htmlFor="sr-title">{t("titleLabel")}</Label>
+        <Input id="sr-title" value={title} onChange={(e) => setTitle(e.target.value)}
+          placeholder={t("titlePlaceholder")} />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="sr-message">{t("messageLabel")}</Label>
+        <Textarea id="sr-message" value={message} onChange={(e) => setMessage(e.target.value)}
+          placeholder={t("messagePlaceholder")} rows={3} />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="sr-expires">{t("expiresLabel")}</Label>
+        <Input id="sr-expires" type="date" value={expiresAt}
+          onChange={(e) => setExpiresAt(e.target.value)}
+          min={new Date().toISOString().split("T")[0]} />
+      </div>
+    </div>
+  );
+
+  const footerButtons = (
+    <>
+      <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
+        {t("cancel")}
+      </Button>
+      <Button onClick={() => handleSubmit(false)} disabled={submitting || uploading}>
+        {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {t("create")}
+      </Button>
+      {onCreated && (
+        <Button onClick={() => handleSubmit(true)} disabled={submitting || uploading}>
+          {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+          {t("createAndSend")}
+        </Button>
+      )}
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>{t("title")}</DrawerTitle>
+            <DrawerDescription>{vehicleName}</DrawerDescription>
+          </DrawerHeader>
+          <div className="overflow-y-auto px-4 pb-2">
+            {formContent}
+          </div>
+          <DrawerFooter className="flex-row gap-2">
+            {footerButtons}
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
@@ -124,89 +233,9 @@ export function CreateStatusReportDialog({
           <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>{vehicleName}</DialogDescription>
         </DialogHeader>
-
-        <div className="space-y-4">
-          {videoUrl ? (
-            <div className="relative overflow-hidden rounded-lg border">
-              <video src={videoUrl} controls preload="metadata" playsInline className="w-full max-h-56" />
-              <div className="flex items-center justify-between p-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <Video className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <span className="truncate text-sm">{videoFileName}</span>
-                </div>
-                <Button type="button" variant="ghost" size="icon" className="h-7 w-7 shrink-0"
-                  onClick={() => { setVideoUrl(null); setVideoFileName(null); }}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ) : uploading ? (
-            <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8">
-              <Loader2 className="mb-2 h-8 w-8 animate-spin text-muted-foreground/50" />
-              <p className="text-sm font-medium">{t("uploading")} {uploadProgress}%</p>
-            </div>
-          ) : (
-            <div
-              onDrop={handleDrop}
-              onDragOver={(e) => e.preventDefault()}
-              className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
-            >
-              <Video className="mb-3 h-8 w-8 text-muted-foreground/50" />
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => captureInputRef.current?.click()}>
-                  <Camera className="mr-1.5 h-4 w-4" />
-                  {t("record")}
-                </Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
-                  <Upload className="mr-1.5 h-4 w-4" />
-                  {t("uploadFile")}
-                </Button>
-              </div>
-              <input ref={captureInputRef} type="file" accept="video/*" capture="environment" className="hidden"
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) { handleFileUpload(f); e.target.value = ""; } }} />
-              <input ref={fileInputRef} type="file" accept="video/*" className="hidden"
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) { handleFileUpload(f); e.target.value = ""; } }} />
-            </div>
-          )}
-
-          <div className="space-y-1.5">
-            <Label htmlFor="sr-title">{t("titleLabel")}</Label>
-            <Input id="sr-title" value={title} onChange={(e) => setTitle(e.target.value)}
-              placeholder={t("titlePlaceholder")} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="sr-message">{t("messageLabel")}</Label>
-            <Textarea id="sr-message" value={message} onChange={(e) => setMessage(e.target.value)}
-              placeholder={t("messagePlaceholder")} rows={3} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="sr-expires">{t("expiresLabel")}</Label>
-            <Input
-              id="sr-expires"
-              type="date"
-              value={expiresAt}
-              onChange={(e) => setExpiresAt(e.target.value)}
-              min={new Date().toISOString().split("T")[0]}
-            />
-          </div>
-        </div>
-
+        {formContent}
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
-            {t("cancel")}
-          </Button>
-          <Button onClick={() => handleSubmit(false)} disabled={submitting || uploading}>
-            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {t("create")}
-          </Button>
-          {onCreated && (
-            <Button onClick={() => handleSubmit(true)} disabled={submitting || uploading}>
-              {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-              {t("createAndSend")}
-            </Button>
-          )}
+          {footerButtons}
         </DialogFooter>
       </DialogContent>
     </Dialog>
