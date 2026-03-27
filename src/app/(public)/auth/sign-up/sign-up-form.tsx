@@ -3,13 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { signUp } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, XCircle } from 'lucide-react'
+import { AuthLogo } from '@/components/auth-logo'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 
 export function SignUpForm({ inviteToken, emailVerificationRequired, redirectTo }: { inviteToken?: string; emailVerificationRequired?: boolean; redirectTo?: string }) {
@@ -75,14 +75,7 @@ export function SignUpForm({ inviteToken, emailVerificationRequired, redirectTo 
       <div className="glass relative z-10 w-full max-w-md rounded-2xl p-8 shadow-2xl">
         <div className="mb-8 text-center">
           <div className="mb-4 inline-flex items-center gap-2">
-            <Image
-              src="/torqvoice_app_logo.png"
-              alt={tc('brandName')}
-              width={48}
-              height={44}
-              className="h-11 w-auto"
-              priority
-            />
+            <AuthLogo alt={tc('brandName')} />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">

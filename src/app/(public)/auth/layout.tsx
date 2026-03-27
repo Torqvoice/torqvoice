@@ -1,7 +1,19 @@
-export default function AuthLayout({
+import { db } from "@/lib/db";
+import { AuthLogoProvider } from "@/components/auth-logo-provider";
+
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  const logoSetting = await db.appSetting.findFirst({
+    where: { key: "workshop.logo" },
+    select: { id: true },
+  });
+
+  return (
+    <AuthLogoProvider hasCustomLogo={!!logoSetting}>
+      {children}
+    </AuthLogoProvider>
+  );
 }

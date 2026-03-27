@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
@@ -10,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Loader2, Shield, XCircle } from 'lucide-react'
+import { AuthLogo } from '@/components/auth-logo'
 
 export default function VerifyTwoFactorPage() {
   const t = useTranslations('auth.verify2fa')
@@ -55,14 +55,7 @@ export default function VerifyTwoFactorPage() {
       <div className="glass relative z-10 w-full max-w-md rounded-2xl p-8 shadow-2xl">
         <div className="mb-8 text-center">
           <div className="mb-4 inline-flex items-center gap-2">
-            <Image
-              src="/torqvoice_app_logo.png"
-              alt={tc('brandName')}
-              width={48}
-              height={44}
-              className="h-11 w-auto"
-              priority
-            />
+            <AuthLogo alt={tc('brandName')} />
           </div>
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
             <Shield className="h-6 w-6 text-primary" />

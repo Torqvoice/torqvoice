@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { authClient, signOut, useSession } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Loader2, Mail, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCooldown } from '@/hooks/use-cooldown'
+import { AuthLogo } from '@/components/auth-logo'
 
 const POLL_INTERVAL = 5000
 
@@ -90,14 +90,7 @@ export default function VerifyEmailPage() {
       <div className="glass relative z-10 w-full max-w-md rounded-2xl p-8 shadow-2xl">
         <div className="mb-8 text-center">
           <div className="mb-4 inline-flex items-center gap-2">
-            <Image
-              src="/torqvoice_app_logo.png"
-              alt={tc('brandName')}
-              width={48}
-              height={44}
-              className="h-11 w-auto"
-              priority
-            />
+            <AuthLogo alt={tc('brandName')} />
           </div>
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <Mail className="h-8 w-8 text-primary" />
