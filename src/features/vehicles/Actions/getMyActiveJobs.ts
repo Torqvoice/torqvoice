@@ -15,6 +15,13 @@ export interface MyActiveJob {
     year: number;
     licensePlate: string | null;
   };
+  customer: {
+    id: string;
+    name: string;
+    email: string | null;
+    phone: string | null;
+    telegramChatId: string | null;
+  } | null;
   imageCount: number;
   videoCount: number;
   partCount: number;
@@ -50,6 +57,15 @@ export async function getMyActiveJobs() {
               model: true,
               year: true,
               licensePlate: true,
+              customer: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  phone: true,
+                  telegramChatId: true,
+                },
+              },
             },
           },
           attachments: {
@@ -71,6 +87,7 @@ export async function getMyActiveJobs() {
         status: r.status,
         vehicleId: r.vehicleId,
         vehicle: r.vehicle,
+        customer: r.vehicle.customer,
         imageCount: r.attachments.filter((a) => a.category === "image").length,
         videoCount: r.attachments.filter((a) => a.category === "video").length,
         partCount: r._count.partItems,

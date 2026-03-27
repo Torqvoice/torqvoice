@@ -16,7 +16,9 @@
     "partAddFailed": "Не удалось добавить запчасть",
     "inStock": "В наличии: {quantity}",
     "quantity": "Количество",
-    "addToJob": "Добавить {qty} к заказу"
+    "addToJob": "Добавить {qty} к заказу",
+    "statusReport": "Отчёт о состоянии",
+    "report": "Отчёт"
   },
   "recentActivity": "Последняя активность",
   "noRecentActivity": "Нет недавней активности",

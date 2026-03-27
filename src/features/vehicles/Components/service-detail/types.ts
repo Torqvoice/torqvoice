@@ -105,6 +105,7 @@ export interface Vehicle {
     phone: string | null;
     address: string | null;
     company: string | null;
+    telegramChatId: string | null;
   } | null;
 }
 

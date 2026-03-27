@@ -16,7 +16,9 @@
     "partAddFailed": "Onderdeel toevoegen mislukt",
     "inStock": "Op voorraad: {quantity}",
     "quantity": "Aantal",
-    "addToJob": "{qty} toevoegen aan klus"
+    "addToJob": "{qty} toevoegen aan klus",
+    "statusReport": "Statusrapport",
+    "report": "Rapport"
   },
   "recentActivity": "Recente activiteit",
   "noRecentActivity": "Geen recente activiteit",

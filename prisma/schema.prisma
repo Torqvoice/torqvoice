@@ -217,10 +217,11 @@ model ServiceRecord {
   technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
   sortOrder    Int         @default(0)
 
-  partItems   ServicePart[]
-  laborItems  ServiceLabor[]
-  attachments ServiceAttachment[]
-  payments    Payment[]
+  partItems     ServicePart[]
+  laborItems    ServiceLabor[]
+  attachments   ServiceAttachment[]
+  payments      Payment[]
+  statusReports StatusReport[]
 
   @@index([vehicleId])
   @@index([technicianId])
@@ -614,6 +615,7 @@ model Organization {
   telegramMessages       TelegramMessage[]
   technicians            Technician[]
   auditLogs              AuditLog[]
+  statusReports          StatusReport[]
 
   @@map("organizations")
 }
@@ -975,14 +977,15 @@ model Technician {
   sortOrder     Int     @default(0)
   dailyCapacity Int     @default(480)
 
-  userId   String?
-  user     User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   serviceRecords ServiceRecord[]
   inspections    Inspection[]
+  statusReports  StatusReport[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1102,4 +1105,37 @@ model AiChatMessage {
 
   @@index([chatId, createdAt])
   @@map("ai_chat_messages")
+}
+
+model StatusReport {
+  id               String    @id @default(cuid())
+  title            String?
+  message          String?   @db.Text
+  videoUrl         String?
+  videoFileName    String?
+  publicToken      String    @unique
+  status           String    @default("draft") // draft | published | sent | viewed
+  sentVia          String? // email, sms, telegram (comma-separated)
+  sentAt           DateTime?
+  viewedAt         DateTime?
+  customerFeedback String?   @db.Text
+  feedbackAt       DateTime?
+  expiresAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  technicianId String?
+  technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+
+  @@index([serviceRecordId])
+  @@index([organizationId])
+  @@index([publicToken])
+  @@index([expiresAt])
+  @@map("status_reports")
 }

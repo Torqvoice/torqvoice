@@ -7,6 +7,7 @@ import { getLaborPresetsList } from "@/features/labor-presets/Actions/laborPrese
 import { getTechnicians, getOrgMembers } from "@/features/workboard/Actions/technicianActions";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { getFeatures } from "@/lib/features";
+import { getStatusReportsForService } from "@/features/status-reports/Actions/getStatusReportsForService";
 import { db } from "@/lib/db";
 import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
 import { ServicePageClient } from "@/features/vehicles/Components/service-page/ServicePageClient";
@@ -20,7 +21,7 @@ export default async function ServiceDetailPage({
 }) {
   const { id, serviceId } = await params;
 
-  const [result, settingsResult, inventoryResult, techniciansResult, presetsResult, authContext, session, orgMembersResult] =
+  const [result, settingsResult, inventoryResult, techniciansResult, presetsResult, authContext, session, orgMembersResult, statusReportsResult] =
     await Promise.all([
       getServiceRecord(serviceId),
       getSettings([
@@ -37,6 +38,7 @@ export default async function ServiceDetailPage({
       getAuthContext(),
       getCachedSession(),
       getOrgMembers(),
+      getStatusReportsForService(serviceId),
     ]);
 
   if (!result.success || !result.data) {
@@ -196,8 +198,10 @@ export default async function ServiceDetailPage({
         maxDocumentsPerService={features?.maxDocumentsPerService ?? 999999}
         smsEnabled={features?.sms ?? false}
         emailEnabled={features?.smtp ?? false}
+        telegramEnabled={features?.telegram ?? false}
         aiEnabled={aiEnabled}
         defaultDueDays={defaultDueDays}
+        statusReports={(statusReportsResult.success && statusReportsResult.data ? statusReportsResult.data : []).map(r => ({ ...r, createdAt: r.createdAt.toISOString(), expiresAt: r.expiresAt?.toISOString() || null }))}
       />
     </div>
   );

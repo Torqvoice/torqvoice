@@ -194,6 +194,7 @@ export async function getServiceRecord(recordId: string) {
                 phone: true,
                 address: true,
                 company: true,
+                telegramChatId: true,
               },
             },
           },

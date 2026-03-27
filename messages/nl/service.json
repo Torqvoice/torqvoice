@@ -20,7 +20,8 @@
       "details": "Details",
       "images": "Afbeeldingen",
       "video": "Video",
-      "documents": "Documenten"
+      "documents": "Documenten",
+      "statusReports": "Statusrapporten"
     },
     "save": "Opslaan",
     "pdf": "PDF",

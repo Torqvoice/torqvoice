@@ -16,7 +16,9 @@
     "partAddFailed": "Kunne ikke legge til del",
     "inStock": "På lager: {quantity}",
     "quantity": "Antall",
-    "addToJob": "Legg til {qty} i jobb"
+    "addToJob": "Legg til {qty} i jobb",
+    "statusReport": "Statusrapport",
+    "report": "Rapport"
   },
   "recentActivity": "Nylig aktivitet",
   "noRecentActivity": "Ingen nylig aktivitet",

@@ -17,12 +17,13 @@ import {
 } from 'lucide-react'
 import { statusColors, paymentStatusColors, paymentStatusLabels } from '../service-detail/types'
 
-export type ServiceTab = 'details' | 'images' | 'video' | 'documents'
+export type ServiceTab = 'details' | 'images' | 'video' | 'documents' | 'statusReports'
 
 export interface TabCounts {
   images: number
   video: number
   documents: number
+  statusReports: number
 }
 
 interface UnifiedServiceHeaderProps {
@@ -68,6 +69,7 @@ export function UnifiedServiceHeader({
     { label: t('tabs.images'), value: 'images' },
     { label: t('tabs.video'), value: 'video' },
     { label: t('tabs.documents'), value: 'documents' },
+    { label: t('tabs.statusReports'), value: 'statusReports' },
   ]
 
   return (

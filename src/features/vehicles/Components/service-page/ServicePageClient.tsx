@@ -33,6 +33,7 @@ import type { LaborPresetOption } from './service-page-types'
 import { ServiceImagesManager } from '../service-images-manager'
 import { ServiceVideoManager } from '../service-video-manager'
 import { ServiceDocumentsManager } from '../service-documents-manager'
+import { StatusReportList } from '@/features/status-reports/Components/StatusReportList'
 import { UnifiedServiceHeader, type ServiceTab } from './UnifiedServiceHeader'
 
 import { useServiceFormState } from './useServiceFormState'
@@ -67,8 +68,10 @@ export function ServicePageClient({
   laborPresets = [],
   smsEnabled = false,
   emailEnabled = false,
+  telegramEnabled = false,
   aiEnabled = false,
   defaultDueDays = 0,
+  statusReports = [],
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -168,6 +171,7 @@ export function ServicePageClient({
           images: imageAttachmentsForManager.length,
           video: videoAttachments.length,
           documents: documentAttachments.length,
+          statusReports: statusReports.length,
         }}
         downloading={actions.downloading}
         saving={formState.loading}
@@ -240,6 +244,27 @@ export function ServicePageClient({
             initialDocuments={documentAttachments}
             maxDiagnostics={maxDiagnosticsPerService}
             maxDocuments={maxDocumentsPerService}
+          />
+        </div>
+      )}
+
+      {activeTab === 'statusReports' && (
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+          <StatusReportList
+            serviceRecordId={record.id}
+            organizationId={organizationId}
+            vehicleName={formState.vehicleName}
+            customer={record.vehicle.customer ? {
+              id: record.vehicle.customer.id,
+              name: record.vehicle.customer.name,
+              email: record.vehicle.customer.email,
+              phone: record.vehicle.customer.phone,
+              telegramChatId: record.vehicle.customer.telegramChatId || null,
+            } : null}
+            smsEnabled={smsEnabled}
+            emailEnabled={emailEnabled}
+            telegramEnabled={telegramEnabled}
+            initialReports={statusReports}
           />
         </div>
       )}

@@ -16,7 +16,9 @@
     "partAddFailed": "Teil konnte nicht hinzugefügt werden",
     "inStock": "Auf Lager: {quantity}",
     "quantity": "Menge",
-    "addToJob": "{qty} zum Auftrag hinzufügen"
+    "addToJob": "{qty} zum Auftrag hinzufügen",
+    "statusReport": "Statusbericht",
+    "report": "Bericht"
   },
   "recentActivity": "Letzte Aktivitäten",
   "noRecentActivity": "Keine aktuellen Aktivitäten",

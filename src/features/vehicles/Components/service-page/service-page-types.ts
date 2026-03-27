@@ -51,8 +51,10 @@ export interface ServicePageClientProps {
   laborPresets?: LaborPresetOption[]
   smsEnabled?: boolean
   emailEnabled?: boolean
+  telegramEnabled?: boolean
   aiEnabled?: boolean
   defaultDueDays?: number
+  statusReports?: { id: string; title: string | null; status: string; videoUrl: string | null; createdAt: string; publicToken: string; expiresAt: string | null }[]
 }
 
 export type { ServicePartInput, ServiceLaborInput, ServiceDetail, InitialData, InventoryPartOption, LaborPresetOption }

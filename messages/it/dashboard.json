@@ -16,7 +16,9 @@
     "partAddFailed": "Impossibile aggiungere il ricambio",
     "inStock": "Disponibile: {quantity}",
     "quantity": "Quantità",
-    "addToJob": "Aggiungi {qty} al lavoro"
+    "addToJob": "Aggiungi {qty} al lavoro",
+    "statusReport": "Rapporto di stato",
+    "report": "Rapporto"
   },
   "recentActivity": "Attività recente",
   "noRecentActivity": "Nessuna attività recente",

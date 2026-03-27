@@ -16,7 +16,9 @@
     "partAddFailed": "Nie udało się dodać części",
     "inStock": "Na stanie: {quantity}",
     "quantity": "Ilość",
-    "addToJob": "Dodaj {qty} do zlecenia"
+    "addToJob": "Dodaj {qty} do zlecenia",
+    "statusReport": "Raport statusu",
+    "report": "Raport"
   },
   "recentActivity": "Ostatnia aktywność",
   "noRecentActivity": "Brak ostatniej aktywności",

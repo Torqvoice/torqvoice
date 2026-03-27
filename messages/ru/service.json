@@ -20,7 +20,8 @@
       "details": "Детали",
       "images": "Изображения",
       "video": "Видео",
-      "documents": "Документы"
+      "documents": "Документы",
+      "statusReports": "Отчёты о состоянии"
     },
     "save": "Сохранить",
     "pdf": "PDF",
