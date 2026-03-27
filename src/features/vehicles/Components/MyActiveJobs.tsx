@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
   Camera,
+  FileVideo,
   ImageIcon,
   Loader2,
   Video,
@@ -33,6 +34,8 @@ import { addPartToServiceRecord } from '@/features/vehicles/Actions/addPartToSer
 import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode'
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
 import { InventoryPartForm } from '@/features/inventory/Components/InventoryPartForm'
+import { CreateStatusReportDialog } from '@/features/status-reports/Components/CreateStatusReportDialog'
+import { SendStatusReportDialog } from '@/features/status-reports/Components/SendStatusReportDialog'
 import type { MyActiveJob } from '@/features/vehicles/Actions/getMyActiveJobs'
 
 interface MyActiveJobsProps {
@@ -54,7 +57,9 @@ const STATUS_COLOR: Record<string, string> = {
 export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
   const t = useTranslations('dashboard.myJobs')
   const router = useRouter()
-  const [uploading, setUploading] = useState<{ jobId: string; type: 'photo' | 'video' } | null>(null)
+  const [uploading, setUploading] = useState<{ jobId: string; type: 'photo' | 'video' } | null>(
+    null
+  )
   const [imageCounts, setImageCounts] = useState<Record<string, number>>(() =>
     Object.fromEntries(jobs.map((j) => [j.id, j.imageCount]))
   )
@@ -85,6 +90,10 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
   const [partCounts, setPartCounts] = useState<Record<string, number>>(() =>
     Object.fromEntries(jobs.map((j) => [j.id, j.partCount]))
   )
+
+  const [statusReportJobId, setStatusReportJobId] = useState<string | null>(null)
+  const [sendReportId, setSendReportId] = useState<string | null>(null)
+  const [sendReportJobId, setSendReportJobId] = useState<string | null>(null)
 
   if (jobs.length === 0) return null
 
@@ -374,6 +383,15 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                         <ScanBarcode className="mr-1.5 h-4 w-4" />
                         {t('scanPart')}
                       </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9"
+                        onClick={() => setStatusReportJobId(job.id)}
+                      >
+                        <FileVideo className="mr-1.5 h-4 w-4" />
+                        {t('statusReport')}
+                      </Button>
                     </div>
                     {/* Mobile: counters only */}
                     <div className="shrink-0 ml-3 flex sm:hidden items-center gap-1.5 text-xs text-muted-foreground">
@@ -397,8 +415,8 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                       )}
                     </div>
                   </div>
-                  {/* Mobile: action buttons on second line */}
-                  <div className="mt-2 sm:hidden">
+                  {/* Mobile: action buttons on two rows */}
+                  <div className="mt-2 flex flex-col gap-1.5 sm:hidden">
                     <ButtonGroup className="w-full">
                       <Button
                         variant="outline"
@@ -428,6 +446,8 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                         )}
                         {t('video')}
                       </Button>
+                    </ButtonGroup>
+                    <ButtonGroup className="w-full">
                       <Button
                         variant="outline"
                         size="sm"
@@ -436,6 +456,15 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                       >
                         <ScanBarcode className="mr-1 h-3.5 w-3.5" />
                         {t('parts')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 h-9"
+                        onClick={() => setStatusReportJobId(job.id)}
+                      >
+                        <FileVideo className="mr-1 h-3.5 w-3.5" />
+                        {t('report')}
                       </Button>
                     </ButtonGroup>
                   </div>
@@ -489,8 +518,14 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                 <div className="min-w-0 flex-1">
                   <p className="font-medium truncate">{scannedPart.name}</p>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    {scannedPart.partNumber && <span className="font-mono text-xs">{scannedPart.partNumber}</span>}
-                    {scannedPart.category && <Badge variant="secondary" className="text-[10px]">{scannedPart.category}</Badge>}
+                    {scannedPart.partNumber && (
+                      <span className="font-mono text-xs">{scannedPart.partNumber}</span>
+                    )}
+                    {scannedPart.category && (
+                      <Badge variant="secondary" className="text-[10px]">
+                        {scannedPart.category}
+                      </Badge>
+                    )}
                   </div>
                 </div>
                 <div className="text-right text-sm text-muted-foreground shrink-0">
@@ -508,7 +543,9 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                 >
                   -
                 </Button>
-                <span className="w-16 text-center text-3xl font-semibold tabular-nums">{addQty}</span>
+                <span className="w-16 text-center text-3xl font-semibold tabular-nums">
+                  {addQty}
+                </span>
                 <Button
                   variant="outline"
                   size="icon"
@@ -546,6 +583,56 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
         onOpenChange={handlePartFormClose}
         initialBarcode={pendingBarcode}
       />
+
+      {statusReportJobId &&
+        (() => {
+          const job = jobs.find((j) => j.id === statusReportJobId)
+          if (!job) return null
+          return (
+            <CreateStatusReportDialog
+              open={!!statusReportJobId}
+              onOpenChange={(open) => {
+                if (!open) setStatusReportJobId(null)
+              }}
+              serviceRecordId={statusReportJobId}
+              vehicleName={`${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}`}
+              customer={job.customer}
+              smsEnabled={false}
+              emailEnabled={true}
+              telegramEnabled={false}
+              onCreated={(reportId) => {
+                const currentJobId = statusReportJobId
+                setStatusReportJobId(null)
+                if (job.customer) {
+                  setSendReportId(reportId)
+                  setSendReportJobId(currentJobId)
+                }
+              }}
+            />
+          )
+        })()}
+
+      {sendReportId &&
+        (() => {
+          const job = sendReportJobId ? jobs.find((j) => j.id === sendReportJobId) : null
+          if (!job?.customer) return null
+          return (
+            <SendStatusReportDialog
+              open={!!sendReportId}
+              onOpenChange={(open) => {
+                if (!open) {
+                  setSendReportId(null)
+                  setSendReportJobId(null)
+                }
+              }}
+              reportId={sendReportId}
+              customer={job.customer}
+              smsEnabled={false}
+              emailEnabled={true}
+              telegramEnabled={false}
+            />
+          )
+        })()}
     </>
   )
 }

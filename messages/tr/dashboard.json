@@ -16,7 +16,9 @@
     "partAddFailed": "Parça eklenemedi",
     "inStock": "Stokta: {quantity}",
     "quantity": "Miktar",
-    "addToJob": "{qty} işe ekle"
+    "addToJob": "{qty} işe ekle",
+    "statusReport": "Durum Raporu",
+    "report": "Rapor"
   },
   "recentActivity": "Son aktivite",
   "noRecentActivity": "Son aktivite yok",

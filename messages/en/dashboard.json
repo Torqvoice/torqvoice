@@ -16,7 +16,9 @@
     "partAddFailed": "Failed to add part",
     "inStock": "In stock: {quantity}",
     "quantity": "Quantity",
-    "addToJob": "Add {qty} to job"
+    "addToJob": "Add {qty} to job",
+    "statusReport": "Status Report",
+    "report": "Report"
   },
   "recentActivity": "Recent Activity",
   "noRecentActivity": "No recent activity",

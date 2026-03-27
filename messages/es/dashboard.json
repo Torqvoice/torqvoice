@@ -16,7 +16,9 @@
     "partAddFailed": "Error al añadir la pieza",
     "inStock": "En stock: {quantity}",
     "quantity": "Cantidad",
-    "addToJob": "Añadir {qty} al trabajo"
+    "addToJob": "Añadir {qty} al trabajo",
+    "statusReport": "Informe de estado",
+    "report": "Informe"
   },
   "recentActivity": "Actividad reciente",
   "noRecentActivity": "Sin actividad reciente",

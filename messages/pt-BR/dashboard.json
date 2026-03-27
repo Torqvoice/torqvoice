@@ -16,7 +16,9 @@
     "partAddFailed": "Falha ao adicionar peça",
     "inStock": "Em estoque: {quantity}",
     "quantity": "Quantidade",
-    "addToJob": "Adicionar {qty} ao serviço"
+    "addToJob": "Adicionar {qty} ao serviço",
+    "statusReport": "Relatório de Status",
+    "report": "Relatório"
   },
   "recentActivity": "Atividade recente",
   "noRecentActivity": "Nenhuma atividade recente",

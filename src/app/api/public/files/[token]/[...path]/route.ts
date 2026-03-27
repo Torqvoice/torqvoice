@@ -70,6 +70,16 @@ export async function GET(
   }
 
   if (!orgId) {
+    const statusReport = await db.statusReport.findFirst({
+      where: { publicToken: token },
+      select: { organizationId: true },
+    });
+    if (statusReport?.organizationId) {
+      orgId = statusReport.organizationId;
+    }
+  }
+
+  if (!orgId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   const filePath = path.join(process.cwd(), "data", "uploads", orgId, category, filename);

@@ -69,6 +69,7 @@ export default getRequestConfig(async () => {
   const laborPresets = (await import(`../../messages/${locale}/laborPresets.json`)).default
   const telegram = (await import(`../../messages/${locale}/telegram.json`)).default
   const telegramMessages = (await import(`../../messages/${locale}/telegramMessages.json`)).default
+  const statusReport = (await import(`../../messages/${locale}/statusReport.json`)).default
 
   return {
     locale,
@@ -100,6 +101,7 @@ export default getRequestConfig(async () => {
       laborPresets,
       telegram,
       telegramMessages,
+      statusReport,
     },
   }
 })

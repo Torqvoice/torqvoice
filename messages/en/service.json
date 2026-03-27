@@ -20,7 +20,8 @@
       "details": "Details",
       "images": "Images",
       "video": "Video",
-      "documents": "Documents"
+      "documents": "Documents",
+      "statusReports": "Status Reports"
     },
     "save": "Save",
     "pdf": "PDF",
