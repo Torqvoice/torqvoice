@@ -33,6 +33,8 @@
   },
   "basicInfo": {
     "title": "Basisinformatie",
+    "invoiceDetails": "Factuurgegevens",
+    "customerInfo": "Klant en voertuig",
     "vehicle": "Voertuig",
     "open": "Open",
     "customer": "Klant",

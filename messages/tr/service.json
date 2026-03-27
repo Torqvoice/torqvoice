@@ -33,6 +33,8 @@
   },
   "basicInfo": {
     "title": "Temel Bilgiler",
+    "invoiceDetails": "Fatura detayları",
+    "customerInfo": "Müşteri ve araç",
     "vehicle": "Araç",
     "open": "Aç",
     "customer": "Müşteri",

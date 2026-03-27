@@ -33,6 +33,8 @@
   },
   "basicInfo": {
     "title": "Información Básica",
+    "invoiceDetails": "Detalles de factura",
+    "customerInfo": "Cliente y vehículo",
     "vehicle": "Vehículo",
     "open": "Abierto",
     "customer": "Cliente",

@@ -33,6 +33,8 @@
   },
   "basicInfo": {
     "title": "Grunnleggende informasjon",
+    "invoiceDetails": "Fakturadetaljer",
+    "customerInfo": "Kunde og kjøretøy",
     "vehicle": "Kjøretøy",
     "open": "Åpen",
     "customer": "Kunde",

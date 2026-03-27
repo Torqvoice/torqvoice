@@ -33,6 +33,8 @@
   },
   "basicInfo": {
     "title": "Основная информация",
+    "invoiceDetails": "Детали счёта",
+    "customerInfo": "Клиент и транспорт",
     "vehicle": "Транспортное средство",
     "open": "Открыть",
     "customer": "Клиент",

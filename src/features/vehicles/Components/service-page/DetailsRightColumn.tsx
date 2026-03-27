@@ -1,5 +1,6 @@
 import { useRouter } from 'next/navigation'
 import { SharedLinkCard } from '@/components/shared-link-card'
+import { InvoiceDetailsSection } from '../service-edit/InvoiceDetailsSection'
 import { BasicInfoSection } from '../service-edit/BasicInfoSection'
 import { ScheduleTimesSection } from '../service-edit/ScheduleTimesSection'
 import { TotalsSection } from '../service-edit/TotalsSection'
@@ -54,20 +55,26 @@ export function DetailsRightColumn({
           }}
         />
       )}
+      <InvoiceDetailsSection
+        initialData={formState.initialData}
+        type={formState.type}
+        setType={formState.dirtySetType}
+        status={formState.status}
+        setStatus={formState.dirtySetStatus}
+        onDirty={formState.markDirty}
+        paymentStatus={formState.paymentStatus}
+        onTogglePaid={actions.handleTogglePaid}
+        paymentLoading={actions.paymentLoading}
+      />
       <BasicInfoSection
         initialData={formState.initialData}
         vehicleId={vehicleId}
         vehicleName={formState.vehicleName}
         selectedVehicleId={formState.selectedVehicleId}
         setSelectedVehicleId={formState.dirtySetSelectedVehicleId}
-        type={formState.type}
-        setType={formState.dirtySetType}
-        status={formState.status}
-        setStatus={formState.dirtySetStatus}
         techName={formState.techName}
         customer={record.vehicle.customer}
         initialVehicle={initialVehicle}
-        onDirty={formState.markDirty}
       />
       <ScheduleTimesSection
         serviceRecordId={record.id}
