@@ -434,7 +434,7 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
                   alt="LubeLog"
                   width={120}
                   height={30}
-                  className="object-contain"
+                  className="h-auto object-contain"
                   unoptimized
                 />
               </button>
@@ -450,7 +450,7 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
                   alt="Invoice Ninja"
                   width={140}
                   height={30}
-                  className="object-contain"
+                  className="h-auto object-contain"
                   unoptimized
                 />
               </button>

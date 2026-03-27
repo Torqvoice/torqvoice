@@ -197,6 +197,8 @@ model ServiceRecord {
   taxAmount       Float     @default(0)
   totalAmount     Float     @default(0)
   invoiceNumber   String?
+  invoiceDate     DateTime?
+  invoiceDueDate  DateTime?
   discountType    String?
   discountValue   Float     @default(0)
   discountAmount  Float     @default(0)

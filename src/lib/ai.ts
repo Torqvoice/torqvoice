@@ -163,6 +163,7 @@ export interface ServiceHistoryRecord {
   title: string;
   description: string | null;
   serviceDate: Date | null;
+  startDateTime?: Date | null;
   type: string;
   cost: number;
   mileage: number | null;
@@ -186,7 +187,7 @@ upcomingMaintenance: predict 2-4 likely upcoming needs based on mileage, age, an
   const recordsStr = records
     .map(
       (r) =>
-        `- ${r.serviceDate ? new Date(r.serviceDate).toISOString().slice(0, 10) : "Unknown date"}: ${r.title} (${r.type}) — Cost: ${r.cost}${r.mileage ? `, Mileage: ${r.mileage}` : ""}${r.description ? `\n  Notes: ${r.description}` : ""}`,
+        `- ${r.serviceDate ? new Date(r.startDateTime ?? r.serviceDate).toISOString().slice(0, 10) : "Unknown date"}: ${r.title} (${r.type}) — Cost: ${r.cost}${r.mileage ? `, Mileage: ${r.mileage}` : ""}${r.description ? `\n  Notes: ${r.description}` : ""}`,
     )
     .join("\n");
 

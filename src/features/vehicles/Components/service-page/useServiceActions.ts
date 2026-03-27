@@ -77,10 +77,14 @@ export function useServiceActions({
 
     // Mobile + desktop layouts both render inputs with the same name.
     // formData.get() returns the first (hidden/stale) one, so read the visible input via offsetParent.
+    // For hidden inputs (offsetParent is always null), take the last one in DOM order.
     const getVisible = (name: string) => {
-      const inputs = form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`)
-      const visible = Array.from(inputs).find(el => el.offsetParent !== null)
-      return visible?.value ?? new FormData(form).get(name) as string
+      const inputs = Array.from(form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`))
+      const visible = inputs.find(el => el.offsetParent !== null)
+      if (visible) return visible.value
+      // All hidden — take last (active layout renders second)
+      const last = inputs[inputs.length - 1]
+      return last?.value ?? new FormData(form).get(name) as string
     }
     const rawMileage = getVisible('mileage')
     const parsedMileage = rawMileage ? Number(rawMileage) || undefined : undefined
@@ -99,6 +103,8 @@ export function useServiceActions({
       diagnosticNotes: notesRef.current.diagnosticNotes || undefined,
       invoiceNotes: notesRef.current.invoiceNotes || undefined,
       invoiceNumber: getVisible('invoiceNumber') || undefined,
+      invoiceDate: getVisible('invoiceDate') || undefined,
+      invoiceDueDate: getVisible('invoiceDueDate') || undefined,
       partItems: partItems.filter((p) => p.name),
       laborItems: laborItems.filter((l) => l.description),
       subtotal,

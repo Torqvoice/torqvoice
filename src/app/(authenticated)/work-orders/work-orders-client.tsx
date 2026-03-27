@@ -49,6 +49,7 @@ interface WorkOrder {
   totalAmount: number;
   cost: number;
   serviceDate: Date;
+  startDateTime: Date | null;
   techName: string | null;
   invoiceNumber: string | null;
   vehicle: {
@@ -358,7 +359,7 @@ export function WorkOrdersClient({
                       {r.techName || "-"}
                     </TableCell>
                     <TableCell className="font-mono text-xs">
-                      {formatDate(new Date(r.serviceDate))}
+                      {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
                     </TableCell>
                     <TableCell className="text-right font-semibold">
                       {formatCurrency(displayTotal, currencyCode)}

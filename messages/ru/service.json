@@ -7,6 +7,11 @@
     "deleteDescription": "Это безвозвратно удалит запись обслуживания и все связанные данные. Это действие необратимо.",
     "deleted": "Запись обслуживания удалена",
     "failedDelete": "Не удалось удалить",
+    "datesExpiredTitle": "Даты счёта истекли",
+    "datesExpiredDescription": "Дата счёта или срок оплаты истёк. Хотите обновить даты перед продолжением?",
+    "datesExpiredUpdate": "Обновить даты и продолжить",
+    "datesExpiredProceed": "Продолжить без изменений",
+    "datesExpiredSetToday": "Установить на сегодня",
     "customFieldsInvalid": "Заполните все обязательные пользовательские поля",
     "customFieldsSaveFailed": "Не удалось сохранить пользовательские поля"
   },
@@ -40,6 +45,8 @@
     "status": "Статус",
     "technician": "Механик",
     "invoiceNumber": "Номер счёта",
+    "invoiceDate": "Дата счёта",
+    "invoiceDueDate": "Срок оплаты",
     "typeOptions": {
       "maintenance": "Техобслуживание",
       "repair": "Ремонт",

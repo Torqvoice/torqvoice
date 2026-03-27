@@ -46,6 +46,7 @@ interface ServiceRecordRow {
   cost: number;
   mileage: number | null;
   serviceDate: Date;
+  startDateTime: Date | null;
   shopName: string | null;
   techName: string | null;
   totalAmount: number;

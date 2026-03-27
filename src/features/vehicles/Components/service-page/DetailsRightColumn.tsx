@@ -67,6 +67,7 @@ export function DetailsRightColumn({
         techName={formState.techName}
         customer={record.vehicle.customer}
         initialVehicle={initialVehicle}
+        onDirty={formState.markDirty}
       />
       <ScheduleTimesSection
         serviceRecordId={record.id}

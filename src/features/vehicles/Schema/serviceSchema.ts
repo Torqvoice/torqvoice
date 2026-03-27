@@ -54,6 +54,8 @@ export const createServiceSchema = z.object({
   discountValue: z.coerce.number().min(0).default(0),
   discountAmount: z.coerce.number().min(0).default(0),
   invoiceNumber: z.string().optional(),
+  invoiceDate: z.string().optional(),
+  invoiceDueDate: z.string().optional(),
 });
 
 export const updateServiceSchema = createServiceSchema.partial().extend({

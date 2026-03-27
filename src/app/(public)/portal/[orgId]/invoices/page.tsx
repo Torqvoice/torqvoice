@@ -80,7 +80,7 @@ export default async function PortalInvoicesPage({
                         {inv.vehicle?.make} {inv.vehicle?.model}
                       </TableCell>
                       <TableCell>
-                        {new Date(inv.serviceDate).toLocaleDateString()}
+                        {new Date(inv.startDateTime ?? inv.serviceDate).toLocaleDateString()}
                       </TableCell>
                       <TableCell>${inv.totalAmount.toFixed(2)}</TableCell>
                       <TableCell>

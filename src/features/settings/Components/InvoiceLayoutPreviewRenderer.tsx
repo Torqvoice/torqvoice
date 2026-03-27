@@ -40,6 +40,7 @@ const DUMMY_INVOICE_DATA = {
   description: null,
   type: "Maintenance",
   serviceDate: new Date("2026-03-10"),
+  startDateTime: new Date("2026-03-10"),
   shopName: "Your Workshop",
   techName: "Mike Johnson",
   mileage: 45230,

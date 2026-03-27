@@ -30,6 +30,8 @@ export interface InitialData {
   diagnosticNotes: string
   invoiceNotes: string
   invoiceNumber?: string
+  invoiceDate: string
+  invoiceDueDate: string
   partItems: ServicePartInput[]
   laborItems: ServiceLaborInput[]
   attachments: (ServiceAttachmentInput & { includeInInvoice?: boolean })[]

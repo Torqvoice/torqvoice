@@ -56,6 +56,7 @@ interface ServiceItem {
   totalAmount: number;
   cost: number;
   serviceDate: Date;
+  startDateTime: Date | null;
   vehicle: {
     id: string;
     make: string;
@@ -1057,7 +1058,7 @@ export function DashboardClient({
                           }}
                         >
                           <TableCell className="font-mono text-xs">
-                            {formatDate(new Date(s.serviceDate))}
+                            {formatDate(new Date(s.startDateTime ?? s.serviceDate))}
                           </TableCell>
                           <TableCell>
                             <div>

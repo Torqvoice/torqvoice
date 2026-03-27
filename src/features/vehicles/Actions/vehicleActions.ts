@@ -30,7 +30,7 @@ export async function getVehicle(vehicleId: string) {
       include: {
         customer: { select: { id: true, name: true, company: true, email: true, phone: true } },
         serviceRecords: {
-          orderBy: { serviceDate: "desc" },
+          orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
           take: 10,
           include: {
             _count: { select: { partItems: true, laborItems: true } },

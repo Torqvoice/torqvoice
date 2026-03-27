@@ -7,6 +7,11 @@
     "deleteDescription": "Cela supprimera définitivement ce dossier de service et toutes les données associées. Cette action ne peut pas être annulée.",
     "deleted": "Dossier de service supprimé",
     "failedDelete": "Impossible de supprimer",
+    "datesExpiredTitle": "Dates de facture expirées",
+    "datesExpiredDescription": "La date de facturation ou la date d'échéance est dépassée. Souhaitez-vous les mettre à jour avant de continuer ?",
+    "datesExpiredUpdate": "Mettre à jour les dates et continuer",
+    "datesExpiredProceed": "Continuer sans modifications",
+    "datesExpiredSetToday": "Définir à aujourd'hui",
     "customFieldsInvalid": "Veuillez remplir tous les champs personnalisés obligatoires",
     "customFieldsSaveFailed": "Échec de l'enregistrement des champs personnalisés"
   },
@@ -40,6 +45,8 @@
     "status": "Statut",
     "technician": "Technicien",
     "invoiceNumber": "Numéro de Facture",
+    "invoiceDate": "Date de facture",
+    "invoiceDueDate": "Date d'échéance",
     "typeOptions": {
       "maintenance": "Maintenance",
       "repair": "Réparation",

@@ -29,6 +29,7 @@ export default async function ServiceDetailPage({
         SETTING_KEYS.DEFAULT_TAX_RATE,
         SETTING_KEYS.TAX_ENABLED,
         SETTING_KEYS.DEFAULT_LABOR_RATE,
+        SETTING_KEYS.INVOICE_DUE_DAYS,
       ]),
       getInventoryPartsList(),
       getTechnicians(),
@@ -64,6 +65,7 @@ export default async function ServiceDetailPage({
     : 0;
   const defaultLaborRate =
     Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0;
+  const defaultDueDays = Number(settings[SETTING_KEYS.INVOICE_DUE_DAYS]) || 0;
   const inventoryParts =
     inventoryResult.success && inventoryResult.data ? inventoryResult.data : [];
   const laborPresets =
@@ -123,6 +125,12 @@ export default async function ServiceDetailPage({
     diagnosticNotes: record.diagnosticNotes || "",
     invoiceNotes: record.invoiceNotes || "",
     invoiceNumber: record.invoiceNumber || "",
+    invoiceDate: (record.invoiceDate ?? record.startDateTime ?? record.serviceDate).toISOString().split("T")[0],
+    invoiceDueDate: record.invoiceDueDate
+      ? record.invoiceDueDate.toISOString().split("T")[0]
+      : defaultDueDays > 0
+        ? new Date((record.invoiceDate ?? record.startDateTime ?? record.serviceDate).getTime() + defaultDueDays * 86400000).toISOString().split("T")[0]
+        : "",
     partItems: record.partItems.map((p) => ({
       partNumber: p.partNumber || "",
       name: p.name,
@@ -189,6 +197,7 @@ export default async function ServiceDetailPage({
         smsEnabled={features?.sms ?? false}
         emailEnabled={features?.smtp ?? false}
         aiEnabled={aiEnabled}
+        defaultDueDays={defaultDueDays}
       />
     </div>
   );

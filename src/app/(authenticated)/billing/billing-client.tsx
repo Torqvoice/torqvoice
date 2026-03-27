@@ -33,6 +33,7 @@ interface BillingRecord {
   title: string;
   invoiceNumber: string | null;
   serviceDate: Date;
+  startDateTime: Date | null;
   totalAmount: number;
   totalPaid: number;
   status: string;
@@ -325,7 +326,7 @@ export default function BillingClient({
                       {record.vehicle.customer?.name || "\u2014"}
                     </TableCell>
                     <TableCell>
-                      {formatDate(new Date(record.serviceDate))}
+                      {formatDate(new Date(record.startDateTime ?? record.serviceDate))}
                     </TableCell>
                     <TableCell className="text-right">
                       {fmt(record.totalAmount)}

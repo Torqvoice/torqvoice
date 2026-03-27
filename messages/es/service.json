@@ -7,6 +7,11 @@
     "deleteDescription": "Esto eliminará permanentemente este registro de servicio y todos los datos asociados. Esto no se puede deshacer.",
     "deleted": "Registro de servicio eliminado",
     "failedDelete": "Error al eliminar",
+    "datesExpiredTitle": "Fechas de factura expiradas",
+    "datesExpiredDescription": "La fecha de la factura o la fecha de vencimiento ha pasado. ¿Desea actualizarlas antes de continuar?",
+    "datesExpiredUpdate": "Actualizar fechas y continuar",
+    "datesExpiredProceed": "Continuar sin cambios",
+    "datesExpiredSetToday": "Establecer a hoy",
     "customFieldsInvalid": "Por favor complete todos los campos personalizados obligatorios",
     "customFieldsSaveFailed": "Error al guardar los campos personalizados"
   },
@@ -40,6 +45,8 @@
     "status": "Estado",
     "technician": "Técnico",
     "invoiceNumber": "Número de Factura",
+    "invoiceDate": "Fecha de factura",
+    "invoiceDueDate": "Fecha de vencimiento",
     "typeOptions": {
       "maintenance": "Mantenimiento",
       "repair": "Reparación",

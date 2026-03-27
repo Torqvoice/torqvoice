@@ -52,6 +52,7 @@ export interface ServicePageClientProps {
   smsEnabled?: boolean
   emailEnabled?: boolean
   aiEnabled?: boolean
+  defaultDueDays?: number
 }
 
 export type { ServicePartInput, ServiceLaborInput, ServiceDetail, InitialData, InventoryPartOption, LaborPresetOption }

@@ -16,10 +16,11 @@ export async function getRevenueReport(params: {
     const records = await db.serviceRecord.findMany({
       where: {
         vehicle: { organizationId },
-        serviceDate: { gte: start, lte: end },
+        startDateTime: { gte: start, lte: end },
       },
       select: {
         serviceDate: true,
+        startDateTime: true,
         totalAmount: true,
         cost: true,
         type: true,
@@ -27,7 +28,7 @@ export async function getRevenueReport(params: {
         payments: { select: { amount: true } },
         partItems: { select: { unitCost: true, quantity: true } },
       },
-      orderBy: { serviceDate: "asc" },
+      orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
     });
 
     // Monthly breakdown
@@ -44,7 +45,8 @@ export async function getRevenueReport(params: {
       const total = r.totalAmount > 0 ? r.totalAmount : r.cost;
       const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0);
       const partsCost = r.partItems.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
-      const month = `${r.serviceDate.getFullYear()}-${String(r.serviceDate.getMonth() + 1).padStart(2, "0")}`;
+      const _date = r.startDateTime ?? r.serviceDate;
+      const month = `${_date.getFullYear()}-${String(_date.getMonth() + 1).padStart(2, "0")}`;
 
       if (!monthly[month]) monthly[month] = { revenue: 0, collected: 0, count: 0, partsCost: 0 };
       monthly[month].revenue += total;
@@ -93,7 +95,7 @@ export async function getServiceReport(params: {
     const records = await db.serviceRecord.findMany({
       where: {
         vehicle: { organizationId },
-        serviceDate: { gte: start, lte: end },
+        startDateTime: { gte: start, lte: end },
       },
       select: {
         type: true,
@@ -137,7 +139,7 @@ export async function getCustomerReport(params: {
         vehicles: {
           select: {
             serviceRecords: {
-              where: { serviceDate: { gte: start, lte: end } },
+              where: { startDateTime: { gte: start, lte: end } },
               select: { totalAmount: true, cost: true },
             },
           },
@@ -180,7 +182,7 @@ export async function getTechnicianReport(params: {
     const records = await db.serviceRecord.findMany({
       where: {
         vehicle: { organizationId },
-        serviceDate: { gte: start, lte: end },
+        startDateTime: { gte: start, lte: end },
         OR: [{ technicianId: { not: null } }, { techName: { not: null } }],
       },
       select: {
@@ -237,7 +239,7 @@ export async function getPartsUsageReport(params: {
       where: {
         serviceRecord: {
           vehicle: { organizationId },
-          serviceDate: { gte: start, lte: end },
+          startDateTime: { gte: start, lte: end },
         },
       },
       select: {
@@ -296,13 +298,14 @@ export async function getJobAnalyticsReport(params: {
     const records = await db.serviceRecord.findMany({
       where: {
         vehicle: { organizationId },
-        serviceDate: { gte: start, lte: end },
+        startDateTime: { gte: start, lte: end },
       },
       select: {
         type: true,
         totalAmount: true,
         cost: true,
         serviceDate: true,
+        startDateTime: true,
         laborItems: { select: { hours: true } },
       },
     });
@@ -334,14 +337,15 @@ export async function getJobAnalyticsReport(params: {
     const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const dayCount = [0, 0, 0, 0, 0, 0, 0];
     for (const r of records) {
-      dayCount[r.serviceDate.getDay()] += 1;
+      dayCount[(r.startDateTime ?? r.serviceDate).getDay()] += 1;
     }
     const dayOfWeek = dayNames.map((day, i) => ({ day, count: dayCount[i] }));
 
     // Monthly trend
     const monthly: Record<string, { count: number; revenue: number }> = {};
     for (const r of records) {
-      const month = `${r.serviceDate.getFullYear()}-${String(r.serviceDate.getMonth() + 1).padStart(2, "0")}`;
+      const _d = r.startDateTime ?? r.serviceDate;
+      const month = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, "0")}`;
       if (!monthly[month]) monthly[month] = { count: 0, revenue: 0 };
       monthly[month].count += 1;
       monthly[month].revenue += r.totalAmount > 0 ? r.totalAmount : r.cost;
@@ -378,9 +382,9 @@ export async function getCustomerRetentionReport(params: {
         vehicles: {
           select: {
             serviceRecords: {
-              where: { serviceDate: { gte: start, lte: end } },
-              select: { serviceDate: true, totalAmount: true, cost: true },
-              orderBy: { serviceDate: "asc" },
+              where: { startDateTime: { gte: start, lte: end } },
+              select: { serviceDate: true, startDateTime: true, totalAmount: true, cost: true },
+              orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
             },
           },
         },
@@ -403,7 +407,7 @@ export async function getCustomerRetentionReport(params: {
       const visits: { date: Date; amount: number }[] = [];
       for (const v of c.vehicles) {
         for (const sr of v.serviceRecords) {
-          visits.push({ date: sr.serviceDate, amount: sr.totalAmount > 0 ? sr.totalAmount : sr.cost });
+          visits.push({ date: sr.startDateTime ?? sr.serviceDate, amount: sr.totalAmount > 0 ? sr.totalAmount : sr.cost });
         }
       }
 
@@ -500,16 +504,17 @@ export async function getTaxReport(params: {
     const records = await db.serviceRecord.findMany({
       where: {
         vehicle: { organizationId },
-        serviceDate: { gte: start, lte: end },
+        startDateTime: { gte: start, lte: end },
       },
       select: {
         serviceDate: true,
+        startDateTime: true,
         subtotal: true,
         taxRate: true,
         taxAmount: true,
         totalAmount: true,
       },
-      orderBy: { serviceDate: "asc" },
+      orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
     });
 
     const monthly: Record<string, { taxCollected: number; invoiceCount: number; taxableAmount: number }> = {};
@@ -521,7 +526,8 @@ export async function getTaxReport(params: {
     for (const r of records) {
       if (r.taxAmount <= 0) continue;
 
-      const month = `${r.serviceDate.getFullYear()}-${String(r.serviceDate.getMonth() + 1).padStart(2, "0")}`;
+      const _dt = r.startDateTime ?? r.serviceDate;
+      const month = `${_dt.getFullYear()}-${String(_dt.getMonth() + 1).padStart(2, "0")}`;
 
       if (!monthly[month]) monthly[month] = { taxCollected: 0, invoiceCount: 0, taxableAmount: 0 };
       monthly[month].taxCollected += r.taxAmount;

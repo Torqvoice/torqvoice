@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
 import { useTranslations } from 'next-intl'
@@ -14,6 +15,20 @@ import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
 import { useHardwareScanner } from '@/hooks/use-hardware-scanner'
 import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode'
 import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Label } from '@/components/ui/label'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import { CalendarIcon, AlertTriangle } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { updateServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { LaborPresetPickerDialog } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import type { LaborPresetOption } from './service-page-types'
 import { ServiceImagesManager } from '../service-images-manager'
@@ -54,9 +69,43 @@ export function ServicePageClient({
   smsEnabled = false,
   emailEnabled = false,
   aiEnabled = false,
+  defaultDueDays = 0,
 }: ServicePageClientProps) {
   const t = useTranslations('service')
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<ServiceTab>('details')
+
+  // Date check dialog state
+  const [showDateCheck, setShowDateCheck] = useState(false)
+  const dateCheckResolveRef = useRef<((proceed: boolean) => void) | null>(null)
+  const today = new Date(new Date().toISOString().split('T')[0])
+  const suggestedDueDate = defaultDueDays > 0 ? new Date(today.getTime() + defaultDueDays * 86400000) : today
+  const [pendingInvoiceDate, setPendingInvoiceDate] = useState<Date>(today)
+  const [pendingDueDate, setPendingDueDate] = useState<Date>(suggestedDueDate)
+  const [updatingDates, setUpdatingDates] = useState(false)
+
+  const formatDate = (date: Date) => date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+  const toISODate = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+
+  const areDatesExpired = useMemo(() => {
+    const invoiceDateStr = initialData.invoiceDate
+    const dueDateStr = initialData.invoiceDueDate
+    const todayStr = new Date().toISOString().split('T')[0]
+    const invoiceExpired = invoiceDateStr ? invoiceDateStr < todayStr : false
+    const dueExpired = dueDateStr ? dueDateStr < todayStr : false
+    return invoiceExpired || dueExpired
+  }, [initialData.invoiceDate, initialData.invoiceDueDate])
+
+  const checkDates = useCallback(async () => {
+    if (!areDatesExpired || formState.paymentStatus === 'paid') return true
+    // Show current (expired) dates so user sees what's wrong
+    setPendingInvoiceDate(initialData.invoiceDate ? new Date(initialData.invoiceDate + 'T00:00:00') : today)
+    setPendingDueDate(initialData.invoiceDueDate ? new Date(initialData.invoiceDueDate + 'T00:00:00') : today)
+    setShowDateCheck(true)
+    return new Promise<boolean>((resolve) => {
+      dateCheckResolveRef.current = resolve
+    })
+  }, [areDatesExpired, defaultDueDays])
 
   const formState = useServiceFormState({
     vehicleId,
@@ -125,10 +174,10 @@ export function ServicePageClient({
         saving={formState.loading}
         hasUnsavedChanges={formState.hasUnsavedChanges}
         showSaved={formState.showSaved}
-        onDownloadPDF={async () => { if (formState.hasUnsavedChanges) await actions.saveNow(); actions.handleDownloadPDF() }}
+        onDownloadPDF={async () => { if (!await checkDates()) return; if (formState.hasUnsavedChanges) await actions.saveNow(); actions.handleDownloadPDF() }}
         onDelete={actions.handleDelete}
-        onShowEmail={async () => { if (formState.hasUnsavedChanges) await actions.saveNow(); actions.setShowEmailDialog(true) }}
-        onShowShare={async () => { if (formState.hasUnsavedChanges) await actions.saveNow(); actions.setShowShareDialog(true) }}
+        onShowEmail={async () => { if (!await checkDates()) return; if (formState.hasUnsavedChanges) await actions.saveNow(); actions.setShowEmailDialog(true) }}
+        onShowShare={async () => { if (!await checkDates()) return; if (formState.hasUnsavedChanges) await actions.saveNow(); actions.setShowShareDialog(true) }}
       />
 
       {activeTab === 'details' && (
@@ -259,6 +308,103 @@ export function ServicePageClient({
           relatedEntityId={record.id}
         />
       )}
+
+      {/* Expired dates check dialog */}
+      <Dialog open={showDateCheck} onOpenChange={(open) => {
+        if (!open) {
+          dateCheckResolveRef.current?.(false)
+          dateCheckResolveRef.current = null
+        }
+        setShowDateCheck(open)
+      }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              {t('page.datesExpiredTitle')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('page.datesExpiredDescription')}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="w-full"
+              onClick={() => {
+                const now = new Date(new Date().toISOString().split('T')[0])
+                setPendingInvoiceDate(now)
+                setPendingDueDate(defaultDueDays > 0 ? new Date(now.getTime() + defaultDueDays * 86400000) : new Date(now.getTime() + 14 * 86400000))
+              }}
+            >
+              {t('page.datesExpiredSetToday')}
+            </Button>
+
+            <div className="space-y-1">
+              <Label className="text-xs">{t('basicInfo.invoiceDate')}</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-left font-normal h-9 text-sm">
+                    <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                    {formatDate(pendingInvoiceDate)}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={pendingInvoiceDate} onSelect={(d) => d && setPendingInvoiceDate(d)} />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-1">
+              <Label className="text-xs">{t('basicInfo.invoiceDueDate')}</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-left font-normal h-9 text-sm">
+                    <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                    {formatDate(pendingDueDate)}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={pendingDueDate} onSelect={(d) => d && setPendingDueDate(d)} />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              disabled={updatingDates}
+              onClick={async () => {
+                setUpdatingDates(true)
+                await updateServiceRecord({
+                  id: record.id,
+                  invoiceDate: toISODate(pendingInvoiceDate),
+                  invoiceDueDate: toISODate(pendingDueDate),
+                })
+                setUpdatingDates(false)
+                setShowDateCheck(false)
+                dateCheckResolveRef.current?.(true)
+                dateCheckResolveRef.current = null
+                router.refresh()
+              }}
+            >
+              {t('page.datesExpiredUpdate')}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDateCheck(false)
+                dateCheckResolveRef.current?.(true)
+                dateCheckResolveRef.current = null
+              }}
+            >
+              {t('page.datesExpiredProceed')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

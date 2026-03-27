@@ -138,6 +138,7 @@ export async function createDraftServiceRecord(
           technicianId: resolvedTechId || undefined,
           invoiceNumber,
           serviceDate,
+          invoiceDate: serviceDate,
           startDateTime: defaultStart,
           endDateTime: endDateTime ?? new Date(defaultStart.getTime() + 3600000),
         },

@@ -1,8 +1,12 @@
 'use client'
 
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -11,7 +15,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import Link from 'next/link'
-import { ExternalLink } from 'lucide-react'
+import { CalendarIcon, ExternalLink } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { useServiceType } from '@/components/service-type-context'
 import type { InitialData } from './form-types'
 import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
@@ -35,6 +40,7 @@ interface BasicInfoSectionProps {
   techName: string
   customer?: CustomerInfo | null
   initialVehicle?: { id: string; make: string; model: string; year: number; licensePlate: string | null } | null
+  onDirty?: () => void
 }
 
 export function BasicInfoSection({
@@ -49,9 +55,26 @@ export function BasicInfoSection({
   techName,
   customer,
   initialVehicle,
+  onDirty,
 }: BasicInfoSectionProps) {
   const t = useTranslations('service.basicInfo')
   const serviceType = useServiceType()
+  const [invoiceDate, setInvoiceDate] = useState<Date | undefined>(
+    initialData.invoiceDate ? new Date(initialData.invoiceDate + 'T00:00:00') : undefined
+  )
+  const [invoiceDueDate, setInvoiceDueDate] = useState<Date | undefined>(
+    initialData.invoiceDueDate ? new Date(initialData.invoiceDueDate + 'T00:00:00') : undefined
+  )
+
+  const formatDate = (date: Date | undefined) => {
+    if (!date) return ''
+    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+  }
+
+  const toISODate = (date: Date | undefined) => {
+    if (!date) return ''
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+  }
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
@@ -153,25 +176,63 @@ export function BasicInfoSection({
         </div>
       </div>
 
+      <div className="space-y-1">
+        <Label htmlFor="mileage" className="text-xs">{serviceType === 'boat' ? t('mileageBoat') : t('mileage')}</Label>
+        <Input
+          id="mileage"
+          name="mileage"
+          type="number"
+          placeholder="50000"
+          defaultValue={initialData.mileage ?? ''}
+        />
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="invoiceNumber" className="text-xs">{t('invoiceNumber')}</Label>
+        <Input
+          id="invoiceNumber"
+          name="invoiceNumber"
+          placeholder="2026-1001"
+          defaultValue={initialData.invoiceNumber || ''}
+        />
+      </div>
+
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1">
-          <Label htmlFor="mileage" className="text-xs">{serviceType === 'boat' ? t('mileageBoat') : t('mileage')}</Label>
-          <Input
-            id="mileage"
-            name="mileage"
-            type="number"
-            placeholder="50000"
-            defaultValue={initialData.mileage ?? ''}
-          />
+          <Label className="text-xs">{t('invoiceDate')}</Label>
+          <input type="hidden" name="invoiceDate" value={toISODate(invoiceDate)} />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn('w-full justify-start text-left font-normal h-9 text-sm', !invoiceDate && 'text-muted-foreground')}
+              >
+                <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                {invoiceDate ? formatDate(invoiceDate) : t('invoiceDate')}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={invoiceDate} onSelect={(d) => { setInvoiceDate(d); onDirty?.() }} />
+            </PopoverContent>
+          </Popover>
         </div>
         <div className="space-y-1">
-          <Label htmlFor="invoiceNumber" className="text-xs">{t('invoiceNumber')}</Label>
-          <Input
-            id="invoiceNumber"
-            name="invoiceNumber"
-            placeholder="2026-1001"
-            defaultValue={initialData.invoiceNumber || ''}
-          />
+          <Label className="text-xs">{t('invoiceDueDate')}</Label>
+          <input type="hidden" name="invoiceDueDate" value={toISODate(invoiceDueDate)} />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn('w-full justify-start text-left font-normal h-9 text-sm', !invoiceDueDate && 'text-muted-foreground')}
+              >
+                <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                {invoiceDueDate ? formatDate(invoiceDueDate) : t('invoiceDueDate')}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={invoiceDueDate} onSelect={(d) => { setInvoiceDueDate(d); onDirty?.() }} />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 

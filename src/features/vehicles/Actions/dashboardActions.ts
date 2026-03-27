@@ -30,7 +30,7 @@ export async function getDashboardStats() {
         where: {
           vehicle: { organizationId },
           status: "completed",
-          serviceDate: { gte: today, lt: tomorrow },
+          startDateTime: { gte: today, lt: tomorrow },
         },
         _sum: { totalAmount: true },
       }),
@@ -52,7 +52,7 @@ export async function getDashboardStats() {
             },
           },
         },
-        orderBy: { serviceDate: "desc" },
+        orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
         take: 50,
       }),
       db.serviceRecord.findMany({
@@ -72,7 +72,7 @@ export async function getDashboardStats() {
             },
           },
         },
-        orderBy: { serviceDate: "desc" },
+        orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
         take: 10,
       }),
     ]);

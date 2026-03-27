@@ -7,6 +7,11 @@
     "deleteDescription": "Dette vil permanent slette denne servicepotten og all tilknyttet data. Dette kan ikke angres.",
     "deleted": "Servicepost slettet",
     "failedDelete": "Kunne ikke slette",
+    "datesExpiredTitle": "Fakturadatoer utløpt",
+    "datesExpiredDescription": "Fakturadatoen eller forfallsdatoen har passert. Vil du oppdatere dem før du fortsetter?",
+    "datesExpiredUpdate": "Oppdater datoer og fortsett",
+    "datesExpiredProceed": "Fortsett uten endringer",
+    "datesExpiredSetToday": "Sett til i dag",
     "customFieldsInvalid": "Vennligst fyll ut alle obligatoriske egendefinerte felt",
     "customFieldsSaveFailed": "Kunne ikke lagre egendefinerte felt"
   },
@@ -40,6 +45,8 @@
     "status": "Status",
     "technician": "Tekniker",
     "invoiceNumber": "Fakturanummer",
+    "invoiceDate": "Fakturadato",
+    "invoiceDueDate": "Forfallsdato",
     "typeOptions": {
       "maintenance": "Vedlikehold",
       "repair": "Reparasjon",

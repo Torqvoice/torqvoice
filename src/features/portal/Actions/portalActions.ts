@@ -58,10 +58,11 @@ export async function getPortalDashboard() {
             status: true,
             totalAmount: true,
             serviceDate: true,
+            startDateTime: true,
             publicToken: true,
             vehicle: { select: { make: true, model: true } },
           },
-          orderBy: { serviceDate: "desc" },
+          orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
           take: 5,
         }),
         db.quote.findMany({
@@ -176,9 +177,10 @@ export async function getPortalVehicleDetail(vehicleId: string) {
             status: true,
             totalAmount: true,
             serviceDate: true,
+            startDateTime: true,
             publicToken: true,
           },
-          orderBy: { serviceDate: "desc" },
+          orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
         },
         inspections: {
           select: {
@@ -218,12 +220,13 @@ export async function getPortalInvoices() {
         status: true,
         totalAmount: true,
         serviceDate: true,
+        startDateTime: true,
         publicToken: true,
         manuallyPaid: true,
         vehicle: { select: { make: true, model: true } },
         payments: { select: { amount: true } },
       },
-      orderBy: { serviceDate: "desc" },
+      orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
     });
     return invoices;
   });
