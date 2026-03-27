@@ -4,7 +4,10 @@
   "table": {
     "name": "Nome",
     "description": "Descrizione",
-    "itemCount": "Voci"
+    "itemCount": "Voci",
+    "type": "Tipo",
+    "hrs": "ore",
+    "units": "unità"
   },
   "empty": {
     "noMatch": "Nessun modello corrisponde alla ricerca.",

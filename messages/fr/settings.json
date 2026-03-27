@@ -118,7 +118,6 @@
     "uploadingLogo": "Telechargement du logo...",
     "logoUpdated": "Logo mis a jour",
     "failedUploadLogo": "Echec du telechargement du logo",
-    "readMore": "Read More",
     "detailsTitle": "Details de l'entreprise",
     "shopName": "Nom de l'entreprise / atelier",
     "shopNamePlaceholder": "Garage Auto Martin",
@@ -530,6 +529,7 @@
     "layoutDocQuote": "Devis"
   },
   "payment": {
+    "readMore": "En savoir plus",
     "detailsTitle": "Details de paiement",
     "detailsDescription": "Compte bancaire et conditions de paiement sur les factures.",
     "bankAccount": "Compte bancaire (IBAN / Til Konto)",

@@ -118,7 +118,6 @@
     "uploadingLogo": "Logo wird hochgeladen...",
     "logoUpdated": "Logo aktualisiert",
     "failedUploadLogo": "Logo-Upload fehlgeschlagen",
-    "readMore": "Read More",
     "detailsTitle": "Firmendetails",
     "shopName": "Firmen-/Werkstattname",
     "shopNamePlaceholder": "Meiers Autowerkstatt",
@@ -530,6 +529,7 @@
     "layoutDocQuote": "Angebot"
   },
   "payment": {
+    "readMore": "Mehr erfahren",
     "detailsTitle": "Zahlungsdetails",
     "detailsDescription": "Bankkonto und Zahlungsbedingungen auf Rechnungen.",
     "bankAccount": "Bankkonto (IBAN / Til Konto)",

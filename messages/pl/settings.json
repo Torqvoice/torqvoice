@@ -118,7 +118,6 @@
     "uploadingLogo": "Przesylanie logo...",
     "logoUpdated": "Logo zaktualizowane",
     "failedUploadLogo": "Nie udalo sie przeslac logo",
-    "readMore": "Read More",
     "detailsTitle": "Dane firmy",
     "shopName": "Nazwa firmy / warsztatu",
     "shopNamePlaceholder": "Warsztat Samochodowy Kowalski",
@@ -530,6 +529,7 @@
     "layoutDocQuote": "Wycena"
   },
   "payment": {
+    "readMore": "Czytaj więcej",
     "detailsTitle": "Szczegoly platnosci",
     "detailsDescription": "Konto bankowe i warunki platnosci wyswietlane na fakturach.",
     "bankAccount": "Konto bankowe (IBAN / Til Konto)",

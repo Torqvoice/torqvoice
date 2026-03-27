@@ -4,7 +4,10 @@
   "table": {
     "name": "Nombre",
     "description": "Descripción",
-    "itemCount": "Elementos"
+    "itemCount": "Elementos",
+    "type": "Tipo",
+    "hrs": "hrs",
+    "units": "unidad(es)"
   },
   "empty": {
     "noMatch": "Ninguna plantilla coincide con su búsqueda.",

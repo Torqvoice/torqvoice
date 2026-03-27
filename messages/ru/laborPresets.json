@@ -4,7 +4,10 @@
   "table": {
     "name": "Название",
     "description": "Описание",
-    "itemCount": "Позиции"
+    "itemCount": "Позиции",
+    "type": "Тип",
+    "hrs": "ч.",
+    "units": "шт."
   },
   "empty": {
     "noMatch": "Шаблоны не найдены.",

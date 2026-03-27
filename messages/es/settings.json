@@ -118,7 +118,6 @@
     "uploadingLogo": "Subiendo logo...",
     "logoUpdated": "Logo actualizado",
     "failedUploadLogo": "Error al subir el logo",
-    "readMore": "Read More",
     "detailsTitle": "Datos de la empresa",
     "shopName": "Nombre de la empresa / taller",
     "shopNamePlaceholder": "Taller Mecanico Lopez",
@@ -530,6 +529,7 @@
     "layoutDocQuote": "Presupuesto"
   },
   "payment": {
+    "readMore": "Leer más",
     "detailsTitle": "Detalles de pago",
     "detailsDescription": "Cuenta bancaria y condiciones de pago en las facturas.",
     "bankAccount": "Cuenta bancaria (IBAN / Til Konto)",

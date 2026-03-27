@@ -118,7 +118,6 @@
     "uploadingLogo": "Logo uploaden...",
     "logoUpdated": "Logo bijgewerkt",
     "failedUploadLogo": "Logo uploaden mislukt",
-    "readMore": "Read More",
     "detailsTitle": "Bedrijfsgegevens",
     "shopName": "Bedrijfs-/werkplaatsnaam",
     "shopNamePlaceholder": "Jansens Autogarage",
@@ -530,6 +529,7 @@
     "layoutDocQuote": "Offerte"
   },
   "payment": {
+    "readMore": "Lees meer",
     "detailsTitle": "Betalingsgegevens",
     "detailsDescription": "Bankrekening en betalingsvoorwaarden op facturen.",
     "bankAccount": "Bankrekening (IBAN / Til Konto)",

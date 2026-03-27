@@ -4,7 +4,10 @@
   "table": {
     "name": "Nome",
     "description": "Descrição",
-    "itemCount": "Itens"
+    "itemCount": "Itens",
+    "type": "Tipo",
+    "hrs": "hrs",
+    "units": "unidade(s)"
   },
   "empty": {
     "noMatch": "Nenhum modelo corresponde à sua pesquisa.",

@@ -118,7 +118,6 @@
     "uploadingLogo": "Загрузка логотипа...",
     "logoUpdated": "Логотип обновлён",
     "failedUploadLogo": "Не удалось загрузить логотип",
-    "readMore": "Read More",
     "detailsTitle": "Данные компании",
     "shopName": "Название компании / мастерской",
     "shopNamePlaceholder": "Автосервис Ивана",
@@ -530,6 +529,7 @@
     }
   },
   "payment": {
+    "readMore": "Подробнее",
     "detailsTitle": "Платёжные реквизиты",
     "detailsDescription": "Банковский счёт и условия оплаты, отображаемые на счетах.",
     "bankAccount": "Банковский счёт (IBAN)",

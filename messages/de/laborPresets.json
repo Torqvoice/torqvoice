@@ -4,7 +4,10 @@
   "table": {
     "name": "Name",
     "description": "Beschreibung",
-    "itemCount": "Positionen"
+    "itemCount": "Positionen",
+    "type": "Typ",
+    "hrs": "Std.",
+    "units": "Einheit(en)"
   },
   "empty": {
     "noMatch": "Keine Vorlagen entsprechen Ihrer Suche.",
