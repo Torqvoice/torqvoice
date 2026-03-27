@@ -67,5 +67,9 @@
     "viewed": "Bekeken",
     "expires": "Verloopt",
     "expired": "Verlopen"
+  },
+  "notify": {
+    "defaultMessage": "Hallo {name}, we hebben een statusupdate over uw {vehicle}. Bekijk het hier: {url}",
+    "emailSubject": "Voertuig statusupdate - {vehicle}"
   }
 }

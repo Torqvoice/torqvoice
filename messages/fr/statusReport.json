@@ -67,5 +67,9 @@
     "viewed": "Consulté",
     "expires": "Expire",
     "expired": "Expiré"
+  },
+  "notify": {
+    "defaultMessage": "Bonjour {name}, nous avons une mise à jour de l'état de votre {vehicle}. Consultez-la ici : {url}",
+    "emailSubject": "Mise à jour de l'état du véhicule - {vehicle}"
   }
 }

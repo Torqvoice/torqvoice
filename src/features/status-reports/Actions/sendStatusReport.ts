@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { getTranslations } from "next-intl/server";
 import { sendStatusReportSchema } from "../Schema/statusReportSchema";
 import { sendSmsToCustomer } from "@/features/sms/Actions/smsActions";
 import { sendNotificationEmail } from "@/features/email/Actions/emailActions";
@@ -48,16 +49,18 @@ export async function sendStatusReport(input: unknown) {
 
       const vehicle = report.serviceRecord.vehicle;
       const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+
+      const t = await getTranslations("statusReport.notify");
       const messageBody =
         data.customMessage ||
-        `Hi ${customer.name}, we have a status update on your ${vehicleName}. View it here: ${publicUrl}`;
+        t("defaultMessage", { name: customer.name, vehicle: vehicleName, url: publicUrl });
 
       const sentChannels: string[] = [];
 
       if (data.channels.email && customer.email) {
         await sendNotificationEmail({
           recipientEmail: customer.email,
-          subject: `Vehicle Status Update - ${vehicleName}`,
+          subject: t("emailSubject", { vehicle: vehicleName }),
           body: messageBody,
         });
         sentChannels.push("email");

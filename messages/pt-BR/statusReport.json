@@ -67,5 +67,9 @@
     "viewed": "Visualizado",
     "expires": "Expira",
     "expired": "Expirado"
+  },
+  "notify": {
+    "defaultMessage": "Olá {name}, temos uma atualização de status do seu {vehicle}. Veja aqui: {url}",
+    "emailSubject": "Atualização de status do veículo - {vehicle}"
   }
 }

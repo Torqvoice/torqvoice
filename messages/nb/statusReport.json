@@ -67,5 +67,9 @@
     "viewed": "Sett",
     "expires": "Utløper",
     "expired": "Utløpt"
+  },
+  "notify": {
+    "defaultMessage": "Hei {name}, vi har en statusoppdatering på din {vehicle}. Se den her: {url}",
+    "emailSubject": "Statusoppdatering for kjøretøy - {vehicle}"
   }
 }
