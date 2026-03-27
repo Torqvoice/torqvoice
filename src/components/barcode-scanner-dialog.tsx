@@ -32,10 +32,26 @@ export function BarcodeScannerDialog({
   const [manualValue, setManualValue] = useState('')
   const hasScannedRef = useRef(false)
 
+  const scanBufferRef = useRef<string[]>([])
+  const REQUIRED_CONSISTENT_READS = 3
+
   const handleScan = useCallback(
     (decodedText: string) => {
       if (hasScannedRef.current) return
+
+      const buffer = scanBufferRef.current
+      if (buffer.length > 0 && buffer[buffer.length - 1] !== decodedText) {
+        // Different barcode read — reset the buffer
+        scanBufferRef.current = [decodedText]
+        return
+      }
+
+      buffer.push(decodedText)
+      if (buffer.length < REQUIRED_CONSISTENT_READS) return
+
+      // Same barcode confirmed N times in a row — accept it
       hasScannedRef.current = true
+      scanBufferRef.current = []
       onScan(decodedText)
       onOpenChange(false)
     },
@@ -51,10 +67,11 @@ export function BarcodeScannerDialog({
     let scanner: any = null
     let mounted = true
     let running = false
+    scanBufferRef.current = []
 
     const startScanner = async () => {
       try {
-        const { Html5Qrcode } = await import('html5-qrcode')
+        const { Html5Qrcode, Html5QrcodeSupportedFormats } = await import('html5-qrcode')
 
         if (!mounted || !scannerRef.current) return
 
@@ -65,11 +82,23 @@ export function BarcodeScannerDialog({
           scannerRef.current.appendChild(div)
         }
 
-        scanner = new Html5Qrcode(containerId)
+        scanner = new Html5Qrcode(containerId, {
+          verbose: false,
+          formatsToSupport: [
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.UPC_E,
+            Html5QrcodeSupportedFormats.ITF,
+            Html5QrcodeSupportedFormats.QR_CODE,
+          ],
+        })
         html5QrRef.current = scanner
 
         const scanConfig = {
-          fps: 15,
+          fps: 10,
           qrbox: (viewfinderWidth: number, viewfinderHeight: number) => ({
             width: Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.8),
             height: Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.3),
