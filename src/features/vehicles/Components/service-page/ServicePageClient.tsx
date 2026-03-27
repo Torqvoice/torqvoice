@@ -40,9 +40,9 @@ import { useServiceFormState } from './useServiceFormState'
 import { useServiceActions } from './useServiceActions'
 import { DetailsLeftColumn } from './DetailsLeftColumn'
 import { DetailsRightColumn } from './DetailsRightColumn'
+import type { ServicePageClientProps } from './service-page-types'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
-import type { ServicePageClientProps } from './service-page-types'
 
 export function ServicePageClient({
   record,
@@ -81,13 +81,16 @@ export function ServicePageClient({
   const [showDateCheck, setShowDateCheck] = useState(false)
   const dateCheckResolveRef = useRef<((proceed: boolean) => void) | null>(null)
   const today = new Date(new Date().toISOString().split('T')[0])
-  const suggestedDueDate = defaultDueDays > 0 ? new Date(today.getTime() + defaultDueDays * 86400000) : today
+  const suggestedDueDate =
+    defaultDueDays > 0 ? new Date(today.getTime() + defaultDueDays * 86400000) : today
   const [pendingInvoiceDate, setPendingInvoiceDate] = useState<Date>(today)
   const [pendingDueDate, setPendingDueDate] = useState<Date>(suggestedDueDate)
   const [updatingDates, setUpdatingDates] = useState(false)
 
-  const formatDate = (date: Date) => date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-  const toISODate = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+  const toISODate = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 
   const areDatesExpired = useMemo(() => {
     const invoiceDateStr = initialData.invoiceDate
@@ -109,33 +112,48 @@ export function ServicePageClient({
   const checkDates = useCallback(async () => {
     if (!areDatesExpired || formState.paymentStatus === 'paid') return true
     // Show current (expired) dates so user sees what's wrong
-    setPendingInvoiceDate(initialData.invoiceDate ? new Date(initialData.invoiceDate + 'T00:00:00') : today)
-    setPendingDueDate(initialData.invoiceDueDate ? new Date(initialData.invoiceDueDate + 'T00:00:00') : today)
+    setPendingInvoiceDate(
+      initialData.invoiceDate ? new Date(initialData.invoiceDate + 'T00:00:00') : today
+    )
+    setPendingDueDate(
+      initialData.invoiceDueDate ? new Date(initialData.invoiceDueDate + 'T00:00:00') : today
+    )
     setShowDateCheck(true)
     return new Promise<boolean>((resolve) => {
       dateCheckResolveRef.current = resolve
     })
-  }, [areDatesExpired, formState.paymentStatus, initialData.invoiceDate, initialData.invoiceDueDate])
+  }, [
+    areDatesExpired,
+    formState.paymentStatus,
+    initialData.invoiceDate,
+    initialData.invoiceDueDate,
+  ])
 
-  const handleBarcodeScan = useCallback(async (barcode: string) => {
-    const result = await lookupPartByBarcode(barcode)
-    if (result.success && result.data) {
-      const part = result.data
-      const price = part.sellPrice > 0 ? part.sellPrice : part.unitCost
-      formState.dirtySetPartItems((prev) => [...prev, {
-        partNumber: part.partNumber || '',
-        name: part.name,
-        quantity: 1,
-        unitPrice: price,
-        total: price,
-        unitCost: part.unitCost,
-        inventoryPartId: part.id,
-      }])
-      toast.success(t('parts.partFound', { name: part.name }))
-    } else {
-      toast.error(t('parts.partNotFound', { barcode }))
-    }
-  }, [formState, t])
+  const handleBarcodeScan = useCallback(
+    async (barcode: string) => {
+      const result = await lookupPartByBarcode(barcode)
+      if (result.success && result.data) {
+        const part = result.data
+        const price = part.sellPrice > 0 ? part.sellPrice : part.unitCost
+        formState.dirtySetPartItems((prev) => [
+          ...prev,
+          {
+            partNumber: part.partNumber || '',
+            name: part.name,
+            quantity: 1,
+            unitPrice: price,
+            total: price,
+            unitCost: part.unitCost,
+            inventoryPartId: part.id,
+          },
+        ])
+        toast.success(t('parts.partFound', { name: part.name }))
+      } else {
+        toast.error(t('parts.partNotFound', { barcode }))
+      }
+    },
+    [formState, t]
+  )
 
   useHardwareScanner({ onScan: handleBarcodeScan, enabled: activeTab === 'details' })
 
@@ -143,8 +161,10 @@ export function ServicePageClient({
     const newItems = preset.items.map((item) => ({
       description: item.description,
       hours: item.hours,
-      rate: item.rate > 0 ? item.rate : (item.pricingType === 'service' ? 0 : defaultLaborRate),
-      total: item.hours * (item.rate > 0 ? item.rate : (item.pricingType === 'service' ? 0 : defaultLaborRate)),
+      rate: item.rate > 0 ? item.rate : item.pricingType === 'service' ? 0 : defaultLaborRate,
+      total:
+        item.hours *
+        (item.rate > 0 ? item.rate : item.pricingType === 'service' ? 0 : defaultLaborRate),
       pricingType: (item.pricingType as 'hourly' | 'service') || 'hourly',
     }))
     formState.dirtySetLaborItems((prev) => [...prev, ...newItems])
@@ -177,14 +197,32 @@ export function ServicePageClient({
         saving={formState.loading}
         hasUnsavedChanges={formState.hasUnsavedChanges}
         showSaved={formState.showSaved}
-        onDownloadPDF={async () => { if (!await checkDates()) return; if (formState.hasUnsavedChanges) await actions.saveNow(); actions.handleDownloadPDF() }}
+        onDownloadPDF={async () => {
+          if (!(await checkDates())) return
+          if (formState.hasUnsavedChanges) await actions.saveNow()
+          actions.handleDownloadPDF()
+        }}
         onDelete={actions.handleDelete}
-        onShowEmail={async () => { if (!await checkDates()) return; if (formState.hasUnsavedChanges) await actions.saveNow(); actions.setShowEmailDialog(true) }}
-        onShowShare={async () => { if (!await checkDates()) return; if (formState.hasUnsavedChanges) await actions.saveNow(); actions.setShowShareDialog(true) }}
+        onShowEmail={async () => {
+          if (!(await checkDates())) return
+          if (formState.hasUnsavedChanges) await actions.saveNow()
+          actions.setShowEmailDialog(true)
+        }}
+        onShowShare={async () => {
+          if (!(await checkDates())) return
+          if (formState.hasUnsavedChanges) await actions.saveNow()
+          actions.setShowShareDialog(true)
+        }}
       />
 
       {activeTab === 'details' && (
-        <form id="service-record-form" ref={formState.formRef} onSubmit={actions.handleSubmit} onInput={formState.markDirty} className="flex min-h-0 flex-1 flex-col">
+        <form
+          id="service-record-form"
+          ref={formState.formRef}
+          onSubmit={actions.handleSubmit}
+          onInput={formState.markDirty}
+          className="flex min-h-0 flex-1 flex-col"
+        >
           <ServiceDetailContent
             leftColumn={
               <DetailsLeftColumn
@@ -230,10 +268,7 @@ export function ServicePageClient({
 
       {activeTab === 'video' && (
         <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-          <ServiceVideoManager
-            serviceRecordId={record.id}
-            initialVideos={videoAttachments}
-          />
+          <ServiceVideoManager serviceRecordId={record.id} initialVideos={videoAttachments} />
         </div>
       )}
 
@@ -254,13 +289,17 @@ export function ServicePageClient({
             serviceRecordId={record.id}
             organizationId={organizationId}
             vehicleName={formState.vehicleName}
-            customer={record.vehicle.customer ? {
-              id: record.vehicle.customer.id,
-              name: record.vehicle.customer.name,
-              email: record.vehicle.customer.email,
-              phone: record.vehicle.customer.phone,
-              telegramChatId: record.vehicle.customer.telegramChatId || null,
-            } : null}
+            customer={
+              record.vehicle.customer
+                ? {
+                    id: record.vehicle.customer.id,
+                    name: record.vehicle.customer.name,
+                    email: record.vehicle.customer.email,
+                    phone: record.vehicle.customer.phone,
+                    telegramChatId: record.vehicle.customer.telegramChatId || null,
+                  }
+                : null
+            }
             smsEnabled={smsEnabled}
             emailEnabled={emailEnabled}
             telegramEnabled={telegramEnabled}
@@ -334,22 +373,23 @@ export function ServicePageClient({
       )}
 
       {/* Expired dates check dialog */}
-      <Dialog open={showDateCheck} onOpenChange={(open) => {
-        if (!open) {
-          dateCheckResolveRef.current?.(false)
-          dateCheckResolveRef.current = null
-        }
-        setShowDateCheck(open)
-      }}>
+      <Dialog
+        open={showDateCheck}
+        onOpenChange={(open) => {
+          if (!open) {
+            dateCheckResolveRef.current?.(false)
+            dateCheckResolveRef.current = null
+          }
+          setShowDateCheck(open)
+        }}
+      >
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-amber-500" />
               {t('page.datesExpiredTitle')}
             </DialogTitle>
-            <DialogDescription>
-              {t('page.datesExpiredDescription')}
-            </DialogDescription>
+            <DialogDescription>{t('page.datesExpiredDescription')}</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3">
@@ -360,7 +400,11 @@ export function ServicePageClient({
               onClick={() => {
                 const now = new Date(new Date().toISOString().split('T')[0])
                 setPendingInvoiceDate(now)
-                setPendingDueDate(defaultDueDays > 0 ? new Date(now.getTime() + defaultDueDays * 86400000) : new Date(now.getTime() + 14 * 86400000))
+                setPendingDueDate(
+                  defaultDueDays > 0
+                    ? new Date(now.getTime() + defaultDueDays * 86400000)
+                    : new Date(now.getTime() + 14 * 86400000)
+                )
               }}
             >
               {t('page.datesExpiredSetToday')}
@@ -370,13 +414,20 @@ export function ServicePageClient({
               <Label className="text-xs">{t('basicInfo.invoiceDate')}</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start text-left font-normal h-9 text-sm">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal h-9 text-sm"
+                  >
                     <CalendarIcon className="mr-2 h-3.5 w-3.5" />
                     {formatDate(pendingInvoiceDate)}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={pendingInvoiceDate} onSelect={(d) => d && setPendingInvoiceDate(d)} />
+                  <Calendar
+                    mode="single"
+                    selected={pendingInvoiceDate}
+                    onSelect={(d) => d && setPendingInvoiceDate(d)}
+                  />
                 </PopoverContent>
               </Popover>
             </div>
@@ -385,13 +436,20 @@ export function ServicePageClient({
               <Label className="text-xs">{t('basicInfo.invoiceDueDate')}</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start text-left font-normal h-9 text-sm">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal h-9 text-sm"
+                  >
                     <CalendarIcon className="mr-2 h-3.5 w-3.5" />
                     {formatDate(pendingDueDate)}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={pendingDueDate} onSelect={(d) => d && setPendingDueDate(d)} />
+                  <Calendar
+                    mode="single"
+                    selected={pendingDueDate}
+                    onSelect={(d) => d && setPendingDueDate(d)}
+                  />
                 </PopoverContent>
               </Popover>
             </div>
