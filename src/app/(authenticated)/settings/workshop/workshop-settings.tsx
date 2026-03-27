@@ -18,9 +18,20 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { setSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { assignTechToUnassignedWorkOrders } from "@/features/workboard/Actions/technicianActions";
 import { Loader2, Ruler, Save, Wrench, Check, ChevronsUpDown, Plus } from "lucide-react";
 import {
   Select,
@@ -52,6 +63,9 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
   const [creatingTech, setCreatingTech] = useState(false);
   const [showNewInput, setShowNewInput] = useState(false);
   const [newTechName, setNewTechName] = useState('');
+  const [showAssignDialog, setShowAssignDialog] = useState(false);
+  const [pendingTechId, setPendingTechId] = useState<string | null>(null);
+  const [assigning, setAssigning] = useState(false);
   const [defaultLaborRate, setDefaultLaborRate] = useState(
     settings[SETTING_KEYS.DEFAULT_LABOR_RATE] || ""
   );
@@ -73,6 +87,24 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
   const handleTechSelect = (techId: string) => {
     setDefaultTechnicianId(techId);
     setTechOpen(false);
+    if (techId) {
+      setPendingTechId(techId);
+      setShowAssignDialog(true);
+    }
+  };
+
+  const handleAssignUnassigned = async () => {
+    if (!pendingTechId) return;
+    setAssigning(true);
+    const result = await assignTechToUnassignedWorkOrders(pendingTechId);
+    setAssigning(false);
+    setShowAssignDialog(false);
+    setPendingTechId(null);
+    if (result.success && result.data) {
+      toast.success(t('workshop.assignedUnassigned', { count: result.data.updated }));
+    } else {
+      toast.error(result.error || t('workshop.assignFailed'));
+    }
   };
 
   const doCreateTechnician = async (name: string) => {
@@ -152,6 +184,21 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
                     <CommandList className="max-h-60 overflow-y-auto">
                       <CommandEmpty className="p-0" />
                       <CommandGroup>
+                        <CommandItem
+                          value="__none__"
+                          onSelect={() => {
+                            setDefaultTechnicianId("");
+                            setTechOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              !defaultTechnicianId ? 'opacity-100' : 'opacity-0',
+                            )}
+                          />
+                          <span className="text-muted-foreground">{t('workshop.noTechnician')}</span>
+                        </CommandItem>
                         {technicians.map((tech) => (
                           <CommandItem
                             key={tech.id}
@@ -330,6 +377,27 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
         </CardContent>
       </Card>
       </ReadOnlyWrapper>
+
+      <AlertDialog open={showAssignDialog} onOpenChange={(open) => {
+        if (!open) setPendingTechId(null);
+        setShowAssignDialog(open);
+      }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('workshop.assignDialogTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('workshop.assignDialogDescription', { name: technicians.find((tech) => tech.id === pendingTechId)?.name || '' })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('workshop.assignDialogSkip')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleAssignUnassigned} disabled={assigning}>
+              {assigning && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('workshop.assignDialogConfirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
