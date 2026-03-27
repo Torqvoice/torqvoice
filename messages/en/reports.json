@@ -1,15 +1,17 @@
 {
   "title": "Reports & Analytics",
   "tabs": {
+    "financial": "Financial Reports",
     "revenue": "Revenue",
+    "pastDueInvoices": "Past Due Invoices",
+    "tax": "Tax",
     "services": "Services",
     "customers": "Customers",
     "inventory": "Inventory",
     "technicians": "Technicians",
     "parts": "Parts",
     "jobAnalytics": "Job Analytics",
-    "retention": "Retention",
-    "tax": "Tax"
+    "retention": "Retention"
   },
   "dateRange": {
     "to": "to"
@@ -41,6 +43,33 @@
       "partsCost": "Parts Cost",
       "netProfit": "Net Profit",
       "count": "Count"
+    }
+  },
+  "pastDueInvoices": {
+    "totalPastDue": "Total Past Due",
+    "totalAmountDue": "Total Amount Due",
+    "over30Days": "Over 30 Days",
+    "over60Days": "Over 60 Days",
+    "over90Days": "Over 90 Days",
+    "totalPastDueDesc": "Invoices with unpaid balance past due date",
+    "totalAmountDueDesc": "Total outstanding amount across all past due invoices",
+    "filterByAge": "Filter by age",
+    "allPastDue": "All Past Due",
+    "30plus": "30+ Days",
+    "60plus": "60+ Days",
+    "90plus": "90+ Days",
+    "pastDueInvoicesList": "Past Due Invoices",
+    "noInvoices": "No past due invoices found.",
+    "tableHeaders": {
+      "customer": "Customer",
+      "company": "Company",
+      "invoiceNumber": "Invoice #",
+      "vehicle": "Vehicle",
+      "totalAmount": "Total Amount",
+      "amountPaid": "Amount Paid",
+      "amountDue": "Amount Due",
+      "dueDate": "Due Date",
+      "daysPastDue": "Days Past Due"
     }
   },
   "services": {
@@ -203,7 +232,15 @@
     "avgDaysBetweenVisits": "Avg Days Between Visits",
     "taxCollected": "Tax Collected",
     "taxableAmount": "Taxable Amount",
-    "invoiceCount": "Invoice Count"
+    "invoiceCount": "Invoice Count",
+    "invoiceNumber": "Invoice #",
+    "totalAmount": "Total Amount",
+    "amountPaid": "Amount Paid",
+    "amountDue": "Amount Due",
+    "dueDate": "Due Date",
+    "daysPastDue": "Days Past Due",
+    "partsCost": "Parts Cost",
+    "netProfit": "Net Profit"
   },
   "empty": "No data loaded yet. Click Refresh to load the report."
 }

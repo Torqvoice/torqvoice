@@ -118,7 +118,6 @@
     "uploadingLogo": "Enviando logo...",
     "logoUpdated": "Logo atualizado",
     "failedUploadLogo": "Falha ao enviar o logo",
-    "readMore": "Read More",
     "detailsTitle": "Detalhes da empresa",
     "shopName": "Nome da empresa / oficina",
     "shopNamePlaceholder": "Auto Mecanica Silva",
@@ -530,6 +529,7 @@
     "layoutDocQuote": "Orcamento"
   },
   "payment": {
+    "readMore": "Saiba mais",
     "detailsTitle": "Detalhes de pagamento",
     "detailsDescription": "Conta bancaria e condicoes de pagamento nas faturas.",
     "bankAccount": "Conta bancaria (IBAN / Til Konto)",

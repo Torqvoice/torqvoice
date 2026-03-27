@@ -66,10 +66,26 @@
     "sent": "Inviato",
     "viewed": "Visualizzato",
     "expires": "Scade",
-    "expired": "Scaduto"
+    "expired": "Scaduto",
+    "statusLabel": "Stato",
+    "created": "Creato",
+    "delete": "Elimina",
+    "deleteConfirm": "Sei sicuro di voler eliminare questo rapporto di stato?",
+    "deleted": "Rapporto di stato eliminato",
+    "deleteTitle": "Elimina rapporto di stato",
+    "deleteFailed": "Impossibile eliminare il rapporto di stato",
+    "cancel": "Annulla",
+  "feedback": "Commento",
+  "hasComment": "Ricevuto",
+  "noFeedback": "Nessun commento",
+  "sentAt": "Inviato",
+  "sentVia": "Inviato tramite",
+  "messageLabel": "Messaggio",
+  "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Ciao {name}, abbiamo un aggiornamento sullo stato del suo {vehicle}. Visualizzalo qui: {url}",
-    "emailSubject": "Aggiornamento stato veicolo - {vehicle}"
+    "emailSubject": "Aggiornamento stato veicolo - {vehicle}",
+  "viewReport": "Visualizza il rapporto qui: {url}"
   }
 }

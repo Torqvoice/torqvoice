@@ -1,15 +1,17 @@
 {
   "title": "Rapporter og Analyser",
   "tabs": {
+    "financial": "Finansrapporter",
     "revenue": "Inntekter",
+    "pastDueInvoices": "Forfalte Fakturaer",
+    "tax": "Skatt",
     "services": "Tjenester",
     "customers": "Kunder",
     "inventory": "Lagerbeholdning",
     "technicians": "Teknikere",
     "parts": "Deler",
     "jobAnalytics": "Jobbanalyse",
-    "retention": "Kundelojalitet",
-    "tax": "Skatt"
+    "retention": "Kundelojalitet"
   },
   "dateRange": {
     "to": "til"
@@ -41,6 +43,33 @@
       "partsCost": "Delekostnad",
       "netProfit": "Nettoresultat",
       "count": "Antall"
+    }
+  },
+  "pastDueInvoices": {
+    "totalPastDue": "Totalt forfalte",
+    "totalAmountDue": "Totalt utestående beløp",
+    "over30Days": "Over 30 dager",
+    "over60Days": "Over 60 dager",
+    "over90Days": "Over 90 dager",
+    "totalPastDueDesc": "Fakturaer med ubetalt saldo etter forfallsdato",
+    "totalAmountDueDesc": "Totalt utestående beløp for alle forfalte fakturaer",
+    "filterByAge": "Filtrer etter alder",
+    "allPastDue": "Alle forfalte",
+    "30plus": "30+ dager",
+    "60plus": "60+ dager",
+    "90plus": "90+ dager",
+    "pastDueInvoicesList": "Forfalte Fakturaer",
+    "noInvoices": "Ingen forfalte fakturaer funnet.",
+    "tableHeaders": {
+      "customer": "Kunde",
+      "company": "Firma",
+      "invoiceNumber": "Fakturanr.",
+      "vehicle": "Kjøretøy",
+      "totalAmount": "Totalbeløp",
+      "amountPaid": "Betalt Beløp",
+      "amountDue": "Utestående Beløp",
+      "dueDate": "Forfallsdato",
+      "daysPastDue": "Dager Forfalt"
     }
   },
   "services": {
@@ -203,7 +232,15 @@
     "avgDaysBetweenVisits": "Gj.sn. Dager Mellom Besøk",
     "taxCollected": "Skatt Innkrevd",
     "taxableAmount": "Skattepliktig Beløp",
-    "invoiceCount": "Antall Fakturaer"
+    "invoiceCount": "Antall Fakturaer",
+    "invoiceNumber": "Fakturanr.",
+    "totalAmount": "Totalbeløp",
+    "amountPaid": "Betalt Beløp",
+    "amountDue": "Utestående Beløp",
+    "dueDate": "Forfallsdato",
+    "daysPastDue": "Dager Forfalt",
+    "partsCost": "Delekostnad",
+    "netProfit": "Nettoresultat"
   },
   "empty": "Ingen data lastet ennå. Klikk Oppdater for å laste rapporten."
 }

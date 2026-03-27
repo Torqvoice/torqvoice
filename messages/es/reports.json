@@ -1,15 +1,17 @@
 {
   "title": "Informes y Análisis",
   "tabs": {
+    "financial": "Informes Financieros",
     "revenue": "Ingresos",
+    "pastDueInvoices": "Facturas Vencidas",
+    "tax": "Impuestos",
     "services": "Servicios",
     "customers": "Clientes",
     "inventory": "Inventario",
     "technicians": "Técnicos",
     "parts": "Piezas",
     "jobAnalytics": "Análisis de Trabajos",
-    "retention": "Retención",
-    "tax": "Impuestos"
+    "retention": "Retención"
   },
   "dateRange": {
     "to": "a"
@@ -41,6 +43,33 @@
       "partsCost": "Coste de piezas",
       "netProfit": "Beneficio neto",
       "count": "Cantidad"
+    }
+  },
+  "pastDueInvoices": {
+    "totalPastDue": "Total vencidas",
+    "totalAmountDue": "Monto total adeudado",
+    "over30Days": "Más de 30 días",
+    "over60Days": "Más de 60 días",
+    "over90Days": "Más de 90 días",
+    "totalPastDueDesc": "Facturas con saldo pendiente después de la fecha de vencimiento",
+    "totalAmountDueDesc": "Monto total pendiente de todas las facturas vencidas",
+    "filterByAge": "Filtrar por antigüedad",
+    "allPastDue": "Todas las vencidas",
+    "30plus": "30+ días",
+    "60plus": "60+ días",
+    "90plus": "90+ días",
+    "pastDueInvoicesList": "Facturas Vencidas",
+    "noInvoices": "No se encontraron facturas vencidas.",
+    "tableHeaders": {
+      "customer": "Cliente",
+      "company": "Empresa",
+      "invoiceNumber": "N.º Factura",
+      "vehicle": "Vehículo",
+      "totalAmount": "Monto Total",
+      "amountPaid": "Monto Pagado",
+      "amountDue": "Monto Adeudado",
+      "dueDate": "Fecha de Vencimiento",
+      "daysPastDue": "Días Vencidos"
     }
   },
   "services": {
@@ -203,7 +232,15 @@
     "avgDaysBetweenVisits": "Prom. Días Entre Visitas",
     "taxCollected": "Impuesto Recaudado",
     "taxableAmount": "Monto Gravable",
-    "invoiceCount": "Cant. de Facturas"
+    "invoiceCount": "Cant. de Facturas",
+    "invoiceNumber": "N.º Factura",
+    "totalAmount": "Monto Total",
+    "amountPaid": "Monto Pagado",
+    "amountDue": "Monto Adeudado",
+    "dueDate": "Fecha de Vencimiento",
+    "daysPastDue": "Días Vencidos",
+    "partsCost": "Coste de piezas",
+    "netProfit": "Beneficio neto"
   },
   "empty": "Aún no se han cargado datos. Haga clic en Actualizar para cargar el informe."
 }

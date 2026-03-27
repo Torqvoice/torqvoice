@@ -1,15 +1,17 @@
 {
   "title": "Berichte & Analysen",
   "tabs": {
+    "financial": "Finanzberichte",
     "revenue": "Umsatz",
+    "pastDueInvoices": "Überfällige Rechnungen",
+    "tax": "Steuer",
     "services": "Dienstleistungen",
     "customers": "Kunden",
     "inventory": "Lagerbestand",
     "technicians": "Techniker",
     "parts": "Teile",
     "jobAnalytics": "Auftragsanalyse",
-    "retention": "Kundenbindung",
-    "tax": "Steuer"
+    "retention": "Kundenbindung"
   },
   "dateRange": {
     "to": "bis"
@@ -41,6 +43,33 @@
       "partsCost": "Teilekosten",
       "netProfit": "Nettogewinn",
       "count": "Anzahl"
+    }
+  },
+  "pastDueInvoices": {
+    "totalPastDue": "Gesamt überfällig",
+    "totalAmountDue": "Gesamtbetrag fällig",
+    "over30Days": "Über 30 Tage",
+    "over60Days": "Über 60 Tage",
+    "over90Days": "Über 90 Tage",
+    "totalPastDueDesc": "Rechnungen mit unbezahltem Saldo nach Fälligkeitsdatum",
+    "totalAmountDueDesc": "Gesamtbetrag aller überfälligen Rechnungen",
+    "filterByAge": "Nach Alter filtern",
+    "allPastDue": "Alle überfälligen",
+    "30plus": "30+ Tage",
+    "60plus": "60+ Tage",
+    "90plus": "90+ Tage",
+    "pastDueInvoicesList": "Überfällige Rechnungen",
+    "noInvoices": "Keine überfälligen Rechnungen gefunden.",
+    "tableHeaders": {
+      "customer": "Kunde",
+      "company": "Unternehmen",
+      "invoiceNumber": "Rechnungsnr.",
+      "vehicle": "Fahrzeug",
+      "totalAmount": "Gesamtbetrag",
+      "amountPaid": "Bezahlter Betrag",
+      "amountDue": "Fälliger Betrag",
+      "dueDate": "Fälligkeitsdatum",
+      "daysPastDue": "Tage überfällig"
     }
   },
   "services": {
@@ -203,7 +232,15 @@
     "avgDaysBetweenVisits": "Ø Tage zwischen Besuchen",
     "taxCollected": "Eingezogene Steuer",
     "taxableAmount": "Steuerpflichtiger Betrag",
-    "invoiceCount": "Rechnungsanzahl"
+    "invoiceCount": "Rechnungsanzahl",
+    "invoiceNumber": "Rechnungsnr.",
+    "totalAmount": "Gesamtbetrag",
+    "amountPaid": "Bezahlter Betrag",
+    "amountDue": "Fälliger Betrag",
+    "dueDate": "Fälligkeitsdatum",
+    "daysPastDue": "Tage überfällig",
+    "partsCost": "Teilekosten",
+    "netProfit": "Nettogewinn"
   },
   "empty": "Noch keine Daten geladen. Klicken Sie auf Aktualisieren, um den Bericht zu laden."
 }

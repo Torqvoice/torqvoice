@@ -118,7 +118,6 @@
     "uploadingLogo": "Caricamento logo...",
     "logoUpdated": "Logo aggiornato",
     "failedUploadLogo": "Caricamento logo non riuscito",
-    "readMore": "Read More",
     "detailsTitle": "Dettagli aziendali",
     "shopName": "Nome azienda / officina",
     "shopNamePlaceholder": "Autofficina di Mario",
@@ -530,6 +529,7 @@
     "layoutDocQuote": "Preventivo"
   },
   "payment": {
+    "readMore": "Scopri di più",
     "detailsTitle": "Dettagli pagamento",
     "detailsDescription": "Conto bancario e termini di pagamento mostrati sulle fatture.",
     "bankAccount": "Conto bancario (IBAN / Til Konto)",

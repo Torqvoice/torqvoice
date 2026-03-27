@@ -66,10 +66,26 @@
     "sent": "Envoyé",
     "viewed": "Consulté",
     "expires": "Expire",
-    "expired": "Expiré"
+    "expired": "Expiré",
+    "statusLabel": "Statut",
+    "created": "Créé",
+    "delete": "Supprimer",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce rapport d'état ?",
+    "deleted": "Rapport d'état supprimé",
+    "deleteTitle": "Supprimer le rapport d'état",
+    "deleteFailed": "Échec de la suppression du rapport d'état",
+    "cancel": "Annuler",
+  "feedback": "Commentaire",
+  "hasComment": "Reçu",
+  "noFeedback": "Aucun commentaire",
+  "sentAt": "Envoyé",
+  "sentVia": "Envoyé via",
+  "messageLabel": "Message",
+  "videoLabel": "Vidéo"
   },
   "notify": {
     "defaultMessage": "Bonjour {name}, nous avons une mise à jour de l'état de votre {vehicle}. Consultez-la ici : {url}",
-    "emailSubject": "Mise à jour de l'état du véhicule - {vehicle}"
+    "emailSubject": "Mise à jour de l'état du véhicule - {vehicle}",
+  "viewReport": "Voir le rapport ici : {url}"
   }
 }

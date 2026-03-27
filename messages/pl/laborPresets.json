@@ -4,7 +4,10 @@
   "table": {
     "name": "Nazwa",
     "description": "Opis",
-    "itemCount": "Pozycje"
+    "itemCount": "Pozycje",
+    "type": "Typ",
+    "hrs": "godz.",
+    "units": "szt."
   },
   "empty": {
     "noMatch": "Żadne szablony nie pasują do wyszukiwania.",

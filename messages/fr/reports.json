@@ -1,15 +1,17 @@
 {
   "title": "Rapports et Analyses",
   "tabs": {
+    "financial": "Rapports Financiers",
     "revenue": "Revenus",
+    "pastDueInvoices": "Factures en Retard",
+    "tax": "Taxes",
     "services": "Services",
     "customers": "Clients",
     "inventory": "Inventaire",
     "technicians": "Techniciens",
     "parts": "Pièces",
     "jobAnalytics": "Analyse des Travaux",
-    "retention": "Fidélisation",
-    "tax": "Taxes"
+    "retention": "Fidélisation"
   },
   "dateRange": {
     "to": "au"
@@ -41,6 +43,33 @@
       "partsCost": "Coût des pièces",
       "netProfit": "Bénéfice net",
       "count": "Nombre"
+    }
+  },
+  "pastDueInvoices": {
+    "totalPastDue": "Total en retard",
+    "totalAmountDue": "Montant total dû",
+    "over30Days": "Plus de 30 jours",
+    "over60Days": "Plus de 60 jours",
+    "over90Days": "Plus de 90 jours",
+    "totalPastDueDesc": "Factures avec solde impayé après la date d'échéance",
+    "totalAmountDueDesc": "Montant total impayé de toutes les factures en retard",
+    "filterByAge": "Filtrer par ancienneté",
+    "allPastDue": "Toutes en retard",
+    "30plus": "30+ jours",
+    "60plus": "60+ jours",
+    "90plus": "90+ jours",
+    "pastDueInvoicesList": "Factures en Retard",
+    "noInvoices": "Aucune facture en retard trouvée.",
+    "tableHeaders": {
+      "customer": "Client",
+      "company": "Entreprise",
+      "invoiceNumber": "N° Facture",
+      "vehicle": "Véhicule",
+      "totalAmount": "Montant Total",
+      "amountPaid": "Montant Payé",
+      "amountDue": "Montant Dû",
+      "dueDate": "Date d'Échéance",
+      "daysPastDue": "Jours de Retard"
     }
   },
   "services": {
@@ -203,7 +232,15 @@
     "avgDaysBetweenVisits": "Moy. Jours Entre Visites",
     "taxCollected": "Taxe Perçue",
     "taxableAmount": "Montant Taxable",
-    "invoiceCount": "Nombre de Factures"
+    "invoiceCount": "Nombre de Factures",
+    "invoiceNumber": "N° Facture",
+    "totalAmount": "Montant Total",
+    "amountPaid": "Montant Payé",
+    "amountDue": "Montant Dû",
+    "dueDate": "Date d'Échéance",
+    "daysPastDue": "Jours de Retard",
+    "partsCost": "Coût des pièces",
+    "netProfit": "Bénéfice net"
   },
   "empty": "Aucune donnée chargée. Cliquez sur Actualiser pour charger le rapport."
 }

@@ -118,7 +118,6 @@
     "uploadingLogo": "Laster opp logo...",
     "logoUpdated": "Logo oppdatert",
     "failedUploadLogo": "Kunne ikke laste opp logo",
-    "readMore": "Read More",
     "detailsTitle": "Bedriftsdetaljer",
     "shopName": "Bedrift / Verkstednavn",
     "shopNamePlaceholder": "Hansens Bilverksted",
@@ -530,6 +529,7 @@
     }
   },
   "payment": {
+    "readMore": "Les mer",
     "detailsTitle": "Betalingsdetaljer",
     "detailsDescription": "Bankkonto og betalingsvilkar vist pa fakturaer.",
     "bankAccount": "Bankkonto (IBAN / Til Konto)",

@@ -66,10 +66,26 @@
     "sent": "Gönderildi",
     "viewed": "Görüntülendi",
     "expires": "Son kullanma",
-    "expired": "Süresi dolmuş"
+    "expired": "Süresi dolmuş",
+    "statusLabel": "Durum",
+    "created": "Oluşturuldu",
+    "delete": "Sil",
+    "deleteConfirm": "Bu durum raporunu silmek istediğinizden emin misiniz?",
+    "deleted": "Durum raporu silindi",
+    "deleteTitle": "Durum raporunu sil",
+    "deleteFailed": "Durum raporu silinemedi",
+    "cancel": "İptal",
+  "feedback": "Geri Bildirim",
+  "hasComment": "Alındı",
+  "noFeedback": "Henüz geri bildirim yok",
+  "sentAt": "Gönderildi",
+  "sentVia": "Gönderim yolu",
+  "messageLabel": "Mesaj",
+  "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Merhaba {name}, {vehicle} aracınız hakkında bir durum güncellemesi var. Buradan görüntüleyin: {url}",
-    "emailSubject": "Araç Durum Güncellemesi - {vehicle}"
+    "emailSubject": "Araç Durum Güncellemesi - {vehicle}",
+  "viewReport": "Raporu buradan görüntüleyin: {url}"
   }
 }

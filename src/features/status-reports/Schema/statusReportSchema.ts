@@ -21,7 +21,7 @@ export const sendStatusReportSchema = z.object({
 
 export const submitFeedbackSchema = z.object({
   token: z.string(),
-  feedback: z.string().min(1),
+  feedback: z.string().min(1).max(2000),
 });
 
 export type CreateStatusReportInput = z.infer<typeof createStatusReportSchema>;

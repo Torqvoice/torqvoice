@@ -51,9 +51,9 @@ export async function sendStatusReport(input: unknown) {
       const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
 
       const t = await getTranslations("statusReport.notify");
-      const messageBody =
-        data.customMessage ||
-        t("defaultMessage", { name: customer.name, vehicle: vehicleName, url: publicUrl });
+      const messageBody = data.customMessage
+        ? `${data.customMessage}\n\n${t("viewReport", { url: publicUrl })}`
+        : t("defaultMessage", { name: customer.name, vehicle: vehicleName, url: publicUrl });
 
       const sentChannels: string[] = [];
 

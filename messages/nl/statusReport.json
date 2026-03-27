@@ -66,10 +66,26 @@
     "sent": "Verzonden",
     "viewed": "Bekeken",
     "expires": "Verloopt",
-    "expired": "Verlopen"
+    "expired": "Verlopen",
+    "statusLabel": "Status",
+    "created": "Aangemaakt",
+    "delete": "Verwijderen",
+    "deleteConfirm": "Weet u zeker dat u dit statusrapport wilt verwijderen?",
+    "deleted": "Statusrapport verwijderd",
+    "deleteTitle": "Statusrapport verwijderen",
+    "deleteFailed": "Kan statusrapport niet verwijderen",
+    "cancel": "Annuleren",
+  "feedback": "Feedback",
+  "hasComment": "Ontvangen",
+  "noFeedback": "Nog geen feedback",
+  "sentAt": "Verzonden",
+  "sentVia": "Verzonden via",
+  "messageLabel": "Bericht",
+  "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Hallo {name}, we hebben een statusupdate over uw {vehicle}. Bekijk het hier: {url}",
-    "emailSubject": "Voertuig statusupdate - {vehicle}"
+    "emailSubject": "Voertuig statusupdate - {vehicle}",
+  "viewReport": "Bekijk het rapport hier: {url}"
   }
 }

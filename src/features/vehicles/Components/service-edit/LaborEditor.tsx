@@ -35,13 +35,13 @@ export function LaborEditor({
 
   return (
     <div className="rounded-lg border p-3 space-y-2">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-sm font-semibold">{t('title')}</h3>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {hasPresets && onOpenPresets && (
             <Button type="button" variant="outline" size="sm" onClick={onOpenPresets}>
               <Layers className="mr-1 h-3.5 w-3.5" />
-              {t('fromPresets')}
+              <span className="hidden sm:inline">{t('fromPresets')}</span>
             </Button>
           )}
           <Button
@@ -51,7 +51,7 @@ export function LaborEditor({
             onClick={() => setLaborItems((prev) => [...prev, makeEmptyLabor(defaultLaborRate)])}
           >
             <Plus className="mr-1 h-3.5 w-3.5" />
-            {t('addLabor')}
+            <span className="hidden sm:inline">{t('addLabor')}</span>
           </Button>
           <Button
             type="button"
@@ -60,7 +60,7 @@ export function LaborEditor({
             onClick={() => setLaborItems((prev) => [...prev, makeEmptyService()])}
           >
             <Wrench className="mr-1 h-3.5 w-3.5" />
-            {t('addService')}
+            <span className="hidden sm:inline">{t('addService')}</span>
           </Button>
         </div>
       </div>

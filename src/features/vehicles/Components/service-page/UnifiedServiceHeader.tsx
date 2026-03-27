@@ -147,14 +147,14 @@ export function UnifiedServiceHeader({
           </ButtonGroup>
         </div>
       </div>
-      <nav className="flex gap-1 border-b">
+      <nav className="flex gap-1 border-b overflow-x-auto scrollbar-none">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             type="button"
             onClick={() => onTabChange(tab.value)}
             className={cn(
-              'cursor-pointer px-3 py-1.5 text-sm font-medium transition-colors -mb-px border-b-2',
+              'cursor-pointer shrink-0 whitespace-nowrap px-3 py-1.5 text-sm font-medium transition-colors -mb-px border-b-2',
               activeTab === tab.value
                 ? 'border-primary text-foreground'
                 : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50'

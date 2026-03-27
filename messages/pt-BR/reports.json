@@ -1,15 +1,17 @@
 {
   "title": "Relatórios e Análises",
   "tabs": {
+    "financial": "Relatórios Financeiros",
     "revenue": "Receita",
+    "pastDueInvoices": "Faturas Vencidas",
+    "tax": "Impostos",
     "services": "Serviços",
     "customers": "Clientes",
     "inventory": "Estoque",
     "technicians": "Técnicos",
     "parts": "Peças",
     "jobAnalytics": "Análise de Trabalhos",
-    "retention": "Retenção",
-    "tax": "Impostos"
+    "retention": "Retenção"
   },
   "dateRange": {
     "to": "até"
@@ -41,6 +43,33 @@
       "partsCost": "Custo de peças",
       "netProfit": "Lucro líquido",
       "count": "Quantidade"
+    }
+  },
+  "pastDueInvoices": {
+    "totalPastDue": "Total vencidas",
+    "totalAmountDue": "Valor total em atraso",
+    "over30Days": "Mais de 30 dias",
+    "over60Days": "Mais de 60 dias",
+    "over90Days": "Mais de 90 dias",
+    "totalPastDueDesc": "Faturas com saldo pendente após a data de vencimento",
+    "totalAmountDueDesc": "Valor total pendente de todas as faturas vencidas",
+    "filterByAge": "Filtrar por período",
+    "allPastDue": "Todas as vencidas",
+    "30plus": "30+ dias",
+    "60plus": "60+ dias",
+    "90plus": "90+ dias",
+    "pastDueInvoicesList": "Faturas Vencidas",
+    "noInvoices": "Nenhuma fatura vencida encontrada.",
+    "tableHeaders": {
+      "customer": "Cliente",
+      "company": "Empresa",
+      "invoiceNumber": "N.º Fatura",
+      "vehicle": "Veículo",
+      "totalAmount": "Valor Total",
+      "amountPaid": "Valor Pago",
+      "amountDue": "Valor em Atraso",
+      "dueDate": "Data de Vencimento",
+      "daysPastDue": "Dias em Atraso"
     }
   },
   "services": {
@@ -203,7 +232,15 @@
     "avgDaysBetweenVisits": "Méd. Dias Entre Visitas",
     "taxCollected": "Imposto Arrecadado",
     "taxableAmount": "Valor Tributável",
-    "invoiceCount": "Quantidade de Faturas"
+    "invoiceCount": "Quantidade de Faturas",
+    "invoiceNumber": "N.º Fatura",
+    "totalAmount": "Valor Total",
+    "amountPaid": "Valor Pago",
+    "amountDue": "Valor em Atraso",
+    "dueDate": "Data de Vencimento",
+    "daysPastDue": "Dias em Atraso",
+    "partsCost": "Custo de peças",
+    "netProfit": "Lucro líquido"
   },
   "empty": "Nenhum dado carregado ainda. Clique em Atualizar para carregar o relatório."
 }

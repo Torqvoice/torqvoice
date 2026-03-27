@@ -1,15 +1,17 @@
 {
   "title": "Raporlar ve Analizler",
   "tabs": {
+    "financial": "Finansal Raporlar",
     "revenue": "Gelir",
+    "pastDueInvoices": "Vadesi Geçmiş Faturalar",
+    "tax": "Vergi",
     "services": "Hizmetler",
     "customers": "Müşteriler",
     "inventory": "Envanter",
     "technicians": "Teknisyenler",
     "parts": "Parçalar",
     "jobAnalytics": "İş Analizi",
-    "retention": "Müşteri Sadakati",
-    "tax": "Vergi"
+    "retention": "Müşteri Sadakati"
   },
   "dateRange": {
     "to": "-"
@@ -41,6 +43,33 @@
       "partsCost": "Parça maliyeti",
       "netProfit": "Net kâr",
       "count": "Adet"
+    }
+  },
+  "pastDueInvoices": {
+    "totalPastDue": "Toplam vadesi geçmiş",
+    "totalAmountDue": "Toplam borç tutarı",
+    "over30Days": "30 günden fazla",
+    "over60Days": "60 günden fazla",
+    "over90Days": "90 günden fazla",
+    "totalPastDueDesc": "Vade tarihinden sonra ödenmemiş bakiyesi olan faturalar",
+    "totalAmountDueDesc": "Tüm vadesi geçmiş faturaların toplam ödenmemiş tutarı",
+    "filterByAge": "Süreye göre filtrele",
+    "allPastDue": "Tüm vadesi geçmişler",
+    "30plus": "30+ gün",
+    "60plus": "60+ gün",
+    "90plus": "90+ gün",
+    "pastDueInvoicesList": "Vadesi Geçmiş Faturalar",
+    "noInvoices": "Vadesi geçmiş fatura bulunamadı.",
+    "tableHeaders": {
+      "customer": "Müşteri",
+      "company": "Şirket",
+      "invoiceNumber": "Fatura No",
+      "vehicle": "Araç",
+      "totalAmount": "Toplam Tutar",
+      "amountPaid": "Ödenen Tutar",
+      "amountDue": "Borç Tutarı",
+      "dueDate": "Vade Tarihi",
+      "daysPastDue": "Gecikme Günü"
     }
   },
   "services": {
@@ -203,7 +232,15 @@
     "avgDaysBetweenVisits": "Ort. Ziyaret Arası Gün",
     "taxCollected": "Tahsil Edilen Vergi",
     "taxableAmount": "Vergilendirilebilir Tutar",
-    "invoiceCount": "Fatura Sayısı"
+    "invoiceCount": "Fatura Sayısı",
+    "invoiceNumber": "Fatura No",
+    "totalAmount": "Toplam Tutar",
+    "amountPaid": "Ödenen Tutar",
+    "amountDue": "Borç Tutarı",
+    "dueDate": "Vade Tarihi",
+    "daysPastDue": "Gecikme Günü",
+    "partsCost": "Parça maliyeti",
+    "netProfit": "Net kâr"
   },
   "empty": "Henüz veri yüklenmedi. Raporu yüklemek için Yenile'ye tıklayın."
 }

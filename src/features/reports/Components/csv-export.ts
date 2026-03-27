@@ -8,6 +8,7 @@ import type {
   JobAnalyticsReport,
   CustomerRetentionReport,
   TaxReport,
+  PastDueInvoicesReport,
 } from "../Schema/reportTypes";
 import { formatCurrency } from "@/lib/format";
 
@@ -159,6 +160,25 @@ export function exportRetentionCsv(
     avgDaysBetweenVisits: c.avgTimeBetweenVisits ?? "",
   }));
   downloadCsv("retention-report.csv", headers, rows, ["name", "company", "visitCount", "totalSpent", "avgDaysBetweenVisits"]);
+}
+
+export function exportPastDueInvoicesCsv(
+  data: PastDueInvoicesReport,
+  currencyCode: string,
+  headers: [string, string, string, string, string, string, string, string] = ["Customer", "Company", "Invoice #", "Total Amount", "Amount Paid", "Amount Due", "Due Date", "Days Past Due"],
+) {
+  const fmt = (n: number) => formatCurrency(n, currencyCode);
+  const rows = data.invoices.map((inv) => ({
+    customer: inv.customerName,
+    company: inv.customerCompany ?? "",
+    invoiceNumber: inv.invoiceNumber ?? "",
+    totalAmount: fmt(inv.totalAmount),
+    amountPaid: fmt(inv.amountPaid),
+    amountDue: fmt(inv.amountDue),
+    dueDate: inv.dueDate,
+    daysPastDue: inv.daysPastDue,
+  }));
+  downloadCsv("past-due-invoices-report.csv", headers, rows, ["customer", "company", "invoiceNumber", "totalAmount", "amountPaid", "amountDue", "dueDate", "daysPastDue"]);
 }
 
 export function exportTaxCsv(

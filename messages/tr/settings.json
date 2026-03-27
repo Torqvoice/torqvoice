@@ -118,7 +118,6 @@
     "uploadingLogo": "Logo yükleniyor...",
     "logoUpdated": "Logo güncellendi",
     "failedUploadLogo": "Logo yüklenemedi",
-    "readMore": "Read More",
     "detailsTitle": "Şirket Bilgileri",
     "shopName": "Şirket / Atölye Adı",
     "shopNamePlaceholder": "Ali'nin Oto Tamir",
@@ -530,6 +529,7 @@
     "layoutDocQuote": "Teklif"
   },
   "payment": {
+    "readMore": "Devamını oku",
     "detailsTitle": "Ödeme Bilgileri",
     "detailsDescription": "Faturalarda gösterilen banka hesabı ve ödeme koşulları.",
     "bankAccount": "Banka Hesabı (IBAN / Til Konto)",

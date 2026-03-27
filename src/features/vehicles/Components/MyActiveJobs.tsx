@@ -40,6 +40,9 @@ import type { MyActiveJob } from '@/features/vehicles/Actions/getMyActiveJobs'
 
 interface MyActiveJobsProps {
   jobs: MyActiveJob[]
+  smsEnabled: boolean
+  emailEnabled: boolean
+  telegramEnabled: boolean
 }
 
 const STATUS_ICON: Record<string, typeof Wrench> = {
@@ -54,12 +57,10 @@ const STATUS_COLOR: Record<string, string> = {
   'waiting-parts': 'bg-orange-500/10 text-orange-600',
 }
 
-export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
+export function MyActiveJobs({ jobs, smsEnabled, emailEnabled, telegramEnabled }: MyActiveJobsProps) {
   const t = useTranslations('dashboard.myJobs')
   const router = useRouter()
-  const [uploading, setUploading] = useState<{ jobId: string; type: 'photo' | 'video' } | null>(
-    null
-  )
+  const [uploading, setUploading] = useState<{ jobId: string; type: 'photo' | 'video' } | null>(null)
   const [imageCounts, setImageCounts] = useState<Record<string, number>>(() =>
     Object.fromEntries(jobs.map((j) => [j.id, j.imageCount]))
   )
@@ -518,14 +519,8 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                 <div className="min-w-0 flex-1">
                   <p className="font-medium truncate">{scannedPart.name}</p>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    {scannedPart.partNumber && (
-                      <span className="font-mono text-xs">{scannedPart.partNumber}</span>
-                    )}
-                    {scannedPart.category && (
-                      <Badge variant="secondary" className="text-[10px]">
-                        {scannedPart.category}
-                      </Badge>
-                    )}
+                    {scannedPart.partNumber && <span className="font-mono text-xs">{scannedPart.partNumber}</span>}
+                    {scannedPart.category && <Badge variant="secondary" className="text-[10px]">{scannedPart.category}</Badge>}
                   </div>
                 </div>
                 <div className="text-right text-sm text-muted-foreground shrink-0">
@@ -543,9 +538,7 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
                 >
                   -
                 </Button>
-                <span className="w-16 text-center text-3xl font-semibold tabular-nums">
-                  {addQty}
-                </span>
+                <span className="w-16 text-center text-3xl font-semibold tabular-nums">{addQty}</span>
                 <Button
                   variant="outline"
                   size="icon"
@@ -584,55 +577,46 @@ export function MyActiveJobs({ jobs }: MyActiveJobsProps) {
         initialBarcode={pendingBarcode}
       />
 
-      {statusReportJobId &&
-        (() => {
-          const job = jobs.find((j) => j.id === statusReportJobId)
-          if (!job) return null
-          return (
-            <CreateStatusReportDialog
-              open={!!statusReportJobId}
-              onOpenChange={(open) => {
-                if (!open) setStatusReportJobId(null)
-              }}
-              serviceRecordId={statusReportJobId}
-              vehicleName={`${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}`}
-              customer={job.customer}
-              smsEnabled={false}
-              emailEnabled={true}
-              telegramEnabled={false}
-              onCreated={(reportId) => {
-                const currentJobId = statusReportJobId
-                setStatusReportJobId(null)
-                if (job.customer) {
-                  setSendReportId(reportId)
-                  setSendReportJobId(currentJobId)
-                }
-              }}
-            />
-          )
-        })()}
+      {statusReportJobId && (() => {
+        const job = jobs.find(j => j.id === statusReportJobId)
+        if (!job) return null
+        return (
+          <CreateStatusReportDialog
+            open={!!statusReportJobId}
+            onOpenChange={(open) => { if (!open) setStatusReportJobId(null) }}
+            serviceRecordId={statusReportJobId}
+            vehicleName={`${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}`}
+            customer={job.customer}
+            smsEnabled={smsEnabled}
+            emailEnabled={emailEnabled}
+            telegramEnabled={telegramEnabled}
+            onCreated={(reportId) => {
+              const currentJobId = statusReportJobId
+              setStatusReportJobId(null)
+              if (job.customer) {
+                setSendReportId(reportId)
+                setSendReportJobId(currentJobId)
+              }
+            }}
+          />
+        )
+      })()}
 
-      {sendReportId &&
-        (() => {
-          const job = sendReportJobId ? jobs.find((j) => j.id === sendReportJobId) : null
-          if (!job?.customer) return null
-          return (
-            <SendStatusReportDialog
-              open={!!sendReportId}
-              onOpenChange={(open) => {
-                if (!open) {
-                  setSendReportId(null)
-                  setSendReportJobId(null)
-                }
-              }}
-              reportId={sendReportId}
-              customer={job.customer}
-              smsEnabled={false}
-              emailEnabled={true}
-              telegramEnabled={false}
-            />
-          )
-        })()}
+      {sendReportId && (() => {
+        const job = sendReportJobId ? jobs.find(j => j.id === sendReportJobId) : null
+        if (!job?.customer) return null
+        return (
+          <SendStatusReportDialog
+            open={!!sendReportId}
+            onOpenChange={(open) => { if (!open) { setSendReportId(null); setSendReportJobId(null) } }}
+            reportId={sendReportId}
+            customer={job.customer}
+            smsEnabled={smsEnabled}
+            emailEnabled={emailEnabled}
+            telegramEnabled={telegramEnabled}
+          />
+        )
+      })()}
     </>
   )
 }

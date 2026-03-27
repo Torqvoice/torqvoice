@@ -32,13 +32,14 @@ export async function cleanupExpiredReports() {
         // videoUrl format: /api/protected/files/{orgId}/services/{filename}
         const match = report.videoUrl.match(/\/services\/(.+)$/);
         if (match) {
+          const filename = path.basename(match[1]);
           const filePath = path.join(
             process.cwd(),
             "data",
             "uploads",
             report.organizationId,
             "services",
-            match[1]
+            filename
           );
           await unlink(filePath);
         }
