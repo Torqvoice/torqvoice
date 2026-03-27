@@ -312,6 +312,7 @@
     "splitCreated": "Job spans multiple days — continuation created for next day",
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
-    "readMore": "Read More"
+    "readMore": "Read More",
+    "setDefaults": "Set Defaults"
   }
 }

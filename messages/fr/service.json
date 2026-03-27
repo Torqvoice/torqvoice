@@ -312,6 +312,7 @@
     "splitCreated": "Le travail s'étend sur plusieurs jours — suite créée pour le jour suivant",
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
-    "readMore": "Read More"
+    "readMore": "Read More",
+    "setDefaults": "Set Defaults"
   }
 }

@@ -15,7 +15,7 @@ import {
   CommandSeparator,
 } from '@/components/ui/command'
 import { Input } from '@/components/ui/input'
-import { Check, ChevronsUpDown, Clock, Plus } from 'lucide-react'
+import { Check, ChevronsUpDown, Clock, Plus, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import {
@@ -24,6 +24,7 @@ import {
 } from '@/features/workboard/Actions/boardActions'
 import { createTechnician } from '@/features/workboard/Actions/technicianActions'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 
 const HOUR_PRESETS = [1, 2, 4, 5, 7]
 
@@ -188,7 +189,17 @@ export function ScheduleTimesSection({
       </div>
 
       <div className="space-y-1">
-        <Label className="text-xs">{t('technician')}</Label>
+        <div className="flex items-center justify-between">
+          <Label className="text-xs">{t('technician')}</Label>
+          <Link
+            href="/settings/workshop"
+            target="_blank"
+            className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Settings className="h-3 w-3" />
+            {t('setDefaults')}
+          </Link>
+        </div>
         <Popover open={techOpen} onOpenChange={setTechOpen} modal={true}>
           <PopoverTrigger asChild>
             <Button

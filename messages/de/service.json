@@ -312,6 +312,7 @@
     "splitCreated": "Auftrag erstreckt sich über mehrere Tage — Fortsetzung für den nächsten Tag erstellt",
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
-    "readMore": "Read More"
+    "readMore": "Read More",
+    "setDefaults": "Set Defaults"
   }
 }
