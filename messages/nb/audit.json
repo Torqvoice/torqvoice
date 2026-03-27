@@ -84,6 +84,9 @@
     "auth_permissionDenied": "Tilgang nektet",
     "labor_preset_create": "Opprettet arbeidspreset",
     "labor_preset_update": "Oppdaterte arbeidspreset",
-    "labor_preset_delete": "Slettet arbeidspreset"
+    "labor_preset_delete": "Slettet arbeidspreset",
+    "statusReport_create": "Opprettet statusrapport",
+    "statusReport_send": "Sendt statusrapport",
+    "telegram_send": "Sendt Telegram-melding"
   }
 }

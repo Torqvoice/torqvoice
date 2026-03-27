@@ -84,6 +84,9 @@
     "auth_permissionDenied": "Permission refusée",
     "labor_preset_create": "Préréglage de main-d'œuvre créé",
     "labor_preset_update": "Préréglage de main-d'œuvre mis à jour",
-    "labor_preset_delete": "Préréglage de main-d'œuvre supprimé"
+    "labor_preset_delete": "Préréglage de main-d'œuvre supprimé",
+    "statusReport_create": "Rapport d'état créé",
+    "statusReport_send": "Rapport d'état envoyé",
+    "telegram_send": "Message Telegram envoyé"
   }
 }

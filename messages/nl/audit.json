@@ -84,6 +84,9 @@
     "auth_permissionDenied": "Toegang geweigerd",
     "labor_preset_create": "Arbeidspreset aangemaakt",
     "labor_preset_update": "Arbeidspreset bijgewerkt",
-    "labor_preset_delete": "Arbeidspreset verwijderd"
+    "labor_preset_delete": "Arbeidspreset verwijderd",
+    "statusReport_create": "Statusrapport aangemaakt",
+    "statusReport_send": "Statusrapport verzonden",
+    "telegram_send": "Telegram-bericht verzonden"
   }
 }

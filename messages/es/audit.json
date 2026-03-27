@@ -84,6 +84,9 @@
     "auth_permissionDenied": "Permiso denegado",
     "labor_preset_create": "Preset de mano de obra creado",
     "labor_preset_update": "Preset de mano de obra actualizado",
-    "labor_preset_delete": "Preset de mano de obra eliminado"
+    "labor_preset_delete": "Preset de mano de obra eliminado",
+    "statusReport_create": "Informe de estado creado",
+    "statusReport_send": "Informe de estado enviado",
+    "telegram_send": "Mensaje de Telegram enviado"
   }
 }

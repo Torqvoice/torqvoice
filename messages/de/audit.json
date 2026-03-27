@@ -84,6 +84,9 @@
     "auth_permissionDenied": "Zugriff verweigert",
     "labor_preset_create": "Arbeitspreset erstellt",
     "labor_preset_update": "Arbeitspreset aktualisiert",
-    "labor_preset_delete": "Arbeitspreset gelöscht"
+    "labor_preset_delete": "Arbeitspreset gelöscht",
+    "statusReport_create": "Statusbericht erstellt",
+    "statusReport_send": "Statusbericht gesendet",
+    "telegram_send": "Telegram-Nachricht gesendet"
   }
 }

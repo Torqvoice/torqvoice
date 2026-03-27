@@ -84,6 +84,9 @@
     "auth_permissionDenied": "Доступ запрещён",
     "labor_preset_create": "Создан шаблон работ",
     "labor_preset_update": "Обновлён шаблон работ",
-    "labor_preset_delete": "Удалён шаблон работ"
+    "labor_preset_delete": "Удалён шаблон работ",
+    "statusReport_create": "Создан отчёт о состоянии",
+    "statusReport_send": "Отправлен отчёт о состоянии",
+    "telegram_send": "Отправлено сообщение в Telegram"
   }
 }
