@@ -343,6 +343,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
           discountValue: quote.discountValue,
           discountAmount: quote.discountAmount,
           serviceDate: new Date(),
+          startDateTime: new Date(),
         },
       });
 

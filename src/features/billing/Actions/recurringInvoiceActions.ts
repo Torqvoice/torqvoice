@@ -304,6 +304,7 @@ export async function processRecurringInvoices() {
             status: "completed",
             cost: ri.cost,
             serviceDate: now,
+            startDateTime: now,
             invoiceNotes: ri.invoiceNotes,
             subtotal,
             taxRate: ri.taxRate,

@@ -7,6 +7,11 @@
     "deleteDescription": "Dit zal dit servicerecord permanent verwijderen en alle bijbehorende gegevens. Dit kan niet ongedaan worden gemaakt.",
     "deleted": "Servicerecord verwijderd",
     "failedDelete": "Verwijderen mislukt",
+    "datesExpiredTitle": "Factuurdatums verlopen",
+    "datesExpiredDescription": "De factuurdatum of vervaldatum is verstreken. Wilt u de datums bijwerken voordat u verdergaat?",
+    "datesExpiredUpdate": "Datums bijwerken en doorgaan",
+    "datesExpiredProceed": "Doorgaan zonder wijzigingen",
+    "datesExpiredSetToday": "Instellen op vandaag",
     "customFieldsInvalid": "Vul alle verplichte aangepaste velden in",
     "customFieldsSaveFailed": "Kan aangepaste velden niet opslaan"
   },
@@ -28,6 +33,11 @@
   },
   "basicInfo": {
     "title": "Basisinformatie",
+    "invoiceDetails": "Factuurgegevens",
+    "customerInfo": "Klant en voertuig",
+    "paid": "Betaald",
+    "markPaid": "Markeer als betaald",
+    "markUnpaid": "Markeer als onbetaald",
     "vehicle": "Voertuig",
     "open": "Open",
     "customer": "Klant",
@@ -40,6 +50,8 @@
     "status": "Status",
     "technician": "Technicus",
     "invoiceNumber": "Factuurnummer",
+    "invoiceDate": "Factuurdatum",
+    "invoiceDueDate": "Vervaldatum",
     "typeOptions": {
       "maintenance": "Onderhoud",
       "repair": "Reparatie",

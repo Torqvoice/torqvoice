@@ -7,6 +7,11 @@
     "deleteDescription": "Bu, bu servis kaydını ve ilişkili tüm verileri kalıcı olarak silecektir. Bu işlem geri alınamaz.",
     "deleted": "Servis kaydı silindi",
     "failedDelete": "Silinemedi",
+    "datesExpiredTitle": "Fatura tarihleri geçmiş",
+    "datesExpiredDescription": "Fatura tarihi veya vade tarihi geçmiş. Devam etmeden önce tarihleri güncellemek ister misiniz?",
+    "datesExpiredUpdate": "Tarihleri güncelle ve devam et",
+    "datesExpiredProceed": "Değişiklik yapmadan devam et",
+    "datesExpiredSetToday": "Bugüne ayarla",
     "customFieldsInvalid": "Lütfen tüm zorunlu özel alanları doldurun",
     "customFieldsSaveFailed": "Özel alanlar kaydedilemedi"
   },
@@ -28,6 +33,11 @@
   },
   "basicInfo": {
     "title": "Temel Bilgiler",
+    "invoiceDetails": "Fatura detayları",
+    "customerInfo": "Müşteri ve araç",
+    "paid": "Ödendi",
+    "markPaid": "Ödendi olarak işaretle",
+    "markUnpaid": "Ödenmedi olarak işaretle",
     "vehicle": "Araç",
     "open": "Aç",
     "customer": "Müşteri",
@@ -40,6 +50,8 @@
     "status": "Durum",
     "technician": "Teknisyen",
     "invoiceNumber": "Fatura Numarası",
+    "invoiceDate": "Fatura tarihi",
+    "invoiceDueDate": "Vade tarihi",
     "typeOptions": {
       "maintenance": "Bakım",
       "repair": "Onarım",

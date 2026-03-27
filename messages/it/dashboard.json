@@ -11,20 +11,7 @@
     "partAddFailed": "Impossibile aggiungere il ricambio",
     "inStock": "Disponibile: {quantity}",
     "quantity": "Quantità",
-    "addToJob": "Aggiungi {qty} al lavoro",
-    "createPart": {
-      "title": "Part Not Found",
-      "description": "No part found for barcode \"{barcode}\". Create a new one?",
-      "name": "Part Name",
-      "namePlaceholder": "e.g. Oil Filter",
-      "partNumber": "Part Number",
-      "partNumberPlaceholder": "e.g. OF-1234",
-      "cost": "Cost",
-      "sellPrice": "Sell Price",
-      "cancel": "Cancel",
-      "create": "Create & Add",
-      "failed": "Failed to create part"
-    }
+    "addToJob": "Aggiungi {qty} al lavoro"
   },
   "recentActivity": "Attività recente",
   "noRecentActivity": "Nessuna attività recente",

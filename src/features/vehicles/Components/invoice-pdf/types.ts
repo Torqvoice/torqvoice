@@ -16,6 +16,9 @@ export interface InvoiceData {
   description: string | null
   type: string
   serviceDate: Date
+  startDateTime?: Date | null
+  invoiceDate?: Date | null
+  invoiceDueDate?: Date | null
   shopName: string | null
   techName: string | null
   mileage: number | null

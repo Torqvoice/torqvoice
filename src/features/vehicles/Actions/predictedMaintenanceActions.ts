@@ -49,14 +49,14 @@ export async function getVehiclePredictedMileage(vehicleId: string) {
         mileage: { not: null },
         status: "completed",
       },
-      orderBy: { serviceDate: "asc" },
-      select: { serviceDate: true, mileage: true },
+      orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
+      select: { serviceDate: true, startDateTime: true, mileage: true },
     });
 
     if (records.length < 2) return null;
 
     const dataPoints = records.map((r) => ({
-      date: new Date(r.serviceDate),
+      date: new Date(r.startDateTime ?? r.serviceDate),
       mileage: r.mileage!,
     }));
 
@@ -139,8 +139,8 @@ export async function getVehiclesDueForService() {
         licensePlate: true,
         serviceRecords: {
           where: { mileage: { not: null }, status: "completed" },
-          orderBy: { serviceDate: "asc" },
-          select: { serviceDate: true, mileage: true },
+          orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
+          select: { serviceDate: true, startDateTime: true, mileage: true },
         },
       },
     });
@@ -155,8 +155,8 @@ export async function getVehiclesDueForService() {
       const latest = records[records.length - 1];
 
       const totalDays =
-        (new Date(latest.serviceDate).getTime() -
-          new Date(earliest.serviceDate).getTime()) /
+        (new Date(latest.startDateTime ?? latest.serviceDate).getTime() -
+          new Date(earliest.startDateTime ?? earliest.serviceDate).getTime()) /
         (1000 * 60 * 60 * 24);
 
       if (totalDays <= 0) continue;
@@ -167,7 +167,7 @@ export async function getVehiclesDueForService() {
       if (avgPerDay <= 0) continue;
 
       const daysSinceLatest =
-        (Date.now() - new Date(latest.serviceDate).getTime()) /
+        (Date.now() - new Date(latest.startDateTime ?? latest.serviceDate).getTime()) /
         (1000 * 60 * 60 * 24);
       const predictedMileage = Math.round(
         latest.mileage! + daysSinceLatest * avgPerDay

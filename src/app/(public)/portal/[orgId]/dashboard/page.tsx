@@ -105,7 +105,7 @@ export default async function PortalDashboardPage({
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {inv.vehicle?.make} {inv.vehicle?.model} &middot;{" "}
-                        {new Date(inv.serviceDate).toLocaleDateString()}
+                        {new Date(inv.startDateTime ?? inv.serviceDate).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">

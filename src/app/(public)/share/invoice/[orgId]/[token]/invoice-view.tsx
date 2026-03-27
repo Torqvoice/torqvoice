@@ -26,6 +26,9 @@ interface InvoiceRecord {
   type: string
   status: string
   serviceDate: Date
+  startDateTime: Date | null
+  invoiceDate: Date | null
+  invoiceDueDate: Date | null
   shopName: string | null
   techName: string | null
   mileage: number | null
@@ -243,7 +246,8 @@ export function InvoiceView({
   const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
   const df = dateFormat || DEFAULT_DATE_FORMAT
   const tz = timezone || undefined
-  const serviceDate = fmtDate(record.serviceDate, df, tz)
+  const effectiveInvoiceDate = record.invoiceDate ?? record.startDateTime ?? record.serviceDate
+  const serviceDate = fmtDate(effectiveInvoiceDate, df, tz)
   const paidFromPayments = record.payments.reduce((sum, p) => sum + p.amount, 0)
   const totalPaid = record.manuallyPaid ? displayTotal : paidFromPayments
   const balanceDue = displayTotal - totalPaid
@@ -993,20 +997,37 @@ export function InvoiceView({
                         <p className="font-medium">{invoiceSettings.orgNumber}</p>
                       </div>
                     )}
-                    {invoiceSettings.paymentTerms && (
-                      <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('paymentTerms')}</p>
-                        <p className="font-medium">{invoiceSettings.paymentTerms}</p>
-                      </div>
-                    )}
-                    {invoiceSettings.dueDays > 0 && (
+                    {(() => {
+                      const dueDate = record.invoiceDueDate
+                        ? new Date(record.invoiceDueDate)
+                        : invoiceSettings.dueDays > 0
+                          ? new Date(new Date(effectiveInvoiceDate).getTime() + invoiceSettings.dueDays * 86400000)
+                          : null
+                      const netDays = dueDate
+                        ? Math.ceil((dueDate.getTime() - new Date(effectiveInvoiceDate).getTime()) / 86400000)
+                        : null
+                      return netDays !== null && netDays > 0 ? (
+                        <div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{t('paymentTerms')}</p>
+                          <p className="font-medium">Net {netDays} Days</p>
+                        </div>
+                      ) : invoiceSettings.paymentTerms ? (
+                        <div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{t('paymentTerms')}</p>
+                          <p className="font-medium">{invoiceSettings.paymentTerms}</p>
+                        </div>
+                      ) : null
+                    })()}
+                    {(record.invoiceDueDate || invoiceSettings.dueDays > 0) && (
                       <div>
                         <p className="text-xs text-gray-500 dark:text-gray-400">{t('dueDate')}</p>
                         <p className="font-medium">
                           {fmtDate(
-                            new Date(
-                              new Date(record.serviceDate).getTime() + invoiceSettings.dueDays * 86400000
-                            ),
+                            record.invoiceDueDate
+                              ? new Date(record.invoiceDueDate)
+                              : new Date(
+                                  new Date(effectiveInvoiceDate).getTime() + invoiceSettings.dueDays * 86400000
+                                ),
                             df,
                             tz,
                           )}

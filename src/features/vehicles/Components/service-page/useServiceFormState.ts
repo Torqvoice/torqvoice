@@ -110,11 +110,12 @@ export function useServiceFormState({
   const taxAmount = (subtotal - discountAmount) * (taxRate / 100)
   const totalAmount = subtotal - discountAmount + taxAmount
 
+  const [localManuallyPaid, setLocalManuallyPaid] = useState(record.manuallyPaid)
   const displayTotal = totalAmount > 0 ? totalAmount : record.cost
   const paidFromPayments = record.payments?.reduce((sum, p) => sum + p.amount, 0) || 0
-  const totalPaid = record.manuallyPaid ? displayTotal : paidFromPayments
+  const totalPaid = localManuallyPaid ? displayTotal : paidFromPayments
   const balanceDue = displayTotal - totalPaid
-  const paymentStatus = record.manuallyPaid
+  const paymentStatus = localManuallyPaid
     ? 'paid'
     : totalPaid === 0
       ? 'unpaid'
@@ -196,7 +197,7 @@ export function useServiceFormState({
     // Computed
     partsSubtotal, laborSubtotal, subtotal,
     discountAmount, taxAmount, totalAmount,
-    displayTotal, totalPaid, balanceDue, paymentStatus,
+    displayTotal, totalPaid, balanceDue, paymentStatus, setLocalManuallyPaid,
     imageAttachments, vehicleName,
     // Helpers
     updatePart, updateLabor,

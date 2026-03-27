@@ -232,6 +232,7 @@ export function BankAccountSection({
   visibleFields,
   primaryColor = '#d97706',
   dueDate,
+  invoiceDate,
 }: {
   invoiceSettings?: InvoiceSettingsProps
   fontFamily: string
@@ -241,6 +242,7 @@ export function BankAccountSection({
   visibleFields?: Set<string> | null
   primaryColor?: string
   dueDate?: string | null
+  invoiceDate?: string | null
 }) {
   const fontBold = getFontBold(fontFamily)
 
@@ -254,7 +256,13 @@ export function BankAccountSection({
 
   const hasBankAccount = showBankAccount && invoiceSettings?.bankAccount
   const hasOrgNumber = showOrgNumber && invoiceSettings?.orgNumber
-  const hasPaymentTerms = !!invoiceSettings?.paymentTerms
+  const netDays = dueDate && invoiceDate
+    ? Math.ceil((new Date(dueDate).getTime() - new Date(invoiceDate).getTime()) / 86400000)
+    : null
+  const paymentTermsText = netDays !== null && netDays > 0
+    ? `Net ${netDays} Days`
+    : invoiceSettings?.paymentTerms || null
+  const hasPaymentTerms = !!paymentTermsText
   const hasDueDate = !!dueDate
 
   if (!hasBankAccount && !hasOrgNumber && !hasPaymentTerms && !hasDueDate) return null
@@ -309,7 +317,7 @@ export function BankAccountSection({
               {labels.paymentTermsLabel || 'Payment Terms'}
             </Text>
             <Text style={{ fontSize: 10, fontFamily: fontBold }}>
-              {invoiceSettings!.paymentTerms}
+              {paymentTermsText}
             </Text>
           </View>
         )}

@@ -131,6 +131,7 @@ export async function getBillingHistory(params: {
           title: string | null;
           invoiceNumber: string | null;
           serviceDate: Date;
+          startDateTime: Date | null;
           effective_total: number;
           paid_amount: number;
           manually_paid: boolean;
@@ -148,6 +149,7 @@ export async function getBillingHistory(params: {
           sub.title,
           sub."invoiceNumber",
           sub."serviceDate",
+          sub."startDateTime",
           sub.effective_total,
           sub.paid_amount,
           sub.manually_paid,
@@ -164,6 +166,7 @@ export async function getBillingHistory(params: {
             sr.title,
             sr."invoiceNumber",
             sr."serviceDate",
+            sr."startDateTime",
             sr."manuallyPaid" AS manually_paid,
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
             CASE WHEN sr."manuallyPaid" = true
@@ -184,7 +187,7 @@ export async function getBillingHistory(params: {
           ${searchCondition}
         ) sub
         WHERE 1=1 ${statusCondition}
-        ORDER BY sub."serviceDate" DESC
+        ORDER BY COALESCE(sub."startDateTime", sub."serviceDate") DESC
         LIMIT ${pageSize} OFFSET ${skip}
       `);
 
@@ -202,7 +205,8 @@ export async function getBillingHistory(params: {
           id: r.id,
           title: r.title || "",
           invoiceNumber: r.invoiceNumber,
-          serviceDate: r.serviceDate,
+          startDateTime: r.startDateTime,
+          serviceDate: r.startDateTime ?? r.serviceDate,
           totalAmount: effectiveTotal,
           totalPaid: paidAmount,
           status: paymentStatus,
@@ -241,7 +245,7 @@ export async function getBillingHistory(params: {
             },
           },
         },
-        orderBy: { serviceDate: "desc" },
+        orderBy: { startDateTime: "desc" },
         skip,
         take: pageSize,
       }),
@@ -262,7 +266,8 @@ export async function getBillingHistory(params: {
           id: r.id,
           title: r.title,
           invoiceNumber: r.invoiceNumber,
-          serviceDate: r.serviceDate,
+          startDateTime: r.startDateTime,
+          serviceDate: r.startDateTime ?? r.serviceDate,
           totalAmount: effectiveTotal,
           totalPaid,
           status: paymentStatus,

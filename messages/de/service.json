@@ -7,6 +7,11 @@
     "deleteDescription": "Dies löscht diesen Serviceeintrag und alle zugehörigen Daten dauerhaft. Dies kann nicht rückgängig gemacht werden.",
     "deleted": "Serviceeintrag gelöscht",
     "failedDelete": "Löschen fehlgeschlagen",
+    "datesExpiredTitle": "Rechnungsdaten abgelaufen",
+    "datesExpiredDescription": "Das Rechnungsdatum oder Fälligkeitsdatum ist überschritten. Möchten Sie die Daten vor dem Fortfahren aktualisieren?",
+    "datesExpiredUpdate": "Daten aktualisieren und fortfahren",
+    "datesExpiredProceed": "Ohne Änderungen fortfahren",
+    "datesExpiredSetToday": "Auf heute setzen",
     "customFieldsInvalid": "Bitte füllen Sie alle erforderlichen benutzerdefinierten Felder aus",
     "customFieldsSaveFailed": "Benutzerdefinierte Felder konnten nicht gespeichert werden"
   },
@@ -28,6 +33,11 @@
   },
   "basicInfo": {
     "title": "Grundlegende Informationen",
+    "invoiceDetails": "Rechnungsdetails",
+    "customerInfo": "Kunde & Fahrzeug",
+    "paid": "Bezahlt",
+    "markPaid": "Als bezahlt markieren",
+    "markUnpaid": "Als unbezahlt markieren",
     "vehicle": "Fahrzeug",
     "open": "Öffnen",
     "customer": "Kunde",
@@ -40,6 +50,8 @@
     "status": "Status",
     "technician": "Techniker",
     "invoiceNumber": "Rechnungsnummer",
+    "invoiceDate": "Rechnungsdatum",
+    "invoiceDueDate": "Fälligkeitsdatum",
     "typeOptions": {
       "maintenance": "Wartung",
       "repair": "Reparatur",

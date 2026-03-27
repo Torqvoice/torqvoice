@@ -11,20 +11,7 @@
     "partAddFailed": "Onderdeel toevoegen mislukt",
     "inStock": "Op voorraad: {quantity}",
     "quantity": "Aantal",
-    "addToJob": "{qty} toevoegen aan klus",
-    "createPart": {
-      "title": "Part Not Found",
-      "description": "No part found for barcode \"{barcode}\". Create a new one?",
-      "name": "Part Name",
-      "namePlaceholder": "e.g. Oil Filter",
-      "partNumber": "Part Number",
-      "partNumberPlaceholder": "e.g. OF-1234",
-      "cost": "Cost",
-      "sellPrice": "Sell Price",
-      "cancel": "Cancel",
-      "create": "Create & Add",
-      "failed": "Failed to create part"
-    }
+    "addToJob": "{qty} toevoegen aan klus"
   },
   "recentActivity": "Recente activiteit",
   "noRecentActivity": "Geen recente activiteit",

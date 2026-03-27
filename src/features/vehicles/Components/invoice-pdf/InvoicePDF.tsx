@@ -88,13 +88,14 @@ export function InvoicePDF({
   const invoiceNum = data.invoiceNumber || `INV-${data.id.slice(-8).toUpperCase()}`
   const df = invoiceSettings?.dateFormat || DEFAULT_DATE_FORMAT
   const tz = invoiceSettings?.timezone || undefined
-  const serviceDate = formatDateForPdf(data.serviceDate, df, tz)
+  const effectiveInvoiceDate = data.invoiceDate ?? data.startDateTime ?? data.serviceDate
+  const serviceDate = formatDateForPdf(effectiveInvoiceDate, df, tz)
 
-  const dueDays = invoiceSettings?.dueDays || 0
-  const dueDate =
-    dueDays > 0
+  const dueDate = data.invoiceDueDate
+    ? formatDateForPdf(data.invoiceDueDate, df, tz)
+    : (invoiceSettings?.dueDays || 0) > 0
       ? formatDateForPdf(
-          new Date(new Date(data.serviceDate).getTime() + dueDays * 86400000),
+          new Date(new Date(effectiveInvoiceDate).getTime() + (invoiceSettings?.dueDays || 0) * 86400000),
           df,
           tz,
         )
@@ -257,6 +258,7 @@ export function InvoicePDF({
         visibleFields={visibleBankAccountFields}
         primaryColor={primaryColor}
         dueDate={dueDate}
+        invoiceDate={serviceDate}
       />
     ),
 

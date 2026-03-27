@@ -25,6 +25,7 @@ export interface ServiceDetail {
   cost: number;
   mileage: number | null;
   serviceDate: Date;
+  startDateTime: Date | null;
   shopName: string | null;
   techName: string | null;
   technicianId: string | null;

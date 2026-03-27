@@ -7,6 +7,11 @@
     "deleteDescription": "Isto vai deletar permanentemente este registro de serviço e todos os dados associados. Isto não pode ser desfeito.",
     "deleted": "Registro de serviço deletado",
     "failedDelete": "Falha ao deletar",
+    "datesExpiredTitle": "Datas da fatura expiradas",
+    "datesExpiredDescription": "A data da fatura ou a data de vencimento já passou. Deseja atualizar as datas antes de prosseguir?",
+    "datesExpiredUpdate": "Atualizar datas e prosseguir",
+    "datesExpiredProceed": "Prosseguir sem alterações",
+    "datesExpiredSetToday": "Definir para hoje",
     "customFieldsInvalid": "Preencha todos os campos personalizados obrigatórios",
     "customFieldsSaveFailed": "Falha ao salvar campos personalizados"
   },
@@ -28,6 +33,11 @@
   },
   "basicInfo": {
     "title": "Informações Básicas",
+    "invoiceDetails": "Detalhes da fatura",
+    "customerInfo": "Cliente e veículo",
+    "paid": "Pago",
+    "markPaid": "Marcar como pago",
+    "markUnpaid": "Marcar como não pago",
     "vehicle": "Veículo",
     "open": "Abrir",
     "customer": "Cliente",
@@ -40,6 +50,8 @@
     "status": "Status",
     "technician": "Técnico",
     "invoiceNumber": "Número da Fatura",
+    "invoiceDate": "Data da fatura",
+    "invoiceDueDate": "Data de vencimento",
     "typeOptions": {
       "maintenance": "Manutenção",
       "repair": "Reparo",

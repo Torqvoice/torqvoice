@@ -93,7 +93,7 @@ export default async function PortalVehicleDetailPage({
                           {sr.title}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {new Date(sr.serviceDate).toLocaleDateString()}
+                          {new Date(sr.startDateTime ?? sr.serviceDate).toLocaleDateString()}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">

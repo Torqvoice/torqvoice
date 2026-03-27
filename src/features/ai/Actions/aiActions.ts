@@ -75,11 +75,12 @@ export async function aiSummarizeVehicleHistory(vehicleId: string) {
               title: true,
               description: true,
               serviceDate: true,
+              startDateTime: true,
               type: true,
               cost: true,
               mileage: true,
             },
-            orderBy: { serviceDate: "asc" },
+            orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
           },
         },
       });

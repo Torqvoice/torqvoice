@@ -43,12 +43,13 @@ export async function getCalendarEvents(params: {
       db.serviceRecord.findMany({
         where: {
           vehicle: { organizationId },
-          serviceDate: { gte: start, lte: end },
+          startDateTime: { gte: start, lte: end },
         },
         select: {
           id: true,
           title: true,
           serviceDate: true,
+          startDateTime: true,
           status: true,
           invoiceNumber: true,
           totalAmount: true,
@@ -63,7 +64,7 @@ export async function getCalendarEvents(params: {
             },
           },
         },
-        orderBy: { serviceDate: "asc" },
+        orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
       }),
       db.reminder.findMany({
         where: {
@@ -119,8 +120,8 @@ export async function getCalendarEvents(params: {
       ...services.map((s) => ({
         id: s.id,
         title: s.title,
-        date: toLocalDateStr(s.serviceDate),
-        time: toTimeStr(s.serviceDate),
+        date: toLocalDateStr(s.startDateTime ?? s.serviceDate),
+        time: s.startDateTime ? toTimeStr(s.startDateTime) : null,
         type: "service" as const,
         status: s.status,
         vehicleId: s.vehicleId,

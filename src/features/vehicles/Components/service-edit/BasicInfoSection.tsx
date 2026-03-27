@@ -3,13 +3,6 @@
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
 import { useServiceType } from '@/components/service-type-context'
@@ -28,10 +21,6 @@ interface BasicInfoSectionProps {
   vehicleName: string
   selectedVehicleId: string
   setSelectedVehicleId: (id: string) => void
-  type: string
-  setType: (type: string) => void
-  status: string
-  setStatus: (status: string) => void
   techName: string
   customer?: CustomerInfo | null
   initialVehicle?: { id: string; make: string; model: string; year: number; licensePlate: string | null } | null
@@ -42,10 +31,6 @@ export function BasicInfoSection({
   vehicleName,
   selectedVehicleId,
   setSelectedVehicleId,
-  type,
-  setType,
-  status,
-  setStatus,
   techName,
   customer,
   initialVehicle,
@@ -55,7 +40,7 @@ export function BasicInfoSection({
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
-      <h3 className="text-sm font-semibold">{t('title')}</h3>
+      <h3 className="text-sm font-semibold">{t('customerInfo')}</h3>
 
       <div className="space-y-1">
         <div className="flex items-center justify-between">
@@ -104,75 +89,14 @@ export function BasicInfoSection({
       )}
 
       <div className="space-y-1">
-        <Label htmlFor="title" className="text-xs">{t('titleLabel')}</Label>
+        <Label htmlFor="mileage" className="text-xs">{serviceType === 'boat' ? t('mileageBoat') : t('mileage')}</Label>
         <Input
-          id="title"
-          name="title"
-          placeholder={t('titlePlaceholder')}
-          defaultValue={initialData.title}
-          maxLength={100}
-          required
+          id="mileage"
+          name="mileage"
+          type="number"
+          placeholder="50000"
+          defaultValue={initialData.mileage ?? ''}
         />
-      </div>
-
-      {/* Hidden serviceDate — kept for form submission, visible scheduling is in ScheduleTimesSection */}
-      <input
-        type="hidden"
-        name="serviceDate"
-        value={initialData.serviceDate || new Date().toISOString().split('T')[0]}
-      />
-
-      <div className="grid grid-cols-2 gap-2">
-        <div className="space-y-1">
-          <Label className="text-xs">{t('type')}</Label>
-          <Select value={type} onValueChange={setType}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="maintenance">{t('typeOptions.maintenance')}</SelectItem>
-              <SelectItem value="repair">{t('typeOptions.repair')}</SelectItem>
-              <SelectItem value="upgrade">{t('typeOptions.upgrade')}</SelectItem>
-              <SelectItem value="inspection">{t('typeOptions.inspection')}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1">
-          <Label className="text-xs">{t('status')}</Label>
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">{t('statusOptions.pending')}</SelectItem>
-              <SelectItem value="in-progress">{t('statusOptions.in_progress')}</SelectItem>
-              <SelectItem value="waiting-parts">{t('statusOptions.waiting_parts')}</SelectItem>
-              <SelectItem value="completed">{t('statusOptions.completed')}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2">
-        <div className="space-y-1">
-          <Label htmlFor="mileage" className="text-xs">{serviceType === 'boat' ? t('mileageBoat') : t('mileage')}</Label>
-          <Input
-            id="mileage"
-            name="mileage"
-            type="number"
-            placeholder="50000"
-            defaultValue={initialData.mileage ?? ''}
-          />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="invoiceNumber" className="text-xs">{t('invoiceNumber')}</Label>
-          <Input
-            id="invoiceNumber"
-            name="invoiceNumber"
-            placeholder="2026-1001"
-            defaultValue={initialData.invoiceNumber || ''}
-          />
-        </div>
       </div>
 
       <input type="hidden" name="techName" value={techName} />

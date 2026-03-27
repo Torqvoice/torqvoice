@@ -7,6 +7,11 @@
     "deleteDescription": "This will permanently delete this service record and all associated data. This cannot be undone.",
     "deleted": "Service record deleted",
     "failedDelete": "Failed to delete",
+    "datesExpiredTitle": "Invoice Dates Expired",
+    "datesExpiredDescription": "The invoice date or due date has passed. Would you like to update them before proceeding?",
+    "datesExpiredUpdate": "Update dates and proceed",
+    "datesExpiredProceed": "Proceed without changes",
+    "datesExpiredSetToday": "Set to today",
     "customFieldsInvalid": "Please fill in all required custom fields",
     "customFieldsSaveFailed": "Failed to save custom fields"
   },
@@ -28,6 +33,11 @@
   },
   "basicInfo": {
     "title": "Basic Information",
+    "invoiceDetails": "Invoice Details",
+    "customerInfo": "Customer & Vehicle",
+    "paid": "Paid",
+    "markPaid": "Mark as Paid",
+    "markUnpaid": "Mark as Unpaid",
     "vehicle": "Vehicle",
     "open": "Open",
     "customer": "Customer",
@@ -40,6 +50,8 @@
     "status": "Status",
     "technician": "Technician",
     "invoiceNumber": "Invoice Number",
+    "invoiceDate": "Invoice Date",
+    "invoiceDueDate": "Due Date",
     "typeOptions": {
       "maintenance": "Maintenance",
       "repair": "Repair",

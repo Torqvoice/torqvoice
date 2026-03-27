@@ -23,7 +23,7 @@ export async function getServiceRecords(vehicleId: string) {
       include: {
         _count: { select: { partItems: true, laborItems: true } },
       },
-      orderBy: { serviceDate: "desc" },
+      orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
     });
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }] });
 }
@@ -71,7 +71,7 @@ export async function getServiceRecordsPaginated(
           _count: { select: { partItems: true, laborItems: true, attachments: true } },
           laborItems: { take: 1, select: { description: true } },
         },
-        orderBy: { serviceDate: "desc" },
+        orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
         skip,
         take: pageSize,
       }),
@@ -96,7 +96,7 @@ export async function getAllServiceRecords() {
         vehicle: { select: { make: true, model: true, year: true } },
         _count: { select: { partItems: true, laborItems: true } },
       },
-      orderBy: { serviceDate: "desc" },
+      orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
       take: 50,
     });
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }] });
@@ -151,7 +151,7 @@ export async function getAllServiceRecordsPaginated(params: {
             },
           },
         },
-        orderBy: { serviceDate: "desc" },
+        orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
         skip,
         take: pageSize,
       }),
@@ -257,7 +257,7 @@ export async function createServiceRecord(input: unknown) {
       });
     }
 
-    const { partItems, laborItems, attachments, ...recordData } = data;
+    const { partItems, laborItems, attachments, serviceDate, invoiceDate, invoiceDueDate, ...recordData } = data;
 
     const record = await db.$transaction(async (tx) => {
       const created = await tx.serviceRecord.create({
@@ -265,7 +265,9 @@ export async function createServiceRecord(input: unknown) {
           ...recordData,
           shopName,
           invoiceNumber,
-          serviceDate: new Date(recordData.serviceDate),
+          serviceDate: new Date(serviceDate),
+          invoiceDate: invoiceDate ? new Date(invoiceDate) : new Date(serviceDate),
+          invoiceDueDate: invoiceDueDate ? new Date(invoiceDueDate) : undefined,
         },
       });
 
@@ -370,7 +372,7 @@ export async function updateServiceRecord(input: unknown) {
     });
     if (!existing) throw new Error("Service record not found");
 
-    const { id, partItems, laborItems, attachments, ...recordData } = data;
+    const { id, partItems, laborItems, attachments, serviceDate: _sd, invoiceDate: _id, invoiceDueDate: _idd, ...recordData } = data;
 
     // Determine which categories are being replaced and which files were removed
     let removedFileUrls: string[] = [];
@@ -397,7 +399,9 @@ export async function updateServiceRecord(input: unknown) {
           invoiceNotes: recordData.invoiceNotes !== undefined ? (recordData.invoiceNotes || null) : undefined,
           invoiceNumber: recordData.invoiceNumber !== undefined ? (recordData.invoiceNumber || null) : undefined,
           mileage: recordData.mileage !== undefined ? (recordData.mileage ?? null) : undefined,
-          serviceDate: recordData.serviceDate ? new Date(recordData.serviceDate) : undefined,
+          serviceDate: data.serviceDate ? new Date(data.serviceDate) : undefined,
+          invoiceDate: data.invoiceDate ? new Date(data.invoiceDate) : undefined,
+          invoiceDueDate: data.invoiceDueDate ? new Date(data.invoiceDueDate) : undefined,
         },
       });
 
@@ -457,7 +461,7 @@ export async function updateServiceRecord(input: unknown) {
     if (recordData.mileage && recordData.mileage > existing.vehicle.mileage) {
       const latestRecord = await db.serviceRecord.findFirst({
         where: { vehicleId: existing.vehicle.id },
-        orderBy: { serviceDate: 'desc' },
+        orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
         select: { id: true },
       });
       if (latestRecord?.id === id) {
@@ -633,7 +637,7 @@ export async function getWorkOrders(params: {
             case "techName": return { techName: dir };
             case "totalAmount": return { totalAmount: dir };
             case "serviceDate":
-            default: return { serviceDate: dir };
+            default: return [{ startDateTime: { sort: dir, nulls: dir === "desc" ? "last" : "first" } }, { serviceDate: dir }];
           }
         })(),
         skip,
