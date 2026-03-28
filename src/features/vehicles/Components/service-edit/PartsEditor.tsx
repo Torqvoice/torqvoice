@@ -53,7 +53,7 @@ export function PartsEditor({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setPartItems((prev) => [...prev, emptyPart()])}
+            onClick={() => setPartItems((prev) => [emptyPart(), ...prev])}
           >
             <Plus className="h-3.5 w-3.5 sm:mr-1" />
             <span className="hidden sm:inline">{t('addPart')}</span>

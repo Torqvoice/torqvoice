@@ -48,7 +48,7 @@ export function LaborEditor({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setLaborItems((prev) => [...prev, makeEmptyLabor(defaultLaborRate)])}
+            onClick={() => setLaborItems((prev) => [makeEmptyLabor(defaultLaborRate), ...prev])}
           >
             <Plus className="mr-1 h-3.5 w-3.5" />
             <span className="hidden sm:inline">{t('addLabor')}</span>
@@ -57,7 +57,7 @@ export function LaborEditor({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setLaborItems((prev) => [...prev, makeEmptyService()])}
+            onClick={() => setLaborItems((prev) => [makeEmptyService(), ...prev])}
           >
             <Wrench className="mr-1 h-3.5 w-3.5" />
             <span className="hidden sm:inline">{t('addService')}</span>
