@@ -443,7 +443,7 @@ export function InventoryClient({
           }
         }}
         part={editPart ?? undefined}
-        markupMultiplier={initialMarkup}
+        markupMultiplier={Number(markupValue) || initialMarkup}
         initialBarcode={!editPart ? scannedBarcode : undefined}
         categories={categories}
         onViewImages={(urls, startIndex) => {

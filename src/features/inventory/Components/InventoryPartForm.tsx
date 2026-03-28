@@ -64,6 +64,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
   const [category, setCategory] = useState(part?.category ?? "");
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
+  const sellPriceManualRef = useRef(false);
   const [gallery, setGallery] = useState<{ id?: string; url: string; fileName?: string | null; description?: string | null; sortOrder: number }[]>(() => {
     if (part?.gallery && part.gallery.length > 0) return part.gallery;
     if (part?.imageUrl) return [{ url: part.imageUrl, sortOrder: 0 }];
@@ -81,6 +82,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
       setSupplierUrl(part?.supplierUrl ?? "");
       setCategory(part?.category ?? "");
       setCategorySearch("");
+      sellPriceManualRef.current = !!(part?.sellPrice && part.sellPrice > 0);
       if (part?.gallery && part.gallery.length > 0) {
         setGallery(part.gallery);
       } else if (part?.imageUrl) {
@@ -652,10 +654,10 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                     step="0.01"
                     defaultValue={part?.unitCost ?? 0}
                     onChange={(e) => {
-                      if (!markupMultiplier || markupMultiplier <= 0) return;
+                      if (!markupMultiplier || markupMultiplier <= 0 || sellPriceManualRef.current) return;
                       const cost = Number(e.target.value) || 0;
                       const sellPriceInput = document.getElementById("sellPrice") as HTMLInputElement | null;
-                      if (sellPriceInput && (!sellPriceInput.value || Number(sellPriceInput.value) === 0)) {
+                      if (sellPriceInput) {
                         sellPriceInput.value = String(Math.round(cost * markupMultiplier * 100) / 100);
                       }
                     }}
@@ -670,6 +672,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                     min="0"
                     step="0.01"
                     defaultValue={part?.sellPrice ?? 0}
+                    onChange={() => { sellPriceManualRef.current = true; }}
                   />
                 </div>
               </div>
