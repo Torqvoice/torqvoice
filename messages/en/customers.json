@@ -40,7 +40,7 @@
       "plate": "Plate",
       "vehicle": "Vehicle",
       "mileage": "Mileage",
-      "mileageBoat": "Engine Hours",
+      "mileageMarine": "Engine Hours",
       "services": "Services"
     },
     "noVehicles": "No vehicles assigned to this customer"

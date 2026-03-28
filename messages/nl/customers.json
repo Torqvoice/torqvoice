@@ -40,7 +40,7 @@
       "plate": "Kenteken",
       "vehicle": "Voertuig",
       "mileage": "Kilometerstand",
-      "mileageBoat": "Motoruren",
+      "mileageMarine": "Motoruren",
       "services": "Services"
     },
     "noVehicles": "Geen voertuigen gekoppeld aan deze klant"

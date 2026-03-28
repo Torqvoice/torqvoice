@@ -142,8 +142,8 @@
     "serviceTypeDescription": "Selecteer het type service dat uw werkplaats biedt. Dit verandert de veldlabels in de hele applicatie.",
     "automotive": "Auto",
     "automotiveDescription": "Auto's, vrachtwagens en andere wegvoertuigen",
-    "boatService": "Bootservice",
-    "boatServiceDescription": "Boten, jachten en vaartuigen"
+    "marineService": "Marine",
+    "marineServiceDescription": "Boten, jachten en vaartuigen"
   },
   "account": {
     "profileTitle": "Profiel",

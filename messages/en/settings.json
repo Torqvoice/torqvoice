@@ -142,8 +142,8 @@
     "serviceTypeDescription": "Select the type of service your workshop provides. This changes field labels throughout the application.",
     "automotive": "Automotive",
     "automotiveDescription": "Cars, trucks, and other road vehicles",
-    "boatService": "Boat Service",
-    "boatServiceDescription": "Boats, yachts, and marine vessels"
+    "marineService": "Marine",
+    "marineServiceDescription": "Boats, yachts, and marine vessels"
   },
   "account": {
     "profileTitle": "Profile",

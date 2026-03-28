@@ -211,7 +211,7 @@ export default async function PublicInvoicePage({
       layoutConfig={layoutConfig}
       customFields={customFields}
       telegramBotLink={telegramBotLink}
-      serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "boat"}
+      serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "marine"}
     />
   );
 }

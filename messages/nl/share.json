@@ -115,7 +115,7 @@
     "vin": "VIN: {vin}",
     "plate": "Kenteken: {plate}",
     "mileage": "Kilometerstand: {mileage}",
-    "mileageBoat": "Motoruren: {mileage}",
+    "mileageMarine": "Motoruren: {mileage}",
     "inspected": "geïnspecteerd",
     "pass": "Goedgekeurd",
     "fail": "Afgekeurd",

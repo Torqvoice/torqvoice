@@ -142,8 +142,8 @@
     "serviceTypeDescription": "Velg typen tjeneste verkstedet ditt tilbyr. Dette endrer feltetiketter i hele applikasjonen.",
     "automotive": "Bil",
     "automotiveDescription": "Biler, lastebiler og andre kjøretøy",
-    "boatService": "Båtservice",
-    "boatServiceDescription": "Båter, yachter og fartøy"
+    "marineService": "Marine",
+    "marineServiceDescription": "Båter, yachter og marine fartøy"
   },
   "account": {
     "profileTitle": "Profil",

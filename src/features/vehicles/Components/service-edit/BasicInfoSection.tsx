@@ -89,7 +89,7 @@ export function BasicInfoSection({
       )}
 
       <div className="space-y-1">
-        <Label htmlFor="mileage" className="text-xs">{serviceType === 'boat' ? t('mileageBoat') : t('mileage')}</Label>
+        <Label htmlFor="mileage" className="text-xs">{serviceType === 'marine' ? t('mileageMarine') : t('mileage')}</Label>
         <Input
           id="mileage"
           name="mileage"

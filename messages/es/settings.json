@@ -142,8 +142,8 @@
     "serviceTypeDescription": "Seleccione el tipo de servicio que ofrece su taller. Esto cambia las etiquetas de los campos en toda la aplicación.",
     "automotive": "Automotriz",
     "automotiveDescription": "Coches, camiones y otros vehículos de carretera",
-    "boatService": "Servicio Náutico",
-    "boatServiceDescription": "Barcos, yates y embarcaciones"
+    "marineService": "Marine",
+    "marineServiceDescription": "Barcos, yates y embarcaciones"
   },
   "account": {
     "profileTitle": "Perfil",

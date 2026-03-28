@@ -142,8 +142,8 @@
     "serviceTypeDescription": "Seleziona il tipo di servizio offerto dalla tua officina. Questo cambia le etichette dei campi in tutta l'applicazione.",
     "automotive": "Automobilistico",
     "automotiveDescription": "Auto, camion e altri veicoli stradali",
-    "boatService": "Servizio Nautico",
-    "boatServiceDescription": "Barche, yacht e imbarcazioni"
+    "marineService": "Marine",
+    "marineServiceDescription": "Barche, yacht e imbarcazioni"
   },
   "account": {
     "profileTitle": "Profilo",

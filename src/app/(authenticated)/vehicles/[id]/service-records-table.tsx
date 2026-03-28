@@ -184,7 +184,7 @@ export function ServiceRecordsTable({
               <TableHead>{t("table.title")}</TableHead>
               <TableHead className="w-[100px]">{t("table.type")}</TableHead>
               <TableHead className="w-[100px]">{t("table.status")}</TableHead>
-              <TableHead className="w-[100px] text-right">{serviceType === 'boat' ? t("table.mileageBoat") : t("table.mileage")}</TableHead>
+              <TableHead className="w-[100px] text-right">{serviceType === 'marine' ? t("table.mileageMarine") : t("table.mileage")}</TableHead>
               <TableHead className="hidden w-[120px] sm:table-cell">{t("table.technician")}</TableHead>
               <TableHead className="w-[50px] text-center">{t("table.files")}</TableHead>
               <TableHead className="w-[100px] text-right">{t("table.total")}</TableHead>

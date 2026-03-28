@@ -173,7 +173,7 @@ export default async function PublicQuotePage({
       documentAttachments={documentAttachments}
       layoutConfig={layoutConfig}
       customFields={customFields}
-      serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "boat"}
+      serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "marine"}
     />
   );
 }

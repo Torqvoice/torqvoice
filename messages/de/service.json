@@ -47,7 +47,7 @@
     "date": "Datum",
     "type": "Typ",
     "mileage": "Kilometerstand",
-    "mileageBoat": "Betriebsstunden",
+    "mileageMarine": "Betriebsstunden",
     "status": "Status",
     "technician": "Techniker",
     "invoiceNumber": "Rechnungsnummer",

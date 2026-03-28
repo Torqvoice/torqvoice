@@ -47,7 +47,7 @@
     "date": "Date",
     "type": "Type",
     "mileage": "Mileage",
-    "mileageBoat": "Engine Hours",
+    "mileageMarine": "Engine Hours",
     "status": "Status",
     "technician": "Technician",
     "invoiceNumber": "Invoice Number",

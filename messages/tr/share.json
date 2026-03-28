@@ -115,7 +115,7 @@
     "vin": "VIN: {vin}",
     "plate": "Plaka: {plate}",
     "mileage": "Kilometre: {mileage}",
-    "mileageBoat": "Motor Saatleri: {mileage}",
+    "mileageMarine": "Motor Saatleri: {mileage}",
     "inspected": "muayene edildi",
     "pass": "Geçti",
     "fail": "Başarısız",

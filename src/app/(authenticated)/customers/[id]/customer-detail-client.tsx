@@ -303,7 +303,7 @@ export function CustomerDetailClient({
                     <TableRow>
                       <TableHead className="w-[120px]">{t("vehicleTable.plate")}</TableHead>
                       <TableHead>{t("vehicleTable.vehicle")}</TableHead>
-                      <TableHead className="hidden sm:table-cell w-[100px] text-right">{serviceType === 'boat' ? t("vehicleTable.mileageBoat") : t("vehicleTable.mileage")}</TableHead>
+                      <TableHead className="hidden sm:table-cell w-[100px] text-right">{serviceType === 'marine' ? t("vehicleTable.mileageMarine") : t("vehicleTable.mileage")}</TableHead>
                       <TableHead className="w-[80px] text-center">{t("vehicleTable.services")}</TableHead>
                     </TableRow>
                   </TableHeader>

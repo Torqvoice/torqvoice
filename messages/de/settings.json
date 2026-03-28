@@ -142,8 +142,8 @@
     "serviceTypeDescription": "Wählen Sie die Art der Dienstleistung, die Ihre Werkstatt anbietet. Dies ändert die Feldbezeichnungen in der gesamten Anwendung.",
     "automotive": "Automobil",
     "automotiveDescription": "Autos, LKWs und andere Straßenfahrzeuge",
-    "boatService": "Bootsservice",
-    "boatServiceDescription": "Boote, Yachten und Wasserfahrzeuge"
+    "marineService": "Marine",
+    "marineServiceDescription": "Boote, Yachten und Wasserfahrzeuge"
   },
   "account": {
     "profileTitle": "Profil",

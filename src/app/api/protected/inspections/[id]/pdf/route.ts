@@ -66,15 +66,15 @@ export async function GET(
     const settingsMap: Record<string, string> = {};
     for (const s of settings) settingsMap[s.key] = s.value;
 
-    // Override labels for boat service type
+    // Override labels for marine service type
     const serviceType = settingsMap["workshop.serviceType"] || "automotive";
-    if (serviceType === "boat") {
-      if (pdfMessages.inspection.mileageBoat) labels.mileage = pdfMessages.inspection.mileageBoat;
-      if (pdfMessages.inspection.vinBoat) labels.vin = pdfMessages.inspection.vinBoat;
-      if (pdfMessages.inspection.plateBoat) labels.plate = pdfMessages.inspection.plateBoat;
-      if (pdfMessages.inspection.vehicleBoat) labels.vehicle = pdfMessages.inspection.vehicleBoat;
-      if (pdfMessages.inspection.titleBoat) labels.title = pdfMessages.inspection.titleBoat;
-      if (pdfMessages.inspection.footerTextBoat) labels.footerText = pdfMessages.inspection.footerTextBoat;
+    if (serviceType === "marine") {
+      if (pdfMessages.inspection.mileageMarine) labels.mileage = pdfMessages.inspection.mileageMarine;
+      if (pdfMessages.inspection.vinMarine) labels.vin = pdfMessages.inspection.vinMarine;
+      if (pdfMessages.inspection.plateMarine) labels.plate = pdfMessages.inspection.plateMarine;
+      if (pdfMessages.inspection.vehicleMarine) labels.vehicle = pdfMessages.inspection.vehicleMarine;
+      if (pdfMessages.inspection.titleMarine) labels.title = pdfMessages.inspection.titleMarine;
+      if (pdfMessages.inspection.footerTextMarine) labels.footerText = pdfMessages.inspection.footerTextMarine;
     }
 
     let logoDataUri: string | undefined;

@@ -47,7 +47,7 @@
     "date": "Дата",
     "type": "Тип",
     "mileage": "Пробег",
-    "mileageBoat": "Моточасы",
+    "mileageMarine": "Моточасы",
     "status": "Статус",
     "technician": "Механик",
     "invoiceNumber": "Номер счёта",

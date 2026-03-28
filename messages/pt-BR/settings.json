@@ -142,8 +142,8 @@
     "serviceTypeDescription": "Selecione o tipo de serviço que sua oficina oferece. Isso altera os rótulos dos campos em todo o aplicativo.",
     "automotive": "Automotivo",
     "automotiveDescription": "Carros, caminhões e outros veículos rodoviários",
-    "boatService": "Serviço Náutico",
-    "boatServiceDescription": "Barcos, iates e embarcações"
+    "marineService": "Marine",
+    "marineServiceDescription": "Barcos, iates e embarcações"
   },
   "account": {
     "profileTitle": "Perfil",

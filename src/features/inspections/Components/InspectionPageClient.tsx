@@ -601,7 +601,7 @@ export function InspectionPageClient({
               {inspection.mileage && (
                 <>
                   <span>&middot;</span>
-                  <span>{inspection.mileage.toLocaleString()} {serviceType === 'boat' ? 'hrs' : 'mi'}</span>
+                  <span>{inspection.mileage.toLocaleString()} {serviceType === 'marine' ? 'hrs' : 'mi'}</span>
                 </>
               )}
               {inspection.vehicle.licensePlate && (

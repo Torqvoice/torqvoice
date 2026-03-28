@@ -142,8 +142,8 @@
     "serviceTypeDescription": "Atölyenizin sunduğu hizmet türünü seçin. Bu, uygulama genelinde alan etiketlerini değiştirir.",
     "automotive": "Otomotiv",
     "automotiveDescription": "Arabalar, kamyonlar ve diğer kara taşıtları",
-    "boatService": "Tekne Servisi",
-    "boatServiceDescription": "Tekneler, yatlar ve deniz taşıtları"
+    "marineService": "Marine",
+    "marineServiceDescription": "Tekneler, yatlar ve deniz taşıtları"
   },
   "account": {
     "profileTitle": "Profil",

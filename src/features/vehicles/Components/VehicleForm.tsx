@@ -65,7 +65,7 @@ interface VehicleFormProps {
 
 export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleFormProps) {
   const serviceType = useServiceType();
-  const isBoat = serviceType === "boat";
+  const isMarine = serviceType === "marine";
   const router = useRouter();
   const modal = useGlassModal();
   const t = useTranslations("vehicles.form");
@@ -307,11 +307,11 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="make">{isBoat ? t("makeBoat") : t("make")}</Label>
+              <Label htmlFor="make">{isMarine ? t("makeMarine") : t("make")}</Label>
               <Input
                 id="make"
                 name="make"
-                placeholder={isBoat ? "Boston Whaler" : "Toyota"}
+                placeholder={isMarine ? "Boston Whaler" : "Toyota"}
                 defaultValue={vehicle?.make}
                 required
               />
@@ -321,7 +321,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
               <Input
                 id="model"
                 name="model"
-                placeholder={isBoat ? "Montauk 170" : "Camry"}
+                placeholder={isMarine ? "Montauk 170" : "Camry"}
                 defaultValue={vehicle?.model}
                 required
               />
@@ -341,7 +341,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="mileage">{isBoat ? t("mileageBoat") : t("mileage")}</Label>
+              <Label htmlFor="mileage">{isMarine ? t("mileageMarine") : t("mileage")}</Label>
               <Input
                 id="mileage"
                 name="mileage"
@@ -354,7 +354,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="vin">{isBoat ? t("vinBoat") : t("vin")}</Label>
+              <Label htmlFor="vin">{isMarine ? t("vinMarine") : t("vin")}</Label>
               <Input
                 id="vin"
                 name="vin"
@@ -363,7 +363,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="licensePlate">{isBoat ? t("licensePlateBoat") : t("licensePlate")}</Label>
+              <Label htmlFor="licensePlate">{isMarine ? t("licensePlateMarine") : t("licensePlate")}</Label>
               <Input
                 id="licensePlate"
                 name="licensePlate"
@@ -395,13 +395,13 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
                 <SelectContent>
                   <SelectItem value="gasoline">{t("gasoline")}</SelectItem>
                   <SelectItem value="diesel">{t("diesel")}</SelectItem>
-                  {!isBoat && (
+                  {!isMarine && (
                     <>
                       <SelectItem value="electric">{t("electric")}</SelectItem>
                       <SelectItem value="hybrid">{t("hybrid")}</SelectItem>
                     </>
                   )}
-                  {isBoat && (
+                  {isMarine && (
                     <SelectItem value="two-stroke">{t("twoStroke")}</SelectItem>
                   )}
                   <SelectItem value="other">{t("other")}</SelectItem>
@@ -409,16 +409,16 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="transmission">{isBoat ? t("transmissionBoat") : t("transmission")}</Label>
+              <Label htmlFor="transmission">{isMarine ? t("transmissionMarine") : t("transmission")}</Label>
               <Select
                 name="transmission"
-                defaultValue={vehicle?.transmission ?? (isBoat ? "outboard" : "automatic")}
+                defaultValue={vehicle?.transmission ?? (isMarine ? "outboard" : "automatic")}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {isBoat ? (
+                  {isMarine ? (
                     <>
                       <SelectItem value="outboard">{t("outboard")}</SelectItem>
                       <SelectItem value="inboard">{t("inboard")}</SelectItem>
@@ -436,11 +436,11 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="engineSize">{isBoat ? t("engineSizeBoat") : t("engineSize")}</Label>
+            <Label htmlFor="engineSize">{isMarine ? t("engineSizeMarine") : t("engineSize")}</Label>
             <Input
               id="engineSize"
               name="engineSize"
-              placeholder={isBoat ? "Mercury F 350 XXL Verado V-10 (350 hp)" : "2.5L"}
+              placeholder={isMarine ? "Mercury F 350 XXL Verado V-10 (350 hp)" : "2.5L"}
               defaultValue={vehicle?.engineSize ?? ""}
             />
           </div>

@@ -164,7 +164,7 @@ export function QuoteView({
   documentAttachments?: QuoteAttachmentView[];
   layoutConfig?: InvoiceLayoutConfig;
   customFields?: CustomField[];
-  serviceType?: "automotive" | "boat";
+  serviceType?: "automotive" | "marine";
 }) {
   const t = useTranslations('share.quote');
   const tc = useTranslations('share.common');
@@ -475,8 +475,8 @@ export function QuoteView({
                     if (!show(fid)) return null
                     switch (fid) {
                       case 'vehicle_name': return <p key={fid} className="font-semibold">{quote.vehicle!.year} {quote.vehicle!.make} {quote.vehicle!.model}</p>
-                      case 'vin': return quote.vehicle!.vin ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'boat' ? `HIN: ${quote.vehicle!.vin}` : t('vin', { vin: quote.vehicle!.vin })}</p> : null
-                      case 'license_plate': return quote.vehicle!.licensePlate ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'boat' ? `Reg: ${quote.vehicle!.licensePlate}` : t('plate', { plate: quote.vehicle!.licensePlate })}</p> : null
+                      case 'vin': return quote.vehicle!.vin ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `HIN: ${quote.vehicle!.vin}` : t('vin', { vin: quote.vehicle!.vin })}</p> : null
+                      case 'license_plate': return quote.vehicle!.licensePlate ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `Reg: ${quote.vehicle!.licensePlate}` : t('plate', { plate: quote.vehicle!.licensePlate })}</p> : null
                       default: return null
                     }
                   }

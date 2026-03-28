@@ -142,7 +142,7 @@ export default async function PublicInspectionPage({
       hasExistingQuoteRequest={!!existingRequest}
       quoteShareUrl={quoteShareUrl}
       portalUrl={portalUrl}
-      serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "boat"}
+      serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "marine"}
     />
   );
 }
