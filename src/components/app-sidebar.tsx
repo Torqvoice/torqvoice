@@ -61,6 +61,7 @@ import {
   Plus,
   Receipt,
   Settings,
+  Ship,
   ShieldCheck,
   Sun,
   Users,
@@ -72,6 +73,7 @@ import { locales, localeNames } from '@/i18n/config'
 import { createNewOrganization } from '@/features/team/Actions/createNewOrganization'
 import type { PlanFeatures } from '@/lib/features'
 import { useTheme } from '@/components/theme-provider'
+import { useServiceType } from '@/components/service-type-context'
 import { NotificationBell, NotificationPanel } from '@/features/notifications/Components/NotificationPanel'
 import { SidebarInstallButton } from '@/components/pwa-install-prompt'
 
@@ -110,6 +112,9 @@ export function AppSidebar({
   const [newOrgName, setNewOrgName] = React.useState('')
   const [creatingOrg, setCreatingOrg] = React.useState(false)
 
+  const serviceType = useServiceType()
+  const isMarine = serviceType === 'marine'
+
   const canAccess = (subject: string) => !visibleSubjects || visibleSubjects.includes(subject)
 
   const clientItems = [
@@ -119,7 +124,7 @@ export function AppSidebar({
   ].filter((item) => canAccess(item.subject))
 
   const workshopItems = [
-    { titleKey: 'sidebar.vehicles' as const, url: '/vehicles', icon: Car, subject: 'vehicles' },
+    { titleKey: isMarine ? 'sidebar.vessels' as const : 'sidebar.vehicles' as const, url: '/vehicles', icon: isMarine ? Ship : Car, subject: 'vehicles' },
     { titleKey: 'sidebar.reminders' as const, url: '/reminders', icon: Bell, subject: 'vehicles' },
     { titleKey: 'sidebar.workOrders' as const, url: '/work-orders', icon: ClipboardList, subject: 'work_orders' },
     { titleKey: 'sidebar.inspections' as const, url: '/inspections', icon: ClipboardCheck, subject: 'inspections' },

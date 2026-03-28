@@ -115,7 +115,7 @@
     "vin": "VIN: {vin}",
     "plate": "Госномер: {plate}",
     "mileage": "Пробег: {mileage}",
-    "mileageBoat": "Моточасы: {mileage}",
+    "mileageMarine": "Моточасы: {mileage}",
     "inspected": "осмотрено",
     "pass": "Норма",
     "fail": "Неисправность",

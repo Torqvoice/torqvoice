@@ -142,8 +142,8 @@
     "serviceTypeDescription": "Wybierz typ usługi oferowanej przez Twój warsztat. Zmienia to etykiety pól w całej aplikacji.",
     "automotive": "Motoryzacja",
     "automotiveDescription": "Samochody, ciężarówki i inne pojazdy drogowe",
-    "boatService": "Serwis Łodzi",
-    "boatServiceDescription": "Łodzie, jachty i jednostki pływające"
+    "marineService": "Marine",
+    "marineServiceDescription": "Łodzie, jachty i jednostki pływające"
   },
   "account": {
     "profileTitle": "Profil",

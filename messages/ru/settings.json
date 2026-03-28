@@ -142,8 +142,8 @@
     "serviceTypeDescription": "Выберите тип услуг, которые предоставляет ваша мастерская. Это изменит названия полей во всём приложении.",
     "automotive": "Автомобильный",
     "automotiveDescription": "Легковые автомобили, грузовики и другие транспортные средства",
-    "boatService": "Обслуживание Судов",
-    "boatServiceDescription": "Лодки, яхты и морские суда"
+    "marineService": "Marine",
+    "marineServiceDescription": "Лодки, яхты и морские суда"
   },
   "account": {
     "profileTitle": "Профиль",

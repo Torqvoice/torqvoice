@@ -47,7 +47,7 @@
     "date": "Dato",
     "type": "Type",
     "mileage": "Kilometerstand",
-    "mileageBoat": "Motortimer",
+    "mileageMarine": "Motortimer",
     "status": "Status",
     "technician": "Tekniker",
     "invoiceNumber": "Fakturanummer",

@@ -47,7 +47,7 @@
     "date": "Data",
     "type": "Typ",
     "mileage": "Przebieg",
-    "mileageBoat": "Godziny Pracy",
+    "mileageMarine": "Godziny Pracy",
     "status": "Status",
     "technician": "Technik",
     "invoiceNumber": "Numer Faktury",

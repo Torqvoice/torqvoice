@@ -40,7 +40,7 @@
       "plate": "Placa",
       "vehicle": "Veículo",
       "mileage": "Quilometragem",
-      "mileageBoat": "Horas de Motor",
+      "mileageMarine": "Horas de Motor",
       "services": "Serviços"
     },
     "noVehicles": "Nenhum veículo atribuído a este cliente"

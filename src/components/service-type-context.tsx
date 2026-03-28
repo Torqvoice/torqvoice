@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from "react";
 
-type ServiceType = "automotive" | "boat";
+type ServiceType = "automotive" | "marine";
 
 const ServiceTypeContext = createContext<ServiceType>("automotive");
 
@@ -14,7 +14,7 @@ export function ServiceTypeProvider({
   children: React.ReactNode;
 }) {
   const value: ServiceType =
-    serviceType === "boat" ? "boat" : "automotive";
+    serviceType === "marine" ? "marine" : "automotive";
 
   return (
     <ServiceTypeContext.Provider value={value}>

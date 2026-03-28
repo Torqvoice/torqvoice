@@ -115,7 +115,7 @@
     "vin": "VIN: {vin}",
     "plate": "Kennzeichen: {plate}",
     "mileage": "Kilometerstand: {mileage}",
-    "mileageBoat": "Betriebsstunden: {mileage}",
+    "mileageMarine": "Betriebsstunden: {mileage}",
     "inspected": "geprüft",
     "pass": "Bestanden",
     "fail": "Nicht bestanden",

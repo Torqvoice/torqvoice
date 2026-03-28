@@ -101,13 +101,13 @@ export async function GET(
     const settingsMap: Record<string, string> = {};
     for (const s of settings) settingsMap[s.key] = s.value;
 
-    // Override labels for boat service type
+    // Override labels for marine service type
     const serviceType = settingsMap["workshop.serviceType"] || "automotive";
-    if (serviceType === "boat") {
-      if (pdfMessages.invoice.mileageBoat) labels.mileage = pdfMessages.invoice.mileageBoat;
-      if (pdfMessages.invoice.vinBoat) labels.vin = pdfMessages.invoice.vinBoat;
-      if (pdfMessages.invoice.plateBoat) labels.plate = pdfMessages.invoice.plateBoat;
-      if (pdfMessages.invoice.vehicleBoat) labels.vehicle = pdfMessages.invoice.vehicleBoat;
+    if (serviceType === "marine") {
+      if (pdfMessages.invoice.mileageMarine) labels.mileage = pdfMessages.invoice.mileageMarine;
+      if (pdfMessages.invoice.vinMarine) labels.vin = pdfMessages.invoice.vinMarine;
+      if (pdfMessages.invoice.plateMarine) labels.plate = pdfMessages.invoice.plateMarine;
+      if (pdfMessages.invoice.vehicleMarine) labels.vehicle = pdfMessages.invoice.vehicleMarine;
       // Override unit labels for engine hours
       labels.km = "hrs";
       labels.mi = "hrs";

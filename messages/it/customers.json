@@ -40,7 +40,7 @@
       "plate": "Targa",
       "vehicle": "Veicolo",
       "mileage": "Chilometraggio",
-      "mileageBoat": "Ore Motore",
+      "mileageMarine": "Ore Motore",
       "services": "Servizi"
     },
     "noVehicles": "Nessun veicolo assegnato a questo cliente"

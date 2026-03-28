@@ -195,12 +195,12 @@ export function NewInspectionDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>{serviceType === 'boat' ? 'Engine Hours' : 'Mileage'} (optional)</Label>
+            <Label>{serviceType === 'marine' ? 'Engine Hours' : 'Mileage'} (optional)</Label>
             <Input
               type="number"
               value={mileage}
               onChange={(e) => setMileage(e.target.value)}
-              placeholder={serviceType === 'boat' ? "Current engine hours" : "Current mileage"}
+              placeholder={serviceType === 'marine' ? "Current engine hours" : "Current mileage"}
               min={0}
             />
           </div>

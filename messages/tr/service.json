@@ -47,7 +47,7 @@
     "date": "Tarih",
     "type": "Tür",
     "mileage": "Kilometre",
-    "mileageBoat": "Motor Saatleri",
+    "mileageMarine": "Motor Saatleri",
     "status": "Durum",
     "technician": "Teknisyen",
     "invoiceNumber": "Fatura Numarası",

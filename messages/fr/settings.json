@@ -142,8 +142,8 @@
     "serviceTypeDescription": "Sélectionnez le type de service proposé par votre atelier. Cela modifie les libellés des champs dans toute l'application.",
     "automotive": "Automobile",
     "automotiveDescription": "Voitures, camions et autres véhicules routiers",
-    "boatService": "Service Nautique",
-    "boatServiceDescription": "Bateaux, yachts et navires"
+    "marineService": "Marine",
+    "marineServiceDescription": "Bateaux, yachts et navires"
   },
   "account": {
     "profileTitle": "Profil",

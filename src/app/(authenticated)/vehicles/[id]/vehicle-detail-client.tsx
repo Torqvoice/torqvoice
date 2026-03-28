@@ -241,8 +241,8 @@ export function VehicleDetailClient({
   aiEnabled?: boolean
 }) {
   const serviceType = useServiceType()
-  const isBoat = serviceType === 'boat'
-  const distUnit = isBoat ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
+  const isMarine = serviceType === 'marine'
+  const distUnit = isMarine ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
   const searchParams = useSearchParams()
   const { formatDate } = useFormatDate()
@@ -580,7 +580,7 @@ export function VehicleDetailClient({
                     <div className="flex cursor-help items-center gap-1.5">
                       <TrendingUp className="h-3.5 w-3.5" />
                       <span className="text-xs">
-                        {isBoat ? t('predictedHours') : unitSystem === 'metric' ? t('predictedKm') : t('predictedMileage')}
+                        {isMarine ? t('predictedHours') : unitSystem === 'metric' ? t('predictedKm') : t('predictedMileage')}
                       </span>
                       <span className="font-semibold text-foreground">
                         ~{predictionData.predictedMileage.toLocaleString()}

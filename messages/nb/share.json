@@ -115,7 +115,7 @@
     "vin": "VIN: {vin}",
     "plate": "Reg.nr: {plate}",
     "mileage": "Kilometerstand: {mileage}",
-    "mileageBoat": "Motortimer: {mileage}",
+    "mileageMarine": "Motortimer: {mileage}",
     "inspected": "kontrollert",
     "pass": "Godkjent",
     "fail": "Ikke godkjent",

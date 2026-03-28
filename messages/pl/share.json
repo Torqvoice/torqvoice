@@ -115,7 +115,7 @@
     "vin": "VIN: {vin}",
     "plate": "Tablica: {plate}",
     "mileage": "Przebieg: {mileage}",
-    "mileageBoat": "Godziny Pracy: {mileage}",
+    "mileageMarine": "Godziny Pracy: {mileage}",
     "inspected": "sprawdzono",
     "pass": "Zaliczono",
     "fail": "Nie zaliczono",

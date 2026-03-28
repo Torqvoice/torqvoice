@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Car, Anchor } from "lucide-react";
+import { Car, Ship } from "lucide-react";
 
 interface ServiceTypeSelectorProps {
   serviceType: string;
@@ -41,10 +41,10 @@ export function ServiceTypeSelector({ serviceType, onServiceTypeChange }: Servic
                 {t("company.automotive")}
               </span>
             </SelectItem>
-            <SelectItem value="boat">
+            <SelectItem value="marine">
               <span className="flex items-center gap-2">
-                <Anchor className="h-4 w-4" />
-                {t("company.boatService")}
+                <Ship className="h-4 w-4" />
+                {t("company.marineService")}
               </span>
             </SelectItem>
           </SelectContent>

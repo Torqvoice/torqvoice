@@ -40,7 +40,7 @@
       "plate": "Registreringsnummer",
       "vehicle": "Kjøretøy",
       "mileage": "Kilometerstand",
-      "mileageBoat": "Motortimer",
+      "mileageMarine": "Motortimer",
       "services": "Tjenester"
     },
     "noVehicles": "Ingen kjøretøy tilknyttet denne kunden"

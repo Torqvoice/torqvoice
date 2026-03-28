@@ -40,7 +40,7 @@
       "plate": "Tablica",
       "vehicle": "Pojazd",
       "mileage": "Przebieg",
-      "mileageBoat": "Godziny Pracy",
+      "mileageMarine": "Godziny Pracy",
       "services": "Usługi"
     },
     "noVehicles": "Brak pojazdów przypisanych do tego klienta"

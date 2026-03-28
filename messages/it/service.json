@@ -47,7 +47,7 @@
     "date": "Data",
     "type": "Tipo",
     "mileage": "Chilometraggio",
-    "mileageBoat": "Ore Motore",
+    "mileageMarine": "Ore Motore",
     "status": "Stato",
     "technician": "Tecnico",
     "invoiceNumber": "Numero Fattura",

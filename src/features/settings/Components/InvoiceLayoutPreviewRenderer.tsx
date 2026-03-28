@@ -208,13 +208,13 @@ export function InvoiceLayoutPreviewRenderer({
       ...(pdf[namespace] ?? {}),
       ...(pdf.common ?? {}),
     };
-    // Override labels for boat service type
-    if (serviceType === "boat") {
+    // Override labels for marine service type
+    if (serviceType === "marine") {
       const ns = pdf[namespace] ?? {};
-      if (ns.mileageBoat) baseLabels.mileage = ns.mileageBoat;
-      if (ns.vinBoat) baseLabels.vin = ns.vinBoat;
-      if (ns.plateBoat) baseLabels.plate = ns.plateBoat;
-      if (ns.vehicleBoat) baseLabels.vehicle = ns.vehicleBoat;
+      if (ns.mileageMarine) baseLabels.mileage = ns.mileageMarine;
+      if (ns.vinMarine) baseLabels.vin = ns.vinMarine;
+      if (ns.plateMarine) baseLabels.plate = ns.plateMarine;
+      if (ns.vehicleMarine) baseLabels.vehicle = ns.vehicleMarine;
       baseLabels.km = "hrs";
       baseLabels.mi = "hrs";
     }

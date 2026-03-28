@@ -43,6 +43,7 @@ import {
 import { createTechnician } from "@/features/workboard/Actions/technicianActions";
 import { cn } from "@/lib/utils";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
+import { ServiceTypeSelector } from "../company/service-type-selector";
 
 interface TechnicianOption {
   id: string
@@ -53,6 +54,9 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
   const router = useRouter();
   const t = useTranslations('settings');
   const [saving, setSaving] = useState(false);
+  const [serviceType, setServiceType] = useState(
+    settings[SETTING_KEYS.SERVICE_TYPE] || "automotive"
+  );
 
   const [defaultTechnicianId, setDefaultTechnicianId] = useState(
     settings[SETTING_KEYS.DEFAULT_TECHNICIAN_ID] || ""
@@ -130,6 +134,7 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
   const handleSave = async () => {
     setSaving(true);
     await setSettings({
+      [SETTING_KEYS.SERVICE_TYPE]: serviceType,
       [SETTING_KEYS.DEFAULT_TECHNICIAN_ID]: defaultTechnicianId,
       [SETTING_KEYS.DEFAULT_TECHNICIAN]: selectedTechName,
       [SETTING_KEYS.DEFAULT_LABOR_RATE]: defaultLaborRate,
@@ -147,6 +152,7 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
     <div className="space-y-6">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
+      <ServiceTypeSelector serviceType={serviceType} onServiceTypeChange={setServiceType} />
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <Wrench className="h-5 w-5 text-muted-foreground" />

@@ -40,7 +40,7 @@
       "plate": "Kennzeichen",
       "vehicle": "Fahrzeug",
       "mileage": "Kilometerstand",
-      "mileageBoat": "Betriebsstunden",
+      "mileageMarine": "Betriebsstunden",
       "services": "Wartungen"
     },
     "noVehicles": "Diesem Kunden sind keine Fahrzeuge zugewiesen"
