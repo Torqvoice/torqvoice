@@ -18,7 +18,10 @@ import { toast } from "sonner";
 import { useGlassModal } from "@/components/glass-modal";
 import { createInventoryPart, updateInventoryPart, deleteOrphanedUploads } from "../Actions/inventoryActions";
 import { aiAnalyzePartImage } from "../Actions/aiAnalyzePartImage";
-import { Camera, ExternalLink, ImageIcon, Loader2, Plus, Sparkles, Upload, X } from "lucide-react";
+import { Camera, Check, ChevronsUpDown, ExternalLink, ImageIcon, Loader2, Plus, Sparkles, Upload, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 import { compressImage } from "@/lib/compress-image";
 
 interface InventoryPartFormProps {
@@ -26,6 +29,7 @@ interface InventoryPartFormProps {
   onOpenChange: (open: boolean) => void;
   markupMultiplier?: number;
   initialBarcode?: string;
+  categories?: string[];
   onViewImages?: (urls: string[], startIndex: number) => void;
   part?: {
     id: string;
@@ -48,7 +52,7 @@ interface InventoryPartFormProps {
   };
 }
 
-export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, initialBarcode, onViewImages }: InventoryPartFormProps) {
+export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, initialBarcode, categories = [], onViewImages }: InventoryPartFormProps) {
   const router = useRouter();
   const modal = useGlassModal();
   const t = useTranslations('inventory');
@@ -57,6 +61,10 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
   const [uploading, setUploading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [supplierUrl, setSupplierUrl] = useState(part?.supplierUrl ?? "");
+  const [category, setCategory] = useState(part?.category ?? "");
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [categorySearch, setCategorySearch] = useState("");
+  const sellPriceManualRef = useRef(false);
   const [gallery, setGallery] = useState<{ id?: string; url: string; fileName?: string | null; description?: string | null; sortOrder: number }[]>(() => {
     if (part?.gallery && part.gallery.length > 0) return part.gallery;
     if (part?.imageUrl) return [{ url: part.imageUrl, sortOrder: 0 }];
@@ -72,6 +80,9 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
     if (open) {
       uploadedUrlsRef.current = [];
       setSupplierUrl(part?.supplierUrl ?? "");
+      setCategory(part?.category ?? "");
+      setCategorySearch("");
+      sellPriceManualRef.current = !!(part?.sellPrice && part.sellPrice > 0);
       if (part?.gallery && part.gallery.length > 0) {
         setGallery(part.gallery);
       } else if (part?.imageUrl) {
@@ -183,7 +194,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
       setIfEmpty("partNumber", metadata.partNumber);
       setIfEmpty("barcode", metadata.barcode);
       setIfEmpty("supplier", metadata.supplier);
-      setIfEmpty("category", metadata.category);
+      if (metadata.category && !category) setCategory(metadata.category);
       if (metadata.unitCost !== undefined) {
         const unitCostInput = form.elements.namedItem("unitCost") as HTMLInputElement | null;
         if (unitCostInput && (!unitCostInput.value || unitCostInput.value === "0")) {
@@ -250,7 +261,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
       setIfEmpty("name", data.name);
       setIfEmpty("partNumber", data.partNumber);
       setIfEmpty("barcode", data.barcode);
-      setIfEmpty("category", data.category);
+      if (data.category && !category) setCategory(data.category);
       setIfEmpty("description", data.description);
       setIfEmpty("supplier", data.supplier);
       toast.success(t('form.aiAnalyzeSuccess'), { id: toastId });
@@ -271,7 +282,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
       partNumber: (formData.get("partNumber") as string) || undefined,
       barcode: (formData.get("barcode") as string) || undefined,
       description: (formData.get("description") as string) || undefined,
-      category: (formData.get("category") as string) || undefined,
+      category: category || undefined,
       quantity: Number(formData.get("quantity")) || 0,
       minQuantity: Number(formData.get("minQuantity")) || 0,
       unitCost: Number(formData.get("unitCost")) || 0,
@@ -523,13 +534,81 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
 
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="category">{t('form.category')}</Label>
-                  <Input
-                    id="category"
-                    name="category"
-                    placeholder={t('form.categoryPlaceholder')}
-                    defaultValue={part?.category ?? ""}
-                  />
+                  <Label>{t('form.category')}</Label>
+                  <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={categoryOpen}
+                        className="w-full justify-between font-normal h-9"
+                      >
+                        <span className={category ? "" : "text-muted-foreground"}>
+                          {category || t('form.categoryPlaceholder')}
+                        </span>
+                        <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                      <Command>
+                        <CommandInput
+                          placeholder={t('form.categorySearch')}
+                          value={categorySearch}
+                          onValueChange={setCategorySearch}
+                        />
+                        <CommandList>
+                          <CommandEmpty>
+                            {categorySearch.trim() ? (
+                              <button
+                                type="button"
+                                className="flex w-full items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded-sm"
+                                onClick={() => {
+                                  setCategory(categorySearch.trim());
+                                  setCategorySearch("");
+                                  setCategoryOpen(false);
+                                }}
+                              >
+                                <Plus className="h-3.5 w-3.5" />
+                                {t('form.categoryCreate', { name: categorySearch.trim() })}
+                              </button>
+                            ) : (
+                              <span className="text-muted-foreground text-xs">{t('form.categoryNone')}</span>
+                            )}
+                          </CommandEmpty>
+                          <CommandGroup>
+                            {categories.map((cat) => (
+                              <CommandItem
+                                key={cat}
+                                value={cat}
+                                onSelect={() => {
+                                  setCategory(cat === category ? "" : cat);
+                                  setCategorySearch("");
+                                  setCategoryOpen(false);
+                                }}
+                              >
+                                <Check className={cn("mr-2 h-3.5 w-3.5", category === cat ? "opacity-100" : "opacity-0")} />
+                                {cat}
+                              </CommandItem>
+                            ))}
+                            {categorySearch.trim() && !categories.some((c) => c.toLowerCase() === categorySearch.trim().toLowerCase()) && (
+                              <CommandItem
+                                value={`__create__${categorySearch.trim()}`}
+                                onSelect={() => {
+                                  setCategory(categorySearch.trim());
+                                  setCategorySearch("");
+                                  setCategoryOpen(false);
+                                }}
+                              >
+                                <Plus className="mr-2 h-3.5 w-3.5" />
+                                {t('form.categoryCreate', { name: categorySearch.trim() })}
+                              </CommandItem>
+                            )}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="location">{t('form.location')}</Label>
@@ -575,10 +654,10 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                     step="0.01"
                     defaultValue={part?.unitCost ?? 0}
                     onChange={(e) => {
-                      if (!markupMultiplier || markupMultiplier <= 0) return;
+                      if (!markupMultiplier || markupMultiplier <= 0 || sellPriceManualRef.current) return;
                       const cost = Number(e.target.value) || 0;
                       const sellPriceInput = document.getElementById("sellPrice") as HTMLInputElement | null;
-                      if (sellPriceInput && (!sellPriceInput.value || Number(sellPriceInput.value) === 0)) {
+                      if (sellPriceInput) {
                         sellPriceInput.value = String(Math.round(cost * markupMultiplier * 100) / 100);
                       }
                     }}
@@ -593,6 +672,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                     min="0"
                     step="0.01"
                     defaultValue={part?.sellPrice ?? 0}
+                    onChange={() => { sellPriceManualRef.current = true; }}
                   />
                 </div>
               </div>

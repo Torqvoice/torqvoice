@@ -15,6 +15,8 @@ export async function getInventoryPartsPaginated(params: {
   pageSize?: number;
   search?: string;
   category?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ userId, organizationId }) => {
     const page = params.page || 1;
@@ -41,10 +43,14 @@ export async function getInventoryPartsPaginated(params: {
       where.category = params.category;
     }
 
+    const dir = params.sortOrder || "desc";
+    const sortableColumns = ["name", "partNumber", "category", "quantity", "unitCost", "sellPrice", "supplier", "location", "updatedAt"];
+    const sortColumn = params.sortBy && sortableColumns.includes(params.sortBy) ? params.sortBy : "updatedAt";
+
     const [parts, total] = await Promise.all([
       db.inventoryPart.findMany({
         where,
-        orderBy: { updatedAt: "desc" },
+        orderBy: { [sortColumn]: dir },
         skip,
         take: pageSize,
         include: { gallery: { orderBy: { sortOrder: "asc" } } },
@@ -279,28 +285,24 @@ export async function getInventoryPartsList() {
 
 const applyMarkupSchema = z.object({
   multiplier: z.number().positive("Multiplier must be greater than 0"),
+  overrideExisting: z.boolean().default(false),
 });
 
 export async function applyMarkupToAll(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
-    const { multiplier } = applyMarkupSchema.parse(input);
+    const { multiplier, overrideExisting } = applyMarkupSchema.parse(input);
 
-    const parts = await db.inventoryPart.findMany({
-      where: { organizationId, isArchived: false },
-      select: { id: true, unitCost: true },
-    });
-
-    await db.$transaction(
-      parts.map((p) =>
-        db.inventoryPart.updateMany({
-          where: { id: p.id, organizationId },
-          data: { sellPrice: Math.round(p.unitCost * multiplier * 100) / 100 },
-        })
-      )
-    );
+    // Use raw SQL to avoid Prisma's @updatedAt auto-update which changes sort order
+    const result = await db.$executeRaw`
+      UPDATE "inventory_parts"
+      SET "sellPrice" = ROUND(("unitCost" * ${multiplier})::numeric, 2)
+      WHERE "organizationId" = ${organizationId}
+        AND "isArchived" = false
+        ${overrideExisting ? Prisma.sql`` : Prisma.sql`AND ("sellPrice" = 0 OR "sellPrice" IS NULL)`}
+    `;
 
     revalidatePath("/inventory");
-    return { updated: parts.length };
+    return { updated: result };
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }] });
 }
 

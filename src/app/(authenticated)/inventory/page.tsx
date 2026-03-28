@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/page-header";
 export default async function InventoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; pageSize?: string; search?: string; category?: string }>;
+  searchParams: Promise<{ page?: string; pageSize?: string; search?: string; category?: string; sortBy?: string; sortOrder?: string }>;
 }) {
   const params = await searchParams;
   const [result, categoriesResult, settingsResult] = await Promise.all([
@@ -16,6 +16,8 @@ export default async function InventoryPage({
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       category: params.category,
+      sortBy: params.sortBy,
+      sortOrder: (params.sortOrder as "asc" | "desc") || undefined,
     }),
     getInventoryCategories(),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]),
@@ -50,6 +52,8 @@ export default async function InventoryPage({
           categories={categories}
           currencyCode={currencyCode}
           markupMultiplier={markupMultiplier}
+          sortBy={params.sortBy || "updatedAt"}
+          sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
         />
       </div>
     </>

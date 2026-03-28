@@ -35,7 +35,10 @@
     "description": "Dette setter salgspris = kostnad x {multiplier} for alle {count} deler.",
     "percentage": "({percent}% påslag)",
     "cancel": "Avbryt",
-    "apply": "Bruk"
+    "apply": "Bruk",
+    "overrideExisting": "Overskriv eksisterende salgspriser",
+    "overrideExistingHint": "Alle deler vil bli oppdatert, inkludert de med eksisterende salgspris.",
+    "skipExistingHint": "Kun deler uten salgspris vil bli oppdatert."
   },
   "errors": {
     "multiplierPositive": "Multiplikatoren må være større enn 0",
@@ -85,7 +88,10 @@
     "nameLabel": "Navn *",
     "namePlaceholder": "Bremseklosssett",
     "category": "Kategori",
-    "categoryPlaceholder": "Bremser",
+    "categoryPlaceholder": "Velg kategori...",
+    "categorySearch": "Søk eller opprett...",
+    "categoryCreate": "Opprett \"{name}\"",
+    "categoryNone": "Ingen kategorier ennå",
     "location": "Plassering",
     "locationPlaceholder": "Hylle A-3",
     "quantity": "Antall",

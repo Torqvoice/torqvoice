@@ -35,7 +35,10 @@
     "description": "Il prezzo di vendita sarà impostato a costo x {multiplier} per tutti i {count} ricambi.",
     "percentage": "({percent}% di ricarico)",
     "cancel": "Annulla",
-    "apply": "Applica"
+    "apply": "Applica",
+    "overrideExisting": "Sovrascrivi prezzi di vendita esistenti",
+    "overrideExistingHint": "Tutti i ricambi verranno aggiornati, inclusi quelli con un prezzo di vendita esistente.",
+    "skipExistingHint": "Verranno aggiornati solo i ricambi senza prezzo di vendita."
   },
   "errors": {
     "multiplierPositive": "Il moltiplicatore deve essere maggiore di 0",
@@ -85,7 +88,10 @@
     "nameLabel": "Nome *",
     "namePlaceholder": "Kit pastiglie freno",
     "category": "Categoria",
-    "categoryPlaceholder": "Freni",
+    "categoryPlaceholder": "Seleziona categoria...",
+    "categorySearch": "Cerca o crea...",
+    "categoryCreate": "Crea \"{name}\"",
+    "categoryNone": "Nessuna categoria",
     "location": "Posizione",
     "locationPlaceholder": "Scaffale A-3",
     "quantity": "Quantità",

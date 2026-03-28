@@ -35,7 +35,10 @@
     "description": "Esto establecerá el precio de venta = coste x {multiplier} para las {count} piezas.",
     "percentage": "({percent}% de margen)",
     "cancel": "Cancelar",
-    "apply": "Aplicar"
+    "apply": "Aplicar",
+    "overrideExisting": "Sobrescribir precios de venta existentes",
+    "overrideExistingHint": "Se actualizarán todas las piezas, incluidas las que ya tienen precio de venta.",
+    "skipExistingHint": "Solo se actualizarán las piezas sin precio de venta."
   },
   "errors": {
     "multiplierPositive": "El multiplicador debe ser mayor que 0",
@@ -85,7 +88,10 @@
     "nameLabel": "Nombre *",
     "namePlaceholder": "Juego de pastillas de freno",
     "category": "Categoría",
-    "categoryPlaceholder": "Frenos",
+    "categoryPlaceholder": "Seleccionar categoría...",
+    "categorySearch": "Buscar o crear...",
+    "categoryCreate": "Crear \"{name}\"",
+    "categoryNone": "Sin categorías aún",
     "location": "Ubicación",
     "locationPlaceholder": "Estante A-3",
     "quantity": "Cantidad",
