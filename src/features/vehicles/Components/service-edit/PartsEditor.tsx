@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useCallback } from 'react'
+import { useRef, useCallback, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -46,6 +46,7 @@ function SortablePartRow({
   onDelete,
   currencyCode,
   t,
+  dragEnabled,
 }: {
   id: string
   part: ServicePartInput
@@ -54,6 +55,7 @@ function SortablePartRow({
   onDelete: () => void
   currencyCode: string
   t: (key: string) => string
+  dragEnabled: boolean
 }) {
   const {
     attributes,
@@ -64,22 +66,21 @@ function SortablePartRow({
     isDragging,
   } = useSortable({ id })
 
-  const style = {
+  const style = dragEnabled ? {
     transform: CSS.Transform.toString(transform),
     transition,
-  }
+  } : undefined
 
   return (
     <div
-      ref={setNodeRef}
+      ref={dragEnabled ? setNodeRef : undefined}
       style={style}
-      className={`grid grid-cols-[auto_1fr] gap-2 sm:grid-cols-[auto_1fr_2fr_0.7fr_1fr_1fr_auto] ${isDragging ? 'z-10 opacity-75' : ''}`}
+      className={`grid grid-cols-[auto_1fr] gap-2 sm:grid-cols-[auto_1fr_2fr_0.7fr_1fr_1fr_auto] ${isDragging && dragEnabled ? 'z-10 opacity-75' : ''}`}
     >
       <button
         type="button"
         className="flex h-9 w-6 cursor-grab items-center justify-center text-muted-foreground hover:text-foreground active:cursor-grabbing"
-        {...attributes}
-        {...listeners}
+        {...(dragEnabled ? { ...attributes, ...listeners } : {})}
       >
         <GripVertical className="h-4 w-4" />
       </button>
@@ -138,6 +139,8 @@ export function PartsEditor({
   onScanBarcode,
 }: PartsEditorProps) {
   const t = useTranslations('service.parts')
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   const keyCounterRef = useRef(0)
   const keysRef = useRef<string[]>([])
 
@@ -221,22 +224,39 @@ export function PartsEditor({
             <span>{t('total')}</span>
             <span />
           </div>
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={keysRef.current} strategy={verticalListSortingStrategy}>
-              {partItems.map((part, i) => (
-                <SortablePartRow
-                  key={keysRef.current[i]}
-                  id={keysRef.current[i]}
-                  part={part}
-                  index={i}
-                  updatePart={updatePart}
-                  onDelete={() => deletePart(i)}
-                  currencyCode={currencyCode}
-                  t={t}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
+          {mounted ? (
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={keysRef.current} strategy={verticalListSortingStrategy}>
+                {partItems.map((part, i) => (
+                  <SortablePartRow
+                    key={keysRef.current[i]}
+                    id={keysRef.current[i]}
+                    part={part}
+                    index={i}
+                    updatePart={updatePart}
+                    onDelete={() => deletePart(i)}
+                    currencyCode={currencyCode}
+                    t={t}
+                    dragEnabled
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          ) : (
+            partItems.map((part, i) => (
+              <SortablePartRow
+                key={keysRef.current[i]}
+                id={keysRef.current[i]}
+                part={part}
+                index={i}
+                updatePart={updatePart}
+                onDelete={() => deletePart(i)}
+                currencyCode={currencyCode}
+                t={t}
+                dragEnabled={false}
+              />
+            ))
+          )}
           <button
             type="button"
             className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
