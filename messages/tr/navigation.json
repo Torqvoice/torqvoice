@@ -58,6 +58,10 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Yeni İş Emri",
   "purchaseWhiteLabel": "Beyaz Etiket Satın Al",
+  "licenseExpired": "Lisansınız sona erdi. Özellikler sınırlı olabilir.",
+  "licenseExpiresTomorrow": "Lisansınız yarın sona eriyor.",
+  "licenseExpiresDays": "Lisansınız {days} gün içinde sona eriyor.",
+  "licenseRenew": "Yenile",
   "sidebar": {
     "dashboard": "Kontrol Paneli",
     "clients": "Müşteriler",

@@ -58,6 +58,10 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Новый заказ-наряд",
   "purchaseWhiteLabel": "Купить White-Label",
+  "licenseExpired": "Ваша лицензия истекла. Функции могут быть ограничены.",
+  "licenseExpiresTomorrow": "Ваша лицензия истекает завтра.",
+  "licenseExpiresDays": "Ваша лицензия истекает через {days} дней.",
+  "licenseRenew": "Продлить",
   "sidebar": {
     "dashboard": "Панель управления",
     "clients": "Клиенты",

@@ -58,6 +58,10 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Ny arbeidsordre",
   "purchaseWhiteLabel": "Kjøp White-Label",
+  "licenseExpired": "Lisensen din har utløpt. Funksjoner kan være begrenset.",
+  "licenseExpiresTomorrow": "Lisensen din utløper i morgen.",
+  "licenseExpiresDays": "Lisensen din utløper om {days} dager.",
+  "licenseRenew": "Forny",
   "sidebar": {
     "dashboard": "Dashbord",
     "clients": "Klienter",

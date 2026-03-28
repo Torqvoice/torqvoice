@@ -58,6 +58,10 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Neuer Arbeitsauftrag",
   "purchaseWhiteLabel": "White-Label erwerben",
+  "licenseExpired": "Ihre Lizenz ist abgelaufen. Funktionen können eingeschränkt sein.",
+  "licenseExpiresTomorrow": "Ihre Lizenz läuft morgen ab.",
+  "licenseExpiresDays": "Ihre Lizenz läuft in {days} Tagen ab.",
+  "licenseRenew": "Verlängern",
   "sidebar": {
     "dashboard": "Dashboard",
     "clients": "Kunden",

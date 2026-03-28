@@ -1,9 +1,12 @@
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
+import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
+import { notify } from '@/lib/notify'
 
 const TORQVOICE_COM_URL = process.env.NEXT_PUBLIC_TORQVOICE_COM_URL || 'https://torqvoice.com'
+const EXPIRY_WARNING_DAYS = 14
 
-async function revalidateOrganizationLicense(organizationId: string, licenseKey: string) {
+export async function revalidateOrganizationLicense(organizationId: string, licenseKey: string) {
   let valid = false
   let plan = 'free'
   let expiresAt = ''
@@ -59,6 +62,76 @@ async function revalidateOrganizationLicense(organizationId: string, licenseKey:
   }
 
   await db.$transaction(upserts)
+
+  // Send expiry warning if within threshold
+  if (valid && expiresAt) {
+    const diff = new Date(expiresAt).getTime() - Date.now()
+    const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24))
+
+    if (daysLeft <= EXPIRY_WARNING_DAYS && daysLeft > 0) {
+      await sendExpiryWarning(organizationId, daysLeft)
+    }
+  }
+}
+
+export async function sendExpiryWarning(organizationId: string, daysLeft: number) {
+  // Check if we already warned today
+  const lastWarning = await db.appSetting.findUnique({
+    where: { organizationId_key: { organizationId, key: 'license.lastExpiryWarning' } },
+    select: { value: true },
+  })
+  const today = new Date().toISOString().slice(0, 10)
+  if (lastWarning?.value === today) return
+
+  // Record that we warned today
+  const orgMember = await db.organizationMember.findFirst({
+    where: { organizationId },
+    select: { userId: true },
+  })
+  if (!orgMember) return
+
+  await db.appSetting.upsert({
+    where: { organizationId_key: { organizationId, key: 'license.lastExpiryWarning' } },
+    update: { value: today },
+    create: { userId: orgMember.userId, organizationId, key: 'license.lastExpiryWarning', value: today },
+  })
+
+  // In-app notification
+  await notify({
+    type: 'license_expiring',
+    title: `License expires in ${daysLeft} day${daysLeft === 1 ? '' : 's'}`,
+    message: 'Please renew your license to maintain full access to all features.',
+    entityType: 'license',
+    entityId: organizationId,
+    entityUrl: '/settings/license',
+    organizationId,
+  })
+
+  // Email notification to org owner
+  try {
+    const owner = await db.organizationMember.findFirst({
+      where: { organizationId, role: 'owner' },
+      include: { user: { select: { email: true } } },
+    })
+    if (!owner?.user.email) return
+
+    const from = await getOrgFromAddress(organizationId)
+    await sendOrgMail(organizationId, {
+      from,
+      to: owner.user.email,
+      subject: `Your license expires in ${daysLeft} day${daysLeft === 1 ? '' : 's'}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px;">
+          <h2 style="color: #d97706;">License Expiration Notice</h2>
+          <p>Your license will expire in <strong>${daysLeft} day${daysLeft === 1 ? '' : 's'}</strong>.</p>
+          <p>Please renew your license to continue using all features without interruption.</p>
+          <p>You can manage your license in <strong>Settings &gt; License</strong>.</p>
+        </div>
+      `,
+    })
+  } catch (error) {
+    console.warn(`[cron] Failed to send license expiry email for org ${organizationId}:`, error)
+  }
 }
 
 /** Revalidates all license keys against torqvoice.com daily at 00:00 UTC */
