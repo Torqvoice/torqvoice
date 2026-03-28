@@ -47,6 +47,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   ExternalLink,
   Loader2,
   MoreVertical,
@@ -97,6 +100,8 @@ export function InventoryClient({
   categories,
   currencyCode = "USD",
   markupMultiplier: initialMarkup = 1.0,
+  sortBy: initialSortBy = "updatedAt",
+  sortOrder: initialSortOrder = "desc",
 }: {
   data: PaginatedData;
   search: string;
@@ -104,6 +109,8 @@ export function InventoryClient({
   categories: string[];
   currencyCode?: string;
   markupMultiplier?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -165,6 +172,21 @@ export function InventoryClient({
     },
     [router, pathname, searchParams]
   );
+
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = initialSortBy === column && initialSortOrder === "asc" ? "desc" : "asc";
+      navigate({ sortBy: column, sortOrder: newOrder });
+    },
+    [navigate, initialSortBy, initialSortOrder]
+  );
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (initialSortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
+    return initialSortOrder === "asc"
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />;
+  };
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
@@ -270,15 +292,47 @@ export function InventoryClient({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('table.partNumber')}</TableHead>
+              <TableHead>
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("partNumber")}>
+                  {t('table.partNumber')}<SortIcon column="partNumber" />
+                </button>
+              </TableHead>
               <TableHead className="hidden lg:table-cell">{t('table.barcode')}</TableHead>
-              <TableHead>{t('table.name')}</TableHead>
-              <TableHead className="hidden sm:table-cell">{t('table.category')}</TableHead>
-              <TableHead>{t('table.inStock')}</TableHead>
-              <TableHead className="text-right">{t('table.unitCost')}</TableHead>
-              <TableHead className="text-right">{t('table.sellPrice')}</TableHead>
-              <TableHead className="hidden md:table-cell">{t('table.supplier')}</TableHead>
-              <TableHead className="hidden lg:table-cell">{t('table.location')}</TableHead>
+              <TableHead>
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("name")}>
+                  {t('table.name')}<SortIcon column="name" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden sm:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("category")}>
+                  {t('table.category')}<SortIcon column="category" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("quantity")}>
+                  {t('table.inStock')}<SortIcon column="quantity" />
+                </button>
+              </TableHead>
+              <TableHead className="text-right">
+                <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort("unitCost")}>
+                  {t('table.unitCost')}<SortIcon column="unitCost" />
+                </button>
+              </TableHead>
+              <TableHead className="text-right">
+                <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort("sellPrice")}>
+                  {t('table.sellPrice')}<SortIcon column="sellPrice" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden md:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("supplier")}>
+                  {t('table.supplier')}<SortIcon column="supplier" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden lg:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("location")}>
+                  {t('table.location')}<SortIcon column="location" />
+                </button>
+              </TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>

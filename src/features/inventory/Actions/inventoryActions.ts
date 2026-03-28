@@ -15,6 +15,8 @@ export async function getInventoryPartsPaginated(params: {
   pageSize?: number;
   search?: string;
   category?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ userId, organizationId }) => {
     const page = params.page || 1;
@@ -41,10 +43,14 @@ export async function getInventoryPartsPaginated(params: {
       where.category = params.category;
     }
 
+    const dir = params.sortOrder || "desc";
+    const sortableColumns = ["name", "partNumber", "category", "quantity", "unitCost", "sellPrice", "supplier", "location", "updatedAt"];
+    const sortColumn = params.sortBy && sortableColumns.includes(params.sortBy) ? params.sortBy : "updatedAt";
+
     const [parts, total] = await Promise.all([
       db.inventoryPart.findMany({
         where,
-        orderBy: { updatedAt: "desc" },
+        orderBy: { [sortColumn]: dir },
         skip,
         take: pageSize,
         include: { gallery: { orderBy: { sortOrder: "asc" } } },
