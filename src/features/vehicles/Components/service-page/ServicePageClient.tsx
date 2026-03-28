@@ -135,7 +135,7 @@ export function ServicePageClient({
     if (result.success && result.data) {
       const part = result.data
       const price = part.sellPrice > 0 ? part.sellPrice : part.unitCost
-      formState.dirtySetPartItems((prev) => [...prev, {
+      formState.dirtySetPartItems((prev) => [{
         partNumber: part.partNumber || '',
         name: part.name,
         quantity: 1,
@@ -143,7 +143,7 @@ export function ServicePageClient({
         total: price,
         unitCost: part.unitCost,
         inventoryPartId: part.id,
-      }])
+      }, ...prev])
       toast.success(t('parts.partFound', { name: part.name }))
     } else {
       toast.error(t('parts.partNotFound', { barcode }))
@@ -160,7 +160,7 @@ export function ServicePageClient({
       total: item.hours * (item.rate > 0 ? item.rate : (item.pricingType === 'service' ? 0 : defaultLaborRate)),
       pricingType: (item.pricingType as 'hourly' | 'service') || 'hourly',
     }))
-    formState.dirtySetLaborItems((prev) => [...prev, ...newItems])
+    formState.dirtySetLaborItems((prev) => [...newItems, ...prev])
   }
 
   const actions = useServiceActions({
@@ -287,7 +287,7 @@ export function ServicePageClient({
         onOpenChange={formState.setShowInventoryPicker}
         inventoryParts={inventoryParts}
         currencyCode={currencyCode}
-        onSelectPart={(part) => formState.dirtySetPartItems((prev) => [...prev, part])}
+        onSelectPart={(part) => formState.dirtySetPartItems((prev) => [part, ...prev])}
       />
 
       <LaborPresetPickerDialog
