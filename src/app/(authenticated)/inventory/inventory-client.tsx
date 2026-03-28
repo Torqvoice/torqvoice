@@ -45,6 +45,7 @@ import {
   DialogTitle as MarkupDialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   ExternalLink,
   Loader2,
@@ -115,6 +116,7 @@ export function InventoryClient({
   const [showMarkup, setShowMarkup] = useState(false);
   const [markupValue, setMarkupValue] = useState(String(initialMarkup));
   const [applyingMarkup, setApplyingMarkup] = useState(false);
+  const [overrideExisting, setOverrideExisting] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
@@ -197,7 +199,7 @@ export function InventoryClient({
     setApplyingMarkup(true);
     try {
       const [result] = await Promise.all([
-        applyMarkupToAll({ multiplier }),
+        applyMarkupToAll({ multiplier, overrideExisting }),
         setSetting(SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER, String(multiplier)),
       ]);
       if (result.success) {
@@ -472,6 +474,16 @@ export function InventoryClient({
                 {Number(markupValue) > 1 && ` ${t('markup.percentage', { percent: Math.round((Number(markupValue) - 1) * 100) })}`}
               </p>
             </div>
+            <label className="flex items-center gap-2">
+              <Switch
+                checked={overrideExisting}
+                onCheckedChange={setOverrideExisting}
+              />
+              <span className="text-sm">{t('markup.overrideExisting')}</span>
+            </label>
+            <p className="text-xs text-muted-foreground">
+              {overrideExisting ? t('markup.overrideExistingHint') : t('markup.skipExistingHint')}
+            </p>
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={() => setShowMarkup(false)}>
                 {t('markup.cancel')}

@@ -279,28 +279,24 @@ export async function getInventoryPartsList() {
 
 const applyMarkupSchema = z.object({
   multiplier: z.number().positive("Multiplier must be greater than 0"),
+  overrideExisting: z.boolean().default(false),
 });
 
 export async function applyMarkupToAll(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
-    const { multiplier } = applyMarkupSchema.parse(input);
+    const { multiplier, overrideExisting } = applyMarkupSchema.parse(input);
 
-    const parts = await db.inventoryPart.findMany({
-      where: { organizationId, isArchived: false },
-      select: { id: true, unitCost: true },
-    });
-
-    await db.$transaction(
-      parts.map((p) =>
-        db.inventoryPart.updateMany({
-          where: { id: p.id, organizationId },
-          data: { sellPrice: Math.round(p.unitCost * multiplier * 100) / 100 },
-        })
-      )
-    );
+    // Use raw SQL to avoid Prisma's @updatedAt auto-update which changes sort order
+    const result = await db.$executeRaw`
+      UPDATE "inventory_parts"
+      SET "sellPrice" = ROUND(("unitCost" * ${multiplier})::numeric, 2)
+      WHERE "organizationId" = ${organizationId}
+        AND "isArchived" = false
+        ${overrideExisting ? Prisma.sql`` : Prisma.sql`AND ("sellPrice" = 0 OR "sellPrice" IS NULL)`}
+    `;
 
     revalidatePath("/inventory");
-    return { updated: parts.length };
+    return { updated: result };
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }] });
 }
 

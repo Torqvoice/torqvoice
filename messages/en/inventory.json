@@ -35,7 +35,10 @@
     "description": "This will set sell price = cost x {multiplier} for all {count} parts.",
     "percentage": "({percent}% markup)",
     "cancel": "Cancel",
-    "apply": "Apply"
+    "apply": "Apply",
+    "overrideExisting": "Override existing sell prices",
+    "overrideExistingHint": "All parts will be updated, including those with an existing sell price.",
+    "skipExistingHint": "Only parts without a sell price will be updated."
   },
   "errors": {
     "multiplierPositive": "Multiplier must be greater than 0",

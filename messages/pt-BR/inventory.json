@@ -35,7 +35,10 @@
     "description": "Isso definirá o preço de venda = custo x {multiplier} para todas as {count} peças.",
     "percentage": "({percent}% de margem)",
     "cancel": "Cancelar",
-    "apply": "Aplicar"
+    "apply": "Aplicar",
+    "overrideExisting": "Substituir preços de venda existentes",
+    "overrideExistingHint": "Todas as peças serão atualizadas, incluindo aquelas com preço de venda existente.",
+    "skipExistingHint": "Apenas peças sem preço de venda serão atualizadas."
   },
   "errors": {
     "multiplierPositive": "O multiplicador deve ser maior que 0",

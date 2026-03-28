@@ -35,7 +35,10 @@
     "description": "Der Verkaufspreis wird auf Kosten x {multiplier} für alle {count} Teile gesetzt.",
     "percentage": "({percent}% Aufschlag)",
     "cancel": "Abbrechen",
-    "apply": "Anwenden"
+    "apply": "Anwenden",
+    "overrideExisting": "Bestehende Verkaufspreise überschreiben",
+    "overrideExistingHint": "Alle Teile werden aktualisiert, auch solche mit einem bestehenden Verkaufspreis.",
+    "skipExistingHint": "Nur Teile ohne Verkaufspreis werden aktualisiert."
   },
   "errors": {
     "multiplierPositive": "Der Multiplikator muss größer als 0 sein",

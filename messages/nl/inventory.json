@@ -35,7 +35,10 @@
     "description": "De verkoopprijs wordt ingesteld op kostprijs x {multiplier} voor alle {count} onderdelen.",
     "percentage": "({percent}% opslag)",
     "cancel": "Annuleren",
-    "apply": "Toepassen"
+    "apply": "Toepassen",
+    "overrideExisting": "Bestaande verkoopprijzen overschrijven",
+    "overrideExistingHint": "Alle onderdelen worden bijgewerkt, inclusief die met een bestaande verkoopprijs.",
+    "skipExistingHint": "Alleen onderdelen zonder verkoopprijs worden bijgewerkt."
   },
   "errors": {
     "multiplierPositive": "De vermenigvuldiger moet groter zijn dan 0",

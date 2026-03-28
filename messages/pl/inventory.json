@@ -35,7 +35,10 @@
     "description": "Cena sprzedaży zostanie ustawiona na koszt x {multiplier} dla wszystkich {count} części.",
     "percentage": "({percent}% marży)",
     "cancel": "Anuluj",
-    "apply": "Zastosuj"
+    "apply": "Zastosuj",
+    "overrideExisting": "Nadpisz istniejące ceny sprzedaży",
+    "overrideExistingHint": "Wszystkie części zostaną zaktualizowane, w tym te z istniejącą ceną sprzedaży.",
+    "skipExistingHint": "Zaktualizowane zostaną tylko części bez ceny sprzedaży."
   },
   "errors": {
     "multiplierPositive": "Mnożnik musi być większy niż 0",

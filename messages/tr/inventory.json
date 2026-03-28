@@ -35,7 +35,10 @@
     "description": "Satış fiyatı tüm {count} parça için maliyet x {multiplier} olarak ayarlanacaktır.",
     "percentage": "(%{percent} kâr marjı)",
     "cancel": "İptal",
-    "apply": "Uygula"
+    "apply": "Uygula",
+    "overrideExisting": "Mevcut satış fiyatlarını geçersiz kıl",
+    "overrideExistingHint": "Mevcut satış fiyatı olanlar dahil tüm parçalar güncellenecek.",
+    "skipExistingHint": "Yalnızca satış fiyatı olmayan parçalar güncellenecek."
   },
   "errors": {
     "multiplierPositive": "Çarpan 0'dan büyük olmalıdır",

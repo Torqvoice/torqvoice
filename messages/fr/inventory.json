@@ -35,7 +35,10 @@
     "description": "Le prix de vente sera défini à coût x {multiplier} pour les {count} pièces.",
     "percentage": "({percent}% de marge)",
     "cancel": "Annuler",
-    "apply": "Appliquer"
+    "apply": "Appliquer",
+    "overrideExisting": "Remplacer les prix de vente existants",
+    "overrideExistingHint": "Toutes les pièces seront mises à jour, y compris celles ayant déjà un prix de vente.",
+    "skipExistingHint": "Seules les pièces sans prix de vente seront mises à jour."
   },
   "errors": {
     "multiplierPositive": "Le multiplicateur doit être supérieur à 0",
