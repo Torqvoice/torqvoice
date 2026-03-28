@@ -58,3 +58,15 @@ export async function setSettings(entries: Record<string, string>) {
     return true;
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }] });
 }
+
+export async function dismissLicenseExpiryBanner() {
+  return withAuth(async ({ userId, organizationId }) => {
+    await db.appSetting.upsert({
+      where: { organizationId_key: { organizationId, key: "license.expiryDismissed" } },
+      update: { value: "true" },
+      create: { userId, organizationId, key: "license.expiryDismissed", value: "true" },
+    });
+    revalidatePath("/");
+    return { success: true };
+  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }] });
+}

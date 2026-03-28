@@ -149,6 +149,13 @@ export async function validateLicense(licenseKey: string) {
               }),
             ]
           : []),
+        // Reset expiry dismissed flag so banner can warn again on next cycle
+        db.appSetting.deleteMany({
+          where: {
+            organizationId: ctx.organizationId,
+            key: "license.expiryDismissed",
+          },
+        }),
       ]);
 
       revalidatePath("/settings");

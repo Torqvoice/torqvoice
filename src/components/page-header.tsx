@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
-import { AlertTriangle, Search, Zap } from 'lucide-react'
+import { AlertTriangle, Search, X, Zap } from 'lucide-react'
 import { useShowWhiteLabelCta } from '@/components/white-label-cta-context'
 import { useLicenseExpiry } from '@/components/license-expiry-context'
 import { NewWorkOrderButton } from '@/components/new-work-order-button'
@@ -83,7 +83,7 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
 export function PageHeader() {
   const pathname = usePathname()
   const showWhiteLabelCta = useShowWhiteLabelCta()
-  const { daysUntilExpiry } = useLicenseExpiry()
+  const { daysUntilExpiry, dismissed, dismiss } = useLicenseExpiry()
   const t = useTranslations('navigation.breadcrumbs')
   const tn = useTranslations('navigation')
 
@@ -173,7 +173,7 @@ export function PageHeader() {
         )}
       </div>
     </header>
-    {daysUntilExpiry !== null && daysUntilExpiry <= 14 && (
+    {daysUntilExpiry !== null && daysUntilExpiry <= 14 && !dismissed && (
       <div className={`flex items-center gap-2 px-4 py-2 text-sm ${
         daysUntilExpiry <= 0
           ? 'bg-destructive/10 text-destructive border-b border-destructive/20'
@@ -189,9 +189,14 @@ export function PageHeader() {
               ? tn('licenseExpiresTomorrow')
               : tn('licenseExpiresDays', { days: daysUntilExpiry })}
         </span>
-        <Link href="/settings/license" className="ml-auto shrink-0 font-medium underline hover:no-underline">
-          {tn('licenseRenew')}
-        </Link>
+        <div className="ml-auto flex items-center gap-2 shrink-0">
+          <Link href="/settings/license" className="font-medium underline hover:no-underline">
+            {tn('licenseRenew')}
+          </Link>
+          <button type="button" onClick={dismiss} className="p-0.5 rounded hover:bg-black/10">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
     )}
     </>

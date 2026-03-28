@@ -78,19 +78,21 @@ export default async function DashboardLayout({
     }
   }
 
-  // Check license expiry (only for admin/owner)
+  // Check license expiry (only for admin/owner with white-label)
   let daysUntilExpiry: number | null = null;
-  if (isOwnerOrAdmin) {
+  let licenseExpiryDismissed = false;
+  if (isOwnerOrAdmin && features.brandingRemoved) {
     const expirySettings = await db.appSetting.findMany({
       where: {
         organizationId: data.organizationId,
-        key: { in: ["license.expiresAt", "license.valid"] },
+        key: { in: ["license.expiresAt", "license.valid", "license.expiryDismissed"] },
       },
       select: { key: true, value: true },
     });
     const expiryMap = new Map(expirySettings.map((s) => [s.key, s.value]));
     const expiresAt = expiryMap.get("license.expiresAt");
     const isValid = expiryMap.get("license.valid");
+    licenseExpiryDismissed = expiryMap.get("license.expiryDismissed") === "true";
     if (expiresAt && isValid === "true") {
       const diff = new Date(expiresAt).getTime() - Date.now();
       daysUntilExpiry = Math.ceil(diff / (1000 * 60 * 60 * 24));
@@ -99,7 +101,7 @@ export default async function DashboardLayout({
 
   return (
     <ServiceTypeProvider serviceType={data.serviceType}>
-    <LicenseExpiryProvider daysUntilExpiry={daysUntilExpiry}>
+    <LicenseExpiryProvider daysUntilExpiry={daysUntilExpiry} dismissed={licenseExpiryDismissed}>
     <WhiteLabelCtaProvider show={showWhiteLabelCta}>
     <SidebarProvider
       style={
