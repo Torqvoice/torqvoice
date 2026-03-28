@@ -12,6 +12,7 @@ interface LicenseExpiryInfo {
 const LicenseExpiryContext = createContext<LicenseExpiryInfo>({
   daysUntilExpiry: null,
   dismissed: false,
+  // biome-ignore lint/suspicious/noEmptyBlockStatements: default noop
   dismiss: () => {},
 })
 

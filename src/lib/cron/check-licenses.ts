@@ -121,7 +121,7 @@ export async function sendExpiryWarning(organizationId: string, daysLeft: number
       to: owner.user.email,
       subject: `Your license expires in ${daysLeft} day${daysLeft === 1 ? '' : 's'}`,
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="font-family: sans-serif; max-width: 600px;">
           <h2 style="color: #d97706;">License Expiration Notice</h2>
           <p>Your license will expire in <strong>${daysLeft} day${daysLeft === 1 ? '' : 's'}</strong>.</p>
           <p>Please renew your license to continue using all features without interruption.</p>
