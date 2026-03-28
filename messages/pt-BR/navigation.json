@@ -58,6 +58,10 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Nova Ordem de Serviço",
   "purchaseWhiteLabel": "Adquirir White-Label",
+  "licenseExpired": "Sua licença expirou. Os recursos podem estar limitados.",
+  "licenseExpiresTomorrow": "Sua licença expira amanhã.",
+  "licenseExpiresDays": "Sua licença expira em {days} dias.",
+  "licenseRenew": "Renovar",
   "sidebar": {
     "dashboard": "Painel",
     "clients": "Clientes",

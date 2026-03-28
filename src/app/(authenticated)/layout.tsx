@@ -14,6 +14,7 @@ import { OnlineTracker } from "@/components/online-tracker";
 import { InstallBanner } from "@/components/pwa-install-prompt";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { ServiceTypeProvider } from "@/components/service-type-context";
+import { LicenseExpiryProvider } from "@/components/license-expiry-context";
 import { db } from "@/lib/db";
 
 export default async function DashboardLayout({
@@ -77,8 +78,28 @@ export default async function DashboardLayout({
     }
   }
 
+  // Check license expiry (only for admin/owner)
+  let daysUntilExpiry: number | null = null;
+  if (isOwnerOrAdmin) {
+    const expirySettings = await db.appSetting.findMany({
+      where: {
+        organizationId: data.organizationId,
+        key: { in: ["license.expiresAt", "license.valid"] },
+      },
+      select: { key: true, value: true },
+    });
+    const expiryMap = new Map(expirySettings.map((s) => [s.key, s.value]));
+    const expiresAt = expiryMap.get("license.expiresAt");
+    const isValid = expiryMap.get("license.valid");
+    if (expiresAt && isValid === "true") {
+      const diff = new Date(expiresAt).getTime() - Date.now();
+      daysUntilExpiry = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    }
+  }
+
   return (
     <ServiceTypeProvider serviceType={data.serviceType}>
+    <LicenseExpiryProvider daysUntilExpiry={daysUntilExpiry}>
     <WhiteLabelCtaProvider show={showWhiteLabelCta}>
     <SidebarProvider
       style={
@@ -116,6 +137,7 @@ export default async function DashboardLayout({
       </DateSettingsProvider>
     </SidebarProvider>
     </WhiteLabelCtaProvider>
+    </LicenseExpiryProvider>
     </ServiceTypeProvider>
   );
 }

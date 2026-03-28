@@ -58,6 +58,10 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Nieuwe werkorder",
   "purchaseWhiteLabel": "White-label aanschaffen",
+  "licenseExpired": "Uw licentie is verlopen. Functies kunnen beperkt zijn.",
+  "licenseExpiresTomorrow": "Uw licentie verloopt morgen.",
+  "licenseExpiresDays": "Uw licentie verloopt over {days} dagen.",
+  "licenseRenew": "Verlengen",
   "sidebar": {
     "dashboard": "Dashboard",
     "clients": "Klanten",

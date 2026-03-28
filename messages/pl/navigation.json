@@ -58,6 +58,10 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Nowe zlecenie",
   "purchaseWhiteLabel": "Kup White-Label",
+  "licenseExpired": "Twoja licencja wygasła. Funkcje mogą być ograniczone.",
+  "licenseExpiresTomorrow": "Twoja licencja wygasa jutro.",
+  "licenseExpiresDays": "Twoja licencja wygasa za {days} dni.",
+  "licenseRenew": "Odnów",
   "sidebar": {
     "dashboard": "Pulpit",
     "clients": "Klienci",
