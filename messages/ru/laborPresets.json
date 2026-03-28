@@ -7,11 +7,11 @@
     "itemCount": "Позиции",
     "type": "Тип",
     "hrs": "ч.",
-    "units": "шт."
+    "units": "усл."
   },
   "empty": {
     "noMatch": "Шаблоны не найдены.",
-    "noPresets": "Шаблонов работ пока нет. Нажмите «Добавить шаблон», чтобы создать."
+    "noPresets": "Шаблонов работ пока нет. Нажмите «Добавить шаблон», чтобы создать новый."
   },
   "actions": {
     "edit": "Редактировать",
@@ -42,10 +42,10 @@
     "cancel": "Отмена",
     "create": "Создать",
     "saveChanges": "Сохранить",
-    "itemQty": "Qty",
-    "itemQtyOrHours": "Unit / Hours",
-    "hourlyTag": "HR",
-    "serviceTag": "SVC"
+    "itemQty": "Кол-во",
+    "itemQtyOrHours": "Кол-во / Часы",
+    "hourlyTag": "н/ч",
+    "serviceTag": "усл."
   },
   "picker": {
     "title": "Выбрать шаблон работ",
@@ -53,7 +53,7 @@
     "noPackages": "Шаблоны работ не найдены.",
     "items": "{count} поз.",
     "totalHours": "{hours}ч всего",
-    "totalUnits": "{units} unit(s)"
+    "totalUnits": "{units} усл."
   },
   "errors": {
     "error": "Ошибка",
