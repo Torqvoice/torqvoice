@@ -17,7 +17,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Building2, ImageIcon, Loader2, Plus, Save, Trash2, Upload } from "lucide-react";
 import { createNewOrganization } from "@/features/team/Actions/createNewOrganization";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
-import { ServiceTypeSelector } from "./service-type-selector";
 
 export function CompanySettings({ settings, organizationName }: { settings: Record<string, string>; organizationName: string }) {
   const router = useRouter();
@@ -30,7 +29,6 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
   const [orgNumber, setOrgNumber] = useState(settings[SETTING_KEYS.INVOICE_ORG_NUMBER] || "");
   const [logoUrl, setLogoUrl] = useState(settings[SETTING_KEYS.COMPANY_LOGO] || "");
   const [uploadingLogo, setUploadingLogo] = useState(false);
-  const [serviceType, setServiceType] = useState(settings[SETTING_KEYS.SERVICE_TYPE] || "automotive");
   const [showCreateOrg, setShowCreateOrg] = useState(false);
   const [newOrgName, setNewOrgName] = useState("");
   const [creatingOrg, setCreatingOrg] = useState(false);
@@ -44,7 +42,6 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
         [SETTING_KEYS.WORKSHOP_PHONE]: workshopPhone,
         [SETTING_KEYS.WORKSHOP_EMAIL]: workshopEmail,
         [SETTING_KEYS.INVOICE_ORG_NUMBER]: orgNumber,
-        [SETTING_KEYS.SERVICE_TYPE]: serviceType,
       }),
     ]);
     setSaving(false);
@@ -164,7 +161,6 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
           </div>
         </CardContent>
       </Card>
-      <ServiceTypeSelector serviceType={serviceType} onServiceTypeChange={setServiceType} />
       <SaveButton>
         <div className="flex items-center justify-between">
           <Button size="sm" onClick={handleSave} disabled={saving}>
