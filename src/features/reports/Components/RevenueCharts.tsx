@@ -35,32 +35,51 @@ interface RevenueBarChartProps {
 export function RevenueBarChart({ data, formatCurrency, labels }: RevenueBarChartProps) {
   if (data.length === 0) return null;
 
+  const compactCurrency = (value: number) => {
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
+    return value.toString();
+  };
+
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+    <ResponsiveContainer width="100%" height={350}>
+      <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }} barGap={1} barCategoryGap="20%">
+        <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
         <XAxis
           dataKey="month"
           className="text-xs fill-muted-foreground"
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 11 }}
+          axisLine={false}
+          tickLine={false}
         />
         <YAxis
           className="text-xs fill-muted-foreground"
-          tick={{ fontSize: 12 }}
-          tickFormatter={(v) => formatCurrency(v)}
+          tick={{ fontSize: 11 }}
+          tickFormatter={compactCurrency}
+          axisLine={false}
+          tickLine={false}
+          width={45}
         />
         <Tooltip
           formatter={(value) => formatCurrency(Number(value))}
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
+            fontSize: "13px",
           }}
+          cursor={{ fill: "var(--muted)", opacity: 0.5 }}
+        />
+        <Legend
+          formatter={(value) => (
+            <span className="text-xs text-muted-foreground">{value}</span>
+          )}
         />
         <Bar dataKey="revenue" name={labels?.revenue ?? "Revenue"} fill="#3b82f6" radius={[4, 4, 0, 0]} />
         <Bar dataKey="collected" name={labels?.collected ?? "Collected"} fill="#10b981" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="netProfit" name={labels?.netProfit ?? "Net Profit"} fill="#10b981" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="netProfit" name={labels?.netProfit ?? "Net Profit"} fill="#8b5cf6" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -93,11 +112,12 @@ export function RevenueTypeDonut({ data, formatCurrency }: RevenueTypeDonutProps
         </Pie>
         <Tooltip
           formatter={(value) => formatCurrency(Number(value))}
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
           }}
         />
         <Legend

@@ -43,15 +43,16 @@ export default async function ReportsPage() {
     );
   }
 
-  const settingsResult = await getSettings([SETTING_KEYS.CURRENCY_CODE]);
+  const settingsResult = await getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.INVOICE_PRIMARY_COLOR]);
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {};
   const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || "USD";
+  const primaryColor = settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || "#d97706";
 
   return (
     <>
       <PageHeader />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <ReportsClient currencyCode={currencyCode} />
+        <ReportsClient currencyCode={currencyCode} primaryColor={primaryColor} />
       </div>
     </>
   );

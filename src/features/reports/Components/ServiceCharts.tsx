@@ -51,11 +51,12 @@ export function ServiceStatusChart({ data, labels }: ServiceStatusChartProps) {
           width={100}
         />
         <Tooltip
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
           }}
         />
         <Bar dataKey="count" name={labels?.count ?? "Count"} fill="#3b82f6" radius={[0, 4, 4, 0]} />
@@ -89,11 +90,12 @@ export function ServiceTypeDonut({ data }: ServiceTypeDonutProps) {
           ))}
         </Pie>
         <Tooltip
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
           }}
         />
         <Legend

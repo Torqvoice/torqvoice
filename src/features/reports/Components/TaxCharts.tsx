@@ -36,11 +36,12 @@ export function TaxBarChart({ data, formatCurrency, labels }: TaxBarChartProps) 
         />
         <Tooltip
           formatter={(value) => formatCurrency(Number(value))}
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
           }}
         />
         <Bar dataKey="taxCollected" name={labels?.taxCollected ?? "Tax Collected"} fill="#f59e0b" radius={[4, 4, 0, 0]} />

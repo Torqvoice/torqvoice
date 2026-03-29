@@ -15,6 +15,7 @@ import {
 import {
   Banknote,
   Building2,
+  CalendarClock,
   CreditCard,
   Database,
   FileText,
@@ -85,6 +86,7 @@ const settingsCategories: SettingsCategory[] = [
       { key: 'workshop', href: '/settings/workshop', icon: Wrench },
       { key: 'maintenance', href: '/settings/maintenance', icon: Gauge },
       { key: 'ai', href: '/settings/ai', icon: Sparkles, gate: 'ai' },
+      { key: 'reportSchedule', href: '/settings/report-schedule', icon: CalendarClock, gate: 'reports' },
     ],
   },
   {

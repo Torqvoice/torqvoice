@@ -48,11 +48,12 @@ export function TechnicianBarChart({ data, formatCurrency, labels }: TechnicianB
         />
         <Tooltip
           formatter={(value) => formatCurrency(Number(value))}
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
           }}
         />
         <Bar dataKey="totalRevenue" name={labels?.revenue ?? "Revenue"} fill="#8b5cf6" radius={[0, 4, 4, 0]} />

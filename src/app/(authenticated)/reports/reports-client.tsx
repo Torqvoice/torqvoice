@@ -1,9 +1,18 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import type { DateRange } from "react-day-picker";
 import {
   Card,
   CardContent,
@@ -38,7 +47,9 @@ import {
   AlertTriangle,
   Wrench,
   Cog,
+  CalendarIcon,
   CalendarDays,
+  FileText,
   UserCheck,
   Receipt,
   Clock,
@@ -90,6 +101,8 @@ import {
   exportTaxCsv,
   exportPastDueInvoicesCsv,
 } from "@/features/reports/Components/csv-export";
+import { ReportPDF } from "@/features/reports/Components/ReportPDF";
+import { pdf } from "@react-pdf/renderer";
 
 type ReportTab = "financial" | "services" | "customers" | "inventory" | "technicians" | "parts" | "job-analytics" | "retention";
 type FinancialSubTab = "revenue" | "past-due-invoices" | "tax";
@@ -98,18 +111,41 @@ type PastDueSortDir = "asc" | "desc";
 
 interface ReportsClientProps {
   currencyCode: string;
+  primaryColor: string;
 }
 
-export default function ReportsClient({ currencyCode }: ReportsClientProps) {
-  const t = useTranslations("reports");
-  const currentYear = new Date().getFullYear();
-  const defaultStart = `${currentYear}-01-01`;
-  const defaultEnd = new Date().toISOString().split("T")[0];
+const VALID_TABS: ReportTab[] = ["financial", "services", "customers", "inventory", "technicians", "parts", "job-analytics", "retention"];
+const VALID_SUB_TABS: FinancialSubTab[] = ["revenue", "past-due-invoices", "tax"];
 
-  const [activeTab, setActiveTab] = useState<ReportTab>("financial");
-  const [financialSubTab, setFinancialSubTab] = useState<FinancialSubTab>("revenue");
-  const [startDate, setStartDate] = useState(defaultStart);
-  const [endDate, setEndDate] = useState(defaultEnd);
+export default function ReportsClient({ currencyCode, primaryColor }: ReportsClientProps) {
+  const t = useTranslations("reports");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const currentYear = new Date().getFullYear();
+
+  const initialTab = (VALID_TABS.includes(searchParams.get("tab") as ReportTab) ? searchParams.get("tab") : "financial") as ReportTab;
+  const initialSubTab = (VALID_SUB_TABS.includes(searchParams.get("subtab") as FinancialSubTab) ? searchParams.get("subtab") : "revenue") as FinancialSubTab;
+
+  const [activeTab, setActiveTab] = useState<ReportTab>(initialTab);
+  const [financialSubTab, setFinancialSubTab] = useState<FinancialSubTab>(initialSubTab);
+
+  const updateUrl = useCallback((tab: string, subtab?: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tab);
+    if (subtab) {
+      params.set("subtab", subtab);
+    } else {
+      params.delete("subtab");
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, pathname]);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: new Date(currentYear, 0, 1),
+    to: new Date(),
+  });
+  const [pendingDateRange, setPendingDateRange] = useState<DateRange>(dateRange);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Past due invoices state
@@ -136,10 +172,14 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
   type FetchableReport = ReportTab | FinancialSubTab;
 
   const fetchReport = useCallback(
-    async (type: FetchableReport) => {
+    async (type: FetchableReport, overrideDateRange?: DateRange) => {
+      const range = overrideDateRange ?? dateRange;
       setLoading(true);
       try {
-        const dateParams = { startDate, endDate };
+        const dateParams = {
+          startDate: range.from ? format(range.from, "yyyy-MM-dd") : "",
+          endDate: range.to ? format(range.to, "yyyy-MM-dd") : "",
+        };
         switch (type) {
           case "revenue": {
             const result = await getRevenueReport(dateParams);
@@ -198,19 +238,23 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
         setLoading(false);
       }
     },
-    [startDate, endDate],
+    [dateRange],
   );
 
-  // Auto-fetch revenue on mount
+  // Auto-fetch current tab on mount
   useEffect(() => {
-    fetchReport("revenue");
+    if (activeTab === "financial") {
+      fetchReport(financialSubTab);
+    } else {
+      fetchReport(activeTab);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTabChange = (value: string) => {
     const tab = value as ReportTab;
     setActiveTab(tab);
+    updateUrl(tab, tab === "financial" ? financialSubTab : undefined);
     if (tab === "financial") {
-      // Fetch the current financial sub-tab if not loaded
       const subDataMap: Record<FinancialSubTab, unknown> = {
         revenue: revenueData,
         "past-due-invoices": pastDueData,
@@ -238,6 +282,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
   const handleFinancialSubTabChange = (value: string) => {
     const subTab = value as FinancialSubTab;
     setFinancialSubTab(subTab);
+    updateUrl("financial", subTab);
     const subDataMap: Record<FinancialSubTab, unknown> = {
       revenue: revenueData,
       "past-due-invoices": pastDueData,
@@ -294,6 +339,148 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
           if (retentionData) exportRetentionCsv(retentionData, currencyCode, [h("customer"), h("company"), h("visits"), h("totalSpent"), h("avgDaysBetweenVisits")]);
           break;
       }
+    }
+  };
+
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  const handlePdfExport = async () => {
+    setPdfLoading(true);
+    try {
+      const from = dateRange.from ? format(dateRange.from, "LLL dd, y") : "";
+      const to = dateRange.to ? format(dateRange.to, "LLL dd, y") : "";
+      const dateRangeStr = from && to ? `${from} – ${to}` : from || to;
+
+      const labels: Record<string, string> = {
+        reportTitle: t("pdf.reportTitle"),
+        revenueSection: t("pdf.revenueSection"),
+        taxSection: t("pdf.taxSection"),
+        pastDueSection: t("pdf.pastDueSection"),
+        servicesSection: t("pdf.servicesSection"),
+        customersSection: t("pdf.customersSection"),
+        techniciansSection: t("pdf.techniciansSection"),
+        partsSection: t("pdf.partsSection"),
+        jobAnalyticsSection: t("pdf.jobAnalyticsSection"),
+        retentionSection: t("pdf.retentionSection"),
+        inventorySection: t("pdf.inventorySection"),
+        monthlyBreakdown: t("pdf.monthlyBreakdown"),
+        revenueByType: t("pdf.revenueByType"),
+        taxByRate: t("pdf.taxByRate"),
+        servicesByStatus: t("pdf.servicesByStatus"),
+        servicesByType: t("pdf.servicesByType"),
+        topCustomers: t("pdf.topCustomers"),
+        topServiceTypes: t("pdf.topServiceTypes"),
+        topReturning: t("pdf.topReturning"),
+        dayOfWeek: t("pdf.dayOfWeek"),
+        monthlyTrend: t("pdf.monthlyTrend"),
+        lowStock: t("pdf.lowStock"),
+        // common labels
+        revenue: t("pdf.revenue"),
+        collected: t("pdf.collected"),
+        outstanding: t("pdf.outstanding"),
+        services: t("pdf.services"),
+        partsCost: t("pdf.partsCost"),
+        netProfit: t("pdf.netProfit"),
+        month: t("pdf.month"),
+        count: t("pdf.count"),
+        type: t("pdf.type"),
+        status: t("pdf.status"),
+        name: t("pdf.name"),
+        company: t("pdf.company"),
+        totalSpent: t("pdf.totalSpent"),
+        customer: t("pdf.customer"),
+        invoiceNumber: t("pdf.invoiceNumber"),
+        totalAmount: t("pdf.totalAmount"),
+        amountDue: t("pdf.amountDue"),
+        dueDate: t("pdf.dueDate"),
+        daysPastDue: t("pdf.daysPastDue"),
+        totalPastDue: t("pdf.totalPastDue"),
+        totalAmountDue: t("pdf.totalAmountDue"),
+        over30: t("pdf.over30"),
+        over60: t("pdf.over60"),
+        over90: t("pdf.over90"),
+        taxCollected: t("pdf.taxCollected"),
+        taxableAmount: t("pdf.taxableAmount"),
+        taxRate: t("pdf.taxRate"),
+        invoiceCount: t("pdf.invoiceCount"),
+        invoices: t("pdf.invoices"),
+        totalServices: t("pdf.totalServices"),
+        totalCustomers: t("pdf.totalCustomers"),
+        activeCustomers: t("pdf.activeCustomers"),
+        technician: t("pdf.technician"),
+        jobs: t("pdf.jobs"),
+        totalRevenue: t("pdf.totalRevenue"),
+        avgRevenue: t("pdf.avgRevenue"),
+        totalHours: t("pdf.totalHours"),
+        avgHours: t("pdf.avgHours"),
+        totalJobs: t("pdf.totalJobs"),
+        partName: t("pdf.partName"),
+        partNumber: t("pdf.partNumber"),
+        usageCount: t("pdf.usageCount"),
+        totalQty: t("pdf.totalQty"),
+        totalPartsRevenue: t("pdf.totalPartsRevenue"),
+        totalPartsUsed: t("pdf.totalPartsUsed"),
+        serviceType: t("pdf.serviceType"),
+        avgValue: t("pdf.avgValue"),
+        avgJobValue: t("pdf.avgJobValue"),
+        returningCustomers: t("pdf.returningCustomers"),
+        newCustomers: t("pdf.newCustomers"),
+        totalActive: t("pdf.totalActive"),
+        avgTimeBetweenVisits: t("pdf.avgTimeBetweenVisits"),
+        avgDaysBetweenVisits: t("pdf.avgDaysBetweenVisits"),
+        visits: t("pdf.visits"),
+        days: t("pdf.days"),
+        totalParts: t("pdf.totalParts"),
+        totalItems: t("pdf.totalItems"),
+        totalValue: t("pdf.totalValue"),
+        totalSellValue: t("pdf.totalSellValue"),
+        quantity: t("pdf.quantity"),
+        minQuantity: t("pdf.minQuantity"),
+        unitCost: t("pdf.unitCost"),
+      };
+
+      // Only include data for the current tab
+      const pdfProps: Record<string, unknown> = {};
+      let filename = "report";
+      if (activeTab === "financial") {
+        if (financialSubTab === "revenue") { pdfProps.revenueData = revenueData; filename = "revenue-report"; }
+        else if (financialSubTab === "tax") { pdfProps.taxData = taxData; filename = "tax-report"; }
+        else if (financialSubTab === "past-due-invoices") { pdfProps.pastDueData = pastDueData; filename = "past-due-invoices-report"; }
+      } else {
+        filename = `${activeTab}-report`;
+        const dataMap: Record<string, [string, unknown]> = {
+          services: ["serviceData", serviceData],
+          customers: ["customerData", customerData],
+          inventory: ["inventoryData", inventoryData],
+          technicians: ["technicianData", technicianData],
+          parts: ["partsData", partsData],
+          "job-analytics": ["jobAnalyticsData", jobAnalyticsData],
+          retention: ["retentionData", retentionData],
+        };
+        const entry = dataMap[activeTab];
+        if (entry) pdfProps[entry[0] as string] = entry[1];
+      }
+
+      const blob = await pdf(
+        <ReportPDF
+          dateRange={dateRangeStr}
+          currencyCode={currencyCode}
+          primaryColor={primaryColor}
+          labels={labels}
+          {...pdfProps}
+        />,
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${filename}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to generate PDF:", error);
+    } finally {
+      setPdfLoading(false);
     }
   };
 
@@ -387,30 +574,80 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
 
         <div className="flex items-center gap-2">
           {showDateRange && (
-            <>
-              <Input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="h-8 w-36 text-sm"
-              />
-              <span className="text-muted-foreground text-sm">{t("dateRange.to")}</span>
-              <Input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="h-8 w-36 text-sm"
-              />
-            </>
+            <Popover open={datePickerOpen} onOpenChange={(open) => {
+              setDatePickerOpen(open);
+              if (open) setPendingDateRange(dateRange);
+            }}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    "justify-start text-left font-normal",
+                    !dateRange.from && "text-muted-foreground",
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                  {dateRange.from ? (
+                    dateRange.to ? (
+                      <>
+                        {format(dateRange.from, "LLL dd, y")} –{" "}
+                        {format(dateRange.to, "LLL dd, y")}
+                      </>
+                    ) : (
+                      format(dateRange.from, "LLL dd, y")
+                    )
+                  ) : (
+                    <span>{t("dateRange.pickDate")}</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="range"
+                  defaultMonth={dateRange.to ? new Date(dateRange.to.getFullYear(), dateRange.to.getMonth() - 1) : dateRange.from}
+                  selected={pendingDateRange}
+                  onSelect={(range) => range && setPendingDateRange(range)}
+                  numberOfMonths={2}
+                />
+                <div className="border-t p-3 flex justify-end">
+                  <Button
+                    size="sm"
+                    disabled={!pendingDateRange.from || !pendingDateRange.to}
+                    onClick={() => {
+                      setDateRange(pendingDateRange);
+                      setDatePickerOpen(false);
+                      if (activeTab === "financial") {
+                        fetchReport(financialSubTab, pendingDateRange);
+                      } else {
+                        fetchReport(activeTab, pendingDateRange);
+                      }
+                    }}
+                  >
+                    {t("dateRange.apply")}
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
           <Button size="sm" variant="outline" onClick={handleRefresh} disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("actions.refresh")}
           </Button>
           {hasData && (
-            <Button size="sm" variant="outline" onClick={handleExport}>
-              <Download className="mr-1.5 h-3.5 w-3.5" />
-              {t("actions.csv")}
-            </Button>
+            <>
+              <Button size="sm" variant="outline" onClick={handleExport}>
+                <Download className="mr-1.5 h-3.5 w-3.5" />
+                {t("actions.csv")}
+              </Button>
+              <Button size="sm" variant="outline" onClick={handlePdfExport} disabled={pdfLoading}>
+                {pdfLoading ? (
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <FileText className="mr-1.5 h-3.5 w-3.5" />
+                )}
+                {t("actions.pdf")}
+              </Button>
+            </>
           )}
         </div>
       </div>

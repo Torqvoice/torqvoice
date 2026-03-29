@@ -48,11 +48,12 @@ export function DayOfWeekChart({ data, labels }: DayOfWeekChartProps) {
         />
         <YAxis className="text-xs fill-muted-foreground" tick={{ fontSize: 12 }} />
         <Tooltip
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
           }}
         />
         <Bar dataKey="count" name={labels?.jobs ?? "Jobs"} fill="#3b82f6" radius={[4, 4, 0, 0]} />
@@ -86,11 +87,12 @@ export function ServiceTypeAnalyticsDonut({ data }: ServiceTypeDonutProps) {
           ))}
         </Pie>
         <Tooltip
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
           }}
         />
         <Legend
@@ -140,11 +142,12 @@ export function MonthlyTrendChart({ data, formatCurrency, labels }: MonthlyTrend
           formatter={(value, name) =>
             name === revenueLabel ? formatCurrency(Number(value)) : value
           }
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
           }}
         />
         <Line yAxisId="left" type="monotone" dataKey="count" name={jobsLabel} stroke="#3b82f6" strokeWidth={2} dot={false} />
