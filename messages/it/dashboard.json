@@ -26,7 +26,7 @@
   "stats": {
     "activeJobs": "Lavori attivi",
     "pending": "In attesa",
-    "todaysRevenue": "Fatturato odierno",
+    "totalParts": "Ricambi totali",
     "totalCustomers": "Clienti totali"
   },
   "customize": "Personalizza",

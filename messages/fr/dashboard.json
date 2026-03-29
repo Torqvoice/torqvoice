@@ -26,7 +26,7 @@
   "stats": {
     "activeJobs": "Travaux en cours",
     "pending": "En attente",
-    "todaysRevenue": "Revenus du jour",
+    "totalParts": "Total des pièces",
     "totalCustomers": "Total des clients"
   },
   "customize": "Personnaliser",

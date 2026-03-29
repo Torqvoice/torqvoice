@@ -27,7 +27,6 @@ import {
   ClipboardCheck,
   ClipboardList,
   Clock,
-  DollarSign,
   EyeOff,
   FileText,
   Gauge,
@@ -71,7 +70,7 @@ interface DashboardStats {
   isAdmin: boolean;
   activeJobs: number;
   pendingJobs: number;
-  todayRevenue: number;
+  totalParts: number;
   totalCustomers: number;
   todaysServices: ServiceItem[];
   recentServices: ServiceItem[];
@@ -289,12 +288,12 @@ export function DashboardClient({
           <p className="text-lg font-bold">{stats.pendingJobs}</p>
         </Link>
         {stats.isAdmin && (
-          <Link href="/reports" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+          <Link href="/inventory" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] text-muted-foreground">{t("stats.todaysRevenue")}</span>
-              <DollarSign className="h-3.5 w-3.5 text-muted-foreground/50" />
+              <span className="text-[11px] text-muted-foreground">{t("stats.totalParts")}</span>
+              <Settings className="h-3.5 w-3.5 text-muted-foreground/50" />
             </div>
-            <p className="text-lg font-bold">{formatCurrency(stats.todayRevenue, currencyCode)}</p>
+            <p className="text-lg font-bold">{stats.totalParts}</p>
           </Link>
         )}
         {stats.isAdmin && (

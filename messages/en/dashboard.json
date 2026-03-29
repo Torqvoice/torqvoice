@@ -26,7 +26,7 @@
   "stats": {
     "activeJobs": "Active Jobs",
     "pending": "Pending",
-    "todaysRevenue": "Today's Revenue",
+    "totalParts": "Total Parts",
     "totalCustomers": "Total Customers"
   },
   "customize": "Customize",

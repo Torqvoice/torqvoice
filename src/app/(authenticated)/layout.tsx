@@ -130,7 +130,6 @@ export default async function DashboardLayout({
         <SidebarInset>
           <div className="pb-14 md:pb-0">{children}</div>
         </SidebarInset>
-        <MobileBottomNav />
         <SearchCommand />
         {isOwnerOrAdmin && <NotificationInitializer />}
         <OnlineTracker />
@@ -138,6 +137,7 @@ export default async function DashboardLayout({
       </ConfirmProvider>
       </DateSettingsProvider>
     </SidebarProvider>
+    <MobileBottomNav isSuperAdmin={data.isSuperAdmin} />
     </WhiteLabelCtaProvider>
     </LicenseExpiryProvider>
     </ServiceTypeProvider>
