@@ -130,7 +130,7 @@ export default async function DashboardLayout({
         <SidebarInset>
           <div className="pb-14 md:pb-0">{children}</div>
         </SidebarInset>
-        <MobileBottomNav />
+        <MobileBottomNav isSuperAdmin={data.isSuperAdmin} />
         <SearchCommand />
         {isOwnerOrAdmin && <NotificationInitializer />}
         <OnlineTracker />

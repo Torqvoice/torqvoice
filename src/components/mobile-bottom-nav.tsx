@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
+  BarChart3,
   Bell,
   CalendarDays,
   Car,
@@ -22,6 +23,7 @@ import {
   Receipt,
   ScanBarcode,
   Settings,
+  ShieldCheck,
   Users,
 } from 'lucide-react'
 import {
@@ -48,19 +50,24 @@ const primaryItems = [
   { href: '/inventory', icon: Package, labelKey: 'inventory' },
 ] as const
 
-const drawerItems = [
+const workshopItems = [
   { href: '/calendar', icon: CalendarDays, labelKey: 'calendar' },
   { href: '/work-board', icon: Columns3, labelKey: 'workBoard' },
-  { href: '/quotes', icon: FileText, labelKey: 'quotes' },
   { href: '/inspections', icon: ClipboardCheck, labelKey: 'inspections' },
   { href: '/reminders', icon: Bell, labelKey: 'reminders' },
-  { href: '/billing', icon: Receipt, labelKey: 'billing' },
-  { href: '/labor-presets', icon: Layers, labelKey: 'laborPresets' },
-  { href: '/audit-log', icon: History, labelKey: 'auditLog' },
-  { href: '/settings', icon: Settings, labelKey: 'settings' },
 ] as const
 
-export function MobileBottomNav() {
+const businessItems = [
+  { href: '/quotes', icon: FileText, labelKey: 'quotes' },
+  { href: '/billing', icon: Receipt, labelKey: 'billing' },
+  { href: '/labor-presets', icon: Layers, labelKey: 'laborPresets' },
+  { href: '/reports', icon: BarChart3, labelKey: 'reports' },
+  { href: '/audit-log', icon: History, labelKey: 'auditLog' },
+] as const
+
+const allDrawerItems = [...workshopItems, ...businessItems, { href: '/settings', icon: Settings, labelKey: 'settings' }, { href: '/admin', icon: ShieldCheck, labelKey: 'adminPanel' }] as const
+
+export function MobileBottomNav({ isSuperAdmin }: { isSuperAdmin?: boolean }) {
   const pathname = usePathname()
   const router = useRouter()
   const t = useTranslations('navigation.sidebar')
@@ -82,7 +89,7 @@ export function MobileBottomNav() {
   const [addQty, setAddQty] = useState(1)
   const [addingStock, setAddingStock] = useState(false)
 
-  const isMoreActive = drawerItems.some(
+  const isMoreActive = allDrawerItems.some(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   )
 
@@ -137,7 +144,7 @@ export function MobileBottomNav() {
           <DrawerHeader className="sr-only">
             <DrawerTitle>{t('more')}</DrawerTitle>
           </DrawerHeader>
-          <div className="p-4">
+          <div className="px-4 pb-4 space-y-4">
             {/* Quick action */}
             <button
               type="button"
@@ -151,29 +158,90 @@ export function MobileBottomNav() {
               {tScan('scanParts')}
             </button>
 
-            <Separator className="my-4" />
+            {/* Workshop */}
+            <div>
+              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2 px-1">{t('workshop')}</p>
+              <nav className="grid grid-cols-4 gap-2">
+                {workshopItems.map(({ href, icon: Icon, labelKey }) => {
+                  const isActive = pathname === href || pathname.startsWith(`${href}/`)
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setDrawerOpen(false)}
+                      className={cn(
+                        'flex flex-col items-center gap-1.5 rounded-lg py-3 text-xs transition-colors',
+                        isActive
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-muted-foreground hover:bg-accent'
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+                      <span>{t(labelKey)}</span>
+                    </Link>
+                  )
+                })}
+              </nav>
+            </div>
 
-            {/* Navigation grid */}
+            {/* Business */}
+            <div>
+              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2 px-1">{t('business')}</p>
+              <nav className="grid grid-cols-4 gap-2">
+                {businessItems.map(({ href, icon: Icon, labelKey }) => {
+                  const isActive = pathname === href || pathname.startsWith(`${href}/`)
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setDrawerOpen(false)}
+                      className={cn(
+                        'flex flex-col items-center gap-1.5 rounded-lg py-3 text-xs transition-colors',
+                        isActive
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-muted-foreground hover:bg-accent'
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+                      <span>{t(labelKey)}</span>
+                    </Link>
+                  )
+                })}
+              </nav>
+            </div>
+
+            <Separator />
+
+            {/* Settings & Admin */}
             <nav className="grid grid-cols-4 gap-2">
-              {drawerItems.map(({ href, icon: Icon, labelKey }) => {
-                const isActive = pathname === href || pathname.startsWith(`${href}/`)
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setDrawerOpen(false)}
-                    className={cn(
-                      'flex flex-col items-center gap-1.5 rounded-lg py-3 text-xs transition-colors',
-                      isActive
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-muted-foreground hover:bg-accent'
-                    )}
-                  >
-                    <Icon className="h-5 w-5" />
-                    <span>{t(labelKey)}</span>
-                  </Link>
-                )
-              })}
+              <Link
+                href="/settings"
+                onClick={() => setDrawerOpen(false)}
+                className={cn(
+                  'flex flex-col items-center gap-1.5 rounded-lg py-3 text-xs transition-colors',
+                  pathname.startsWith('/settings')
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-accent'
+                )}
+              >
+                <Settings className="h-5 w-5" />
+                <span>{t('settings')}</span>
+              </Link>
+              {isSuperAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setDrawerOpen(false)}
+                  className={cn(
+                    'flex flex-col items-center gap-1.5 rounded-lg py-3 text-xs transition-colors',
+                    pathname.startsWith('/admin')
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-accent'
+                  )}
+                >
+                  <ShieldCheck className="h-5 w-5" />
+                  <span>{t('adminPanel')}</span>
+                </Link>
+              )}
             </nav>
           </div>
         </DrawerContent>
