@@ -26,7 +26,7 @@
   "stats": {
     "activeJobs": "Aktif İşler",
     "pending": "Beklemede",
-    "todaysRevenue": "Bugünkü Gelir",
+    "totalParts": "Toplam Parça",
     "totalCustomers": "Toplam Müşteriler"
   },
   "customize": "Özelleştir",

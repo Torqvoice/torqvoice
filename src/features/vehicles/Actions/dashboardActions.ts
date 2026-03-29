@@ -7,15 +7,11 @@ import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 export async function getDashboardStats() {
   return withAuth(async ({ organizationId, role }) => {
     const isAdmin = role === "owner" || role === "admin" || role === "super_admin";
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
 
     const [
       activeJobs,
       pendingJobs,
-      todayCompletedRecords,
+      totalParts,
       totalCustomers,
       todaysServices,
       recentServices,
@@ -26,13 +22,8 @@ export async function getDashboardStats() {
       db.serviceRecord.count({
         where: { vehicle: { organizationId }, status: "pending" },
       }),
-      db.serviceRecord.aggregate({
-        where: {
-          vehicle: { organizationId },
-          status: "completed",
-          startDateTime: { gte: today, lt: tomorrow },
-        },
-        _sum: { totalAmount: true },
+      db.inventoryPart.count({
+        where: { organizationId, isArchived: false },
       }),
       db.customer.count({ where: { organizationId } }),
       db.serviceRecord.findMany({
@@ -81,7 +72,7 @@ export async function getDashboardStats() {
       isAdmin,
       activeJobs,
       pendingJobs,
-      todayRevenue: todayCompletedRecords._sum.totalAmount || 0,
+      totalParts,
       totalCustomers,
       todaysServices,
       recentServices,

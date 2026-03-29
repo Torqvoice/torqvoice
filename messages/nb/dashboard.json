@@ -26,7 +26,7 @@
   "stats": {
     "activeJobs": "Aktive jobber",
     "pending": "Ventende",
-    "todaysRevenue": "Dagens omsetning",
+    "totalParts": "Totale deler",
     "totalCustomers": "Totalt antall kunder"
   },
   "customize": "Tilpass",

@@ -26,7 +26,7 @@
   "stats": {
     "activeJobs": "Actieve opdrachten",
     "pending": "In afwachting",
-    "todaysRevenue": "Omzet vandaag",
+    "totalParts": "Totaal onderdelen",
     "totalCustomers": "Totaal klanten"
   },
   "customize": "Aanpassen",
