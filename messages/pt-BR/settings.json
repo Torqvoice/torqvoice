@@ -82,6 +82,10 @@
         "title": "AI",
         "description": "Provedor de IA e recursos"
       },
+      "reportSchedule": {
+        "title": "Report Schedule",
+        "description": "Automated report delivery"
+      },
       "appearance": {
         "title": "Aparencia",
         "description": "Tema e exibicao"
@@ -1026,6 +1030,53 @@
       "high": "Alto custo",
       "medium": "Médio",
       "low": "Baixo custo"
+    }
+  },
+  "reportSchedule": {
+    "title": "Report Schedule",
+    "description": "Automatically generate and email report PDFs on a recurring schedule.",
+    "schedule": "Schedule",
+    "name": "Schedule Name",
+    "namePlaceholder": "e.g. Weekly Business Report",
+    "frequency": "Frequency",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "sections": "Report Sections",
+    "sectionsDescription": "Select which sections to include in the scheduled report.",
+    "sectionsIncluded": "Sections included",
+    "selectAll": "Select all",
+    "clearAll": "Clear all",
+    "recipients": "Recipients",
+    "recipientsDescription": "Select team members who will receive the report via email.",
+    "recipientsCount": "Recipients",
+    "endDate": "End Date",
+    "endDateDescription": "Optionally stop the schedule after this date.",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "nextRun": "Next run",
+    "lastRun": "Last run",
+    "runCount": "Reports sent",
+    "save": "Save Schedule",
+    "create": "Create Schedule",
+    "delete": "Delete Schedule",
+    "created": "Report schedule created",
+    "updated": "Report schedule updated",
+    "deleted": "Report schedule deleted",
+    "toggledOn": "Report schedule enabled",
+    "toggledOff": "Report schedule disabled",
+    "noMembers": "No team members found",
+    "sectionLabels": {
+      "revenue": "Revenue",
+      "tax": "Tax",
+      "pastDue": "Past Due Invoices",
+      "services": "Services",
+      "customers": "Customers",
+      "technicians": "Technicians",
+      "parts": "Parts Usage",
+      "jobAnalytics": "Job Analytics",
+      "retention": "Customer Retention",
+      "inventory": "Inventory"
     }
   }
 }
