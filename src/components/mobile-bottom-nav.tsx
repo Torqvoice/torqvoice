@@ -127,7 +127,7 @@ export function MobileBottomNav({ isSuperAdmin }: { isSuperAdmin?: boolean }) {
           })}
           <button
             type="button"
-            onClick={() => setDrawerOpen(true)}
+            onClick={(e) => { e.currentTarget.blur(); setDrawerOpen(true) }}
             className={cn(
               'flex flex-col items-center gap-0.5 py-2 text-[10px]',
               isMoreActive ? 'text-primary' : 'text-muted-foreground'
