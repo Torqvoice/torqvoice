@@ -52,11 +52,12 @@ export function RetentionBarChart({ data, formatCurrency, labels }: RetentionBar
           formatter={(value, name) =>
             name === totalSpentLabel ? formatCurrency(Number(value)) : value
           }
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
           }}
         />
         <Bar dataKey="visitCount" name={labels?.visits ?? "Visits"} fill="#8b5cf6" radius={[0, 4, 4, 0]} />

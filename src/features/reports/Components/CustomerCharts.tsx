@@ -48,11 +48,12 @@ export function TopCustomersChart({ data, formatCurrency, labels }: TopCustomers
         />
         <Tooltip
           formatter={(value) => formatCurrency(Number(value))}
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
           }}
         />
         <Bar dataKey="totalSpent" name={labels?.totalSpent ?? "Total Spent"} fill="#3b82f6" radius={[0, 4, 4, 0]} />

@@ -51,11 +51,12 @@ export function PartsDonut({ data }: PartsDonutProps) {
           ))}
         </Pie>
         <Tooltip
+          wrapperStyle={{ outline: "none" }}
           contentStyle={{
-            backgroundColor: "hsl(var(--popover))",
-            border: "1px solid hsl(var(--border))",
+            backgroundColor: "var(--popover)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
-            color: "hsl(var(--popover-foreground))",
+            color: "var(--popover-foreground)",
           }}
         />
         <Legend
