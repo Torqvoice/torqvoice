@@ -137,6 +137,7 @@
     "upgrade": "Melhoria",
     "inspection": "Inspeção",
     "newWorkOrder": "Nova Ordem de Serviço",
+    "exportServiceHistory": "Exportar Histórico",
     "table": {
       "date": "Data",
       "title": "Título",

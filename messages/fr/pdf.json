@@ -105,6 +105,20 @@
     "viewPortal": "Consultez votre portail : {url}",
     "tel": "Tél. : {phone}"
   },
+  "serviceHistory": {
+    "serviceHistoryTitle": "HISTORIQUE D'ENTRETIEN",
+    "totalServices": "Total Services",
+    "totalPartsUsed": "Pièces Utilisées",
+    "totalLaborItems": "Éléments Main-d'œuvre",
+    "grandTotal": "Total Général",
+    "serviceRecords": "Registres de Service",
+    "date": "Date",
+    "serviceTitle": "Service",
+    "type": "Type",
+    "status": "Statut",
+    "mileageCol": "Kilométrage",
+    "mileageColMarine": "Heures Moteur"
+  },
   "common": {
     "poweredBy": "Propulsé par"
   }

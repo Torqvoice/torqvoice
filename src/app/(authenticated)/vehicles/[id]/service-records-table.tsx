@@ -29,11 +29,13 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Download,
   Loader2,
   Paperclip,
   Plus,
   Search,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useServiceType } from "@/components/service-type-context";
 
@@ -85,6 +87,7 @@ export function ServiceRecordsTable({
   const [isPending, startTransition] = useTransition();
   const [searchInput, setSearchInput] = useState(search);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const t = useTranslations("vehicles.services");
   const serviceType = useServiceType();
 
@@ -133,6 +136,27 @@ export function ServiceRecordsTable({
     [navigate]
   );
 
+  const handleExportPdf = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const res = await fetch(`/api/protected/vehicles/${vehicleId}/service-history-pdf`);
+      if (!res.ok) throw new Error("Failed to generate PDF");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] || "service-history.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("Failed to export service history PDF");
+    } finally {
+      setIsExporting(false);
+    }
+  }, [vehicleId]);
+
   const startItem = (page - 1) * pageSize + 1;
   const endItem = Math.min(page * pageSize, total);
 
@@ -167,12 +191,27 @@ export function ServiceRecordsTable({
           </Select>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <Button size="sm" asChild>
-          <Link href={`/vehicles/${vehicleId}/service/new`}>
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            {t("newWorkOrder")}
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleExportPdf}
+            disabled={isExporting || total === 0}
+          >
+            {isExporting ? (
+              <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Download className="mr-1 h-3.5 w-3.5" />
+            )}
+            {t("exportServiceHistory")}
+          </Button>
+          <Button size="sm" asChild>
+            <Link href={`/vehicles/${vehicleId}/service/new`}>
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              {t("newWorkOrder")}
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Table */}

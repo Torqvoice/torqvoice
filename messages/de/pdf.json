@@ -105,6 +105,20 @@
     "viewPortal": "Ihr Portal ansehen: {url}",
     "tel": "Tel: {phone}"
   },
+  "serviceHistory": {
+    "serviceHistoryTitle": "SERVICEHISTORIE",
+    "totalServices": "Gesamt Services",
+    "totalPartsUsed": "Teile verwendet",
+    "totalLaborItems": "Arbeitsposten",
+    "grandTotal": "Gesamtsumme",
+    "serviceRecords": "Service-Einträge",
+    "date": "Datum",
+    "serviceTitle": "Service",
+    "type": "Typ",
+    "status": "Status",
+    "mileageCol": "Kilometerstand",
+    "mileageColMarine": "Motorstunden"
+  },
   "common": {
     "poweredBy": "Bereitgestellt von"
   }

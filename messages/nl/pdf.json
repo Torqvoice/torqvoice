@@ -105,6 +105,20 @@
     "viewPortal": "Bekijk uw portaal: {url}",
     "tel": "Tel: {phone}"
   },
+  "serviceHistory": {
+    "serviceHistoryTitle": "SERVICEGESCHIEDENIS",
+    "totalServices": "Totaal Services",
+    "totalPartsUsed": "Onderdelen Gebruikt",
+    "totalLaborItems": "Arbeidsitems",
+    "grandTotal": "Eindtotaal",
+    "serviceRecords": "Serviceoverzicht",
+    "date": "Datum",
+    "serviceTitle": "Service",
+    "type": "Type",
+    "status": "Status",
+    "mileageCol": "Kilometerstand",
+    "mileageColMarine": "Motoruren"
+  },
   "common": {
     "poweredBy": "Mogelijk gemaakt door"
   }

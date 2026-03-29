@@ -105,6 +105,20 @@
     "viewPortal": "Ваш портал: {url}",
     "tel": "Тел: {phone}"
   },
+  "serviceHistory": {
+    "serviceHistoryTitle": "ИСТОРИЯ ОБСЛУЖИВАНИЯ",
+    "totalServices": "Всего услуг",
+    "totalPartsUsed": "Использовано деталей",
+    "totalLaborItems": "Позиции работ",
+    "grandTotal": "Итого",
+    "serviceRecords": "Записи обслуживания",
+    "date": "Дата",
+    "serviceTitle": "Услуга",
+    "type": "Тип",
+    "status": "Статус",
+    "mileageCol": "Пробег",
+    "mileageColMarine": "Моточасы"
+  },
   "common": {
     "poweredBy": "Работает на"
   }
