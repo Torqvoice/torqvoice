@@ -57,6 +57,15 @@
   "search": "Rechercher…",
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Nouvel ordre de travail",
+  "quickCreate": {
+    "title": "Ajout rapide",
+    "workOrder": "Ordre de travail",
+    "customer": "Client",
+    "vehicle": "Véhicule",
+    "quote": "Devis",
+    "part": "Pièce",
+    "inspection": "Inspection"
+  },
   "purchaseWhiteLabel": "Acheter la marque blanche",
   "licenseExpired": "Votre licence a expiré. Les fonctionnalités peuvent être limitées.",
   "licenseExpiresTomorrow": "Votre licence expire demain.",

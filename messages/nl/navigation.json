@@ -57,6 +57,15 @@
   "search": "Zoeken...",
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Nieuwe werkorder",
+  "quickCreate": {
+    "title": "Snel toevoegen",
+    "workOrder": "Werkorder",
+    "customer": "Klant",
+    "vehicle": "Voertuig",
+    "quote": "Offerte",
+    "part": "Onderdeel",
+    "inspection": "Keuring"
+  },
   "purchaseWhiteLabel": "White-label aanschaffen",
   "licenseExpired": "Uw licentie is verlopen. Functies kunnen beperkt zijn.",
   "licenseExpiresTomorrow": "Uw licentie verloopt morgen.",

@@ -112,6 +112,16 @@ export function VehiclesClient({
   const modal = useGlassModal()
   const confirm = useConfirm()
 
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setShowForm(true)
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete('create')
+      const cleanUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname
+      window.history.replaceState(null, '', cleanUrl)
+    }
+  }, [searchParams, pathname])
+
   const toggleView = (v: 'table' | 'grid' | 'grid6') => {
     setView(v)
     document.cookie = `${VIEW_COOKIE}=${v};path=/;max-age=${60 * 60 * 24 * 365}`

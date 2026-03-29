@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useTransition } from "react";
+import { useState, useCallback, useTransition, useEffect } from "react";
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog';
 import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog';
 import { useHardwareScanner } from '@/hooks/use-hardware-scanner';
@@ -137,6 +137,16 @@ export function InventoryClient({
   } | null>(null);
   const [scannedBarcode, setScannedBarcode] = useState('');
   const [showScanActions, setShowScanActions] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("create") === "true") {
+      setShowForm(true);
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("create");
+      const cleanUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+      window.history.replaceState(null, "", cleanUrl);
+    }
+  }, [searchParams, pathname]);
   const modal = useGlassModal();
   const confirm = useConfirm();
 

@@ -18,7 +18,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar'
 import { AlertTriangle, Search, X, Zap } from 'lucide-react'
 import { useShowWhiteLabelCta } from '@/components/white-label-cta-context'
 import { useLicenseExpiry } from '@/components/license-expiry-context'
-import { NewWorkOrderButton } from '@/components/new-work-order-button'
+import { QuickCreateMenu } from '@/components/quick-create-menu'
 
 function SearchTrigger() {
   const t = useTranslations('navigation')
@@ -162,7 +162,7 @@ export function PageHeader() {
       </Breadcrumb>
       <div className="ml-auto flex items-center gap-2">
         <SearchTrigger />
-        <NewWorkOrderButton />
+        <QuickCreateMenu />
         {showWhiteLabelCta && (
           <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
             <Link href="/settings/license">

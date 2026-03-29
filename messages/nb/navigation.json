@@ -57,6 +57,15 @@
   "search": "Søk...",
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Ny arbeidsordre",
+  "quickCreate": {
+    "title": "Hurtiglegg til",
+    "workOrder": "Arbeidsordre",
+    "customer": "Kunde",
+    "vehicle": "Kjøretøy",
+    "quote": "Tilbud",
+    "part": "Del",
+    "inspection": "Inspeksjon"
+  },
   "purchaseWhiteLabel": "Kjøp White-Label",
   "licenseExpired": "Lisensen din har utløpt. Funksjoner kan være begrenset.",
   "licenseExpiresTomorrow": "Lisensen din utløper i morgen.",

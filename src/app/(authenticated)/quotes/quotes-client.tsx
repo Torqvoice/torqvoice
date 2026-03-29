@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useTransition } from 'react'
+import { useState, useCallback, useTransition, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -95,6 +95,16 @@ export function QuotesClient({
   const [newVehicleId, setNewVehicleId] = useState('')
   const [newCustomerId, setNewCustomerId] = useState('')
   const [creating, setCreating] = useState(false)
+
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setShowNewDialog(true)
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete('create')
+      const cleanUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname
+      window.history.replaceState(null, '', cleanUrl)
+    }
+  }, [searchParams, pathname])
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -265,7 +275,7 @@ export function QuotesClient({
 
       {/* New Quote Dialog */}
       <Dialog open={showNewDialog} onOpenChange={setShowNewDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t('form.newQuote')}</DialogTitle>
           </DialogHeader>

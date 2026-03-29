@@ -57,6 +57,15 @@
   "search": "Suchen...",
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Neuer Arbeitsauftrag",
+  "quickCreate": {
+    "title": "Schnell hinzufügen",
+    "workOrder": "Arbeitsauftrag",
+    "customer": "Kunde",
+    "vehicle": "Fahrzeug",
+    "quote": "Angebot",
+    "part": "Ersatzteil",
+    "inspection": "Inspektion"
+  },
   "purchaseWhiteLabel": "White-Label erwerben",
   "licenseExpired": "Ihre Lizenz ist abgelaufen. Funktionen können eingeschränkt sein.",
   "licenseExpiresTomorrow": "Ihre Lizenz läuft morgen ab.",

@@ -57,6 +57,15 @@
   "search": "Ara...",
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Yeni İş Emri",
+  "quickCreate": {
+    "title": "Hızlı Ekle",
+    "workOrder": "İş Emri",
+    "customer": "Müşteri",
+    "vehicle": "Araç",
+    "quote": "Teklif",
+    "part": "Parça",
+    "inspection": "Muayene"
+  },
   "purchaseWhiteLabel": "Beyaz Etiket Satın Al",
   "licenseExpired": "Lisansınız sona erdi. Özellikler sınırlı olabilir.",
   "licenseExpiresTomorrow": "Lisansınız yarın sona eriyor.",

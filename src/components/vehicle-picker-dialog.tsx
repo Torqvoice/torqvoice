@@ -171,7 +171,7 @@ export function VehiclePickerDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" aria-describedby={undefined}>
         {pickerStep === "select" ? (
           <>
             <DialogHeader>
