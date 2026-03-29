@@ -140,7 +140,7 @@ export function MobileBottomNav({ isSuperAdmin }: { isSuperAdmin?: boolean }) {
       </nav>
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent>
+        <DrawerContent aria-describedby={undefined}>
           <DrawerHeader className="sr-only">
             <DrawerTitle>{t('more')}</DrawerTitle>
           </DrawerHeader>
@@ -257,7 +257,7 @@ export function MobileBottomNav({ isSuperAdmin }: { isSuperAdmin?: boolean }) {
         setShowScanActions(open)
         if (!open) router.refresh()
       }}>
-        <DrawerContent>
+        <DrawerContent aria-describedby={undefined}>
           <DrawerHeader>
             <DrawerTitle>{tScan('title')}</DrawerTitle>
           </DrawerHeader>
