@@ -1144,7 +1144,8 @@ model StatusReport {
 model ReportSchedule {
   id          String    @id @default(cuid())
   name        String    @default("Scheduled Report")
-  frequency   String // "daily" | "weekly" | "monthly"
+  frequency   String // "daily" | "weekly" | "monthly" etc.
+  dateRange   String    @default("last30d") // "last1d" | "last7d" | "last30d" | "ytd" | "allTime" etc.
   sections    String // JSON array of section keys
   recipients  String // JSON array of user IDs
   nextRunDate DateTime

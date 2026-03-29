@@ -3,6 +3,7 @@ CREATE TABLE "report_schedules" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL DEFAULT 'Scheduled Report',
     "frequency" TEXT NOT NULL,
+    "dateRange" TEXT NOT NULL DEFAULT 'last30d',
     "sections" TEXT NOT NULL,
     "recipients" TEXT NOT NULL,
     "nextRunDate" TIMESTAMP(3) NOT NULL,

@@ -40,7 +40,7 @@ export default async function ReportSchedulePage() {
 
   return (
     <ReportScheduleSettings
-      schedule={schedules[0] ?? null}
+      schedules={schedules}
       members={members}
     />
   );

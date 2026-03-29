@@ -19,27 +19,66 @@ function calculateNextRunDate(current: Date, frequency: string): Date {
     case "weekly":
       next.setDate(next.getDate() + 7);
       break;
+    case "biweekly":
+      next.setDate(next.getDate() + 14);
+      break;
     case "monthly":
       next.setMonth(next.getMonth() + 1);
+      break;
+    case "bimonthly":
+      next.setMonth(next.getMonth() + 2);
+      break;
+    case "quarterly":
+      next.setMonth(next.getMonth() + 4);
+      break;
+    case "semiannually":
+      next.setMonth(next.getMonth() + 6);
+      break;
+    case "yearly":
+      next.setFullYear(next.getFullYear() + 1);
       break;
   }
   next.setHours(8, 0, 0, 0);
   return next;
 }
 
-function getDateRange(frequency: string): { start: Date; end: Date } {
+function getDateRange(dateRange: string): { start: Date; end: Date } {
   const end = new Date();
   end.setHours(23, 59, 59, 999);
   const start = new Date(end);
 
-  switch (frequency) {
-    case "daily":
+  switch (dateRange) {
+    case "last1d":
       start.setDate(start.getDate() - 1);
       break;
-    case "weekly":
+    case "last7d":
       start.setDate(start.getDate() - 7);
       break;
-    case "monthly":
+    case "last14d":
+      start.setDate(start.getDate() - 14);
+      break;
+    case "last30d":
+      start.setMonth(start.getMonth() - 1);
+      break;
+    case "last60d":
+      start.setMonth(start.getMonth() - 2);
+      break;
+    case "last90d":
+      start.setMonth(start.getMonth() - 3);
+      break;
+    case "last6m":
+      start.setMonth(start.getMonth() - 6);
+      break;
+    case "last12m":
+      start.setFullYear(start.getFullYear() - 1);
+      break;
+    case "ytd":
+      start.setMonth(0, 1);
+      break;
+    case "allTime":
+      start.setFullYear(2000, 0, 1);
+      break;
+    default:
       start.setMonth(start.getMonth() - 1);
       break;
   }
@@ -278,114 +317,128 @@ async function fetchTax(orgId: string, start: Date, end: Date) {
   };
 }
 
+// --------------- process a single schedule ---------------
+
+export async function processOneSchedule(schedule: {
+  id: string;
+  name: string;
+  frequency: string;
+  dateRange: string;
+  sections: string;
+  recipients: string;
+  organizationId: string;
+  endDate: Date | null;
+}) {
+  const now = new Date();
+  const sections: string[] = JSON.parse(schedule.sections);
+  const recipientIds: string[] = JSON.parse(schedule.recipients);
+  const { start, end } = getDateRange(schedule.dateRange || "last30d");
+  const dateRangeStr = formatDateRange(start, end);
+
+  // Fetch org settings
+  const settings = await db.appSetting.findMany({
+    where: { organizationId: schedule.organizationId, key: { in: [SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.INVOICE_PRIMARY_COLOR] } },
+  });
+  const settingsMap: Record<string, string> = {};
+  for (const s of settings) settingsMap[s.key] = s.value;
+  const currencyCode = settingsMap[SETTING_KEYS.CURRENCY_CODE] || "USD";
+  const primaryColor = settingsMap[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || "#d97706";
+
+  // Fetch report data for selected sections
+  const [revenueData, taxData, pastDueData, serviceData, customerData, technicianData, partsData, jobAnalyticsData, retentionData, inventoryData] = await Promise.all([
+    sections.includes("revenue") ? fetchRevenue(schedule.organizationId, start, end) : null,
+    sections.includes("tax") ? fetchTax(schedule.organizationId, start, end) : null,
+    sections.includes("pastDue") ? fetchPastDue(schedule.organizationId) : null,
+    sections.includes("services") ? fetchServices(schedule.organizationId, start, end) : null,
+    sections.includes("customers") ? fetchCustomers(schedule.organizationId, start, end) : null,
+    sections.includes("technicians") ? fetchTechnicians(schedule.organizationId, start, end) : null,
+    sections.includes("parts") ? fetchParts(schedule.organizationId, start, end) : null,
+    sections.includes("jobAnalytics") ? fetchJobAnalytics(schedule.organizationId, start, end) : null,
+    sections.includes("retention") ? fetchRetention(schedule.organizationId, start, end) : null,
+    sections.includes("inventory") ? fetchInventory(schedule.organizationId) : null,
+  ]);
+
+  // Generate PDF
+  const element = React.createElement(ReportPDF, {
+    dateRange: dateRangeStr,
+    currencyCode,
+    primaryColor,
+    labels: {},
+    revenueData,
+    taxData,
+    pastDueData,
+    serviceData,
+    customerData,
+    technicianData,
+    partsData,
+    jobAnalyticsData,
+    retentionData,
+    inventoryData,
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pdfBuffer = await renderToBuffer(element as any);
+
+  // Resolve recipient emails
+  const recipients = await db.user.findMany({
+    where: { id: { in: recipientIds } },
+    select: { name: true, email: true },
+  });
+
+  const fromAddress = await getOrgFromAddress(schedule.organizationId);
+  const org = await db.organization.findUnique({
+    where: { id: schedule.organizationId },
+    select: { name: true },
+  });
+
+  // Send email to each recipient
+  for (const recipient of recipients) {
+    try {
+      await sendOrgMail(schedule.organizationId, {
+        to: recipient.email,
+        subject: `${schedule.name} – ${dateRangeStr}`,
+        html: `<p>Hi ${recipient.name || ""},</p><p>Please find attached your scheduled business report from <strong>${org?.name || "your organization"}</strong>.</p><p>Report period: ${dateRangeStr}<br/>Frequency: ${schedule.frequency}</p><p>This is an automated report.</p>`,
+        from: fromAddress,
+        attachments: [
+          {
+            filename: `report-${now.toISOString().split("T")[0]}.pdf`,
+            content: pdfBuffer,
+          },
+        ],
+      });
+    } catch (emailErr) {
+      console.error(`[cron] Failed to email report to ${recipient.email}:`, emailErr);
+    }
+  }
+
+  // Update schedule
+  const nextRunDate = calculateNextRunDate(now, schedule.frequency);
+  const shouldDeactivate = schedule.endDate && nextRunDate > schedule.endDate;
+
+  await db.reportSchedule.update({
+    where: { id: schedule.id },
+    data: {
+      lastRunAt: now,
+      runCount: { increment: 1 },
+      nextRunDate,
+      isActive: !shouldDeactivate,
+    },
+  });
+
+  console.log(`[cron] Report schedule ${schedule.id} processed, sent to ${recipients.length} recipients`);
+}
+
 // --------------- main cron ---------------
 
 export function processReportSchedules() {
   const job = new CronJob("0 * * * *", async () => {
-    const now = new Date();
-
     const dueSchedules = await db.reportSchedule.findMany({
-      where: { isActive: true, nextRunDate: { lte: now } },
+      where: { isActive: true, nextRunDate: { lte: new Date() } },
     });
 
     for (const schedule of dueSchedules) {
       try {
-        const sections: string[] = JSON.parse(schedule.sections);
-        const recipientIds: string[] = JSON.parse(schedule.recipients);
-        const { start, end } = getDateRange(schedule.frequency);
-        const dateRangeStr = formatDateRange(start, end);
-
-        // Fetch org settings
-        const settings = await db.appSetting.findMany({
-          where: { organizationId: schedule.organizationId, key: { in: [SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.INVOICE_PRIMARY_COLOR] } },
-        });
-        const settingsMap: Record<string, string> = {};
-        for (const s of settings) settingsMap[s.key] = s.value;
-        const currencyCode = settingsMap[SETTING_KEYS.CURRENCY_CODE] || "USD";
-        const primaryColor = settingsMap[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || "#d97706";
-
-        // Fetch report data for selected sections
-        const [revenueData, taxData, pastDueData, serviceData, customerData, technicianData, partsData, jobAnalyticsData, retentionData, inventoryData] = await Promise.all([
-          sections.includes("revenue") ? fetchRevenue(schedule.organizationId, start, end) : null,
-          sections.includes("tax") ? fetchTax(schedule.organizationId, start, end) : null,
-          sections.includes("pastDue") ? fetchPastDue(schedule.organizationId) : null,
-          sections.includes("services") ? fetchServices(schedule.organizationId, start, end) : null,
-          sections.includes("customers") ? fetchCustomers(schedule.organizationId, start, end) : null,
-          sections.includes("technicians") ? fetchTechnicians(schedule.organizationId, start, end) : null,
-          sections.includes("parts") ? fetchParts(schedule.organizationId, start, end) : null,
-          sections.includes("jobAnalytics") ? fetchJobAnalytics(schedule.organizationId, start, end) : null,
-          sections.includes("retention") ? fetchRetention(schedule.organizationId, start, end) : null,
-          sections.includes("inventory") ? fetchInventory(schedule.organizationId) : null,
-        ]);
-
-        // Generate PDF
-        const element = React.createElement(ReportPDF, {
-          dateRange: dateRangeStr,
-          currencyCode,
-          primaryColor,
-          labels: {}, // English fallback defaults built into the component
-          revenueData,
-          taxData,
-          pastDueData,
-          serviceData,
-          customerData,
-          technicianData,
-          partsData,
-          jobAnalyticsData,
-          retentionData,
-          inventoryData,
-        });
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const pdfBuffer = await renderToBuffer(element as any);
-
-        // Resolve recipient emails
-        const recipients = await db.user.findMany({
-          where: { id: { in: recipientIds } },
-          select: { name: true, email: true },
-        });
-
-        const fromAddress = await getOrgFromAddress(schedule.organizationId);
-        const org = await db.organization.findUnique({
-          where: { id: schedule.organizationId },
-          select: { name: true },
-        });
-
-        // Send email to each recipient
-        for (const recipient of recipients) {
-          try {
-            await sendOrgMail(schedule.organizationId, {
-              to: recipient.email,
-              subject: `${schedule.name} – ${dateRangeStr}`,
-              html: `<p>Hi ${recipient.name || ""},</p><p>Please find attached your scheduled business report from <strong>${org?.name || "your organization"}</strong>.</p><p>Report period: ${dateRangeStr}<br/>Frequency: ${schedule.frequency}</p><p>This is an automated report.</p>`,
-              from: fromAddress,
-              attachments: [
-                {
-                  filename: `report-${new Date().toISOString().split("T")[0]}.pdf`,
-                  content: pdfBuffer,
-                },
-              ],
-            });
-          } catch (emailErr) {
-            console.error(`[cron] Failed to email report to ${recipient.email}:`, emailErr);
-          }
-        }
-
-        // Update schedule
-        const nextRunDate = calculateNextRunDate(now, schedule.frequency);
-        const shouldDeactivate = schedule.endDate && nextRunDate > schedule.endDate;
-
-        await db.reportSchedule.update({
-          where: { id: schedule.id },
-          data: {
-            lastRunAt: now,
-            runCount: { increment: 1 },
-            nextRunDate,
-            isActive: !shouldDeactivate,
-          },
-        });
-
-        console.log(`[cron] Report schedule ${schedule.id} processed, sent to ${recipients.length} recipients`);
+        await processOneSchedule(schedule);
       } catch (err) {
         console.error(`[cron] Failed to process report schedule ${schedule.id}:`, err);
       }

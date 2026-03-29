@@ -18,8 +18,23 @@ function calculateNextRunDate(from: Date, frequency: string): Date {
     case "weekly":
       next.setDate(next.getDate() + 7);
       break;
+    case "biweekly":
+      next.setDate(next.getDate() + 14);
+      break;
     case "monthly":
       next.setMonth(next.getMonth() + 1);
+      break;
+    case "bimonthly":
+      next.setMonth(next.getMonth() + 2);
+      break;
+    case "quarterly":
+      next.setMonth(next.getMonth() + 4);
+      break;
+    case "semiannually":
+      next.setMonth(next.getMonth() + 6);
+      break;
+    case "yearly":
+      next.setFullYear(next.getFullYear() + 1);
       break;
   }
   // Set to 8:00 AM
@@ -78,6 +93,7 @@ export async function createReportSchedule(input: unknown) {
         data: {
           name: data.name || "Scheduled Report",
           frequency: data.frequency,
+          dateRange: data.dateRange || "last30d",
           sections: JSON.stringify(data.sections),
           recipients: JSON.stringify(data.recipients),
           nextRunDate,
@@ -121,6 +137,7 @@ export async function updateReportSchedule(input: unknown) {
         data: {
           name: data.name || "Scheduled Report",
           frequency: data.frequency,
+          dateRange: data.dateRange || "last30d",
           sections: JSON.stringify(data.sections),
           recipients: JSON.stringify(data.recipients),
           nextRunDate,
@@ -160,6 +177,32 @@ export async function deleteReportSchedule(id: string) {
       requiredPermissions: [
         {
           action: PermissionAction.DELETE,
+          subject: PermissionSubject.REPORTS,
+        },
+      ],
+    },
+  );
+}
+
+export async function sendReportNow(id: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const schedule = await db.reportSchedule.findFirst({
+        where: { id, organizationId },
+      });
+      if (!schedule) throw new Error("Schedule not found");
+
+      // Dynamically import and run the cron's processing logic for this single schedule
+      const { processOneSchedule } = await import("@/lib/cron/report-schedules");
+      await processOneSchedule(schedule);
+
+      revalidatePath("/settings/report-schedule");
+      return { sent: true };
+    },
+    {
+      requiredPermissions: [
+        {
+          action: PermissionAction.UPDATE,
           subject: PermissionSubject.REPORTS,
         },
       ],
