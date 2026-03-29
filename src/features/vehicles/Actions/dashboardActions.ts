@@ -17,7 +17,7 @@ export async function getDashboardStats() {
       recentServices,
     ] = await Promise.all([
       db.serviceRecord.count({
-        where: { vehicle: { organizationId }, status: "in-progress" },
+        where: { vehicle: { organizationId }, status: { not: "completed" } },
       }),
       db.serviceRecord.count({
         where: { vehicle: { organizationId }, status: "pending" },
