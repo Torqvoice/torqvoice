@@ -105,6 +105,20 @@
     "viewPortal": "Se portalen din: {url}",
     "tel": "Tlf: {phone}"
   },
+  "serviceHistory": {
+    "serviceHistoryTitle": "SERVICEHISTORIKK",
+    "totalServices": "Totalt Tjenester",
+    "totalPartsUsed": "Deler Brukt",
+    "totalLaborItems": "Arbeidsposter",
+    "grandTotal": "Totalsum",
+    "serviceRecords": "Serviceoppføringer",
+    "date": "Dato",
+    "serviceTitle": "Tjeneste",
+    "type": "Type",
+    "status": "Status",
+    "mileageCol": "Kilometerstand",
+    "mileageColMarine": "Motortimer"
+  },
   "common": {
     "poweredBy": "Drevet av"
   }

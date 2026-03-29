@@ -137,6 +137,7 @@
     "upgrade": "Yükseltme",
     "inspection": "Muayene",
     "newWorkOrder": "Yeni İş Emri",
+    "exportServiceHistory": "Geçmişi Dışa Aktar",
     "table": {
       "date": "Tarih",
       "title": "Başlık",

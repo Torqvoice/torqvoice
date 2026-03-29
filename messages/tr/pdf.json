@@ -105,6 +105,20 @@
     "viewPortal": "Portalınızı görüntüleyin: {url}",
     "tel": "Tel: {phone}"
   },
+  "serviceHistory": {
+    "serviceHistoryTitle": "SERVİS GEÇMİŞİ",
+    "totalServices": "Toplam Servis",
+    "totalPartsUsed": "Kullanılan Parçalar",
+    "totalLaborItems": "İşçilik Kalemleri",
+    "grandTotal": "Genel Toplam",
+    "serviceRecords": "Servis Kayıtları",
+    "date": "Tarih",
+    "serviceTitle": "Servis",
+    "type": "Tür",
+    "status": "Durum",
+    "mileageCol": "Kilometre",
+    "mileageColMarine": "Motor Saati"
+  },
   "common": {
     "poweredBy": "Destekleyen"
   }

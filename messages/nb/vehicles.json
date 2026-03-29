@@ -137,6 +137,7 @@
     "upgrade": "Oppgradering",
     "inspection": "Inspeksjon",
     "newWorkOrder": "Ny arbeidsordre",
+    "exportServiceHistory": "Eksporter historikk",
     "table": {
       "date": "Dato",
       "title": "Tittel",

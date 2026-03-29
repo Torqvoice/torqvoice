@@ -137,6 +137,7 @@
     "upgrade": "Aggiornamento",
     "inspection": "Ispezione",
     "newWorkOrder": "Nuovo Ordine di Lavoro",
+    "exportServiceHistory": "Esporta Storico",
     "table": {
       "date": "Data",
       "title": "Titolo",
