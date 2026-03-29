@@ -14,7 +14,9 @@
     "retention": "Retención"
   },
   "dateRange": {
-    "to": "a"
+    "to": "a",
+    "pickDate": "Seleccionar rango de fechas",
+    "apply": "Aplicar"
   },
   "actions": {
     "refresh": "Actualizar",

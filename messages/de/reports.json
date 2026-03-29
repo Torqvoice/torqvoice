@@ -14,7 +14,9 @@
     "retention": "Kundenbindung"
   },
   "dateRange": {
-    "to": "bis"
+    "to": "bis",
+    "pickDate": "Datumsbereich wählen",
+    "apply": "Anwenden"
   },
   "actions": {
     "refresh": "Aktualisieren",

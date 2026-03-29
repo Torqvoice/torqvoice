@@ -14,7 +14,9 @@
     "retention": "Utrzymanie Klientów"
   },
   "dateRange": {
-    "to": "do"
+    "to": "do",
+    "pickDate": "Wybierz zakres dat",
+    "apply": "Zastosuj"
   },
   "actions": {
     "refresh": "Odśwież",

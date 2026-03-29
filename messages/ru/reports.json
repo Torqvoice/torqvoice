@@ -14,7 +14,9 @@
     "retention": "Удержание"
   },
   "dateRange": {
-    "to": "до"
+    "to": "до",
+    "pickDate": "Выбрать диапазон дат",
+    "apply": "Применить"
   },
   "actions": {
     "refresh": "Обновить",

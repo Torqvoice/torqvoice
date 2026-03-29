@@ -14,7 +14,9 @@
     "retention": "Fidélisation"
   },
   "dateRange": {
-    "to": "au"
+    "to": "au",
+    "pickDate": "Choisir une plage de dates",
+    "apply": "Appliquer"
   },
   "actions": {
     "refresh": "Actualiser",

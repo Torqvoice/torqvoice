@@ -14,7 +14,9 @@
     "retention": "Klantbehoud"
   },
   "dateRange": {
-    "to": "tot"
+    "to": "tot",
+    "pickDate": "Kies een datumbereik",
+    "apply": "Toepassen"
   },
   "actions": {
     "refresh": "Vernieuwen",

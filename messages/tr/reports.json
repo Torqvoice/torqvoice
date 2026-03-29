@@ -14,7 +14,9 @@
     "retention": "Müşteri Sadakati"
   },
   "dateRange": {
-    "to": "-"
+    "to": "-",
+    "pickDate": "Tarih aralığı seçin",
+    "apply": "Uygula"
   },
   "actions": {
     "refresh": "Yenile",

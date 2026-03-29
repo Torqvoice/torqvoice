@@ -3,7 +3,15 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import type { DateRange } from "react-day-picker";
 import {
   Card,
   CardContent,
@@ -38,6 +46,7 @@ import {
   AlertTriangle,
   Wrench,
   Cog,
+  CalendarIcon,
   CalendarDays,
   UserCheck,
   Receipt,
@@ -103,13 +112,15 @@ interface ReportsClientProps {
 export default function ReportsClient({ currencyCode }: ReportsClientProps) {
   const t = useTranslations("reports");
   const currentYear = new Date().getFullYear();
-  const defaultStart = `${currentYear}-01-01`;
-  const defaultEnd = new Date().toISOString().split("T")[0];
 
   const [activeTab, setActiveTab] = useState<ReportTab>("financial");
   const [financialSubTab, setFinancialSubTab] = useState<FinancialSubTab>("revenue");
-  const [startDate, setStartDate] = useState(defaultStart);
-  const [endDate, setEndDate] = useState(defaultEnd);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: new Date(currentYear, 0, 1),
+    to: new Date(),
+  });
+  const [pendingDateRange, setPendingDateRange] = useState<DateRange>(dateRange);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Past due invoices state
@@ -136,10 +147,14 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
   type FetchableReport = ReportTab | FinancialSubTab;
 
   const fetchReport = useCallback(
-    async (type: FetchableReport) => {
+    async (type: FetchableReport, overrideDateRange?: DateRange) => {
+      const range = overrideDateRange ?? dateRange;
       setLoading(true);
       try {
-        const dateParams = { startDate, endDate };
+        const dateParams = {
+          startDate: range.from ? format(range.from, "yyyy-MM-dd") : "",
+          endDate: range.to ? format(range.to, "yyyy-MM-dd") : "",
+        };
         switch (type) {
           case "revenue": {
             const result = await getRevenueReport(dateParams);
@@ -198,7 +213,7 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
         setLoading(false);
       }
     },
-    [startDate, endDate],
+    [dateRange],
   );
 
   // Auto-fetch revenue on mount
@@ -387,21 +402,61 @@ export default function ReportsClient({ currencyCode }: ReportsClientProps) {
 
         <div className="flex items-center gap-2">
           {showDateRange && (
-            <>
-              <Input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="h-8 w-36 text-sm"
-              />
-              <span className="text-muted-foreground text-sm">{t("dateRange.to")}</span>
-              <Input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="h-8 w-36 text-sm"
-              />
-            </>
+            <Popover open={datePickerOpen} onOpenChange={(open) => {
+              setDatePickerOpen(open);
+              if (open) setPendingDateRange(dateRange);
+            }}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    "justify-start text-left font-normal",
+                    !dateRange.from && "text-muted-foreground",
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                  {dateRange.from ? (
+                    dateRange.to ? (
+                      <>
+                        {format(dateRange.from, "LLL dd, y")} –{" "}
+                        {format(dateRange.to, "LLL dd, y")}
+                      </>
+                    ) : (
+                      format(dateRange.from, "LLL dd, y")
+                    )
+                  ) : (
+                    <span>{t("dateRange.pickDate")}</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  defaultMonth={dateRange.to ? new Date(dateRange.to.getFullYear(), dateRange.to.getMonth() - 1) : dateRange.from}
+                  selected={pendingDateRange}
+                  onSelect={(range) => range && setPendingDateRange(range)}
+                  numberOfMonths={2}
+                />
+                <div className="border-t p-3 flex justify-end">
+                  <Button
+                    size="sm"
+                    disabled={!pendingDateRange.from || !pendingDateRange.to}
+                    onClick={() => {
+                      setDateRange(pendingDateRange);
+                      setDatePickerOpen(false);
+                      if (activeTab === "financial") {
+                        fetchReport(financialSubTab, pendingDateRange);
+                      } else {
+                        fetchReport(activeTab, pendingDateRange);
+                      }
+                    }}
+                  >
+                    {t("dateRange.apply")}
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
           <Button size="sm" variant="outline" onClick={handleRefresh} disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("actions.refresh")}

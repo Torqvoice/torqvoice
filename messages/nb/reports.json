@@ -14,7 +14,9 @@
     "retention": "Kundelojalitet"
   },
   "dateRange": {
-    "to": "til"
+    "to": "til",
+    "pickDate": "Velg datoperiode",
+    "apply": "Bruk"
   },
   "actions": {
     "refresh": "Oppdater",

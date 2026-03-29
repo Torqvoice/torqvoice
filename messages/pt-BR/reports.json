@@ -14,7 +14,9 @@
     "retention": "Retenção"
   },
   "dateRange": {
-    "to": "até"
+    "to": "até",
+    "pickDate": "Selecionar período",
+    "apply": "Aplicar"
   },
   "actions": {
     "refresh": "Atualizar",
