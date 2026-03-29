@@ -98,6 +98,7 @@ export async function getInspection(id: string) {
         },
       },
     });
+    if (!inspection) throw new Error("Inspection not found");
     return inspection;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INSPECTIONS }] });
 }
