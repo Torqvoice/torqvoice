@@ -5,7 +5,6 @@ import "@/features/vehicles/Components/invoice-pdf/fonts";
 import React from "react";
 import { sendOrgMail, getOrgFromAddress } from "@/lib/email";
 import { ReportPDF } from "@/features/reports/Components/ReportPDF";
-import { formatCurrency } from "@/lib/format";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 
 // --------------- date helpers ---------------
@@ -425,7 +424,7 @@ export async function processOneSchedule(schedule: {
     },
   });
 
-  console.log(`[cron] Report schedule ${schedule.id} processed, sent to ${recipients.length} recipients`);
+  console.warn(`[cron] Report schedule ${schedule.id} processed, sent to ${recipients.length} recipients`);
 }
 
 // --------------- main cron ---------------
@@ -446,5 +445,5 @@ export function processReportSchedules() {
   });
 
   job.start();
-  console.log("[cron] Report schedule processor started (hourly)");
+  console.warn("[cron] Report schedule processor started (hourly)");
 }

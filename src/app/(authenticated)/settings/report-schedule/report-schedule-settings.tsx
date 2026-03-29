@@ -4,13 +4,10 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -50,12 +47,10 @@ import {
   Send,
   Trash2,
   Users,
-  LayoutGrid,
   Plus,
   Pencil,
   X,
   ChevronsUpDown,
-  Check,
 } from "lucide-react";
 import {
   createReportSchedule,
@@ -65,7 +60,7 @@ import {
   sendReportNow,
 } from "@/features/report-schedule/Actions/reportScheduleActions";
 import { REPORT_SECTIONS, DATE_RANGES } from "@/features/report-schedule/Schema/reportScheduleSchema";
-import type { ReportSection, DateRangeKey } from "@/features/report-schedule/Schema/reportScheduleSchema";
+import type { ReportSection } from "@/features/report-schedule/Schema/reportScheduleSchema";
 
 interface Schedule {
   id: string;
