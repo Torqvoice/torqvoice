@@ -57,6 +57,15 @@
   "search": "Поиск...",
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Новый заказ-наряд",
+  "quickCreate": {
+    "title": "Быстрое добавление",
+    "workOrder": "Заказ-наряд",
+    "customer": "Клиент",
+    "vehicle": "Транспорт",
+    "quote": "Предложение",
+    "part": "Запчасть",
+    "inspection": "Осмотр"
+  },
   "purchaseWhiteLabel": "Купить White-Label",
   "licenseExpired": "Ваша лицензия истекла. Функции могут быть ограничены.",
   "licenseExpiresTomorrow": "Ваша лицензия истекает завтра.",

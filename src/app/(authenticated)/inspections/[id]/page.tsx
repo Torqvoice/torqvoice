@@ -3,6 +3,7 @@ import { InspectionPageClient, type InspectionData } from "@/features/inspection
 import { PageHeader } from "@/components/page-header";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { getFeatures } from "@/lib/features";
+import { redirect } from "next/navigation";
 
 export default async function InspectionDetailPage({
   params,
@@ -17,16 +18,7 @@ export default async function InspectionDetailPage({
   ]);
 
   if (!result.success || !result.data) {
-    return (
-      <>
-        <PageHeader />
-        <div className="flex h-[50vh] items-center justify-center">
-          <p className="text-muted-foreground">
-            {result.error || "Inspection not found"}
-          </p>
-        </div>
-      </>
-    );
+    redirect("/inspections");
   }
 
   const features = authContext?.organizationId

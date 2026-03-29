@@ -57,6 +57,15 @@
   "search": "Search...",
   "shortcut": "Ctrl+K",
   "newWorkOrder": "New Work Order",
+  "quickCreate": {
+    "title": "Quick Add",
+    "workOrder": "Work Order",
+    "customer": "Customer",
+    "vehicle": "Vehicle",
+    "quote": "Quote",
+    "part": "Part",
+    "inspection": "Inspection"
+  },
   "purchaseWhiteLabel": "Purchase White-Label",
   "licenseExpired": "Your license has expired. Features may be limited.",
   "licenseExpiresTomorrow": "Your license expires tomorrow.",
