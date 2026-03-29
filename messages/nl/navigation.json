@@ -58,7 +58,7 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Nieuwe werkorder",
   "quickCreate": {
-    "title": "Snel toevoegen",
+    "title": "Toevoegen",
     "workOrder": "Werkorder",
     "customer": "Klant",
     "vehicle": "Voertuig",

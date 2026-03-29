@@ -58,7 +58,7 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Ny arbeidsordre",
   "quickCreate": {
-    "title": "Hurtiglegg til",
+    "title": "Legg til",
     "workOrder": "Arbeidsordre",
     "customer": "Kunde",
     "vehicle": "Kjøretøy",

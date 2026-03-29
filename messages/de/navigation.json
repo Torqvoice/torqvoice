@@ -58,7 +58,7 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Neuer Arbeitsauftrag",
   "quickCreate": {
-    "title": "Schnell hinzufügen",
+    "title": "Hinzufügen",
     "workOrder": "Arbeitsauftrag",
     "customer": "Kunde",
     "vehicle": "Fahrzeug",

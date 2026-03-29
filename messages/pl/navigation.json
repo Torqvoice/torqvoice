@@ -58,7 +58,7 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Nowe zlecenie",
   "quickCreate": {
-    "title": "Szybkie dodanie",
+    "title": "Dodaj",
     "workOrder": "Zlecenie",
     "customer": "Klient",
     "vehicle": "Pojazd",

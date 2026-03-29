@@ -58,7 +58,7 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Новый заказ-наряд",
   "quickCreate": {
-    "title": "Быстрое добавление",
+    "title": "Добавить",
     "workOrder": "Заказ-наряд",
     "customer": "Клиент",
     "vehicle": "Транспорт",

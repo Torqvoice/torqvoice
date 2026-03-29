@@ -58,7 +58,7 @@
   "shortcut": "Ctrl+K",
   "newWorkOrder": "Yeni İş Emri",
   "quickCreate": {
-    "title": "Hızlı Ekle",
+    "title": "Ekle",
     "workOrder": "İş Emri",
     "customer": "Müşteri",
     "vehicle": "Araç",
