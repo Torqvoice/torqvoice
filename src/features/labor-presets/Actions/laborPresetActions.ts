@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { createLaborPresetSchema, updateLaborPresetSchema } from "../Schema/laborPresetSchema";
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 
 export async function getLaborPresetsPaginated(params: {
