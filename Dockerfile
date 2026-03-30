@@ -33,16 +33,17 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 --home /home/nextjs nextjs
 
-# Install runtime dependencies (prisma CLI + serverExternalPackages)
+# Install runtime dependencies (prisma CLI + driver adapter + pg driver)
 # Must run before standalone copy to avoid conflicts with bundled node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-RUN npm install @prisma/client@6.19.2 prisma@6.19.2 @prisma/adapter-pg@6.19.2 pg && \
+RUN npm install prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv && \
     chown -R nextjs:nodejs /app/node_modules
 
 RUN apk add --no-cache bash ffmpeg
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/init-db.sh ./init-db.sh
 
 # Automatically leverage output traces to reduce image size
