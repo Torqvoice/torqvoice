@@ -14,8 +14,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client
-RUN npx prisma generate
+# Generate Prisma client (--no-config skips prisma.config.ts which needs DATABASE_URL)
+RUN npx prisma generate --no-config
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
