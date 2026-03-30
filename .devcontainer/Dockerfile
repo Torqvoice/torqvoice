@@ -21,9 +21,6 @@ RUN if [ "$USER_GID" != "1000" ] || [ "$USER_UID" != "1000" ]; then \
 WORKDIR /workspace
 RUN chown $USERNAME:$USERNAME /workspace
 
-COPY package*.json ./
-RUN npm install
-
 COPY . .
 
 EXPOSE 3000
