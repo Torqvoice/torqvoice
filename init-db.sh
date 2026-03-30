@@ -5,8 +5,13 @@ trap 'echo "An error occurred. Exiting..."; exit 1' ERR
 
 cmd="$@"
 
+# Construct DATABASE_URL from environment variables if not already set
+if [ -z "$DATABASE_URL" ]; then
+  export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+fi
+
 echo "Waiting for PostgreSQL to be ready..."
-until npx prisma db execute --stdin <<< "SELECT 1" 2>/dev/null; do
+until pg_isready -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" -q; do
   echo "PostgreSQL is unavailable - sleeping 2s..."
   sleep 2
 done
