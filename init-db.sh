@@ -11,7 +11,7 @@ if [ -z "$DATABASE_URL" ]; then
 fi
 
 echo "Waiting for PostgreSQL to be ready..."
-until pg_isready -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" -q; do
+until pg_isready -d "$DATABASE_URL" -q; do
   echo "PostgreSQL is unavailable - sleeping 2s..."
   sleep 2
 done
