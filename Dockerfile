@@ -35,12 +35,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 --home /home/nextjs nextjs
 
-# Install runtime dependencies (prisma CLI + driver adapter + pg driver)
-# Must run before standalone copy to avoid conflicts with bundled node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-RUN npm install prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv && \
-    chown -R nextjs:nodejs /app/node_modules
-
 RUN apk add --no-cache bash ffmpeg postgresql-client
 
 COPY --from=builder /app/public ./public
@@ -51,6 +45,11 @@ COPY --from=builder /app/init-db.sh ./init-db.sh
 # Automatically leverage output traces to reduce image size
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Install runtime dependencies for Prisma CLI (after standalone copy so they don't get overwritten)
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+RUN npm install prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv && \
+    chown -R nextjs:nodejs /app/node_modules
 
 # Create uploads directories
 RUN mkdir -p /app/data/uploads && chown -R nextjs:nodejs /app/data
