@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
 import type OpenAI from "openai";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 
 const MAX_ROWS = 100;
 
