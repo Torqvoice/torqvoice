@@ -182,6 +182,7 @@
     "saveError": "Not {action} başarısız oldu"
   },
   "findings": {
+    "sectionTitle": "Bulgular",
     "addFinding": "Bulgu Ekle",
     "editTitle": "Bulguyu Düzenle",
     "addTitle": "Bulgu Ekle",

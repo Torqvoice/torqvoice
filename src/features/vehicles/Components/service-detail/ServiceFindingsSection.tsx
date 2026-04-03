@@ -74,38 +74,50 @@ export function ServiceFindingsSection({
     setLoading(null);
   };
 
+  const hasFindings = findings.length > 0;
+  const openCount = findings.filter((f) => f.status === "open").length;
+
   return (
     <>
-      <div className="rounded-lg border bg-card p-3">
-        <div className="mb-2 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
-            <h3 className="text-sm font-semibold">{t("sectionTitle")}</h3>
-            {findings.filter((f) => f.status === "open").length > 0 && (
-              <Badge variant="destructive" className="h-5 min-w-5 px-1 text-[10px]">
-                {findings.filter((f) => f.status === "open").length}
-              </Badge>
-            )}
+      {!hasFindings ? (
+        <Button
+          size="sm"
+          variant="outline"
+          className="w-full"
+          onClick={() => {
+            setEditingFinding(undefined);
+            setShowForm(true);
+          }}
+        >
+          <AlertTriangle className="mr-1.5 h-3.5 w-3.5 text-amber-500" />
+          {t("addFinding")}
+        </Button>
+      ) : (
+        <div className="rounded-lg border bg-card p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              <h3 className="text-sm font-semibold">{t("sectionTitle")}</h3>
+              {openCount > 0 && (
+                <Badge variant="destructive" className="h-5 min-w-5 px-1 text-[10px]">
+                  {openCount}
+                </Badge>
+              )}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-xs"
+              onClick={() => {
+                setEditingFinding(undefined);
+                setShowForm(true);
+              }}
+            >
+              <Plus className="mr-1 h-3 w-3" />
+              {t("addFinding")}
+            </Button>
           </div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 text-xs"
-            onClick={() => {
-              setEditingFinding(undefined);
-              setShowForm(true);
-            }}
-          >
-            <Plus className="mr-1 h-3 w-3" />
-            {t("addFinding")}
-          </Button>
-        </div>
 
-        {findings.length === 0 ? (
-          <p className="py-2 text-center text-xs text-muted-foreground">
-            {t("empty")}
-          </p>
-        ) : (
           <div className="space-y-1.5">
             {findings.map((f) => (
               <div
@@ -172,8 +184,8 @@ export function ServiceFindingsSection({
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <FindingForm
         vehicleId={vehicleId}

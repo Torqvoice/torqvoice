@@ -182,6 +182,7 @@
     "saveError": "Impossibile {action} la nota"
   },
   "findings": {
+    "sectionTitle": "Riscontri",
     "addFinding": "Aggiungi Riscontro",
     "editTitle": "Modifica Riscontro",
     "addTitle": "Aggiungi Riscontro",

@@ -182,6 +182,7 @@
     "saveError": "Nie udało się {action} notatki"
   },
   "findings": {
+    "sectionTitle": "Ustalenia",
     "addFinding": "Dodaj ustalenie",
     "editTitle": "Edytuj ustalenie",
     "addTitle": "Dodaj ustalenie",

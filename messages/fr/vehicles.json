@@ -182,6 +182,7 @@
     "saveError": "\u00c9chec de {action} de la note"
   },
   "findings": {
+    "sectionTitle": "Constatations",
     "addFinding": "Ajouter une constatation",
     "editTitle": "Modifier la constatation",
     "addTitle": "Ajouter une constatation",

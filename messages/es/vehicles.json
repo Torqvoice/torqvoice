@@ -182,6 +182,7 @@
     "saveError": "Error al {action} nota"
   },
   "findings": {
+    "sectionTitle": "Hallazgos",
     "addFinding": "Agregar hallazgo",
     "editTitle": "Editar hallazgo",
     "addTitle": "Agregar hallazgo",

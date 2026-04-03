@@ -182,6 +182,7 @@
     "saveError": "Kunne ikke {action} notat"
   },
   "findings": {
+    "sectionTitle": "Funn",
     "addFinding": "Legg til funn",
     "editTitle": "Rediger funn",
     "addTitle": "Legg til funn",

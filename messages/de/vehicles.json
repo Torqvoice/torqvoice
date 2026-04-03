@@ -182,6 +182,7 @@
     "saveError": "Fehler beim {action} der Notiz"
   },
   "findings": {
+    "sectionTitle": "Befunde",
     "addFinding": "Befund hinzufügen",
     "editTitle": "Befund bearbeiten",
     "addTitle": "Befund hinzufügen",

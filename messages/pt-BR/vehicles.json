@@ -182,6 +182,7 @@
     "saveError": "Falha ao {action} nota"
   },
   "findings": {
+    "sectionTitle": "Constatações",
     "addFinding": "Adicionar Constatação",
     "editTitle": "Editar Constatação",
     "addTitle": "Adicionar Constatação",

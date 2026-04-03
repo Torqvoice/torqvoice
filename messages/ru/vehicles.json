@@ -182,6 +182,7 @@
     "saveError": "Не удалось {action} заметку"
   },
   "findings": {
+    "sectionTitle": "Замечания",
     "addFinding": "Добавить замечание",
     "editTitle": "Редактировать замечание",
     "addTitle": "Добавить замечание",

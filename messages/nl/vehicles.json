@@ -182,6 +182,7 @@
     "saveError": "{action} van notitie mislukt"
   },
   "findings": {
+    "sectionTitle": "Bevindingen",
     "addFinding": "Bevinding toevoegen",
     "editTitle": "Bevinding bewerken",
     "addTitle": "Bevinding toevoegen",
