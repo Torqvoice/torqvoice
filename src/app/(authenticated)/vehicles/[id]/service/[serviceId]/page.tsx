@@ -180,7 +180,7 @@ export default async function ServiceDetailPage({
   // Fetch open observations for this vehicle (not just this service)
   const openObservations = await db.vehicleFinding.findMany({
     where: { vehicleId: id, status: { not: "resolved" } },
-    select: { id: true, description: true, severity: true, notes: true },
+    select: { id: true, description: true, severity: true, notes: true, serviceRecordId: true },
     orderBy: { createdAt: "desc" },
   });
 

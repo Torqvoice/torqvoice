@@ -264,12 +264,12 @@ export function LaborEditor({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={onAddFinding}>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onAddFinding?.() }}>
                   <Plus className="mr-2 h-4 w-4" />
                   {t('newObservation')}
                 </DropdownMenuItem>
                 {openObservationsCount > 0 && onShowExistingObservations && (
-                  <DropdownMenuItem onClick={onShowExistingObservations}>
+                  <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onShowExistingObservations() }}>
                     <Eye className="mr-2 h-4 w-4" />
                     {t('addExisting', { count: openObservationsCount })}
                   </DropdownMenuItem>

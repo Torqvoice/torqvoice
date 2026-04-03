@@ -210,6 +210,8 @@
     },
     "edit": "Bearbeiten",
     "resolve": "Als erledigt markieren",
+    "discoveredIn": "Entdeckt in",
+    "resolvedIn": "Behoben in",
     "createWorkOrder": "Arbeitsauftrag erstellen ({count})",
     "vehicleHasObservations": "Dieses Fahrzeug hat {count} offene Beobachtungen",
     "addToWorkOrder": "Zum Auftrag hinzufügen ({count})",

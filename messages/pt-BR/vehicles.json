@@ -210,6 +210,8 @@
     },
     "edit": "Editar",
     "resolve": "Marcar como resolvido",
+    "discoveredIn": "Descoberto em",
+    "resolvedIn": "Resolvido em",
     "createWorkOrder": "Criar ordem de serviço ({count})",
     "vehicleHasObservations": "Este veículo tem {count} observações em aberto",
     "addToWorkOrder": "Adicionar à ordem de serviço ({count})",

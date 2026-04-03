@@ -29,7 +29,7 @@ import { FindingsTable } from './findings-table'
 import { toast } from 'sonner'
 import { deleteNote, toggleNotePin } from '@/features/vehicles/Actions/noteActions'
 import { toggleReminder, deleteReminder } from '@/features/vehicles/Actions/reminderActions'
-import { deleteFinding, resolveFinding } from '@/features/vehicles/Actions/findingActions'
+import { deleteFinding } from '@/features/vehicles/Actions/findingActions'
 import { createServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { unarchiveVehicle } from '@/features/vehicles/Actions/unarchiveVehicle'
 import { deleteVehicle } from '@/features/vehicles/Actions/deleteVehicle'
@@ -389,16 +389,6 @@ export function VehicleDetailClient({
     }
   }
 
-  const handleResolveFinding = async (id: string) => {
-    const result = await resolveFinding({ id })
-    if (result.success) {
-      toast.success(tf('findingResolved'))
-      router.refresh()
-    } else {
-      modal.open('error', 'Error', result.error || tf('resolveError'))
-    }
-  }
-
   const handleDeleteFinding = async (id: string) => {
     const result = await deleteFinding(id)
     if (result.success) {
@@ -433,12 +423,8 @@ export function VehicleDetailClient({
     })
     if (result.success && result.data) {
       const newServiceId = result.data.id
-      // Mark selected observations as resolved, linked to the new work order
-      await Promise.all(
-        findingIds.map((id) =>
-          resolveFinding({ id, resolvedServiceRecordId: newServiceId })
-        )
-      )
+      // Delete the observations that were added to the work order
+      await Promise.all(findingIds.map((id) => deleteFinding(id)))
       router.push(`/vehicles/${vehicle.id}/service/${newServiceId}`)
     } else {
       modal.open('error', 'Error', result.error || 'Failed to create work order')
@@ -1304,7 +1290,6 @@ export function VehicleDetailClient({
               setEditingFinding(f)
               setShowFindingForm(true)
             }}
-            onResolveFinding={handleResolveFinding}
             onDeleteFinding={handleDeleteFinding}
             onCreateWorkOrder={handleCreateWorkOrderFromFindings}
             isCreatingWorkOrder={creatingWorkOrder}

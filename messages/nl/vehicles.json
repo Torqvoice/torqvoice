@@ -210,6 +210,8 @@
     },
     "edit": "Bewerken",
     "resolve": "Markeer als opgelost",
+    "discoveredIn": "Ontdekt in",
+    "resolvedIn": "Opgelost in",
     "createWorkOrder": "Werkorder aanmaken ({count})",
     "vehicleHasObservations": "Dit voertuig heeft {count} openstaande observaties",
     "addToWorkOrder": "Toevoegen aan werkorder ({count})",

@@ -210,6 +210,8 @@
     },
     "edit": "Редактировать",
     "resolve": "Отметить как решённое",
+    "discoveredIn": "Обнаружено в",
+    "resolvedIn": "Решено в",
     "createWorkOrder": "Создать заказ-наряд ({count})",
     "vehicleHasObservations": "У этого транспортного средства {count} открытых наблюдений",
     "addToWorkOrder": "Добавить в заказ-наряд ({count})",

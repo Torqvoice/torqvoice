@@ -210,6 +210,8 @@
     },
     "edit": "Modifier",
     "resolve": "Marquer comme résolu",
+    "discoveredIn": "Découvert dans",
+    "resolvedIn": "Résolu dans",
     "createWorkOrder": "Créer un ordre de travail ({count})",
     "vehicleHasObservations": "Ce véhicule a {count} observations en cours",
     "addToWorkOrder": "Ajouter à l'ordre de travail ({count})",

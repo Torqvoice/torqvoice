@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { AlertTriangle, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -29,10 +29,8 @@ interface DetailsLeftColumnProps {
   aiEnabled?: boolean
   vehicleId: string
   findings?: { id: string; description: string; severity: string; status: string; notes: string | null }[]
-  openObservations?: { id: string; description: string; severity: string; notes: string | null }[]
+  openObservations?: { id: string; description: string; severity: string; notes: string | null; serviceRecordId: string | null }[]
   onAddObservations?: (selectedIds: string[]) => Promise<void>
-  onDismissObservations?: () => void
-  dismissedObservations?: boolean
   addingObservations?: boolean
 }
 
@@ -51,16 +49,29 @@ export function DetailsLeftColumn({
   findings = [],
   openObservations = [],
   onAddObservations,
-  onDismissObservations,
-  dismissedObservations = false,
   addingObservations = false,
 }: DetailsLeftColumnProps) {
   const tf = useTranslations('vehicles.findings')
   const [openFindingForm, setOpenFindingForm] = useState(false)
-  const [selectedObs, setSelectedObs] = useState<Set<string>>(() => new Set(openObservations.map((o) => o.id)))
-  const [showExisting, setShowExisting] = useState(false)
+  // Only show observations from OTHER work orders in the banner
+  const otherObservations = openObservations.filter((o) => o.serviceRecordId !== record.id)
+  const [selectedObs, setSelectedObs] = useState<Set<string>>(() => new Set(otherObservations.map((o) => o.id)))
 
-  const showBanner = openObservations.length > 0 && (!dismissedObservations || showExisting)
+  const dismissKey = `obs-dismissed-${record.id}`
+  const [dismissState, setDismissState] = useState<'loading' | 'show' | 'hidden'>('loading')
+  useEffect(() => {
+    try {
+      setDismissState(sessionStorage.getItem(dismissKey) === '1' ? 'hidden' : 'show')
+    } catch {
+      setDismissState('show')
+    }
+  }, [dismissKey])
+  const setDismissed = (v: boolean) => {
+    setDismissState(v ? 'hidden' : 'show')
+    try { if (v) sessionStorage.setItem(dismissKey, '1'); else sessionStorage.removeItem(dismissKey) } catch {}
+  }
+
+  const showBanner = otherObservations.length > 0 && dismissState === 'show'
 
   const toggleObs = (id: string) => {
     setSelectedObs((prev) => {
@@ -78,14 +89,14 @@ export function DetailsLeftColumn({
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500" />
-              <p className="text-sm font-medium">{tf('vehicleHasObservations', { count: openObservations.length })}</p>
+              <p className="text-sm font-medium">{tf('vehicleHasObservations', { count: otherObservations.length })}</p>
             </div>
-            <button type="button" onClick={() => { setShowExisting(false); onDismissObservations?.() }} className="shrink-0 text-muted-foreground hover:text-foreground">
+            <button type="button" onClick={() => setDismissed(true)} className="shrink-0 text-muted-foreground hover:text-foreground">
               <X className="h-4 w-4" />
             </button>
           </div>
           <div className="mt-2 space-y-1">
-            {openObservations.map((o) => (
+            {otherObservations.map((o) => (
               <label key={o.id} className="flex items-start gap-2 rounded px-1 py-0.5 text-sm hover:bg-amber-100 dark:hover:bg-amber-900/30 cursor-pointer">
                 <Checkbox
                   checked={selectedObs.has(o.id)}
@@ -101,7 +112,7 @@ export function DetailsLeftColumn({
               {addingObservations ? <span className="mr-1 h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" /> : null}
               {tf('addToWorkOrder', { count: selectedObs.size })}
             </Button>
-            <Button type="button" size="sm" variant="ghost" onClick={() => { setShowExisting(false); onDismissObservations?.() }}>
+            <Button type="button" size="sm" variant="ghost" onClick={() => setDismissed(true)}>
               {tf('dismiss')}
             </Button>
           </div>
@@ -127,8 +138,8 @@ export function DetailsLeftColumn({
         hasPresets={hasPresets}
         onOpenPresets={onOpenPresets}
         onAddFinding={() => setOpenFindingForm(true)}
-        openObservationsCount={openObservations.length}
-        onShowExistingObservations={() => setShowExisting(true)}
+        openObservationsCount={otherObservations.length}
+        onShowExistingObservations={() => setDismissed(false)}
       />
       <NotesSection
         initialData={formState.initialData}

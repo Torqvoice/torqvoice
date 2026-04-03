@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useCallback, useState, useTransition } from "react";
 import { useFormatDate } from "@/lib/use-format-date";
 import { Button } from "@/components/ui/button";
@@ -32,13 +33,13 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  CheckCircle2,
   Loader2,
   MoreVertical,
   Pencil,
   Plus,
   Trash2,
   Wrench,
+  ExternalLink,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -63,7 +64,6 @@ interface FindingsTableProps {
   totalPages: number;
   onAddFinding: () => void;
   onEditFinding: (finding: FindingRow) => void;
-  onResolveFinding: (id: string) => void;
   onDeleteFinding: (id: string) => void;
   onCreateWorkOrder: (findingIds: string[]) => void;
   isCreatingWorkOrder?: boolean;
@@ -75,11 +75,6 @@ const severityColors: Record<string, string> = {
   monitor: "bg-blue-500/10 text-blue-500 border-blue-500/20",
 };
 
-const statusColors: Record<string, string> = {
-  open: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
-  quoted: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-  resolved: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-};
 
 export function FindingsTable({
   vehicleId,
@@ -90,7 +85,6 @@ export function FindingsTable({
   totalPages,
   onAddFinding,
   onEditFinding,
-  onResolveFinding,
   onDeleteFinding,
   onCreateWorkOrder,
   isCreatingWorkOrder = false,
@@ -103,8 +97,6 @@ export function FindingsTable({
   const t = useTranslations("vehicles.findings");
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const openRecords = records.filter((r) => r.status !== "resolved");
-
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -115,10 +107,10 @@ export function FindingsTable({
   };
 
   const toggleAll = () => {
-    if (selected.size === openRecords.length) {
+    if (selected.size === records.length) {
       setSelected(new Set());
     } else {
-      setSelected(new Set(openRecords.map((r) => r.id)));
+      setSelected(new Set(records.map((r) => r.id)));
     }
   };
 
@@ -195,16 +187,15 @@ export function FindingsTable({
           <TableHeader>
             <TableRow>
               <TableHead className="w-10 px-2">
-                {openRecords.length > 0 && (
+                {records.length > 0 && (
                   <Checkbox
-                    checked={selected.size === openRecords.length && openRecords.length > 0}
+                    checked={selected.size === records.length && records.length > 0}
                     onCheckedChange={toggleAll}
                   />
                 )}
               </TableHead>
               <TableHead className="w-28">{t("table.severity")}</TableHead>
               <TableHead>{t("table.description")}</TableHead>
-              <TableHead className="w-24">{t("table.status")}</TableHead>
               <TableHead className="hidden w-30 sm:table-cell">
                 {t("table.date")}
               </TableHead>
@@ -215,7 +206,7 @@ export function FindingsTable({
             {records.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={5}
                   className="h-32 text-center text-muted-foreground"
                 >
                   {t("empty")}
@@ -225,12 +216,10 @@ export function FindingsTable({
               records.map((f) => (
                 <TableRow key={f.id}>
                   <TableCell className="px-2">
-                    {f.status !== "resolved" && (
-                      <Checkbox
-                        checked={selected.has(f.id)}
-                        onCheckedChange={() => toggleSelect(f.id)}
-                      />
-                    )}
+                    <Checkbox
+                      checked={selected.has(f.id)}
+                      onCheckedChange={() => toggleSelect(f.id)}
+                    />
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -248,15 +237,19 @@ export function FindingsTable({
                           {f.notes}
                         </p>
                       )}
+                      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                        {f.serviceRecord && (
+                          <Link
+                            href={`/vehicles/${vehicleId}/service/${f.serviceRecord.id}`}
+                            className="inline-flex items-center gap-1 text-blue-600 underline decoration-blue-600/30 hover:decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400/30 dark:hover:decoration-blue-400"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            {t("discoveredIn")}: {f.serviceRecord.title}
+                          </Link>
+                        )}
+                      </div>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={`text-xs ${statusColors[f.status] || ""}`}
-                    >
-                      {t(`status.${f.status}` as "status.open" | "status.quoted" | "status.resolved")}
-                    </Badge>
                   </TableCell>
                   <TableCell className="hidden font-mono text-xs text-muted-foreground sm:table-cell">
                     {formatDate(new Date(f.createdAt))}
@@ -277,14 +270,6 @@ export function FindingsTable({
                           <Pencil className="mr-2 h-4 w-4" />
                           {t("edit")}
                         </DropdownMenuItem>
-                        {f.status !== "resolved" && (
-                          <DropdownMenuItem
-                            onClick={() => onResolveFinding(f.id)}
-                          >
-                            <CheckCircle2 className="mr-2 h-4 w-4" />
-                            {t("resolve")}
-                          </DropdownMenuItem>
-                        )}
                         <DropdownMenuItem
                           className="text-destructive"
                           onClick={() => onDeleteFinding(f.id)}

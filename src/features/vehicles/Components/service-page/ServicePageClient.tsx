@@ -27,7 +27,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { CalendarIcon, AlertTriangle } from 'lucide-react'
-import { resolveFinding } from '@/features/vehicles/Actions/findingActions'
+import { deleteFinding } from '@/features/vehicles/Actions/findingActions'
 import { updateServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { LaborPresetPickerDialog } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import type { LaborPresetOption } from './service-page-types'
@@ -157,7 +157,6 @@ export function ServicePageClient({
 
   // Observations banner state
   const tf = useTranslations('vehicles.findings')
-  const [dismissedObservations, setDismissedObservations] = useState(false)
   const [addingObservations, setAddingObservations] = useState(false)
 
   const handleAddObservationsToWorkOrder = async (selectedIds: string[]) => {
@@ -172,11 +171,8 @@ export function ServicePageClient({
       pricingType: 'hourly' as const,
     }))
     formState.dirtySetLaborItems((prev) => [...newItems, ...prev])
-    // Resolve the added observations
-    await Promise.all(
-      selected.map((o) => resolveFinding({ id: o.id, resolvedServiceRecordId: record.id }))
-    )
-    setDismissedObservations(true)
+    // Delete the observations that were added to the work order
+    await Promise.all(selected.map((o) => deleteFinding(o.id)))
     setAddingObservations(false)
     toast.success(tf('observationsAdded', { count: selected.length }))
     router.refresh()
@@ -245,8 +241,6 @@ export function ServicePageClient({
                 findings={findings}
                 openObservations={openObservations}
                 onAddObservations={handleAddObservationsToWorkOrder}
-                onDismissObservations={() => setDismissedObservations(true)}
-                dismissedObservations={dismissedObservations}
                 addingObservations={addingObservations}
               />
             }
