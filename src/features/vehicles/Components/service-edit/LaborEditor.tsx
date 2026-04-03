@@ -251,7 +251,7 @@ export function LaborEditor({
             <span className="hidden sm:inline">{t('addService')}</span>
           </Button>
           {onAddFinding && openObservationsCount > 0 && onShowExistingObservations ? (
-            <DropdownMenu modal={false}>
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button type="button" variant="outline" size="sm">
                   <AlertTriangle className="mr-1 h-3.5 w-3.5" />
