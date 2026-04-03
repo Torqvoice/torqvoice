@@ -58,8 +58,9 @@ export function DetailsLeftColumn({
   const tf = useTranslations('vehicles.findings')
   const [openFindingForm, setOpenFindingForm] = useState(false)
   const [selectedObs, setSelectedObs] = useState<Set<string>>(() => new Set(openObservations.map((o) => o.id)))
+  const [showExisting, setShowExisting] = useState(false)
 
-  const showBanner = openObservations.length > 0 && !dismissedObservations
+  const showBanner = openObservations.length > 0 && (!dismissedObservations || showExisting)
 
   const toggleObs = (id: string) => {
     setSelectedObs((prev) => {
@@ -79,7 +80,7 @@ export function DetailsLeftColumn({
               <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500" />
               <p className="text-sm font-medium">{tf('vehicleHasObservations', { count: openObservations.length })}</p>
             </div>
-            <button type="button" onClick={onDismissObservations} className="shrink-0 text-muted-foreground hover:text-foreground">
+            <button type="button" onClick={() => { setShowExisting(false); onDismissObservations?.() }} className="shrink-0 text-muted-foreground hover:text-foreground">
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -100,7 +101,7 @@ export function DetailsLeftColumn({
               {addingObservations ? <span className="mr-1 h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" /> : null}
               {tf('addToWorkOrder', { count: selectedObs.size })}
             </Button>
-            <Button type="button" size="sm" variant="ghost" onClick={onDismissObservations}>
+            <Button type="button" size="sm" variant="ghost" onClick={() => { setShowExisting(false); onDismissObservations?.() }}>
               {tf('dismiss')}
             </Button>
           </div>
@@ -126,6 +127,8 @@ export function DetailsLeftColumn({
         hasPresets={hasPresets}
         onOpenPresets={onOpenPresets}
         onAddFinding={() => setOpenFindingForm(true)}
+        openObservationsCount={openObservations.length}
+        onShowExistingObservations={() => setShowExisting(true)}
       />
       <NotesSection
         initialData={formState.initialData}
