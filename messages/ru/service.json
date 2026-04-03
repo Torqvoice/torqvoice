@@ -109,7 +109,7 @@
     "addService": "Добавить услугу",
     "addFinding": "Наблюдение",
     "newObservation": "Новое наблюдение",
-    "addExisting": "Добавить существующие ({count})",
+    "addExisting": "Показать существующие ({count})",
     "qty": "кол-во",
     "qtyOrHours": "Услуга / Часы",
     "hourlyTag": "н/ч",

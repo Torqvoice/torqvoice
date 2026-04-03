@@ -109,7 +109,7 @@
     "addService": "Add Service",
     "addFinding": "Gözlem",
     "newObservation": "Yeni gözlem",
-    "addExisting": "Mevcut ekle ({count})",
+    "addExisting": "Mevcut göster ({count})",
     "qty": "Qty",
     "qtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",

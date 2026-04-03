@@ -102,7 +102,7 @@
     "addService": "Add Service",
     "addFinding": "Observation",
     "newObservation": "New Observation",
-    "addExisting": "Add Existing ({count})",
+    "addExisting": "Show Existing ({count})",
     "fromPresets": "From Presets",
     "description": "Description",
     "hours": "Hours",

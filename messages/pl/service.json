@@ -109,7 +109,7 @@
     "addService": "Add Service",
     "addFinding": "Obserwacja",
     "newObservation": "Nowa obserwacja",
-    "addExisting": "Dodaj istniejące ({count})",
+    "addExisting": "Pokaż istniejące ({count})",
     "qty": "Qty",
     "qtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",

@@ -1077,7 +1077,7 @@ export function VehicleDetailClient({
             <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
             <span className="hidden sm:inline">{t('tabs.findings')}</span>
             {vehicle._count.findings > 0 && (
-              <Badge variant="destructive" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                 {vehicle._count.findings}
               </Badge>
             )}

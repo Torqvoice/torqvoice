@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteFinding } from "../../Actions/findingActions";
-import { FindingForm } from "../FindingForm";
 
 interface Finding {
   id: string;
@@ -28,8 +27,8 @@ interface ServiceFindingsSectionProps {
   vehicleId: string;
   serviceRecordId: string;
   findings: Finding[];
-  externalOpenForm?: boolean;
-  onExternalOpenFormHandled?: () => void;
+  onAddFinding?: () => void;
+  onEditFinding?: (finding: Finding) => void;
 }
 
 const severityColors: Record<string, string> = {
@@ -43,22 +42,12 @@ export function ServiceFindingsSection({
   vehicleId,
   serviceRecordId,
   findings,
-  externalOpenForm,
-  onExternalOpenFormHandled,
+  onAddFinding,
+  onEditFinding,
 }: ServiceFindingsSectionProps) {
   const router = useRouter();
   const t = useTranslations("vehicles.findings");
-  const [showForm, setShowForm] = useState(false);
-  const [editingFinding, setEditingFinding] = useState<Finding | undefined>();
   const [loading, setLoading] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (externalOpenForm) {
-      setEditingFinding(undefined);
-      setShowForm(true);
-      onExternalOpenFormHandled?.();
-    }
-  }, [externalOpenForm, onExternalOpenFormHandled]);
 
   const handleDelete = async (id: string) => {
     setLoading(id);
@@ -90,10 +79,7 @@ export function ServiceFindingsSection({
               size="sm"
               variant="outline"
               className="h-7 text-xs"
-              onClick={() => {
-                setEditingFinding(undefined);
-                setShowForm(true);
-              }}
+              onClick={() => onAddFinding?.()}
             >
               <Plus className="mr-1 h-3 w-3" />
               {t("addFinding")}
@@ -125,10 +111,7 @@ export function ServiceFindingsSection({
                     size="icon"
                     variant="ghost"
                     className="h-6 w-6"
-                    onClick={() => {
-                      setEditingFinding(f);
-                      setShowForm(true);
-                    }}
+                    onClick={() => onEditFinding?.(f)}
                   >
                     <Pencil className="h-3 w-3" />
                   </Button>
@@ -147,14 +130,6 @@ export function ServiceFindingsSection({
           </div>
         </div>
       )}
-
-      <FindingForm
-        vehicleId={vehicleId}
-        serviceRecordId={serviceRecordId}
-        open={showForm}
-        onOpenChange={setShowForm}
-        finding={editingFinding}
-      />
     </>
   );
 }

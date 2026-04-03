@@ -250,33 +250,43 @@ export function LaborEditor({
             <Wrench className="mr-1 h-3.5 w-3.5" />
             <span className="hidden sm:inline">{t('addService')}</span>
           </Button>
-          {onAddFinding && (
-            <DropdownMenu>
+          {onAddFinding && openObservationsCount > 0 && onShowExistingObservations ? (
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button type="button" variant="outline" size="sm">
                   <AlertTriangle className="mr-1 h-3.5 w-3.5 text-amber-500" />
                   <span className="hidden sm:inline">{t('addFinding')}</span>
-                  {openObservationsCount > 0 && (
-                    <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-medium text-white">
-                      {openObservationsCount}
-                    </span>
-                  )}
+                  <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-medium text-white">
+                    {openObservationsCount}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onAddFinding?.() }}>
+                <DropdownMenuItem
+                  onClick={(e) => { e.preventDefault(); onAddFinding() }}
+                >
                   <Plus className="mr-2 h-4 w-4" />
                   {t('newObservation')}
                 </DropdownMenuItem>
-                {openObservationsCount > 0 && onShowExistingObservations && (
-                  <DropdownMenuItem onSelect={(e) => { e.preventDefault(); onShowExistingObservations() }}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    {t('addExisting', { count: openObservationsCount })}
-                  </DropdownMenuItem>
-                )}
+                <DropdownMenuItem
+                  onClick={(e) => { e.preventDefault(); onShowExistingObservations() }}
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  {t('addExisting', { count: openObservationsCount })}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
+          ) : onAddFinding ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onAddFinding}
+            >
+              <AlertTriangle className="mr-1 h-3.5 w-3.5 text-amber-500" />
+              <span className="hidden sm:inline">{t('addFinding')}</span>
+            </Button>
+          ) : null}
         </div>
       </div>
 

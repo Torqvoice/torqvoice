@@ -109,7 +109,7 @@
     "addService": "Add Service",
     "addFinding": "Observasjon",
     "newObservation": "Ny observasjon",
-    "addExisting": "Legg til eksisterende ({count})",
+    "addExisting": "Vis eksisterende ({count})",
     "qty": "Qty",
     "qtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
