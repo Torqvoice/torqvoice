@@ -30,6 +30,7 @@ import { toast } from 'sonner'
 import { deleteNote, toggleNotePin } from '@/features/vehicles/Actions/noteActions'
 import { toggleReminder, deleteReminder } from '@/features/vehicles/Actions/reminderActions'
 import { deleteFinding, resolveFinding } from '@/features/vehicles/Actions/findingActions'
+import { createServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { unarchiveVehicle } from '@/features/vehicles/Actions/unarchiveVehicle'
 import { deleteVehicle } from '@/features/vehicles/Actions/deleteVehicle'
 import {
@@ -405,6 +406,42 @@ export function VehicleDetailClient({
       router.refresh()
     } else {
       modal.open('error', 'Error', result.error || tf('deleteError'))
+    }
+  }
+
+  const [creatingWorkOrder, setCreatingWorkOrder] = useState(false)
+  const handleCreateWorkOrderFromFindings = async (findingIds: string[]) => {
+    setCreatingWorkOrder(true)
+    const selectedFindings = paginatedFindings.records.filter((f) => findingIds.includes(f.id))
+    const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+    const result = await createServiceRecord({
+      vehicleId: vehicle.id,
+      title: `${vehicleName} - ${tf('sectionTitle')}`,
+      type: 'repair',
+      status: 'pending',
+      laborItems: selectedFindings.map((f) => ({
+        description: `${f.description}${f.notes ? ` - ${f.notes}` : ''}`,
+        hours: 0,
+        rate: 0,
+        total: 0,
+        pricingType: 'hourly' as const,
+      })),
+      subtotal: 0,
+      taxRate: 0,
+      taxAmount: 0,
+      totalAmount: 0,
+    })
+    if (result.success && result.data) {
+      // Mark selected observations as resolved, linked to the new work order
+      await Promise.all(
+        findingIds.map((id) =>
+          resolveFinding({ id, resolvedServiceRecordId: result.data.id })
+        )
+      )
+      router.push(`/vehicles/${vehicle.id}/service/${result.data.id}`)
+    } else {
+      modal.open('error', 'Error', result.error || 'Failed to create work order')
+      setCreatingWorkOrder(false)
     }
   }
 
@@ -1268,6 +1305,8 @@ export function VehicleDetailClient({
             }}
             onResolveFinding={handleResolveFinding}
             onDeleteFinding={handleDeleteFinding}
+            onCreateWorkOrder={handleCreateWorkOrderFromFindings}
+            isCreatingWorkOrder={creatingWorkOrder}
           />
         </TabsContent>
 

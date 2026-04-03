@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useCallback, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { useFormatDate } from "@/lib/use-format-date";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -37,6 +38,7 @@ import {
   Pencil,
   Plus,
   Trash2,
+  Wrench,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -63,6 +65,8 @@ interface FindingsTableProps {
   onEditFinding: (finding: FindingRow) => void;
   onResolveFinding: (id: string) => void;
   onDeleteFinding: (id: string) => void;
+  onCreateWorkOrder: (findingIds: string[]) => void;
+  isCreatingWorkOrder?: boolean;
 }
 
 const severityColors: Record<string, string> = {
@@ -88,6 +92,8 @@ export function FindingsTable({
   onEditFinding,
   onResolveFinding,
   onDeleteFinding,
+  onCreateWorkOrder,
+  isCreatingWorkOrder = false,
 }: FindingsTableProps) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -95,6 +101,26 @@ export function FindingsTable({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const t = useTranslations("vehicles.findings");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const openRecords = records.filter((r) => r.status !== "resolved");
+
+  const toggleSelect = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    if (selected.size === openRecords.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(openRecords.map((r) => r.id)));
+    }
+  };
 
   const createUrl = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -137,16 +163,30 @@ export function FindingsTable({
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between">
-        {isPending && (
-          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-        )}
-        <div className="ml-auto">
-          <Button size="sm" onClick={onAddFinding}>
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            {t("addFinding")}
-          </Button>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          {isPending && (
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          )}
+          {selected.size > 0 && (
+            <Button
+              size="sm"
+              onClick={() => onCreateWorkOrder(Array.from(selected))}
+              disabled={isCreatingWorkOrder}
+            >
+              {isCreatingWorkOrder ? (
+                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Wrench className="mr-1 h-3.5 w-3.5" />
+              )}
+              {t("createWorkOrder", { count: selected.size })}
+            </Button>
+          )}
         </div>
+        <Button size="sm" onClick={onAddFinding}>
+          <Plus className="mr-1 h-3.5 w-3.5" />
+          {t("addFinding")}
+        </Button>
       </div>
 
       {/* Table */}
@@ -154,6 +194,14 @@ export function FindingsTable({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-10 px-2">
+                {openRecords.length > 0 && (
+                  <Checkbox
+                    checked={selected.size === openRecords.length && openRecords.length > 0}
+                    onCheckedChange={toggleAll}
+                  />
+                )}
+              </TableHead>
               <TableHead className="w-28">{t("table.severity")}</TableHead>
               <TableHead>{t("table.description")}</TableHead>
               <TableHead className="w-24">{t("table.status")}</TableHead>
@@ -167,7 +215,7 @@ export function FindingsTable({
             {records.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={6}
                   className="h-32 text-center text-muted-foreground"
                 >
                   {t("empty")}
@@ -176,6 +224,14 @@ export function FindingsTable({
             ) : (
               records.map((f) => (
                 <TableRow key={f.id}>
+                  <TableCell className="px-2">
+                    {f.status !== "resolved" && (
+                      <Checkbox
+                        checked={selected.has(f.id)}
+                        onCheckedChange={() => toggleSelect(f.id)}
+                      />
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"

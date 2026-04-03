@@ -210,6 +210,7 @@
     },
     "edit": "Bewerken",
     "resolve": "Markeer als opgelost",
+    "createWorkOrder": "Werkorder aanmaken ({count})",
     "delete": "Verwijderen",
     "findingCreated": "Observatie toegevoegd",
     "findingUpdated": "Observatie bijgewerkt",

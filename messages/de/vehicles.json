@@ -210,6 +210,7 @@
     },
     "edit": "Bearbeiten",
     "resolve": "Als erledigt markieren",
+    "createWorkOrder": "Arbeitsauftrag erstellen ({count})",
     "delete": "Löschen",
     "findingCreated": "Beobachtung hinzugefügt",
     "findingUpdated": "Beobachtung aktualisiert",

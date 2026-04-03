@@ -210,6 +210,7 @@
     },
     "edit": "Modifica",
     "resolve": "Segna come risolto",
+    "createWorkOrder": "Crea ordine di lavoro ({count})",
     "delete": "Elimina",
     "findingCreated": "Osservazione aggiunta",
     "findingUpdated": "Osservazione aggiornata",

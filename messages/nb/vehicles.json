@@ -210,6 +210,7 @@
     },
     "edit": "Rediger",
     "resolve": "Merk som løst",
+    "createWorkOrder": "Opprett arbeidsordre ({count})",
     "delete": "Slett",
     "findingCreated": "Observasjon lagt til",
     "findingUpdated": "Observasjon oppdatert",

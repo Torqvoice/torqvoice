@@ -210,6 +210,7 @@
     },
     "edit": "Edytuj",
     "resolve": "Oznacz jako rozwiązane",
+    "createWorkOrder": "Utwórz zlecenie ({count})",
     "delete": "Usuń",
     "findingCreated": "Obserwacja dodana",
     "findingUpdated": "Obserwacja zaktualizowana",

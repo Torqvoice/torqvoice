@@ -210,6 +210,7 @@
     },
     "edit": "Düzenle",
     "resolve": "Çözüldü olarak işaretle",
+    "createWorkOrder": "İş emri oluştur ({count})",
     "delete": "Sil",
     "findingCreated": "Gözlem eklendi",
     "findingUpdated": "Gözlem güncellendi",
