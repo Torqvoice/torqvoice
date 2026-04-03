@@ -41,6 +41,7 @@
     "inventory_create": "Создана складская запчасть",
     "inventory_update": "Обновлена складская запчасть",
     "inventory_delete": "Удалена складская запчасть",
+    "inventory_bulkDelete": "Массовое удаление складских запчастей",
     "team_invite": "Приглашён участник команды",
     "team_sendInvitation": "Отправлено приглашение",
     "team_cancelInvitation": "Отменено приглашение",

@@ -41,6 +41,7 @@
     "inventory_create": "Created Inventory Part",
     "inventory_update": "Updated Inventory Part",
     "inventory_delete": "Deleted Inventory Part",
+    "inventory_bulkDelete": "Bulk Deleted Inventory Parts",
     "team_invite": "Invited Team Member",
     "team_sendInvitation": "Sent Invitation",
     "team_cancelInvitation": "Cancelled Invitation",

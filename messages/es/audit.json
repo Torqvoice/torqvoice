@@ -41,6 +41,7 @@
     "inventory_create": "Pieza de inventario creada",
     "inventory_update": "Pieza de inventario actualizada",
     "inventory_delete": "Pieza de inventario eliminada",
+    "inventory_bulkDelete": "Piezas de inventario eliminadas en masa",
     "team_invite": "Miembro del equipo invitado",
     "team_sendInvitation": "Invitación enviada",
     "team_cancelInvitation": "Invitación cancelada",

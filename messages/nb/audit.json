@@ -41,6 +41,7 @@
     "inventory_create": "Opprettet lagerdel",
     "inventory_update": "Oppdaterte lagerdel",
     "inventory_delete": "Slettet lagerdel",
+    "inventory_bulkDelete": "Masseslettet lagerdeler",
     "team_invite": "Inviterte teammedlem",
     "team_sendInvitation": "Sendte invitasjon",
     "team_cancelInvitation": "Kansellerte invitasjon",

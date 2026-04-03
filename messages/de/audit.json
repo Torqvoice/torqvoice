@@ -41,6 +41,7 @@
     "inventory_create": "Lagerteil erstellt",
     "inventory_update": "Lagerteil aktualisiert",
     "inventory_delete": "Lagerteil gelöscht",
+    "inventory_bulkDelete": "Lagerteile massengelöscht",
     "team_invite": "Teammitglied eingeladen",
     "team_sendInvitation": "Einladung gesendet",
     "team_cancelInvitation": "Einladung storniert",

@@ -41,6 +41,7 @@
     "inventory_create": "Utworzono część magazynową",
     "inventory_update": "Zaktualizowano część magazynową",
     "inventory_delete": "Usunięto część magazynową",
+    "inventory_bulkDelete": "Masowo usunięto części magazynowe",
     "team_invite": "Zaproszono członka zespołu",
     "team_sendInvitation": "Wysłano zaproszenie",
     "team_cancelInvitation": "Anulowano zaproszenie",

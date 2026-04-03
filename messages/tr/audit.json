@@ -41,6 +41,7 @@
     "inventory_create": "Envanter parçası oluşturuldu",
     "inventory_update": "Envanter parçası güncellendi",
     "inventory_delete": "Envanter parçası silindi",
+    "inventory_bulkDelete": "Envanter parçaları toplu silindi",
     "team_invite": "Ekip üyesi davet edildi",
     "team_sendInvitation": "Davet gönderildi",
     "team_cancelInvitation": "Davet iptal edildi",
