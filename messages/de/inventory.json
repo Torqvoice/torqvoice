@@ -29,6 +29,15 @@
     "description": "\"{name}\" aus dem Lager löschen? Dies kann nicht rückgängig gemacht werden.",
     "confirm": "Löschen"
   },
+  "bulkDelete": {
+    "title": "Ausgewählte Teile löschen",
+    "description": "{count, plural, one {# Teil} other {# Teile}} aus dem Lager löschen? Dies kann nicht rückgängig gemacht werden.",
+    "confirm": "Löschen",
+    "selected": "{count, plural, one {# Teil} other {# Teile}} ausgewählt",
+    "clearSelection": "Auswahl aufheben",
+    "deleteSelected": "Löschen ({count})",
+    "success": "{count, plural, one {# Teil} other {# Teile}} gelöscht"
+  },
   "markup": {
     "title": "Aufschlag auf alle Teile anwenden",
     "multiplierLabel": "Aufschlagsfaktor",

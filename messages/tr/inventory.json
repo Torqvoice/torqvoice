@@ -29,6 +29,15 @@
     "description": "\"{name}\" envanterden silinsin mi? Bu işlem geri alınamaz.",
     "confirm": "Sil"
   },
+  "bulkDelete": {
+    "title": "Seçili parçaları sil",
+    "description": "Envanterden {count, plural, one {# parça} other {# parça}} silinsin mi? Bu işlem geri alınamaz.",
+    "confirm": "Sil",
+    "selected": "{count, plural, one {# parça} other {# parça}} seçili",
+    "clearSelection": "Temizle",
+    "deleteSelected": "Sil ({count})",
+    "success": "{count, plural, one {# parça} other {# parça}} silindi"
+  },
   "markup": {
     "title": "Tüm parçalara kâr marjı uygula",
     "multiplierLabel": "Kâr marjı çarpanı",

@@ -29,6 +29,15 @@
     "description": "Excluir \"{name}\" do inventário? Esta ação não pode ser desfeita.",
     "confirm": "Excluir"
   },
+  "bulkDelete": {
+    "title": "Excluir peças selecionadas",
+    "description": "Excluir {count, plural, one {# peça} other {# peças}} do estoque? Esta ação não pode ser desfeita.",
+    "confirm": "Excluir",
+    "selected": "{count, plural, one {# peça selecionada} other {# peças selecionadas}}",
+    "clearSelection": "Limpar",
+    "deleteSelected": "Excluir ({count})",
+    "success": "{count, plural, one {# peça excluída} other {# peças excluídas}}"
+  },
   "markup": {
     "title": "Aplicar margem a todas as peças",
     "multiplierLabel": "Multiplicador de margem",

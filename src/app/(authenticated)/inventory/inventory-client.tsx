@@ -31,11 +31,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { InventoryPartForm } from "@/features/inventory/Components/InventoryPartForm";
-import { deleteInventoryPart, applyMarkupToAll } from "@/features/inventory/Actions/inventoryActions";
+import { deleteInventoryPart, deleteInventoryParts, applyMarkupToAll } from "@/features/inventory/Actions/inventoryActions";
 import { setSetting } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import {
@@ -64,6 +65,7 @@ import {
   X,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
+import { toast } from "sonner";
 
 interface InventoryPart {
   id: string;
@@ -137,6 +139,8 @@ export function InventoryClient({
   } | null>(null);
   const [scannedBarcode, setScannedBarcode] = useState('');
   const [showScanActions, setShowScanActions] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("create") === "true") {
@@ -222,6 +226,44 @@ export function InventoryClient({
     }
   };
 
+  const toggleSelect = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selected.size === data.parts.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(data.parts.map((p) => p.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selected.size === 0) return;
+    const ok = await confirm({
+      title: t('bulkDelete.title'),
+      description: t('bulkDelete.description', { count: selected.size }),
+      confirmLabel: t('bulkDelete.confirm'),
+      destructive: true,
+    });
+    if (!ok) return;
+    setIsBulkDeleting(true);
+    const result = await deleteInventoryParts(Array.from(selected));
+    if (result.success) {
+      toast.success(t('bulkDelete.success', { count: result.data?.deleted ?? selected.size }));
+      setSelected(new Set());
+      router.refresh();
+    } else {
+      modal.open("error", t('errors.error'), result.error || t('errors.deleteFailed'));
+    }
+    setIsBulkDeleting(false);
+  };
+
   const handleApplyMarkup = async () => {
     const multiplier = Number(markupValue);
     if (!multiplier || multiplier <= 0) {
@@ -251,49 +293,70 @@ export function InventoryClient({
     <div className="space-y-4">
       {/* Toolbar */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-        <div className="flex flex-1 items-center gap-2">
-          <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
-            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder={t('searchPlaceholder')}
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-9"
-            />
-          </form>
-          <Select
-            value={category || "all"}
-            onValueChange={(v) => navigate({ category: v === "all" ? undefined : v })}
-          >
-            <SelectTrigger className="w-[120px] sm:w-[150px]">
-              <SelectValue placeholder={t('categoryPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('allCategories')}</SelectItem>
-              {categories.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-        </div>
-        <div className="flex items-center justify-between gap-2">
-          <Button size="sm" variant="outline" onClick={() => setShowScanner(true)}>
-            <ScanBarcode className="h-3.5 w-3.5 sm:mr-1" />
-            <span className="hidden sm:inline">{t('scanBarcode')}</span>
-          </Button>
-          <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" onClick={() => setShowMarkup(true)}>
-              <Percent className="h-3.5 w-3.5 sm:mr-1" />
-              <span className="hidden sm:inline">{t('applyMarkup')}</span>
-            </Button>
-            <Button size="sm" onClick={() => setShowForm(true)}>
-              <Plus className="h-3.5 w-3.5 sm:mr-1" />
-              <span className="hidden sm:inline">{t('addPart')}</span>
+        {selected.size > 0 ? (
+          <div className="flex flex-1 items-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              {t('bulkDelete.selected', { count: selected.size })}
+            </span>
+            <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
+              <X className="mr-1 h-3.5 w-3.5" />
+              {t('bulkDelete.clearSelection')}
             </Button>
           </div>
+        ) : (
+          <div className="flex flex-1 items-center gap-2">
+            <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder={t('searchPlaceholder')}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="pl-9"
+              />
+            </form>
+            <Select
+              value={category || "all"}
+              onValueChange={(v) => navigate({ category: v === "all" ? undefined : v })}
+            >
+              <SelectTrigger className="w-[120px] sm:w-[150px]">
+                <SelectValue placeholder={t('categoryPlaceholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('allCategories')}</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          </div>
+        )}
+        <div className="flex items-center justify-between gap-2">
+          {selected.size > 0 ? (
+            <Button size="sm" variant="destructive" onClick={handleBulkDelete} disabled={isBulkDeleting}>
+              {isBulkDeleting ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Trash2 className="mr-1 h-3.5 w-3.5" />}
+              {t('bulkDelete.deleteSelected', { count: selected.size })}
+            </Button>
+          ) : (
+            <>
+              <Button size="sm" variant="outline" onClick={() => setShowScanner(true)}>
+                <ScanBarcode className="h-3.5 w-3.5 sm:mr-1" />
+                <span className="hidden sm:inline">{t('scanBarcode')}</span>
+              </Button>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={() => setShowMarkup(true)}>
+                  <Percent className="h-3.5 w-3.5 sm:mr-1" />
+                  <span className="hidden sm:inline">{t('applyMarkup')}</span>
+                </Button>
+                <Button size="sm" onClick={() => setShowForm(true)}>
+                  <Plus className="h-3.5 w-3.5 sm:mr-1" />
+                  <span className="hidden sm:inline">{t('addPart')}</span>
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -302,6 +365,19 @@ export function InventoryClient({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[40px]">
+                <Checkbox
+                  checked={
+                    data.parts.length > 0 && selected.size === data.parts.length
+                      ? true
+                      : selected.size > 0
+                        ? "indeterminate"
+                        : false
+                  }
+                  onCheckedChange={toggleSelectAll}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </TableHead>
               <TableHead>
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("partNumber")}>
                   {t('table.partNumber')}<SortIcon column="partNumber" />
@@ -349,7 +425,7 @@ export function InventoryClient({
           <TableBody>
             {data.parts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={10} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={11} className="h-32 text-center text-muted-foreground">
                   {search || category ? t('empty.noMatch') : t('empty.noParts')}
                 </TableCell>
               </TableRow>
@@ -365,6 +441,12 @@ export function InventoryClient({
                       setShowForm(true);
                     }}
                   >
+                    <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={selected.has(part.id)}
+                        onCheckedChange={() => toggleSelect(part.id)}
+                      />
+                    </TableCell>
                     <TableCell>
                       {part.partNumber ? (
                         <span className="font-mono text-sm">{part.partNumber}</span>

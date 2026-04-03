@@ -29,6 +29,15 @@
     "description": "Удалить \"{name}\" со склада? Это действие необратимо.",
     "confirm": "Удалить"
   },
+  "bulkDelete": {
+    "title": "Удалить выбранные детали",
+    "description": "Удалить {count, plural, one {# деталь} few {# детали} other {# деталей}} со склада? Это действие нельзя отменить.",
+    "confirm": "Удалить",
+    "selected": "{count, plural, one {# деталь выбрана} few {# детали выбраны} other {# деталей выбрано}}",
+    "clearSelection": "Сбросить",
+    "deleteSelected": "Удалить ({count})",
+    "success": "{count, plural, one {# деталь удалена} few {# детали удалены} other {# деталей удалено}}"
+  },
   "markup": {
     "title": "Применить наценку ко всем запчастям",
     "multiplierLabel": "Множитель наценки",

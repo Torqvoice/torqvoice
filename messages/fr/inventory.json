@@ -29,6 +29,15 @@
     "description": "Supprimer \"{name}\" de l'inventaire ? Cette action est irréversible.",
     "confirm": "Supprimer"
   },
+  "bulkDelete": {
+    "title": "Supprimer les pièces sélectionnées",
+    "description": "Supprimer {count, plural, one {# pièce} other {# pièces}} de l'inventaire ? Cette action est irréversible.",
+    "confirm": "Supprimer",
+    "selected": "{count, plural, one {# pièce sélectionnée} other {# pièces sélectionnées}}",
+    "clearSelection": "Effacer",
+    "deleteSelected": "Supprimer ({count})",
+    "success": "{count, plural, one {# pièce supprimée} other {# pièces supprimées}}"
+  },
   "markup": {
     "title": "Appliquer la marge à toutes les pièces",
     "multiplierLabel": "Multiplicateur de marge",

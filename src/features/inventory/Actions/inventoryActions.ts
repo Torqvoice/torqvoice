@@ -230,6 +230,44 @@ export async function deleteInventoryPart(partId: string) {
   });
 }
 
+export async function deleteInventoryParts(partIds: string[]) {
+  return withAuth(async ({ userId, organizationId }) => {
+    if (partIds.length === 0) throw new Error("No parts selected");
+
+    // Gather image URLs before deleting
+    const parts = await db.inventoryPart.findMany({
+      where: { id: { in: partIds }, organizationId },
+      select: { imageUrl: true, gallery: { select: { url: true } } },
+    });
+
+    const result = await db.inventoryPart.deleteMany({
+      where: { id: { in: partIds }, organizationId },
+    });
+
+    // Clean up associated image files
+    const allUrls = parts.flatMap(part => [
+      part.imageUrl,
+      ...part.gallery.map(g => g.url),
+    ]).filter(Boolean) as string[];
+    const uniqueUrls = [...new Set(allUrls)];
+    for (const url of uniqueUrls) {
+      try { await unlink(resolveUploadPath(url)); } catch { /* already gone */ }
+    }
+
+    revalidatePath("/inventory");
+    return { deleted: result.count };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INVENTORY }],
+    audit: ({ result }) => ({
+      action: "inventory.bulkDelete",
+      entity: "InventoryPart",
+      entityId: partIds.join(","),
+      message: `Bulk deleted ${result.deleted} inventory parts`,
+      metadata: { partIds, deleted: result.deleted },
+    }),
+  });
+}
+
 export async function adjustInventoryStock(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const { id, adjustment } = adjustStockSchema.parse(input);

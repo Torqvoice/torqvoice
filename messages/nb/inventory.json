@@ -29,6 +29,15 @@
     "description": "Slette \"{name}\" fra lageret? Dette kan ikke angres.",
     "confirm": "Slett"
   },
+  "bulkDelete": {
+    "title": "Slett valgte deler",
+    "description": "Slette {count, plural, one {# del} other {# deler}} fra lageret? Dette kan ikke angres.",
+    "confirm": "Slett",
+    "selected": "{count, plural, one {# del} other {# deler}} valgt",
+    "clearSelection": "Fjern valg",
+    "deleteSelected": "Slett ({count})",
+    "success": "{count, plural, one {# del} other {# deler}} slettet"
+  },
   "markup": {
     "title": "Bruk påslag på alle deler",
     "multiplierLabel": "Påslagsmultiplikator",
