@@ -432,13 +432,14 @@ export function VehicleDetailClient({
       totalAmount: 0,
     })
     if (result.success && result.data) {
+      const newServiceId = result.data.id
       // Mark selected observations as resolved, linked to the new work order
       await Promise.all(
         findingIds.map((id) =>
-          resolveFinding({ id, resolvedServiceRecordId: result.data.id })
+          resolveFinding({ id, resolvedServiceRecordId: newServiceId })
         )
       )
-      router.push(`/vehicles/${vehicle.id}/service/${result.data.id}`)
+      router.push(`/vehicles/${vehicle.id}/service/${newServiceId}`)
     } else {
       modal.open('error', 'Error', result.error || 'Failed to create work order')
       setCreatingWorkOrder(false)

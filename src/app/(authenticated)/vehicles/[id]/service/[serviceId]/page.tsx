@@ -177,6 +177,13 @@ export default async function ServiceDetailPage({
     .filter((a) => a.category === "document" || a.category === "diagnostic")
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }));
 
+  // Fetch open observations for this vehicle (not just this service)
+  const openObservations = await db.vehicleFinding.findMany({
+    where: { vehicleId: id, status: { not: "resolved" } },
+    select: { id: true, description: true, severity: true, notes: true },
+    orderBy: { createdAt: "desc" },
+  });
+
   return (
     <div className="flex h-svh flex-col overflow-hidden">
       <PageHeader />
@@ -210,6 +217,7 @@ export default async function ServiceDetailPage({
         defaultDueDays={defaultDueDays}
         statusReports={(statusReportsResult.success && statusReportsResult.data ? statusReportsResult.data : []).map(r => ({ ...r, createdAt: r.createdAt.toISOString(), expiresAt: r.expiresAt?.toISOString() || null, feedbackAt: r.feedbackAt?.toISOString() || null, sentAt: r.sentAt?.toISOString() || null }))}
         findings={findingsResult.success && findingsResult.data ? findingsResult.data : []}
+        openObservations={openObservations}
       />
     </div>
   );

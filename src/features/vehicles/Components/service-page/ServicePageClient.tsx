@@ -27,6 +27,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { CalendarIcon, AlertTriangle } from 'lucide-react'
+import { resolveFinding } from '@/features/vehicles/Actions/findingActions'
 import { updateServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { LaborPresetPickerDialog } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import type { LaborPresetOption } from './service-page-types'
@@ -74,6 +75,7 @@ export function ServicePageClient({
   statusReports = [],
   initialTab,
   findings = [],
+  openObservations = [],
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -153,6 +155,33 @@ export function ServicePageClient({
 
   useHardwareScanner({ onScan: handleBarcodeScan, enabled: activeTab === 'details' })
 
+  // Observations banner state
+  const tf = useTranslations('vehicles.findings')
+  const [dismissedObservations, setDismissedObservations] = useState(false)
+  const [addingObservations, setAddingObservations] = useState(false)
+
+  const handleAddObservationsToWorkOrder = async (selectedIds: string[]) => {
+    const selected = openObservations.filter((o) => selectedIds.includes(o.id))
+    if (selected.length === 0) return
+    setAddingObservations(true)
+    const newItems = selected.map((o) => ({
+      description: `${o.description}${o.notes ? ` - ${o.notes}` : ''}`,
+      hours: 0,
+      rate: 0,
+      total: 0,
+      pricingType: 'hourly' as const,
+    }))
+    formState.dirtySetLaborItems((prev) => [...newItems, ...prev])
+    // Resolve the added observations
+    await Promise.all(
+      selected.map((o) => resolveFinding({ id: o.id, resolvedServiceRecordId: record.id }))
+    )
+    setDismissedObservations(true)
+    setAddingObservations(false)
+    toast.success(tf('observationsAdded', { count: selected.length }))
+    router.refresh()
+  }
+
   const handleSelectPreset = (preset: LaborPresetOption) => {
     const newItems = preset.items.map((item) => ({
       description: item.description,
@@ -214,6 +243,11 @@ export function ServicePageClient({
                 aiEnabled={aiEnabled}
                 vehicleId={vehicleId}
                 findings={findings}
+                openObservations={openObservations}
+                onAddObservations={handleAddObservationsToWorkOrder}
+                onDismissObservations={() => setDismissedObservations(true)}
+                dismissedObservations={dismissedObservations}
+                addingObservations={addingObservations}
               />
             }
             rightColumn={

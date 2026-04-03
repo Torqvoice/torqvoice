@@ -1,6 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { AlertTriangle, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { PartsEditor } from '../service-edit/PartsEditor'
 import { LaborEditor } from '../service-edit/LaborEditor'
 import { NotesSection } from '../service-edit/NotesSection'
@@ -25,6 +29,11 @@ interface DetailsLeftColumnProps {
   aiEnabled?: boolean
   vehicleId: string
   findings?: { id: string; description: string; severity: string; status: string; notes: string | null }[]
+  openObservations?: { id: string; description: string; severity: string; notes: string | null }[]
+  onAddObservations?: (selectedIds: string[]) => Promise<void>
+  onDismissObservations?: () => void
+  dismissedObservations?: boolean
+  addingObservations?: boolean
 }
 
 export function DetailsLeftColumn({
@@ -40,11 +49,63 @@ export function DetailsLeftColumn({
   aiEnabled,
   vehicleId,
   findings = [],
+  openObservations = [],
+  onAddObservations,
+  onDismissObservations,
+  dismissedObservations = false,
+  addingObservations = false,
 }: DetailsLeftColumnProps) {
+  const tf = useTranslations('vehicles.findings')
   const [openFindingForm, setOpenFindingForm] = useState(false)
+  const [selectedObs, setSelectedObs] = useState<Set<string>>(() => new Set(openObservations.map((o) => o.id)))
+
+  const showBanner = openObservations.length > 0 && !dismissedObservations
+
+  const toggleObs = (id: string) => {
+    setSelectedObs((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   return (
     <div className="space-y-3">
+      {showBanner && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-950/30">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500" />
+              <p className="text-sm font-medium">{tf('vehicleHasObservations', { count: openObservations.length })}</p>
+            </div>
+            <button type="button" onClick={onDismissObservations} className="shrink-0 text-muted-foreground hover:text-foreground">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="mt-2 space-y-1">
+            {openObservations.map((o) => (
+              <label key={o.id} className="flex items-start gap-2 rounded px-1 py-0.5 text-sm hover:bg-amber-100 dark:hover:bg-amber-900/30 cursor-pointer">
+                <Checkbox
+                  checked={selectedObs.has(o.id)}
+                  onCheckedChange={() => toggleObs(o.id)}
+                  className="mt-0.5"
+                />
+                <span>{o.description}{o.notes ? <span className="text-muted-foreground"> — {o.notes}</span> : null}</span>
+              </label>
+            ))}
+          </div>
+          <div className="mt-2 flex gap-2">
+            <Button type="button" size="sm" disabled={selectedObs.size === 0 || addingObservations} onClick={() => onAddObservations?.(Array.from(selectedObs))}>
+              {addingObservations ? <span className="mr-1 h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" /> : null}
+              {tf('addToWorkOrder', { count: selectedObs.size })}
+            </Button>
+            <Button type="button" size="sm" variant="ghost" onClick={onDismissObservations}>
+              {tf('dismiss')}
+            </Button>
+          </div>
+        </div>
+      )}
       <PartsEditor
         partItems={formState.partItems}
         setPartItems={formState.dirtySetPartItems}
