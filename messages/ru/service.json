@@ -107,6 +107,7 @@
     "descriptionPlaceholder": "Описание *",
     "subtotal": "Подитог работ: {amount}",
     "addService": "Добавить услугу",
+    "addFinding": "Добавить замечание",
     "qty": "кол-во",
     "qtyOrHours": "Услуга / Часы",
     "hourlyTag": "н/ч",

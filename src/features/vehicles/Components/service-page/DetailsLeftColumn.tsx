@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import { PartsEditor } from '../service-edit/PartsEditor'
 import { LaborEditor } from '../service-edit/LaborEditor'
 import { NotesSection } from '../service-edit/NotesSection'
@@ -38,6 +41,8 @@ export function DetailsLeftColumn({
   vehicleId,
   findings = [],
 }: DetailsLeftColumnProps) {
+  const [openFindingForm, setOpenFindingForm] = useState(false)
+
   return (
     <div className="space-y-3">
       <PartsEditor
@@ -59,6 +64,7 @@ export function DetailsLeftColumn({
         defaultLaborRate={defaultLaborRate}
         hasPresets={hasPresets}
         onOpenPresets={onOpenPresets}
+        onAddFinding={() => setOpenFindingForm(true)}
       />
       <NotesSection
         initialData={formState.initialData}
@@ -70,6 +76,8 @@ export function DetailsLeftColumn({
         vehicleId={vehicleId}
         serviceRecordId={record.id}
         findings={findings}
+        externalOpenForm={openFindingForm}
+        onExternalOpenFormHandled={() => setOpenFindingForm(false)}
       />
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         <PaymentsSection

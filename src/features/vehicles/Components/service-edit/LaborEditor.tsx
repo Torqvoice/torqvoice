@@ -4,7 +4,7 @@ import { useRef, useCallback, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { GripVertical, Layers, Plus, Trash2, Wrench } from 'lucide-react'
+import { AlertTriangle, GripVertical, Layers, Plus, Trash2, Wrench } from 'lucide-react'
 import { formatCurrency, getCurrencySymbol } from '@/lib/format'
 import { useTranslations } from 'next-intl'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -36,6 +36,7 @@ interface LaborEditorProps {
   defaultLaborRate: number
   hasPresets?: boolean
   onOpenPresets?: () => void
+  onAddFinding?: () => void
 }
 
 function SortableLaborRow({
@@ -149,6 +150,7 @@ export function LaborEditor({
   defaultLaborRate,
   hasPresets,
   onOpenPresets,
+  onAddFinding,
 }: LaborEditorProps) {
   const t = useTranslations('service.labor')
   const cs = getCurrencySymbol(currencyCode)
@@ -238,6 +240,17 @@ export function LaborEditor({
             <Wrench className="mr-1 h-3.5 w-3.5" />
             <span className="hidden sm:inline">{t('addService')}</span>
           </Button>
+          {onAddFinding && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onAddFinding}
+            >
+              <AlertTriangle className="mr-1 h-3.5 w-3.5 text-amber-500" />
+              <span className="hidden sm:inline">{t('addFinding')}</span>
+            </Button>
+          )}
         </div>
       </div>
 

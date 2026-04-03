@@ -107,6 +107,7 @@
     "descriptionPlaceholder": "Beschrijving *",
     "subtotal": "Arbeidskosten totaal: {amount}",
     "addService": "Add Service",
+    "addFinding": "Bevinding toevoegen",
     "qty": "Qty",
     "qtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",

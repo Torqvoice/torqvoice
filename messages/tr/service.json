@@ -107,6 +107,7 @@
     "descriptionPlaceholder": "Açıklama *",
     "subtotal": "İşçilik Ara Toplamı: {amount}",
     "addService": "Add Service",
+    "addFinding": "Bulgu ekle",
     "qty": "Qty",
     "qtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",

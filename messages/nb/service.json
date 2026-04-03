@@ -107,6 +107,7 @@
     "descriptionPlaceholder": "Beskrivelse *",
     "subtotal": "Arbeid delsum: {amount}",
     "addService": "Add Service",
+    "addFinding": "Legg til funn",
     "qty": "Qty",
     "qtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",

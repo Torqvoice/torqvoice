@@ -107,6 +107,7 @@
     "descriptionPlaceholder": "Descripción *",
     "subtotal": "Subtotal de Mano de Obra: {amount}",
     "addService": "Add Service",
+    "addFinding": "Agregar hallazgo",
     "qty": "Qty",
     "qtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",

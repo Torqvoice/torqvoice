@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,8 @@ interface ServiceFindingsSectionProps {
   vehicleId: string;
   serviceRecordId: string;
   findings: Finding[];
+  externalOpenForm?: boolean;
+  onExternalOpenFormHandled?: () => void;
 }
 
 const severityColors: Record<string, string> = {
@@ -47,12 +49,22 @@ export function ServiceFindingsSection({
   vehicleId,
   serviceRecordId,
   findings,
+  externalOpenForm,
+  onExternalOpenFormHandled,
 }: ServiceFindingsSectionProps) {
   const router = useRouter();
   const t = useTranslations("vehicles.findings");
   const [showForm, setShowForm] = useState(false);
   const [editingFinding, setEditingFinding] = useState<Finding | undefined>();
   const [loading, setLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (externalOpenForm) {
+      setEditingFinding(undefined);
+      setShowForm(true);
+      onExternalOpenFormHandled?.();
+    }
+  }, [externalOpenForm, onExternalOpenFormHandled]);
 
   const handleResolve = async (id: string) => {
     setLoading(id);
@@ -74,25 +86,11 @@ export function ServiceFindingsSection({
     setLoading(null);
   };
 
-  const hasFindings = findings.length > 0;
   const openCount = findings.filter((f) => f.status === "open").length;
 
   return (
     <>
-      {!hasFindings ? (
-        <Button
-          size="sm"
-          variant="outline"
-          className="w-full"
-          onClick={() => {
-            setEditingFinding(undefined);
-            setShowForm(true);
-          }}
-        >
-          <AlertTriangle className="mr-1.5 h-3.5 w-3.5 text-amber-500" />
-          {t("addFinding")}
-        </Button>
-      ) : (
+      {findings.length > 0 && (
         <div className="rounded-lg border bg-card p-3">
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-2">

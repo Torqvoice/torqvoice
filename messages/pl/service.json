@@ -107,6 +107,7 @@
     "descriptionPlaceholder": "Opis *",
     "subtotal": "Razem Praca: {amount}",
     "addService": "Add Service",
+    "addFinding": "Dodaj ustalenie",
     "qty": "Qty",
     "qtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
