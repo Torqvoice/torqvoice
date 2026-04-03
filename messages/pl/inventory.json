@@ -29,6 +29,15 @@
     "description": "Usunąć \"{name}\" z magazynu? Tej operacji nie można cofnąć.",
     "confirm": "Usuń"
   },
+  "bulkDelete": {
+    "title": "Delete Selected Parts",
+    "description": "Delete {count, plural, one {# part} other {# parts}} from inventory? This cannot be undone.",
+    "confirm": "Delete",
+    "selected": "{count, plural, one {# part} other {# parts}} selected",
+    "clearSelection": "Clear",
+    "deleteSelected": "Delete ({count})",
+    "success": "Deleted {count, plural, one {# part} other {# parts}}"
+  },
   "markup": {
     "title": "Zastosuj marżę do wszystkich części",
     "multiplierLabel": "Mnożnik marży",

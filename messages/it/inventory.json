@@ -29,6 +29,15 @@
     "description": "Eliminare \"{name}\" dall'inventario? Questa azione non può essere annullata.",
     "confirm": "Elimina"
   },
+  "bulkDelete": {
+    "title": "Delete Selected Parts",
+    "description": "Delete {count, plural, one {# part} other {# parts}} from inventory? This cannot be undone.",
+    "confirm": "Delete",
+    "selected": "{count, plural, one {# part} other {# parts}} selected",
+    "clearSelection": "Clear",
+    "deleteSelected": "Delete ({count})",
+    "success": "Deleted {count, plural, one {# part} other {# parts}}"
+  },
   "markup": {
     "title": "Applica ricarico a tutti i ricambi",
     "multiplierLabel": "Moltiplicatore di ricarico",
