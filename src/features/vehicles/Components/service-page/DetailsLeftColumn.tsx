@@ -122,7 +122,7 @@ export function DetailsLeftColumn({
 
       {/* Existing observations dialog */}
       <Dialog open={showExistingDialog} onOpenChange={setShowExistingDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{tf('vehicleHasObservations', { count: otherObservations.length })}</DialogTitle>
           </DialogHeader>

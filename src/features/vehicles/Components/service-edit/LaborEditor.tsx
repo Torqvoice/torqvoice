@@ -254,7 +254,7 @@ export function LaborEditor({
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button type="button" variant="outline" size="sm">
-                  <AlertTriangle className="mr-1 h-3.5 w-3.5 text-amber-500" />
+                  <AlertTriangle className="mr-1 h-3.5 w-3.5" />
                   <span className="hidden sm:inline">{t('addFinding')}</span>
                   <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-medium text-white">
                     {openObservationsCount}
@@ -283,7 +283,7 @@ export function LaborEditor({
               size="sm"
               onClick={onAddFinding}
             >
-              <AlertTriangle className="mr-1 h-3.5 w-3.5 text-amber-500" />
+              <AlertTriangle className="mr-1 h-3.5 w-3.5" />
               <span className="hidden sm:inline">{t('addFinding')}</span>
             </Button>
           ) : null}
