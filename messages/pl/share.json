@@ -55,7 +55,7 @@
     "diagnosticReports": "Raporty diagnostyczne ({count})",
     "notes": "Uwagi",
     "diagnosticNotes": "Uwagi diagnostyczne",
-    "findings": "Ustalenia",
+    "findings": "Obserwacje",
     "severity": "Priorytet",
     "findingNotes": "Uwagi",
     "findingSeverityUrgent": "Pilne",

@@ -40,7 +40,7 @@
     "paymentTermsLabel": "Payment Terms",
     "dueDateLabel": "Due Date",
     "diagnosticNotes": "Diagnostic Notes",
-    "findings": "Findings",
+    "findings": "Observations",
     "findingSeverityLabel": "Severity",
     "findingSeverityUrgent": "Urgent",
     "findingSeverityNeedsWork": "Needs Work",

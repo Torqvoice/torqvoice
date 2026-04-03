@@ -55,7 +55,7 @@
     "diagnosticReports": "Diagnostic Reports ({count})",
     "notes": "Notes",
     "diagnosticNotes": "Diagnostic Notes",
-    "findings": "Findings",
+    "findings": "Observations",
     "severity": "Severity",
     "findingNotes": "Notes",
     "findingSeverityUrgent": "Urgent",

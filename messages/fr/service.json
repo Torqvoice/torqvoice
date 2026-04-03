@@ -107,7 +107,7 @@
     "descriptionPlaceholder": "Description *",
     "subtotal": "Sous-total Main-d'œuvre: {amount}",
     "addService": "Add Service",
-    "addFinding": "Ajouter constatation",
+    "addFinding": "Ajouter une observation",
     "qty": "Qty",
     "qtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",

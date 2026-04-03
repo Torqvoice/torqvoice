@@ -55,7 +55,7 @@
     "diagnosticReports": "Tanı Raporları ({count})",
     "notes": "Notlar",
     "diagnosticNotes": "Tanı Notları",
-    "findings": "Bulgular",
+    "findings": "Gözlemler",
     "severity": "Önem",
     "findingNotes": "Notlar",
     "findingSeverityUrgent": "Acil",

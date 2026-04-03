@@ -107,7 +107,7 @@
     "descriptionPlaceholder": "Beschreibung *",
     "subtotal": "Arbeitssumme: {amount}",
     "addService": "Add Service",
-    "addFinding": "Befund hinzufügen",
+    "addFinding": "Beobachtung hinzufügen",
     "qty": "Qty",
     "qtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",

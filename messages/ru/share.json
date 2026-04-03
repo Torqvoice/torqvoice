@@ -55,7 +55,7 @@
     "diagnosticReports": "Диагностические отчёты ({count})",
     "notes": "Заметки",
     "diagnosticNotes": "Диагностические заметки",
-    "findings": "Замечания",
+    "findings": "Наблюдения",
     "severity": "Приоритет",
     "findingNotes": "Примечания",
     "findingSeverityUrgent": "Срочно",

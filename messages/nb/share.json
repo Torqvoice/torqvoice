@@ -55,7 +55,7 @@
     "diagnosticReports": "Diagnoserapporter ({count})",
     "notes": "Notater",
     "diagnosticNotes": "Diagnosenotater",
-    "findings": "Funn",
+    "findings": "Observasjoner",
     "severity": "Alvorlighet",
     "findingNotes": "Merknader",
     "findingSeverityUrgent": "Haster",

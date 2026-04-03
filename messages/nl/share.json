@@ -55,7 +55,7 @@
     "diagnosticReports": "Diagnoserapporten ({count})",
     "notes": "Notities",
     "diagnosticNotes": "Diagnosenotities",
-    "findings": "Bevindingen",
+    "findings": "Observaties",
     "severity": "Ernst",
     "findingNotes": "Opmerkingen",
     "findingSeverityUrgent": "Urgent",
