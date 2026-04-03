@@ -630,7 +630,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                     type="number"
                     min="0"
                     step="1"
-                    defaultValue={part?.quantity ?? 0}
+                    defaultValue={part?.quantity ?? 1}
                   />
                 </div>
                 <div className="space-y-2">
