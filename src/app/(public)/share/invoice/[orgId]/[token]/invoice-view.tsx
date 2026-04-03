@@ -132,7 +132,7 @@ function isFieldVisible(config: InvoiceLayoutConfig | undefined, sectionId: stri
 }
 
 function getSectionOrder(config: InvoiceLayoutConfig | undefined): string[] {
-  if (!config) return ['header', 'customer', 'vehicle', 'service', 'parts_table', 'labor_table', 'totals', 'general', 'notes', 'diagnostic_notes', 'findings', 'bank_account', 'footer']
+  if (!config) return ['header', 'customer', 'vehicle', 'service', 'parts_table', 'labor_table', 'findings', 'totals', 'general', 'notes', 'diagnostic_notes', 'bank_account', 'footer']
   return [...config.sections].sort((a, b) => a.order - b.order).map(s => s.id)
 }
 
