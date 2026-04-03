@@ -30,13 +30,13 @@
     "confirm": "Excluir"
   },
   "bulkDelete": {
-    "title": "Delete Selected Parts",
-    "description": "Delete {count, plural, one {# part} other {# parts}} from inventory? This cannot be undone.",
-    "confirm": "Delete",
-    "selected": "{count, plural, one {# part} other {# parts}} selected",
-    "clearSelection": "Clear",
-    "deleteSelected": "Delete ({count})",
-    "success": "Deleted {count, plural, one {# part} other {# parts}}"
+    "title": "Excluir peças selecionadas",
+    "description": "Excluir {count, plural, one {# peça} other {# peças}} do estoque? Esta ação não pode ser desfeita.",
+    "confirm": "Excluir",
+    "selected": "{count, plural, one {# peça selecionada} other {# peças selecionadas}}",
+    "clearSelection": "Limpar",
+    "deleteSelected": "Excluir ({count})",
+    "success": "{count, plural, one {# peça excluída} other {# peças excluídas}}"
   },
   "markup": {
     "title": "Aplicar margem a todas as peças",

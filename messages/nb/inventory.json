@@ -30,13 +30,13 @@
     "confirm": "Slett"
   },
   "bulkDelete": {
-    "title": "Delete Selected Parts",
-    "description": "Delete {count, plural, one {# part} other {# parts}} from inventory? This cannot be undone.",
-    "confirm": "Delete",
-    "selected": "{count, plural, one {# part} other {# parts}} selected",
-    "clearSelection": "Clear",
-    "deleteSelected": "Delete ({count})",
-    "success": "Deleted {count, plural, one {# part} other {# parts}}"
+    "title": "Slett valgte deler",
+    "description": "Slette {count, plural, one {# del} other {# deler}} fra lageret? Dette kan ikke angres.",
+    "confirm": "Slett",
+    "selected": "{count, plural, one {# del} other {# deler}} valgt",
+    "clearSelection": "Fjern valg",
+    "deleteSelected": "Slett ({count})",
+    "success": "{count, plural, one {# del} other {# deler}} slettet"
   },
   "markup": {
     "title": "Bruk påslag på alle deler",

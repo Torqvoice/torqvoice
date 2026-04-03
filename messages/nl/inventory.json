@@ -30,13 +30,13 @@
     "confirm": "Verwijderen"
   },
   "bulkDelete": {
-    "title": "Delete Selected Parts",
-    "description": "Delete {count, plural, one {# part} other {# parts}} from inventory? This cannot be undone.",
-    "confirm": "Delete",
-    "selected": "{count, plural, one {# part} other {# parts}} selected",
-    "clearSelection": "Clear",
-    "deleteSelected": "Delete ({count})",
-    "success": "Deleted {count, plural, one {# part} other {# parts}}"
+    "title": "Geselecteerde onderdelen verwijderen",
+    "description": "{count, plural, one {# onderdeel} other {# onderdelen}} uit de voorraad verwijderen? Dit kan niet ongedaan worden gemaakt.",
+    "confirm": "Verwijderen",
+    "selected": "{count, plural, one {# onderdeel} other {# onderdelen}} geselecteerd",
+    "clearSelection": "Wissen",
+    "deleteSelected": "Verwijderen ({count})",
+    "success": "{count, plural, one {# onderdeel} other {# onderdelen}} verwijderd"
   },
   "markup": {
     "title": "Opslag toepassen op alle onderdelen",

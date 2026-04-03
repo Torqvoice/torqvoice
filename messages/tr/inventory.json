@@ -30,13 +30,13 @@
     "confirm": "Sil"
   },
   "bulkDelete": {
-    "title": "Delete Selected Parts",
-    "description": "Delete {count, plural, one {# part} other {# parts}} from inventory? This cannot be undone.",
-    "confirm": "Delete",
-    "selected": "{count, plural, one {# part} other {# parts}} selected",
-    "clearSelection": "Clear",
-    "deleteSelected": "Delete ({count})",
-    "success": "Deleted {count, plural, one {# part} other {# parts}}"
+    "title": "Seçili parçaları sil",
+    "description": "Envanterden {count, plural, one {# parça} other {# parça}} silinsin mi? Bu işlem geri alınamaz.",
+    "confirm": "Sil",
+    "selected": "{count, plural, one {# parça} other {# parça}} seçili",
+    "clearSelection": "Temizle",
+    "deleteSelected": "Sil ({count})",
+    "success": "{count, plural, one {# parça} other {# parça}} silindi"
   },
   "markup": {
     "title": "Tüm parçalara kâr marjı uygula",

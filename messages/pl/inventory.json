@@ -30,13 +30,13 @@
     "confirm": "Usuń"
   },
   "bulkDelete": {
-    "title": "Delete Selected Parts",
-    "description": "Delete {count, plural, one {# part} other {# parts}} from inventory? This cannot be undone.",
-    "confirm": "Delete",
-    "selected": "{count, plural, one {# part} other {# parts}} selected",
-    "clearSelection": "Clear",
-    "deleteSelected": "Delete ({count})",
-    "success": "Deleted {count, plural, one {# part} other {# parts}}"
+    "title": "Usuń zaznaczone części",
+    "description": "Usunąć {count, plural, one {# część} few {# części} other {# części}} z magazynu? Tej operacji nie można cofnąć.",
+    "confirm": "Usuń",
+    "selected": "{count, plural, one {# część zaznaczona} few {# części zaznaczone} other {# części zaznaczonych}}",
+    "clearSelection": "Wyczyść",
+    "deleteSelected": "Usuń ({count})",
+    "success": "Usunięto {count, plural, one {# część} few {# części} other {# części}}"
   },
   "markup": {
     "title": "Zastosuj marżę do wszystkich części",

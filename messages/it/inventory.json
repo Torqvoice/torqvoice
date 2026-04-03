@@ -30,13 +30,13 @@
     "confirm": "Elimina"
   },
   "bulkDelete": {
-    "title": "Delete Selected Parts",
-    "description": "Delete {count, plural, one {# part} other {# parts}} from inventory? This cannot be undone.",
-    "confirm": "Delete",
-    "selected": "{count, plural, one {# part} other {# parts}} selected",
-    "clearSelection": "Clear",
-    "deleteSelected": "Delete ({count})",
-    "success": "Deleted {count, plural, one {# part} other {# parts}}"
+    "title": "Elimina ricambi selezionati",
+    "description": "Eliminare {count, plural, one {# ricambio} other {# ricambi}} dall'inventario? Questa azione non può essere annullata.",
+    "confirm": "Elimina",
+    "selected": "{count, plural, one {# ricambio selezionato} other {# ricambi selezionati}}",
+    "clearSelection": "Annulla selezione",
+    "deleteSelected": "Elimina ({count})",
+    "success": "{count, plural, one {# ricambio eliminato} other {# ricambi eliminati}}"
   },
   "markup": {
     "title": "Applica ricarico a tutti i ricambi",
