@@ -24,17 +24,23 @@ export async function aiAnalyzePartImage(imageDataUris: string | string[]) {
       const uris = Array.isArray(imageDataUris) ? imageDataUris : [imageDataUris];
       const imageCount = uris.length;
 
-      const systemPrompt = `You are an expert automotive parts identifier. Analyze the ${imageCount > 1 ? `${imageCount} images` : "image"} of a part or its packaging and extract as much information as possible. ${imageCount > 1 ? "The images show the same part from different angles. Combine information from all images." : ""} Return ONLY valid JSON with these fields (omit fields you cannot determine):
+      const langInstruction = locale !== "en"
+        ? `IMPORTANT: The user's language is ${langName}. You MUST translate the "name", "category", and "description" fields into ${langName}, regardless of what language appears on the packaging or part. For example, if the packaging is in German but the user's language is Norwegian, translate to Norwegian. Keep "partNumber", "barcode", and "supplier" in their original form — do NOT translate those.`
+        : "";
+
+      const systemPrompt = `You are an expert automotive parts identifier. Analyze the ${imageCount > 1 ? `${imageCount} images` : "image"} of a part or its packaging and extract as much information as possible. ${imageCount > 1 ? "The images show the same part from different angles. Combine information from all images." : ""}
+
+${langInstruction}
+
+Return ONLY valid JSON with these fields (omit fields you cannot determine):
 {
-  "name": "part name",
+  "name": "part name${locale !== "en" ? ` (in ${langName})` : ""}",
   "partNumber": "manufacturer part number",
   "barcode": "barcode/UPC/EAN number if visible",
-  "category": "part category (e.g. Brakes, Filters, Engine, Electrical)",
-  "description": "brief description of the part",
+  "category": "part category${locale !== "en" ? ` (in ${langName})` : ""} (e.g. Brakes, Filters, Engine, Electrical)",
+  "description": "brief description of the part${locale !== "en" ? ` (in ${langName})` : ""}",
   "supplier": "manufacturer or brand name"
-}
-
-${locale !== "en" ? `Respond with values in ${langName} where appropriate (name, category, description). Keep partNumber, barcode, and supplier in their original form.` : ""}`;
+}`;
 
       const userText = imageCount > 1
         ? `Analyze these ${imageCount} images of the same automotive/repair part from different angles and extract all identifiable information.`
