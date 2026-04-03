@@ -55,7 +55,12 @@
     "diagnosticReports": "Tanı Raporları ({count})",
     "notes": "Notlar",
     "diagnosticNotes": "Tanı Notları",
-    "findings": "Bekleyen bulgular",
+    "findings": "Bulgular",
+    "severity": "Önem",
+    "findingNotes": "Notlar",
+    "findingSeverityUrgent": "Acil",
+    "findingSeverityNeedsWork": "Onarım gerekli",
+    "findingSeverityMonitor": "İzle",
     "tel": "Tel: {phone}"
   },
   "quote": {

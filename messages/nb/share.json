@@ -55,7 +55,12 @@
     "diagnosticReports": "Diagnoserapporter ({count})",
     "notes": "Notater",
     "diagnosticNotes": "Diagnosenotater",
-    "findings": "Utestående funn",
+    "findings": "Funn",
+    "severity": "Alvorlighet",
+    "findingNotes": "Merknader",
+    "findingSeverityUrgent": "Haster",
+    "findingSeverityNeedsWork": "Trenger arbeid",
+    "findingSeverityMonitor": "Overvåke",
     "tel": "Tlf: {phone}"
   },
   "quote": {

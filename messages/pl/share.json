@@ -55,7 +55,12 @@
     "diagnosticReports": "Raporty diagnostyczne ({count})",
     "notes": "Uwagi",
     "diagnosticNotes": "Uwagi diagnostyczne",
-    "findings": "Zaległe ustalenia",
+    "findings": "Ustalenia",
+    "severity": "Priorytet",
+    "findingNotes": "Uwagi",
+    "findingSeverityUrgent": "Pilne",
+    "findingSeverityNeedsWork": "Wymaga naprawy",
+    "findingSeverityMonitor": "Monitorować",
     "tel": "Tel: {phone}"
   },
   "quote": {

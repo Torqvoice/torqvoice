@@ -55,7 +55,12 @@
     "diagnosticReports": "Diagnostic Reports ({count})",
     "notes": "Notes",
     "diagnosticNotes": "Diagnostic Notes",
-    "findings": "Outstanding Findings",
+    "findings": "Findings",
+    "severity": "Severity",
+    "findingNotes": "Notes",
+    "findingSeverityUrgent": "Urgent",
+    "findingSeverityNeedsWork": "Needs Work",
+    "findingSeverityMonitor": "Monitor",
     "tel": "Tel: {phone}"
   },
   "quote": {

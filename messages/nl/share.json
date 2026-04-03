@@ -55,7 +55,12 @@
     "diagnosticReports": "Diagnoserapporten ({count})",
     "notes": "Notities",
     "diagnosticNotes": "Diagnosenotities",
-    "findings": "Openstaande bevindingen",
+    "findings": "Bevindingen",
+    "severity": "Ernst",
+    "findingNotes": "Opmerkingen",
+    "findingSeverityUrgent": "Urgent",
+    "findingSeverityNeedsWork": "Reparatie nodig",
+    "findingSeverityMonitor": "Monitoren",
     "tel": "Tel: {phone}"
   },
   "quote": {

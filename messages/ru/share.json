@@ -55,7 +55,12 @@
     "diagnosticReports": "Диагностические отчёты ({count})",
     "notes": "Заметки",
     "diagnosticNotes": "Диагностические заметки",
-    "findings": "Нерешённые замечания",
+    "findings": "Замечания",
+    "severity": "Приоритет",
+    "findingNotes": "Примечания",
+    "findingSeverityUrgent": "Срочно",
+    "findingSeverityNeedsWork": "Требует ремонта",
+    "findingSeverityMonitor": "Наблюдение",
     "tel": "Тел: {phone}"
   },
   "quote": {

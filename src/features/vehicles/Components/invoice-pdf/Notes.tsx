@@ -357,58 +357,6 @@ export function DiagnosticNotesSection({
   )
 }
 
-export function FindingsPdfSection({
-  findings,
-  fontFamily,
-  styles,
-  labels,
-}: {
-  findings: Array<{ description: string; severity: string; notes: string | null }>
-  fontFamily: string
-  styles: Record<string, Style>
-  labels: Record<string, string>
-}) {
-  const fontBold = getFontBold(fontFamily)
-  if (!findings || findings.length === 0) return null
-
-  const severityLabels: Record<string, string> = {
-    urgent: labels.findingSeverityUrgent || 'Urgent',
-    needs_work: labels.findingSeverityNeedsWork || 'Needs Work',
-    monitor: labels.findingSeverityMonitor || 'Monitor',
-  }
-
-  const severityColors: Record<string, string> = {
-    urgent: '#ef4444',
-    needs_work: '#f59e0b',
-    monitor: '#3b82f6',
-  }
-
-  return (
-    <View wrap={false} style={{ ...styles.notesSection, marginTop: 8 }}>
-      <Text style={styles.notesLabel}>{labels.findings || 'Outstanding Findings'}</Text>
-      {findings.map((f, i) => (
-        <View key={i} style={{ flexDirection: 'row', marginBottom: 4, gap: 6 }}>
-          <Text style={{
-            fontSize: 7,
-            color: severityColors[f.severity] || '#666',
-            fontFamily: fontBold,
-            textTransform: 'uppercase',
-            width: 55,
-            paddingTop: 1,
-          }}>
-            {severityLabels[f.severity] || f.severity}
-          </Text>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 9, color: '#333', lineHeight: 1.4 }}>{f.description}</Text>
-            {f.notes && (
-              <Text style={{ fontSize: 8, color: '#666', lineHeight: 1.4 }}>{f.notes}</Text>
-            )}
-          </View>
-        </View>
-      ))}
-    </View>
-  )
-}
 
 // ---------------------------------------------------------------------------
 // Composite Notes component – kept for backward compatibility

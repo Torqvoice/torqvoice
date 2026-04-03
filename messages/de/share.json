@@ -55,7 +55,12 @@
     "diagnosticReports": "Diagnoseberichte ({count})",
     "notes": "Hinweise",
     "diagnosticNotes": "Diagnosehinweise",
-    "findings": "Offene Befunde",
+    "findings": "Befunde",
+    "severity": "Schweregrad",
+    "findingNotes": "Hinweise",
+    "findingSeverityUrgent": "Dringend",
+    "findingSeverityNeedsWork": "Reparaturbedarf",
+    "findingSeverityMonitor": "Beobachten",
     "tel": "Tel: {phone}"
   },
   "quote": {

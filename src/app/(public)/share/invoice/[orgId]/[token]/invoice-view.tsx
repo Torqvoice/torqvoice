@@ -978,24 +978,33 @@ export function InvoiceView({
             case 'findings':
               if (!findings || findings.length === 0) return null
               return (
-                <div key="findings" className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30">
-                  <p className="mb-2 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('findings', { defaultValue: 'Outstanding Findings' })}</p>
-                  <div className="space-y-2">
-                    {findings.map((f, i) => {
-                      const severityColor = f.severity === 'urgent' ? 'text-red-600' : f.severity === 'needs_work' ? 'text-amber-600' : 'text-blue-600'
-                      const severityLabel = f.severity === 'urgent' ? 'Urgent' : f.severity === 'needs_work' ? 'Needs Work' : 'Monitor'
-                      return (
-                        <div key={i} className="flex gap-2">
-                          <span className={`shrink-0 text-xs font-semibold uppercase ${severityColor}`} style={{ width: '70px', paddingTop: '2px' }}>
-                            {severityLabel}
-                          </span>
-                          <div>
-                            <p className="text-sm text-gray-800 dark:text-gray-200">{f.description}</p>
-                            {f.notes && <p className="text-xs text-gray-500 dark:text-gray-400">{f.notes}</p>}
-                          </div>
-                        </div>
-                      )
-                    })}
+                <div key="findings" className="mt-6">
+                  <h4 className="mb-3 font-semibold">{t('findings', { defaultValue: 'Findings' })}</h4>
+                  <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
+                          <th className="w-[20%] p-2 font-medium">{t('severity', { defaultValue: 'Severity' })}</th>
+                          <th className="p-2 font-medium">{t('description')}</th>
+                          <th className="w-[30%] p-2 font-medium">{t('findingNotes', { defaultValue: 'Notes' })}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {findings.map((f, i) => {
+                          const severityColor = f.severity === 'urgent' ? 'text-red-600 dark:text-red-400' : f.severity === 'needs_work' ? 'text-amber-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400'
+                          const severityLabel = f.severity === 'urgent' ? t('findingSeverityUrgent', { defaultValue: 'Urgent' }) : f.severity === 'needs_work' ? t('findingSeverityNeedsWork', { defaultValue: 'Needs Work' }) : t('findingSeverityMonitor', { defaultValue: 'Monitor' })
+                          return (
+                            <tr key={i}>
+                              <td className="p-2">
+                                <span className={`text-xs font-semibold uppercase ${severityColor}`}>{severityLabel}</span>
+                              </td>
+                              <td className="p-2">{f.description}</td>
+                              <td className="p-2 text-gray-500 dark:text-gray-400">{f.notes || '-'}</td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )

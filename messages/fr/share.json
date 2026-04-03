@@ -55,7 +55,12 @@
     "diagnosticReports": "Rapports de diagnostic ({count})",
     "notes": "Notes",
     "diagnosticNotes": "Notes de diagnostic",
-    "findings": "Constatations en suspens",
+    "findings": "Constatations",
+    "severity": "Gravité",
+    "findingNotes": "Remarques",
+    "findingSeverityUrgent": "Urgent",
+    "findingSeverityNeedsWork": "Réparation nécessaire",
+    "findingSeverityMonitor": "À surveiller",
     "tel": "Tél. : {phone}"
   },
   "quote": {
