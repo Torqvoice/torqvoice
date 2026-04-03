@@ -55,6 +55,7 @@
     "diagnosticReports": "Informes de diagnóstico ({count})",
     "notes": "Notas",
     "diagnosticNotes": "Notas de diagnóstico",
+    "findings": "Hallazgos pendientes",
     "tel": "Tel: {phone}"
   },
   "quote": {

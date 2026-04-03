@@ -52,7 +52,8 @@
       "quotes": "Offertes",
       "inspections": "Keuringen",
       "notes": "Notities",
-      "reminders": "Herinneringen"
+      "reminders": "Herinneringen",
+      "findings": "Bevindingen"
     },
     "noteDeleted": "Notitie verwijderd",
     "noteDeleteError": "Verwijderen mislukt",
@@ -179,6 +180,46 @@
     "noteCreated": "Notitie aangemaakt",
     "titleRequired": "Titel en inhoud zijn verplicht",
     "saveError": "{action} van notitie mislukt"
+  },
+  "findings": {
+    "addFinding": "Bevinding toevoegen",
+    "editTitle": "Bevinding bewerken",
+    "addTitle": "Bevinding toevoegen",
+    "empty": "Nog geen bevindingen.",
+    "descriptionLabel": "Beschrijving *",
+    "descriptionPlaceholder": "bijv. Remblokken voor op minimum",
+    "severityLabel": "Ernst",
+    "notesLabel": "Aanvullende opmerkingen",
+    "notesPlaceholder": "Optionele details...",
+    "table": {
+      "severity": "Ernst",
+      "description": "Beschrijving",
+      "status": "Status",
+      "date": "Datum"
+    },
+    "severity": {
+      "urgent": "Urgent",
+      "needs_work": "Reparatie nodig",
+      "monitor": "Monitoren"
+    },
+    "status": {
+      "open": "Open",
+      "quoted": "Geoffreerd",
+      "resolved": "Opgelost"
+    },
+    "edit": "Bewerken",
+    "resolve": "Markeer als opgelost",
+    "delete": "Verwijderen",
+    "findingCreated": "Bevinding toegevoegd",
+    "findingUpdated": "Bevinding bijgewerkt",
+    "findingResolved": "Bevinding opgelost",
+    "findingDeleted": "Bevinding verwijderd",
+    "saveError": "{action} van bevinding mislukt",
+    "deleteError": "Verwijderen van bevinding mislukt",
+    "resolveError": "Oplossen van bevinding mislukt",
+    "showing": "{start}-{end} van {total} weergegeven",
+    "perPage": "per pagina",
+    "page": "Pagina {page} van {totalPages}"
   },
   "form": {
     "editTitle": "Voertuig bewerken",

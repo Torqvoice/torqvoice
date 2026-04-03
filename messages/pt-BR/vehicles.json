@@ -52,7 +52,8 @@
       "quotes": "Orçamentos",
       "inspections": "Inspeções",
       "notes": "Notas",
-      "reminders": "Lembretes"
+      "reminders": "Lembretes",
+      "findings": "Constatações"
     },
     "noteDeleted": "Nota excluída",
     "noteDeleteError": "Falha ao excluir",
@@ -179,6 +180,46 @@
     "noteCreated": "Nota criada",
     "titleRequired": "Título e conteúdo são obrigatórios",
     "saveError": "Falha ao {action} nota"
+  },
+  "findings": {
+    "addFinding": "Adicionar Constatação",
+    "editTitle": "Editar Constatação",
+    "addTitle": "Adicionar Constatação",
+    "empty": "Nenhuma constatação ainda.",
+    "descriptionLabel": "Descrição *",
+    "descriptionPlaceholder": "ex. Pastilhas de freio dianteiras no mínimo",
+    "severityLabel": "Gravidade",
+    "notesLabel": "Observações adicionais",
+    "notesPlaceholder": "Detalhes opcionais...",
+    "table": {
+      "severity": "Gravidade",
+      "description": "Descrição",
+      "status": "Status",
+      "date": "Data"
+    },
+    "severity": {
+      "urgent": "Urgente",
+      "needs_work": "Necessita reparo",
+      "monitor": "Monitorar"
+    },
+    "status": {
+      "open": "Aberto",
+      "quoted": "Orçado",
+      "resolved": "Resolvido"
+    },
+    "edit": "Editar",
+    "resolve": "Marcar como resolvido",
+    "delete": "Excluir",
+    "findingCreated": "Constatação adicionada",
+    "findingUpdated": "Constatação atualizada",
+    "findingResolved": "Constatação resolvida",
+    "findingDeleted": "Constatação excluída",
+    "saveError": "Falha ao {action} constatação",
+    "deleteError": "Falha ao excluir constatação",
+    "resolveError": "Falha ao resolver constatação",
+    "showing": "Exibindo {start}-{end} de {total}",
+    "perPage": "por página",
+    "page": "Página {page} de {totalPages}"
   },
   "form": {
     "editTitle": "Editar Veículo",

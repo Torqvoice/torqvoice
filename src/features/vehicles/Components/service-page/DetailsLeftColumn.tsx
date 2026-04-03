@@ -3,6 +3,7 @@ import { LaborEditor } from '../service-edit/LaborEditor'
 import { NotesSection } from '../service-edit/NotesSection'
 import { PaymentsSection } from '../service-detail/PaymentsSection'
 import { InvoiceSummary } from '../service-detail/InvoiceSummary'
+import { ServiceFindingsSection } from '../service-detail/ServiceFindingsSection'
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
 import type { ServiceDetail } from '../service-detail/types'
@@ -19,6 +20,8 @@ interface DetailsLeftColumnProps {
   onOpenPresets?: () => void
   onScanBarcode?: () => void
   aiEnabled?: boolean
+  vehicleId: string
+  findings?: { id: string; description: string; severity: string; status: string; notes: string | null }[]
 }
 
 export function DetailsLeftColumn({
@@ -32,6 +35,8 @@ export function DetailsLeftColumn({
   onOpenPresets,
   onScanBarcode,
   aiEnabled,
+  vehicleId,
+  findings = [],
 }: DetailsLeftColumnProps) {
   return (
     <div className="space-y-3">
@@ -60,6 +65,11 @@ export function DetailsLeftColumn({
         onNotesChange={formState.handleNotesChange}
         serviceRecordId={record.id}
         aiEnabled={aiEnabled}
+      />
+      <ServiceFindingsSection
+        vehicleId={vehicleId}
+        serviceRecordId={record.id}
+        findings={findings}
       />
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         <PaymentsSection

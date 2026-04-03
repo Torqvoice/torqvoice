@@ -52,7 +52,8 @@
       "quotes": "Devis",
       "inspections": "Inspections",
       "notes": "Notes",
-      "reminders": "Rappels"
+      "reminders": "Rappels",
+      "findings": "Constatations"
     },
     "noteDeleted": "Note supprim\u00e9e",
     "noteDeleteError": "\u00c9chec de la suppression",
@@ -179,6 +180,46 @@
     "noteCreated": "Note cr\u00e9\u00e9e",
     "titleRequired": "Le titre et le contenu sont obligatoires",
     "saveError": "\u00c9chec de {action} de la note"
+  },
+  "findings": {
+    "addFinding": "Ajouter une constatation",
+    "editTitle": "Modifier la constatation",
+    "addTitle": "Ajouter une constatation",
+    "empty": "Aucune constatation pour le moment.",
+    "descriptionLabel": "Description *",
+    "descriptionPlaceholder": "ex. Plaquettes de frein avant au minimum",
+    "severityLabel": "Gravité",
+    "notesLabel": "Notes supplémentaires",
+    "notesPlaceholder": "Détails optionnels...",
+    "table": {
+      "severity": "Gravité",
+      "description": "Description",
+      "status": "Statut",
+      "date": "Date"
+    },
+    "severity": {
+      "urgent": "Urgent",
+      "needs_work": "À réparer",
+      "monitor": "À surveiller"
+    },
+    "status": {
+      "open": "Ouvert",
+      "quoted": "Devisé",
+      "resolved": "Résolu"
+    },
+    "edit": "Modifier",
+    "resolve": "Marquer comme résolu",
+    "delete": "Supprimer",
+    "findingCreated": "Constatation ajoutée",
+    "findingUpdated": "Constatation mise à jour",
+    "findingResolved": "Constatation résolue",
+    "findingDeleted": "Constatation supprimée",
+    "saveError": "Échec de {action} de la constatation",
+    "deleteError": "Échec de la suppression de la constatation",
+    "resolveError": "Échec de la résolution de la constatation",
+    "showing": "Affichage de {start}-{end} sur {total}",
+    "perPage": "par page",
+    "page": "Page {page} sur {totalPages}"
   },
   "form": {
     "editTitle": "Modifier le v\u00e9hicule",

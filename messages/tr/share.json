@@ -55,6 +55,7 @@
     "diagnosticReports": "Tanı Raporları ({count})",
     "notes": "Notlar",
     "diagnosticNotes": "Tanı Notları",
+    "findings": "Bekleyen bulgular",
     "tel": "Tel: {phone}"
   },
   "quote": {

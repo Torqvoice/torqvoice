@@ -48,6 +48,7 @@ export interface InvoiceData {
     pricingType?: string
   }[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>;
+  findings?: Array<{ description: string; severity: string; notes: string | null }>;
   vehicle: {
     make: string
     model: string

@@ -52,7 +52,8 @@
       "quotes": "Предложения",
       "inspections": "Осмотры",
       "notes": "Заметки",
-      "reminders": "Напоминания"
+      "reminders": "Напоминания",
+      "findings": "Замечания"
     },
     "noteDeleted": "Заметка удалена",
     "noteDeleteError": "Не удалось удалить",
@@ -179,6 +180,46 @@
     "noteCreated": "Заметка создана",
     "titleRequired": "Название и содержание обязательны",
     "saveError": "Не удалось {action} заметку"
+  },
+  "findings": {
+    "addFinding": "Добавить замечание",
+    "editTitle": "Редактировать замечание",
+    "addTitle": "Добавить замечание",
+    "empty": "Замечаний пока нет.",
+    "descriptionLabel": "Описание *",
+    "descriptionPlaceholder": "напр. Передние тормозные колодки на минимуме",
+    "severityLabel": "Серьёзность",
+    "notesLabel": "Дополнительные примечания",
+    "notesPlaceholder": "Дополнительные сведения...",
+    "table": {
+      "severity": "Серьёзность",
+      "description": "Описание",
+      "status": "Статус",
+      "date": "Дата"
+    },
+    "severity": {
+      "urgent": "Срочно",
+      "needs_work": "Требует ремонта",
+      "monitor": "Наблюдение"
+    },
+    "status": {
+      "open": "Открыто",
+      "quoted": "Оценено",
+      "resolved": "Решено"
+    },
+    "edit": "Редактировать",
+    "resolve": "Отметить как решённое",
+    "delete": "Удалить",
+    "findingCreated": "Замечание добавлено",
+    "findingUpdated": "Замечание обновлено",
+    "findingResolved": "Замечание решено",
+    "findingDeleted": "Замечание удалено",
+    "saveError": "Не удалось {action} замечание",
+    "deleteError": "Не удалось удалить замечание",
+    "resolveError": "Не удалось решить замечание",
+    "showing": "Показано {start}-{end} из {total}",
+    "perPage": "на странице",
+    "page": "Страница {page} из {totalPages}"
   },
   "form": {
     "editTitle": "Редактировать транспортное средство",

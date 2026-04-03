@@ -52,7 +52,8 @@
       "quotes": "Angebote",
       "inspections": "Inspektionen",
       "notes": "Notizen",
-      "reminders": "Erinnerungen"
+      "reminders": "Erinnerungen",
+      "findings": "Befunde"
     },
     "noteDeleted": "Notiz gel\u00f6scht",
     "noteDeleteError": "Fehler beim L\u00f6schen",
@@ -179,6 +180,46 @@
     "noteCreated": "Notiz erstellt",
     "titleRequired": "Titel und Inhalt sind erforderlich",
     "saveError": "Fehler beim {action} der Notiz"
+  },
+  "findings": {
+    "addFinding": "Befund hinzufügen",
+    "editTitle": "Befund bearbeiten",
+    "addTitle": "Befund hinzufügen",
+    "empty": "Noch keine Befunde.",
+    "descriptionLabel": "Beschreibung *",
+    "descriptionPlaceholder": "z.B. Bremsbeläge vorne am Minimum",
+    "severityLabel": "Schweregrad",
+    "notesLabel": "Zusätzliche Anmerkungen",
+    "notesPlaceholder": "Optionale Details...",
+    "table": {
+      "severity": "Schweregrad",
+      "description": "Beschreibung",
+      "status": "Status",
+      "date": "Datum"
+    },
+    "severity": {
+      "urgent": "Dringend",
+      "needs_work": "Reparaturbedarf",
+      "monitor": "Beobachten"
+    },
+    "status": {
+      "open": "Offen",
+      "quoted": "Angeboten",
+      "resolved": "Erledigt"
+    },
+    "edit": "Bearbeiten",
+    "resolve": "Als erledigt markieren",
+    "delete": "Löschen",
+    "findingCreated": "Befund hinzugefügt",
+    "findingUpdated": "Befund aktualisiert",
+    "findingResolved": "Befund erledigt",
+    "findingDeleted": "Befund gelöscht",
+    "saveError": "Fehler beim {action} des Befunds",
+    "deleteError": "Fehler beim Löschen des Befunds",
+    "resolveError": "Fehler beim Erledigen des Befunds",
+    "showing": "Zeige {start}-{end} von {total}",
+    "perPage": "pro Seite",
+    "page": "Seite {page} von {totalPages}"
   },
   "form": {
     "editTitle": "Fahrzeug bearbeiten",

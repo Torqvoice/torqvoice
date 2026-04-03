@@ -73,6 +73,7 @@ export function ServicePageClient({
   defaultDueDays = 0,
   statusReports = [],
   initialTab,
+  findings = [],
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -211,6 +212,8 @@ export function ServicePageClient({
                 onOpenPresets={() => formState.setShowPresetPicker(true)}
                 onScanBarcode={() => formState.setShowBarcodeScanner(true)}
                 aiEnabled={aiEnabled}
+                vehicleId={vehicleId}
+                findings={findings}
               />
             }
             rightColumn={

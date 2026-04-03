@@ -55,6 +55,7 @@
     "diagnosticReports": "Diagnoseberichte ({count})",
     "notes": "Hinweise",
     "diagnosticNotes": "Diagnosehinweise",
+    "findings": "Offene Befunde",
     "tel": "Tel: {phone}"
   },
   "quote": {

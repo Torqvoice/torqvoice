@@ -52,7 +52,8 @@
       "quotes": "Teklifler",
       "inspections": "Muayeneler",
       "notes": "Notlar",
-      "reminders": "Hatırlatıcılar"
+      "reminders": "Hatırlatıcılar",
+      "findings": "Bulgular"
     },
     "noteDeleted": "Not silindi",
     "noteDeleteError": "Silinemedi",
@@ -179,6 +180,46 @@
     "noteCreated": "Not oluşturuldu",
     "titleRequired": "Başlık ve içerik gereklidir",
     "saveError": "Not {action} başarısız oldu"
+  },
+  "findings": {
+    "addFinding": "Bulgu Ekle",
+    "editTitle": "Bulguyu Düzenle",
+    "addTitle": "Bulgu Ekle",
+    "empty": "Henüz bulgu yok.",
+    "descriptionLabel": "Açıklama *",
+    "descriptionPlaceholder": "örn. Ön fren balataları minimumda",
+    "severityLabel": "Önem Derecesi",
+    "notesLabel": "Ek Notlar",
+    "notesPlaceholder": "İsteğe bağlı detaylar...",
+    "table": {
+      "severity": "Önem Derecesi",
+      "description": "Açıklama",
+      "status": "Durum",
+      "date": "Tarih"
+    },
+    "severity": {
+      "urgent": "Acil",
+      "needs_work": "Onarım Gerekli",
+      "monitor": "İzle"
+    },
+    "status": {
+      "open": "Açık",
+      "quoted": "Teklif Verildi",
+      "resolved": "Çözüldü"
+    },
+    "edit": "Düzenle",
+    "resolve": "Çözüldü olarak işaretle",
+    "delete": "Sil",
+    "findingCreated": "Bulgu eklendi",
+    "findingUpdated": "Bulgu güncellendi",
+    "findingResolved": "Bulgu çözüldü",
+    "findingDeleted": "Bulgu silindi",
+    "saveError": "Bulgu {action} başarısız oldu",
+    "deleteError": "Bulgu silinemedi",
+    "resolveError": "Bulgu çözülemedi",
+    "showing": "{start}-{end} / {total} gösteriliyor",
+    "perPage": "sayfa başına",
+    "page": "Sayfa {page} / {totalPages}"
   },
   "form": {
     "editTitle": "Aracı Düzenle",

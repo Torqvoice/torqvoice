@@ -55,6 +55,7 @@
     "diagnosticReports": "Raporty diagnostyczne ({count})",
     "notes": "Uwagi",
     "diagnosticNotes": "Uwagi diagnostyczne",
+    "findings": "Zaległe ustalenia",
     "tel": "Tel: {phone}"
   },
   "quote": {

@@ -55,6 +55,7 @@
     "diagnosticReports": "Relatórios de Diagnóstico ({count})",
     "notes": "Observações",
     "diagnosticNotes": "Notas de Diagnóstico",
+    "findings": "Constatações pendentes",
     "tel": "Tel: {phone}"
   },
   "quote": {

@@ -52,7 +52,8 @@
       "quotes": "Quotes",
       "inspections": "Inspections",
       "notes": "Notes",
-      "reminders": "Reminders"
+      "reminders": "Reminders",
+      "findings": "Findings"
     },
     "noteDeleted": "Note deleted",
     "noteDeleteError": "Failed to delete",
@@ -179,6 +180,47 @@
     "noteCreated": "Note created",
     "titleRequired": "Title and content are required",
     "saveError": "Failed to {action} note"
+  },
+  "findings": {
+    "sectionTitle": "Findings",
+    "addFinding": "Add Finding",
+    "editTitle": "Edit Finding",
+    "addTitle": "Add Finding",
+    "empty": "No findings yet.",
+    "descriptionLabel": "Description *",
+    "descriptionPlaceholder": "e.g. Brake pads front at minimum",
+    "severityLabel": "Severity",
+    "notesLabel": "Additional Notes",
+    "notesPlaceholder": "Optional details...",
+    "table": {
+      "severity": "Severity",
+      "description": "Description",
+      "status": "Status",
+      "date": "Date"
+    },
+    "severity": {
+      "urgent": "Urgent",
+      "needs_work": "Needs Work",
+      "monitor": "Monitor"
+    },
+    "status": {
+      "open": "Open",
+      "quoted": "Quoted",
+      "resolved": "Resolved"
+    },
+    "edit": "Edit",
+    "resolve": "Mark Resolved",
+    "delete": "Delete",
+    "findingCreated": "Finding added",
+    "findingUpdated": "Finding updated",
+    "findingResolved": "Finding resolved",
+    "findingDeleted": "Finding deleted",
+    "saveError": "Failed to {action} finding",
+    "deleteError": "Failed to delete finding",
+    "resolveError": "Failed to resolve finding",
+    "showing": "Showing {start}-{end} of {total}",
+    "perPage": "per page",
+    "page": "Page {page} of {totalPages}"
   },
   "form": {
     "editTitle": "Edit Vehicle",

@@ -6,7 +6,7 @@ import { Header } from './Header'
 import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable } from './Tables'
 import { Totals } from './Totals'
-import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
+import { NotesOnly, BankAccountSection, DiagnosticNotesSection, FindingsPdfSection } from './Notes'
 import { CustomFields } from './CustomFields'
 import { Footer, AttachmentsFooter } from './Footer'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -243,6 +243,15 @@ export function InvoicePDF({
     diagnostic_notes: (
       <DiagnosticNotesSection
         diagnosticNotes={data.diagnosticNotes}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+      />
+    ),
+
+    findings: (
+      <FindingsPdfSection
+        findings={data.findings || []}
         fontFamily={fontFamily}
         styles={styles}
         labels={labels}

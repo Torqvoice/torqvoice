@@ -63,6 +63,7 @@ export const BUILTIN_SECTIONS = [
   { id: "totals", name: "Totals" },
   { id: "notes", name: "Notes" },
   { id: "diagnostic_notes", name: "Diagnostic Notes" },
+  { id: "findings", name: "Findings" },
   { id: "bank_account", name: "Bank Account" },
   { id: "footer", name: "Footer" },
   { id: "telegram_qr", name: "Telegram QR" },

@@ -55,6 +55,7 @@
     "diagnosticReports": "Diagnoserapporter ({count})",
     "notes": "Notater",
     "diagnosticNotes": "Diagnosenotater",
+    "findings": "Utestående funn",
     "tel": "Tlf: {phone}"
   },
   "quote": {

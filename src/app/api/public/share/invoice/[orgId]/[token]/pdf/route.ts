@@ -75,6 +75,13 @@ export async function GET(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
+    // Fetch findings for this service record (open ones to show on invoice)
+    const findings = await db.vehicleFinding.findMany({
+      where: { serviceRecordId: record.id, status: { not: "resolved" } },
+      select: { description: true, severity: true, notes: true },
+      orderBy: { createdAt: "desc" },
+    });
+
     // Fetch custom field values for this service record
     const customFieldValues = await db.customFieldValue.findMany({
       where: { entityId: record.id, entityType: "service_record" },
@@ -206,7 +213,7 @@ export async function GET(
     }
 
     const element = React.createElement(InvoicePDF, {
-      data: { ...record, customFields },
+      data: { ...record, customFields, findings },
       workshop: {
         name: org?.name || "",
         address: settingsMap["workshop.address"] || "",

@@ -52,7 +52,8 @@
       "quotes": "Preventivi",
       "inspections": "Ispezioni",
       "notes": "Note",
-      "reminders": "Promemoria"
+      "reminders": "Promemoria",
+      "findings": "Riscontri"
     },
     "noteDeleted": "Nota eliminata",
     "noteDeleteError": "Impossibile eliminare",
@@ -179,6 +180,46 @@
     "noteCreated": "Nota creata",
     "titleRequired": "Titolo e contenuto sono obbligatori",
     "saveError": "Impossibile {action} la nota"
+  },
+  "findings": {
+    "addFinding": "Aggiungi Riscontro",
+    "editTitle": "Modifica Riscontro",
+    "addTitle": "Aggiungi Riscontro",
+    "empty": "Nessun riscontro ancora.",
+    "descriptionLabel": "Descrizione *",
+    "descriptionPlaceholder": "es. Pastiglie freno anteriori al minimo",
+    "severityLabel": "Gravità",
+    "notesLabel": "Note aggiuntive",
+    "notesPlaceholder": "Dettagli facoltativi...",
+    "table": {
+      "severity": "Gravità",
+      "description": "Descrizione",
+      "status": "Stato",
+      "date": "Data"
+    },
+    "severity": {
+      "urgent": "Urgente",
+      "needs_work": "Da riparare",
+      "monitor": "Da monitorare"
+    },
+    "status": {
+      "open": "Aperto",
+      "quoted": "Preventivato",
+      "resolved": "Risolto"
+    },
+    "edit": "Modifica",
+    "resolve": "Segna come risolto",
+    "delete": "Elimina",
+    "findingCreated": "Riscontro aggiunto",
+    "findingUpdated": "Riscontro aggiornato",
+    "findingResolved": "Riscontro risolto",
+    "findingDeleted": "Riscontro eliminato",
+    "saveError": "Impossibile {action} il riscontro",
+    "deleteError": "Impossibile eliminare il riscontro",
+    "resolveError": "Impossibile risolvere il riscontro",
+    "showing": "Visualizzando {start}-{end} di {total}",
+    "perPage": "per pagina",
+    "page": "Pagina {page} di {totalPages}"
   },
   "form": {
     "editTitle": "Modifica Veicolo",

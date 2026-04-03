@@ -55,6 +55,7 @@
     "diagnosticReports": "Diagnoserapporten ({count})",
     "notes": "Notities",
     "diagnosticNotes": "Diagnosenotities",
+    "findings": "Openstaande bevindingen",
     "tel": "Tel: {phone}"
   },
   "quote": {

@@ -55,6 +55,7 @@
     "diagnosticReports": "Диагностические отчёты ({count})",
     "notes": "Заметки",
     "diagnosticNotes": "Диагностические заметки",
+    "findings": "Нерешённые замечания",
     "tel": "Тел: {phone}"
   },
   "quote": {

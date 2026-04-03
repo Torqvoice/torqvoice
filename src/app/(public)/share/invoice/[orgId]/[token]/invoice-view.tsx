@@ -132,7 +132,7 @@ function isFieldVisible(config: InvoiceLayoutConfig | undefined, sectionId: stri
 }
 
 function getSectionOrder(config: InvoiceLayoutConfig | undefined): string[] {
-  if (!config) return ['header', 'customer', 'vehicle', 'service', 'parts_table', 'labor_table', 'totals', 'general', 'notes', 'diagnostic_notes', 'bank_account', 'footer']
+  if (!config) return ['header', 'customer', 'vehicle', 'service', 'parts_table', 'labor_table', 'totals', 'general', 'notes', 'diagnostic_notes', 'findings', 'bank_account', 'footer']
   return [...config.sections].sort((a, b) => a.order - b.order).map(s => s.id)
 }
 
@@ -195,6 +195,7 @@ export function InvoiceView({
   portalUrl,
   layoutConfig,
   customFields = [],
+  findings = [],
   telegramBotLink,
   serviceType = "automotive",
 }: {
@@ -218,6 +219,7 @@ export function InvoiceView({
   portalUrl?: string
   layoutConfig?: InvoiceLayoutConfig
   customFields?: CustomField[]
+  findings?: Array<{ description: string; severity: string; notes: string | null }>
   telegramBotLink?: string
   serviceType?: "automotive" | "marine"
 }) {
@@ -970,6 +972,31 @@ export function InvoiceView({
                     className="notes-content text-sm text-gray-600 dark:text-gray-400"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.diagnosticNotes!) }}
                   />
+                </div>
+              )
+
+            case 'findings':
+              if (!findings || findings.length === 0) return null
+              return (
+                <div key="findings" className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30">
+                  <p className="mb-2 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('findings', { defaultValue: 'Outstanding Findings' })}</p>
+                  <div className="space-y-2">
+                    {findings.map((f, i) => {
+                      const severityColor = f.severity === 'urgent' ? 'text-red-600' : f.severity === 'needs_work' ? 'text-amber-600' : 'text-blue-600'
+                      const severityLabel = f.severity === 'urgent' ? 'Urgent' : f.severity === 'needs_work' ? 'Needs Work' : 'Monitor'
+                      return (
+                        <div key={i} className="flex gap-2">
+                          <span className={`shrink-0 text-xs font-semibold uppercase ${severityColor}`} style={{ width: '70px', paddingTop: '2px' }}>
+                            {severityLabel}
+                          </span>
+                          <div>
+                            <p className="text-sm text-gray-800 dark:text-gray-200">{f.description}</p>
+                            {f.notes && <p className="text-xs text-gray-500 dark:text-gray-400">{f.notes}</p>}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
               )
 

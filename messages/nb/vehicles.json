@@ -52,7 +52,8 @@
       "quotes": "Tilbud",
       "inspections": "Inspeksjoner",
       "notes": "Notater",
-      "reminders": "Paminnelser"
+      "reminders": "Paminnelser",
+      "findings": "Funn"
     },
     "noteDeleted": "Notat slettet",
     "noteDeleteError": "Kunne ikke slette",
@@ -179,6 +180,46 @@
     "noteCreated": "Notat opprettet",
     "titleRequired": "Tittel og innhold er pakrevd",
     "saveError": "Kunne ikke {action} notat"
+  },
+  "findings": {
+    "addFinding": "Legg til funn",
+    "editTitle": "Rediger funn",
+    "addTitle": "Legg til funn",
+    "empty": "Ingen funn enna.",
+    "descriptionLabel": "Beskrivelse *",
+    "descriptionPlaceholder": "f.eks. Bremseklosser foran på minimum",
+    "severityLabel": "Alvorlighetsgrad",
+    "notesLabel": "Tilleggsnotater",
+    "notesPlaceholder": "Valgfrie detaljer...",
+    "table": {
+      "severity": "Alvorlighetsgrad",
+      "description": "Beskrivelse",
+      "status": "Status",
+      "date": "Dato"
+    },
+    "severity": {
+      "urgent": "Haster",
+      "needs_work": "Trenger arbeid",
+      "monitor": "Overvåk"
+    },
+    "status": {
+      "open": "Åpen",
+      "quoted": "Tilbudt",
+      "resolved": "Løst"
+    },
+    "edit": "Rediger",
+    "resolve": "Merk som løst",
+    "delete": "Slett",
+    "findingCreated": "Funn lagt til",
+    "findingUpdated": "Funn oppdatert",
+    "findingResolved": "Funn løst",
+    "findingDeleted": "Funn slettet",
+    "saveError": "Kunne ikke {action} funn",
+    "deleteError": "Kunne ikke slette funn",
+    "resolveError": "Kunne ikke løse funn",
+    "showing": "Viser {start}-{end} av {total}",
+    "perPage": "per side",
+    "page": "Side {page} av {totalPages}"
   },
   "form": {
     "editTitle": "Rediger kjoretoy",
