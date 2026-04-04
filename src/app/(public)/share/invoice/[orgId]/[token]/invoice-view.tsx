@@ -868,23 +868,21 @@ export function InvoiceView({
               return (
                 <div key="totals">
                   <div className="mt-6 ml-auto max-w-xs space-y-2">
-                    {partsSubtotal > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">{t('parts')}</span>
-                        <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
-                      </div>
-                    )}
-                    {laborSubtotal > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">{t('labor')}</span>
-                        <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
-                      </div>
-                    )}
                     {partsSubtotal > 0 && laborSubtotal > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">{t('subtotal')}</span>
-                        <span>{formatCurrency(computedSubtotal, currencyCode)}</span>
-                      </div>
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">{t('parts')}</span>
+                          <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">{t('labor')}</span>
+                          <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">{t('subtotal')}</span>
+                          <span>{formatCurrency(computedSubtotal, currencyCode)}</span>
+                        </div>
+                      </>
                     )}
                     {record.discountAmount > 0 && (
                       <div className="flex justify-between text-sm">
