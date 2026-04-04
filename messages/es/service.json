@@ -27,6 +27,7 @@
     "pdf": "PDF",
     "email": "Correo Electrónico",
     "share": "Compartir",
+    "notify": "Notificar",
     "delete": "Eliminar",
     "unpaid": "Sin Pagar",
     "unsavedChanges": "Cambios sin guardar",
@@ -163,7 +164,8 @@
     "balanceDue": "Saldo Pendiente",
     "paidBadge": "PAGADO",
     "entityLabel": "Factura",
-    "emailSubject": "Confirmación de Pago"
+    "emailSubject": "Confirmación de Pago",
+    "statusEmailSubject": "Actualización del estado del servicio"
   },
   "payments": {
     "title": "Pagos",
@@ -317,5 +319,14 @@
     "customTechnicians": "Custom",
     "readMore": "Leer más",
     "setDefaults": "Configurar valores"
+  },
+  "notifications": {
+    "title": "Notificaciones al cliente",
+    "viaSms": "por SMS",
+    "viaEmail": "por correo",
+    "justNow": "Ahora mismo",
+    "minutesAgo": "hace {count}m",
+    "hoursAgo": "hace {count}h",
+    "daysAgo": "hace {count}d"
   }
 }

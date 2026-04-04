@@ -12,6 +12,7 @@ import {
   Globe,
   Loader2,
   Mail,
+  MessageSquare,
   Save,
   Trash2,
 } from 'lucide-react'
@@ -43,6 +44,8 @@ interface UnifiedServiceHeaderProps {
   onDelete: () => void
   onShowEmail: () => void
   onShowShare: () => void
+  onNotifyCustomer?: () => void
+  hasCustomer?: boolean
 }
 
 export function UnifiedServiceHeader({
@@ -62,6 +65,8 @@ export function UnifiedServiceHeader({
   onDelete,
   onShowEmail,
   onShowShare,
+  onNotifyCustomer,
+  hasCustomer = false,
 }: UnifiedServiceHeaderProps) {
   const t = useTranslations('service.header')
   const tabs: { label: string; value: ServiceTab }[] = [
@@ -135,6 +140,12 @@ export function UnifiedServiceHeader({
               <Globe className="h-3.5 w-3.5 sm:mr-1" />
               <span className="hidden sm:inline">{t('share')}</span>
             </Button>
+            {hasCustomer && onNotifyCustomer && (
+              <Button variant="outline" size="sm" onClick={onNotifyCustomer}>
+                <MessageSquare className="h-3.5 w-3.5 sm:mr-1" />
+                <span className="hidden sm:inline">{t('notify')}</span>
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"

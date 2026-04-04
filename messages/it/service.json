@@ -27,6 +27,7 @@
     "pdf": "PDF",
     "email": "Email",
     "share": "Condividi",
+    "notify": "Notifica",
     "delete": "Elimina",
     "unpaid": "Non Pagato",
     "unsavedChanges": "Modifiche non salvate",
@@ -163,7 +164,8 @@
     "balanceDue": "Importo Dovuto",
     "paidBadge": "PAGATO",
     "entityLabel": "Fattura",
-    "emailSubject": "Conferma Pagamento"
+    "emailSubject": "Conferma Pagamento",
+    "statusEmailSubject": "Aggiornamento dello stato del servizio"
   },
   "payments": {
     "title": "Pagamenti",
@@ -317,5 +319,14 @@
     "customTechnicians": "Custom",
     "readMore": "Scopri di più",
     "setDefaults": "Valori predefiniti"
+  },
+  "notifications": {
+    "title": "Notifiche al cliente",
+    "viaSms": "via SMS",
+    "viaEmail": "via e-mail",
+    "justNow": "Proprio ora",
+    "minutesAgo": "{count}m fa",
+    "hoursAgo": "{count}h fa",
+    "daysAgo": "{count}g fa"
   }
 }

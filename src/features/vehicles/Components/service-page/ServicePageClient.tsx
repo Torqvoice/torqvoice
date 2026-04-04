@@ -29,6 +29,9 @@ import {
 import { CalendarIcon, AlertTriangle } from 'lucide-react'
 import { deleteFinding } from '@/features/vehicles/Actions/findingActions'
 import { updateServiceRecord } from '@/features/vehicles/Actions/serviceActions'
+import { getSmsTemplates } from '@/features/sms/Actions/smsActions'
+import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { LaborPresetPickerDialog } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import type { LaborPresetOption } from './service-page-types'
 import { ServiceImagesManager } from '../service-images-manager'
@@ -77,6 +80,7 @@ export function ServicePageClient({
   initialTab,
   findings = [],
   openObservations = [],
+  notificationHistory = [],
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -156,6 +160,32 @@ export function ServicePageClient({
 
   useHardwareScanner({ onScan: handleBarcodeScan, enabled: activeTab === 'details' })
 
+  // Notify customer
+  const statusTemplateKeys: Record<string, string> = {
+    'in-progress': SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
+    'waiting-parts': SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
+    'completed': SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
+  }
+  const [showNotifyDialog, setShowNotifyDialog] = useState(false)
+  const [notifyMessage, setNotifyMessage] = useState('')
+
+  const handleNotifyCustomer = useCallback(async () => {
+    if (!record.vehicle.customer) return
+    const templateKey = statusTemplateKeys[formState.status] || SETTING_KEYS.SMS_TEMPLATE_STATUS_READY
+    const tplResult = await getSmsTemplates()
+    const tplData = tplResult.success && tplResult.data ? tplResult.data : null
+    const tpl = tplData?.templates[templateKey] || SMS_TEMPLATE_DEFAULTS[templateKey] || ''
+    const vehicle = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
+    const message = interpolateSmsTemplate(tpl, {
+      customer_name: record.vehicle.customer.name,
+      vehicle,
+      company_name: tplData?.companyName || '',
+      current_user: tplData?.currentUser || '',
+    })
+    setNotifyMessage(message)
+    setShowNotifyDialog(true)
+  }, [formState.status, record.vehicle.customer, record.vehicle.year, record.vehicle.make, record.vehicle.model]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // Observations state
   const tf = useTranslations('vehicles.findings')
   const [addingObservations, setAddingObservations] = useState(false)
@@ -223,6 +253,8 @@ export function ServicePageClient({
         onDelete={actions.handleDelete}
         onShowEmail={async () => { if (!await checkDates()) return; if (formState.hasUnsavedChanges) await actions.saveNow(); actions.setShowEmailDialog(true) }}
         onShowShare={async () => { if (!await checkDates()) return; if (formState.hasUnsavedChanges) await actions.saveNow(); actions.setShowShareDialog(true) }}
+        onNotifyCustomer={handleNotifyCustomer}
+        hasCustomer={!!record.vehicle.customer}
       />
 
       {activeTab === 'details' && (
@@ -261,6 +293,7 @@ export function ServicePageClient({
                   initialVehicle={initialVehicle}
                   boardTechnicians={boardTechnicians}
                   orgMembers={orgMembers}
+                  notificationHistory={notificationHistory}
                 />
               }
             />
@@ -378,17 +411,30 @@ export function ServicePageClient({
       />
 
       {record.vehicle.customer && (
-        <NotifyCustomerDialog
-          open={actions.showPaymentNotifyDialog}
-          onOpenChange={actions.setShowPaymentNotifyDialog}
-          customer={record.vehicle.customer}
-          defaultMessage={actions.paymentNotifyMessage}
-          emailSubject={t('invoice.emailSubject')}
-          smsEnabled={smsEnabled}
-          emailEnabled={emailEnabled}
-          relatedEntityType="service-record"
-          relatedEntityId={record.id}
-        />
+        <>
+          <NotifyCustomerDialog
+            open={actions.showPaymentNotifyDialog}
+            onOpenChange={actions.setShowPaymentNotifyDialog}
+            customer={record.vehicle.customer}
+            defaultMessage={actions.paymentNotifyMessage}
+            emailSubject={t('invoice.emailSubject')}
+            smsEnabled={smsEnabled}
+            emailEnabled={emailEnabled}
+            relatedEntityType="service-record"
+            relatedEntityId={record.id}
+          />
+          <NotifyCustomerDialog
+            open={showNotifyDialog}
+            onOpenChange={setShowNotifyDialog}
+            customer={record.vehicle.customer}
+            defaultMessage={notifyMessage}
+            emailSubject={t('invoice.statusEmailSubject')}
+            smsEnabled={smsEnabled}
+            emailEnabled={emailEnabled}
+            relatedEntityType="service-record"
+            relatedEntityId={record.id}
+          />
+        </>
       )}
 
       {/* Expired dates check dialog */}
