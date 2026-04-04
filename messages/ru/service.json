@@ -27,6 +27,7 @@
     "pdf": "PDF",
     "email": "Эл. почта",
     "share": "Поделиться",
+    "notify": "Уведомить",
     "delete": "Удалить",
     "unpaid": "Не оплачено",
     "unsavedChanges": "Несохранённые изменения",
@@ -318,5 +319,14 @@
     "customTechnicians": "Custom",
     "readMore": "Подробнее",
     "setDefaults": "Настройки по умолчанию"
+  },
+  "notifications": {
+    "title": "Уведомления клиента",
+    "viaSms": "через SMS",
+    "viaEmail": "по эл. почте",
+    "justNow": "Только что",
+    "minutesAgo": "{count}м назад",
+    "hoursAgo": "{count}ч назад",
+    "daysAgo": "{count}д назад"
   }
 }

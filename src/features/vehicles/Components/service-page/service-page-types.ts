@@ -58,6 +58,7 @@ export interface ServicePageClientProps {
   initialTab?: string
   findings?: { id: string; description: string; severity: string; status: string; notes: string | null }[]
   openObservations?: { id: string; description: string; severity: string; notes: string | null; serviceRecordId: string | null }[]
+  notificationHistory?: { id: string; body: string; status: string; createdAt: string; toNumber: string }[]
 }
 
 export type { ServicePartInput, ServiceLaborInput, ServiceDetail, InitialData, InventoryPartOption, LaborPresetOption }

@@ -177,6 +177,14 @@ export default async function ServiceDetailPage({
     .filter((a) => a.category === "document" || a.category === "diagnostic")
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }));
 
+  // Fetch notification history for this service record
+  const notificationHistory = await db.smsMessage.findMany({
+    where: { relatedEntityId: serviceId, relatedEntityType: "service-record", direction: "outbound" },
+    select: { id: true, body: true, status: true, createdAt: true, toNumber: true },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+  });
+
   // Fetch open observations for this vehicle (not just this service)
   const openObservations = await db.vehicleFinding.findMany({
     where: { vehicleId: id, status: { not: "resolved" } },
@@ -218,6 +226,7 @@ export default async function ServiceDetailPage({
         statusReports={(statusReportsResult.success && statusReportsResult.data ? statusReportsResult.data : []).map(r => ({ ...r, createdAt: r.createdAt.toISOString(), expiresAt: r.expiresAt?.toISOString() || null, feedbackAt: r.feedbackAt?.toISOString() || null, sentAt: r.sentAt?.toISOString() || null }))}
         findings={findingsResult.success && findingsResult.data ? findingsResult.data : []}
         openObservations={openObservations}
+        notificationHistory={notificationHistory.map(n => ({ ...n, createdAt: n.createdAt.toISOString() }))}
       />
     </div>
   );

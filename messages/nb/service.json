@@ -27,6 +27,7 @@
     "pdf": "PDF",
     "email": "E-post",
     "share": "Del",
+    "notify": "Varsle",
     "delete": "Slett",
     "unpaid": "Ubetalt",
     "unsavedChanges": "Ulagrede endringer",
@@ -318,5 +319,14 @@
     "customTechnicians": "Custom",
     "readMore": "Les mer",
     "setDefaults": "Standardinnstillinger"
+  },
+  "notifications": {
+    "title": "Kundevarsler",
+    "viaSms": "via SMS",
+    "viaEmail": "via e-post",
+    "justNow": "Akkurat nå",
+    "minutesAgo": "{count}m siden",
+    "hoursAgo": "{count}t siden",
+    "daysAgo": "{count}d siden"
   }
 }

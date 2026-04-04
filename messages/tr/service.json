@@ -27,6 +27,7 @@
     "pdf": "PDF",
     "email": "E-posta",
     "share": "Paylaş",
+    "notify": "Bildir",
     "delete": "Sil",
     "unpaid": "Ödenmedi",
     "unsavedChanges": "Kaydedilmemiş değişiklikler",
@@ -318,5 +319,14 @@
     "customTechnicians": "Custom",
     "readMore": "Daha fazla",
     "setDefaults": "Varsayılanlar"
+  },
+  "notifications": {
+    "title": "Müşteri bildirimleri",
+    "viaSms": "SMS ile",
+    "viaEmail": "e-posta ile",
+    "justNow": "Az önce",
+    "minutesAgo": "{count}dk önce",
+    "hoursAgo": "{count}sa önce",
+    "daysAgo": "{count}g önce"
   }
 }

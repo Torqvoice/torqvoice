@@ -80,6 +80,7 @@ export function ServicePageClient({
   initialTab,
   findings = [],
   openObservations = [],
+  notificationHistory = [],
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -159,25 +160,18 @@ export function ServicePageClient({
 
   useHardwareScanner({ onScan: handleBarcodeScan, enabled: activeTab === 'details' })
 
-  // Status change notification
+  // Notify customer
   const statusTemplateKeys: Record<string, string> = {
     'in-progress': SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
     'waiting-parts': SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
     'completed': SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
   }
-  const [showStatusNotify, setShowStatusNotify] = useState(false)
-  const [statusNotifyMessage, setStatusNotifyMessage] = useState('')
-  const previousStatusRef = useRef(record.status)
+  const [showNotifyDialog, setShowNotifyDialog] = useState(false)
+  const [notifyMessage, setNotifyMessage] = useState('')
 
-  const handleStatusChange = useCallback(async (newStatus: string) => {
-    formState.dirtySetStatus(newStatus)
-    const prevStatus = previousStatusRef.current
-    previousStatusRef.current = newStatus
-
-    if (prevStatus === newStatus) return
-    const templateKey = statusTemplateKeys[newStatus]
-    if (!record.vehicle.customer || !templateKey) return
-
+  const handleNotifyCustomer = useCallback(async () => {
+    if (!record.vehicle.customer) return
+    const templateKey = statusTemplateKeys[formState.status] || SETTING_KEYS.SMS_TEMPLATE_STATUS_READY
     const tplResult = await getSmsTemplates()
     const tplData = tplResult.success && tplResult.data ? tplResult.data : null
     const tpl = tplData?.templates[templateKey] || SMS_TEMPLATE_DEFAULTS[templateKey] || ''
@@ -188,9 +182,9 @@ export function ServicePageClient({
       company_name: tplData?.companyName || '',
       current_user: tplData?.currentUser || '',
     })
-    setStatusNotifyMessage(message)
-    setShowStatusNotify(true)
-  }, [formState, record.vehicle.customer, record.vehicle.year, record.vehicle.make, record.vehicle.model]) // eslint-disable-line react-hooks/exhaustive-deps
+    setNotifyMessage(message)
+    setShowNotifyDialog(true)
+  }, [formState.status, record.vehicle.customer, record.vehicle.year, record.vehicle.make, record.vehicle.model]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Observations state
   const tf = useTranslations('vehicles.findings')
@@ -259,6 +253,8 @@ export function ServicePageClient({
         onDelete={actions.handleDelete}
         onShowEmail={async () => { if (!await checkDates()) return; if (formState.hasUnsavedChanges) await actions.saveNow(); actions.setShowEmailDialog(true) }}
         onShowShare={async () => { if (!await checkDates()) return; if (formState.hasUnsavedChanges) await actions.saveNow(); actions.setShowShareDialog(true) }}
+        onNotifyCustomer={handleNotifyCustomer}
+        hasCustomer={!!record.vehicle.customer}
       />
 
       {activeTab === 'details' && (
@@ -297,7 +293,7 @@ export function ServicePageClient({
                   initialVehicle={initialVehicle}
                   boardTechnicians={boardTechnicians}
                   orgMembers={orgMembers}
-                  onStatusChange={handleStatusChange}
+                  notificationHistory={notificationHistory}
                 />
               }
             />
@@ -428,10 +424,10 @@ export function ServicePageClient({
             relatedEntityId={record.id}
           />
           <NotifyCustomerDialog
-            open={showStatusNotify}
-            onOpenChange={setShowStatusNotify}
+            open={showNotifyDialog}
+            onOpenChange={setShowNotifyDialog}
             customer={record.vehicle.customer}
-            defaultMessage={statusNotifyMessage}
+            defaultMessage={notifyMessage}
             emailSubject={t('invoice.statusEmailSubject')}
             smsEnabled={smsEnabled}
             emailEnabled={emailEnabled}

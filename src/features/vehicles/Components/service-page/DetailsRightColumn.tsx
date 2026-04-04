@@ -1,4 +1,6 @@
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { MessageSquare } from 'lucide-react'
 import { SharedLinkCard } from '@/components/shared-link-card'
 import { InvoiceDetailsSection } from '../service-edit/InvoiceDetailsSection'
 import { BasicInfoSection } from '../service-edit/BasicInfoSection'
@@ -23,7 +25,7 @@ interface DetailsRightColumnProps {
   initialVehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null }
   boardTechnicians: BoardTechnicianOption[]
   orgMembers?: OrgMemberOption[]
-  onStatusChange?: (status: string) => void
+  notificationHistory?: { id: string; body: string; status: string; createdAt: string; toNumber: string }[]
 }
 
 export function DetailsRightColumn({
@@ -37,7 +39,7 @@ export function DetailsRightColumn({
   initialVehicle,
   boardTechnicians,
   orgMembers,
-  onStatusChange,
+  notificationHistory = [],
 }: DetailsRightColumnProps) {
   const router = useRouter()
 
@@ -62,7 +64,7 @@ export function DetailsRightColumn({
         type={formState.type}
         setType={formState.dirtySetType}
         status={formState.status}
-        setStatus={onStatusChange || formState.dirtySetStatus}
+        setStatus={formState.dirtySetStatus}
         onDirty={formState.markDirty}
         paymentStatus={formState.paymentStatus}
         onTogglePaid={actions.handleTogglePaid}
@@ -116,6 +118,41 @@ export function DetailsRightColumn({
         onValuesReady={formState.onCustomFieldsReady}
         onChange={formState.markDirty}
       />
+      {notificationHistory.length > 0 && (
+        <NotificationHistory notifications={notificationHistory} />
+      )}
+    </div>
+  )
+}
+
+function NotificationHistory({ notifications }: { notifications: { id: string; body: string; status: string; createdAt: string; toNumber: string }[] }) {
+  const t = useTranslations('service.notifications')
+
+  function timeAgo(dateStr: string) {
+    const diff = Date.now() - new Date(dateStr).getTime()
+    const mins = Math.floor(diff / 60000)
+    if (mins < 1) return t('justNow')
+    if (mins < 60) return t('minutesAgo', { count: mins })
+    const hours = Math.floor(mins / 60)
+    if (hours < 24) return t('hoursAgo', { count: hours })
+    const days = Math.floor(hours / 24)
+    return t('daysAgo', { count: days })
+  }
+
+  return (
+    <div className="rounded-lg border p-3">
+      <div className="mb-2 flex items-center gap-2">
+        <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
+        <h3 className="text-sm font-semibold">{t('title')}</h3>
+      </div>
+      <div className="space-y-2">
+        {notifications.map((n) => (
+          <div key={n.id} className="text-xs">
+            <p className="text-muted-foreground">{timeAgo(n.createdAt)} · {t('viaSms')}</p>
+            <p className="mt-0.5 truncate">{n.body}</p>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

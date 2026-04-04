@@ -27,6 +27,7 @@
     "pdf": "PDF",
     "email": "E-Mail",
     "share": "Teilen",
+    "notify": "Benachrichtigen",
     "delete": "Löschen",
     "unpaid": "Unbezahlt",
     "unsavedChanges": "Nicht gespeicherte Änderungen",
@@ -318,5 +319,14 @@
     "customTechnicians": "Custom",
     "readMore": "Mehr erfahren",
     "setDefaults": "Standardwerte"
+  },
+  "notifications": {
+    "title": "Kundenbenachrichtigungen",
+    "viaSms": "per SMS",
+    "viaEmail": "per E-Mail",
+    "justNow": "Gerade eben",
+    "minutesAgo": "vor {count}m",
+    "hoursAgo": "vor {count}h",
+    "daysAgo": "vor {count}d"
   }
 }

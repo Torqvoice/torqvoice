@@ -27,6 +27,7 @@
     "pdf": "PDF",
     "email": "Email",
     "share": "Share",
+    "notify": "Notify",
     "delete": "Delete",
     "unpaid": "Unpaid",
     "unsavedChanges": "Unsaved changes",
@@ -318,5 +319,14 @@
     "customTechnicians": "Custom",
     "readMore": "Read More",
     "setDefaults": "Set Defaults"
+  },
+  "notifications": {
+    "title": "Customer Notifications",
+    "viaSms": "via SMS",
+    "viaEmail": "via Email",
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago"
   }
 }

@@ -27,6 +27,7 @@
     "pdf": "PDF",
     "email": "E-mail",
     "share": "Delen",
+    "notify": "Melden",
     "delete": "Verwijderen",
     "unpaid": "Onbetaald",
     "unsavedChanges": "Niet-opgeslagen wijzigingen",
@@ -318,5 +319,14 @@
     "customTechnicians": "Custom",
     "readMore": "Meer lezen",
     "setDefaults": "Standaardwaarden"
+  },
+  "notifications": {
+    "title": "Klantmeldingen",
+    "viaSms": "via SMS",
+    "viaEmail": "via e-mail",
+    "justNow": "Zojuist",
+    "minutesAgo": "{count}m geleden",
+    "hoursAgo": "{count}u geleden",
+    "daysAgo": "{count}d geleden"
   }
 }
