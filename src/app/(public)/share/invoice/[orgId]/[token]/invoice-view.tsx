@@ -244,7 +244,17 @@ export function InvoiceView({
   }, [token])
 
   const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
-  const displayTotal = record.totalAmount > 0 ? record.totalAmount : record.cost
+  const partsSubtotal = record.partItems.reduce((sum, p) => sum + p.total, 0)
+  const laborSubtotal = record.laborItems.reduce((sum, l) => sum + l.total, 0)
+  const computedSubtotal = partsSubtotal + laborSubtotal
+  const computedDiscount = record.discountType === 'percentage'
+    ? computedSubtotal * (record.discountValue / 100)
+    : record.discountType === 'fixed'
+      ? Math.min(record.discountValue, computedSubtotal)
+      : 0
+  const computedTax = (computedSubtotal - computedDiscount) * (record.taxRate / 100)
+  const computedTotal = computedSubtotal - computedDiscount + computedTax
+  const displayTotal = record.totalAmount > 0 ? record.totalAmount : computedTotal > 0 ? computedTotal : record.cost
   const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
   const df = dateFormat || DEFAULT_DATE_FORMAT
   const tz = timezone || undefined
@@ -858,10 +868,22 @@ export function InvoiceView({
               return (
                 <div key="totals">
                   <div className="mt-6 ml-auto max-w-xs space-y-2">
-                    {record.subtotal > 0 && (
+                    {partsSubtotal > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">{t('parts')}</span>
+                        <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
+                      </div>
+                    )}
+                    {laborSubtotal > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">{t('labor')}</span>
+                        <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
+                      </div>
+                    )}
+                    {partsSubtotal > 0 && laborSubtotal > 0 && (
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">{t('subtotal')}</span>
-                        <span>{formatCurrency(record.subtotal, currencyCode)}</span>
+                        <span>{formatCurrency(computedSubtotal, currencyCode)}</span>
                       </div>
                     )}
                     {record.discountAmount > 0 && (
