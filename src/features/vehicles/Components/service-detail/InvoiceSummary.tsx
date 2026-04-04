@@ -56,7 +56,7 @@ export function InvoiceSummary({
             <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
           </div>
         )}
-        {subtotal > 0 && (discountAmount > 0 || taxRate > 0) && (
+        {subtotal > 0 && ((hasPartItems && hasLaborItems) || discountAmount > 0 || taxRate > 0) && (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">{t("subtotal")}</span>
             <span>{formatCurrency(subtotal, currencyCode)}</span>

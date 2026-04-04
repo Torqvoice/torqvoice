@@ -111,9 +111,9 @@ export function useServiceActions({
       taxRate,
       taxAmount,
       totalAmount,
-      discountType: discountType === 'none' ? undefined : discountType,
-      discountValue,
-      discountAmount,
+      discountType: discountType === 'none' ? 'none' : discountType,
+      discountValue: discountType === 'none' ? 0 : discountValue,
+      discountAmount: discountType === 'none' ? 0 : discountAmount,
     }
 
     const result = await updateServiceRecord(payload)
