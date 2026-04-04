@@ -56,6 +56,7 @@
     "notes": "Hinweise",
     "diagnosticNotes": "Diagnosehinweise",
     "findings": "Beobachtungen",
+    "findingsDescription": "Die folgenden Punkte wurden bei diesem Service festgestellt und erfordern möglicherweise Aufmerksamkeit.",
     "severity": "Schweregrad",
     "findingNotes": "Hinweise",
     "findingSeverityUrgent": "Dringend",

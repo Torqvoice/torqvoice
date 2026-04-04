@@ -40,6 +40,7 @@
     "dueDateLabel": "Fälligkeitsdatum",
     "diagnosticNotes": "Diagnosehinweise",
     "findings": "Beobachtungen",
+    "findingsDescription": "Die folgenden Punkte wurden bei diesem Service festgestellt und erfordern möglicherweise Aufmerksamkeit.",
     "findingSeverityLabel": "Schweregrad",
     "findingSeverityUrgent": "Dringend",
     "findingSeverityNeedsWork": "Reparaturbedarf",

@@ -40,6 +40,7 @@
     "dueDateLabel": "Vade tarihi",
     "diagnosticNotes": "Tanı Notları",
     "findings": "Gözlemler",
+    "findingsDescription": "Aşağıdaki maddeler bu servis sırasında gözlemlenmiştir ve ilgi gerektirebilir.",
     "findingSeverityLabel": "Önem",
     "findingSeverityUrgent": "Acil",
     "findingSeverityNeedsWork": "Onarım gerekli",

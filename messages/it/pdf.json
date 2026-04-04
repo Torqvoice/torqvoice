@@ -40,6 +40,7 @@
     "dueDateLabel": "Data di scadenza",
     "diagnosticNotes": "Note Diagnostiche",
     "findings": "Osservazioni",
+    "findingsDescription": "I seguenti elementi sono stati osservati durante questo servizio e potrebbero richiedere attenzione.",
     "findingSeverityLabel": "Gravità",
     "findingSeverityUrgent": "Urgente",
     "findingSeverityNeedsWork": "Necessita intervento",

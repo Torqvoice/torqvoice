@@ -979,7 +979,8 @@ export function InvoiceView({
               if (!findings || findings.length === 0) return null
               return (
                 <div key="findings" className="mt-6">
-                  <h4 className="mb-3 font-semibold">{t('findings', { defaultValue: 'Findings' })}</h4>
+                  <h4 className="mb-1 font-semibold">{t('findings', { defaultValue: 'Findings' })}</h4>
+                  <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">{t('findingsDescription', { defaultValue: 'The following items were observed during this service and may require attention.' })}</p>
                   <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
                     <table className="w-full text-sm">
                       <thead>

@@ -56,6 +56,7 @@
     "notes": "Notities",
     "diagnosticNotes": "Diagnosenotities",
     "findings": "Observaties",
+    "findingsDescription": "De volgende punten zijn waargenomen tijdens deze service en vereisen mogelijk aandacht.",
     "severity": "Ernst",
     "findingNotes": "Opmerkingen",
     "findingSeverityUrgent": "Urgent",

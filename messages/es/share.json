@@ -56,6 +56,7 @@
     "notes": "Notas",
     "diagnosticNotes": "Notas de diagnóstico",
     "findings": "Observaciones",
+    "findingsDescription": "Los siguientes elementos fueron observados durante este servicio y pueden requerir atención.",
     "severity": "Gravedad",
     "findingNotes": "Notas",
     "findingSeverityUrgent": "Urgente",

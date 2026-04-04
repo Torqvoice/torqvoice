@@ -56,6 +56,7 @@
     "notes": "Notater",
     "diagnosticNotes": "Diagnosenotater",
     "findings": "Observasjoner",
+    "findingsDescription": "Følgende punkter ble observert under denne servicen og kan kreve oppmerksomhet.",
     "severity": "Alvorlighet",
     "findingNotes": "Merknader",
     "findingSeverityUrgent": "Haster",

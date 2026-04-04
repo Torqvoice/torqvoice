@@ -56,6 +56,7 @@
     "notes": "Uwagi",
     "diagnosticNotes": "Uwagi diagnostyczne",
     "findings": "Obserwacje",
+    "findingsDescription": "Następujące elementy zostały zaobserwowane podczas tego serwisu i mogą wymagać uwagi.",
     "severity": "Priorytet",
     "findingNotes": "Uwagi",
     "findingSeverityUrgent": "Pilne",

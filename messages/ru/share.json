@@ -56,6 +56,7 @@
     "notes": "Заметки",
     "diagnosticNotes": "Диагностические заметки",
     "findings": "Наблюдения",
+    "findingsDescription": "Следующие элементы были обнаружены во время данного обслуживания и могут потребовать внимания.",
     "severity": "Приоритет",
     "findingNotes": "Примечания",
     "findingSeverityUrgent": "Срочно",

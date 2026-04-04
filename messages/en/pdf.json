@@ -41,6 +41,7 @@
     "dueDateLabel": "Due Date",
     "diagnosticNotes": "Diagnostic Notes",
     "findings": "Observations",
+    "findingsDescription": "The following items were observed during this service and may require attention.",
     "findingSeverityLabel": "Severity",
     "findingSeverityUrgent": "Urgent",
     "findingSeverityNeedsWork": "Needs Work",

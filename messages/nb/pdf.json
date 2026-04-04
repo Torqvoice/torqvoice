@@ -40,6 +40,7 @@
     "dueDateLabel": "Forfallsdato",
     "diagnosticNotes": "Diagnosenotater",
     "findings": "Observasjoner",
+    "findingsDescription": "Følgende punkter ble observert under denne servicen og kan kreve oppmerksomhet.",
     "findingSeverityLabel": "Alvorlighet",
     "findingSeverityUrgent": "Haster",
     "findingSeverityNeedsWork": "Trenger arbeid",

@@ -124,6 +124,7 @@ export function FindingsPdfSection({
   return (
     <View>
       <Text style={styles.sectionTitle}>{labels.findings || 'Findings'}</Text>
+      <Text style={{ fontSize: 8, color: '#666', marginBottom: 4, lineHeight: 1.4 }}>{labels.findingsDescription || 'The following items were observed during this service and may require attention.'}</Text>
       <View style={styles.table}>
         <View style={styles.tableHeader}>
           <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>{labels.findingSeverityLabel || 'Severity'}</Text>

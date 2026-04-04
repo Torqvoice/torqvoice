@@ -40,6 +40,7 @@
     "dueDateLabel": "Termin płatności",
     "diagnosticNotes": "Uwagi diagnostyczne",
     "findings": "Obserwacje",
+    "findingsDescription": "Następujące elementy zostały zaobserwowane podczas tego serwisu i mogą wymagać uwagi.",
     "findingSeverityLabel": "Priorytet",
     "findingSeverityUrgent": "Pilne",
     "findingSeverityNeedsWork": "Wymaga naprawy",
