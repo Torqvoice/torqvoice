@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -54,6 +54,11 @@ export function NotifyCustomerDialog({
 
   const hasPhone = !!customer.phone;
   const hasEmail = !!customer.email;
+
+  // Sync message when defaultMessage prop changes (e.g. async template load)
+  useEffect(() => {
+    if (defaultMessage) setMessage(defaultMessage);
+  }, [defaultMessage]);
 
   // Reset state when dialog opens with new message
   const handleOpenChange = (next: boolean) => {

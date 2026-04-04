@@ -163,7 +163,8 @@
     "balanceDue": "К оплате",
     "paidBadge": "ОПЛАЧЕНО",
     "entityLabel": "Счёт",
-    "emailSubject": "Подтверждение оплаты"
+    "emailSubject": "Подтверждение оплаты",
+    "statusEmailSubject": "Обновление статуса обслуживания"
   },
   "payments": {
     "title": "Платежи",

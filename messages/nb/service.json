@@ -163,7 +163,8 @@
     "balanceDue": "Skyld beløp",
     "paidBadge": "BETALT",
     "entityLabel": "Faktura",
-    "emailSubject": "Betalingsbekreftelse"
+    "emailSubject": "Betalingsbekreftelse",
+    "statusEmailSubject": "Oppdatering av servicestatus"
   },
   "payments": {
     "title": "Betalinger",

@@ -163,7 +163,8 @@
     "balanceDue": "Kalan Bakiye",
     "paidBadge": "ÖDENDİ",
     "entityLabel": "Fatura",
-    "emailSubject": "Ödeme Onayı"
+    "emailSubject": "Ödeme Onayı",
+    "statusEmailSubject": "Servis durumu güncellemesi"
   },
   "payments": {
     "title": "Ödemeler",

@@ -163,7 +163,8 @@
     "balanceDue": "Pozostało do Zapłaty",
     "paidBadge": "ZAPŁACONE",
     "entityLabel": "Faktura",
-    "emailSubject": "Potwierdzenie Płatności"
+    "emailSubject": "Potwierdzenie Płatności",
+    "statusEmailSubject": "Aktualizacja statusu serwisu"
   },
   "payments": {
     "title": "Płatności",

@@ -23,6 +23,7 @@ interface DetailsRightColumnProps {
   initialVehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null }
   boardTechnicians: BoardTechnicianOption[]
   orgMembers?: OrgMemberOption[]
+  onStatusChange?: (status: string) => void
 }
 
 export function DetailsRightColumn({
@@ -36,6 +37,7 @@ export function DetailsRightColumn({
   initialVehicle,
   boardTechnicians,
   orgMembers,
+  onStatusChange,
 }: DetailsRightColumnProps) {
   const router = useRouter()
 
@@ -60,7 +62,7 @@ export function DetailsRightColumn({
         type={formState.type}
         setType={formState.dirtySetType}
         status={formState.status}
-        setStatus={formState.dirtySetStatus}
+        setStatus={onStatusChange || formState.dirtySetStatus}
         onDirty={formState.markDirty}
         paymentStatus={formState.paymentStatus}
         onTogglePaid={actions.handleTogglePaid}

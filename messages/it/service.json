@@ -163,7 +163,8 @@
     "balanceDue": "Importo Dovuto",
     "paidBadge": "PAGATO",
     "entityLabel": "Fattura",
-    "emailSubject": "Conferma Pagamento"
+    "emailSubject": "Conferma Pagamento",
+    "statusEmailSubject": "Aggiornamento dello stato del servizio"
   },
   "payments": {
     "title": "Pagamenti",

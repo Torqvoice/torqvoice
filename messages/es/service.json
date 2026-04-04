@@ -163,7 +163,8 @@
     "balanceDue": "Saldo Pendiente",
     "paidBadge": "PAGADO",
     "entityLabel": "Factura",
-    "emailSubject": "Confirmación de Pago"
+    "emailSubject": "Confirmación de Pago",
+    "statusEmailSubject": "Actualización del estado del servicio"
   },
   "payments": {
     "title": "Pagos",

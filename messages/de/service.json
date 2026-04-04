@@ -163,7 +163,8 @@
     "balanceDue": "Ausstehend",
     "paidBadge": "BEZAHLT",
     "entityLabel": "Rechnung",
-    "emailSubject": "Zahlungsbestätigung"
+    "emailSubject": "Zahlungsbestätigung",
+    "statusEmailSubject": "Aktualisierung des Servicestatus"
   },
   "payments": {
     "title": "Zahlungen",

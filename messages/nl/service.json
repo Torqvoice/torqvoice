@@ -163,7 +163,8 @@
     "balanceDue": "Verschuldigd bedrag",
     "paidBadge": "BETAALD",
     "entityLabel": "Factuur",
-    "emailSubject": "Betalingsbevestiging"
+    "emailSubject": "Betalingsbevestiging",
+    "statusEmailSubject": "Update servicestatus"
   },
   "payments": {
     "title": "Betalingen",

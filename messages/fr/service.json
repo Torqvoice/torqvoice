@@ -163,7 +163,8 @@
     "balanceDue": "Solde Dû",
     "paidBadge": "PAYÉ",
     "entityLabel": "Facture",
-    "emailSubject": "Confirmation de Paiement"
+    "emailSubject": "Confirmation de Paiement",
+    "statusEmailSubject": "Mise à jour du statut du service"
   },
   "payments": {
     "title": "Paiements",

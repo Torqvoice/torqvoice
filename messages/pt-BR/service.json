@@ -163,7 +163,8 @@
     "balanceDue": "Saldo Devedor",
     "paidBadge": "PAGO",
     "entityLabel": "Fatura",
-    "emailSubject": "Confirmação de Pagamento"
+    "emailSubject": "Confirmação de Pagamento",
+    "statusEmailSubject": "Atualização do status do serviço"
   },
   "payments": {
     "title": "Pagamentos",
