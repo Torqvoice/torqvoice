@@ -984,9 +984,9 @@ export function InvoiceView({
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
-                          <th className="w-[20%] p-2 font-medium">{t('severity', { defaultValue: 'Severity' })}</th>
-                          <th className="p-2 font-medium">{t('description')}</th>
-                          <th className="w-[30%] p-2 font-medium">{t('findingNotes', { defaultValue: 'Notes' })}</th>
+                          <th className="w-[15%] p-2 font-medium">{t('severity', { defaultValue: 'Severity' })}</th>
+                          <th className="w-[40%] p-2 font-medium">{t('description')}</th>
+                          <th className="p-2 font-medium">{t('findingNotes', { defaultValue: 'Notes' })}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y">

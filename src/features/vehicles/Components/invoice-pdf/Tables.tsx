@@ -126,15 +126,15 @@ export function FindingsPdfSection({
       <Text style={styles.sectionTitle}>{labels.findings || 'Findings'}</Text>
       <View style={styles.table}>
         <View style={styles.tableHeader}>
-          <Text style={{ ...styles.tableHeaderCell, width: '20%' }}>{labels.findingSeverityLabel || 'Severity'}</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.description || 'Description'}</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>{labels.findingNotesLabel || 'Notes'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>{labels.findingSeverityLabel || 'Severity'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '40%' }}>{labels.description || 'Description'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.findingNotesLabel || 'Notes'}</Text>
         </View>
         {findings.map((f, i) => (
           <View key={i} style={styles.tableRow}>
             <Text style={{
               ...styles.tableCell,
-              width: '20%',
+              width: '15%',
               fontSize: 8,
               color: severityColors[f.severity] || '#666',
               fontFamily: fontBold,
@@ -142,8 +142,8 @@ export function FindingsPdfSection({
             }}>
               {severityLabels[f.severity] || f.severity}
             </Text>
-            <Text style={{ ...styles.tableCell, width: '45%' }}>{f.description}</Text>
-            <Text style={{ ...styles.tableCell, width: '35%', color: '#666' }}>{f.notes || '-'}</Text>
+            <Text style={{ ...styles.tableCell, width: '40%' }}>{f.description}</Text>
+            <Text style={{ ...styles.tableCell, width: '45%', color: '#666' }}>{f.notes || '-'}</Text>
           </View>
         ))}
       </View>
