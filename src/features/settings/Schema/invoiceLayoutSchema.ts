@@ -12,7 +12,7 @@ export const invoiceFieldConfigSchema = z.object({
 export const invoiceSectionSchema = z.object({
   id: z.string(),
   visible: z.boolean(),
-  order: z.number().int().nonnegative(),
+  order: z.number().int(),
   /** When set, the section renders in a 2-column row alongside other column sections. */
   column: z.enum(["left", "right"]).optional(),
   /** Controls which fields are shown within this section. */
@@ -263,11 +263,29 @@ export function mergeWithDefaults(
   }
 
   // Append any new built-in sections that are missing from saved.
-  let nextOrder = Math.max(...migrated.map((s) => s.order), -1) + 1;
-
+  // Insert each after its natural predecessor from the default order,
+  // so e.g. "findings" lands after "labor_table" instead of at the end.
+  const defaultOrder = defaults.sections.map((s) => s.id);
+  const toInsert: { section: InvoiceSection; afterIdx: number }[] = [];
   for (const def of defaults.sections) {
-    if (!seen.has(def.id)) {
-      merged.push({ ...def, order: nextOrder++ });
+    if (seen.has(def.id)) continue;
+    const defaultIdx = defaultOrder.indexOf(def.id);
+    let insertAfterIdx = -1;
+    for (let i = defaultIdx - 1; i >= 0; i--) {
+      const idx = merged.findIndex((s) => s.id === defaultOrder[i]);
+      if (idx !== -1) { insertAfterIdx = idx; break; }
+    }
+    toInsert.push({ section: def, afterIdx: insertAfterIdx });
+  }
+  if (toInsert.length > 0) {
+    // Insert in reverse so indices stay stable
+    toInsert.sort((a, b) => b.afterIdx - a.afterIdx);
+    for (const { section, afterIdx } of toInsert) {
+      merged.splice(afterIdx + 1, 0, { ...section, order: 0 });
+    }
+    // Renumber all orders as clean integers
+    for (let i = 0; i < merged.length; i++) {
+      merged[i] = { ...merged[i], order: i };
     }
   }
 
