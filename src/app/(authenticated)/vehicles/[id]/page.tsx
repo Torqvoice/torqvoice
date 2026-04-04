@@ -9,6 +9,7 @@ import { getVehiclePredictedMileage } from "@/features/vehicles/Actions/predicte
 import { getVehicleInspections } from "@/features/inspections/Actions/inspectionActions";
 import { getTemplates } from "@/features/inspections/Actions/templateActions";
 import { getVehicleQuotes } from "@/features/quotes/Actions/quoteActions";
+import { getVehicleFindings } from "@/features/vehicles/Actions/findingActions";
 import { getFeatures } from "@/lib/features";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
@@ -32,8 +33,10 @@ export default async function VehicleDetailPage({
 
   const notesPage = Number(sp.notesPage) || 1;
   const notesPageSize = Number(sp.notesPageSize) || 10;
+  const findingsPage = Number(sp.findingsPage) || 1;
+  const findingsPageSize = Number(sp.findingsPageSize) || 10;
 
-  const [result, customersResult, serviceResult, notesResult, settingsResult, maintenanceSettingsResult, inspectionsResult, templatesResult, quotesResult] = await Promise.all([
+  const [result, customersResult, serviceResult, notesResult, settingsResult, maintenanceSettingsResult, inspectionsResult, templatesResult, quotesResult, findingsResult] = await Promise.all([
     getVehicle(id),
     getCustomersList(),
     getServiceRecordsPaginated(id, { page, pageSize, search, type }),
@@ -47,6 +50,7 @@ export default async function VehicleDetailPage({
     getVehicleInspections(id),
     getTemplates(),
     getVehicleQuotes(id),
+    getVehicleFindings(id, { page: findingsPage, pageSize: findingsPageSize }),
   ]);
 
   if (!result.success || !result.data) {
@@ -68,6 +72,10 @@ export default async function VehicleDetailPage({
 
   const paginatedNotes = notesResult.success && notesResult.data
     ? notesResult.data
+    : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
+
+  const paginatedFindings = findingsResult.success && findingsResult.data
+    ? findingsResult.data
     : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
   const currencySettings = settingsResult.success && settingsResult.data ? settingsResult.data : {};
@@ -153,6 +161,7 @@ export default async function VehicleDetailPage({
           inspectionTemplates={templatesResult.success && templatesResult.data ? templatesResult.data : []}
           quotes={quotesResult.success && quotesResult.data ? quotesResult.data : []}
           aiEnabled={aiEnabled}
+          paginatedFindings={paginatedFindings}
         />
       </div>
     </>

@@ -52,7 +52,8 @@
       "quotes": "Cotizaciones",
       "inspections": "Inspecciones",
       "notes": "Notas",
-      "reminders": "Recordatorios"
+      "reminders": "Recordatorios",
+      "findings": "Observaciones"
     },
     "noteDeleted": "Nota eliminada",
     "noteDeleteError": "Error al eliminar",
@@ -179,6 +180,54 @@
     "noteCreated": "Nota creada",
     "titleRequired": "El titulo y el contenido son obligatorios",
     "saveError": "Error al {action} nota"
+  },
+  "findings": {
+    "sectionTitle": "Observaciones",
+    "addFinding": "Agregar observación",
+    "editTitle": "Editar observación",
+    "addTitle": "Agregar observación",
+    "empty": "Aún no hay observaciones.",
+    "descriptionLabel": "Descripción *",
+    "descriptionPlaceholder": "ej. Pastillas de freno delanteras al mínimo",
+    "severityLabel": "Gravedad",
+    "notesLabel": "Notas adicionales",
+    "notesPlaceholder": "Detalles opcionales...",
+    "table": {
+      "severity": "Gravedad",
+      "description": "Descripción",
+      "status": "Estado",
+      "date": "Fecha"
+    },
+    "severity": {
+      "urgent": "Alta",
+      "needs_work": "Media",
+      "monitor": "Baja"
+    },
+    "status": {
+      "open": "Abierto",
+      "quoted": "Cotizado",
+      "resolved": "Resuelto"
+    },
+    "edit": "Editar",
+    "resolve": "Marcar como resuelto",
+    "discoveredIn": "Descubierto en",
+    "resolvedIn": "Resuelto en",
+    "createWorkOrder": "Crear orden de trabajo ({count})",
+    "vehicleHasObservations": "Este vehículo tiene {count} observaciones abiertas",
+    "addToWorkOrder": "Agregar a la orden ({count})",
+    "dismiss": "Descartar",
+    "observationsAdded": "{count} observaciones agregadas a la orden",
+    "delete": "Eliminar",
+    "findingCreated": "Observación agregada",
+    "findingUpdated": "Observación actualizada",
+    "findingResolved": "Observación resuelta",
+    "findingDeleted": "Observación eliminada",
+    "saveError": "Error al {action} observación",
+    "deleteError": "Error al eliminar observación",
+    "resolveError": "Error al resolver observación",
+    "showing": "Mostrando {start}-{end} de {total}",
+    "perPage": "por página",
+    "page": "Página {page} de {totalPages}"
   },
   "form": {
     "editTitle": "Editar vehiculo",

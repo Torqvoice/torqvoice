@@ -46,6 +46,10 @@ const DUMMY_INVOICE_DATA = {
   mileage: 45230,
   diagnosticNotes:
     "<p>Brake wear at 15%. Recommended replacement within 5,000 miles.</p>",
+  findings: [
+    { description: "Rear brake pads worn to 15%", severity: "needs_work", notes: "Recommend replacement within 5,000 miles" },
+    { description: "Minor oil leak at valve cover gasket", severity: "monitor", notes: null },
+  ],
   invoiceNotes:
     "<p>Front brake pads replaced. Oil and filter changed with synthetic 5W-30. Next service recommended at 50,000 miles.</p>",
   subtotal: 314.5,

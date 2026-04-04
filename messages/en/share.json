@@ -55,6 +55,13 @@
     "diagnosticReports": "Diagnostic Reports ({count})",
     "notes": "Notes",
     "diagnosticNotes": "Diagnostic Notes",
+    "findings": "Observations",
+    "findingsDescription": "The following items were observed during this service and may require attention.",
+    "severity": "Severity",
+    "findingNotes": "Notes",
+    "findingSeverityUrgent": "High",
+    "findingSeverityNeedsWork": "Medium",
+    "findingSeverityMonitor": "Low",
     "tel": "Tel: {phone}"
   },
   "quote": {

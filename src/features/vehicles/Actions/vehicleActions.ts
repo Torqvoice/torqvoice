@@ -57,6 +57,7 @@ export async function getVehicle(vehicleId: string) {
             serviceRecords: true,
             notes: true,
             reminders: { where: { isCompleted: false } },
+            findings: { where: { status: "open" } },
           },
         },
       },

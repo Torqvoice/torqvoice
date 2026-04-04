@@ -52,7 +52,8 @@
       "quotes": "Devis",
       "inspections": "Inspections",
       "notes": "Notes",
-      "reminders": "Rappels"
+      "reminders": "Rappels",
+      "findings": "Observations"
     },
     "noteDeleted": "Note supprim\u00e9e",
     "noteDeleteError": "\u00c9chec de la suppression",
@@ -179,6 +180,54 @@
     "noteCreated": "Note cr\u00e9\u00e9e",
     "titleRequired": "Le titre et le contenu sont obligatoires",
     "saveError": "\u00c9chec de {action} de la note"
+  },
+  "findings": {
+    "sectionTitle": "Observations",
+    "addFinding": "Ajouter une observation",
+    "editTitle": "Modifier l'observation",
+    "addTitle": "Ajouter une observation",
+    "empty": "Aucune observation pour le moment.",
+    "descriptionLabel": "Description *",
+    "descriptionPlaceholder": "ex. Plaquettes de frein avant au minimum",
+    "severityLabel": "Gravité",
+    "notesLabel": "Notes supplémentaires",
+    "notesPlaceholder": "Détails optionnels...",
+    "table": {
+      "severity": "Gravité",
+      "description": "Description",
+      "status": "Statut",
+      "date": "Date"
+    },
+    "severity": {
+      "urgent": "Haute",
+      "needs_work": "Moyenne",
+      "monitor": "Basse"
+    },
+    "status": {
+      "open": "Ouvert",
+      "quoted": "Devisé",
+      "resolved": "Résolu"
+    },
+    "edit": "Modifier",
+    "resolve": "Marquer comme résolu",
+    "discoveredIn": "Découvert dans",
+    "resolvedIn": "Résolu dans",
+    "createWorkOrder": "Créer un ordre de travail ({count})",
+    "vehicleHasObservations": "Ce véhicule a {count} observations en cours",
+    "addToWorkOrder": "Ajouter à l'ordre de travail ({count})",
+    "dismiss": "Ignorer",
+    "observationsAdded": "{count} observations ajoutées à l'ordre de travail",
+    "delete": "Supprimer",
+    "findingCreated": "Observation ajoutée",
+    "findingUpdated": "Observation mise à jour",
+    "findingResolved": "Observation résolue",
+    "findingDeleted": "Observation supprimée",
+    "saveError": "Échec de l'observation",
+    "deleteError": "Échec de suppression",
+    "resolveError": "Échec de résolution",
+    "showing": "Affichage de {start}-{end} sur {total}",
+    "perPage": "par page",
+    "page": "Page {page} sur {totalPages}"
   },
   "form": {
     "editTitle": "Modifier le v\u00e9hicule",

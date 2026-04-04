@@ -52,7 +52,8 @@
       "quotes": "Preventivi",
       "inspections": "Ispezioni",
       "notes": "Note",
-      "reminders": "Promemoria"
+      "reminders": "Promemoria",
+      "findings": "Osservazioni"
     },
     "noteDeleted": "Nota eliminata",
     "noteDeleteError": "Impossibile eliminare",
@@ -179,6 +180,54 @@
     "noteCreated": "Nota creata",
     "titleRequired": "Titolo e contenuto sono obbligatori",
     "saveError": "Impossibile {action} la nota"
+  },
+  "findings": {
+    "sectionTitle": "Osservazioni",
+    "addFinding": "Aggiungi osservazione",
+    "editTitle": "Modifica osservazione",
+    "addTitle": "Aggiungi osservazione",
+    "empty": "Nessuna osservazione ancora.",
+    "descriptionLabel": "Descrizione *",
+    "descriptionPlaceholder": "es. Pastiglie freno anteriori al minimo",
+    "severityLabel": "Gravità",
+    "notesLabel": "Note aggiuntive",
+    "notesPlaceholder": "Dettagli facoltativi...",
+    "table": {
+      "severity": "Gravità",
+      "description": "Descrizione",
+      "status": "Stato",
+      "date": "Data"
+    },
+    "severity": {
+      "urgent": "Alta",
+      "needs_work": "Media",
+      "monitor": "Bassa"
+    },
+    "status": {
+      "open": "Aperto",
+      "quoted": "Preventivato",
+      "resolved": "Risolto"
+    },
+    "edit": "Modifica",
+    "resolve": "Segna come risolto",
+    "discoveredIn": "Scoperto in",
+    "resolvedIn": "Risolto in",
+    "createWorkOrder": "Crea ordine di lavoro ({count})",
+    "vehicleHasObservations": "Questo veicolo ha {count} osservazioni aperte",
+    "addToWorkOrder": "Aggiungi all'ordine di lavoro ({count})",
+    "dismiss": "Ignora",
+    "observationsAdded": "{count} osservazioni aggiunte all'ordine di lavoro",
+    "delete": "Elimina",
+    "findingCreated": "Osservazione aggiunta",
+    "findingUpdated": "Osservazione aggiornata",
+    "findingResolved": "Osservazione risolta",
+    "findingDeleted": "Osservazione eliminata",
+    "saveError": "Impossibile salvare l'osservazione",
+    "deleteError": "Impossibile eliminare l'osservazione",
+    "resolveError": "Impossibile risolvere l'osservazione",
+    "showing": "Visualizzando {start}-{end} di {total}",
+    "perPage": "per pagina",
+    "page": "Pagina {page} di {totalPages}"
   },
   "form": {
     "editTitle": "Modifica Veicolo",

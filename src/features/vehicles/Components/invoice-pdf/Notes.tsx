@@ -357,6 +357,7 @@ export function DiagnosticNotesSection({
   )
 }
 
+
 // ---------------------------------------------------------------------------
 // Composite Notes component – kept for backward compatibility
 // ---------------------------------------------------------------------------

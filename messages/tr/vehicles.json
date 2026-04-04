@@ -52,7 +52,8 @@
       "quotes": "Teklifler",
       "inspections": "Muayeneler",
       "notes": "Notlar",
-      "reminders": "Hatırlatıcılar"
+      "reminders": "Hatırlatıcılar",
+      "findings": "Gözlemler"
     },
     "noteDeleted": "Not silindi",
     "noteDeleteError": "Silinemedi",
@@ -179,6 +180,54 @@
     "noteCreated": "Not oluşturuldu",
     "titleRequired": "Başlık ve içerik gereklidir",
     "saveError": "Not {action} başarısız oldu"
+  },
+  "findings": {
+    "sectionTitle": "Gözlemler",
+    "addFinding": "Gözlem ekle",
+    "editTitle": "Gözlemi düzenle",
+    "addTitle": "Gözlem ekle",
+    "empty": "Henüz gözlem yok.",
+    "descriptionLabel": "Açıklama *",
+    "descriptionPlaceholder": "örn. Ön fren balataları minimumda",
+    "severityLabel": "Önem Derecesi",
+    "notesLabel": "Ek Notlar",
+    "notesPlaceholder": "İsteğe bağlı detaylar...",
+    "table": {
+      "severity": "Önem Derecesi",
+      "description": "Açıklama",
+      "status": "Durum",
+      "date": "Tarih"
+    },
+    "severity": {
+      "urgent": "Yüksek",
+      "needs_work": "Orta",
+      "monitor": "Düşük"
+    },
+    "status": {
+      "open": "Açık",
+      "quoted": "Teklif Verildi",
+      "resolved": "Çözüldü"
+    },
+    "edit": "Düzenle",
+    "resolve": "Çözüldü olarak işaretle",
+    "discoveredIn": "Keşfedildiği iş emri",
+    "resolvedIn": "Çözüldüğü iş emri",
+    "createWorkOrder": "İş emri oluştur ({count})",
+    "vehicleHasObservations": "Bu araçta {count} açık gözlem var",
+    "addToWorkOrder": "İş emrine ekle ({count})",
+    "dismiss": "Kapat",
+    "observationsAdded": "{count} gözlem iş emrine eklendi",
+    "delete": "Sil",
+    "findingCreated": "Gözlem eklendi",
+    "findingUpdated": "Gözlem güncellendi",
+    "findingResolved": "Gözlem çözüldü",
+    "findingDeleted": "Gözlem silindi",
+    "saveError": "Gözlem kaydedilemedi",
+    "deleteError": "Gözlem silinemedi",
+    "resolveError": "Gözlem çözülemedi",
+    "showing": "{start}-{end} / {total} gösteriliyor",
+    "perPage": "sayfa başına",
+    "page": "Sayfa {page} / {totalPages}"
   },
   "form": {
     "editTitle": "Aracı Düzenle",

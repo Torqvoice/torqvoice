@@ -4,7 +4,7 @@ import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { createStyles, gray, getFontBold } from './styles'
 import { Header } from './Header'
 import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
-import { PartsTable, LaborTable } from './Tables'
+import { PartsTable, LaborTable, FindingsPdfSection } from './Tables'
 import { Totals } from './Totals'
 import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
 import { CustomFields } from './CustomFields'
@@ -84,7 +84,15 @@ export function InvoicePDF({
   const vehicleName = `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}`
   const partsSubtotal = data.partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
-  const displayTotal = data.totalAmount > 0 ? data.totalAmount : data.cost
+  const computedSubtotal = partsSubtotal + laborSubtotal
+  const computedDiscount = data.discountType === 'percentage'
+    ? computedSubtotal * ((data.discountValue || 0) / 100)
+    : data.discountType === 'fixed'
+      ? Math.min(data.discountValue || 0, computedSubtotal)
+      : 0
+  const computedTax = (computedSubtotal - computedDiscount) * (data.taxRate / 100)
+  const computedTotal = computedSubtotal - computedDiscount + computedTax
+  const displayTotal = data.totalAmount > 0 ? data.totalAmount : computedTotal > 0 ? computedTotal : data.cost
   const invoiceNum = data.invoiceNumber || `INV-${data.id.slice(-8).toUpperCase()}`
   const df = invoiceSettings?.dateFormat || DEFAULT_DATE_FORMAT
   const tz = invoiceSettings?.timezone || undefined
@@ -243,6 +251,15 @@ export function InvoicePDF({
     diagnostic_notes: (
       <DiagnosticNotesSection
         diagnosticNotes={data.diagnosticNotes}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+      />
+    ),
+
+    findings: (
+      <FindingsPdfSection
+        findings={data.findings || []}
         fontFamily={fontFamily}
         styles={styles}
         labels={labels}

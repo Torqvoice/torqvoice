@@ -4,7 +4,13 @@ import { useRef, useCallback, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { GripVertical, Layers, Plus, Trash2, Wrench } from 'lucide-react'
+import { AlertTriangle, Eye, GripVertical, Layers, Plus, Trash2, Wrench } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { formatCurrency, getCurrencySymbol } from '@/lib/format'
 import { useTranslations } from 'next-intl'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -36,6 +42,9 @@ interface LaborEditorProps {
   defaultLaborRate: number
   hasPresets?: boolean
   onOpenPresets?: () => void
+  onAddFinding?: () => void
+  openObservationsCount?: number
+  onShowExistingObservations?: () => void
 }
 
 function SortableLaborRow({
@@ -149,6 +158,9 @@ export function LaborEditor({
   defaultLaborRate,
   hasPresets,
   onOpenPresets,
+  onAddFinding,
+  openObservationsCount = 0,
+  onShowExistingObservations,
 }: LaborEditorProps) {
   const t = useTranslations('service.labor')
   const cs = getCurrencySymbol(currencyCode)
@@ -238,6 +250,43 @@ export function LaborEditor({
             <Wrench className="mr-1 h-3.5 w-3.5" />
             <span className="hidden sm:inline">{t('addService')}</span>
           </Button>
+          {onAddFinding && openObservationsCount > 0 && onShowExistingObservations ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button type="button" variant="outline" size="sm">
+                  <AlertTriangle className="mr-1 h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">{t('addFinding')}</span>
+                  <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-medium text-white">
+                    {openObservationsCount}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => { e.preventDefault(); onAddFinding() }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t('newObservation')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => { e.preventDefault(); onShowExistingObservations() }}
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  {t('addExisting', { count: openObservationsCount })}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : onAddFinding ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onAddFinding}
+            >
+              <AlertTriangle className="mr-1 h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t('addFinding')}</span>
+            </Button>
+          ) : null}
         </div>
       </div>
 

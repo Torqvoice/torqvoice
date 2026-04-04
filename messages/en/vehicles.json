@@ -52,7 +52,8 @@
       "quotes": "Quotes",
       "inspections": "Inspections",
       "notes": "Notes",
-      "reminders": "Reminders"
+      "reminders": "Reminders",
+      "findings": "Observations"
     },
     "noteDeleted": "Note deleted",
     "noteDeleteError": "Failed to delete",
@@ -179,6 +180,54 @@
     "noteCreated": "Note created",
     "titleRequired": "Title and content are required",
     "saveError": "Failed to {action} note"
+  },
+  "findings": {
+    "sectionTitle": "Observations",
+    "addFinding": "Add Observation",
+    "editTitle": "Edit Observation",
+    "addTitle": "Add Observation",
+    "empty": "No observations yet.",
+    "descriptionLabel": "Description *",
+    "descriptionPlaceholder": "e.g. Brake pads front at minimum",
+    "severityLabel": "Severity",
+    "notesLabel": "Additional Notes",
+    "notesPlaceholder": "Optional details...",
+    "table": {
+      "severity": "Severity",
+      "description": "Description",
+      "status": "Status",
+      "date": "Date"
+    },
+    "severity": {
+      "urgent": "High",
+      "needs_work": "Medium",
+      "monitor": "Low"
+    },
+    "status": {
+      "open": "Open",
+      "quoted": "Quoted",
+      "resolved": "Resolved"
+    },
+    "edit": "Edit",
+    "resolve": "Mark Resolved",
+    "discoveredIn": "Discovered in",
+    "resolvedIn": "Resolved in",
+    "createWorkOrder": "Create Work Order ({count})",
+    "vehicleHasObservations": "This vehicle has {count} open observations",
+    "addToWorkOrder": "Add to Work Order ({count})",
+    "dismiss": "Dismiss",
+    "observationsAdded": "{count} observations added to work order",
+    "delete": "Delete",
+    "findingCreated": "Observation added",
+    "findingUpdated": "Observation updated",
+    "findingResolved": "Observation resolved",
+    "findingDeleted": "Observation deleted",
+    "saveError": "Failed to {action} observation",
+    "deleteError": "Failed to delete observation",
+    "resolveError": "Failed to resolve observation",
+    "showing": "Showing {start}-{end} of {total}",
+    "perPage": "per page",
+    "page": "Page {page} of {totalPages}"
   },
   "form": {
     "editTitle": "Edit Vehicle",

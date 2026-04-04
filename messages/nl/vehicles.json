@@ -52,7 +52,8 @@
       "quotes": "Offertes",
       "inspections": "Keuringen",
       "notes": "Notities",
-      "reminders": "Herinneringen"
+      "reminders": "Herinneringen",
+      "findings": "Observaties"
     },
     "noteDeleted": "Notitie verwijderd",
     "noteDeleteError": "Verwijderen mislukt",
@@ -179,6 +180,54 @@
     "noteCreated": "Notitie aangemaakt",
     "titleRequired": "Titel en inhoud zijn verplicht",
     "saveError": "{action} van notitie mislukt"
+  },
+  "findings": {
+    "sectionTitle": "Observaties",
+    "addFinding": "Observatie toevoegen",
+    "editTitle": "Observatie bewerken",
+    "addTitle": "Observatie toevoegen",
+    "empty": "Nog geen observaties.",
+    "descriptionLabel": "Beschrijving *",
+    "descriptionPlaceholder": "bijv. Remblokken voor op minimum",
+    "severityLabel": "Ernst",
+    "notesLabel": "Aanvullende opmerkingen",
+    "notesPlaceholder": "Optionele details...",
+    "table": {
+      "severity": "Ernst",
+      "description": "Beschrijving",
+      "status": "Status",
+      "date": "Datum"
+    },
+    "severity": {
+      "urgent": "Hoog",
+      "needs_work": "Gemiddeld",
+      "monitor": "Laag"
+    },
+    "status": {
+      "open": "Open",
+      "quoted": "Geoffreerd",
+      "resolved": "Opgelost"
+    },
+    "edit": "Bewerken",
+    "resolve": "Markeer als opgelost",
+    "discoveredIn": "Ontdekt in",
+    "resolvedIn": "Opgelost in",
+    "createWorkOrder": "Werkorder aanmaken ({count})",
+    "vehicleHasObservations": "Dit voertuig heeft {count} openstaande observaties",
+    "addToWorkOrder": "Toevoegen aan werkorder ({count})",
+    "dismiss": "Negeren",
+    "observationsAdded": "{count} observaties toegevoegd aan werkorder",
+    "delete": "Verwijderen",
+    "findingCreated": "Observatie toegevoegd",
+    "findingUpdated": "Observatie bijgewerkt",
+    "findingResolved": "Observatie opgelost",
+    "findingDeleted": "Observatie verwijderd",
+    "saveError": "Kan observatie niet opslaan",
+    "deleteError": "Kan observatie niet verwijderen",
+    "resolveError": "Kan observatie niet oplossen",
+    "showing": "{start}-{end} van {total} weergegeven",
+    "perPage": "per pagina",
+    "page": "Pagina {page} van {totalPages}"
   },
   "form": {
     "editTitle": "Voertuig bewerken",

@@ -52,7 +52,8 @@
       "quotes": "Tilbud",
       "inspections": "Inspeksjoner",
       "notes": "Notater",
-      "reminders": "Paminnelser"
+      "reminders": "Paminnelser",
+      "findings": "Observasjoner"
     },
     "noteDeleted": "Notat slettet",
     "noteDeleteError": "Kunne ikke slette",
@@ -179,6 +180,54 @@
     "noteCreated": "Notat opprettet",
     "titleRequired": "Tittel og innhold er pakrevd",
     "saveError": "Kunne ikke {action} notat"
+  },
+  "findings": {
+    "sectionTitle": "Observasjoner",
+    "addFinding": "Legg til observasjon",
+    "editTitle": "Rediger observasjon",
+    "addTitle": "Legg til observasjon",
+    "empty": "Ingen observasjoner ennå.",
+    "descriptionLabel": "Beskrivelse *",
+    "descriptionPlaceholder": "f.eks. Bremseklosser foran på minimum",
+    "severityLabel": "Alvorlighetsgrad",
+    "notesLabel": "Tilleggsnotater",
+    "notesPlaceholder": "Valgfrie detaljer...",
+    "table": {
+      "severity": "Alvorlighetsgrad",
+      "description": "Beskrivelse",
+      "status": "Status",
+      "date": "Dato"
+    },
+    "severity": {
+      "urgent": "Høy",
+      "needs_work": "Middels",
+      "monitor": "Lav"
+    },
+    "status": {
+      "open": "Åpen",
+      "quoted": "Tilbudt",
+      "resolved": "Løst"
+    },
+    "edit": "Rediger",
+    "resolve": "Merk som løst",
+    "discoveredIn": "Oppdaget i",
+    "resolvedIn": "Løst i",
+    "createWorkOrder": "Opprett arbeidsordre ({count})",
+    "vehicleHasObservations": "Dette kjøretøyet har {count} åpne observasjoner",
+    "addToWorkOrder": "Legg til i arbeidsordre ({count})",
+    "dismiss": "Avvis",
+    "observationsAdded": "{count} observasjoner lagt til i arbeidsordre",
+    "delete": "Slett",
+    "findingCreated": "Observasjon lagt til",
+    "findingUpdated": "Observasjon oppdatert",
+    "findingResolved": "Observasjon løst",
+    "findingDeleted": "Observasjon slettet",
+    "saveError": "Kunne ikke lagre observasjon",
+    "deleteError": "Kunne ikke slette observasjon",
+    "resolveError": "Kunne ikke løse observasjon",
+    "showing": "Viser {start}-{end} av {total}",
+    "perPage": "per side",
+    "page": "Side {page} av {totalPages}"
   },
   "form": {
     "editTitle": "Rediger kjoretoy",

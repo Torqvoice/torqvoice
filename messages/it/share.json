@@ -55,6 +55,13 @@
     "diagnosticReports": "Rapporti Diagnostici ({count})",
     "notes": "Note",
     "diagnosticNotes": "Note Diagnostiche",
+    "findings": "Osservazioni",
+    "findingsDescription": "I seguenti elementi sono stati osservati durante questo servizio e potrebbero richiedere attenzione.",
+    "severity": "Gravità",
+    "findingNotes": "Note",
+    "findingSeverityUrgent": "Alta",
+    "findingSeverityNeedsWork": "Media",
+    "findingSeverityMonitor": "Bassa",
     "tel": "Tel: {phone}"
   },
   "quote": {

@@ -27,6 +27,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { CalendarIcon, AlertTriangle } from 'lucide-react'
+import { deleteFinding } from '@/features/vehicles/Actions/findingActions'
 import { updateServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { LaborPresetPickerDialog } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import type { LaborPresetOption } from './service-page-types'
@@ -40,6 +41,7 @@ import { useServiceFormState } from './useServiceFormState'
 import { useServiceActions } from './useServiceActions'
 import { DetailsLeftColumn } from './DetailsLeftColumn'
 import { DetailsRightColumn } from './DetailsRightColumn'
+import { ObservationsManager, type ObservationsControls } from './ObservationsManager'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
 import type { ServicePageClientProps } from './service-page-types'
@@ -73,6 +75,8 @@ export function ServicePageClient({
   defaultDueDays = 0,
   statusReports = [],
   initialTab,
+  findings = [],
+  openObservations = [],
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -152,6 +156,31 @@ export function ServicePageClient({
 
   useHardwareScanner({ onScan: handleBarcodeScan, enabled: activeTab === 'details' })
 
+  // Observations state
+  const tf = useTranslations('vehicles.findings')
+  const [addingObservations, setAddingObservations] = useState(false)
+  const otherObsCount = openObservations.filter((o) => o.serviceRecordId !== record.id).length
+  const obsControlsRef = useRef<ObservationsControls | null>(null)
+
+  const handleAddObservationsToWorkOrder = async (selectedIds: string[]) => {
+    const selected = openObservations.filter((o) => selectedIds.includes(o.id))
+    if (selected.length === 0) return
+    setAddingObservations(true)
+    const newItems = selected.map((o) => ({
+      description: `${o.description}${o.notes ? ` - ${o.notes}` : ''}`,
+      hours: 0,
+      rate: 0,
+      total: 0,
+      pricingType: 'hourly' as const,
+    }))
+    formState.dirtySetLaborItems((prev) => [...newItems, ...prev])
+    // Delete the observations that were added to the work order
+    await Promise.all(selected.map((o) => deleteFinding(o.id)))
+    setAddingObservations(false)
+    toast.success(tf('observationsAdded', { count: selected.length }))
+    router.refresh()
+  }
+
   const handleSelectPreset = (preset: LaborPresetOption) => {
     const newItems = preset.items.map((item) => ({
       description: item.description,
@@ -197,38 +226,54 @@ export function ServicePageClient({
       />
 
       {activeTab === 'details' && (
-        <form id="service-record-form" ref={formState.formRef} onSubmit={actions.handleSubmit} onInput={formState.markDirty} className="flex min-h-0 flex-1 flex-col">
-          <ServiceDetailContent
-            leftColumn={
-              <DetailsLeftColumn
-                formState={formState}
-                actions={actions}
-                record={record}
-                currencyCode={currencyCode}
-                defaultLaborRate={defaultLaborRate}
-                inventoryParts={inventoryParts}
-                hasPresets={laborPresets.length > 0}
-                onOpenPresets={() => formState.setShowPresetPicker(true)}
-                onScanBarcode={() => formState.setShowBarcodeScanner(true)}
-                aiEnabled={aiEnabled}
-              />
-            }
-            rightColumn={
-              <DetailsRightColumn
-                formState={formState}
-                actions={actions}
-                record={record}
-                vehicleId={vehicleId}
-                organizationId={organizationId}
-                currencyCode={currencyCode}
-                taxEnabled={taxEnabled}
-                initialVehicle={initialVehicle}
-                boardTechnicians={boardTechnicians}
-                orgMembers={orgMembers}
-              />
-            }
+        <>
+          <form id="service-record-form" ref={formState.formRef} onSubmit={actions.handleSubmit} onInput={formState.markDirty} className="flex min-h-0 flex-1 flex-col">
+            <ServiceDetailContent
+              leftColumn={
+                <DetailsLeftColumn
+                  formState={formState}
+                  actions={actions}
+                  record={record}
+                  currencyCode={currencyCode}
+                  defaultLaborRate={defaultLaborRate}
+                  inventoryParts={inventoryParts}
+                  hasPresets={laborPresets.length > 0}
+                  onOpenPresets={() => formState.setShowPresetPicker(true)}
+                  onScanBarcode={() => formState.setShowBarcodeScanner(true)}
+                  aiEnabled={aiEnabled}
+                  vehicleId={vehicleId}
+                  findings={findings}
+                  onAddFinding={() => obsControlsRef.current?.onAddFinding()}
+                  onEditFinding={(f) => obsControlsRef.current?.onEditFinding(f)}
+                  openObservationsCount={otherObsCount}
+                  onShowExistingObservations={() => obsControlsRef.current?.onShowExistingObservations()}
+                />
+              }
+              rightColumn={
+                <DetailsRightColumn
+                  formState={formState}
+                  actions={actions}
+                  record={record}
+                  vehicleId={vehicleId}
+                  organizationId={organizationId}
+                  currencyCode={currencyCode}
+                  taxEnabled={taxEnabled}
+                  initialVehicle={initialVehicle}
+                  boardTechnicians={boardTechnicians}
+                  orgMembers={orgMembers}
+                />
+              }
+            />
+          </form>
+          <ObservationsManager
+            vehicleId={vehicleId}
+            serviceRecordId={record.id}
+            openObservations={openObservations}
+            onAddObservations={handleAddObservationsToWorkOrder}
+            addingObservations={addingObservations}
+            onControlsReady={(c) => { obsControlsRef.current = c }}
           />
-        </form>
+        </>
       )}
 
       {activeTab === 'images' && (

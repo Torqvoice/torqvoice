@@ -170,6 +170,7 @@ model Vehicle {
   recurringInvoices RecurringInvoice[]
   inspections       Inspection[]
   serviceRequests   ServiceRequest[]
+  findings          VehicleFinding[]
 
   @@index([organizationId])
   @@map("vehicles")
@@ -222,6 +223,9 @@ model ServiceRecord {
   attachments   ServiceAttachment[]
   payments      Payment[]
   statusReports StatusReport[]
+
+  discoveredFindings VehicleFinding[] @relation("FindingDiscoveredIn")
+  resolvedFindings   VehicleFinding[] @relation("FindingResolvedIn")
 
   @@index([vehicleId])
   @@index([technicianId])
@@ -278,6 +282,30 @@ model Reminder {
 
   @@index([vehicleId])
   @@map("reminders")
+}
+
+model VehicleFinding {
+  id          String   @id @default(cuid())
+  description String
+  severity    String   @default("needs_work")
+  status      String   @default("open")
+  notes       String?
+  imageUrls   String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  serviceRecordId String?
+  serviceRecord   ServiceRecord? @relation("FindingDiscoveredIn", fields: [serviceRecordId], references: [id], onDelete: SetNull)
+
+  resolvedServiceRecordId String?
+  resolvedServiceRecord   ServiceRecord? @relation("FindingResolvedIn", fields: [resolvedServiceRecordId], references: [id], onDelete: SetNull)
+
+  @@index([vehicleId])
+  @@index([serviceRecordId])
+  @@map("vehicle_findings")
 }
 
 model Customer {

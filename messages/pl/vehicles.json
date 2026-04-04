@@ -52,7 +52,8 @@
       "quotes": "Wyceny",
       "inspections": "Przeglądy",
       "notes": "Notatki",
-      "reminders": "Przypomnienia"
+      "reminders": "Przypomnienia",
+      "findings": "Obserwacje"
     },
     "noteDeleted": "Notatka usunięta",
     "noteDeleteError": "Nie udało się usunąć",
@@ -179,6 +180,54 @@
     "noteCreated": "Notatka utworzona",
     "titleRequired": "Tytuł i treść są wymagane",
     "saveError": "Nie udało się {action} notatki"
+  },
+  "findings": {
+    "sectionTitle": "Obserwacje",
+    "addFinding": "Dodaj obserwację",
+    "editTitle": "Edytuj obserwację",
+    "addTitle": "Dodaj obserwację",
+    "empty": "Brak obserwacji.",
+    "descriptionLabel": "Opis *",
+    "descriptionPlaceholder": "np. Klocki hamulcowe przednie na minimum",
+    "severityLabel": "Ważność",
+    "notesLabel": "Dodatkowe uwagi",
+    "notesPlaceholder": "Opcjonalne szczegóły...",
+    "table": {
+      "severity": "Ważność",
+      "description": "Opis",
+      "status": "Status",
+      "date": "Data"
+    },
+    "severity": {
+      "urgent": "Wysoki",
+      "needs_work": "Średni",
+      "monitor": "Niski"
+    },
+    "status": {
+      "open": "Otwarte",
+      "quoted": "Wycenione",
+      "resolved": "Rozwiązane"
+    },
+    "edit": "Edytuj",
+    "resolve": "Oznacz jako rozwiązane",
+    "discoveredIn": "Odkryto w",
+    "resolvedIn": "Rozwiązano w",
+    "createWorkOrder": "Utwórz zlecenie ({count})",
+    "vehicleHasObservations": "Ten pojazd ma {count} otwartych obserwacji",
+    "addToWorkOrder": "Dodaj do zlecenia ({count})",
+    "dismiss": "Odrzuć",
+    "observationsAdded": "{count} obserwacji dodanych do zlecenia",
+    "delete": "Usuń",
+    "findingCreated": "Obserwacja dodana",
+    "findingUpdated": "Obserwacja zaktualizowana",
+    "findingResolved": "Obserwacja rozwiązana",
+    "findingDeleted": "Obserwacja usunięta",
+    "saveError": "Nie udało się zapisać obserwacji",
+    "deleteError": "Nie udało się usunąć obserwacji",
+    "resolveError": "Nie udało się rozwiązać obserwacji",
+    "showing": "Wyświetlanie {start}-{end} z {total}",
+    "perPage": "na stronę",
+    "page": "Strona {page} z {totalPages}"
   },
   "form": {
     "editTitle": "Edytuj pojazd",

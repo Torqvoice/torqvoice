@@ -132,7 +132,7 @@ function isFieldVisible(config: InvoiceLayoutConfig | undefined, sectionId: stri
 }
 
 function getSectionOrder(config: InvoiceLayoutConfig | undefined): string[] {
-  if (!config) return ['header', 'customer', 'vehicle', 'service', 'parts_table', 'labor_table', 'totals', 'general', 'notes', 'diagnostic_notes', 'bank_account', 'footer']
+  if (!config) return ['header', 'customer', 'vehicle', 'service', 'parts_table', 'labor_table', 'findings', 'totals', 'general', 'notes', 'diagnostic_notes', 'bank_account', 'footer']
   return [...config.sections].sort((a, b) => a.order - b.order).map(s => s.id)
 }
 
@@ -195,6 +195,7 @@ export function InvoiceView({
   portalUrl,
   layoutConfig,
   customFields = [],
+  findings = [],
   telegramBotLink,
   serviceType = "automotive",
 }: {
@@ -218,6 +219,7 @@ export function InvoiceView({
   portalUrl?: string
   layoutConfig?: InvoiceLayoutConfig
   customFields?: CustomField[]
+  findings?: Array<{ description: string; severity: string; notes: string | null }>
   telegramBotLink?: string
   serviceType?: "automotive" | "marine"
 }) {
@@ -242,7 +244,17 @@ export function InvoiceView({
   }, [token])
 
   const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
-  const displayTotal = record.totalAmount > 0 ? record.totalAmount : record.cost
+  const partsSubtotal = record.partItems.reduce((sum, p) => sum + p.total, 0)
+  const laborSubtotal = record.laborItems.reduce((sum, l) => sum + l.total, 0)
+  const computedSubtotal = partsSubtotal + laborSubtotal
+  const computedDiscount = record.discountType === 'percentage'
+    ? computedSubtotal * (record.discountValue / 100)
+    : record.discountType === 'fixed'
+      ? Math.min(record.discountValue, computedSubtotal)
+      : 0
+  const computedTax = (computedSubtotal - computedDiscount) * (record.taxRate / 100)
+  const computedTotal = computedSubtotal - computedDiscount + computedTax
+  const displayTotal = record.totalAmount > 0 ? record.totalAmount : computedTotal > 0 ? computedTotal : record.cost
   const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
   const df = dateFormat || DEFAULT_DATE_FORMAT
   const tz = timezone || undefined
@@ -856,11 +868,21 @@ export function InvoiceView({
               return (
                 <div key="totals">
                   <div className="mt-6 ml-auto max-w-xs space-y-2">
-                    {record.subtotal > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">{t('subtotal')}</span>
-                        <span>{formatCurrency(record.subtotal, currencyCode)}</span>
-                      </div>
+                    {partsSubtotal > 0 && laborSubtotal > 0 && (
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">{t('parts')}</span>
+                          <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">{t('labor')}</span>
+                          <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">{t('subtotal')}</span>
+                          <span>{formatCurrency(computedSubtotal, currencyCode)}</span>
+                        </div>
+                      </>
                     )}
                     {record.discountAmount > 0 && (
                       <div className="flex justify-between text-sm">
@@ -970,6 +992,41 @@ export function InvoiceView({
                     className="notes-content text-sm text-gray-600 dark:text-gray-400"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.diagnosticNotes!) }}
                   />
+                </div>
+              )
+
+            case 'findings':
+              if (!findings || findings.length === 0) return null
+              return (
+                <div key="findings" className="mt-6">
+                  <h4 className="mb-1 font-semibold">{t('findings', { defaultValue: 'Findings' })}</h4>
+                  <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">{t('findingsDescription', { defaultValue: 'The following items were observed during this service and may require attention.' })}</p>
+                  <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b text-left" style={{ backgroundColor: `${primaryColor}15` }}>
+                          <th className="w-[15%] p-2 font-medium">{t('severity', { defaultValue: 'Severity' })}</th>
+                          <th className="w-[40%] p-2 font-medium">{t('description')}</th>
+                          <th className="p-2 font-medium">{t('findingNotes', { defaultValue: 'Notes' })}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {findings.map((f, i) => {
+                          const severityColor = f.severity === 'urgent' ? 'text-red-600 dark:text-red-400' : f.severity === 'needs_work' ? 'text-amber-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400'
+                          const severityLabel = f.severity === 'urgent' ? t('findingSeverityUrgent', { defaultValue: 'Urgent' }) : f.severity === 'needs_work' ? t('findingSeverityNeedsWork', { defaultValue: 'Needs Work' }) : t('findingSeverityMonitor', { defaultValue: 'Monitor' })
+                          return (
+                            <tr key={i}>
+                              <td className="p-2">
+                                <span className={`text-xs font-semibold uppercase ${severityColor}`}>{severityLabel}</span>
+                              </td>
+                              <td className="p-2">{f.description}</td>
+                              <td className="p-2 text-gray-500 dark:text-gray-400">{f.notes || '-'}</td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )
 

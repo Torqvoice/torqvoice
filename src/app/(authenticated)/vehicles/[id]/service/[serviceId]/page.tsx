@@ -8,6 +8,7 @@ import { getTechnicians, getOrgMembers } from "@/features/workboard/Actions/tech
 import { getAuthContext } from "@/lib/get-auth-context";
 import { getFeatures } from "@/lib/features";
 import { getStatusReportsForService } from "@/features/status-reports/Actions/getStatusReportsForService";
+import { getServiceFindings } from "@/features/vehicles/Actions/findingActions";
 import { db } from "@/lib/db";
 import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
 import { ServicePageClient } from "@/features/vehicles/Components/service-page/ServicePageClient";
@@ -25,7 +26,7 @@ export default async function ServiceDetailPage({
   const sp = await searchParams;
   const initialTab = typeof sp.tab === "string" ? sp.tab : undefined;
 
-  const [result, settingsResult, inventoryResult, techniciansResult, presetsResult, authContext, session, orgMembersResult, statusReportsResult] =
+  const [result, settingsResult, inventoryResult, techniciansResult, presetsResult, authContext, session, orgMembersResult, statusReportsResult, findingsResult] =
     await Promise.all([
       getServiceRecord(serviceId),
       getSettings([
@@ -43,6 +44,7 @@ export default async function ServiceDetailPage({
       getCachedSession(),
       getOrgMembers(),
       getStatusReportsForService(serviceId),
+      getServiceFindings(serviceId),
     ]);
 
   if (!result.success || !result.data) {
@@ -175,6 +177,13 @@ export default async function ServiceDetailPage({
     .filter((a) => a.category === "document" || a.category === "diagnostic")
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }));
 
+  // Fetch open observations for this vehicle (not just this service)
+  const openObservations = await db.vehicleFinding.findMany({
+    where: { vehicleId: id, status: { not: "resolved" } },
+    select: { id: true, description: true, severity: true, notes: true, serviceRecordId: true },
+    orderBy: { createdAt: "desc" },
+  });
+
   return (
     <div className="flex h-svh flex-col overflow-hidden">
       <PageHeader />
@@ -207,6 +216,8 @@ export default async function ServiceDetailPage({
         aiEnabled={aiEnabled}
         defaultDueDays={defaultDueDays}
         statusReports={(statusReportsResult.success && statusReportsResult.data ? statusReportsResult.data : []).map(r => ({ ...r, createdAt: r.createdAt.toISOString(), expiresAt: r.expiresAt?.toISOString() || null, feedbackAt: r.feedbackAt?.toISOString() || null, sentAt: r.sentAt?.toISOString() || null }))}
+        findings={findingsResult.success && findingsResult.data ? findingsResult.data : []}
+        openObservations={openObservations}
       />
     </div>
   );

@@ -54,6 +54,7 @@ export async function saveInvoiceLayoutConfig(config: InvoiceLayoutConfig) {
     });
 
     revalidatePath("/settings/templates");
+    revalidatePath("/settings/invoice");
     return validated;
   }, {
     requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }],

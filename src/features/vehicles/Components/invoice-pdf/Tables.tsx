@@ -1,5 +1,6 @@
 import { Text, View } from '@react-pdf/renderer'
 import { formatCurrency } from '@/lib/format'
+import { getFontBold } from './styles'
 import type { InvoiceData } from './types'
 import type { Style } from '@react-pdf/types'
 
@@ -89,6 +90,63 @@ export function LaborTable({ data, currencyCode, styles, labels }: TablesProps) 
             </View>
           )
         })}
+      </View>
+    </View>
+  )
+}
+
+export function FindingsPdfSection({
+  findings,
+  fontFamily,
+  styles,
+  labels,
+}: {
+  findings: Array<{ description: string; severity: string; notes: string | null }>
+  fontFamily: string
+  styles: Record<string, Style>
+  labels: Record<string, string>
+}) {
+  if (!findings || findings.length === 0) return null
+  const fontBold = getFontBold(fontFamily)
+
+  const severityLabels: Record<string, string> = {
+    urgent: labels.findingSeverityUrgent || 'Urgent',
+    needs_work: labels.findingSeverityNeedsWork || 'Needs Work',
+    monitor: labels.findingSeverityMonitor || 'Monitor',
+  }
+
+  const severityColors: Record<string, string> = {
+    urgent: '#ef4444',
+    needs_work: '#f59e0b',
+    monitor: '#3b82f6',
+  }
+
+  return (
+    <View>
+      <Text style={styles.sectionTitle}>{labels.findings || 'Findings'}</Text>
+      <Text style={{ fontSize: 8, color: '#666', marginBottom: 4, lineHeight: 1.4 }}>{labels.findingsDescription || 'The following items were observed during this service and may require attention.'}</Text>
+      <View style={styles.table}>
+        <View style={styles.tableHeader}>
+          <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>{labels.findingSeverityLabel || 'Severity'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '40%' }}>{labels.description || 'Description'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.findingNotesLabel || 'Notes'}</Text>
+        </View>
+        {findings.map((f, i) => (
+          <View key={i} style={styles.tableRow}>
+            <Text style={{
+              ...styles.tableCell,
+              width: '15%',
+              fontSize: 8,
+              color: severityColors[f.severity] || '#666',
+              fontFamily: fontBold,
+              textTransform: 'uppercase',
+            }}>
+              {severityLabels[f.severity] || f.severity}
+            </Text>
+            <Text style={{ ...styles.tableCell, width: '40%' }}>{f.description}</Text>
+            <Text style={{ ...styles.tableCell, width: '45%', color: '#666' }}>{f.notes || '-'}</Text>
+          </View>
+        ))}
       </View>
     </View>
   )

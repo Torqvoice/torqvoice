@@ -22,11 +22,15 @@ import { useGlassModal } from '@/components/glass-modal'
 import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
 import { NoteForm } from '@/features/vehicles/Components/NoteForm'
 import { ReminderForm } from '@/features/vehicles/Components/ReminderForm'
+import { FindingForm } from '@/features/vehicles/Components/FindingForm'
 import { ServiceRecordsTable } from './service-records-table'
 import { NotesTable } from './notes-table'
+import { FindingsTable } from './findings-table'
 import { toast } from 'sonner'
 import { deleteNote, toggleNotePin } from '@/features/vehicles/Actions/noteActions'
 import { toggleReminder, deleteReminder } from '@/features/vehicles/Actions/reminderActions'
+import { deleteFinding } from '@/features/vehicles/Actions/findingActions'
+import { createServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { unarchiveVehicle } from '@/features/vehicles/Actions/unarchiveVehicle'
 import { deleteVehicle } from '@/features/vehicles/Actions/deleteVehicle'
 import {
@@ -128,6 +132,24 @@ interface PaginatedNotes {
   totalPages: number
 }
 
+interface PaginatedFindings {
+  records: {
+    id: string
+    description: string
+    severity: string
+    status: string
+    notes: string | null
+    imageUrls: string[]
+    createdAt: Date
+    serviceRecord: { id: string; title: string } | null
+    resolvedServiceRecord: { id: string; title: string } | null
+  }[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
 interface VehicleDetail {
   id: string
   make: string
@@ -172,6 +194,7 @@ interface VehicleDetail {
     serviceRecords: number
     notes: number
     reminders: number
+    findings: number
   }
 }
 
@@ -209,11 +232,13 @@ export function VehicleDetailClient({
   inspectionTemplates,
   quotes = [],
   aiEnabled = false,
+  paginatedFindings,
 }: {
   vehicle: VehicleDetail
   customers: CustomerOption[]
   paginatedServices: PaginatedServices
   paginatedNotes: PaginatedNotes
+  paginatedFindings: PaginatedFindings
   serviceSearch: string
   serviceRecordType: string
   currencyCode?: string
@@ -252,7 +277,8 @@ export function VehicleDetailClient({
   const tc = useTranslations('common.buttons')
 
   const tq = useTranslations('vehicles.quotes')
-  const validTabs = ['services', 'quotes', 'inspections', 'notes', 'reminders'] as const
+  const tf = useTranslations('vehicles.findings')
+  const validTabs = ['services', 'quotes', 'inspections', 'findings', 'notes', 'reminders'] as const
   const tabParam = searchParams.get('tab')
   const activeTab = validTabs.includes(tabParam as (typeof validTabs)[number])
     ? (tabParam as string)
@@ -279,6 +305,8 @@ export function VehicleDetailClient({
   const [editingReminder, setEditingReminder] = useState<
     VehicleDetail['reminders'][number] | undefined
   >()
+  const [showFindingForm, setShowFindingForm] = useState(false)
+  const [editingFinding, setEditingFinding] = useState<PaginatedFindings['records'][number] | undefined>()
   const [reminderFilter, setReminderFilter] = useState<'active' | 'completed' | 'all'>('active')
   const [showImage, setShowImage] = useState(false)
   const [selectedNote, setSelectedNote] = useState<PaginatedNotes['records'][number] | null>(null)
@@ -358,6 +386,49 @@ export function VehicleDetailClient({
       router.refresh()
     } else {
       modal.open('error', 'Error', result.error || t('reminderDeleteError'))
+    }
+  }
+
+  const handleDeleteFinding = async (id: string) => {
+    const result = await deleteFinding(id)
+    if (result.success) {
+      toast.success(tf('findingDeleted'))
+      router.refresh()
+    } else {
+      modal.open('error', 'Error', result.error || tf('deleteError'))
+    }
+  }
+
+  const [creatingWorkOrder, setCreatingWorkOrder] = useState(false)
+  const handleCreateWorkOrderFromFindings = async (findingIds: string[]) => {
+    setCreatingWorkOrder(true)
+    const selectedFindings = paginatedFindings.records.filter((f) => findingIds.includes(f.id))
+    const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+    const result = await createServiceRecord({
+      vehicleId: vehicle.id,
+      title: `${vehicleName} - ${tf('sectionTitle')}`,
+      type: 'repair',
+      status: 'pending',
+      laborItems: selectedFindings.map((f) => ({
+        description: `${f.description}${f.notes ? ` - ${f.notes}` : ''}`,
+        hours: 0,
+        rate: 0,
+        total: 0,
+        pricingType: 'hourly' as const,
+      })),
+      subtotal: 0,
+      taxRate: 0,
+      taxAmount: 0,
+      totalAmount: 0,
+    })
+    if (result.success && result.data) {
+      const newServiceId = result.data.id
+      // Delete the observations that were added to the work order
+      await Promise.all(findingIds.map((id) => deleteFinding(id)))
+      router.push(`/vehicles/${vehicle.id}/service/${newServiceId}`)
+    } else {
+      modal.open('error', 'Error', result.error || 'Failed to create work order')
+      setCreatingWorkOrder(false)
     }
   }
 
@@ -974,7 +1045,7 @@ export function VehicleDetailClient({
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="services" className="gap-1.5">
             <Wrench className="h-3.5 w-3.5 shrink-0" />
             <span className="hidden sm:inline">{t('tabs.services')}</span>
@@ -999,6 +1070,15 @@ export function VehicleDetailClient({
             {inspections && inspections.length > 0 && (
               <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
                 {inspections.length}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="findings" className="gap-1.5">
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.findings')}</span>
+            {vehicle._count.findings > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {vehicle._count.findings}
               </Badge>
             )}
           </TabsTrigger>
@@ -1191,6 +1271,29 @@ export function VehicleDetailClient({
               </Table>
             </div>
           )}
+        </TabsContent>
+
+        {/* Findings Tab */}
+        <TabsContent value="findings" forceMount>
+          <FindingsTable
+            vehicleId={vehicle.id}
+            records={paginatedFindings.records}
+            total={paginatedFindings.total}
+            page={paginatedFindings.page}
+            pageSize={paginatedFindings.pageSize}
+            totalPages={paginatedFindings.totalPages}
+            onAddFinding={() => {
+              setEditingFinding(undefined)
+              setShowFindingForm(true)
+            }}
+            onEditFinding={(f) => {
+              setEditingFinding(f)
+              setShowFindingForm(true)
+            }}
+            onDeleteFinding={handleDeleteFinding}
+            onCreateWorkOrder={handleCreateWorkOrderFromFindings}
+            isCreatingWorkOrder={creatingWorkOrder}
+          />
         </TabsContent>
 
         {/* Notes Tab */}
@@ -1401,6 +1504,12 @@ export function VehicleDetailClient({
         open={showReminderForm}
         onOpenChange={setShowReminderForm}
         reminder={editingReminder}
+      />
+      <FindingForm
+        vehicleId={vehicle.id}
+        open={showFindingForm}
+        onOpenChange={setShowFindingForm}
+        finding={editingFinding}
       />
       <NewInspectionDialog
         open={showNewInspection}

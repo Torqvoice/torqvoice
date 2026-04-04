@@ -55,6 +55,13 @@
     "diagnosticReports": "Tanı Raporları ({count})",
     "notes": "Notlar",
     "diagnosticNotes": "Tanı Notları",
+    "findings": "Gözlemler",
+    "findingsDescription": "Aşağıdaki maddeler bu servis sırasında gözlemlenmiştir ve ilgi gerektirebilir.",
+    "severity": "Önem",
+    "findingNotes": "Notlar",
+    "findingSeverityUrgent": "Yüksek",
+    "findingSeverityNeedsWork": "Orta",
+    "findingSeverityMonitor": "Düşük",
     "tel": "Tel: {phone}"
   },
   "quote": {

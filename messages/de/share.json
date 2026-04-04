@@ -55,6 +55,13 @@
     "diagnosticReports": "Diagnoseberichte ({count})",
     "notes": "Hinweise",
     "diagnosticNotes": "Diagnosehinweise",
+    "findings": "Beobachtungen",
+    "findingsDescription": "Die folgenden Punkte wurden bei diesem Service festgestellt und erfordern möglicherweise Aufmerksamkeit.",
+    "severity": "Schweregrad",
+    "findingNotes": "Hinweise",
+    "findingSeverityUrgent": "Hoch",
+    "findingSeverityNeedsWork": "Mittel",
+    "findingSeverityMonitor": "Niedrig",
     "tel": "Tel: {phone}"
   },
   "quote": {

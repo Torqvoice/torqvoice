@@ -52,7 +52,8 @@
       "quotes": "Предложения",
       "inspections": "Осмотры",
       "notes": "Заметки",
-      "reminders": "Напоминания"
+      "reminders": "Напоминания",
+      "findings": "Наблюдения"
     },
     "noteDeleted": "Заметка удалена",
     "noteDeleteError": "Не удалось удалить",
@@ -179,6 +180,54 @@
     "noteCreated": "Заметка создана",
     "titleRequired": "Название и содержание обязательны",
     "saveError": "Не удалось {action} заметку"
+  },
+  "findings": {
+    "sectionTitle": "Наблюдения",
+    "addFinding": "Добавить наблюдение",
+    "editTitle": "Редактировать наблюдение",
+    "addTitle": "Добавить наблюдение",
+    "empty": "Пока нет наблюдений.",
+    "descriptionLabel": "Описание *",
+    "descriptionPlaceholder": "напр. Передние тормозные колодки на минимуме",
+    "severityLabel": "Серьёзность",
+    "notesLabel": "Дополнительные примечания",
+    "notesPlaceholder": "Дополнительные сведения...",
+    "table": {
+      "severity": "Серьёзность",
+      "description": "Описание",
+      "status": "Статус",
+      "date": "Дата"
+    },
+    "severity": {
+      "urgent": "Высокий",
+      "needs_work": "Средний",
+      "monitor": "Низкий"
+    },
+    "status": {
+      "open": "Открыто",
+      "quoted": "Оценено",
+      "resolved": "Решено"
+    },
+    "edit": "Редактировать",
+    "resolve": "Отметить как решённое",
+    "discoveredIn": "Обнаружено в",
+    "resolvedIn": "Решено в",
+    "createWorkOrder": "Создать заказ-наряд ({count})",
+    "vehicleHasObservations": "У этого транспортного средства {count} открытых наблюдений",
+    "addToWorkOrder": "Добавить в заказ-наряд ({count})",
+    "dismiss": "Скрыть",
+    "observationsAdded": "{count} наблюдений добавлено в заказ-наряд",
+    "delete": "Удалить",
+    "findingCreated": "Наблюдение добавлено",
+    "findingUpdated": "Наблюдение обновлено",
+    "findingResolved": "Наблюдение решено",
+    "findingDeleted": "Наблюдение удалено",
+    "saveError": "Не удалось сохранить наблюдение",
+    "deleteError": "Не удалось удалить наблюдение",
+    "resolveError": "Не удалось решить наблюдение",
+    "showing": "Показано {start}-{end} из {total}",
+    "perPage": "на странице",
+    "page": "Страница {page} из {totalPages}"
   },
   "form": {
     "editTitle": "Редактировать транспортное средство",
