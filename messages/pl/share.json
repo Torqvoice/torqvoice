@@ -59,9 +59,9 @@
     "findingsDescription": "Następujące elementy zostały zaobserwowane podczas tego serwisu i mogą wymagać uwagi.",
     "severity": "Priorytet",
     "findingNotes": "Uwagi",
-    "findingSeverityUrgent": "Pilne",
-    "findingSeverityNeedsWork": "Wymaga naprawy",
-    "findingSeverityMonitor": "Monitorować",
+    "findingSeverityUrgent": "Wysoki",
+    "findingSeverityNeedsWork": "Średni",
+    "findingSeverityMonitor": "Niski",
     "tel": "Tel: {phone}"
   },
   "quote": {

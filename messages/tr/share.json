@@ -59,9 +59,9 @@
     "findingsDescription": "Aşağıdaki maddeler bu servis sırasında gözlemlenmiştir ve ilgi gerektirebilir.",
     "severity": "Önem",
     "findingNotes": "Notlar",
-    "findingSeverityUrgent": "Acil",
-    "findingSeverityNeedsWork": "Onarım gerekli",
-    "findingSeverityMonitor": "İzle",
+    "findingSeverityUrgent": "Yüksek",
+    "findingSeverityNeedsWork": "Orta",
+    "findingSeverityMonitor": "Düşük",
     "tel": "Tel: {phone}"
   },
   "quote": {

@@ -199,9 +199,9 @@
       "date": "Datum"
     },
     "severity": {
-      "urgent": "Urgent",
-      "needs_work": "Reparatie nodig",
-      "monitor": "Monitoren"
+      "urgent": "Hoog",
+      "needs_work": "Gemiddeld",
+      "monitor": "Laag"
     },
     "status": {
       "open": "Open",

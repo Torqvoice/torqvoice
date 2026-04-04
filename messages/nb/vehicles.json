@@ -199,9 +199,9 @@
       "date": "Dato"
     },
     "severity": {
-      "urgent": "Haster",
-      "needs_work": "Trenger arbeid",
-      "monitor": "Overvåk"
+      "urgent": "Høy",
+      "needs_work": "Middels",
+      "monitor": "Lav"
     },
     "status": {
       "open": "Åpen",

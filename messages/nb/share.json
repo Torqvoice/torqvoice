@@ -59,9 +59,9 @@
     "findingsDescription": "Følgende punkter ble observert under denne servicen og kan kreve oppmerksomhet.",
     "severity": "Alvorlighet",
     "findingNotes": "Merknader",
-    "findingSeverityUrgent": "Haster",
-    "findingSeverityNeedsWork": "Trenger arbeid",
-    "findingSeverityMonitor": "Overvåke",
+    "findingSeverityUrgent": "Høy",
+    "findingSeverityNeedsWork": "Middels",
+    "findingSeverityMonitor": "Lav",
     "tel": "Tlf: {phone}"
   },
   "quote": {

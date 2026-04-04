@@ -59,9 +59,9 @@
     "findingsDescription": "Os seguintes itens foram observados durante este serviço e podem necessitar de atenção.",
     "severity": "Gravidade",
     "findingNotes": "Observações",
-    "findingSeverityUrgent": "Urgente",
-    "findingSeverityNeedsWork": "Necessita reparo",
-    "findingSeverityMonitor": "Monitorar",
+    "findingSeverityUrgent": "Alta",
+    "findingSeverityNeedsWork": "Média",
+    "findingSeverityMonitor": "Baixa",
     "tel": "Tel: {phone}"
   },
   "quote": {

@@ -199,9 +199,9 @@
       "date": "Date"
     },
     "severity": {
-      "urgent": "Urgent",
-      "needs_work": "À réparer",
-      "monitor": "À surveiller"
+      "urgent": "Haute",
+      "needs_work": "Moyenne",
+      "monitor": "Basse"
     },
     "status": {
       "open": "Ouvert",

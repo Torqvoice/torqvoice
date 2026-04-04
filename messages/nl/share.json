@@ -59,9 +59,9 @@
     "findingsDescription": "De volgende punten zijn waargenomen tijdens deze service en vereisen mogelijk aandacht.",
     "severity": "Ernst",
     "findingNotes": "Opmerkingen",
-    "findingSeverityUrgent": "Urgent",
-    "findingSeverityNeedsWork": "Reparatie nodig",
-    "findingSeverityMonitor": "Monitoren",
+    "findingSeverityUrgent": "Hoog",
+    "findingSeverityNeedsWork": "Gemiddeld",
+    "findingSeverityMonitor": "Laag",
     "tel": "Tel: {phone}"
   },
   "quote": {

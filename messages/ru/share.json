@@ -59,9 +59,9 @@
     "findingsDescription": "Следующие элементы были обнаружены во время данного обслуживания и могут потребовать внимания.",
     "severity": "Приоритет",
     "findingNotes": "Примечания",
-    "findingSeverityUrgent": "Срочно",
-    "findingSeverityNeedsWork": "Требует ремонта",
-    "findingSeverityMonitor": "Наблюдение",
+    "findingSeverityUrgent": "Высокий",
+    "findingSeverityNeedsWork": "Средний",
+    "findingSeverityMonitor": "Низкий",
     "tel": "Тел: {phone}"
   },
   "quote": {

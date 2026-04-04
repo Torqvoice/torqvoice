@@ -199,9 +199,9 @@
       "date": "Tarih"
     },
     "severity": {
-      "urgent": "Acil",
-      "needs_work": "Onarım Gerekli",
-      "monitor": "İzle"
+      "urgent": "Yüksek",
+      "needs_work": "Orta",
+      "monitor": "Düşük"
     },
     "status": {
       "open": "Açık",

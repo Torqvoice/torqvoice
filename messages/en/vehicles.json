@@ -199,9 +199,9 @@
       "date": "Date"
     },
     "severity": {
-      "urgent": "Urgent",
-      "needs_work": "Needs Work",
-      "monitor": "Monitor"
+      "urgent": "High",
+      "needs_work": "Medium",
+      "monitor": "Low"
     },
     "status": {
       "open": "Open",

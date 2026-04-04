@@ -199,9 +199,9 @@
       "date": "Дата"
     },
     "severity": {
-      "urgent": "Срочно",
-      "needs_work": "Требует ремонта",
-      "monitor": "Наблюдение"
+      "urgent": "Высокий",
+      "needs_work": "Средний",
+      "monitor": "Низкий"
     },
     "status": {
       "open": "Открыто",
