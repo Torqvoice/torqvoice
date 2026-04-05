@@ -10,6 +10,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { PWAServiceWorker } from '@/components/pwa-service-worker'
 import { PostHogProvider } from '@/components/posthog-provider'
 import { isCloudMode } from '@/lib/features'
+import { isDemoMode } from '@/lib/demo'
 import { DemoBanner } from '@/components/demo-banner'
 import './globals.css'
 
@@ -98,7 +99,7 @@ export default async function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <PostHogProvider
-          isCloud={isCloudMode()}
+          enabled={isCloudMode() || isDemoMode}
           posthogKey={process.env.POSTHOG_KEY}
           posthogHost={process.env.POSTHOG_HOST}
         >
