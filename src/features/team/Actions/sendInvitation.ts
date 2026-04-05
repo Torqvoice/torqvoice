@@ -7,9 +7,11 @@ import { sendInvitationSchema } from "../Schema/teamSchema";
 import { sendOrgMail, getOrgFromAddress } from "@/lib/email";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
+import { demoGuard } from "@/lib/demo";
 
 export async function sendInvitation(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
+    demoGuard();
     const data = sendInvitationSchema.parse(input);
 
     // Fetch membership for organization name (authorization is handled by withAuth's requiredPermissions)

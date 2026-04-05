@@ -7,6 +7,7 @@ import { requireFeature } from "@/lib/features";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { SMS_TEMPLATE_DEFAULTS } from "@/lib/sms-templates";
+import { demoGuard } from "@/lib/demo";
 
 export async function sendSmsToCustomer(input: {
   customerId: string;
@@ -16,6 +17,7 @@ export async function sendSmsToCustomer(input: {
 }) {
   return withAuth(
     async ({ organizationId }) => {
+      demoGuard();
       await requireFeature(organizationId, "sms");
 
       const customer = await db.customer.findFirst({

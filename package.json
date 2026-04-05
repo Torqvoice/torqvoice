@@ -14,7 +14,8 @@
     "check:fix": "biome check . --write",
     "prepare": "next-ws patch",
     "test": "vitest run",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "seed:demo": "node --experimental-strip-types --no-warnings plans/seed_dummy_data.ts"
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.1011.0",

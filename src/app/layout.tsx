@@ -10,6 +10,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { PWAServiceWorker } from '@/components/pwa-service-worker'
 import { PostHogProvider } from '@/components/posthog-provider'
 import { isCloudMode } from '@/lib/features'
+import { DemoBanner } from '@/components/demo-banner'
 import './globals.css'
 
 const geistSans = Geist({
@@ -105,6 +106,7 @@ export default async function RootLayout({
             <ThemeProvider defaultTheme="dark">
               <QueryProvider>
                 <TooltipProvider>
+                  <DemoBanner />
                   {children}
                   <GlassModal />
                   <Toaster richColors position="bottom-right" />

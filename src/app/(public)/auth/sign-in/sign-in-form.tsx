@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -9,10 +9,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { Fingerprint, Loader2, XCircle } from 'lucide-react'
+import { Fingerprint, Loader2, PlayCircle, XCircle } from 'lucide-react'
 import { AuthLogo } from '@/components/auth-logo'
 
-function SignInFormInner({ registrationDisabled }: { registrationDisabled: boolean }) {
+const DEMO_EMAIL = 'demo@torqvoice.com'
+const DEMO_PASSWORD = 'demo'
+
+function SignInFormInner({ registrationDisabled, demoMode = false }: { registrationDisabled: boolean; demoMode?: boolean }) {
   const t = useTranslations('auth.signIn')
   const tc = useTranslations('common')
   const [email, setEmail] = useState('')
@@ -47,6 +50,34 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
       setLoading(false)
     }
   }
+
+  const handleDemoSignIn = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const result = await signIn.email({ email: DEMO_EMAIL, password: DEMO_PASSWORD })
+      if (result.error) {
+        setError(result.error.message || tc('errors.unexpected'))
+        setLoading(false)
+      } else {
+        router.push('/')
+        router.refresh()
+      }
+    } catch {
+      setError(tc('errors.unexpected'))
+      setLoading(false)
+    }
+  }
+
+  // Auto-sign-in when arriving with ?demo=1 (deep-link from marketing site)
+  const autoTriggered = useRef(false)
+  useEffect(() => {
+    if (!demoMode || autoTriggered.current) return
+    if (searchParams.get('demo') !== '1') return
+    autoTriggered.current = true
+    void handleDemoSignIn()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demoMode, searchParams])
 
   const handlePasskeySignIn = async () => {
     setPasskeyLoading(true)
@@ -84,6 +115,28 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
         <div className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
           <XCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
+        </div>
+      )}
+
+      {demoMode && (
+        <div className="mb-6">
+          <Button
+            type="button"
+            className="h-11 w-full"
+            disabled={loading}
+            onClick={handleDemoSignIn}
+          >
+            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlayCircle className="mr-2 h-4 w-4" />}
+            Try the demo
+          </Button>
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            Or sign in manually with <code className="rounded bg-muted px-1">{DEMO_EMAIL}</code> / <code className="rounded bg-muted px-1">{DEMO_PASSWORD}</code>
+          </p>
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <Separator className="w-full" />
+            </div>
+          </div>
         </div>
       )}
 
@@ -169,7 +222,7 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
   )
 }
 
-export function SignInForm({ registrationDisabled }: { registrationDisabled: boolean }) {
+export function SignInForm({ registrationDisabled, demoMode = false }: { registrationDisabled: boolean; demoMode?: boolean }) {
   return (
     <div className="grid-bg flex min-h-screen items-center justify-center p-4">
       <div className="absolute inset-0 overflow-hidden">
@@ -177,7 +230,7 @@ export function SignInForm({ registrationDisabled }: { registrationDisabled: boo
         <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
       </div>
       <Suspense>
-        <SignInFormInner registrationDisabled={registrationDisabled} />
+        <SignInFormInner registrationDisabled={registrationDisabled} demoMode={demoMode} />
       </Suspense>
     </div>
   )

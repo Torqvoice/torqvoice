@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
+import { isDemoMode } from "@/lib/demo";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
 import { mkdir, writeFile, stat, readdir, rm } from "fs/promises";
 import { readFileSync } from "fs";
@@ -193,6 +194,10 @@ async function extractZipToTempDir(zipBuffer: Buffer): Promise<string> {
 // ── API Route ────────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
+  if (isDemoMode) {
+    return NextResponse.json({ error: "Data import is disabled on the demo." }, { status: 403 });
+  }
+
   const ctx = await getAuthContext();
   if (!ctx) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

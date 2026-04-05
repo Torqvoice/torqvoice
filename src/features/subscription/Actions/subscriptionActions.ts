@@ -3,9 +3,11 @@
 import { withAuth } from "@/lib/with-auth";
 import { db } from "@/lib/db";
 import { getStripeClient } from "@/lib/stripe-config";
+import { demoGuard } from "@/lib/demo";
 
 export async function cancelSubscription() {
   return withAuth(async ({ organizationId }) => {
+    demoGuard();
     const subscription = await db.subscription.findUnique({
       where: { organizationId },
     });
@@ -37,6 +39,7 @@ export async function cancelSubscription() {
 
 export async function resumeSubscription() {
   return withAuth(async ({ organizationId }) => {
+    demoGuard();
     const subscription = await db.subscription.findUnique({
       where: { organizationId },
     });
