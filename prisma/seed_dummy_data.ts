@@ -29,7 +29,7 @@ const DATA_ROOT = process.env.DATA_ROOT || path.join(process.cwd(), "data");
 const UPLOAD_DIR = path.join(DATA_ROOT, "uploads", ORG_ID, "vehicles");
 // Image assets bundled with the repo — preferred over live URL downloads so
 // the seed never fails when an Unsplash photo gets removed.
-const BUNDLED_IMAGE_DIR = path.join(import.meta.dirname, "seed-assets", "vehicles");
+const BUNDLED_IMAGE_DIR = path.join(process.cwd(), "prisma", "seed-assets", "vehicles");
 
 // All CDN URLs verified: extracted from Unsplash photo pages via curl, all return HTTP 200
 const vehicleImages: Record<string, string> = {
