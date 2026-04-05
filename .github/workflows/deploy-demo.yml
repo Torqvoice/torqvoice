@@ -154,7 +154,7 @@ jobs:
             -e DEMO_USER_PASSWORD="demo" \
             -e DATA_ROOT=/app/data \
             torqvoice-app-demo \
-            node --experimental-strip-types --no-warnings prisma/seed_dummy_data.ts
+            npx tsx prisma/seed_dummy_data.ts
 
       - name: Prune old images and build cache
         run: docker image prune -f && docker builder prune -f

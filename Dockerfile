@@ -53,7 +53,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.
 COPY --from=builder --chown=nextjs:nodejs /app/src/generated ./src/generated
 
 # Install runtime packages for Prisma v7
-RUN npm install prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv
+RUN npm install prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx
 
 # Copy init script
 COPY --chown=nextjs:nodejs init-db.sh ./init-db.sh
