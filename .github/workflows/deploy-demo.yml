@@ -1,26 +1,67 @@
 name: "Deploy: Demo"
 
 on:
-  push:
-    branches: [demo]
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Image tag to deploy (e.g. latest, v1.3.0, dev-abc1234)"
-        required: false
-        default: "latest"
       reseed:
         description: "Reseed demo data after deploy"
         type: boolean
         required: false
         default: true
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-demo
+
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+    steps:
+      - name: Checkout demo branch
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get short commit SHA
+        id: sha
+        run: echo "short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Set image reference
+        id: meta
+        run: echo "image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push demo image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:demo-${{ steps.sha.outputs.short }}
+          build-args: |
+            APP_VERSION=demo-${{ steps.sha.outputs.short }}
+          cache-from: type=gha,scope=demo
+          cache-to: type=gha,scope=demo,mode=max
+
   deploy:
+    needs: build
     runs-on: [self-hosted, Linux, X64, hetzner]
 
     steps:
-      - name: Checkout repo
+      - name: Checkout demo branch
         uses: actions/checkout@v4
 
       - name: Log in to GitHub Container Registry
@@ -37,6 +78,7 @@ jobs:
           DATA_PATH: ${{ secrets.DATA_PATH }}
           POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
           POSTHOG_KEY: ${{ secrets.POSTHOG_DEMO_KEY }}
+          DEMO_IMAGE: ${{ needs.build.outputs.image }}
         run: |
           mkdir -p $HOME/torqvoice-deploy/demo
           cd $HOME/torqvoice-deploy/demo
@@ -51,7 +93,7 @@ jobs:
           services:
             torqvoice-app-demo:
               container_name: torqvoice-app-demo
-              image: ghcr.io/torqvoice/torqvoice:${APP_TAG:-latest}
+              image: ${DEMO_IMAGE}:latest
               restart: unless-stopped
               volumes:
                 - ${DATA_PATH}/torqvoice_demo_data:/app/data
@@ -82,8 +124,7 @@ jobs:
       - name: Deploy demo
         run: |
           cd $HOME/torqvoice-deploy/demo
-          TAG=${{ inputs.tag || 'latest' }}
-          APP_TAG=$TAG docker compose up -d --pull always
+          docker compose up -d --pull always
 
       - name: Health check
         run: |
