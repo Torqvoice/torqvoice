@@ -15,7 +15,7 @@
     "prepare": "next-ws patch",
     "test": "vitest run",
     "test:coverage": "vitest --coverage",
-    "seed:demo": "node --experimental-strip-types --no-warnings prisma/seed_dummy_data.ts"
+    "seed:demo": "npx tsx prisma/seed_dummy_data.ts"
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.1011.0",
