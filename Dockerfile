@@ -52,8 +52,26 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.
 # Copy generated Prisma client
 COPY --from=builder --chown=nextjs:nodejs /app/src/generated ./src/generated
 
-# Install runtime packages for Prisma v7
-RUN npm install prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx
+# Remove Next.js standalone's traced stubs for pg/prisma (tracer copies package.json
+# but not all files), then install the full runtime packages fresh.
+RUN rm -rf \
+      /app/node_modules/pg \
+      /app/node_modules/pg-types \
+      /app/node_modules/pg-pool \
+      /app/node_modules/pg-connection-string \
+      /app/node_modules/pg-protocol \
+      /app/node_modules/pg-int8 \
+      /app/node_modules/pg-cloudflare \
+      /app/node_modules/pgpass \
+      /app/node_modules/postgres-array \
+      /app/node_modules/postgres-bytea \
+      /app/node_modules/postgres-date \
+      /app/node_modules/postgres-interval \
+      /app/node_modules/split2 \
+      /app/node_modules/prisma \
+      /app/node_modules/@prisma \
+      /app/node_modules/.prisma \
+    && npm install prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx
 
 # Copy init script
 COPY --chown=nextjs:nodejs init-db.sh ./init-db.sh
