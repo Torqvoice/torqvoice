@@ -11,7 +11,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}-demo
+  IMAGE_NAME: torqvoice/torqvoice-demo
 
 jobs:
   build:
@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout demo branch
         uses: actions/checkout@v4
+        with:
+          ref: demo
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -54,7 +56,7 @@ jobs:
           build-args: |
             APP_VERSION=demo-${{ steps.sha.outputs.short }}
           cache-from: type=gha,scope=demo
-          cache-to: type=gha,scope=demo,mode=max
+          cache-to: type=gha,scope=demo,mode=min
 
   deploy:
     needs: build
@@ -63,6 +65,8 @@ jobs:
     steps:
       - name: Checkout demo branch
         uses: actions/checkout@v4
+        with:
+          ref: demo
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -142,30 +146,15 @@ jobs:
           docker logs torqvoice-app-demo --tail 50
           exit 1
 
-      - name: Setup Node
-        if: ${{ github.event_name == 'push' || inputs.reseed }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
-
-      - name: Install deps + generate Prisma client
-        if: ${{ github.event_name == 'push' || inputs.reseed }}
-        run: |
-          npm ci --ignore-scripts
-          npx prisma generate
-
       - name: Seed demo data
         if: ${{ github.event_name == 'push' || inputs.reseed }}
-        env:
-          DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
-          DEMO_USER_EMAIL: "demo@torqvoice.com"
-          DEMO_USER_PASSWORD: "demo"
-          DATA_ROOT: ${{ secrets.DATA_PATH }}/torqvoice_demo_data
         run: |
-          node --experimental-strip-types --no-warnings plans/seed_dummy_data.ts
-          # container runs as uid 1001, so chown the newly-written uploads
-          docker run --rm -v "${DATA_ROOT}":/data alpine chown -R 1001:1001 /data
+          docker exec \
+            -e DEMO_USER_EMAIL="demo@torqvoice.com" \
+            -e DEMO_USER_PASSWORD="demo" \
+            -e DATA_ROOT=/app/data \
+            torqvoice-app-demo \
+            npx tsx prisma/seed_dummy_data.ts
 
       - name: Prune old images and build cache
         run: docker image prune -f && docker builder prune -f
