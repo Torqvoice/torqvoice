@@ -26,3 +26,26 @@ export function demoGuard(): void {
     throw new Error("This action is disabled on the demo. Install Torqvoice on your own server to use it.");
   }
 }
+
+/**
+ * Setting keys that store provider credentials / secrets. Demo visitors
+ * shouldn't be able to paste real API keys into a shared demo DB.
+ */
+const DEMO_BLOCKED_SETTING_KEY_PATTERNS: RegExp[] = [
+  /^payment\.(stripe|vipps|paypal)\./,
+  /^payment\.providersEnabled$/,
+];
+
+export function isDemoBlockedSettingKey(key: string): boolean {
+  return DEMO_BLOCKED_SETTING_KEY_PATTERNS.some((p) => p.test(key));
+}
+
+/**
+ * Guard for settings writes — throws if the key stores a credential/secret.
+ * Safe keys (theme, language, date format, ...) pass through.
+ */
+export function demoGuardSettingKey(key: string): void {
+  if (isDemoMode && isDemoBlockedSettingKey(key)) {
+    throw new Error("This setting can't be changed on the demo.");
+  }
+}

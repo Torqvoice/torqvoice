@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { ALL_ORG_SMS_KEYS, ORG_SMS_KEYS } from "../Schema/smsSettingsSchema";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { sendOrgSms } from "@/lib/sms";
+import { demoGuard } from "@/lib/demo";
 
 export async function getSmsSettings() {
   return withAuth(
@@ -31,6 +32,7 @@ export async function getSmsSettings() {
 export async function setSmsSettings(entries: Record<string, string>) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      demoGuard();
       // Auto-generate webhook secret if not already set
       const existing = await db.appSetting.findUnique({
         where: {
@@ -71,6 +73,7 @@ export async function setSmsSettings(entries: Record<string, string>) {
 export async function testSmsSend(testPhone: string) {
   return withAuth(
     async ({ organizationId }) => {
+      demoGuard();
       if (!testPhone?.trim()) {
         throw new Error("Please enter a phone number to send the test SMS to");
       }

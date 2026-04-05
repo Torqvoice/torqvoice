@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { revalidatePath } from "next/cache";
 import { ALL_AI_KEYS, AI_KEYS, type AiProvider, type AiModel, getModelCost, formatModelLabel } from "../Schema/aiSettingsSchema";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { demoGuard } from "@/lib/demo";
 
 const API_KEY_MASK = "••••••••••••••••";
 
@@ -36,6 +37,7 @@ export async function getAiSettings() {
 export async function setAiSettings(entries: Record<string, string>) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      demoGuard();
       // Filter out masked API key — only update if user provided a new one
       const filtered = Object.entries(entries).filter(
         ([key, value]) => !(key === AI_KEYS.AI_API_KEY && value === API_KEY_MASK),
@@ -118,6 +120,7 @@ function anthropicModelOrder(id: string): number {
 export async function fetchAiModels(provider: AiProvider) {
   return withAuth(
     async ({ organizationId }) => {
+      demoGuard();
       // Read API key from DB — never accept it from the client
       const setting = await db.appSetting.findUnique({
         where: { organizationId_key: { organizationId, key: AI_KEYS.AI_API_KEY } },

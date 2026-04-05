@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { revalidatePath } from "next/cache";
+import { demoGuard } from "@/lib/demo";
 import {
   ALL_ORG_TELEGRAM_KEYS,
   ORG_TELEGRAM_KEYS,
@@ -40,6 +41,7 @@ export async function getTelegramSettings() {
 export async function setTelegramSettings(settings: { botToken: string }) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      demoGuard();
       await requireFeature(organizationId, "telegram");
 
       // Validate bot token by calling getMe
@@ -94,6 +96,7 @@ export async function testTelegramSend(input: {
 }) {
   return withAuth(
     async ({ organizationId }) => {
+      demoGuard();
       await requireFeature(organizationId, "telegram");
 
       if (!input.chatId?.trim()) {
