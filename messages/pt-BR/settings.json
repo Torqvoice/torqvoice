@@ -626,6 +626,8 @@
     "languageTitle": "Idioma",
     "languageDescription": "Escolha o idioma de exibição do aplicativo.",
     "language": "Idioma",
+    "forceCustomerLocale": "Forçar este idioma nas páginas voltadas ao cliente",
+    "forceCustomerLocaleHint": "Quando ativado, os clientes que visualizam faturas, orçamentos e inspeções compartilhadas os verão no idioma da sua oficina, independentemente das configurações do navegador. Quando desativado, os clientes veem as páginas no idioma configurado no navegador.",
     "saved": "Configurações de localização salvas",
     "saveSettings": "Salvar configurações"
   },

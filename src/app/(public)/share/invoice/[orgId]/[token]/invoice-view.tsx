@@ -16,7 +16,7 @@ import {
 import { QRCodeSVG } from 'qrcode.react'
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { sanitizeHtml } from '@/lib/sanitize-html'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds, getVisibleFieldsForSection } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 interface InvoiceRecord {
@@ -225,6 +225,7 @@ export function InvoiceView({
 }) {
   const t = useTranslations('share.invoice')
   const tc = useTranslations('share.common')
+  const locale = useLocale()
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
   const [paymentAmount, setPaymentAmount] = useState('')
   const [paymentLoading, setPaymentLoading] = useState<string | null>(null)
@@ -743,7 +744,7 @@ export function InvoiceView({
                       case 'vehicle_name': return <p key={fid} className="font-semibold">{vehicleName}</p>
                       case 'vin': return record.vehicle.vin ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `HIN: ${record.vehicle.vin}` : t('vin', { vin: record.vehicle.vin })}</p> : null
                       case 'license_plate': return record.vehicle.licensePlate ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `Reg: ${record.vehicle.licensePlate}` : t('plate', { plate: record.vehicle.licensePlate })}</p> : null
-                      case 'mileage': return record.vehicle.mileage > 0 ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `Engine Hours: ${record.vehicle.mileage.toLocaleString()}` : record.vehicle.mileage.toLocaleString()}</p> : null
+                      case 'mileage': return record.vehicle.mileage > 0 ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `Engine Hours: ${record.vehicle.mileage.toLocaleString(locale)}` : record.vehicle.mileage.toLocaleString(locale)}</p> : null
                       default: return null
                     }
                   }

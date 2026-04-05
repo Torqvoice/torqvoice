@@ -1,28 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
+import { NextResponse, type NextRequest } from 'next/server'
 
-const publicPaths = ["/auth", "/api/v1", "/api/public", "/api/internal", "/api/webhooks", "/share", "/terms"];
-
-export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Allow public paths
-  if (publicPaths.some((path) => pathname.startsWith(path))) {
-    return NextResponse.next();
-  }
-
-  // Check for session cookie (handles both secure and non-secure prefixes)
-  const sessionCookie = getSessionCookie(request);
-
-  if (!pathname.startsWith("/auth") && !sessionCookie) {
-    const signInUrl = new URL("/auth/sign-in", request.url);
-    signInUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(signInUrl);
-  }
-
-  return NextResponse.next();
+// Expose the request pathname to server components and route handlers
+// via an internal `x-pathname` header. next-intl's request config uses
+// this to detect customer-facing routes and apply forced locales.
+export function proxy(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-pathname', request.nextUrl.pathname)
+  return NextResponse.next({
+    request: { headers: requestHeaders },
+  })
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)"],
-};
+  matcher: [
+    // Everything except static files, images, and Next internals
+    '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2|ttf|eot)$).*)',
+  ],
+}

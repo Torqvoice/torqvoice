@@ -626,6 +626,8 @@
     "languageTitle": "Langue",
     "languageDescription": "Choisissez la langue d'affichage de l'application.",
     "language": "Langue",
+    "forceCustomerLocale": "Forcer cette langue sur les pages destinées aux clients",
+    "forceCustomerLocaleHint": "Lorsqu'il est activé, les clients consultant les factures, devis et inspections partagés les verront dans la langue de votre atelier, quels que soient les paramètres de leur navigateur. Lorsqu'il est désactivé, les clients voient les pages dans la langue configurée dans leur navigateur.",
     "saved": "Paramètres de localisation enregistrés",
     "saveSettings": "Enregistrer les paramètres"
   },

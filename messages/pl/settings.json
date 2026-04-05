@@ -626,6 +626,8 @@
     "languageTitle": "Język",
     "languageDescription": "Wybierz język wyświetlania aplikacji.",
     "language": "Język",
+    "forceCustomerLocale": "Wymuś ten język na stronach dla klientów",
+    "forceCustomerLocaleHint": "Po włączeniu klienci przeglądający udostępnione faktury, oferty i inspekcje zobaczą je w języku Twojego warsztatu, niezależnie od ustawień przeglądarki. Gdy wyłączone, klienci widzą strony w języku skonfigurowanym w ich przeglądarce.",
     "saved": "Ustawienia lokalizacji zapisane",
     "saveSettings": "Zapisz ustawienia"
   },
