@@ -11,7 +11,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}-demo
+  IMAGE_NAME: torqvoice/torqvoice-demo
 
 jobs:
   build:
