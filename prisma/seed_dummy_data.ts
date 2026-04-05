@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { randomBytes, scryptSync } from "node:crypto";
 import * as fs from "fs";
 import * as path from "path";
@@ -15,7 +16,9 @@ function hashPassword(password: string): string {
   return `${salt}:${key.toString("hex")}`;
 }
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+});
 
 const USER_ID = "IqcAL6GKoedJNO8Xi6UJkCM5YZqgS9uU";
 const ORG_ID = "cmmh0vczm0000oiyan37vuyqf";
