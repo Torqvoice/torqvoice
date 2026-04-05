@@ -1,0 +1,171 @@
+name: "Deploy: Demo"
+
+on:
+  workflow_dispatch:
+    inputs:
+      reseed:
+        description: "Reseed demo data after deploy"
+        type: boolean
+        required: false
+        default: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-demo
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+    steps:
+      - name: Checkout demo branch
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get short commit SHA
+        id: sha
+        run: echo "short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Set image reference
+        id: meta
+        run: echo "image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push demo image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:demo-${{ steps.sha.outputs.short }}
+          build-args: |
+            APP_VERSION=demo-${{ steps.sha.outputs.short }}
+          cache-from: type=gha,scope=demo
+          cache-to: type=gha,scope=demo,mode=max
+
+  deploy:
+    needs: build
+    runs-on: [self-hosted, Linux, X64, hetzner]
+
+    steps:
+      - name: Checkout demo branch
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Create deployment files
+        env:
+          VIRTUAL_HOST: "demo.torqvoice.com"
+          DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.DEMO_BETTER_AUTH_SECRET }}
+          APP_URL: "https://demo.torqvoice.com"
+          DEMO_USER_EMAIL: "demo@torqvoice.com"
+          DEMO_USER_PASSWORD: "demo"
+          DATA_PATH: ${{ secrets.DATA_PATH }}
+          POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
+          POSTHOG_KEY: ${{ secrets.POSTHOG_DEMO_KEY }}
+          DEMO_IMAGE: ${{ needs.build.outputs.image }}
+        run: |
+          mkdir -p $HOME/torqvoice-deploy/demo
+          cd $HOME/torqvoice-deploy/demo
+
+          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|DEMO_|POSTHOG_)' > .env
+
+          cat > docker-compose.yml << 'COMPOSE'
+          networks:
+            proxy:
+              external: true
+              name: proxy
+          services:
+            torqvoice-app-demo:
+              container_name: torqvoice-app-demo
+              image: ${DEMO_IMAGE}:latest
+              restart: unless-stopped
+              volumes:
+                - ${DATA_PATH}/torqvoice_demo_data:/app/data
+              expose:
+                - "3000"
+              environment:
+                VIRTUAL_HOST: ${VIRTUAL_HOST}
+                VIRTUAL_PORT: "3000"
+                LETSENCRYPT_HOST: ${VIRTUAL_HOST}
+                DATABASE_URL: ${DATABASE_URL}
+                BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+                NEXT_PUBLIC_APP_URL: ${APP_URL}
+                DEMO_MODE: "true"
+                DEMO_USER_EMAIL: ${DEMO_USER_EMAIL}
+                DEMO_USER_PASSWORD: ${DEMO_USER_PASSWORD}
+                POSTHOG_HOST: ${POSTHOG_HOST}
+                POSTHOG_KEY: ${POSTHOG_KEY}
+              networks:
+                - proxy
+          COMPOSE
+
+      - name: Ensure data directory permissions
+        run: |
+          DATA_DIR="${{ secrets.DATA_PATH }}/torqvoice_demo_data"
+          mkdir -p "$DATA_DIR"
+          docker run --rm -v "$DATA_DIR":/data alpine chown -R 1001:1001 /data
+
+      - name: Deploy demo
+        run: |
+          cd $HOME/torqvoice-deploy/demo
+          docker compose up -d --pull always
+
+      - name: Health check
+        run: |
+          echo "Waiting for demo container to be ready..."
+          for i in $(seq 1 12); do
+            STATUS=$(docker inspect --format='{{.State.Status}}' torqvoice-app-demo 2>/dev/null || echo "not found")
+            if [ "$STATUS" = "running" ]; then
+              echo "Container is running!"
+              exit 0
+            fi
+            echo "Status: $STATUS, retrying in 5s..."
+            sleep 5
+          done
+          echo "::error::Container failed to start"
+          docker logs torqvoice-app-demo --tail 50
+          exit 1
+
+      - name: Setup Node
+        if: ${{ github.event_name == 'push' || inputs.reseed }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install deps + generate Prisma client
+        if: ${{ github.event_name == 'push' || inputs.reseed }}
+        run: |
+          npm ci --ignore-scripts
+          npx prisma generate
+
+      - name: Seed demo data
+        if: ${{ github.event_name == 'push' || inputs.reseed }}
+        env:
+          DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
+          DEMO_USER_EMAIL: "demo@torqvoice.com"
+          DEMO_USER_PASSWORD: "demo"
+          DATA_ROOT: ${{ secrets.DATA_PATH }}/torqvoice_demo_data
+        run: |
+          node --experimental-strip-types --no-warnings plans/seed_dummy_data.ts
+          # container runs as uid 1001, so chown the newly-written uploads
+          docker run --rm -v "${DATA_ROOT}":/data alpine chown -R 1001:1001 /data
+
+      - name: Prune old images and build cache
+        run: docker image prune -f && docker builder prune -f
