@@ -89,7 +89,7 @@ export async function PortalShell({
       <PortalHeader
         orgId={orgParam}
         orgName={org.name}
-        orgLogo={logoSetting?.value}
+        orgLogo={logoSetting?.value ? `/api/public/logo/${orgParam}` : undefined}
         customerName={customer.name}
       />
       <div className="flex min-h-0 flex-1">
