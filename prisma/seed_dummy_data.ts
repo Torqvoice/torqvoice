@@ -1142,5 +1142,5 @@ async function seed() {
 }
 
 seed()
-  .catch((e) => { console.error("Seed failed:", e); process.exit(1); })
-  .finally(() => prisma.$disconnect());
+  .then(async () => { await prisma.$disconnect(); process.exit(0); })
+  .catch(async (e) => { console.error("Seed failed:", e); await prisma.$disconnect(); process.exit(1); });
