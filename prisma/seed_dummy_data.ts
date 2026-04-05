@@ -27,6 +27,9 @@ const DEMO_PASSWORD = process.env.DEMO_USER_PASSWORD || "demo";
 const DEMO_ORG_NAME = process.env.DEMO_ORG_NAME || "Demo Auto Workshop";
 const DATA_ROOT = process.env.DATA_ROOT || path.join(process.cwd(), "data");
 const UPLOAD_DIR = path.join(DATA_ROOT, "uploads", ORG_ID, "vehicles");
+// Image assets bundled with the repo — preferred over live URL downloads so
+// the seed never fails when an Unsplash photo gets removed.
+const BUNDLED_IMAGE_DIR = path.join(import.meta.dirname, "seed-assets", "vehicles");
 
 // All CDN URLs verified: extracted from Unsplash photo pages via curl, all return HTTP 200
 const vehicleImages: Record<string, string> = {
@@ -54,7 +57,7 @@ const vehicleImages: Record<string, string> = {
   "subaru-forester.jpg": "https://images.unsplash.com/photo-1687048988997-ec57f83ea3bd?w=800&q=80",
   // Trucks
   "kenworth-t680.jpg": "https://images.unsplash.com/photo-1586191552066-d52dd1e3af86?w=800&q=80",
-  "freightliner-cascadia.jpg": "https://images.unsplash.com/photo-1635681463939-dc861a9a42c9?w=800&q=80",
+  "freightliner-cascadia.jpg": "https://images.unsplash.com/photo-1616432043562-3671ea2e5242?w=800&q=80",
   "volvo-fh640.jpg": "https://images.unsplash.com/photo-1633966100013-25a16d17b43d?w=800&q=80",
   "mack-granite.jpg": "https://images.unsplash.com/photo-1746349086423-06ea6b4d73f7?w=800&q=80",
   "concrete-mixer.jpg": "https://images.unsplash.com/photo-1530139675202-8c52bb810762?w=800&q=80",
@@ -164,12 +167,20 @@ async function seed() {
   await provisionDemoAccount();
   await cleanup();
 
-  // Download images
-  console.log("Downloading images...");
+  // Populate vehicle images: prefer bundled assets → fall back to cached copy
+  // in data volume → fall back to live download.
+  console.log("Populating vehicle images...");
+  if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
   for (const [file, url] of Object.entries(vehicleImages)) {
     const dest = path.join(UPLOAD_DIR, file);
-    if (fs.existsSync(dest)) { console.log(`  [exists] ${file}`); continue; }
-    try { await downloadFile(url, dest); console.log(`  [ok] ${file}`); }
+    const bundled = path.join(BUNDLED_IMAGE_DIR, file);
+    if (fs.existsSync(bundled)) {
+      fs.copyFileSync(bundled, dest);
+      console.log(`  [bundled] ${file}`);
+      continue;
+    }
+    if (fs.existsSync(dest)) { console.log(`  [cached] ${file}`); continue; }
+    try { await downloadFile(url, dest); console.log(`  [downloaded] ${file}`); }
     catch { console.warn(`  [fail] ${file}`); }
   }
 
@@ -549,7 +560,7 @@ async function seed() {
   const findings = await Promise.all([
     prisma.vehicleFinding.create({ data: { vehicleId: vehicles[4].id, description: "Front brake pads at 3mm, recommend replacement within 5,000 miles", severity: "needs_work", status: "open", serviceRecordId: serviceRecords[1].id, notes: "Customer informed during 50K service. Quoted separately.", imageUrls: [] } }),
     prisma.vehicleFinding.create({ data: { vehicleId: vehicles[5].id, description: "CV boot torn on driver side, grease leaking onto suspension components", severity: "urgent", status: "open", notes: "Needs attention soon - will fail CV joint if not addressed.", imageUrls: [] } }),
-    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[1].id, description: "Slight oil seepage from valve cover gasket, monitor at next service", severity: "monitor", status: "open", serviceRecordId: serviceRecords[19].id, notes: "Not dripping yet - just damp. Re-check in 6 months.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[1].id, description: "Slight oil seepage from valve cover gasket, monitor at next service", severity: "monitor", status: "open", serviceRecordId: serviceRecords[18].id, notes: "Not dripping yet - just damp. Re-check in 6 months.", imageUrls: [] } }),
     prisma.vehicleFinding.create({ data: { vehicleId: vehicles[8].id, description: "Battery testing at 78% capacity, recommend replacement before winter", severity: "monitor", status: "open", notes: "Still starts reliably. Load test shows degraded CCA.", imageUrls: [] } }),
     prisma.vehicleFinding.create({ data: { vehicleId: vehicles[2].id, description: "Tire tread below 4/32 on front tires, will need replacement soon", severity: "needs_work", status: "open", notes: "Rears still have 6/32. Recommend rotating and planning fronts soon.", imageUrls: [] } }),
     prisma.vehicleFinding.create({ data: { vehicleId: vehicles[9].id, description: "Coolant appears contaminated with oil traces, consider flush and inspection", severity: "needs_work", status: "open", serviceRecordId: serviceRecords[13].id, notes: "Found during turbo job. May be related to oil cooler seal.", imageUrls: [] } }),
