@@ -5,6 +5,7 @@ import { nextCookies } from 'better-auth/next-js'
 import { twoFactor } from 'better-auth/plugins/two-factor'
 import { db } from './db'
 import { logAudit } from './audit'
+import { isDemoMode } from './demo'
 
 const baseURL = process.env.NEXT_PUBLIC_APP_URL
 const isProduction = baseURL?.startsWith('https://')
@@ -157,11 +158,13 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
-          // Block registration if disabled via system settings
-          const setting = await db.systemSetting.findUnique({
-            where: { key: 'registration.disabled' },
-          })
-          if (setting?.value === 'true') {
+          // Block registration if disabled via system settings (always disabled in demo mode)
+          const setting = isDemoMode
+            ? null
+            : await db.systemSetting.findUnique({
+                where: { key: 'registration.disabled' },
+              })
+          if (isDemoMode || setting?.value === 'true') {
             // Allow registration if there's a pending invitation for this email
             const invitation = await db.teamInvitation.findFirst({
               where: {

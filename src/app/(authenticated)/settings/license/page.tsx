@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { isCloudMode } from "@/lib/features";
 import { LicenseSettings } from "@/features/settings/Components/license-settings";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { isDemoMode } from "@/lib/demo";
 
 export default async function LicensePage() {
   if (isCloudMode()) {
@@ -35,6 +36,7 @@ export default async function LicensePage() {
       initialKey={map.get(SETTING_KEYS.LICENSE_KEY) || ""}
       initialValid={map.get(SETTING_KEYS.LICENSE_VALID) === "true"}
       initialCheckedAt={map.get(SETTING_KEYS.LICENSE_CHECKED_AT) || ""}
+      demoMode={isDemoMode}
     />
   );
 }

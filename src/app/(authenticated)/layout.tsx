@@ -16,6 +16,7 @@ import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { ServiceTypeProvider } from "@/components/service-type-context";
 import { LicenseExpiryProvider } from "@/components/license-expiry-context";
 import { db } from "@/lib/db";
+import { isDemoMode } from "@/lib/demo";
 
 export default async function DashboardLayout({
   children,
@@ -39,7 +40,7 @@ export default async function DashboardLayout({
   }
 
   const features = await getFeatures(data.organizationId);
-  const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved;
+  const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved && !isDemoMode;
 
   // Check user-level messaging enabled settings
   let smsEnabled = false;

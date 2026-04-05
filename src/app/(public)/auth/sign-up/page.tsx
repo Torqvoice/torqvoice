@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { db } from '@/lib/db'
 import { auth } from '@/lib/auth'
 import { SignUpForm } from './sign-up-form'
+import { isDemoMode } from '@/lib/demo'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,6 +24,9 @@ export default async function SignUpPage({
 
   // If there's an invite token, skip the registration-disabled check
   if (!inviteToken) {
+    if (isDemoMode) {
+      redirect('/auth/sign-in')
+    }
     const regSetting = await db.systemSetting.findUnique({
       where: { key: 'registration.disabled' },
       select: { value: true },

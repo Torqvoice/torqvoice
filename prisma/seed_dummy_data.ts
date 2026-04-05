@@ -489,6 +489,198 @@ async function seed() {
   ]);
   console.log("  Created 9 vehicle notes");
 
+  // -- Additional vehicle notes (customer preferences, reminders, history) --
+  console.log("\nCreating additional vehicle notes...");
+  const additionalNotes = await Promise.all([
+    prisma.note.create({ data: { vehicleId: vehicles[0].id, title: "Customer preference", content: "James prefers Mobil 1 full synthetic 0W-20 on every oil change. Do not substitute.", isPinned: true } }),
+    prisma.note.create({ data: { vehicleId: vehicles[0].id, title: "Key location", content: "Spare key in lockbox #4 (code 4412). Customer drops off after hours sometimes.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[1].id, title: "Fleet maintenance policy", content: "Summit Construction requires photo documentation of all brake and tire work. Upload to service record.", isPinned: true } }),
+    prisma.note.create({ data: { vehicleId: vehicles[1].id, title: "Aftermarket bed liner", content: "Spray-in bed liner installed 2023. Don't pressure wash interior of bed at close range.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[2].id, title: "Off-road use", content: "Mike uses this for hunting trips. Undercarriage gets a lot of mud - always inspect skid plates.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[3].id, title: "Municipal contract vehicle", content: "Metro City Services - invoicing via purchase order only. PO required before work starts.", isPinned: true } }),
+    prisma.note.create({ data: { vehicleId: vehicles[5].id, title: "Budget-conscious customer", content: "Amanda prefers aftermarket parts where safe. Always provide OEM vs aftermarket pricing options.", isPinned: true } }),
+    prisma.note.create({ data: { vehicleId: vehicles[5].id, title: "Check AC vents", content: "Musty smell reported last visit. Recommended cabin filter + evaporator clean at next service.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[7].id, title: "Referral source", content: "Jessica was referred by Ryan Parker. Offer referral discount on next service.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[8].id, title: "Ranch use", content: "Silverado used for cattle hauling. Check hitch and trailer plug every visit.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[9].id, title: "Commercial use", content: "Kevin uses this daily for catering. Needs quick turnaround - try to get him in/out same day.", isPinned: true } }),
+    prisma.note.create({ data: { vehicleId: vehicles[10].id, title: "OEM parts only", content: "David insists on genuine Audi parts. No VAG knockoffs. He'll ask to see part numbers.", isPinned: true } }),
+    prisma.note.create({ data: { vehicleId: vehicles[12].id, title: "Soft top care", content: "Customer has both hard and soft top. Store removed top carefully, document any scratches.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[14].id, title: "Manual transmission", content: "David is the primary driver. Wife drives occasionally but doesn't like manual - clutch wear expected.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[15].id, title: "Weekend vehicle", content: "Robert uses this mainly weekends for towing his boat. Look at trailer brakes in spring.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[16].id, title: "TRD package notes", content: "TRD Off-Road suspension - use correct alignment specs (different from base Tacoma).", isPinned: true } }),
+    prisma.note.create({ data: { vehicleId: vehicles[19].id, title: "Long-haul unit", content: "Pacific Freight unit #8. Portland-Chicago route. Driver: Miguel Santos. DEF fills every other trip.", isPinned: true } }),
+    prisma.note.create({ data: { vehicleId: vehicles[21].id, title: "Dump body maintenance", content: "Body floor develops cracks at 150k+ mi. Inspect weld seams during every service.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[22].id, title: "Concrete mixer drum", content: "Drum drive motor is a known weak point on this unit. Monitor for sluggish rotation.", isPinned: true } }),
+    prisma.note.create({ data: { vehicleId: vehicles[26].id, title: "Seasonal use", content: "Massey Ferguson is the backup tractor for Prairie Farms. Heavy use spring/fall only.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[27].id, title: "Warranty active", content: "John Deere 8R 410 still under warranty until Jan 2027. Contact JD dealer for anything covered.", isPinned: true } }),
+    prisma.note.create({ data: { vehicleId: vehicles[29].id, title: "Harvest critical", content: "S780 combine is CRITICAL for fall harvest. Any work needs to be done before September.", isPinned: true } }),
+    prisma.note.create({ data: { vehicleId: vehicles[32].id, title: "D8T parts lead time", content: "CAT D8T parts often take 2-3 weeks. Order ahead. Titan Building will wait if told up front.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[34].id, title: "Undercarriage wear", content: "Track chains due for replacement around 2000hr. Currently at 1800hr — budget planning.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[37].id, title: "Metro City asset tag", content: "City asset tag #WL-014. Include in all invoices for their records.", isPinned: false } }),
+    prisma.note.create({ data: { vehicleId: vehicles[39].id, title: "Indoor use only", content: "Electric forklift used indoors at Ironclad warehouse. Tire compound is non-marking.", isPinned: false } }),
+  ]);
+  console.log(`  Created ${additionalNotes.length} additional vehicle notes`);
+
+  // -- Additional reminders --
+  console.log("\nCreating additional reminders...");
+  const additionalReminders = await Promise.all([
+    prisma.reminder.create({ data: { vehicleId: vehicles[1].id, title: "Timing belt replacement", description: "Interval-based - EcoBoost timing chain inspection due", dueMileage: 60000 } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[2].id, title: "Annual inspection", description: "Minnesota state safety inspection", dueDate: new Date("2026-05-15") } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[5].id, title: "Brake fluid flush", description: "Honda recommends every 3 years", dueMileage: 72000, dueDate: new Date("2026-06-01") } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[8].id, title: "Registration renewal", description: "Texas registration expires June 2026", dueDate: new Date("2026-06-30") } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[9].id, title: "Next oil change", description: "Sprinter service B interval", dueMileage: 40000 } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[10].id, title: "Haldex service", description: "Quattro rear diff fluid change - 40K interval", dueMileage: 40000, isCompleted: true } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[11].id, title: "Front diff fluid", description: "After lift kit, recommend fluid change at 35K", dueMileage: 35000 } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[12].id, title: "Annual inspection", description: "Georgia annual safety inspection", dueDate: new Date("2026-08-22") } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[14].id, title: "DSG service interval", description: "Next DSG fluid/filter at 78K", dueMileage: 78000 } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[17].id, title: "CVT fluid check", description: "Subaru CVT recommended drain/fill", dueMileage: 30000 } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[19].id, title: "DOT inspection", description: "Annual DOT required", dueDate: new Date("2026-05-20") } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[22].id, title: "Mixer drum inspection", description: "Annual drum wear/bolt check", dueDate: new Date("2026-07-01") } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[27].id, title: "250hr service", description: "John Deere 8R scheduled interval", dueMileage: 1000 } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[30].id, title: "Pre-harvest prep", description: "X9 1100 combine full inspection before harvest", dueDate: new Date("2026-08-15") } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[32].id, title: "Blade edge replacement", description: "Check wear on cutting edge", dueMileage: 6500, isCompleted: true } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[34].id, title: "Undercarriage inspection", description: "2000hr interval for track chain inspection", dueMileage: 2000 } }),
+    prisma.reminder.create({ data: { vehicleId: vehicles[38].id, title: "OSHA crane certification", description: "Annual load test and certification due", dueDate: new Date("2026-05-01") } }),
+  ]);
+  console.log(`  Created ${additionalReminders.length} additional reminders`);
+
+  // -- Vehicle Findings (observations from service) --
+  console.log("\nCreating vehicle findings...");
+  const findings = await Promise.all([
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[4].id, description: "Front brake pads at 3mm, recommend replacement within 5,000 miles", severity: "needs_work", status: "open", serviceRecordId: serviceRecords[1].id, notes: "Customer informed during 50K service. Quoted separately.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[5].id, description: "CV boot torn on driver side, grease leaking onto suspension components", severity: "urgent", status: "open", notes: "Needs attention soon - will fail CV joint if not addressed.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[1].id, description: "Slight oil seepage from valve cover gasket, monitor at next service", severity: "monitor", status: "open", serviceRecordId: serviceRecords[19].id, notes: "Not dripping yet - just damp. Re-check in 6 months.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[8].id, description: "Battery testing at 78% capacity, recommend replacement before winter", severity: "monitor", status: "open", notes: "Still starts reliably. Load test shows degraded CCA.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[2].id, description: "Tire tread below 4/32 on front tires, will need replacement soon", severity: "needs_work", status: "open", notes: "Rears still have 6/32. Recommend rotating and planning fronts soon.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[9].id, description: "Coolant appears contaminated with oil traces, consider flush and inspection", severity: "needs_work", status: "open", serviceRecordId: serviceRecords[13].id, notes: "Found during turbo job. May be related to oil cooler seal.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[11].id, description: "Death wobble symptoms reported - track bar bushings worn", severity: "urgent", status: "resolved", notes: "Customer reported highway death wobble. Replaced steering stabilizer and tie rods.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[13].id, description: "Rear tire wear uneven - alignment suspected after track use", severity: "needs_work", status: "open", serviceRecordId: serviceRecords[3].id, notes: "Right rear shows inner edge wear consistent with toe-out.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[18].id, description: "DEF tank heater intermittent - low DEF temperature warning in cold weather", severity: "monitor", status: "open", serviceRecordId: serviceRecords[4].id, notes: "Only acts up below 20F. Monitor and replace if it fails completely.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[20].id, description: "Charge air cooler pipe cracked, boost leak confirmed", severity: "urgent", status: "open", notes: "Part ordered. Causing low-power complaint from driver.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[21].id, description: "Dump body floor showing stress cracks near rear hinge", severity: "needs_work", status: "open", notes: "Will need weld repair within 10,000 miles to avoid structural failure.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[24].id, description: "Front loader pins showing excessive play, bushings worn", severity: "needs_work", status: "open", notes: "Noticeable play when boom is fully extended. Replace at next service.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[25].id, description: "A/C condenser fins damaged, reduced cooling efficiency", severity: "monitor", status: "open", notes: "Fins bent from field debris. Combing/straightening recommended.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[31].id, description: "Left blade cylinder showing slow seepage at rod seal", severity: "monitor", status: "resolved", serviceRecordId: serviceRecords[8].id, resolvedServiceRecordId: serviceRecords[8].id, notes: "Resealed during Sept 2025 hydraulic overhaul.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[33].id, description: "Boom cylinder showing 2 inch drift over 10 minutes under load", severity: "needs_work", status: "open", notes: "Cylinder reseal scheduled in unassigned work.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[34].id, description: "Track shoe bolts loosening, retorque recommended", severity: "monitor", status: "open", notes: "Checked 8 of 42 shoes - 3 required retorque. Full inspection next service.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[38].id, description: "Right rear outrigger extending slower than left", severity: "needs_work", status: "open", notes: "Likely valve or cylinder seal. Scheduled for inspection.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[26].id, description: "Overheating under heavy PTO load - radiator partially blocked with chaff", severity: "needs_work", status: "open", notes: "Cleaned out what we could. Recommend pull radiator for deep clean.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[36].id, description: "Hydraulic hose chafing against frame rail near pivot point", severity: "needs_work", status: "open", notes: "Protective sleeve worn through. Will fail if not rerouted.", imageUrls: [] } }),
+    prisma.vehicleFinding.create({ data: { vehicleId: vehicles[16].id, description: "Leaf spring bushings dry and cracking, suspension noise reported", severity: "needs_work", status: "open", notes: "Customer scheduled for leaf spring replacement.", imageUrls: [] } }),
+  ]);
+  console.log(`  Created ${findings.length} vehicle findings`);
+
+  // -- Repeat service history for predicted maintenance --
+  // Pick 6 vehicles, give each 3-4 completed service records with increasing mileage
+  // spanning 2-3 years so the predictedMaintenanceActions has regression data.
+  console.log("\nCreating repeat service history for predicted maintenance...");
+  type HistEntry = { offsetDays: number; mileage: number; title: string; desc: string; type: string; techName: string };
+  const predMaintHistory: { vehicleId: string; entries: HistEntry[] }[] = [
+    {
+      vehicleId: vehicles[1].id, // Ford F-150 Lariat white (Summit Construction, current 42300)
+      entries: [
+        { offsetDays: -820, mileage: 10500, title: "F-150 - 10K Oil Change",       desc: "First service. Synthetic 5W-30, oil filter, tire rotation.",     type: "maintenance", techName: "Jake Wilson" },
+        { offsetDays: -540, mileage: 20200, title: "F-150 - 20K Service",          desc: "Oil change, cabin filter, brake inspection, tire rotation.",     type: "maintenance", techName: "Jake Wilson" },
+        { offsetDays: -280, mileage: 30100, title: "F-150 - 30K Major Service",    desc: "Full fluid service, spark plugs, transfer case fluid.",          type: "maintenance", techName: "Chris Taylor" },
+        { offsetDays: -90,  mileage: 40800, title: "F-150 - 40K Service",          desc: "Oil change, brake fluid flush, differential service.",           type: "maintenance", techName: "Jake Wilson" },
+      ],
+    },
+    {
+      vehicleId: vehicles[4].id, // BMW 330i xDrive (Sarah Coleman, current 55200)
+      entries: [
+        { offsetDays: -900, mileage: 22000, title: "BMW 330i - 22K Oil Service",   desc: "OEM oil, filter, inspection. OEM parts only per customer.",      type: "maintenance", techName: "Chris Taylor" },
+        { offsetDays: -600, mileage: 32500, title: "BMW 330i - 32K Service",       desc: "Oil, cabin filter, brake inspection. All OEM BMW parts.",        type: "maintenance", techName: "Chris Taylor" },
+        { offsetDays: -300, mileage: 43800, title: "BMW 330i - 43K Service",       desc: "Oil change, tire rotation, 4-wheel alignment.",                  type: "maintenance", techName: "Chris Taylor" },
+      ],
+    },
+    {
+      vehicleId: vehicles[5].id, // Honda Civic Sport (Amanda Foster, current 67800)
+      entries: [
+        { offsetDays: -960, mileage: 28500, title: "Civic - 28K Oil Change",       desc: "Synthetic oil, filter, tire rotation.",                          type: "maintenance", techName: "Jake Wilson" },
+        { offsetDays: -680, mileage: 39200, title: "Civic - 39K Service",          desc: "Oil change, cabin filter, engine air filter.",                   type: "maintenance", techName: "Jake Wilson" },
+        { offsetDays: -360, mileage: 52000, title: "Civic - 52K Major Service",    desc: "Oil, coolant flush, transmission fluid, belt inspection.",       type: "maintenance", techName: "Sofia Andersen" },
+        { offsetDays: -110, mileage: 64500, title: "Civic - 64K Service",          desc: "Oil change, brake pad inspection, alignment check.",             type: "maintenance", techName: "Jake Wilson" },
+      ],
+    },
+    {
+      vehicleId: vehicles[8].id, // Silverado 2500HD (Lisa Martinez, current 98400)
+      entries: [
+        { offsetDays: -850, mileage: 62000, title: "Silverado - 62K Oil Service",  desc: "Duramax diesel oil, fuel filters, DEF top-off.",                 type: "maintenance", techName: "Marcus Reed" },
+        { offsetDays: -560, mileage: 75500, title: "Silverado - 75K Service",      desc: "Oil, fuel filters, DEF fluid, tire rotation.",                   type: "maintenance", techName: "Marcus Reed" },
+        { offsetDays: -290, mileage: 87200, title: "Silverado - 87K Major Service", desc: "Oil, coolant flush, transmission service, DPF regen.",          type: "maintenance", techName: "Marcus Reed" },
+        { offsetDays: -60,  mileage: 96100, title: "Silverado - 96K Service",      desc: "Oil change, fuel filter, brake inspection.",                     type: "maintenance", techName: "Jake Wilson" },
+      ],
+    },
+    {
+      vehicleId: vehicles[18].id, // Kenworth T680 (Pacific Freight, current 185000)
+      entries: [
+        { offsetDays: -780, mileage: 92000,  title: "Kenworth - 92K PM",           desc: "Full PM - oil, fuel filters, air filters, inspection.",          type: "maintenance", techName: "Marcus Reed" },
+        { offsetDays: -520, mileage: 118000, title: "Kenworth - 118K PM",          desc: "Engine oil, all filters, DEF, grease service.",                  type: "maintenance", techName: "Marcus Reed" },
+        { offsetDays: -260, mileage: 148000, title: "Kenworth - 148K PM",          desc: "Engine oil, all filters, coolant check, brake adjust.",          type: "maintenance", techName: "Marcus Reed" },
+      ],
+    },
+    {
+      vehicleId: vehicles[16].id, // Tacoma TRD Off-Road (Lisa Martinez, current 31200)
+      entries: [
+        { offsetDays: -790, mileage: 8500,  title: "Tacoma - 8K Oil Change",       desc: "First service. Synthetic oil, filter, tire rotation.",           type: "maintenance", techName: "Jake Wilson" },
+        { offsetDays: -520, mileage: 15800, title: "Tacoma - 15K Service",         desc: "Oil change, cabin filter, brake inspection.",                    type: "maintenance", techName: "Jake Wilson" },
+        { offsetDays: -250, mileage: 24200, title: "Tacoma - 24K Service",         desc: "Oil, tire rotation, differential fluid check.",                  type: "maintenance", techName: "Erik Haugen" },
+      ],
+    },
+  ];
+
+  const today = new Date("2026-04-05");
+  const predMaintRecords = [];
+  for (const hist of predMaintHistory) {
+    for (const entry of hist.entries) {
+      const serviceDate = new Date(today);
+      serviceDate.setDate(serviceDate.getDate() + entry.offsetDays);
+      const rec = await prisma.serviceRecord.create({
+        data: {
+          vehicleId: hist.vehicleId,
+          title: entry.title,
+          description: entry.desc,
+          type: entry.type,
+          status: "completed",
+          serviceDate,
+          mileage: entry.mileage,
+          techName: entry.techName,
+          shopName: "Egeland Auto",
+          subtotal: 180,
+          taxRate: 8,
+          taxAmount: 14.40,
+          totalAmount: 194.40,
+          cost: 194.40,
+          partItems: { create: [{ name: "Synthetic Oil (5qt)", partNumber: "OIL-SYN-5Q", quantity: 1, unitPrice: 45, total: 45 }, { name: "Oil Filter", partNumber: "OF-UNI", quantity: 1, unitPrice: 12, total: 12 }] },
+          laborItems: { create: [{ description: "Service and inspection", hours: 1.2, rate: 102.50, total: 123 }] },
+        },
+      });
+      predMaintRecords.push(rec);
+    }
+  }
+  console.log(`  Created ${predMaintRecords.length} historical service records across ${predMaintHistory.length} vehicles`);
+
+  // Enable predicted maintenance feature setting
+  console.log("\nEnabling predicted maintenance feature...");
+  await Promise.all([
+    prisma.appSetting.upsert({
+      where: { organizationId_key: { organizationId: ORG_ID, key: "maintenance.enabled" } },
+      create: { organizationId: ORG_ID, key: "maintenance.enabled", value: "true", userId: USER_ID },
+      update: { value: "true" },
+    }),
+    prisma.appSetting.upsert({
+      where: { organizationId_key: { organizationId: ORG_ID, key: "maintenance.serviceInterval" } },
+      create: { organizationId: ORG_ID, key: "maintenance.serviceInterval", value: "15000", userId: USER_ID },
+      update: { value: "15000" },
+    }),
+    prisma.appSetting.upsert({
+      where: { organizationId_key: { organizationId: ORG_ID, key: "maintenance.approachingThreshold" } },
+      create: { organizationId: ORG_ID, key: "maintenance.approachingThreshold", value: "1000", userId: USER_ID },
+      update: { value: "1000" },
+    }),
+  ]);
+  console.log("  Enabled predicted maintenance (interval: 15,000 mi, approaching: 1,000 mi)");
+
   // -- SMS Messages --
   console.log("\nCreating SMS messages...");
   const shopNumber = "+15551234567";
@@ -534,6 +726,8 @@ async function seed() {
     prisma.technician.create({ data: { name: "Tom Bradley", color: "#14b8a6", sortOrder: 7, organizationId: ORG_ID } }),
     prisma.technician.create({ data: { name: "Kari Moen", color: "#a855f7", sortOrder: 8, organizationId: ORG_ID } }),
     prisma.technician.create({ data: { name: "Daniel Eriksen", color: "#ef4444", sortOrder: 9, organizationId: ORG_ID } }),
+    // Demo Owner (index 10) — linked to the demo user so dashboard "My Active Jobs" populates
+    prisma.technician.create({ data: { name: "Demo Owner", color: "#0ea5e9", sortOrder: 10, organizationId: ORG_ID, userId: USER_ID } }),
   ]);
   console.log(`  Created ${technicians.length} technicians`);
 
@@ -900,18 +1094,38 @@ async function seed() {
   ]);
   console.log(`  Updated ${jobUpdates.length} service records with technician assignments and time slots`);
 
+  // -- Assign the Demo Owner a few active jobs so the dashboard "My Active Jobs" populates --
+  console.log("\nAssigning active jobs to the Demo Owner technician...");
+  const demoOwnerTech = technicians[10]; // Demo Owner
+  const demoOwnerJobs = await Promise.all([
+    // Tesla Model Y suspension (pending) — reassign from Sofia
+    prisma.serviceRecord.update({ where: { id: boardServiceRecords[2].id }, data: { technicianId: demoOwnerTech.id } }),
+    // F-150 exhaust leak repair (pending) — reassign from Jake
+    prisma.serviceRecord.update({ where: { id: boardServiceRecords[7].id }, data: { technicianId: demoOwnerTech.id } }),
+    // Jeep axle seal replacement (pending) — reassign from Chris
+    prisma.serviceRecord.update({ where: { id: boardServiceRecords[11].id }, data: { technicianId: demoOwnerTech.id } }),
+    // Kenworth T680 Sleeper AC repair (waiting-parts) — previously unassigned
+    prisma.serviceRecord.update({ where: { id: unassignedRecords[11].id }, data: { technicianId: demoOwnerTech.id } }),
+    // Porsche 911 Pre-Track Inspection (pending) — previously unassigned
+    prisma.serviceRecord.update({ where: { id: unassignedRecords[2].id }, data: { technicianId: demoOwnerTech.id } }),
+  ]);
+  console.log(`  Assigned ${demoOwnerJobs.length} active jobs to ${demoOwnerTech.name}`);
+
   // -- Summary --
   console.log("\n" + "=".repeat(50));
   console.log("Seed completed!");
   console.log("=".repeat(50));
   console.log(`  Customers:       ${customers.length}`);
   console.log(`  Vehicles:        ${vehicles.length}`);
-  console.log(`  Service Records: ${serviceRecords.length + boardServiceRecords.length + unassignedRecords.length}`);
+  console.log(`  Service Records: ${serviceRecords.length + boardServiceRecords.length + unassignedRecords.length + predMaintRecords.length}`);
   console.log(`  Quotes:          ${quotes.length}`);
   console.log(`  Inventory Parts: ${inventoryParts.length}`);
   console.log(`  Technicians:     ${technicians.length}`);
   console.log(`  Board Assignments: (removed - technicianId set directly on service records)`);
   console.log(`  Unassigned Jobs: ${unassignedRecords.length}`);
+  console.log(`  Notes:           ${9 + additionalNotes.length}`);
+  console.log(`  Reminders:       ${8 + additionalReminders.length}`);
+  console.log(`  Findings:        ${findings.length}`);
   console.log(`  SMS Messages:    22`);
   console.log("=".repeat(50));
 }
