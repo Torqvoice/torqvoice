@@ -153,10 +153,15 @@ jobs:
           node-version: "22"
           cache: "npm"
 
-      - name: Install deps + generate Prisma client
+      - name: Install seed deps + generate Prisma client
         if: ${{ github.event_name == 'push' || inputs.reseed }}
         run: |
-          npm ci --ignore-scripts
+          npm install --no-save --ignore-scripts \
+            prisma@7.6.0 \
+            @prisma/client@7.6.0 \
+            @prisma/adapter-pg@7.6.0 \
+            pg \
+            better-auth
           npx prisma generate
 
       - name: Seed demo data
