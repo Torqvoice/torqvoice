@@ -626,6 +626,8 @@
     "languageTitle": "Taal",
     "languageDescription": "Kies de weergavetaal van de applicatie.",
     "language": "Taal",
+    "forceCustomerLocale": "Forceer deze taal op klantgerichte pagina's",
+    "forceCustomerLocaleHint": "Wanneer ingeschakeld, zien klanten die gedeelde facturen, offertes en inspecties bekijken deze in de taal van uw werkplaats, ongeacht hun browserinstellingen. Wanneer uitgeschakeld, zien klanten de pagina's in de taal die in hun browser is ingesteld.",
     "saved": "Lokalisatie-instellingen opgeslagen",
     "saveSettings": "Instellingen opslaan"
   },

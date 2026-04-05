@@ -1,45 +1,33 @@
 import { getRequestConfig } from 'next-intl/server'
 import { cookies, headers } from 'next/headers'
 import { type Locale, defaultLocale, locales } from './config'
-
-function getBestLocaleFromHeader(acceptLanguage: string | null): Locale | undefined {
-  if (!acceptLanguage) return undefined
-
-  const entries = acceptLanguage
-    .split(',')
-    .map((part) => {
-      const [lang, q] = part.trim().split(';q=')
-      return { lang: lang.trim(), q: q ? parseFloat(q) : 1 }
-    })
-    .sort((a, b) => b.q - a.q)
-
-  for (const { lang } of entries) {
-    // Exact match (e.g. "pt-BR")
-    if (locales.includes(lang as Locale)) return lang as Locale
-
-    // Prefix match: "de-AT" → "de"
-    const prefix = lang.split('-')[0]
-    if (locales.includes(prefix as Locale)) return prefix as Locale
-
-    // Reverse prefix: "pt" → "pt-BR"
-    const match = locales.find((l) => l.startsWith(prefix + '-'))
-    if (match) return match
-  }
-
-  return undefined
-}
+import { extractCustomerOrgParam, getBestLocaleFromHeader, resolveCustomerLocale } from './locale-from-request'
+import { resolvePortalOrg } from '@/lib/portal-slug'
 
 export default getRequestConfig(async () => {
-  const cookieStore = await cookies()
-  const cookieLocale = cookieStore.get('locale')?.value
+  const headerStore = await headers()
+  const acceptLanguage = headerStore.get('accept-language')
+  const pathname = headerStore.get('x-pathname')
 
   let locale: Locale
-  if (locales.includes(cookieLocale as Locale)) {
-    locale = cookieLocale as Locale
+
+  // Customer-facing routes (share/* and portal/*) apply the workshop's
+  // forced locale when enabled, otherwise fall back to the customer's
+  // Accept-Language — never the viewer's cookie (which may belong to
+  // a team member testing the page).
+  const customerOrgParam = extractCustomerOrgParam(pathname)
+  if (customerOrgParam) {
+    const org = await resolvePortalOrg(customerOrgParam)
+    const orgId = org?.id ?? customerOrgParam
+    locale = await resolveCustomerLocale(orgId, acceptLanguage)
   } else {
-    const headerStore = await headers()
-    const acceptLanguage = headerStore.get('accept-language')
-    locale = getBestLocaleFromHeader(acceptLanguage) ?? defaultLocale
+    const cookieStore = await cookies()
+    const cookieLocale = cookieStore.get('locale')?.value
+    if (locales.includes(cookieLocale as Locale)) {
+      locale = cookieLocale as Locale
+    } else {
+      locale = getBestLocaleFromHeader(acceptLanguage) ?? defaultLocale
+    }
   }
 
   const common = (await import(`../../messages/${locale}/common.json`)).default

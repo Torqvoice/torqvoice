@@ -626,6 +626,8 @@
     "languageTitle": "Dil",
     "languageDescription": "Uygulamanın görüntüleme dilini seçin.",
     "language": "Dil",
+    "forceCustomerLocale": "Bu dili müşteriye yönelik sayfalarda zorla",
+    "forceCustomerLocaleHint": "Etkinleştirildiğinde, paylaşılan faturaları, teklifleri ve incelemeleri görüntüleyen müşteriler bunları, tarayıcı ayarlarından bağımsız olarak atölyenizin dilinde görür. Devre dışı bırakıldığında, müşteriler sayfaları tarayıcılarında yapılandırılan dilde görür.",
     "saved": "Yerelleştirme ayarları kaydedildi",
     "saveSettings": "Ayarları kaydet"
   },

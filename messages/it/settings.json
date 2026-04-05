@@ -626,6 +626,8 @@
     "languageTitle": "Lingua",
     "languageDescription": "Scegli la lingua di visualizzazione dell'applicazione.",
     "language": "Lingua",
+    "forceCustomerLocale": "Forza questa lingua sulle pagine rivolte al cliente",
+    "forceCustomerLocaleHint": "Quando attivato, i clienti che visualizzano fatture, preventivi e ispezioni condivise li vedranno nella lingua della tua officina, indipendentemente dalle impostazioni del browser. Quando disattivato, i clienti vedono le pagine nella lingua configurata nel loro browser.",
     "saved": "Impostazioni di localizzazione salvate",
     "saveSettings": "Salva impostazioni"
   },

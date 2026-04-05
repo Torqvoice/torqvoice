@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { setSettings } from "@/features/settings/Actions/settingsActions";
+import { setSetting, setSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import {
   Select,
@@ -143,6 +143,15 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
   const [timeFormat, setTimeFormat] = useState(settings[SETTING_KEYS.TIME_FORMAT] || "12h");
   const [timezone, setTimezone] = useState(settings[SETTING_KEYS.TIMEZONE] || "");
 
+  const [forceCustomerLocale, setForceCustomerLocale] = useState(settings[SETTING_KEYS.FORCE_CUSTOMER_LOCALE] === "true");
+
+  // Theme (localStorage) and new Date() (runtime TZ) are client-only;
+  // defer rendering until after hydration to avoid SSR/client mismatches.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleSave = async () => {
     setSaving(true);
     await setSettings({
@@ -156,6 +165,25 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
     setSaving(false);
     router.refresh();
     toast.success(t("localization.saved"));
+  };
+
+  const handleLanguageChange = async (value: string) => {
+    await Promise.all([
+      setLocale(value),
+      setSetting(SETTING_KEYS.WORKSHOP_LOCALE, value),
+    ]);
+    router.refresh();
+  };
+
+  const handleForceCustomerLocaleChange = async (value: boolean) => {
+    setForceCustomerLocale(value);
+    // Snapshot the admin's current locale so force mode always has a target,
+    // even on existing installs where workshop.locale was never written.
+    await setSettings({
+      [SETTING_KEYS.FORCE_CUSTOMER_LOCALE]: String(value),
+      [SETTING_KEYS.WORKSHOP_LOCALE]: currentLocale,
+    });
+    router.refresh();
   };
 
   return (
@@ -176,10 +204,7 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
             <Label>{t("localization.language")}</Label>
             <Select
               value={currentLocale}
-              onValueChange={async (value) => {
-                await setLocale(value);
-                router.refresh();
-              }}
+              onValueChange={handleLanguageChange}
             >
               <SelectTrigger className="w-64">
                 <SelectValue />
@@ -192,6 +217,18 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="pr-4">
+              <Label>{t("localization.forceCustomerLocale")}</Label>
+              <p className="text-xs text-muted-foreground">
+                {t("localization.forceCustomerLocaleHint")}
+              </p>
+            </div>
+            <Switch checked={forceCustomerLocale} onCheckedChange={handleForceCustomerLocaleChange} />
           </div>
         </CardContent>
       </Card>
@@ -368,8 +405,8 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
                   <Clock className="h-3.5 w-3.5" />
                   <span className="font-medium text-foreground">{t("appearance.previewLabel")}</span>
                 </div>
-                <p>{t("appearance.dateLabel")}: <span className="font-medium text-foreground">{formatDate(new Date(), dateFormat, timezone || undefined)}</span></p>
-                <p>{t("appearance.dateTimeLabel")}: <span className="font-medium text-foreground">{formatDateTime(new Date(), dateFormat, timeFormat as "12h" | "24h", timezone || undefined)}</span></p>
+                <p>{t("appearance.dateLabel")}: <span className="font-medium text-foreground">{mounted ? formatDate(new Date(), dateFormat, timezone || undefined) : ""}</span></p>
+                <p>{t("appearance.dateTimeLabel")}: <span className="font-medium text-foreground">{mounted ? formatDateTime(new Date(), dateFormat, timeFormat as "12h" | "24h", timezone || undefined) : ""}</span></p>
               </div>
             </div>
           </ReadOnlyWrapper>
@@ -385,7 +422,7 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="flex items-center gap-3">
-              {theme === "dark" ? (
+              {mounted && theme === "dark" ? (
                 <Moon className="h-5 w-5 text-muted-foreground" />
               ) : (
                 <Sun className="h-5 w-5 text-muted-foreground" />
@@ -398,7 +435,7 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
               </div>
             </div>
             <Switch
-              checked={theme === "dark"}
+              checked={mounted && theme === "dark"}
               onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
             />
           </div>

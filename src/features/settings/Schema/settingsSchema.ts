@@ -89,6 +89,8 @@ export const SETTING_KEYS = {
   AI_MODEL: "ai.model",
   AI_ENABLED: "ai.enabled",
   SERVICE_TYPE: "workshop.serviceType",
+  WORKSHOP_LOCALE: "workshop.locale",
+  FORCE_CUSTOMER_LOCALE: "workshop.forceCustomerLocale",
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];

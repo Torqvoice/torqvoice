@@ -626,6 +626,8 @@
     "languageTitle": "Language",
     "languageDescription": "Choose the display language for the application.",
     "language": "Language",
+    "forceCustomerLocale": "Force this language on customer-facing pages",
+    "forceCustomerLocaleHint": "When enabled, customers viewing shared invoices, quotes and inspections will see them in your workshop's language regardless of their browser settings. When disabled, customers see pages in the language configured in their browser.",
     "saved": "Localization settings saved",
     "saveSettings": "Save Settings"
   },

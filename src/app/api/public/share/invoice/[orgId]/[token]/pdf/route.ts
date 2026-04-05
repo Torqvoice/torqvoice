@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import "@/features/vehicles/Components/invoice-pdf/fonts";
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { InvoicePDF } from "@/features/vehicles/Components/InvoicePDF";
 import React from "react";
@@ -13,6 +13,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { formatDateForPdf } from "@/lib/format";
 import { resolvePortalOrg } from "@/lib/portal-slug";
 import { mergeWithDefaults } from "@/features/settings/Schema/invoiceLayoutSchema";
+import { resolveCustomerLocale } from "@/i18n/locale-from-request";
 
 export async function GET(
   _request: Request,
@@ -22,9 +23,15 @@ export async function GET(
   if (limited) return limited;
 
   try {
+    const { orgId: orgParam, token } = await params;
+
+    // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
+    const resolvedOrg = await resolvePortalOrg(orgParam);
+    const orgId = resolvedOrg?.id ?? orgParam;
+
     // Load locale-based PDF translations
-    const cookieStore = await cookies();
-    const locale = cookieStore.get("locale")?.value || "en";
+    const headerStore = await headers();
+    const locale = await resolveCustomerLocale(orgId, headerStore.get("accept-language"));
     let pdfMessages: Record<string, Record<string, string>>;
     try {
       pdfMessages = (await import(`../../../../../../../../../messages/${locale}/pdf.json`)).default;
@@ -35,11 +42,6 @@ export async function GET(
       ...pdfMessages.invoice,
       ...pdfMessages.common,
     };
-    const { orgId: orgParam, token } = await params;
-
-    // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
-    const resolvedOrg = await resolvePortalOrg(orgParam);
-    const orgId = resolvedOrg?.id ?? orgParam;
 
     const record = await db.serviceRecord.findUnique({
       where: { publicToken: token },

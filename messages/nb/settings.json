@@ -626,6 +626,8 @@
     "languageTitle": "Språk",
     "languageDescription": "Velg visningsspråk for applikasjonen.",
     "language": "Språk",
+    "forceCustomerLocale": "Tving dette språket på kundesider",
+    "forceCustomerLocaleHint": "Når aktivert vil kunder som ser delte fakturaer, tilbud og inspeksjoner se dem på verkstedets språk uavhengig av nettleserinnstillingene deres. Når deaktivert, ser kundene sidene på språket som er konfigurert i nettleseren deres.",
     "saved": "Lokaliseringsinnstillinger lagret",
     "saveSettings": "Lagre innstillinger"
   },
