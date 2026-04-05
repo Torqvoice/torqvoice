@@ -61,7 +61,10 @@ export function PasskeySettings() {
     try {
       const result = await authClient.passkey.addPasskey()
       if (result?.error) {
-        toast.error(result.error.message || t('account.passkey.registerFailed'))
+        // User dismissed the passkey prompt — not an error state
+        if ('code' in result.error && result.error.code === 'REGISTRATION_CANCELLED') return
+        const msg = typeof result.error.message === 'string' ? result.error.message : ''
+        toast.error(msg || t('account.passkey.registerFailed'))
       } else {
         toast.success(t('account.passkey.registerSuccess'))
         fetchPasskeys()

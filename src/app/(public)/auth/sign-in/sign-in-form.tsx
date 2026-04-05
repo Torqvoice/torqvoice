@@ -54,7 +54,10 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
     try {
       const result = await authClient.signIn.passkey()
       if (result?.error) {
-        setError(result.error.message || t('errors.passkeyFailed'))
+        // User dismissed the passkey prompt — not an error state
+        if ('code' in result.error && result.error.code === 'AUTH_CANCELLED') return
+        const msg = typeof result.error.message === 'string' ? result.error.message : ''
+        setError(msg || t('errors.passkeyFailed'))
       } else {
         const redirect = searchParams.get('redirect') || '/'
         router.push(redirect)
