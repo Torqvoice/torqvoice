@@ -61,7 +61,7 @@ export const metadata: Metadata = {
       'Self-hosted workshop management platform for automotive service businesses. Manage work orders, invoices, customers, inventory, and vehicle service history.',
     images: [
       {
-        url: '/images/torqvoice_opengraph.jpg',
+        url: '/images/torqvoice_opengraph.png',
         width: 1200,
         height: 630,
         alt: 'TorqVoice - Workshop Management Platform',
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     title: 'TorqVoice - Workshop Management Platform',
     description:
       'Self-hosted workshop management platform for automotive service businesses. Manage work orders, invoices, customers, inventory, and vehicle service history.',
-    images: ['/images/torqvoice_opengraph.jpg'],
+    images: ['/images/torqvoice_opengraph.png'],
   },
 }
 

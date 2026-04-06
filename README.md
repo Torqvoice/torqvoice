@@ -11,6 +11,8 @@
    	<a href="https://github.com/sinamics/torqvoice/issues/new?labels=bug&template=bug_template.yml&title=%5BBug%5D%3A+">Bug Report</a>
    	·
    	<a href="https://github.com/sinamics/torqvoice/issues/new?labels=enhancement&template=feature_request.yml&title=%5BFeature+Request%5D%3A+">Feature Request</a>
+   	·
+   	<a href="https://demo.torqvoice.com/auth/sign-in?demo=1"><strong>Live Demo</strong></a>
    </p>
 
    <div align="center">
@@ -25,6 +27,10 @@
 <br />
 
 Torqvoice is a self-hosted workshop management platform built for automotive service businesses. It replaces scattered tools with a single place to manage customers, vehicles, service records, quotes, invoicing, inventory, billing all with a clean modern UI.
+
+## Try the Demo
+
+👉 **[demo.torqvoice.com](https://demo.torqvoice.com/auth/sign-in?demo=1)** — one-click sign-in, populated with realistic data. No signup required. Data resets every 3 hours.
 
 ## Quick Start
 
