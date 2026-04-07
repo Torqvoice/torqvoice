@@ -29,13 +29,17 @@
     "outstanding": "Openstaand",
     "services": "Diensten",
     "partsCost": "Onderdeelkosten",
-    "netProfit": "Nettowinst",
+    "partsNetProfit": "Nettowinst Onderdelen",
+    "partsNetProfitDesc": "Omzet onderdelen minus inkoopkosten",
+    "laborRevenue": "Arbeid",
+    "laborRevenueDesc": "Inkomsten uit arbeidskosten",
+    "netProfit": "Totale Nettowinst",
     "revenueDesc": "Totaal gefactureerd van alle voltooide diensten",
     "collectedDesc": "Ontvangen betalingen van klanten",
     "outstandingDesc": "Gefactureerd maar nog niet betaald",
     "servicesDesc": "Totaal voltooide werkorders",
     "partsCostDesc": "Inkoopkosten van gebruikte onderdelen",
-    "netProfitDesc": "Omzet minus onderdeelkosten",
+    "netProfitDesc": "Nettowinst onderdelen plus arbeidsinkomsten",
     "monthlyRevenue": "Maandelijkse Omzet",
     "revenueByType": "Omzet per Type",
     "monthlyBreakdown": "Maandelijks Overzicht",
@@ -44,6 +48,8 @@
       "revenue": "Omzet",
       "collected": "Geïnd",
       "partsCost": "Onderdeelkosten",
+      "partsNetProfit": "Winst Onderdelen",
+      "laborRevenue": "Arbeid",
       "netProfit": "Nettowinst",
       "count": "Aantal"
     }
@@ -123,6 +129,8 @@
   "parts": {
     "partsUsed": "Gebruikte Onderdelen",
     "partsRevenue": "Onderdelen Omzet",
+    "partsCost": "Kosten Onderdelen",
+    "netProfit": "Nettowinst",
     "topPartsByUsage": "Meest Gebruikte Onderdelen",
     "partsUsage": "Onderdelengebruik",
     "tableHeaders": {
@@ -130,7 +138,9 @@
       "partNumber": "Onderdeelnr.",
       "usageCount": "Gebruiksaantal",
       "totalQty": "Totaal Aant.",
-      "revenue": "Omzet"
+      "revenue": "Omzet",
+      "cost": "Kosten",
+      "netProfit": "Nettowinst"
     }
   },
   "jobAnalytics": {
@@ -243,6 +253,8 @@
     "dueDate": "Vervaldatum",
     "daysPastDue": "Dagen Achterstallig",
     "partsCost": "Onderdeelkosten",
+    "partsNetProfit": "Nettowinst Onderdelen",
+    "laborRevenue": "Arbeid",
     "netProfit": "Nettowinst"
   },
   "pdf": {
@@ -273,6 +285,8 @@
     "outstanding": "Outstanding",
     "services": "Services",
     "partsCost": "Parts Cost",
+    "partsNetProfit": "Nettowinst Onderdelen",
+    "laborRevenue": "Arbeid",
     "netProfit": "Net Profit",
     "month": "Month",
     "count": "Count",
@@ -312,6 +326,8 @@
     "usageCount": "Usage Count",
     "totalQty": "Total Qty",
     "totalPartsRevenue": "Parts Revenue",
+    "totalPartsCost": "Kosten Onderdelen",
+    "totalPartsNetProfit": "Nettowinst",
     "totalPartsUsed": "Parts Used",
     "serviceType": "Service Type",
     "avgValue": "Avg Value",

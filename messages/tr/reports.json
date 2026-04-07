@@ -29,13 +29,17 @@
     "outstanding": "Bekleyen",
     "services": "Hizmetler",
     "partsCost": "Parça maliyeti",
-    "netProfit": "Net kâr",
+    "partsNetProfit": "Parça Net Kârı",
+    "partsNetProfitDesc": "Parça geliri eksi satın alma maliyeti",
+    "laborRevenue": "İşçilik",
+    "laborRevenueDesc": "İşçilik ücretlerinden elde edilen gelir",
+    "netProfit": "Toplam Net Kâr",
     "revenueDesc": "Tamamlanan tüm servislerden toplam fatura",
     "collectedDesc": "Müşterilerden alınan ödemeler",
     "outstandingDesc": "Faturalandırılmış ancak henüz ödenmemiş",
     "servicesDesc": "Toplam tamamlanan iş emirleri",
     "partsCostDesc": "Servislerde kullanılan parçaların alış maliyeti",
-    "netProfitDesc": "Gelir eksi parça maliyeti",
+    "netProfitDesc": "Parça net kârı artı işçilik geliri",
     "monthlyRevenue": "Aylık Gelir",
     "revenueByType": "Türe Göre Gelir",
     "monthlyBreakdown": "Aylık Döküm",
@@ -44,6 +48,8 @@
       "revenue": "Gelir",
       "collected": "Tahsil Edilen",
       "partsCost": "Parça maliyeti",
+      "partsNetProfit": "Parça Kârı",
+      "laborRevenue": "İşçilik",
       "netProfit": "Net kâr",
       "count": "Adet"
     }
@@ -123,6 +129,8 @@
   "parts": {
     "partsUsed": "Kullanılan Parçalar",
     "partsRevenue": "Parça Geliri",
+    "partsCost": "Parça Maliyeti",
+    "netProfit": "Net Kâr",
     "topPartsByUsage": "Kullanıma Göre En Çok Parçalar",
     "partsUsage": "Parça Kullanımı",
     "tableHeaders": {
@@ -130,7 +138,9 @@
       "partNumber": "Parça No",
       "usageCount": "Kullanım Sayısı",
       "totalQty": "Toplam Adet",
-      "revenue": "Gelir"
+      "revenue": "Gelir",
+      "cost": "Maliyet",
+      "netProfit": "Net Kâr"
     }
   },
   "jobAnalytics": {
@@ -243,6 +253,8 @@
     "dueDate": "Vade Tarihi",
     "daysPastDue": "Gecikme Günü",
     "partsCost": "Parça maliyeti",
+    "partsNetProfit": "Parça Net Kârı",
+    "laborRevenue": "İşçilik",
     "netProfit": "Net kâr"
   },
   "pdf": {
@@ -273,6 +285,8 @@
     "outstanding": "Outstanding",
     "services": "Services",
     "partsCost": "Parts Cost",
+    "partsNetProfit": "Parça Net Kârı",
+    "laborRevenue": "İşçilik",
     "netProfit": "Net Profit",
     "month": "Month",
     "count": "Count",
@@ -312,6 +326,8 @@
     "usageCount": "Usage Count",
     "totalQty": "Total Qty",
     "totalPartsRevenue": "Parts Revenue",
+    "totalPartsCost": "Parça Maliyeti",
+    "totalPartsNetProfit": "Net Kâr",
     "totalPartsUsed": "Parts Used",
     "serviceType": "Service Type",
     "avgValue": "Avg Value",

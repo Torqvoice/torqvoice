@@ -274,6 +274,8 @@ export function ReportPDF({
               { label: l.outstanding || "Outstanding", value: fmt(revenueData.summary.outstanding) },
               { label: l.services || "Services", value: String(revenueData.summary.totalCount) },
               { label: l.partsCost || "Parts Cost", value: fmt(revenueData.summary.totalPartsCost) },
+              { label: l.partsNetProfit || "Parts Net Profit", value: fmt(revenueData.summary.totalPartsNetProfit) },
+              { label: l.laborRevenue || "Labor", value: fmt(revenueData.summary.totalLaborRevenue) },
               { label: l.netProfit || "Net Profit", value: fmt(revenueData.summary.netProfit) },
             ]}
           />
@@ -287,15 +289,19 @@ export function ReportPDF({
                 l.revenue || "Revenue",
                 l.collected || "Collected",
                 l.partsCost || "Parts Cost",
+                l.partsNetProfit || "Parts Profit",
+                l.laborRevenue || "Labor",
                 l.netProfit || "Net Profit",
                 l.count || "Jobs",
               ]}
-              widths={[22, 18, 18, 16, 16, 10]}
+              widths={[16, 14, 14, 12, 12, 12, 12, 8]}
               rows={revenueData.monthly.map((m) => [
                 m.month,
                 fmt(m.revenue),
                 fmt(m.collected),
                 fmt(m.partsCost),
+                fmt(m.partsNetProfit),
+                fmt(m.laborRevenue),
                 fmt(m.netProfit),
                 String(m.count),
               ])}
@@ -576,8 +582,10 @@ export function ReportPDF({
           <SummaryCards
             s={s}
             items={[
-              { label: l.totalPartsRevenue || "Parts Revenue", value: fmt(partsData.totalPartsRevenue) },
               { label: l.totalPartsUsed || "Parts Used", value: String(partsData.totalPartsUsed) },
+              { label: l.totalPartsRevenue || "Parts Revenue", value: fmt(partsData.totalPartsRevenue) },
+              { label: l.totalPartsCost || "Parts Cost", value: fmt(partsData.totalPartsCost) },
+              { label: l.totalPartsNetProfit || "Net Profit", value: fmt(partsData.totalPartsNetProfit) },
             ]}
           />
 
@@ -590,14 +598,18 @@ export function ReportPDF({
                 l.usageCount || "Used",
                 l.totalQty || "Qty",
                 l.totalRevenue || "Revenue",
+                l.totalPartsCost || "Cost",
+                l.netProfit || "Profit",
               ]}
-              widths={[30, 20, 15, 15, 20]}
+              widths={[22, 16, 12, 12, 14, 12, 12]}
               rows={partsData.parts.map((p) => [
                 p.name,
                 p.partNumber || "-",
                 String(p.usageCount),
                 String(p.totalQuantity),
                 fmt(p.totalRevenue),
+                fmt(p.totalCost),
+                fmt(p.netProfit),
               ])}
             />
           </View>

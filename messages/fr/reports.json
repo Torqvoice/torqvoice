@@ -29,13 +29,17 @@
     "outstanding": "En attente",
     "services": "Services",
     "partsCost": "Coût des pièces",
-    "netProfit": "Bénéfice net",
+    "partsNetProfit": "Bénéfice Net Pièces",
+    "partsNetProfitDesc": "Revenus des pièces moins coût d'achat",
+    "laborRevenue": "Main-d'œuvre",
+    "laborRevenueDesc": "Revenus des frais de main-d'œuvre",
+    "netProfit": "Bénéfice Net Total",
     "revenueDesc": "Total facturé pour tous les services terminés",
     "collectedDesc": "Paiements reçus des clients",
     "outstandingDesc": "Facturé mais pas encore encaissé",
     "servicesDesc": "Total des ordres de travail terminés",
     "partsCostDesc": "Coût d'achat des pièces utilisées",
-    "netProfitDesc": "Chiffre d'affaires moins coût des pièces",
+    "netProfitDesc": "Bénéfice net pièces plus revenus main-d'œuvre",
     "monthlyRevenue": "Revenus Mensuels",
     "revenueByType": "Revenus par Type",
     "monthlyBreakdown": "Répartition Mensuelle",
@@ -44,6 +48,8 @@
       "revenue": "Revenus",
       "collected": "Encaissé",
       "partsCost": "Coût des pièces",
+      "partsNetProfit": "Bénéfice Pièces",
+      "laborRevenue": "Main-d'œuvre",
       "netProfit": "Bénéfice net",
       "count": "Nombre"
     }
@@ -123,6 +129,8 @@
   "parts": {
     "partsUsed": "Pièces Utilisées",
     "partsRevenue": "Revenus Pièces",
+    "partsCost": "Coût des Pièces",
+    "netProfit": "Bénéfice Net",
     "topPartsByUsage": "Pièces les Plus Utilisées",
     "partsUsage": "Utilisation des Pièces",
     "tableHeaders": {
@@ -130,7 +138,9 @@
       "partNumber": "N° Pièce",
       "usageCount": "Nombre d'Utilisations",
       "totalQty": "Qté Totale",
-      "revenue": "Revenus"
+      "revenue": "Revenus",
+      "cost": "Coût",
+      "netProfit": "Bénéfice Net"
     }
   },
   "jobAnalytics": {
@@ -243,6 +253,8 @@
     "dueDate": "Date d'Échéance",
     "daysPastDue": "Jours de Retard",
     "partsCost": "Coût des pièces",
+    "partsNetProfit": "Bénéfice Net Pièces",
+    "laborRevenue": "Main-d'œuvre",
     "netProfit": "Bénéfice net"
   },
   "pdf": {
@@ -273,6 +285,8 @@
     "outstanding": "Outstanding",
     "services": "Services",
     "partsCost": "Parts Cost",
+    "partsNetProfit": "Bénéfice Net Pièces",
+    "laborRevenue": "Main-d'œuvre",
     "netProfit": "Net Profit",
     "month": "Month",
     "count": "Count",
@@ -312,6 +326,8 @@
     "usageCount": "Usage Count",
     "totalQty": "Total Qty",
     "totalPartsRevenue": "Parts Revenue",
+    "totalPartsCost": "Coût des Pièces",
+    "totalPartsNetProfit": "Bénéfice Net",
     "totalPartsUsed": "Parts Used",
     "serviceType": "Service Type",
     "avgValue": "Avg Value",

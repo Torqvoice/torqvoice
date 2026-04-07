@@ -29,13 +29,17 @@
     "outstanding": "In sospeso",
     "services": "Servizi",
     "partsCost": "Costo ricambi",
-    "netProfit": "Utile netto",
+    "partsNetProfit": "Profitto Netto Ricambi",
+    "partsNetProfitDesc": "Ricavi ricambi meno costo di acquisto",
+    "laborRevenue": "Manodopera",
+    "laborRevenueDesc": "Ricavi da costi di manodopera",
+    "netProfit": "Profitto Netto Totale",
     "revenueDesc": "Totale fatturato da tutti i servizi completati",
     "collectedDesc": "Pagamenti ricevuti dai clienti",
     "outstandingDesc": "Fatturato ma non ancora incassato",
     "servicesDesc": "Totale ordini di lavoro completati",
     "partsCostDesc": "Costo di acquisto dei ricambi utilizzati",
-    "netProfitDesc": "Ricavi meno costo ricambi",
+    "netProfitDesc": "Profitto netto ricambi più ricavi manodopera",
     "monthlyRevenue": "Ricavi Mensili",
     "revenueByType": "Ricavi per Tipo",
     "monthlyBreakdown": "Riepilogo Mensile",
@@ -44,6 +48,8 @@
       "revenue": "Ricavi",
       "collected": "Incassato",
       "partsCost": "Costo ricambi",
+      "partsNetProfit": "Profitto Ricambi",
+      "laborRevenue": "Manodopera",
       "netProfit": "Utile netto",
       "count": "Conteggio"
     }
@@ -123,6 +129,8 @@
   "parts": {
     "partsUsed": "Ricambi Utilizzati",
     "partsRevenue": "Ricavi Ricambi",
+    "partsCost": "Costo Ricambi",
+    "netProfit": "Profitto Netto",
     "topPartsByUsage": "Ricambi Più Utilizzati",
     "partsUsage": "Utilizzo Ricambi",
     "tableHeaders": {
@@ -130,7 +138,9 @@
       "partNumber": "N. Ricambio",
       "usageCount": "Utilizzi",
       "totalQty": "Qtà Totale",
-      "revenue": "Ricavi"
+      "revenue": "Ricavi",
+      "cost": "Costo",
+      "netProfit": "Profitto Netto"
     }
   },
   "jobAnalytics": {
@@ -243,6 +253,8 @@
     "dueDate": "Data di Scadenza",
     "daysPastDue": "Giorni di Ritardo",
     "partsCost": "Costo ricambi",
+    "partsNetProfit": "Profitto Netto Ricambi",
+    "laborRevenue": "Manodopera",
     "netProfit": "Utile netto"
   },
   "pdf": {
@@ -273,6 +285,8 @@
     "outstanding": "Outstanding",
     "services": "Services",
     "partsCost": "Parts Cost",
+    "partsNetProfit": "Profitto Netto Ricambi",
+    "laborRevenue": "Manodopera",
     "netProfit": "Net Profit",
     "month": "Month",
     "count": "Count",
@@ -312,6 +326,8 @@
     "usageCount": "Usage Count",
     "totalQty": "Total Qty",
     "totalPartsRevenue": "Parts Revenue",
+    "totalPartsCost": "Costo Ricambi",
+    "totalPartsNetProfit": "Profitto Netto",
     "totalPartsUsed": "Parts Used",
     "serviceType": "Service Type",
     "avgValue": "Avg Value",

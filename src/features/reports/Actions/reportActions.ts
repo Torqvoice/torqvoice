@@ -26,17 +26,20 @@ export async function getRevenueReport(params: {
         type: true,
         manuallyPaid: true,
         payments: { select: { amount: true } },
-        partItems: { select: { unitCost: true, quantity: true } },
+        partItems: { select: { unitCost: true, quantity: true, total: true } },
+        laborItems: { select: { total: true } },
       },
       orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
     });
 
     // Monthly breakdown
-    const monthly: Record<string, { revenue: number; collected: number; count: number; partsCost: number }> = {};
+    const monthly: Record<string, { revenue: number; collected: number; count: number; partsCost: number; partsRevenue: number; laborRevenue: number }> = {};
     let totalRevenue = 0;
     let totalCollected = 0;
     let totalCount = 0;
     let totalPartsCost = 0;
+    let totalPartsRevenue = 0;
+    let totalLaborRevenue = 0;
 
     // Type breakdown
     const byType: Record<string, { revenue: number; count: number }> = {};
@@ -45,19 +48,25 @@ export async function getRevenueReport(params: {
       const total = r.totalAmount > 0 ? r.totalAmount : r.cost;
       const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0);
       const partsCost = r.partItems.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
+      const partsRevenue = r.partItems.reduce((s, p) => s + p.total, 0);
+      const laborRevenue = r.laborItems.reduce((s, l) => s + l.total, 0);
       const _date = r.startDateTime ?? r.serviceDate;
       const month = `${_date.getFullYear()}-${String(_date.getMonth() + 1).padStart(2, "0")}`;
 
-      if (!monthly[month]) monthly[month] = { revenue: 0, collected: 0, count: 0, partsCost: 0 };
+      if (!monthly[month]) monthly[month] = { revenue: 0, collected: 0, count: 0, partsCost: 0, partsRevenue: 0, laborRevenue: 0 };
       monthly[month].revenue += total;
       monthly[month].collected += paid;
       monthly[month].count += 1;
       monthly[month].partsCost += partsCost;
+      monthly[month].partsRevenue += partsRevenue;
+      monthly[month].laborRevenue += laborRevenue;
 
       totalRevenue += total;
       totalCollected += paid;
       totalCount += 1;
       totalPartsCost += partsCost;
+      totalPartsRevenue += partsRevenue;
+      totalLaborRevenue += laborRevenue;
 
       if (!byType[r.type]) byType[r.type] = { revenue: 0, count: 0 };
       byType[r.type].revenue += total;
@@ -68,7 +77,8 @@ export async function getRevenueReport(params: {
       monthly: Object.entries(monthly).map(([month, data]) => ({
         month,
         ...data,
-        netProfit: data.revenue - data.partsCost,
+        partsNetProfit: data.partsRevenue - data.partsCost,
+        netProfit: (data.partsRevenue - data.partsCost) + data.laborRevenue,
       })),
       byType: Object.entries(byType).map(([type, data]) => ({ type, ...data })),
       summary: {
@@ -77,7 +87,10 @@ export async function getRevenueReport(params: {
         outstanding: totalRevenue - totalCollected,
         totalCount,
         totalPartsCost,
-        netProfit: totalRevenue - totalPartsCost,
+        totalPartsRevenue,
+        totalPartsNetProfit: totalPartsRevenue - totalPartsCost,
+        totalLaborRevenue,
+        netProfit: (totalPartsRevenue - totalPartsCost) + totalLaborRevenue,
       },
     };
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] });
@@ -247,17 +260,19 @@ export async function getPartsUsageReport(params: {
         partNumber: true,
         quantity: true,
         total: true,
+        unitCost: true,
       },
     });
 
-    const byPart: Record<string, { partNumber: string | null; usageCount: number; totalQuantity: number; totalRevenue: number }> = {};
+    const byPart: Record<string, { partNumber: string | null; usageCount: number; totalQuantity: number; totalRevenue: number; totalCost: number }> = {};
 
     for (const p of parts) {
       const key = p.name.toLowerCase();
-      if (!byPart[key]) byPart[key] = { partNumber: p.partNumber, usageCount: 0, totalQuantity: 0, totalRevenue: 0 };
+      if (!byPart[key]) byPart[key] = { partNumber: p.partNumber, usageCount: 0, totalQuantity: 0, totalRevenue: 0, totalCost: 0 };
       byPart[key].usageCount += 1;
       byPart[key].totalQuantity += p.quantity;
       byPart[key].totalRevenue += p.total;
+      byPart[key].totalCost += p.unitCost * p.quantity;
       if (p.partNumber && !byPart[key].partNumber) byPart[key].partNumber = p.partNumber;
     }
 
@@ -274,13 +289,20 @@ export async function getPartsUsageReport(params: {
         usageCount: data.usageCount,
         totalQuantity: data.totalQuantity,
         totalRevenue: data.totalRevenue,
+        totalCost: data.totalCost,
+        netProfit: data.totalRevenue - data.totalCost,
       }))
       .sort((a, b) => b.usageCount - a.usageCount)
       .slice(0, 20);
 
+    const totalPartsRevenue = parts.reduce((s, p) => s + p.total, 0);
+    const totalPartsCost = parts.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
+
     return {
       parts: result,
-      totalPartsRevenue: parts.reduce((s, p) => s + p.total, 0),
+      totalPartsRevenue,
+      totalPartsCost,
+      totalPartsNetProfit: totalPartsRevenue - totalPartsCost,
       totalPartsUsed: parts.reduce((s, p) => s + p.quantity, 0),
     };
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] });

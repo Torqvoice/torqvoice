@@ -42,7 +42,7 @@ function downloadCsv(
 export function exportRevenueCsv(
   data: RevenueReport,
   currencyCode: string,
-  headers: [string, string, string, string, string, string] = ["Month", "Revenue", "Collected", "Count", "Parts Cost", "Net Profit"],
+  headers: [string, string, string, string, string, string, string, string] = ["Month", "Revenue", "Collected", "Count", "Parts Cost", "Parts Net Profit", "Labor", "Net Profit"],
 ) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const rows = data.monthly.map((m) => ({
@@ -51,9 +51,11 @@ export function exportRevenueCsv(
     collected: fmt(m.collected),
     count: m.count,
     partsCost: fmt(m.partsCost),
+    partsNetProfit: fmt(m.partsNetProfit),
+    laborRevenue: fmt(m.laborRevenue),
     netProfit: fmt(m.netProfit),
   }));
-  downloadCsv("revenue-report.csv", headers, rows, ["month", "revenue", "collected", "count", "partsCost", "netProfit"]);
+  downloadCsv("revenue-report.csv", headers, rows, ["month", "revenue", "collected", "count", "partsCost", "partsNetProfit", "laborRevenue", "netProfit"]);
 }
 
 export function exportServicesCsv(
@@ -118,7 +120,7 @@ export function exportTechniciansCsv(
 export function exportPartsCsv(
   data: PartsUsageReport,
   currencyCode: string,
-  headers: [string, string, string, string, string] = ["Part Name", "Part #", "Usage Count", "Total Qty", "Total Revenue"],
+  headers: [string, string, string, string, string, string, string] = ["Part Name", "Part #", "Usage Count", "Total Qty", "Revenue", "Cost", "Net Profit"],
 ) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const rows = data.parts.map((p) => ({
@@ -127,8 +129,10 @@ export function exportPartsCsv(
     usageCount: p.usageCount,
     totalQuantity: p.totalQuantity,
     totalRevenue: fmt(p.totalRevenue),
+    totalCost: fmt(p.totalCost),
+    netProfit: fmt(p.netProfit),
   }));
-  downloadCsv("parts-usage-report.csv", headers, rows, ["name", "partNumber", "usageCount", "totalQuantity", "totalRevenue"]);
+  downloadCsv("parts-usage-report.csv", headers, rows, ["name", "partNumber", "usageCount", "totalQuantity", "totalRevenue", "totalCost", "netProfit"]);
 }
 
 export function exportJobAnalyticsCsv(

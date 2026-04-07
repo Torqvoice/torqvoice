@@ -4,6 +4,9 @@ export interface MonthlyRevenue {
   collected: number;
   count: number;
   partsCost: number;
+  partsRevenue: number;
+  partsNetProfit: number;
+  laborRevenue: number;
   netProfit: number;
 }
 
@@ -19,6 +22,9 @@ export interface RevenueSummary {
   outstanding: number;
   totalCount: number;
   totalPartsCost: number;
+  totalPartsRevenue: number;
+  totalPartsNetProfit: number;
+  totalLaborRevenue: number;
   netProfit: number;
 }
 
@@ -99,11 +105,15 @@ export interface PartUsage {
   usageCount: number;
   totalQuantity: number;
   totalRevenue: number;
+  totalCost: number;
+  netProfit: number;
 }
 
 export interface PartsUsageReport {
   parts: PartUsage[];
   totalPartsRevenue: number;
+  totalPartsCost: number;
+  totalPartsNetProfit: number;
   totalPartsUsed: number;
 }
 

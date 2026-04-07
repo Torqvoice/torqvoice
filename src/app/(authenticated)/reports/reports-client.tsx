@@ -306,7 +306,7 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
     if (activeTab === "financial") {
       switch (financialSubTab) {
         case "revenue":
-          if (revenueData) exportRevenueCsv(revenueData, currencyCode, [h("month"), h("revenue"), h("collected"), h("count"), h("partsCost"), h("netProfit")]);
+          if (revenueData) exportRevenueCsv(revenueData, currencyCode, [h("month"), h("revenue"), h("collected"), h("count"), h("partsCost"), h("partsNetProfit"), h("laborRevenue"), h("netProfit")]);
           break;
         case "past-due-invoices":
           if (pastDueData) exportPastDueInvoicesCsv(pastDueData, currencyCode, [h("customer"), h("company"), h("invoiceNumber"), h("totalAmount"), h("amountPaid"), h("amountDue"), h("dueDate"), h("daysPastDue")]);
@@ -330,7 +330,7 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
           if (technicianData) exportTechniciansCsv(technicianData, currencyCode, [h("technician"), h("jobs"), h("totalRevenue"), h("avgRevenue"), h("totalHours"), h("avgHours")]);
           break;
         case "parts":
-          if (partsData) exportPartsCsv(partsData, currencyCode, [h("partName"), h("partNumber"), h("usageCount"), h("totalQty"), h("totalRevenue")]);
+          if (partsData) exportPartsCsv(partsData, currencyCode, [h("partName"), h("partNumber"), h("usageCount"), h("totalQty"), h("totalRevenue"), h("partsCost"), h("netProfit")]);
           break;
         case "job-analytics":
           if (jobAnalyticsData) exportJobAnalyticsCsv(jobAnalyticsData, currencyCode, [h("serviceType"), h("count"), h("avgValue"), h("avgHours")]);
@@ -380,6 +380,8 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
         outstanding: t("pdf.outstanding"),
         services: t("pdf.services"),
         partsCost: t("pdf.partsCost"),
+        partsNetProfit: t("pdf.partsNetProfit"),
+        laborRevenue: t("pdf.laborRevenue"),
         netProfit: t("pdf.netProfit"),
         month: t("pdf.month"),
         count: t("pdf.count"),
@@ -419,6 +421,8 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
         usageCount: t("pdf.usageCount"),
         totalQty: t("pdf.totalQty"),
         totalPartsRevenue: t("pdf.totalPartsRevenue"),
+        totalPartsCost: t("pdf.totalPartsCost"),
+        totalPartsNetProfit: t("pdf.totalPartsNetProfit"),
         totalPartsUsed: t("pdf.totalPartsUsed"),
         serviceType: t("pdf.serviceType"),
         avgValue: t("pdf.avgValue"),
@@ -755,7 +759,35 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
                   <Card className="border-0 shadow-sm">
                     <CardContent className="flex items-center gap-3 p-4">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-green-500/10">
-                        <TrendingUp className="h-4 w-4 text-green-500" />
+                        <Package className="h-4 w-4 text-green-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("revenue.partsNetProfit")}</p>
+                        <p className="text-lg font-semibold truncate">
+                          {fmtCurrency(revenueData.summary.totalPartsNetProfit)}
+                        </p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.partsNetProfitDesc")}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
+                        <Wrench className="h-4 w-4 text-blue-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">{t("revenue.laborRevenue")}</p>
+                        <p className="text-lg font-semibold truncate">
+                          {fmtCurrency(revenueData.summary.totalLaborRevenue)}
+                        </p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.laborRevenueDesc")}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
+                        <TrendingUp className="h-4 w-4 text-emerald-500" />
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs text-muted-foreground">{t("revenue.netProfit")}</p>
@@ -804,6 +836,8 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
                             <TableHead className="text-right">{t("revenue.tableHeaders.revenue")}</TableHead>
                             <TableHead className="text-right">{t("revenue.tableHeaders.collected")}</TableHead>
                             <TableHead className="text-right">{t("revenue.tableHeaders.partsCost")}</TableHead>
+                            <TableHead className="text-right">{t("revenue.tableHeaders.partsNetProfit")}</TableHead>
+                            <TableHead className="text-right">{t("revenue.tableHeaders.laborRevenue")}</TableHead>
                             <TableHead className="text-right">{t("revenue.tableHeaders.netProfit")}</TableHead>
                             <TableHead className="text-right">{t("revenue.tableHeaders.count")}</TableHead>
                           </TableRow>
@@ -820,6 +854,12 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
                               </TableCell>
                               <TableCell className="text-right text-sm">
                                 {fmtCurrency(row.partsCost)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm">
+                                {fmtCurrency(row.partsNetProfit)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm">
+                                {fmtCurrency(row.laborRevenue)}
                               </TableCell>
                               <TableCell className="text-right text-sm">
                                 {fmtCurrency(row.netProfit)}
@@ -1450,7 +1490,7 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
       <TabsContent value="parts">
         {!loading && partsData && (
           <div className="space-y-4">
-            <div className="grid gap-3 grid-cols-2 max-w-lg">
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
               <Card className="border-0 shadow-sm">
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
@@ -1471,6 +1511,32 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
                     <p className="text-xs text-muted-foreground">{t("parts.partsRevenue")}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(partsData.totalPartsRevenue)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-sm">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-orange-500/10">
+                    <Package className="h-4 w-4 text-orange-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">{t("parts.partsCost")}</p>
+                    <p className="text-lg font-semibold truncate">
+                      {fmtCurrency(partsData.totalPartsCost)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-sm">
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-green-500/10">
+                    <TrendingUp className="h-4 w-4 text-green-500" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">{t("parts.netProfit")}</p>
+                    <p className="text-lg font-semibold truncate">
+                      {fmtCurrency(partsData.totalPartsNetProfit)}
                     </p>
                   </div>
                 </CardContent>
@@ -1500,6 +1566,8 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
                         <TableHead className="text-right">{t("parts.tableHeaders.usageCount")}</TableHead>
                         <TableHead className="text-right">{t("parts.tableHeaders.totalQty")}</TableHead>
                         <TableHead className="text-right">{t("parts.tableHeaders.revenue")}</TableHead>
+                        <TableHead className="text-right">{t("parts.tableHeaders.cost")}</TableHead>
+                        <TableHead className="text-right">{t("parts.tableHeaders.netProfit")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1510,6 +1578,8 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
                           <TableCell className="text-right text-sm">{row.usageCount}</TableCell>
                           <TableCell className="text-right text-sm">{row.totalQuantity}</TableCell>
                           <TableCell className="text-right text-sm">{fmtCurrency(row.totalRevenue)}</TableCell>
+                          <TableCell className="text-right text-sm">{fmtCurrency(row.totalCost)}</TableCell>
+                          <TableCell className="text-right text-sm">{fmtCurrency(row.netProfit)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

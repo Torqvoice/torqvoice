@@ -29,13 +29,17 @@
     "outstanding": "Ausstehend",
     "services": "Dienstleistungen",
     "partsCost": "Teilekosten",
-    "netProfit": "Nettogewinn",
+    "partsNetProfit": "Ersatzteil-Nettogewinn",
+    "partsNetProfitDesc": "Ersatzteilumsatz minus Einkaufskosten",
+    "laborRevenue": "Arbeit",
+    "laborRevenueDesc": "Einnahmen aus Arbeitskosten",
+    "netProfit": "Gesamter Nettogewinn",
     "revenueDesc": "Gesamtbetrag aller abgeschlossenen Aufträge",
     "collectedDesc": "Erhaltene Zahlungen von Kunden",
     "outstandingDesc": "In Rechnung gestellt, aber noch nicht bezahlt",
     "servicesDesc": "Abgeschlossene Arbeitsaufträge gesamt",
     "partsCostDesc": "Einkaufskosten der verwendeten Teile",
-    "netProfitDesc": "Umsatz abzüglich Teilekosten",
+    "netProfitDesc": "Ersatzteil-Nettogewinn plus Arbeitsumsatz",
     "monthlyRevenue": "Monatlicher Umsatz",
     "revenueByType": "Umsatz nach Typ",
     "monthlyBreakdown": "Monatliche Aufschlüsselung",
@@ -44,6 +48,8 @@
       "revenue": "Umsatz",
       "collected": "Eingezogen",
       "partsCost": "Teilekosten",
+      "partsNetProfit": "Teile-Gewinn",
+      "laborRevenue": "Arbeit",
       "netProfit": "Nettogewinn",
       "count": "Anzahl"
     }
@@ -123,6 +129,8 @@
   "parts": {
     "partsUsed": "Verwendete Teile",
     "partsRevenue": "Teileumsatz",
+    "partsCost": "Teilekosten",
+    "netProfit": "Nettogewinn",
     "topPartsByUsage": "Top-Teile nach Verwendung",
     "partsUsage": "Teileverwendung",
     "tableHeaders": {
@@ -130,7 +138,9 @@
       "partNumber": "Teilenr.",
       "usageCount": "Verwendungsanzahl",
       "totalQty": "Gesamtmenge",
-      "revenue": "Umsatz"
+      "revenue": "Umsatz",
+      "cost": "Kosten",
+      "netProfit": "Nettogewinn"
     }
   },
   "jobAnalytics": {
@@ -243,6 +253,8 @@
     "dueDate": "Fälligkeitsdatum",
     "daysPastDue": "Tage überfällig",
     "partsCost": "Teilekosten",
+    "partsNetProfit": "Teile-Nettogewinn",
+    "laborRevenue": "Arbeit",
     "netProfit": "Nettogewinn"
   },
   "pdf": {
@@ -273,6 +285,8 @@
     "outstanding": "Outstanding",
     "services": "Services",
     "partsCost": "Parts Cost",
+    "partsNetProfit": "Teile-Nettogewinn",
+    "laborRevenue": "Arbeit",
     "netProfit": "Net Profit",
     "month": "Month",
     "count": "Count",
@@ -312,6 +326,8 @@
     "usageCount": "Usage Count",
     "totalQty": "Total Qty",
     "totalPartsRevenue": "Parts Revenue",
+    "totalPartsCost": "Teilekosten",
+    "totalPartsNetProfit": "Nettogewinn",
     "totalPartsUsed": "Parts Used",
     "serviceType": "Service Type",
     "avgValue": "Avg Value",
