@@ -685,120 +685,56 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
           <TabsContent value="revenue">
             {!loading && revenueData && (
               <div className="space-y-4">
-                <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
+                {/* Top-line metrics */}
+                <div className="grid gap-2 grid-cols-3">
                   <Card className="border-0 shadow-sm">
-                    <CardContent className="flex items-center gap-3 p-4">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
-                        <DollarSign className="h-4 w-4 text-blue-500" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("revenue.revenue")}</p>
-                        <p className="text-lg font-semibold truncate">
-                          {fmtCurrency(revenueData.summary.totalRevenue)}
-                        </p>
-                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.revenueDesc")}</p>
-                      </div>
+                    <CardContent className="px-3 py-1.5">
+                      <p className="text-[11px] text-muted-foreground">{t("revenue.revenue")}</p>
+                      <p className="text-base font-semibold truncate">{fmtCurrency(revenueData.summary.totalRevenue)}</p>
                     </CardContent>
                   </Card>
                   <Card className="border-0 shadow-sm">
-                    <CardContent className="flex items-center gap-3 p-4">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
-                        <TrendingUp className="h-4 w-4 text-emerald-500" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("revenue.collected")}</p>
-                        <p className="text-lg font-semibold truncate">
-                          {fmtCurrency(revenueData.summary.totalCollected)}
-                        </p>
-                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.collectedDesc")}</p>
-                      </div>
+                    <CardContent className="px-3 py-1.5">
+                      <p className="text-[11px] text-muted-foreground">{t("revenue.collected")}</p>
+                      <p className="text-base font-semibold truncate">{fmtCurrency(revenueData.summary.totalCollected)}</p>
                     </CardContent>
                   </Card>
                   <Card className="border-0 shadow-sm">
-                    <CardContent className="flex items-center gap-3 p-4">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
-                        <AlertTriangle className="h-4 w-4 text-amber-500" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("revenue.outstanding")}</p>
-                        <p className="text-lg font-semibold truncate">
-                          {fmtCurrency(revenueData.summary.outstanding)}
-                        </p>
-                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.outstandingDesc")}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-0 shadow-sm">
-                    <CardContent className="flex items-center gap-3 p-4">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
-                        <BarChart3 className="h-4 w-4 text-violet-500" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("revenue.services")}</p>
-                        <p className="text-lg font-semibold">
-                          {revenueData.summary.totalCount}
-                        </p>
-                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.servicesDesc")}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-0 shadow-sm">
-                    <CardContent className="flex items-center gap-3 p-4">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-orange-500/10">
-                        <Package className="h-4 w-4 text-orange-500" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("revenue.partsCost")}</p>
-                        <p className="text-lg font-semibold truncate">
-                          {fmtCurrency(revenueData.summary.totalPartsCost)}
-                        </p>
-                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.partsCostDesc")}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-0 shadow-sm">
-                    <CardContent className="flex items-center gap-3 p-4">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-green-500/10">
-                        <Package className="h-4 w-4 text-green-500" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("revenue.partsNetProfit")}</p>
-                        <p className="text-lg font-semibold truncate">
-                          {fmtCurrency(revenueData.summary.totalPartsNetProfit)}
-                        </p>
-                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.partsNetProfitDesc")}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-0 shadow-sm">
-                    <CardContent className="flex items-center gap-3 p-4">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
-                        <Wrench className="h-4 w-4 text-blue-500" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("revenue.laborRevenue")}</p>
-                        <p className="text-lg font-semibold truncate">
-                          {fmtCurrency(revenueData.summary.totalLaborRevenue)}
-                        </p>
-                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.laborRevenueDesc")}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-0 shadow-sm">
-                    <CardContent className="flex items-center gap-3 p-4">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
-                        <TrendingUp className="h-4 w-4 text-emerald-500" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("revenue.netProfit")}</p>
-                        <p className="text-lg font-semibold truncate">
-                          {fmtCurrency(revenueData.summary.netProfit)}
-                        </p>
-                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("revenue.netProfitDesc")}</p>
-                      </div>
+                    <CardContent className="px-3 py-1.5">
+                      <p className="text-[11px] text-muted-foreground">{t("revenue.outstanding")}</p>
+                      <p className="text-base font-semibold truncate">{fmtCurrency(revenueData.summary.outstanding)}</p>
                     </CardContent>
                   </Card>
                 </div>
+
+                {/* Net Profit breakdown */}
+                <Card className="border-0 shadow-sm">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">{t("revenue.netProfit")}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-green-500" />
+                          <span className="text-sm text-muted-foreground">{t("revenue.partsNetProfit")}</span>
+                        </div>
+                        <span className="text-sm font-medium tabular-nums">{fmtCurrency(revenueData.summary.totalPartsNetProfit)}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-blue-500" />
+                          <span className="text-sm text-muted-foreground">{t("revenue.laborRevenue")}</span>
+                        </div>
+                        <span className="text-sm font-medium tabular-nums">{fmtCurrency(revenueData.summary.totalLaborRevenue)}</span>
+                      </div>
+                      <div className="border-t pt-3 flex items-center justify-between">
+                        <span className="text-sm font-medium">{t("revenue.netProfit")}</span>
+                        <span className="text-base font-semibold tabular-nums">{fmtCurrency(revenueData.summary.netProfit)}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
                 <div className="grid gap-4 lg:grid-cols-5">
                   <Card className="border-0 shadow-sm lg:col-span-3">

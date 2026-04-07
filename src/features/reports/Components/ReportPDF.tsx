@@ -222,6 +222,37 @@ function TableBlock({
   );
 }
 
+function ProfitBreakdown({
+  s,
+  title,
+  lines,
+  total,
+}: {
+  s: ReportStyles;
+  title: string;
+  lines: { label: string; value: string; color: string }[];
+  total: { label: string; value: string };
+}) {
+  return (
+    <View style={{ marginBottom: 14, backgroundColor: grayLight, borderRadius: 4, padding: 12 }}>
+      <Text style={{ fontSize: 9, fontFamily: "Roboto-Bold", marginBottom: 8 }}>{title}</Text>
+      {lines.map((line, i) => (
+        <View key={i} style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: line.color }} />
+            <Text style={{ fontSize: 8, color: gray }}>{line.label}</Text>
+          </View>
+          <Text style={{ fontSize: 8, fontFamily: "Roboto-Bold" }}>{line.value}</Text>
+        </View>
+      ))}
+      <View style={{ borderTopWidth: 0.5, borderTopColor: border, marginTop: 4, paddingTop: 6, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <Text style={{ fontSize: 9, fontFamily: "Roboto-Bold" }}>{total.label}</Text>
+        <Text style={{ fontSize: 11, fontFamily: "Roboto-Bold" }}>{total.value}</Text>
+      </View>
+    </View>
+  );
+}
+
 function PageFooter({ s }: { s: ReportStyles }) {
   return (
     <Text
@@ -272,12 +303,17 @@ export function ReportPDF({
               { label: l.revenue || "Revenue", value: fmt(revenueData.summary.totalRevenue) },
               { label: l.collected || "Collected", value: fmt(revenueData.summary.totalCollected) },
               { label: l.outstanding || "Outstanding", value: fmt(revenueData.summary.outstanding) },
-              { label: l.services || "Services", value: String(revenueData.summary.totalCount) },
-              { label: l.partsCost || "Parts Cost", value: fmt(revenueData.summary.totalPartsCost) },
-              { label: l.partsNetProfit || "Parts Net Profit", value: fmt(revenueData.summary.totalPartsNetProfit) },
-              { label: l.laborRevenue || "Labor", value: fmt(revenueData.summary.totalLaborRevenue) },
-              { label: l.netProfit || "Net Profit", value: fmt(revenueData.summary.netProfit) },
             ]}
+          />
+
+          <ProfitBreakdown
+            s={s}
+            title={l.netProfit || "Net Profit"}
+            lines={[
+              { label: l.partsNetProfit || "Parts Net Profit", value: fmt(revenueData.summary.totalPartsNetProfit), color: "#22c55e" },
+              { label: l.laborRevenue || "Labor", value: fmt(revenueData.summary.totalLaborRevenue), color: "#3b82f6" },
+            ]}
+            total={{ label: l.netProfit || "Net Profit", value: fmt(revenueData.summary.netProfit) }}
           />
 
           <View style={s.section}>
