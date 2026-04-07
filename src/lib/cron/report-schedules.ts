@@ -104,35 +104,40 @@ async function fetchRevenue(orgId: string, start: Date, end: Date) {
     select: {
       serviceDate: true, startDateTime: true, totalAmount: true, cost: true, type: true,
       manuallyPaid: true, payments: { select: { amount: true } },
-      partItems: { select: { unitCost: true, quantity: true } },
+      partItems: { select: { unitCost: true, quantity: true, total: true } },
+      laborItems: { select: { total: true } },
     },
     orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
   });
 
-  const monthly: Record<string, { revenue: number; collected: number; count: number; partsCost: number }> = {};
+  const monthly: Record<string, { revenue: number; collected: number; count: number; partsCost: number; partsRevenue: number; laborRevenue: number }> = {};
   const byType: Record<string, { revenue: number; count: number }> = {};
-  let totalRevenue = 0, totalCollected = 0, totalCount = 0, totalPartsCost = 0;
+  let totalRevenue = 0, totalCollected = 0, totalCount = 0, totalPartsCost = 0, totalPartsRevenue = 0, totalLaborRevenue = 0;
 
   for (const r of records) {
     const total = r.totalAmount > 0 ? r.totalAmount : r.cost;
     const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0);
     const partsCost = r.partItems.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
+    const partsRevenue = r.partItems.reduce((s, p) => s + p.total, 0);
+    const laborRevenue = r.laborItems.reduce((s, l) => s + l.total, 0);
     const _d = r.startDateTime ?? r.serviceDate;
     const month = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, "0")}`;
 
-    if (!monthly[month]) monthly[month] = { revenue: 0, collected: 0, count: 0, partsCost: 0 };
+    if (!monthly[month]) monthly[month] = { revenue: 0, collected: 0, count: 0, partsCost: 0, partsRevenue: 0, laborRevenue: 0 };
     monthly[month].revenue += total; monthly[month].collected += paid;
     monthly[month].count += 1; monthly[month].partsCost += partsCost;
+    monthly[month].partsRevenue += partsRevenue; monthly[month].laborRevenue += laborRevenue;
     totalRevenue += total; totalCollected += paid; totalCount += 1; totalPartsCost += partsCost;
+    totalPartsRevenue += partsRevenue; totalLaborRevenue += laborRevenue;
 
     if (!byType[r.type]) byType[r.type] = { revenue: 0, count: 0 };
     byType[r.type].revenue += total; byType[r.type].count += 1;
   }
 
   return {
-    monthly: Object.entries(monthly).map(([month, d]) => ({ month, ...d, netProfit: d.revenue - d.partsCost })),
+    monthly: Object.entries(monthly).map(([month, d]) => ({ month, ...d, partsNetProfit: d.partsRevenue - d.partsCost, netProfit: (d.partsRevenue - d.partsCost) + d.laborRevenue })),
     byType: Object.entries(byType).map(([type, d]) => ({ type, ...d })),
-    summary: { totalRevenue, totalCollected, outstanding: totalRevenue - totalCollected, totalCount, totalPartsCost, netProfit: totalRevenue - totalPartsCost },
+    summary: { totalRevenue, totalCollected, outstanding: totalRevenue - totalCollected, totalCount, totalPartsCost, totalPartsRevenue, totalPartsNetProfit: totalPartsRevenue - totalPartsCost, totalLaborRevenue, netProfit: (totalPartsRevenue - totalPartsCost) + totalLaborRevenue },
   };
 }
 
@@ -192,17 +197,20 @@ async function fetchTechnicians(orgId: string, start: Date, end: Date) {
 async function fetchParts(orgId: string, start: Date, end: Date) {
   const parts = await db.servicePart.findMany({
     where: { serviceRecord: { vehicle: { organizationId: orgId }, startDateTime: { gte: start, lte: end } } },
-    select: { name: true, partNumber: true, quantity: true, total: true },
+    select: { name: true, partNumber: true, quantity: true, total: true, unitCost: true },
   });
-  const byPart: Record<string, { name: string; partNumber: string | null; usageCount: number; totalQuantity: number; totalRevenue: number }> = {};
+  const byPart: Record<string, { name: string; partNumber: string | null; usageCount: number; totalQuantity: number; totalRevenue: number; totalCost: number }> = {};
   for (const p of parts) {
     const key = p.name.toLowerCase();
-    if (!byPart[key]) byPart[key] = { name: p.name, partNumber: p.partNumber, usageCount: 0, totalQuantity: 0, totalRevenue: 0 };
+    if (!byPart[key]) byPart[key] = { name: p.name, partNumber: p.partNumber, usageCount: 0, totalQuantity: 0, totalRevenue: 0, totalCost: 0 };
     byPart[key].usageCount += 1; byPart[key].totalQuantity += p.quantity; byPart[key].totalRevenue += p.total;
+    byPart[key].totalCost += p.unitCost * p.quantity;
     if (p.partNumber && !byPart[key].partNumber) byPart[key].partNumber = p.partNumber;
   }
-  const result = Object.values(byPart).sort((a, b) => b.usageCount - a.usageCount).slice(0, 20);
-  return { parts: result, totalPartsRevenue: parts.reduce((s, p) => s + p.total, 0), totalPartsUsed: parts.reduce((s, p) => s + p.quantity, 0) };
+  const result = Object.values(byPart).map((d) => ({ ...d, netProfit: d.totalRevenue - d.totalCost })).sort((a, b) => b.usageCount - a.usageCount).slice(0, 20);
+  const totalPartsRevenue = parts.reduce((s, p) => s + p.total, 0);
+  const totalPartsCost = parts.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
+  return { parts: result, totalPartsRevenue, totalPartsCost, totalPartsNetProfit: totalPartsRevenue - totalPartsCost, totalPartsUsed: parts.reduce((s, p) => s + p.quantity, 0) };
 }
 
 async function fetchJobAnalytics(orgId: string, start: Date, end: Date) {

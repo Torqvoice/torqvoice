@@ -29,13 +29,17 @@
     "outstanding": "Zaległe",
     "services": "Usługi",
     "partsCost": "Koszt części",
-    "netProfit": "Zysk netto",
+    "partsNetProfit": "Zysk Netto z Części",
+    "partsNetProfitDesc": "Przychód z części minus koszt zakupu",
+    "laborRevenue": "Robocizna",
+    "laborRevenueDesc": "Przychód z opłat za robociznę",
+    "netProfit": "Całkowity Zysk Netto",
     "revenueDesc": "Łączna kwota faktur ze wszystkich usług",
     "collectedDesc": "Płatności otrzymane od klientów",
     "outstandingDesc": "Zafakturowane, ale jeszcze nieopłacone",
     "servicesDesc": "Łączna liczba zrealizowanych zleceń",
     "partsCostDesc": "Koszt zakupu części użytych w usługach",
-    "netProfitDesc": "Przychód minus koszt części",
+    "netProfitDesc": "Zysk netto z części plus przychód z robocizny",
     "monthlyRevenue": "Przychody Miesięczne",
     "revenueByType": "Przychody wg Typu",
     "monthlyBreakdown": "Zestawienie Miesięczne",
@@ -44,6 +48,8 @@
       "revenue": "Przychody",
       "collected": "Zebrano",
       "partsCost": "Koszt części",
+      "partsNetProfit": "Zysk z Części",
+      "laborRevenue": "Robocizna",
       "netProfit": "Zysk netto",
       "count": "Ilość"
     }
@@ -123,6 +129,8 @@
   "parts": {
     "partsUsed": "Użyte Części",
     "partsRevenue": "Przychody z Części",
+    "partsCost": "Koszt Części",
+    "netProfit": "Zysk Netto",
     "topPartsByUsage": "Najczęściej Używane Części",
     "partsUsage": "Użycie Części",
     "tableHeaders": {
@@ -130,7 +138,9 @@
       "partNumber": "Nr Części",
       "usageCount": "Liczba Użyć",
       "totalQty": "Łączna Ilość",
-      "revenue": "Przychody"
+      "revenue": "Przychody",
+      "cost": "Koszt",
+      "netProfit": "Zysk Netto"
     }
   },
   "jobAnalytics": {
@@ -243,6 +253,8 @@
     "dueDate": "Termin Płatności",
     "daysPastDue": "Dni Przeterminowania",
     "partsCost": "Koszt części",
+    "partsNetProfit": "Zysk Netto z Części",
+    "laborRevenue": "Robocizna",
     "netProfit": "Zysk netto"
   },
   "pdf": {
@@ -273,6 +285,8 @@
     "outstanding": "Outstanding",
     "services": "Services",
     "partsCost": "Parts Cost",
+    "partsNetProfit": "Zysk Netto z Części",
+    "laborRevenue": "Robocizna",
     "netProfit": "Net Profit",
     "month": "Month",
     "count": "Count",
@@ -312,6 +326,8 @@
     "usageCount": "Usage Count",
     "totalQty": "Total Qty",
     "totalPartsRevenue": "Parts Revenue",
+    "totalPartsCost": "Koszt Części",
+    "totalPartsNetProfit": "Zysk Netto",
     "totalPartsUsed": "Parts Used",
     "serviceType": "Service Type",
     "avgValue": "Avg Value",

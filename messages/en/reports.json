@@ -29,13 +29,17 @@
     "outstanding": "Outstanding",
     "services": "Services",
     "partsCost": "Parts Cost",
-    "netProfit": "Net Profit",
+    "partsNetProfit": "Parts Net Profit",
+    "partsNetProfitDesc": "Parts revenue minus parts purchase cost",
+    "laborRevenue": "Labor",
+    "laborRevenueDesc": "Revenue from labor charges",
+    "netProfit": "Total Net Profit",
     "revenueDesc": "Total invoiced from all completed services",
     "collectedDesc": "Payments received from customers",
     "outstandingDesc": "Invoiced but not yet paid",
     "servicesDesc": "Total completed work orders",
     "partsCostDesc": "Purchase cost of parts used in services",
-    "netProfitDesc": "Revenue minus parts cost",
+    "netProfitDesc": "Parts net profit plus labor revenue",
     "monthlyRevenue": "Monthly Revenue",
     "revenueByType": "Revenue by Type",
     "monthlyBreakdown": "Monthly Breakdown",
@@ -44,6 +48,8 @@
       "revenue": "Revenue",
       "collected": "Collected",
       "partsCost": "Parts Cost",
+      "partsNetProfit": "Parts Profit",
+      "laborRevenue": "Labor",
       "netProfit": "Net Profit",
       "count": "Count"
     }
@@ -123,6 +129,8 @@
   "parts": {
     "partsUsed": "Parts Used",
     "partsRevenue": "Parts Revenue",
+    "partsCost": "Parts Cost",
+    "netProfit": "Net Profit",
     "topPartsByUsage": "Top Parts by Usage",
     "partsUsage": "Parts Usage",
     "tableHeaders": {
@@ -130,7 +138,9 @@
       "partNumber": "Part #",
       "usageCount": "Usage Count",
       "totalQty": "Total Qty",
-      "revenue": "Revenue"
+      "revenue": "Revenue",
+      "cost": "Cost",
+      "netProfit": "Net Profit"
     }
   },
   "jobAnalytics": {
@@ -243,6 +253,8 @@
     "dueDate": "Due Date",
     "daysPastDue": "Days Past Due",
     "partsCost": "Parts Cost",
+    "partsNetProfit": "Parts Net Profit",
+    "laborRevenue": "Labor",
     "netProfit": "Net Profit"
   },
   "pdf": {
@@ -273,6 +285,8 @@
     "outstanding": "Outstanding",
     "services": "Services",
     "partsCost": "Parts Cost",
+    "partsNetProfit": "Parts Net Profit",
+    "laborRevenue": "Labor",
     "netProfit": "Net Profit",
     "month": "Month",
     "count": "Count",
@@ -312,6 +326,8 @@
     "usageCount": "Usage Count",
     "totalQty": "Total Qty",
     "totalPartsRevenue": "Parts Revenue",
+    "totalPartsCost": "Parts Cost",
+    "totalPartsNetProfit": "Net Profit",
     "totalPartsUsed": "Parts Used",
     "serviceType": "Service Type",
     "avgValue": "Avg Value",
