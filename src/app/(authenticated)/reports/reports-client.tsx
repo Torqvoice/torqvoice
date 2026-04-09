@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -744,10 +745,19 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         </div>
       </div>
 
-      {/* Loading overlay (hidden on vehicles tab — it handles its own) */}
+      {/* Loading skeleton (hidden on vehicles tab — it handles its own) */}
       {loading && activeTab !== "vehicles" && (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <div className="space-y-4">
+          <div className="grid gap-2 grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-16 rounded-lg" />
+            ))}
+          </div>
+          <div className="grid gap-4 lg:grid-cols-5">
+            <Skeleton className="h-[300px] rounded-lg lg:col-span-3" />
+            <Skeleton className="h-[300px] rounded-lg lg:col-span-2" />
+          </div>
+          <Skeleton className="h-48 rounded-lg" />
         </div>
       )}
 
@@ -1834,8 +1844,16 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         </div>
 
         {loading && activeTab === "vehicles" && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <div className="space-y-4">
+            <Skeleton className="h-[72px] rounded-lg" />
+            <div className="grid gap-4 lg:grid-cols-5">
+              <Skeleton className="h-[300px] rounded-lg lg:col-span-3" />
+              <Skeleton className="h-[300px] rounded-lg lg:col-span-2" />
+            </div>
+            <div className="grid gap-4 lg:grid-cols-5">
+              <Skeleton className="h-48 rounded-lg lg:col-span-2" />
+              <Skeleton className="h-48 rounded-lg lg:col-span-3" />
+            </div>
           </div>
         )}
         {!loading && vehicleData && (
