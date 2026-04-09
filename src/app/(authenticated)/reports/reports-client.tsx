@@ -92,7 +92,7 @@ import { PartsDonut } from "@/features/reports/Components/PartsCharts";
 import { DayOfWeekChart, ServiceTypeAnalyticsDonut, MonthlyTrendChart } from "@/features/reports/Components/JobAnalyticsCharts";
 import { RetentionBarChart } from "@/features/reports/Components/RetentionCharts";
 import { TaxBarChart } from "@/features/reports/Components/TaxCharts";
-import { VehicleCostBarChart, VehicleServiceTypeDonut } from "@/features/reports/Components/VehicleCharts";
+import { VehicleCostBarChart } from "@/features/reports/Components/VehicleCharts";
 import { VehicleCombobox } from "@/features/quotes/Components/VehicleCombobox";
 import {
   exportRevenueCsv,
@@ -118,12 +118,13 @@ type PastDueSortDir = "asc" | "desc";
 interface ReportsClientProps {
   currencyCode: string;
   primaryColor: string;
+  organizationName: string;
 }
 
 const VALID_TABS: ReportTab[] = ["financial", "services", "customers", "inventory", "technicians", "parts", "job-analytics", "retention", "vehicles"];
 const VALID_SUB_TABS: FinancialSubTab[] = ["revenue", "past-due-invoices", "tax"];
 
-export default function ReportsClient({ currencyCode, primaryColor }: ReportsClientProps) {
+export default function ReportsClient({ currencyCode, primaryColor, organizationName }: ReportsClientProps) {
   const t = useTranslations("reports");
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -472,6 +473,13 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
         partsCostLabel: t("pdf.partsCostLabel"),
         laborCostLabel: t("pdf.laborCostLabel"),
         date: t("pdf.date"),
+        repairs: t("vehicles.repairs"),
+        maintenance: t("vehicles.maintenance"),
+        upgrades: t("vehicles.upgrades"),
+        inspections: t("vehicles.inspections"),
+        totalLaborHours: t("vehicles.totalLaborHours"),
+        serviceHistory: t("vehicles.serviceHistory"),
+        serviceTypeBreakdown: t("vehicles.serviceTypeBreakdown"),
       };
 
       // Only include data for the current tab
@@ -502,6 +510,7 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
           dateRange={dateRangeStr}
           currencyCode={currencyCode}
           primaryColor={primaryColor}
+          organizationName={organizationName}
           labels={labels}
           {...pdfProps}
         />,
@@ -1784,78 +1793,32 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
 
         {!loading && vehicleData && (
           <div className="space-y-4">
-            {/* Vehicle header card */}
+            {/* Vehicle header with inline stats */}
             <Card className="border-0 shadow-sm">
-              <CardContent className="flex items-center gap-3 p-4">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
-                  <Car className="h-4 w-4 text-blue-500" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-lg font-semibold">
-                    {vehicleData.vehicleInfo.year} {vehicleData.vehicleInfo.make} {vehicleData.vehicleInfo.model}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).join(" · ")}
-                  </p>
+              <CardContent className="p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
+                      <Car className="h-4 w-4 text-blue-500" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-base font-semibold">
+                        {vehicleData.vehicleInfo.year} {vehicleData.vehicleInfo.make} {vehicleData.vehicleInfo.model}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).join(" · ")}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm tabular-nums">
+                    <span><span className="text-muted-foreground">{t("vehicles.totalServices")}:</span> <span className="font-medium">{vehicleData.summary.totalServices}</span></span>
+                    <span><span className="text-muted-foreground">{t("vehicles.totalCost")}:</span> <span className="font-medium">{fmtCurrency(vehicleData.summary.totalCost)}</span></span>
+                    <span><span className="text-muted-foreground">{t("vehicles.totalPartsUsed")}:</span> <span className="font-medium">{vehicleData.summary.totalPartsUsed}</span></span>
+                    <span><span className="text-muted-foreground">{t("vehicles.totalLaborHours")}:</span> <span className="font-medium">{vehicleData.summary.totalLaborHours.toFixed(1)}</span></span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Summary metrics */}
-            <div className="grid gap-2 grid-cols-2 sm:grid-cols-4">
-              <Card className="border-0 shadow-sm">
-                <CardContent className="px-3 py-1.5">
-                  <p className="text-[11px] text-muted-foreground">{t("vehicles.totalServices")}</p>
-                  <p className="text-base font-semibold">{vehicleData.summary.totalServices}</p>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="px-3 py-1.5">
-                  <p className="text-[11px] text-muted-foreground">{t("vehicles.totalCost")}</p>
-                  <p className="text-base font-semibold truncate">{fmtCurrency(vehicleData.summary.totalCost)}</p>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="px-3 py-1.5">
-                  <p className="text-[11px] text-muted-foreground">{t("vehicles.repairs")}</p>
-                  <p className="text-base font-semibold">{vehicleData.summary.repairCount}</p>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="px-3 py-1.5">
-                  <p className="text-[11px] text-muted-foreground">{t("vehicles.maintenance")}</p>
-                  <p className="text-base font-semibold">{vehicleData.summary.maintenanceCount}</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Additional metrics row */}
-            <div className="grid gap-2 grid-cols-2 sm:grid-cols-4">
-              <Card className="border-0 shadow-sm">
-                <CardContent className="px-3 py-1.5">
-                  <p className="text-[11px] text-muted-foreground">{t("vehicles.upgrades")}</p>
-                  <p className="text-base font-semibold">{vehicleData.summary.upgradeCount}</p>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="px-3 py-1.5">
-                  <p className="text-[11px] text-muted-foreground">{t("vehicles.inspections")}</p>
-                  <p className="text-base font-semibold">{vehicleData.summary.inspectionCount}</p>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="px-3 py-1.5">
-                  <p className="text-[11px] text-muted-foreground">{t("vehicles.totalPartsUsed")}</p>
-                  <p className="text-base font-semibold">{vehicleData.summary.totalPartsUsed}</p>
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm">
-                <CardContent className="px-3 py-1.5">
-                  <p className="text-[11px] text-muted-foreground">{t("vehicles.totalLaborHours")}</p>
-                  <p className="text-base font-semibold">{vehicleData.summary.totalLaborHours.toFixed(1)}</p>
-                </CardContent>
-              </Card>
-            </div>
 
             {/* Charts row */}
             <div className="grid gap-4 lg:grid-cols-5">
@@ -1876,84 +1839,111 @@ export default function ReportsClient({ currencyCode, primaryColor }: ReportsCli
                   <CardTitle className="text-sm font-medium">{t("vehicles.serviceTypeBreakdown")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <VehicleServiceTypeDonut data={vehicleData.serviceTypeBreakdown} formatCurrency={fmtCurrency} />
+                  <div className="space-y-3">
+                    {vehicleData.serviceTypeBreakdown.map((item) => {
+                      const pct = vehicleData.summary.totalCost > 0
+                        ? (item.totalCost / vehicleData.summary.totalCost) * 100
+                        : 0;
+                      return (
+                        <div key={item.type}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm capitalize">{item.type}</span>
+                            <span className="text-sm font-medium tabular-nums">{fmtCurrency(item.totalCost)}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden">
+                              <div
+                                className="h-full rounded-full bg-blue-500"
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                            <span className="text-xs text-muted-foreground tabular-nums w-16 text-right">
+                              {item.count} · {pct.toFixed(0)}%
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {vehicleData.serviceTypeBreakdown.length > 0 && (
+                      <div className="border-t pt-3 flex items-center justify-between">
+                        <span className="text-sm font-medium">{t("vehicles.totalCost")}</span>
+                        <span className="text-sm font-semibold tabular-nums">{fmtCurrency(vehicleData.summary.totalCost)}</span>
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Top Parts table */}
-            {vehicleData.topParts.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("vehicles.topParts")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("vehicles.tableHeaders.partName")}</TableHead>
-                        <TableHead>{t("vehicles.tableHeaders.partNumber")}</TableHead>
-                        <TableHead className="text-right">{t("vehicles.tableHeaders.quantity")}</TableHead>
-                        <TableHead className="text-right">{t("vehicles.tableHeaders.cost")}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {vehicleData.topParts.map((part, i) => (
-                        <TableRow key={i}>
-                          <TableCell className="text-sm font-medium">{part.name}</TableCell>
-                          <TableCell className="text-sm">{part.partNumber ?? "-"}</TableCell>
-                          <TableCell className="text-right text-sm">{part.quantity}</TableCell>
-                          <TableCell className="text-right text-sm">{fmtCurrency(part.totalCost)}</TableCell>
+            {/* Top Parts + Service History side by side on large screens */}
+            <div className="grid gap-4 lg:grid-cols-5">
+              {vehicleData.topParts.length > 0 && (
+                <Card className="border-0 shadow-sm lg:col-span-2">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">{t("vehicles.topParts")}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t("vehicles.tableHeaders.partName")}</TableHead>
+                          <TableHead className="text-right">{t("vehicles.tableHeaders.quantity")}</TableHead>
+                          <TableHead className="text-right">{t("vehicles.tableHeaders.cost")}</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            )}
+                      </TableHeader>
+                      <TableBody>
+                        {vehicleData.topParts.map((part, i) => (
+                          <TableRow key={i}>
+                            <TableCell className="text-sm">
+                              <span className="font-medium">{part.name}</span>
+                              {part.partNumber && <span className="text-muted-foreground ml-1.5 text-xs">#{part.partNumber}</span>}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">{part.quantity}</TableCell>
+                            <TableCell className="text-right text-sm">{fmtCurrency(part.totalCost)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              )}
 
-            {/* Service History table */}
-            {vehicleData.serviceHistory.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("vehicles.serviceHistory")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("vehicles.tableHeaders.date")}</TableHead>
-                        <TableHead>{t("vehicles.tableHeaders.title")}</TableHead>
-                        <TableHead>{t("vehicles.tableHeaders.type")}</TableHead>
-                        <TableHead>{t("vehicles.tableHeaders.status")}</TableHead>
-                        <TableHead className="text-right">{t("vehicles.tableHeaders.totalAmount")}</TableHead>
-                        <TableHead className="text-right hidden sm:table-cell">{t("vehicles.tableHeaders.partsCount")}</TableHead>
-                        <TableHead className="text-right hidden sm:table-cell">{t("vehicles.tableHeaders.laborHours")}</TableHead>
-                        <TableHead className="hidden md:table-cell">{t("vehicles.tableHeaders.techName")}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {vehicleData.serviceHistory.map((row) => (
-                        <TableRow key={row.id}>
-                          <TableCell className="text-sm">{row.date}</TableCell>
-                          <TableCell className="text-sm font-medium">{row.title}</TableCell>
-                          <TableCell className="text-sm">
-                            <Badge variant="secondary">{row.type}</Badge>
-                          </TableCell>
-                          <TableCell className="text-sm">
-                            <Badge variant={row.status === "completed" ? "default" : "outline"}>{row.status}</Badge>
-                          </TableCell>
-                          <TableCell className="text-right text-sm">{fmtCurrency(row.totalAmount)}</TableCell>
-                          <TableCell className="text-right text-sm hidden sm:table-cell">{row.partsCount}</TableCell>
-                          <TableCell className="text-right text-sm hidden sm:table-cell">{row.laborHours.toFixed(1)}</TableCell>
-                          <TableCell className="text-sm hidden md:table-cell">{row.techName ?? "-"}</TableCell>
+              {vehicleData.serviceHistory.length > 0 && (
+                <Card className={cn("border-0 shadow-sm", vehicleData.topParts.length > 0 ? "lg:col-span-3" : "lg:col-span-5")}>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">{t("vehicles.serviceHistory")}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t("vehicles.tableHeaders.date")}</TableHead>
+                          <TableHead>{t("vehicles.tableHeaders.title")}</TableHead>
+                          <TableHead>{t("vehicles.tableHeaders.type")}</TableHead>
+                          <TableHead className="text-right">{t("vehicles.tableHeaders.totalAmount")}</TableHead>
+                          <TableHead className="text-right hidden sm:table-cell">{t("vehicles.tableHeaders.laborHours")}</TableHead>
+                          <TableHead className="hidden md:table-cell">{t("vehicles.tableHeaders.techName")}</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            )}
+                      </TableHeader>
+                      <TableBody>
+                        {vehicleData.serviceHistory.map((row) => (
+                          <TableRow key={row.id}>
+                            <TableCell className="text-sm text-muted-foreground">{row.date}</TableCell>
+                            <TableCell className="text-sm font-medium">{row.title}</TableCell>
+                            <TableCell className="text-sm">
+                              <Badge variant="secondary">{row.type}</Badge>
+                            </TableCell>
+                            <TableCell className="text-right text-sm">{fmtCurrency(row.totalAmount)}</TableCell>
+                            <TableCell className="text-right text-sm hidden sm:table-cell">{row.laborHours.toFixed(1)}</TableCell>
+                            <TableCell className="text-sm hidden md:table-cell">{row.techName ?? "-"}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
         )}
         {!loading && !vehicleData && !selectedVehicleId && (
