@@ -790,15 +790,19 @@ export function ReportPDF({
             subtitle={`${vehicleData.vehicleInfo.year} ${vehicleData.vehicleInfo.make} ${vehicleData.vehicleInfo.model}${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).length > 0 ? ` — ${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).join(" · ")}` : ""}`}
           />
 
-          <SummaryCards
-            s={s}
-            items={[
+          <View style={{ flexDirection: "row", backgroundColor: grayLight, borderRadius: 4, padding: 10, marginBottom: 14, justifyContent: "space-between" }}>
+            {[
               { label: l.totalServices || "Total Services", value: String(vehicleData.summary.totalServices) },
               { label: l.totalCost || "Total Cost", value: fmt(vehicleData.summary.totalCost) },
               { label: l.totalPartsUsed || "Parts Used", value: String(vehicleData.summary.totalPartsUsed) },
               { label: l.totalLaborHours || "Labor Hours", value: vehicleData.summary.totalLaborHours.toFixed(1) },
-            ]}
-          />
+            ].map((item, i) => (
+              <View key={i} style={{ alignItems: i === 0 ? "flex-start" : i === 3 ? "flex-end" : "center" }}>
+                <Text style={{ fontSize: 7, color: gray, textTransform: "uppercase", marginBottom: 2 }}>{item.label}</Text>
+                <Text style={{ fontSize: 12, fontFamily: "Roboto-Bold" }}>{item.value}</Text>
+              </View>
+            ))}
+          </View>
 
           {vehicleData.serviceTypeBreakdown.length > 0 && (
             <View style={s.section}>

@@ -17,7 +17,20 @@
   "dateRange": {
     "to": "tot",
     "pickDate": "Kies een datumbereik",
-    "apply": "Toepassen"
+    "apply": "Toepassen",
+    "presets": {
+      "today": "Vandaag",
+      "yesterday": "Gisteren",
+      "last7": "Laatste 7 dagen",
+      "last30": "Laatste 30 dagen",
+      "last90": "Laatste 90 dagen",
+      "thisMonth": "Deze maand",
+      "lastMonth": "Vorige maand",
+      "thisQuarter": "Dit kwartaal",
+      "thisYear": "Dit jaar",
+      "lastYear": "Vorig jaar",
+      "allTime": "Gehele periode"
+    }
   },
   "actions": {
     "refresh": "Vernieuwen",

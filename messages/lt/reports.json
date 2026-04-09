@@ -17,7 +17,20 @@
   "dateRange": {
     "to": "iki",
     "pickDate": "Pasirinkite datų intervalą",
-    "apply": "Taikyti"
+    "apply": "Taikyti",
+    "presets": {
+      "today": "Šiandien",
+      "yesterday": "Vakar",
+      "last7": "Paskutinės 7 dienos",
+      "last30": "Paskutinės 30 dienų",
+      "last90": "Paskutinės 90 dienų",
+      "thisMonth": "Šis mėnuo",
+      "lastMonth": "Praėjęs mėnuo",
+      "thisQuarter": "Šis ketvirtis",
+      "thisYear": "Šie metai",
+      "lastYear": "Praėję metai",
+      "allTime": "Visas laikotarpis"
+    }
   },
   "actions": {
     "refresh": "Atnaujinti",

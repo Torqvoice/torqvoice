@@ -17,7 +17,20 @@
   "dateRange": {
     "to": "-",
     "pickDate": "Tarih aralığı seçin",
-    "apply": "Uygula"
+    "apply": "Uygula",
+    "presets": {
+      "today": "Bugün",
+      "yesterday": "Dün",
+      "last7": "Son 7 gün",
+      "last30": "Son 30 gün",
+      "last90": "Son 90 gün",
+      "thisMonth": "Bu ay",
+      "lastMonth": "Geçen ay",
+      "thisQuarter": "Bu çeyrek",
+      "thisYear": "Bu yıl",
+      "lastYear": "Geçen yıl",
+      "allTime": "Tüm zamanlar"
+    }
   },
   "actions": {
     "refresh": "Yenile",

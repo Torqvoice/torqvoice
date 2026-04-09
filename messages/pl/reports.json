@@ -17,7 +17,20 @@
   "dateRange": {
     "to": "do",
     "pickDate": "Wybierz zakres dat",
-    "apply": "Zastosuj"
+    "apply": "Zastosuj",
+    "presets": {
+      "today": "Dzisiaj",
+      "yesterday": "Wczoraj",
+      "last7": "Ostatnie 7 dni",
+      "last30": "Ostatnie 30 dni",
+      "last90": "Ostatnie 90 dni",
+      "thisMonth": "Ten miesiąc",
+      "lastMonth": "Poprzedni miesiąc",
+      "thisQuarter": "Ten kwartał",
+      "thisYear": "Ten rok",
+      "lastYear": "Poprzedni rok",
+      "allTime": "Cały okres"
+    }
   },
   "actions": {
     "refresh": "Odśwież",

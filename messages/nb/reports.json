@@ -17,7 +17,20 @@
   "dateRange": {
     "to": "til",
     "pickDate": "Velg datoperiode",
-    "apply": "Bruk"
+    "apply": "Bruk",
+    "presets": {
+      "today": "I dag",
+      "yesterday": "I går",
+      "last7": "Siste 7 dager",
+      "last30": "Siste 30 dager",
+      "last90": "Siste 90 dager",
+      "thisMonth": "Denne måneden",
+      "lastMonth": "Forrige måned",
+      "thisQuarter": "Dette kvartalet",
+      "thisYear": "I år",
+      "lastYear": "I fjor",
+      "allTime": "Hele perioden"
+    }
   },
   "actions": {
     "refresh": "Oppdater",

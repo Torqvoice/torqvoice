@@ -17,7 +17,20 @@
   "dateRange": {
     "to": "au",
     "pickDate": "Choisir une plage de dates",
-    "apply": "Appliquer"
+    "apply": "Appliquer",
+    "presets": {
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "last7": "7 derniers jours",
+      "last30": "30 derniers jours",
+      "last90": "90 derniers jours",
+      "thisMonth": "Ce mois-ci",
+      "lastMonth": "Mois dernier",
+      "thisQuarter": "Ce trimestre",
+      "thisYear": "Cette année",
+      "lastYear": "Année dernière",
+      "allTime": "Toute la période"
+    }
   },
   "actions": {
     "refresh": "Actualiser",

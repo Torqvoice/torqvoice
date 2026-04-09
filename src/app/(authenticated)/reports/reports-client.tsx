@@ -653,13 +653,54 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="end">
-                <Calendar
-                  mode="range"
-                  defaultMonth={dateRange.to ? new Date(dateRange.to.getFullYear(), dateRange.to.getMonth() - 1) : dateRange.from}
-                  selected={pendingDateRange}
-                  onSelect={(range) => range && setPendingDateRange(range)}
-                  numberOfMonths={2}
-                />
+                <div className="flex">
+                  <Calendar
+                    mode="range"
+                    defaultMonth={dateRange.to ? new Date(dateRange.to.getFullYear(), dateRange.to.getMonth() - 1) : dateRange.from}
+                    selected={pendingDateRange}
+                    onSelect={(range) => range && setPendingDateRange(range)}
+                    numberOfMonths={2}
+                  />
+                  <div className="border-l p-2 flex flex-col gap-0.5 min-w-[130px]">
+                    {(() => {
+                      const now = new Date();
+                      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                      const presets: { label: string; from: Date; to: Date }[] = [
+                        { label: t("dateRange.presets.today"), from: today, to: today },
+                        { label: t("dateRange.presets.yesterday"), from: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1), to: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1) },
+                        { label: t("dateRange.presets.last7"), from: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6), to: today },
+                        { label: t("dateRange.presets.last30"), from: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29), to: today },
+                        { label: t("dateRange.presets.last90"), from: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 89), to: today },
+                        { label: t("dateRange.presets.thisMonth"), from: new Date(now.getFullYear(), now.getMonth(), 1), to: today },
+                        { label: t("dateRange.presets.lastMonth"), from: new Date(now.getFullYear(), now.getMonth() - 1, 1), to: new Date(now.getFullYear(), now.getMonth(), 0) },
+                        { label: t("dateRange.presets.thisQuarter"), from: new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1), to: today },
+                        { label: t("dateRange.presets.thisYear"), from: new Date(now.getFullYear(), 0, 1), to: today },
+                        { label: t("dateRange.presets.lastYear"), from: new Date(now.getFullYear() - 1, 0, 1), to: new Date(now.getFullYear() - 1, 11, 31) },
+                        { label: t("dateRange.presets.allTime"), from: new Date(2000, 0, 1), to: today },
+                      ];
+                      return presets.map((p) => (
+                        <Button
+                          key={p.label}
+                          variant="ghost"
+                          size="sm"
+                          className="justify-start text-xs h-7 px-2"
+                          onClick={() => {
+                            const range = { from: p.from, to: p.to };
+                            setDateRange(range);
+                            setDatePickerOpen(false);
+                            if (activeTab === "financial") {
+                              fetchReport(financialSubTab, range);
+                            } else {
+                              fetchReport(activeTab, range);
+                            }
+                          }}
+                        >
+                          {p.label}
+                        </Button>
+                      ));
+                    })()}
+                  </div>
+                </div>
                 <div className="border-t p-3 flex justify-end">
                   <Button
                     size="sm"
