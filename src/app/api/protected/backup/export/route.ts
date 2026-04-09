@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
 import JSZip from "jszip";
+import { isDemoMode } from "@/lib/demo";
 import { readdir, readFile, stat } from "fs/promises";
 import path from "path";
 
@@ -38,6 +39,10 @@ const DEFAULT_OPTIONS: ExportOptions = {
 };
 
 export async function POST(request: NextRequest) {
+  if (isDemoMode) {
+    return NextResponse.json({ error: "This action is disabled on the demo." }, { status: 403 });
+  }
+
   const ctx = await getAuthContext();
 
   if (!ctx) {

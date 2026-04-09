@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { demoGuard } from "@/lib/demo";
 
 const renameOrgSchema = z.object({
   name: z.string().min(2).max(100).trim(),
@@ -12,6 +13,7 @@ const renameOrgSchema = z.object({
 
 export async function renameOrganization(input: unknown) {
   return withAuth(async ({ organizationId }) => {
+    demoGuard();
     const data = renameOrgSchema.parse(input);
 
     await db.organization.update({

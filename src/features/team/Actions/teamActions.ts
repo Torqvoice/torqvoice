@@ -7,6 +7,7 @@ import { createOrganizationSchema, inviteMemberSchema, updateMemberRoleSchema } 
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { getFeatures, getMaxOrganizations, isCloudMode, FeatureGatedError } from "@/lib/features";
+import { demoGuard } from "@/lib/demo";
 
 export async function getOrganization() {
   return withAuth(async ({ userId, organizationId }) => {
@@ -169,6 +170,7 @@ export async function inviteMember(input: unknown) {
 
 export async function updateMemberRole(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
+    demoGuard();
     const data = updateMemberRoleSchema.parse(input);
 
     const membership = await db.organizationMember.findFirst({
@@ -204,6 +206,7 @@ export async function updateMemberRole(input: unknown) {
 
 export async function removeMember(memberId: string) {
   return withAuth(async ({ userId, organizationId }) => {
+    demoGuard();
     const membership = await db.organizationMember.findFirst({
       where: { userId, organizationId },
     });

@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { z } from "zod";
 import crypto from "crypto";
+import { demoGuard } from "@/lib/demo";
 
 const updateEmailSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -12,6 +13,7 @@ const updateEmailSchema = z.object({
 
 export async function updateEmail(data: { email: string }) {
   return withAuth(async ({ userId }) => {
+    demoGuard();
     const parsed = updateEmailSchema.parse(data);
 
     const existing = await db.user.findFirst({
@@ -45,6 +47,7 @@ export async function updateEmail(data: { email: string }) {
  */
 export async function requestEmailChange(data: { email: string }) {
   return withAuth(async ({ userId }) => {
+    demoGuard();
     const parsed = updateEmailSchema.parse(data);
 
     const existing = await db.user.findFirst({
