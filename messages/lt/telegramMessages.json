@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "Telegram žinutės",
+    "featureDescription": "Siųskite ir gaukite Telegram žinutes su klientais tiesiogiai iš Torqvoice."
+  },
+  "notConfigured": {
+    "title": "Telegram nesukonfigūruotas",
+    "description": "Nustatykite Telegram botą, kad galėtumėte siųsti ir gauti žinutes su klientais. Sukurkite botą per @BotFather ir sukonfigūruokite jį nustatymuose.",
+    "goToSettings": "Eiti į Telegram nustatymus"
+  },
+  "threads": {
+    "title": "Pokalbiai",
+    "empty": "Telegram pokalbių dar nėra. Klientai gali pradėti susirašinėti parašydami jūsų botui.",
+    "loadMore": "Įkelti daugiau",
+    "selectConversation": "Pasirinkite pokalbį",
+    "you": "Jūs: ",
+    "deleteConversation": "Ištrinti pokalbį",
+    "deleteTitle": "Ištrinti pokalbį?",
+    "deleteDescription": "Bus visam laikui ištrintos visos Telegram žinutės su {name}. Šio veiksmo negalima atšaukti.",
+    "deleted": "Pokalbis ištrintas",
+    "deleteError": "Nepavyko ištrinti pokalbio"
+  },
+  "conversation": {
+    "notLinked": "Šis klientas dar neprisijungė prie jūsų Telegram boto. Pasidalinkite boto nuoroda, kad juos sujungtumėte.",
+    "loadOlder": "Įkelti senesnes",
+    "empty": "Žinučių dar nėra. Parašykite pirmąją žinutę {name}.",
+    "placeholder": "Žinutė {name}...",
+    "deleteMessage": "Ištrinti žinutę",
+    "deleteTitle": "Ištrinti žinutę?",
+    "deleteDescription": "Ši žinutė bus visam laikui ištrinta. Šio veiksmo negalima atšaukti.",
+    "messageDeleted": "Žinutė ištrinta",
+    "deleteError": "Nepavyko ištrinti žinutės",
+    "sendError": "Nepavyko išsiųsti žinutės"
+  },
+  "sendDialog": {
+    "send": "Siųsti {label}",
+    "message": "Žinutė",
+    "placeholder": "Rašykite žinutę...",
+    "characters": "{count} / 4096 simbolių",
+    "sendTelegram": "Siųsti žinutę",
+    "messageSent": "Žinutė išsiųsta",
+    "sentTo": "Žinutė išsiųsta {name} per Telegram",
+    "sendError": "Nepavyko išsiųsti žinutės"
+  }
+}

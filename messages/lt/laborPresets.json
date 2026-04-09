@@ -1,0 +1,65 @@
+{
+  "searchPlaceholder": "Ieškoti darbų šablonų...",
+  "addPackage": "Pridėti darbų šabloną",
+  "table": {
+    "name": "Pavadinimas",
+    "description": "Aprašymas",
+    "itemCount": "Elementai",
+    "type": "Tipas",
+    "hrs": "val.",
+    "units": "vnt."
+  },
+  "empty": {
+    "noMatch": "Nėra šablonų, atitinkančių paiešką.",
+    "noPresets": "Darbų šablonų dar nėra. Spustelėkite \"Pridėti šabloną\", kad sukurtumėte."
+  },
+  "actions": {
+    "edit": "Redaguoti",
+    "delete": "Ištrinti"
+  },
+  "deletePreset": {
+    "title": "Ištrinti darbų šabloną",
+    "description": "Bus visam laikui ištrintas \"{name}\" ir visi jo elementai. Šio veiksmo negalima atšaukti.",
+    "confirm": "Ištrinti"
+  },
+  "form": {
+    "singleItem": "Vienas elementas",
+    "package": "Paketas",
+    "addPackage": "Pridėti darbų šabloną",
+    "editPackage": "Redaguoti darbų šabloną",
+    "singleNameLabel": "Pavadinimas",
+    "singleNamePlaceholder": "pvz., Alyvos keitimas",
+    "nameLabel": "Paketo pavadinimas",
+    "namePlaceholder": "pvz., Alyvos keitimo paketas",
+    "descriptionLabel": "Aprašymas",
+    "descriptionPlaceholder": "Neprivalomas aprašymas...",
+    "itemsTitle": "Darbų elementai",
+    "itemDescription": "Aprašymas",
+    "itemHours": "Valandos",
+    "itemQty": "Kiekis",
+    "itemQtyOrHours": "Vnt. / Valandos",
+    "itemRate": "Tarifas",
+    "itemDescriptionPlaceholder": "Aprašymas *",
+    "addItem": "Pridėti elementą",
+    "cancel": "Atšaukti",
+    "create": "Sukurti paketą",
+    "saveChanges": "Išsaugoti pakeitimus",
+    "hourlyTag": "VAL",
+    "serviceTag": "PSL"
+  },
+  "picker": {
+    "title": "Pasirinkti darbų šabloną",
+    "search": "Ieškoti šablonų...",
+    "noPackages": "Darbų šablonų nerasta.",
+    "items": "{count} elementų",
+    "totalHours": "{hours} val. iš viso",
+    "totalUnits": "{units} vnt."
+  },
+  "errors": {
+    "error": "Klaida",
+    "saveFailed": "Nepavyko išsaugoti darbų šablono",
+    "deleteFailed": "Nepavyko ištrinti darbų šablono",
+    "loadFailed": "Nepavyko įkelti darbų šablono",
+    "noItems": "Reikalingas bent vienas elementas"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "error": "Nepavyko įkelti priminimų",
+  "showing": "Rodoma {count} iš {total}",
+  "deleted": "Priminimas ištrintas",
+  "deleteError": "Nepavyko ištrinti priminimo",
+  "vehicle": "Transporto priemonė",
+  "selectVehicle": "Pasirinkite transporto priemonę...",
+  "searchVehicle": "Ieškoti transporto priemonių...",
+  "noVehicle": "Transporto priemonių nerasta.",
+  "pickDate": "Pasirinkite datą"
+}

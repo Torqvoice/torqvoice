@@ -1,0 +1,43 @@
+{
+  "brandName": "Torqvoice",
+  "buttons": {
+    "signIn": "Prisijungti",
+    "save": "Išsaugoti",
+    "saveChanges": "Išsaugoti pakeitimus",
+    "cancel": "Atšaukti",
+    "delete": "Ištrinti",
+    "submit": "Pateikti",
+    "back": "Atgal",
+    "confirm": "Patvirtinti",
+    "edit": "Redaguoti",
+    "add": "Pridėti"
+  },
+  "form": {
+    "email": "El. paštas",
+    "password": "Slaptažodis",
+    "emailPlaceholder": "you@example.com",
+    "name": "Vardas",
+    "phone": "Telefonas",
+    "company": "Įmonė",
+    "address": "Adresas",
+    "notes": "Pastabos"
+  },
+  "errors": {
+    "unexpected": "Įvyko netikėta klaida. Bandykite dar kartą.",
+    "error": "Klaida"
+  },
+  "terms": {
+    "termsOfService": "Paslaugų teikimo sąlygos"
+  },
+  "errorPage": {
+    "title": "Kažkas nutiko",
+    "description": "Variklis netikėtai užgeso. Mūsų mechanikai informuoti ir šalina gedimą.",
+    "tryAgain": "Bandyti dar kartą",
+    "backToDashboard": "Grįžti į valdymo skydelį"
+  },
+  "notFoundPage": {
+    "title": "Puslapis nerastas",
+    "description": "Atrodo, ši dalis vis dar servise. Puslapis, kurio ieškote, neegzistuoja arba buvo perkeltas.",
+    "backToDashboard": "Grįžti į valdymo skydelį"
+  }
+}

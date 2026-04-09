@@ -1,0 +1,127 @@
+{
+  "myJobs": {
+    "title": "Mano aktyvūs darbai",
+    "description": "Jums priskirti darbo užsakymai.",
+    "uploadFailed": "Nepavyko įkelti vaizdo",
+    "uploadSuccess": "{count} vaizdas(-ų) įkelta",
+    "takePhoto": "Fotografuoti",
+    "addPhoto": "Pridėti nuotrauką",
+    "addVideo": "Pridėti vaizdo įrašą",
+    "videoUploadSuccess": "{count} vaizdo įrašas(-ų) įkelta",
+    "scanPart": "Nuskaityti dalį",
+    "photo": "Nuotrauka",
+    "video": "Vaizdo įrašas",
+    "parts": "Dalys",
+    "partAdded": "Pridėta \"{name}\" prie darbo užsakymo",
+    "partAddFailed": "Nepavyko pridėti dalies",
+    "inStock": "Sandėlyje: {quantity}",
+    "quantity": "Kiekis",
+    "addToJob": "Pridėti {qty} prie darbo",
+    "statusReport": "Būsenos ataskaita",
+    "report": "Ataskaita"
+  },
+  "recentActivity": "Naujausios veiklos",
+  "noRecentActivity": "Naujausių veiklų nėra",
+  "unknownUser": "Naudotojas",
+  "stats": {
+    "activeJobs": "Aktyvūs darbai",
+    "pending": "Laukiantys",
+    "totalParts": "Iš viso dalių",
+    "totalCustomers": "Iš viso klientų"
+  },
+  "customize": "Tinkinti",
+  "viewAll": "Peržiūrėti visus",
+  "showCards": "Rodyti korteles",
+  "cards": {
+    "maintenance": "Numatoma priežiūra",
+    "reminders": "Artėjantys priminimai",
+    "inspections": "Apžiūros",
+    "quoteRequests": "Pasiūlymų užklausos",
+    "quoteResponses": "Pasiūlymų atsakymai",
+    "sms": "Naujausios žinutės",
+    "notifications": "Naujausi pranešimai",
+    "recentCompleted": "Neseniai užbaigti",
+    "activeJobs": "Aktyvūs darbai"
+  },
+  "maintenance": {
+    "title": "Numatoma priežiūra",
+    "description": "Remiantis paslaugų istorija ir numatoma dienos rida",
+    "overdue": "Vėluoja",
+    "approaching": "Artėja",
+    "estimated": "Apytikriai {mileage} {unit}",
+    "sinceLastService": "{mileage} {unit} nuo paskutinės paslaugos",
+    "certainty": "{percent}% tikimybė",
+    "active": "Aktyvūs",
+    "dismissedTab": "Atmesti",
+    "noActive": "Šiuo metu nėra transporto priemonių, kurioms reikia aptarnavimo.",
+    "dismissedOn": "Atmesta {date}",
+    "restore": "Atkurti"
+  },
+  "reminders": {
+    "title": "Artėjantys priminimai",
+    "overdue": "Vėluoja",
+    "dueSoon": "Netrukus",
+    "noData": "Artėjančių priminimų nėra."
+  },
+  "messages": {
+    "title": "Naujausios žinutės",
+    "viewAll": "Peržiūrėti visas",
+    "you": "Jūs: ",
+    "noData": "Naujausių žinučių nėra."
+  },
+  "notifications": {
+    "title": "Naujausi pranešimai",
+    "noData": "Naujausių pranešimų nėra."
+  },
+  "inspections": {
+    "title": "Apžiūros",
+    "inProgress": "Vykdomos",
+    "completed": "Užbaigtos",
+    "itemCount": "{inspected}/{total} elementų",
+    "noData": "Apžiūrų nėra."
+  },
+  "quoteRequests": {
+    "title": "Pasiūlymų užklausos",
+    "description": "Klientai prašo pasiūlymų iš bendrinamų apžiūrų",
+    "pending": "Laukia",
+    "createQuote": "Sukurti pasiūlymą",
+    "itemsRequested": "{count, plural, one {# elementas prašomas} other {# elementai prašomi}}",
+    "noData": "Laukiančių pasiūlymų užklausų nėra."
+  },
+  "quoteResponses": {
+    "title": "Klientų atsakymai į pasiūlymus",
+    "description": "Pasiūlymai, kuriuos klientai priėmė arba paprašė pakeitimų",
+    "accepted": "Priimta",
+    "changesRequested": "Prašomi pakeitimai",
+    "convertToWorkOrder": "Konvertuoti į darbo užsakymą",
+    "convert": "Konvertuoti",
+    "viewQuote": "Peržiūrėti pasiūlymą",
+    "view": "Peržiūrėti",
+    "noData": "Klientų atsakymų nėra."
+  },
+  "recentCompleted": {
+    "title": "Neseniai užbaigti",
+    "date": "Data",
+    "vehicle": "Transporto priemonė",
+    "customer": "Klientas",
+    "serviceTitle": "Pavadinimas",
+    "total": "Suma",
+    "empty": "Užbaigtų paslaugų dar nėra"
+  },
+  "activeJobsTable": {
+    "title": "Aktyvūs darbai",
+    "vehicle": "Transporto priemonė",
+    "customer": "Klientas",
+    "serviceTitle": "Pavadinimas",
+    "status": "Būsena",
+    "tech": "Technikas",
+    "empty": "Aktyvių darbų nėra"
+  },
+  "relativeTime": {
+    "now": "dabar",
+    "minutes": "{count} min.",
+    "hours": "{count} val.",
+    "days": "{count} d."
+  },
+  "error": "Nepavyko įkelti valdymo skydelio"
+}
