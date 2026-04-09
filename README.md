@@ -54,3 +54,10 @@ See the [Quick Start guide](https://torqvoice.com/docs/installation#quick-start)
 ## License
 
 [Elastic License 2.0 (ELv2)](LICENSE)
+
+- Add a dedicated Vehicles report tab with per-vehicle cost breakdown by service type (repair vs maintenance vs 
+upgrade), monthly cost trends, top parts used, and full service history
+- Vehicle selector with searchable dropdown and infinite scroll to pick any vehicle in the organization         
+- CSV, PDF export support for vehicle reports                                                                   
+- Add date range presets (Grafana-style) to the report date picker: Today, Last 7/30/90 days, This month, This  
+year, Last year, etc.

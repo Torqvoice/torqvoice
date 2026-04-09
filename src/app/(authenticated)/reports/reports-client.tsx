@@ -57,6 +57,8 @@ import {
   ArrowUpDown,
   Landmark,
   Car,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   getRevenueReport,
@@ -173,6 +175,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
   const [pastDueData, setPastDueData] = useState<PastDueInvoicesReport | null>(null);
   const [vehicleData, setVehicleData] = useState<VehicleReportData | null>(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>("");
+  const [historyPage, setHistoryPage] = useState(0);
 
   const fmtCurrency = useCallback(
     (value: number) => formatCurrency(value, currencyCode),
@@ -1834,6 +1837,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
             onChange={(id) => {
               setSelectedVehicleId(id);
               setVehicleData(null);
+              setHistoryPage(0);
               if (id) {
                 fetchReport("vehicles", undefined, id);
               }
@@ -1973,41 +1977,64 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 </Card>
               )}
 
-              {vehicleData.serviceHistory.length > 0 && (
-                <Card className={cn("border-0 shadow-sm", vehicleData.topParts.length > 0 ? "lg:col-span-3" : "lg:col-span-5")}>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">{t("vehicles.serviceHistory")}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{t("vehicles.tableHeaders.date")}</TableHead>
-                          <TableHead>{t("vehicles.tableHeaders.title")}</TableHead>
-                          <TableHead>{t("vehicles.tableHeaders.type")}</TableHead>
-                          <TableHead className="text-right">{t("vehicles.tableHeaders.totalAmount")}</TableHead>
-                          <TableHead className="text-right hidden sm:table-cell">{t("vehicles.tableHeaders.laborHours")}</TableHead>
-                          <TableHead className="hidden md:table-cell">{t("vehicles.tableHeaders.techName")}</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {vehicleData.serviceHistory.map((row) => (
-                          <TableRow key={row.id}>
-                            <TableCell className="text-sm text-muted-foreground">{row.date}</TableCell>
-                            <TableCell className="text-sm font-medium">{row.title}</TableCell>
-                            <TableCell className="text-sm">
-                              <Badge variant="secondary">{row.type}</Badge>
-                            </TableCell>
-                            <TableCell className="text-right text-sm">{fmtCurrency(row.totalAmount)}</TableCell>
-                            <TableCell className="text-right text-sm hidden sm:table-cell">{row.laborHours.toFixed(1)}</TableCell>
-                            <TableCell className="text-sm hidden md:table-cell">{row.techName ?? "-"}</TableCell>
+              {vehicleData.serviceHistory.length > 0 && (() => {
+                const pageSize = 15;
+                const totalPages = Math.ceil(vehicleData.serviceHistory.length / pageSize);
+                const page = Math.min(historyPage, totalPages - 1);
+                const paged = vehicleData.serviceHistory.slice(page * pageSize, (page + 1) * pageSize);
+                return (
+                  <Card className={cn("border-0 shadow-sm", vehicleData.topParts.length > 0 ? "lg:col-span-3" : "lg:col-span-5")}>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm font-medium">{t("vehicles.serviceHistory")}</CardTitle>
+                        {totalPages > 1 && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <span>{page * pageSize + 1}–{Math.min((page + 1) * pageSize, vehicleData.serviceHistory.length)} / {vehicleData.serviceHistory.length}</span>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page === 0} onClick={() => setHistoryPage(page - 1)}>
+                              <ChevronLeft className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page >= totalPages - 1} onClick={() => setHistoryPage(page + 1)}>
+                              <ChevronRight className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{t("vehicles.tableHeaders.date")}</TableHead>
+                            <TableHead>{t("vehicles.tableHeaders.title")}</TableHead>
+                            <TableHead>{t("vehicles.tableHeaders.type")}</TableHead>
+                            <TableHead className="text-right">{t("vehicles.tableHeaders.totalAmount")}</TableHead>
+                            <TableHead className="text-right hidden sm:table-cell">{t("vehicles.tableHeaders.laborHours")}</TableHead>
+                            <TableHead className="hidden md:table-cell">{t("vehicles.tableHeaders.techName")}</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              )}
+                        </TableHeader>
+                        <TableBody>
+                          {paged.map((row) => (
+                            <TableRow
+                              key={row.id}
+                              className="cursor-pointer hover:bg-muted/50"
+                              onClick={() => router.push(`/vehicles/${vehicleData.vehicleInfo.id}/service/${row.id}`)}
+                            >
+                              <TableCell className="text-sm text-muted-foreground">{row.date}</TableCell>
+                              <TableCell className="text-sm font-medium">{row.title}</TableCell>
+                              <TableCell className="text-sm">
+                                <Badge variant="secondary">{row.type}</Badge>
+                              </TableCell>
+                              <TableCell className="text-right text-sm">{fmtCurrency(row.totalAmount)}</TableCell>
+                              <TableCell className="text-right text-sm hidden sm:table-cell">{row.laborHours.toFixed(1)}</TableCell>
+                              <TableCell className="text-sm hidden md:table-cell">{row.techName ?? "-"}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
             </div>
           </div>
         )}
