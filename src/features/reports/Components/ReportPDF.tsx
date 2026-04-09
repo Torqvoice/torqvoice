@@ -17,6 +17,7 @@ import type {
   CustomerRetentionReport,
   TaxReport,
   PastDueInvoicesReport,
+  VehicleReportData,
 } from "../Schema/reportTypes";
 import { formatCurrency } from "@/lib/format";
 
@@ -151,6 +152,7 @@ interface ReportPDFProps {
   retentionData?: CustomerRetentionReport | null;
   taxData?: TaxReport | null;
   pastDueData?: PastDueInvoicesReport | null;
+  vehicleData?: VehicleReportData | null;
 }
 
 type ReportStyles = ReturnType<typeof createReportStyles>;
@@ -280,6 +282,7 @@ export function ReportPDF({
   retentionData,
   taxData,
   pastDueData,
+  vehicleData,
 }: ReportPDFProps) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const s = createReportStyles(primaryColor);
@@ -818,6 +821,87 @@ export function ReportPDF({
                   String(p.quantity),
                   p.minQuantity != null ? String(p.minQuantity) : "-",
                   p.unitCost != null ? fmt(p.unitCost) : "-",
+                ])}
+              />
+            </View>
+          )}
+          <PageFooter s={s} />
+        </Page>
+      )}
+
+      {/* ==================== VEHICLE ==================== */}
+      {vehicleData && (
+        <Page size="A4" style={s.page}>
+          <View style={s.headerRow}>
+            <View>
+              <Text style={s.title}>{l.reportTitle || "Business Report"}</Text>
+              <Text style={s.subtitle}>{l.vehiclesSection || "Vehicle Report"}</Text>
+            </View>
+            <Text style={s.dateBadge}>{dateRange}</Text>
+          </View>
+
+          <View style={{ marginBottom: 14, backgroundColor: grayLight, borderRadius: 4, padding: 12 }}>
+            <Text style={{ fontSize: 13, fontFamily: "Roboto-Bold", marginBottom: 4 }}>
+              {vehicleData.vehicleInfo.year} {vehicleData.vehicleInfo.make} {vehicleData.vehicleInfo.model}
+            </Text>
+            <Text style={{ fontSize: 8, color: gray }}>
+              {[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).join(" · ")}
+            </Text>
+          </View>
+
+          <SummaryCards
+            s={s}
+            items={[
+              { label: l.totalServices || "Total Services", value: String(vehicleData.summary.totalServices) },
+              { label: l.totalCost || "Total Cost", value: fmt(vehicleData.summary.totalCost) },
+              { label: l.services || "Repairs", value: String(vehicleData.summary.repairCount) },
+              { label: l.services || "Maintenance", value: String(vehicleData.summary.maintenanceCount) },
+            ]}
+          />
+
+          {vehicleData.monthlyCosts.length > 0 && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>{l.monthlyBreakdown || "Monthly Breakdown"}</Text>
+              <TableBlock
+                s={s}
+                headers={[
+                  l.month || "Month",
+                  l.partsCostLabel || "Parts Cost",
+                  l.laborCostLabel || "Labor Cost",
+                  l.totalCost || "Total Cost",
+                  l.count || "Jobs",
+                ]}
+                widths={[24, 22, 22, 22, 10]}
+                rows={vehicleData.monthlyCosts.map((m) => [
+                  m.month,
+                  fmt(m.partsCost),
+                  fmt(m.laborCost),
+                  fmt(m.totalCost),
+                  String(m.count),
+                ])}
+              />
+            </View>
+          )}
+
+          {vehicleData.serviceHistory.length > 0 && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>{l.date ? "Service History" : "Service History"}</Text>
+              <TableBlock
+                s={s}
+                headers={[
+                  l.date || "Date",
+                  l.title || "Title",
+                  l.type || "Type",
+                  l.status || "Status",
+                  l.totalAmount || "Total",
+                ]}
+                widths={[18, 32, 16, 16, 18]}
+                rows={vehicleData.serviceHistory.map((r) => [
+                  r.date,
+                  r.title,
+                  r.type,
+                  r.status,
+                  fmt(r.totalAmount),
                 ])}
               />
             </View>

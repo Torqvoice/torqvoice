@@ -11,7 +11,8 @@
     "technicians": "Механики",
     "parts": "Запчасти",
     "jobAnalytics": "Аналитика работ",
-    "retention": "Удержание"
+    "retention": "Удержание",
+    "vehicles": "Транспорт"
   },
   "dateRange": {
     "to": "до",
@@ -187,6 +188,36 @@
       "taxableAmount": "Налогооблагаемая сумма"
     }
   },
+  "vehicles": {
+    "selectVehicle": "Выберите транспорт...",
+    "selectVehiclePrompt": "Выберите транспорт выше для просмотра отчёта.",
+    "totalServices": "Всего обслуживаний",
+    "totalCost": "Общая стоимость",
+    "repairs": "Ремонт",
+    "maintenance": "Техобслуживание",
+    "upgrades": "Модернизация",
+    "inspections": "Осмотры",
+    "totalPartsUsed": "Использовано запчастей",
+    "totalLaborHours": "Часы работы",
+    "monthlyCosts": "Ежемесячные расходы",
+    "serviceTypeBreakdown": "Разбивка по типам обслуживания",
+    "topParts": "Топ запчастей по использованию",
+    "serviceHistory": "История обслуживания",
+    "tableHeaders": {
+      "date": "Дата",
+      "title": "Название",
+      "type": "Тип",
+      "status": "Статус",
+      "totalAmount": "Итого",
+      "partsCount": "Запчасти",
+      "laborHours": "Часы работы",
+      "techName": "Механик",
+      "partName": "Название запчасти",
+      "partNumber": "Арт. №",
+      "quantity": "Кол-во",
+      "cost": "Стоимость"
+    }
+  },
   "charts": {
     "revenue": "Доход",
     "collected": "Собрано",
@@ -194,7 +225,9 @@
     "totalSpent": "Всего потрачено",
     "jobs": "Работы",
     "visits": "Визиты",
-    "taxCollected": "Собрано налога"
+    "taxCollected": "Собрано налога",
+    "partsCost": "Стоимость запчастей",
+    "laborCost": "Стоимость работ"
   },
   "days": {
     "monday": "Понедельник",
@@ -255,7 +288,13 @@
     "partsCost": "Стоимость запчастей",
     "partsNetProfit": "Чистая прибыль запчасти",
     "laborRevenue": "Работа",
-    "netProfit": "Чистая прибыль"
+    "netProfit": "Чистая прибыль",
+    "date": "Дата",
+    "title": "Название",
+    "type": "Тип",
+    "status": "Статус",
+    "partsUsed": "Запчасти",
+    "laborHours": "Часы работы"
   },
   "pdf": {
     "reportTitle": "Бизнес-отчёт",
@@ -345,7 +384,14 @@
     "totalSellValue": "Цена продажи",
     "quantity": "Кол-во",
     "minQuantity": "Мин. кол-во",
-    "unitCost": "Цена за ед."
+    "unitCost": "Цена за ед.",
+    "vehiclesSection": "Отчёт по транспорту",
+    "vehicleLabel": "Транспорт",
+    "totalCost": "Общая стоимость",
+    "partsCostLabel": "Стоимость запчастей",
+    "laborCostLabel": "Стоимость работ",
+    "date": "Дата",
+    "title": "Название"
   },
   "empty": "Данные ещё не загружены. Нажмите «Обновить» для загрузки отчёта."
 }

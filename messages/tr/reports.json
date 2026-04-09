@@ -11,7 +11,8 @@
     "technicians": "Teknisyenler",
     "parts": "Parçalar",
     "jobAnalytics": "İş Analizi",
-    "retention": "Müşteri Sadakati"
+    "retention": "Müşteri Sadakati",
+    "vehicles": "Araçlar"
   },
   "dateRange": {
     "to": "-",
@@ -187,6 +188,36 @@
       "taxableAmount": "Vergilendirilebilir Tutar"
     }
   },
+  "vehicles": {
+    "selectVehicle": "Bir araç seçin...",
+    "selectVehiclePrompt": "Raporunu görüntülemek için yukarıdan bir araç seçin.",
+    "totalServices": "Toplam Hizmetler",
+    "totalCost": "Toplam Maliyet",
+    "repairs": "Onarımlar",
+    "maintenance": "Bakım",
+    "upgrades": "Yükseltmeler",
+    "inspections": "Muayeneler",
+    "totalPartsUsed": "Kullanılan Parçalar",
+    "totalLaborHours": "İşçilik Saatleri",
+    "monthlyCosts": "Aylık Maliyetler",
+    "serviceTypeBreakdown": "Hizmet Türü Dökümü",
+    "topParts": "En Çok Kullanılan Parçalar",
+    "serviceHistory": "Servis Geçmişi",
+    "tableHeaders": {
+      "date": "Tarih",
+      "title": "Başlık",
+      "type": "Tür",
+      "status": "Durum",
+      "totalAmount": "Toplam",
+      "partsCount": "Parçalar",
+      "laborHours": "İşçilik Saatleri",
+      "techName": "Teknisyen",
+      "partName": "Parça Adı",
+      "partNumber": "Parça No",
+      "quantity": "Adet",
+      "cost": "Maliyet"
+    }
+  },
   "charts": {
     "revenue": "Gelir",
     "collected": "Tahsil Edilen",
@@ -194,7 +225,9 @@
     "totalSpent": "Toplam Harcama",
     "jobs": "İşler",
     "visits": "Ziyaretler",
-    "taxCollected": "Tahsil Edilen Vergi"
+    "taxCollected": "Tahsil Edilen Vergi",
+    "partsCost": "Parça Maliyeti",
+    "laborCost": "İşçilik Maliyeti"
   },
   "days": {
     "sunday": "Pazar",
@@ -255,7 +288,13 @@
     "partsCost": "Parça maliyeti",
     "partsNetProfit": "Parça Net Kârı",
     "laborRevenue": "İşçilik",
-    "netProfit": "Net kâr"
+    "netProfit": "Net kâr",
+    "date": "Tarih",
+    "title": "Başlık",
+    "type": "Tür",
+    "status": "Durum",
+    "partsUsed": "Parçalar",
+    "laborHours": "İşçilik Saatleri"
   },
   "pdf": {
     "reportTitle": "Business Report",
@@ -345,7 +384,14 @@
     "totalSellValue": "Sell Value",
     "quantity": "Qty",
     "minQuantity": "Min Qty",
-    "unitCost": "Unit Cost"
+    "unitCost": "Unit Cost",
+    "vehiclesSection": "Araç Raporu",
+    "vehicleLabel": "Araç",
+    "totalCost": "Toplam Maliyet",
+    "partsCostLabel": "Parça Maliyeti",
+    "laborCostLabel": "İşçilik Maliyeti",
+    "date": "Tarih",
+    "title": "Başlık"
   },
   "empty": "Henüz veri yüklenmedi. Raporu yüklemek için Yenile'ye tıklayın."
 }

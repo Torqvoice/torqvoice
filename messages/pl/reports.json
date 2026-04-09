@@ -11,7 +11,8 @@
     "technicians": "Technicy",
     "parts": "Części",
     "jobAnalytics": "Analiza Zleceń",
-    "retention": "Utrzymanie Klientów"
+    "retention": "Utrzymanie Klientów",
+    "vehicles": "Pojazdy"
   },
   "dateRange": {
     "to": "do",
@@ -187,6 +188,36 @@
       "taxableAmount": "Kwota Opodatkowana"
     }
   },
+  "vehicles": {
+    "selectVehicle": "Wybierz pojazd...",
+    "selectVehiclePrompt": "Wybierz pojazd powyżej, aby zobaczyć raport.",
+    "totalServices": "Łączna Liczba Usług",
+    "totalCost": "Łączny Koszt",
+    "repairs": "Naprawy",
+    "maintenance": "Konserwacja",
+    "upgrades": "Ulepszenia",
+    "inspections": "Przeglądy",
+    "totalPartsUsed": "Użyte Części",
+    "totalLaborHours": "Godziny Robocizny",
+    "monthlyCosts": "Koszty Miesięczne",
+    "serviceTypeBreakdown": "Zestawienie Typów Usług",
+    "topParts": "Najczęściej Używane Części",
+    "serviceHistory": "Historia Usług",
+    "tableHeaders": {
+      "date": "Data",
+      "title": "Tytuł",
+      "type": "Typ",
+      "status": "Status",
+      "totalAmount": "Suma",
+      "partsCount": "Części",
+      "laborHours": "Godziny Robocizny",
+      "techName": "Technik",
+      "partName": "Nazwa Części",
+      "partNumber": "Nr Części",
+      "quantity": "Ilość",
+      "cost": "Koszt"
+    }
+  },
   "charts": {
     "revenue": "Przychody",
     "collected": "Zebrano",
@@ -194,7 +225,9 @@
     "totalSpent": "Suma Wydatków",
     "jobs": "Zlecenia",
     "visits": "Wizyty",
-    "taxCollected": "Zebrany Podatek"
+    "taxCollected": "Zebrany Podatek",
+    "partsCost": "Koszt Części",
+    "laborCost": "Koszt Robocizny"
   },
   "days": {
     "sunday": "Niedziela",
@@ -255,7 +288,13 @@
     "partsCost": "Koszt części",
     "partsNetProfit": "Zysk Netto z Części",
     "laborRevenue": "Robocizna",
-    "netProfit": "Zysk netto"
+    "netProfit": "Zysk netto",
+    "date": "Data",
+    "title": "Tytuł",
+    "type": "Typ",
+    "status": "Status",
+    "partsUsed": "Części",
+    "laborHours": "Godziny Robocizny"
   },
   "pdf": {
     "reportTitle": "Business Report",
@@ -345,7 +384,14 @@
     "totalSellValue": "Sell Value",
     "quantity": "Qty",
     "minQuantity": "Min Qty",
-    "unitCost": "Unit Cost"
+    "unitCost": "Unit Cost",
+    "vehiclesSection": "Raport Pojazdu",
+    "vehicleLabel": "Pojazd",
+    "totalCost": "Łączny Koszt",
+    "partsCostLabel": "Koszt Części",
+    "laborCostLabel": "Koszt Robocizny",
+    "date": "Data",
+    "title": "Tytuł"
   },
   "empty": "Nie załadowano jeszcze danych. Kliknij Odśwież, aby załadować raport."
 }

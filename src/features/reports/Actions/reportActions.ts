@@ -608,6 +608,130 @@ export async function getPastDueInvoicesReport() {
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] });
 }
 
+export async function getVehicleReport(params: {
+  vehicleId: string;
+  startDate?: string;
+  endDate?: string;
+}) {
+  return withAuth(async ({ organizationId }) => {
+    const start = params.startDate ? new Date(params.startDate) : new Date(new Date().getFullYear(), 0, 1);
+    const end = params.endDate ? new Date(params.endDate) : new Date();
+    end.setHours(23, 59, 59, 999);
+
+    const vehicle = await db.vehicle.findFirst({
+      where: { id: params.vehicleId, organizationId },
+      select: {
+        id: true, year: true, make: true, model: true,
+        vin: true, licensePlate: true, mileage: true,
+        customer: { select: { name: true } },
+      },
+    });
+    if (!vehicle) throw new Error("Vehicle not found");
+
+    const records = await db.serviceRecord.findMany({
+      where: {
+        vehicleId: params.vehicleId,
+        vehicle: { organizationId },
+        startDateTime: { gte: start, lte: end },
+      },
+      select: {
+        id: true, title: true, type: true, status: true,
+        serviceDate: true, startDateTime: true,
+        totalAmount: true, cost: true,
+        techName: true,
+        technician: { select: { name: true } },
+        partItems: { select: { name: true, partNumber: true, quantity: true, unitCost: true, total: true } },
+        laborItems: { select: { hours: true, total: true } },
+      },
+      orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
+    });
+
+    let totalCost = 0;
+    let totalPartsUsed = 0;
+    let totalLaborHours = 0;
+    const typeCounts: Record<string, { count: number; totalCost: number }> = {};
+    const monthly: Record<string, { partsCost: number; laborCost: number; totalCost: number; count: number }> = {};
+    const partUsage: Record<string, { partNumber: string | null; quantity: number; totalCost: number }> = {};
+    const partNames: Record<string, string> = {};
+
+    for (const r of records) {
+      const total = r.totalAmount > 0 ? r.totalAmount : r.cost;
+      totalCost += total;
+
+      const partsCost = r.partItems.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
+      const laborCost = r.laborItems.reduce((s, l) => s + l.total, 0);
+      const laborHrs = r.laborItems.reduce((s, l) => s + l.hours, 0);
+      totalPartsUsed += r.partItems.reduce((s, p) => s + p.quantity, 0);
+      totalLaborHours += laborHrs;
+
+      if (!typeCounts[r.type]) typeCounts[r.type] = { count: 0, totalCost: 0 };
+      typeCounts[r.type].count += 1;
+      typeCounts[r.type].totalCost += total;
+
+      const _d = r.startDateTime ?? r.serviceDate;
+      const month = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, "0")}`;
+      if (!monthly[month]) monthly[month] = { partsCost: 0, laborCost: 0, totalCost: 0, count: 0 };
+      monthly[month].partsCost += partsCost;
+      monthly[month].laborCost += laborCost;
+      monthly[month].totalCost += total;
+      monthly[month].count += 1;
+
+      for (const p of r.partItems) {
+        const key = p.name.toLowerCase();
+        if (!partUsage[key]) partUsage[key] = { partNumber: p.partNumber, quantity: 0, totalCost: 0 };
+        partUsage[key].quantity += p.quantity;
+        partUsage[key].totalCost += p.unitCost * p.quantity;
+        if (p.partNumber && !partUsage[key].partNumber) partUsage[key].partNumber = p.partNumber;
+        if (!partNames[key]) partNames[key] = p.name;
+      }
+    }
+
+    return {
+      vehicleInfo: {
+        id: vehicle.id,
+        year: vehicle.year,
+        make: vehicle.make,
+        model: vehicle.model,
+        vin: vehicle.vin,
+        licensePlate: vehicle.licensePlate,
+        mileage: vehicle.mileage,
+        customerName: vehicle.customer?.name ?? null,
+      },
+      summary: {
+        totalServices: records.length,
+        totalCost,
+        totalPartsUsed,
+        totalLaborHours,
+        repairCount: typeCounts["repair"]?.count ?? 0,
+        maintenanceCount: typeCounts["maintenance"]?.count ?? 0,
+        upgradeCount: typeCounts["upgrade"]?.count ?? 0,
+        inspectionCount: typeCounts["inspection"]?.count ?? 0,
+      },
+      monthlyCosts: Object.entries(monthly)
+        .map(([month, data]) => ({ month, ...data }))
+        .sort((a, b) => a.month.localeCompare(b.month)),
+      serviceTypeBreakdown: Object.entries(typeCounts)
+        .map(([type, data]) => ({ type, ...data }))
+        .sort((a, b) => b.count - a.count),
+      topParts: Object.entries(partUsage)
+        .map(([key, data]) => ({ name: partNames[key] || key, ...data }))
+        .sort((a, b) => b.quantity - a.quantity)
+        .slice(0, 20),
+      serviceHistory: records.map((r) => ({
+        id: r.id,
+        title: r.title,
+        type: r.type,
+        status: r.status,
+        date: (r.startDateTime ?? r.serviceDate).toISOString().split("T")[0],
+        totalAmount: r.totalAmount > 0 ? r.totalAmount : r.cost,
+        partsCount: r.partItems.reduce((s, p) => s + p.quantity, 0),
+        laborHours: r.laborItems.reduce((s, l) => s + l.hours, 0),
+        techName: r.technician?.name ?? r.techName ?? null,
+      })),
+    };
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] });
+}
+
 export async function getTaxReport(params: {
   startDate?: string;
   endDate?: string;

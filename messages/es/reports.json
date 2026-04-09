@@ -11,7 +11,8 @@
     "technicians": "Técnicos",
     "parts": "Piezas",
     "jobAnalytics": "Análisis de Trabajos",
-    "retention": "Retención"
+    "retention": "Retención",
+    "vehicles": "Vehículos"
   },
   "dateRange": {
     "to": "a",
@@ -187,6 +188,36 @@
       "taxableAmount": "Monto Gravable"
     }
   },
+  "vehicles": {
+    "selectVehicle": "Seleccionar un vehículo...",
+    "selectVehiclePrompt": "Seleccione un vehículo arriba para ver su informe.",
+    "totalServices": "Total de Servicios",
+    "totalCost": "Costo Total",
+    "repairs": "Reparaciones",
+    "maintenance": "Mantenimiento",
+    "upgrades": "Mejoras",
+    "inspections": "Inspecciones",
+    "totalPartsUsed": "Piezas Utilizadas",
+    "totalLaborHours": "Horas de Mano de Obra",
+    "monthlyCosts": "Costos Mensuales",
+    "serviceTypeBreakdown": "Desglose por Tipo de Servicio",
+    "topParts": "Piezas Más Utilizadas",
+    "serviceHistory": "Historial de Servicios",
+    "tableHeaders": {
+      "date": "Fecha",
+      "title": "Título",
+      "type": "Tipo",
+      "status": "Estado",
+      "totalAmount": "Total",
+      "partsCount": "Piezas",
+      "laborHours": "Horas de Mano de Obra",
+      "techName": "Técnico",
+      "partName": "Nombre de Pieza",
+      "partNumber": "N.º Pieza",
+      "quantity": "Cant.",
+      "cost": "Costo"
+    }
+  },
   "charts": {
     "revenue": "Ingresos",
     "collected": "Cobrado",
@@ -194,7 +225,9 @@
     "totalSpent": "Gasto Total",
     "jobs": "Trabajos",
     "visits": "Visitas",
-    "taxCollected": "Impuesto Recaudado"
+    "taxCollected": "Impuesto Recaudado",
+    "partsCost": "Coste de Piezas",
+    "laborCost": "Costo de Mano de Obra"
   },
   "days": {
     "sunday": "Domingo",
@@ -255,7 +288,13 @@
     "partsCost": "Coste de piezas",
     "partsNetProfit": "Beneficio Neto Repuestos",
     "laborRevenue": "Mano de Obra",
-    "netProfit": "Beneficio neto"
+    "netProfit": "Beneficio neto",
+    "date": "Fecha",
+    "title": "Título",
+    "type": "Tipo",
+    "status": "Estado",
+    "partsUsed": "Piezas",
+    "laborHours": "Horas de Mano de Obra"
   },
   "pdf": {
     "reportTitle": "Business Report",
@@ -345,7 +384,14 @@
     "totalSellValue": "Sell Value",
     "quantity": "Qty",
     "minQuantity": "Min Qty",
-    "unitCost": "Unit Cost"
+    "unitCost": "Unit Cost",
+    "vehiclesSection": "Informe de Vehículo",
+    "vehicleLabel": "Vehículo",
+    "totalCost": "Costo Total",
+    "partsCostLabel": "Coste de Piezas",
+    "laborCostLabel": "Costo de Mano de Obra",
+    "date": "Fecha",
+    "title": "Título"
   },
   "empty": "Aún no se han cargado datos. Haga clic en Actualizar para cargar el informe."
 }
