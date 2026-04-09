@@ -11,12 +11,26 @@
     "technicians": "Tecnici",
     "parts": "Ricambi",
     "jobAnalytics": "Analisi Lavori",
-    "retention": "Fidelizzazione"
+    "retention": "Fidelizzazione",
+    "vehicles": "Veicoli"
   },
   "dateRange": {
     "to": "a",
     "pickDate": "Seleziona intervallo date",
-    "apply": "Applica"
+    "apply": "Applica",
+    "presets": {
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "last7": "Ultimi 7 giorni",
+      "last30": "Ultimi 30 giorni",
+      "last90": "Ultimi 90 giorni",
+      "thisMonth": "Questo mese",
+      "lastMonth": "Mese scorso",
+      "thisQuarter": "Questo trimestre",
+      "thisYear": "Quest'anno",
+      "lastYear": "Anno scorso",
+      "allTime": "Tutto il periodo"
+    }
   },
   "actions": {
     "refresh": "Aggiorna",
@@ -187,6 +201,36 @@
       "taxableAmount": "Importo Tassabile"
     }
   },
+  "vehicles": {
+    "selectVehicle": "Seleziona un veicolo...",
+    "selectVehiclePrompt": "Seleziona un veicolo sopra per visualizzare il report.",
+    "totalServices": "Totale Servizi",
+    "totalCost": "Costo Totale",
+    "repairs": "Riparazioni",
+    "maintenance": "Manutenzione",
+    "upgrades": "Upgrade",
+    "inspections": "Ispezioni",
+    "totalPartsUsed": "Ricambi Utilizzati",
+    "totalLaborHours": "Ore di Manodopera",
+    "monthlyCosts": "Costi Mensili",
+    "serviceTypeBreakdown": "Riepilogo Tipi di Servizio",
+    "topParts": "Ricambi Più Utilizzati",
+    "serviceHistory": "Storico Servizi",
+    "tableHeaders": {
+      "date": "Data",
+      "title": "Titolo",
+      "type": "Tipo",
+      "status": "Stato",
+      "totalAmount": "Totale",
+      "partsCount": "Ricambi",
+      "laborHours": "Ore di Manodopera",
+      "techName": "Tecnico",
+      "partName": "Nome Ricambio",
+      "partNumber": "N. Ricambio",
+      "quantity": "Qtà",
+      "cost": "Costo"
+    }
+  },
   "charts": {
     "revenue": "Ricavi",
     "collected": "Incassato",
@@ -194,7 +238,9 @@
     "totalSpent": "Totale Speso",
     "jobs": "Lavori",
     "visits": "Visite",
-    "taxCollected": "Tassa Riscossa"
+    "taxCollected": "Tassa Riscossa",
+    "partsCost": "Costo Ricambi",
+    "laborCost": "Costo Manodopera"
   },
   "days": {
     "sunday": "Domenica",
@@ -255,7 +301,13 @@
     "partsCost": "Costo ricambi",
     "partsNetProfit": "Profitto Netto Ricambi",
     "laborRevenue": "Manodopera",
-    "netProfit": "Utile netto"
+    "netProfit": "Utile netto",
+    "date": "Data",
+    "title": "Titolo",
+    "type": "Tipo",
+    "status": "Stato",
+    "partsUsed": "Ricambi",
+    "laborHours": "Ore di Manodopera"
   },
   "pdf": {
     "reportTitle": "Business Report",
@@ -345,7 +397,14 @@
     "totalSellValue": "Sell Value",
     "quantity": "Qty",
     "minQuantity": "Min Qty",
-    "unitCost": "Unit Cost"
+    "unitCost": "Unit Cost",
+    "vehiclesSection": "Report Veicolo",
+    "vehicleLabel": "Veicolo",
+    "totalCost": "Costo Totale",
+    "partsCostLabel": "Costo Ricambi",
+    "laborCostLabel": "Costo Manodopera",
+    "date": "Data",
+    "title": "Titolo"
   },
   "empty": "Nessun dato caricato. Clicca su Aggiorna per caricare il report."
 }

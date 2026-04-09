@@ -11,12 +11,26 @@
     "technicians": "Técnicos",
     "parts": "Peças",
     "jobAnalytics": "Análise de Trabalhos",
-    "retention": "Retenção"
+    "retention": "Retenção",
+    "vehicles": "Veículos"
   },
   "dateRange": {
     "to": "até",
     "pickDate": "Selecionar período",
-    "apply": "Aplicar"
+    "apply": "Aplicar",
+    "presets": {
+      "today": "Hoje",
+      "yesterday": "Ontem",
+      "last7": "Últimos 7 dias",
+      "last30": "Últimos 30 dias",
+      "last90": "Últimos 90 dias",
+      "thisMonth": "Este mês",
+      "lastMonth": "Mês passado",
+      "thisQuarter": "Este trimestre",
+      "thisYear": "Este ano",
+      "lastYear": "Ano passado",
+      "allTime": "Todo o período"
+    }
   },
   "actions": {
     "refresh": "Atualizar",
@@ -187,6 +201,36 @@
       "taxableAmount": "Valor Tributável"
     }
   },
+  "vehicles": {
+    "selectVehicle": "Selecionar um veículo...",
+    "selectVehiclePrompt": "Selecione um veículo acima para ver o relatório.",
+    "totalServices": "Total de Serviços",
+    "totalCost": "Custo Total",
+    "repairs": "Reparos",
+    "maintenance": "Manutenção",
+    "upgrades": "Melhorias",
+    "inspections": "Inspeções",
+    "totalPartsUsed": "Peças Usadas",
+    "totalLaborHours": "Horas de Mão de Obra",
+    "monthlyCosts": "Custos Mensais",
+    "serviceTypeBreakdown": "Detalhamento por Tipo de Serviço",
+    "topParts": "Peças Mais Usadas",
+    "serviceHistory": "Histórico de Serviços",
+    "tableHeaders": {
+      "date": "Data",
+      "title": "Título",
+      "type": "Tipo",
+      "status": "Status",
+      "totalAmount": "Total",
+      "partsCount": "Peças",
+      "laborHours": "Horas de Mão de Obra",
+      "techName": "Técnico",
+      "partName": "Nome da Peça",
+      "partNumber": "N.º Peça",
+      "quantity": "Qtd.",
+      "cost": "Custo"
+    }
+  },
   "charts": {
     "revenue": "Receita",
     "collected": "Recebido",
@@ -194,7 +238,9 @@
     "totalSpent": "Total Gasto",
     "jobs": "Trabalhos",
     "visits": "Visitas",
-    "taxCollected": "Imposto Arrecadado"
+    "taxCollected": "Imposto Arrecadado",
+    "partsCost": "Custo de Peças",
+    "laborCost": "Custo de Mão de Obra"
   },
   "days": {
     "sunday": "Domingo",
@@ -255,7 +301,13 @@
     "partsCost": "Custo de peças",
     "partsNetProfit": "Lucro Líquido Peças",
     "laborRevenue": "Mão de Obra",
-    "netProfit": "Lucro líquido"
+    "netProfit": "Lucro líquido",
+    "date": "Data",
+    "title": "Título",
+    "type": "Tipo",
+    "status": "Status",
+    "partsUsed": "Peças",
+    "laborHours": "Horas de Mão de Obra"
   },
   "pdf": {
     "reportTitle": "Business Report",
@@ -345,7 +397,14 @@
     "totalSellValue": "Sell Value",
     "quantity": "Qty",
     "minQuantity": "Min Qty",
-    "unitCost": "Unit Cost"
+    "unitCost": "Unit Cost",
+    "vehiclesSection": "Relatório de Veículo",
+    "vehicleLabel": "Veículo",
+    "totalCost": "Custo Total",
+    "partsCostLabel": "Custo de Peças",
+    "laborCostLabel": "Custo de Mão de Obra",
+    "date": "Data",
+    "title": "Título"
   },
   "empty": "Nenhum dado carregado ainda. Clique em Atualizar para carregar o relatório."
 }
