@@ -1,0 +1,75 @@
+{
+  "page": {
+    "error": "Nepavyko įkelti darbų lentos"
+  },
+  "toolbar": {
+    "today": "Šiandien",
+    "day": "Diena",
+    "week": "Savaitė",
+    "presenter": "Prezentacija",
+    "addTechnician": "Pridėti techniką"
+  },
+  "board": {
+    "days": {
+      "mon": "Pir",
+      "tue": "Ant",
+      "wed": "Tre",
+      "thu": "Ket",
+      "fri": "Pen",
+      "sat": "Šeš",
+      "sun": "Sek"
+    },
+    "noTechnicians": "Technikų dar nėra",
+    "noTechniciansDescription": "Pridėkite techniką, kad pradėtumėte planuoti darbus lentoje.",
+    "failedMove": "Nepavyko perkelti priskyrimo",
+    "failedAssign": "Nepavyko priskirti darbo",
+    "failedRemove": "Nepavyko pašalinti priskyrimo",
+    "createNewWorkorder": "Sukurti naują darbo užsakymą"
+  },
+  "unassigned": {
+    "title": "Nepriskirti darbai ({count})",
+    "searchPlaceholder": "Ieškoti darbų...",
+    "empty": "Nepriskirtų darbų nėra"
+  },
+  "technician": {
+    "editTitle": "Redaguoti techniką",
+    "addTitle": "Pridėti techniką",
+    "name": "Vardas",
+    "namePlaceholder": "pvz., Jonas Jonaitis",
+    "color": "Spalva",
+    "linkMember": "Susieti su organizacijos nariu (neprivaloma)",
+    "standalone": "Atskiras technikas",
+    "deleteTitle": "Ištrinti techniką",
+    "deleteDescription": "Pašalinti \"{name}\" iš darbų lentos? Esami priskyrimai taip pat bus pašalinti.",
+    "addTechnician": "Pridėti techniką"
+  },
+  "jobDetail": {
+    "viewDetails": "Peržiūrėti informaciją",
+    "remove": "Pašalinti",
+    "startTime": "Pradžios laikas",
+    "endTime": "Pabaigos laikas",
+    "failedDuration": "Nepavyko atnaujinti trukmės",
+    "failedTimes": "Nepavyko atnaujinti laikų",
+    "endBeforeStart": "Pabaigos laikas turi būti po pradžios laiko"
+  },
+  "presenter": {
+    "title": "Darbų lenta",
+    "day": "Diena",
+    "status": "Būsena",
+    "week": "Savaitė",
+    "today": "Šiandien",
+    "timeline": "Laiko juosta",
+    "live": "Tiesiogiai",
+    "disconnected": "Tiesioginiai atnaujinimai atjungti",
+    "noTechnicians": "Technikai nesukonfigūruoti",
+    "noJobsToday": "Šiandien darbų nėra",
+    "job": "{count} darbas",
+    "jobs": "{count} darbai",
+    "statusLabels": {
+      "pending": "Laukia",
+      "inProgress": "Vykdoma",
+      "waitingParts": "Laukia dalių",
+      "completed": "Užbaigta"
+    }
+  }
+}

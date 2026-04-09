@@ -1,0 +1,62 @@
+{
+  "title": "Telegram nustatymai",
+  "description": "Sukonfigūruokite savo Telegram botą, kad galėtumėte siųsti ir gauti žinutes su klientais.",
+  "botToken": {
+    "label": "Boto žetonas",
+    "placeholder": "Įveskite boto žetoną iš @BotFather",
+    "help": "Sukurkite botą per @BotFather Telegram, kad gautumėte žetoną."
+  },
+  "botUsername": {
+    "label": "Boto naudotojo vardas",
+    "notConnected": "Neprijungtas"
+  },
+  "webhook": {
+    "label": "Webhook URL",
+    "description": "Šis URL automatiškai sukonfigūruojamas, kai išsaugote boto žetoną."
+  },
+  "deepLink": {
+    "title": "Kliento prisijungimo nuoroda",
+    "description": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti prie jūsų boto. Pakeiskite kliento ID vietos žymeklį tikruoju kliento ID.",
+    "copied": "Nuoroda nukopijuota!"
+  },
+  "test": {
+    "title": "Bandomoji žinutė",
+    "chatId": "Pokalbio ID",
+    "chatIdPlaceholder": "Įveskite Telegram pokalbio ID",
+    "message": "Žinutė",
+    "messagePlaceholder": "Įveskite bandomąją žinutę...",
+    "send": "Siųsti bandomąją",
+    "success": "Bandomoji žinutė išsiųsta!",
+    "error": "Nepavyko išsiųsti bandomosios žinutės"
+  },
+  "save": "Išsaugoti nustatymus",
+  "saving": "Saugoma...",
+  "saved": "Telegram nustatymai išsaugoti",
+  "saveError": "Nepavyko išsaugoti nustatymų",
+  "disconnect": {
+    "button": "Atjungti botą",
+    "title": "Atjungti Telegram botą?",
+    "description": "Bus pašalinta boto konfigūracija ir sustabdytas žinučių gavimas. Esama pokalbių istorija bus išsaugota.",
+    "success": "Telegram botas atjungtas",
+    "error": "Nepavyko atjungti"
+  },
+  "qr": {
+    "title": "Prisijungti per Telegram",
+    "description": "Nuskaitykite šį QR kodą, kad susirašinėtumėte su mumis per Telegram.",
+    "copyLink": "Kopijuoti nuorodą",
+    "copied": "Nuoroda nukopijuota!",
+    "sendEmail": "Siųsti el. paštu",
+    "emailSubject": "Prisijunkite prie mūsų per Telegram",
+    "emailBody": "Sveiki, {name},\n\nDabar galite susirašinėti su mumis per Telegram dėl jūsų transporto priemonės atnaujinimų.\n\nSpustelėkite šią nuorodą, kad prisijungtumėte: {link}\n\nDėkojame!"
+  },
+  "invoiceQr": {
+    "label": "Rodyti QR kodą sąskaitose",
+    "description": "Rodyti Telegram QR kodą bendrinamosiose skaitmeninėse sąskaitose, kad klientai galėtų prisijungti."
+  },
+  "helpLink": "Sužinoti daugiau",
+  "enable": {
+    "label": "Įjungti Telegram",
+    "hint": "Rodyti Telegram šoninėje juostoje ir klientų puslapiuose.",
+    "disabledInfo": "Telegram šiuo metu išjungtas. Įjunkite, kad pradėtumėte siųsti ir gauti žinutes per Telegram."
+  }
+}

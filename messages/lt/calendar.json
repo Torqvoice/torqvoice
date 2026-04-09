@@ -1,0 +1,67 @@
+{
+  "weekdays": {
+    "sun": "Sek",
+    "mon": "Pir",
+    "tue": "Ant",
+    "wed": "Tre",
+    "thu": "Ket",
+    "fri": "Pen",
+    "sat": "Šeš"
+  },
+  "months": {
+    "january": "Sausis",
+    "february": "Vasaris",
+    "march": "Kovas",
+    "april": "Balandis",
+    "may": "Gegužė",
+    "june": "Birželis",
+    "july": "Liepa",
+    "august": "Rugpjūtis",
+    "september": "Rugsėjis",
+    "october": "Spalis",
+    "november": "Lapkritis",
+    "december": "Gruodis"
+  },
+  "stats": {
+    "services": "Paslaugos",
+    "overdue": "Vėluoja",
+    "pendingQuotes": "Laukiantys pasiūlymai",
+    "revenue": "Pajamos"
+  },
+  "today": "Šiandien",
+  "workOrder": "Darbo užsakymas",
+  "filters": {
+    "services": "Paslaugos",
+    "reminders": "Priminimai",
+    "quotes": "Pasiūlymai"
+  },
+  "selectVehicle": "Pasirinkite transporto priemonę darbo užsakymui",
+  "dateChoice": {
+    "title": "Darbo užsakymo data",
+    "description": "Pasirinkote {selectedDate}. Kuriai datai turėtų būti šis darbo užsakymas?",
+    "useSelected": "Naudoti {date}",
+    "useToday": "Naudoti šiandienos datą"
+  },
+  "more": "+ {count} daugiau",
+  "events": {
+    "status": {
+      "completed": "Užbaigta",
+      "inProgress": "Vykdoma",
+      "waitingParts": "Laukia dalių",
+      "pending": "Laukia",
+      "sent": "Išsiųsta",
+      "approved": "Patvirtinta",
+      "draft": "Juodraštis",
+      "done": "Atlikta",
+      "overdue": "Vėluoja",
+      "upcoming": "Artėja"
+    },
+    "type": {
+      "service": "Paslauga",
+      "reminder": "Priminimas",
+      "quote": "Pasiūlymas"
+    },
+    "noEvents": "Įvykių nėra",
+    "selectDay": "Pasirinkite dieną su įvykiais arba sukurkite naują darbo užsakymą."
+  }
+}
