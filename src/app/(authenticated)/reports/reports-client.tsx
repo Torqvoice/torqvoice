@@ -581,8 +581,8 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
-      {/* Tab bar with date range and actions */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {/* Tab bar */}
+      <div className="space-y-3">
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="financial" className="gap-1.5">
             <Landmark className="h-4 w-4" />
@@ -591,6 +591,10 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
           <TabsTrigger value="services" className="gap-1.5">
             <BarChart3 className="h-4 w-4" />
             {t("tabs.services")}
+          </TabsTrigger>
+          <TabsTrigger value="vehicles" className="gap-1.5">
+            <Car className="h-4 w-4" />
+            {t("tabs.vehicles")}
           </TabsTrigger>
           <TabsTrigger value="customers" className="gap-1.5">
             <Users className="h-4 w-4" />
@@ -616,13 +620,10 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
             <UserCheck className="h-4 w-4" />
             {t("tabs.retention")}
           </TabsTrigger>
-          <TabsTrigger value="vehicles" className="gap-1.5">
-            <Car className="h-4 w-4" />
-            {t("tabs.vehicles")}
-          </TabsTrigger>
         </TabsList>
 
-        <div className="flex items-center gap-2">
+        {/* Date range and actions */}
+        <div className="flex items-center gap-2 flex-wrap justify-end">
           {showDateRange && (
             <Popover open={datePickerOpen} onOpenChange={(open) => {
               setDatePickerOpen(open);
@@ -743,8 +744,8 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         </div>
       </div>
 
-      {/* Loading overlay */}
-      {loading && (
+      {/* Loading overlay (hidden on vehicles tab — it handles its own) */}
+      {loading && activeTab !== "vehicles" && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
@@ -1832,6 +1833,11 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
           />
         </div>
 
+        {loading && activeTab === "vehicles" && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        )}
         {!loading && vehicleData && (
           <div className="space-y-4">
             {/* Vehicle header with inline stats */}
