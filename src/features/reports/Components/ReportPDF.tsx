@@ -17,6 +17,7 @@ import type {
   CustomerRetentionReport,
   TaxReport,
   PastDueInvoicesReport,
+  VehicleReportData,
 } from "../Schema/reportTypes";
 import { formatCurrency } from "@/lib/format";
 
@@ -140,6 +141,7 @@ interface ReportPDFProps {
   dateRange: string;
   currencyCode: string;
   primaryColor: string;
+  organizationName?: string;
   labels: Record<string, string>;
   revenueData?: RevenueReport | null;
   serviceData?: ServiceReport | null;
@@ -151,6 +153,7 @@ interface ReportPDFProps {
   retentionData?: CustomerRetentionReport | null;
   taxData?: TaxReport | null;
   pastDueData?: PastDueInvoicesReport | null;
+  vehicleData?: VehicleReportData | null;
 }
 
 type ReportStyles = ReturnType<typeof createReportStyles>;
@@ -280,22 +283,29 @@ export function ReportPDF({
   retentionData,
   taxData,
   pastDueData,
+  vehicleData,
+  organizationName,
 }: ReportPDFProps) {
   const fmt = (n: number) => formatCurrency(n, currencyCode);
   const s = createReportStyles(primaryColor);
+
+  const ReportHeader = ({ title, subtitle }: { title: string; subtitle: string }) => (
+    <View style={s.headerRow}>
+      <View>
+        <Text style={s.title}>{title}</Text>
+        <Text style={s.subtitle}>{subtitle}</Text>
+        {organizationName ? <Text style={{ fontSize: 8, color: gray, marginTop: 2 }}>{organizationName}</Text> : null}
+      </View>
+      <Text style={s.dateBadge}>{dateRange}</Text>
+    </View>
+  );
 
   return (
     <Document>
       {/* ==================== REVENUE ==================== */}
       {revenueData && (
         <Page size="A4" style={s.page}>
-          <View style={s.headerRow}>
-            <View>
-              <Text style={s.title}>{l.reportTitle || "Business Report"}</Text>
-              <Text style={s.subtitle}>{l.revenueSection || "Revenue Report"}</Text>
-            </View>
-            <Text style={s.dateBadge}>{dateRange}</Text>
-          </View>
+          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.revenueSection || "Revenue Report"} />
 
           <SummaryCards
             s={s}
@@ -366,13 +376,7 @@ export function ReportPDF({
       {/* ==================== TAX ==================== */}
       {taxData && (
         <Page size="A4" style={s.page}>
-          <View style={s.headerRow}>
-            <View>
-              <Text style={s.title}>{l.reportTitle || "Business Report"}</Text>
-              <Text style={s.subtitle}>{l.taxSection || "Tax Report"}</Text>
-            </View>
-            <Text style={s.dateBadge}>{dateRange}</Text>
-          </View>
+          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.taxSection || "Tax Report"} />
 
           <SummaryCards
             s={s}
@@ -425,13 +429,7 @@ export function ReportPDF({
       {/* ==================== PAST DUE INVOICES ==================== */}
       {pastDueData && (
         <Page size="A4" style={s.page}>
-          <View style={s.headerRow}>
-            <View>
-              <Text style={s.title}>{l.reportTitle || "Business Report"}</Text>
-              <Text style={s.subtitle}>{l.pastDueSection || "Past Due Invoices"}</Text>
-            </View>
-            <Text style={s.dateBadge}>{dateRange}</Text>
-          </View>
+          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.pastDueSection || "Past Due Invoices"} />
 
           <SummaryCards
             s={s}
@@ -473,13 +471,7 @@ export function ReportPDF({
       {/* ==================== SERVICES ==================== */}
       {serviceData && (
         <Page size="A4" style={s.page}>
-          <View style={s.headerRow}>
-            <View>
-              <Text style={s.title}>{l.reportTitle || "Business Report"}</Text>
-              <Text style={s.subtitle}>{l.servicesSection || "Services Report"}</Text>
-            </View>
-            <Text style={s.dateBadge}>{dateRange}</Text>
-          </View>
+          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.servicesSection || "Services Report"} />
 
           <SummaryCards
             s={s}
@@ -518,13 +510,7 @@ export function ReportPDF({
       {/* ==================== CUSTOMERS ==================== */}
       {customerData && (
         <Page size="A4" style={s.page}>
-          <View style={s.headerRow}>
-            <View>
-              <Text style={s.title}>{l.reportTitle || "Business Report"}</Text>
-              <Text style={s.subtitle}>{l.customersSection || "Customers Report"}</Text>
-            </View>
-            <Text style={s.dateBadge}>{dateRange}</Text>
-          </View>
+          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.customersSection || "Customers Report"} />
 
           <SummaryCards
             s={s}
@@ -562,13 +548,7 @@ export function ReportPDF({
       {/* ==================== TECHNICIANS ==================== */}
       {technicianData && (
         <Page size="A4" style={s.page}>
-          <View style={s.headerRow}>
-            <View>
-              <Text style={s.title}>{l.reportTitle || "Business Report"}</Text>
-              <Text style={s.subtitle}>{l.techniciansSection || "Technicians Report"}</Text>
-            </View>
-            <Text style={s.dateBadge}>{dateRange}</Text>
-          </View>
+          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.techniciansSection || "Technicians Report"} />
 
           <SummaryCards
             s={s}
@@ -607,13 +587,7 @@ export function ReportPDF({
       {/* ==================== PARTS USAGE ==================== */}
       {partsData && (
         <Page size="A4" style={s.page}>
-          <View style={s.headerRow}>
-            <View>
-              <Text style={s.title}>{l.reportTitle || "Business Report"}</Text>
-              <Text style={s.subtitle}>{l.partsSection || "Parts Usage Report"}</Text>
-            </View>
-            <Text style={s.dateBadge}>{dateRange}</Text>
-          </View>
+          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.partsSection || "Parts Usage Report"} />
 
           <SummaryCards
             s={s}
@@ -656,13 +630,7 @@ export function ReportPDF({
       {/* ==================== JOB ANALYTICS ==================== */}
       {jobAnalyticsData && (
         <Page size="A4" style={s.page}>
-          <View style={s.headerRow}>
-            <View>
-              <Text style={s.title}>{l.reportTitle || "Business Report"}</Text>
-              <Text style={s.subtitle}>{l.jobAnalyticsSection || "Job Analytics"}</Text>
-            </View>
-            <Text style={s.dateBadge}>{dateRange}</Text>
-          </View>
+          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.jobAnalyticsSection || "Job Analytics"} />
 
           <SummaryCards
             s={s}
@@ -728,13 +696,7 @@ export function ReportPDF({
       {/* ==================== RETENTION ==================== */}
       {retentionData && (
         <Page size="A4" style={s.page}>
-          <View style={s.headerRow}>
-            <View>
-              <Text style={s.title}>{l.reportTitle || "Business Report"}</Text>
-              <Text style={s.subtitle}>{l.retentionSection || "Customer Retention"}</Text>
-            </View>
-            <Text style={s.dateBadge}>{dateRange}</Text>
-          </View>
+          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.retentionSection || "Customer Retention"} />
 
           <SummaryCards
             s={s}
@@ -781,13 +743,7 @@ export function ReportPDF({
       {/* ==================== INVENTORY ==================== */}
       {inventoryData && (
         <Page size="A4" style={s.page}>
-          <View style={s.headerRow}>
-            <View>
-              <Text style={s.title}>{l.reportTitle || "Business Report"}</Text>
-              <Text style={s.subtitle}>{l.inventorySection || "Inventory Report"}</Text>
-            </View>
-            <Text style={s.dateBadge}>{dateRange}</Text>
-          </View>
+          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.inventorySection || "Inventory Report"} />
 
           <SummaryCards
             s={s}
@@ -818,6 +774,106 @@ export function ReportPDF({
                   String(p.quantity),
                   p.minQuantity != null ? String(p.minQuantity) : "-",
                   p.unitCost != null ? fmt(p.unitCost) : "-",
+                ])}
+              />
+            </View>
+          )}
+          <PageFooter s={s} />
+        </Page>
+      )}
+
+      {/* ==================== VEHICLE ==================== */}
+      {vehicleData && (
+        <Page size="A4" style={s.page}>
+          <ReportHeader
+            title={l.vehiclesSection || "Vehicle Report"}
+            subtitle={`${vehicleData.vehicleInfo.year} ${vehicleData.vehicleInfo.make} ${vehicleData.vehicleInfo.model}${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).length > 0 ? ` — ${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).join(" · ")}` : ""}`}
+          />
+
+          <View style={{ flexDirection: "row", backgroundColor: grayLight, borderRadius: 4, padding: 10, marginBottom: 14, justifyContent: "space-between" }}>
+            {[
+              { label: l.totalServices || "Total Services", value: String(vehicleData.summary.totalServices) },
+              { label: l.totalCost || "Total Cost", value: fmt(vehicleData.summary.totalCost) },
+              { label: l.totalPartsUsed || "Parts Used", value: String(vehicleData.summary.totalPartsUsed) },
+              { label: l.totalLaborHours || "Labor Hours", value: vehicleData.summary.totalLaborHours.toFixed(1) },
+            ].map((item, i) => (
+              <View key={i} style={{ alignItems: i === 0 ? "flex-start" : i === 3 ? "flex-end" : "center" }}>
+                <Text style={{ fontSize: 7, color: gray, textTransform: "uppercase", marginBottom: 2 }}>{item.label}</Text>
+                <Text style={{ fontSize: 12, fontFamily: "Roboto-Bold" }}>{item.value}</Text>
+              </View>
+            ))}
+          </View>
+
+          {vehicleData.serviceTypeBreakdown.length > 0 && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>{l.serviceTypeBreakdown || "Expenses by Service Type"}</Text>
+              <TableBlock
+                s={s}
+                headers={[
+                  l.type || "Type",
+                  l.count || "Count",
+                  l.totalCost || "Cost",
+                ]}
+                widths={[40, 20, 40]}
+                rows={[
+                  ...vehicleData.serviceTypeBreakdown.map((item) => [
+                    item.type.charAt(0).toUpperCase() + item.type.slice(1),
+                    String(item.count),
+                    fmt(item.totalCost),
+                  ]),
+                  [
+                    l.totalCost || "Total",
+                    String(vehicleData.summary.totalServices),
+                    fmt(vehicleData.summary.totalCost),
+                  ],
+                ]}
+              />
+            </View>
+          )}
+
+          {vehicleData.monthlyCosts.length > 0 && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>{l.monthlyBreakdown || "Monthly Breakdown"}</Text>
+              <TableBlock
+                s={s}
+                headers={[
+                  l.month || "Month",
+                  l.partsCostLabel || "Parts Cost",
+                  l.laborCostLabel || "Labor Cost",
+                  l.totalCost || "Total Cost",
+                  l.count || "Jobs",
+                ]}
+                widths={[24, 22, 22, 22, 10]}
+                rows={vehicleData.monthlyCosts.map((m) => [
+                  m.month,
+                  fmt(m.partsCost),
+                  fmt(m.laborCost),
+                  fmt(m.totalCost),
+                  String(m.count),
+                ])}
+              />
+            </View>
+          )}
+
+          {vehicleData.serviceHistory.length > 0 && (
+            <View style={s.section}>
+              <Text style={s.sectionTitle}>{l.serviceHistory || "Service History"}</Text>
+              <TableBlock
+                s={s}
+                headers={[
+                  l.date || "Date",
+                  l.title || "Title",
+                  l.type || "Type",
+                  l.status || "Status",
+                  l.totalAmount || "Total",
+                ]}
+                widths={[18, 32, 16, 16, 18]}
+                rows={vehicleData.serviceHistory.map((r) => [
+                  r.date,
+                  r.title,
+                  r.type,
+                  r.status,
+                  fmt(r.totalAmount),
                 ])}
               />
             </View>

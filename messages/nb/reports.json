@@ -11,12 +11,26 @@
     "technicians": "Teknikere",
     "parts": "Deler",
     "jobAnalytics": "Jobbanalyse",
-    "retention": "Kundelojalitet"
+    "retention": "Kundelojalitet",
+    "vehicles": "Kjøretøy"
   },
   "dateRange": {
     "to": "til",
     "pickDate": "Velg datoperiode",
-    "apply": "Bruk"
+    "apply": "Bruk",
+    "presets": {
+      "today": "I dag",
+      "yesterday": "I går",
+      "last7": "Siste 7 dager",
+      "last30": "Siste 30 dager",
+      "last90": "Siste 90 dager",
+      "thisMonth": "Denne måneden",
+      "lastMonth": "Forrige måned",
+      "thisQuarter": "Dette kvartalet",
+      "thisYear": "I år",
+      "lastYear": "I fjor",
+      "allTime": "Hele perioden"
+    }
   },
   "actions": {
     "refresh": "Oppdater",
@@ -187,6 +201,36 @@
       "taxableAmount": "Skattepliktig Beløp"
     }
   },
+  "vehicles": {
+    "selectVehicle": "Velg et kjøretøy...",
+    "selectVehiclePrompt": "Velg et kjøretøy ovenfor for å se rapporten.",
+    "totalServices": "Totalt Tjenester",
+    "totalCost": "Total Kostnad",
+    "repairs": "Reparasjoner",
+    "maintenance": "Vedlikehold",
+    "upgrades": "Oppgraderinger",
+    "inspections": "Inspeksjoner",
+    "totalPartsUsed": "Deler Brukt",
+    "totalLaborHours": "Arbeidstimer",
+    "monthlyCosts": "Månedlige Kostnader",
+    "serviceTypeBreakdown": "Tjenestetype-oversikt",
+    "topParts": "Mest Brukte Deler",
+    "serviceHistory": "Tjenestehistorikk",
+    "tableHeaders": {
+      "date": "Dato",
+      "title": "Tittel",
+      "type": "Type",
+      "status": "Status",
+      "totalAmount": "Totalt",
+      "partsCount": "Deler",
+      "laborHours": "Arbeidstimer",
+      "techName": "Tekniker",
+      "partName": "Delenavn",
+      "partNumber": "Delenr.",
+      "quantity": "Ant.",
+      "cost": "Kostnad"
+    }
+  },
   "charts": {
     "revenue": "Inntekter",
     "collected": "Innkrevd",
@@ -194,7 +238,9 @@
     "totalSpent": "Totalt Brukt",
     "jobs": "Jobber",
     "visits": "Besøk",
-    "taxCollected": "Skatt Innkrevd"
+    "taxCollected": "Skatt Innkrevd",
+    "partsCost": "Delekostnad",
+    "laborCost": "Arbeidskostnad"
   },
   "days": {
     "sunday": "Søndag",
@@ -255,7 +301,13 @@
     "partsCost": "Delekostnad",
     "partsNetProfit": "Netto fortjeneste deler",
     "laborRevenue": "Arbeid",
-    "netProfit": "Nettoresultat"
+    "netProfit": "Nettoresultat",
+    "date": "Dato",
+    "title": "Tittel",
+    "type": "Type",
+    "status": "Status",
+    "partsUsed": "Deler",
+    "laborHours": "Arbeidstimer"
   },
   "pdf": {
     "reportTitle": "Business Report",
@@ -269,7 +321,7 @@
     "jobAnalyticsSection": "Job Analytics",
     "retentionSection": "Customer Retention",
     "inventorySection": "Inventory Report",
-    "monthlyBreakdown": "Monthly Breakdown",
+    "monthlyBreakdown": "Månedlig Oversikt",
     "revenueByType": "Revenue by Type",
     "taxByRate": "Tax by Rate",
     "servicesByStatus": "By Status",
@@ -345,7 +397,14 @@
     "totalSellValue": "Sell Value",
     "quantity": "Qty",
     "minQuantity": "Min Qty",
-    "unitCost": "Unit Cost"
+    "unitCost": "Unit Cost",
+    "vehiclesSection": "Kjøretøyrapport",
+    "vehicleLabel": "Kjøretøy",
+    "totalCost": "Total Kostnad",
+    "partsCostLabel": "Delekostnad",
+    "laborCostLabel": "Arbeidskostnad",
+    "date": "Dato",
+    "title": "Tittel"
   },
   "empty": "Ingen data lastet ennå. Klikk Oppdater for å laste rapporten."
 }

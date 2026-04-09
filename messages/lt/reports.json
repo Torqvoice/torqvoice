@@ -11,12 +11,26 @@
     "technicians": "Technikai",
     "parts": "Dalys",
     "jobAnalytics": "Darbų analitika",
-    "retention": "Grįžtamumas"
+    "retention": "Grįžtamumas",
+    "vehicles": "Transporto priemonės"
   },
   "dateRange": {
     "to": "iki",
     "pickDate": "Pasirinkite datų intervalą",
-    "apply": "Taikyti"
+    "apply": "Taikyti",
+    "presets": {
+      "today": "Šiandien",
+      "yesterday": "Vakar",
+      "last7": "Paskutinės 7 dienos",
+      "last30": "Paskutinės 30 dienų",
+      "last90": "Paskutinės 90 dienų",
+      "thisMonth": "Šis mėnuo",
+      "lastMonth": "Praėjęs mėnuo",
+      "thisQuarter": "Šis ketvirtis",
+      "thisYear": "Šie metai",
+      "lastYear": "Praėję metai",
+      "allTime": "Visas laikotarpis"
+    }
   },
   "actions": {
     "refresh": "Atnaujinti",
@@ -187,6 +201,36 @@
       "taxableAmount": "Apmokestinama suma"
     }
   },
+  "vehicles": {
+    "selectVehicle": "Pasirinkite transporto priemonę...",
+    "selectVehiclePrompt": "Pasirinkite transporto priemonę aukščiau, kad peržiūrėtumėte ataskaitą.",
+    "totalServices": "Iš viso paslaugų",
+    "totalCost": "Bendra savikaina",
+    "repairs": "Remontai",
+    "maintenance": "Priežiūra",
+    "upgrades": "Patobulinimai",
+    "inspections": "Apžiūros",
+    "totalPartsUsed": "Panaudotos dalys",
+    "totalLaborHours": "Darbo valandos",
+    "monthlyCosts": "Mėnesio išlaidos",
+    "serviceTypeBreakdown": "Paslaugų tipų suskirstymas",
+    "topParts": "Populiariausios dalys",
+    "serviceHistory": "Paslaugų istorija",
+    "tableHeaders": {
+      "date": "Data",
+      "title": "Pavadinimas",
+      "type": "Tipas",
+      "status": "Būsena",
+      "totalAmount": "Suma",
+      "partsCount": "Dalys",
+      "laborHours": "Darbo valandos",
+      "techName": "Technikas",
+      "partName": "Dalies pavadinimas",
+      "partNumber": "Dalies Nr.",
+      "quantity": "Kiekis",
+      "cost": "Savikaina"
+    }
+  },
   "charts": {
     "revenue": "Pajamos",
     "collected": "Surinkta",
@@ -194,7 +238,9 @@
     "totalSpent": "Iš viso išleista",
     "jobs": "Darbai",
     "visits": "Apsilankymai",
-    "taxCollected": "Surinkti mokesčiai"
+    "taxCollected": "Surinkti mokesčiai",
+    "partsCost": "Dalių savikaina",
+    "laborCost": "Darbo savikaina"
   },
   "days": {
     "sunday": "Sekmadienis",
@@ -255,7 +301,13 @@
     "partsCost": "Dalių savikaina",
     "partsNetProfit": "Dalių grynasis pelnas",
     "laborRevenue": "Darbai",
-    "netProfit": "Grynasis pelnas"
+    "netProfit": "Grynasis pelnas",
+    "date": "Data",
+    "title": "Pavadinimas",
+    "type": "Tipas",
+    "status": "Būsena",
+    "partsUsed": "Dalys",
+    "laborHours": "Darbo valandos"
   },
   "pdf": {
     "reportTitle": "Verslo ataskaita",
@@ -345,7 +397,14 @@
     "totalSellValue": "Pardavimo vertė",
     "quantity": "Kiekis",
     "minQuantity": "Min. kiekis",
-    "unitCost": "Vnt. savikaina"
+    "unitCost": "Vnt. savikaina",
+    "vehiclesSection": "Transporto priemonės ataskaita",
+    "vehicleLabel": "Transporto priemonė",
+    "totalCost": "Bendra savikaina",
+    "partsCostLabel": "Dalių savikaina",
+    "laborCostLabel": "Darbo savikaina",
+    "date": "Data",
+    "title": "Pavadinimas"
   },
   "empty": "Duomenys dar neįkelti. Spustelėkite \"Atnaujinti\", kad įkeltumėte ataskaitą."
 }

@@ -11,12 +11,26 @@
     "technicians": "Techniker",
     "parts": "Teile",
     "jobAnalytics": "Auftragsanalyse",
-    "retention": "Kundenbindung"
+    "retention": "Kundenbindung",
+    "vehicles": "Fahrzeuge"
   },
   "dateRange": {
     "to": "bis",
     "pickDate": "Datumsbereich wählen",
-    "apply": "Anwenden"
+    "apply": "Anwenden",
+    "presets": {
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "last7": "Letzte 7 Tage",
+      "last30": "Letzte 30 Tage",
+      "last90": "Letzte 90 Tage",
+      "thisMonth": "Dieser Monat",
+      "lastMonth": "Letzter Monat",
+      "thisQuarter": "Dieses Quartal",
+      "thisYear": "Dieses Jahr",
+      "lastYear": "Letztes Jahr",
+      "allTime": "Gesamter Zeitraum"
+    }
   },
   "actions": {
     "refresh": "Aktualisieren",
@@ -187,6 +201,36 @@
       "taxableAmount": "Steuerpflichtiger Betrag"
     }
   },
+  "vehicles": {
+    "selectVehicle": "Fahrzeug auswählen...",
+    "selectVehiclePrompt": "Wählen Sie oben ein Fahrzeug aus, um den Bericht anzuzeigen.",
+    "totalServices": "Gesamtleistungen",
+    "totalCost": "Gesamtkosten",
+    "repairs": "Reparaturen",
+    "maintenance": "Wartung",
+    "upgrades": "Upgrades",
+    "inspections": "Inspektionen",
+    "totalPartsUsed": "Verwendete Teile",
+    "totalLaborHours": "Arbeitsstunden",
+    "monthlyCosts": "Monatliche Kosten",
+    "serviceTypeBreakdown": "Dienstleistungstyp-Aufschlüsselung",
+    "topParts": "Meistverwendete Teile",
+    "serviceHistory": "Servicehistorie",
+    "tableHeaders": {
+      "date": "Datum",
+      "title": "Titel",
+      "type": "Typ",
+      "status": "Status",
+      "totalAmount": "Gesamt",
+      "partsCount": "Teile",
+      "laborHours": "Arbeitsstunden",
+      "techName": "Techniker",
+      "partName": "Teilename",
+      "partNumber": "Teilenr.",
+      "quantity": "Menge",
+      "cost": "Kosten"
+    }
+  },
   "charts": {
     "revenue": "Umsatz",
     "collected": "Eingezogen",
@@ -194,7 +238,9 @@
     "totalSpent": "Gesamtausgaben",
     "jobs": "Aufträge",
     "visits": "Besuche",
-    "taxCollected": "Eingezogene Steuer"
+    "taxCollected": "Eingezogene Steuer",
+    "partsCost": "Teilekosten",
+    "laborCost": "Arbeitskosten"
   },
   "days": {
     "sunday": "Sonntag",
@@ -255,7 +301,13 @@
     "partsCost": "Teilekosten",
     "partsNetProfit": "Teile-Nettogewinn",
     "laborRevenue": "Arbeit",
-    "netProfit": "Nettogewinn"
+    "netProfit": "Nettogewinn",
+    "date": "Datum",
+    "title": "Titel",
+    "type": "Typ",
+    "status": "Status",
+    "partsUsed": "Teile",
+    "laborHours": "Arbeitsstunden"
   },
   "pdf": {
     "reportTitle": "Business Report",
@@ -269,7 +321,7 @@
     "jobAnalyticsSection": "Job Analytics",
     "retentionSection": "Customer Retention",
     "inventorySection": "Inventory Report",
-    "monthlyBreakdown": "Monthly Breakdown",
+    "monthlyBreakdown": "Monatliche Übersicht",
     "revenueByType": "Revenue by Type",
     "taxByRate": "Tax by Rate",
     "servicesByStatus": "By Status",
@@ -345,7 +397,14 @@
     "totalSellValue": "Sell Value",
     "quantity": "Qty",
     "minQuantity": "Min Qty",
-    "unitCost": "Unit Cost"
+    "unitCost": "Unit Cost",
+    "vehiclesSection": "Fahrzeugbericht",
+    "vehicleLabel": "Fahrzeug",
+    "totalCost": "Gesamtkosten",
+    "partsCostLabel": "Teilekosten",
+    "laborCostLabel": "Arbeitskosten",
+    "date": "Datum",
+    "title": "Titel"
   },
   "empty": "Noch keine Daten geladen. Klicken Sie auf Aktualisieren, um den Bericht zu laden."
 }

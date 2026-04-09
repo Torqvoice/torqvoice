@@ -11,12 +11,26 @@
     "technicians": "Technici",
     "parts": "Onderdelen",
     "jobAnalytics": "Opdrachtanalyse",
-    "retention": "Klantbehoud"
+    "retention": "Klantbehoud",
+    "vehicles": "Voertuigen"
   },
   "dateRange": {
     "to": "tot",
     "pickDate": "Kies een datumbereik",
-    "apply": "Toepassen"
+    "apply": "Toepassen",
+    "presets": {
+      "today": "Vandaag",
+      "yesterday": "Gisteren",
+      "last7": "Laatste 7 dagen",
+      "last30": "Laatste 30 dagen",
+      "last90": "Laatste 90 dagen",
+      "thisMonth": "Deze maand",
+      "lastMonth": "Vorige maand",
+      "thisQuarter": "Dit kwartaal",
+      "thisYear": "Dit jaar",
+      "lastYear": "Vorig jaar",
+      "allTime": "Gehele periode"
+    }
   },
   "actions": {
     "refresh": "Vernieuwen",
@@ -187,6 +201,36 @@
       "taxableAmount": "Belastbaar Bedrag"
     }
   },
+  "vehicles": {
+    "selectVehicle": "Selecteer een voertuig...",
+    "selectVehiclePrompt": "Selecteer hierboven een voertuig om het rapport te bekijken.",
+    "totalServices": "Totaal Diensten",
+    "totalCost": "Totale Kosten",
+    "repairs": "Reparaties",
+    "maintenance": "Onderhoud",
+    "upgrades": "Upgrades",
+    "inspections": "Inspecties",
+    "totalPartsUsed": "Gebruikte Onderdelen",
+    "totalLaborHours": "Arbeidsuren",
+    "monthlyCosts": "Maandelijkse Kosten",
+    "serviceTypeBreakdown": "Diensttype Overzicht",
+    "topParts": "Meest Gebruikte Onderdelen",
+    "serviceHistory": "Servicegeschiedenis",
+    "tableHeaders": {
+      "date": "Datum",
+      "title": "Titel",
+      "type": "Type",
+      "status": "Status",
+      "totalAmount": "Totaal",
+      "partsCount": "Onderdelen",
+      "laborHours": "Arbeidsuren",
+      "techName": "Technicus",
+      "partName": "Onderdeelnaam",
+      "partNumber": "Onderdeelnr.",
+      "quantity": "Aant.",
+      "cost": "Kosten"
+    }
+  },
   "charts": {
     "revenue": "Omzet",
     "collected": "Geïnd",
@@ -194,7 +238,9 @@
     "totalSpent": "Totaal Besteed",
     "jobs": "Opdrachten",
     "visits": "Bezoeken",
-    "taxCollected": "Geïnde Belasting"
+    "taxCollected": "Geïnde Belasting",
+    "partsCost": "Onderdeelkosten",
+    "laborCost": "Arbeidskosten"
   },
   "days": {
     "sunday": "Zondag",
@@ -255,7 +301,13 @@
     "partsCost": "Onderdeelkosten",
     "partsNetProfit": "Nettowinst Onderdelen",
     "laborRevenue": "Arbeid",
-    "netProfit": "Nettowinst"
+    "netProfit": "Nettowinst",
+    "date": "Datum",
+    "title": "Titel",
+    "type": "Type",
+    "status": "Status",
+    "partsUsed": "Onderdelen",
+    "laborHours": "Arbeidsuren"
   },
   "pdf": {
     "reportTitle": "Business Report",
@@ -269,7 +321,7 @@
     "jobAnalyticsSection": "Job Analytics",
     "retentionSection": "Customer Retention",
     "inventorySection": "Inventory Report",
-    "monthlyBreakdown": "Monthly Breakdown",
+    "monthlyBreakdown": "Maandelijks Overzicht",
     "revenueByType": "Revenue by Type",
     "taxByRate": "Tax by Rate",
     "servicesByStatus": "By Status",
@@ -345,7 +397,14 @@
     "totalSellValue": "Sell Value",
     "quantity": "Qty",
     "minQuantity": "Min Qty",
-    "unitCost": "Unit Cost"
+    "unitCost": "Unit Cost",
+    "vehiclesSection": "Voertuigrapport",
+    "vehicleLabel": "Voertuig",
+    "totalCost": "Totale Kosten",
+    "partsCostLabel": "Onderdeelkosten",
+    "laborCostLabel": "Arbeidskosten",
+    "date": "Datum",
+    "title": "Titel"
   },
   "empty": "Nog geen gegevens geladen. Klik op Vernieuwen om het rapport te laden."
 }

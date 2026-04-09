@@ -207,3 +207,67 @@ export interface TaxReport {
     totalInvoices: number;
   };
 }
+
+// --- Vehicle Reports ---
+
+export interface VehicleReportSummary {
+  totalServices: number;
+  totalCost: number;
+  totalPartsUsed: number;
+  totalLaborHours: number;
+  repairCount: number;
+  maintenanceCount: number;
+  upgradeCount: number;
+  inspectionCount: number;
+}
+
+export interface VehicleMonthlyCost {
+  month: string;
+  partsCost: number;
+  laborCost: number;
+  totalCost: number;
+  count: number;
+}
+
+export interface VehicleServiceTypeBreakdown {
+  type: string;
+  count: number;
+  totalCost: number;
+}
+
+export interface VehiclePartUsage {
+  name: string;
+  partNumber: string | null;
+  quantity: number;
+  totalCost: number;
+}
+
+export interface VehicleServiceHistoryItem {
+  id: string;
+  title: string;
+  type: string;
+  status: string;
+  date: string;
+  totalAmount: number;
+  partsCount: number;
+  laborHours: number;
+  techName: string | null;
+}
+
+export interface VehicleReportData {
+  vehicleInfo: {
+    id: string;
+    year: number;
+    make: string;
+    model: string;
+    vin: string | null;
+    licensePlate: string | null;
+    mileage: number;
+    customerName: string | null;
+  };
+  summary: VehicleReportSummary;
+  monthlyCosts: VehicleMonthlyCost[];
+  serviceTypeBreakdown: VehicleServiceTypeBreakdown[];
+  topParts: VehiclePartUsage[];
+  serviceHistory: VehicleServiceHistoryItem[];
+}

@@ -9,6 +9,7 @@ import type {
   CustomerRetentionReport,
   TaxReport,
   PastDueInvoicesReport,
+  VehicleReportData,
 } from "../Schema/reportTypes";
 import { formatCurrency } from "@/lib/format";
 
@@ -183,6 +184,25 @@ export function exportPastDueInvoicesCsv(
     daysPastDue: inv.daysPastDue,
   }));
   downloadCsv("past-due-invoices-report.csv", headers, rows, ["customer", "company", "invoiceNumber", "totalAmount", "amountPaid", "amountDue", "dueDate", "daysPastDue"]);
+}
+
+export function exportVehicleReportCsv(
+  data: VehicleReportData,
+  currencyCode: string,
+  headers: [string, string, string, string, string, string, string] = ["Date", "Title", "Type", "Status", "Total", "Parts", "Labor Hours"],
+) {
+  const fmt = (n: number) => formatCurrency(n, currencyCode);
+  const rows = data.serviceHistory.map((s) => ({
+    date: s.date,
+    title: s.title,
+    type: s.type,
+    status: s.status,
+    totalAmount: fmt(s.totalAmount),
+    partsCount: s.partsCount,
+    laborHours: s.laborHours.toFixed(1),
+  }));
+  const vehicleLabel = `${data.vehicleInfo.year} ${data.vehicleInfo.make} ${data.vehicleInfo.model}`;
+  downloadCsv(`vehicle-report-${vehicleLabel.replace(/\s+/g, "-")}.csv`, headers, rows, ["date", "title", "type", "status", "totalAmount", "partsCount", "laborHours"]);
 }
 
 export function exportTaxCsv(

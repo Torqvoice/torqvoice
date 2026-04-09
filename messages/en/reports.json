@@ -11,12 +11,26 @@
     "technicians": "Technicians",
     "parts": "Parts",
     "jobAnalytics": "Job Analytics",
-    "retention": "Retention"
+    "retention": "Retention",
+    "vehicles": "Vehicles"
   },
   "dateRange": {
     "to": "to",
     "pickDate": "Pick a date range",
-    "apply": "Apply"
+    "apply": "Apply",
+    "presets": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "last7": "Last 7 days",
+      "last30": "Last 30 days",
+      "last90": "Last 90 days",
+      "thisMonth": "This month",
+      "lastMonth": "Last month",
+      "thisQuarter": "This quarter",
+      "thisYear": "This year",
+      "lastYear": "Last year",
+      "allTime": "All time"
+    }
   },
   "actions": {
     "refresh": "Refresh",
@@ -187,6 +201,36 @@
       "taxableAmount": "Taxable Amount"
     }
   },
+  "vehicles": {
+    "selectVehicle": "Select a vehicle...",
+    "selectVehiclePrompt": "Select a vehicle above to view its report.",
+    "totalServices": "Total Services",
+    "totalCost": "Total Cost",
+    "repairs": "Repairs",
+    "maintenance": "Maintenance",
+    "upgrades": "Upgrades",
+    "inspections": "Inspections",
+    "totalPartsUsed": "Parts Used",
+    "totalLaborHours": "Labor Hours",
+    "monthlyCosts": "Monthly Costs",
+    "serviceTypeBreakdown": "Service Type Breakdown",
+    "topParts": "Top Parts Used",
+    "serviceHistory": "Service History",
+    "tableHeaders": {
+      "date": "Date",
+      "title": "Title",
+      "type": "Type",
+      "status": "Status",
+      "totalAmount": "Total",
+      "partsCount": "Parts",
+      "laborHours": "Labor Hours",
+      "techName": "Technician",
+      "partName": "Part Name",
+      "partNumber": "Part #",
+      "quantity": "Qty",
+      "cost": "Cost"
+    }
+  },
   "charts": {
     "revenue": "Revenue",
     "collected": "Collected",
@@ -194,7 +238,9 @@
     "totalSpent": "Total Spent",
     "jobs": "Jobs",
     "visits": "Visits",
-    "taxCollected": "Tax Collected"
+    "taxCollected": "Tax Collected",
+    "partsCost": "Parts Cost",
+    "laborCost": "Labor Cost"
   },
   "days": {
     "sunday": "Sunday",
@@ -255,7 +301,13 @@
     "partsCost": "Parts Cost",
     "partsNetProfit": "Parts Net Profit",
     "laborRevenue": "Labor",
-    "netProfit": "Net Profit"
+    "netProfit": "Net Profit",
+    "date": "Date",
+    "title": "Title",
+    "type": "Type",
+    "status": "Status",
+    "partsUsed": "Parts",
+    "laborHours": "Labor Hours"
   },
   "pdf": {
     "reportTitle": "Business Report",
@@ -345,7 +397,15 @@
     "totalSellValue": "Sell Value",
     "quantity": "Qty",
     "minQuantity": "Min Qty",
-    "unitCost": "Unit Cost"
+    "unitCost": "Unit Cost",
+    "vehiclesSection": "Vehicle Report",
+    "vehicleLabel": "Vehicle",
+    "customer": "Customer",
+    "totalCost": "Total Cost",
+    "partsCostLabel": "Parts Cost",
+    "laborCostLabel": "Labor Cost",
+    "date": "Date",
+    "title": "Title"
   },
   "empty": "No data loaded yet. Click Refresh to load the report."
 }
