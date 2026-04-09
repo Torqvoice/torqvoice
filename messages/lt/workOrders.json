@@ -1,0 +1,80 @@
+{
+  "page": {
+    "error": "Nepavyko įkelti darbo užsakymų"
+  },
+  "list": {
+    "searchPlaceholder": "Ieškoti darbo užsakymų...",
+    "newWorkOrder": "Naujas darbo užsakymas",
+    "selectVehicle": "Pasirinkite transporto priemonę",
+    "empty": "Darbo užsakymų nerasta.",
+    "statusUpdated": "Būsena atnaujinta",
+    "statusTabs": {
+      "all": "Visi",
+      "active": "Aktyvūs",
+      "pending": "Laukiantys",
+      "inProgress": "Vykdomi",
+      "waitingParts": "Laukia dalių",
+      "completed": "Užbaigti"
+    },
+    "statusActions": {
+      "startWork": "Pradėti darbą",
+      "waitingParts": "Laukia dalių",
+      "complete": "Užbaigti",
+      "resumeWork": "Tęsti darbą",
+      "reopen": "Atidaryti iš naujo"
+    },
+    "table": {
+      "invoice": "Sąskaita Nr.",
+      "vehicle": "Transporto priemonė",
+      "customer": "Klientas",
+      "title": "Pavadinimas",
+      "status": "Būsena",
+      "tech": "Technikas",
+      "date": "Data",
+      "total": "Suma"
+    },
+    "emailSubject": "Transporto priemonės būsenos atnaujinimas: {status}"
+  },
+  "vehiclePicker": {
+    "title": "Pasirinkite transporto priemonę darbo užsakymui",
+    "searchPlaceholder": "Ieškoti transporto priemonių...",
+    "empty": "Transporto priemonių nerasta.",
+    "emptySearch": "Nėra transporto priemonių, atitinkančių paiešką.",
+    "addNewVehicle": "Pridėti naują transporto priemonę",
+    "noPlate": "Be numerio",
+    "make": "Markė *",
+    "model": "Modelis *",
+    "year": "Metai *",
+    "licensePlate": "Valstybinis numeris",
+    "customer": "Klientas",
+    "selectCustomer": "Pasirinkite klientą (neprivaloma)",
+    "createNewCustomer": "Sukurti naują klientą",
+    "newCustomer": "Naujas klientas",
+    "customerName": "Vardas *",
+    "customerNamePlaceholder": "Kliento vardas",
+    "phone": "Telefonas",
+    "phonePlaceholder": "Telefono numeris",
+    "creating": "Kuriama...",
+    "createAndContinue": "Sukurti ir tęsti",
+    "invalidYear": "Įveskite teisingus metus",
+    "customerNameRequired": "Kliento vardas yra privalomas",
+    "failedCreateCustomer": "Nepavyko sukurti kliento",
+    "failedCreateVehicle": "Nepavyko sukurti transporto priemonės",
+    "somethingWentWrong": "Kažkas nutiko"
+  },
+  "notify": {
+    "title": "Pranešti {name}",
+    "description": "Siųsti pranešimą klientui apie šį atnaujinimą.",
+    "sms": "SMS",
+    "email": "El. paštas",
+    "noPhone": "(nėra telefono)",
+    "noEmail": "(nėra el. pašto)",
+    "notAvailable": "(nepasiekiama)",
+    "skip": "Praleisti",
+    "send": "Siųsti",
+    "smsSent": "SMS išsiųsta",
+    "emailSent": "Laiškas išsiųstas",
+    "failedSms": "Nepavyko išsiųsti SMS",
+    "failedEmail": "Nepavyko išsiųsti laiško"
+  }
+}

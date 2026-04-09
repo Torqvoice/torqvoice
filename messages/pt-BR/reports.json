@@ -29,13 +29,17 @@
     "outstanding": "Pendente",
     "services": "Serviços",
     "partsCost": "Custo de peças",
-    "netProfit": "Lucro líquido",
+    "partsNetProfit": "Lucro Líquido de Peças",
+    "partsNetProfitDesc": "Receita de peças menos custo de compra",
+    "laborRevenue": "Mão de Obra",
+    "laborRevenueDesc": "Receita de cobranças de mão de obra",
+    "netProfit": "Lucro Líquido Total",
     "revenueDesc": "Total faturado de todos os serviços concluídos",
     "collectedDesc": "Pagamentos recebidos de clientes",
     "outstandingDesc": "Faturado mas ainda não pago",
     "servicesDesc": "Total de ordens de serviço concluídas",
     "partsCostDesc": "Custo de compra das peças usadas nos serviços",
-    "netProfitDesc": "Receita menos custo de peças",
+    "netProfitDesc": "Lucro líquido de peças mais receita de mão de obra",
     "monthlyRevenue": "Receita Mensal",
     "revenueByType": "Receita por Tipo",
     "monthlyBreakdown": "Detalhamento Mensal",
@@ -44,6 +48,8 @@
       "revenue": "Receita",
       "collected": "Recebido",
       "partsCost": "Custo de peças",
+      "partsNetProfit": "Lucro Peças",
+      "laborRevenue": "Mão de Obra",
       "netProfit": "Lucro líquido",
       "count": "Quantidade"
     }
@@ -123,6 +129,8 @@
   "parts": {
     "partsUsed": "Peças Usadas",
     "partsRevenue": "Receita de Peças",
+    "partsCost": "Custo de Peças",
+    "netProfit": "Lucro Líquido",
     "topPartsByUsage": "Peças Mais Usadas",
     "partsUsage": "Uso de Peças",
     "tableHeaders": {
@@ -130,7 +138,9 @@
       "partNumber": "N.º Peça",
       "usageCount": "Vezes Usada",
       "totalQty": "Qtd. Total",
-      "revenue": "Receita"
+      "revenue": "Receita",
+      "cost": "Custo",
+      "netProfit": "Lucro Líquido"
     }
   },
   "jobAnalytics": {
@@ -243,6 +253,8 @@
     "dueDate": "Data de Vencimento",
     "daysPastDue": "Dias em Atraso",
     "partsCost": "Custo de peças",
+    "partsNetProfit": "Lucro Líquido Peças",
+    "laborRevenue": "Mão de Obra",
     "netProfit": "Lucro líquido"
   },
   "pdf": {
@@ -273,6 +285,8 @@
     "outstanding": "Outstanding",
     "services": "Services",
     "partsCost": "Parts Cost",
+    "partsNetProfit": "Lucro Líquido Peças",
+    "laborRevenue": "Mão de Obra",
     "netProfit": "Net Profit",
     "month": "Month",
     "count": "Count",
@@ -312,6 +326,8 @@
     "usageCount": "Usage Count",
     "totalQty": "Total Qty",
     "totalPartsRevenue": "Parts Revenue",
+    "totalPartsCost": "Custo de Peças",
+    "totalPartsNetProfit": "Lucro Líquido",
     "totalPartsUsed": "Parts Used",
     "serviceType": "Service Type",
     "avgValue": "Avg Value",

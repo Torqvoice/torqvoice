@@ -29,13 +29,17 @@
     "outstanding": "Utestående",
     "services": "Tjenester",
     "partsCost": "Delekostnad",
-    "netProfit": "Nettoresultat",
+    "partsNetProfit": "Netto fortjeneste deler",
+    "partsNetProfitDesc": "Deleomsetning minus innkjøpskostnad",
+    "laborRevenue": "Arbeid",
+    "laborRevenueDesc": "Inntekter fra arbeidskostnader",
+    "netProfit": "Total netto fortjeneste",
     "revenueDesc": "Totalt fakturert fra alle fullførte tjenester",
     "collectedDesc": "Betalinger mottatt fra kunder",
     "outstandingDesc": "Fakturert men ikke betalt ennå",
     "servicesDesc": "Totalt fullførte arbeidsordrer",
     "partsCostDesc": "Innkjøpskostnad for deler brukt i tjenester",
-    "netProfitDesc": "Inntekt minus delekostnad",
+    "netProfitDesc": "Netto fortjeneste deler pluss arbeidsinntekter",
     "monthlyRevenue": "Månedlige Inntekter",
     "revenueByType": "Inntekter etter Type",
     "monthlyBreakdown": "Månedlig Oversikt",
@@ -44,6 +48,8 @@
       "revenue": "Inntekter",
       "collected": "Innkrevd",
       "partsCost": "Delekostnad",
+      "partsNetProfit": "Fortjeneste deler",
+      "laborRevenue": "Arbeid",
       "netProfit": "Nettoresultat",
       "count": "Antall"
     }
@@ -123,6 +129,8 @@
   "parts": {
     "partsUsed": "Deler Brukt",
     "partsRevenue": "Deleinntekter",
+    "partsCost": "Delekostnad",
+    "netProfit": "Netto fortjeneste",
     "topPartsByUsage": "Mest Brukte Deler",
     "partsUsage": "Deleforbruk",
     "tableHeaders": {
@@ -130,7 +138,9 @@
       "partNumber": "Delenr.",
       "usageCount": "Bruksantall",
       "totalQty": "Total Ant.",
-      "revenue": "Inntekter"
+      "revenue": "Inntekter",
+      "cost": "Kostnad",
+      "netProfit": "Netto fortjeneste"
     }
   },
   "jobAnalytics": {
@@ -243,6 +253,8 @@
     "dueDate": "Forfallsdato",
     "daysPastDue": "Dager Forfalt",
     "partsCost": "Delekostnad",
+    "partsNetProfit": "Netto fortjeneste deler",
+    "laborRevenue": "Arbeid",
     "netProfit": "Nettoresultat"
   },
   "pdf": {
@@ -273,6 +285,8 @@
     "outstanding": "Outstanding",
     "services": "Services",
     "partsCost": "Parts Cost",
+    "partsNetProfit": "Netto fortjeneste deler",
+    "laborRevenue": "Arbeid",
     "netProfit": "Net Profit",
     "month": "Month",
     "count": "Count",
@@ -312,6 +326,8 @@
     "usageCount": "Usage Count",
     "totalQty": "Total Qty",
     "totalPartsRevenue": "Parts Revenue",
+    "totalPartsCost": "Delekostnad",
+    "totalPartsNetProfit": "Netto fortjeneste",
     "totalPartsUsed": "Parts Used",
     "serviceType": "Service Type",
     "avgValue": "Avg Value",

@@ -1,0 +1,45 @@
+{
+  "page": {
+    "featureName": "SMS žinutės",
+    "featureDescription": "Siųskite ir gaukite SMS žinutes su klientais tiesiogiai iš Torqvoice."
+  },
+  "notConfigured": {
+    "title": "SMS nesukonfigūruotas",
+    "description": "Nustatykite SMS tiekėją, kad galėtumėte siųsti ir gauti žinutes su klientais. Palaikomi Twilio, Vonage ir Telnyx.",
+    "goToSettings": "Eiti į SMS nustatymus"
+  },
+  "threads": {
+    "title": "Pokalbiai",
+    "empty": "Pokalbių dar nėra. Siųskite SMS iš kliento puslapio, kad pradėtumėte.",
+    "loadMore": "Įkelti daugiau",
+    "selectConversation": "Pasirinkite pokalbį",
+    "you": "Jūs: ",
+    "deleteConversation": "Ištrinti pokalbį",
+    "deleteTitle": "Ištrinti pokalbį?",
+    "deleteDescription": "Bus visam laikui ištrintos visos žinutės su {name}. Šio veiksmo negalima atšaukti.",
+    "deleted": "Pokalbis ištrintas",
+    "deleteError": "Nepavyko ištrinti pokalbio"
+  },
+  "conversation": {
+    "noPhone": "{name} neturi telefono numerio. Pridėkite telefono numerį, kad pradėtumėte susirašinėti.",
+    "loadOlder": "Įkelti senesnes",
+    "empty": "Žinučių dar nėra. Parašykite pirmąją žinutę {name}.",
+    "placeholder": "Žinutė {name}...",
+    "deleteMessage": "Ištrinti žinutę",
+    "deleteTitle": "Ištrinti žinutę?",
+    "deleteDescription": "Ši žinutė bus visam laikui ištrinta iš pokalbio. Šio veiksmo negalima atšaukti.",
+    "messageDeleted": "Žinutė ištrinta",
+    "deleteError": "Nepavyko ištrinti žinutės",
+    "sendError": "Nepavyko išsiųsti SMS"
+  },
+  "sendDialog": {
+    "send": "Siųsti {label}",
+    "message": "Žinutė",
+    "placeholder": "Rašykite žinutę...",
+    "characters": "{count} / 1600 simbolių",
+    "sendSms": "Siųsti SMS",
+    "smsSent": "SMS išsiųsta",
+    "sentTo": "{label} išsiųsta {name} ({phone})",
+    "sendError": "Nepavyko išsiųsti SMS"
+  }
+}

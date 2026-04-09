@@ -1,0 +1,18 @@
+{
+  "title": "DI asistentas",
+  "description": "Užduokite klausimus apie savo dirbtuvių duomenis — transporto priemones, paslaugas, klientus, pajamas ir daugiau.",
+  "placeholder": "Klauskite apie savo dirbtuves...",
+  "clear": "Išvalyti pokalbį",
+  "error": "Kažkas nutiko. Bandykite dar kartą.",
+  "notEnabled": "DI neįjungtas. Sukonfigūruokite jį skiltyje Nustatymai → DI.",
+  "suggestion1": "Kurioms transporto priemonėms reikia aptarnavimo?",
+  "suggestion2": "Parodykite neapmokėtas sąskaitas",
+  "suggestion3": "Kokios šio mėnesio pajamos?",
+  "suggestion4": "Pateikite dirbtuvių apžvalgą",
+  "newChat": "Naujas pokalbis",
+  "noChats": "Pokalbių dar nėra",
+  "chatsPrivate": "Jūsų pokalbiai yra privatūs ir matomi tik jums.",
+  "deleteChat": "Ištrinti pokalbį",
+  "hideSidebar": "Slėpti šoninę juostą",
+  "showSidebar": "Rodyti šoninę juostą"
+}
