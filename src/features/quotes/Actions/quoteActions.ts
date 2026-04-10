@@ -119,11 +119,27 @@ export async function createQuote(input: unknown) {
 
     // Generate quote number
     const settings = await db.appSetting.findMany({
-      where: { organizationId, key: { in: ["workshop.quotePrefix"] } },
+      where: {
+        organizationId,
+        key: {
+          in: [
+            "workshop.quotePrefix",
+            "workshop.defaultTaxRate",
+            "workshop.taxEnabled",
+          ],
+        },
+      },
     });
     const settingsMap: Record<string, string> = {};
     for (const s of settings) settingsMap[s.key] = s.value;
     const prefix = settingsMap["workshop.quotePrefix"] || "QT-";
+
+    // Apply default tax rate from settings when the caller hasn't set one.
+    // All current call sites send taxRate: 0 at creation, so 0 means "unset".
+    const taxEnabled = settingsMap["workshop.taxEnabled"] !== "false";
+    const defaultTaxRate = taxEnabled
+      ? Number(settingsMap["workshop.defaultTaxRate"]) || 0
+      : 0;
 
     const lastQuote = await db.quote.findFirst({
       where: { organizationId },
@@ -146,6 +162,7 @@ export async function createQuote(input: unknown) {
           quoteNumber,
           userId,
           organizationId,
+          taxRate: quoteData.taxRate > 0 ? quoteData.taxRate : defaultTaxRate,
           validUntil: quoteData.validUntil ? new Date(quoteData.validUntil) : undefined,
           discountType: quoteData.discountType === "none" ? null : quoteData.discountType,
         },

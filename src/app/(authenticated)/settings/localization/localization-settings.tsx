@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { setSetting, setSettings } from "@/features/settings/Actions/settingsActions";
+import { applyTaxRateToExisting } from "@/features/settings/Actions/applyTaxRateToExisting";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { useConfirm } from "@/components/confirm-dialog";
 import {
   Select,
   SelectContent,
@@ -124,12 +126,20 @@ const TIMEZONE_OPTIONS = [
   "Africa/Lagos",
 ];
 
-export function LocalizationSettings({ settings }: { settings: Record<string, string> }) {
+export function LocalizationSettings({
+  settings,
+  taxBackfillCounts,
+}: {
+  settings: Record<string, string>;
+  taxBackfillCounts: { serviceRecords: number; quotes: number };
+}) {
   const router = useRouter();
   const t = useTranslations("settings");
+  const confirm = useConfirm();
   const { theme, setTheme } = useTheme();
   const currentLocale = useLocale();
   const [saving, setSaving] = useState(false);
+  const [applyingTax, setApplyingTax] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [timezoneOpen, setTimezoneOpen] = useState(false);
 
@@ -165,6 +175,40 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
     setSaving(false);
     router.refresh();
     toast.success(t("localization.saved"));
+  };
+
+  const handleApplyTaxToExisting = async () => {
+    const totalCount = taxBackfillCounts.serviceRecords + taxBackfillCounts.quotes;
+    if (totalCount === 0) {
+      toast.info(t("currency.applyTaxNoRecords"));
+      return;
+    }
+    const ok = await confirm({
+      title: t("currency.applyTaxConfirmTitle"),
+      description: t("currency.applyTaxConfirmDescription", {
+        rate: defaultTaxRate,
+        serviceRecords: taxBackfillCounts.serviceRecords,
+        quotes: taxBackfillCounts.quotes,
+      }),
+      confirmLabel: t("currency.applyTaxConfirmLabel"),
+    });
+    if (!ok) return;
+
+    setApplyingTax(true);
+    const result = await applyTaxRateToExisting();
+    setApplyingTax(false);
+
+    if (result.success && result.data) {
+      toast.success(
+        t("currency.applyTaxSuccess", {
+          serviceRecords: result.data.serviceRecordsUpdated,
+          quotes: result.data.quotesUpdated,
+        }),
+      );
+      router.refresh();
+    } else {
+      toast.error(result.error || t("currency.applyTaxFailed"));
+    }
   };
 
   const handleLanguageChange = async (value: string) => {
@@ -294,22 +338,50 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
               </div>
 
               {taxEnabled && (
-                <div className="space-y-2">
-                  <Label htmlFor="defaultTaxRate">{t("currency.defaultTaxRate")}</Label>
-                  <Input
-                    id="defaultTaxRate"
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    placeholder="0"
-                    value={defaultTaxRate}
-                    onChange={(e) => setDefaultTaxRate(e.target.value)}
-                    className="w-32"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t("currency.defaultTaxRateHint")}
-                  </p>
-                </div>
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="defaultTaxRate">{t("currency.defaultTaxRate")}</Label>
+                    <Input
+                      id="defaultTaxRate"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      placeholder="0"
+                      value={defaultTaxRate}
+                      onChange={(e) => setDefaultTaxRate(e.target.value)}
+                      className="w-32"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {t("currency.defaultTaxRateHint")}
+                    </p>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-2">
+                    <Label>{t("currency.applyTaxToExistingLabel")}</Label>
+                    <p className="text-xs text-muted-foreground">
+                      {t("currency.applyTaxToExistingHint", {
+                        serviceRecords: taxBackfillCounts.serviceRecords,
+                        quotes: taxBackfillCounts.quotes,
+                      })}
+                    </p>
+                    <Button
+                      variant="outline"
+                      onClick={handleApplyTaxToExisting}
+                      disabled={
+                        applyingTax ||
+                        Number(defaultTaxRate) <= 0 ||
+                        taxBackfillCounts.serviceRecords + taxBackfillCounts.quotes === 0
+                      }
+                    >
+                      {applyingTax ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : null}
+                      {t("currency.applyTaxToExistingButton")}
+                    </Button>
+                  </div>
+                </>
               )}
             </div>
           </ReadOnlyWrapper>
