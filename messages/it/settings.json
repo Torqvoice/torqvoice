@@ -39,8 +39,8 @@
         "description": "Termini di pagamento e conti"
       },
       "tax": {
-        "title": "Tax",
-        "description": "Tax rate & defaults"
+        "title": "Imposta",
+        "description": "Aliquota fiscale e predefiniti"
       },
       "currency": {
         "title": "Valuta",
@@ -578,8 +578,8 @@
     "saved": "Impostazioni pagamento salvate"
   },
   "tax": {
-    "title": "Tax",
-    "description": "Configure the tax rate applied to invoices, quotes, and work orders."
+    "title": "Imposta",
+    "description": "Configura l'aliquota fiscale applicata a fatture, preventivi e ordini di lavoro."
   },
   "currency": {
     "title": "Valuta e imposte",
@@ -592,15 +592,15 @@
     "enableTaxHint": "Mostra calcolo imposte su fatture e registri di servizio",
     "defaultTaxRate": "Aliquota fiscale predefinita (%)",
     "defaultTaxRateHint": "Compilata automaticamente quando si creano nuovi registri di servizio",
-    "applyTaxToExistingLabel": "Apply tax to existing records",
-    "applyTaxToExistingHint": "Applies the default tax rate to existing work orders and quotes that don't have a tax rate set. Eligible: {serviceRecords} work orders, {quotes} quotes.",
-    "applyTaxToExistingButton": "Apply tax to existing records",
-    "applyTaxConfirmTitle": "Apply tax to existing records?",
-    "applyTaxConfirmDescription": "This will set the tax rate to {rate}% on {serviceRecords} work orders and {quotes} quotes that currently have no tax rate, and recalculate their totals. Records with a custom tax rate will not be changed. This cannot be undone.",
-    "applyTaxConfirmLabel": "Apply tax",
-    "applyTaxSuccess": "Updated {serviceRecords} work orders and {quotes} quotes.",
-    "applyTaxFailed": "Failed to apply tax to existing records",
-    "applyTaxNoRecords": "No records need the default tax rate applied.",
+    "applyTaxToExistingLabel": "Applica imposta ai record esistenti",
+    "applyTaxToExistingHint": "Applica l'aliquota fiscale predefinita agli ordini di lavoro e preventivi esistenti senza un'aliquota impostata. Idonei: {serviceRecords} ordini di lavoro, {quotes} preventivi.",
+    "applyTaxToExistingButton": "Applica imposta ai record esistenti",
+    "applyTaxConfirmTitle": "Applicare imposta ai record esistenti?",
+    "applyTaxConfirmDescription": "Questo impostera l'aliquota fiscale al {rate}% su {serviceRecords} ordini di lavoro e {quotes} preventivi che attualmente non hanno un'aliquota, e ricalcolera i totali. I record con un'aliquota personalizzata non verranno modificati. Questa operazione e irreversibile.",
+    "applyTaxConfirmLabel": "Applica imposta",
+    "applyTaxSuccess": "Aggiornati {serviceRecords} ordini di lavoro e {quotes} preventivi.",
+    "applyTaxFailed": "Impossibile applicare l'imposta ai record esistenti",
+    "applyTaxNoRecords": "Nessun record necessita dell'aliquota fiscale predefinita.",
     "saveSettings": "Salva impostazioni",
     "saved": "Impostazioni salvate",
     "currencies": {

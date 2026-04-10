@@ -39,8 +39,8 @@
         "description": "Mokėjimo sąlygos ir sąskaitos"
       },
       "tax": {
-        "title": "Tax",
-        "description": "Tax rate & defaults"
+        "title": "Mokestis",
+        "description": "Mokesčių tarifas ir numatytosios reikšmės"
       },
       "currency": {
         "title": "Valiuta",
@@ -578,8 +578,8 @@
     "saved": "Mokėjimo nustatymai išsaugoti"
   },
   "tax": {
-    "title": "Tax",
-    "description": "Configure the tax rate applied to invoices, quotes, and work orders."
+    "title": "Mokestis",
+    "description": "Konfigūruokite mokesčių tarifą, taikomą sąskaitoms, pasiūlymams ir darbo užsakymams."
   },
   "currency": {
     "title": "Valiuta ir mokesčiai",
@@ -592,15 +592,15 @@
     "enableTaxHint": "Rodyti mokesčių skaičiavimą sąskaitose ir paslaugų įrašuose",
     "defaultTaxRate": "Numatytasis mokesčių tarifas (%)",
     "defaultTaxRateHint": "Automatiškai užpildoma kuriant naujus paslaugų įrašus",
-    "applyTaxToExistingLabel": "Apply tax to existing records",
-    "applyTaxToExistingHint": "Applies the default tax rate to existing work orders and quotes that don't have a tax rate set. Eligible: {serviceRecords} work orders, {quotes} quotes.",
-    "applyTaxToExistingButton": "Apply tax to existing records",
-    "applyTaxConfirmTitle": "Apply tax to existing records?",
-    "applyTaxConfirmDescription": "This will set the tax rate to {rate}% on {serviceRecords} work orders and {quotes} quotes that currently have no tax rate, and recalculate their totals. Records with a custom tax rate will not be changed. This cannot be undone.",
-    "applyTaxConfirmLabel": "Apply tax",
-    "applyTaxSuccess": "Updated {serviceRecords} work orders and {quotes} quotes.",
-    "applyTaxFailed": "Failed to apply tax to existing records",
-    "applyTaxNoRecords": "No records need the default tax rate applied.",
+    "applyTaxToExistingLabel": "Taikyti mokestį esamiems įrašams",
+    "applyTaxToExistingHint": "Taiko numatytąjį mokesčių tarifą esamiems darbo užsakymams ir pasiūlymams, kuriems nenustatytas mokesčių tarifas. Tinkami: {serviceRecords} darbo užsakymų, {quotes} pasiūlymų.",
+    "applyTaxToExistingButton": "Taikyti mokestį esamiems įrašams",
+    "applyTaxConfirmTitle": "Taikyti mokestį esamiems įrašams?",
+    "applyTaxConfirmDescription": "Tai nustatys {rate}% mokesčių tarifą {serviceRecords} darbo užsakymams ir {quotes} pasiūlymams, kurie šiuo metu neturi mokesčių tarifo, ir perskaičiuos jų sumas. Įrašai su individualiu mokesčių tarifu nebus pakeisti. Šio veiksmo atšaukti negalima.",
+    "applyTaxConfirmLabel": "Taikyti mokestį",
+    "applyTaxSuccess": "Atnaujinta {serviceRecords} darbo užsakymų ir {quotes} pasiūlymų.",
+    "applyTaxFailed": "Nepavyko taikyti mokesčio esamiems įrašams",
+    "applyTaxNoRecords": "Jokie įrašai nereikalauja numatytojo mokesčių tarifo.",
     "saveSettings": "Išsaugoti nustatymus",
     "saved": "Nustatymai išsaugoti",
     "currencies": {

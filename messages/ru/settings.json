@@ -39,8 +39,8 @@
         "description": "Условия оплаты и счета"
       },
       "tax": {
-        "title": "Tax",
-        "description": "Tax rate & defaults"
+        "title": "Налог",
+        "description": "Налоговая ставка и значения по умолчанию"
       },
       "currency": {
         "title": "Валюта",
@@ -578,8 +578,8 @@
     "saved": "Настройки оплаты сохранены"
   },
   "tax": {
-    "title": "Tax",
-    "description": "Configure the tax rate applied to invoices, quotes, and work orders."
+    "title": "Налог",
+    "description": "Настройте налоговую ставку, применяемую к счетам, коммерческим предложениям и заказам на работу."
   },
   "currency": {
     "title": "Валюта и налоги",
@@ -592,15 +592,15 @@
     "enableTaxHint": "Показывать расчёт налога на счетах и записях обслуживания",
     "defaultTaxRate": "Ставка налога по умолчанию (%)",
     "defaultTaxRateHint": "Автоматически заполняется при создании новых записей обслуживания",
-    "applyTaxToExistingLabel": "Apply tax to existing records",
-    "applyTaxToExistingHint": "Applies the default tax rate to existing work orders and quotes that don't have a tax rate set. Eligible: {serviceRecords} work orders, {quotes} quotes.",
-    "applyTaxToExistingButton": "Apply tax to existing records",
-    "applyTaxConfirmTitle": "Apply tax to existing records?",
-    "applyTaxConfirmDescription": "This will set the tax rate to {rate}% on {serviceRecords} work orders and {quotes} quotes that currently have no tax rate, and recalculate their totals. Records with a custom tax rate will not be changed. This cannot be undone.",
-    "applyTaxConfirmLabel": "Apply tax",
-    "applyTaxSuccess": "Updated {serviceRecords} work orders and {quotes} quotes.",
-    "applyTaxFailed": "Failed to apply tax to existing records",
-    "applyTaxNoRecords": "No records need the default tax rate applied.",
+    "applyTaxToExistingLabel": "Применить налог к существующим записям",
+    "applyTaxToExistingHint": "Применяет налоговую ставку по умолчанию к существующим заказам на работу и коммерческим предложениям без установленной ставки. Подходит: {serviceRecords} заказов, {quotes} предложений.",
+    "applyTaxToExistingButton": "Применить налог к существующим записям",
+    "applyTaxConfirmTitle": "Применить налог к существующим записям?",
+    "applyTaxConfirmDescription": "Это установит налоговую ставку {rate}% для {serviceRecords} заказов на работу и {quotes} коммерческих предложений, у которых сейчас нет ставки, и пересчитает их суммы. Записи с пользовательской ставкой не будут изменены. Это действие нельзя отменить.",
+    "applyTaxConfirmLabel": "Применить налог",
+    "applyTaxSuccess": "Обновлено {serviceRecords} заказов на работу и {quotes} коммерческих предложений.",
+    "applyTaxFailed": "Не удалось применить налог к существующим записям",
+    "applyTaxNoRecords": "Нет записей, требующих налоговой ставки по умолчанию.",
     "saveSettings": "Сохранить настройки",
     "saved": "Настройки сохранены",
     "currencies": {

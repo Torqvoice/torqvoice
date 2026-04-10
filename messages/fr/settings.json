@@ -39,8 +39,8 @@
         "description": "Conditions de paiement et comptes"
       },
       "tax": {
-        "title": "Tax",
-        "description": "Tax rate & defaults"
+        "title": "Taxe",
+        "description": "Taux de taxe et valeurs par defaut"
       },
       "currency": {
         "title": "Devise",
@@ -578,8 +578,8 @@
     "saved": "Parametres de paiement enregistres"
   },
   "tax": {
-    "title": "Tax",
-    "description": "Configure the tax rate applied to invoices, quotes, and work orders."
+    "title": "Taxe",
+    "description": "Configurez le taux de taxe applique aux factures, devis et bons de travail."
   },
   "currency": {
     "title": "Devise et taxes",
@@ -592,15 +592,15 @@
     "enableTaxHint": "Afficher le calcul des taxes sur les factures et les dossiers de service",
     "defaultTaxRate": "Taux d'imposition par defaut (%)",
     "defaultTaxRateHint": "Rempli automatiquement lors de la creation de nouveaux dossiers de service",
-    "applyTaxToExistingLabel": "Apply tax to existing records",
-    "applyTaxToExistingHint": "Applies the default tax rate to existing work orders and quotes that don't have a tax rate set. Eligible: {serviceRecords} work orders, {quotes} quotes.",
-    "applyTaxToExistingButton": "Apply tax to existing records",
-    "applyTaxConfirmTitle": "Apply tax to existing records?",
-    "applyTaxConfirmDescription": "This will set the tax rate to {rate}% on {serviceRecords} work orders and {quotes} quotes that currently have no tax rate, and recalculate their totals. Records with a custom tax rate will not be changed. This cannot be undone.",
-    "applyTaxConfirmLabel": "Apply tax",
-    "applyTaxSuccess": "Updated {serviceRecords} work orders and {quotes} quotes.",
-    "applyTaxFailed": "Failed to apply tax to existing records",
-    "applyTaxNoRecords": "No records need the default tax rate applied.",
+    "applyTaxToExistingLabel": "Appliquer la taxe aux enregistrements existants",
+    "applyTaxToExistingHint": "Applique le taux de taxe par defaut aux bons de travail et devis existants sans taux de taxe. Eligibles : {serviceRecords} bons de travail, {quotes} devis.",
+    "applyTaxToExistingButton": "Appliquer la taxe aux enregistrements existants",
+    "applyTaxConfirmTitle": "Appliquer la taxe aux enregistrements existants ?",
+    "applyTaxConfirmDescription": "Cela definira le taux de taxe a {rate}% sur {serviceRecords} bons de travail et {quotes} devis qui n'ont actuellement aucun taux de taxe, et recalculera leurs totaux. Les enregistrements avec un taux personnalise ne seront pas modifies. Cette action est irreversible.",
+    "applyTaxConfirmLabel": "Appliquer la taxe",
+    "applyTaxSuccess": "{serviceRecords} bons de travail et {quotes} devis mis a jour.",
+    "applyTaxFailed": "Impossible d'appliquer la taxe aux enregistrements existants",
+    "applyTaxNoRecords": "Aucun enregistrement ne necessite le taux de taxe par defaut.",
     "saveSettings": "Enregistrer les parametres",
     "saved": "Parametres enregistres",
     "currencies": {
