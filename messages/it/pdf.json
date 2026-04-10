@@ -3,6 +3,7 @@
     "title": "FATTURA",
     "due": "Scadenza: {date}",
     "billTo": "Fatturare a",
+    "customerTaxId": "P. IVA",
     "vehicle": "Veicolo",
     "vin": "VIN: {vin}",
     "plate": "Targa: {plate}",
@@ -61,6 +62,7 @@
   "quote": {
     "title": "PREVENTIVO",
     "to": "A",
+    "customerTaxId": "P. IVA",
     "vehicle": "Veicolo",
     "vin": "VIN: {vin}",
     "plate": "Targa: {plate}",

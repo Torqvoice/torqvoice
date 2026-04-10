@@ -47,6 +47,7 @@ interface QuoteRecord {
     phone: string | null;
     address: string | null;
     company: string | null;
+    taxId?: string | null;
   } | null;
   vehicle: {
     make: string;
@@ -148,6 +149,7 @@ export function QuoteView({
   layoutConfig,
   customFields = [],
   serviceType = "automotive",
+  taxLabel,
 }: {
   quote: QuoteRecord;
   workshop: { name: string; address: string; phone: string; email: string };
@@ -167,6 +169,7 @@ export function QuoteView({
   layoutConfig?: InvoiceLayoutConfig;
   customFields?: CustomField[];
   serviceType?: "automotive" | "marine";
+  taxLabel?: string;
 }) {
   const t = useTranslations('share.quote');
   const tc = useTranslations('share.common');
@@ -444,8 +447,8 @@ export function QuoteView({
                   if (!c) return null
                   const vf = getVisibleFieldsForSection(layoutConfig, 'customer')
                   const show = (fid: string) => !vf || vf.has(fid)
-                  if (!(show('customer_name') || show('customer_email') || show('customer_phone') || show('customer_address') || show('customer_company'))) return null
-                  const fieldOrder = getOrderedFieldIds(vf, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone'])
+                  if (!(show('customer_name') || show('customer_email') || show('customer_phone') || show('customer_address') || show('customer_company') || show('customer_tax_id'))) return null
+                  const fieldOrder = getOrderedFieldIds(vf, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone', 'customer_tax_id'])
                   const renderField = (fid: string) => {
                     if (!show(fid)) return null
                     switch (fid) {
@@ -454,6 +457,7 @@ export function QuoteView({
                       case 'customer_address': return c.address ? <p key={fid} className="text-sm text-gray-500">{c.address}</p> : null
                       case 'customer_email': return c.email ? <p key={fid} className="text-sm text-gray-500">{c.email}</p> : null
                       case 'customer_phone': return c.phone ? <p key={fid} className="text-sm text-gray-500">{c.phone}</p> : null
+                      case 'customer_tax_id': return c.taxId ? <p key={fid} className="text-sm text-gray-500">{t('taxId')}: {c.taxId}</p> : null
                       default: return null
                     }
                   }
@@ -654,9 +658,11 @@ export function QuoteView({
                         {quote.taxRate > 0 && (
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-500">
-                              {quote.taxInclusive
-                                ? t('taxIncluded', { rate: quote.taxRate })
-                                : t('tax', { rate: quote.taxRate })}
+                              {taxLabel
+                                ? `${taxLabel} (${quote.taxInclusive ? 'incl. ' : ''}${quote.taxRate}%)`
+                                : quote.taxInclusive
+                                  ? t('taxIncluded', { rate: quote.taxRate })
+                                  : t('tax', { rate: quote.taxRate })}
                             </span>
                             <span>{formatCurrency(tax, currencyCode)}</span>
                           </div>

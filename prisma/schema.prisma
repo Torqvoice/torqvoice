@@ -316,6 +316,8 @@ model Customer {
   phone          String?
   address        String?
   company        String?
+  taxId          String?
+  taxExempt      Boolean  @default(false)
   notes          String?
   telegramChatId String?
   createdAt      DateTime @default(now())

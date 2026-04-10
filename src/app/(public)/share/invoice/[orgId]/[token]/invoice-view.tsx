@@ -87,6 +87,7 @@ interface InvoiceRecord {
       phone: string | null
       address: string | null
       company: string | null
+      taxId?: string | null
     } | null
   }
 }
@@ -200,6 +201,7 @@ export function InvoiceView({
   findings = [],
   telegramBotLink,
   serviceType = "automotive",
+  taxLabel,
 }: {
   record: InvoiceRecord
   workshop: { name: string; address: string; phone: string; email: string }
@@ -224,6 +226,7 @@ export function InvoiceView({
   findings?: Array<{ description: string; severity: string; notes: string | null }>
   telegramBotLink?: string
   serviceType?: "automotive" | "marine"
+  taxLabel?: string
 }) {
   const t = useTranslations('share.invoice')
   const tc = useTranslations('share.common')
@@ -716,8 +719,8 @@ export function InvoiceView({
                   if (!c) return null
                   const vf = getVisibleFieldsForSection(layoutConfig, 'customer')
                   const show = (fid: string) => !vf || vf.has(fid)
-                  if (!(show('customer_name') || show('customer_email') || show('customer_phone') || show('customer_address') || show('customer_company'))) return null
-                  const fieldOrder = getOrderedFieldIds(vf, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone'])
+                  if (!(show('customer_name') || show('customer_email') || show('customer_phone') || show('customer_address') || show('customer_company') || show('customer_tax_id'))) return null
+                  const fieldOrder = getOrderedFieldIds(vf, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone', 'customer_tax_id'])
                   const renderField = (fid: string) => {
                     if (!show(fid)) return null
                     switch (fid) {
@@ -726,6 +729,7 @@ export function InvoiceView({
                       case 'customer_address': return c.address ? <p key={fid} className="text-sm text-gray-500">{c.address}</p> : null
                       case 'customer_email': return c.email ? <p key={fid} className="text-sm text-gray-500">{c.email}</p> : null
                       case 'customer_phone': return c.phone ? <p key={fid} className="text-sm text-gray-500">{c.phone}</p> : null
+                      case 'customer_tax_id': return c.taxId ? <p key={fid} className="text-sm text-gray-500">{t('taxId')}: {c.taxId}</p> : null
                       default: return null
                     }
                   }
@@ -906,9 +910,11 @@ export function InvoiceView({
                     {record.taxRate > 0 && (
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">
-                          {record.taxInclusive
-                            ? t('taxIncluded', { rate: record.taxRate })
-                            : t('tax', { rate: record.taxRate })}
+                          {taxLabel
+                            ? `${taxLabel} (${record.taxInclusive ? 'incl. ' : ''}${record.taxRate}%)`
+                            : record.taxInclusive
+                              ? t('taxIncluded', { rate: record.taxRate })
+                              : t('tax', { rate: record.taxRate })}
                         </span>
                         <span>{formatCurrency(computedTax, currencyCode)}</span>
                       </div>

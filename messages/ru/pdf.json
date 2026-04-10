@@ -3,6 +3,7 @@
     "title": "СЧЁТ",
     "due": "Срок: {date}",
     "billTo": "Плательщик",
+    "customerTaxId": "ИНН",
     "vehicle": "Транспортное средство",
     "vin": "VIN: {vin}",
     "plate": "Госномер: {plate}",
@@ -61,6 +62,7 @@
   "quote": {
     "title": "КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ",
     "to": "Кому",
+    "customerTaxId": "ИНН",
     "vehicle": "Транспортное средство",
     "vin": "VIN: {vin}",
     "plate": "Госномер: {plate}",

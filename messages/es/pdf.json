@@ -3,6 +3,7 @@
     "title": "FACTURA",
     "due": "Vence: {date}",
     "billTo": "Facturar a",
+    "customerTaxId": "NIF",
     "vehicle": "Vehículo",
     "vin": "VIN: {vin}",
     "plate": "Placa: {plate}",
@@ -61,6 +62,7 @@
   "quote": {
     "title": "PRESUPUESTO",
     "to": "Para",
+    "customerTaxId": "NIF",
     "vehicle": "Vehículo",
     "vin": "VIN: {vin}",
     "plate": "Placa: {plate}",

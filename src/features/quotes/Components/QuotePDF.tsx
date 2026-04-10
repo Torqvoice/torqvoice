@@ -48,6 +48,7 @@ interface QuoteData {
     phone: string | null
     address: string | null
     company: string | null
+    taxId?: string | null
   } | null
   vehicle: {
     make: string
@@ -338,11 +339,11 @@ export function QuotePDF({
 
   const renderCustomerSection = () => {
     const showC = (fid: string) => !visibleCustomerFields || visibleCustomerFields.has(fid)
-    const hasCustomer = data.customer && (showC('customer_name') || (showC('customer_company') && data.customer.company) || (showC('customer_address') && data.customer.address) || (showC('customer_email') && data.customer.email) || (showC('customer_phone') && data.customer.phone))
+    const hasCustomer = data.customer && (showC('customer_name') || (showC('customer_company') && data.customer.company) || (showC('customer_address') && data.customer.address) || (showC('customer_email') && data.customer.email) || (showC('customer_phone') && data.customer.phone) || (showC('customer_tax_id') && data.customer.taxId))
     const hasCustCf = customerCf.some(cf => cf.value !== '' && cf.value != null)
     if (!hasCustomer && !hasCustCf) return null
 
-    const fieldOrder = getOrderedFieldIds(visibleCustomerFields, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone'])
+    const fieldOrder = getOrderedFieldIds(visibleCustomerFields, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone', 'customer_tax_id'])
     const c = data.customer
 
     const renderField = (fid: string) => {
@@ -353,6 +354,7 @@ export function QuotePDF({
         case 'customer_address': return c.address ? <Text key={fid} style={styles.infoTextSmall}>{c.address}</Text> : null
         case 'customer_email': return c.email ? <Text key={fid} style={styles.infoTextSmall}>{c.email}</Text> : null
         case 'customer_phone': return c.phone ? <Text key={fid} style={styles.infoTextSmall}>{c.phone}</Text> : null
+        case 'customer_tax_id': return c.taxId ? <Text key={fid} style={styles.infoTextSmall}>{(labels.customerTaxId || 'Tax ID')}: {c.taxId}</Text> : null
         default: return null
       }
     }

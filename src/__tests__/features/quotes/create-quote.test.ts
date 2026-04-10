@@ -26,6 +26,7 @@ vi.mock("@/lib/db", () => ({
     user: { findUnique: vi.fn() },
     appSetting: { findMany: vi.fn() },
     quote: { findFirst: vi.fn() },
+    customer: { findFirst: vi.fn() },
     $transaction: vi.fn(),
   },
 }));
@@ -54,6 +55,7 @@ function setupAuth() {
 function setupQuoteCreation() {
   vi.mocked(db.appSetting.findMany).mockResolvedValue([]);
   vi.mocked(db.quote.findFirst).mockResolvedValue(null); // no previous quotes
+  vi.mocked(db.customer.findFirst).mockResolvedValue(null); // not tax-exempt by default
 }
 
 beforeEach(() => {

@@ -46,6 +46,9 @@ export function TaxSettings({
   const [taxInclusive, setTaxInclusive] = useState(
     settings[SETTING_KEYS.TAX_INCLUSIVE] === "true",
   );
+  const [taxLabel, setTaxLabel] = useState(
+    settings[SETTING_KEYS.TAX_LABEL] || "",
+  );
 
   const handleSave = async () => {
     setSaving(true);
@@ -53,6 +56,7 @@ export function TaxSettings({
       [SETTING_KEYS.TAX_ENABLED]: String(taxEnabled),
       [SETTING_KEYS.DEFAULT_TAX_RATE]: taxEnabled ? defaultTaxRate : "0",
       [SETTING_KEYS.TAX_INCLUSIVE]: String(taxInclusive),
+      [SETTING_KEYS.TAX_LABEL]: taxLabel.trim(),
     });
     setSaving(false);
     router.refresh();
@@ -178,6 +182,25 @@ export function TaxSettings({
                       %
                     </span>
                   </div>
+                </div>
+              )}
+
+              {taxEnabled && (
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="taxLabel">{t("tax.labelLabel")}</Label>
+                    <p className="text-xs text-muted-foreground">
+                      {t("tax.labelHint")}
+                    </p>
+                  </div>
+                  <Input
+                    id="taxLabel"
+                    type="text"
+                    placeholder={t("tax.labelPlaceholder")}
+                    value={taxLabel}
+                    onChange={(e) => setTaxLabel(e.target.value)}
+                    className="w-40"
+                  />
                 </div>
               )}
 

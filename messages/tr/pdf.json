@@ -3,6 +3,7 @@
     "title": "FATURA",
     "due": "Son Tarih: {date}",
     "billTo": "Fatura Adresi",
+    "customerTaxId": "Vergi no",
     "vehicle": "Araç",
     "vin": "VIN: {vin}",
     "plate": "Plaka: {plate}",
@@ -61,6 +62,7 @@
   "quote": {
     "title": "TEKLİF",
     "to": "Alıcı",
+    "customerTaxId": "Vergi no",
     "vehicle": "Araç",
     "vin": "VIN: {vin}",
     "plate": "Plaka: {plate}",

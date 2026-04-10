@@ -63,6 +63,7 @@ export interface InvoiceData {
       phone: string | null
       address: string | null
       company: string | null
+      taxId?: string | null
     } | null
   }
 }

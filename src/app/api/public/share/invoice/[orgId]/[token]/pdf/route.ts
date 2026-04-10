@@ -122,6 +122,13 @@ export async function GET(
       labels.mi = "hrs";
     }
 
+    // Custom tax label override (e.g. "VAT", "MVA", "GST", "MwSt.")
+    const customTaxLabel = settingsMap["workshop.taxLabel"]?.trim();
+    if (customTaxLabel) {
+      labels.tax = `${customTaxLabel} ({rate}%)`;
+      labels.taxIncluded = `${customTaxLabel} (incl. {rate}%)`;
+    }
+
     // Load logo
     let logoDataUri: string | undefined;
     const logoPath = settingsMap["workshop.logo"];

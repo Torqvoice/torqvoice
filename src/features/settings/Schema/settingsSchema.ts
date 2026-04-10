@@ -8,6 +8,7 @@ export const SETTING_KEYS = {
   DEFAULT_TAX_RATE: "workshop.defaultTaxRate",
   TAX_ENABLED: "workshop.taxEnabled",
   TAX_INCLUSIVE: "workshop.taxInclusive",
+  TAX_LABEL: "workshop.taxLabel",
   INVOICE_PREFIX: "workshop.invoicePrefix",
   INVOICE_START_NUMBER: "workshop.invoiceStartNumber",
   CURRENCY_SYMBOL: "workshop.currencySymbol",

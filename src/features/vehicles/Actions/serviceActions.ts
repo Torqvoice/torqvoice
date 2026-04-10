@@ -211,6 +211,7 @@ export async function createServiceRecord(input: unknown) {
     const data = createServiceSchema.parse(input);
     const vehicle = await db.vehicle.findFirst({
       where: { id: data.vehicleId, organizationId },
+      include: { customer: { select: { taxExempt: true } } },
     });
     if (!vehicle) throw new Error("Vehicle not found");
 
@@ -241,6 +242,12 @@ export async function createServiceRecord(input: unknown) {
       "taxInclusive" in inputObj
         ? data.taxInclusive
         : settingsMap["workshop.taxInclusive"] === "true";
+
+    // Tax-exempt customer: force taxRate to 0 (overrides whatever the caller sent).
+    if (vehicle.customer?.taxExempt) {
+      data.taxRate = 0;
+      data.taxAmount = 0;
+    }
 
     // Generate sequential invoice number
     const startNumber = parseInt(settingsMap["workshop.invoiceStartNumber"] || "0", 10);

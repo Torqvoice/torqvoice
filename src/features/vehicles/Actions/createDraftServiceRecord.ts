@@ -14,6 +14,7 @@ export async function createDraftServiceRecord(
     async ({ organizationId, userId }) => {
       const vehicle = await db.vehicle.findFirst({
         where: { id: vehicleId, organizationId },
+        include: { customer: { select: { taxExempt: true } } },
       });
       if (!vehicle) throw new Error("Vehicle not found");
 
@@ -118,9 +119,11 @@ export async function createDraftServiceRecord(
         });
       }
 
-      // Apply default tax rate from settings (if tax is enabled)
+      // Apply default tax rate from settings (if tax is enabled).
+      // Tax-exempt customers always get a 0% rate regardless of org default.
       const taxEnabled = settingsMap["workshop.taxEnabled"] !== "false";
-      const defaultTaxRate = taxEnabled
+      const customerExempt = vehicle.customer?.taxExempt ?? false;
+      const defaultTaxRate = taxEnabled && !customerExempt
         ? Number(settingsMap["workshop.defaultTaxRate"]) || 0
         : 0;
       const taxInclusive = settingsMap["workshop.taxInclusive"] === "true";

@@ -64,6 +64,7 @@ export async function GET(
                   phone: true,
                   address: true,
                   company: true,
+                  taxId: true,
                 },
               },
             },
@@ -115,6 +116,13 @@ export async function GET(
       // Override unit labels for engine hours
       labels.km = "hrs";
       labels.mi = "hrs";
+    }
+
+    // Custom tax label override (e.g. "VAT", "MVA", "GST", "MwSt.")
+    const customTaxLabel = settingsMap["workshop.taxLabel"]?.trim();
+    if (customTaxLabel) {
+      labels.tax = `${customTaxLabel} ({rate}%)`;
+      labels.taxIncluded = `${customTaxLabel} (incl. {rate}%)`;
     }
 
     // Load image attachments as base64 data URIs for PDF embedding

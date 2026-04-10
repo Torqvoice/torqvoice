@@ -3,6 +3,7 @@
     "title": "FAKTURA",
     "due": "Forfall: {date}",
     "billTo": "Fakturert til",
+    "customerTaxId": "Org.nr",
     "vehicle": "Kjøretøy",
     "vin": "VIN: {vin}",
     "plate": "Reg.nr: {plate}",
@@ -61,6 +62,7 @@
   "quote": {
     "title": "TILBUD",
     "to": "Til",
+    "customerTaxId": "Org.nr",
     "vehicle": "Kjøretøy",
     "vin": "VIN: {vin}",
     "plate": "Reg.nr: {plate}",

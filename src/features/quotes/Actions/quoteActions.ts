@@ -138,10 +138,23 @@ export async function createQuote(input: unknown) {
     // Apply default tax rate from settings when the caller hasn't set one.
     // All current call sites send taxRate: 0 at creation, so 0 means "unset".
     const taxEnabled = settingsMap["workshop.taxEnabled"] !== "false";
-    const defaultTaxRate = taxEnabled
+    let defaultTaxRate = taxEnabled
       ? Number(settingsMap["workshop.defaultTaxRate"]) || 0
       : 0;
     const taxInclusive = settingsMap["workshop.taxInclusive"] === "true";
+
+    // Tax-exempt customer: force the rate to 0 regardless of org default.
+    if (data.customerId) {
+      const customer = await db.customer.findFirst({
+        where: { id: data.customerId, organizationId },
+        select: { taxExempt: true },
+      });
+      if (customer?.taxExempt) {
+        defaultTaxRate = 0;
+        data.taxRate = 0;
+        data.taxAmount = 0;
+      }
+    }
 
     const lastQuote = await db.quote.findFirst({
       where: { organizationId },

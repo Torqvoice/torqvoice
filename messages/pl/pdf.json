@@ -3,6 +3,7 @@
     "title": "FAKTURA",
     "due": "Termin: {date}",
     "billTo": "Odbiorca",
+    "customerTaxId": "NIP",
     "vehicle": "Pojazd",
     "vin": "VIN: {vin}",
     "plate": "Tablica: {plate}",
@@ -61,6 +62,7 @@
   "quote": {
     "title": "WYCENA",
     "to": "Do",
+    "customerTaxId": "NIP",
     "vehicle": "Pojazd",
     "vin": "VIN: {vin}",
     "plate": "Tablica: {plate}",

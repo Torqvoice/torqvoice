@@ -45,6 +45,8 @@ interface Customer {
   phone: string | null;
   address: string | null;
   company: string | null;
+  taxId: string | null;
+  taxExempt: boolean;
   notes: string | null;
   _count: { vehicles: number };
 }
