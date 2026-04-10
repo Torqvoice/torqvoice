@@ -49,6 +49,11 @@ export async function GET(
           laborItems: true,
           attachments: true,
           payments: { orderBy: { date: "desc" } },
+          // Pull the linked technician's current name as the source of truth.
+          // The denormalized `techName` field can drift out of sync; the FK
+          // relation is always correct. The PDF prefers technician.name and
+          // falls back to techName for legacy records that have no FK.
+          technician: { select: { name: true } },
           vehicle: {
             select: {
               make: true,

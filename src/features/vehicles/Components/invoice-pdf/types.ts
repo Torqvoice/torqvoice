@@ -21,6 +21,7 @@ export interface InvoiceData {
   invoiceDueDate?: Date | null
   shopName: string | null
   techName: string | null
+  technician?: { name: string } | null
   mileage: number | null
   diagnosticNotes: string | null
   invoiceNotes: string | null

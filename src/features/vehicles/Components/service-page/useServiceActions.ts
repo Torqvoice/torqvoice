@@ -43,7 +43,7 @@ export function useServiceActions({
   const [paymentNotifyMessage, setPaymentNotifyMessage] = useState('')
 
   const {
-    selectedVehicleId, techName, type, status,
+    selectedVehicleId, type, status,
     partItems, laborItems, subtotal, taxRate, taxInclusive, taxAmount, totalAmount,
     discountType, discountValue, discountAmount,
     isSavingRef, autosaveTimer, setLoading,
@@ -99,7 +99,10 @@ export function useServiceActions({
       cost: totalAmount,
       mileage: parsedMileage,
       serviceDate: getVisible('serviceDate') || new Date().toISOString(),
-      techName: techName || undefined,
+      // techName intentionally omitted: it has no UI in the form (read-only),
+      // and the Schedule card writes it directly via assignTechnician. Sending
+      // the form-state value here would clobber a tech change made via the
+      // Schedule card with a stale name from initial load.
       diagnosticNotes: notesRef.current.diagnosticNotes || undefined,
       invoiceNotes: notesRef.current.invoiceNotes || undefined,
       invoiceNumber: getVisible('invoiceNumber') || undefined,
