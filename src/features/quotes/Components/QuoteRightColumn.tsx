@@ -324,7 +324,9 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
             <span>{formatCurrency(state.laborSubtotal, currencyCode)}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">{t('totals.subtotal')}</span>
+            <span className="text-muted-foreground">
+              {state.taxInclusive ? t('totals.subtotalInclTax') : t('totals.subtotal')}
+            </span>
             <span className="font-medium">{formatCurrency(state.subtotal, currencyCode)}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
@@ -372,7 +374,9 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
           {state.taxEnabled && (
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">{t('totals.tax')}</span>
+                <span className="text-muted-foreground">
+                  {state.taxInclusive ? t('totals.taxIncluded') : t('totals.tax')}
+                </span>
                 <Input
                   type="number"
                   min="0"

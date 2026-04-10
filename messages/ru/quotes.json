@@ -134,11 +134,13 @@
     "parts": "Запчасти",
     "labor": "Работа",
     "subtotal": "Подитог",
+    "subtotalInclTax": "Подитог (с НДС)",
     "discount": "Скидка",
     "discountNone": "Нет",
     "discountPercentage": "Процент",
     "discountFixed": "Фиксированная",
     "tax": "Налог",
+    "taxIncluded": "Налог (вкл.)",
     "total": "Итого"
   },
   "shareDialog": {

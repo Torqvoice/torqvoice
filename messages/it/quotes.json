@@ -134,11 +134,13 @@
     "parts": "Ricambi",
     "labor": "Manodopera",
     "subtotal": "Subtotale",
+    "subtotalInclTax": "Subtotale (IVA inclusa)",
     "discount": "Sconto",
     "discountNone": "Nessuno",
     "discountPercentage": "Percentuale",
     "discountFixed": "Fisso",
     "tax": "IVA",
+    "taxIncluded": "IVA (incl.)",
     "total": "Totale"
   },
   "shareDialog": {

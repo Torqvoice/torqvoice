@@ -579,7 +579,13 @@
   },
   "tax": {
     "title": "Impuesto",
-    "description": "Configure la tasa de impuesto aplicada a facturas, presupuestos y ordenes de trabajo."
+    "description": "Configure la tasa de impuesto aplicada a facturas, presupuestos y ordenes de trabajo.",
+    "modeLabel": "Modo de impuesto",
+    "modeHint": "Elija si los precios de las lineas se introducen con impuesto incluido (inclusivo) o antes de impuestos (exclusivo). Los registros existentes mantienen el modo con el que fueron creados.",
+    "modeExclusive": "Exclusivo",
+    "modeInclusive": "Inclusivo",
+    "modeExclusiveExample": "Ejemplo: 100 + {rate}% impuesto = 100 + impuesto encima.",
+    "modeInclusiveExample": "Ejemplo: 100 ya incluye {rate}% impuesto — la parte del impuesto se calcula al inverso."
   },
   "currency": {
     "title": "Moneda e impuestos",

@@ -579,7 +579,13 @@
   },
   "tax": {
     "title": "Avgift",
-    "description": "Konfigurer avgiftssatsen som brukes på fakturaer, tilbud og arbeidsordrer."
+    "description": "Konfigurer avgiftssatsen som brukes på fakturaer, tilbud og arbeidsordrer.",
+    "modeLabel": "Avgiftsmodus",
+    "modeHint": "Velg om priser på linjeelementer skrives inn med avgift inkludert (inklusiv) eller før avgift (eksklusiv). Eksisterende oppføringer beholder modusen de ble opprettet med.",
+    "modeExclusive": "Eksklusiv",
+    "modeInclusive": "Inklusiv",
+    "modeExclusiveExample": "Eksempel: 100 + {rate}% avgift = 100 + avgift på toppen.",
+    "modeInclusiveExample": "Eksempel: 100 inkluderer allerede {rate}% avgift — avgiftsdelen beregnes baklengs."
   },
   "currency": {
     "title": "Valuta og avgift",

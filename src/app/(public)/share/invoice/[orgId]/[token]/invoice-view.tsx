@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { calculateTotals } from '@/lib/tax'
 import { sanitizeHtml } from '@/lib/sanitize-html'
 import { useLocale, useTranslations } from 'next-intl'
 import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds, getVisibleFieldsForSection } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -37,6 +38,7 @@ interface InvoiceRecord {
   subtotal: number
   taxRate: number
   taxAmount: number
+  taxInclusive?: boolean
   totalAmount: number
   cost: number
   invoiceNumber: string | null
@@ -253,8 +255,12 @@ export function InvoiceView({
     : record.discountType === 'fixed'
       ? Math.min(record.discountValue, computedSubtotal)
       : 0
-  const computedTax = (computedSubtotal - computedDiscount) * (record.taxRate / 100)
-  const computedTotal = computedSubtotal - computedDiscount + computedTax
+  const { taxAmount: computedTax, totalAmount: computedTotal } = calculateTotals({
+    subtotal: computedSubtotal,
+    discountAmount: computedDiscount,
+    taxRate: record.taxRate,
+    taxInclusive: record.taxInclusive ?? false,
+  })
   const displayTotal = record.totalAmount > 0 ? record.totalAmount : computedTotal > 0 ? computedTotal : record.cost
   const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
   const df = dateFormat || DEFAULT_DATE_FORMAT
@@ -880,7 +886,9 @@ export function InvoiceView({
                           <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">{t('subtotal')}</span>
+                          <span className="text-gray-500">
+                            {record.taxInclusive ? t('subtotalInclTax') : t('subtotal')}
+                          </span>
                           <span>{formatCurrency(computedSubtotal, currencyCode)}</span>
                         </div>
                       </>
@@ -897,8 +905,12 @@ export function InvoiceView({
                     )}
                     {record.taxRate > 0 && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">{t('tax', { rate: record.taxRate })}</span>
-                        <span>{formatCurrency(record.taxAmount, currencyCode)}</span>
+                        <span className="text-gray-500">
+                          {record.taxInclusive
+                            ? t('taxIncluded', { rate: record.taxRate })
+                            : t('tax', { rate: record.taxRate })}
+                        </span>
+                        <span>{formatCurrency(computedTax, currencyCode)}</span>
                       </div>
                     )}
                     <div

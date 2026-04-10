@@ -134,11 +134,13 @@
     "parts": "Pièces",
     "labor": "Main-d'œuvre",
     "subtotal": "Sous-total",
+    "subtotalInclTax": "Sous-total (TTC)",
     "discount": "Remise",
     "discountNone": "Aucune",
     "discountPercentage": "Pourcentage",
     "discountFixed": "Fixe",
     "tax": "Taxe",
+    "taxIncluded": "Taxe (incl.)",
     "total": "Total"
   },
   "shareDialog": {

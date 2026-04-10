@@ -579,7 +579,13 @@
   },
   "tax": {
     "title": "Imposto",
-    "description": "Configure a taxa de imposto aplicada a faturas, orcamentos e ordens de servico."
+    "description": "Configure a taxa de imposto aplicada a faturas, orcamentos e ordens de servico.",
+    "modeLabel": "Modo de imposto",
+    "modeHint": "Escolha se os precos das linhas sao inseridos com imposto ja incluido (inclusivo) ou antes do imposto (exclusivo). Os registros existentes mantem o modo com o qual foram criados.",
+    "modeExclusive": "Exclusivo",
+    "modeInclusive": "Inclusivo",
+    "modeExclusiveExample": "Exemplo: 100 + {rate}% de imposto = 100 + imposto por cima.",
+    "modeInclusiveExample": "Exemplo: 100 ja inclui {rate}% de imposto — a parte do imposto e calculada de tras para frente."
   },
   "currency": {
     "title": "Moeda e impostos",

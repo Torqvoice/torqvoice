@@ -29,6 +29,7 @@ export async function createDraftServiceRecord(
                 "workshop.defaultTechnicianId",
                 "workshop.defaultTaxRate",
                 "workshop.taxEnabled",
+                "workshop.taxInclusive",
                 "workboard.workDayStart",
               ],
             },
@@ -122,6 +123,7 @@ export async function createDraftServiceRecord(
       const defaultTaxRate = taxEnabled
         ? Number(settingsMap["workshop.defaultTaxRate"]) || 0
         : 0;
+      const taxInclusive = settingsMap["workshop.taxInclusive"] === "true";
 
       // Default to today's date at work day start time (from settings, fallback 07:00)
       let defaultStart: Date;
@@ -146,6 +148,7 @@ export async function createDraftServiceRecord(
           technicianId: resolvedTechId || undefined,
           invoiceNumber,
           taxRate: defaultTaxRate,
+          taxInclusive,
           serviceDate,
           invoiceDate: serviceDate,
           startDateTime: defaultStart,

@@ -134,11 +134,13 @@
     "parts": "Parts",
     "labor": "Labor",
     "subtotal": "Subtotal",
+    "subtotalInclTax": "Subtotal (incl. tax)",
     "discount": "Discount",
     "discountNone": "None",
     "discountPercentage": "Percentage",
     "discountFixed": "Fixed",
     "tax": "Tax",
+    "taxIncluded": "Tax (incl.)",
     "total": "Total"
   },
   "shareDialog": {

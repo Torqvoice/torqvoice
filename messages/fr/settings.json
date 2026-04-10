@@ -579,7 +579,13 @@
   },
   "tax": {
     "title": "Taxe",
-    "description": "Configurez le taux de taxe applique aux factures, devis et bons de travail."
+    "description": "Configurez le taux de taxe applique aux factures, devis et bons de travail.",
+    "modeLabel": "Mode de taxe",
+    "modeHint": "Choisissez si les prix des lignes sont saisis avec la taxe deja incluse (inclusif) ou hors taxe (exclusif). Les enregistrements existants conservent le mode avec lequel ils ont ete crees.",
+    "modeExclusive": "Exclusif",
+    "modeInclusive": "Inclusif",
+    "modeExclusiveExample": "Exemple : 100 + {rate}% de taxe = 100 + taxe en plus.",
+    "modeInclusiveExample": "Exemple : 100 inclut deja {rate}% de taxe — la part de taxe est calculee en sens inverse."
   },
   "currency": {
     "title": "Devise et taxes",

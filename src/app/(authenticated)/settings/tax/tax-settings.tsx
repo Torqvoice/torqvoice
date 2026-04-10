@@ -15,6 +15,7 @@ import { setSettings } from "@/features/settings/Actions/settingsActions";
 import { applyTaxRateToExisting } from "@/features/settings/Actions/applyTaxRateToExisting";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { useConfirm } from "@/components/confirm-dialog";
+import { cn } from "@/lib/utils";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
 export function TaxSettings({
@@ -36,12 +37,16 @@ export function TaxSettings({
   const [defaultTaxRate, setDefaultTaxRate] = useState(
     settings[SETTING_KEYS.DEFAULT_TAX_RATE] || "0",
   );
+  const [taxInclusive, setTaxInclusive] = useState(
+    settings[SETTING_KEYS.TAX_INCLUSIVE] === "true",
+  );
 
   const handleSave = async () => {
     setSaving(true);
     await setSettings({
       [SETTING_KEYS.TAX_ENABLED]: String(taxEnabled),
       [SETTING_KEYS.DEFAULT_TAX_RATE]: taxEnabled ? defaultTaxRate : "0",
+      [SETTING_KEYS.TAX_INCLUSIVE]: String(taxInclusive),
     });
     setSaving(false);
     router.refresh();
@@ -132,6 +137,50 @@ export function TaxSettings({
                       %
                     </span>
                   </div>
+                </div>
+              )}
+
+              {taxEnabled && (
+                <div className="space-y-2">
+                  <Label>{t("tax.modeLabel")}</Label>
+                  <p className="text-xs text-muted-foreground">
+                    {t("tax.modeHint")}
+                  </p>
+                  <div className="inline-flex rounded-md border p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setTaxInclusive(false)}
+                      className={cn(
+                        "rounded px-3 py-1.5 text-sm font-medium transition-colors",
+                        !taxInclusive
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {t("tax.modeExclusive")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTaxInclusive(true)}
+                      className={cn(
+                        "rounded px-3 py-1.5 text-sm font-medium transition-colors",
+                        taxInclusive
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {t("tax.modeInclusive")}
+                    </button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {taxInclusive
+                      ? t("tax.modeInclusiveExample", {
+                          rate: defaultTaxRate || "0",
+                        })
+                      : t("tax.modeExclusiveExample", {
+                          rate: defaultTaxRate || "0",
+                        })}
+                  </p>
                 </div>
               )}
 

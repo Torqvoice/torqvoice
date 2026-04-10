@@ -579,7 +579,13 @@
   },
   "tax": {
     "title": "Imposta",
-    "description": "Configura l'aliquota fiscale applicata a fatture, preventivi e ordini di lavoro."
+    "description": "Configura l'aliquota fiscale applicata a fatture, preventivi e ordini di lavoro.",
+    "modeLabel": "Modalita imposta",
+    "modeHint": "Scegli se i prezzi delle voci sono inseriti con imposta gia inclusa (inclusivo) o al netto (esclusivo). I record esistenti mantengono la modalita con cui sono stati creati.",
+    "modeExclusive": "Esclusivo",
+    "modeInclusive": "Inclusivo",
+    "modeExclusiveExample": "Esempio: 100 + {rate}% imposta = 100 + imposta sopra.",
+    "modeInclusiveExample": "Esempio: 100 include gia {rate}% imposta — la parte fiscale viene calcolata a ritroso."
   },
   "currency": {
     "title": "Valuta e imposte",

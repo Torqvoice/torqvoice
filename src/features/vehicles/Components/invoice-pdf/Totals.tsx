@@ -58,7 +58,11 @@ export function Totals({
       )}
       {data.subtotal > 0 && (
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
+          <Text style={styles.totalLabel}>
+            {data.taxInclusive
+              ? (labels.subtotalInclTax || labels.subtotal || 'Subtotal (incl. tax)')
+              : (labels.subtotal || 'Subtotal')}
+          </Text>
           <Text style={styles.totalValue}>{formatCurrency(data.subtotal, currencyCode)}</Text>
         </View>
       )}
@@ -76,7 +80,15 @@ export function Totals({
       )}
       {data.taxRate > 0 && (
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>{labels.tax ? fillTemplate(labels.tax, { rate: String(data.taxRate) }) : `Tax (${data.taxRate}%)`}</Text>
+          <Text style={styles.totalLabel}>
+            {data.taxInclusive
+              ? (labels.taxIncluded
+                  ? fillTemplate(labels.taxIncluded, { rate: String(data.taxRate) })
+                  : `Includes tax (${data.taxRate}%)`)
+              : (labels.tax
+                  ? fillTemplate(labels.tax, { rate: String(data.taxRate) })
+                  : `Tax (${data.taxRate}%)`)}
+          </Text>
           <Text style={styles.totalValue}>{formatCurrency(data.taxAmount, currencyCode)}</Text>
         </View>
       )}

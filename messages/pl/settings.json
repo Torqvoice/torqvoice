@@ -579,7 +579,13 @@
   },
   "tax": {
     "title": "Podatek",
-    "description": "Skonfiguruj stawke podatku stosowana do faktur, ofert i zlecen serwisowych."
+    "description": "Skonfiguruj stawke podatku stosowana do faktur, ofert i zlecen serwisowych.",
+    "modeLabel": "Tryb podatku",
+    "modeHint": "Wybierz, czy ceny pozycji sa wprowadzane z juz uwzglednionym podatkiem (brutto) czy bez podatku (netto). Istniejace rekordy zachowuja tryb, z ktorym zostaly utworzone.",
+    "modeExclusive": "Netto",
+    "modeInclusive": "Brutto",
+    "modeExclusiveExample": "Przyklad: 100 + {rate}% podatku = 100 + podatek doliczony.",
+    "modeInclusiveExample": "Przyklad: 100 juz zawiera {rate}% podatku — czesc podatkowa jest obliczana wstecz."
   },
   "currency": {
     "title": "Waluta i podatki",

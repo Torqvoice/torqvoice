@@ -126,6 +126,7 @@ export async function createQuote(input: unknown) {
             "workshop.quotePrefix",
             "workshop.defaultTaxRate",
             "workshop.taxEnabled",
+            "workshop.taxInclusive",
           ],
         },
       },
@@ -140,6 +141,7 @@ export async function createQuote(input: unknown) {
     const defaultTaxRate = taxEnabled
       ? Number(settingsMap["workshop.defaultTaxRate"]) || 0
       : 0;
+    const taxInclusive = settingsMap["workshop.taxInclusive"] === "true";
 
     const lastQuote = await db.quote.findFirst({
       where: { organizationId },
@@ -163,6 +165,7 @@ export async function createQuote(input: unknown) {
           userId,
           organizationId,
           taxRate: quoteData.taxRate > 0 ? quoteData.taxRate : defaultTaxRate,
+          taxInclusive,
           validUntil: quoteData.validUntil ? new Date(quoteData.validUntil) : undefined,
           discountType: quoteData.discountType === "none" ? null : quoteData.discountType,
         },
@@ -354,6 +357,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
           subtotal: quote.subtotal,
           taxRate: quote.taxRate,
           taxAmount: quote.taxAmount,
+          taxInclusive: quote.taxInclusive,
           totalAmount: quote.totalAmount,
           cost: quote.totalAmount,
           discountType: quote.discountType,

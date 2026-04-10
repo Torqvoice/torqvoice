@@ -1,6 +1,7 @@
 import React from 'react'
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { calculateTotals } from '@/lib/tax'
 import { createStyles, gray, getFontBold } from './styles'
 import { Header } from './Header'
 import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
@@ -90,8 +91,12 @@ export function InvoicePDF({
     : data.discountType === 'fixed'
       ? Math.min(data.discountValue || 0, computedSubtotal)
       : 0
-  const computedTax = (computedSubtotal - computedDiscount) * (data.taxRate / 100)
-  const computedTotal = computedSubtotal - computedDiscount + computedTax
+  const { taxAmount: computedTax, totalAmount: computedTotal } = calculateTotals({
+    subtotal: computedSubtotal,
+    discountAmount: computedDiscount,
+    taxRate: data.taxRate,
+    taxInclusive: data.taxInclusive ?? false,
+  })
   const displayTotal = data.totalAmount > 0 ? data.totalAmount : computedTotal > 0 ? computedTotal : data.cost
   const invoiceNum = data.invoiceNumber || `INV-${data.id.slice(-8).toUpperCase()}`
   const df = invoiceSettings?.dateFormat || DEFAULT_DATE_FORMAT

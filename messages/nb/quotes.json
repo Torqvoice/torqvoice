@@ -134,11 +134,13 @@
     "parts": "Deler",
     "labor": "Arbeid",
     "subtotal": "Delsum",
+    "subtotalInclTax": "Delsum (inkl. mva)",
     "discount": "Rabatt",
     "discountNone": "Ingen",
     "discountPercentage": "Prosent",
     "discountFixed": "Fast beløp",
     "tax": "Mva",
+    "taxIncluded": "Mva (inkl.)",
     "total": "Totalt"
   },
   "shareDialog": {

@@ -4,6 +4,7 @@ import { Camera, Check, ChevronLeft, ChevronRight, Download, FileText, Loader2, 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from "@/lib/format";
+import { calculateTotals } from "@/lib/tax";
 import { sanitizeHtml } from "@/lib/sanitize-html";
 import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds, getVisibleFieldsForSection } from "@/features/settings/Schema/invoiceLayoutSchema";
 
@@ -18,6 +19,7 @@ interface QuoteRecord {
   subtotal: number;
   taxRate: number;
   taxAmount: number;
+  taxInclusive?: boolean;
   discountType: string | null;
   discountValue: number;
   discountAmount: number;
@@ -613,8 +615,12 @@ export function QuoteView({
                       : quote.discountType === "fixed"
                       ? Math.min(quote.discountValue, sub)
                       : 0;
-                    const tax = (sub - disc) * (quote.taxRate / 100);
-                    const total = sub - disc + tax;
+                    const { taxAmount: tax, totalAmount: total } = calculateTotals({
+                      subtotal: sub,
+                      discountAmount: disc,
+                      taxRate: quote.taxRate,
+                      taxInclusive: quote.taxInclusive ?? false,
+                    });
                     return (
                       <>
                         {quote.laborItems.length > 0 && (
@@ -631,7 +637,9 @@ export function QuoteView({
                         )}
                         {sub > 0 && (
                           <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">{t('subtotal')}</span>
+                            <span className="text-gray-500">
+                              {quote.taxInclusive ? t('subtotalInclTax') : t('subtotal')}
+                            </span>
                             <span>{formatCurrency(sub, currencyCode)}</span>
                           </div>
                         )}
@@ -645,7 +653,11 @@ export function QuoteView({
                         )}
                         {quote.taxRate > 0 && (
                           <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">{t('tax', { rate: quote.taxRate })}</span>
+                            <span className="text-gray-500">
+                              {quote.taxInclusive
+                                ? t('taxIncluded', { rate: quote.taxRate })
+                                : t('tax', { rate: quote.taxRate })}
+                            </span>
                             <span>{formatCurrency(tax, currencyCode)}</span>
                           </div>
                         )}

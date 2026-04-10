@@ -6,6 +6,7 @@ import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import { CustomFields } from '@/features/vehicles/Components/invoice-pdf/CustomFields'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 import type { InvoiceLayoutConfig, InvoiceSection } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { calculateTotals } from '@/lib/tax'
 import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds, getVisibleFieldsForSection as getVisibleFieldsForSectionHelper } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 const DEFAULT_HEADER_FIELD_ORDER = ['logo', 'company_name', 'company_address', 'company_phone', 'company_email', 'company_org_number']
@@ -26,6 +27,7 @@ interface QuoteData {
   subtotal: number
   taxRate: number
   taxAmount: number
+  taxInclusive?: boolean
   discountType: string | null
   discountValue: number
   discountAmount: number
@@ -517,8 +519,13 @@ export function QuotePDF({
       : data.discountType === 'fixed'
       ? Math.min(data.discountValue, sub)
       : 0
-    const tax = (sub - disc) * (data.taxRate / 100)
-    const total = sub - disc + tax
+    const taxInclusive = data.taxInclusive ?? false
+    const { taxAmount: tax, totalAmount: total } = calculateTotals({
+      subtotal: sub,
+      discountAmount: disc,
+      taxRate: data.taxRate,
+      taxInclusive,
+    })
     return (
       <View style={styles.totalsBox}>
         {data.laborItems.length > 0 && (
@@ -539,7 +546,11 @@ export function QuotePDF({
         )}
         {sub > 0 && (
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
+            <Text style={styles.totalLabel}>
+              {taxInclusive
+                ? (labels.subtotalInclTax || labels.subtotal || 'Subtotal (incl. tax)')
+                : (labels.subtotal || 'Subtotal')}
+            </Text>
             <Text style={styles.totalValue}>{formatCurrency(sub, currencyCode)}</Text>
           </View>
         )}
@@ -557,7 +568,15 @@ export function QuotePDF({
         )}
         {data.taxRate > 0 && (
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>{labels.tax ? fillTemplate(labels.tax, { rate: String(data.taxRate) }) : `Tax (${data.taxRate}%)`}</Text>
+            <Text style={styles.totalLabel}>
+              {taxInclusive
+                ? (labels.taxIncluded
+                    ? fillTemplate(labels.taxIncluded, { rate: String(data.taxRate) })
+                    : `Includes tax (${data.taxRate}%)`)
+                : (labels.tax
+                    ? fillTemplate(labels.tax, { rate: String(data.taxRate) })
+                    : `Tax (${data.taxRate}%)`)}
+            </Text>
             <Text style={styles.totalValue}>{formatCurrency(tax, currencyCode)}</Text>
           </View>
         )}

@@ -15,6 +15,7 @@ interface InvoiceSummaryProps {
   discountValue: number;
   taxRate: number;
   taxAmount: number;
+  taxInclusive: boolean;
   displayTotal: number;
   totalPaid: number;
   balanceDue: number;
@@ -33,6 +34,7 @@ export function InvoiceSummary({
   discountValue,
   taxRate,
   taxAmount,
+  taxInclusive,
   displayTotal,
   totalPaid,
   balanceDue,
@@ -58,7 +60,9 @@ export function InvoiceSummary({
         )}
         {subtotal > 0 && ((hasPartItems && hasLaborItems) || discountAmount > 0 || taxRate > 0) && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t("subtotal")}</span>
+            <span className="text-muted-foreground">
+              {taxInclusive ? t("subtotalInclTax") : t("subtotal")}
+            </span>
             <span>{formatCurrency(subtotal, currencyCode)}</span>
           </div>
         )}
@@ -72,7 +76,9 @@ export function InvoiceSummary({
         )}
         {taxRate > 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t("tax", { rate: taxRate })}</span>
+            <span className="text-muted-foreground">
+              {taxInclusive ? t("taxIncluded", { rate: taxRate }) : t("tax", { rate: taxRate })}
+            </span>
             <span>{formatCurrency(taxAmount, currencyCode)}</span>
           </div>
         )}

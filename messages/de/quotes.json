@@ -134,11 +134,13 @@
     "parts": "Teile",
     "labor": "Arbeitszeit",
     "subtotal": "Zwischensumme",
+    "subtotalInclTax": "Zwischensumme (inkl. Steuer)",
     "discount": "Rabatt",
     "discountNone": "Kein",
     "discountPercentage": "Prozentsatz",
     "discountFixed": "Festbetrag",
     "tax": "Steuer",
+    "taxIncluded": "Steuer (inkl.)",
     "total": "Gesamt"
   },
   "shareDialog": {

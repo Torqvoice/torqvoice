@@ -24,6 +24,7 @@ interface TotalsSectionProps {
   taxRate: number
   setTaxRate: (rate: number) => void
   taxAmount: number
+  taxInclusive: boolean
   totalAmount: number
   currencyCode: string
 }
@@ -41,6 +42,7 @@ export function TotalsSection({
   taxRate,
   setTaxRate,
   taxAmount,
+  taxInclusive,
   totalAmount,
   currencyCode,
 }: TotalsSectionProps) {
@@ -58,7 +60,9 @@ export function TotalsSection({
           <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">{t('subtotal')}</span>
+          <span className="text-muted-foreground">
+            {taxInclusive ? t('subtotalInclTax') : t('subtotal')}
+          </span>
           <span className="font-medium">{formatCurrency(subtotal, currencyCode)}</span>
         </div>
 
@@ -99,7 +103,9 @@ export function TotalsSection({
         {taxEnabled && (
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">{t('tax')}</span>
+              <span className="text-muted-foreground">
+                {taxInclusive ? t('taxIncluded') : t('tax')}
+              </span>
               <Input
                 type="number"
                 min="0"

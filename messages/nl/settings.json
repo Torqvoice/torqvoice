@@ -579,7 +579,13 @@
   },
   "tax": {
     "title": "Belasting",
-    "description": "Configureer het belastingtarief dat wordt toegepast op facturen, offertes en werkorders."
+    "description": "Configureer het belastingtarief dat wordt toegepast op facturen, offertes en werkorders.",
+    "modeLabel": "Belastingmodus",
+    "modeHint": "Kies of prijzen op regelitems worden ingevoerd inclusief belasting (inclusief) of vóór belasting (exclusief). Bestaande records behouden de modus waarmee ze zijn aangemaakt.",
+    "modeExclusive": "Exclusief",
+    "modeInclusive": "Inclusief",
+    "modeExclusiveExample": "Voorbeeld: 100 + {rate}% belasting = 100 + belasting erbovenop.",
+    "modeInclusiveExample": "Voorbeeld: 100 bevat al {rate}% belasting — het belastingdeel wordt teruggerekend."
   },
   "currency": {
     "title": "Valuta en belasting",

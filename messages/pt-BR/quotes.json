@@ -134,11 +134,13 @@
     "parts": "Peças",
     "labor": "Mão de obra",
     "subtotal": "Subtotal",
+    "subtotalInclTax": "Subtotal (com imposto)",
     "discount": "Desconto",
     "discountNone": "Nenhum",
     "discountPercentage": "Porcentagem",
     "discountFixed": "Fixo",
     "tax": "Imposto",
+    "taxIncluded": "Imposto (incl.)",
     "total": "Total"
   },
   "shareDialog": {

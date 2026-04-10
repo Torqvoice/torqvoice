@@ -579,7 +579,13 @@
   },
   "tax": {
     "title": "Mokestis",
-    "description": "Konfigūruokite mokesčių tarifą, taikomą sąskaitoms, pasiūlymams ir darbo užsakymams."
+    "description": "Konfigūruokite mokesčių tarifą, taikomą sąskaitoms, pasiūlymams ir darbo užsakymams.",
+    "modeLabel": "Mokesčių režimas",
+    "modeHint": "Pasirinkite, ar eilučių kainos įvedamos su jau įskaičiuotu mokesčiu (su mokesčiu) ar be mokesčio (be mokesčio). Esami įrašai išlaiko režimą, su kuriuo buvo sukurti.",
+    "modeExclusive": "Be mokesčio",
+    "modeInclusive": "Su mokesčiu",
+    "modeExclusiveExample": "Pavyzdys: 100 + {rate}% mokesčio = 100 + mokestis viršuje.",
+    "modeInclusiveExample": "Pavyzdys: 100 jau apima {rate}% mokesčio — mokesčio dalis apskaičiuojama atgal."
   },
   "currency": {
     "title": "Valiuta ir mokesčiai",

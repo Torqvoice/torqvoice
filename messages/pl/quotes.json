@@ -134,11 +134,13 @@
     "parts": "Części",
     "labor": "Robocizna",
     "subtotal": "Suma częściowa",
+    "subtotalInclTax": "Suma częściowa (z podatkiem)",
     "discount": "Rabat",
     "discountNone": "Brak",
     "discountPercentage": "Procentowy",
     "discountFixed": "Stały",
     "tax": "Podatek",
+    "taxIncluded": "Podatek (zaw.)",
     "total": "Suma"
   },
   "shareDialog": {

@@ -579,7 +579,13 @@
   },
   "tax": {
     "title": "Steuer",
-    "description": "Konfigurieren Sie den Steuersatz für Rechnungen, Angebote und Arbeitsaufträge."
+    "description": "Konfigurieren Sie den Steuersatz für Rechnungen, Angebote und Arbeitsaufträge.",
+    "modeLabel": "Steuermodus",
+    "modeHint": "Wählen Sie, ob Preise auf Positionen mit bereits enthaltener Steuer (inklusiv) oder vor Steuer (exklusiv) eingegeben werden. Bestehende Datensätze behalten den Modus, mit dem sie erstellt wurden.",
+    "modeExclusive": "Exklusiv",
+    "modeInclusive": "Inklusiv",
+    "modeExclusiveExample": "Beispiel: 100 + {rate}% Steuer = 100 + Steuer obendrauf.",
+    "modeInclusiveExample": "Beispiel: 100 enthält bereits {rate}% Steuer — der Steueranteil wird zurückgerechnet."
   },
   "currency": {
     "title": "Wahrung & Steuer",

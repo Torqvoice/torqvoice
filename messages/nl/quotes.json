@@ -134,11 +134,13 @@
     "parts": "Onderdelen",
     "labor": "Arbeid",
     "subtotal": "Subtotaal",
+    "subtotalInclTax": "Subtotaal (incl. btw)",
     "discount": "Korting",
     "discountNone": "Geen",
     "discountPercentage": "Percentage",
     "discountFixed": "Vast bedrag",
     "tax": "Btw",
+    "taxIncluded": "Btw (incl.)",
     "total": "Totaal"
   },
   "shareDialog": {

@@ -27,6 +27,7 @@ export interface InvoiceData {
   subtotal: number
   taxRate: number
   taxAmount: number
+  taxInclusive?: boolean
   totalAmount: number
   cost: number
   invoiceNumber: string | null

@@ -25,6 +25,7 @@ export interface QuoteRecord {
   subtotal: number;
   taxRate: number;
   taxAmount: number;
+  taxInclusive: boolean;
   discountType: string | null;
   discountValue: number;
   discountAmount: number;

@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
 import { SETTING_KEYS } from "../Schema/settingsSchema";
+import { calculateTotals } from "@/lib/tax";
 
 /**
  * Apply the current default tax rate from settings to existing ServiceRecords
@@ -47,6 +48,7 @@ export async function applyTaxRateToExisting() {
           id: true,
           subtotal: true,
           discountAmount: true,
+          taxInclusive: true,
         },
       });
 
@@ -60,6 +62,7 @@ export async function applyTaxRateToExisting() {
           id: true,
           subtotal: true,
           discountAmount: true,
+          taxInclusive: true,
         },
       });
 
@@ -68,9 +71,12 @@ export async function applyTaxRateToExisting() {
 
       await db.$transaction(async (tx) => {
         for (const r of serviceRecords) {
-          const base = Math.max(0, r.subtotal - r.discountAmount);
-          const taxAmount = base * (defaultTaxRate / 100);
-          const totalAmount = base + taxAmount;
+          const { taxAmount, totalAmount } = calculateTotals({
+            subtotal: r.subtotal,
+            discountAmount: r.discountAmount,
+            taxRate: defaultTaxRate,
+            taxInclusive: r.taxInclusive,
+          });
           await tx.serviceRecord.update({
             where: { id: r.id },
             data: {
@@ -83,9 +89,12 @@ export async function applyTaxRateToExisting() {
         }
 
         for (const q of quotes) {
-          const base = Math.max(0, q.subtotal - q.discountAmount);
-          const taxAmount = base * (defaultTaxRate / 100);
-          const totalAmount = base + taxAmount;
+          const { taxAmount, totalAmount } = calculateTotals({
+            subtotal: q.subtotal,
+            discountAmount: q.discountAmount,
+            taxRate: defaultTaxRate,
+            taxInclusive: q.taxInclusive,
+          });
           await tx.quote.update({
             where: { id: q.id },
             data: {

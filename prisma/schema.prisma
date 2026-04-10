@@ -196,6 +196,7 @@ model ServiceRecord {
   subtotal        Float     @default(0)
   taxRate         Float     @default(0)
   taxAmount       Float     @default(0)
+  taxInclusive    Boolean   @default(false)
   totalAmount     Float     @default(0)
   invoiceNumber   String?
   invoiceDate     DateTime?
@@ -493,6 +494,7 @@ model Quote {
   subtotal        Float     @default(0)
   taxRate         Float     @default(0)
   taxAmount       Float     @default(0)
+  taxInclusive    Boolean   @default(false)
   discountType    String?
   discountValue   Float     @default(0)
   discountAmount  Float     @default(0)
@@ -778,6 +780,7 @@ model RecurringInvoice {
   type         String  @default("maintenance")
   cost         Float   @default(0)
   taxRate      Float   @default(0)
+  taxInclusive Boolean @default(false)
   invoiceNotes String?
 
   vehicleId String

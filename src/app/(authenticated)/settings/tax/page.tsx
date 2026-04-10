@@ -5,7 +5,11 @@ import { TaxSettings } from "./tax-settings";
 
 export default async function TaxSettingsPage() {
   const [result, backfillResult] = await Promise.all([
-    getSettings([SETTING_KEYS.TAX_ENABLED, SETTING_KEYS.DEFAULT_TAX_RATE]),
+    getSettings([
+      SETTING_KEYS.TAX_ENABLED,
+      SETTING_KEYS.DEFAULT_TAX_RATE,
+      SETTING_KEYS.TAX_INCLUSIVE,
+    ]),
     getTaxBackfillCounts(),
   ]);
   const settings = result.success && result.data ? result.data : {};

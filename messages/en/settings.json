@@ -579,7 +579,13 @@
   },
   "tax": {
     "title": "Tax",
-    "description": "Configure the tax rate applied to invoices, quotes, and work orders."
+    "description": "Configure the tax rate applied to invoices, quotes, and work orders.",
+    "modeLabel": "Tax mode",
+    "modeHint": "Choose whether prices on line items are entered with tax already included (inclusive) or before tax (exclusive). Existing records keep the mode they were created with.",
+    "modeExclusive": "Exclusive",
+    "modeInclusive": "Inclusive",
+    "modeExclusiveExample": "Example: $100 + {rate}% tax = $100 + tax on top.",
+    "modeInclusiveExample": "Example: $100 entered already includes {rate}% tax — the tax portion is reverse-calculated."
   },
   "currency": {
     "title": "Currency & Tax",

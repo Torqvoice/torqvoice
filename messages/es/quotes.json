@@ -134,11 +134,13 @@
     "parts": "Repuestos",
     "labor": "Mano de obra",
     "subtotal": "Subtotal",
+    "subtotalInclTax": "Subtotal (con impuesto)",
     "discount": "Descuento",
     "discountNone": "Ninguno",
     "discountPercentage": "Porcentaje",
     "discountFixed": "Fijo",
     "tax": "Impuesto",
+    "taxIncluded": "Impuesto (incl.)",
     "total": "Total"
   },
   "shareDialog": {

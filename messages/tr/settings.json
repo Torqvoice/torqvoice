@@ -579,7 +579,13 @@
   },
   "tax": {
     "title": "Vergi",
-    "description": "Faturalar, teklifler ve iş emirlerine uygulanan vergi oranını yapılandırın."
+    "description": "Faturalar, teklifler ve iş emirlerine uygulanan vergi oranını yapılandırın.",
+    "modeLabel": "Vergi modu",
+    "modeHint": "Satır kalemlerindeki fiyatların vergi dahil mi (dahil) yoksa vergi hariç mi (hariç) girildiğini seçin. Mevcut kayıtlar, oluşturuldukları modu korur.",
+    "modeExclusive": "Hariç",
+    "modeInclusive": "Dahil",
+    "modeExclusiveExample": "Örnek: 100 + %{rate} vergi = 100 + üstüne vergi.",
+    "modeInclusiveExample": "Örnek: 100 zaten %{rate} vergiyi içeriyor — vergi kısmı geriye doğru hesaplanır."
   },
   "currency": {
     "title": "Para Birimi & Vergi",

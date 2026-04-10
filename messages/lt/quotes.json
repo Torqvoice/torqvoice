@@ -134,11 +134,13 @@
     "parts": "Dalys",
     "labor": "Darbai",
     "subtotal": "Tarpinė suma",
+    "subtotalInclTax": "Tarpinė suma (su mokesčiu)",
     "discount": "Nuolaida",
     "discountNone": "Nėra",
     "discountPercentage": "Procentinė",
     "discountFixed": "Fiksuota",
     "tax": "Mokestis",
+    "taxIncluded": "Mokestis (įsk.)",
     "total": "Iš viso"
   },
   "shareDialog": {
