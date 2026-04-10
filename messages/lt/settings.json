@@ -425,6 +425,7 @@
       "customer_address": "Kliento adresas",
       "customer_email": "Kliento el. paštas",
       "customer_phone": "Kliento telefonas",
+      "customer_tax_id": "Kliento PVM kodas",
       "vehicle_name": "Transporto priemonė",
       "vin": "VIN",
       "license_plate": "Valstybinis numeris",

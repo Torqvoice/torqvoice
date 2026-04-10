@@ -425,6 +425,7 @@
       "customer_address": "Dirección",
       "customer_email": "Correo electrónico",
       "customer_phone": "Teléfono",
+      "customer_tax_id": "NIF / CIF del cliente",
       "vehicle_name": "Vehículo",
       "vin": "VIN",
       "license_plate": "Matrícula",

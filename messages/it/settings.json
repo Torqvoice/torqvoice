@@ -425,6 +425,7 @@
       "customer_address": "Indirizzo",
       "customer_email": "E-mail",
       "customer_phone": "Telefono",
+      "customer_tax_id": "P. IVA cliente",
       "vehicle_name": "Veicolo",
       "vin": "VIN",
       "license_plate": "Targa",

@@ -425,6 +425,7 @@
       "customer_address": "Адрес клиента",
       "customer_email": "Эл. почта клиента",
       "customer_phone": "Телефон клиента",
+      "customer_tax_id": "ИНН клиента",
       "vehicle_name": "Транспортное средство",
       "vin": "VIN",
       "license_plate": "Госномер",

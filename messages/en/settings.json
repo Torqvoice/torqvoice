@@ -425,6 +425,7 @@
       "customer_address": "Customer Address",
       "customer_email": "Customer Email",
       "customer_phone": "Customer Phone",
+      "customer_tax_id": "Customer Tax ID",
       "vehicle_name": "Vehicle",
       "vin": "VIN",
       "license_plate": "License Plate",

@@ -425,6 +425,7 @@
       "customer_address": "Adresse",
       "customer_email": "E-Mail",
       "customer_phone": "Telefon",
+      "customer_tax_id": "USt-IdNr.",
       "vehicle_name": "Fahrzeug",
       "vin": "FIN",
       "license_plate": "Kennzeichen",

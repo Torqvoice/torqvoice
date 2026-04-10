@@ -425,6 +425,7 @@
       "customer_address": "Adres",
       "customer_email": "E-mail",
       "customer_phone": "Telefoon",
+      "customer_tax_id": "Btw-nummer klant",
       "vehicle_name": "Voertuig",
       "vin": "VIN",
       "license_plate": "Kenteken",

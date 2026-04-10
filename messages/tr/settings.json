@@ -425,6 +425,7 @@
       "customer_address": "Adres",
       "customer_email": "E-posta",
       "customer_phone": "Telefon",
+      "customer_tax_id": "Müşteri vergi no",
       "vehicle_name": "Araç",
       "vin": "VIN",
       "license_plate": "Plaka",

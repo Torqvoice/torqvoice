@@ -425,6 +425,7 @@
       "customer_address": "Adresse",
       "customer_email": "E-post",
       "customer_phone": "Telefon",
+      "customer_tax_id": "Org.nr / MVA-nr",
       "vehicle_name": "Kjøretøy",
       "vin": "VIN",
       "license_plate": "Reg.nr",

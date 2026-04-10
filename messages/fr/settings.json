@@ -425,6 +425,7 @@
       "customer_address": "Adresse",
       "customer_email": "E-mail",
       "customer_phone": "Téléphone",
+      "customer_tax_id": "Numéro TVA client",
       "vehicle_name": "Véhicule",
       "vin": "VIN",
       "license_plate": "Plaque d'immatriculation",

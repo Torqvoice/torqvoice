@@ -106,6 +106,7 @@ const DUMMY_INVOICE_DATA = {
       phone: "(555) 123-4567",
       address: "123 Main Street, Springfield",
       company: "Smith Auto Group",
+      taxId: "GB123456789",
     },
   },
 };
@@ -162,6 +163,7 @@ const DUMMY_QUOTE_DATA = {
     phone: "(555) 123-4567",
     address: "123 Main Street, Springfield",
     company: "Smith Auto Group",
+    taxId: "GB123456789",
   },
   vehicle: {
     make: "Toyota",

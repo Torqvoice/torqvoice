@@ -425,6 +425,7 @@
       "customer_address": "Adres",
       "customer_email": "E-mail",
       "customer_phone": "Telefon",
+      "customer_tax_id": "NIP klienta",
       "vehicle_name": "Pojazd",
       "vin": "VIN",
       "license_plate": "Tablica rejestracyjna",

@@ -425,6 +425,7 @@
       "customer_address": "Endereço",
       "customer_email": "E-mail",
       "customer_phone": "Telefone",
+      "customer_tax_id": "CNPJ do cliente",
       "vehicle_name": "Veículo",
       "vin": "VIN",
       "license_plate": "Placa",
