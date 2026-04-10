@@ -598,7 +598,16 @@
     "convertInclusiveConfirmLabel": "Records converteren",
     "convertInclusiveSuccess": "{serviceRecords} werkorders en {quotes} offertes geconverteerd naar inclusieve modus.",
     "convertInclusiveFailed": "Records konden niet worden geconverteerd naar inclusieve modus",
-    "convertInclusiveNoRecords": "Geen records in exclusieve modus om te converteren."
+    "convertInclusiveNoRecords": "Geen records in exclusieve modus om te converteren.",
+    "convertExclusiveLabel": "Bestaande records converteren naar exclusieve modus",
+    "convertExclusiveHint": "Schaalt elke regelprijs omlaag met het belastingtarief zodat prijzen bedragen vóór belasting tonen. Klantgerichte totalen blijven hetzelfde. In aanmerking: {serviceRecords} werkorders, {quotes} offertes.",
+    "convertExclusiveButton": "Converteer naar exclusief",
+    "convertExclusiveConfirmTitle": "Bestaande records converteren naar exclusieve modus?",
+    "convertExclusiveConfirmDescription": "Dit herschrijft de regelprijzen van {serviceRecords} werkorders en {quotes} offertes zodat ze bedragen vóór belasting tonen. Klantgerichte totalen veranderen niet, maar gedrukte prijzen op eerdere facturen verschijnen lager. Dit kan niet ongedaan worden gemaakt.",
+    "convertExclusiveConfirmLabel": "Records converteren",
+    "convertExclusiveSuccess": "{serviceRecords} werkorders en {quotes} offertes geconverteerd naar exclusieve modus.",
+    "convertExclusiveFailed": "Records konden niet worden geconverteerd naar exclusieve modus",
+    "convertExclusiveNoRecords": "Geen records in inclusieve modus om te converteren."
   },
   "currency": {
     "title": "Valuta en belasting",

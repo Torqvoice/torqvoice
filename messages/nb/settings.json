@@ -598,7 +598,16 @@
     "convertInclusiveConfirmLabel": "Konverter oppføringer",
     "convertInclusiveSuccess": "Konverterte {serviceRecords} arbeidsordrer og {quotes} tilbud til inklusiv modus.",
     "convertInclusiveFailed": "Kunne ikke konvertere oppføringer til inklusiv modus",
-    "convertInclusiveNoRecords": "Ingen oppføringer i eksklusiv modus å konvertere."
+    "convertInclusiveNoRecords": "Ingen oppføringer i eksklusiv modus å konvertere.",
+    "convertExclusiveLabel": "Konverter eksisterende oppføringer til eksklusiv modus",
+    "convertExclusiveHint": "Skalerer hver linjepris ned med avgiftssatsen slik at prisene viser beløp før avgift. Kundens totaler forblir uendret. Berettiget: {serviceRecords} arbeidsordrer, {quotes} tilbud.",
+    "convertExclusiveButton": "Konverter til eksklusiv",
+    "convertExclusiveConfirmTitle": "Konvertere eksisterende oppføringer til eksklusiv modus?",
+    "convertExclusiveConfirmDescription": "Dette vil omskrive linjeprisene på {serviceRecords} arbeidsordrer og {quotes} tilbud slik at de viser beløp før avgift. Kundens totaler endres ikke, men de utskrevne prisene på tidligere fakturaer vil vises lavere. Dette kan ikke angres.",
+    "convertExclusiveConfirmLabel": "Konverter oppføringer",
+    "convertExclusiveSuccess": "Konverterte {serviceRecords} arbeidsordrer og {quotes} tilbud til eksklusiv modus.",
+    "convertExclusiveFailed": "Kunne ikke konvertere oppføringer til eksklusiv modus",
+    "convertExclusiveNoRecords": "Ingen oppføringer i inklusiv modus å konvertere."
   },
   "currency": {
     "title": "Valuta og avgift",

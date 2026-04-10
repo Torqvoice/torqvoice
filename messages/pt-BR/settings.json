@@ -598,7 +598,16 @@
     "convertInclusiveConfirmLabel": "Converter registros",
     "convertInclusiveSuccess": "Convertidas {serviceRecords} ordens de serviço e {quotes} orçamentos para modo inclusivo.",
     "convertInclusiveFailed": "Falha ao converter registros para modo inclusivo",
-    "convertInclusiveNoRecords": "Nenhum registro em modo exclusivo para converter."
+    "convertInclusiveNoRecords": "Nenhum registro em modo exclusivo para converter.",
+    "convertExclusiveLabel": "Converter registros existentes para modo exclusivo",
+    "convertExclusiveHint": "Escala cada preço de linha para baixo pela taxa de imposto para que os preços mostrem valores antes do imposto. Os totais para o cliente não mudam. Elegíveis: {serviceRecords} ordens de serviço, {quotes} orçamentos.",
+    "convertExclusiveButton": "Converter para exclusivo",
+    "convertExclusiveConfirmTitle": "Converter registros existentes para modo exclusivo?",
+    "convertExclusiveConfirmDescription": "Isso reescreverá os preços de linha de {serviceRecords} ordens de serviço e {quotes} orçamentos para mostrar valores antes do imposto. Os totais para o cliente não mudarão, mas os preços impressos em faturas anteriores aparecerão mais baixos. Esta ação não pode ser desfeita.",
+    "convertExclusiveConfirmLabel": "Converter registros",
+    "convertExclusiveSuccess": "Convertidas {serviceRecords} ordens de serviço e {quotes} orçamentos para modo exclusivo.",
+    "convertExclusiveFailed": "Falha ao converter registros para modo exclusivo",
+    "convertExclusiveNoRecords": "Nenhum registro em modo inclusivo para converter."
   },
   "currency": {
     "title": "Moeda e impostos",

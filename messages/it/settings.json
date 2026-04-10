@@ -598,7 +598,16 @@
     "convertInclusiveConfirmLabel": "Converti i record",
     "convertInclusiveSuccess": "Convertiti {serviceRecords} ordini di lavoro e {quotes} preventivi in modalità inclusiva.",
     "convertInclusiveFailed": "Impossibile convertire i record in modalità inclusiva",
-    "convertInclusiveNoRecords": "Nessun record in modalità esclusiva da convertire."
+    "convertInclusiveNoRecords": "Nessun record in modalità esclusiva da convertire.",
+    "convertExclusiveLabel": "Convertire record esistenti in modalità esclusiva",
+    "convertExclusiveHint": "Riduce ogni prezzo di riga in base alla aliquota fiscale in modo che i prezzi mostrino gli importi al netto. I totali lato cliente non cambiano. Idonei: {serviceRecords} ordini di lavoro, {quotes} preventivi.",
+    "convertExclusiveButton": "Converti in esclusivo",
+    "convertExclusiveConfirmTitle": "Convertire i record esistenti in modalità esclusiva?",
+    "convertExclusiveConfirmDescription": "Questo riscriverà i prezzi di riga di {serviceRecords} ordini di lavoro e {quotes} preventivi per mostrare importi al netto. I totali lato cliente non cambieranno, ma i prezzi stampati sulle fatture passate appariranno più bassi. Questa operazione è irreversibile.",
+    "convertExclusiveConfirmLabel": "Converti i record",
+    "convertExclusiveSuccess": "Convertiti {serviceRecords} ordini di lavoro e {quotes} preventivi in modalità esclusiva.",
+    "convertExclusiveFailed": "Impossibile convertire i record in modalità esclusiva",
+    "convertExclusiveNoRecords": "Nessun record in modalità inclusiva da convertire."
   },
   "currency": {
     "title": "Valuta e imposte",

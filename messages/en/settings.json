@@ -598,7 +598,16 @@
     "convertInclusiveConfirmLabel": "Convert records",
     "convertInclusiveSuccess": "Converted {serviceRecords} work orders and {quotes} quotes to inclusive mode.",
     "convertInclusiveFailed": "Failed to convert records to inclusive mode",
-    "convertInclusiveNoRecords": "No exclusive-mode records to convert."
+    "convertInclusiveNoRecords": "No exclusive-mode records to convert.",
+    "convertExclusiveLabel": "Convert existing records to exclusive mode",
+    "convertExclusiveHint": "Scales every line item price downward by the tax rate so prices show pre-tax amounts. Customer-facing totals stay the same. Eligible: {serviceRecords} work orders, {quotes} quotes.",
+    "convertExclusiveButton": "Convert to exclusive",
+    "convertExclusiveConfirmTitle": "Convert existing records to exclusive mode?",
+    "convertExclusiveConfirmDescription": "This will rewrite line item prices on {serviceRecords} work orders and {quotes} quotes so they show pre-tax amounts. Customer-facing totals will not change, but the printed prices on past invoices will appear lower. This cannot be undone.",
+    "convertExclusiveConfirmLabel": "Convert records",
+    "convertExclusiveSuccess": "Converted {serviceRecords} work orders and {quotes} quotes to exclusive mode.",
+    "convertExclusiveFailed": "Failed to convert records to exclusive mode",
+    "convertExclusiveNoRecords": "No inclusive-mode records to convert."
   },
   "currency": {
     "title": "Currency & Tax",

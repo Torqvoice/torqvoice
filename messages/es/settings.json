@@ -598,7 +598,16 @@
     "convertInclusiveConfirmLabel": "Convertir registros",
     "convertInclusiveSuccess": "Se convirtieron {serviceRecords} órdenes de trabajo y {quotes} presupuestos a modo inclusivo.",
     "convertInclusiveFailed": "No se pudo convertir los registros a modo inclusivo",
-    "convertInclusiveNoRecords": "No hay registros en modo exclusivo para convertir."
+    "convertInclusiveNoRecords": "No hay registros en modo exclusivo para convertir.",
+    "convertExclusiveLabel": "Convertir registros existentes a modo exclusivo",
+    "convertExclusiveHint": "Escala cada precio de línea hacia abajo por la tasa de impuesto para que los precios muestren importes sin impuesto. Los totales para el cliente no cambian. Elegibles: {serviceRecords} órdenes de trabajo, {quotes} presupuestos.",
+    "convertExclusiveButton": "Convertir a exclusivo",
+    "convertExclusiveConfirmTitle": "¿Convertir registros existentes a modo exclusivo?",
+    "convertExclusiveConfirmDescription": "Esto reescribirá los precios de línea de {serviceRecords} órdenes de trabajo y {quotes} presupuestos para que muestren importes sin impuesto. Los totales para el cliente no cambiarán, pero los precios impresos en facturas anteriores aparecerán más bajos. Esto no se puede deshacer.",
+    "convertExclusiveConfirmLabel": "Convertir registros",
+    "convertExclusiveSuccess": "Se convirtieron {serviceRecords} órdenes de trabajo y {quotes} presupuestos a modo exclusivo.",
+    "convertExclusiveFailed": "No se pudo convertir los registros a modo exclusivo",
+    "convertExclusiveNoRecords": "No hay registros en modo inclusivo para convertir."
   },
   "currency": {
     "title": "Moneda e impuestos",

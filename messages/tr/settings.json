@@ -598,7 +598,16 @@
     "convertInclusiveConfirmLabel": "Kayıtları dönüştür",
     "convertInclusiveSuccess": "{serviceRecords} iş emri ve {quotes} teklif KDV dahil moda dönüştürüldü.",
     "convertInclusiveFailed": "Kayıtlar KDV dahil moda dönüştürülemedi",
-    "convertInclusiveNoRecords": "Dönüştürülecek KDV hariç modunda kayıt yok."
+    "convertInclusiveNoRecords": "Dönüştürülecek KDV hariç modunda kayıt yok.",
+    "convertExclusiveLabel": "Mevcut kayıtları KDV hariç moda dönüştür",
+    "convertExclusiveHint": "Her satır fiyatını vergi oranı kadar aşağı ölçekleyerek fiyatların vergi öncesi tutarları göstermesini sağlar. Müşteri tarafındaki toplamlar değişmez. Uygun: {serviceRecords} iş emri, {quotes} teklif.",
+    "convertExclusiveButton": "KDV harice dönüştür",
+    "convertExclusiveConfirmTitle": "Mevcut kayıtlar KDV hariç moda dönüştürülsün mü?",
+    "convertExclusiveConfirmDescription": "Bu, {serviceRecords} iş emri ve {quotes} teklifteki satır fiyatlarını vergi öncesi tutarları gösterecek şekilde yeniden yazacaktır. Müşteri tarafındaki toplamlar değişmeyecek, ancak geçmiş faturalardaki yazdırılmış fiyatlar daha düşük görünecektir. Bu işlem geri alınamaz.",
+    "convertExclusiveConfirmLabel": "Kayıtları dönüştür",
+    "convertExclusiveSuccess": "{serviceRecords} iş emri ve {quotes} teklif KDV hariç moda dönüştürüldü.",
+    "convertExclusiveFailed": "Kayıtlar KDV hariç moda dönüştürülemedi",
+    "convertExclusiveNoRecords": "Dönüştürülecek KDV dahil modunda kayıt yok."
   },
   "currency": {
     "title": "Para Birimi & Vergi",

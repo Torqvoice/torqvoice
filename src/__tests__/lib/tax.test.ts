@@ -220,6 +220,70 @@ describe("convert exclusive → inclusive (round-trip)", () => {
   });
 });
 
+describe("convert inclusive → exclusive (round-trip)", () => {
+  // The convertRecordsToExclusive backfill divides line items by (1 + rate/100).
+  // After scaling, calculateTotals in exclusive mode must produce the SAME
+  // taxAmount and totalAmount the original inclusive record had.
+
+  it("preserves totals for an inclusive record with no discount", () => {
+    const taxRate = 25;
+    const inclusive = calculateTotals({
+      subtotal: 125,
+      discountAmount: 0,
+      taxRate,
+      taxInclusive: true,
+    });
+    const factor = 1 + taxRate / 100;
+    const exclusive = calculateTotals({
+      subtotal: 125 / factor,
+      discountAmount: 0,
+      taxRate,
+      taxInclusive: false,
+    });
+    expect(exclusive.taxAmount).toBeCloseTo(inclusive.taxAmount);
+    expect(exclusive.totalAmount).toBeCloseTo(inclusive.totalAmount);
+  });
+
+  it("preserves totals when converting an inclusive record with a fixed discount back to exclusive", () => {
+    const taxRate = 10;
+    const inclusive = calculateTotals({
+      subtotal: 110,
+      discountAmount: 22,
+      taxRate,
+      taxInclusive: true,
+    });
+    const factor = 1 + taxRate / 100;
+    const exclusive = calculateTotals({
+      subtotal: 110 / factor,
+      discountAmount: 22 / factor,
+      taxRate,
+      taxInclusive: false,
+    });
+    expect(exclusive.taxAmount).toBeCloseTo(inclusive.taxAmount);
+    expect(exclusive.totalAmount).toBeCloseTo(inclusive.totalAmount);
+  });
+
+  it("preserves totals for an inclusive record with a percentage discount", () => {
+    const taxRate = 25;
+    // Inclusive 10% discount on 200 gross subtotal
+    const inclusive = calculateTotals({
+      subtotal: 200,
+      discountAmount: 20,
+      taxRate,
+      taxInclusive: true,
+    });
+    const factor = 1 + taxRate / 100;
+    const exclusive = calculateTotals({
+      subtotal: 200 / factor,
+      discountAmount: 20 / factor,
+      taxRate,
+      taxInclusive: false,
+    });
+    expect(exclusive.taxAmount).toBeCloseTo(inclusive.taxAmount);
+    expect(exclusive.totalAmount).toBeCloseTo(inclusive.totalAmount);
+  });
+});
+
 describe("netLineTotal", () => {
   it("returns the line total unchanged for exclusive mode", () => {
     expect(netLineTotal(100, 10, false)).toBe(100);

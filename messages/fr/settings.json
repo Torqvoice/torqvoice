@@ -598,7 +598,16 @@
     "convertInclusiveConfirmLabel": "Convertir les enregistrements",
     "convertInclusiveSuccess": "{serviceRecords} bons de travail et {quotes} devis convertis en mode inclusif.",
     "convertInclusiveFailed": "Impossible de convertir les enregistrements en mode inclusif",
-    "convertInclusiveNoRecords": "Aucun enregistrement en mode exclusif à convertir."
+    "convertInclusiveNoRecords": "Aucun enregistrement en mode exclusif à convertir.",
+    "convertExclusiveLabel": "Convertir les enregistrements existants en mode exclusif",
+    "convertExclusiveHint": "Diminue chaque prix de ligne par le taux de taxe afin que les prix affichent les montants hors taxe. Les totaux côté client restent identiques. Éligibles : {serviceRecords} bons de travail, {quotes} devis.",
+    "convertExclusiveButton": "Convertir en exclusif",
+    "convertExclusiveConfirmTitle": "Convertir les enregistrements existants en mode exclusif ?",
+    "convertExclusiveConfirmDescription": "Cela réécrira les prix de ligne de {serviceRecords} bons de travail et {quotes} devis pour quils affichent les montants hors taxe. Les totaux côté client ne changeront pas, mais les prix imprimés sur les factures passées apparaîtront plus bas. Cette action est irréversible.",
+    "convertExclusiveConfirmLabel": "Convertir les enregistrements",
+    "convertExclusiveSuccess": "{serviceRecords} bons de travail et {quotes} devis convertis en mode exclusif.",
+    "convertExclusiveFailed": "Impossible de convertir les enregistrements en mode exclusif",
+    "convertExclusiveNoRecords": "Aucun enregistrement en mode inclusif à convertir."
   },
   "currency": {
     "title": "Devise et taxes",

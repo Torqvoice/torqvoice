@@ -15,6 +15,7 @@ import { setSettings } from "@/features/settings/Actions/settingsActions";
 import {
   applyTaxRateToExisting,
   convertRecordsToInclusive,
+  convertRecordsToExclusive,
 } from "@/features/settings/Actions/applyTaxRateToExisting";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { useConfirm } from "@/components/confirm-dialog";
@@ -25,10 +26,12 @@ export function TaxSettings({
   settings,
   taxBackfillCounts,
   inclusiveBackfillCounts,
+  exclusiveBackfillCounts,
 }: {
   settings: Record<string, string>;
   taxBackfillCounts: { serviceRecords: number; quotes: number };
   inclusiveBackfillCounts: { serviceRecords: number; quotes: number };
+  exclusiveBackfillCounts: { serviceRecords: number; quotes: number };
 }) {
   const router = useRouter();
   const t = useTranslations("settings");
@@ -37,6 +40,7 @@ export function TaxSettings({
   const [saving, setSaving] = useState(false);
   const [applyingTax, setApplyingTax] = useState(false);
   const [convertingInclusive, setConvertingInclusive] = useState(false);
+  const [convertingExclusive, setConvertingExclusive] = useState(false);
   const [taxEnabled, setTaxEnabled] = useState(
     settings[SETTING_KEYS.TAX_ENABLED] !== "false",
   );
@@ -130,6 +134,41 @@ export function TaxSettings({
       router.refresh();
     } else {
       toast.error(result.error || t("tax.convertInclusiveFailed"));
+    }
+  };
+
+  const handleConvertToExclusive = async () => {
+    const totalCount =
+      exclusiveBackfillCounts.serviceRecords + exclusiveBackfillCounts.quotes;
+    if (totalCount === 0) {
+      toast.info(t("tax.convertExclusiveNoRecords"));
+      return;
+    }
+    const ok = await confirm({
+      title: t("tax.convertExclusiveConfirmTitle"),
+      description: t("tax.convertExclusiveConfirmDescription", {
+        serviceRecords: exclusiveBackfillCounts.serviceRecords,
+        quotes: exclusiveBackfillCounts.quotes,
+      }),
+      confirmLabel: t("tax.convertExclusiveConfirmLabel"),
+      destructive: true,
+    });
+    if (!ok) return;
+
+    setConvertingExclusive(true);
+    const result = await convertRecordsToExclusive();
+    setConvertingExclusive(false);
+
+    if (result.success && result.data) {
+      toast.success(
+        t("tax.convertExclusiveSuccess", {
+          serviceRecords: result.data.serviceRecordsUpdated,
+          quotes: result.data.quotesUpdated,
+        }),
+      );
+      router.refresh();
+    } else {
+      toast.error(result.error || t("tax.convertExclusiveFailed"));
     }
   };
 
@@ -314,6 +353,41 @@ export function TaxSettings({
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       ) : null}
                       {t("tax.convertInclusiveButton")}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {taxEnabled && !taxInclusive && (
+                <div className="rounded-lg border bg-muted/30 p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="space-y-1 sm:max-w-xl">
+                      <p className="text-sm font-medium">
+                        {t("tax.convertExclusiveLabel")}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {t("tax.convertExclusiveHint", {
+                          serviceRecords: exclusiveBackfillCounts.serviceRecords,
+                          quotes: exclusiveBackfillCounts.quotes,
+                        })}
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      onClick={handleConvertToExclusive}
+                      disabled={
+                        convertingExclusive ||
+                        exclusiveBackfillCounts.serviceRecords +
+                          exclusiveBackfillCounts.quotes ===
+                          0
+                      }
+                    >
+                      {convertingExclusive ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : null}
+                      {t("tax.convertExclusiveButton")}
                     </Button>
                   </div>
                 </div>

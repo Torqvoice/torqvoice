@@ -598,7 +598,16 @@
     "convertInclusiveConfirmLabel": "Konvertuoti įrašus",
     "convertInclusiveSuccess": "Konvertuota {serviceRecords} darbo užsakymų ir {quotes} pasiūlymų į režimą su mokesčiu.",
     "convertInclusiveFailed": "Nepavyko konvertuoti įrašų į režimą su mokesčiu",
-    "convertInclusiveNoRecords": "Nėra įrašų be mokesčio režime, kuriuos būtų galima konvertuoti."
+    "convertInclusiveNoRecords": "Nėra įrašų be mokesčio režime, kuriuos būtų galima konvertuoti.",
+    "convertExclusiveLabel": "Konvertuoti esamus įrašus į režimą be mokesčio",
+    "convertExclusiveHint": "Sumažina kiekvienos eilutės kainą mokesčių tarifu, kad kainos rodytų sumas be mokesčio. Kliento pusės sumos lieka nepakitusios. Tinkami: {serviceRecords} darbo užsakymų, {quotes} pasiūlymų.",
+    "convertExclusiveButton": "Konvertuoti į režimą be mokesčio",
+    "convertExclusiveConfirmTitle": "Konvertuoti esamus įrašus į režimą be mokesčio?",
+    "convertExclusiveConfirmDescription": "Tai perrašys eilučių kainas {serviceRecords} darbo užsakymuose ir {quotes} pasiūlymuose, kad jos rodytų sumas be mokesčio. Kliento pusės sumos nesikeis, bet ankstesnėse sąskaitose atspausdintos kainos atrodys mažesnės. Šio veiksmo atšaukti negalima.",
+    "convertExclusiveConfirmLabel": "Konvertuoti įrašus",
+    "convertExclusiveSuccess": "Konvertuota {serviceRecords} darbo užsakymų ir {quotes} pasiūlymų į režimą be mokesčio.",
+    "convertExclusiveFailed": "Nepavyko konvertuoti įrašų į režimą be mokesčio",
+    "convertExclusiveNoRecords": "Nėra įrašų su mokesčio režime, kuriuos būtų galima konvertuoti."
   },
   "currency": {
     "title": "Valiuta ir mokesčiai",

@@ -598,7 +598,16 @@
     "convertInclusiveConfirmLabel": "Преобразовать записи",
     "convertInclusiveSuccess": "Преобразовано {serviceRecords} заказов и {quotes} коммерческих предложений в режим с НДС.",
     "convertInclusiveFailed": "Не удалось преобразовать записи в режим с НДС",
-    "convertInclusiveNoRecords": "Нет записей в режиме без НДС для преобразования."
+    "convertInclusiveNoRecords": "Нет записей в режиме без НДС для преобразования.",
+    "convertExclusiveLabel": "Преобразовать существующие записи в режим без НДС",
+    "convertExclusiveHint": "Уменьшает каждую цену позиции на ставку налога, чтобы цены показывали суммы без налога. Итоги для клиента остаются прежними. Подходит: {serviceRecords} заказов, {quotes} коммерческих предложений.",
+    "convertExclusiveButton": "Преобразовать в режим без НДС",
+    "convertExclusiveConfirmTitle": "Преобразовать существующие записи в режим без НДС?",
+    "convertExclusiveConfirmDescription": "Это перепишет цены позиций в {serviceRecords} заказах и {quotes} коммерческих предложениях, чтобы они показывали суммы без налога. Итоги для клиента не изменятся, но напечатанные цены на старых счетах будут отображаться ниже. Это действие нельзя отменить.",
+    "convertExclusiveConfirmLabel": "Преобразовать записи",
+    "convertExclusiveSuccess": "Преобразовано {serviceRecords} заказов и {quotes} коммерческих предложений в режим без НДС.",
+    "convertExclusiveFailed": "Не удалось преобразовать записи в режим без НДС",
+    "convertExclusiveNoRecords": "Нет записей в режиме с НДС для преобразования."
   },
   "currency": {
     "title": "Валюта и налоги",

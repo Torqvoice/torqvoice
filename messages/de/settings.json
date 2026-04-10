@@ -598,7 +598,16 @@
     "convertInclusiveConfirmLabel": "Einträge umwandeln",
     "convertInclusiveSuccess": "{serviceRecords} Arbeitsaufträge und {quotes} Angebote in inklusiven Modus umgewandelt.",
     "convertInclusiveFailed": "Einträge konnten nicht in inklusiven Modus umgewandelt werden",
-    "convertInclusiveNoRecords": "Keine Einträge im exklusiven Modus zum Umwandeln."
+    "convertInclusiveNoRecords": "Keine Einträge im exklusiven Modus zum Umwandeln.",
+    "convertExclusiveLabel": "Bestehende Einträge in exklusiven Modus umwandeln",
+    "convertExclusiveHint": "Skaliert jeden Zeilenpreis um den Steuersatz nach unten, sodass die Preise Beträge vor Steuer anzeigen. Kundenseitige Summen bleiben gleich. Berechtigt: {serviceRecords} Arbeitsaufträge, {quotes} Angebote.",
+    "convertExclusiveButton": "In exklusiv umwandeln",
+    "convertExclusiveConfirmTitle": "Bestehende Einträge in exklusiven Modus umwandeln?",
+    "convertExclusiveConfirmDescription": "Dies schreibt die Zeilenpreise von {serviceRecords} Arbeitsaufträgen und {quotes} Angeboten so um, dass sie Beträge vor Steuer anzeigen. Kundenseitige Summen ändern sich nicht, aber die gedruckten Preise auf früheren Rechnungen erscheinen niedriger. Dies kann nicht rückgängig gemacht werden.",
+    "convertExclusiveConfirmLabel": "Einträge umwandeln",
+    "convertExclusiveSuccess": "{serviceRecords} Arbeitsaufträge und {quotes} Angebote in exklusiven Modus umgewandelt.",
+    "convertExclusiveFailed": "Einträge konnten nicht in exklusiven Modus umgewandelt werden",
+    "convertExclusiveNoRecords": "Keine Einträge im inklusiven Modus zum Umwandeln."
   },
   "currency": {
     "title": "Wahrung & Steuer",
