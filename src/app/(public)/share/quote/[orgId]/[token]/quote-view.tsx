@@ -4,7 +4,7 @@ import { Camera, Check, ChevronLeft, ChevronRight, Download, FileText, Loader2, 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from "@/lib/format";
-import { calculateTotals } from "@/lib/tax";
+import { calculateTotals, netLineTotal } from "@/lib/tax";
 import { sanitizeHtml } from "@/lib/sanitize-html";
 import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds, getVisibleFieldsForSection } from "@/features/settings/Schema/invoiceLayoutSchema";
 
@@ -562,15 +562,19 @@ export function QuoteView({
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {quote.partItems.map((p, i) => (
-                          <tr key={i} className={p.excluded ? "line-through text-gray-400" : ""}>
-                            <td className="p-2 font-mono text-xs">{p.partNumber || "-"}</td>
-                            <td className="p-2">{p.name}</td>
-                            <td className="p-2 text-right">{p.quantity}</td>
-                            <td className="p-2 text-right">{formatCurrency(p.unitPrice, currencyCode)}</td>
-                            <td className="p-2 text-right font-medium">{formatCurrency(p.total, currencyCode)}</td>
-                          </tr>
-                        ))}
+                        {quote.partItems.map((p, i) => {
+                          const netUnitPrice = netLineTotal(p.unitPrice, quote.taxRate, quote.taxInclusive ?? false)
+                          const netLineValue = netLineTotal(p.total, quote.taxRate, quote.taxInclusive ?? false)
+                          return (
+                            <tr key={i} className={p.excluded ? "line-through text-gray-400" : ""}>
+                              <td className="p-2 font-mono text-xs">{p.partNumber || "-"}</td>
+                              <td className="p-2">{p.name}</td>
+                              <td className="p-2 text-right">{p.quantity}</td>
+                              <td className="p-2 text-right">{formatCurrency(netUnitPrice, currencyCode)}</td>
+                              <td className="p-2 text-right font-medium">{formatCurrency(netLineValue, currencyCode)}</td>
+                            </tr>
+                          )
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -593,14 +597,18 @@ export function QuoteView({
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {quote.laborItems.map((l, i) => (
-                          <tr key={i} className={l.excluded ? "line-through text-gray-400" : ""}>
-                            <td className="p-2">{l.description}</td>
-                            <td className="p-2 text-right">{l.pricingType === 'service' ? `${l.hours} ${t('unit')}` : `${l.hours} ${t('hrs')}`}</td>
-                            <td className="p-2 text-right">{l.pricingType === 'service' ? formatCurrency(l.rate, currencyCode) : t('ratePerHour', { rate: formatCurrency(l.rate, currencyCode) })}</td>
-                            <td className="p-2 text-right font-medium">{formatCurrency(l.total, currencyCode)}</td>
-                          </tr>
-                        ))}
+                        {quote.laborItems.map((l, i) => {
+                          const netRate = netLineTotal(l.rate, quote.taxRate, quote.taxInclusive ?? false)
+                          const netLineValue = netLineTotal(l.total, quote.taxRate, quote.taxInclusive ?? false)
+                          return (
+                            <tr key={i} className={l.excluded ? "line-through text-gray-400" : ""}>
+                              <td className="p-2">{l.description}</td>
+                              <td className="p-2 text-right">{l.pricingType === 'service' ? `${l.hours} ${t('unit')}` : `${l.hours} ${t('hrs')}`}</td>
+                              <td className="p-2 text-right">{l.pricingType === 'service' ? formatCurrency(netRate, currencyCode) : t('ratePerHour', { rate: formatCurrency(netRate, currencyCode) })}</td>
+                              <td className="p-2 text-right font-medium">{formatCurrency(netLineValue, currencyCode)}</td>
+                            </tr>
+                          )
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -611,20 +619,27 @@ export function QuoteView({
               return (
                 <div key="totals" className="mt-6 ml-auto max-w-xs space-y-2">
                   {(() => {
-                    const laborTotal = quote.laborItems.reduce((sum, l) => l.excluded ? sum : sum + l.total, 0);
-                    const partsTotal = quote.partItems.reduce((sum, p) => p.excluded ? sum : sum + p.total, 0);
-                    const sub = laborTotal + partsTotal;
-                    const disc = quote.discountType === "percentage"
-                      ? sub * (quote.discountValue / 100)
+                    const quoteTaxInclusive = quote.taxInclusive ?? false;
+                    // Stored sums (gross in inclusive mode, net in exclusive)
+                    const laborTotalStored = quote.laborItems.reduce((sum, l) => l.excluded ? sum : sum + l.total, 0);
+                    const partsTotalStored = quote.partItems.reduce((sum, p) => p.excluded ? sum : sum + p.total, 0);
+                    const subStored = laborTotalStored + partsTotalStored;
+                    const discStored = quote.discountType === "percentage"
+                      ? subStored * (quote.discountValue / 100)
                       : quote.discountType === "fixed"
-                      ? Math.min(quote.discountValue, sub)
+                      ? Math.min(quote.discountValue, subStored)
                       : 0;
                     const { taxAmount: tax, totalAmount: total } = calculateTotals({
-                      subtotal: sub,
-                      discountAmount: disc,
+                      subtotal: subStored,
+                      discountAmount: discStored,
                       taxRate: quote.taxRate,
-                      taxInclusive: quote.taxInclusive ?? false,
+                      taxInclusive: quoteTaxInclusive,
                     });
+                    // Universal display: net per category, net subtotal, net discount.
+                    const partsTotal = netLineTotal(partsTotalStored, quote.taxRate, quoteTaxInclusive);
+                    const laborTotal = netLineTotal(laborTotalStored, quote.taxRate, quoteTaxInclusive);
+                    const sub = netLineTotal(subStored, quote.taxRate, quoteTaxInclusive);
+                    const disc = netLineTotal(discStored, quote.taxRate, quoteTaxInclusive);
                     return (
                       <>
                         {quote.laborItems.length > 0 && (
@@ -641,9 +656,7 @@ export function QuoteView({
                         )}
                         {sub > 0 && (
                           <div className="flex justify-between text-sm">
-                            <span className="text-gray-500">
-                              {quote.taxInclusive ? t('subtotalInclTax') : t('subtotal')}
-                            </span>
+                            <span className="text-gray-500">{t('subtotal')}</span>
                             <span>{formatCurrency(sub, currencyCode)}</span>
                           </div>
                         )}
@@ -659,10 +672,8 @@ export function QuoteView({
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-500">
                               {taxLabel
-                                ? `${taxLabel} (${quote.taxInclusive ? 'incl. ' : ''}${quote.taxRate}%)`
-                                : quote.taxInclusive
-                                  ? t('taxIncluded', { rate: quote.taxRate })
-                                  : t('tax', { rate: quote.taxRate })}
+                                ? `${taxLabel} (${quote.taxRate}%)`
+                                : t('tax', { rate: quote.taxRate })}
                             </span>
                             <span>{formatCurrency(tax, currencyCode)}</span>
                           </div>

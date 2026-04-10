@@ -132,7 +132,8 @@
     "discountFixed": "Vast",
     "tax": "Belasting",
     "taxIncluded": "Belasting (incl.)",
-    "total": "Totaal"
+    "total": "Totaal",
+    "inclusiveModeHint": "Regelprijzen worden inclusief belasting ingevoerd. De totalen tonen de uitsplitsing netto + belasting."
   },
   "notes": {
     "title": "Opmerkingen",

@@ -122,7 +122,6 @@ export async function GET(
     const customTaxLabel = settingsMap["workshop.taxLabel"]?.trim();
     if (customTaxLabel) {
       labels.tax = `${customTaxLabel} ({rate}%)`;
-      labels.taxIncluded = `${customTaxLabel} (incl. {rate}%)`;
     }
 
     // Load image attachments as base64 data URIs for PDF embedding

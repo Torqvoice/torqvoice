@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/lib/format";
+import { netLineTotal } from "@/lib/tax";
 
 interface InvoiceSummaryProps {
   hasPartItems: boolean;
@@ -42,6 +43,14 @@ export function InvoiceSummary({
   currencyCode,
 }: InvoiceSummaryProps) {
   const t = useTranslations("service.invoice");
+
+  // Universal display: net per category, net subtotal, net discount, tax, gross total.
+  // No-op for exclusive records; back-calculates the net portions for inclusive records.
+  const displayPartsSubtotal = netLineTotal(partsSubtotal, taxRate, taxInclusive);
+  const displayLaborSubtotal = netLineTotal(laborSubtotal, taxRate, taxInclusive);
+  const displaySubtotal = netLineTotal(subtotal, taxRate, taxInclusive);
+  const displayDiscountAmount = netLineTotal(discountAmount, taxRate, taxInclusive);
+
   return (
     <div className="rounded-lg border p-3">
       <h3 className="mb-2 text-sm font-semibold">{t("title")}</h3>
@@ -49,35 +58,33 @@ export function InvoiceSummary({
         {hasPartItems && (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">{t("parts")}</span>
-            <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
+            <span>{formatCurrency(displayPartsSubtotal, currencyCode)}</span>
           </div>
         )}
         {hasLaborItems && (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">{t("labor")}</span>
-            <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
+            <span>{formatCurrency(displayLaborSubtotal, currencyCode)}</span>
           </div>
         )}
-        {subtotal > 0 && ((hasPartItems && hasLaborItems) || discountAmount > 0 || taxRate > 0) && (
+        {displaySubtotal > 0 && ((hasPartItems && hasLaborItems) || displayDiscountAmount > 0 || taxRate > 0) && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">
-              {taxInclusive ? t("subtotalInclTax") : t("subtotal")}
-            </span>
-            <span>{formatCurrency(subtotal, currencyCode)}</span>
+            <span className="text-muted-foreground">{t("subtotal")}</span>
+            <span>{formatCurrency(displaySubtotal, currencyCode)}</span>
           </div>
         )}
-        {discountAmount > 0 && (
+        {displayDiscountAmount > 0 && (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">
               {t("discount")}{discountType === "percentage" ? ` (${discountValue}%)` : ""}
             </span>
-            <span className="text-destructive">{formatCurrency(-discountAmount, currencyCode)}</span>
+            <span className="text-destructive">{formatCurrency(-displayDiscountAmount, currencyCode)}</span>
           </div>
         )}
         {taxRate > 0 && (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">
-              {taxInclusive ? t("taxIncluded", { rate: taxRate }) : t("tax", { rate: taxRate })}
+              {t("tax", { rate: taxRate })}
             </span>
             <span>{formatCurrency(taxAmount, currencyCode)}</span>
           </div>

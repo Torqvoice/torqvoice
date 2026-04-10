@@ -1,5 +1,6 @@
 import { Text, View } from '@react-pdf/renderer'
 import { formatCurrency } from '@/lib/format'
+import { netLineTotal } from '@/lib/tax'
 import { getFontBold } from './styles'
 import type { InvoiceData } from './types'
 import type { Style } from '@react-pdf/types'
@@ -21,6 +22,12 @@ interface TablesProps {
 export function PartsTable({ data, currencyCode, styles, labels }: TablesProps) {
   if (data.partItems.length === 0) return null
 
+  // Universal display: when an inclusive record is rendered, line item prices
+  // are back-calculated to net so the invoice is legally compliant and clear.
+  // Exclusive records render unchanged (netLineTotal returns input as-is).
+  const taxRate = data.taxRate
+  const taxInclusive = data.taxInclusive ?? false
+
   return (
     <View>
       <Text style={styles.sectionTitle}>{labels.parts || 'Parts'}</Text>
@@ -34,21 +41,25 @@ export function PartsTable({ data, currencyCode, styles, labels }: TablesProps) 
           </Text>
           <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>{labels.total || 'Total'}</Text>
         </View>
-        {data.partItems.map((part, i) => (
-          <View key={i} style={styles.tableRow}>
-            <Text style={{ ...styles.tableCell, width: '15%' }}>{part.partNumber || '-'}</Text>
-            <Text style={{ ...styles.tableCell, width: '35%' }}>{part.name}</Text>
-            <Text style={{ ...styles.tableCell, width: '12%', textAlign: 'right' }}>
-              {part.quantity}
-            </Text>
-            <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right' }}>
-              {formatCurrency(part.unitPrice, currencyCode)}
-            </Text>
-            <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
-              {formatCurrency(part.total, currencyCode)}
-            </Text>
-          </View>
-        ))}
+        {data.partItems.map((part, i) => {
+          const netUnitPrice = netLineTotal(part.unitPrice, taxRate, taxInclusive)
+          const netLineTotalValue = netLineTotal(part.total, taxRate, taxInclusive)
+          return (
+            <View key={i} style={styles.tableRow}>
+              <Text style={{ ...styles.tableCell, width: '15%' }}>{part.partNumber || '-'}</Text>
+              <Text style={{ ...styles.tableCell, width: '35%' }}>{part.name}</Text>
+              <Text style={{ ...styles.tableCell, width: '12%', textAlign: 'right' }}>
+                {part.quantity}
+              </Text>
+              <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right' }}>
+                {formatCurrency(netUnitPrice, currencyCode)}
+              </Text>
+              <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
+                {formatCurrency(netLineTotalValue, currencyCode)}
+              </Text>
+            </View>
+          )
+        })}
       </View>
     </View>
   )
@@ -56,6 +67,10 @@ export function PartsTable({ data, currencyCode, styles, labels }: TablesProps) 
 
 export function LaborTable({ data, currencyCode, styles, labels }: TablesProps) {
   if (data.laborItems.length === 0) return null
+
+  // See PartsTable for the rationale on netLineTotal usage.
+  const taxRate = data.taxRate
+  const taxInclusive = data.taxInclusive ?? false
 
   return (
     <View>
@@ -69,6 +84,8 @@ export function LaborTable({ data, currencyCode, styles, labels }: TablesProps) 
         </View>
         {data.laborItems.map((labor, i) => {
           const isService = labor.pricingType === 'service'
+          const netRate = netLineTotal(labor.rate, taxRate, taxInclusive)
+          const netLineTotalValue = netLineTotal(labor.total, taxRate, taxInclusive)
           return (
             <View key={i} style={styles.tableRow}>
               <Text style={{ ...styles.tableCell, width: '45%' }}>{labor.description}</Text>
@@ -79,13 +96,13 @@ export function LaborTable({ data, currencyCode, styles, labels }: TablesProps) 
               </Text>
               <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right' }}>
                 {isService
-                  ? formatCurrency(labor.rate, currencyCode)
+                  ? formatCurrency(netRate, currencyCode)
                   : labels.ratePerHour
-                    ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(labor.rate, currencyCode) })
-                    : `${formatCurrency(labor.rate, currencyCode)}/hr`}
+                    ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(netRate, currencyCode) })
+                    : `${formatCurrency(netRate, currencyCode)}/hr`}
               </Text>
               <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
-                {formatCurrency(labor.total, currencyCode)}
+                {formatCurrency(netLineTotalValue, currencyCode)}
               </Text>
             </View>
           )

@@ -141,7 +141,8 @@
     "discountFixed": "Fisso",
     "tax": "IVA",
     "taxIncluded": "IVA (incl.)",
-    "total": "Totale"
+    "total": "Totale",
+    "inclusiveModeHint": "I prezzi delle righe sono inseriti con imposta inclusa. I totali mostrano la suddivisione netto + imposta."
   },
   "shareDialog": {
     "title": "Condividi preventivo",

@@ -309,3 +309,128 @@ describe("netLineTotal", () => {
     expect(tax).toBeCloseTo(25);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Universal display formula — used by all PDFs/share views/invoice summary.
+// The display always shows: net subtotal + net discount + tax + gross total,
+// regardless of whether the record was entered in inclusive or exclusive mode.
+// These tests prove the same formulas balance for both modes and locked their
+// behaviour against future regressions.
+// ---------------------------------------------------------------------------
+describe("universal invoice display formulas", () => {
+  function buildDisplay(args: {
+    subtotal: number;
+    discountAmount: number;
+    taxRate: number;
+    taxInclusive: boolean;
+  }) {
+    const { subtotal, discountAmount, taxRate, taxInclusive } = args;
+    const { taxAmount, totalAmount } = calculateTotals(args);
+    return {
+      // Per-line and category subtotals are netted for display:
+      displaySubtotal: netLineTotal(subtotal, taxRate, taxInclusive),
+      displayDiscount: netLineTotal(discountAmount, taxRate, taxInclusive),
+      // Tax and total come straight from stored values (always correct).
+      displayTax: taxAmount,
+      displayTotal: totalAmount,
+    };
+  }
+
+  it("exclusive mode: simple invoice", () => {
+    const d = buildDisplay({ subtotal: 100, discountAmount: 0, taxRate: 25, taxInclusive: false });
+    expect(d.displaySubtotal).toBeCloseTo(100);
+    expect(d.displayDiscount).toBeCloseTo(0);
+    expect(d.displayTax).toBeCloseTo(25);
+    expect(d.displayTotal).toBeCloseTo(125);
+    // The display equation must balance.
+    expect(d.displaySubtotal - d.displayDiscount + d.displayTax).toBeCloseTo(d.displayTotal);
+  });
+
+  it("inclusive mode: simple invoice — net per-line is back-calculated", () => {
+    // User typed 125 (gross), inclusive 25%
+    const d = buildDisplay({ subtotal: 125, discountAmount: 0, taxRate: 25, taxInclusive: true });
+    expect(d.displaySubtotal).toBeCloseTo(100); // back-calculated net
+    expect(d.displayDiscount).toBeCloseTo(0);
+    expect(d.displayTax).toBeCloseTo(25);
+    expect(d.displayTotal).toBeCloseTo(125);
+    expect(d.displaySubtotal - d.displayDiscount + d.displayTax).toBeCloseTo(d.displayTotal);
+  });
+
+  it("exclusive mode: with fixed discount", () => {
+    const d = buildDisplay({ subtotal: 200, discountAmount: 20, taxRate: 25, taxInclusive: false });
+    // base = 180, tax = 45, total = 225
+    expect(d.displaySubtotal).toBeCloseTo(200);
+    expect(d.displayDiscount).toBeCloseTo(20);
+    expect(d.displayTax).toBeCloseTo(45);
+    expect(d.displayTotal).toBeCloseTo(225);
+    expect(d.displaySubtotal - d.displayDiscount + d.displayTax).toBeCloseTo(d.displayTotal);
+  });
+
+  it("inclusive mode: with fixed discount — discount is also back-calculated", () => {
+    // User typed 250 gross subtotal, 25 gross discount, inclusive 25%
+    // base = 225 gross, net = 180, tax = 45, total = 225
+    const d = buildDisplay({ subtotal: 250, discountAmount: 25, taxRate: 25, taxInclusive: true });
+    expect(d.displaySubtotal).toBeCloseTo(200); // 250 / 1.25
+    expect(d.displayDiscount).toBeCloseTo(20); // 25 / 1.25
+    expect(d.displayTax).toBeCloseTo(45);
+    expect(d.displayTotal).toBeCloseTo(225);
+    expect(d.displaySubtotal - d.displayDiscount + d.displayTax).toBeCloseTo(d.displayTotal);
+  });
+
+  it("inclusive mode: 0% tax — display equals stored values", () => {
+    const d = buildDisplay({ subtotal: 100, discountAmount: 10, taxRate: 0, taxInclusive: true });
+    expect(d.displaySubtotal).toBeCloseTo(100);
+    expect(d.displayDiscount).toBeCloseTo(10);
+    expect(d.displayTax).toBe(0);
+    expect(d.displayTotal).toBeCloseTo(90);
+  });
+
+  it("Norwegian VAT (25%) inclusive — exact 180 round-trip", () => {
+    // The user's reported case: typed 180 → conversion stored 225 inclusive
+    // The universal display should show 180 again on the invoice.
+    const d = buildDisplay({ subtotal: 225, discountAmount: 0, taxRate: 25, taxInclusive: true });
+    expect(d.displaySubtotal).toBeCloseTo(180);
+    expect(d.displayTax).toBeCloseTo(45);
+    expect(d.displayTotal).toBeCloseTo(225);
+  });
+
+  it("German VAT (19%) inclusive with discount", () => {
+    // Subtotal 119 gross, 11.90 gross discount, inclusive 19%
+    // base = 107.10, net = 90, tax = 17.10, total = 107.10
+    const d = buildDisplay({ subtotal: 119, discountAmount: 11.9, taxRate: 19, taxInclusive: true });
+    expect(d.displaySubtotal).toBeCloseTo(100);
+    expect(d.displayDiscount).toBeCloseTo(10);
+    expect(d.displayTax).toBeCloseTo(17.1);
+    expect(d.displayTotal).toBeCloseTo(107.1);
+    expect(d.displaySubtotal - d.displayDiscount + d.displayTax).toBeCloseTo(d.displayTotal);
+  });
+
+  it("US sales tax (8.25%) exclusive — unchanged behaviour", () => {
+    const d = buildDisplay({ subtotal: 1000, discountAmount: 0, taxRate: 8.25, taxInclusive: false });
+    expect(d.displaySubtotal).toBeCloseTo(1000);
+    expect(d.displayTax).toBeCloseTo(82.5);
+    expect(d.displayTotal).toBeCloseTo(1082.5);
+  });
+
+  it("the same logical invoice produces identical display in both modes", () => {
+    // An exclusive record with subtotal=1000, no discount, 25% tax
+    // is logically equivalent to an inclusive record with subtotal=1250.
+    // The universal display must produce the same numbers for both.
+    const exclusive = buildDisplay({ subtotal: 1000, discountAmount: 0, taxRate: 25, taxInclusive: false });
+    const inclusive = buildDisplay({ subtotal: 1250, discountAmount: 0, taxRate: 25, taxInclusive: true });
+    expect(exclusive.displaySubtotal).toBeCloseTo(inclusive.displaySubtotal);
+    expect(exclusive.displayTax).toBeCloseTo(inclusive.displayTax);
+    expect(exclusive.displayTotal).toBeCloseTo(inclusive.displayTotal);
+  });
+
+  it("equivalent records with discount produce identical display in both modes", () => {
+    // Exclusive: 200 net subtotal, 20 net discount, 25% tax
+    // Inclusive equivalent: 250 gross subtotal, 25 gross discount, 25% tax
+    const exclusive = buildDisplay({ subtotal: 200, discountAmount: 20, taxRate: 25, taxInclusive: false });
+    const inclusive = buildDisplay({ subtotal: 250, discountAmount: 25, taxRate: 25, taxInclusive: true });
+    expect(exclusive.displaySubtotal).toBeCloseTo(inclusive.displaySubtotal);
+    expect(exclusive.displayDiscount).toBeCloseTo(inclusive.displayDiscount);
+    expect(exclusive.displayTax).toBeCloseTo(inclusive.displayTax);
+    expect(exclusive.displayTotal).toBeCloseTo(inclusive.displayTotal);
+  });
+});

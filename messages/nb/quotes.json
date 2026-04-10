@@ -141,7 +141,8 @@
     "discountFixed": "Fast beløp",
     "tax": "Mva",
     "taxIncluded": "Mva (inkl.)",
-    "total": "Totalt"
+    "total": "Totalt",
+    "inclusiveModeHint": "Linjepriser legges inn med avgift inkludert. Totalene viser fordelingen netto + avgift."
   },
   "shareDialog": {
     "title": "Del tilbud",

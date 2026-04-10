@@ -141,7 +141,8 @@
     "discountFixed": "Fiksuota",
     "tax": "Mokestis",
     "taxIncluded": "Mokestis (įsk.)",
-    "total": "Iš viso"
+    "total": "Iš viso",
+    "inclusiveModeHint": "Eilučių kainos įvedamos su mokesčiu. Sumos rodo paskirstymą be mokesčio + mokestis."
   },
   "shareDialog": {
     "title": "Dalintis pasiūlymu",

@@ -141,7 +141,8 @@
     "discountFixed": "Festbetrag",
     "tax": "Steuer",
     "taxIncluded": "Steuer (inkl.)",
-    "total": "Gesamt"
+    "total": "Gesamt",
+    "inclusiveModeHint": "Zeilenpreise werden inklusive Steuer eingegeben. Die Summen zeigen die Aufteilung netto + Steuer."
   },
   "shareDialog": {
     "title": "Angebot teilen",

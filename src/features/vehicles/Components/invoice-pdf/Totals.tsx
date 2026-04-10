@@ -1,5 +1,6 @@
 import { Text, View } from '@react-pdf/renderer'
 import { formatCurrency } from '@/lib/format'
+import { netLineTotal } from '@/lib/tax'
 import type { InvoiceData, PaymentSummary } from './types'
 import { gray, lightenColor, getFontBold } from './styles'
 import type { Style } from '@react-pdf/types'
@@ -42,31 +43,38 @@ export function Totals({
 }: TotalsProps) {
   const fontBold = getFontBold(fontFamily)
 
+  // Universal display: always show net subtotal + net discount + tax + gross
+  // total, regardless of how the record was entered. For exclusive records
+  // these helpers are no-ops; for inclusive records they back-calculate the
+  // pre-tax amounts so the invoice is legally compliant and clear to read.
+  const taxRate = data.taxRate
+  const taxInclusive = data.taxInclusive ?? false
+  const displayPartsSubtotal = netLineTotal(partsSubtotal, taxRate, taxInclusive)
+  const displayLaborSubtotal = netLineTotal(laborSubtotal, taxRate, taxInclusive)
+  const displaySubtotal = netLineTotal(data.subtotal, taxRate, taxInclusive)
+  const displayDiscountAmount = netLineTotal(data.discountAmount ?? 0, taxRate, taxInclusive)
+
   return (
     <View style={styles.totalsBox}>
       {data.partItems.length > 0 && (
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
-          <Text style={styles.totalValue}>{formatCurrency(partsSubtotal, currencyCode)}</Text>
+          <Text style={styles.totalValue}>{formatCurrency(displayPartsSubtotal, currencyCode)}</Text>
         </View>
       )}
       {data.laborItems.length > 0 && (
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
-          <Text style={styles.totalValue}>{formatCurrency(laborSubtotal, currencyCode)}</Text>
+          <Text style={styles.totalValue}>{formatCurrency(displayLaborSubtotal, currencyCode)}</Text>
         </View>
       )}
-      {data.subtotal > 0 && (
+      {displaySubtotal > 0 && (
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>
-            {data.taxInclusive
-              ? (labels.subtotalInclTax || labels.subtotal || 'Subtotal (incl. tax)')
-              : (labels.subtotal || 'Subtotal')}
-          </Text>
-          <Text style={styles.totalValue}>{formatCurrency(data.subtotal, currencyCode)}</Text>
+          <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
+          <Text style={styles.totalValue}>{formatCurrency(displaySubtotal, currencyCode)}</Text>
         </View>
       )}
-      {(data.discountAmount ?? 0) > 0 && (
+      {displayDiscountAmount > 0 && (
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>
             {data.discountType === 'percentage'
@@ -74,20 +82,16 @@ export function Totals({
               : (labels.discount || 'Discount')}
           </Text>
           <Text style={{ ...styles.totalValue, color: '#dc2626' }}>
-            {formatCurrency(-(data.discountAmount ?? 0), currencyCode)}
+            {formatCurrency(-displayDiscountAmount, currencyCode)}
           </Text>
         </View>
       )}
-      {data.taxRate > 0 && (
+      {taxRate > 0 && (
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>
-            {data.taxInclusive
-              ? (labels.taxIncluded
-                  ? fillTemplate(labels.taxIncluded, { rate: String(data.taxRate) })
-                  : `Includes tax (${data.taxRate}%)`)
-              : (labels.tax
-                  ? fillTemplate(labels.tax, { rate: String(data.taxRate) })
-                  : `Tax (${data.taxRate}%)`)}
+            {labels.tax
+              ? fillTemplate(labels.tax, { rate: String(taxRate) })
+              : `Tax (${taxRate}%)`}
           </Text>
           <Text style={styles.totalValue}>{formatCurrency(data.taxAmount, currencyCode)}</Text>
         </View>

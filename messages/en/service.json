@@ -132,7 +132,8 @@
     "discountFixed": "Fixed",
     "tax": "Tax",
     "taxIncluded": "Tax (incl.)",
-    "total": "Total"
+    "total": "Total",
+    "inclusiveModeHint": "Line item prices are entered with tax included. Totals show the net + tax breakdown."
   },
   "notes": {
     "title": "Notes",

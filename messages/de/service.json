@@ -132,7 +132,8 @@
     "discountFixed": "Festbetrag",
     "tax": "Steuern",
     "taxIncluded": "Steuer (inkl.)",
-    "total": "Gesamt"
+    "total": "Gesamt",
+    "inclusiveModeHint": "Zeilenpreise werden inklusive Steuer eingegeben. Die Summen zeigen die Aufteilung netto + Steuer."
   },
   "notes": {
     "title": "Notizen",

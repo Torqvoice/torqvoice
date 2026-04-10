@@ -132,7 +132,8 @@
     "discountFixed": "Fast",
     "tax": "Skatt",
     "taxIncluded": "Avgift (inkl.)",
-    "total": "Total"
+    "total": "Total",
+    "inclusiveModeHint": "Linjepriser legges inn med avgift inkludert. Totalene viser fordelingen netto + avgift."
   },
   "notes": {
     "title": "Notater",

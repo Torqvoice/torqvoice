@@ -141,7 +141,8 @@
     "discountFixed": "Fijo",
     "tax": "Impuesto",
     "taxIncluded": "Impuesto (incl.)",
-    "total": "Total"
+    "total": "Total",
+    "inclusiveModeHint": "Los precios por línea se introducen con impuesto incluido. Los totales muestran el desglose neto + impuesto."
   },
   "shareDialog": {
     "title": "Compartir presupuesto",

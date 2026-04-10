@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { formatCurrency } from '@/lib/format'
+import { netLineTotal } from '@/lib/tax'
 
 interface TotalsSectionProps {
   partsSubtotal: number
@@ -47,23 +48,30 @@ export function TotalsSection({
   currencyCode,
 }: TotalsSectionProps) {
   const t = useTranslations('service.totals')
+
+  // Universal display: net per category, net subtotal, net discount, tax, gross total.
+  // Matches the invoice/PDF/share view exactly so the user always sees how the
+  // tax breaks down — even when they're entering prices in inclusive mode.
+  const displayPartsSubtotal = netLineTotal(partsSubtotal, taxRate, taxInclusive)
+  const displayLaborSubtotal = netLineTotal(laborSubtotal, taxRate, taxInclusive)
+  const displaySubtotal = netLineTotal(subtotal, taxRate, taxInclusive)
+  const displayDiscountAmount = netLineTotal(discountAmount, taxRate, taxInclusive)
+
   return (
     <div className="rounded-lg border p-3 space-y-2">
       <h3 className="text-sm font-semibold">{t('title')}</h3>
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">{t('parts')}</span>
-          <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
+          <span>{formatCurrency(displayPartsSubtotal, currencyCode)}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">{t('labor')}</span>
-          <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
+          <span>{formatCurrency(displayLaborSubtotal, currencyCode)}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            {taxInclusive ? t('subtotalInclTax') : t('subtotal')}
-          </span>
-          <span className="font-medium">{formatCurrency(subtotal, currencyCode)}</span>
+          <span className="text-muted-foreground">{t('subtotal')}</span>
+          <span className="font-medium">{formatCurrency(displaySubtotal, currencyCode)}</span>
         </div>
 
         <div className="flex items-center justify-between text-sm">
@@ -93,9 +101,9 @@ export function TotalsSection({
               <span className="text-muted-foreground">%</span>
             )}
           </div>
-          {discountAmount > 0 && (
+          {displayDiscountAmount > 0 && (
             <span className="text-destructive">
-              {formatCurrency(-discountAmount, currencyCode)}
+              {formatCurrency(-displayDiscountAmount, currencyCode)}
             </span>
           )}
         </div>
@@ -103,9 +111,7 @@ export function TotalsSection({
         {taxEnabled && (
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">
-                {taxInclusive ? t('taxIncluded') : t('tax')}
-              </span>
+              <span className="text-muted-foreground">{t('tax')}</span>
               <Input
                 type="number"
                 min="0"
@@ -124,6 +130,11 @@ export function TotalsSection({
           <span>{t('total')}</span>
           <span>{formatCurrency(totalAmount, currencyCode)}</span>
         </div>
+        {taxInclusive && (
+          <p className="text-xs text-muted-foreground italic">
+            {t('inclusiveModeHint')}
+          </p>
+        )}
       </div>
     </div>
   )
