@@ -585,7 +585,16 @@
     "modeExclusive": "Netto",
     "modeInclusive": "Brutto",
     "modeExclusiveExample": "Przyklad: 100 + {rate}% podatku = 100 + podatek doliczony.",
-    "modeInclusiveExample": "Przyklad: 100 juz zawiera {rate}% podatku — czesc podatkowa jest obliczana wstecz."
+    "modeInclusiveExample": "Przyklad: 100 juz zawiera {rate}% podatku — czesc podatkowa jest obliczana wstecz.",
+    "convertInclusiveLabel": "Konwertuj istniejące rekordy na tryb brutto",
+    "convertInclusiveHint": "Skaluje ceny pozycji w górę o stawkę podatku, aby ceny zawierały podatek. Sumy dla klienta pozostają niezmienione. Kwalifikujące się: {serviceRecords} zleceń, {quotes} ofert.",
+    "convertInclusiveButton": "Konwertuj na brutto",
+    "convertInclusiveConfirmTitle": "Konwertować istniejące rekordy na tryb brutto?",
+    "convertInclusiveConfirmDescription": "To przepisze ceny pozycji w {serviceRecords} zleceniach i {quotes} ofertach, aby zawierały podatek. Sumy dla klienta nie zmienią się, ale wydrukowane ceny na poprzednich fakturach pojawią się wyższe. Tej operacji nie można cofnąć.",
+    "convertInclusiveConfirmLabel": "Konwertuj rekordy",
+    "convertInclusiveSuccess": "Przekonwertowano {serviceRecords} zleceń i {quotes} ofert na tryb brutto.",
+    "convertInclusiveFailed": "Nie udało się przekonwertować rekordów na tryb brutto",
+    "convertInclusiveNoRecords": "Brak rekordów w trybie netto do konwersji."
   },
   "currency": {
     "title": "Waluta i podatki",

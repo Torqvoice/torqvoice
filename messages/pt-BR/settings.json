@@ -585,7 +585,16 @@
     "modeExclusive": "Exclusivo",
     "modeInclusive": "Inclusivo",
     "modeExclusiveExample": "Exemplo: 100 + {rate}% de imposto = 100 + imposto por cima.",
-    "modeInclusiveExample": "Exemplo: 100 ja inclui {rate}% de imposto — a parte do imposto e calculada de tras para frente."
+    "modeInclusiveExample": "Exemplo: 100 ja inclui {rate}% de imposto — a parte do imposto e calculada de tras para frente.",
+    "convertInclusiveLabel": "Converter registros existentes para modo inclusivo",
+    "convertInclusiveHint": "Escala cada preço de linha para cima pela taxa de imposto para que os preços incluam imposto. Os totais para o cliente não mudam. Elegíveis: {serviceRecords} ordens de serviço, {quotes} orçamentos.",
+    "convertInclusiveButton": "Converter para inclusivo",
+    "convertInclusiveConfirmTitle": "Converter registros existentes para modo inclusivo?",
+    "convertInclusiveConfirmDescription": "Isso reescreverá os preços de linha de {serviceRecords} ordens de serviço e {quotes} orçamentos para incluir imposto. Os totais para o cliente não mudarão, mas os preços impressos em faturas anteriores aparecerão mais altos. Esta ação não pode ser desfeita.",
+    "convertInclusiveConfirmLabel": "Converter registros",
+    "convertInclusiveSuccess": "Convertidas {serviceRecords} ordens de serviço e {quotes} orçamentos para modo inclusivo.",
+    "convertInclusiveFailed": "Falha ao converter registros para modo inclusivo",
+    "convertInclusiveNoRecords": "Nenhum registro em modo exclusivo para converter."
   },
   "currency": {
     "title": "Moeda e impostos",

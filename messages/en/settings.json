@@ -585,7 +585,16 @@
     "modeExclusive": "Exclusive",
     "modeInclusive": "Inclusive",
     "modeExclusiveExample": "Example: $100 + {rate}% tax = $100 + tax on top.",
-    "modeInclusiveExample": "Example: $100 entered already includes {rate}% tax — the tax portion is reverse-calculated."
+    "modeInclusiveExample": "Example: $100 entered already includes {rate}% tax — the tax portion is reverse-calculated.",
+    "convertInclusiveLabel": "Convert existing records to inclusive mode",
+    "convertInclusiveHint": "Scales every line item price upward by the tax rate so prices include tax. Customer-facing totals stay the same. Eligible: {serviceRecords} work orders, {quotes} quotes.",
+    "convertInclusiveButton": "Convert to inclusive",
+    "convertInclusiveConfirmTitle": "Convert existing records to inclusive mode?",
+    "convertInclusiveConfirmDescription": "This will rewrite line item prices on {serviceRecords} work orders and {quotes} quotes so they include tax. Customer-facing totals will not change, but the printed prices on past invoices will appear higher. This cannot be undone.",
+    "convertInclusiveConfirmLabel": "Convert records",
+    "convertInclusiveSuccess": "Converted {serviceRecords} work orders and {quotes} quotes to inclusive mode.",
+    "convertInclusiveFailed": "Failed to convert records to inclusive mode",
+    "convertInclusiveNoRecords": "No exclusive-mode records to convert."
   },
   "currency": {
     "title": "Currency & Tax",

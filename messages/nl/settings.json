@@ -585,7 +585,16 @@
     "modeExclusive": "Exclusief",
     "modeInclusive": "Inclusief",
     "modeExclusiveExample": "Voorbeeld: 100 + {rate}% belasting = 100 + belasting erbovenop.",
-    "modeInclusiveExample": "Voorbeeld: 100 bevat al {rate}% belasting — het belastingdeel wordt teruggerekend."
+    "modeInclusiveExample": "Voorbeeld: 100 bevat al {rate}% belasting — het belastingdeel wordt teruggerekend.",
+    "convertInclusiveLabel": "Bestaande records converteren naar inclusieve modus",
+    "convertInclusiveHint": "Schaalt elke regelprijs omhoog met het belastingtarief zodat prijzen belasting bevatten. Klantgerichte totalen blijven hetzelfde. In aanmerking: {serviceRecords} werkorders, {quotes} offertes.",
+    "convertInclusiveButton": "Converteer naar inclusief",
+    "convertInclusiveConfirmTitle": "Bestaande records converteren naar inclusieve modus?",
+    "convertInclusiveConfirmDescription": "Dit herschrijft de regelprijzen van {serviceRecords} werkorders en {quotes} offertes zodat ze belasting bevatten. Klantgerichte totalen veranderen niet, maar gedrukte prijzen op eerdere facturen verschijnen hoger. Dit kan niet ongedaan worden gemaakt.",
+    "convertInclusiveConfirmLabel": "Records converteren",
+    "convertInclusiveSuccess": "{serviceRecords} werkorders en {quotes} offertes geconverteerd naar inclusieve modus.",
+    "convertInclusiveFailed": "Records konden niet worden geconverteerd naar inclusieve modus",
+    "convertInclusiveNoRecords": "Geen records in exclusieve modus om te converteren."
   },
   "currency": {
     "title": "Valuta en belasting",

@@ -585,7 +585,16 @@
     "modeExclusive": "Eksklusiv",
     "modeInclusive": "Inklusiv",
     "modeExclusiveExample": "Eksempel: 100 + {rate}% avgift = 100 + avgift på toppen.",
-    "modeInclusiveExample": "Eksempel: 100 inkluderer allerede {rate}% avgift — avgiftsdelen beregnes baklengs."
+    "modeInclusiveExample": "Eksempel: 100 inkluderer allerede {rate}% avgift — avgiftsdelen beregnes baklengs.",
+    "convertInclusiveLabel": "Konverter eksisterende oppføringer til inklusiv modus",
+    "convertInclusiveHint": "Skalerer hver linjepris opp med avgiftssatsen slik at prisene inkluderer avgift. Kundens totaler forblir uendret. Berettiget: {serviceRecords} arbeidsordrer, {quotes} tilbud.",
+    "convertInclusiveButton": "Konverter til inklusiv",
+    "convertInclusiveConfirmTitle": "Konvertere eksisterende oppføringer til inklusiv modus?",
+    "convertInclusiveConfirmDescription": "Dette vil omskrive linjeprisene på {serviceRecords} arbeidsordrer og {quotes} tilbud slik at de inkluderer avgift. Kundens totaler endres ikke, men de utskrevne prisene på tidligere fakturaer vil vises høyere. Dette kan ikke angres.",
+    "convertInclusiveConfirmLabel": "Konverter oppføringer",
+    "convertInclusiveSuccess": "Konverterte {serviceRecords} arbeidsordrer og {quotes} tilbud til inklusiv modus.",
+    "convertInclusiveFailed": "Kunne ikke konvertere oppføringer til inklusiv modus",
+    "convertInclusiveNoRecords": "Ingen oppføringer i eksklusiv modus å konvertere."
   },
   "currency": {
     "title": "Valuta og avgift",

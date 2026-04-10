@@ -585,7 +585,16 @@
     "modeExclusive": "Exklusiv",
     "modeInclusive": "Inklusiv",
     "modeExclusiveExample": "Beispiel: 100 + {rate}% Steuer = 100 + Steuer obendrauf.",
-    "modeInclusiveExample": "Beispiel: 100 enthält bereits {rate}% Steuer — der Steueranteil wird zurückgerechnet."
+    "modeInclusiveExample": "Beispiel: 100 enthält bereits {rate}% Steuer — der Steueranteil wird zurückgerechnet.",
+    "convertInclusiveLabel": "Bestehende Einträge in inklusiven Modus umwandeln",
+    "convertInclusiveHint": "Skaliert jeden Zeilenpreis um den Steuersatz nach oben, sodass die Preise die Steuer enthalten. Kundenseitige Summen bleiben gleich. Berechtigt: {serviceRecords} Arbeitsaufträge, {quotes} Angebote.",
+    "convertInclusiveButton": "In inklusiv umwandeln",
+    "convertInclusiveConfirmTitle": "Bestehende Einträge in inklusiven Modus umwandeln?",
+    "convertInclusiveConfirmDescription": "Dies schreibt die Zeilenpreise von {serviceRecords} Arbeitsaufträgen und {quotes} Angeboten so um, dass sie die Steuer enthalten. Kundenseitige Summen ändern sich nicht, aber die gedruckten Preise auf früheren Rechnungen erscheinen höher. Dies kann nicht rückgängig gemacht werden.",
+    "convertInclusiveConfirmLabel": "Einträge umwandeln",
+    "convertInclusiveSuccess": "{serviceRecords} Arbeitsaufträge und {quotes} Angebote in inklusiven Modus umgewandelt.",
+    "convertInclusiveFailed": "Einträge konnten nicht in inklusiven Modus umgewandelt werden",
+    "convertInclusiveNoRecords": "Keine Einträge im exklusiven Modus zum Umwandeln."
   },
   "currency": {
     "title": "Wahrung & Steuer",

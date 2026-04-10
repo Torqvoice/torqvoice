@@ -585,7 +585,16 @@
     "modeExclusive": "Exclusif",
     "modeInclusive": "Inclusif",
     "modeExclusiveExample": "Exemple : 100 + {rate}% de taxe = 100 + taxe en plus.",
-    "modeInclusiveExample": "Exemple : 100 inclut deja {rate}% de taxe — la part de taxe est calculee en sens inverse."
+    "modeInclusiveExample": "Exemple : 100 inclut deja {rate}% de taxe — la part de taxe est calculee en sens inverse.",
+    "convertInclusiveLabel": "Convertir les enregistrements existants en mode inclusif",
+    "convertInclusiveHint": "Augmente chaque prix de ligne par le taux de taxe afin que les prix incluent la taxe. Les totaux côté client restent identiques. Éligibles : {serviceRecords} bons de travail, {quotes} devis.",
+    "convertInclusiveButton": "Convertir en inclusif",
+    "convertInclusiveConfirmTitle": "Convertir les enregistrements existants en mode inclusif ?",
+    "convertInclusiveConfirmDescription": "Cela réécrira les prix de ligne de {serviceRecords} bons de travail et {quotes} devis pour quils incluent la taxe. Les totaux côté client ne changeront pas, mais les prix imprimés sur les factures passées apparaîtront plus élevés. Cette action est irréversible.",
+    "convertInclusiveConfirmLabel": "Convertir les enregistrements",
+    "convertInclusiveSuccess": "{serviceRecords} bons de travail et {quotes} devis convertis en mode inclusif.",
+    "convertInclusiveFailed": "Impossible de convertir les enregistrements en mode inclusif",
+    "convertInclusiveNoRecords": "Aucun enregistrement en mode exclusif à convertir."
   },
   "currency": {
     "title": "Devise et taxes",

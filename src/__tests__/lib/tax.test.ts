@@ -134,6 +134,92 @@ describe("calculateTotals", () => {
   });
 });
 
+describe("convert exclusive → inclusive (round-trip)", () => {
+  // The convertRecordsToInclusive backfill scales line items by (1 + rate/100).
+  // After scaling, calculateTotals in inclusive mode must produce the SAME
+  // taxAmount and totalAmount that the original exclusive calculation produced
+  // — i.e. the customer-facing total is preserved.
+
+  it("preserves totals for an exclusive record with no discount", () => {
+    const taxRate = 25;
+    const exclusive = calculateTotals({
+      subtotal: 100,
+      discountAmount: 0,
+      taxRate,
+      taxInclusive: false,
+    });
+    // Apply the conversion: scale subtotal by (1 + rate/100)
+    const factor = 1 + taxRate / 100;
+    const inclusive = calculateTotals({
+      subtotal: 100 * factor,
+      discountAmount: 0,
+      taxRate,
+      taxInclusive: true,
+    });
+    expect(inclusive.taxAmount).toBeCloseTo(exclusive.taxAmount);
+    expect(inclusive.totalAmount).toBeCloseTo(exclusive.totalAmount);
+  });
+
+  it("preserves totals when converting a record with a fixed discount", () => {
+    const taxRate = 10;
+    const exclusive = calculateTotals({
+      subtotal: 100,
+      discountAmount: 20,
+      taxRate,
+      taxInclusive: false,
+    });
+    // Both subtotal AND fixed discountAmount must scale to preserve the math
+    const factor = 1 + taxRate / 100;
+    const inclusive = calculateTotals({
+      subtotal: 100 * factor,
+      discountAmount: 20 * factor,
+      taxRate,
+      taxInclusive: true,
+    });
+    expect(inclusive.taxAmount).toBeCloseTo(exclusive.taxAmount);
+    expect(inclusive.totalAmount).toBeCloseTo(exclusive.totalAmount);
+  });
+
+  it("preserves totals for a percentage-discount record", () => {
+    const taxRate = 25;
+    // 10% discount: discountAmount = subtotal * 0.10
+    const exclusive = calculateTotals({
+      subtotal: 200,
+      discountAmount: 20,
+      taxRate,
+      taxInclusive: false,
+    });
+    // Both scale by the same factor; percentage stays the same so the
+    // resulting discountAmount = (200 * factor) * 0.10 = 20 * factor.
+    const factor = 1 + taxRate / 100;
+    const inclusive = calculateTotals({
+      subtotal: 200 * factor,
+      discountAmount: 20 * factor,
+      taxRate,
+      taxInclusive: true,
+    });
+    expect(inclusive.taxAmount).toBeCloseTo(exclusive.taxAmount);
+    expect(inclusive.totalAmount).toBeCloseTo(exclusive.totalAmount);
+  });
+
+  it("handles taxRate=0 (factor=1, no scaling needed)", () => {
+    const exclusive = calculateTotals({
+      subtotal: 100,
+      discountAmount: 0,
+      taxRate: 0,
+      taxInclusive: false,
+    });
+    const inclusive = calculateTotals({
+      subtotal: 100, // factor = 1
+      discountAmount: 0,
+      taxRate: 0,
+      taxInclusive: true,
+    });
+    expect(inclusive.taxAmount).toBe(exclusive.taxAmount);
+    expect(inclusive.totalAmount).toBe(exclusive.totalAmount);
+  });
+});
+
 describe("netLineTotal", () => {
   it("returns the line total unchanged for exclusive mode", () => {
     expect(netLineTotal(100, 10, false)).toBe(100);

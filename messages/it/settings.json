@@ -585,7 +585,16 @@
     "modeExclusive": "Esclusivo",
     "modeInclusive": "Inclusivo",
     "modeExclusiveExample": "Esempio: 100 + {rate}% imposta = 100 + imposta sopra.",
-    "modeInclusiveExample": "Esempio: 100 include gia {rate}% imposta — la parte fiscale viene calcolata a ritroso."
+    "modeInclusiveExample": "Esempio: 100 include gia {rate}% imposta — la parte fiscale viene calcolata a ritroso.",
+    "convertInclusiveLabel": "Convertire record esistenti in modalità inclusiva",
+    "convertInclusiveHint": "Aumenta ogni prezzo di riga in base alla aliquota fiscale in modo che i prezzi includano l imposta. I totali lato cliente non cambiano. Idonei: {serviceRecords} ordini di lavoro, {quotes} preventivi.",
+    "convertInclusiveButton": "Converti in inclusivo",
+    "convertInclusiveConfirmTitle": "Convertire i record esistenti in modalità inclusiva?",
+    "convertInclusiveConfirmDescription": "Questo riscriverà i prezzi di riga di {serviceRecords} ordini di lavoro e {quotes} preventivi per includere l imposta. I totali lato cliente non cambieranno, ma i prezzi stampati sulle fatture passate appariranno più alti. Questa operazione è irreversibile.",
+    "convertInclusiveConfirmLabel": "Converti i record",
+    "convertInclusiveSuccess": "Convertiti {serviceRecords} ordini di lavoro e {quotes} preventivi in modalità inclusiva.",
+    "convertInclusiveFailed": "Impossibile convertire i record in modalità inclusiva",
+    "convertInclusiveNoRecords": "Nessun record in modalità esclusiva da convertire."
   },
   "currency": {
     "title": "Valuta e imposte",

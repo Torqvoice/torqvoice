@@ -585,7 +585,16 @@
     "modeExclusive": "Hariç",
     "modeInclusive": "Dahil",
     "modeExclusiveExample": "Örnek: 100 + %{rate} vergi = 100 + üstüne vergi.",
-    "modeInclusiveExample": "Örnek: 100 zaten %{rate} vergiyi içeriyor — vergi kısmı geriye doğru hesaplanır."
+    "modeInclusiveExample": "Örnek: 100 zaten %{rate} vergiyi içeriyor — vergi kısmı geriye doğru hesaplanır.",
+    "convertInclusiveLabel": "Mevcut kayıtları KDV dahil moda dönüştür",
+    "convertInclusiveHint": "Her satır fiyatını vergi oranı kadar yukarı ölçekleyerek fiyatların vergi dahil olmasını sağlar. Müşteri tarafındaki toplamlar değişmez. Uygun: {serviceRecords} iş emri, {quotes} teklif.",
+    "convertInclusiveButton": "KDV dahile dönüştür",
+    "convertInclusiveConfirmTitle": "Mevcut kayıtlar KDV dahil moda dönüştürülsün mü?",
+    "convertInclusiveConfirmDescription": "Bu, {serviceRecords} iş emri ve {quotes} teklifteki satır fiyatlarını vergi dahil olacak şekilde yeniden yazacaktır. Müşteri tarafındaki toplamlar değişmeyecek, ancak geçmiş faturalardaki yazdırılmış fiyatlar daha yüksek görünecektir. Bu işlem geri alınamaz.",
+    "convertInclusiveConfirmLabel": "Kayıtları dönüştür",
+    "convertInclusiveSuccess": "{serviceRecords} iş emri ve {quotes} teklif KDV dahil moda dönüştürüldü.",
+    "convertInclusiveFailed": "Kayıtlar KDV dahil moda dönüştürülemedi",
+    "convertInclusiveNoRecords": "Dönüştürülecek KDV hariç modunda kayıt yok."
   },
   "currency": {
     "title": "Para Birimi & Vergi",

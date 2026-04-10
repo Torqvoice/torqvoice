@@ -585,7 +585,16 @@
     "modeExclusive": "Be mokesčio",
     "modeInclusive": "Su mokesčiu",
     "modeExclusiveExample": "Pavyzdys: 100 + {rate}% mokesčio = 100 + mokestis viršuje.",
-    "modeInclusiveExample": "Pavyzdys: 100 jau apima {rate}% mokesčio — mokesčio dalis apskaičiuojama atgal."
+    "modeInclusiveExample": "Pavyzdys: 100 jau apima {rate}% mokesčio — mokesčio dalis apskaičiuojama atgal.",
+    "convertInclusiveLabel": "Konvertuoti esamus įrašus į režimą su mokesčiu",
+    "convertInclusiveHint": "Padidina kiekvienos eilutės kainą mokesčių tarifu, kad kainos apimtų mokestį. Kliento pusės sumos lieka nepakitusios. Tinkami: {serviceRecords} darbo užsakymų, {quotes} pasiūlymų.",
+    "convertInclusiveButton": "Konvertuoti į režimą su mokesčiu",
+    "convertInclusiveConfirmTitle": "Konvertuoti esamus įrašus į režimą su mokesčiu?",
+    "convertInclusiveConfirmDescription": "Tai perrašys eilučių kainas {serviceRecords} darbo užsakymuose ir {quotes} pasiūlymuose, kad jose būtų įskaičiuotas mokestis. Kliento pusės sumos nesikeis, bet ankstesnėse sąskaitose atspausdintos kainos atrodys aukštesnės. Šio veiksmo atšaukti negalima.",
+    "convertInclusiveConfirmLabel": "Konvertuoti įrašus",
+    "convertInclusiveSuccess": "Konvertuota {serviceRecords} darbo užsakymų ir {quotes} pasiūlymų į režimą su mokesčiu.",
+    "convertInclusiveFailed": "Nepavyko konvertuoti įrašų į režimą su mokesčiu",
+    "convertInclusiveNoRecords": "Nėra įrašų be mokesčio režime, kuriuos būtų galima konvertuoti."
   },
   "currency": {
     "title": "Valiuta ir mokesčiai",
