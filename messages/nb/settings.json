@@ -38,6 +38,10 @@
         "title": "Betaling",
         "description": "Betalingsvilkar og kontoer"
       },
+      "tax": {
+        "title": "Avgift",
+        "description": "Avgiftssats og standarder"
+      },
       "currency": {
         "title": "Valuta",
         "description": "Valuta- og avgiftsstandarder"
@@ -421,6 +425,7 @@
       "customer_address": "Adresse",
       "customer_email": "E-post",
       "customer_phone": "Telefon",
+      "customer_tax_id": "Org.nr / MVA-nr",
       "vehicle_name": "Kjøretøy",
       "vin": "VIN",
       "license_plate": "Reg.nr",
@@ -573,6 +578,37 @@
     "savePayment": "Lagre betalingsinnstillinger",
     "saved": "Betalingsinnstillinger lagret"
   },
+  "tax": {
+    "title": "Avgift",
+    "description": "Konfigurer avgiftssatsen som brukes på fakturaer, tilbud og arbeidsordrer.",
+    "modeLabel": "Avgiftsmodus",
+    "modeHint": "Velg om priser på linjeelementer skrives inn med avgift inkludert (inklusiv) eller før avgift (eksklusiv). Eksisterende oppføringer beholder modusen de ble opprettet med.",
+    "modeExclusive": "Eksklusiv",
+    "modeInclusive": "Inklusiv",
+    "modeExclusiveExample": "Eksempel: 100 + {rate}% avgift = 100 + avgift på toppen.",
+    "modeInclusiveExample": "Eksempel: 100 inkluderer allerede {rate}% avgift — avgiftsdelen beregnes baklengs.",
+    "labelLabel": "Avgiftsetikett",
+    "labelHint": "Tilpasset navn vist på fakturaer og tilbud (f.eks. MVA, GST, MwSt.). La stå tom for å bruke standardverdien.",
+    "labelPlaceholder": "MVA",
+    "convertInclusiveLabel": "Konverter eksisterende oppføringer til inklusiv modus",
+    "convertInclusiveHint": "Skalerer hver linjepris opp med avgiftssatsen slik at prisene inkluderer avgift. Kundens totaler forblir uendret. Berettiget: {serviceRecords} arbeidsordrer, {quotes} tilbud.",
+    "convertInclusiveButton": "Konverter til inklusiv",
+    "convertInclusiveConfirmTitle": "Konvertere eksisterende oppføringer til inklusiv modus?",
+    "convertInclusiveConfirmDescription": "Dette vil omskrive linjeprisene på {serviceRecords} arbeidsordrer og {quotes} tilbud slik at de inkluderer avgift. Kundens totaler endres ikke, men de utskrevne prisene på tidligere fakturaer vil vises høyere. Dette kan ikke angres.",
+    "convertInclusiveConfirmLabel": "Konverter oppføringer",
+    "convertInclusiveSuccess": "Konverterte {serviceRecords} arbeidsordrer og {quotes} tilbud til inklusiv modus.",
+    "convertInclusiveFailed": "Kunne ikke konvertere oppføringer til inklusiv modus",
+    "convertInclusiveNoRecords": "Ingen oppføringer i eksklusiv modus å konvertere.",
+    "convertExclusiveLabel": "Konverter eksisterende oppføringer til eksklusiv modus",
+    "convertExclusiveHint": "Skalerer hver linjepris ned med avgiftssatsen slik at prisene viser beløp før avgift. Kundens totaler forblir uendret. Berettiget: {serviceRecords} arbeidsordrer, {quotes} tilbud.",
+    "convertExclusiveButton": "Konverter til eksklusiv",
+    "convertExclusiveConfirmTitle": "Konvertere eksisterende oppføringer til eksklusiv modus?",
+    "convertExclusiveConfirmDescription": "Dette vil omskrive linjeprisene på {serviceRecords} arbeidsordrer og {quotes} tilbud slik at de viser beløp før avgift. Kundens totaler endres ikke, men de utskrevne prisene på tidligere fakturaer vil vises lavere. Dette kan ikke angres.",
+    "convertExclusiveConfirmLabel": "Konverter oppføringer",
+    "convertExclusiveSuccess": "Konverterte {serviceRecords} arbeidsordrer og {quotes} tilbud til eksklusiv modus.",
+    "convertExclusiveFailed": "Kunne ikke konvertere oppføringer til eksklusiv modus",
+    "convertExclusiveNoRecords": "Ingen oppføringer i inklusiv modus å konvertere."
+  },
   "currency": {
     "title": "Valuta og avgift",
     "description": "Standardvaluta og avgiftssats for fakturaer og servicedata.",
@@ -584,6 +620,15 @@
     "enableTaxHint": "Vis avgiftsberegning pa fakturaer og servicedata",
     "defaultTaxRate": "Standard avgiftssats (%)",
     "defaultTaxRateHint": "Fylles ut automatisk ved opprettelse av nye servicedata",
+    "applyTaxToExistingLabel": "Bruk avgift på eksisterende poster",
+    "applyTaxToExistingHint": "Setter standard avgiftssats på eksisterende arbeidsordrer og tilbud som ikke har avgift. Gjelder: {serviceRecords} arbeidsordrer, {quotes} tilbud.",
+    "applyTaxToExistingButton": "Bruk avgift på eksisterende poster",
+    "applyTaxConfirmTitle": "Bruke avgift på eksisterende poster?",
+    "applyTaxConfirmDescription": "Dette vil sette avgiftssatsen til {rate}% på {serviceRecords} arbeidsordrer og {quotes} tilbud som ikke har avgift, og beregne summene på nytt. Poster med egen avgiftssats endres ikke. Dette kan ikke angres.",
+    "applyTaxConfirmLabel": "Bruk avgift",
+    "applyTaxSuccess": "Oppdaterte {serviceRecords} arbeidsordrer og {quotes} tilbud.",
+    "applyTaxFailed": "Kunne ikke bruke avgift på eksisterende poster",
+    "applyTaxNoRecords": "Ingen poster trenger standard avgiftssats.",
     "saveSettings": "Lagre innstillinger",
     "saved": "Innstillinger lagret",
     "currencies": {

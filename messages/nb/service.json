@@ -125,12 +125,15 @@
     "parts": "Deler",
     "labor": "Arbeid",
     "subtotal": "Delsum",
+    "subtotalInclTax": "Delsum (inkl. avgift)",
     "discount": "Rabatt",
     "discountNone": "Ingen",
     "discountPercentage": "Prosent",
     "discountFixed": "Fast",
     "tax": "Skatt",
-    "total": "Total"
+    "taxIncluded": "Avgift (inkl.)",
+    "total": "Total",
+    "inclusiveModeHint": "Linjepriser legges inn med avgift inkludert. Totalene viser fordelingen netto + avgift."
   },
   "notes": {
     "title": "Notater",
@@ -157,8 +160,10 @@
     "parts": "Deler",
     "labor": "Arbeidskraft",
     "subtotal": "Delsum",
+    "subtotalInclTax": "Delsum (inkl. mva)",
     "discount": "Rabatt",
     "tax": "Skatt ({rate}%)",
+    "taxIncluded": "Mva. inkl. ({rate}%)",
     "total": "Total",
     "paid": "Betalt",
     "balanceDue": "Skyld beløp",

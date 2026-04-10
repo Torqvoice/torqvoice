@@ -42,6 +42,7 @@ import {
   X,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
+import { calculateTotals } from "@/lib/tax";
 import {
   createRecurringInvoice,
   toggleRecurringInvoice,
@@ -86,6 +87,7 @@ interface RecurringInvoice {
   type: string;
   cost: number;
   taxRate: number;
+  taxInclusive: boolean;
   invoiceNotes: string | null;
   vehicleId: string;
   vehicle: {
@@ -156,6 +158,7 @@ export default function RecurringInvoicesClient({
   const [serviceType, setServiceType] = useState("maintenance");
   const [cost, setCost] = useState("0");
   const [taxRate, setTaxRate] = useState("0");
+  const [taxInclusive, setTaxInclusive] = useState(false);
   const [invoiceNotes, setInvoiceNotes] = useState("");
   const [parts, setParts] = useState<PartRow[]>([]);
   const [labor, setLabor] = useState<LaborRow[]>([]);
@@ -170,6 +173,7 @@ export default function RecurringInvoicesClient({
     setServiceType("maintenance");
     setCost("0");
     setTaxRate("0");
+    setTaxInclusive(false);
     setInvoiceNotes("");
     setParts([]);
     setLabor([]);
@@ -192,6 +196,7 @@ export default function RecurringInvoicesClient({
         type: serviceType,
         cost: parseFloat(cost) || 0,
         taxRate: parseFloat(taxRate) || 0,
+        taxInclusive,
         invoiceNotes: invoiceNotes.trim() || undefined,
         templateParts: parts
           .filter((p) => p.name.trim())
@@ -333,7 +338,12 @@ export default function RecurringInvoicesClient({
                   const partsTotal = inv.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0);
                   const laborTotal = inv.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0);
                   const subtotal = inv.cost + partsTotal + laborTotal;
-                  const total = subtotal + subtotal * (inv.taxRate / 100);
+                  const { totalAmount: total } = calculateTotals({
+                    subtotal,
+                    discountAmount: 0,
+                    taxRate: inv.taxRate,
+                    taxInclusive: inv.taxInclusive,
+                  });
 
                   return (
                     <TableRow key={inv.id}>

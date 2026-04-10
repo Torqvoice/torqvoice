@@ -46,7 +46,7 @@ export async function GET(
         laborItems: true,
         attachments: true,
         customer: {
-          select: { name: true, email: true, phone: true, address: true, company: true },
+          select: { name: true, email: true, phone: true, address: true, company: true, taxId: true },
         },
         vehicle: {
           select: { make: true, model: true, year: true, vin: true, licensePlate: true },
@@ -75,6 +75,12 @@ export async function GET(
       if (pdfMessages.quote.vinMarine) labels.vin = pdfMessages.quote.vinMarine;
       if (pdfMessages.quote.plateMarine) labels.plate = pdfMessages.quote.plateMarine;
       if (pdfMessages.quote.vehicleMarine) labels.vehicle = pdfMessages.quote.vehicleMarine;
+    }
+
+    // Custom tax label override (e.g. "VAT", "MVA", "GST", "MwSt.")
+    const customTaxLabel = settingsMap["workshop.taxLabel"]?.trim();
+    if (customTaxLabel) {
+      labels.tax = `${customTaxLabel} ({rate}%)`;
     }
 
     let logoDataUri: string | undefined;

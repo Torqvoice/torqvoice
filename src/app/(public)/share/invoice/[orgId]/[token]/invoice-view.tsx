@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { formatCurrency, formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { calculateTotals, netLineTotal } from '@/lib/tax'
 import { sanitizeHtml } from '@/lib/sanitize-html'
 import { useLocale, useTranslations } from 'next-intl'
 import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds, getVisibleFieldsForSection } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -37,6 +38,7 @@ interface InvoiceRecord {
   subtotal: number
   taxRate: number
   taxAmount: number
+  taxInclusive?: boolean
   totalAmount: number
   cost: number
   invoiceNumber: string | null
@@ -85,6 +87,7 @@ interface InvoiceRecord {
       phone: string | null
       address: string | null
       company: string | null
+      taxId?: string | null
     } | null
   }
 }
@@ -198,6 +201,7 @@ export function InvoiceView({
   findings = [],
   telegramBotLink,
   serviceType = "automotive",
+  taxLabel,
 }: {
   record: InvoiceRecord
   workshop: { name: string; address: string; phone: string; email: string }
@@ -222,6 +226,7 @@ export function InvoiceView({
   findings?: Array<{ description: string; severity: string; notes: string | null }>
   telegramBotLink?: string
   serviceType?: "automotive" | "marine"
+  taxLabel?: string
 }) {
   const t = useTranslations('share.invoice')
   const tc = useTranslations('share.common')
@@ -245,16 +250,29 @@ export function InvoiceView({
   }, [token])
 
   const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
-  const partsSubtotal = record.partItems.reduce((sum, p) => sum + p.total, 0)
-  const laborSubtotal = record.laborItems.reduce((sum, l) => sum + l.total, 0)
-  const computedSubtotal = partsSubtotal + laborSubtotal
-  const computedDiscount = record.discountType === 'percentage'
-    ? computedSubtotal * (record.discountValue / 100)
+  const partsSubtotalStored = record.partItems.reduce((sum, p) => sum + p.total, 0)
+  const laborSubtotalStored = record.laborItems.reduce((sum, l) => sum + l.total, 0)
+  const computedSubtotalStored = partsSubtotalStored + laborSubtotalStored
+  const computedDiscountStored = record.discountType === 'percentage'
+    ? computedSubtotalStored * (record.discountValue / 100)
     : record.discountType === 'fixed'
-      ? Math.min(record.discountValue, computedSubtotal)
+      ? Math.min(record.discountValue, computedSubtotalStored)
       : 0
-  const computedTax = (computedSubtotal - computedDiscount) * (record.taxRate / 100)
-  const computedTotal = computedSubtotal - computedDiscount + computedTax
+  const recordTaxInclusive = record.taxInclusive ?? false
+  const { taxAmount: computedTax, totalAmount: computedTotal } = calculateTotals({
+    subtotal: computedSubtotalStored,
+    discountAmount: computedDiscountStored,
+    taxRate: record.taxRate,
+    taxInclusive: recordTaxInclusive,
+  })
+
+  // Universal display: net per-line/category in both modes (no-op for exclusive,
+  // back-calculates for inclusive). The customer-facing total stays the same.
+  const partsSubtotal = netLineTotal(partsSubtotalStored, record.taxRate, recordTaxInclusive)
+  const laborSubtotal = netLineTotal(laborSubtotalStored, record.taxRate, recordTaxInclusive)
+  const computedSubtotal = netLineTotal(computedSubtotalStored, record.taxRate, recordTaxInclusive)
+  const computedDiscount = netLineTotal(computedDiscountStored, record.taxRate, recordTaxInclusive)
+  const displayDiscountAmount = netLineTotal(record.discountAmount, record.taxRate, recordTaxInclusive)
   const displayTotal = record.totalAmount > 0 ? record.totalAmount : computedTotal > 0 ? computedTotal : record.cost
   const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
   const df = dateFormat || DEFAULT_DATE_FORMAT
@@ -710,8 +728,8 @@ export function InvoiceView({
                   if (!c) return null
                   const vf = getVisibleFieldsForSection(layoutConfig, 'customer')
                   const show = (fid: string) => !vf || vf.has(fid)
-                  if (!(show('customer_name') || show('customer_email') || show('customer_phone') || show('customer_address') || show('customer_company'))) return null
-                  const fieldOrder = getOrderedFieldIds(vf, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone'])
+                  if (!(show('customer_name') || show('customer_email') || show('customer_phone') || show('customer_address') || show('customer_company') || show('customer_tax_id'))) return null
+                  const fieldOrder = getOrderedFieldIds(vf, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone', 'customer_tax_id'])
                   const renderField = (fid: string) => {
                     if (!show(fid)) return null
                     switch (fid) {
@@ -720,6 +738,7 @@ export function InvoiceView({
                       case 'customer_address': return c.address ? <p key={fid} className="text-sm text-gray-500">{c.address}</p> : null
                       case 'customer_email': return c.email ? <p key={fid} className="text-sm text-gray-500">{c.email}</p> : null
                       case 'customer_phone': return c.phone ? <p key={fid} className="text-sm text-gray-500">{c.phone}</p> : null
+                      case 'customer_tax_id': return c.taxId ? <p key={fid} className="text-sm text-gray-500">{t('taxId')}: {c.taxId}</p> : null
                       default: return null
                     }
                   }
@@ -814,19 +833,23 @@ export function InvoiceView({
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {record.partItems.map((p, i) => (
-                          <tr key={i}>
-                            <td className="p-2 font-mono text-xs">{p.partNumber || '-'}</td>
-                            <td className="p-2">{p.name}</td>
-                            <td className="p-2 text-right">{p.quantity}</td>
-                            <td className="p-2 text-right">
-                              {formatCurrency(p.unitPrice, currencyCode)}
-                            </td>
-                            <td className="p-2 text-right font-medium">
-                              {formatCurrency(p.total, currencyCode)}
-                            </td>
-                          </tr>
-                        ))}
+                        {record.partItems.map((p, i) => {
+                          const netUnitPrice = netLineTotal(p.unitPrice, record.taxRate, recordTaxInclusive)
+                          const netLineValue = netLineTotal(p.total, record.taxRate, recordTaxInclusive)
+                          return (
+                            <tr key={i}>
+                              <td className="p-2 font-mono text-xs">{p.partNumber || '-'}</td>
+                              <td className="p-2">{p.name}</td>
+                              <td className="p-2 text-right">{p.quantity}</td>
+                              <td className="p-2 text-right">
+                                {formatCurrency(netUnitPrice, currencyCode)}
+                              </td>
+                              <td className="p-2 text-right font-medium">
+                                {formatCurrency(netLineValue, currencyCode)}
+                              </td>
+                            </tr>
+                          )
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -849,16 +872,20 @@ export function InvoiceView({
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {record.laborItems.map((l, i) => (
-                          <tr key={i}>
-                            <td className="p-2">{l.description}</td>
-                            <td className="p-2 text-right">{l.pricingType === 'service' ? `${l.hours} ${t('unit')}` : `${l.hours} ${t('hrs')}`}</td>
-                            <td className="p-2 text-right">{l.pricingType === 'service' ? formatCurrency(l.rate, currencyCode) : t('ratePerHour', { rate: formatCurrency(l.rate, currencyCode) })}</td>
-                            <td className="p-2 text-right font-medium">
-                              {formatCurrency(l.total, currencyCode)}
-                            </td>
-                          </tr>
-                        ))}
+                        {record.laborItems.map((l, i) => {
+                          const netRate = netLineTotal(l.rate, record.taxRate, recordTaxInclusive)
+                          const netLineValue = netLineTotal(l.total, record.taxRate, recordTaxInclusive)
+                          return (
+                            <tr key={i}>
+                              <td className="p-2">{l.description}</td>
+                              <td className="p-2 text-right">{l.pricingType === 'service' ? `${l.hours} ${t('unit')}` : `${l.hours} ${t('hrs')}`}</td>
+                              <td className="p-2 text-right">{l.pricingType === 'service' ? formatCurrency(netRate, currencyCode) : t('ratePerHour', { rate: formatCurrency(netRate, currencyCode) })}</td>
+                              <td className="p-2 text-right font-medium">
+                                {formatCurrency(netLineValue, currencyCode)}
+                              </td>
+                            </tr>
+                          )
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -885,20 +912,24 @@ export function InvoiceView({
                         </div>
                       </>
                     )}
-                    {record.discountAmount > 0 && (
+                    {displayDiscountAmount > 0 && (
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">
                           {record.discountType === 'percentage' ? t('discountPercent', { percent: record.discountValue }) : t('discount')}
                         </span>
                         <span className="text-red-500">
-                          {formatCurrency(-record.discountAmount, currencyCode)}
+                          {formatCurrency(-displayDiscountAmount, currencyCode)}
                         </span>
                       </div>
                     )}
                     {record.taxRate > 0 && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">{t('tax', { rate: record.taxRate })}</span>
-                        <span>{formatCurrency(record.taxAmount, currencyCode)}</span>
+                        <span className="text-gray-500">
+                          {taxLabel
+                            ? `${taxLabel} (${record.taxRate}%)`
+                            : t('tax', { rate: record.taxRate })}
+                        </span>
+                        <span>{formatCurrency(computedTax, currencyCode)}</span>
                       </div>
                     )}
                     <div

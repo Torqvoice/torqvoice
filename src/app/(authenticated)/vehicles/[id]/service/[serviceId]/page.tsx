@@ -158,6 +158,7 @@ export default async function ServiceDetailPage({
     subtotal: record.subtotal,
     taxRate: record.taxRate,
     taxAmount: record.taxAmount,
+    taxInclusive: record.taxInclusive,
     totalAmount: record.totalAmount,
     discountType: record.discountType || undefined,
     discountValue: record.discountValue,

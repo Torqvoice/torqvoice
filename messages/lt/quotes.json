@@ -134,12 +134,15 @@
     "parts": "Dalys",
     "labor": "Darbai",
     "subtotal": "Tarpinė suma",
+    "subtotalInclTax": "Tarpinė suma (su mokesčiu)",
     "discount": "Nuolaida",
     "discountNone": "Nėra",
     "discountPercentage": "Procentinė",
     "discountFixed": "Fiksuota",
     "tax": "Mokestis",
-    "total": "Iš viso"
+    "taxIncluded": "Mokestis (įsk.)",
+    "total": "Iš viso",
+    "inclusiveModeHint": "Eilučių kainos įvedamos su mokesčiu. Sumos rodo paskirstymą be mokesčio + mokestis."
   },
   "shareDialog": {
     "title": "Dalintis pasiūlymu",

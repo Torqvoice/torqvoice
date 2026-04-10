@@ -377,4 +377,77 @@ describe("QuoteView", () => {
       });
     });
   });
+
+  // -------------------------------------------------------------------------
+  // Universal display: inclusive records must show NET line items + tax line.
+  // -------------------------------------------------------------------------
+  describe("universal tax display (inclusive mode)", () => {
+    it("shows NET per-line price and a separate tax line for an inclusive record", () => {
+      const props = {
+        ...DEFAULT_PROPS,
+        quote: {
+          ...BASE_QUOTE,
+          taxRate: 25,
+          taxInclusive: true,
+          partItems: [
+            // Stored gross: unitPrice 125, total 125 (which is 100 net + 25 tax)
+            { name: "Brake Pad", partNumber: "BP-001", quantity: 1, unitPrice: 125, total: 125 },
+          ],
+          subtotal: 125,
+          taxAmount: 25,
+          totalAmount: 125,
+        },
+      };
+      render(<QuoteView {...props} />);
+
+      // The tax line is shown as the actual tax amount (not as "incl.")
+      expect(screen.getByText("Tax (25%)")).toBeInTheDocument();
+      // Per-line unit price is back-calculated to net (100, not 125)
+      // Currency formatting may vary, so we look for any element containing the net value.
+      const netCells = screen.getAllByText(/100\.00/);
+      expect(netCells.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("the same logical quote produces identical visible totals in both modes", () => {
+      // Render an exclusive quote
+      const exclusiveProps = {
+        ...DEFAULT_PROPS,
+        quote: {
+          ...BASE_QUOTE,
+          taxRate: 25,
+          taxInclusive: false,
+          partItems: [{ name: "Brake Pad", partNumber: "BP-001", quantity: 1, unitPrice: 100, total: 100 }],
+          subtotal: 100,
+          taxAmount: 25,
+          totalAmount: 125,
+        },
+      };
+      const { unmount } = render(<QuoteView {...exclusiveProps} />);
+      // Tax line shows 25.00
+      expect(screen.getAllByText(/25\.00/).length).toBeGreaterThanOrEqual(1);
+      // Total shows 125.00
+      expect(screen.getAllByText(/125\.00/).length).toBeGreaterThanOrEqual(1);
+      unmount();
+
+      // Render the equivalent inclusive quote
+      const inclusiveProps = {
+        ...DEFAULT_PROPS,
+        quote: {
+          ...BASE_QUOTE,
+          taxRate: 25,
+          taxInclusive: true,
+          partItems: [{ name: "Brake Pad", partNumber: "BP-001", quantity: 1, unitPrice: 125, total: 125 }],
+          subtotal: 125,
+          taxAmount: 25,
+          totalAmount: 125,
+        },
+      };
+      render(<QuoteView {...inclusiveProps} />);
+      // Same tax line 25.00 and same total 125.00 — proves both modes produce the same display
+      expect(screen.getAllByText(/25\.00/).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText(/125\.00/).length).toBeGreaterThanOrEqual(1);
+      // And the back-calculated net 100.00 appears (in the parts table line)
+      expect(screen.getAllByText(/100\.00/).length).toBeGreaterThanOrEqual(1);
+    });
+  });
 });

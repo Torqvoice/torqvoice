@@ -38,6 +38,10 @@
         "title": "Pagamento",
         "description": "Termini di pagamento e conti"
       },
+      "tax": {
+        "title": "Imposta",
+        "description": "Aliquota fiscale e predefiniti"
+      },
       "currency": {
         "title": "Valuta",
         "description": "Valuta e imposte predefinite"
@@ -421,6 +425,7 @@
       "customer_address": "Indirizzo",
       "customer_email": "E-mail",
       "customer_phone": "Telefono",
+      "customer_tax_id": "P. IVA cliente",
       "vehicle_name": "Veicolo",
       "vin": "VIN",
       "license_plate": "Targa",
@@ -573,6 +578,37 @@
     "savePayment": "Salva impostazioni pagamento",
     "saved": "Impostazioni pagamento salvate"
   },
+  "tax": {
+    "title": "Imposta",
+    "description": "Configura l'aliquota fiscale applicata a fatture, preventivi e ordini di lavoro.",
+    "modeLabel": "Modalita imposta",
+    "modeHint": "Scegli se i prezzi delle voci sono inseriti con imposta gia inclusa (inclusivo) o al netto (esclusivo). I record esistenti mantengono la modalita con cui sono stati creati.",
+    "modeExclusive": "Esclusivo",
+    "modeInclusive": "Inclusivo",
+    "modeExclusiveExample": "Esempio: 100 + {rate}% imposta = 100 + imposta sopra.",
+    "modeInclusiveExample": "Esempio: 100 include gia {rate}% imposta — la parte fiscale viene calcolata a ritroso.",
+    "labelLabel": "Etichetta imposta",
+    "labelHint": "Nome personalizzato mostrato su fatture e preventivi (es. IVA, GST). Lasciare vuoto per usare il predefinito tradotto.",
+    "labelPlaceholder": "IVA",
+    "convertInclusiveLabel": "Convertire record esistenti in modalità inclusiva",
+    "convertInclusiveHint": "Aumenta ogni prezzo di riga in base alla aliquota fiscale in modo che i prezzi includano l imposta. I totali lato cliente non cambiano. Idonei: {serviceRecords} ordini di lavoro, {quotes} preventivi.",
+    "convertInclusiveButton": "Converti in inclusivo",
+    "convertInclusiveConfirmTitle": "Convertire i record esistenti in modalità inclusiva?",
+    "convertInclusiveConfirmDescription": "Questo riscriverà i prezzi di riga di {serviceRecords} ordini di lavoro e {quotes} preventivi per includere l imposta. I totali lato cliente non cambieranno, ma i prezzi stampati sulle fatture passate appariranno più alti. Questa operazione è irreversibile.",
+    "convertInclusiveConfirmLabel": "Converti i record",
+    "convertInclusiveSuccess": "Convertiti {serviceRecords} ordini di lavoro e {quotes} preventivi in modalità inclusiva.",
+    "convertInclusiveFailed": "Impossibile convertire i record in modalità inclusiva",
+    "convertInclusiveNoRecords": "Nessun record in modalità esclusiva da convertire.",
+    "convertExclusiveLabel": "Convertire record esistenti in modalità esclusiva",
+    "convertExclusiveHint": "Riduce ogni prezzo di riga in base alla aliquota fiscale in modo che i prezzi mostrino gli importi al netto. I totali lato cliente non cambiano. Idonei: {serviceRecords} ordini di lavoro, {quotes} preventivi.",
+    "convertExclusiveButton": "Converti in esclusivo",
+    "convertExclusiveConfirmTitle": "Convertire i record esistenti in modalità esclusiva?",
+    "convertExclusiveConfirmDescription": "Questo riscriverà i prezzi di riga di {serviceRecords} ordini di lavoro e {quotes} preventivi per mostrare importi al netto. I totali lato cliente non cambieranno, ma i prezzi stampati sulle fatture passate appariranno più bassi. Questa operazione è irreversibile.",
+    "convertExclusiveConfirmLabel": "Converti i record",
+    "convertExclusiveSuccess": "Convertiti {serviceRecords} ordini di lavoro e {quotes} preventivi in modalità esclusiva.",
+    "convertExclusiveFailed": "Impossibile convertire i record in modalità esclusiva",
+    "convertExclusiveNoRecords": "Nessun record in modalità inclusiva da convertire."
+  },
   "currency": {
     "title": "Valuta e imposte",
     "description": "Valuta e aliquota fiscale predefinite utilizzate in fatture e registri di servizio.",
@@ -584,6 +620,15 @@
     "enableTaxHint": "Mostra calcolo imposte su fatture e registri di servizio",
     "defaultTaxRate": "Aliquota fiscale predefinita (%)",
     "defaultTaxRateHint": "Compilata automaticamente quando si creano nuovi registri di servizio",
+    "applyTaxToExistingLabel": "Applica imposta ai record esistenti",
+    "applyTaxToExistingHint": "Applica l'aliquota fiscale predefinita agli ordini di lavoro e preventivi esistenti senza un'aliquota impostata. Idonei: {serviceRecords} ordini di lavoro, {quotes} preventivi.",
+    "applyTaxToExistingButton": "Applica imposta ai record esistenti",
+    "applyTaxConfirmTitle": "Applicare imposta ai record esistenti?",
+    "applyTaxConfirmDescription": "Questo impostera l'aliquota fiscale al {rate}% su {serviceRecords} ordini di lavoro e {quotes} preventivi che attualmente non hanno un'aliquota, e ricalcolera i totali. I record con un'aliquota personalizzata non verranno modificati. Questa operazione e irreversibile.",
+    "applyTaxConfirmLabel": "Applica imposta",
+    "applyTaxSuccess": "Aggiornati {serviceRecords} ordini di lavoro e {quotes} preventivi.",
+    "applyTaxFailed": "Impossibile applicare l'imposta ai record esistenti",
+    "applyTaxNoRecords": "Nessun record necessita dell'aliquota fiscale predefinita.",
     "saveSettings": "Salva impostazioni",
     "saved": "Impostazioni salvate",
     "currencies": {

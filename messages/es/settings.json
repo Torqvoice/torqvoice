@@ -38,6 +38,10 @@
         "title": "Pago",
         "description": "Condiciones de pago y cuentas"
       },
+      "tax": {
+        "title": "Impuesto",
+        "description": "Tasa de impuesto y predeterminados"
+      },
       "currency": {
         "title": "Moneda",
         "description": "Valores predeterminados de moneda e impuestos"
@@ -421,6 +425,7 @@
       "customer_address": "Dirección",
       "customer_email": "Correo electrónico",
       "customer_phone": "Teléfono",
+      "customer_tax_id": "NIF / CIF del cliente",
       "vehicle_name": "Vehículo",
       "vin": "VIN",
       "license_plate": "Matrícula",
@@ -573,6 +578,37 @@
     "savePayment": "Guardar configuracion de pago",
     "saved": "Configuracion de pago guardada"
   },
+  "tax": {
+    "title": "Impuesto",
+    "description": "Configure la tasa de impuesto aplicada a facturas, presupuestos y ordenes de trabajo.",
+    "modeLabel": "Modo de impuesto",
+    "modeHint": "Elija si los precios de las lineas se introducen con impuesto incluido (inclusivo) o antes de impuestos (exclusivo). Los registros existentes mantienen el modo con el que fueron creados.",
+    "modeExclusive": "Exclusivo",
+    "modeInclusive": "Inclusivo",
+    "modeExclusiveExample": "Ejemplo: 100 + {rate}% impuesto = 100 + impuesto encima.",
+    "modeInclusiveExample": "Ejemplo: 100 ya incluye {rate}% impuesto — la parte del impuesto se calcula al inverso.",
+    "labelLabel": "Etiqueta de impuesto",
+    "labelHint": "Nombre personalizado que se muestra en facturas y presupuestos (p. ej. IVA, GST). Dejar vacío para usar el predeterminado localizado.",
+    "labelPlaceholder": "IVA",
+    "convertInclusiveLabel": "Convertir registros existentes a modo inclusivo",
+    "convertInclusiveHint": "Escala cada precio de línea hacia arriba por la tasa de impuesto para que los precios incluyan impuesto. Los totales para el cliente no cambian. Elegibles: {serviceRecords} órdenes de trabajo, {quotes} presupuestos.",
+    "convertInclusiveButton": "Convertir a inclusivo",
+    "convertInclusiveConfirmTitle": "¿Convertir registros existentes a modo inclusivo?",
+    "convertInclusiveConfirmDescription": "Esto reescribirá los precios de línea de {serviceRecords} órdenes de trabajo y {quotes} presupuestos para que incluyan impuesto. Los totales para el cliente no cambiarán, pero los precios impresos en facturas anteriores aparecerán más altos. Esto no se puede deshacer.",
+    "convertInclusiveConfirmLabel": "Convertir registros",
+    "convertInclusiveSuccess": "Se convirtieron {serviceRecords} órdenes de trabajo y {quotes} presupuestos a modo inclusivo.",
+    "convertInclusiveFailed": "No se pudo convertir los registros a modo inclusivo",
+    "convertInclusiveNoRecords": "No hay registros en modo exclusivo para convertir.",
+    "convertExclusiveLabel": "Convertir registros existentes a modo exclusivo",
+    "convertExclusiveHint": "Escala cada precio de línea hacia abajo por la tasa de impuesto para que los precios muestren importes sin impuesto. Los totales para el cliente no cambian. Elegibles: {serviceRecords} órdenes de trabajo, {quotes} presupuestos.",
+    "convertExclusiveButton": "Convertir a exclusivo",
+    "convertExclusiveConfirmTitle": "¿Convertir registros existentes a modo exclusivo?",
+    "convertExclusiveConfirmDescription": "Esto reescribirá los precios de línea de {serviceRecords} órdenes de trabajo y {quotes} presupuestos para que muestren importes sin impuesto. Los totales para el cliente no cambiarán, pero los precios impresos en facturas anteriores aparecerán más bajos. Esto no se puede deshacer.",
+    "convertExclusiveConfirmLabel": "Convertir registros",
+    "convertExclusiveSuccess": "Se convirtieron {serviceRecords} órdenes de trabajo y {quotes} presupuestos a modo exclusivo.",
+    "convertExclusiveFailed": "No se pudo convertir los registros a modo exclusivo",
+    "convertExclusiveNoRecords": "No hay registros en modo inclusivo para convertir."
+  },
   "currency": {
     "title": "Moneda e impuestos",
     "description": "Moneda predeterminada y tasa de impuestos para facturas y registros de servicio.",
@@ -584,6 +620,15 @@
     "enableTaxHint": "Mostrar calculo de impuestos en facturas y registros de servicio",
     "defaultTaxRate": "Tasa de impuesto predeterminada (%)",
     "defaultTaxRateHint": "Se completa automaticamente al crear nuevos registros de servicio",
+    "applyTaxToExistingLabel": "Aplicar impuesto a registros existentes",
+    "applyTaxToExistingHint": "Aplica la tasa de impuesto predeterminada a ordenes de trabajo y presupuestos existentes que no tienen tasa configurada. Elegibles: {serviceRecords} ordenes de trabajo, {quotes} presupuestos.",
+    "applyTaxToExistingButton": "Aplicar impuesto a registros existentes",
+    "applyTaxConfirmTitle": "¿Aplicar impuesto a registros existentes?",
+    "applyTaxConfirmDescription": "Esto establecera la tasa de impuesto en {rate}% en {serviceRecords} ordenes de trabajo y {quotes} presupuestos que actualmente no tienen tasa, y recalculara sus totales. Los registros con una tasa personalizada no se modificaran. Esta accion no se puede deshacer.",
+    "applyTaxConfirmLabel": "Aplicar impuesto",
+    "applyTaxSuccess": "Se actualizaron {serviceRecords} ordenes de trabajo y {quotes} presupuestos.",
+    "applyTaxFailed": "No se pudo aplicar el impuesto a los registros existentes",
+    "applyTaxNoRecords": "Ningun registro necesita la tasa de impuesto predeterminada.",
     "saveSettings": "Guardar configuracion",
     "saved": "Configuracion guardada",
     "currencies": {

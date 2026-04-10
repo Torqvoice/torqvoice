@@ -119,11 +119,42 @@ export async function createQuote(input: unknown) {
 
     // Generate quote number
     const settings = await db.appSetting.findMany({
-      where: { organizationId, key: { in: ["workshop.quotePrefix"] } },
+      where: {
+        organizationId,
+        key: {
+          in: [
+            "workshop.quotePrefix",
+            "workshop.defaultTaxRate",
+            "workshop.taxEnabled",
+            "workshop.taxInclusive",
+          ],
+        },
+      },
     });
     const settingsMap: Record<string, string> = {};
     for (const s of settings) settingsMap[s.key] = s.value;
     const prefix = settingsMap["workshop.quotePrefix"] || "QT-";
+
+    // Apply default tax rate from settings when the caller hasn't set one.
+    // All current call sites send taxRate: 0 at creation, so 0 means "unset".
+    const taxEnabled = settingsMap["workshop.taxEnabled"] !== "false";
+    let defaultTaxRate = taxEnabled
+      ? Number(settingsMap["workshop.defaultTaxRate"]) || 0
+      : 0;
+    const taxInclusive = settingsMap["workshop.taxInclusive"] === "true";
+
+    // Tax-exempt customer: force the rate to 0 regardless of org default.
+    if (data.customerId) {
+      const customer = await db.customer.findFirst({
+        where: { id: data.customerId, organizationId },
+        select: { taxExempt: true },
+      });
+      if (customer?.taxExempt) {
+        defaultTaxRate = 0;
+        data.taxRate = 0;
+        data.taxAmount = 0;
+      }
+    }
 
     const lastQuote = await db.quote.findFirst({
       where: { organizationId },
@@ -146,6 +177,8 @@ export async function createQuote(input: unknown) {
           quoteNumber,
           userId,
           organizationId,
+          taxRate: quoteData.taxRate > 0 ? quoteData.taxRate : defaultTaxRate,
+          taxInclusive,
           validUntil: quoteData.validUntil ? new Date(quoteData.validUntil) : undefined,
           discountType: quoteData.discountType === "none" ? null : quoteData.discountType,
         },
@@ -337,6 +370,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
           subtotal: quote.subtotal,
           taxRate: quote.taxRate,
           taxAmount: quote.taxAmount,
+          taxInclusive: quote.taxInclusive,
           totalAmount: quote.totalAmount,
           cost: quote.totalAmount,
           discountType: quote.discountType,

@@ -102,6 +102,7 @@ export function DetailsRightColumn({
         taxRate={formState.taxRate}
         setTaxRate={formState.dirtySetTaxRate}
         taxAmount={formState.taxAmount}
+        taxInclusive={formState.taxInclusive}
         totalAmount={formState.totalAmount}
         currencyCode={currencyCode}
       />

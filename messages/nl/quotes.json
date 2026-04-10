@@ -134,12 +134,15 @@
     "parts": "Onderdelen",
     "labor": "Arbeid",
     "subtotal": "Subtotaal",
+    "subtotalInclTax": "Subtotaal (incl. btw)",
     "discount": "Korting",
     "discountNone": "Geen",
     "discountPercentage": "Percentage",
     "discountFixed": "Vast bedrag",
     "tax": "Btw",
-    "total": "Totaal"
+    "taxIncluded": "Btw (incl.)",
+    "total": "Totaal",
+    "inclusiveModeHint": "Regelprijzen worden inclusief belasting ingevoerd. De totalen tonen de uitsplitsing netto + belasting."
   },
   "shareDialog": {
     "title": "Offerte delen",

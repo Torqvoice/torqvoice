@@ -125,12 +125,15 @@
     "parts": "Pièces",
     "labor": "Main-d'œuvre",
     "subtotal": "Sous-total",
+    "subtotalInclTax": "Sous-total (TTC)",
     "discount": "Remise",
     "discountNone": "Aucune",
     "discountPercentage": "Pourcentage",
     "discountFixed": "Fixe",
     "tax": "Taxe",
-    "total": "Total"
+    "taxIncluded": "Taxe (incl.)",
+    "total": "Total",
+    "inclusiveModeHint": "Les prix de ligne sont saisis taxe incluse. Les totaux affichent la répartition net + taxe."
   },
   "notes": {
     "title": "Notes",
@@ -157,8 +160,10 @@
     "parts": "Pièces",
     "labor": "Main-d'œuvre",
     "subtotal": "Sous-total",
+    "subtotalInclTax": "Sous-total (TTC)",
     "discount": "Remise",
     "tax": "Taxe ({rate}%)",
+    "taxIncluded": "Taxe (incl., {rate}%)",
     "total": "Total",
     "paid": "Payé",
     "balanceDue": "Solde Dû",

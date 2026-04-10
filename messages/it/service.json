@@ -125,12 +125,15 @@
     "parts": "Pezzi",
     "labor": "Manodopera",
     "subtotal": "Subtotale",
+    "subtotalInclTax": "Subtotale (incl. imposta)",
     "discount": "Sconto",
     "discountNone": "Nessuno",
     "discountPercentage": "Percentuale",
     "discountFixed": "Fisso",
     "tax": "Imposta",
-    "total": "Totale"
+    "taxIncluded": "Imposta (incl.)",
+    "total": "Totale",
+    "inclusiveModeHint": "I prezzi delle righe sono inseriti con imposta inclusa. I totali mostrano la suddivisione netto + imposta."
   },
   "notes": {
     "title": "Note",
@@ -157,8 +160,10 @@
     "parts": "Pezzi",
     "labor": "Manodopera",
     "subtotal": "Subtotale",
+    "subtotalInclTax": "Subtotale (incl. imposta)",
     "discount": "Sconto",
     "tax": "Imposta ({rate}%)",
+    "taxIncluded": "Imposta (incl., {rate}%)",
     "total": "Totale",
     "paid": "Pagato",
     "balanceDue": "Importo Dovuto",

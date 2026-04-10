@@ -23,6 +23,7 @@ export const createRecurringInvoiceSchema = z.object({
   type: z.string().default("maintenance"),
   cost: z.number().min(0).default(0),
   taxRate: z.number().min(0).max(100).default(0),
+  taxInclusive: z.boolean().default(false),
   invoiceNotes: z.string().optional(),
   templateParts: z.array(recurringPartSchema).default([]),
   templateLabor: z.array(recurringLaborSchema).default([]),

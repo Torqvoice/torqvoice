@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { SharedLinkCard } from '@/components/shared-link-card'
 import { formatCurrency } from '@/lib/format'
+import { netLineTotal } from '@/lib/tax'
 import type { QuoteFormState } from './useQuoteFormState'
 import type { QuoteRecord } from './quote-page-types'
 import { VehicleCombobox } from './VehicleCombobox'
@@ -312,89 +313,104 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
         )}
 
       {/* Totals */}
-      <div className="rounded-lg border p-3 space-y-2">
-        <h3 className="text-sm font-semibold">{t('totals.title')}</h3>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">{t('totals.parts')}</span>
-            <span>{formatCurrency(state.partsSubtotal, currencyCode)}</span>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">{t('totals.labor')}</span>
-            <span>{formatCurrency(state.laborSubtotal, currencyCode)}</span>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">{t('totals.subtotal')}</span>
-            <span className="font-medium">{formatCurrency(state.subtotal, currencyCode)}</span>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">{t('totals.discount')}</span>
-              <Select
-                value={state.discountType}
-                onValueChange={(v) => {
-                  state.setDiscountType(v)
-                  state.markDirty()
-                }}
-              >
-                <SelectTrigger className="h-7 w-28 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">{t('totals.discountNone')}</SelectItem>
-                  <SelectItem value="percentage">{t('totals.discountPercentage')}</SelectItem>
-                  <SelectItem value="fixed">{t('totals.discountFixed')}</SelectItem>
-                </SelectContent>
-              </Select>
-              {state.discountType !== 'none' && (
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={state.discountValue}
-                  onChange={(e) => {
-                    state.setDiscountValue(e.target.value === '' ? 0 : Number(e.target.value))
-                    state.markDirty()
-                  }}
-                  className="h-7 w-20 text-right text-xs"
-                />
-              )}
-              {state.discountType === 'percentage' && (
-                <span className="text-muted-foreground">%</span>
-              )}
-            </div>
-            {state.discountAmount > 0 && (
-              <span className="text-destructive">
-                {formatCurrency(-state.discountAmount, currencyCode)}
-              </span>
-            )}
-          </div>
-          {state.taxEnabled && (
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">{t('totals.tax')}</span>
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.1"
-                  value={state.taxRate}
-                  onChange={(e) => {
-                    state.setTaxRate(e.target.value === '' ? 0 : Number(e.target.value))
-                    state.markDirty()
-                  }}
-                  className="h-7 w-20 text-right text-xs"
-                />
-                <span className="text-muted-foreground">%</span>
+      {(() => {
+        // Universal display: net per category, net subtotal, net discount, tax, gross total.
+        // Same layout as the quote PDF/share view so the user always sees the breakdown.
+        const displayPartsSubtotal = netLineTotal(state.partsSubtotal, state.taxRate, state.taxInclusive)
+        const displayLaborSubtotal = netLineTotal(state.laborSubtotal, state.taxRate, state.taxInclusive)
+        const displaySubtotal = netLineTotal(state.subtotal, state.taxRate, state.taxInclusive)
+        const displayDiscountAmount = netLineTotal(state.discountAmount, state.taxRate, state.taxInclusive)
+        return (
+          <div className="rounded-lg border p-3 space-y-2">
+            <h3 className="text-sm font-semibold">{t('totals.title')}</h3>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{t('totals.parts')}</span>
+                <span>{formatCurrency(displayPartsSubtotal, currencyCode)}</span>
               </div>
-              <span>{formatCurrency(state.taxAmount, currencyCode)}</span>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{t('totals.labor')}</span>
+                <span>{formatCurrency(displayLaborSubtotal, currencyCode)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{t('totals.subtotal')}</span>
+                <span className="font-medium">{formatCurrency(displaySubtotal, currencyCode)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground">{t('totals.discount')}</span>
+                  <Select
+                    value={state.discountType}
+                    onValueChange={(v) => {
+                      state.setDiscountType(v)
+                      state.markDirty()
+                    }}
+                  >
+                    <SelectTrigger className="h-7 w-28 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t('totals.discountNone')}</SelectItem>
+                      <SelectItem value="percentage">{t('totals.discountPercentage')}</SelectItem>
+                      <SelectItem value="fixed">{t('totals.discountFixed')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {state.discountType !== 'none' && (
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={state.discountValue}
+                      onChange={(e) => {
+                        state.setDiscountValue(e.target.value === '' ? 0 : Number(e.target.value))
+                        state.markDirty()
+                      }}
+                      className="h-7 w-20 text-right text-xs"
+                    />
+                  )}
+                  {state.discountType === 'percentage' && (
+                    <span className="text-muted-foreground">%</span>
+                  )}
+                </div>
+                {displayDiscountAmount > 0 && (
+                  <span className="text-destructive">
+                    {formatCurrency(-displayDiscountAmount, currencyCode)}
+                  </span>
+                )}
+              </div>
+              {state.taxEnabled && (
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">{t('totals.tax')}</span>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={state.taxRate}
+                      onChange={(e) => {
+                        state.setTaxRate(e.target.value === '' ? 0 : Number(e.target.value))
+                        state.markDirty()
+                      }}
+                      className="h-7 w-20 text-right text-xs"
+                    />
+                    <span className="text-muted-foreground">%</span>
+                  </div>
+                  <span>{formatCurrency(state.taxAmount, currencyCode)}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between border-t pt-2 text-lg font-bold">
+                <span>{t('totals.total')}</span>
+                <span>{formatCurrency(state.totalAmount, currencyCode)}</span>
+              </div>
+              {state.taxInclusive && (
+                <p className="text-xs text-muted-foreground italic">
+                  {t('totals.inclusiveModeHint')}
+                </p>
+              )}
             </div>
-          )}
-          <div className="flex items-center justify-between border-t pt-2 text-lg font-bold">
-            <span>{t('totals.total')}</span>
-            <span>{formatCurrency(state.totalAmount, currencyCode)}</span>
           </div>
-        </div>
-      </div>
+        )
+      })()}
     </div>
   )
 })

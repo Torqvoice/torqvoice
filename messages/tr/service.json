@@ -125,12 +125,15 @@
     "parts": "Parçalar",
     "labor": "İşçilik",
     "subtotal": "Ara Toplam",
+    "subtotalInclTax": "Ara Toplam (KDV dahil)",
     "discount": "İndirim",
     "discountNone": "Yok",
     "discountPercentage": "Yüzde",
     "discountFixed": "Sabit",
     "tax": "Vergi",
-    "total": "Toplam"
+    "taxIncluded": "Vergi (dahil)",
+    "total": "Toplam",
+    "inclusiveModeHint": "Satır fiyatları KDV dahil girilir. Toplamlar net + vergi dağılımını gösterir."
   },
   "notes": {
     "title": "Notlar",
@@ -157,8 +160,10 @@
     "parts": "Parçalar",
     "labor": "İşçilik",
     "subtotal": "Ara Toplam",
+    "subtotalInclTax": "Ara Toplam (KDV dahil)",
     "discount": "İndirim",
     "tax": "Vergi ({rate}%)",
+    "taxIncluded": "Vergi (dahil, %{rate})",
     "total": "Toplam",
     "paid": "Ödendi",
     "balanceDue": "Kalan Bakiye",

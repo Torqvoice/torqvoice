@@ -44,7 +44,7 @@ export function useServiceActions({
 
   const {
     selectedVehicleId, techName, type, status,
-    partItems, laborItems, subtotal, taxRate, taxAmount, totalAmount,
+    partItems, laborItems, subtotal, taxRate, taxInclusive, taxAmount, totalAmount,
     discountType, discountValue, discountAmount,
     isSavingRef, autosaveTimer, setLoading,
     setHasUnsavedChanges, flashSaved, notesRef,
@@ -109,6 +109,7 @@ export function useServiceActions({
       laborItems: laborItems.filter((l) => l.description),
       subtotal,
       taxRate,
+      taxInclusive,
       taxAmount,
       totalAmount,
       discountType: discountType === 'none' ? 'none' : discountType,

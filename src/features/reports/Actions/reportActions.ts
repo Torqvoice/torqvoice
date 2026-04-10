@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { netLineTotal } from "@/lib/tax";
 
 export async function getRevenueReport(params: {
   startDate?: string;
@@ -24,6 +25,8 @@ export async function getRevenueReport(params: {
         totalAmount: true,
         cost: true,
         type: true,
+        taxRate: true,
+        taxInclusive: true,
         manuallyPaid: true,
         payments: { select: { amount: true } },
         partItems: { select: { unitCost: true, quantity: true, total: true } },
@@ -32,7 +35,10 @@ export async function getRevenueReport(params: {
       orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
     });
 
-    // Monthly breakdown
+    // Monthly breakdown.
+    // `revenue` is the gross customer-facing total (what was charged).
+    // `partsRevenue` and `laborRevenue` are NET (pre-tax) so they add up
+    // consistently with `partsCost` (which is always net) for profit math.
     const monthly: Record<string, { revenue: number; collected: number; count: number; partsCost: number; partsRevenue: number; laborRevenue: number }> = {};
     let totalRevenue = 0;
     let totalCollected = 0;
@@ -48,8 +54,14 @@ export async function getRevenueReport(params: {
       const total = r.totalAmount > 0 ? r.totalAmount : r.cost;
       const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0);
       const partsCost = r.partItems.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
-      const partsRevenue = r.partItems.reduce((s, p) => s + p.total, 0);
-      const laborRevenue = r.laborItems.reduce((s, l) => s + l.total, 0);
+      const partsRevenue = r.partItems.reduce(
+        (s, p) => s + netLineTotal(p.total, r.taxRate, r.taxInclusive),
+        0,
+      );
+      const laborRevenue = r.laborItems.reduce(
+        (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive),
+        0,
+      );
       const _date = r.startDateTime ?? r.serviceDate;
       const month = `${_date.getFullYear()}-${String(_date.getMonth() + 1).padStart(2, "0")}`;
 
@@ -261,17 +273,25 @@ export async function getPartsUsageReport(params: {
         quantity: true,
         total: true,
         unitCost: true,
+        serviceRecord: { select: { taxRate: true, taxInclusive: true } },
       },
     });
 
+    // Use net (pre-tax) line totals so revenue/profit math is consistent
+    // across inclusive- and exclusive-tax records.
+    const partWithNet = parts.map((p) => ({
+      ...p,
+      netTotal: netLineTotal(p.total, p.serviceRecord.taxRate, p.serviceRecord.taxInclusive),
+    }));
+
     const byPart: Record<string, { partNumber: string | null; usageCount: number; totalQuantity: number; totalRevenue: number; totalCost: number }> = {};
 
-    for (const p of parts) {
+    for (const p of partWithNet) {
       const key = p.name.toLowerCase();
       if (!byPart[key]) byPart[key] = { partNumber: p.partNumber, usageCount: 0, totalQuantity: 0, totalRevenue: 0, totalCost: 0 };
       byPart[key].usageCount += 1;
       byPart[key].totalQuantity += p.quantity;
-      byPart[key].totalRevenue += p.total;
+      byPart[key].totalRevenue += p.netTotal;
       byPart[key].totalCost += p.unitCost * p.quantity;
       if (p.partNumber && !byPart[key].partNumber) byPart[key].partNumber = p.partNumber;
     }
@@ -295,7 +315,7 @@ export async function getPartsUsageReport(params: {
       .sort((a, b) => b.usageCount - a.usageCount)
       .slice(0, 20);
 
-    const totalPartsRevenue = parts.reduce((s, p) => s + p.total, 0);
+    const totalPartsRevenue = partWithNet.reduce((s, p) => s + p.netTotal, 0);
     const totalPartsCost = parts.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
 
     return {
@@ -638,6 +658,7 @@ export async function getVehicleReport(params: {
         id: true, title: true, type: true, status: true,
         serviceDate: true, startDateTime: true,
         totalAmount: true, cost: true,
+        taxRate: true, taxInclusive: true,
         techName: true,
         technician: { select: { name: true } },
         partItems: { select: { name: true, partNumber: true, quantity: true, unitCost: true, total: true } },
@@ -659,7 +680,12 @@ export async function getVehicleReport(params: {
       totalCost += total;
 
       const partsCost = r.partItems.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
-      const laborCost = r.laborItems.reduce((s, l) => s + l.total, 0);
+      // Labor "cost" here is what was charged to the customer for labor.
+      // Net (pre-tax) so monthly breakdowns are consistent across modes.
+      const laborCost = r.laborItems.reduce(
+        (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive),
+        0,
+      );
       const laborHrs = r.laborItems.reduce((s, l) => s + l.hours, 0);
       totalPartsUsed += r.partItems.reduce((s, p) => s + p.quantity, 0);
       totalLaborHours += laborHrs;
@@ -752,6 +778,7 @@ export async function getTaxReport(params: {
         subtotal: true,
         taxRate: true,
         taxAmount: true,
+        taxInclusive: true,
         totalAmount: true,
       },
       orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
@@ -769,17 +796,22 @@ export async function getTaxReport(params: {
       const _dt = r.startDateTime ?? r.serviceDate;
       const month = `${_dt.getFullYear()}-${String(_dt.getMonth() + 1).padStart(2, "0")}`;
 
+      // The taxable base = total - tax. This is the net amount on which tax
+      // was calculated, and it works in BOTH inclusive and exclusive modes
+      // (and accounts for any discount applied).
+      const taxableBase = Math.max(0, r.totalAmount - r.taxAmount);
+
       if (!monthly[month]) monthly[month] = { taxCollected: 0, invoiceCount: 0, taxableAmount: 0 };
       monthly[month].taxCollected += r.taxAmount;
       monthly[month].invoiceCount += 1;
-      monthly[month].taxableAmount += r.subtotal;
+      monthly[month].taxableAmount += taxableBase;
 
       if (!byRate[r.taxRate]) byRate[r.taxRate] = { taxCollected: 0, invoiceCount: 0 };
       byRate[r.taxRate].taxCollected += r.taxAmount;
       byRate[r.taxRate].invoiceCount += 1;
 
       totalTaxCollected += r.taxAmount;
-      totalTaxableAmount += r.subtotal;
+      totalTaxableAmount += taxableBase;
       totalInvoices += 1;
     }
 

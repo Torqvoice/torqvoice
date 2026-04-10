@@ -38,6 +38,10 @@
         "title": "Betaling",
         "description": "Betalingsvoorwaarden en rekeningen"
       },
+      "tax": {
+        "title": "Belasting",
+        "description": "Belastingtarief en standaardwaarden"
+      },
       "currency": {
         "title": "Valuta",
         "description": "Standaardvaluta en belasting"
@@ -421,6 +425,7 @@
       "customer_address": "Adres",
       "customer_email": "E-mail",
       "customer_phone": "Telefoon",
+      "customer_tax_id": "Btw-nummer klant",
       "vehicle_name": "Voertuig",
       "vin": "VIN",
       "license_plate": "Kenteken",
@@ -573,6 +578,37 @@
     "savePayment": "Betalingsinstellingen opslaan",
     "saved": "Betalingsinstellingen opgeslagen"
   },
+  "tax": {
+    "title": "Belasting",
+    "description": "Configureer het belastingtarief dat wordt toegepast op facturen, offertes en werkorders.",
+    "modeLabel": "Belastingmodus",
+    "modeHint": "Kies of prijzen op regelitems worden ingevoerd inclusief belasting (inclusief) of vóór belasting (exclusief). Bestaande records behouden de modus waarmee ze zijn aangemaakt.",
+    "modeExclusive": "Exclusief",
+    "modeInclusive": "Inclusief",
+    "modeExclusiveExample": "Voorbeeld: 100 + {rate}% belasting = 100 + belasting erbovenop.",
+    "modeInclusiveExample": "Voorbeeld: 100 bevat al {rate}% belasting — het belastingdeel wordt teruggerekend.",
+    "labelLabel": "Belastinglabel",
+    "labelHint": "Aangepaste naam getoond op facturen en offertes (bijv. Btw, VAT). Leeg laten voor de gelokaliseerde standaardwaarde.",
+    "labelPlaceholder": "Btw",
+    "convertInclusiveLabel": "Bestaande records converteren naar inclusieve modus",
+    "convertInclusiveHint": "Schaalt elke regelprijs omhoog met het belastingtarief zodat prijzen belasting bevatten. Klantgerichte totalen blijven hetzelfde. In aanmerking: {serviceRecords} werkorders, {quotes} offertes.",
+    "convertInclusiveButton": "Converteer naar inclusief",
+    "convertInclusiveConfirmTitle": "Bestaande records converteren naar inclusieve modus?",
+    "convertInclusiveConfirmDescription": "Dit herschrijft de regelprijzen van {serviceRecords} werkorders en {quotes} offertes zodat ze belasting bevatten. Klantgerichte totalen veranderen niet, maar gedrukte prijzen op eerdere facturen verschijnen hoger. Dit kan niet ongedaan worden gemaakt.",
+    "convertInclusiveConfirmLabel": "Records converteren",
+    "convertInclusiveSuccess": "{serviceRecords} werkorders en {quotes} offertes geconverteerd naar inclusieve modus.",
+    "convertInclusiveFailed": "Records konden niet worden geconverteerd naar inclusieve modus",
+    "convertInclusiveNoRecords": "Geen records in exclusieve modus om te converteren.",
+    "convertExclusiveLabel": "Bestaande records converteren naar exclusieve modus",
+    "convertExclusiveHint": "Schaalt elke regelprijs omlaag met het belastingtarief zodat prijzen bedragen vóór belasting tonen. Klantgerichte totalen blijven hetzelfde. In aanmerking: {serviceRecords} werkorders, {quotes} offertes.",
+    "convertExclusiveButton": "Converteer naar exclusief",
+    "convertExclusiveConfirmTitle": "Bestaande records converteren naar exclusieve modus?",
+    "convertExclusiveConfirmDescription": "Dit herschrijft de regelprijzen van {serviceRecords} werkorders en {quotes} offertes zodat ze bedragen vóór belasting tonen. Klantgerichte totalen veranderen niet, maar gedrukte prijzen op eerdere facturen verschijnen lager. Dit kan niet ongedaan worden gemaakt.",
+    "convertExclusiveConfirmLabel": "Records converteren",
+    "convertExclusiveSuccess": "{serviceRecords} werkorders en {quotes} offertes geconverteerd naar exclusieve modus.",
+    "convertExclusiveFailed": "Records konden niet worden geconverteerd naar exclusieve modus",
+    "convertExclusiveNoRecords": "Geen records in inclusieve modus om te converteren."
+  },
   "currency": {
     "title": "Valuta en belasting",
     "description": "Standaardvaluta en belastingtarief voor facturen en servicerecords.",
@@ -584,6 +620,15 @@
     "enableTaxHint": "Toon belastingberekening op facturen en servicerecords",
     "defaultTaxRate": "Standaard belastingtarief (%)",
     "defaultTaxRateHint": "Automatisch ingevuld bij het aanmaken van nieuwe servicerecords",
+    "applyTaxToExistingLabel": "Belasting toepassen op bestaande records",
+    "applyTaxToExistingHint": "Past het standaard belastingtarief toe op bestaande werkorders en offertes zonder een ingesteld tarief. In aanmerking: {serviceRecords} werkorders, {quotes} offertes.",
+    "applyTaxToExistingButton": "Belasting toepassen op bestaande records",
+    "applyTaxConfirmTitle": "Belasting toepassen op bestaande records?",
+    "applyTaxConfirmDescription": "Dit stelt het belastingtarief in op {rate}% voor {serviceRecords} werkorders en {quotes} offertes die momenteel geen tarief hebben, en herberekent hun totalen. Records met een aangepast belastingtarief worden niet gewijzigd. Dit kan niet ongedaan worden gemaakt.",
+    "applyTaxConfirmLabel": "Belasting toepassen",
+    "applyTaxSuccess": "{serviceRecords} werkorders en {quotes} offertes bijgewerkt.",
+    "applyTaxFailed": "Kon belasting niet toepassen op bestaande records",
+    "applyTaxNoRecords": "Geen records hebben het standaard belastingtarief nodig.",
     "saveSettings": "Instellingen opslaan",
     "saved": "Instellingen opgeslagen",
     "currencies": {

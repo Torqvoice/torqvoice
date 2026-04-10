@@ -36,6 +36,7 @@ export default async function PublicQuotePage({
           phone: true,
           address: true,
           company: true,
+          taxId: true,
         },
       },
       vehicle: {
@@ -75,6 +76,7 @@ export default async function PublicQuotePage({
             "portal.enabled",
             "quote.layoutConfig",
             "workshop.serviceType",
+            "workshop.taxLabel",
           ],
         },
       },
@@ -174,6 +176,7 @@ export default async function PublicQuotePage({
       layoutConfig={layoutConfig}
       customFields={customFields}
       serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "marine"}
+      taxLabel={settingsMap["workshop.taxLabel"]?.trim() || undefined}
     />
   );
 }

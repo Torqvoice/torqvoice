@@ -134,12 +134,15 @@
     "parts": "Deler",
     "labor": "Arbeid",
     "subtotal": "Delsum",
+    "subtotalInclTax": "Delsum (inkl. mva)",
     "discount": "Rabatt",
     "discountNone": "Ingen",
     "discountPercentage": "Prosent",
     "discountFixed": "Fast beløp",
     "tax": "Mva",
-    "total": "Totalt"
+    "taxIncluded": "Mva (inkl.)",
+    "total": "Totalt",
+    "inclusiveModeHint": "Linjepriser legges inn med avgift inkludert. Totalene viser fordelingen netto + avgift."
   },
   "shareDialog": {
     "title": "Del tilbud",

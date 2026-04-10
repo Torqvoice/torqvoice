@@ -6,6 +6,7 @@ import React from "react";
 import { sendOrgMail, getOrgFromAddress } from "@/lib/email";
 import { ReportPDF } from "@/features/reports/Components/ReportPDF";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { netLineTotal } from "@/lib/tax";
 
 // --------------- date helpers ---------------
 
@@ -103,6 +104,7 @@ async function fetchRevenue(orgId: string, start: Date, end: Date) {
     where: { vehicle: { organizationId: orgId }, startDateTime: { gte: start, lte: end } },
     select: {
       serviceDate: true, startDateTime: true, totalAmount: true, cost: true, type: true,
+      taxRate: true, taxInclusive: true,
       manuallyPaid: true, payments: { select: { amount: true } },
       partItems: { select: { unitCost: true, quantity: true, total: true } },
       laborItems: { select: { total: true } },
@@ -118,8 +120,15 @@ async function fetchRevenue(orgId: string, start: Date, end: Date) {
     const total = r.totalAmount > 0 ? r.totalAmount : r.cost;
     const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0);
     const partsCost = r.partItems.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
-    const partsRevenue = r.partItems.reduce((s, p) => s + p.total, 0);
-    const laborRevenue = r.laborItems.reduce((s, l) => s + l.total, 0);
+    // Net (pre-tax) parts/labor so profit math works in both tax modes.
+    const partsRevenue = r.partItems.reduce(
+      (s, p) => s + netLineTotal(p.total, r.taxRate, r.taxInclusive),
+      0,
+    );
+    const laborRevenue = r.laborItems.reduce(
+      (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive),
+      0,
+    );
     const _d = r.startDateTime ?? r.serviceDate;
     const month = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, "0")}`;
 
@@ -197,18 +206,25 @@ async function fetchTechnicians(orgId: string, start: Date, end: Date) {
 async function fetchParts(orgId: string, start: Date, end: Date) {
   const parts = await db.servicePart.findMany({
     where: { serviceRecord: { vehicle: { organizationId: orgId }, startDateTime: { gte: start, lte: end } } },
-    select: { name: true, partNumber: true, quantity: true, total: true, unitCost: true },
+    select: {
+      name: true, partNumber: true, quantity: true, total: true, unitCost: true,
+      serviceRecord: { select: { taxRate: true, taxInclusive: true } },
+    },
   });
+  const partWithNet = parts.map((p) => ({
+    ...p,
+    netTotal: netLineTotal(p.total, p.serviceRecord.taxRate, p.serviceRecord.taxInclusive),
+  }));
   const byPart: Record<string, { name: string; partNumber: string | null; usageCount: number; totalQuantity: number; totalRevenue: number; totalCost: number }> = {};
-  for (const p of parts) {
+  for (const p of partWithNet) {
     const key = p.name.toLowerCase();
     if (!byPart[key]) byPart[key] = { name: p.name, partNumber: p.partNumber, usageCount: 0, totalQuantity: 0, totalRevenue: 0, totalCost: 0 };
-    byPart[key].usageCount += 1; byPart[key].totalQuantity += p.quantity; byPart[key].totalRevenue += p.total;
+    byPart[key].usageCount += 1; byPart[key].totalQuantity += p.quantity; byPart[key].totalRevenue += p.netTotal;
     byPart[key].totalCost += p.unitCost * p.quantity;
     if (p.partNumber && !byPart[key].partNumber) byPart[key].partNumber = p.partNumber;
   }
   const result = Object.values(byPart).map((d) => ({ ...d, netProfit: d.totalRevenue - d.totalCost })).sort((a, b) => b.usageCount - a.usageCount).slice(0, 20);
-  const totalPartsRevenue = parts.reduce((s, p) => s + p.total, 0);
+  const totalPartsRevenue = partWithNet.reduce((s, p) => s + p.netTotal, 0);
   const totalPartsCost = parts.reduce((s, p) => s + (p.unitCost * p.quantity), 0);
   return { parts: result, totalPartsRevenue, totalPartsCost, totalPartsNetProfit: totalPartsRevenue - totalPartsCost, totalPartsUsed: parts.reduce((s, p) => s + p.quantity, 0) };
 }
@@ -301,7 +317,7 @@ async function fetchPastDue(orgId: string) {
 async function fetchTax(orgId: string, start: Date, end: Date) {
   const records = await db.serviceRecord.findMany({
     where: { vehicle: { organizationId: orgId }, startDateTime: { gte: start, lte: end } },
-    select: { serviceDate: true, startDateTime: true, subtotal: true, taxRate: true, taxAmount: true },
+    select: { serviceDate: true, startDateTime: true, subtotal: true, taxRate: true, taxAmount: true, taxInclusive: true, totalAmount: true },
     orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
   });
   const monthly: Record<string, { taxCollected: number; invoiceCount: number; taxableAmount: number }> = {};
@@ -311,11 +327,13 @@ async function fetchTax(orgId: string, start: Date, end: Date) {
     if (r.taxAmount <= 0) continue;
     const _d = r.startDateTime ?? r.serviceDate;
     const month = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, "0")}`;
+    // Net taxable base = totalAmount - taxAmount, valid for both modes.
+    const taxableBase = Math.max(0, r.totalAmount - r.taxAmount);
     if (!monthly[month]) monthly[month] = { taxCollected: 0, invoiceCount: 0, taxableAmount: 0 };
-    monthly[month].taxCollected += r.taxAmount; monthly[month].invoiceCount += 1; monthly[month].taxableAmount += r.subtotal;
+    monthly[month].taxCollected += r.taxAmount; monthly[month].invoiceCount += 1; monthly[month].taxableAmount += taxableBase;
     if (!byRate[r.taxRate]) byRate[r.taxRate] = { taxCollected: 0, invoiceCount: 0 };
     byRate[r.taxRate].taxCollected += r.taxAmount; byRate[r.taxRate].invoiceCount += 1;
-    totalTaxCollected += r.taxAmount; totalTaxableAmount += r.subtotal; totalInvoices += 1;
+    totalTaxCollected += r.taxAmount; totalTaxableAmount += taxableBase; totalInvoices += 1;
   }
   return {
     monthly: Object.entries(monthly).map(([month, d]) => ({ month, ...d })),

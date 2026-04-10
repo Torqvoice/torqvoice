@@ -7,6 +7,7 @@ import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { updateQuote, deleteQuote, convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
+import { calculateTotals } from "@/lib/tax";
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from "./quote-page-types";
 import { emptyPart, makeEmptyLabor, makeEmptyService } from "./quote-page-types";
 
@@ -62,6 +63,7 @@ export function useQuoteFormState({
     quote.laborItems.map((l) => ({ description: l.description, hours: l.hours, rate: l.rate, total: l.total, pricingType: (l.pricingType as "hourly" | "service") || "hourly", excluded: l.excluded ?? false }))
   );
   const [taxRate, setTaxRate] = useState(quote.taxRate ?? defaultTaxRate);
+  const [taxInclusive] = useState<boolean>(quote.taxInclusive ?? false);
   const [discountType, setDiscountType] = useState<string>(quote.discountType || "none");
   const [discountValue, setDiscountValue] = useState(quote.discountValue ?? 0);
   const [noteType, setNoteType] = useState<"public" | "internal">("public");
@@ -142,8 +144,12 @@ export function useQuoteFormState({
     : discountType === "fixed"
     ? Math.min(discountValue, subtotal)
     : 0;
-  const taxAmount = (subtotal - discountAmount) * (taxRate / 100);
-  const totalAmount = subtotal - discountAmount + taxAmount;
+  const { taxAmount, totalAmount } = calculateTotals({
+    subtotal,
+    discountAmount,
+    taxRate,
+    taxInclusive,
+  });
 
   const updatePart = useCallback((index: number, field: keyof QuotePartInput, value: string | number | boolean) => {
     setPartItems((prev) => {
@@ -217,6 +223,7 @@ export function useQuoteFormState({
       laborItems: laborItems.filter((l) => l.description),
       subtotal,
       taxRate,
+      taxInclusive,
       taxAmount,
       discountType: discountType === "none" ? undefined : discountType,
       discountValue,
@@ -315,7 +322,7 @@ export function useQuoteFormState({
     saving, downloading, status, setStatus,
     customerId, setCustomerId, vehicleId, setVehicleId,
     partItems, laborItems,
-    taxRate, setTaxRate, taxEnabled,
+    taxRate, setTaxRate, taxEnabled, taxInclusive,
     discountType, setDiscountType, discountValue, setDiscountValue,
     noteType, setNoteType, description, setDescription, notes, setNotes,
     // Dialogs

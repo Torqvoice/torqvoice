@@ -76,6 +76,7 @@ export const BUILTIN_CUSTOMER_FIELDS = [
   { id: "customer_address", name: "Customer Address" },
   { id: "customer_email", name: "Customer Email" },
   { id: "customer_phone", name: "Customer Phone" },
+  { id: "customer_tax_id", name: "Customer Tax ID" },
 ] as const;
 
 export const BUILTIN_VEHICLE_FIELDS = [

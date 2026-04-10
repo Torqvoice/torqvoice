@@ -134,12 +134,15 @@
     "parts": "Запчасти",
     "labor": "Работа",
     "subtotal": "Подитог",
+    "subtotalInclTax": "Подитог (с НДС)",
     "discount": "Скидка",
     "discountNone": "Нет",
     "discountPercentage": "Процент",
     "discountFixed": "Фиксированная",
     "tax": "Налог",
-    "total": "Итого"
+    "taxIncluded": "Налог (вкл.)",
+    "total": "Итого",
+    "inclusiveModeHint": "Цены позиций вводятся с НДС. Итоги показывают разбивку: без НДС + НДС."
   },
   "shareDialog": {
     "title": "Поделиться предложением",
