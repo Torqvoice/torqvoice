@@ -317,3 +317,187 @@ describe("createQuote — org scoping", () => {
     );
   });
 });
+
+// ---------------------------------------------------------------------------
+// createQuote — tax injection (org defaults + customer.taxExempt)
+// ---------------------------------------------------------------------------
+
+describe("createQuote — tax injection", () => {
+  it("injects the org default tax rate when caller sends taxRate=0", async () => {
+    setupAuth();
+    setupQuoteCreation();
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.defaultTaxRate", value: "25" } as any,
+      { key: "workshop.taxEnabled", value: "true" } as any,
+    ]);
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: "q-default-rate" });
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        quote: { create: mockCreate },
+        quotePart: { createMany: vi.fn() },
+        quoteLabor: { createMany: vi.fn() },
+      })
+    );
+
+    await createQuote({
+      title: "Test",
+      status: "draft",
+      subtotal: 0,
+      taxRate: 0,
+      taxAmount: 0,
+      discountValue: 0,
+      discountAmount: 0,
+      totalAmount: 0,
+    });
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxRate: 25 }),
+      })
+    );
+  });
+
+  it("respects an explicit non-zero taxRate from the caller (no auto-injection)", async () => {
+    setupAuth();
+    setupQuoteCreation();
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.defaultTaxRate", value: "25" } as any,
+      { key: "workshop.taxEnabled", value: "true" } as any,
+    ]);
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: "q-explicit-rate" });
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        quote: { create: mockCreate },
+        quotePart: { createMany: vi.fn() },
+        quoteLabor: { createMany: vi.fn() },
+      })
+    );
+
+    await createQuote({
+      title: "Test",
+      status: "draft",
+      subtotal: 0,
+      taxRate: 8,
+      taxAmount: 0,
+      discountValue: 0,
+      discountAmount: 0,
+      totalAmount: 0,
+    });
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxRate: 8 }),
+      })
+    );
+  });
+
+  it("injects taxInclusive=true from the org setting", async () => {
+    setupAuth();
+    setupQuoteCreation();
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.taxInclusive", value: "true" } as any,
+    ]);
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: "q-incl" });
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        quote: { create: mockCreate },
+        quotePart: { createMany: vi.fn() },
+        quoteLabor: { createMany: vi.fn() },
+      })
+    );
+
+    await createQuote({
+      title: "Test",
+      status: "draft",
+      subtotal: 0,
+      taxRate: 0,
+      taxAmount: 0,
+      discountValue: 0,
+      discountAmount: 0,
+      totalAmount: 0,
+    });
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxInclusive: true }),
+      })
+    );
+  });
+
+  it("forces taxRate=0 when the customer is tax exempt (overrides any caller value)", async () => {
+    setupAuth();
+    setupQuoteCreation();
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.defaultTaxRate", value: "25" } as any,
+      { key: "workshop.taxEnabled", value: "true" } as any,
+    ]);
+    vi.mocked(db.customer.findFirst).mockResolvedValue({ taxExempt: true } as any);
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: "q-exempt" });
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        quote: { create: mockCreate },
+        quotePart: { createMany: vi.fn() },
+        quoteLabor: { createMany: vi.fn() },
+      })
+    );
+
+    await createQuote({
+      title: "Test",
+      customerId: "cust-exempt",
+      status: "draft",
+      subtotal: 0,
+      taxRate: 25,
+      taxAmount: 0,
+      discountValue: 0,
+      discountAmount: 0,
+      totalAmount: 0,
+    });
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxRate: 0 }),
+      })
+    );
+  });
+
+  it("does NOT zero out taxRate when the customer is NOT tax exempt", async () => {
+    setupAuth();
+    setupQuoteCreation();
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.defaultTaxRate", value: "25" } as any,
+      { key: "workshop.taxEnabled", value: "true" } as any,
+    ]);
+    vi.mocked(db.customer.findFirst).mockResolvedValue({ taxExempt: false } as any);
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: "q-normal" });
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        quote: { create: mockCreate },
+        quotePart: { createMany: vi.fn() },
+        quoteLabor: { createMany: vi.fn() },
+      })
+    );
+
+    await createQuote({
+      title: "Test",
+      customerId: "cust-normal",
+      status: "draft",
+      subtotal: 100,
+      taxRate: 0, // empty → should pick up the org default of 25
+      taxAmount: 0,
+      discountValue: 0,
+      discountAmount: 0,
+      totalAmount: 100,
+    });
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxRate: 25 }),
+      })
+    );
+  });
+});

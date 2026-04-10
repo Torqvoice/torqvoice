@@ -608,3 +608,179 @@ describe("createDraftServiceRecord — scheduling", () => {
     expect(startDT.getMinutes()).toBe(30);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Tax injection — both creation actions read settings + customer.taxExempt
+// at creation time. These tests prove the wiring (lib/tax math is locked
+// separately in src/__tests__/lib/tax.test.ts).
+// ---------------------------------------------------------------------------
+
+describe("createServiceRecord — tax injection", () => {
+  it("inherits the org's workshop.taxInclusive setting when caller doesn't pass it", async () => {
+    setupAuth();
+    setupCommonMocks();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ ...VEHICLE, customer: { taxExempt: false } } as any);
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.taxInclusive", value: "true" } as any,
+    ]);
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: "sr-incl" });
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        serviceRecord: { create: mockCreate },
+        servicePart: { createMany: vi.fn() },
+        serviceLabor: { createMany: vi.fn() },
+        serviceAttachment: { createMany: vi.fn() },
+        inventoryPart: { findFirst: vi.fn(), update: vi.fn() },
+      })
+    );
+
+    await createServiceRecord({ vehicleId: VEHICLE_ID, title: "Test" });
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxInclusive: true }),
+      })
+    );
+  });
+
+  it("respects an explicit taxInclusive value from the caller (overrides org default)", async () => {
+    setupAuth();
+    setupCommonMocks();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ ...VEHICLE, customer: { taxExempt: false } } as any);
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.taxInclusive", value: "true" } as any,
+    ]);
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: "sr-explicit" });
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        serviceRecord: { create: mockCreate },
+        servicePart: { createMany: vi.fn() },
+        serviceLabor: { createMany: vi.fn() },
+        serviceAttachment: { createMany: vi.fn() },
+        inventoryPart: { findFirst: vi.fn(), update: vi.fn() },
+      })
+    );
+
+    // Caller explicitly passes taxInclusive: false. Should be respected.
+    await createServiceRecord({ vehicleId: VEHICLE_ID, title: "Test", taxInclusive: false });
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxInclusive: false }),
+      })
+    );
+  });
+
+  it("forces taxRate=0 and taxAmount=0 when the customer is tax exempt", async () => {
+    setupAuth();
+    setupCommonMocks();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ ...VEHICLE, customer: { taxExempt: true } } as any);
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: "sr-exempt" });
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        serviceRecord: { create: mockCreate },
+        servicePart: { createMany: vi.fn() },
+        serviceLabor: { createMany: vi.fn() },
+        serviceAttachment: { createMany: vi.fn() },
+        inventoryPart: { findFirst: vi.fn(), update: vi.fn() },
+      })
+    );
+
+    // Caller passes a non-zero rate; the exempt flag must override it.
+    await createServiceRecord({
+      vehicleId: VEHICLE_ID,
+      title: "Test",
+      taxRate: 25,
+      taxAmount: 50,
+    });
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxRate: 0, taxAmount: 0 }),
+      })
+    );
+  });
+});
+
+describe("createDraftServiceRecord — tax injection", () => {
+  it("injects the org default tax rate from settings", async () => {
+    setupAuth();
+    setupCommonMocks();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ ...VEHICLE, customer: { taxExempt: false } } as any);
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.defaultTaxRate", value: "25" } as any,
+      { key: "workshop.taxEnabled", value: "true" } as any,
+    ]);
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: "draft-1" } as any);
+
+    await createDraftServiceRecord(VEHICLE_ID);
+
+    expect(vi.mocked(db.serviceRecord.create)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxRate: 25 }),
+      })
+    );
+  });
+
+  it("injects taxInclusive=true from the org setting", async () => {
+    setupAuth();
+    setupCommonMocks();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ ...VEHICLE, customer: { taxExempt: false } } as any);
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.defaultTaxRate", value: "25" } as any,
+      { key: "workshop.taxEnabled", value: "true" } as any,
+      { key: "workshop.taxInclusive", value: "true" } as any,
+    ]);
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: "draft-incl" } as any);
+
+    await createDraftServiceRecord(VEHICLE_ID);
+
+    expect(vi.mocked(db.serviceRecord.create)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxInclusive: true }),
+      })
+    );
+  });
+
+  it("forces taxRate=0 when the vehicle's customer is tax exempt", async () => {
+    setupAuth();
+    setupCommonMocks();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ ...VEHICLE, customer: { taxExempt: true } } as any);
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.defaultTaxRate", value: "25" } as any,
+      { key: "workshop.taxEnabled", value: "true" } as any,
+    ]);
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: "draft-exempt" } as any);
+
+    await createDraftServiceRecord(VEHICLE_ID);
+
+    // Even though the org default is 25%, the exempt customer overrides it.
+    expect(vi.mocked(db.serviceRecord.create)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxRate: 0 }),
+      })
+    );
+  });
+
+  it("uses 0 as the default rate when tax is disabled in settings", async () => {
+    setupAuth();
+    setupCommonMocks();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ ...VEHICLE, customer: { taxExempt: false } } as any);
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.defaultTaxRate", value: "25" } as any,
+      { key: "workshop.taxEnabled", value: "false" } as any,
+    ]);
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: "draft-disabled" } as any);
+
+    await createDraftServiceRecord(VEHICLE_ID);
+
+    expect(vi.mocked(db.serviceRecord.create)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ taxRate: 0 }),
+      })
+    );
+  });
+});
