@@ -207,7 +207,12 @@ export function TaxSettings({
                 </div>
               )}
 
-              {taxEnabled &&
+              {/* Hidden for now: applying tax to existing records can drop
+                  exclusive-mode invoices from "paid" to "partial" because the
+                  recomputed totalAmount no longer matches the existing payments.
+                  Re-enable once the backfill skips paid records. */}
+              {false &&
+                taxEnabled &&
                 Number(defaultTaxRate) > 0 &&
                 taxBackfillCounts.serviceRecords + taxBackfillCounts.quotes > 0 && (
                   <div className="rounded-lg border bg-muted/30 p-4">
