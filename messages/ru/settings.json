@@ -38,6 +38,10 @@
         "title": "Оплата",
         "description": "Условия оплаты и счета"
       },
+      "tax": {
+        "title": "Tax",
+        "description": "Tax rate & defaults"
+      },
       "currency": {
         "title": "Валюта",
         "description": "Валюта и налоги по умолчанию"
@@ -572,6 +576,10 @@
     "paypalWebhookHint": "Добавьте этот URL в панели разработчика PayPal в разделе Webhooks. Подпишитесь на <code>PAYMENT.CAPTURE.COMPLETED</code>.",
     "savePayment": "Сохранить настройки оплаты",
     "saved": "Настройки оплаты сохранены"
+  },
+  "tax": {
+    "title": "Tax",
+    "description": "Configure the tax rate applied to invoices, quotes, and work orders."
   },
   "currency": {
     "title": "Валюта и налоги",

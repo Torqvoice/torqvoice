@@ -38,6 +38,10 @@
         "title": "Zahlung",
         "description": "Zahlungsbedingungen & Konten"
       },
+      "tax": {
+        "title": "Steuer",
+        "description": "Steuersatz & Standardwerte"
+      },
       "currency": {
         "title": "Wahrung",
         "description": "Wahrungs- & Steuerstandards"
@@ -572,6 +576,10 @@
     "paypalWebhookHint": "Fugen Sie diese URL in Ihrem PayPal-Entwickler-Dashboard unter Webhooks hinzu. Abonnieren Sie <code>PAYMENT.CAPTURE.COMPLETED</code>.",
     "savePayment": "Zahlungseinstellungen speichern",
     "saved": "Zahlungseinstellungen gespeichert"
+  },
+  "tax": {
+    "title": "Steuer",
+    "description": "Konfigurieren Sie den Steuersatz für Rechnungen, Angebote und Arbeitsaufträge."
   },
   "currency": {
     "title": "Wahrung & Steuer",

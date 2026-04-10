@@ -38,6 +38,10 @@
         "title": "Betaling",
         "description": "Betalingsvilkar og kontoer"
       },
+      "tax": {
+        "title": "Avgift",
+        "description": "Avgiftssats og standarder"
+      },
       "currency": {
         "title": "Valuta",
         "description": "Valuta- og avgiftsstandarder"
@@ -572,6 +576,10 @@
     "paypalWebhookHint": "Legg til denne URL-en i PayPal-utviklerdashbordet under Webhooks. Abonner pa <code>PAYMENT.CAPTURE.COMPLETED</code>.",
     "savePayment": "Lagre betalingsinnstillinger",
     "saved": "Betalingsinnstillinger lagret"
+  },
+  "tax": {
+    "title": "Avgift",
+    "description": "Konfigurer avgiftssatsen som brukes på fakturaer, tilbud og arbeidsordrer."
   },
   "currency": {
     "title": "Valuta og avgift",

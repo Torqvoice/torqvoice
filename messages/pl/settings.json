@@ -38,6 +38,10 @@
         "title": "Platnosc",
         "description": "Warunki platnosci i konta"
       },
+      "tax": {
+        "title": "Tax",
+        "description": "Tax rate & defaults"
+      },
       "currency": {
         "title": "Waluta",
         "description": "Domyslna waluta i podatki"
@@ -572,6 +576,10 @@
     "paypalWebhookHint": "Dodaj ten URL w panelu PayPal Developer w sekcji Webhooks. Subskrybuj <code>PAYMENT.CAPTURE.COMPLETED</code>.",
     "savePayment": "Zapisz ustawienia platnosci",
     "saved": "Ustawienia platnosci zapisane"
+  },
+  "tax": {
+    "title": "Tax",
+    "description": "Configure the tax rate applied to invoices, quotes, and work orders."
   },
   "currency": {
     "title": "Waluta i podatki",

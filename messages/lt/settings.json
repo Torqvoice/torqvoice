@@ -38,6 +38,10 @@
         "title": "Mokėjimas",
         "description": "Mokėjimo sąlygos ir sąskaitos"
       },
+      "tax": {
+        "title": "Tax",
+        "description": "Tax rate & defaults"
+      },
       "currency": {
         "title": "Valiuta",
         "description": "Valiuta ir mokesčių numatytosios reikšmės"
@@ -572,6 +576,10 @@
     "paypalWebhookHint": "Pridėkite šį URL savo PayPal Developer valdymo skydelyje po Webhooks. Prenumeruokite <code>PAYMENT.CAPTURE.COMPLETED</code>.",
     "savePayment": "Išsaugoti mokėjimo nustatymus",
     "saved": "Mokėjimo nustatymai išsaugoti"
+  },
+  "tax": {
+    "title": "Tax",
+    "description": "Configure the tax rate applied to invoices, quotes, and work orders."
   },
   "currency": {
     "title": "Valiuta ir mokesčiai",

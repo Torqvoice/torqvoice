@@ -38,6 +38,10 @@
         "title": "Payment",
         "description": "Payment terms & accounts"
       },
+      "tax": {
+        "title": "Tax",
+        "description": "Tax rate & defaults"
+      },
       "currency": {
         "title": "Currency",
         "description": "Currency & tax defaults"
@@ -572,6 +576,10 @@
     "paypalWebhookHint": "Add this URL in your PayPal Developer Dashboard under Webhooks. Subscribe to <code>PAYMENT.CAPTURE.COMPLETED</code>.",
     "savePayment": "Save Payment Settings",
     "saved": "Payment settings saved"
+  },
+  "tax": {
+    "title": "Tax",
+    "description": "Configure the tax rate applied to invoices, quotes, and work orders."
   },
   "currency": {
     "title": "Currency & Tax",

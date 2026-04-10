@@ -38,6 +38,10 @@
         "title": "Pago",
         "description": "Condiciones de pago y cuentas"
       },
+      "tax": {
+        "title": "Tax",
+        "description": "Tax rate & defaults"
+      },
       "currency": {
         "title": "Moneda",
         "description": "Valores predeterminados de moneda e impuestos"
@@ -572,6 +576,10 @@
     "paypalWebhookHint": "Agregue esta URL en su Panel de Desarrollador de PayPal en Webhooks. Suscribase a <code>PAYMENT.CAPTURE.COMPLETED</code>.",
     "savePayment": "Guardar configuracion de pago",
     "saved": "Configuracion de pago guardada"
+  },
+  "tax": {
+    "title": "Tax",
+    "description": "Configure the tax rate applied to invoices, quotes, and work orders."
   },
   "currency": {
     "title": "Moneda e impuestos",
