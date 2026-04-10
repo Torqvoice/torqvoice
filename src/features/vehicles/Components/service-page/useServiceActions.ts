@@ -4,7 +4,12 @@ import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import { useTranslations } from 'next-intl'
-import { updateServiceRecord, deleteServiceRecord, deleteServiceAttachment, toggleManuallyPaid } from '@/features/vehicles/Actions/serviceActions'
+import {
+  updateServiceRecord,
+  deleteServiceRecord,
+  deleteServiceAttachment,
+  toggleManuallyPaid,
+} from '@/features/vehicles/Actions/serviceActions'
 import { createPayment, deletePayment } from '@/features/payments/Actions/paymentActions'
 import { getSmsTemplates } from '@/features/sms/Actions/smsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -43,12 +48,27 @@ export function useServiceActions({
   const [paymentNotifyMessage, setPaymentNotifyMessage] = useState('')
 
   const {
-    selectedVehicleId, type, status,
-    partItems, laborItems, subtotal, taxRate, taxInclusive, taxAmount, totalAmount,
-    discountType, discountValue, discountAmount,
-    isSavingRef, autosaveTimer, setLoading,
-    setHasUnsavedChanges, flashSaved, notesRef,
-    initialData, customFieldsSaveRef,
+    selectedVehicleId,
+    type,
+    status,
+    partItems,
+    laborItems,
+    subtotal,
+    taxRate,
+    taxInclusive,
+    taxAmount,
+    totalAmount,
+    discountType,
+    discountValue,
+    discountAmount,
+    isSavingRef,
+    autosaveTimer,
+    setLoading,
+    setHasUnsavedChanges,
+    flashSaved,
+    notesRef,
+    initialData,
+    customFieldsSaveRef,
   } = formState
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -80,11 +100,11 @@ export function useServiceActions({
     // For hidden inputs (offsetParent is always null), take the last one in DOM order.
     const getVisible = (name: string) => {
       const inputs = Array.from(form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`))
-      const visible = inputs.find(el => el.offsetParent !== null)
+      const visible = inputs.find((el) => el.offsetParent !== null)
       if (visible) return visible.value
       // All hidden — take last (active layout renders second)
       const last = inputs[inputs.length - 1]
-      return last?.value ?? new FormData(form).get(name) as string
+      return last?.value ?? (new FormData(form).get(name) as string)
     }
     const rawMileage = getVisible('mileage')
     const parsedMileage = rawMileage ? Number(rawMileage) || undefined : undefined
@@ -198,7 +218,10 @@ export function useServiceActions({
     const invoiceNum = record.invoiceNumber || `#${record.id.slice(-8).toUpperCase()}`
     const tplResult = await getSmsTemplates()
     const tplData = tplResult.success && tplResult.data ? tplResult.data : null
-    const tpl = tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] || SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] || ''
+    const tpl =
+      tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] ||
+      SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] ||
+      ''
     setPaymentNotifyMessage(
       interpolateSmsTemplate(tpl, {
         amount,
@@ -211,7 +234,12 @@ export function useServiceActions({
     setShowPaymentNotifyDialog(true)
   }
 
-  const handleCreatePayment = async (data: { amount: number; date: string; method: string; note?: string }) => {
+  const handleCreatePayment = async (data: {
+    amount: number
+    date: string
+    method: string
+    note?: string
+  }) => {
     setPaymentLoading(true)
     const result = await createPayment({ serviceRecordId: record.id, ...data })
     setPaymentLoading(false)
@@ -233,7 +261,9 @@ export function useServiceActions({
     setPaymentLoading(false)
     if (result.success) {
       formState.setLocalManuallyPaid(!!result.data?.manuallyPaid)
-      toast.success(result.data?.manuallyPaid ? t('payments.markedPaid') : t('payments.markedUnpaid'))
+      toast.success(
+        result.data?.manuallyPaid ? t('payments.markedPaid') : t('payments.markedUnpaid')
+      )
       router.refresh()
       if (result.data?.manuallyPaid && record.vehicle.customer) {
         await buildPaymentNotifyMessage('')
@@ -276,12 +306,16 @@ export function useServiceActions({
     deletingAttachment,
     paymentLoading,
     deletingPayment,
-    showShareDialog, setShowShareDialog,
-    showEmailDialog, setShowEmailDialog,
-    showPaymentNotifyDialog, setShowPaymentNotifyDialog,
+    showShareDialog,
+    setShowShareDialog,
+    showEmailDialog,
+    setShowEmailDialog,
+    showPaymentNotifyDialog,
+    setShowPaymentNotifyDialog,
     paymentNotifyMessage,
     // Carousel
-    carouselIndex, setCarouselIndex,
+    carouselIndex,
+    setCarouselIndex,
     onImageClick: setCarouselIndex,
     // Helpers
     saveNow: formState.saveNow,
