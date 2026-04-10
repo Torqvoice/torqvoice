@@ -142,12 +142,17 @@ function renderServiceField(fieldId: string, ctx: ServiceRenderCtx): React.React
           {labels.type ? fillTemplate(labels.type, { type: data.type }) : `Type: ${data.type}`}
         </Text>
       )
-    case 'tech_name':
-      return data.techName ? (
+    case 'tech_name': {
+      // Prefer the linked technician's current name (always correct);
+      // fall back to the legacy denormalized `techName` for records that
+      // were created without a technicianId.
+      const tech = data.technician?.name || data.techName
+      return tech ? (
         <Text key={fieldId} style={styles.infoTextSmall}>
-          {labels.tech ? fillTemplate(labels.tech, { tech: data.techName }) : `Tech: ${data.techName}`}
+          {labels.tech ? fillTemplate(labels.tech, { tech }) : `Tech: ${tech}`}
         </Text>
       ) : null
+    }
     default:
       return null
   }
