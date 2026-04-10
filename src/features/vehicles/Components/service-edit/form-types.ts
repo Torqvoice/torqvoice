@@ -38,6 +38,7 @@ export interface InitialData {
   subtotal: number
   taxRate: number
   taxAmount: number
+  taxInclusive?: boolean
   totalAmount: number
   discountType?: string
   discountValue?: number

@@ -38,6 +38,10 @@
         "title": "Payment",
         "description": "Payment terms & accounts"
       },
+      "tax": {
+        "title": "Tax",
+        "description": "Tax rate & defaults"
+      },
       "currency": {
         "title": "Currency",
         "description": "Currency & tax defaults"
@@ -421,6 +425,7 @@
       "customer_address": "Customer Address",
       "customer_email": "Customer Email",
       "customer_phone": "Customer Phone",
+      "customer_tax_id": "Customer Tax ID",
       "vehicle_name": "Vehicle",
       "vin": "VIN",
       "license_plate": "License Plate",
@@ -573,6 +578,37 @@
     "savePayment": "Save Payment Settings",
     "saved": "Payment settings saved"
   },
+  "tax": {
+    "title": "Tax",
+    "description": "Configure the tax rate applied to invoices, quotes, and work orders.",
+    "modeLabel": "Tax mode",
+    "modeHint": "Choose whether prices on line items are entered with tax already included (inclusive) or before tax (exclusive). Existing records keep the mode they were created with.",
+    "modeExclusive": "Exclusive",
+    "modeInclusive": "Inclusive",
+    "modeExclusiveExample": "Example: $100 + {rate}% tax = $100 + tax on top.",
+    "modeInclusiveExample": "Example: $100 entered already includes {rate}% tax — the tax portion is reverse-calculated.",
+    "labelLabel": "Tax label",
+    "labelHint": "Custom name shown on invoices and quotes (e.g. VAT, GST, MVA, MwSt.). Leave blank to use the localized default.",
+    "labelPlaceholder": "VAT",
+    "convertInclusiveLabel": "Convert existing records to inclusive mode",
+    "convertInclusiveHint": "Scales every line item price upward by the tax rate so prices include tax. Customer-facing totals stay the same. Eligible: {serviceRecords} work orders, {quotes} quotes.",
+    "convertInclusiveButton": "Convert to inclusive",
+    "convertInclusiveConfirmTitle": "Convert existing records to inclusive mode?",
+    "convertInclusiveConfirmDescription": "This will rewrite line item prices on {serviceRecords} work orders and {quotes} quotes so they include tax. Customer-facing totals will not change, but the printed prices on past invoices will appear higher. This cannot be undone.",
+    "convertInclusiveConfirmLabel": "Convert records",
+    "convertInclusiveSuccess": "Converted {serviceRecords} work orders and {quotes} quotes to inclusive mode.",
+    "convertInclusiveFailed": "Failed to convert records to inclusive mode",
+    "convertInclusiveNoRecords": "No exclusive-mode records to convert.",
+    "convertExclusiveLabel": "Convert existing records to exclusive mode",
+    "convertExclusiveHint": "Scales every line item price downward by the tax rate so prices show pre-tax amounts. Customer-facing totals stay the same. Eligible: {serviceRecords} work orders, {quotes} quotes.",
+    "convertExclusiveButton": "Convert to exclusive",
+    "convertExclusiveConfirmTitle": "Convert existing records to exclusive mode?",
+    "convertExclusiveConfirmDescription": "This will rewrite line item prices on {serviceRecords} work orders and {quotes} quotes so they show pre-tax amounts. Customer-facing totals will not change, but the printed prices on past invoices will appear lower. This cannot be undone.",
+    "convertExclusiveConfirmLabel": "Convert records",
+    "convertExclusiveSuccess": "Converted {serviceRecords} work orders and {quotes} quotes to exclusive mode.",
+    "convertExclusiveFailed": "Failed to convert records to exclusive mode",
+    "convertExclusiveNoRecords": "No inclusive-mode records to convert."
+  },
   "currency": {
     "title": "Currency & Tax",
     "description": "Default currency and tax rate used across invoices and service records.",
@@ -584,6 +620,15 @@
     "enableTaxHint": "Show tax calculation on invoices and service records",
     "defaultTaxRate": "Default Tax Rate (%)",
     "defaultTaxRateHint": "Auto-populated when creating new service records",
+    "applyTaxToExistingLabel": "Apply tax to existing records",
+    "applyTaxToExistingHint": "Applies the default tax rate to existing work orders and quotes that don't have a tax rate set. Eligible: {serviceRecords} work orders, {quotes} quotes.",
+    "applyTaxToExistingButton": "Apply tax to existing records",
+    "applyTaxConfirmTitle": "Apply tax to existing records?",
+    "applyTaxConfirmDescription": "This will set the tax rate to {rate}% on {serviceRecords} work orders and {quotes} quotes that currently have no tax rate, and recalculate their totals. Records with a custom tax rate will not be changed. This cannot be undone.",
+    "applyTaxConfirmLabel": "Apply tax",
+    "applyTaxSuccess": "Updated {serviceRecords} work orders and {quotes} quotes.",
+    "applyTaxFailed": "Failed to apply tax to existing records",
+    "applyTaxNoRecords": "No records need the default tax rate applied.",
     "saveSettings": "Save Settings",
     "saved": "Settings saved",
     "currencies": {

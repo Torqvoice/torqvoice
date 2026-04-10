@@ -211,6 +211,7 @@ export async function createServiceRecord(input: unknown) {
     const data = createServiceSchema.parse(input);
     const vehicle = await db.vehicle.findFirst({
       where: { id: data.vehicleId, organizationId },
+      include: { customer: { select: { taxExempt: true } } },
     });
     if (!vehicle) throw new Error("Vehicle not found");
 
@@ -219,7 +220,7 @@ export async function createServiceRecord(input: unknown) {
       db.appSetting.findMany({
         where: {
           organizationId,
-          key: { in: ["workshop.invoicePrefix", "workshop.invoiceStartNumber"] },
+          key: { in: ["workshop.invoicePrefix", "workshop.invoiceStartNumber", "workshop.taxInclusive"] },
         },
       }),
       db.organization.findUnique({
@@ -232,6 +233,21 @@ export async function createServiceRecord(input: unknown) {
 
     const shopName = data.shopName || org?.name || undefined;
     const prefix = resolveInvoicePrefix(settingsMap["workshop.invoicePrefix"] || "{year}-");
+
+    // If the caller didn't pass taxInclusive, inherit the org's current setting.
+    // Existing callers (vehicle-detail-client, ServiceForm) don't send the field,
+    // so they pick up the workshop default; explicit values are respected.
+    const inputObj = (input ?? {}) as Record<string, unknown>;
+    const taxInclusive =
+      "taxInclusive" in inputObj
+        ? data.taxInclusive
+        : settingsMap["workshop.taxInclusive"] === "true";
+
+    // Tax-exempt customer: force taxRate to 0 (overrides whatever the caller sent).
+    if (vehicle.customer?.taxExempt) {
+      data.taxRate = 0;
+      data.taxAmount = 0;
+    }
 
     // Generate sequential invoice number
     const startNumber = parseInt(settingsMap["workshop.invoiceStartNumber"] || "0", 10);
@@ -264,6 +280,7 @@ export async function createServiceRecord(input: unknown) {
       const created = await tx.serviceRecord.create({
         data: {
           ...recordData,
+          taxInclusive,
           shopName,
           invoiceNumber,
           serviceDate: new Date(serviceDate),

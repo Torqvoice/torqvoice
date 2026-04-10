@@ -1,6 +1,7 @@
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import { calculateTotals } from '@/lib/tax'
 
 function calculateNextRunDate(current: Date, frequency: string): Date {
   const next = new Date(current)
@@ -80,8 +81,12 @@ export function processRecurringInvoices() {
           const partsSubtotal = ri.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0)
           const laborSubtotal = ri.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0)
           const subtotal = ri.cost + partsSubtotal + laborSubtotal
-          const taxAmount = subtotal * (ri.taxRate / 100)
-          const totalAmount = subtotal + taxAmount
+          const { taxAmount, totalAmount } = calculateTotals({
+            subtotal,
+            discountAmount: 0,
+            taxRate: ri.taxRate,
+            taxInclusive: ri.taxInclusive,
+          })
 
           await db.$transaction(async (tx) => {
             await tx.serviceRecord.create({
@@ -96,6 +101,7 @@ export function processRecurringInvoices() {
                 invoiceNotes: ri.invoiceNotes,
                 subtotal,
                 taxRate: ri.taxRate,
+                taxInclusive: ri.taxInclusive,
                 taxAmount,
                 totalAmount,
                 invoiceNumber,

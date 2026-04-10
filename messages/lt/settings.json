@@ -38,6 +38,10 @@
         "title": "Mokėjimas",
         "description": "Mokėjimo sąlygos ir sąskaitos"
       },
+      "tax": {
+        "title": "Mokestis",
+        "description": "Mokesčių tarifas ir numatytosios reikšmės"
+      },
       "currency": {
         "title": "Valiuta",
         "description": "Valiuta ir mokesčių numatytosios reikšmės"
@@ -421,6 +425,7 @@
       "customer_address": "Kliento adresas",
       "customer_email": "Kliento el. paštas",
       "customer_phone": "Kliento telefonas",
+      "customer_tax_id": "Kliento PVM kodas",
       "vehicle_name": "Transporto priemonė",
       "vin": "VIN",
       "license_plate": "Valstybinis numeris",
@@ -573,6 +578,37 @@
     "savePayment": "Išsaugoti mokėjimo nustatymus",
     "saved": "Mokėjimo nustatymai išsaugoti"
   },
+  "tax": {
+    "title": "Mokestis",
+    "description": "Konfigūruokite mokesčių tarifą, taikomą sąskaitoms, pasiūlymams ir darbo užsakymams.",
+    "modeLabel": "Mokesčių režimas",
+    "modeHint": "Pasirinkite, ar eilučių kainos įvedamos su jau įskaičiuotu mokesčiu (su mokesčiu) ar be mokesčio (be mokesčio). Esami įrašai išlaiko režimą, su kuriuo buvo sukurti.",
+    "modeExclusive": "Be mokesčio",
+    "modeInclusive": "Su mokesčiu",
+    "modeExclusiveExample": "Pavyzdys: 100 + {rate}% mokesčio = 100 + mokestis viršuje.",
+    "modeInclusiveExample": "Pavyzdys: 100 jau apima {rate}% mokesčio — mokesčio dalis apskaičiuojama atgal.",
+    "labelLabel": "Mokesčio etiketė",
+    "labelHint": "Pasirinktinis pavadinimas, rodomas sąskaitose ir pasiūlymuose (pvz. PVM, VAT). Palikite tuščią, kad būtų naudojama lokalizuota numatytoji.",
+    "labelPlaceholder": "PVM",
+    "convertInclusiveLabel": "Konvertuoti esamus įrašus į režimą su mokesčiu",
+    "convertInclusiveHint": "Padidina kiekvienos eilutės kainą mokesčių tarifu, kad kainos apimtų mokestį. Kliento pusės sumos lieka nepakitusios. Tinkami: {serviceRecords} darbo užsakymų, {quotes} pasiūlymų.",
+    "convertInclusiveButton": "Konvertuoti į režimą su mokesčiu",
+    "convertInclusiveConfirmTitle": "Konvertuoti esamus įrašus į režimą su mokesčiu?",
+    "convertInclusiveConfirmDescription": "Tai perrašys eilučių kainas {serviceRecords} darbo užsakymuose ir {quotes} pasiūlymuose, kad jose būtų įskaičiuotas mokestis. Kliento pusės sumos nesikeis, bet ankstesnėse sąskaitose atspausdintos kainos atrodys aukštesnės. Šio veiksmo atšaukti negalima.",
+    "convertInclusiveConfirmLabel": "Konvertuoti įrašus",
+    "convertInclusiveSuccess": "Konvertuota {serviceRecords} darbo užsakymų ir {quotes} pasiūlymų į režimą su mokesčiu.",
+    "convertInclusiveFailed": "Nepavyko konvertuoti įrašų į režimą su mokesčiu",
+    "convertInclusiveNoRecords": "Nėra įrašų be mokesčio režime, kuriuos būtų galima konvertuoti.",
+    "convertExclusiveLabel": "Konvertuoti esamus įrašus į režimą be mokesčio",
+    "convertExclusiveHint": "Sumažina kiekvienos eilutės kainą mokesčių tarifu, kad kainos rodytų sumas be mokesčio. Kliento pusės sumos lieka nepakitusios. Tinkami: {serviceRecords} darbo užsakymų, {quotes} pasiūlymų.",
+    "convertExclusiveButton": "Konvertuoti į režimą be mokesčio",
+    "convertExclusiveConfirmTitle": "Konvertuoti esamus įrašus į režimą be mokesčio?",
+    "convertExclusiveConfirmDescription": "Tai perrašys eilučių kainas {serviceRecords} darbo užsakymuose ir {quotes} pasiūlymuose, kad jos rodytų sumas be mokesčio. Kliento pusės sumos nesikeis, bet ankstesnėse sąskaitose atspausdintos kainos atrodys mažesnės. Šio veiksmo atšaukti negalima.",
+    "convertExclusiveConfirmLabel": "Konvertuoti įrašus",
+    "convertExclusiveSuccess": "Konvertuota {serviceRecords} darbo užsakymų ir {quotes} pasiūlymų į režimą be mokesčio.",
+    "convertExclusiveFailed": "Nepavyko konvertuoti įrašų į režimą be mokesčio",
+    "convertExclusiveNoRecords": "Nėra įrašų su mokesčio režime, kuriuos būtų galima konvertuoti."
+  },
   "currency": {
     "title": "Valiuta ir mokesčiai",
     "description": "Numatytoji valiuta ir mokesčių tarifas, naudojami sąskaitose ir paslaugų įrašuose.",
@@ -584,6 +620,15 @@
     "enableTaxHint": "Rodyti mokesčių skaičiavimą sąskaitose ir paslaugų įrašuose",
     "defaultTaxRate": "Numatytasis mokesčių tarifas (%)",
     "defaultTaxRateHint": "Automatiškai užpildoma kuriant naujus paslaugų įrašus",
+    "applyTaxToExistingLabel": "Taikyti mokestį esamiems įrašams",
+    "applyTaxToExistingHint": "Taiko numatytąjį mokesčių tarifą esamiems darbo užsakymams ir pasiūlymams, kuriems nenustatytas mokesčių tarifas. Tinkami: {serviceRecords} darbo užsakymų, {quotes} pasiūlymų.",
+    "applyTaxToExistingButton": "Taikyti mokestį esamiems įrašams",
+    "applyTaxConfirmTitle": "Taikyti mokestį esamiems įrašams?",
+    "applyTaxConfirmDescription": "Tai nustatys {rate}% mokesčių tarifą {serviceRecords} darbo užsakymams ir {quotes} pasiūlymams, kurie šiuo metu neturi mokesčių tarifo, ir perskaičiuos jų sumas. Įrašai su individualiu mokesčių tarifu nebus pakeisti. Šio veiksmo atšaukti negalima.",
+    "applyTaxConfirmLabel": "Taikyti mokestį",
+    "applyTaxSuccess": "Atnaujinta {serviceRecords} darbo užsakymų ir {quotes} pasiūlymų.",
+    "applyTaxFailed": "Nepavyko taikyti mokesčio esamiems įrašams",
+    "applyTaxNoRecords": "Jokie įrašai nereikalauja numatytojo mokesčių tarifo.",
     "saveSettings": "Išsaugoti nustatymus",
     "saved": "Nustatymai išsaugoti",
     "currencies": {

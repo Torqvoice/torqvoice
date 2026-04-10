@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
+import { calculateTotals } from "@/lib/tax";
 
 export async function addPartToServiceRecord(input: {
   serviceRecordId: string;
@@ -19,7 +20,7 @@ export async function addPartToServiceRecord(input: {
     async ({ organizationId }) => {
       const record = await db.serviceRecord.findFirst({
         where: { id: input.serviceRecordId, vehicle: { organizationId } },
-        select: { id: true, vehicleId: true, subtotal: true, taxRate: true, discountType: true, discountValue: true },
+        select: { id: true, vehicleId: true, subtotal: true, taxRate: true, taxInclusive: true, discountType: true, discountValue: true },
       });
       if (!record) throw new Error("Service record not found");
 
@@ -55,8 +56,12 @@ export async function addPartToServiceRecord(input: {
           : record.discountType === "fixed"
             ? Math.min(record.discountValue ?? 0, subtotal)
             : 0;
-      const taxAmount = (subtotal - discountAmount) * (record.taxRate / 100);
-      const totalAmount = subtotal - discountAmount + taxAmount;
+      const { taxAmount, totalAmount } = calculateTotals({
+        subtotal,
+        discountAmount,
+        taxRate: record.taxRate,
+        taxInclusive: record.taxInclusive,
+      });
 
       await db.serviceRecord.update({
         where: { id: record.id },

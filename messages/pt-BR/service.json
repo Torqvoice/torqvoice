@@ -125,12 +125,15 @@
     "parts": "Peças",
     "labor": "Mão de Obra",
     "subtotal": "Subtotal",
+    "subtotalInclTax": "Subtotal (com imposto)",
     "discount": "Desconto",
     "discountNone": "Nenhum",
     "discountPercentage": "Percentual",
     "discountFixed": "Fixo",
     "tax": "Imposto",
-    "total": "Total"
+    "taxIncluded": "Imposto (incl.)",
+    "total": "Total",
+    "inclusiveModeHint": "Os preços das linhas são inseridos com imposto incluído. Os totais mostram a divisão líquido + imposto."
   },
   "notes": {
     "title": "Notas",
@@ -157,8 +160,10 @@
     "parts": "Peças",
     "labor": "Mão de Obra",
     "subtotal": "Subtotal",
+    "subtotalInclTax": "Subtotal (com imposto)",
     "discount": "Desconto",
     "tax": "Imposto ({rate}%)",
+    "taxIncluded": "Imposto (incl., {rate}%)",
     "total": "Total",
     "paid": "Pago",
     "balanceDue": "Saldo Devedor",

@@ -60,7 +60,7 @@ interface CustomerRenderCtx {
 }
 
 function renderCustomerField(fieldId: string, ctx: CustomerRenderCtx): React.ReactNode {
-  const { data, styles } = ctx
+  const { data, styles, labels } = ctx
   const c = data.vehicle.customer
   if (!c) return null
 
@@ -75,6 +75,12 @@ function renderCustomerField(fieldId: string, ctx: CustomerRenderCtx): React.Rea
       return c.email ? <Text key={fieldId} style={styles.infoTextSmall}>{c.email}</Text> : null
     case 'customer_phone':
       return c.phone ? <Text key={fieldId} style={styles.infoTextSmall}>{c.phone}</Text> : null
+    case 'customer_tax_id':
+      return c.taxId ? (
+        <Text key={fieldId} style={styles.infoTextSmall}>
+          {(labels.customerTaxId || 'Tax ID')}: {c.taxId}
+        </Text>
+      ) : null
     default:
       return null
   }
@@ -136,12 +142,17 @@ function renderServiceField(fieldId: string, ctx: ServiceRenderCtx): React.React
           {labels.type ? fillTemplate(labels.type, { type: data.type }) : `Type: ${data.type}`}
         </Text>
       )
-    case 'tech_name':
-      return data.techName ? (
+    case 'tech_name': {
+      // Prefer the linked technician's current name (always correct);
+      // fall back to the legacy denormalized `techName` for records that
+      // were created without a technicianId.
+      const tech = data.technician?.name || data.techName
+      return tech ? (
         <Text key={fieldId} style={styles.infoTextSmall}>
-          {labels.tech ? fillTemplate(labels.tech, { tech: data.techName }) : `Tech: ${data.techName}`}
+          {labels.tech ? fillTemplate(labels.tech, { tech }) : `Tech: ${tech}`}
         </Text>
       ) : null
+    }
     default:
       return null
   }
@@ -151,7 +162,7 @@ function renderServiceField(fieldId: string, ctx: ServiceRenderCtx): React.React
 // Default field orders (used when no layout config / visibleFields)
 // ---------------------------------------------------------------------------
 
-const DEFAULT_CUSTOMER_FIELDS = ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone']
+const DEFAULT_CUSTOMER_FIELDS = ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone', 'customer_tax_id']
 const DEFAULT_VEHICLE_FIELDS = ['vehicle_name', 'vin', 'license_plate', 'mileage']
 const DEFAULT_SERVICE_FIELDS = ['service_title', 'service_type', 'tech_name']
 

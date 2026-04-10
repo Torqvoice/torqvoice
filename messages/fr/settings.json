@@ -38,6 +38,10 @@
         "title": "Paiement",
         "description": "Conditions de paiement et comptes"
       },
+      "tax": {
+        "title": "Taxe",
+        "description": "Taux de taxe et valeurs par defaut"
+      },
       "currency": {
         "title": "Devise",
         "description": "Devise et taxes par defaut"
@@ -421,6 +425,7 @@
       "customer_address": "Adresse",
       "customer_email": "E-mail",
       "customer_phone": "Téléphone",
+      "customer_tax_id": "Numéro TVA client",
       "vehicle_name": "Véhicule",
       "vin": "VIN",
       "license_plate": "Plaque d'immatriculation",
@@ -573,6 +578,37 @@
     "savePayment": "Enregistrer les parametres de paiement",
     "saved": "Parametres de paiement enregistres"
   },
+  "tax": {
+    "title": "Taxe",
+    "description": "Configurez le taux de taxe applique aux factures, devis et bons de travail.",
+    "modeLabel": "Mode de taxe",
+    "modeHint": "Choisissez si les prix des lignes sont saisis avec la taxe deja incluse (inclusif) ou hors taxe (exclusif). Les enregistrements existants conservent le mode avec lequel ils ont ete crees.",
+    "modeExclusive": "Exclusif",
+    "modeInclusive": "Inclusif",
+    "modeExclusiveExample": "Exemple : 100 + {rate}% de taxe = 100 + taxe en plus.",
+    "modeInclusiveExample": "Exemple : 100 inclut deja {rate}% de taxe — la part de taxe est calculee en sens inverse.",
+    "labelLabel": "Libellé de taxe",
+    "labelHint": "Nom personnalisé affiché sur les factures et devis (p. ex. TVA, GST). Laisser vide pour utiliser le libellé localisé par défaut.",
+    "labelPlaceholder": "TVA",
+    "convertInclusiveLabel": "Convertir les enregistrements existants en mode inclusif",
+    "convertInclusiveHint": "Augmente chaque prix de ligne par le taux de taxe afin que les prix incluent la taxe. Les totaux côté client restent identiques. Éligibles : {serviceRecords} bons de travail, {quotes} devis.",
+    "convertInclusiveButton": "Convertir en inclusif",
+    "convertInclusiveConfirmTitle": "Convertir les enregistrements existants en mode inclusif ?",
+    "convertInclusiveConfirmDescription": "Cela réécrira les prix de ligne de {serviceRecords} bons de travail et {quotes} devis pour quils incluent la taxe. Les totaux côté client ne changeront pas, mais les prix imprimés sur les factures passées apparaîtront plus élevés. Cette action est irréversible.",
+    "convertInclusiveConfirmLabel": "Convertir les enregistrements",
+    "convertInclusiveSuccess": "{serviceRecords} bons de travail et {quotes} devis convertis en mode inclusif.",
+    "convertInclusiveFailed": "Impossible de convertir les enregistrements en mode inclusif",
+    "convertInclusiveNoRecords": "Aucun enregistrement en mode exclusif à convertir.",
+    "convertExclusiveLabel": "Convertir les enregistrements existants en mode exclusif",
+    "convertExclusiveHint": "Diminue chaque prix de ligne par le taux de taxe afin que les prix affichent les montants hors taxe. Les totaux côté client restent identiques. Éligibles : {serviceRecords} bons de travail, {quotes} devis.",
+    "convertExclusiveButton": "Convertir en exclusif",
+    "convertExclusiveConfirmTitle": "Convertir les enregistrements existants en mode exclusif ?",
+    "convertExclusiveConfirmDescription": "Cela réécrira les prix de ligne de {serviceRecords} bons de travail et {quotes} devis pour quils affichent les montants hors taxe. Les totaux côté client ne changeront pas, mais les prix imprimés sur les factures passées apparaîtront plus bas. Cette action est irréversible.",
+    "convertExclusiveConfirmLabel": "Convertir les enregistrements",
+    "convertExclusiveSuccess": "{serviceRecords} bons de travail et {quotes} devis convertis en mode exclusif.",
+    "convertExclusiveFailed": "Impossible de convertir les enregistrements en mode exclusif",
+    "convertExclusiveNoRecords": "Aucun enregistrement en mode inclusif à convertir."
+  },
   "currency": {
     "title": "Devise et taxes",
     "description": "Devise par defaut et taux d'imposition pour les factures et les dossiers de service.",
@@ -584,6 +620,15 @@
     "enableTaxHint": "Afficher le calcul des taxes sur les factures et les dossiers de service",
     "defaultTaxRate": "Taux d'imposition par defaut (%)",
     "defaultTaxRateHint": "Rempli automatiquement lors de la creation de nouveaux dossiers de service",
+    "applyTaxToExistingLabel": "Appliquer la taxe aux enregistrements existants",
+    "applyTaxToExistingHint": "Applique le taux de taxe par defaut aux bons de travail et devis existants sans taux de taxe. Eligibles : {serviceRecords} bons de travail, {quotes} devis.",
+    "applyTaxToExistingButton": "Appliquer la taxe aux enregistrements existants",
+    "applyTaxConfirmTitle": "Appliquer la taxe aux enregistrements existants ?",
+    "applyTaxConfirmDescription": "Cela definira le taux de taxe a {rate}% sur {serviceRecords} bons de travail et {quotes} devis qui n'ont actuellement aucun taux de taxe, et recalculera leurs totaux. Les enregistrements avec un taux personnalise ne seront pas modifies. Cette action est irreversible.",
+    "applyTaxConfirmLabel": "Appliquer la taxe",
+    "applyTaxSuccess": "{serviceRecords} bons de travail et {quotes} devis mis a jour.",
+    "applyTaxFailed": "Impossible d'appliquer la taxe aux enregistrements existants",
+    "applyTaxNoRecords": "Aucun enregistrement ne necessite le taux de taxe par defaut.",
     "saveSettings": "Enregistrer les parametres",
     "saved": "Parametres enregistres",
     "currencies": {

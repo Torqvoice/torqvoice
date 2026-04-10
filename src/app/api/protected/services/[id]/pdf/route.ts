@@ -49,6 +49,11 @@ export async function GET(
           laborItems: true,
           attachments: true,
           payments: { orderBy: { date: "desc" } },
+          // Pull the linked technician's current name as the source of truth.
+          // The denormalized `techName` field can drift out of sync; the FK
+          // relation is always correct. The PDF prefers technician.name and
+          // falls back to techName for legacy records that have no FK.
+          technician: { select: { name: true } },
           vehicle: {
             select: {
               make: true,
@@ -64,6 +69,7 @@ export async function GET(
                   phone: true,
                   address: true,
                   company: true,
+                  taxId: true,
                 },
               },
             },
@@ -115,6 +121,12 @@ export async function GET(
       // Override unit labels for engine hours
       labels.km = "hrs";
       labels.mi = "hrs";
+    }
+
+    // Custom tax label override (e.g. "VAT", "MVA", "GST", "MwSt.")
+    const customTaxLabel = settingsMap["workshop.taxLabel"]?.trim();
+    if (customTaxLabel) {
+      labels.tax = `${customTaxLabel} ({rate}%)`;
     }
 
     // Load image attachments as base64 data URIs for PDF embedding

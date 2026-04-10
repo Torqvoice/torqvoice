@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -133,10 +132,8 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [timezoneOpen, setTimezoneOpen] = useState(false);
 
-  // Currency & Tax
+  // Currency
   const [currencyCode, setCurrencyCode] = useState(settings[SETTING_KEYS.CURRENCY_CODE] || "USD");
-  const [taxEnabled, setTaxEnabled] = useState(settings[SETTING_KEYS.TAX_ENABLED] !== "false");
-  const [defaultTaxRate, setDefaultTaxRate] = useState(settings[SETTING_KEYS.DEFAULT_TAX_RATE] || "0");
 
   // Date & Time
   const [dateFormat, setDateFormat] = useState(settings[SETTING_KEYS.DATE_FORMAT] || DEFAULT_DATE_FORMAT);
@@ -156,8 +153,6 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
     setSaving(true);
     await setSettings({
       [SETTING_KEYS.CURRENCY_CODE]: currencyCode,
-      [SETTING_KEYS.TAX_ENABLED]: String(taxEnabled),
-      [SETTING_KEYS.DEFAULT_TAX_RATE]: taxEnabled ? defaultTaxRate : "0",
       [SETTING_KEYS.DATE_FORMAT]: dateFormat,
       [SETTING_KEYS.TIME_FORMAT]: timeFormat,
       [SETTING_KEYS.TIMEZONE]: timezone,
@@ -233,7 +228,7 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
         </CardContent>
       </Card>
 
-      {/* Currency & Tax */}
+      {/* Currency */}
       <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-3 pb-4">
           <Coins className="h-5 w-5 text-muted-foreground" />
@@ -280,37 +275,6 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
                   {t("currency.previewLabel", { value: formatCurrency(1234.56, currencyCode) })}
                 </p>
               </div>
-
-              <Separator />
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>{t("currency.enableTax")}</Label>
-                  <p className="text-xs text-muted-foreground">
-                    {t("currency.enableTaxHint")}
-                  </p>
-                </div>
-                <Switch checked={taxEnabled} onCheckedChange={setTaxEnabled} />
-              </div>
-
-              {taxEnabled && (
-                <div className="space-y-2">
-                  <Label htmlFor="defaultTaxRate">{t("currency.defaultTaxRate")}</Label>
-                  <Input
-                    id="defaultTaxRate"
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    placeholder="0"
-                    value={defaultTaxRate}
-                    onChange={(e) => setDefaultTaxRate(e.target.value)}
-                    className="w-32"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t("currency.defaultTaxRateHint")}
-                  </p>
-                </div>
-              )}
             </div>
           </ReadOnlyWrapper>
         </CardContent>

@@ -49,6 +49,9 @@ export async function GET(
         partItems: true,
         laborItems: true,
         payments: { orderBy: { date: "desc" } },
+        // Linked technician (FK) is the source of truth for the tech name;
+        // the legacy `techName` string is only a fallback for old records.
+        technician: { select: { name: true } },
         vehicle: {
           select: {
             make: true,
@@ -66,6 +69,7 @@ export async function GET(
                 phone: true,
                 address: true,
                 company: true,
+                taxId: true,
               },
             },
           },
@@ -120,6 +124,12 @@ export async function GET(
       // Override unit labels for engine hours
       labels.km = "hrs";
       labels.mi = "hrs";
+    }
+
+    // Custom tax label override (e.g. "VAT", "MVA", "GST", "MwSt.")
+    const customTaxLabel = settingsMap["workshop.taxLabel"]?.trim();
+    if (customTaxLabel) {
+      labels.tax = `${customTaxLabel} ({rate}%)`;
     }
 
     // Load logo

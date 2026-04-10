@@ -117,7 +117,7 @@
     "serviceTag": "SVC",
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
-    "switchToHourlyHint": "Hourly: priced by hours worked (hours \u00d7 rate/hr). Click to switch.",
+    "switchToHourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
     "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
   },
   "totals": {
@@ -125,12 +125,15 @@
     "parts": "Parts",
     "labor": "Labor",
     "subtotal": "Subtotal",
+    "subtotalInclTax": "Subtotal (incl. tax)",
     "discount": "Discount",
     "discountNone": "None",
     "discountPercentage": "Percentage",
     "discountFixed": "Fixed",
     "tax": "Tax",
-    "total": "Total"
+    "taxIncluded": "Tax (incl.)",
+    "total": "Total",
+    "inclusiveModeHint": "Line item prices are entered with tax included. Totals show the net + tax breakdown."
   },
   "notes": {
     "title": "Notes",
@@ -157,8 +160,10 @@
     "parts": "Parts",
     "labor": "Labor",
     "subtotal": "Subtotal",
+    "subtotalInclTax": "Subtotal (incl. tax)",
     "discount": "Discount",
     "tax": "Tax ({rate}%)",
+    "taxIncluded": "Tax (incl., {rate}%)",
     "total": "Total",
     "paid": "Paid",
     "balanceDue": "Balance Due",

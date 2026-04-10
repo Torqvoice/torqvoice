@@ -26,6 +26,7 @@ import {
   Layout,
   Mail,
   MessageSquare,
+  Percent,
   Send,
   Sparkles,
   UserCog,
@@ -64,6 +65,7 @@ const settingsCategories: SettingsCategory[] = [
       { key: 'invoice', href: '/settings/invoice', icon: FileText },
       { key: 'templates', href: '/settings/templates', icon: Layout, gate: 'customTemplates' },
       { key: 'payment', href: '/settings/payment', icon: Banknote, gate: 'payments' },
+      { key: 'tax', href: '/settings/tax', icon: Percent },
     ],
   },
   {

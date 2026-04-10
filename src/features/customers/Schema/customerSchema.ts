@@ -6,6 +6,8 @@ export const createCustomerSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   company: z.string().optional(),
+  taxId: z.string().optional(),
+  taxExempt: z.boolean().optional(),
   notes: z.string().optional(),
 });
 

@@ -134,12 +134,15 @@
     "parts": "Części",
     "labor": "Robocizna",
     "subtotal": "Suma częściowa",
+    "subtotalInclTax": "Suma częściowa (z podatkiem)",
     "discount": "Rabat",
     "discountNone": "Brak",
     "discountPercentage": "Procentowy",
     "discountFixed": "Stały",
     "tax": "Podatek",
-    "total": "Suma"
+    "taxIncluded": "Podatek (zaw.)",
+    "total": "Suma",
+    "inclusiveModeHint": "Ceny pozycji są wprowadzane z podatkiem. Sumy pokazują podział netto + podatek."
   },
   "shareDialog": {
     "title": "Udostępnij wycenę",

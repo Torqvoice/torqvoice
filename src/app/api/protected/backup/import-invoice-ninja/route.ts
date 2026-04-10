@@ -91,6 +91,7 @@ interface INInvoice {
   footer: string | null;
   tax_name1: string;
   tax_rate1: number;
+  uses_inclusive_taxes?: boolean;
   is_deleted: boolean;
   created_at: number;
 }
@@ -436,6 +437,9 @@ export async function POST(request: NextRequest) {
             taxRate: parseNum(invoice.tax_rate1) || 0,
             taxAmount:
               parseNum(invoice.amount) - (partsTotal + laborTotal) + discount,
+            // Invoice Ninja exposes `uses_inclusive_taxes` per invoice; fall
+            // back to false (Invoice Ninja default) when the field is missing.
+            taxInclusive: Boolean(invoice.uses_inclusive_taxes),
             totalAmount: amount,
             vehicleId: placeholderVehicleId,
           },

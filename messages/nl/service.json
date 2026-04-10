@@ -125,12 +125,15 @@
     "parts": "Onderdelen",
     "labor": "Arbeidskosten",
     "subtotal": "Subtotaal",
+    "subtotalInclTax": "Subtotaal (incl. btw)",
     "discount": "Korting",
     "discountNone": "Geen",
     "discountPercentage": "Percentage",
     "discountFixed": "Vast",
     "tax": "Belasting",
-    "total": "Totaal"
+    "taxIncluded": "Belasting (incl.)",
+    "total": "Totaal",
+    "inclusiveModeHint": "Regelprijzen worden inclusief belasting ingevoerd. De totalen tonen de uitsplitsing netto + belasting."
   },
   "notes": {
     "title": "Opmerkingen",
@@ -157,8 +160,10 @@
     "parts": "Onderdelen",
     "labor": "Arbeidskosten",
     "subtotal": "Subtotaal",
+    "subtotalInclTax": "Subtotaal (incl. btw)",
     "discount": "Korting",
     "tax": "Belasting ({rate}%)",
+    "taxIncluded": "Btw (incl., {rate}%)",
     "total": "Totaal",
     "paid": "Betaald",
     "balanceDue": "Verschuldigd bedrag",

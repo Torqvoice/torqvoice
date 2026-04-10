@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
@@ -28,6 +29,8 @@ interface CustomerFormProps {
     phone?: string | null;
     address?: string | null;
     company?: string | null;
+    taxId?: string | null;
+    taxExempt?: boolean;
     notes?: string | null;
   };
   onCreated?: (customer: { id: string; name: string; company: string | null }) => void;
@@ -39,6 +42,7 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
   const router = useRouter();
   const modal = useGlassModal();
   const [loading, setLoading] = useState(false);
+  const [taxExempt, setTaxExempt] = useState(customer?.taxExempt ?? false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -51,6 +55,8 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
       phone: (formData.get("phone") as string) || undefined,
       address: (formData.get("address") as string) || undefined,
       company: (formData.get("company") as string) || undefined,
+      taxId: (formData.get("taxId") as string) || undefined,
+      taxExempt,
       notes: (formData.get("notes") as string) || undefined,
     };
 
@@ -134,6 +140,25 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
               placeholder={t("addressPlaceholder")}
               defaultValue={customer?.address ?? ""}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="taxId">{t("taxId")}</Label>
+            <Input
+              id="taxId"
+              name="taxId"
+              placeholder={t("taxIdPlaceholder")}
+              defaultValue={customer?.taxId ?? ""}
+            />
+            <p className="text-xs text-muted-foreground">{t("taxIdHint")}</p>
+          </div>
+
+          <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
+            <div className="space-y-0.5">
+              <Label>{t("taxExempt")}</Label>
+              <p className="text-xs text-muted-foreground">{t("taxExemptHint")}</p>
+            </div>
+            <Switch checked={taxExempt} onCheckedChange={setTaxExempt} />
           </div>
 
           <div className="space-y-2">

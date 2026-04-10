@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
+import { calculateTotals } from '@/lib/tax'
 import type { ServicePartInput, ServiceLaborInput, InitialData } from './service-page-types'
 import type { ServiceDetail } from '../service-detail/types'
 
@@ -25,6 +26,7 @@ export function useServiceFormState({
   const [partItems, setPartItems] = useState<ServicePartInput[]>(initialData.partItems || [])
   const [laborItems, setLaborItems] = useState<ServiceLaborInput[]>(initialData.laborItems || [])
   const [taxRate, setTaxRate] = useState(initialData.taxRate ?? defaultTaxRate)
+  const [taxInclusive] = useState<boolean>(initialData.taxInclusive ?? false)
   const [discountType, setDiscountType] = useState<string>(initialData.discountType || 'none')
   const [discountValue, setDiscountValue] = useState(initialData.discountValue ?? 0)
   const [showInventoryPicker, setShowInventoryPicker] = useState(false)
@@ -107,8 +109,12 @@ export function useServiceFormState({
       : discountType === 'fixed'
         ? Math.min(discountValue, subtotal)
         : 0
-  const taxAmount = (subtotal - discountAmount) * (taxRate / 100)
-  const totalAmount = subtotal - discountAmount + taxAmount
+  const { taxAmount, totalAmount } = calculateTotals({
+    subtotal,
+    discountAmount,
+    taxRate,
+    taxInclusive,
+  })
 
   const [localManuallyPaid, setLocalManuallyPaid] = useState(record.manuallyPaid)
   const displayTotal = totalAmount > 0 ? totalAmount : record.cost
@@ -182,7 +188,7 @@ export function useServiceFormState({
     selectedVehicleId,
     techName, type, status,
     partItems, laborItems,
-    taxRate, discountType, discountValue,
+    taxRate, taxInclusive, discountType, discountValue,
     showInventoryPicker, setShowInventoryPicker,
     showBarcodeScanner, setShowBarcodeScanner,
     showPresetPicker, setShowPresetPicker,

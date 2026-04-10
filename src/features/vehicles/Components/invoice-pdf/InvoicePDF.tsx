@@ -1,6 +1,7 @@
 import React from 'react'
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { calculateTotals } from '@/lib/tax'
 import { createStyles, gray, getFontBold } from './styles'
 import { Header } from './Header'
 import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
@@ -10,7 +11,13 @@ import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
 import { CustomFields } from './CustomFields'
 import { Footer, AttachmentsFooter } from './Footer'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
-import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getVisibleFieldsForSection } from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  isCustomFieldId,
+  fromCustomFieldId,
+  groupSectionsForRendering,
+  getDefaultInvoiceLayout,
+  getVisibleFieldsForSection,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 import type {
   TemplateConfig,
   InvoiceData,
@@ -28,17 +35,17 @@ import type {
 function getCustomFieldsForSection(
   layoutConfig: InvoiceLayoutConfig | undefined,
   sectionId: string,
-  allCustomFields: Array<{ fieldId: string; label: string; value: string; fieldType: string }>,
+  allCustomFields: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
 ): Array<{ fieldId: string; label: string; value: string; fieldType: string }> {
   if (!layoutConfig || !allCustomFields?.length) return []
-  const section = layoutConfig.sections.find(s => s.id === sectionId)
+  const section = layoutConfig.sections.find((s) => s.id === sectionId)
   if (!section?.fields) return []
   const cfIds = new Set(
     section.fields
-      .filter(f => f.visible && isCustomFieldId(f.id))
-      .map(f => fromCustomFieldId(f.id))
+      .filter((f) => f.visible && isCustomFieldId(f.id))
+      .map((f) => fromCustomFieldId(f.id))
   )
-  return allCustomFields.filter(cf => cfIds.has(cf.fieldId))
+  return allCustomFields.filter((cf) => cfIds.has(cf.fieldId))
 }
 
 export function InvoicePDF({
@@ -85,14 +92,20 @@ export function InvoicePDF({
   const partsSubtotal = data.partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
   const computedSubtotal = partsSubtotal + laborSubtotal
-  const computedDiscount = data.discountType === 'percentage'
-    ? computedSubtotal * ((data.discountValue || 0) / 100)
-    : data.discountType === 'fixed'
-      ? Math.min(data.discountValue || 0, computedSubtotal)
-      : 0
-  const computedTax = (computedSubtotal - computedDiscount) * (data.taxRate / 100)
-  const computedTotal = computedSubtotal - computedDiscount + computedTax
-  const displayTotal = data.totalAmount > 0 ? data.totalAmount : computedTotal > 0 ? computedTotal : data.cost
+  const computedDiscount =
+    data.discountType === 'percentage'
+      ? computedSubtotal * ((data.discountValue || 0) / 100)
+      : data.discountType === 'fixed'
+        ? Math.min(data.discountValue || 0, computedSubtotal)
+        : 0
+  const { totalAmount: computedTotal } = calculateTotals({
+    subtotal: computedSubtotal,
+    discountAmount: computedDiscount,
+    taxRate: data.taxRate,
+    taxInclusive: data.taxInclusive ?? false,
+  })
+  const displayTotal =
+    data.totalAmount > 0 ? data.totalAmount : computedTotal > 0 ? computedTotal : data.cost
   const invoiceNum = data.invoiceNumber || `INV-${data.id.slice(-8).toUpperCase()}`
   const df = invoiceSettings?.dateFormat || DEFAULT_DATE_FORMAT
   const tz = invoiceSettings?.timezone || undefined
@@ -103,9 +116,11 @@ export function InvoicePDF({
     ? formatDateForPdf(data.invoiceDueDate, df, tz)
     : (invoiceSettings?.dueDays || 0) > 0
       ? formatDateForPdf(
-          new Date(new Date(effectiveInvoiceDate).getTime() + (invoiceSettings?.dueDays || 0) * 86400000),
+          new Date(
+            new Date(effectiveInvoiceDate).getTime() + (invoiceSettings?.dueDays || 0) * 86400000
+          ),
           df,
-          tz,
+          tz
         )
       : null
 
@@ -190,13 +205,9 @@ export function InvoicePDF({
       />
     ),
 
-    parts_table: (
-      <PartsTable data={data} currencyCode={cc} styles={styles} labels={labels} />
-    ),
+    parts_table: <PartsTable data={data} currencyCode={cc} styles={styles} labels={labels} />,
 
-    labor_table: (
-      <LaborTable data={data} currencyCode={cc} styles={styles} labels={labels} />
-    ),
+    labor_table: <LaborTable data={data} currencyCode={cc} styles={styles} labels={labels} />,
 
     totals: (
       <>
@@ -281,7 +292,15 @@ export function InvoicePDF({
 
     telegram_qr: telegramQrDataUri ? (
       <View style={{ alignItems: 'center', marginTop: 14, paddingTop: 10 }}>
-        <View style={{ alignItems: 'center', backgroundColor: '#fafafa', borderRadius: 6, padding: 10, paddingBottom: 6 }}>
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: '#fafafa',
+            borderRadius: 6,
+            padding: 10,
+            paddingBottom: 6,
+          }}
+        >
           <Image src={telegramQrDataUri} style={{ width: 56, height: 56 }} />
           <Text style={{ fontSize: 6.5, color: gray[500], marginTop: 4, fontFamily }}>
             {telegramLabel || 'Chat with us on Telegram'}
@@ -317,8 +336,12 @@ export function InvoicePDF({
         <React.Fragment key={group.sectionId}>{sectionMap[group.sectionId]}</React.Fragment>
       )
     } else {
-      const leftNodes = group.left.map(id => <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>).filter(Boolean)
-      const rightNodes = group.right.map(id => <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>).filter(Boolean)
+      const leftNodes = group.left
+        .map((id) => <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>)
+        .filter(Boolean)
+      const rightNodes = group.right
+        .map((id) => <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>)
+        .filter(Boolean)
       if (leftNodes.length > 0 || rightNodes.length > 0) {
         renderedSections.push(
           <View key={`col-${group.left[0] || group.right[0]}`} style={styles.infoRow}>

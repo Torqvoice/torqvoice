@@ -62,6 +62,8 @@ interface CustomerDetail {
   phone: string | null;
   address: string | null;
   company: string | null;
+  taxId: string | null;
+  taxExempt: boolean;
   notes: string | null;
   vehicles: {
     id: string;
@@ -137,7 +139,7 @@ export function CustomerDetailClient({
     router.replace(`/customers/${customer.id}${qs ? `?${qs}` : ""}`, { scroll: false });
   };
 
-  const hasContactInfo = customer.email || customer.phone || customer.address || customer.company || customer.notes;
+  const hasContactInfo = customer.email || customer.phone || customer.address || customer.company || customer.taxId || customer.notes;
 
   return (
     <div className="space-y-6">
@@ -196,6 +198,17 @@ export function CustomerDetailClient({
                     <MapPin className="h-3.5 w-3.5" />
                     <span>{customer.address}</span>
                   </div>
+                )}
+                {customer.taxId && (
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    <span className="font-medium">{t("taxIdLabel")}:</span>
+                    <span>{customer.taxId}</span>
+                  </div>
+                )}
+                {customer.taxExempt && (
+                  <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">
+                    {t("taxExemptBadge")}
+                  </span>
                 )}
               </div>
             )}

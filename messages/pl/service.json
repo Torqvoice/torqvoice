@@ -125,12 +125,15 @@
     "parts": "Części",
     "labor": "Praca",
     "subtotal": "Razem Częściowe",
+    "subtotalInclTax": "Razem Częściowe (z podatkiem)",
     "discount": "Rabat",
     "discountNone": "Brak",
     "discountPercentage": "Procent",
     "discountFixed": "Stały",
     "tax": "Podatek",
-    "total": "Razem"
+    "taxIncluded": "Podatek (zaw.)",
+    "total": "Razem",
+    "inclusiveModeHint": "Ceny pozycji są wprowadzane z podatkiem. Sumy pokazują podział netto + podatek."
   },
   "notes": {
     "title": "Notatki",
@@ -157,8 +160,10 @@
     "parts": "Części",
     "labor": "Praca",
     "subtotal": "Razem Częściowe",
+    "subtotalInclTax": "Razem Częściowe (z podatkiem)",
     "discount": "Rabat",
     "tax": "Podatek ({rate}%)",
+    "taxIncluded": "Podatek (zaw., {rate}%)",
     "total": "Razem",
     "paid": "Zapłacone",
     "balanceDue": "Pozostało do Zapłaty",

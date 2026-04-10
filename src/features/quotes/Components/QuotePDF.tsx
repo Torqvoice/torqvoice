@@ -6,6 +6,7 @@ import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import { CustomFields } from '@/features/vehicles/Components/invoice-pdf/CustomFields'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 import type { InvoiceLayoutConfig, InvoiceSection } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { calculateTotals, netLineTotal } from '@/lib/tax'
 import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds, getVisibleFieldsForSection as getVisibleFieldsForSectionHelper } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 const DEFAULT_HEADER_FIELD_ORDER = ['logo', 'company_name', 'company_address', 'company_phone', 'company_email', 'company_org_number']
@@ -26,6 +27,7 @@ interface QuoteData {
   subtotal: number
   taxRate: number
   taxAmount: number
+  taxInclusive?: boolean
   discountType: string | null
   discountValue: number
   discountAmount: number
@@ -46,6 +48,7 @@ interface QuoteData {
     phone: string | null
     address: string | null
     company: string | null
+    taxId?: string | null
   } | null
   vehicle: {
     make: string
@@ -336,11 +339,11 @@ export function QuotePDF({
 
   const renderCustomerSection = () => {
     const showC = (fid: string) => !visibleCustomerFields || visibleCustomerFields.has(fid)
-    const hasCustomer = data.customer && (showC('customer_name') || (showC('customer_company') && data.customer.company) || (showC('customer_address') && data.customer.address) || (showC('customer_email') && data.customer.email) || (showC('customer_phone') && data.customer.phone))
+    const hasCustomer = data.customer && (showC('customer_name') || (showC('customer_company') && data.customer.company) || (showC('customer_address') && data.customer.address) || (showC('customer_email') && data.customer.email) || (showC('customer_phone') && data.customer.phone) || (showC('customer_tax_id') && data.customer.taxId))
     const hasCustCf = customerCf.some(cf => cf.value !== '' && cf.value != null)
     if (!hasCustomer && !hasCustCf) return null
 
-    const fieldOrder = getOrderedFieldIds(visibleCustomerFields, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone'])
+    const fieldOrder = getOrderedFieldIds(visibleCustomerFields, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone', 'customer_tax_id'])
     const c = data.customer
 
     const renderField = (fid: string) => {
@@ -351,6 +354,7 @@ export function QuotePDF({
         case 'customer_address': return c.address ? <Text key={fid} style={styles.infoTextSmall}>{c.address}</Text> : null
         case 'customer_email': return c.email ? <Text key={fid} style={styles.infoTextSmall}>{c.email}</Text> : null
         case 'customer_phone': return c.phone ? <Text key={fid} style={styles.infoTextSmall}>{c.phone}</Text> : null
+        case 'customer_tax_id': return c.taxId ? <Text key={fid} style={styles.infoTextSmall}>{(labels.customerTaxId || 'Tax ID')}: {c.taxId}</Text> : null
         default: return null
       }
     }
@@ -423,6 +427,12 @@ export function QuotePDF({
     )
   }
 
+  // Universal display: in inclusive mode, line items are back-calculated to
+  // their pre-tax (net) values so the printed prices match what users see in
+  // exclusive mode and so the invoice meets EU/Norwegian VAT presentation rules.
+  const taxRate = data.taxRate
+  const taxInclusive = data.taxInclusive ?? false
+
   const renderPartsTable = () => {
     if (data.partItems.length === 0) return null
     return (
@@ -442,21 +452,25 @@ export function QuotePDF({
               {labels.total || 'Total'}
             </Text>
           </View>
-          {data.partItems.map((p, i) => (
-            <View key={i} style={{ ...styles.tableRow, ...(p.excluded ? { opacity: 0.5 } : {}) }}>
-              <Text style={{ ...styles.tableCell, width: '15%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.partNumber || '-'}</Text>
-              <Text style={{ ...styles.tableCell, width: '35%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.name}</Text>
-              <Text style={{ ...styles.tableCell, width: '12%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                {p.quantity}
-              </Text>
-              <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                {formatCurrency(p.unitPrice, currencyCode)}
-              </Text>
-              <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                {formatCurrency(p.total, currencyCode)}
-              </Text>
-            </View>
-          ))}
+          {data.partItems.map((p, i) => {
+            const netUnitPrice = netLineTotal(p.unitPrice, taxRate, taxInclusive)
+            const netLineValue = netLineTotal(p.total, taxRate, taxInclusive)
+            return (
+              <View key={i} style={{ ...styles.tableRow, ...(p.excluded ? { opacity: 0.5 } : {}) }}>
+                <Text style={{ ...styles.tableCell, width: '15%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.partNumber || '-'}</Text>
+                <Text style={{ ...styles.tableCell, width: '35%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.name}</Text>
+                <Text style={{ ...styles.tableCell, width: '12%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                  {p.quantity}
+                </Text>
+                <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                  {formatCurrency(netUnitPrice, currencyCode)}
+                </Text>
+                <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                  {formatCurrency(netLineValue, currencyCode)}
+                </Text>
+              </View>
+            )
+          })}
         </View>
       </View>
     )
@@ -482,6 +496,8 @@ export function QuotePDF({
           </View>
           {data.laborItems.map((l, i) => {
             const isService = l.pricingType === 'service'
+            const netRate = netLineTotal(l.rate, taxRate, taxInclusive)
+            const netLineValue = netLineTotal(l.total, taxRate, taxInclusive)
             return (
               <View key={i} style={{ ...styles.tableRow, ...(l.excluded ? { opacity: 0.5 } : {}) }}>
                 <Text style={{ ...styles.tableCell, width: '45%', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>{l.description}</Text>
@@ -492,13 +508,13 @@ export function QuotePDF({
                 </Text>
                 <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
                   {isService
-                    ? formatCurrency(l.rate, currencyCode)
+                    ? formatCurrency(netRate, currencyCode)
                     : labels.ratePerHour
-                      ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(l.rate, currencyCode) })
-                      : `${formatCurrency(l.rate, currencyCode)}/hr`}
+                      ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(netRate, currencyCode) })
+                      : `${formatCurrency(netRate, currencyCode)}/hr`}
                 </Text>
                 <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                  {formatCurrency(l.total, currencyCode)}
+                  {formatCurrency(netLineValue, currencyCode)}
                 </Text>
               </View>
             )
@@ -509,23 +525,38 @@ export function QuotePDF({
   }
 
   const renderTotals = () => {
-    const laborTotal = data.laborItems.reduce((sum, l) => l.excluded ? sum : sum + l.total, 0)
-    const partsTotal = data.partItems.reduce((sum, p) => p.excluded ? sum : sum + p.total, 0)
-    const sub = laborTotal + partsTotal
-    const disc = data.discountType === 'percentage'
-      ? sub * (data.discountValue / 100)
+    // Stored line totals (sums of stored values — gross in inclusive mode,
+    // net in exclusive). Excluded lines are not part of the totals.
+    const laborTotalStored = data.laborItems.reduce((sum, l) => l.excluded ? sum : sum + l.total, 0)
+    const partsTotalStored = data.partItems.reduce((sum, p) => p.excluded ? sum : sum + p.total, 0)
+    const subStored = laborTotalStored + partsTotalStored
+    const discStored = data.discountType === 'percentage'
+      ? subStored * (data.discountValue / 100)
       : data.discountType === 'fixed'
-      ? Math.min(data.discountValue, sub)
+      ? Math.min(data.discountValue, subStored)
       : 0
-    const tax = (sub - disc) * (data.taxRate / 100)
-    const total = sub - disc + tax
+    const { taxAmount: tax, totalAmount: total } = calculateTotals({
+      subtotal: subStored,
+      discountAmount: discStored,
+      taxRate: data.taxRate,
+      taxInclusive,
+    })
+
+    // Universal display values: net per category, net subtotal, net discount.
+    // For exclusive records these are no-ops; for inclusive records they
+    // back-calculate the pre-tax amounts.
+    const partsTotalDisplay = netLineTotal(partsTotalStored, data.taxRate, taxInclusive)
+    const laborTotalDisplay = netLineTotal(laborTotalStored, data.taxRate, taxInclusive)
+    const subDisplay = netLineTotal(subStored, data.taxRate, taxInclusive)
+    const discDisplay = netLineTotal(discStored, data.taxRate, taxInclusive)
+
     return (
       <View style={styles.totalsBox}>
         {data.laborItems.length > 0 && (
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
             <Text style={styles.totalValue}>
-              {formatCurrency(laborTotal, currencyCode)}
+              {formatCurrency(laborTotalDisplay, currencyCode)}
             </Text>
           </View>
         )}
@@ -533,17 +564,17 @@ export function QuotePDF({
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
             <Text style={styles.totalValue}>
-              {formatCurrency(partsTotal, currencyCode)}
+              {formatCurrency(partsTotalDisplay, currencyCode)}
             </Text>
           </View>
         )}
-        {sub > 0 && (
+        {subDisplay > 0 && (
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
-            <Text style={styles.totalValue}>{formatCurrency(sub, currencyCode)}</Text>
+            <Text style={styles.totalValue}>{formatCurrency(subDisplay, currencyCode)}</Text>
           </View>
         )}
-        {disc > 0 && (
+        {discDisplay > 0 && (
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>
               {data.discountType === 'percentage'
@@ -551,13 +582,17 @@ export function QuotePDF({
                 : (labels.discount || 'Discount')}
             </Text>
             <Text style={{ ...styles.totalValue, color: '#dc2626' }}>
-              {formatCurrency(-disc, currencyCode)}
+              {formatCurrency(-discDisplay, currencyCode)}
             </Text>
           </View>
         )}
         {data.taxRate > 0 && (
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>{labels.tax ? fillTemplate(labels.tax, { rate: String(data.taxRate) }) : `Tax (${data.taxRate}%)`}</Text>
+            <Text style={styles.totalLabel}>
+              {labels.tax
+                ? fillTemplate(labels.tax, { rate: String(data.taxRate) })
+                : `Tax (${data.taxRate}%)`}
+            </Text>
             <Text style={styles.totalValue}>{formatCurrency(tax, currencyCode)}</Text>
           </View>
         )}

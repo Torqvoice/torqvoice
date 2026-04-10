@@ -125,12 +125,15 @@
     "parts": "Dalys",
     "labor": "Darbai",
     "subtotal": "Tarpinė suma",
+    "subtotalInclTax": "Tarpinė suma (su mokesčiu)",
     "discount": "Nuolaida",
     "discountNone": "Nėra",
     "discountPercentage": "Procentinė",
     "discountFixed": "Fiksuota",
     "tax": "Mokestis",
-    "total": "Iš viso"
+    "taxIncluded": "Mokestis (įsk.)",
+    "total": "Iš viso",
+    "inclusiveModeHint": "Eilučių kainos įvedamos su mokesčiu. Sumos rodo paskirstymą be mokesčio + mokestis."
   },
   "notes": {
     "title": "Pastabos",
@@ -157,8 +160,10 @@
     "parts": "Dalys",
     "labor": "Darbai",
     "subtotal": "Tarpinė suma",
+    "subtotalInclTax": "Tarpinė suma (su mokesčiu)",
     "discount": "Nuolaida",
     "tax": "Mokestis ({rate}%)",
+    "taxIncluded": "Mokestis (įsk., {rate}%)",
     "total": "Iš viso",
     "paid": "Apmokėta",
     "balanceDue": "Mokėtina suma",

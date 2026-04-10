@@ -38,6 +38,10 @@
         "title": "Pagamento",
         "description": "Condicoes de pagamento e contas"
       },
+      "tax": {
+        "title": "Imposto",
+        "description": "Taxa de imposto e padroes"
+      },
       "currency": {
         "title": "Moeda",
         "description": "Padroes de moeda e impostos"
@@ -421,6 +425,7 @@
       "customer_address": "Endereço",
       "customer_email": "E-mail",
       "customer_phone": "Telefone",
+      "customer_tax_id": "CNPJ do cliente",
       "vehicle_name": "Veículo",
       "vin": "VIN",
       "license_plate": "Placa",
@@ -573,6 +578,37 @@
     "savePayment": "Salvar configuracoes de pagamento",
     "saved": "Configuracoes de pagamento salvas"
   },
+  "tax": {
+    "title": "Imposto",
+    "description": "Configure a taxa de imposto aplicada a faturas, orcamentos e ordens de servico.",
+    "modeLabel": "Modo de imposto",
+    "modeHint": "Escolha se os precos das linhas sao inseridos com imposto ja incluido (inclusivo) ou antes do imposto (exclusivo). Os registros existentes mantem o modo com o qual foram criados.",
+    "modeExclusive": "Exclusivo",
+    "modeInclusive": "Inclusivo",
+    "modeExclusiveExample": "Exemplo: 100 + {rate}% de imposto = 100 + imposto por cima.",
+    "modeInclusiveExample": "Exemplo: 100 ja inclui {rate}% de imposto — a parte do imposto e calculada de tras para frente.",
+    "labelLabel": "Rótulo de imposto",
+    "labelHint": "Nome personalizado exibido em faturas e orçamentos (ex. ICMS, IVA). Deixe em branco para usar o padrão traduzido.",
+    "labelPlaceholder": "Imposto",
+    "convertInclusiveLabel": "Converter registros existentes para modo inclusivo",
+    "convertInclusiveHint": "Escala cada preço de linha para cima pela taxa de imposto para que os preços incluam imposto. Os totais para o cliente não mudam. Elegíveis: {serviceRecords} ordens de serviço, {quotes} orçamentos.",
+    "convertInclusiveButton": "Converter para inclusivo",
+    "convertInclusiveConfirmTitle": "Converter registros existentes para modo inclusivo?",
+    "convertInclusiveConfirmDescription": "Isso reescreverá os preços de linha de {serviceRecords} ordens de serviço e {quotes} orçamentos para incluir imposto. Os totais para o cliente não mudarão, mas os preços impressos em faturas anteriores aparecerão mais altos. Esta ação não pode ser desfeita.",
+    "convertInclusiveConfirmLabel": "Converter registros",
+    "convertInclusiveSuccess": "Convertidas {serviceRecords} ordens de serviço e {quotes} orçamentos para modo inclusivo.",
+    "convertInclusiveFailed": "Falha ao converter registros para modo inclusivo",
+    "convertInclusiveNoRecords": "Nenhum registro em modo exclusivo para converter.",
+    "convertExclusiveLabel": "Converter registros existentes para modo exclusivo",
+    "convertExclusiveHint": "Escala cada preço de linha para baixo pela taxa de imposto para que os preços mostrem valores antes do imposto. Os totais para o cliente não mudam. Elegíveis: {serviceRecords} ordens de serviço, {quotes} orçamentos.",
+    "convertExclusiveButton": "Converter para exclusivo",
+    "convertExclusiveConfirmTitle": "Converter registros existentes para modo exclusivo?",
+    "convertExclusiveConfirmDescription": "Isso reescreverá os preços de linha de {serviceRecords} ordens de serviço e {quotes} orçamentos para mostrar valores antes do imposto. Os totais para o cliente não mudarão, mas os preços impressos em faturas anteriores aparecerão mais baixos. Esta ação não pode ser desfeita.",
+    "convertExclusiveConfirmLabel": "Converter registros",
+    "convertExclusiveSuccess": "Convertidas {serviceRecords} ordens de serviço e {quotes} orçamentos para modo exclusivo.",
+    "convertExclusiveFailed": "Falha ao converter registros para modo exclusivo",
+    "convertExclusiveNoRecords": "Nenhum registro em modo inclusivo para converter."
+  },
   "currency": {
     "title": "Moeda e impostos",
     "description": "Moeda padrao e taxa de imposto para faturas e registros de servico.",
@@ -584,6 +620,15 @@
     "enableTaxHint": "Mostrar calculo de impostos em faturas e registros de servico",
     "defaultTaxRate": "Taxa de imposto padrao (%)",
     "defaultTaxRateHint": "Preenchido automaticamente ao criar novos registros de servico",
+    "applyTaxToExistingLabel": "Aplicar imposto aos registros existentes",
+    "applyTaxToExistingHint": "Aplica a taxa de imposto padrao as ordens de servico e orcamentos existentes sem taxa definida. Elegiveis: {serviceRecords} ordens de servico, {quotes} orcamentos.",
+    "applyTaxToExistingButton": "Aplicar imposto aos registros existentes",
+    "applyTaxConfirmTitle": "Aplicar imposto aos registros existentes?",
+    "applyTaxConfirmDescription": "Isso definira a taxa de imposto em {rate}% em {serviceRecords} ordens de servico e {quotes} orcamentos que atualmente nao tem taxa, e recalculara seus totais. Registros com uma taxa personalizada nao serao alterados. Esta acao nao pode ser desfeita.",
+    "applyTaxConfirmLabel": "Aplicar imposto",
+    "applyTaxSuccess": "Atualizadas {serviceRecords} ordens de servico e {quotes} orcamentos.",
+    "applyTaxFailed": "Falha ao aplicar imposto aos registros existentes",
+    "applyTaxNoRecords": "Nenhum registro precisa da taxa de imposto padrao.",
     "saveSettings": "Salvar configuracoes",
     "saved": "Configuracoes salvas",
     "currencies": {

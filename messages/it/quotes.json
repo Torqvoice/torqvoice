@@ -134,12 +134,15 @@
     "parts": "Ricambi",
     "labor": "Manodopera",
     "subtotal": "Subtotale",
+    "subtotalInclTax": "Subtotale (IVA inclusa)",
     "discount": "Sconto",
     "discountNone": "Nessuno",
     "discountPercentage": "Percentuale",
     "discountFixed": "Fisso",
     "tax": "IVA",
-    "total": "Totale"
+    "taxIncluded": "IVA (incl.)",
+    "total": "Totale",
+    "inclusiveModeHint": "I prezzi delle righe sono inseriti con imposta inclusa. I totali mostrano la suddivisione netto + imposta."
   },
   "shareDialog": {
     "title": "Condividi preventivo",

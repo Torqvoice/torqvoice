@@ -125,12 +125,15 @@
     "parts": "Teile",
     "labor": "Arbeit",
     "subtotal": "Zwischensumme",
+    "subtotalInclTax": "Zwischensumme (inkl. Steuer)",
     "discount": "Rabatt",
     "discountNone": "Keine",
     "discountPercentage": "Prozentsatz",
     "discountFixed": "Festbetrag",
     "tax": "Steuern",
-    "total": "Gesamt"
+    "taxIncluded": "Steuer (inkl.)",
+    "total": "Gesamt",
+    "inclusiveModeHint": "Zeilenpreise werden inklusive Steuer eingegeben. Die Summen zeigen die Aufteilung netto + Steuer."
   },
   "notes": {
     "title": "Notizen",
@@ -157,8 +160,10 @@
     "parts": "Teile",
     "labor": "Arbeit",
     "subtotal": "Zwischensumme",
+    "subtotalInclTax": "Zwischensumme (inkl. Steuer)",
     "discount": "Rabatt",
     "tax": "Steuern ({rate}%)",
+    "taxIncluded": "Steuer (inkl., {rate}%)",
     "total": "Gesamt",
     "paid": "Bezahlt",
     "balanceDue": "Ausstehend",

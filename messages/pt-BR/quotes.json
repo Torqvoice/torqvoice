@@ -134,12 +134,15 @@
     "parts": "Peças",
     "labor": "Mão de obra",
     "subtotal": "Subtotal",
+    "subtotalInclTax": "Subtotal (com imposto)",
     "discount": "Desconto",
     "discountNone": "Nenhum",
     "discountPercentage": "Porcentagem",
     "discountFixed": "Fixo",
     "tax": "Imposto",
-    "total": "Total"
+    "taxIncluded": "Imposto (incl.)",
+    "total": "Total",
+    "inclusiveModeHint": "Os preços das linhas são inseridos com imposto incluído. Os totais mostram a divisão líquido + imposto."
   },
   "shareDialog": {
     "title": "Compartilhar orçamento",

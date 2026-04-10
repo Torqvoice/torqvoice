@@ -11,6 +11,7 @@ import {
   type UpdateRecurringInvoiceInput,
 } from "../Schema/recurringInvoiceSchema";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
+import { calculateTotals } from "@/lib/tax";
 
 export async function getRecurringInvoices() {
   return withAuth(async ({ organizationId }) => {
@@ -46,6 +47,17 @@ export async function createRecurringInvoice(input: CreateRecurringInvoiceInput)
     });
     if (!vehicle) throw new Error("Vehicle not found");
 
+    // If the caller didn't explicitly set taxInclusive, inherit the org's
+    // current default so new templates match the org's tax mode setting.
+    let taxInclusive = parsed.taxInclusive;
+    if (input && typeof input === "object" && !("taxInclusive" in input)) {
+      const setting = await db.appSetting.findUnique({
+        where: { organizationId_key: { organizationId, key: "workshop.taxInclusive" } },
+        select: { value: true },
+      });
+      taxInclusive = setting?.value === "true";
+    }
+
     const invoice = await db.recurringInvoice.create({
       data: {
         title: parsed.title,
@@ -57,6 +69,7 @@ export async function createRecurringInvoice(input: CreateRecurringInvoiceInput)
         type: parsed.type,
         cost: parsed.cost,
         taxRate: parsed.taxRate,
+        taxInclusive,
         invoiceNotes: parsed.invoiceNotes,
         templateParts: {
           create: parsed.templateParts.map((p) => ({
@@ -128,6 +141,7 @@ export async function updateRecurringInvoice(input: UpdateRecurringInvoiceInput)
           ...(parsed.type !== undefined && { type: parsed.type }),
           ...(parsed.cost !== undefined && { cost: parsed.cost }),
           ...(parsed.taxRate !== undefined && { taxRate: parsed.taxRate }),
+          ...(parsed.taxInclusive !== undefined && { taxInclusive: parsed.taxInclusive }),
           ...(parsed.invoiceNotes !== undefined && { invoiceNotes: parsed.invoiceNotes }),
           ...(parsed.templateParts && {
             templateParts: {
@@ -292,8 +306,12 @@ export async function processRecurringInvoices() {
         0,
       );
       const subtotal = ri.cost + partsSubtotal + laborSubtotal;
-      const taxAmount = subtotal * (ri.taxRate / 100);
-      const totalAmount = subtotal + taxAmount;
+      const { taxAmount, totalAmount } = calculateTotals({
+        subtotal,
+        discountAmount: 0,
+        taxRate: ri.taxRate,
+        taxInclusive: ri.taxInclusive,
+      });
 
       const serviceRecord = await db.$transaction(async (tx) => {
         const sr = await tx.serviceRecord.create({
@@ -308,6 +326,7 @@ export async function processRecurringInvoices() {
             invoiceNotes: ri.invoiceNotes,
             subtotal,
             taxRate: ri.taxRate,
+            taxInclusive: ri.taxInclusive,
             taxAmount,
             totalAmount,
             invoiceNumber,

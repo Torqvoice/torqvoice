@@ -55,6 +55,7 @@ export default async function PublicInvoicePage({
               phone: true,
               address: true,
               company: true,
+              taxId: true,
             },
           },
         },
@@ -96,6 +97,7 @@ export default async function PublicInvoicePage({
             "workshop.dateFormat",
             "workshop.timezone",
             "workshop.serviceType",
+            "workshop.taxLabel",
             "portal.enabled",
             "invoice.layoutConfig",
             "telegram.botUsername",
@@ -220,6 +222,7 @@ export default async function PublicInvoicePage({
       findings={findings}
       telegramBotLink={telegramBotLink}
       serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "marine"}
+      taxLabel={settingsMap["workshop.taxLabel"]?.trim() || undefined}
     />
   );
 }

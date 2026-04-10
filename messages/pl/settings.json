@@ -38,6 +38,10 @@
         "title": "Platnosc",
         "description": "Warunki platnosci i konta"
       },
+      "tax": {
+        "title": "Podatek",
+        "description": "Stawka podatku i wartosci domyslne"
+      },
       "currency": {
         "title": "Waluta",
         "description": "Domyslna waluta i podatki"
@@ -421,6 +425,7 @@
       "customer_address": "Adres",
       "customer_email": "E-mail",
       "customer_phone": "Telefon",
+      "customer_tax_id": "NIP klienta",
       "vehicle_name": "Pojazd",
       "vin": "VIN",
       "license_plate": "Tablica rejestracyjna",
@@ -573,6 +578,37 @@
     "savePayment": "Zapisz ustawienia platnosci",
     "saved": "Ustawienia platnosci zapisane"
   },
+  "tax": {
+    "title": "Podatek",
+    "description": "Skonfiguruj stawke podatku stosowana do faktur, ofert i zlecen serwisowych.",
+    "modeLabel": "Tryb podatku",
+    "modeHint": "Wybierz, czy ceny pozycji sa wprowadzane z juz uwzglednionym podatkiem (brutto) czy bez podatku (netto). Istniejace rekordy zachowuja tryb, z ktorym zostaly utworzone.",
+    "modeExclusive": "Netto",
+    "modeInclusive": "Brutto",
+    "modeExclusiveExample": "Przyklad: 100 + {rate}% podatku = 100 + podatek doliczony.",
+    "modeInclusiveExample": "Przyklad: 100 juz zawiera {rate}% podatku — czesc podatkowa jest obliczana wstecz.",
+    "labelLabel": "Etykieta podatku",
+    "labelHint": "Własna nazwa wyświetlana na fakturach i ofertach (np. VAT, MwSt.). Pozostaw puste, aby użyć domyślnej zlokalizowanej nazwy.",
+    "labelPlaceholder": "VAT",
+    "convertInclusiveLabel": "Konwertuj istniejące rekordy na tryb brutto",
+    "convertInclusiveHint": "Skaluje ceny pozycji w górę o stawkę podatku, aby ceny zawierały podatek. Sumy dla klienta pozostają niezmienione. Kwalifikujące się: {serviceRecords} zleceń, {quotes} ofert.",
+    "convertInclusiveButton": "Konwertuj na brutto",
+    "convertInclusiveConfirmTitle": "Konwertować istniejące rekordy na tryb brutto?",
+    "convertInclusiveConfirmDescription": "To przepisze ceny pozycji w {serviceRecords} zleceniach i {quotes} ofertach, aby zawierały podatek. Sumy dla klienta nie zmienią się, ale wydrukowane ceny na poprzednich fakturach pojawią się wyższe. Tej operacji nie można cofnąć.",
+    "convertInclusiveConfirmLabel": "Konwertuj rekordy",
+    "convertInclusiveSuccess": "Przekonwertowano {serviceRecords} zleceń i {quotes} ofert na tryb brutto.",
+    "convertInclusiveFailed": "Nie udało się przekonwertować rekordów na tryb brutto",
+    "convertInclusiveNoRecords": "Brak rekordów w trybie netto do konwersji.",
+    "convertExclusiveLabel": "Konwertuj istniejące rekordy na tryb netto",
+    "convertExclusiveHint": "Skaluje ceny pozycji w dół o stawkę podatku, aby ceny pokazywały kwoty przed opodatkowaniem. Sumy dla klienta pozostają niezmienione. Kwalifikujące się: {serviceRecords} zleceń, {quotes} ofert.",
+    "convertExclusiveButton": "Konwertuj na netto",
+    "convertExclusiveConfirmTitle": "Konwertować istniejące rekordy na tryb netto?",
+    "convertExclusiveConfirmDescription": "To przepisze ceny pozycji w {serviceRecords} zleceniach i {quotes} ofertach, aby pokazywały kwoty przed opodatkowaniem. Sumy dla klienta nie zmienią się, ale wydrukowane ceny na poprzednich fakturach pojawią się niższe. Tej operacji nie można cofnąć.",
+    "convertExclusiveConfirmLabel": "Konwertuj rekordy",
+    "convertExclusiveSuccess": "Przekonwertowano {serviceRecords} zleceń i {quotes} ofert na tryb netto.",
+    "convertExclusiveFailed": "Nie udało się przekonwertować rekordów na tryb netto",
+    "convertExclusiveNoRecords": "Brak rekordów w trybie brutto do konwersji."
+  },
   "currency": {
     "title": "Waluta i podatki",
     "description": "Domyslna waluta i stawka podatkowa dla faktur i rekordow serwisowych.",
@@ -584,6 +620,15 @@
     "enableTaxHint": "Pokaz obliczanie podatku na fakturach i rekordach serwisowych",
     "defaultTaxRate": "Domyslna stawka podatkowa (%)",
     "defaultTaxRateHint": "Automatycznie wypelniana przy tworzeniu nowych rekordow serwisowych",
+    "applyTaxToExistingLabel": "Zastosuj podatek do istniejacych rekordow",
+    "applyTaxToExistingHint": "Stosuje domyslna stawke podatku do istniejacych zlecen serwisowych i ofert bez ustawionej stawki. Kwalifikujace sie: {serviceRecords} zlecen, {quotes} ofert.",
+    "applyTaxToExistingButton": "Zastosuj podatek do istniejacych rekordow",
+    "applyTaxConfirmTitle": "Zastosowac podatek do istniejacych rekordow?",
+    "applyTaxConfirmDescription": "Ustawi to stawke podatku na {rate}% dla {serviceRecords} zlecen serwisowych i {quotes} ofert, ktore obecnie nie maja ustawionej stawki, i przeliczy ich sumy. Rekordy z wlasna stawka podatku nie zostana zmienione. Tej operacji nie mozna cofnac.",
+    "applyTaxConfirmLabel": "Zastosuj podatek",
+    "applyTaxSuccess": "Zaktualizowano {serviceRecords} zlecen serwisowych i {quotes} ofert.",
+    "applyTaxFailed": "Nie udalo sie zastosowac podatku do istniejacych rekordow",
+    "applyTaxNoRecords": "Zadne rekordy nie wymagaja domyslnej stawki podatku.",
     "saveSettings": "Zapisz ustawienia",
     "saved": "Ustawienia zapisane",
     "currencies": {

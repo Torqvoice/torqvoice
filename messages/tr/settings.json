@@ -38,6 +38,10 @@
         "title": "Ödeme",
         "description": "Ödeme koşulları & hesaplar"
       },
+      "tax": {
+        "title": "Vergi",
+        "description": "Vergi oranı ve varsayılanlar"
+      },
       "currency": {
         "title": "Para Birimi",
         "description": "Para birimi & vergi varsayılanları"
@@ -421,6 +425,7 @@
       "customer_address": "Adres",
       "customer_email": "E-posta",
       "customer_phone": "Telefon",
+      "customer_tax_id": "Müşteri vergi no",
       "vehicle_name": "Araç",
       "vin": "VIN",
       "license_plate": "Plaka",
@@ -573,6 +578,37 @@
     "savePayment": "Ödeme Ayarlarını Kaydet",
     "saved": "Ödeme ayarları kaydedildi"
   },
+  "tax": {
+    "title": "Vergi",
+    "description": "Faturalar, teklifler ve iş emirlerine uygulanan vergi oranını yapılandırın.",
+    "modeLabel": "Vergi modu",
+    "modeHint": "Satır kalemlerindeki fiyatların vergi dahil mi (dahil) yoksa vergi hariç mi (hariç) girildiğini seçin. Mevcut kayıtlar, oluşturuldukları modu korur.",
+    "modeExclusive": "Hariç",
+    "modeInclusive": "Dahil",
+    "modeExclusiveExample": "Örnek: 100 + %{rate} vergi = 100 + üstüne vergi.",
+    "modeInclusiveExample": "Örnek: 100 zaten %{rate} vergiyi içeriyor — vergi kısmı geriye doğru hesaplanır.",
+    "labelLabel": "Vergi etiketi",
+    "labelHint": "Faturalar ve tekliflerde gösterilen özel ad (örn. KDV, VAT). Yerelleştirilmiş varsayılanı kullanmak için boş bırakın.",
+    "labelPlaceholder": "KDV",
+    "convertInclusiveLabel": "Mevcut kayıtları KDV dahil moda dönüştür",
+    "convertInclusiveHint": "Her satır fiyatını vergi oranı kadar yukarı ölçekleyerek fiyatların vergi dahil olmasını sağlar. Müşteri tarafındaki toplamlar değişmez. Uygun: {serviceRecords} iş emri, {quotes} teklif.",
+    "convertInclusiveButton": "KDV dahile dönüştür",
+    "convertInclusiveConfirmTitle": "Mevcut kayıtlar KDV dahil moda dönüştürülsün mü?",
+    "convertInclusiveConfirmDescription": "Bu, {serviceRecords} iş emri ve {quotes} teklifteki satır fiyatlarını vergi dahil olacak şekilde yeniden yazacaktır. Müşteri tarafındaki toplamlar değişmeyecek, ancak geçmiş faturalardaki yazdırılmış fiyatlar daha yüksek görünecektir. Bu işlem geri alınamaz.",
+    "convertInclusiveConfirmLabel": "Kayıtları dönüştür",
+    "convertInclusiveSuccess": "{serviceRecords} iş emri ve {quotes} teklif KDV dahil moda dönüştürüldü.",
+    "convertInclusiveFailed": "Kayıtlar KDV dahil moda dönüştürülemedi",
+    "convertInclusiveNoRecords": "Dönüştürülecek KDV hariç modunda kayıt yok.",
+    "convertExclusiveLabel": "Mevcut kayıtları KDV hariç moda dönüştür",
+    "convertExclusiveHint": "Her satır fiyatını vergi oranı kadar aşağı ölçekleyerek fiyatların vergi öncesi tutarları göstermesini sağlar. Müşteri tarafındaki toplamlar değişmez. Uygun: {serviceRecords} iş emri, {quotes} teklif.",
+    "convertExclusiveButton": "KDV harice dönüştür",
+    "convertExclusiveConfirmTitle": "Mevcut kayıtlar KDV hariç moda dönüştürülsün mü?",
+    "convertExclusiveConfirmDescription": "Bu, {serviceRecords} iş emri ve {quotes} teklifteki satır fiyatlarını vergi öncesi tutarları gösterecek şekilde yeniden yazacaktır. Müşteri tarafındaki toplamlar değişmeyecek, ancak geçmiş faturalardaki yazdırılmış fiyatlar daha düşük görünecektir. Bu işlem geri alınamaz.",
+    "convertExclusiveConfirmLabel": "Kayıtları dönüştür",
+    "convertExclusiveSuccess": "{serviceRecords} iş emri ve {quotes} teklif KDV hariç moda dönüştürüldü.",
+    "convertExclusiveFailed": "Kayıtlar KDV hariç moda dönüştürülemedi",
+    "convertExclusiveNoRecords": "Dönüştürülecek KDV dahil modunda kayıt yok."
+  },
   "currency": {
     "title": "Para Birimi & Vergi",
     "description": "Faturalar ve servis kayıtlarında kullanılan varsayılan para birimi ve vergi oranı.",
@@ -584,6 +620,15 @@
     "enableTaxHint": "Faturalar ve servis kayıtlarında vergi hesaplamasını göster",
     "defaultTaxRate": "Varsayılan Vergi Oranı (%)",
     "defaultTaxRateHint": "Yeni servis kayıtları oluşturulurken otomatik olarak doldurulur",
+    "applyTaxToExistingLabel": "Mevcut kayıtlara vergi uygula",
+    "applyTaxToExistingHint": "Vergi oranı ayarlanmamış mevcut iş emirleri ve tekliflere varsayılan vergi oranını uygular. Uygun: {serviceRecords} iş emri, {quotes} teklif.",
+    "applyTaxToExistingButton": "Mevcut kayıtlara vergi uygula",
+    "applyTaxConfirmTitle": "Mevcut kayıtlara vergi uygulansın mı?",
+    "applyTaxConfirmDescription": "Bu, şu anda vergi oranı olmayan {serviceRecords} iş emri ve {quotes} teklif üzerindeki vergi oranını %{rate} olarak ayarlayacak ve toplamlarını yeniden hesaplayacaktır. Özel vergi oranı olan kayıtlar değiştirilmeyecektir. Bu işlem geri alınamaz.",
+    "applyTaxConfirmLabel": "Vergi uygula",
+    "applyTaxSuccess": "{serviceRecords} iş emri ve {quotes} teklif güncellendi.",
+    "applyTaxFailed": "Vergi mevcut kayıtlara uygulanamadı",
+    "applyTaxNoRecords": "Hiçbir kayıt varsayılan vergi oranına ihtiyaç duymuyor.",
     "saveSettings": "Ayarları Kaydet",
     "saved": "Ayarlar kaydedildi",
     "currencies": {

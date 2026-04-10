@@ -49,6 +49,7 @@ export const createServiceSchema = z.object({
   subtotal: z.coerce.number().min(0).default(0),
   taxRate: z.coerce.number().min(0).default(0),
   taxAmount: z.coerce.number().min(0).default(0),
+  taxInclusive: z.boolean().default(false),
   totalAmount: z.coerce.number().min(0).default(0),
   discountType: z.enum(["none", "percentage", "fixed"]).optional(),
   discountValue: z.coerce.number().min(0).default(0),

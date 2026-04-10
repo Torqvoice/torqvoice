@@ -40,6 +40,7 @@ export const createQuoteSchema = z.object({
   subtotal: z.coerce.number().min(0).default(0),
   taxRate: z.coerce.number().min(0).default(0),
   taxAmount: z.coerce.number().min(0).default(0),
+  taxInclusive: z.boolean().default(false),
   discountType: z.enum(["none", "percentage", "fixed"]).optional(),
   discountValue: z.coerce.number().min(0).default(0),
   discountAmount: z.coerce.number().min(0).default(0),

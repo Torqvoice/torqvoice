@@ -443,4 +443,77 @@ describe("InvoiceView", () => {
       });
     });
   });
+
+  // -------------------------------------------------------------------------
+  // Universal display: net per-line, separate tax line, gross total — both modes.
+  // -------------------------------------------------------------------------
+  describe("universal tax display (inclusive mode)", () => {
+    it("renders the same totals for an exclusive and an equivalent inclusive record", () => {
+      // Exclusive: 100 net + 25 tax = 125 total
+      const exclusiveProps = {
+        ...DEFAULT_PROPS,
+        record: {
+          ...BASE_RECORD,
+          taxRate: 25,
+          taxInclusive: false,
+          partItems: [
+            { partNumber: "BP-001", name: "Brake Pad", quantity: 1, unitPrice: 100, total: 100 },
+          ],
+          subtotal: 100,
+          taxAmount: 25,
+          totalAmount: 125,
+          cost: 125,
+        },
+      };
+      const { unmount } = render(<InvoiceView {...exclusiveProps} />);
+      // Exclusive shows the net unit price (100) and the tax amount (25)
+      expect(screen.getAllByText(/100\.00/).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText(/25\.00/).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText(/125\.00/).length).toBeGreaterThanOrEqual(1);
+      unmount();
+
+      // Inclusive equivalent: stored gross 125, displays the same way after back-calc
+      const inclusiveProps = {
+        ...DEFAULT_PROPS,
+        record: {
+          ...BASE_RECORD,
+          taxRate: 25,
+          taxInclusive: true,
+          partItems: [
+            // Stored gross: 125
+            { partNumber: "BP-001", name: "Brake Pad", quantity: 1, unitPrice: 125, total: 125 },
+          ],
+          subtotal: 125,
+          taxAmount: 25,
+          totalAmount: 125,
+          cost: 125,
+        },
+      };
+      render(<InvoiceView {...inclusiveProps} />);
+      // The display back-calculates the line item to net 100, and shows the same tax 25 + total 125
+      expect(screen.getAllByText(/100\.00/).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText(/25\.00/).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText(/125\.00/).length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("does not render the tax line when taxRate is 0", () => {
+      const props = {
+        ...DEFAULT_PROPS,
+        record: {
+          ...BASE_RECORD,
+          taxRate: 0,
+          taxInclusive: false,
+          partItems: [
+            { partNumber: "P", name: "Part", quantity: 1, unitPrice: 100, total: 100 },
+          ],
+          subtotal: 100,
+          taxAmount: 0,
+          totalAmount: 100,
+          cost: 100,
+        },
+      };
+      render(<InvoiceView {...props} />);
+      expect(screen.queryByText(/Tax \(\d/)).toBeNull();
+    });
+  });
 });

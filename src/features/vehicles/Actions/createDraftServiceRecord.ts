@@ -14,6 +14,7 @@ export async function createDraftServiceRecord(
     async ({ organizationId, userId }) => {
       const vehicle = await db.vehicle.findFirst({
         where: { id: vehicleId, organizationId },
+        include: { customer: { select: { taxExempt: true } } },
       });
       if (!vehicle) throw new Error("Vehicle not found");
 
@@ -27,6 +28,9 @@ export async function createDraftServiceRecord(
                 "workshop.invoiceStartNumber",
                 "workshop.defaultTechnician",
                 "workshop.defaultTechnicianId",
+                "workshop.defaultTaxRate",
+                "workshop.taxEnabled",
+                "workshop.taxInclusive",
                 "workboard.workDayStart",
               ],
             },
@@ -115,6 +119,15 @@ export async function createDraftServiceRecord(
         });
       }
 
+      // Apply default tax rate from settings (if tax is enabled).
+      // Tax-exempt customers always get a 0% rate regardless of org default.
+      const taxEnabled = settingsMap["workshop.taxEnabled"] !== "false";
+      const customerExempt = vehicle.customer?.taxExempt ?? false;
+      const defaultTaxRate = taxEnabled && !customerExempt
+        ? Number(settingsMap["workshop.defaultTaxRate"]) || 0
+        : 0;
+      const taxInclusive = settingsMap["workshop.taxInclusive"] === "true";
+
       // Default to today's date at work day start time (from settings, fallback 07:00)
       let defaultStart: Date;
       if (!startDateTime) {
@@ -137,6 +150,8 @@ export async function createDraftServiceRecord(
           techName,
           technicianId: resolvedTechId || undefined,
           invoiceNumber,
+          taxRate: defaultTaxRate,
+          taxInclusive,
           serviceDate,
           invoiceDate: serviceDate,
           startDateTime: defaultStart,

@@ -21,12 +21,14 @@ export interface InvoiceData {
   invoiceDueDate?: Date | null
   shopName: string | null
   techName: string | null
+  technician?: { name: string } | null
   mileage: number | null
   diagnosticNotes: string | null
   invoiceNotes: string | null
   subtotal: number
   taxRate: number
   taxAmount: number
+  taxInclusive?: boolean
   totalAmount: number
   cost: number
   invoiceNumber: string | null
@@ -62,6 +64,7 @@ export interface InvoiceData {
       phone: string | null
       address: string | null
       company: string | null
+      taxId?: string | null
     } | null
   }
 }
