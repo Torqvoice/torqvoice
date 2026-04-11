@@ -672,7 +672,10 @@
     "languageDescription": "Pasirinkite programos rodymo kalbą.",
     "language": "Kalba",
     "forceCustomerLocale": "Priverstinai naudoti šią kalbą klientams matomuose puslapiuose",
-    "forceCustomerLocaleHint": "Kai įjungta, klientai, peržiūrintys bendrinas sąskaitas, pasiūlymus ir apžiūras, matys juos jūsų dirbtuvių kalba, nepriklausomai nuo naršyklės nustatymų. Kai išjungta, klientai mato puslapius savo naršyklėje nustatyta kalba.",
+    "forceCustomerLocaleHint": "Kai įjungta, klientų portalas ir bendrinos sąskaitos, pasiūlymai bei apžiūros rodomi jūsų dirbtuvių kalba, nepriklausomai nuo lankytojo naršyklės nustatymų. Kai išjungta, klientams skirti puslapiai naudoja lankytojo naršyklės kalbą.",
+    "defaultCountryCode": "Numatytasis šalies kodas",
+    "defaultCountryCodeHint": "Naudojamas, kai klientai prisijungia prie portalo SMS žinute — pridedamas prie telefono numerių be šalies kodo (jūsų arba kliento). Formatas: + ir skaičiai, pvz. +370.",
+    "defaultCountryCodeInvalid": "Įveskite teisingą šalies kodą, pvz. +370, 370 arba 00370.",
     "saved": "Lokalizacijos nustatymai išsaugoti",
     "saveSettings": "Išsaugoti nustatymus"
   },
@@ -914,7 +917,38 @@
     "slugHint": "Mažosios raidės, skaičiai, brūkšneliai ir pabraukimai. 3–48 simboliai. Palikite tuščią, kad naudotumėte numatytąjį URL.",
     "portalUrl": "Portalo URL",
     "urlCopied": "Portalo URL nukopijuotas",
-    "shareHint": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti prie savo portalo."
+    "shareHint": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti prie savo portalo.",
+    "descriptionLabel": "Apie jūsų dirbtuves",
+    "descriptionPlaceholder": "Papasakokite klientams apie savo dirbtuves, siūlomas paslaugas ir kuo esate unikalūs.",
+    "descriptionHint": "Rodoma lankytojams jūsų portalo pradžios puslapio viršuje.",
+    "hoursLabel": "Darbo laikas",
+    "hoursPlaceholder": "Pir-Pen: 8:00-17:00\nŠeš: 9:00-13:00\nSek: Uždaryta",
+    "hoursHint": "Laisvas tekstas. Naudokite naujas eilutes, kad nurodytumėte kiekvieną dieną atskirai.",
+    "contentSaved": "Portalo turinys išsaugotas",
+    "background": {
+      "title": "Portalo fonas",
+      "description": "Pasirinkite, kaip atrodo klientų portalo pradžios puslapis.",
+      "typeNone": "Joks",
+      "typeTemplate": "Šablonas",
+      "typeImage": "Pasirinktinė nuotrauka",
+      "chooseTemplate": "Pasirinkite šabloną",
+      "uploadLabel": "Fono nuotrauka",
+      "upload": "Įkelti nuotrauką",
+      "replace": "Pakeisti nuotrauką",
+      "remove": "Pašalinti",
+      "uploadHint": "JPG, PNG arba WebP. Iki 8 MB. Rekomenduojama bent 1600×900.",
+      "uploading": "Įkeliamas fonas…",
+      "uploaded": "Fonas atnaujintas",
+      "uploadFailed": "Nepavyko įkelti fono",
+      "templateNames": {
+        "default": "Subtilus",
+        "sunrise": "Saulėtekis",
+        "ocean": "Vandenynas",
+        "forest": "Miškas",
+        "slate": "Skalūnas",
+        "sand": "Smėlis"
+      }
+    }
   },
   "email": {
     "title": "El. pašto tiekėjas",

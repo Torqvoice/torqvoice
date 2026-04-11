@@ -1,6 +1,6 @@
-import { PortalShell } from "@/features/portal/Components/PortalShell";
-import { getPortalInvoices } from "@/features/portal/Actions/portalActions";
-import { Badge } from "@/components/ui/badge";
+import { PortalShell } from '@/features/portal/Components/PortalShell'
+import { getPortalInvoices } from '@/features/portal/Actions/portalActions'
+import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -8,36 +8,36 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { FileText } from "lucide-react";
-import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+} from '@/components/ui/table'
+import { Download, FileText } from 'lucide-react'
+import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 
 export default async function PortalInvoicesPage({
   params,
 }: {
-  params: Promise<{ orgId: string }>;
+  params: Promise<{ orgId: string }>
 }) {
-  const { orgId } = await params;
-  const t = await getTranslations('portal.invoices');
-  const result = await getPortalInvoices();
+  const { orgId } = await params
+  const t = await getTranslations('portal.invoices')
+  const result = await getPortalInvoices()
 
   if (!result.success || !result.data) {
     return (
       <PortalShell orgId={orgId}>
         <p className="text-muted-foreground">{t('failedToLoad')}</p>
       </PortalShell>
-    );
+    )
   }
 
-  const invoices = result.data;
+  const invoices = result.data
 
   function getPaymentStatus(inv: (typeof invoices)[number]) {
-    if (inv.manuallyPaid) return "paid" as const;
-    const paid = inv.payments.reduce((sum, p) => sum + p.amount, 0);
-    if (paid >= inv.totalAmount) return "paid" as const;
-    if (paid > 0) return "partial" as const;
-    return "unpaid" as const;
+    if (inv.manuallyPaid) return 'paid' as const
+    const paid = inv.payments.reduce((sum, p) => sum + p.amount, 0)
+    if (paid >= inv.totalAmount) return 'paid' as const
+    if (paid > 0) return 'partial' as const
+    return 'unpaid' as const
   }
 
   return (
@@ -68,13 +68,11 @@ export default async function PortalInvoicesPage({
               </TableHeader>
               <TableBody>
                 {invoices.map((inv) => {
-                  const payStatus = getPaymentStatus(inv);
+                  const payStatus = getPaymentStatus(inv)
                   return (
                     <TableRow key={inv.id}>
                       <TableCell className="font-medium">
-                        {inv.invoiceNumber
-                          ? `#${inv.invoiceNumber}`
-                          : inv.title}
+                        {inv.invoiceNumber ? `#${inv.invoiceNumber}` : inv.title}
                       </TableCell>
                       <TableCell>
                         {inv.vehicle?.make} {inv.vehicle?.model}
@@ -86,28 +84,38 @@ export default async function PortalInvoicesPage({
                       <TableCell>
                         <Badge
                           variant={
-                            payStatus === "paid"
-                              ? "default"
-                              : payStatus === "partial"
-                                ? "secondary"
-                                : "outline"
+                            payStatus === 'paid'
+                              ? 'default'
+                              : payStatus === 'partial'
+                                ? 'secondary'
+                                : 'outline'
                           }
                         >
                           {t(payStatus)}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {inv.publicToken && (
-                          <Link
-                            href={`/share/invoice/${orgId}/${inv.publicToken}`}
-                            className="text-sm text-primary hover:underline"
+                        <div className="flex items-center gap-3">
+                          {inv.publicToken && (
+                            <Link
+                              href={`/share/invoice/${orgId}/${inv.publicToken}`}
+                              className="text-sm text-primary hover:underline"
+                            >
+                              {t('view')}
+                            </Link>
+                          )}
+                          <a
+                            href={`/portal/${orgId}/invoices/${inv.id}/pdf`}
+                            download
+                            className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
                           >
-                            {t('view')}
-                          </Link>
-                        )}
+                            <Download className="h-4 w-4" />
+                            {t('download')}
+                          </a>
+                        </div>
                       </TableCell>
                     </TableRow>
-                  );
+                  )
                 })}
               </TableBody>
             </Table>
@@ -115,5 +123,5 @@ export default async function PortalInvoicesPage({
         )}
       </div>
     </PortalShell>
-  );
+  )
 }

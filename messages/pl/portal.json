@@ -1,12 +1,44 @@
 {
+  "directory": {
+    "title": "Znajdź swój warsztat",
+    "description": "Wybierz swój warsztat poniżej, aby uzyskać dostęp do portalu klienta.",
+    "searchPlaceholder": "Szukaj warsztatów…",
+    "noWorkshops": "Obecnie nie ma dostępnych warsztatów.",
+    "noResults": "Żaden warsztat nie pasuje do wyszukiwania.",
+    "openPortal": "Otwórz portal"
+  },
+  "landing": {
+    "contactTitle": "Skontaktuj się z nami",
+    "aboutTitle": "O nas",
+    "noContactInfo": "Dane kontaktowe nie są jeszcze dostępne.",
+    "address": "Adres",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "hours": "Godziny otwarcia",
+    "directions": "Wyznacz trasę"
+  },
   "login": {
-    "signInTitle": "Zaloguj się do portalu klienta",
+    "signInTitle": "Logowanie klienta",
+    "signInSubtitle": "Zaloguj się, aby zobaczyć faktury, oferty i historię serwisową.",
     "emailLabel": "Adres e-mail",
     "emailPlaceholder": "ty@przyklad.pl",
     "sendLink": "Wyślij link do logowania",
     "checkEmail": "Sprawdź swoją skrzynkę",
     "checkEmailDescription": "Jeśli konto dla tego adresu e-mail istnieje, wysłaliśmy link do logowania. Link wygasa po 15 minutach.",
     "tryDifferentEmail": "Wypróbuj inny adres e-mail",
+    "tabEmail": "E-mail",
+    "tabSms": "SMS",
+    "phoneLabel": "Numer telefonu",
+    "phonePlaceholder": "+48 512345678",
+    "phoneLocalPlaceholder": "512345678",
+    "sendCode": "Wyślij kod",
+    "codeSentTitle": "Wprowadź kod, który wysłaliśmy",
+    "codeSentDescription": "Wysłaliśmy 6-cyfrowy kod na {phone}, jeśli pasuje do konta.",
+    "codeLabel": "6-cyfrowy kod",
+    "codePlaceholder": "123456",
+    "verifyCode": "Zaloguj się",
+    "useDifferentPhone": "Użyj innego numeru",
+    "invalidCode": "Nieprawidłowy lub wygasły kod",
     "notFound": "Nie znaleziono",
     "portalNotExist": "Ten portal nie istnieje.",
     "portalNotAvailable": "Portal niedostępny",
@@ -21,7 +53,8 @@
     "requestService": "Zamów serwis"
   },
   "header": {
-    "signOut": "Wyloguj się"
+    "signOut": "Wyloguj się",
+    "askShort": "Serwis"
   },
   "shell": {
     "notFound": "Nie znaleziono",
@@ -44,7 +77,14 @@
     "noQuotesYet": "Brak wycen.",
     "view": "Zobacz",
     "pending": "Oczekujące",
-    "failedToLoad": "Nie udało się załadować panelu."
+    "failedToLoad": "Nie udało się załadować panelu.",
+    "quickRequestService": "Zamów serwis",
+    "quickRequestServiceHint": "Zarezerwuj naprawę lub przegląd",
+    "quickViewInvoices": "Twoje faktury",
+    "quickViewInvoicesHint": "Faktury i historia płatności",
+    "quickViewVehicles": "Twoje pojazdy",
+    "quickViewVehiclesHint": "Historia serwisowa i szczegóły",
+    "activeJobs": "Bieżące zlecenia"
   },
   "invoices": {
     "title": "Faktury",
@@ -57,6 +97,7 @@
     "amount": "Kwota",
     "payment": "Płatność",
     "view": "Zobacz",
+    "download": "Pobierz",
     "paid": "zapłacono",
     "partial": "częściowo",
     "unpaid": "niezapłacono"

@@ -1,12 +1,44 @@
 {
+  "directory": {
+    "title": "Trouvez votre garage",
+    "description": "Choisissez votre garage ci-dessous pour accéder au portail client.",
+    "searchPlaceholder": "Rechercher un garage…",
+    "noWorkshops": "Aucun garage n'est disponible pour le moment.",
+    "noResults": "Aucun garage ne correspond à votre recherche.",
+    "openPortal": "Ouvrir le portail"
+  },
+  "landing": {
+    "contactTitle": "Nous contacter",
+    "aboutTitle": "À propos",
+    "noContactInfo": "Les coordonnées ne sont pas encore disponibles.",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "hours": "Horaires d'ouverture",
+    "directions": "Itinéraire"
+  },
   "login": {
-    "signInTitle": "Connexion à votre portail client",
+    "signInTitle": "Connexion client",
+    "signInSubtitle": "Connectez-vous pour consulter vos factures, devis et historique d'entretien.",
     "emailLabel": "Adresse e-mail",
     "emailPlaceholder": "vous@exemple.com",
     "sendLink": "Envoyer le lien de connexion",
     "checkEmail": "Vérifiez votre e-mail",
     "checkEmailDescription": "Si un compte existe pour cet e-mail, nous avons envoyé un lien de connexion. Le lien expire dans 15 minutes.",
     "tryDifferentEmail": "Essayer une autre adresse e-mail",
+    "tabEmail": "E-mail",
+    "tabSms": "SMS",
+    "phoneLabel": "Numéro de téléphone",
+    "phonePlaceholder": "+33 612345678",
+    "phoneLocalPlaceholder": "612345678",
+    "sendCode": "Envoyer le code",
+    "codeSentTitle": "Saisissez le code que nous avons envoyé",
+    "codeSentDescription": "Nous avons envoyé un code à 6 chiffres au {phone} s'il correspond à un compte.",
+    "codeLabel": "Code à 6 chiffres",
+    "codePlaceholder": "123456",
+    "verifyCode": "Se connecter",
+    "useDifferentPhone": "Utiliser un autre numéro",
+    "invalidCode": "Code invalide ou expiré",
     "notFound": "Introuvable",
     "portalNotExist": "Ce portail n'existe pas.",
     "portalNotAvailable": "Portail indisponible",
@@ -21,7 +53,8 @@
     "requestService": "Demander un service"
   },
   "header": {
-    "signOut": "Se déconnecter"
+    "signOut": "Se déconnecter",
+    "askShort": "Service"
   },
   "shell": {
     "notFound": "Introuvable",
@@ -44,7 +77,14 @@
     "noQuotesYet": "Aucun devis pour l'instant.",
     "view": "Voir",
     "pending": "En attente",
-    "failedToLoad": "Échec du chargement du tableau de bord."
+    "failedToLoad": "Échec du chargement du tableau de bord.",
+    "quickRequestService": "Demander un service",
+    "quickRequestServiceHint": "Réserver une réparation ou un contrôle",
+    "quickViewInvoices": "Vos factures",
+    "quickViewInvoicesHint": "Factures et historique des paiements",
+    "quickViewVehicles": "Vos véhicules",
+    "quickViewVehiclesHint": "Historique d'entretien et détails",
+    "activeJobs": "Travaux en cours"
   },
   "invoices": {
     "title": "Factures",
@@ -57,6 +97,7 @@
     "amount": "Montant",
     "payment": "Paiement",
     "view": "Voir",
+    "download": "Télécharger",
     "paid": "payé",
     "partial": "partiel",
     "unpaid": "impayé"

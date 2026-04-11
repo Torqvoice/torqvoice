@@ -672,7 +672,10 @@
     "languageDescription": "Kies de weergavetaal van de applicatie.",
     "language": "Taal",
     "forceCustomerLocale": "Forceer deze taal op klantgerichte pagina's",
-    "forceCustomerLocaleHint": "Wanneer ingeschakeld, zien klanten die gedeelde facturen, offertes en inspecties bekijken deze in de taal van uw werkplaats, ongeacht hun browserinstellingen. Wanneer uitgeschakeld, zien klanten de pagina's in de taal die in hun browser is ingesteld.",
+    "forceCustomerLocaleHint": "Wanneer ingeschakeld, verschijnen het klantenportaal en gedeelde facturen, offertes en inspecties in de taal van uw werkplaats, ongeacht de browserinstellingen van de bezoeker. Wanneer uitgeschakeld, volgen klantgerichte pagina's de browsertaal van de bezoeker.",
+    "defaultCountryCode": "Standaard landcode",
+    "defaultCountryCodeHint": "Wordt gebruikt wanneer klanten zich via SMS aanmelden bij het portaal — toegepast op telefoonnummers zonder landcode (van u of van de klant). Formaat: + gevolgd door cijfers, bijv. +31.",
+    "defaultCountryCodeInvalid": "Voer een geldige landcode in, bijv. +31, 31 of 0031.",
     "saved": "Lokalisatie-instellingen opgeslagen",
     "saveSettings": "Instellingen opslaan"
   },
@@ -914,7 +917,38 @@
     "slugHint": "Kleine letters, cijfers, koppeltekens en underscores. 3-48 tekens. Laat leeg om de standaard-URL te gebruiken.",
     "portalUrl": "Portaal-URL",
     "urlCopied": "Portaal-URL gekopieerd",
-    "shareHint": "Deel deze link met uw klanten zodat ze kunnen inloggen op hun portaal."
+    "shareHint": "Deel deze link met uw klanten zodat ze kunnen inloggen op hun portaal.",
+    "descriptionLabel": "Over uw werkplaats",
+    "descriptionPlaceholder": "Vertel klanten iets over uw werkplaats, de diensten die u aanbiedt en wat u uniek maakt.",
+    "descriptionHint": "Wordt aan bezoekers getoond bovenaan uw portaalpagina.",
+    "hoursLabel": "Openingstijden",
+    "hoursPlaceholder": "Ma-Vr: 8:00-17:00\nZa: 9:00-13:00\nZo: Gesloten",
+    "hoursHint": "Vrije tekst. Gebruik regeleinden om elke dag apart te vermelden.",
+    "contentSaved": "Portaalinhoud opgeslagen",
+    "background": {
+      "title": "Portaalachtergrond",
+      "description": "Kies hoe de landingspagina van het klantenportaal eruitziet.",
+      "typeNone": "Geen",
+      "typeTemplate": "Sjabloon",
+      "typeImage": "Eigen afbeelding",
+      "chooseTemplate": "Kies een sjabloon",
+      "uploadLabel": "Achtergrondafbeelding",
+      "upload": "Afbeelding uploaden",
+      "replace": "Afbeelding vervangen",
+      "remove": "Verwijderen",
+      "uploadHint": "JPG, PNG of WebP. Max 8 MB. Aanbevolen minstens 1600×900.",
+      "uploading": "Achtergrond uploaden…",
+      "uploaded": "Achtergrond bijgewerkt",
+      "uploadFailed": "Achtergrond uploaden mislukt",
+      "templateNames": {
+        "default": "Subtiel",
+        "sunrise": "Zonsopgang",
+        "ocean": "Oceaan",
+        "forest": "Bos",
+        "slate": "Leisteen",
+        "sand": "Zand"
+      }
+    }
   },
   "email": {
     "title": "E-mailprovider",

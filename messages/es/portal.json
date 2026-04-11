@@ -1,12 +1,44 @@
 {
+  "directory": {
+    "title": "Encuentra tu taller",
+    "description": "Elige tu taller a continuación para acceder al portal de clientes.",
+    "searchPlaceholder": "Buscar talleres…",
+    "noWorkshops": "Actualmente no hay talleres disponibles.",
+    "noResults": "Ningún taller coincide con tu búsqueda.",
+    "openPortal": "Abrir portal"
+  },
+  "landing": {
+    "contactTitle": "Contáctanos",
+    "aboutTitle": "Sobre nosotros",
+    "noContactInfo": "Los datos de contacto aún no están disponibles.",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "hours": "Horario de apertura",
+    "directions": "Cómo llegar"
+  },
   "login": {
-    "signInTitle": "Inicie sesión en su portal de clientes",
+    "signInTitle": "Acceso de clientes",
+    "signInSubtitle": "Inicia sesión para ver tus facturas, presupuestos e historial de servicio.",
     "emailLabel": "Dirección de correo electrónico",
     "emailPlaceholder": "usted@ejemplo.com",
     "sendLink": "Enviar enlace de acceso",
     "checkEmail": "Revise su correo electrónico",
     "checkEmailDescription": "Si existe una cuenta para ese correo, hemos enviado un enlace de acceso. El enlace expira en 15 minutos.",
     "tryDifferentEmail": "Probar con otro correo electrónico",
+    "tabEmail": "Correo",
+    "tabSms": "SMS",
+    "phoneLabel": "Número de teléfono",
+    "phonePlaceholder": "+34 612345678",
+    "phoneLocalPlaceholder": "612345678",
+    "sendCode": "Enviar código",
+    "codeSentTitle": "Introduce el código que enviamos",
+    "codeSentDescription": "Enviamos un código de 6 dígitos a {phone} si coincide con una cuenta.",
+    "codeLabel": "Código de 6 dígitos",
+    "codePlaceholder": "123456",
+    "verifyCode": "Iniciar sesión",
+    "useDifferentPhone": "Usar otro número",
+    "invalidCode": "Código no válido o caducado",
     "notFound": "No encontrado",
     "portalNotExist": "Este portal no existe.",
     "portalNotAvailable": "Portal no disponible",
@@ -21,7 +53,8 @@
     "requestService": "Solicitar servicio"
   },
   "header": {
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "askShort": "Servicio"
   },
   "shell": {
     "notFound": "No encontrado",
@@ -44,7 +77,14 @@
     "noQuotesYet": "Aún no hay presupuestos.",
     "view": "Ver",
     "pending": "Pendiente",
-    "failedToLoad": "Error al cargar el panel."
+    "failedToLoad": "Error al cargar el panel.",
+    "quickRequestService": "Solicitar servicio",
+    "quickRequestServiceHint": "Reservar reparación o revisión",
+    "quickViewInvoices": "Tus facturas",
+    "quickViewInvoicesHint": "Facturas e historial de pagos",
+    "quickViewVehicles": "Tus vehículos",
+    "quickViewVehiclesHint": "Historial de servicio y detalles",
+    "activeJobs": "Trabajos en curso"
   },
   "invoices": {
     "title": "Facturas",
@@ -57,6 +97,7 @@
     "amount": "Monto",
     "payment": "Pago",
     "view": "Ver",
+    "download": "Descargar",
     "paid": "pagado",
     "partial": "parcial",
     "unpaid": "sin pagar"

@@ -1,74 +1,91 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { sendOrgSms, getOrgSmsPhoneNumber } from "@/lib/sms";
-import { requireFeature } from "@/lib/features";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { SMS_TEMPLATE_DEFAULTS } from "@/lib/sms-templates";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { sendOrgSms, getOrgSmsPhoneNumber, normalizeOrgPhone } from '@/lib/sms'
+import { requireFeature } from '@/lib/features'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { SMS_TEMPLATE_DEFAULTS } from '@/lib/sms-templates'
 
 export async function sendSmsToCustomer(input: {
-  customerId: string;
-  body: string;
-  relatedEntityType?: string;
-  relatedEntityId?: string;
+  customerId: string
+  body: string
+  relatedEntityType?: string
+  relatedEntityId?: string
 }) {
   return withAuth(
     async ({ organizationId }) => {
-      await requireFeature(organizationId, "sms");
+      await requireFeature(organizationId, 'sms')
 
       const customer = await db.customer.findFirst({
         where: { id: input.customerId, organizationId },
         select: { id: true, phone: true, name: true },
-      });
+      })
 
-      if (!customer) throw new Error("Customer not found");
-      if (!customer.phone) throw new Error("Customer has no phone number");
+      if (!customer) throw new Error('Customer not found')
+      if (!customer.phone) throw new Error('Customer has no phone number')
 
-      const fromNumber = await getOrgSmsPhoneNumber(organizationId);
-      if (!fromNumber) throw new Error("SMS phone number is not configured");
+      const fromNumber = await getOrgSmsPhoneNumber(organizationId)
+      if (!fromNumber) throw new Error('SMS phone number is not configured')
+
+      // Normalize the destination phone using the workshop's default
+      // country code so the audit-log row records the same E.164 number
+      // the provider will receive. sendOrgSms re-normalizes internally as
+      // defense in depth, so this stays correct even if either side
+      // changes later.
+      const normalizedTo = await normalizeOrgPhone(organizationId, customer.phone)
+      if (!normalizedTo) {
+        throw new Error(
+          'Customer phone is not in a format we can dial. ' +
+            "Set a default country code in Settings → Localization, or update the customer's phone to E.164 format."
+        )
+      }
 
       // Create the message record first
       const message = await db.smsMessage.create({
         data: {
-          direction: "outbound",
+          direction: 'outbound',
           fromNumber,
-          toNumber: customer.phone,
+          toNumber: normalizedTo,
           body: input.body,
-          status: "queued",
+          status: 'queued',
           organizationId,
           customerId: customer.id,
           relatedEntityType: input.relatedEntityType,
           relatedEntityId: input.relatedEntityId,
         },
-      });
+      })
 
       try {
         const result = await sendOrgSms(organizationId, {
-          to: customer.phone,
+          to: normalizedTo,
           body: input.body,
-        });
+        })
 
         await db.smsMessage.update({
           where: { id: message.id },
           data: {
-            status: "sent",
+            status: 'sent',
             providerMsgId: result.providerMsgId,
           },
-        });
+        })
 
-        return { id: message.id, status: "sent" as const, customerPhone: customer.phone, customerName: customer.name };
+        return {
+          id: message.id,
+          status: 'sent' as const,
+          customerPhone: result.to,
+          customerName: customer.name,
+        }
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
 
         await db.smsMessage.update({
           where: { id: message.id },
-          data: { status: "failed", errorMessage },
-        });
+          data: { status: 'failed', errorMessage },
+        })
 
-        throw new Error(`Failed to send SMS: ${errorMessage}`);
+        throw new Error(`Failed to send SMS: ${errorMessage}`)
       }
     },
     {
@@ -76,21 +93,17 @@ export async function sendSmsToCustomer(input: {
         { action: PermissionAction.UPDATE, subject: PermissionSubject.CUSTOMERS },
       ],
       audit: ({ result }) => ({
-        action: "sms.send",
-        entity: "SmsMessage",
+        action: 'sms.send',
+        entity: 'SmsMessage',
         entityId: result.id,
         message: `Sent SMS to ${result.customerName} (${result.customerPhone})`,
         metadata: { messageId: result.id },
       }),
-    },
-  );
+    }
+  )
 }
 
-export async function getConversation(
-  customerId: string,
-  cursor?: string,
-  limit: number = 50,
-) {
+export async function getConversation(customerId: string, cursor?: string, limit: number = 50) {
   return withAuth(
     async ({ organizationId }) => {
       const messages = await db.smsMessage.findMany({
@@ -98,7 +111,7 @@ export async function getConversation(
           organizationId,
           customerId,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         take: limit + 1,
         ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
         select: {
@@ -110,22 +123,22 @@ export async function getConversation(
           fromNumber: true,
           toNumber: true,
         },
-      });
+      })
 
-      const hasMore = messages.length > limit;
-      const items = hasMore ? messages.slice(0, limit) : messages;
+      const hasMore = messages.length > limit
+      const items = hasMore ? messages.slice(0, limit) : messages
 
       return {
         messages: items.reverse(),
         nextCursor: hasMore ? items[items.length - 1]?.id : null,
-      };
+      }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
       ],
-    },
-  );
+    }
+  )
 }
 
 export async function deleteSmsMessage(messageId: string) {
@@ -133,18 +146,18 @@ export async function deleteSmsMessage(messageId: string) {
     async ({ organizationId }) => {
       const message = await db.smsMessage.findFirst({
         where: { id: messageId, organizationId },
-      });
-      if (!message) throw new Error("Message not found");
+      })
+      if (!message) throw new Error('Message not found')
 
-      await db.smsMessage.delete({ where: { id: messageId } });
-      return { deleted: true };
+      await db.smsMessage.delete({ where: { id: messageId } })
+      return { deleted: true }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS },
       ],
-    },
-  );
+    }
+  )
 }
 
 export async function deleteConversation(customerId: string) {
@@ -153,21 +166,21 @@ export async function deleteConversation(customerId: string) {
       const customer = await db.customer.findFirst({
         where: { id: customerId, organizationId },
         select: { id: true },
-      });
-      if (!customer) throw new Error("Customer not found");
+      })
+      if (!customer) throw new Error('Customer not found')
 
       const { count } = await db.smsMessage.deleteMany({
         where: { organizationId, customerId },
-      });
+      })
 
-      return { deleted: count };
+      return { deleted: count }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS },
       ],
-    },
-  );
+    }
+  )
 }
 
 export async function getSmsTemplates() {
@@ -182,7 +195,7 @@ export async function getSmsTemplates() {
         SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
         SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
         SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
-      ];
+      ]
       const [settings, org, user] = await Promise.all([
         db.appSetting.findMany({
           where: { organizationId, key: { in: smsKeys } },
@@ -195,25 +208,25 @@ export async function getSmsTemplates() {
           where: { id: userId },
           select: { name: true },
         }),
-      ]);
+      ])
 
-      const templates: Record<string, string> = {};
+      const templates: Record<string, string> = {}
       for (const key of smsKeys) {
-        const found = settings.find((s) => s.key === key);
-        templates[key] = found?.value || SMS_TEMPLATE_DEFAULTS[key] || "";
+        const found = settings.find((s) => s.key === key)
+        templates[key] = found?.value || SMS_TEMPLATE_DEFAULTS[key] || ''
       }
       return {
         templates,
-        companyName: org?.name || "",
-        currentUser: user?.name || "",
-      };
+        companyName: org?.name || '',
+        currentUser: user?.name || '',
+      }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
       ],
-    },
-  );
+    }
+  )
 }
 
 export async function getRecentSmsThreads(offset: number = 0, limit: number = 50) {
@@ -230,7 +243,7 @@ export async function getRecentSmsThreads(offset: number = 0, limit: number = 50
           name: true,
           phone: true,
           smsMessages: {
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: 'desc' },
             take: 1,
             select: {
               id: true,
@@ -242,15 +255,15 @@ export async function getRecentSmsThreads(offset: number = 0, limit: number = 50
           },
         },
         orderBy: {
-          smsMessages: { _count: "desc" },
+          smsMessages: { _count: 'desc' },
         },
         skip: offset,
         take: limit + 1,
-      });
+      })
 
-      const filtered = customers.filter((c) => c.smsMessages.length > 0);
-      const hasMore = filtered.length > limit;
-      const items = hasMore ? filtered.slice(0, limit) : filtered;
+      const filtered = customers.filter((c) => c.smsMessages.length > 0)
+      const hasMore = filtered.length > limit
+      const items = hasMore ? filtered.slice(0, limit) : filtered
 
       const threads = items
         .map((c) => ({
@@ -262,15 +275,15 @@ export async function getRecentSmsThreads(offset: number = 0, limit: number = 50
         .sort(
           (a, b) =>
             new Date(b.lastMessage.createdAt).getTime() -
-            new Date(a.lastMessage.createdAt).getTime(),
-        );
+            new Date(a.lastMessage.createdAt).getTime()
+        )
 
-      return { threads, hasMore };
+      return { threads, hasMore }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
       ],
-    },
-  );
+    }
+  )
 }

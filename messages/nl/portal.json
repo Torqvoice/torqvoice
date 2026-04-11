@@ -1,12 +1,44 @@
 {
+  "directory": {
+    "title": "Vind uw werkplaats",
+    "description": "Kies hieronder uw werkplaats om naar het klantenportaal te gaan.",
+    "searchPlaceholder": "Werkplaatsen zoeken…",
+    "noWorkshops": "Er zijn momenteel geen werkplaatsen beschikbaar.",
+    "noResults": "Geen werkplaatsen gevonden voor uw zoekopdracht.",
+    "openPortal": "Portaal openen"
+  },
+  "landing": {
+    "contactTitle": "Neem contact op",
+    "aboutTitle": "Over ons",
+    "noContactInfo": "Contactgegevens zijn nog niet beschikbaar.",
+    "address": "Adres",
+    "phone": "Telefoon",
+    "email": "E-mail",
+    "hours": "Openingstijden",
+    "directions": "Routebeschrijving"
+  },
   "login": {
-    "signInTitle": "Aanmelden bij uw klantenportaal",
+    "signInTitle": "Klantlogin",
+    "signInSubtitle": "Log in om uw facturen, offertes en servicegeschiedenis te bekijken.",
     "emailLabel": "E-mailadres",
     "emailPlaceholder": "u@voorbeeld.nl",
     "sendLink": "Aanmeldlink versturen",
     "checkEmail": "Controleer uw e-mail",
     "checkEmailDescription": "Als er een account bestaat voor dat e-mailadres, hebben we een aanmeldlink verstuurd. De link verloopt na 15 minuten.",
     "tryDifferentEmail": "Probeer een ander e-mailadres",
+    "tabEmail": "E-mail",
+    "tabSms": "SMS",
+    "phoneLabel": "Telefoonnummer",
+    "phonePlaceholder": "+31 612345678",
+    "phoneLocalPlaceholder": "612345678",
+    "sendCode": "Code versturen",
+    "codeSentTitle": "Voer de code in die we hebben verstuurd",
+    "codeSentDescription": "We hebben een 6-cijferige code naar {phone} gestuurd als deze overeenkomt met een account.",
+    "codeLabel": "6-cijferige code",
+    "codePlaceholder": "123456",
+    "verifyCode": "Aanmelden",
+    "useDifferentPhone": "Een ander nummer gebruiken",
+    "invalidCode": "Ongeldige of verlopen code",
     "notFound": "Niet gevonden",
     "portalNotExist": "Dit portaal bestaat niet.",
     "portalNotAvailable": "Portaal niet beschikbaar",
@@ -21,7 +53,8 @@
     "requestService": "Service aanvragen"
   },
   "header": {
-    "signOut": "Afmelden"
+    "signOut": "Afmelden",
+    "askShort": "Service"
   },
   "shell": {
     "notFound": "Niet gevonden",
@@ -44,7 +77,14 @@
     "noQuotesYet": "Nog geen offertes.",
     "view": "Bekijken",
     "pending": "In behandeling",
-    "failedToLoad": "Dashboard laden mislukt."
+    "failedToLoad": "Dashboard laden mislukt.",
+    "quickRequestService": "Service aanvragen",
+    "quickRequestServiceHint": "Reparatie of controle boeken",
+    "quickViewInvoices": "Uw facturen",
+    "quickViewInvoicesHint": "Facturen en betaalgeschiedenis",
+    "quickViewVehicles": "Uw voertuigen",
+    "quickViewVehiclesHint": "Servicegeschiedenis en details",
+    "activeJobs": "Lopende werkzaamheden"
   },
   "invoices": {
     "title": "Facturen",
@@ -57,6 +97,7 @@
     "amount": "Bedrag",
     "payment": "Betaling",
     "view": "Bekijken",
+    "download": "Downloaden",
     "paid": "betaald",
     "partial": "gedeeltelijk",
     "unpaid": "onbetaald"

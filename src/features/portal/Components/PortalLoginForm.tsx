@@ -1,119 +1,278 @@
-"use client";
+'use client'
 
-import { useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Loader2, Mail } from "lucide-react";
+import { useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Loader2, Mail } from 'lucide-react'
+
+type PortalLoginFormProps = {
+  orgId: string
+  error?: string
+  smsEnabled: boolean
+  defaultCountryCode: string | null
+}
 
 export function PortalLoginForm({
   orgId,
-  orgName,
-  orgLogo,
   error,
-}: {
-  orgId: string;
-  orgName: string;
-  orgLogo?: string | null;
-  error?: string;
-}) {
-  const t = useTranslations("portal.login");
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const [isPending, startTransition] = useTransition();
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    startTransition(async () => {
-      await fetch(`/api/public/portal/${orgId}/auth/request`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      setSent(true);
-    });
-  };
+  smsEnabled,
+  defaultCountryCode,
+}: PortalLoginFormProps) {
+  const t = useTranslations('portal.login')
 
   return (
-    <div className="flex min-h-svh items-center justify-center bg-muted/30 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mb-4 flex justify-center">
-            {orgLogo ? (
-              <img
-                src={orgLogo}
-                alt={orgName}
-                className="h-12 w-12 rounded object-contain"
-              />
-            ) : (
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-lg font-bold text-primary">
-                {orgName.charAt(0)}
-              </div>
-            )}
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>{t('signInTitle')}</CardTitle>
+        <CardDescription>{t('signInSubtitle')}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {error && (
+          <div className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-center text-sm text-destructive">
+            {error}
           </div>
-          <CardTitle>{orgName}</CardTitle>
-          <CardDescription>
-            {t("signInTitle")}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <div className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-center text-sm text-destructive">
-              {error}
-            </div>
-          )}
-          {sent ? (
-            <div className="text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
-                <Mail className="h-6 w-6 text-green-600" />
-              </div>
-              <h3 className="text-lg font-semibold">{t("checkEmail")}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {t("checkEmailDescription")}
-              </p>
-              <Button
-                variant="ghost"
-                className="mt-4"
-                onClick={() => {
-                  setSent(false);
-                  setEmail("");
-                }}
-              >
-                {t("tryDifferentEmail")}
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">{t("emailLabel")}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder={t("emailPlaceholder")}
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoFocus
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {t("sendLink")}
-              </Button>
-            </form>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
+        )}
+        {smsEnabled ? (
+          <Tabs defaultValue="email" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="email">{t('tabEmail')}</TabsTrigger>
+              <TabsTrigger value="sms">{t('tabSms')}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="email" className="mt-4">
+              <EmailLoginForm orgId={orgId} />
+            </TabsContent>
+            <TabsContent value="sms" className="mt-4">
+              <SmsLoginForm orgId={orgId} defaultCountryCode={defaultCountryCode} />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <EmailLoginForm orgId={orgId} />
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function EmailLoginForm({ orgId }: { orgId: string }) {
+  const t = useTranslations('portal.login')
+  const [email, setEmail] = useState('')
+  const [sent, setSent] = useState(false)
+  const [isPending, startTransition] = useTransition()
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    startTransition(async () => {
+      await fetch(`/api/public/portal/${orgId}/auth/request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      setSent(true)
+    })
+  }
+
+  if (sent) {
+    return (
+      <div className="text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
+          <Mail className="h-6 w-6 text-green-600" />
+        </div>
+        <h3 className="text-lg font-semibold">{t('checkEmail')}</h3>
+        <p className="mt-2 text-sm text-muted-foreground">{t('checkEmailDescription')}</p>
+        <Button
+          variant="ghost"
+          className="mt-4"
+          onClick={() => {
+            setSent(false)
+            setEmail('')
+          }}
+        >
+          {t('tryDifferentEmail')}
+        </Button>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="email">{t('emailLabel')}</Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder={t('emailPlaceholder')}
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
+      <Button type="submit" className="w-full" disabled={isPending}>
+        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {t('sendLink')}
+      </Button>
+    </form>
+  )
+}
+
+function SmsLoginForm({
+  orgId,
+  defaultCountryCode,
+}: {
+  orgId: string
+  defaultCountryCode: string | null
+}) {
+  const t = useTranslations('portal.login')
+  const router = useRouter()
+  const [step, setStep] = useState<'phone' | 'code'>('phone')
+  // When a country code is set, `phone` holds only the local digits.
+  // When not set, `phone` holds the full E.164 number the user types.
+  const [phone, setPhone] = useState('')
+  const [code, setCode] = useState('')
+  const [verifyError, setVerifyError] = useState<string | null>(null)
+  const [isRequestPending, startRequestTransition] = useTransition()
+  const [isVerifyPending, startVerifyTransition] = useTransition()
+
+  // The full phone we send to the server. The server normalizes again as a
+  // safety net, but pre-joining here makes the UI explicit about what's
+  // being sent.
+  const fullPhone = defaultCountryCode ? `${defaultCountryCode}${phone}` : phone
+
+  const handleRequest = (e: React.FormEvent) => {
+    e.preventDefault()
+    setVerifyError(null)
+    startRequestTransition(async () => {
+      try {
+        await fetch(`/api/public/portal/${orgId}/auth/sms-request`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: fullPhone }),
+        })
+      } catch {
+        // Ignore network errors and still advance to step 2; we don't want to
+        // reveal whether the phone matched an account.
+      }
+      setStep('code')
+    })
+  }
+
+  const handleVerify = (e: React.FormEvent) => {
+    e.preventDefault()
+    setVerifyError(null)
+    startVerifyTransition(async () => {
+      try {
+        const res = await fetch(`/api/public/portal/${orgId}/auth/sms-verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: fullPhone, code }),
+        })
+        const data = (await res.json().catch(() => ({}))) as {
+          success?: boolean
+          error?: string
+        }
+        if (data.success) {
+          router.push(`/portal/${orgId}/dashboard`)
+          router.refresh()
+          return
+        }
+        setVerifyError(data.error || t('invalidCode'))
+      } catch {
+        setVerifyError(t('invalidCode'))
+      }
+    })
+  }
+
+  if (step === 'code') {
+    return (
+      <form onSubmit={handleVerify} className="space-y-4">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold">{t('codeSentTitle')}</h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {t('codeSentDescription', { phone: fullPhone })}
+          </p>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="sms-code">{t('codeLabel')}</Label>
+          <Input
+            id="sms-code"
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="[0-9]{6}"
+            maxLength={6}
+            placeholder={t('codePlaceholder')}
+            required
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+          />
+        </div>
+        {verifyError && (
+          <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-2 text-center text-sm text-destructive">
+            {verifyError}
+          </div>
+        )}
+        <Button type="submit" className="w-full" disabled={isVerifyPending}>
+          {isVerifyPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {t('verifyCode')}
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          className="w-full"
+          onClick={() => {
+            setStep('phone')
+            setCode('')
+            setVerifyError(null)
+          }}
+        >
+          {t('useDifferentPhone')}
+        </Button>
+      </form>
+    )
+  }
+
+  return (
+    <form onSubmit={handleRequest} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="sms-phone">{t('phoneLabel')}</Label>
+        {defaultCountryCode ? (
+          <div className="flex items-center rounded-md border border-input bg-background focus-within:ring-1 focus-within:ring-ring">
+            <span className="select-none border-r border-input px-3 py-2 text-sm text-muted-foreground">
+              {defaultCountryCode}
+            </span>
+            <input
+              id="sms-phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel-national"
+              placeholder={t('phoneLocalPlaceholder')}
+              required
+              value={phone}
+              onChange={(e) => setPhone(e.target.value.replace(/[^\d]/g, ''))}
+              className="w-full bg-transparent px-3 py-2 text-sm outline-none"
+            />
+          </div>
+        ) : (
+          <Input
+            id="sms-phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            placeholder={t('phonePlaceholder')}
+            required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+        )}
+      </div>
+      <Button type="submit" className="w-full" disabled={isRequestPending}>
+        {isRequestPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {t('sendCode')}
+      </Button>
+    </form>
+  )
 }
