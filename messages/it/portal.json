@@ -1,6 +1,24 @@
 {
+  "directory": {
+    "title": "Trova la tua officina",
+    "description": "Scegli la tua officina qui sotto per accedere al portale clienti.",
+    "searchPlaceholder": "Cerca officine…",
+    "noWorkshops": "Nessuna officina è attualmente disponibile.",
+    "noResults": "Nessuna officina corrisponde alla tua ricerca.",
+    "openPortal": "Apri portale"
+  },
+  "landing": {
+    "contactTitle": "Contattaci",
+    "aboutTitle": "Chi siamo",
+    "noContactInfo": "I contatti non sono ancora disponibili.",
+    "address": "Indirizzo",
+    "phone": "Telefono",
+    "email": "Email",
+    "hours": "Orari di apertura"
+  },
   "login": {
-    "signInTitle": "Accedi al tuo portale clienti",
+    "signInTitle": "Accesso clienti",
+    "signInSubtitle": "Accedi per vedere fatture, preventivi e storico dei servizi.",
     "emailLabel": "Indirizzo email",
     "emailPlaceholder": "tu@esempio.com",
     "sendLink": "Invia link di accesso",

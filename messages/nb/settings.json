@@ -672,7 +672,7 @@
     "languageDescription": "Velg visningsspråk for applikasjonen.",
     "language": "Språk",
     "forceCustomerLocale": "Tving dette språket på kundesider",
-    "forceCustomerLocaleHint": "Når aktivert vil kunder som ser delte fakturaer, tilbud og inspeksjoner se dem på verkstedets språk uavhengig av nettleserinnstillingene deres. Når deaktivert, ser kundene sidene på språket som er konfigurert i nettleseren deres.",
+    "forceCustomerLocaleHint": "Når aktivert vises kundeportalen og delte fakturaer, tilbud og inspeksjoner på verkstedets språk uavhengig av besøkendes nettleserinnstillinger. Når deaktivert, følger kundesidene besøkendes nettleserspråk.",
     "saved": "Lokaliseringsinnstillinger lagret",
     "saveSettings": "Lagre innstillinger"
   },
@@ -914,7 +914,14 @@
     "slugHint": "Sma bokstaver, tall, bindestreker og understreker. 3-48 tegn. La sta tom for a bruke standard-URL.",
     "portalUrl": "Portal-URL",
     "urlCopied": "Portal-URL kopiert",
-    "shareHint": "Del denne lenken med kundene dine slik at de kan logge inn pa portalen sin."
+    "shareHint": "Del denne lenken med kundene dine slik at de kan logge inn pa portalen sin.",
+    "descriptionLabel": "Om verkstedet",
+    "descriptionPlaceholder": "Fortell kundene litt om verkstedet, tjenestene dere tilbyr og hva som gjor dere unike.",
+    "descriptionHint": "Vises til besokende overst pa portalsiden.",
+    "hoursLabel": "Apningstider",
+    "hoursPlaceholder": "Man-fre: 08:00-17:00\nLor: 09:00-13:00\nSon: Stengt",
+    "hoursHint": "Fritekst. Bruk linjeskift for a liste opp dagene hver for seg.",
+    "contentSaved": "Portalinnhold lagret"
   },
   "email": {
     "title": "E-postleverandor",

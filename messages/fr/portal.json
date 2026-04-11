@@ -1,6 +1,24 @@
 {
+  "directory": {
+    "title": "Trouvez votre garage",
+    "description": "Choisissez votre garage ci-dessous pour accéder au portail client.",
+    "searchPlaceholder": "Rechercher un garage…",
+    "noWorkshops": "Aucun garage n'est disponible pour le moment.",
+    "noResults": "Aucun garage ne correspond à votre recherche.",
+    "openPortal": "Ouvrir le portail"
+  },
+  "landing": {
+    "contactTitle": "Nous contacter",
+    "aboutTitle": "À propos",
+    "noContactInfo": "Les coordonnées ne sont pas encore disponibles.",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "hours": "Horaires d'ouverture"
+  },
   "login": {
-    "signInTitle": "Connexion à votre portail client",
+    "signInTitle": "Connexion client",
+    "signInSubtitle": "Connectez-vous pour consulter vos factures, devis et historique d'entretien.",
     "emailLabel": "Adresse e-mail",
     "emailPlaceholder": "vous@exemple.com",
     "sendLink": "Envoyer le lien de connexion",

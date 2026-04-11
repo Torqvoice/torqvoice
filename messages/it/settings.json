@@ -672,7 +672,7 @@
     "languageDescription": "Scegli la lingua di visualizzazione dell'applicazione.",
     "language": "Lingua",
     "forceCustomerLocale": "Forza questa lingua sulle pagine rivolte al cliente",
-    "forceCustomerLocaleHint": "Quando attivato, i clienti che visualizzano fatture, preventivi e ispezioni condivise li vedranno nella lingua della tua officina, indipendentemente dalle impostazioni del browser. Quando disattivato, i clienti vedono le pagine nella lingua configurata nel loro browser.",
+    "forceCustomerLocaleHint": "Quando attivato, il portale clienti e le fatture, i preventivi e le ispezioni condivise vengono mostrati nella lingua della tua officina, indipendentemente dalle impostazioni del browser del visitatore. Quando disattivato, le pagine rivolte ai clienti seguono la lingua del browser del visitatore.",
     "saved": "Impostazioni di localizzazione salvate",
     "saveSettings": "Salva impostazioni"
   },
@@ -914,7 +914,14 @@
     "slugHint": "Lettere minuscole, numeri, trattini e underscore. 3-48 caratteri. Lascia vuoto per usare l'URL predefinito.",
     "portalUrl": "URL del portale",
     "urlCopied": "URL del portale copiato",
-    "shareHint": "Condividi questo link con i tuoi clienti per permettere loro di accedere al portale."
+    "shareHint": "Condividi questo link con i tuoi clienti per permettere loro di accedere al portale.",
+    "descriptionLabel": "La tua officina",
+    "descriptionPlaceholder": "Racconta ai clienti qualcosa sulla tua officina, i servizi che offri e ciò che ti rende unico.",
+    "descriptionHint": "Mostrato ai visitatori in cima alla pagina del portale.",
+    "hoursLabel": "Orari di apertura",
+    "hoursPlaceholder": "Lun-Ven: 8:00-17:00\nSab: 9:00-13:00\nDom: Chiuso",
+    "hoursHint": "Testo libero. Usa interruzioni di riga per elencare ogni giorno separatamente.",
+    "contentSaved": "Contenuto del portale salvato"
   },
   "email": {
     "title": "Provider e-mail",

@@ -672,7 +672,7 @@
     "languageDescription": "Uygulamanın görüntüleme dilini seçin.",
     "language": "Dil",
     "forceCustomerLocale": "Bu dili müşteriye yönelik sayfalarda zorla",
-    "forceCustomerLocaleHint": "Etkinleştirildiğinde, paylaşılan faturaları, teklifleri ve incelemeleri görüntüleyen müşteriler bunları, tarayıcı ayarlarından bağımsız olarak atölyenizin dilinde görür. Devre dışı bırakıldığında, müşteriler sayfaları tarayıcılarında yapılandırılan dilde görür.",
+    "forceCustomerLocaleHint": "Etkinleştirildiğinde, müşteri portalı ve paylaşılan faturalar, teklifler ve incelemeler, ziyaretçinin tarayıcı ayarlarından bağımsız olarak atölyenizin dilinde görüntülenir. Devre dışı bırakıldığında, müşteriye yönelik sayfalar ziyaretçinin tarayıcı dilini kullanır.",
     "saved": "Yerelleştirme ayarları kaydedildi",
     "saveSettings": "Ayarları kaydet"
   },
@@ -914,7 +914,14 @@
     "slugHint": "Küçük harfler, sayılar, tireler ve alt çizgiler. 3-48 karakter. Varsayılan URL'yi kullanmak için boş bırakın.",
     "portalUrl": "Portal URL'si",
     "urlCopied": "Portal URL'si kopyalandı",
-    "shareHint": "Bu bağlantıyı müşterilerinizle paylaşarak portallarına giriş yapmalarını sağlayın."
+    "shareHint": "Bu bağlantıyı müşterilerinizle paylaşarak portallarına giriş yapmalarını sağlayın.",
+    "descriptionLabel": "Servisiniz hakkında",
+    "descriptionPlaceholder": "Müşterilerinize servisinizi, sunduğunuz hizmetleri ve sizi özel kılan şeyi anlatın.",
+    "descriptionHint": "Ziyaretçilere portal ana sayfanızın üst kısmında gösterilir.",
+    "hoursLabel": "Çalışma saatleri",
+    "hoursPlaceholder": "Pzt-Cum: 8:00-17:00\nCmt: 9:00-13:00\nPaz: Kapalı",
+    "hoursHint": "Serbest metin. Her günü ayrı listelemek için satır sonu kullanın.",
+    "contentSaved": "Portal içeriği kaydedildi"
   },
   "email": {
     "title": "E-posta Sağlayıcısı",

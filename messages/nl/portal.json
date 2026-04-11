@@ -1,6 +1,24 @@
 {
+  "directory": {
+    "title": "Vind uw werkplaats",
+    "description": "Kies hieronder uw werkplaats om naar het klantenportaal te gaan.",
+    "searchPlaceholder": "Werkplaatsen zoeken…",
+    "noWorkshops": "Er zijn momenteel geen werkplaatsen beschikbaar.",
+    "noResults": "Geen werkplaatsen gevonden voor uw zoekopdracht.",
+    "openPortal": "Portaal openen"
+  },
+  "landing": {
+    "contactTitle": "Neem contact op",
+    "aboutTitle": "Over ons",
+    "noContactInfo": "Contactgegevens zijn nog niet beschikbaar.",
+    "address": "Adres",
+    "phone": "Telefoon",
+    "email": "E-mail",
+    "hours": "Openingstijden"
+  },
   "login": {
-    "signInTitle": "Aanmelden bij uw klantenportaal",
+    "signInTitle": "Klantlogin",
+    "signInSubtitle": "Log in om uw facturen, offertes en servicegeschiedenis te bekijken.",
     "emailLabel": "E-mailadres",
     "emailPlaceholder": "u@voorbeeld.nl",
     "sendLink": "Aanmeldlink versturen",

@@ -672,7 +672,7 @@
     "languageDescription": "Kies de weergavetaal van de applicatie.",
     "language": "Taal",
     "forceCustomerLocale": "Forceer deze taal op klantgerichte pagina's",
-    "forceCustomerLocaleHint": "Wanneer ingeschakeld, zien klanten die gedeelde facturen, offertes en inspecties bekijken deze in de taal van uw werkplaats, ongeacht hun browserinstellingen. Wanneer uitgeschakeld, zien klanten de pagina's in de taal die in hun browser is ingesteld.",
+    "forceCustomerLocaleHint": "Wanneer ingeschakeld, verschijnen het klantenportaal en gedeelde facturen, offertes en inspecties in de taal van uw werkplaats, ongeacht de browserinstellingen van de bezoeker. Wanneer uitgeschakeld, volgen klantgerichte pagina's de browsertaal van de bezoeker.",
     "saved": "Lokalisatie-instellingen opgeslagen",
     "saveSettings": "Instellingen opslaan"
   },
@@ -914,7 +914,14 @@
     "slugHint": "Kleine letters, cijfers, koppeltekens en underscores. 3-48 tekens. Laat leeg om de standaard-URL te gebruiken.",
     "portalUrl": "Portaal-URL",
     "urlCopied": "Portaal-URL gekopieerd",
-    "shareHint": "Deel deze link met uw klanten zodat ze kunnen inloggen op hun portaal."
+    "shareHint": "Deel deze link met uw klanten zodat ze kunnen inloggen op hun portaal.",
+    "descriptionLabel": "Over uw werkplaats",
+    "descriptionPlaceholder": "Vertel klanten iets over uw werkplaats, de diensten die u aanbiedt en wat u uniek maakt.",
+    "descriptionHint": "Wordt aan bezoekers getoond bovenaan uw portaalpagina.",
+    "hoursLabel": "Openingstijden",
+    "hoursPlaceholder": "Ma-Vr: 8:00-17:00\nZa: 9:00-13:00\nZo: Gesloten",
+    "hoursHint": "Vrije tekst. Gebruik regeleinden om elke dag apart te vermelden.",
+    "contentSaved": "Portaalinhoud opgeslagen"
   },
   "email": {
     "title": "E-mailprovider",

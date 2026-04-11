@@ -1,6 +1,24 @@
 {
+  "directory": {
+    "title": "Encuentra tu taller",
+    "description": "Elige tu taller a continuación para acceder al portal de clientes.",
+    "searchPlaceholder": "Buscar talleres…",
+    "noWorkshops": "Actualmente no hay talleres disponibles.",
+    "noResults": "Ningún taller coincide con tu búsqueda.",
+    "openPortal": "Abrir portal"
+  },
+  "landing": {
+    "contactTitle": "Contáctanos",
+    "aboutTitle": "Sobre nosotros",
+    "noContactInfo": "Los datos de contacto aún no están disponibles.",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "hours": "Horario de apertura"
+  },
   "login": {
-    "signInTitle": "Inicie sesión en su portal de clientes",
+    "signInTitle": "Acceso de clientes",
+    "signInSubtitle": "Inicia sesión para ver tus facturas, presupuestos e historial de servicio.",
     "emailLabel": "Dirección de correo electrónico",
     "emailPlaceholder": "usted@ejemplo.com",
     "sendLink": "Enviar enlace de acceso",

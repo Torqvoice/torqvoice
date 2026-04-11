@@ -672,7 +672,7 @@
     "languageDescription": "Wählen Sie die Anzeigesprache der Anwendung.",
     "language": "Sprache",
     "forceCustomerLocale": "Diese Sprache für kundenseitige Seiten erzwingen",
-    "forceCustomerLocaleHint": "Wenn aktiviert, sehen Kunden geteilte Rechnungen, Angebote und Inspektionen in der Sprache Ihrer Werkstatt, unabhängig von ihren Browsereinstellungen. Wenn deaktiviert, sehen Kunden die Seiten in der in ihrem Browser konfigurierten Sprache.",
+    "forceCustomerLocaleHint": "Wenn aktiviert, erscheinen das Kundenportal sowie geteilte Rechnungen, Angebote und Inspektionen in der Sprache Ihrer Werkstatt, unabhängig von den Browsereinstellungen des Besuchers. Wenn deaktiviert, folgen kundenseitige Seiten der Browsersprache des Besuchers.",
     "saved": "Lokalisierungseinstellungen gespeichert",
     "saveSettings": "Einstellungen speichern"
   },
@@ -914,7 +914,14 @@
     "slugHint": "Kleinbuchstaben, Zahlen, Bindestriche und Unterstriche. 3-48 Zeichen. Leer lassen, um die Standard-URL zu verwenden.",
     "portalUrl": "Portal-URL",
     "urlCopied": "Portal-URL kopiert",
-    "shareHint": "Teilen Sie diesen Link mit Ihren Kunden, damit sie sich in ihr Portal einloggen konnen."
+    "shareHint": "Teilen Sie diesen Link mit Ihren Kunden, damit sie sich in ihr Portal einloggen konnen.",
+    "descriptionLabel": "Über Ihre Werkstatt",
+    "descriptionPlaceholder": "Erzählen Sie Ihren Kunden etwas über Ihre Werkstatt, die angebotenen Leistungen und was Sie auszeichnet.",
+    "descriptionHint": "Wird Besuchern oben auf Ihrer Portal-Startseite angezeigt.",
+    "hoursLabel": "Öffnungszeiten",
+    "hoursPlaceholder": "Mo-Fr: 8:00-17:00\nSa: 9:00-13:00\nSo: Geschlossen",
+    "hoursHint": "Freitext. Verwenden Sie Zeilenumbrüche, um jeden Tag separat aufzulisten.",
+    "contentSaved": "Portalinhalt gespeichert"
   },
   "email": {
     "title": "E-Mail-Anbieter",

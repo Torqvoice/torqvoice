@@ -1,6 +1,24 @@
 {
+  "directory": {
+    "title": "Finden Sie Ihre Werkstatt",
+    "description": "Wählen Sie unten Ihre Werkstatt, um auf das Kundenportal zuzugreifen.",
+    "searchPlaceholder": "Werkstätten suchen…",
+    "noWorkshops": "Derzeit sind keine Werkstätten verfügbar.",
+    "noResults": "Keine Werkstatt entspricht Ihrer Suche.",
+    "openPortal": "Portal öffnen"
+  },
+  "landing": {
+    "contactTitle": "Kontakt",
+    "aboutTitle": "Über uns",
+    "noContactInfo": "Kontaktdaten sind noch nicht verfügbar.",
+    "address": "Adresse",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "hours": "Öffnungszeiten"
+  },
   "login": {
-    "signInTitle": "Melden Sie sich bei Ihrem Kundenportal an",
+    "signInTitle": "Kundenanmeldung",
+    "signInSubtitle": "Melden Sie sich an, um Rechnungen, Angebote und Servicehistorie zu sehen.",
     "emailLabel": "E-Mail-Adresse",
     "emailPlaceholder": "sie@beispiel.de",
     "sendLink": "Anmeldelink senden",

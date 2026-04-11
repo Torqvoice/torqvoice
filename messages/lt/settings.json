@@ -672,7 +672,7 @@
     "languageDescription": "Pasirinkite programos rodymo kalbą.",
     "language": "Kalba",
     "forceCustomerLocale": "Priverstinai naudoti šią kalbą klientams matomuose puslapiuose",
-    "forceCustomerLocaleHint": "Kai įjungta, klientai, peržiūrintys bendrinas sąskaitas, pasiūlymus ir apžiūras, matys juos jūsų dirbtuvių kalba, nepriklausomai nuo naršyklės nustatymų. Kai išjungta, klientai mato puslapius savo naršyklėje nustatyta kalba.",
+    "forceCustomerLocaleHint": "Kai įjungta, klientų portalas ir bendrinos sąskaitos, pasiūlymai bei apžiūros rodomi jūsų dirbtuvių kalba, nepriklausomai nuo lankytojo naršyklės nustatymų. Kai išjungta, klientams skirti puslapiai naudoja lankytojo naršyklės kalbą.",
     "saved": "Lokalizacijos nustatymai išsaugoti",
     "saveSettings": "Išsaugoti nustatymus"
   },
@@ -914,7 +914,14 @@
     "slugHint": "Mažosios raidės, skaičiai, brūkšneliai ir pabraukimai. 3–48 simboliai. Palikite tuščią, kad naudotumėte numatytąjį URL.",
     "portalUrl": "Portalo URL",
     "urlCopied": "Portalo URL nukopijuotas",
-    "shareHint": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti prie savo portalo."
+    "shareHint": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti prie savo portalo.",
+    "descriptionLabel": "Apie jūsų dirbtuves",
+    "descriptionPlaceholder": "Papasakokite klientams apie savo dirbtuves, siūlomas paslaugas ir kuo esate unikalūs.",
+    "descriptionHint": "Rodoma lankytojams jūsų portalo pradžios puslapio viršuje.",
+    "hoursLabel": "Darbo laikas",
+    "hoursPlaceholder": "Pir-Pen: 8:00-17:00\nŠeš: 9:00-13:00\nSek: Uždaryta",
+    "hoursHint": "Laisvas tekstas. Naudokite naujas eilutes, kad nurodytumėte kiekvieną dieną atskirai.",
+    "contentSaved": "Portalo turinys išsaugotas"
   },
   "email": {
     "title": "El. pašto tiekėjas",

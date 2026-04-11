@@ -672,7 +672,7 @@
     "languageDescription": "Choisissez la langue d'affichage de l'application.",
     "language": "Langue",
     "forceCustomerLocale": "Forcer cette langue sur les pages destinées aux clients",
-    "forceCustomerLocaleHint": "Lorsqu'il est activé, les clients consultant les factures, devis et inspections partagés les verront dans la langue de votre atelier, quels que soient les paramètres de leur navigateur. Lorsqu'il est désactivé, les clients voient les pages dans la langue configurée dans leur navigateur.",
+    "forceCustomerLocaleHint": "Lorsqu'il est activé, le portail client et les factures, devis et inspections partagés s'affichent dans la langue de votre atelier, quels que soient les paramètres du navigateur du visiteur. Lorsqu'il est désactivé, les pages destinées aux clients suivent la langue du navigateur du visiteur.",
     "saved": "Paramètres de localisation enregistrés",
     "saveSettings": "Enregistrer les paramètres"
   },
@@ -914,7 +914,14 @@
     "slugHint": "Lettres minuscules, chiffres, tirets et underscores. 3-48 caracteres. Laissez vide pour utiliser l'URL par defaut.",
     "portalUrl": "URL du portail",
     "urlCopied": "URL du portail copiee",
-    "shareHint": "Partagez ce lien avec vos clients pour qu'ils puissent se connecter a leur portail."
+    "shareHint": "Partagez ce lien avec vos clients pour qu'ils puissent se connecter a leur portail.",
+    "descriptionLabel": "À propos de votre garage",
+    "descriptionPlaceholder": "Présentez votre garage à vos clients : vos services, votre équipe, ce qui vous rend unique.",
+    "descriptionHint": "Affiché aux visiteurs en haut de la page d'accueil de votre portail.",
+    "hoursLabel": "Horaires d'ouverture",
+    "hoursPlaceholder": "Lun-Ven : 8h00-17h00\nSam : 9h00-13h00\nDim : Fermé",
+    "hoursHint": "Texte libre. Utilisez des sauts de ligne pour lister chaque jour séparément.",
+    "contentSaved": "Contenu du portail enregistré"
   },
   "email": {
     "title": "Fournisseur de messagerie",

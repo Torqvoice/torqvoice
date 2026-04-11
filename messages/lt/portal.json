@@ -1,6 +1,24 @@
 {
+  "directory": {
+    "title": "Raskite savo dirbtuves",
+    "description": "Pasirinkite savo dirbtuves žemiau, kad pasiektumėte klientų portalą.",
+    "searchPlaceholder": "Ieškoti dirbtuvių…",
+    "noWorkshops": "Šiuo metu nėra prieinamų dirbtuvių.",
+    "noResults": "Pagal jūsų paiešką nerasta dirbtuvių.",
+    "openPortal": "Atidaryti portalą"
+  },
+  "landing": {
+    "contactTitle": "Susisiekite su mumis",
+    "aboutTitle": "Apie mus",
+    "noContactInfo": "Kontaktiniai duomenys dar nepateikti.",
+    "address": "Adresas",
+    "phone": "Telefonas",
+    "email": "El. paštas",
+    "hours": "Darbo laikas"
+  },
   "login": {
-    "signInTitle": "Prisijunkite prie savo kliento portalo",
+    "signInTitle": "Klientų prisijungimas",
+    "signInSubtitle": "Prisijunkite, kad peržiūrėtumėte sąskaitas, pasiūlymus ir paslaugų istoriją.",
     "emailLabel": "El. pašto adresas",
     "emailPlaceholder": "you@example.com",
     "sendLink": "Siųsti prisijungimo nuorodą",

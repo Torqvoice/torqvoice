@@ -1,6 +1,24 @@
 {
+  "directory": {
+    "title": "Znajdź swój warsztat",
+    "description": "Wybierz swój warsztat poniżej, aby uzyskać dostęp do portalu klienta.",
+    "searchPlaceholder": "Szukaj warsztatów…",
+    "noWorkshops": "Obecnie nie ma dostępnych warsztatów.",
+    "noResults": "Żaden warsztat nie pasuje do wyszukiwania.",
+    "openPortal": "Otwórz portal"
+  },
+  "landing": {
+    "contactTitle": "Skontaktuj się z nami",
+    "aboutTitle": "O nas",
+    "noContactInfo": "Dane kontaktowe nie są jeszcze dostępne.",
+    "address": "Adres",
+    "phone": "Telefon",
+    "email": "E-mail",
+    "hours": "Godziny otwarcia"
+  },
   "login": {
-    "signInTitle": "Zaloguj się do portalu klienta",
+    "signInTitle": "Logowanie klienta",
+    "signInSubtitle": "Zaloguj się, aby zobaczyć faktury, oferty i historię serwisową.",
     "emailLabel": "Adres e-mail",
     "emailPlaceholder": "ty@przyklad.pl",
     "sendLink": "Wyślij link do logowania",

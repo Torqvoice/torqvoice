@@ -1,6 +1,24 @@
 {
+  "directory": {
+    "title": "Finn verkstedet ditt",
+    "description": "Velg verkstedet ditt nedenfor for å gå til kundeportalen.",
+    "searchPlaceholder": "Søk etter verksted…",
+    "noWorkshops": "Ingen verksteder er tilgjengelige akkurat nå.",
+    "noResults": "Ingen verksteder samsvarer med søket.",
+    "openPortal": "Åpne portal"
+  },
+  "landing": {
+    "contactTitle": "Kontakt oss",
+    "aboutTitle": "Om oss",
+    "noContactInfo": "Kontaktinformasjon er ikke tilgjengelig ennå.",
+    "address": "Adresse",
+    "phone": "Telefon",
+    "email": "E-post",
+    "hours": "Åpningstider"
+  },
   "login": {
-    "signInTitle": "Logg inn på kundeportalen din",
+    "signInTitle": "Kundeinnlogging",
+    "signInSubtitle": "Logg inn for å se fakturaer, tilbud og servicehistorikk.",
     "emailLabel": "E-postadresse",
     "emailPlaceholder": "deg@eksempel.com",
     "sendLink": "Send innloggingslenke",

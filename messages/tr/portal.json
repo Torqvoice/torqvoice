@@ -1,6 +1,24 @@
 {
+  "directory": {
+    "title": "Servisinizi bulun",
+    "description": "Müşteri portalına erişmek için aşağıdan servisinizi seçin.",
+    "searchPlaceholder": "Servis ara…",
+    "noWorkshops": "Şu anda kullanılabilir servis yok.",
+    "noResults": "Aramanızla eşleşen servis bulunamadı.",
+    "openPortal": "Portalı aç"
+  },
+  "landing": {
+    "contactTitle": "Bize ulaşın",
+    "aboutTitle": "Hakkımızda",
+    "noContactInfo": "İletişim bilgileri henüz mevcut değil.",
+    "address": "Adres",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "hours": "Çalışma saatleri"
+  },
   "login": {
-    "signInTitle": "Müşteri portalınıza giriş yapın",
+    "signInTitle": "Müşteri girişi",
+    "signInSubtitle": "Faturalarınızı, tekliflerinizi ve servis geçmişinizi görmek için giriş yapın.",
     "emailLabel": "E-posta adresi",
     "emailPlaceholder": "siz@ornek.com",
     "sendLink": "Giriş bağlantısı gönder",

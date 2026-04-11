@@ -1,6 +1,24 @@
 {
+  "directory": {
+    "title": "Find your workshop",
+    "description": "Choose your workshop below to access the customer portal.",
+    "searchPlaceholder": "Search workshops…",
+    "noWorkshops": "No workshops are currently available.",
+    "noResults": "No workshops match your search.",
+    "openPortal": "Open portal"
+  },
+  "landing": {
+    "contactTitle": "Contact us",
+    "aboutTitle": "About us",
+    "noContactInfo": "Contact details are not yet available.",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "hours": "Opening hours"
+  },
   "login": {
-    "signInTitle": "Sign in to your customer portal",
+    "signInTitle": "Customer login",
+    "signInSubtitle": "Sign in to view your invoices, quotes, and service history.",
     "emailLabel": "Email address",
     "emailPlaceholder": "you@example.com",
     "sendLink": "Send sign-in link",

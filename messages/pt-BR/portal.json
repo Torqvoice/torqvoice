@@ -1,6 +1,24 @@
 {
+  "directory": {
+    "title": "Encontre sua oficina",
+    "description": "Escolha sua oficina abaixo para acessar o portal do cliente.",
+    "searchPlaceholder": "Buscar oficinas…",
+    "noWorkshops": "Nenhuma oficina está disponível no momento.",
+    "noResults": "Nenhuma oficina corresponde à sua busca.",
+    "openPortal": "Abrir portal"
+  },
+  "landing": {
+    "contactTitle": "Fale conosco",
+    "aboutTitle": "Sobre nós",
+    "noContactInfo": "As informações de contato ainda não estão disponíveis.",
+    "address": "Endereço",
+    "phone": "Telefone",
+    "email": "E-mail",
+    "hours": "Horário de funcionamento"
+  },
   "login": {
-    "signInTitle": "Entre no seu portal do cliente",
+    "signInTitle": "Acesso do cliente",
+    "signInSubtitle": "Entre para ver suas faturas, orçamentos e histórico de serviço.",
     "emailLabel": "Endereço de e-mail",
     "emailPlaceholder": "voce@exemplo.com",
     "sendLink": "Enviar link de acesso",

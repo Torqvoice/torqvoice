@@ -1,18 +1,18 @@
-import { getLayoutData } from "@/lib/get-layout-data";
-import { getFeatures, isCloudMode } from "@/lib/features";
-import { FeatureLockedMessage } from "../feature-locked-message";
-import { CustomerPortalSettings } from "@/features/portal/Components/CustomerPortalSettings";
-import { redirect } from "next/navigation";
-import { db } from "@/lib/db";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { getLayoutData } from '@/lib/get-layout-data'
+import { getFeatures, isCloudMode } from '@/lib/features'
+import { FeatureLockedMessage } from '../feature-locked-message'
+import { CustomerPortalSettings } from '@/features/portal/Components/CustomerPortalSettings'
+import { redirect } from 'next/navigation'
+import { db } from '@/lib/db'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
 export default async function CustomerPortalSettingsPage() {
-  const data = await getLayoutData();
+  const data = await getLayoutData()
 
-  if (data.status === "unauthenticated") redirect("/auth/sign-in");
-  if (data.status === "no-organization") redirect("/onboarding");
+  if (data.status === 'unauthenticated') redirect('/auth/sign-in')
+  if (data.status === 'no-organization') redirect('/onboarding')
 
-  const features = await getFeatures(data.organizationId);
+  const features = await getFeatures(data.organizationId)
 
   if (!features.customerPortal) {
     return (
@@ -21,36 +21,43 @@ export default async function CustomerPortalSettingsPage() {
         description="Give your customers a self-service portal to view invoices, quotes, inspections, and request service."
         isCloud={isCloudMode()}
       />
-    );
+    )
   }
 
-  const [setting, org] = await Promise.all([
-    db.appSetting.findUnique({
+  const [settings, org] = await Promise.all([
+    db.appSetting.findMany({
       where: {
-        organizationId_key: {
-          organizationId: data.organizationId,
-          key: SETTING_KEYS.PORTAL_ENABLED,
+        organizationId: data.organizationId,
+        key: {
+          in: [
+            SETTING_KEYS.PORTAL_ENABLED,
+            SETTING_KEYS.PORTAL_DESCRIPTION,
+            SETTING_KEYS.PORTAL_HOURS,
+          ],
         },
       },
+      select: { key: true, value: true },
     }),
     db.organization.findUnique({
       where: { id: data.organizationId },
       select: { portalSlug: true },
     }),
-  ]);
+  ])
+
+  const settingMap = new Map(settings.map((s) => [s.key, s.value]))
 
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000");
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
 
   return (
     <CustomerPortalSettings
-      enabled={setting?.value === "true"}
+      enabled={settingMap.get(SETTING_KEYS.PORTAL_ENABLED) === 'true'}
       orgId={data.organizationId}
       portalSlug={org?.portalSlug ?? null}
       appUrl={appUrl}
+      description={settingMap.get(SETTING_KEYS.PORTAL_DESCRIPTION) ?? ''}
+      hours={settingMap.get(SETTING_KEYS.PORTAL_HOURS) ?? ''}
     />
-  );
+  )
 }

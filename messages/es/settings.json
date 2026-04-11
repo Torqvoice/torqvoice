@@ -672,7 +672,7 @@
     "languageDescription": "Elija el idioma de visualización de la aplicación.",
     "language": "Idioma",
     "forceCustomerLocale": "Forzar este idioma en las páginas dirigidas al cliente",
-    "forceCustomerLocaleHint": "Cuando está activado, los clientes que vean facturas, presupuestos e inspecciones compartidas los verán en el idioma de su taller, independientemente de la configuración de su navegador. Cuando está desactivado, los clientes ven las páginas en el idioma configurado en su navegador.",
+    "forceCustomerLocaleHint": "Cuando está activado, el portal de clientes y las facturas, presupuestos e inspecciones compartidas aparecen en el idioma de su taller, independientemente de la configuración del navegador del visitante. Cuando está desactivado, las páginas para clientes siguen el idioma del navegador del visitante.",
     "saved": "Configuración de localización guardada",
     "saveSettings": "Guardar configuración"
   },
@@ -914,7 +914,14 @@
     "slugHint": "Letras minusculas, numeros, guiones y guiones bajos. 3-48 caracteres. Dejar vacio para usar la URL predeterminada.",
     "portalUrl": "URL del portal",
     "urlCopied": "URL del portal copiada",
-    "shareHint": "Comparta este enlace con sus clientes para que puedan iniciar sesion en su portal."
+    "shareHint": "Comparta este enlace con sus clientes para que puedan iniciar sesion en su portal.",
+    "descriptionLabel": "Sobre tu taller",
+    "descriptionPlaceholder": "Cuenta a tus clientes algo sobre tu taller, los servicios que ofreces y lo que te hace único.",
+    "descriptionHint": "Se muestra a los visitantes en la parte superior de la página de tu portal.",
+    "hoursLabel": "Horario de apertura",
+    "hoursPlaceholder": "Lun-Vie: 8:00-17:00\nSab: 9:00-13:00\nDom: Cerrado",
+    "hoursHint": "Texto libre. Usa saltos de línea para listar cada día por separado.",
+    "contentSaved": "Contenido del portal guardado"
   },
   "email": {
     "title": "Proveedor de correo",
