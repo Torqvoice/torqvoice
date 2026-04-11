@@ -30,6 +30,7 @@
     "tabSms": "SMS",
     "phoneLabel": "Telefon numarası",
     "phonePlaceholder": "+90 5123456789",
+    "phoneLocalPlaceholder": "5123456789",
     "sendCode": "Kod gönder",
     "codeSentTitle": "Gönderdiğimiz kodu girin",
     "codeSentDescription": "Bir hesapla eşleşiyorsa {phone} numarasına 6 haneli bir kod gönderdik.",

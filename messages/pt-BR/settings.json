@@ -673,6 +673,9 @@
     "language": "Idioma",
     "forceCustomerLocale": "Forçar este idioma nas páginas voltadas ao cliente",
     "forceCustomerLocaleHint": "Quando ativado, o portal do cliente e as faturas, orçamentos e inspeções compartilhadas aparecem no idioma da sua oficina, independentemente das configurações do navegador do visitante. Quando desativado, as páginas voltadas aos clientes seguem o idioma do navegador do visitante.",
+    "defaultCountryCode": "Código de país padrão",
+    "defaultCountryCodeHint": "Usado quando os clientes fazem login no portal por SMS — aplicado a números de telefone sem código de país (seus ou do cliente). Formato: + seguido de dígitos, ex: +55.",
+    "defaultCountryCodeInvalid": "Digite um código de país válido, ex: +55, 55 ou 0055.",
     "saved": "Configurações de localização salvas",
     "saveSettings": "Salvar configurações"
   },

@@ -14,9 +14,15 @@ type PortalLoginFormProps = {
   orgId: string
   error?: string
   smsEnabled: boolean
+  defaultCountryCode: string | null
 }
 
-export function PortalLoginForm({ orgId, error, smsEnabled }: PortalLoginFormProps) {
+export function PortalLoginForm({
+  orgId,
+  error,
+  smsEnabled,
+  defaultCountryCode,
+}: PortalLoginFormProps) {
   const t = useTranslations('portal.login')
 
   return (
@@ -41,7 +47,7 @@ export function PortalLoginForm({ orgId, error, smsEnabled }: PortalLoginFormPro
               <EmailLoginForm orgId={orgId} />
             </TabsContent>
             <TabsContent value="sms" className="mt-4">
-              <SmsLoginForm orgId={orgId} />
+              <SmsLoginForm orgId={orgId} defaultCountryCode={defaultCountryCode} />
             </TabsContent>
           </Tabs>
         ) : (
@@ -113,15 +119,28 @@ function EmailLoginForm({ orgId }: { orgId: string }) {
   )
 }
 
-function SmsLoginForm({ orgId }: { orgId: string }) {
+function SmsLoginForm({
+  orgId,
+  defaultCountryCode,
+}: {
+  orgId: string
+  defaultCountryCode: string | null
+}) {
   const t = useTranslations('portal.login')
   const router = useRouter()
   const [step, setStep] = useState<'phone' | 'code'>('phone')
+  // When a country code is set, `phone` holds only the local digits.
+  // When not set, `phone` holds the full E.164 number the user types.
   const [phone, setPhone] = useState('')
   const [code, setCode] = useState('')
   const [verifyError, setVerifyError] = useState<string | null>(null)
   const [isRequestPending, startRequestTransition] = useTransition()
   const [isVerifyPending, startVerifyTransition] = useTransition()
+
+  // The full phone we send to the server. The server normalizes again as a
+  // safety net, but pre-joining here makes the UI explicit about what's
+  // being sent.
+  const fullPhone = defaultCountryCode ? `${defaultCountryCode}${phone}` : phone
 
   const handleRequest = (e: React.FormEvent) => {
     e.preventDefault()
@@ -131,7 +150,7 @@ function SmsLoginForm({ orgId }: { orgId: string }) {
         await fetch(`/api/public/portal/${orgId}/auth/sms-request`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone }),
+          body: JSON.stringify({ phone: fullPhone }),
         })
       } catch {
         // Ignore network errors and still advance to step 2; we don't want to
@@ -149,7 +168,7 @@ function SmsLoginForm({ orgId }: { orgId: string }) {
         const res = await fetch(`/api/public/portal/${orgId}/auth/sms-verify`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, code }),
+          body: JSON.stringify({ phone: fullPhone, code }),
         })
         const data = (await res.json().catch(() => ({}))) as {
           success?: boolean
@@ -173,7 +192,7 @@ function SmsLoginForm({ orgId }: { orgId: string }) {
         <div className="text-center">
           <h3 className="text-lg font-semibold">{t('codeSentTitle')}</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            {t('codeSentDescription', { phone })}
+            {t('codeSentDescription', { phone: fullPhone })}
           </p>
         </div>
         <div className="space-y-2">
@@ -220,16 +239,35 @@ function SmsLoginForm({ orgId }: { orgId: string }) {
     <form onSubmit={handleRequest} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="sms-phone">{t('phoneLabel')}</Label>
-        <Input
-          id="sms-phone"
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          placeholder={t('phonePlaceholder')}
-          required
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
+        {defaultCountryCode ? (
+          <div className="flex items-center rounded-md border border-input bg-background focus-within:ring-1 focus-within:ring-ring">
+            <span className="select-none border-r border-input px-3 py-2 text-sm text-muted-foreground">
+              {defaultCountryCode}
+            </span>
+            <input
+              id="sms-phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel-national"
+              placeholder={t('phoneLocalPlaceholder')}
+              required
+              value={phone}
+              onChange={(e) => setPhone(e.target.value.replace(/[^\d]/g, ''))}
+              className="w-full bg-transparent px-3 py-2 text-sm outline-none"
+            />
+          </div>
+        ) : (
+          <Input
+            id="sms-phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            placeholder={t('phonePlaceholder')}
+            required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+        )}
       </div>
       <Button type="submit" className="w-full" disabled={isRequestPending}>
         {isRequestPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

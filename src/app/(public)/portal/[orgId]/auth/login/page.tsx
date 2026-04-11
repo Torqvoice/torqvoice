@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { getTranslations } from 'next-intl/server'
 import { getOrgSmsProvider } from '@/lib/sms'
+import { normalizeCountryCode } from '@/lib/portal-phone'
 import {
   isValidPortalBackgroundType,
   type PortalBackgroundType,
@@ -58,12 +59,15 @@ export default async function PortalLoginPage({
           SETTING_KEYS.PORTAL_BACKGROUND_TYPE,
           SETTING_KEYS.PORTAL_BACKGROUND_TEMPLATE,
           SETTING_KEYS.PORTAL_BACKGROUND_IMAGE,
+          SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE,
         ],
       },
     },
     select: { key: true, value: true },
   })
   const get = (key: string) => settings.find((s) => s.key === key)?.value ?? null
+
+  const countryCode = normalizeCountryCode(get(SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE))
 
   const rawBgType = get(SETTING_KEYS.PORTAL_BACKGROUND_TYPE)
   const backgroundType: PortalBackgroundType = isValidPortalBackgroundType(rawBgType)
@@ -106,6 +110,7 @@ export default async function PortalLoginPage({
         get(SETTING_KEYS.PORTAL_BACKGROUND_IMAGE) ? `/api/public/portal-bg/${orgParam}` : null
       }
       smsEnabled={smsEnabled}
+      defaultCountryCode={countryCode}
     />
   )
 }

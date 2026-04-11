@@ -30,6 +30,7 @@
     "tabSms": "SMS",
     "phoneLabel": "Número de teléfono",
     "phonePlaceholder": "+34 612345678",
+    "phoneLocalPlaceholder": "612345678",
     "sendCode": "Enviar código",
     "codeSentTitle": "Introduce el código que enviamos",
     "codeSentDescription": "Enviamos un código de 6 dígitos a {phone} si coincide con una cuenta.",

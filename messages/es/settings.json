@@ -673,6 +673,9 @@
     "language": "Idioma",
     "forceCustomerLocale": "Forzar este idioma en las páginas dirigidas al cliente",
     "forceCustomerLocaleHint": "Cuando está activado, el portal de clientes y las facturas, presupuestos e inspecciones compartidas aparecen en el idioma de su taller, independientemente de la configuración del navegador del visitante. Cuando está desactivado, las páginas para clientes siguen el idioma del navegador del visitante.",
+    "defaultCountryCode": "Código de país predeterminado",
+    "defaultCountryCodeHint": "Se usa cuando los clientes inician sesión en el portal por SMS — se aplica a los números de teléfono que no incluyen el código de país (suyos o del cliente). Formato: + seguido de dígitos, por ejemplo +34.",
+    "defaultCountryCodeInvalid": "Introduce un código de país válido, por ejemplo +34, 34 o 0034.",
     "saved": "Configuración de localización guardada",
     "saveSettings": "Guardar configuración"
   },

@@ -5,6 +5,8 @@ import { db } from '@/lib/db'
 import { rateLimit } from '@/lib/rate-limit'
 import { CUSTOMER_SESSION_COOKIE, CUSTOMER_SESSION_DURATION } from '@/lib/customer-session'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { getPhoneLookupVariants, normalizePortalPhone } from '@/lib/portal-phone'
 
 export async function POST(request: Request, { params }: { params: Promise<{ orgId: string }> }) {
   const rateLimitResponse = rateLimit(request, { limit: 5, windowMs: 60_000 })
@@ -33,9 +35,29 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
 
     const orgId = org.id
 
+    // Normalize the phone with the workshop's default country code so the
+    // lookup matches what sms-request stored (always E.164).
+    const countrySetting = await db.appSetting.findUnique({
+      where: {
+        organizationId_key: {
+          organizationId: orgId,
+          key: SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE,
+        },
+      },
+      select: { value: true },
+    })
+    const defaultCountryCode = countrySetting?.value ?? null
+    const e164 = normalizePortalPhone(phone, defaultCountryCode)
+    if (!e164) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or expired code' },
+        { status: 400 }
+      )
+    }
+
     const codeRow = await db.customerSmsCode.findFirst({
       where: {
-        phone,
+        phone: e164,
         code,
         organizationId: orgId,
         usedAt: null,
@@ -57,11 +79,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
       data: { usedAt: new Date() },
     })
 
-    // Find the customer
+    // Find the customer — try the same variants as sms-request so legacy
+    // records without country codes still resolve.
+    const phoneVariants = getPhoneLookupVariants(e164, defaultCountryCode)
     const customer = await db.customer.findFirst({
       where: {
-        phone,
         organizationId: orgId,
+        phone: { in: phoneVariants },
       },
       select: { id: true },
     })

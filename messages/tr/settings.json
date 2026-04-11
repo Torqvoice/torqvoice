@@ -673,6 +673,9 @@
     "language": "Dil",
     "forceCustomerLocale": "Bu dili müşteriye yönelik sayfalarda zorla",
     "forceCustomerLocaleHint": "Etkinleştirildiğinde, müşteri portalı ve paylaşılan faturalar, teklifler ve incelemeler, ziyaretçinin tarayıcı ayarlarından bağımsız olarak atölyenizin dilinde görüntülenir. Devre dışı bırakıldığında, müşteriye yönelik sayfalar ziyaretçinin tarayıcı dilini kullanır.",
+    "defaultCountryCode": "Varsayılan ülke kodu",
+    "defaultCountryCodeHint": "Müşteriler portala SMS ile giriş yaptığında kullanılır — ülke kodu olmayan telefon numaralarına (sizin veya müşterinin) eklenir. Format: + ve rakamlar, örn. +90.",
+    "defaultCountryCodeInvalid": "Geçerli bir ülke kodu girin, örn. +90, 90 veya 0090.",
     "saved": "Yerelleştirme ayarları kaydedildi",
     "saveSettings": "Ayarları kaydet"
   },

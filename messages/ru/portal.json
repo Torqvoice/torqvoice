@@ -30,6 +30,7 @@
     "tabSms": "СМС",
     "phoneLabel": "Номер телефона",
     "phonePlaceholder": "+7 9123456789",
+    "phoneLocalPlaceholder": "9123456789",
     "sendCode": "Отправить код",
     "codeSentTitle": "Введите отправленный код",
     "codeSentDescription": "Мы отправили 6-значный код на {phone}, если этот номер привязан к аккаунту.",

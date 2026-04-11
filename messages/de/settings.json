@@ -673,6 +673,9 @@
     "language": "Sprache",
     "forceCustomerLocale": "Diese Sprache für kundenseitige Seiten erzwingen",
     "forceCustomerLocaleHint": "Wenn aktiviert, erscheinen das Kundenportal sowie geteilte Rechnungen, Angebote und Inspektionen in der Sprache Ihrer Werkstatt, unabhängig von den Browsereinstellungen des Besuchers. Wenn deaktiviert, folgen kundenseitige Seiten der Browsersprache des Besuchers.",
+    "defaultCountryCode": "Standard-Ländervorwahl",
+    "defaultCountryCodeHint": "Wird verwendet, wenn Kunden sich per SMS am Portal anmelden — ergänzt Telefonnummern ohne Vorwahl (Ihre oder die des Kunden). Format: + gefolgt von Ziffern, z. B. +49.",
+    "defaultCountryCodeInvalid": "Geben Sie eine gültige Ländervorwahl ein, z. B. +49, 49 oder 0049.",
     "saved": "Lokalisierungseinstellungen gespeichert",
     "saveSettings": "Einstellungen speichern"
   },

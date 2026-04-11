@@ -22,6 +22,7 @@ export type PortalLandingProps = {
   backgroundTemplateId: string | null
   backgroundImageUrl: string | null
   smsEnabled: boolean
+  defaultCountryCode: string | null
 }
 
 export async function PortalLanding({
@@ -38,6 +39,7 @@ export async function PortalLanding({
   backgroundTemplateId,
   backgroundImageUrl,
   smsEnabled,
+  defaultCountryCode,
 }: PortalLandingProps) {
   const t = await getTranslations('portal.landing')
 
@@ -154,7 +156,12 @@ export async function PortalLanding({
           </div>
 
           <div className="lg:col-span-2">
-            <PortalLoginForm orgId={orgId} error={authError} smsEnabled={smsEnabled} />
+            <PortalLoginForm
+              orgId={orgId}
+              error={authError}
+              smsEnabled={smsEnabled}
+              defaultCountryCode={defaultCountryCode}
+            />
           </div>
         </div>
       </div>

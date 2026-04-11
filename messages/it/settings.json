@@ -673,6 +673,9 @@
     "language": "Lingua",
     "forceCustomerLocale": "Forza questa lingua sulle pagine rivolte al cliente",
     "forceCustomerLocaleHint": "Quando attivato, il portale clienti e le fatture, i preventivi e le ispezioni condivise vengono mostrati nella lingua della tua officina, indipendentemente dalle impostazioni del browser del visitatore. Quando disattivato, le pagine rivolte ai clienti seguono la lingua del browser del visitatore.",
+    "defaultCountryCode": "Prefisso paese predefinito",
+    "defaultCountryCodeHint": "Usato quando i clienti accedono al portale tramite SMS — applicato ai numeri di telefono senza prefisso paese (il tuo o quello del cliente). Formato: + seguito da cifre, ad es. +39.",
+    "defaultCountryCodeInvalid": "Inserisci un prefisso paese valido, ad es. +39, 39 o 0039.",
     "saved": "Impostazioni di localizzazione salvate",
     "saveSettings": "Salva impostazioni"
   },

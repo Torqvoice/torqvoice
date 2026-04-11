@@ -673,6 +673,9 @@
     "language": "Język",
     "forceCustomerLocale": "Wymuś ten język na stronach dla klientów",
     "forceCustomerLocaleHint": "Po włączeniu portal klienta oraz udostępnione faktury, oferty i inspekcje wyświetlają się w języku Twojego warsztatu, niezależnie od ustawień przeglądarki odwiedzającego. Gdy wyłączone, strony dla klientów używają języka przeglądarki odwiedzającego.",
+    "defaultCountryCode": "Domyślny kod kraju",
+    "defaultCountryCodeHint": "Używany, gdy klienci logują się do portalu przez SMS — dodawany do numerów telefonów bez kodu kraju (Twojego lub klienta). Format: + i cyfry, np. +48.",
+    "defaultCountryCodeInvalid": "Wpisz prawidłowy kod kraju, np. +48, 48 lub 0048.",
     "saved": "Ustawienia lokalizacji zapisane",
     "saveSettings": "Zapisz ustawienia"
   },

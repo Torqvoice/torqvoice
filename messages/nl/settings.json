@@ -673,6 +673,9 @@
     "language": "Taal",
     "forceCustomerLocale": "Forceer deze taal op klantgerichte pagina's",
     "forceCustomerLocaleHint": "Wanneer ingeschakeld, verschijnen het klantenportaal en gedeelde facturen, offertes en inspecties in de taal van uw werkplaats, ongeacht de browserinstellingen van de bezoeker. Wanneer uitgeschakeld, volgen klantgerichte pagina's de browsertaal van de bezoeker.",
+    "defaultCountryCode": "Standaard landcode",
+    "defaultCountryCodeHint": "Wordt gebruikt wanneer klanten zich via SMS aanmelden bij het portaal — toegepast op telefoonnummers zonder landcode (van u of van de klant). Formaat: + gevolgd door cijfers, bijv. +31.",
+    "defaultCountryCodeInvalid": "Voer een geldige landcode in, bijv. +31, 31 of 0031.",
     "saved": "Lokalisatie-instellingen opgeslagen",
     "saveSettings": "Instellingen opslaan"
   },

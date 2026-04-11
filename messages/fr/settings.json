@@ -673,6 +673,9 @@
     "language": "Langue",
     "forceCustomerLocale": "Forcer cette langue sur les pages destinées aux clients",
     "forceCustomerLocaleHint": "Lorsqu'il est activé, le portail client et les factures, devis et inspections partagés s'affichent dans la langue de votre atelier, quels que soient les paramètres du navigateur du visiteur. Lorsqu'il est désactivé, les pages destinées aux clients suivent la langue du navigateur du visiteur.",
+    "defaultCountryCode": "Indicatif pays par défaut",
+    "defaultCountryCodeHint": "Utilisé lorsque les clients se connectent au portail par SMS — appliqué aux numéros de téléphone sans indicatif pays (le vôtre ou celui du client). Format : + suivi de chiffres, par exemple +33.",
+    "defaultCountryCodeInvalid": "Saisissez un indicatif pays valide, par exemple +33, 33 ou 0033.",
     "saved": "Paramètres de localisation enregistrés",
     "saveSettings": "Enregistrer les paramètres"
   },

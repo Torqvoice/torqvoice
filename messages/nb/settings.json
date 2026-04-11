@@ -673,6 +673,9 @@
     "language": "Språk",
     "forceCustomerLocale": "Tving dette språket på kundesider",
     "forceCustomerLocaleHint": "Når aktivert vises kundeportalen og delte fakturaer, tilbud og inspeksjoner på verkstedets språk uavhengig av besøkendes nettleserinnstillinger. Når deaktivert, følger kundesidene besøkendes nettleserspråk.",
+    "defaultCountryCode": "Standard landskode",
+    "defaultCountryCodeHint": "Brukes når kunder logger inn på portalen via SMS — legges til telefonnummer som mangler landskode (deres eller dine). Format: + etterfulgt av tall, f.eks. +47.",
+    "defaultCountryCodeInvalid": "Skriv inn en gyldig landskode, f.eks. +47, 47 eller 0047.",
     "saved": "Lokaliseringsinnstillinger lagret",
     "saveSettings": "Lagre innstillinger"
   },

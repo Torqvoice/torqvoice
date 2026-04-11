@@ -30,6 +30,7 @@
     "tabSms": "SMS",
     "phoneLabel": "Phone number",
     "phonePlaceholder": "+47 12345678",
+    "phoneLocalPlaceholder": "12345678",
     "sendCode": "Send code",
     "codeSentTitle": "Enter the code we sent",
     "codeSentDescription": "We sent a 6-digit code to {phone} if it matches an account.",

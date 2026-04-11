@@ -30,6 +30,7 @@
     "tabSms": "SMS",
     "phoneLabel": "Telefono numeris",
     "phonePlaceholder": "+370 61234567",
+    "phoneLocalPlaceholder": "61234567",
     "sendCode": "Siųsti kodą",
     "codeSentTitle": "Įveskite mūsų išsiųstą kodą",
     "codeSentDescription": "Jei egzistuoja paskyra, išsiuntėme 6 skaitmenų kodą į {phone}.",

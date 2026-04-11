@@ -17,16 +17,37 @@ function stripPunctuation(input: string): string {
 }
 
 /**
- * Normalize a workshop default country code (e.g. "47", "+47", " +47 ")
- * to the canonical "+47" form. Returns null when the input is not a
- * plausible country code.
+ * Normalize a workshop default country code to the canonical "+XX" form.
+ * Accepts any of these reasonable inputs:
+ *
+ *   "+47"   → "+47"
+ *   "47"    → "+47"
+ *   "0047"  → "+47"   (00 is the international dialing prefix, same as +)
+ *   " +47 " → "+47"
+ *   "+1"    → "+1"
+ *   "+371"  → "+371"  (Latvia, 3-digit code)
+ *
+ * Returns null when the input is empty, all-junk, the wrong shape, or
+ * outside the 1–3 digit range that real ITU E.164 country codes use.
  */
 export function normalizeCountryCode(input: string | null | undefined): string | null {
   if (!input) return null
-  const trimmed = stripPunctuation(input)
-  const withoutPlus = trimmed.replace(/^\+/, '')
-  if (!/^[1-9]\d{0,3}$/.test(withoutPlus)) return null
-  return `+${withoutPlus}`
+  const stripped = stripPunctuation(input)
+  if (!stripped) return null
+
+  // 00 international prefix is equivalent to +
+  let withPlus: string
+  if (stripped.startsWith('+')) {
+    withPlus = stripped
+  } else if (stripped.startsWith('00')) {
+    withPlus = `+${stripped.slice(2)}`
+  } else {
+    withPlus = `+${stripped}`
+  }
+
+  // Real country codes are 1–3 digits and never start with 0.
+  if (!/^\+[1-9]\d{0,2}$/.test(withPlus)) return null
+  return withPlus
 }
 
 /**
@@ -42,7 +63,7 @@ export function normalizeCountryCode(input: string | null | undefined): string |
  */
 export function normalizePortalPhone(
   input: string,
-  defaultCountryCode: string | null,
+  defaultCountryCode: string | null
 ): string | null {
   const stripped = stripPunctuation(input)
   if (!stripped) return null
@@ -75,10 +96,7 @@ export function normalizePortalPhone(
  * We return all plausible variants given a normalized E.164 input plus
  * the workshop's default country code.
  */
-export function getPhoneLookupVariants(
-  e164: string,
-  defaultCountryCode: string | null,
-): string[] {
+export function getPhoneLookupVariants(e164: string, defaultCountryCode: string | null): string[] {
   const variants = new Set<string>()
   variants.add(e164)
 

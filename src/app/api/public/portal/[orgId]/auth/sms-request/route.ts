@@ -31,17 +31,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
 
     const orgId = org.id
 
-    // Check portal is enabled
-    const portalSetting = await db.appSetting.findUnique({
+    // Fetch the relevant org settings in one query.
+    const settings = await db.appSetting.findMany({
       where: {
-        organizationId_key: {
-          organizationId: orgId,
-          key: SETTING_KEYS.PORTAL_ENABLED,
+        organizationId: orgId,
+        key: {
+          in: [SETTING_KEYS.PORTAL_ENABLED, SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE],
         },
       },
+      select: { key: true, value: true },
     })
+    const settingMap = new Map(settings.map((s) => [s.key, s.value]))
 
-    if (portalSetting?.value !== 'true') {
+    if (settingMap.get(SETTING_KEYS.PORTAL_ENABLED) !== 'true') {
       return NextResponse.json({ success: true })
     }
 
@@ -51,16 +53,22 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
       return NextResponse.json({ success: true })
     }
 
-    // Validate phone format - don't leak validation errors
-    if (!isValidE164(phone)) {
+    // Normalize the phone using the workshop's default country code as a
+    // fallback. Customers don't always type the country code, and existing
+    // customer records may not have it stored either.
+    const defaultCountryCode = settingMap.get(SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE) ?? null
+    const e164 = normalizePortalPhone(phone, defaultCountryCode)
+    if (!e164) {
       return NextResponse.json({ success: true })
     }
 
-    // Look up customer
+    // Look up customer trying multiple variants of the phone — covers
+    // legacy records stored without a country code or with a trunk prefix.
+    const phoneVariants = getPhoneLookupVariants(e164, defaultCountryCode)
     const customer = await db.customer.findFirst({
       where: {
-        phone,
         organizationId: orgId,
+        phone: { in: phoneVariants },
       },
       select: { id: true, name: true },
     })
@@ -76,7 +84,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
     await db.customerSmsCode.create({
       data: {
         code,
-        phone,
+        phone: e164,
         organizationId: orgId,
         expiresAt: new Date(Date.now() + 15 * 60 * 1000),
       },
@@ -86,7 +94,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
     // don't leak provider errors to the caller.
     try {
       await sendOrgSms(orgId, {
-        to: phone,
+        to: e164,
         body: `${code} is your sign-in code for ${org.name}. Expires in 15 minutes.`,
       })
     } catch (smsError) {

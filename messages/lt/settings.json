@@ -673,6 +673,9 @@
     "language": "Kalba",
     "forceCustomerLocale": "Priverstinai naudoti šią kalbą klientams matomuose puslapiuose",
     "forceCustomerLocaleHint": "Kai įjungta, klientų portalas ir bendrinos sąskaitos, pasiūlymai bei apžiūros rodomi jūsų dirbtuvių kalba, nepriklausomai nuo lankytojo naršyklės nustatymų. Kai išjungta, klientams skirti puslapiai naudoja lankytojo naršyklės kalbą.",
+    "defaultCountryCode": "Numatytasis šalies kodas",
+    "defaultCountryCodeHint": "Naudojamas, kai klientai prisijungia prie portalo SMS žinute — pridedamas prie telefono numerių be šalies kodo (jūsų arba kliento). Formatas: + ir skaičiai, pvz. +370.",
+    "defaultCountryCodeInvalid": "Įveskite teisingą šalies kodą, pvz. +370, 370 arba 00370.",
     "saved": "Lokalizacijos nustatymai išsaugoti",
     "saveSettings": "Išsaugoti nustatymus"
   },
