@@ -1,6 +1,11 @@
 import { getTranslations } from 'next-intl/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Clock, Mail, MapPin, Phone } from 'lucide-react'
+import { Clock, ExternalLink, Mail, MapPin, Phone } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import {
+  type PortalBackgroundType,
+  resolvePortalBackgroundTemplate,
+} from '@/features/portal/portal-backgrounds'
 import { PortalLoginForm } from './PortalLoginForm'
 
 export type PortalLandingProps = {
@@ -13,6 +18,9 @@ export type PortalLandingProps = {
   phone: string | null
   email: string | null
   authError?: string
+  backgroundType: PortalBackgroundType
+  backgroundTemplateId: string | null
+  backgroundImageUrl: string | null
 }
 
 export async function PortalLanding({
@@ -25,14 +33,46 @@ export async function PortalLanding({
   phone,
   email,
   authError,
+  backgroundType,
+  backgroundTemplateId,
+  backgroundImageUrl,
 }: PortalLandingProps) {
   const t = await getTranslations('portal.landing')
 
   const hasContact = Boolean(address || phone || email || hours)
 
+  // Resolve which background to render. Image > template > none > default.
+  const useImage = backgroundType === 'image' && Boolean(backgroundImageUrl)
+  const useTemplate = backgroundType === 'template'
+  const useNone = backgroundType === 'none'
+  const templateClass = useTemplate
+    ? resolvePortalBackgroundTemplate(backgroundTemplateId).className
+    : ''
+
   return (
-    <div className="min-h-svh bg-muted/30">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+    <div
+      className={cn(
+        'relative min-h-svh',
+        useNone ? '' : useImage ? 'bg-muted/30' : templateClass || 'bg-muted/30'
+      )}
+    >
+      {useImage && backgroundImageUrl && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={backgroundImageUrl}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          />
+          {/* Soft overlay so cards remain readable on busy photos. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-white/70 backdrop-blur-[2px]"
+          />
+        </>
+      )}
+      <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
         {/* Hero */}
         <header className="mb-10 flex flex-col items-center text-center sm:mb-14">
           {orgLogo ? (
@@ -67,6 +107,15 @@ export async function PortalLanding({
                   {address && (
                     <ContactRow icon={<MapPin className="h-5 w-5" />} label={t('address')}>
                       <p className="whitespace-pre-line">{address}</p>
+                      <a
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                      >
+                        {t('directions')}
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
                     </ContactRow>
                   )}
                   {phone && (

@@ -14,7 +14,8 @@
     "address": "Adresas",
     "phone": "Telefonas",
     "email": "El. paštas",
-    "hours": "Darbo laikas"
+    "hours": "Darbo laikas",
+    "directions": "Kelio nuorodos"
   },
   "login": {
     "signInTitle": "Klientų prisijungimas",

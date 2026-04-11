@@ -921,7 +921,31 @@
     "hoursLabel": "Orari di apertura",
     "hoursPlaceholder": "Lun-Ven: 8:00-17:00\nSab: 9:00-13:00\nDom: Chiuso",
     "hoursHint": "Testo libero. Usa interruzioni di riga per elencare ogni giorno separatamente.",
-    "contentSaved": "Contenuto del portale salvato"
+    "contentSaved": "Contenuto del portale salvato",
+    "background": {
+      "title": "Sfondo del portale",
+      "description": "Scegli l'aspetto della pagina di benvenuto del portale clienti.",
+      "typeNone": "Nessuno",
+      "typeTemplate": "Modello",
+      "typeImage": "Immagine personalizzata",
+      "chooseTemplate": "Scegli un modello",
+      "uploadLabel": "Immagine di sfondo",
+      "upload": "Carica immagine",
+      "replace": "Sostituisci immagine",
+      "remove": "Rimuovi",
+      "uploadHint": "JPG, PNG o WebP. Max 8 MB. Consigliato almeno 1600×900.",
+      "uploading": "Caricamento sfondo…",
+      "uploaded": "Sfondo aggiornato",
+      "uploadFailed": "Caricamento sfondo non riuscito",
+      "templateNames": {
+        "default": "Sobrio",
+        "sunrise": "Alba",
+        "ocean": "Oceano",
+        "forest": "Foresta",
+        "slate": "Ardesia",
+        "sand": "Sabbia"
+      }
+    }
   },
   "email": {
     "title": "Provider e-mail",

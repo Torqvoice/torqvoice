@@ -5,6 +5,10 @@ import { CustomerPortalSettings } from '@/features/portal/Components/CustomerPor
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import {
+  isValidPortalBackgroundType,
+  type PortalBackgroundType,
+} from '@/features/portal/portal-backgrounds'
 
 export default async function CustomerPortalSettingsPage() {
   const data = await getLayoutData()
@@ -33,6 +37,9 @@ export default async function CustomerPortalSettingsPage() {
             SETTING_KEYS.PORTAL_ENABLED,
             SETTING_KEYS.PORTAL_DESCRIPTION,
             SETTING_KEYS.PORTAL_HOURS,
+            SETTING_KEYS.PORTAL_BACKGROUND_TYPE,
+            SETTING_KEYS.PORTAL_BACKGROUND_TEMPLATE,
+            SETTING_KEYS.PORTAL_BACKGROUND_IMAGE,
           ],
         },
       },
@@ -50,6 +57,11 @@ export default async function CustomerPortalSettingsPage() {
     process.env.NEXT_PUBLIC_APP_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
 
+  const rawBgType = settingMap.get(SETTING_KEYS.PORTAL_BACKGROUND_TYPE)
+  const backgroundType: PortalBackgroundType = isValidPortalBackgroundType(rawBgType)
+    ? rawBgType
+    : 'none'
+
   return (
     <CustomerPortalSettings
       enabled={settingMap.get(SETTING_KEYS.PORTAL_ENABLED) === 'true'}
@@ -58,6 +70,9 @@ export default async function CustomerPortalSettingsPage() {
       appUrl={appUrl}
       description={settingMap.get(SETTING_KEYS.PORTAL_DESCRIPTION) ?? ''}
       hours={settingMap.get(SETTING_KEYS.PORTAL_HOURS) ?? ''}
+      backgroundType={backgroundType}
+      backgroundTemplate={settingMap.get(SETTING_KEYS.PORTAL_BACKGROUND_TEMPLATE) ?? ''}
+      backgroundImage={settingMap.get(SETTING_KEYS.PORTAL_BACKGROUND_IMAGE) ?? ''}
     />
   )
 }

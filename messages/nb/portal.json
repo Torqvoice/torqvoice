@@ -14,7 +14,8 @@
     "address": "Adresse",
     "phone": "Telefon",
     "email": "E-post",
-    "hours": "Åpningstider"
+    "hours": "Åpningstider",
+    "directions": "Veibeskrivelse"
   },
   "login": {
     "signInTitle": "Kundeinnlogging",

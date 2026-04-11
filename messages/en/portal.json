@@ -14,7 +14,8 @@
     "address": "Address",
     "phone": "Phone",
     "email": "Email",
-    "hours": "Opening hours"
+    "hours": "Opening hours",
+    "directions": "Get directions"
   },
   "login": {
     "signInTitle": "Customer login",

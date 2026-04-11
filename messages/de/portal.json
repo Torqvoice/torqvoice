@@ -14,7 +14,8 @@
     "address": "Adresse",
     "phone": "Telefon",
     "email": "E-Mail",
-    "hours": "Öffnungszeiten"
+    "hours": "Öffnungszeiten",
+    "directions": "Wegbeschreibung"
   },
   "login": {
     "signInTitle": "Kundenanmeldung",

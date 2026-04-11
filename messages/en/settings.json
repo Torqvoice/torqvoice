@@ -921,7 +921,31 @@
     "hoursLabel": "Opening hours",
     "hoursPlaceholder": "Mon-Fri: 8:00-17:00\nSat: 9:00-13:00\nSun: Closed",
     "hoursHint": "Free-form text. Use line breaks to list each day separately.",
-    "contentSaved": "Portal content saved"
+    "contentSaved": "Portal content saved",
+    "background": {
+      "title": "Portal background",
+      "description": "Choose how the customer portal landing page looks.",
+      "typeNone": "None",
+      "typeTemplate": "Template",
+      "typeImage": "Custom image",
+      "chooseTemplate": "Choose a template",
+      "uploadLabel": "Background image",
+      "upload": "Upload image",
+      "replace": "Replace image",
+      "remove": "Remove",
+      "uploadHint": "JPG, PNG or WebP. Max 8 MB. Recommended at least 1600×900.",
+      "uploading": "Uploading background…",
+      "uploaded": "Background updated",
+      "uploadFailed": "Failed to upload background",
+      "templateNames": {
+        "default": "Subtle",
+        "sunrise": "Sunrise",
+        "ocean": "Ocean",
+        "forest": "Forest",
+        "slate": "Slate",
+        "sand": "Sand"
+      }
+    }
   },
   "email": {
     "title": "Email Provider",

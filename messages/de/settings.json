@@ -921,7 +921,31 @@
     "hoursLabel": "Öffnungszeiten",
     "hoursPlaceholder": "Mo-Fr: 8:00-17:00\nSa: 9:00-13:00\nSo: Geschlossen",
     "hoursHint": "Freitext. Verwenden Sie Zeilenumbrüche, um jeden Tag separat aufzulisten.",
-    "contentSaved": "Portalinhalt gespeichert"
+    "contentSaved": "Portalinhalt gespeichert",
+    "background": {
+      "title": "Portal-Hintergrund",
+      "description": "Wählen Sie das Aussehen der Startseite des Kundenportals.",
+      "typeNone": "Keiner",
+      "typeTemplate": "Vorlage",
+      "typeImage": "Eigenes Bild",
+      "chooseTemplate": "Vorlage auswählen",
+      "uploadLabel": "Hintergrundbild",
+      "upload": "Bild hochladen",
+      "replace": "Bild ersetzen",
+      "remove": "Entfernen",
+      "uploadHint": "JPG, PNG oder WebP. Max. 8 MB. Empfohlen mindestens 1600×900.",
+      "uploading": "Hintergrund wird hochgeladen…",
+      "uploaded": "Hintergrund aktualisiert",
+      "uploadFailed": "Hintergrund konnte nicht hochgeladen werden",
+      "templateNames": {
+        "default": "Dezent",
+        "sunrise": "Sonnenaufgang",
+        "ocean": "Ozean",
+        "forest": "Wald",
+        "slate": "Schiefer",
+        "sand": "Sand"
+      }
+    }
   },
   "email": {
     "title": "E-Mail-Anbieter",

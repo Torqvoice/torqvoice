@@ -921,7 +921,31 @@
     "hoursLabel": "Horaires d'ouverture",
     "hoursPlaceholder": "Lun-Ven : 8h00-17h00\nSam : 9h00-13h00\nDim : Fermé",
     "hoursHint": "Texte libre. Utilisez des sauts de ligne pour lister chaque jour séparément.",
-    "contentSaved": "Contenu du portail enregistré"
+    "contentSaved": "Contenu du portail enregistré",
+    "background": {
+      "title": "Arrière-plan du portail",
+      "description": "Choisissez l'apparence de la page d'accueil du portail client.",
+      "typeNone": "Aucun",
+      "typeTemplate": "Modèle",
+      "typeImage": "Image personnalisée",
+      "chooseTemplate": "Choisissez un modèle",
+      "uploadLabel": "Image d'arrière-plan",
+      "upload": "Téléverser une image",
+      "replace": "Remplacer l'image",
+      "remove": "Supprimer",
+      "uploadHint": "JPG, PNG ou WebP. Max 8 Mo. Recommandé au moins 1600×900.",
+      "uploading": "Téléversement de l'arrière-plan…",
+      "uploaded": "Arrière-plan mis à jour",
+      "uploadFailed": "Échec du téléversement de l'arrière-plan",
+      "templateNames": {
+        "default": "Subtil",
+        "sunrise": "Lever de soleil",
+        "ocean": "Océan",
+        "forest": "Forêt",
+        "slate": "Ardoise",
+        "sand": "Sable"
+      }
+    }
   },
   "email": {
     "title": "Fournisseur de messagerie",

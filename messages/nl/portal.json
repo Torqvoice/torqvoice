@@ -14,7 +14,8 @@
     "address": "Adres",
     "phone": "Telefoon",
     "email": "E-mail",
-    "hours": "Openingstijden"
+    "hours": "Openingstijden",
+    "directions": "Routebeschrijving"
   },
   "login": {
     "signInTitle": "Klantlogin",

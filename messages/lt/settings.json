@@ -921,7 +921,31 @@
     "hoursLabel": "Darbo laikas",
     "hoursPlaceholder": "Pir-Pen: 8:00-17:00\nŠeš: 9:00-13:00\nSek: Uždaryta",
     "hoursHint": "Laisvas tekstas. Naudokite naujas eilutes, kad nurodytumėte kiekvieną dieną atskirai.",
-    "contentSaved": "Portalo turinys išsaugotas"
+    "contentSaved": "Portalo turinys išsaugotas",
+    "background": {
+      "title": "Portalo fonas",
+      "description": "Pasirinkite, kaip atrodo klientų portalo pradžios puslapis.",
+      "typeNone": "Joks",
+      "typeTemplate": "Šablonas",
+      "typeImage": "Pasirinktinė nuotrauka",
+      "chooseTemplate": "Pasirinkite šabloną",
+      "uploadLabel": "Fono nuotrauka",
+      "upload": "Įkelti nuotrauką",
+      "replace": "Pakeisti nuotrauką",
+      "remove": "Pašalinti",
+      "uploadHint": "JPG, PNG arba WebP. Iki 8 MB. Rekomenduojama bent 1600×900.",
+      "uploading": "Įkeliamas fonas…",
+      "uploaded": "Fonas atnaujintas",
+      "uploadFailed": "Nepavyko įkelti fono",
+      "templateNames": {
+        "default": "Subtilus",
+        "sunrise": "Saulėtekis",
+        "ocean": "Vandenynas",
+        "forest": "Miškas",
+        "slate": "Skalūnas",
+        "sand": "Smėlis"
+      }
+    }
   },
   "email": {
     "title": "El. pašto tiekėjas",

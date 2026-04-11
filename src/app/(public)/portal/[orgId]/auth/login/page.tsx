@@ -5,6 +5,10 @@ import { getCustomerSession } from '@/lib/customer-session'
 import { redirect } from 'next/navigation'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { getTranslations } from 'next-intl/server'
+import {
+  isValidPortalBackgroundType,
+  type PortalBackgroundType,
+} from '@/features/portal/portal-backgrounds'
 
 export default async function PortalLoginPage({
   params,
@@ -46,12 +50,20 @@ export default async function PortalLoginPage({
           SETTING_KEYS.WORKSHOP_ADDRESS,
           SETTING_KEYS.WORKSHOP_PHONE,
           SETTING_KEYS.WORKSHOP_EMAIL,
+          SETTING_KEYS.PORTAL_BACKGROUND_TYPE,
+          SETTING_KEYS.PORTAL_BACKGROUND_TEMPLATE,
+          SETTING_KEYS.PORTAL_BACKGROUND_IMAGE,
         ],
       },
     },
     select: { key: true, value: true },
   })
   const get = (key: string) => settings.find((s) => s.key === key)?.value ?? null
+
+  const rawBgType = get(SETTING_KEYS.PORTAL_BACKGROUND_TYPE)
+  const backgroundType: PortalBackgroundType = isValidPortalBackgroundType(rawBgType)
+    ? rawBgType
+    : 'none'
 
   if (get(SETTING_KEYS.PORTAL_ENABLED) !== 'true') {
     return (
@@ -82,6 +94,12 @@ export default async function PortalLoginPage({
       phone={get(SETTING_KEYS.WORKSHOP_PHONE)}
       email={get(SETTING_KEYS.WORKSHOP_EMAIL)}
       authError={authError}
+      backgroundType={backgroundType}
+      backgroundTemplateId={get(SETTING_KEYS.PORTAL_BACKGROUND_TEMPLATE)}
+      // Same public-endpoint pattern as the logo.
+      backgroundImageUrl={
+        get(SETTING_KEYS.PORTAL_BACKGROUND_IMAGE) ? `/api/public/portal-bg/${orgParam}` : null
+      }
     />
   )
 }

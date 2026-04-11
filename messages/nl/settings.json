@@ -921,7 +921,31 @@
     "hoursLabel": "Openingstijden",
     "hoursPlaceholder": "Ma-Vr: 8:00-17:00\nZa: 9:00-13:00\nZo: Gesloten",
     "hoursHint": "Vrije tekst. Gebruik regeleinden om elke dag apart te vermelden.",
-    "contentSaved": "Portaalinhoud opgeslagen"
+    "contentSaved": "Portaalinhoud opgeslagen",
+    "background": {
+      "title": "Portaalachtergrond",
+      "description": "Kies hoe de landingspagina van het klantenportaal eruitziet.",
+      "typeNone": "Geen",
+      "typeTemplate": "Sjabloon",
+      "typeImage": "Eigen afbeelding",
+      "chooseTemplate": "Kies een sjabloon",
+      "uploadLabel": "Achtergrondafbeelding",
+      "upload": "Afbeelding uploaden",
+      "replace": "Afbeelding vervangen",
+      "remove": "Verwijderen",
+      "uploadHint": "JPG, PNG of WebP. Max 8 MB. Aanbevolen minstens 1600×900.",
+      "uploading": "Achtergrond uploaden…",
+      "uploaded": "Achtergrond bijgewerkt",
+      "uploadFailed": "Achtergrond uploaden mislukt",
+      "templateNames": {
+        "default": "Subtiel",
+        "sunrise": "Zonsopgang",
+        "ocean": "Oceaan",
+        "forest": "Bos",
+        "slate": "Leisteen",
+        "sand": "Zand"
+      }
+    }
   },
   "email": {
     "title": "E-mailprovider",

@@ -14,7 +14,8 @@
     "address": "Dirección",
     "phone": "Teléfono",
     "email": "Correo electrónico",
-    "hours": "Horario de apertura"
+    "hours": "Horario de apertura",
+    "directions": "Cómo llegar"
   },
   "login": {
     "signInTitle": "Acceso de clientes",

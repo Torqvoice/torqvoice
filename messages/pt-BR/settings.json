@@ -921,7 +921,31 @@
     "hoursLabel": "Horário de funcionamento",
     "hoursPlaceholder": "Seg-Sex: 8:00-17:00\nSáb: 9:00-13:00\nDom: Fechado",
     "hoursHint": "Texto livre. Use quebras de linha para listar cada dia separadamente.",
-    "contentSaved": "Conteúdo do portal salvo"
+    "contentSaved": "Conteúdo do portal salvo",
+    "background": {
+      "title": "Plano de fundo do portal",
+      "description": "Escolha como a página inicial do portal do cliente fica.",
+      "typeNone": "Nenhum",
+      "typeTemplate": "Modelo",
+      "typeImage": "Imagem personalizada",
+      "chooseTemplate": "Escolha um modelo",
+      "uploadLabel": "Imagem de fundo",
+      "upload": "Enviar imagem",
+      "replace": "Substituir imagem",
+      "remove": "Remover",
+      "uploadHint": "JPG, PNG ou WebP. Máx. 8 MB. Recomendado pelo menos 1600×900.",
+      "uploading": "Enviando plano de fundo…",
+      "uploaded": "Plano de fundo atualizado",
+      "uploadFailed": "Falha ao enviar o plano de fundo",
+      "templateNames": {
+        "default": "Sutil",
+        "sunrise": "Amanhecer",
+        "ocean": "Oceano",
+        "forest": "Floresta",
+        "slate": "Ardósia",
+        "sand": "Areia"
+      }
+    }
   },
   "email": {
     "title": "Provedor de e-mail",

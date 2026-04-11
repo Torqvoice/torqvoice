@@ -14,7 +14,8 @@
     "address": "Adres",
     "phone": "Telefon",
     "email": "E-posta",
-    "hours": "Çalışma saatleri"
+    "hours": "Çalışma saatleri",
+    "directions": "Yol tarifi al"
   },
   "login": {
     "signInTitle": "Müşteri girişi",

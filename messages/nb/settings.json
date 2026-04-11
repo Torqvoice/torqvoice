@@ -921,7 +921,31 @@
     "hoursLabel": "Apningstider",
     "hoursPlaceholder": "Man-fre: 08:00-17:00\nLor: 09:00-13:00\nSon: Stengt",
     "hoursHint": "Fritekst. Bruk linjeskift for a liste opp dagene hver for seg.",
-    "contentSaved": "Portalinnhold lagret"
+    "contentSaved": "Portalinnhold lagret",
+    "background": {
+      "title": "Portalbakgrunn",
+      "description": "Velg hvordan landingssiden for kundeportalen ser ut.",
+      "typeNone": "Ingen",
+      "typeTemplate": "Mal",
+      "typeImage": "Eget bilde",
+      "chooseTemplate": "Velg en mal",
+      "uploadLabel": "Bakgrunnsbilde",
+      "upload": "Last opp bilde",
+      "replace": "Bytt bilde",
+      "remove": "Fjern",
+      "uploadHint": "JPG, PNG eller WebP. Maks 8 MB. Anbefalt minst 1600x900.",
+      "uploading": "Laster opp bakgrunn...",
+      "uploaded": "Bakgrunn oppdatert",
+      "uploadFailed": "Kunne ikke laste opp bakgrunn",
+      "templateNames": {
+        "default": "Diskret",
+        "sunrise": "Soloppgang",
+        "ocean": "Hav",
+        "forest": "Skog",
+        "slate": "Skifer",
+        "sand": "Sand"
+      }
+    }
   },
   "email": {
     "title": "E-postleverandor",

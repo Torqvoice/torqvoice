@@ -921,7 +921,31 @@
     "hoursLabel": "Çalışma saatleri",
     "hoursPlaceholder": "Pzt-Cum: 8:00-17:00\nCmt: 9:00-13:00\nPaz: Kapalı",
     "hoursHint": "Serbest metin. Her günü ayrı listelemek için satır sonu kullanın.",
-    "contentSaved": "Portal içeriği kaydedildi"
+    "contentSaved": "Portal içeriği kaydedildi",
+    "background": {
+      "title": "Portal arka planı",
+      "description": "Müşteri portalı ana sayfasının nasıl görüneceğini seçin.",
+      "typeNone": "Yok",
+      "typeTemplate": "Şablon",
+      "typeImage": "Özel görsel",
+      "chooseTemplate": "Bir şablon seçin",
+      "uploadLabel": "Arka plan görseli",
+      "upload": "Görsel yükle",
+      "replace": "Görseli değiştir",
+      "remove": "Kaldır",
+      "uploadHint": "JPG, PNG veya WebP. Maks 8 MB. En az 1600×900 önerilir.",
+      "uploading": "Arka plan yükleniyor…",
+      "uploaded": "Arka plan güncellendi",
+      "uploadFailed": "Arka plan yüklenemedi",
+      "templateNames": {
+        "default": "Sade",
+        "sunrise": "Gün doğumu",
+        "ocean": "Okyanus",
+        "forest": "Orman",
+        "slate": "Arduvaz",
+        "sand": "Kum"
+      }
+    }
   },
   "email": {
     "title": "E-posta Sağlayıcısı",

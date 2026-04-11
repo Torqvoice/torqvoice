@@ -921,7 +921,31 @@
     "hoursLabel": "Godziny otwarcia",
     "hoursPlaceholder": "Pn-Pt: 8:00-17:00\nSob: 9:00-13:00\nNd: Zamknięte",
     "hoursHint": "Tekst dowolny. Użyj nowej linii, aby wymienić każdy dzień osobno.",
-    "contentSaved": "Treść portalu zapisana"
+    "contentSaved": "Treść portalu zapisana",
+    "background": {
+      "title": "Tło portalu",
+      "description": "Wybierz wygląd strony głównej portalu klienta.",
+      "typeNone": "Brak",
+      "typeTemplate": "Szablon",
+      "typeImage": "Własne zdjęcie",
+      "chooseTemplate": "Wybierz szablon",
+      "uploadLabel": "Zdjęcie tła",
+      "upload": "Prześlij zdjęcie",
+      "replace": "Zamień zdjęcie",
+      "remove": "Usuń",
+      "uploadHint": "JPG, PNG lub WebP. Maks. 8 MB. Zalecane co najmniej 1600×900.",
+      "uploading": "Przesyłanie tła…",
+      "uploaded": "Tło zaktualizowane",
+      "uploadFailed": "Nie udało się przesłać tła",
+      "templateNames": {
+        "default": "Subtelny",
+        "sunrise": "Wschód słońca",
+        "ocean": "Ocean",
+        "forest": "Las",
+        "slate": "Łupek",
+        "sand": "Piasek"
+      }
+    }
   },
   "email": {
     "title": "Dostawca poczty e-mail",
