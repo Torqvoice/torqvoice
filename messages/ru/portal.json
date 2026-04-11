@@ -26,6 +26,18 @@
     "checkEmail": "Проверьте почту",
     "checkEmailDescription": "Если аккаунт с таким адресом существует, мы отправили ссылку для входа. Ссылка действительна 15 минут.",
     "tryDifferentEmail": "Попробовать другой адрес",
+    "tabEmail": "Эл. почта",
+    "tabSms": "СМС",
+    "phoneLabel": "Номер телефона",
+    "phonePlaceholder": "+7 9123456789",
+    "sendCode": "Отправить код",
+    "codeSentTitle": "Введите отправленный код",
+    "codeSentDescription": "Мы отправили 6-значный код на {phone}, если этот номер привязан к аккаунту.",
+    "codeLabel": "6-значный код",
+    "codePlaceholder": "123456",
+    "verifyCode": "Войти",
+    "useDifferentPhone": "Использовать другой номер",
+    "invalidCode": "Неверный или просроченный код",
     "notFound": "Не найдено",
     "portalNotExist": "Этот портал не существует.",
     "portalNotAvailable": "Портал недоступен",
@@ -40,7 +52,8 @@
     "requestService": "Заявка на обслуживание"
   },
   "header": {
-    "signOut": "Выйти"
+    "signOut": "Выйти",
+    "askShort": "Сервис"
   },
   "shell": {
     "notFound": "Не найдено",
@@ -63,7 +76,14 @@
     "noQuotesYet": "Предложений пока нет.",
     "view": "Просмотр",
     "pending": "Ожидает",
-    "failedToLoad": "Не удалось загрузить панель управления."
+    "failedToLoad": "Не удалось загрузить панель управления.",
+    "quickRequestService": "Запросить сервис",
+    "quickRequestServiceHint": "Записаться на ремонт или осмотр",
+    "quickViewInvoices": "Ваши счета",
+    "quickViewInvoicesHint": "Счета и история платежей",
+    "quickViewVehicles": "Ваши автомобили",
+    "quickViewVehiclesHint": "История обслуживания и детали",
+    "activeJobs": "Текущие работы"
   },
   "invoices": {
     "title": "Счета",
@@ -76,6 +96,7 @@
     "amount": "Сумма",
     "payment": "Оплата",
     "view": "Просмотр",
+    "download": "Скачать",
     "paid": "оплачено",
     "partial": "частично",
     "unpaid": "не оплачено"

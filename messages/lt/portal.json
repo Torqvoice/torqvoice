@@ -26,6 +26,18 @@
     "checkEmail": "Patikrinkite el. paštą",
     "checkEmailDescription": "Jei tokia paskyra egzistuoja, išsiuntėme prisijungimo nuorodą. Nuoroda galioja 15 minučių.",
     "tryDifferentEmail": "Pabandyti kitą el. paštą",
+    "tabEmail": "El. paštas",
+    "tabSms": "SMS",
+    "phoneLabel": "Telefono numeris",
+    "phonePlaceholder": "+370 61234567",
+    "sendCode": "Siųsti kodą",
+    "codeSentTitle": "Įveskite mūsų išsiųstą kodą",
+    "codeSentDescription": "Jei egzistuoja paskyra, išsiuntėme 6 skaitmenų kodą į {phone}.",
+    "codeLabel": "6 skaitmenų kodas",
+    "codePlaceholder": "123456",
+    "verifyCode": "Prisijungti",
+    "useDifferentPhone": "Naudoti kitą numerį",
+    "invalidCode": "Neteisingas arba pasibaigęs kodas",
     "notFound": "Nerasta",
     "portalNotExist": "Šis portalas neegzistuoja.",
     "portalNotAvailable": "Portalas nepasiekiamas",
@@ -40,7 +52,8 @@
     "requestService": "Užsakyti paslaugą"
   },
   "header": {
-    "signOut": "Atsijungti"
+    "signOut": "Atsijungti",
+    "askShort": "Servisas"
   },
   "shell": {
     "notFound": "Nerasta",
@@ -63,7 +76,14 @@
     "noQuotesYet": "Pasiūlymų dar nėra.",
     "view": "Peržiūrėti",
     "pending": "Laukia",
-    "failedToLoad": "Nepavyko įkelti valdymo skydelio."
+    "failedToLoad": "Nepavyko įkelti valdymo skydelio.",
+    "quickRequestService": "Užsakyti servisą",
+    "quickRequestServiceHint": "Rezervuokite remontą ar patikrą",
+    "quickViewInvoices": "Jūsų sąskaitos",
+    "quickViewInvoicesHint": "Sąskaitos ir mokėjimų istorija",
+    "quickViewVehicles": "Jūsų transporto priemonės",
+    "quickViewVehiclesHint": "Aptarnavimo istorija ir informacija",
+    "activeJobs": "Aktyvūs darbai"
   },
   "invoices": {
     "title": "Sąskaitos",
@@ -76,6 +96,7 @@
     "amount": "Suma",
     "payment": "Mokėjimas",
     "view": "Peržiūrėti",
+    "download": "Atsisiųsti",
     "paid": "apmokėta",
     "partial": "dalinai",
     "unpaid": "neapmokėta"

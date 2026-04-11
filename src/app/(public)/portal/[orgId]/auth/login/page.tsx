@@ -5,6 +5,7 @@ import { getCustomerSession } from '@/lib/customer-session'
 import { redirect } from 'next/navigation'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { getTranslations } from 'next-intl/server'
+import { getOrgSmsProvider } from '@/lib/sms'
 import {
   isValidPortalBackgroundType,
   type PortalBackgroundType,
@@ -36,6 +37,10 @@ export default async function PortalLoginPage({
   }
 
   const orgId = org.id
+
+  // Whether this workshop has an SMS provider configured. Controls visibility
+  // of the SMS sign-in tab on the landing page.
+  const smsEnabled = (await getOrgSmsProvider(orgId)) !== null
 
   // Fetch all the portal-relevant settings in one query.
   const settings = await db.appSetting.findMany({
@@ -100,6 +105,7 @@ export default async function PortalLoginPage({
       backgroundImageUrl={
         get(SETTING_KEYS.PORTAL_BACKGROUND_IMAGE) ? `/api/public/portal-bg/${orgParam}` : null
       }
+      smsEnabled={smsEnabled}
     />
   )
 }

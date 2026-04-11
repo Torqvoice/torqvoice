@@ -26,6 +26,18 @@
     "checkEmail": "Prüfen Sie Ihre E-Mails",
     "checkEmailDescription": "Falls ein Konto für diese E-Mail-Adresse existiert, haben wir Ihnen einen Anmeldelink gesendet. Der Link läuft in 15 Minuten ab.",
     "tryDifferentEmail": "Andere E-Mail-Adresse verwenden",
+    "tabEmail": "E-Mail",
+    "tabSms": "SMS",
+    "phoneLabel": "Telefonnummer",
+    "phonePlaceholder": "+49 12345678",
+    "sendCode": "Code senden",
+    "codeSentTitle": "Geben Sie den Code ein, den wir gesendet haben",
+    "codeSentDescription": "Wir haben einen 6-stelligen Code an {phone} gesendet, falls ein Konto existiert.",
+    "codeLabel": "6-stelliger Code",
+    "codePlaceholder": "123456",
+    "verifyCode": "Anmelden",
+    "useDifferentPhone": "Andere Nummer verwenden",
+    "invalidCode": "Ungültiger oder abgelaufener Code",
     "notFound": "Nicht gefunden",
     "portalNotExist": "Dieses Portal existiert nicht.",
     "portalNotAvailable": "Portal nicht verfügbar",
@@ -40,7 +52,8 @@
     "requestService": "Service anfordern"
   },
   "header": {
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "askShort": "Service"
   },
   "shell": {
     "notFound": "Nicht gefunden",
@@ -63,7 +76,14 @@
     "noQuotesYet": "Noch keine Angebote.",
     "view": "Ansehen",
     "pending": "Ausstehend",
-    "failedToLoad": "Dashboard konnte nicht geladen werden."
+    "failedToLoad": "Dashboard konnte nicht geladen werden.",
+    "quickRequestService": "Service anfragen",
+    "quickRequestServiceHint": "Reparatur oder Inspektion buchen",
+    "quickViewInvoices": "Ihre Rechnungen",
+    "quickViewInvoicesHint": "Rechnungen und Zahlungsverlauf",
+    "quickViewVehicles": "Ihre Fahrzeuge",
+    "quickViewVehiclesHint": "Servicehistorie und Details",
+    "activeJobs": "Aktive Aufträge"
   },
   "invoices": {
     "title": "Rechnungen",
@@ -76,6 +96,7 @@
     "amount": "Betrag",
     "payment": "Zahlung",
     "view": "Ansehen",
+    "download": "Herunterladen",
     "paid": "bezahlt",
     "partial": "teilweise",
     "unpaid": "unbezahlt"

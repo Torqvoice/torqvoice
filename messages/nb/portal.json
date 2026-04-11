@@ -26,6 +26,18 @@
     "checkEmail": "Sjekk e-posten din",
     "checkEmailDescription": "Hvis det finnes en konto for den e-postadressen, har vi sendt en innloggingslenke. Lenken utløper om 15 minutter.",
     "tryDifferentEmail": "Prøv en annen e-postadresse",
+    "tabEmail": "E-post",
+    "tabSms": "SMS",
+    "phoneLabel": "Telefonnummer",
+    "phonePlaceholder": "+47 12345678",
+    "sendCode": "Send kode",
+    "codeSentTitle": "Skriv inn koden vi sendte",
+    "codeSentDescription": "Vi sendte en 6-sifret kode til {phone} hvis det finnes en konto.",
+    "codeLabel": "6-sifret kode",
+    "codePlaceholder": "123456",
+    "verifyCode": "Logg inn",
+    "useDifferentPhone": "Bruk et annet nummer",
+    "invalidCode": "Ugyldig eller utløpt kode",
     "notFound": "Ikke funnet",
     "portalNotExist": "Denne portalen finnes ikke.",
     "portalNotAvailable": "Portal ikke tilgjengelig",
@@ -40,7 +52,8 @@
     "requestService": "Be om service"
   },
   "header": {
-    "signOut": "Logg ut"
+    "signOut": "Logg ut",
+    "askShort": "Service"
   },
   "shell": {
     "notFound": "Ikke funnet",
@@ -63,7 +76,14 @@
     "noQuotesYet": "Ingen tilbud ennå.",
     "view": "Se",
     "pending": "Ventende",
-    "failedToLoad": "Kunne ikke laste inn oversikten."
+    "failedToLoad": "Kunne ikke laste inn oversikten.",
+    "quickRequestService": "Be om service",
+    "quickRequestServiceHint": "Bestill reparasjon eller kontroll",
+    "quickViewInvoices": "Dine fakturaer",
+    "quickViewInvoicesHint": "Regninger og betalingshistorikk",
+    "quickViewVehicles": "Dine kjøretøy",
+    "quickViewVehiclesHint": "Servicehistorikk og detaljer",
+    "activeJobs": "Pågående arbeid"
   },
   "invoices": {
     "title": "Fakturaer",
@@ -76,6 +96,7 @@
     "amount": "Beløp",
     "payment": "Betaling",
     "view": "Se",
+    "download": "Last ned",
     "paid": "betalt",
     "partial": "delbetalt",
     "unpaid": "ubetalt"

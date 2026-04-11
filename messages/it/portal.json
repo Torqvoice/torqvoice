@@ -26,6 +26,18 @@
     "checkEmail": "Controlla la tua email",
     "checkEmailDescription": "Se esiste un account per quell'email, abbiamo inviato un link di accesso. Il link scade in 15 minuti.",
     "tryDifferentEmail": "Prova con un'altra email",
+    "tabEmail": "Email",
+    "tabSms": "SMS",
+    "phoneLabel": "Numero di telefono",
+    "phonePlaceholder": "+39 3123456789",
+    "sendCode": "Invia codice",
+    "codeSentTitle": "Inserisci il codice che abbiamo inviato",
+    "codeSentDescription": "Abbiamo inviato un codice a 6 cifre al {phone} se corrisponde a un account.",
+    "codeLabel": "Codice a 6 cifre",
+    "codePlaceholder": "123456",
+    "verifyCode": "Accedi",
+    "useDifferentPhone": "Usa un altro numero",
+    "invalidCode": "Codice non valido o scaduto",
     "notFound": "Non Trovato",
     "portalNotExist": "Questo portale non esiste.",
     "portalNotAvailable": "Portale Non Disponibile",
@@ -40,7 +52,8 @@
     "requestService": "Richiedi Servizio"
   },
   "header": {
-    "signOut": "Esci"
+    "signOut": "Esci",
+    "askShort": "Servizio"
   },
   "shell": {
     "notFound": "Non Trovato",
@@ -63,7 +76,14 @@
     "noQuotesYet": "Nessun preventivo ancora.",
     "view": "Visualizza",
     "pending": "In attesa",
-    "failedToLoad": "Caricamento della dashboard non riuscito."
+    "failedToLoad": "Caricamento della dashboard non riuscito.",
+    "quickRequestService": "Richiedi assistenza",
+    "quickRequestServiceHint": "Prenota una riparazione o un controllo",
+    "quickViewInvoices": "Le tue fatture",
+    "quickViewInvoicesHint": "Fatture e storico pagamenti",
+    "quickViewVehicles": "I tuoi veicoli",
+    "quickViewVehiclesHint": "Storico assistenza e dettagli",
+    "activeJobs": "Lavori in corso"
   },
   "invoices": {
     "title": "Fatture",
@@ -76,6 +96,7 @@
     "amount": "Importo",
     "payment": "Pagamento",
     "view": "Visualizza",
+    "download": "Scarica",
     "paid": "pagato",
     "partial": "parziale",
     "unpaid": "non pagato"

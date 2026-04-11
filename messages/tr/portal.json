@@ -26,6 +26,18 @@
     "checkEmail": "E-postanızı kontrol edin",
     "checkEmailDescription": "Bu e-posta için bir hesap mevcutsa, bir giriş bağlantısı gönderdik. Bağlantı 15 dakika içinde sona erer.",
     "tryDifferentEmail": "Farklı bir e-posta deneyin",
+    "tabEmail": "E-posta",
+    "tabSms": "SMS",
+    "phoneLabel": "Telefon numarası",
+    "phonePlaceholder": "+90 5123456789",
+    "sendCode": "Kod gönder",
+    "codeSentTitle": "Gönderdiğimiz kodu girin",
+    "codeSentDescription": "Bir hesapla eşleşiyorsa {phone} numarasına 6 haneli bir kod gönderdik.",
+    "codeLabel": "6 haneli kod",
+    "codePlaceholder": "123456",
+    "verifyCode": "Giriş yap",
+    "useDifferentPhone": "Farklı bir numara kullan",
+    "invalidCode": "Geçersiz veya süresi dolmuş kod",
     "notFound": "Bulunamadı",
     "portalNotExist": "Bu portal mevcut değil.",
     "portalNotAvailable": "Portal Kullanılamıyor",
@@ -40,7 +52,8 @@
     "requestService": "Servis İste"
   },
   "header": {
-    "signOut": "Çıkış yap"
+    "signOut": "Çıkış yap",
+    "askShort": "Servis"
   },
   "shell": {
     "notFound": "Bulunamadı",
@@ -63,7 +76,14 @@
     "noQuotesYet": "Henüz teklif yok.",
     "view": "Görüntüle",
     "pending": "Beklemede",
-    "failedToLoad": "Gösterge paneli yüklenemedi."
+    "failedToLoad": "Gösterge paneli yüklenemedi.",
+    "quickRequestService": "Servis talep et",
+    "quickRequestServiceHint": "Onarım veya kontrol rezerve edin",
+    "quickViewInvoices": "Faturalarınız",
+    "quickViewInvoicesHint": "Faturalar ve ödeme geçmişi",
+    "quickViewVehicles": "Araçlarınız",
+    "quickViewVehiclesHint": "Servis geçmişi ve detaylar",
+    "activeJobs": "Devam eden işler"
   },
   "invoices": {
     "title": "Faturalar",
@@ -76,6 +96,7 @@
     "amount": "Tutar",
     "payment": "Ödeme",
     "view": "Görüntüle",
+    "download": "İndir",
     "paid": "ödendi",
     "partial": "kısmi",
     "unpaid": "ödenmedi"

@@ -1079,6 +1079,20 @@ model CustomerMagicLink {
   @@map("customer_magic_links")
 }
 
+model CustomerSmsCode {
+  id             String    @id @default(cuid())
+  code           String
+  phone          String
+  organizationId String
+  expiresAt      DateTime
+  usedAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([phone, organizationId])
+  @@index([organizationId])
+  @@map("customer_sms_codes")
+}
+
 model ServiceRequest {
   id            String    @id @default(cuid())
   description   String

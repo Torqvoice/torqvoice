@@ -97,6 +97,7 @@ export const SETTING_KEYS = {
   AI_ENABLED: 'ai.enabled',
   SERVICE_TYPE: 'workshop.serviceType',
   WORKSHOP_LOCALE: 'workshop.locale',
+  WORKSHOP_DEFAULT_COUNTRY_CODE: 'workshop.defaultCountryCode',
   FORCE_CUSTOMER_LOCALE: 'workshop.forceCustomerLocale',
 } as const
 
