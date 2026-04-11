@@ -11,6 +11,7 @@ import { getFeatures } from "@/lib/features";
 import { getRecentSmsThreads } from "@/features/sms/Actions/smsActions";
 import { getNotifications } from "@/features/notifications/Actions/notificationActions";
 import { getRecentAuditLogs } from "@/features/audit/Actions/auditActions";
+import { getRecentObservations } from "@/features/vehicles/Actions/findingActions";
 import { getMyActiveJobs } from "@/features/vehicles/Actions/getMyActiveJobs";
 import { DashboardClient } from "./dashboard-client";
 import { MyActiveJobs } from "@/features/vehicles/Components/MyActiveJobs";
@@ -21,7 +22,7 @@ export default async function DashboardPage() {
   const features = auth ? await getFeatures(auth.organizationId) : null;
   const smsEnabled = features?.sms ?? false;
 
-  const [result, settingsResult, remindersResult, maintenanceResult, dismissedMaintenanceResult, inProgressResult, completedResult, quoteRequestsResult, quoteResponsesResult, smsResult, notificationsResult, auditLogsResult, myJobsResult] = await Promise.all([
+  const [result, settingsResult, remindersResult, maintenanceResult, dismissedMaintenanceResult, inProgressResult, completedResult, quoteRequestsResult, quoteResponsesResult, smsResult, notificationsResult, auditLogsResult, recentObservationsResult, myJobsResult] = await Promise.all([
     getDashboardStats(),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
     getUpcomingReminders(),
@@ -34,6 +35,7 @@ export default async function DashboardPage() {
     smsEnabled ? getRecentSmsThreads(0, 5) : Promise.resolve(null),
     getNotifications(),
     getRecentAuditLogs(10),
+    getRecentObservations(),
     getMyActiveJobs(),
   ]);
 
@@ -57,6 +59,7 @@ export default async function DashboardPage() {
   const smsThreads = smsResult && smsResult.success && smsResult.data ? smsResult.data.threads : [];
   const notifications = notificationsResult.success && notificationsResult.data ? notificationsResult.data.notifications : [];
   const recentAuditLogs = auditLogsResult.success && auditLogsResult.data ? auditLogsResult.data : [];
+  const recentObservations = recentObservationsResult.success && recentObservationsResult.data ? recentObservationsResult.data : [];
 
   const myJobs = myJobsResult.success && myJobsResult.data ? myJobsResult.data : [];
 
@@ -80,6 +83,7 @@ export default async function DashboardPage() {
           smsEnabled={smsEnabled}
           notifications={notifications}
           recentAuditLogs={recentAuditLogs}
+          recentObservations={recentObservations}
         />
       </div>
     </>

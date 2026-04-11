@@ -22,6 +22,14 @@
   },
   "recentActivity": "Recente activiteit",
   "noRecentActivity": "Geen recente activiteit",
+  "recentObservations": "Recente waarnemingen",
+  "noRecentObservations": "Geen openstaande waarnemingen",
+  "observations": {
+    "severity": "Ernst",
+    "vehicle": "Voertuig",
+    "description": "Beschrijving",
+    "when": "Wanneer"
+  },
   "unknownUser": "Gebruiker",
   "stats": {
     "activeJobs": "Actieve opdrachten",

@@ -229,6 +229,20 @@
     "perPage": "puslapyje",
     "page": "Puslapis {page} iš {totalPages}"
   },
+  "observationsPage": {
+    "searchPlaceholder": "Ieškoti pagal aprašymą, pastabas arba transporto priemonę...",
+    "allStatuses": "Visos būsenos",
+    "allSeverities": "Visi sunkumo lygiai",
+    "empty": "Pastebėjimų nerasta.",
+    "columns": {
+      "severity": "Sunkumas",
+      "status": "Būsena",
+      "vehicle": "Transporto priemonė",
+      "description": "Aprašymas",
+      "notes": "Pastabos",
+      "created": "Sukurta"
+    }
+  },
   "form": {
     "editTitle": "Redaguoti transporto priemonę",
     "addTitle": "Pridėti naują transporto priemonę",

@@ -22,6 +22,14 @@
   },
   "recentActivity": "Son aktivite",
   "noRecentActivity": "Son aktivite yok",
+  "recentObservations": "Son Gözlemler",
+  "noRecentObservations": "Açık gözlem yok",
+  "observations": {
+    "severity": "Önem",
+    "vehicle": "Araç",
+    "description": "Açıklama",
+    "when": "Ne zaman"
+  },
   "unknownUser": "Kullanıcı",
   "stats": {
     "activeJobs": "Aktif İşler",

@@ -229,6 +229,20 @@
     "perPage": "per page",
     "page": "Page {page} of {totalPages}"
   },
+  "observationsPage": {
+    "searchPlaceholder": "Search description, notes, or vehicle...",
+    "allStatuses": "All Statuses",
+    "allSeverities": "All Severities",
+    "empty": "No observations found.",
+    "columns": {
+      "severity": "Severity",
+      "status": "Status",
+      "vehicle": "Vehicle",
+      "description": "Description",
+      "notes": "Notes",
+      "created": "Created"
+    }
+  },
   "form": {
     "editTitle": "Edit Vehicle",
     "addTitle": "Add New Vehicle",

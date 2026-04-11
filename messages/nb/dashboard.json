@@ -22,6 +22,14 @@
   },
   "recentActivity": "Nylig aktivitet",
   "noRecentActivity": "Ingen nylig aktivitet",
+  "recentObservations": "Nylige observasjoner",
+  "noRecentObservations": "Ingen åpne observasjoner",
+  "observations": {
+    "severity": "Alvorlighetsgrad",
+    "vehicle": "Kjøretøy",
+    "description": "Beskrivelse",
+    "when": "Når"
+  },
   "unknownUser": "Bruker",
   "stats": {
     "activeJobs": "Aktive jobber",

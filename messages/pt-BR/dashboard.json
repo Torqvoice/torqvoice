@@ -22,6 +22,14 @@
   },
   "recentActivity": "Atividade recente",
   "noRecentActivity": "Nenhuma atividade recente",
+  "recentObservations": "Observações recentes",
+  "noRecentObservations": "Nenhuma observação aberta",
+  "observations": {
+    "severity": "Gravidade",
+    "vehicle": "Veículo",
+    "description": "Descrição",
+    "when": "Quando"
+  },
   "unknownUser": "Usuário",
   "stats": {
     "activeJobs": "Trabalhos Ativos",

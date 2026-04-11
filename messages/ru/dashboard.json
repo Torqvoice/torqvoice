@@ -22,6 +22,14 @@
   },
   "recentActivity": "Последняя активность",
   "noRecentActivity": "Нет недавней активности",
+  "recentObservations": "Недавние наблюдения",
+  "noRecentObservations": "Нет открытых наблюдений",
+  "observations": {
+    "severity": "Серьёзность",
+    "vehicle": "Транспорт",
+    "description": "Описание",
+    "when": "Когда"
+  },
   "unknownUser": "Пользователь",
   "stats": {
     "activeJobs": "Активные работы",

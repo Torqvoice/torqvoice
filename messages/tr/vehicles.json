@@ -229,6 +229,20 @@
     "perPage": "sayfa başına",
     "page": "Sayfa {page} / {totalPages}"
   },
+  "observationsPage": {
+    "searchPlaceholder": "Açıklama, not veya araç ara...",
+    "allStatuses": "Tüm Durumlar",
+    "allSeverities": "Tüm Önem Düzeyleri",
+    "empty": "Gözlem bulunamadı.",
+    "columns": {
+      "severity": "Önem",
+      "status": "Durum",
+      "vehicle": "Araç",
+      "description": "Açıklama",
+      "notes": "Notlar",
+      "created": "Oluşturuldu"
+    }
+  },
   "form": {
     "editTitle": "Aracı Düzenle",
     "addTitle": "Yeni Araç Ekle",

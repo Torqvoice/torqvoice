@@ -229,6 +229,20 @@
     "perPage": "per pagina",
     "page": "Pagina {page} van {totalPages}"
   },
+  "observationsPage": {
+    "searchPlaceholder": "Zoek in beschrijving, notities of voertuig...",
+    "allStatuses": "Alle statussen",
+    "allSeverities": "Alle ernstniveaus",
+    "empty": "Geen waarnemingen gevonden.",
+    "columns": {
+      "severity": "Ernst",
+      "status": "Status",
+      "vehicle": "Voertuig",
+      "description": "Beschrijving",
+      "notes": "Notities",
+      "created": "Aangemaakt"
+    }
+  },
   "form": {
     "editTitle": "Voertuig bewerken",
     "addTitle": "Nieuw voertuig toevoegen",

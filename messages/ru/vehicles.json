@@ -229,6 +229,20 @@
     "perPage": "на странице",
     "page": "Страница {page} из {totalPages}"
   },
+  "observationsPage": {
+    "searchPlaceholder": "Поиск по описанию, заметкам или транспорту...",
+    "allStatuses": "Все статусы",
+    "allSeverities": "Все уровни",
+    "empty": "Наблюдения не найдены.",
+    "columns": {
+      "severity": "Серьёзность",
+      "status": "Статус",
+      "vehicle": "Транспорт",
+      "description": "Описание",
+      "notes": "Заметки",
+      "created": "Создано"
+    }
+  },
   "form": {
     "editTitle": "Редактировать транспортное средство",
     "addTitle": "Добавить новое транспортное средство",

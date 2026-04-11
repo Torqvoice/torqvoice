@@ -229,6 +229,20 @@
     "perPage": "na stronę",
     "page": "Strona {page} z {totalPages}"
   },
+  "observationsPage": {
+    "searchPlaceholder": "Szukaj opisu, notatek lub pojazdu...",
+    "allStatuses": "Wszystkie statusy",
+    "allSeverities": "Wszystkie poziomy ważności",
+    "empty": "Nie znaleziono obserwacji.",
+    "columns": {
+      "severity": "Ważność",
+      "status": "Status",
+      "vehicle": "Pojazd",
+      "description": "Opis",
+      "notes": "Notatki",
+      "created": "Utworzono"
+    }
+  },
   "form": {
     "editTitle": "Edytuj pojazd",
     "addTitle": "Dodaj nowy pojazd",

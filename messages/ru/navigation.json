@@ -52,7 +52,8 @@
     "reminders": "Напоминания",
     "allReminders": "Все напоминания",
     "auditLog": "Журнал аудита",
-    "aiAssistant": "ИИ-ассистент"
+    "aiAssistant": "ИИ-ассистент",
+    "observations": "Наблюдения"
   },
   "search": "Поиск...",
   "shortcut": "Ctrl+K",
