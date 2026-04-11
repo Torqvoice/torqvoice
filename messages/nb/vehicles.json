@@ -229,6 +229,20 @@
     "perPage": "per side",
     "page": "Side {page} av {totalPages}"
   },
+  "observationsPage": {
+    "searchPlaceholder": "Søk i beskrivelse, notater eller kjøretøy...",
+    "allStatuses": "Alle statuser",
+    "allSeverities": "Alle alvorlighetsgrader",
+    "empty": "Ingen observasjoner funnet.",
+    "columns": {
+      "severity": "Alvorlighetsgrad",
+      "status": "Status",
+      "vehicle": "Kjøretøy",
+      "description": "Beskrivelse",
+      "notes": "Notater",
+      "created": "Opprettet"
+    }
+  },
   "form": {
     "editTitle": "Rediger kjoretoy",
     "addTitle": "Legg til nytt kjoretoy",

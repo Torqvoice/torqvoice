@@ -78,6 +78,7 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/settings/customer-portal': [{ key: 'settings', href: '/settings' }, { key: 'customerPortal' }],
   '/ai': [{ key: 'aiAssistant' }],
   '/audit-log': [{ key: 'auditLog' }],
+  '/observations': [{ key: 'observations' }],
 }
 
 export function PageHeader() {

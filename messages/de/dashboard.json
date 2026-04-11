@@ -22,6 +22,14 @@
   },
   "recentActivity": "Letzte Aktivitäten",
   "noRecentActivity": "Keine aktuellen Aktivitäten",
+  "recentObservations": "Aktuelle Beobachtungen",
+  "noRecentObservations": "Keine offenen Beobachtungen",
+  "observations": {
+    "severity": "Schweregrad",
+    "vehicle": "Fahrzeug",
+    "description": "Beschreibung",
+    "when": "Wann"
+  },
   "unknownUser": "Benutzer",
   "stats": {
     "activeJobs": "Aktive Aufträge",
@@ -41,7 +49,8 @@
     "sms": "Letzte Nachrichten",
     "notifications": "Letzte Benachrichtigungen",
     "recentCompleted": "Kürzlich abgeschlossen",
-    "activeJobs": "Aktive Aufträge"
+    "activeJobs": "Aktive Aufträge",
+    "recentObservations": "Aktuelle Beobachtungen"
   },
   "maintenance": {
     "title": "Voraussichtlich fällige Wartung",

@@ -22,6 +22,14 @@
   },
   "recentActivity": "Последняя активность",
   "noRecentActivity": "Нет недавней активности",
+  "recentObservations": "Недавние наблюдения",
+  "noRecentObservations": "Нет открытых наблюдений",
+  "observations": {
+    "severity": "Серьёзность",
+    "vehicle": "Транспорт",
+    "description": "Описание",
+    "when": "Когда"
+  },
   "unknownUser": "Пользователь",
   "stats": {
     "activeJobs": "Активные работы",
@@ -41,7 +49,8 @@
     "sms": "Последние сообщения",
     "notifications": "Последние уведомления",
     "recentCompleted": "Недавно завершённые",
-    "activeJobs": "Активные работы"
+    "activeJobs": "Активные работы",
+    "recentObservations": "Недавние наблюдения"
   },
   "maintenance": {
     "title": "Прогнозируемое техобслуживание",

@@ -22,6 +22,14 @@
   },
   "recentActivity": "Son aktivite",
   "noRecentActivity": "Son aktivite yok",
+  "recentObservations": "Son Gözlemler",
+  "noRecentObservations": "Açık gözlem yok",
+  "observations": {
+    "severity": "Önem",
+    "vehicle": "Araç",
+    "description": "Açıklama",
+    "when": "Ne zaman"
+  },
   "unknownUser": "Kullanıcı",
   "stats": {
     "activeJobs": "Aktif İşler",
@@ -41,7 +49,8 @@
     "sms": "Son Mesajlar",
     "notifications": "Son Bildirimler",
     "recentCompleted": "Son Tamamlananlar",
-    "activeJobs": "Aktif İşler"
+    "activeJobs": "Aktif İşler",
+    "recentObservations": "Son Gözlemler"
   },
   "maintenance": {
     "title": "Tahmini Bakım Zamanı",

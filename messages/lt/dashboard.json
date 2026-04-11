@@ -22,6 +22,14 @@
   },
   "recentActivity": "Naujausios veiklos",
   "noRecentActivity": "Naujausių veiklų nėra",
+  "recentObservations": "Naujausi pastebėjimai",
+  "noRecentObservations": "Atvirų pastebėjimų nėra",
+  "observations": {
+    "severity": "Sunkumas",
+    "vehicle": "Transporto priemonė",
+    "description": "Aprašymas",
+    "when": "Kada"
+  },
   "unknownUser": "Naudotojas",
   "stats": {
     "activeJobs": "Aktyvūs darbai",
@@ -41,7 +49,8 @@
     "sms": "Naujausios žinutės",
     "notifications": "Naujausi pranešimai",
     "recentCompleted": "Neseniai užbaigti",
-    "activeJobs": "Aktyvūs darbai"
+    "activeJobs": "Aktyvūs darbai",
+    "recentObservations": "Naujausi pastebėjimai"
   },
   "maintenance": {
     "title": "Numatoma priežiūra",

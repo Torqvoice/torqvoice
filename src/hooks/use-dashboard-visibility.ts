@@ -12,6 +12,7 @@ export const DASHBOARD_CARD_IDS = [
   "notifications",
   "recentCompleted",
   "activeJobs",
+  "recentObservations",
 ] as const;
 
 export type DashboardCardId = (typeof DASHBOARD_CARD_IDS)[number];
