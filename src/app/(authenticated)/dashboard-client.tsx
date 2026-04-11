@@ -1246,6 +1246,7 @@ export function DashboardClient({
           </CardContent>
         </Card>
         {/* Recent Observations */}
+        {isVisible("recentObservations") && (
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-1">
             <div className="flex items-center justify-between">
@@ -1312,6 +1313,7 @@ export function DashboardClient({
             )}
           </CardContent>
         </Card>
+        )}
       </div>
     </div>
   );

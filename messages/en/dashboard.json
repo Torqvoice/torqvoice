@@ -49,7 +49,8 @@
     "sms": "Recent Messages",
     "notifications": "Recent Notifications",
     "recentCompleted": "Recent Completed",
-    "activeJobs": "Active Jobs"
+    "activeJobs": "Active Jobs",
+    "recentObservations": "Recent Observations"
   },
   "maintenance": {
     "title": "Predicted Maintenance Due",

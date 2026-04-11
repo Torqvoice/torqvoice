@@ -49,7 +49,8 @@
     "sms": "Ostatnie wiadomości",
     "notifications": "Ostatnie powiadomienia",
     "recentCompleted": "Ostatnio ukończone",
-    "activeJobs": "Aktywne zlecenia"
+    "activeJobs": "Aktywne zlecenia",
+    "recentObservations": "Ostatnie obserwacje"
   },
   "maintenance": {
     "title": "Przewidywany termin konserwacji",

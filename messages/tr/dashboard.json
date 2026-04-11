@@ -49,7 +49,8 @@
     "sms": "Son Mesajlar",
     "notifications": "Son Bildirimler",
     "recentCompleted": "Son Tamamlananlar",
-    "activeJobs": "Aktif İşler"
+    "activeJobs": "Aktif İşler",
+    "recentObservations": "Son Gözlemler"
   },
   "maintenance": {
     "title": "Tahmini Bakım Zamanı",

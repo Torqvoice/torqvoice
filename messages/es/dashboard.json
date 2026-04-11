@@ -49,7 +49,8 @@
     "sms": "Mensajes recientes",
     "notifications": "Notificaciones recientes",
     "recentCompleted": "Completados recientemente",
-    "activeJobs": "Trabajos activos"
+    "activeJobs": "Trabajos activos",
+    "recentObservations": "Observaciones recientes"
   },
   "maintenance": {
     "title": "Mantenimiento previsto pendiente",
