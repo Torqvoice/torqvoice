@@ -45,7 +45,16 @@
     "itemQty": "Кол-во",
     "itemQtyOrHours": "Кол-во / Часы",
     "hourlyTag": "н/ч",
-    "serviceTag": "усл."
+    "serviceTag": "усл.",
+    "partsTitle": "Запчасти",
+    "addPart": "Добавить запчасть",
+    "partName": "Название запчасти",
+    "partNumber": "Запчасть #",
+    "partQty": "Кол-во",
+    "partPrice": "Цена за ед.",
+    "importFromInventory": "Импорт со склада",
+    "searchInventory": "Поиск на складе...",
+    "noPartsFound": "Запчасти не найдены"
   },
   "picker": {
     "title": "Выбрать шаблон работ",
@@ -53,7 +62,8 @@
     "noPackages": "Шаблоны работ не найдены.",
     "items": "{count} поз.",
     "totalHours": "{hours}ч всего",
-    "totalUnits": "{units} усл."
+    "totalUnits": "{units} усл.",
+    "totalParts": "{count} запчастей"
   },
   "errors": {
     "error": "Ошибка",

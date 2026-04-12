@@ -139,6 +139,7 @@ describe("updateLaborPreset — cross-org isolation", () => {
     vi.mocked(db.laborPreset.findFirst).mockResolvedValue({ id: "preset-a" } as any);
     const mockTx = {
       laborPresetItem: { deleteMany: vi.fn().mockResolvedValue({ count: 1 }) },
+      laborPresetPart: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
       laborPreset: {
         update: vi.fn().mockResolvedValue({
           id: "preset-a",

@@ -45,7 +45,16 @@
     "itemQty": "Qty",
     "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
-    "serviceTag": "SVC"
+    "serviceTag": "SVC",
+    "partsTitle": "Pièces",
+    "addPart": "Ajouter une pièce",
+    "partName": "Nom de la pièce",
+    "partNumber": "Pièce #",
+    "partQty": "Qté",
+    "partPrice": "Prix unitaire",
+    "importFromInventory": "Importer de l'inventaire",
+    "searchInventory": "Rechercher dans l'inventaire...",
+    "noPartsFound": "Aucune pièce trouvée"
   },
   "picker": {
     "title": "Sélectionner un modèle de main-d'œuvre",
@@ -53,7 +62,8 @@
     "noPackages": "Aucun modèle de main-d'œuvre trouvé.",
     "items": "{count} éléments",
     "totalHours": "{hours}h au total",
-    "totalUnits": "{units} unit(s)"
+    "totalUnits": "{units} unit(s)",
+    "totalParts": "{count} pièces"
   },
   "errors": {
     "error": "Erreur",

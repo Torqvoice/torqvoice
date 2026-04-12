@@ -45,7 +45,16 @@
     "itemQty": "Qty",
     "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
-    "serviceTag": "SVC"
+    "serviceTag": "SVC",
+    "partsTitle": "Deler",
+    "addPart": "Legg til del",
+    "partName": "Delnavn",
+    "partNumber": "Del #",
+    "partQty": "Ant.",
+    "partPrice": "Enhetspris",
+    "importFromInventory": "Importer fra lager",
+    "searchInventory": "Søk i lager...",
+    "noPartsFound": "Ingen deler funnet"
   },
   "picker": {
     "title": "Velg arbeidsmal",
@@ -53,7 +62,8 @@
     "noPackages": "Ingen arbeidsmaler funnet.",
     "items": "{count} elementer",
     "totalHours": "{hours}t totalt",
-    "totalUnits": "{units} unit(s)"
+    "totalUnits": "{units} unit(s)",
+    "totalParts": "{count} deler"
   },
   "errors": {
     "error": "Feil",

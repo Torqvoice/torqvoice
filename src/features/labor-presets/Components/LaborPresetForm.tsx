@@ -16,6 +16,8 @@ import {
 import { useGlassModal } from "@/components/glass-modal";
 import { createLaborPreset, updateLaborPreset } from "../Actions/laborPresetActions";
 import { Loader2, Plus, Trash2 } from "lucide-react";
+import { PresetPartsEditor } from "./PresetPartsEditor";
+import type { PresetPartItem } from "./PresetPartsEditor";
 
 type PricingType = "hourly" | "service";
 
@@ -39,6 +41,7 @@ interface LaborPresetData {
   name: string;
   description: string | null;
   items: { description: string; hours: number; rate: number; pricingType?: string; sortOrder: number }[];
+  parts?: { name: string; partNumber: string | null; quantity: number; unitPrice: number; inventoryPartId: string | null; sortOrder: number }[];
 }
 
 type PresetMode = "single" | "package";
@@ -48,6 +51,8 @@ interface LaborPresetFormProps {
   onOpenChange: (open: boolean) => void;
   preset?: LaborPresetData;
   defaultLaborRate?: number;
+  inventoryParts?: { id: string; name: string; partNumber: string | null; sellPrice: number; unitCost: number }[];
+  currencyCode?: string;
 }
 
 function detectMode(preset?: LaborPresetData): PresetMode {
@@ -72,7 +77,7 @@ function PricingTypeToggle({ value, onChange, tHourly, tService }: { value: Pric
   );
 }
 
-export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate = 0 }: LaborPresetFormProps) {
+export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate = 0, inventoryParts, currencyCode }: LaborPresetFormProps) {
   const router = useRouter();
   const modal = useGlassModal();
   const t = useTranslations("laborPresets");
@@ -96,6 +101,16 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
     return [{ name: "", description: "", hours: 0, rate: defaultLaborRate, pricingType: "hourly" }];
   });
 
+  const [parts, setParts] = useState<PresetPartItem[]>(
+    preset?.parts?.map((p) => ({
+      name: p.name,
+      partNumber: p.partNumber || "",
+      quantity: p.quantity,
+      unitPrice: p.unitPrice,
+      inventoryPartId: p.inventoryPartId || "",
+    })) ?? []
+  );
+
   const handleOpenChange = (isOpen: boolean) => {
     if (isOpen) {
       const detectedMode = detectMode(preset);
@@ -112,6 +127,15 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
       } else {
         setSingleItems([{ name: "", description: "", hours: 0, rate: defaultLaborRate, pricingType: "hourly" }]);
       }
+      setParts(
+        preset?.parts?.map((p) => ({
+          name: p.name,
+          partNumber: p.partNumber || "",
+          quantity: p.quantity,
+          unitPrice: p.unitPrice,
+          inventoryPartId: p.inventoryPartId || "",
+        })) ?? []
+      );
     }
     onOpenChange(isOpen);
   };
@@ -154,9 +178,20 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
     setSingleItems((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const buildPartsPayload = () =>
+    parts.filter((p) => p.name.trim()).map((part, index) => ({
+      name: part.name,
+      partNumber: part.partNumber || undefined,
+      quantity: Number(part.quantity) || 1,
+      unitPrice: Number(part.unitPrice) || 0,
+      inventoryPartId: part.inventoryPartId || undefined,
+      sortOrder: index,
+    }));
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    const partsPayload = buildPartsPayload();
 
     if (mode === "single") {
       const validItems = singleItems.filter((i) => i.name.trim());
@@ -167,42 +202,30 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
       }
 
       if (preset) {
-        // Editing: update the single preset
         const item = validItems[0];
         const result = await updateLaborPreset({
           id: preset.id,
           name: "",
           description: item.description || undefined,
           items: [{ description: item.name, hours: Number(item.hours) || 0, rate: Number(item.rate) || 0, pricingType: item.pricingType, sortOrder: 0 }],
+          parts: partsPayload,
         });
-        if (result.success) {
-          onOpenChange(false);
-          router.refresh();
-        } else {
-          modal.open("error", t("errors.error"), result.error || t("errors.saveFailed"));
-        }
+        if (result.success) { onOpenChange(false); router.refresh(); }
+        else { modal.open("error", t("errors.error"), result.error || t("errors.saveFailed")); }
       } else {
-        // Creating: create one preset per single item
         let allSuccess = true;
         for (const item of validItems) {
           const result = await createLaborPreset({
             name: "",
             description: item.description || undefined,
             items: [{ description: item.name, hours: Number(item.hours) || 0, rate: Number(item.rate) || 0, pricingType: item.pricingType, sortOrder: 0 }],
+            parts: partsPayload,
           });
-          if (!result.success) {
-            modal.open("error", t("errors.error"), result.error || t("errors.saveFailed"));
-            allSuccess = false;
-            break;
-          }
+          if (!result.success) { modal.open("error", t("errors.error"), result.error || t("errors.saveFailed")); allSuccess = false; break; }
         }
-        if (allSuccess) {
-          onOpenChange(false);
-          router.refresh();
-        }
+        if (allSuccess) { onOpenChange(false); router.refresh(); }
       }
     } else {
-      // Package mode
       const validItems = items.filter((i) => i.description.trim());
       if (validItems.length === 0) {
         modal.open("error", t("errors.error"), t("errors.noItems"));
@@ -214,24 +237,14 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
         name,
         description: description || undefined,
         items: validItems.map((item, index) => ({
-          description: item.description,
-          hours: Number(item.hours) || 0,
-          rate: Number(item.rate) || 0,
-          pricingType: item.pricingType,
-          sortOrder: index,
+          description: item.description, hours: Number(item.hours) || 0, rate: Number(item.rate) || 0, pricingType: item.pricingType, sortOrder: index,
         })),
+        parts: partsPayload,
       };
 
-      const result = preset
-        ? await updateLaborPreset({ ...data, id: preset.id })
-        : await createLaborPreset(data);
-
-      if (result.success) {
-        onOpenChange(false);
-        router.refresh();
-      } else {
-        modal.open("error", t("errors.error"), result.error || t("errors.saveFailed"));
-      }
+      const result = preset ? await updateLaborPreset({ ...data, id: preset.id }) : await createLaborPreset(data);
+      if (result.success) { onOpenChange(false); router.refresh(); }
+      else { modal.open("error", t("errors.error"), result.error || t("errors.saveFailed")); }
     }
 
     setLoading(false);
@@ -239,7 +252,7 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>
             {preset ? t("form.editPackage") : t("form.addPackage")}
@@ -341,6 +354,13 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
               >
                 <Plus className="h-4 w-4" />
               </button>
+
+              <PresetPartsEditor
+                parts={parts}
+                onPartsChange={setParts}
+                inventoryParts={inventoryParts}
+                currencyCode={currencyCode}
+              />
             </div>
           ) : (
             <>
@@ -434,6 +454,13 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
+
+              <PresetPartsEditor
+                parts={parts}
+                onPartsChange={setParts}
+                inventoryParts={inventoryParts}
+                currencyCode={currencyCode}
+              />
             </>
           )}
 

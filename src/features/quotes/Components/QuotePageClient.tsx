@@ -108,6 +108,18 @@ export function QuotePageClient({
         excluded: false,
       }))
       state.addLaborBulk(newItems)
+
+      if (preset.parts?.length) {
+        const newParts = preset.parts.map((part) => ({
+          name: part.name,
+          partNumber: part.partNumber || '',
+          quantity: part.quantity,
+          unitPrice: part.unitPrice,
+          total: part.quantity * part.unitPrice,
+          excluded: false,
+        }))
+        state.addPartBulk(newParts)
+      }
     },
     [defaultLaborRate, state]
   )
