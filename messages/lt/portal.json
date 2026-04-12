@@ -7,6 +7,11 @@
     "noResults": "Pagal jūsų paiešką nerasta dirbtuvių.",
     "openPortal": "Atidaryti portalą"
   },
+  "directLink": {
+    "title": "Klientų portalas",
+    "description": "Norėdami pasiekti klientų portalą, naudokite tiesioginę nuorodą, kurią gavote iš savo dirbtuvių.",
+    "hint": "Jūsų dirbtuvės pasidalins portalo nuoroda el. paštu arba SMS žinute."
+  },
   "landing": {
     "contactTitle": "Susisiekite su mumis",
     "aboutTitle": "Apie mus",

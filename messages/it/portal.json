@@ -7,6 +7,11 @@
     "noResults": "Nessuna officina corrisponde alla tua ricerca.",
     "openPortal": "Apri portale"
   },
+  "directLink": {
+    "title": "Portale clienti",
+    "description": "Utilizza il link diretto fornito dalla tua officina per accedere al portale clienti.",
+    "hint": "La tua officina condividerà il link del portale tramite e-mail o SMS."
+  },
   "landing": {
     "contactTitle": "Contattaci",
     "aboutTitle": "Chi siamo",

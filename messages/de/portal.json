@@ -7,6 +7,11 @@
     "noResults": "Keine Werkstatt entspricht Ihrer Suche.",
     "openPortal": "Portal öffnen"
   },
+  "directLink": {
+    "title": "Kundenportal",
+    "description": "Bitte verwenden Sie den direkten Link Ihrer Werkstatt, um auf das Kundenportal zuzugreifen.",
+    "hint": "Ihre Werkstatt wird Ihnen den Portal-Link per E-Mail oder SMS mitteilen."
+  },
   "landing": {
     "contactTitle": "Kontakt",
     "aboutTitle": "Über uns",
