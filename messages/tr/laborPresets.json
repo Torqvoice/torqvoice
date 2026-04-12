@@ -45,7 +45,16 @@
     "itemQty": "Qty",
     "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
-    "serviceTag": "SVC"
+    "serviceTag": "SVC",
+    "partsTitle": "Parçalar",
+    "addPart": "Parça ekle",
+    "partName": "Parça adı",
+    "partNumber": "Parça #",
+    "partQty": "Adet",
+    "partPrice": "Birim fiyat",
+    "importFromInventory": "Envanterden içe aktar",
+    "searchInventory": "Envanterde ara...",
+    "noPartsFound": "Parça bulunamadı"
   },
   "picker": {
     "title": "İşçilik Şablonu Seç",
@@ -53,7 +62,8 @@
     "noPackages": "İşçilik şablonu bulunamadı.",
     "items": "{count} kalem",
     "totalHours": "toplam {hours}s",
-    "totalUnits": "{units} unit(s)"
+    "totalUnits": "{units} unit(s)",
+    "totalParts": "{count} parça"
   },
   "errors": {
     "error": "Hata",

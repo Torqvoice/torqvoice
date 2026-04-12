@@ -45,7 +45,16 @@
     "itemQty": "Qty",
     "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
-    "serviceTag": "SVC"
+    "serviceTag": "SVC",
+    "partsTitle": "Części",
+    "addPart": "Dodaj część",
+    "partName": "Nazwa części",
+    "partNumber": "Część #",
+    "partQty": "Ilość",
+    "partPrice": "Cena jedn.",
+    "importFromInventory": "Importuj z magazynu",
+    "searchInventory": "Szukaj w magazynie...",
+    "noPartsFound": "Nie znaleziono części"
   },
   "picker": {
     "title": "Wybierz szablon robocizny",
@@ -53,7 +62,8 @@
     "noPackages": "Nie znaleziono szablonów robocizny.",
     "items": "{count} pozycji",
     "totalHours": "{hours} godz. łącznie",
-    "totalUnits": "{units} unit(s)"
+    "totalUnits": "{units} unit(s)",
+    "totalParts": "{count} części"
   },
   "errors": {
     "error": "Błąd",

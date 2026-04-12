@@ -45,7 +45,16 @@
     "itemQty": "Qty",
     "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
-    "serviceTag": "SVC"
+    "serviceTag": "SVC",
+    "partsTitle": "Onderdelen",
+    "addPart": "Onderdeel toevoegen",
+    "partName": "Onderdeelnaam",
+    "partNumber": "Onderdeel #",
+    "partQty": "Aantal",
+    "partPrice": "Stuksprijs",
+    "importFromInventory": "Importeren uit voorraad",
+    "searchInventory": "Zoeken in voorraad...",
+    "noPartsFound": "Geen onderdelen gevonden"
   },
   "picker": {
     "title": "Arbeidssjabloon selecteren",
@@ -53,7 +62,8 @@
     "noPackages": "Geen arbeidssjablonen gevonden.",
     "items": "{count} items",
     "totalHours": "{hours}u totaal",
-    "totalUnits": "{units} unit(s)"
+    "totalUnits": "{units} unit(s)",
+    "totalParts": "{count} onderdelen"
   },
   "errors": {
     "error": "Fout",

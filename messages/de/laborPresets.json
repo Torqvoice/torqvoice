@@ -45,7 +45,16 @@
     "itemQty": "Qty",
     "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
-    "serviceTag": "SVC"
+    "serviceTag": "SVC",
+    "partsTitle": "Teile",
+    "addPart": "Teil hinzufügen",
+    "partName": "Teilname",
+    "partNumber": "Teil-Nr.",
+    "partQty": "Menge",
+    "partPrice": "Stückpreis",
+    "importFromInventory": "Aus Lager importieren",
+    "searchInventory": "Lager durchsuchen...",
+    "noPartsFound": "Keine Teile gefunden"
   },
   "picker": {
     "title": "Arbeitsvorlage auswählen",
@@ -53,7 +62,8 @@
     "noPackages": "Keine Arbeitsvorlagen gefunden.",
     "items": "{count} Positionen",
     "totalHours": "{hours} Std. gesamt",
-    "totalUnits": "{units} unit(s)"
+    "totalUnits": "{units} unit(s)",
+    "totalParts": "{count} Teile"
   },
   "errors": {
     "error": "Fehler",

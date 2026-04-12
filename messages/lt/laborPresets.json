@@ -45,7 +45,16 @@
     "create": "Sukurti paketą",
     "saveChanges": "Išsaugoti pakeitimus",
     "hourlyTag": "VAL",
-    "serviceTag": "PSL"
+    "serviceTag": "PSL",
+    "partsTitle": "Dalys",
+    "addPart": "Pridėti dalį",
+    "partName": "Dalies pavadinimas",
+    "partNumber": "Dalies #",
+    "partQty": "Kiekis",
+    "partPrice": "Vieneto kaina",
+    "importFromInventory": "Importuoti iš sandėlio",
+    "searchInventory": "Ieškoti sandėlyje...",
+    "noPartsFound": "Dalių nerasta"
   },
   "picker": {
     "title": "Pasirinkti darbų šabloną",
@@ -53,7 +62,8 @@
     "noPackages": "Darbų šablonų nerasta.",
     "items": "{count} elementų",
     "totalHours": "{hours} val. iš viso",
-    "totalUnits": "{units} vnt."
+    "totalUnits": "{units} vnt.",
+    "totalParts": "{count} dalių"
   },
   "errors": {
     "error": "Klaida",

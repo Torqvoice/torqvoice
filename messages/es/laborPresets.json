@@ -45,7 +45,16 @@
     "itemQty": "Qty",
     "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
-    "serviceTag": "SVC"
+    "serviceTag": "SVC",
+    "partsTitle": "Piezas",
+    "addPart": "Añadir pieza",
+    "partName": "Nombre de pieza",
+    "partNumber": "Pieza #",
+    "partQty": "Cant.",
+    "partPrice": "Precio unitario",
+    "importFromInventory": "Importar del inventario",
+    "searchInventory": "Buscar en inventario...",
+    "noPartsFound": "No se encontraron piezas"
   },
   "picker": {
     "title": "Seleccionar plantilla de mano de obra",
@@ -53,7 +62,8 @@
     "noPackages": "No se encontraron plantillas de mano de obra.",
     "items": "{count} elementos",
     "totalHours": "{hours}h en total",
-    "totalUnits": "{units} unit(s)"
+    "totalUnits": "{units} unit(s)",
+    "totalParts": "{count} piezas"
   },
   "errors": {
     "error": "Error",

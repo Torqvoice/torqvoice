@@ -49,7 +49,7 @@ export async function getLaborPresetsPaginated(params: {
         skip,
         take: pageSize,
         include: {
-          _count: { select: { items: true } },
+          _count: { select: { items: true, parts: true } },
           items: { select: { hours: true, pricingType: true } },
         },
       }),
@@ -72,6 +72,7 @@ export async function getLaborPreset(presetId: string) {
       where: { id: presetId, organizationId },
       include: {
         items: { orderBy: { sortOrder: "asc" } },
+        parts: { orderBy: { sortOrder: "asc" } },
       },
     });
     if (!preset) throw new Error("Preset not found");
@@ -98,8 +99,18 @@ export async function createLaborPreset(input: unknown) {
             sortOrder: index,
           })),
         },
+        parts: data.parts?.length ? {
+          create: data.parts.map((part, index) => ({
+            name: part.name,
+            partNumber: part.partNumber || null,
+            quantity: part.quantity,
+            unitPrice: part.unitPrice,
+            inventoryPartId: part.inventoryPartId || null,
+            sortOrder: index,
+          })),
+        } : undefined,
       },
-      include: { items: true },
+      include: { items: true, parts: true },
     });
     revalidatePath("/labor-presets");
     return preset;
@@ -118,7 +129,7 @@ export async function createLaborPreset(input: unknown) {
 export async function updateLaborPreset(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const data = updateLaborPresetSchema.parse(input);
-    const { id, items, ...updateData } = data;
+    const { id, items, parts, ...updateData } = data;
     // Resolve name from first item if not provided
     if (updateData.name !== undefined) {
       updateData.name = updateData.name?.trim() || items?.[0]?.description || "Untitled";
@@ -130,10 +141,11 @@ export async function updateLaborPreset(input: unknown) {
     if (!existing) throw new Error("Preset not found");
 
     await db.$transaction(async (tx) => {
-      // Delete old items
+      // Delete old items and parts
       await tx.laborPresetItem.deleteMany({ where: { presetId: id } });
+      await tx.laborPresetPart.deleteMany({ where: { presetId: id } });
 
-      // Update preset and create new items
+      // Update preset and create new items/parts
       return tx.laborPreset.update({
         where: { id },
         data: {
@@ -148,8 +160,18 @@ export async function updateLaborPreset(input: unknown) {
               sortOrder: index,
             })),
           } : undefined,
+          parts: parts?.length ? {
+            create: parts.map((part, index) => ({
+              name: part.name,
+              partNumber: part.partNumber || null,
+              quantity: part.quantity,
+              unitPrice: part.unitPrice,
+              inventoryPartId: part.inventoryPartId || null,
+              sortOrder: index,
+            })),
+          } : undefined,
         },
-        include: { items: true },
+        include: { items: true, parts: true },
       });
     });
 
@@ -201,6 +223,17 @@ export async function getLaborPresetsList() {
             hours: true,
             rate: true,
             pricingType: true,
+            sortOrder: true,
+          },
+          orderBy: { sortOrder: "asc" },
+        },
+        parts: {
+          select: {
+            name: true,
+            partNumber: true,
+            quantity: true,
+            unitPrice: true,
+            inventoryPartId: true,
             sortOrder: true,
           },
           orderBy: { sortOrder: "asc" },

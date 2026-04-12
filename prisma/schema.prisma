@@ -419,6 +419,7 @@ model LaborPreset {
   organizationId String
   organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   items          LaborPresetItem[]
+  parts          LaborPresetPart[]
 
   @@index([organizationId])
   @@map("labor_presets")
@@ -436,6 +437,22 @@ model LaborPresetItem {
 
   @@index([presetId])
   @@map("labor_preset_items")
+}
+
+model LaborPresetPart {
+  id              String  @id @default(cuid())
+  name            String
+  partNumber      String?
+  quantity        Float   @default(1)
+  unitPrice       Float   @default(0)
+  inventoryPartId String?
+  sortOrder       Int     @default(0)
+
+  presetId String
+  preset   LaborPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+
+  @@index([presetId])
+  @@map("labor_preset_parts")
 }
 
 model InventoryPart {
