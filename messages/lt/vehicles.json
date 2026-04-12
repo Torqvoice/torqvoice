@@ -148,7 +148,16 @@
       "mileageMarine": "Variklio valandos",
       "technician": "Technikas",
       "files": "Failai",
-      "total": "Suma"
+      "total": "Suma",
+      "warranty": "Garantija"
+    },
+    "warranty": {
+      "status": {
+        "active": "Aktyvi",
+        "expiring": "Baigiasi",
+        "expired": "Pasibaigusi",
+        "none": "N/A"
+      }
     },
     "emptyFiltered": "Nėra paslaugų įrašų, atitinkančių filtrus.",
     "empty": "Paslaugų įrašų dar nėra.",

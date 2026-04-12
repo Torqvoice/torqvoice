@@ -148,7 +148,16 @@
       "mileageMarine": "Ore Motore",
       "technician": "Tecnico",
       "files": "File",
-      "total": "Totale"
+      "total": "Totale",
+      "warranty": "Garanzia"
+    },
+    "warranty": {
+      "status": {
+        "active": "Attiva",
+        "expiring": "In scadenza",
+        "expired": "Scaduta",
+        "none": "N/A"
+      }
     },
     "emptyFiltered": "Nessun intervento corrisponde ai filtri.",
     "empty": "Nessun intervento ancora.",

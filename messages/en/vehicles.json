@@ -148,7 +148,16 @@
       "mileageMarine": "Engine Hours",
       "technician": "Technician",
       "files": "Files",
-      "total": "Total"
+      "total": "Total",
+      "warranty": "Warranty"
+    },
+    "warranty": {
+      "status": {
+        "active": "Active",
+        "expiring": "Expiring",
+        "expired": "Expired",
+        "none": "N/A"
+      }
     },
     "emptyFiltered": "No service records match your filters.",
     "empty": "No service records yet.",

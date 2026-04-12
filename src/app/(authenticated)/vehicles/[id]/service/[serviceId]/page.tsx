@@ -163,6 +163,9 @@ export default async function ServiceDetailPage({
     discountType: record.discountType || undefined,
     discountValue: record.discountValue,
     discountAmount: record.discountAmount,
+    warrantyMonths: record.warrantyMonths ?? null,
+    warrantyMileage: record.warrantyMileage ?? null,
+    warrantyNotes: record.warrantyNotes ?? null,
   };
 
   // Prepare media attachments for managers

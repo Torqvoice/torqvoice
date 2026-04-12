@@ -7,6 +7,14 @@ import { Download } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
+import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
+
+const warrantyBadgeStyles: Record<WarrantyStatus, string> = {
+  active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  expiring: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+  expired: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  none: 'bg-muted text-muted-foreground',
+}
 
 export default async function PortalVehicleDetailPage({
   params,
@@ -16,6 +24,7 @@ export default async function PortalVehicleDetailPage({
   const { orgId, vehicleId } = await params
   const t = await getTranslations('portal.vehicles')
   const tInvoices = await getTranslations('portal.invoices')
+  const tWarranty = await getTranslations('vehicles.services.warranty.status')
   const [result, serviceTypeSetting] = await Promise.all([
     getPortalVehicleDetail(vehicleId),
     db.appSetting.findUnique({
@@ -105,6 +114,22 @@ export default async function PortalVehicleDetailPage({
                       </div>
                       <div className="flex items-center gap-3">
                         <Badge variant="outline">{sr.status}</Badge>
+                        {(() => {
+                          const ws = getWarrantyStatus(
+                            sr.warrantyExpiresAt,
+                            sr.warrantyMileage,
+                            sr.mileage,
+                            v.mileage,
+                          )
+                          return ws !== 'none' ? (
+                            <Badge
+                              variant="outline"
+                              className={`text-xs ${warrantyBadgeStyles[ws]}`}
+                            >
+                              {tWarranty(ws)}
+                            </Badge>
+                          ) : null
+                        })()}
                         <span className="text-sm font-medium">${sr.totalAmount.toFixed(2)}</span>
                         {sr.publicToken && (
                           <Link

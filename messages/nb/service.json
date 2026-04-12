@@ -333,5 +333,32 @@
     "minutesAgo": "{count}m siden",
     "hoursAgo": "{count}t siden",
     "daysAgo": "{count}d siden"
+  },
+  "table": {
+    "warranty": "Garanti"
+  },
+  "warranty": {
+    "title": "Garanti",
+    "months": "Varighet (måneder)",
+    "mileage": "Kilometergrense",
+    "notes": "Garantivilkår",
+    "notesPlaceholder": "f.eks. 12 måneders garanti på alle deler og arbeid...",
+    "expiresAt": "Utløper",
+    "presets": {
+      "3months": "3 md",
+      "6months": "6 md",
+      "12months": "12 md",
+      "24months": "24 md"
+    },
+    "status": {
+      "active": "Aktiv",
+      "expiring": "Utløper snart",
+      "expired": "Utløpt",
+      "none": "Ingen"
+    },
+    "defaults": {
+      "title": "Standard garantiinnstillinger",
+      "description": "Angi standard garantivilkår for nye serviceoppføringer"
+    }
   }
 }

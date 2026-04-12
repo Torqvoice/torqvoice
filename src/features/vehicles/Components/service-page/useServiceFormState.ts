@@ -32,6 +32,9 @@ export function useServiceFormState({
   const [showInventoryPicker, setShowInventoryPicker] = useState(false)
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false)
   const [showPresetPicker, setShowPresetPicker] = useState(false)
+  const [warrantyMonths, setWarrantyMonths] = useState<number | null>(initialData.warrantyMonths ?? null)
+  const [warrantyMileage, setWarrantyMileage] = useState<number | null>(initialData.warrantyMileage ?? null)
+  const [warrantyNotes, setWarrantyNotes] = useState<string | null>(initialData.warrantyNotes ?? null)
 
   // Autosave state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -181,6 +184,9 @@ export function useServiceFormState({
   const dirtySetType = useCallback((v: string) => { setType(v); markDirty() }, [markDirty])
   const dirtySetStatus = useCallback((v: string) => { setStatus(v); markDirty() }, [markDirty])
   const dirtySetSelectedVehicleId = useCallback((v: string) => { setSelectedVehicleId(v); markDirty() }, [markDirty])
+  const dirtySetWarrantyMonths = useCallback((v: number | null) => { setWarrantyMonths(v); markDirty() }, [markDirty])
+  const dirtySetWarrantyMileage = useCallback((v: number | null) => { setWarrantyMileage(v); markDirty() }, [markDirty])
+  const dirtySetWarrantyNotes = useCallback((v: string | null) => { setWarrantyNotes(v); markDirty() }, [markDirty])
 
   return {
     // State
@@ -210,6 +216,9 @@ export function useServiceFormState({
     dirtySetPartItems, dirtySetLaborItems,
     dirtySetDiscountType, dirtySetDiscountValue, dirtySetTaxRate,
     dirtySetType, dirtySetStatus, dirtySetSelectedVehicleId,
+    // Warranty
+    warrantyMonths, warrantyMileage, warrantyNotes,
+    dirtySetWarrantyMonths, dirtySetWarrantyMileage, dirtySetWarrantyNotes,
     initialData,
   }
 }

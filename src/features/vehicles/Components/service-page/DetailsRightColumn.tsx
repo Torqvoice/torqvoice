@@ -8,6 +8,7 @@ import { ScheduleTimesSection } from '../service-edit/ScheduleTimesSection'
 import { TotalsSection } from '../service-edit/TotalsSection'
 import { ServiceAttachments } from '../service-detail/ServiceAttachments'
 import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
+import { WarrantySection } from './WarrantySection'
 import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
@@ -105,6 +106,15 @@ export function DetailsRightColumn({
         taxInclusive={formState.taxInclusive}
         totalAmount={formState.totalAmount}
         currencyCode={currencyCode}
+      />
+      <WarrantySection
+        warrantyMonths={formState.warrantyMonths}
+        warrantyMileage={formState.warrantyMileage}
+        warrantyNotes={formState.warrantyNotes}
+        serviceDate={formState.initialData.serviceDate}
+        onWarrantyMonthsChange={formState.dirtySetWarrantyMonths}
+        onWarrantyMileageChange={formState.dirtySetWarrantyMileage}
+        onWarrantyNotesChange={formState.dirtySetWarrantyNotes}
       />
       <ServiceAttachments
         attachments={record.attachments || []}

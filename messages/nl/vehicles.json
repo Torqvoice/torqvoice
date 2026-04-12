@@ -148,7 +148,16 @@
       "mileageMarine": "Motoruren",
       "technician": "Monteur",
       "files": "Bestanden",
-      "total": "Totaal"
+      "total": "Totaal",
+      "warranty": "Garantie"
+    },
+    "warranty": {
+      "status": {
+        "active": "Actief",
+        "expiring": "Verloopt binnenkort",
+        "expired": "Verlopen",
+        "none": "N/A"
+      }
     },
     "emptyFiltered": "Geen servicegegevens gevonden voor uw filters.",
     "empty": "Nog geen servicegegevens.",

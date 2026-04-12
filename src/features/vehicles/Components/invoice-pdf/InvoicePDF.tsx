@@ -8,6 +8,7 @@ import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable, FindingsPdfSection } from './Tables'
 import { Totals } from './Totals'
 import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
+import { WarrantySection } from './Warranty'
 import { CustomFields } from './CustomFields'
 import { Footer, AttachmentsFooter } from './Footer'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -256,6 +257,20 @@ export function InvoicePDF({
         fontFamily={fontFamily}
         styles={styles}
         labels={labels}
+      />
+    ),
+
+    warranty: (
+      <WarrantySection
+        warrantyMonths={data.warrantyMonths}
+        warrantyMileage={data.warrantyMileage}
+        warrantyExpiresAt={data.warrantyExpiresAt}
+        warrantyNotes={data.warrantyNotes}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+        dateFormat={invoiceSettings?.dateFormat}
+        timezone={invoiceSettings?.timezone}
       />
     ),
 

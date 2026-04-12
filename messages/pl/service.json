@@ -333,5 +333,32 @@
     "minutesAgo": "{count}m temu",
     "hoursAgo": "{count}g temu",
     "daysAgo": "{count}d temu"
+  },
+  "table": {
+    "warranty": "Gwarancja"
+  },
+  "warranty": {
+    "title": "Gwarancja",
+    "months": "Czas trwania (miesiące)",
+    "mileage": "Limit przebiegu",
+    "notes": "Warunki gwarancji",
+    "notesPlaceholder": "np. 12-miesięczna gwarancja na wszystkie części i robociznę...",
+    "expiresAt": "Wygasa",
+    "presets": {
+      "3months": "3 m-ce",
+      "6months": "6 m-cy",
+      "12months": "12 m-cy",
+      "24months": "24 m-ce"
+    },
+    "status": {
+      "active": "Aktywna",
+      "expiring": "Wygasa wkrótce",
+      "expired": "Wygasła",
+      "none": "Brak"
+    },
+    "defaults": {
+      "title": "Domyślne ustawienia gwarancji",
+      "description": "Ustaw domyślne warunki gwarancji dla nowych wpisów serwisowych"
+    }
   }
 }

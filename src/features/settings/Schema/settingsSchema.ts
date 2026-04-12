@@ -99,6 +99,9 @@ export const SETTING_KEYS = {
   WORKSHOP_LOCALE: 'workshop.locale',
   WORKSHOP_DEFAULT_COUNTRY_CODE: 'workshop.defaultCountryCode',
   FORCE_CUSTOMER_LOCALE: 'workshop.forceCustomerLocale',
+  DEFAULT_WARRANTY_MONTHS: 'defaultWarrantyMonths',
+  DEFAULT_WARRANTY_MILEAGE: 'defaultWarrantyMileage',
+  DEFAULT_WARRANTY_NOTES: 'defaultWarrantyNotes',
 } as const
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS]

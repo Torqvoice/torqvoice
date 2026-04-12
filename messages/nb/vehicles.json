@@ -148,7 +148,16 @@
       "mileageMarine": "Motortimer",
       "technician": "Mekaniker",
       "files": "Filer",
-      "total": "Totalt"
+      "total": "Totalt",
+      "warranty": "Garanti"
+    },
+    "warranty": {
+      "status": {
+        "active": "Aktiv",
+        "expiring": "Utloper snart",
+        "expired": "Utlopt",
+        "none": "N/A"
+      }
     },
     "emptyFiltered": "Ingen serviceoppforinger samsvarer med filtrene dine.",
     "empty": "Ingen serviceoppforinger enna.",

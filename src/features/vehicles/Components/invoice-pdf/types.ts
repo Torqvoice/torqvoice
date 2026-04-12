@@ -51,6 +51,10 @@ export interface InvoiceData {
   }[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>;
   findings?: Array<{ description: string; severity: string; notes: string | null }>;
+  warrantyMonths?: number | null;
+  warrantyMileage?: number | null;
+  warrantyExpiresAt?: Date | string | null;
+  warrantyNotes?: string | null;
   vehicle: {
     make: string
     model: string

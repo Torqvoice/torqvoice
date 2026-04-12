@@ -333,5 +333,32 @@
     "minutesAgo": "{count}m geleden",
     "hoursAgo": "{count}u geleden",
     "daysAgo": "{count}d geleden"
+  },
+  "table": {
+    "warranty": "Garantie"
+  },
+  "warranty": {
+    "title": "Garantie",
+    "months": "Duur (maanden)",
+    "mileage": "Kilometerlimiet",
+    "notes": "Garantievoorwaarden",
+    "notesPlaceholder": "bijv. 12 maanden garantie op alle onderdelen en arbeid...",
+    "expiresAt": "Verloopt",
+    "presets": {
+      "3months": "3 md",
+      "6months": "6 md",
+      "12months": "12 md",
+      "24months": "24 md"
+    },
+    "status": {
+      "active": "Actief",
+      "expiring": "Verloopt binnenkort",
+      "expired": "Verlopen",
+      "none": "Geen"
+    },
+    "defaults": {
+      "title": "Standaard garantie-instellingen",
+      "description": "Stel standaard garantievoorwaarden in voor nieuwe serviceregistraties"
+    }
   }
 }

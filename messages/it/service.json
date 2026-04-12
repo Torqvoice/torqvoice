@@ -333,5 +333,32 @@
     "minutesAgo": "{count}m fa",
     "hoursAgo": "{count}h fa",
     "daysAgo": "{count}g fa"
+  },
+  "table": {
+    "warranty": "Garanzia"
+  },
+  "warranty": {
+    "title": "Garanzia",
+    "months": "Durata (mesi)",
+    "mileage": "Limite chilometrico",
+    "notes": "Termini di garanzia",
+    "notesPlaceholder": "es. Garanzia di 12 mesi su tutti i ricambi e la manodopera...",
+    "expiresAt": "Scadenza",
+    "presets": {
+      "3months": "3 m",
+      "6months": "6 m",
+      "12months": "12 m",
+      "24months": "24 m"
+    },
+    "status": {
+      "active": "Attiva",
+      "expiring": "In scadenza",
+      "expired": "Scaduta",
+      "none": "Nessuna"
+    },
+    "defaults": {
+      "title": "Impostazioni garanzia predefinite",
+      "description": "Imposta i termini di garanzia predefiniti per i nuovi interventi"
+    }
   }
 }

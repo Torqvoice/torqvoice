@@ -333,5 +333,32 @@
     "minutesAgo": "prieš {count} min.",
     "hoursAgo": "prieš {count} val.",
     "daysAgo": "prieš {count} d."
+  },
+  "table": {
+    "warranty": "Garantija"
+  },
+  "warranty": {
+    "title": "Garantija",
+    "months": "Trukmė (mėnesiai)",
+    "mileage": "Ridos limitas",
+    "notes": "Garantijos sąlygos",
+    "notesPlaceholder": "pvz. 12 mėnesių garantija visoms dalims ir darbui...",
+    "expiresAt": "Galioja iki",
+    "presets": {
+      "3months": "3 mėn.",
+      "6months": "6 mėn.",
+      "12months": "12 mėn.",
+      "24months": "24 mėn."
+    },
+    "status": {
+      "active": "Aktyvi",
+      "expiring": "Baigiasi",
+      "expired": "Pasibaigusi",
+      "none": "Nėra"
+    },
+    "defaults": {
+      "title": "Numatytieji garantijos nustatymai",
+      "description": "Nustatyti numatytas garantijos sąlygas naujiems aptarnavimo įrašams"
+    }
   }
 }

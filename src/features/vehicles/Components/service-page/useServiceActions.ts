@@ -61,6 +61,9 @@ export function useServiceActions({
     discountType,
     discountValue,
     discountAmount,
+    warrantyMonths,
+    warrantyMileage,
+    warrantyNotes,
     isSavingRef,
     autosaveTimer,
     setLoading,
@@ -138,6 +141,9 @@ export function useServiceActions({
       discountType: discountType === 'none' ? 'none' : discountType,
       discountValue: discountType === 'none' ? 0 : discountValue,
       discountAmount: discountType === 'none' ? 0 : discountAmount,
+      warrantyMonths: warrantyMonths ?? undefined,
+      warrantyMileage: warrantyMileage ?? undefined,
+      warrantyNotes: warrantyNotes ?? undefined,
     }
 
     const result = await updateServiceRecord(payload)

@@ -333,5 +333,32 @@
     "minutesAgo": "{count}m ago",
     "hoursAgo": "{count}h ago",
     "daysAgo": "{count}d ago"
+  },
+  "table": {
+    "warranty": "Warranty"
+  },
+  "warranty": {
+    "title": "Warranty",
+    "months": "Duration (months)",
+    "mileage": "Mileage Limit",
+    "notes": "Warranty Terms",
+    "notesPlaceholder": "e.g. 12-month warranty on all parts and labor...",
+    "expiresAt": "Expires",
+    "presets": {
+      "3months": "3 mo",
+      "6months": "6 mo",
+      "12months": "12 mo",
+      "24months": "24 mo"
+    },
+    "status": {
+      "active": "Active",
+      "expiring": "Expiring",
+      "expired": "Expired",
+      "none": "N/A"
+    },
+    "defaults": {
+      "title": "Default Warranty Settings",
+      "description": "Set default warranty terms for new service records"
+    }
   }
 }

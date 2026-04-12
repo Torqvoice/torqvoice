@@ -148,7 +148,16 @@
       "mileageMarine": "Betriebsstunden",
       "technician": "Techniker",
       "files": "Dateien",
-      "total": "Gesamt"
+      "total": "Gesamt",
+      "warranty": "Garantie"
+    },
+    "warranty": {
+      "status": {
+        "active": "Aktiv",
+        "expiring": "Auslaufend",
+        "expired": "Abgelaufen",
+        "none": "N/A"
+      }
     },
     "emptyFiltered": "Keine Serviceeintr\u00e4ge entsprechen Ihren Filtern.",
     "empty": "Noch keine Serviceeintr\u00e4ge.",

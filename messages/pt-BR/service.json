@@ -333,5 +333,32 @@
     "minutesAgo": "{count}m atrás",
     "hoursAgo": "{count}h atrás",
     "daysAgo": "{count}d atrás"
+  },
+  "table": {
+    "warranty": "Garantia"
+  },
+  "warranty": {
+    "title": "Garantia",
+    "months": "Duração (meses)",
+    "mileage": "Limite de quilometragem",
+    "notes": "Termos de garantia",
+    "notesPlaceholder": "ex. Garantia de 12 meses em todas as peças e mão de obra...",
+    "expiresAt": "Expira",
+    "presets": {
+      "3months": "3 m",
+      "6months": "6 m",
+      "12months": "12 m",
+      "24months": "24 m"
+    },
+    "status": {
+      "active": "Ativa",
+      "expiring": "Expirando",
+      "expired": "Expirada",
+      "none": "N/A"
+    },
+    "defaults": {
+      "title": "Configurações padrão de garantia",
+      "description": "Definir termos de garantia padrão para novos registros de serviço"
+    }
   }
 }

@@ -333,5 +333,32 @@
     "minutesAgo": "il y a {count}m",
     "hoursAgo": "il y a {count}h",
     "daysAgo": "il y a {count}j"
+  },
+  "table": {
+    "warranty": "Garantie"
+  },
+  "warranty": {
+    "title": "Garantie",
+    "months": "Durée (mois)",
+    "mileage": "Limite de kilométrage",
+    "notes": "Conditions de garantie",
+    "notesPlaceholder": "ex. Garantie de 12 mois sur toutes les pièces et la main-d'œuvre...",
+    "expiresAt": "Expire",
+    "presets": {
+      "3months": "3 m",
+      "6months": "6 m",
+      "12months": "12 m",
+      "24months": "24 m"
+    },
+    "status": {
+      "active": "Active",
+      "expiring": "Expire bientôt",
+      "expired": "Expirée",
+      "none": "Aucune"
+    },
+    "defaults": {
+      "title": "Paramètres de garantie par défaut",
+      "description": "Définir les conditions de garantie par défaut pour les nouveaux dossiers de service"
+    }
   }
 }
