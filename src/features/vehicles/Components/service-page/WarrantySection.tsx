@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import { ChevronDown, ChevronRight, Shield } from 'lucide-react'
+import { ChevronDown, ChevronRight, Shield, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -49,19 +49,39 @@ export function WarrantySection({
 
   return (
     <div className="rounded-lg border p-3">
-      <button
-        type="button"
-        className="flex w-full items-center gap-2 text-left"
-        onClick={() => setOpen((prev) => !prev)}
-      >
-        {open ? (
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-        ) : (
-          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className="flex flex-1 items-center gap-2 text-left"
+          onClick={() => setOpen((prev) => !prev)}
+        >
+          {open ? (
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+          ) : (
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+          )}
+          <Shield className="h-3.5 w-3.5 text-muted-foreground" />
+          <h3 className="text-sm font-semibold">{t('title')}</h3>
+          {!open && hasValues && (
+            <span className="text-xs text-muted-foreground">{warrantyMonths ? `${warrantyMonths} mo` : ''}</span>
+          )}
+        </button>
+        {hasValues && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-6 px-2 text-xs text-muted-foreground hover:text-destructive"
+            onClick={() => {
+              onWarrantyMonthsChange(null)
+              onWarrantyMileageChange(null)
+              onWarrantyNotesChange(null)
+            }}
+          >
+            <X className="h-3 w-3" />
+          </Button>
         )}
-        <Shield className="h-3.5 w-3.5 text-muted-foreground" />
-        <h3 className="text-sm font-semibold">{t('title')}</h3>
-      </button>
+      </div>
 
       {open && (
         <div className="mt-3 space-y-3">

@@ -46,6 +46,10 @@ interface InvoiceRecord {
   discountType: string | null
   discountValue: number
   discountAmount: number
+  warrantyMonths: number | null
+  warrantyMileage: number | null
+  warrantyExpiresAt: Date | string | null
+  warrantyNotes: string | null
   partItems: {
     partNumber: string | null
     name: string
@@ -1026,6 +1030,28 @@ export function InvoiceView({
                   />
                 </div>
               )
+
+            case 'warranty': {
+              if (!record.warrantyMonths && !record.warrantyNotes) return null
+              const parts: string[] = []
+              if (record.warrantyMonths) parts.push(`${record.warrantyMonths} ${record.warrantyMonths === 1 ? t('warrantyMonth', { defaultValue: 'month' }) : t('warrantyMonths', { defaultValue: 'months' })}`)
+              if (record.warrantyMileage) parts.push(`${record.warrantyMileage.toLocaleString()} ${t('warrantyKm', { defaultValue: 'km' })}`)
+              const expiresAt = record.warrantyExpiresAt ? fmtDate(new Date(record.warrantyExpiresAt), df) : null
+              return (
+                <div key="warranty" className="mt-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                  <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('warrantyTitle', { defaultValue: 'Warranty' })}</p>
+                  {parts.length > 0 && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{parts.join(' / ')}</p>
+                  )}
+                  {expiresAt && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('warrantyExpires', { defaultValue: 'Expires' })}: {expiresAt}</p>
+                  )}
+                  {record.warrantyNotes && (
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{record.warrantyNotes}</p>
+                  )}
+                </div>
+              )
+            }
 
             case 'findings':
               if (!findings || findings.length === 0) return null

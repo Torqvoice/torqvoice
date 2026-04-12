@@ -141,9 +141,9 @@ export function useServiceActions({
       discountType: discountType === 'none' ? 'none' : discountType,
       discountValue: discountType === 'none' ? 0 : discountValue,
       discountAmount: discountType === 'none' ? 0 : discountAmount,
-      warrantyMonths: warrantyMonths ?? undefined,
-      warrantyMileage: warrantyMileage ?? undefined,
-      warrantyNotes: warrantyNotes ?? undefined,
+      warrantyMonths: warrantyMonths ?? 0,
+      warrantyMileage: warrantyMileage ?? 0,
+      warrantyNotes: warrantyNotes ?? '',
     }
 
     const result = await updateServiceRecord(payload)
