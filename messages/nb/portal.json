@@ -7,6 +7,11 @@
     "noResults": "Ingen verksteder samsvarer med søket.",
     "openPortal": "Åpne portal"
   },
+  "directLink": {
+    "title": "Kundeportal",
+    "description": "Bruk den direkte lenken fra verkstedet ditt for å få tilgang til kundeportalen.",
+    "hint": "Verkstedet ditt vil dele portallenken med deg via e-post eller SMS."
+  },
   "landing": {
     "contactTitle": "Kontakt oss",
     "aboutTitle": "Om oss",

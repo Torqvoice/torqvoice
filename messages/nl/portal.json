@@ -7,6 +7,11 @@
     "noResults": "Geen werkplaatsen gevonden voor uw zoekopdracht.",
     "openPortal": "Portaal openen"
   },
+  "directLink": {
+    "title": "Klantenportaal",
+    "description": "Gebruik de directe link van uw werkplaats om toegang te krijgen tot het klantenportaal.",
+    "hint": "Uw werkplaats deelt de portaallink met u via e-mail of sms."
+  },
   "landing": {
     "contactTitle": "Neem contact op",
     "aboutTitle": "Over ons",

@@ -7,6 +7,11 @@
     "noResults": "No workshops match your search.",
     "openPortal": "Open portal"
   },
+  "directLink": {
+    "title": "Customer Portal",
+    "description": "Please use the direct link provided by your workshop to access the customer portal.",
+    "hint": "Your workshop will share the portal link with you via email or SMS."
+  },
   "landing": {
     "contactTitle": "Contact us",
     "aboutTitle": "About us",

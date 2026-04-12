@@ -7,6 +7,11 @@
     "noResults": "Aucun garage ne correspond à votre recherche.",
     "openPortal": "Ouvrir le portail"
   },
+  "directLink": {
+    "title": "Portail client",
+    "description": "Veuillez utiliser le lien direct fourni par votre garage pour accéder au portail client.",
+    "hint": "Votre garage vous communiquera le lien du portail par e-mail ou SMS."
+  },
   "landing": {
     "contactTitle": "Nous contacter",
     "aboutTitle": "À propos",

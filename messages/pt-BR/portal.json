@@ -7,6 +7,11 @@
     "noResults": "Nenhuma oficina corresponde à sua busca.",
     "openPortal": "Abrir portal"
   },
+  "directLink": {
+    "title": "Portal do cliente",
+    "description": "Use o link direto fornecido pela sua oficina para acessar o portal do cliente.",
+    "hint": "Sua oficina compartilhará o link do portal com você por e-mail ou SMS."
+  },
   "landing": {
     "contactTitle": "Fale conosco",
     "aboutTitle": "Sobre nós",

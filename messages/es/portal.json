@@ -7,6 +7,11 @@
     "noResults": "Ningún taller coincide con tu búsqueda.",
     "openPortal": "Abrir portal"
   },
+  "directLink": {
+    "title": "Portal de clientes",
+    "description": "Utiliza el enlace directo proporcionado por tu taller para acceder al portal de clientes.",
+    "hint": "Tu taller compartirá el enlace del portal contigo por correo electrónico o SMS."
+  },
   "landing": {
     "contactTitle": "Contáctanos",
     "aboutTitle": "Sobre nosotros",
