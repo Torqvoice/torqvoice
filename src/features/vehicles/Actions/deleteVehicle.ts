@@ -8,9 +8,10 @@ import { revalidatePath } from "next/cache";
 export async function deleteVehicle(vehicleId: string) {
   return withAuth(
     async ({ organizationId }) => {
-      await db.vehicle.deleteMany({
+      const result = await db.vehicle.deleteMany({
         where: { id: vehicleId, organizationId },
       });
+      if (result.count === 0) throw new Error("Vehicle not found");
 
       revalidatePath("/");
       revalidatePath("/vehicles");

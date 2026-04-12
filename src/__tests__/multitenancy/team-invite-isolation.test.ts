@@ -110,8 +110,8 @@ function setupOrgAMember() {
 
 /**
  * User whose built-in role is "member" but whose custom role has isAdmin:true.
- * withAuth grants them access (roleIsAdmin=true), but actions that check the
- * built-in role string will incorrectly block them (BUG-6, BUG-7).
+ * withAuth properly grants isAdmin from customRole.isAdmin, so these actions
+ * work correctly.
  */
 function setupOrgACustomAdmin() {
   mockSession.mockResolvedValue({ user: { id: "user-a", email: "cadmin@orgA.com" } } as any);
