@@ -52,7 +52,7 @@ export function InventorySearchDialog({
         if (!v) setSearch("");
       }}
     >
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{t("form.importFromInventory")}</DialogTitle>
         </DialogHeader>
