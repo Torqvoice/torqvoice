@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/table";
 import { typeColors, statusColors } from "@/lib/table-utils";
 import { formatCurrency } from "@/lib/format";
+import { getWarrantyStatus, type WarrantyStatus } from "@/lib/warranty";
 import {
   ChevronLeft,
   ChevronRight,
@@ -39,6 +40,21 @@ import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useServiceType } from "@/components/service-type-context";
 
+const warrantyBadgeStyles: Record<WarrantyStatus, string> = {
+  active: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  expiring: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+  expired: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  none: "bg-muted text-muted-foreground",
+};
+
+function WarrantyBadge({ status, t }: { status: WarrantyStatus; t: (key: string) => string }) {
+  return (
+    <Badge variant="outline" className={`text-xs ${warrantyBadgeStyles[status]}`}>
+      {t(`warranty.status.${status}`)}
+    </Badge>
+  );
+}
+
 interface ServiceRecordRow {
   id: string;
   title: string;
@@ -53,6 +69,10 @@ interface ServiceRecordRow {
   techName: string | null;
   totalAmount: number;
   invoiceNumber: string | null;
+  warrantyMonths: number | null;
+  warrantyMileage: number | null;
+  warrantyExpiresAt: Date | null;
+  warrantyNotes: string | null;
   _count: { partItems: number; laborItems: number; attachments: number };
   laborItems?: { description: string }[];
 }
@@ -67,6 +87,7 @@ interface ServiceRecordsTableProps {
   search: string;
   type: string;
   currencyCode?: string;
+  vehicleMileage?: number;
 }
 
 export function ServiceRecordsTable({
@@ -79,6 +100,7 @@ export function ServiceRecordsTable({
   search,
   type,
   currencyCode = "USD",
+  vehicleMileage,
 }: ServiceRecordsTableProps) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -227,12 +249,13 @@ export function ServiceRecordsTable({
               <TableHead className="hidden w-[120px] sm:table-cell">{t("table.technician")}</TableHead>
               <TableHead className="w-[50px] text-center">{t("table.files")}</TableHead>
               <TableHead className="w-[100px] text-right">{t("table.total")}</TableHead>
+              <TableHead className="w-[90px] text-right">{t("table.warranty")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {records.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={9} className="h-32 text-center text-muted-foreground">
                   {search || type !== "all"
                     ? t("emptyFiltered")
                     : t("empty")}
@@ -299,6 +322,17 @@ export function ServiceRecordsTable({
                         )}
                         {formatCurrency(displayTotal, currencyCode)}
                       </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <WarrantyBadge
+                        status={getWarrantyStatus(
+                          record.warrantyExpiresAt,
+                          record.warrantyMileage,
+                          record.mileage,
+                          vehicleMileage,
+                        )}
+                        t={t}
+                      />
                     </TableCell>
                   </TableRow>
                 );

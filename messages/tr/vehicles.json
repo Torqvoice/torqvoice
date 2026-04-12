@@ -148,7 +148,16 @@
       "mileageMarine": "Motor Saatleri",
       "technician": "Teknisyen",
       "files": "Dosyalar",
-      "total": "Toplam"
+      "total": "Toplam",
+      "warranty": "Garanti"
+    },
+    "warranty": {
+      "status": {
+        "active": "Aktif",
+        "expiring": "Sona eriyor",
+        "expired": "Sona erdi",
+        "none": "N/A"
+      }
     },
     "emptyFiltered": "Filtrelerinizle eşleşen servis kaydı bulunamadı.",
     "empty": "Henüz servis kaydı yok.",

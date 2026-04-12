@@ -333,5 +333,32 @@
     "minutesAgo": "vor {count}m",
     "hoursAgo": "vor {count}h",
     "daysAgo": "vor {count}d"
+  },
+  "table": {
+    "warranty": "Garantie"
+  },
+  "warranty": {
+    "title": "Garantie",
+    "months": "Dauer (Monate)",
+    "mileage": "Kilometergrenze",
+    "notes": "Garantiebedingungen",
+    "notesPlaceholder": "z.B. 12 Monate Garantie auf alle Teile und Arbeit...",
+    "expiresAt": "Läuft ab",
+    "presets": {
+      "3months": "3 Mo.",
+      "6months": "6 Mo.",
+      "12months": "12 Mo.",
+      "24months": "24 Mo."
+    },
+    "status": {
+      "active": "Aktiv",
+      "expiring": "Läuft bald ab",
+      "expired": "Abgelaufen",
+      "none": "Keine"
+    },
+    "defaults": {
+      "title": "Standard-Garantieeinstellungen",
+      "description": "Standardgarantiebedingungen für neue Serviceeinträge festlegen"
+    }
   }
 }

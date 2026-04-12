@@ -57,6 +57,9 @@ export const createServiceSchema = z.object({
   invoiceNumber: z.string().optional(),
   invoiceDate: z.string().optional(),
   invoiceDueDate: z.string().optional(),
+  warrantyMonths: z.coerce.number().int().min(0).optional(),
+  warrantyMileage: z.coerce.number().int().min(0).optional(),
+  warrantyNotes: z.string().optional(),
 });
 
 export const updateServiceSchema = createServiceSchema.partial().extend({

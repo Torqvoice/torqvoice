@@ -333,5 +333,32 @@
     "minutesAgo": "{count}dk önce",
     "hoursAgo": "{count}sa önce",
     "daysAgo": "{count}g önce"
+  },
+  "table": {
+    "warranty": "Garanti"
+  },
+  "warranty": {
+    "title": "Garanti",
+    "months": "Süre (ay)",
+    "mileage": "Kilometre limiti",
+    "notes": "Garanti koşulları",
+    "notesPlaceholder": "ör. Tüm parça ve işçilik için 12 ay garanti...",
+    "expiresAt": "Bitiş",
+    "presets": {
+      "3months": "3 ay",
+      "6months": "6 ay",
+      "12months": "12 ay",
+      "24months": "24 ay"
+    },
+    "status": {
+      "active": "Aktif",
+      "expiring": "Sona eriyor",
+      "expired": "Süresi doldu",
+      "none": "Yok"
+    },
+    "defaults": {
+      "title": "Varsayılan garanti ayarları",
+      "description": "Yeni servis kayıtları için varsayılan garanti koşullarını ayarlayın"
+    }
   }
 }

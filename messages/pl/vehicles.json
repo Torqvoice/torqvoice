@@ -148,7 +148,16 @@
       "mileageMarine": "Godziny Pracy",
       "technician": "Technik",
       "files": "Pliki",
-      "total": "Suma"
+      "total": "Suma",
+      "warranty": "Gwarancja"
+    },
+    "warranty": {
+      "status": {
+        "active": "Aktywna",
+        "expiring": "Wygasa",
+        "expired": "Wygasla",
+        "none": "N/A"
+      }
     },
     "emptyFiltered": "Brak rekordów serwisowych pasujących do filtrów.",
     "empty": "Brak rekordów serwisowych.",

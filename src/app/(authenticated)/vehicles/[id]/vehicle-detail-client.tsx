@@ -110,6 +110,10 @@ interface PaginatedServices {
     techName: string | null
     totalAmount: number
     invoiceNumber: string | null
+    warrantyMonths: number | null
+    warrantyMileage: number | null
+    warrantyExpiresAt: Date | null
+    warrantyNotes: string | null
     _count: { partItems: number; laborItems: number; attachments: number }
   }[]
   total: number
@@ -1118,6 +1122,7 @@ export function VehicleDetailClient({
             search={serviceSearch}
             type={serviceRecordType}
             currencyCode={currencyCode}
+            vehicleMileage={vehicle.mileage}
           />
         </TabsContent>
 

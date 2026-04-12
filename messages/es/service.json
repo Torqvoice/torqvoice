@@ -333,5 +333,32 @@
     "minutesAgo": "hace {count}m",
     "hoursAgo": "hace {count}h",
     "daysAgo": "hace {count}d"
+  },
+  "table": {
+    "warranty": "Garantía"
+  },
+  "warranty": {
+    "title": "Garantía",
+    "months": "Duración (meses)",
+    "mileage": "Límite de kilometraje",
+    "notes": "Términos de garantía",
+    "notesPlaceholder": "ej. Garantía de 12 meses en todas las piezas y mano de obra...",
+    "expiresAt": "Vence",
+    "presets": {
+      "3months": "3 m",
+      "6months": "6 m",
+      "12months": "12 m",
+      "24months": "24 m"
+    },
+    "status": {
+      "active": "Activa",
+      "expiring": "Por vencer",
+      "expired": "Vencida",
+      "none": "N/A"
+    },
+    "defaults": {
+      "title": "Configuración de garantía predeterminada",
+      "description": "Establecer términos de garantía predeterminados para nuevos registros de servicio"
+    }
   }
 }

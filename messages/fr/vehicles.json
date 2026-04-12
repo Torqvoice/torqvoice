@@ -148,7 +148,16 @@
       "mileageMarine": "Heures Moteur",
       "technician": "Technicien",
       "files": "Fichiers",
-      "total": "Total"
+      "total": "Total",
+      "warranty": "Garantie"
+    },
+    "warranty": {
+      "status": {
+        "active": "Active",
+        "expiring": "Expiration proche",
+        "expired": "Expirée",
+        "none": "N/A"
+      }
     },
     "emptyFiltered": "Aucun dossier de service ne correspond \u00e0 vos filtres.",
     "empty": "Aucun dossier de service pour le moment.",
