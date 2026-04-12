@@ -70,10 +70,11 @@ export async function addPartToServiceRecord(input: {
 
       // Deduct inventory stock if linked
       if (input.inventoryPartId) {
-        await db.inventoryPart.update({
-          where: { id: input.inventoryPartId },
+        const invResult = await db.inventoryPart.updateMany({
+          where: { id: input.inventoryPartId, organizationId },
           data: { quantity: { decrement: input.quantity } },
         });
+        if (invResult.count === 0) throw new Error("Inventory part not found");
       }
 
       revalidatePath(`/vehicles/${record.vehicleId}/service/${record.id}`);

@@ -193,16 +193,14 @@ describe("getCustomers — org scoping", () => {
 // ---------------------------------------------------------------------------
 
 describe("updateCustomer — cross-org isolation", () => {
-  it("🐛 BUG-3: silently returns success when targeting another org's customer — nothing is actually changed", async () => {
+  it("returns error when targeting another org's customer", async () => {
     setupOrgAOwner();
     // updateMany with org filter matches 0 rows for a cross-org customer id
     vi.mocked(db.customer.updateMany).mockResolvedValue({ count: 0 } as any);
 
     const result = await updateCustomer({ id: `${ORG_B}-customer-id`, name: "Hacked" });
 
-    // BUG: should be { success: false, error: "Customer not found" }
-    // Fix: check `result.count === 0` and throw (same pattern as inventoryActions).
-    expect(result.success).toBe(false); // FAILS until bug is fixed
+    expect(result.success).toBe(false);
   });
 
   it("update query always includes organizationId to prevent cross-org writes", async () => {
@@ -233,16 +231,14 @@ describe("updateCustomer — cross-org isolation", () => {
 // ---------------------------------------------------------------------------
 
 describe("deleteCustomer — cross-org isolation", () => {
-  it("🐛 BUG-4: silently returns success when deleting another org's customer — nothing is actually deleted", async () => {
+  it("returns error when deleting another org's customer", async () => {
     setupOrgAOwner();
     // deleteMany with org filter matches 0 rows for a cross-org customer id
     vi.mocked(db.customer.deleteMany).mockResolvedValue({ count: 0 } as any);
 
     const result = await deleteCustomer(`${ORG_B}-customer-id`);
 
-    // BUG: should be { success: false, error: "Customer not found" }
-    // Fix: check `result.count === 0` and throw (same pattern as inventoryActions).
-    expect(result.success).toBe(false); // FAILS until bug is fixed
+    expect(result.success).toBe(false);
   });
 
   it("delete query always includes organizationId to prevent cross-org deletes", async () => {
