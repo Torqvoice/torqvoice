@@ -1,12 +1,44 @@
 {
+  "directory": {
+    "title": "Encontre sua oficina",
+    "description": "Escolha sua oficina abaixo para acessar o portal do cliente.",
+    "searchPlaceholder": "Buscar oficinas…",
+    "noWorkshops": "Nenhuma oficina está disponível no momento.",
+    "noResults": "Nenhuma oficina corresponde à sua busca.",
+    "openPortal": "Abrir portal"
+  },
+  "landing": {
+    "contactTitle": "Fale conosco",
+    "aboutTitle": "Sobre nós",
+    "noContactInfo": "As informações de contato ainda não estão disponíveis.",
+    "address": "Endereço",
+    "phone": "Telefone",
+    "email": "E-mail",
+    "hours": "Horário de funcionamento",
+    "directions": "Como chegar"
+  },
   "login": {
-    "signInTitle": "Entre no seu portal do cliente",
+    "signInTitle": "Acesso do cliente",
+    "signInSubtitle": "Entre para ver suas faturas, orçamentos e histórico de serviço.",
     "emailLabel": "Endereço de e-mail",
     "emailPlaceholder": "voce@exemplo.com",
     "sendLink": "Enviar link de acesso",
     "checkEmail": "Verifique seu e-mail",
     "checkEmailDescription": "Se uma conta existir para esse e-mail, enviamos um link de acesso. O link expira em 15 minutos.",
     "tryDifferentEmail": "Tente um e-mail diferente",
+    "tabEmail": "E-mail",
+    "tabSms": "SMS",
+    "phoneLabel": "Número de telefone",
+    "phonePlaceholder": "+55 11912345678",
+    "phoneLocalPlaceholder": "11912345678",
+    "sendCode": "Enviar código",
+    "codeSentTitle": "Digite o código que enviamos",
+    "codeSentDescription": "Enviamos um código de 6 dígitos para {phone} se corresponder a uma conta.",
+    "codeLabel": "Código de 6 dígitos",
+    "codePlaceholder": "123456",
+    "verifyCode": "Entrar",
+    "useDifferentPhone": "Usar outro número",
+    "invalidCode": "Código inválido ou expirado",
     "notFound": "Não Encontrado",
     "portalNotExist": "Este portal não existe.",
     "portalNotAvailable": "Portal Indisponível",
@@ -21,7 +53,8 @@
     "requestService": "Solicitar Serviço"
   },
   "header": {
-    "signOut": "Sair"
+    "signOut": "Sair",
+    "askShort": "Serviço"
   },
   "shell": {
     "notFound": "Não Encontrado",
@@ -44,7 +77,14 @@
     "noQuotesYet": "Nenhum orçamento ainda.",
     "view": "Ver",
     "pending": "Pendente",
-    "failedToLoad": "Falha ao carregar o painel."
+    "failedToLoad": "Falha ao carregar o painel.",
+    "quickRequestService": "Solicitar serviço",
+    "quickRequestServiceHint": "Agendar reparo ou revisão",
+    "quickViewInvoices": "Suas faturas",
+    "quickViewInvoicesHint": "Faturas e histórico de pagamentos",
+    "quickViewVehicles": "Seus veículos",
+    "quickViewVehiclesHint": "Histórico de serviços e detalhes",
+    "activeJobs": "Serviços em andamento"
   },
   "invoices": {
     "title": "Faturas",
@@ -57,6 +97,7 @@
     "amount": "Valor",
     "payment": "Pagamento",
     "view": "Ver",
+    "download": "Baixar",
     "paid": "pago",
     "partial": "parcial",
     "unpaid": "não pago"

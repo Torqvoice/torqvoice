@@ -52,7 +52,8 @@
     "reminders": "Rappels",
     "allReminders": "Tous les rappels",
     "auditLog": "Journal d'audit",
-    "aiAssistant": "Assistant IA"
+    "aiAssistant": "Assistant IA",
+    "observations": "Observations"
   },
   "search": "Rechercher…",
   "shortcut": "Ctrl+K",

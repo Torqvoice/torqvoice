@@ -672,7 +672,10 @@
     "languageDescription": "Choose the display language for the application.",
     "language": "Language",
     "forceCustomerLocale": "Force this language on customer-facing pages",
-    "forceCustomerLocaleHint": "When enabled, customers viewing shared invoices, quotes and inspections will see them in your workshop's language regardless of their browser settings. When disabled, customers see pages in the language configured in their browser.",
+    "forceCustomerLocaleHint": "When enabled, the customer portal and shared invoices, quotes and inspections will appear in your workshop's language regardless of the visitor's browser settings. When disabled, customer-facing pages follow the visitor's browser language.",
+    "defaultCountryCode": "Default country code",
+    "defaultCountryCodeHint": "Used when customers sign in to the portal by SMS — applied to phone numbers that don't include a country code (yours or theirs). Format: + followed by digits, e.g. +47.",
+    "defaultCountryCodeInvalid": "Enter a valid country code, e.g. +47, 47, or 0047.",
     "saved": "Localization settings saved",
     "saveSettings": "Save Settings"
   },
@@ -914,7 +917,38 @@
     "slugHint": "Lowercase letters, numbers, hyphens, and underscores. 3-48 characters. Leave blank to use the default URL.",
     "portalUrl": "Portal URL",
     "urlCopied": "Portal URL copied",
-    "shareHint": "Share this link with your customers so they can log in to their portal."
+    "shareHint": "Share this link with your customers so they can log in to their portal.",
+    "descriptionLabel": "About your workshop",
+    "descriptionPlaceholder": "Tell customers a bit about your workshop, the services you offer, and what makes you unique.",
+    "descriptionHint": "Shown to visitors at the top of your portal landing page.",
+    "hoursLabel": "Opening hours",
+    "hoursPlaceholder": "Mon-Fri: 8:00-17:00\nSat: 9:00-13:00\nSun: Closed",
+    "hoursHint": "Free-form text. Use line breaks to list each day separately.",
+    "contentSaved": "Portal content saved",
+    "background": {
+      "title": "Portal background",
+      "description": "Choose how the customer portal landing page looks.",
+      "typeNone": "None",
+      "typeTemplate": "Template",
+      "typeImage": "Custom image",
+      "chooseTemplate": "Choose a template",
+      "uploadLabel": "Background image",
+      "upload": "Upload image",
+      "replace": "Replace image",
+      "remove": "Remove",
+      "uploadHint": "JPG, PNG or WebP. Max 8 MB. Recommended at least 1600×900.",
+      "uploading": "Uploading background…",
+      "uploaded": "Background updated",
+      "uploadFailed": "Failed to upload background",
+      "templateNames": {
+        "default": "Subtle",
+        "sunrise": "Sunrise",
+        "ocean": "Ocean",
+        "forest": "Forest",
+        "slate": "Slate",
+        "sand": "Sand"
+      }
+    }
   },
   "email": {
     "title": "Email Provider",

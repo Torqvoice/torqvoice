@@ -229,6 +229,20 @@
     "perPage": "por página",
     "page": "Página {page} de {totalPages}"
   },
+  "observationsPage": {
+    "searchPlaceholder": "Buscar descripción, notas o vehículo...",
+    "allStatuses": "Todos los estados",
+    "allSeverities": "Todas las gravedades",
+    "empty": "No se encontraron observaciones.",
+    "columns": {
+      "severity": "Gravedad",
+      "status": "Estado",
+      "vehicle": "Vehículo",
+      "description": "Descripción",
+      "notes": "Notas",
+      "created": "Creado"
+    }
+  },
   "form": {
     "editTitle": "Editar vehiculo",
     "addTitle": "Agregar nuevo vehiculo",

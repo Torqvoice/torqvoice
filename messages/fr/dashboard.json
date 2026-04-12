@@ -22,6 +22,14 @@
   },
   "recentActivity": "Activité récente",
   "noRecentActivity": "Aucune activité récente",
+  "recentObservations": "Observations récentes",
+  "noRecentObservations": "Aucune observation ouverte",
+  "observations": {
+    "severity": "Gravité",
+    "vehicle": "Véhicule",
+    "description": "Description",
+    "when": "Quand"
+  },
   "unknownUser": "Utilisateur",
   "stats": {
     "activeJobs": "Travaux en cours",
@@ -41,7 +49,8 @@
     "sms": "Messages récents",
     "notifications": "Notifications récentes",
     "recentCompleted": "Terminés récemment",
-    "activeJobs": "Travaux en cours"
+    "activeJobs": "Travaux en cours",
+    "recentObservations": "Observations récentes"
   },
   "maintenance": {
     "title": "Maintenance prévue à effectuer",

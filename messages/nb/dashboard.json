@@ -22,6 +22,14 @@
   },
   "recentActivity": "Nylig aktivitet",
   "noRecentActivity": "Ingen nylig aktivitet",
+  "recentObservations": "Nylige observasjoner",
+  "noRecentObservations": "Ingen åpne observasjoner",
+  "observations": {
+    "severity": "Alvorlighetsgrad",
+    "vehicle": "Kjøretøy",
+    "description": "Beskrivelse",
+    "when": "Når"
+  },
   "unknownUser": "Bruker",
   "stats": {
     "activeJobs": "Aktive jobber",
@@ -41,7 +49,8 @@
     "sms": "Siste meldinger",
     "notifications": "Siste varsler",
     "recentCompleted": "Nylig fullført",
-    "activeJobs": "Aktive jobber"
+    "activeJobs": "Aktive jobber",
+    "recentObservations": "Nylige observasjoner"
   },
   "maintenance": {
     "title": "Forventet vedlikehold",

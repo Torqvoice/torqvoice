@@ -672,7 +672,10 @@
     "languageDescription": "Uygulamanın görüntüleme dilini seçin.",
     "language": "Dil",
     "forceCustomerLocale": "Bu dili müşteriye yönelik sayfalarda zorla",
-    "forceCustomerLocaleHint": "Etkinleştirildiğinde, paylaşılan faturaları, teklifleri ve incelemeleri görüntüleyen müşteriler bunları, tarayıcı ayarlarından bağımsız olarak atölyenizin dilinde görür. Devre dışı bırakıldığında, müşteriler sayfaları tarayıcılarında yapılandırılan dilde görür.",
+    "forceCustomerLocaleHint": "Etkinleştirildiğinde, müşteri portalı ve paylaşılan faturalar, teklifler ve incelemeler, ziyaretçinin tarayıcı ayarlarından bağımsız olarak atölyenizin dilinde görüntülenir. Devre dışı bırakıldığında, müşteriye yönelik sayfalar ziyaretçinin tarayıcı dilini kullanır.",
+    "defaultCountryCode": "Varsayılan ülke kodu",
+    "defaultCountryCodeHint": "Müşteriler portala SMS ile giriş yaptığında kullanılır — ülke kodu olmayan telefon numaralarına (sizin veya müşterinin) eklenir. Format: + ve rakamlar, örn. +90.",
+    "defaultCountryCodeInvalid": "Geçerli bir ülke kodu girin, örn. +90, 90 veya 0090.",
     "saved": "Yerelleştirme ayarları kaydedildi",
     "saveSettings": "Ayarları kaydet"
   },
@@ -914,7 +917,38 @@
     "slugHint": "Küçük harfler, sayılar, tireler ve alt çizgiler. 3-48 karakter. Varsayılan URL'yi kullanmak için boş bırakın.",
     "portalUrl": "Portal URL'si",
     "urlCopied": "Portal URL'si kopyalandı",
-    "shareHint": "Bu bağlantıyı müşterilerinizle paylaşarak portallarına giriş yapmalarını sağlayın."
+    "shareHint": "Bu bağlantıyı müşterilerinizle paylaşarak portallarına giriş yapmalarını sağlayın.",
+    "descriptionLabel": "Servisiniz hakkında",
+    "descriptionPlaceholder": "Müşterilerinize servisinizi, sunduğunuz hizmetleri ve sizi özel kılan şeyi anlatın.",
+    "descriptionHint": "Ziyaretçilere portal ana sayfanızın üst kısmında gösterilir.",
+    "hoursLabel": "Çalışma saatleri",
+    "hoursPlaceholder": "Pzt-Cum: 8:00-17:00\nCmt: 9:00-13:00\nPaz: Kapalı",
+    "hoursHint": "Serbest metin. Her günü ayrı listelemek için satır sonu kullanın.",
+    "contentSaved": "Portal içeriği kaydedildi",
+    "background": {
+      "title": "Portal arka planı",
+      "description": "Müşteri portalı ana sayfasının nasıl görüneceğini seçin.",
+      "typeNone": "Yok",
+      "typeTemplate": "Şablon",
+      "typeImage": "Özel görsel",
+      "chooseTemplate": "Bir şablon seçin",
+      "uploadLabel": "Arka plan görseli",
+      "upload": "Görsel yükle",
+      "replace": "Görseli değiştir",
+      "remove": "Kaldır",
+      "uploadHint": "JPG, PNG veya WebP. Maks 8 MB. En az 1600×900 önerilir.",
+      "uploading": "Arka plan yükleniyor…",
+      "uploaded": "Arka plan güncellendi",
+      "uploadFailed": "Arka plan yüklenemedi",
+      "templateNames": {
+        "default": "Sade",
+        "sunrise": "Gün doğumu",
+        "ocean": "Okyanus",
+        "forest": "Orman",
+        "slate": "Arduvaz",
+        "sand": "Kum"
+      }
+    }
   },
   "email": {
     "title": "E-posta Sağlayıcısı",

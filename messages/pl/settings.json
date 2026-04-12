@@ -672,7 +672,10 @@
     "languageDescription": "Wybierz język wyświetlania aplikacji.",
     "language": "Język",
     "forceCustomerLocale": "Wymuś ten język na stronach dla klientów",
-    "forceCustomerLocaleHint": "Po włączeniu klienci przeglądający udostępnione faktury, oferty i inspekcje zobaczą je w języku Twojego warsztatu, niezależnie od ustawień przeglądarki. Gdy wyłączone, klienci widzą strony w języku skonfigurowanym w ich przeglądarce.",
+    "forceCustomerLocaleHint": "Po włączeniu portal klienta oraz udostępnione faktury, oferty i inspekcje wyświetlają się w języku Twojego warsztatu, niezależnie od ustawień przeglądarki odwiedzającego. Gdy wyłączone, strony dla klientów używają języka przeglądarki odwiedzającego.",
+    "defaultCountryCode": "Domyślny kod kraju",
+    "defaultCountryCodeHint": "Używany, gdy klienci logują się do portalu przez SMS — dodawany do numerów telefonów bez kodu kraju (Twojego lub klienta). Format: + i cyfry, np. +48.",
+    "defaultCountryCodeInvalid": "Wpisz prawidłowy kod kraju, np. +48, 48 lub 0048.",
     "saved": "Ustawienia lokalizacji zapisane",
     "saveSettings": "Zapisz ustawienia"
   },
@@ -914,7 +917,38 @@
     "slugHint": "Male litery, cyfry, myslniki i podkreslenia. 3-48 znakow. Pozostaw puste, aby uzyc domyslnego URL.",
     "portalUrl": "URL portalu",
     "urlCopied": "URL portalu skopiowany",
-    "shareHint": "Udostepnij ten link swoim klientom, aby mogli zalogowac sie do swojego portalu."
+    "shareHint": "Udostepnij ten link swoim klientom, aby mogli zalogowac sie do swojego portalu.",
+    "descriptionLabel": "O Twoim warsztacie",
+    "descriptionPlaceholder": "Opowiedz klientom o swoim warsztacie, oferowanych usługach i tym, co Cię wyróżnia.",
+    "descriptionHint": "Wyświetlane odwiedzającym na górze strony portalu.",
+    "hoursLabel": "Godziny otwarcia",
+    "hoursPlaceholder": "Pn-Pt: 8:00-17:00\nSob: 9:00-13:00\nNd: Zamknięte",
+    "hoursHint": "Tekst dowolny. Użyj nowej linii, aby wymienić każdy dzień osobno.",
+    "contentSaved": "Treść portalu zapisana",
+    "background": {
+      "title": "Tło portalu",
+      "description": "Wybierz wygląd strony głównej portalu klienta.",
+      "typeNone": "Brak",
+      "typeTemplate": "Szablon",
+      "typeImage": "Własne zdjęcie",
+      "chooseTemplate": "Wybierz szablon",
+      "uploadLabel": "Zdjęcie tła",
+      "upload": "Prześlij zdjęcie",
+      "replace": "Zamień zdjęcie",
+      "remove": "Usuń",
+      "uploadHint": "JPG, PNG lub WebP. Maks. 8 MB. Zalecane co najmniej 1600×900.",
+      "uploading": "Przesyłanie tła…",
+      "uploaded": "Tło zaktualizowane",
+      "uploadFailed": "Nie udało się przesłać tła",
+      "templateNames": {
+        "default": "Subtelny",
+        "sunrise": "Wschód słońca",
+        "ocean": "Ocean",
+        "forest": "Las",
+        "slate": "Łupek",
+        "sand": "Piasek"
+      }
+    }
   },
   "email": {
     "title": "Dostawca poczty e-mail",

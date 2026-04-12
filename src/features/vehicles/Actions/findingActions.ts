@@ -10,6 +10,107 @@ import {
 } from "../Schema/findingSchema";
 import { revalidatePath } from "next/cache";
 
+export async function getObservationsPaginated(params: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  status?: string;
+  severity?: string;
+}) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const page = params.page || 1;
+      const pageSize = params.pageSize || 25;
+      const skip = (page - 1) * pageSize;
+
+      const search = params.search?.trim();
+      const where = {
+        vehicle: { organizationId },
+        ...(params.status && params.status !== "all" ? { status: params.status } : {}),
+        ...(params.severity && params.severity !== "all" ? { severity: params.severity } : {}),
+        ...(search
+          ? {
+              OR: [
+                { description: { contains: search, mode: "insensitive" as const } },
+                { notes: { contains: search, mode: "insensitive" as const } },
+                { vehicle: { licensePlate: { contains: search, mode: "insensitive" as const } } },
+                { vehicle: { make: { contains: search, mode: "insensitive" as const } } },
+                { vehicle: { model: { contains: search, mode: "insensitive" as const } } },
+              ],
+            }
+          : {}),
+      };
+
+      const [records, total] = await Promise.all([
+        db.vehicleFinding.findMany({
+          where,
+          include: {
+            vehicle: {
+              select: {
+                id: true,
+                make: true,
+                model: true,
+                year: true,
+                licensePlate: true,
+              },
+            },
+            serviceRecord: { select: { id: true, title: true } },
+            resolvedServiceRecord: { select: { id: true, title: true } },
+          },
+          orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+          skip,
+          take: pageSize,
+        }),
+        db.vehicleFinding.count({ where }),
+      ]);
+
+      return {
+        records,
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      };
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.VEHICLES },
+      ],
+    }
+  );
+}
+
+export async function getRecentObservations(limit = 10) {
+  return withAuth(
+    async ({ organizationId }) => {
+      return db.vehicleFinding.findMany({
+        where: {
+          status: "open",
+          vehicle: { organizationId },
+        },
+        include: {
+          vehicle: {
+            select: {
+              id: true,
+              make: true,
+              model: true,
+              year: true,
+              licensePlate: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: limit,
+      });
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.VEHICLES },
+      ],
+    }
+  );
+}
+
 export async function getServiceFindings(serviceRecordId: string) {
   return withAuth(
     async ({ organizationId }) => {

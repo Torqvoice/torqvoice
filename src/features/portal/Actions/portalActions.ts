@@ -1,35 +1,34 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { getCustomerSession, type CustomerSessionData } from "@/lib/customer-session";
-import { notify } from "@/lib/notify";
-import { withAuth, type ActionResult } from "@/lib/with-auth";
-import { revalidatePath } from "next/cache";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { db } from '@/lib/db'
+import { getCustomerSession, type CustomerSessionData } from '@/lib/customer-session'
+import { notify } from '@/lib/notify'
+import { withAuth, type ActionResult } from '@/lib/with-auth'
+import { revalidatePath } from 'next/cache'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 
 type PortalResult<T = unknown> = {
-  success: boolean;
-  data?: T;
-  error?: string;
-};
+  success: boolean
+  data?: T
+  error?: string
+}
 
 async function withPortalAuth<T>(
-  action: (session: CustomerSessionData) => Promise<T>,
+  action: (session: CustomerSessionData) => Promise<T>
 ): Promise<PortalResult<T>> {
   try {
-    const session = await getCustomerSession();
+    const session = await getCustomerSession()
 
     if (!session) {
-      return { success: false, error: "Not authenticated" };
+      return { success: false, error: 'Not authenticated' }
     }
 
-    const data = await action(session);
-    return { success: true, data };
+    const data = await action(session)
+    return { success: true, data }
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "An unexpected error occurred";
-    console.error("[portalAction]", message);
-    return { success: false, error: message };
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred'
+    console.error('[portalAction]', message)
+    return { success: false, error: message }
   }
 }
 
@@ -37,7 +36,7 @@ async function withPortalAuth<T>(
 
 export async function getPortalDashboard() {
   return withPortalAuth(async ({ customerId, organizationId }) => {
-    const [customer, vehicles, recentInvoices, recentQuotes, pendingRequests] =
+    const [customer, vehicles, recentInvoices, activeJobs, recentQuotes, pendingRequests] =
       await Promise.all([
         db.customer.findUnique({
           where: { id: customerId },
@@ -47,9 +46,12 @@ export async function getPortalDashboard() {
           where: { customerId, organizationId },
           select: { id: true },
         }),
+        // Recent INVOICES: only completed records — anything before that
+        // is still a work-order in progress and not really an invoice yet.
         db.serviceRecord.findMany({
           where: {
             vehicle: { customerId, organizationId },
+            status: 'completed',
           },
           select: {
             id: true,
@@ -62,7 +64,24 @@ export async function getPortalDashboard() {
             publicToken: true,
             vehicle: { select: { make: true, model: true } },
           },
-          orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
+          orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
+          take: 5,
+        }),
+        // Active jobs: work currently being done on the customer's vehicles.
+        db.serviceRecord.findMany({
+          where: {
+            vehicle: { customerId, organizationId },
+            status: { in: ['pending', 'in-progress', 'waiting-parts'] },
+          },
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            startDateTime: true,
+            serviceDate: true,
+            vehicle: { select: { make: true, model: true } },
+          },
+          orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
           take: 5,
         }),
         db.quote.findMany({
@@ -77,11 +96,11 @@ export async function getPortalDashboard() {
             publicToken: true,
             vehicle: { select: { make: true, model: true } },
           },
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
           take: 5,
         }),
         db.serviceRequest.findMany({
-          where: { customerId, organizationId, status: "pending" },
+          where: { customerId, organizationId, status: 'pending' },
           select: {
             id: true,
             description: true,
@@ -90,29 +109,30 @@ export async function getPortalDashboard() {
             createdAt: true,
             vehicle: { select: { make: true, model: true } },
           },
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
         }),
-      ]);
+      ])
 
-    // Count open invoices (not fully paid)
-    const allInvoices = await db.serviceRecord.findMany({
-      where: { vehicle: { customerId, organizationId } },
+    // Open invoices: completed records that the customer still owes money on.
+    // Pre-completion records are not counted — they're not yet invoices.
+    const completedInvoices = await db.serviceRecord.findMany({
+      where: { vehicle: { customerId, organizationId }, status: 'completed' },
       select: {
         totalAmount: true,
         manuallyPaid: true,
         payments: { select: { amount: true } },
       },
-    });
+    })
 
-    const openInvoiceCount = allInvoices.filter((inv) => {
-      if (inv.manuallyPaid) return false;
-      const paid = inv.payments.reduce((sum, p) => sum + p.amount, 0);
-      return paid < inv.totalAmount;
-    }).length;
+    const openInvoiceCount = completedInvoices.filter((inv) => {
+      if (inv.manuallyPaid) return false
+      const paid = inv.payments.reduce((sum, p) => sum + p.amount, 0)
+      return paid < inv.totalAmount
+    }).length
 
     const pendingQuoteCount = await db.quote.count({
-      where: { customerId, organizationId, status: "sent" },
-    });
+      where: { customerId, organizationId, status: 'sent' },
+    })
 
     return {
       customer,
@@ -120,10 +140,11 @@ export async function getPortalDashboard() {
       openInvoiceCount,
       pendingQuoteCount,
       recentInvoices,
+      activeJobs,
       recentQuotes,
       pendingRequests,
-    };
-  });
+    }
+  })
 }
 
 // ─── Vehicles ─────────────────────────────────────────────────────────────
@@ -147,10 +168,10 @@ export async function getPortalVehicles() {
           },
         },
       },
-      orderBy: { createdAt: "desc" },
-    });
-    return vehicles;
-  });
+      orderBy: { createdAt: 'desc' },
+    })
+    return vehicles
+  })
 }
 
 export async function getPortalVehicleDetail(vehicleId: string) {
@@ -180,7 +201,7 @@ export async function getPortalVehicleDetail(vehicleId: string) {
             startDateTime: true,
             publicToken: true,
           },
-          orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
+          orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
         },
         inspections: {
           select: {
@@ -192,26 +213,31 @@ export async function getPortalVehicleDetail(vehicleId: string) {
             template: { select: { name: true } },
             items: { select: { condition: true } },
           },
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
         },
       },
-    });
+    })
 
     if (!vehicle) {
-      throw new Error("Vehicle not found");
+      throw new Error('Vehicle not found')
     }
 
-    return vehicle;
-  });
+    return vehicle
+  })
 }
 
 // ─── Invoices ─────────────────────────────────────────────────────────────
 
 export async function getPortalInvoices() {
   return withPortalAuth(async ({ customerId, organizationId }) => {
+    // Only completed records are surfaced as "invoices" to customers.
+    // In-progress / pending / waiting-parts records are work orders, not
+    // invoices, and showing them here causes confusion (prices may still
+    // change, customer can't act on them).
     const invoices = await db.serviceRecord.findMany({
       where: {
         vehicle: { customerId, organizationId },
+        status: 'completed',
       },
       select: {
         id: true,
@@ -226,10 +252,10 @@ export async function getPortalInvoices() {
         vehicle: { select: { make: true, model: true } },
         payments: { select: { amount: true } },
       },
-      orderBy: [{ startDateTime: { sort: "desc", nulls: "last" } }, { serviceDate: "desc" }],
-    });
-    return invoices;
-  });
+      orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
+    })
+    return invoices
+  })
 }
 
 // ─── Quotes ───────────────────────────────────────────────────────────────
@@ -248,10 +274,10 @@ export async function getPortalQuotes() {
         publicToken: true,
         vehicle: { select: { make: true, model: true } },
       },
-      orderBy: { createdAt: "desc" },
-    });
-    return quotes;
-  });
+      orderBy: { createdAt: 'desc' },
+    })
+    return quotes
+  })
 }
 
 // ─── Inspections ──────────────────────────────────────────────────────────
@@ -272,63 +298,61 @@ export async function getPortalInspections() {
         template: { select: { name: true } },
         items: { select: { condition: true } },
       },
-      orderBy: { createdAt: "desc" },
-    });
-    return inspections;
-  });
+      orderBy: { createdAt: 'desc' },
+    })
+    return inspections
+  })
 }
 
 // ─── Service Requests ─────────────────────────────────────────────────────
 
 export async function createServiceRequest(input: {
-  vehicleId: string;
-  description: string;
-  preferredDate?: string;
+  vehicleId: string
+  description: string
+  preferredDate?: string
 }) {
   return withPortalAuth(async ({ customerId, organizationId }) => {
     // Validate vehicle belongs to customer
     const vehicle = await db.vehicle.findFirst({
       where: { id: input.vehicleId, customerId, organizationId },
       select: { id: true, make: true, model: true },
-    });
+    })
 
     if (!vehicle) {
-      throw new Error("Vehicle not found");
+      throw new Error('Vehicle not found')
     }
 
     const customer = await db.customer.findUnique({
       where: { id: customerId },
       select: { name: true },
-    });
+    })
 
     const serviceRequest = await db.serviceRequest.create({
       data: {
         description: input.description,
-        preferredDate: input.preferredDate
-          ? new Date(input.preferredDate)
-          : null,
+        preferredDate: input.preferredDate ? new Date(input.preferredDate) : null,
         customerId,
         vehicleId: input.vehicleId,
         organizationId,
       },
-    });
+    })
 
     // Notify staff
-    const vehicleName = `${vehicle.make} ${vehicle.model}`;
-    const customerName = customer?.name ?? "A customer";
+    const vehicleName = `${vehicle.make} ${vehicle.model}`
+    const customerName = customer?.name ?? 'A customer'
 
     await notify({
       organizationId,
-      type: "service_request",
-      title: "New Service Request",
+      type: 'service_request',
+      title: 'New Service Request',
       message: `${customerName} requested service for ${vehicleName}: ${input.description.slice(0, 100)}`,
-      entityType: "service_request",
+      entityType: 'service_request',
       entityId: serviceRequest.id,
       entityUrl: `/customers/${customerId}?tab=requests`,
-    });
+    })
 
-    return serviceRequest;
-  });
+    return serviceRequest
+  })
 }
 
 export async function getPortalServiceRequests() {
@@ -344,72 +368,82 @@ export async function getPortalServiceRequests() {
         createdAt: true,
         vehicle: { select: { make: true, model: true } },
       },
-      orderBy: { createdAt: "desc" },
-    });
-    return requests;
-  });
+      orderBy: { createdAt: 'desc' },
+    })
+    return requests
+  })
 }
 
 // ─── Admin: Portal Slug ──────────────────────────────────────────────────
 
-const SLUG_REGEX = /^[a-z0-9][a-z0-9_-]{1,46}[a-z0-9]$/;
-const RESERVED_SLUGS = ["auth", "api", "admin", "login", "verify", "dashboard", "settings", "portal"];
+const SLUG_REGEX = /^[a-z0-9][a-z0-9_-]{1,46}[a-z0-9]$/
+const RESERVED_SLUGS = [
+  'auth',
+  'api',
+  'admin',
+  'login',
+  'verify',
+  'dashboard',
+  'settings',
+  'portal',
+]
 
-export async function updatePortalSlug(
-  slug: string | null,
-): Promise<ActionResult> {
+export async function updatePortalSlug(slug: string | null): Promise<ActionResult> {
   return withAuth(
     async ({ organizationId }) => {
       // Allow clearing the slug
-      if (!slug || slug.trim() === "") {
+      if (!slug || slug.trim() === '') {
         await db.organization.update({
           where: { id: organizationId },
           data: { portalSlug: null },
-        });
-        revalidatePath("/settings/customer-portal");
-        return { slug: null };
+        })
+        revalidatePath('/settings/customer-portal')
+        return { slug: null }
       }
 
-      const normalized = slug.trim().toLowerCase();
+      const normalized = slug.trim().toLowerCase()
 
       if (!SLUG_REGEX.test(normalized)) {
         throw new Error(
-          "Slug must be 3–48 characters, lowercase alphanumeric, hyphens, or underscores.",
-        );
+          'Slug must be 3–48 characters, lowercase alphanumeric, hyphens, or underscores.'
+        )
       }
 
       if (RESERVED_SLUGS.includes(normalized)) {
-        throw new Error("This slug is reserved. Please choose another.");
+        throw new Error('This slug is reserved. Please choose another.')
       }
 
       // Check uniqueness
       const existing = await db.organization.findUnique({
         where: { portalSlug: normalized },
         select: { id: true },
-      });
+      })
 
       if (existing && existing.id !== organizationId) {
-        throw new Error("This slug is already taken. Please choose another.");
+        throw new Error('This slug is already taken. Please choose another.')
       }
 
       await db.organization.update({
         where: { id: organizationId },
         data: { portalSlug: normalized },
-      });
+      })
 
-      revalidatePath("/settings/customer-portal");
-      return { slug: normalized || null };
+      revalidatePath('/settings/customer-portal')
+      return { slug: normalized || null }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
-      audit: ({ result }) => result ? ({
-        action: "settings.updatePortalSlug",
-        entity: "Organization",
-        message: result.slug ? `Set portal slug to "${result.slug}"` : "Cleared portal slug",
-        metadata: { slug: result.slug },
-      }) : null,
-    },
-  );
+      audit: ({ result }) =>
+        result
+          ? {
+              action: 'settings.updatePortalSlug',
+              entity: 'Organization',
+              message: result.slug ? `Set portal slug to "${result.slug}"` : 'Cleared portal slug',
+              metadata: { slug: result.slug },
+            }
+          : null,
+    }
+  )
 }

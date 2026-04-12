@@ -672,7 +672,10 @@
     "languageDescription": "Elija el idioma de visualización de la aplicación.",
     "language": "Idioma",
     "forceCustomerLocale": "Forzar este idioma en las páginas dirigidas al cliente",
-    "forceCustomerLocaleHint": "Cuando está activado, los clientes que vean facturas, presupuestos e inspecciones compartidas los verán en el idioma de su taller, independientemente de la configuración de su navegador. Cuando está desactivado, los clientes ven las páginas en el idioma configurado en su navegador.",
+    "forceCustomerLocaleHint": "Cuando está activado, el portal de clientes y las facturas, presupuestos e inspecciones compartidas aparecen en el idioma de su taller, independientemente de la configuración del navegador del visitante. Cuando está desactivado, las páginas para clientes siguen el idioma del navegador del visitante.",
+    "defaultCountryCode": "Código de país predeterminado",
+    "defaultCountryCodeHint": "Se usa cuando los clientes inician sesión en el portal por SMS — se aplica a los números de teléfono que no incluyen el código de país (suyos o del cliente). Formato: + seguido de dígitos, por ejemplo +34.",
+    "defaultCountryCodeInvalid": "Introduce un código de país válido, por ejemplo +34, 34 o 0034.",
     "saved": "Configuración de localización guardada",
     "saveSettings": "Guardar configuración"
   },
@@ -914,7 +917,38 @@
     "slugHint": "Letras minusculas, numeros, guiones y guiones bajos. 3-48 caracteres. Dejar vacio para usar la URL predeterminada.",
     "portalUrl": "URL del portal",
     "urlCopied": "URL del portal copiada",
-    "shareHint": "Comparta este enlace con sus clientes para que puedan iniciar sesion en su portal."
+    "shareHint": "Comparta este enlace con sus clientes para que puedan iniciar sesion en su portal.",
+    "descriptionLabel": "Sobre tu taller",
+    "descriptionPlaceholder": "Cuenta a tus clientes algo sobre tu taller, los servicios que ofreces y lo que te hace único.",
+    "descriptionHint": "Se muestra a los visitantes en la parte superior de la página de tu portal.",
+    "hoursLabel": "Horario de apertura",
+    "hoursPlaceholder": "Lun-Vie: 8:00-17:00\nSab: 9:00-13:00\nDom: Cerrado",
+    "hoursHint": "Texto libre. Usa saltos de línea para listar cada día por separado.",
+    "contentSaved": "Contenido del portal guardado",
+    "background": {
+      "title": "Fondo del portal",
+      "description": "Elige cómo se ve la página de inicio del portal de clientes.",
+      "typeNone": "Ninguno",
+      "typeTemplate": "Plantilla",
+      "typeImage": "Imagen personalizada",
+      "chooseTemplate": "Elige una plantilla",
+      "uploadLabel": "Imagen de fondo",
+      "upload": "Subir imagen",
+      "replace": "Reemplazar imagen",
+      "remove": "Eliminar",
+      "uploadHint": "JPG, PNG o WebP. Máx. 8 MB. Recomendado al menos 1600×900.",
+      "uploading": "Subiendo fondo…",
+      "uploaded": "Fondo actualizado",
+      "uploadFailed": "Error al subir el fondo",
+      "templateNames": {
+        "default": "Sutil",
+        "sunrise": "Amanecer",
+        "ocean": "Océano",
+        "forest": "Bosque",
+        "slate": "Pizarra",
+        "sand": "Arena"
+      }
+    }
   },
   "email": {
     "title": "Proveedor de correo",

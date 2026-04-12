@@ -52,7 +52,8 @@
     "reminders": "Hatırlatmalar",
     "allReminders": "Tüm hatırlatmalar",
     "auditLog": "Denetim günlüğü",
-    "aiAssistant": "AI Asistanı"
+    "aiAssistant": "AI Asistanı",
+    "observations": "Gözlemler"
   },
   "search": "Ara...",
   "shortcut": "Ctrl+K",

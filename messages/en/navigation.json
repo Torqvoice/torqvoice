@@ -52,7 +52,8 @@
     "reminders": "Reminders",
     "allReminders": "All Reminders",
     "auditLog": "Audit Log",
-    "aiAssistant": "AI Assistant"
+    "aiAssistant": "AI Assistant",
+    "observations": "Observations"
   },
   "search": "Search...",
   "shortcut": "Ctrl+K",

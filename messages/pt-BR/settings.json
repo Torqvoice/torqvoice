@@ -672,7 +672,10 @@
     "languageDescription": "Escolha o idioma de exibição do aplicativo.",
     "language": "Idioma",
     "forceCustomerLocale": "Forçar este idioma nas páginas voltadas ao cliente",
-    "forceCustomerLocaleHint": "Quando ativado, os clientes que visualizam faturas, orçamentos e inspeções compartilhadas os verão no idioma da sua oficina, independentemente das configurações do navegador. Quando desativado, os clientes veem as páginas no idioma configurado no navegador.",
+    "forceCustomerLocaleHint": "Quando ativado, o portal do cliente e as faturas, orçamentos e inspeções compartilhadas aparecem no idioma da sua oficina, independentemente das configurações do navegador do visitante. Quando desativado, as páginas voltadas aos clientes seguem o idioma do navegador do visitante.",
+    "defaultCountryCode": "Código de país padrão",
+    "defaultCountryCodeHint": "Usado quando os clientes fazem login no portal por SMS — aplicado a números de telefone sem código de país (seus ou do cliente). Formato: + seguido de dígitos, ex: +55.",
+    "defaultCountryCodeInvalid": "Digite um código de país válido, ex: +55, 55 ou 0055.",
     "saved": "Configurações de localização salvas",
     "saveSettings": "Salvar configurações"
   },
@@ -914,7 +917,38 @@
     "slugHint": "Letras minusculas, numeros, hifens e underscores. 3-48 caracteres. Deixe em branco para usar a URL padrao.",
     "portalUrl": "URL do portal",
     "urlCopied": "URL do portal copiada",
-    "shareHint": "Compartilhe este link com seus clientes para que possam fazer login no portal."
+    "shareHint": "Compartilhe este link com seus clientes para que possam fazer login no portal.",
+    "descriptionLabel": "Sobre sua oficina",
+    "descriptionPlaceholder": "Conte aos clientes sobre sua oficina, os serviços que você oferece e o que torna seu trabalho único.",
+    "descriptionHint": "Mostrado aos visitantes no topo da página inicial do seu portal.",
+    "hoursLabel": "Horário de funcionamento",
+    "hoursPlaceholder": "Seg-Sex: 8:00-17:00\nSáb: 9:00-13:00\nDom: Fechado",
+    "hoursHint": "Texto livre. Use quebras de linha para listar cada dia separadamente.",
+    "contentSaved": "Conteúdo do portal salvo",
+    "background": {
+      "title": "Plano de fundo do portal",
+      "description": "Escolha como a página inicial do portal do cliente fica.",
+      "typeNone": "Nenhum",
+      "typeTemplate": "Modelo",
+      "typeImage": "Imagem personalizada",
+      "chooseTemplate": "Escolha um modelo",
+      "uploadLabel": "Imagem de fundo",
+      "upload": "Enviar imagem",
+      "replace": "Substituir imagem",
+      "remove": "Remover",
+      "uploadHint": "JPG, PNG ou WebP. Máx. 8 MB. Recomendado pelo menos 1600×900.",
+      "uploading": "Enviando plano de fundo…",
+      "uploaded": "Plano de fundo atualizado",
+      "uploadFailed": "Falha ao enviar o plano de fundo",
+      "templateNames": {
+        "default": "Sutil",
+        "sunrise": "Amanhecer",
+        "ocean": "Oceano",
+        "forest": "Floresta",
+        "slate": "Ardósia",
+        "sand": "Areia"
+      }
+    }
   },
   "email": {
     "title": "Provedor de e-mail",

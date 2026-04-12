@@ -1,12 +1,44 @@
 {
+  "directory": {
+    "title": "Find your workshop",
+    "description": "Choose your workshop below to access the customer portal.",
+    "searchPlaceholder": "Search workshops…",
+    "noWorkshops": "No workshops are currently available.",
+    "noResults": "No workshops match your search.",
+    "openPortal": "Open portal"
+  },
+  "landing": {
+    "contactTitle": "Contact us",
+    "aboutTitle": "About us",
+    "noContactInfo": "Contact details are not yet available.",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "hours": "Opening hours",
+    "directions": "Get directions"
+  },
   "login": {
-    "signInTitle": "Sign in to your customer portal",
+    "signInTitle": "Customer login",
+    "signInSubtitle": "Sign in to view your invoices, quotes, and service history.",
     "emailLabel": "Email address",
     "emailPlaceholder": "you@example.com",
     "sendLink": "Send sign-in link",
     "checkEmail": "Check your email",
     "checkEmailDescription": "If an account exists for that email, we've sent a sign-in link. The link expires in 15 minutes.",
     "tryDifferentEmail": "Try a different email",
+    "tabEmail": "Email",
+    "tabSms": "SMS",
+    "phoneLabel": "Phone number",
+    "phonePlaceholder": "+47 12345678",
+    "phoneLocalPlaceholder": "12345678",
+    "sendCode": "Send code",
+    "codeSentTitle": "Enter the code we sent",
+    "codeSentDescription": "We sent a 6-digit code to {phone} if it matches an account.",
+    "codeLabel": "6-digit code",
+    "codePlaceholder": "123456",
+    "verifyCode": "Sign in",
+    "useDifferentPhone": "Use a different number",
+    "invalidCode": "Invalid or expired code",
     "notFound": "Not Found",
     "portalNotExist": "This portal does not exist.",
     "portalNotAvailable": "Portal Not Available",
@@ -21,7 +53,8 @@
     "requestService": "Request Service"
   },
   "header": {
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "askShort": "Service"
   },
   "shell": {
     "notFound": "Not Found",
@@ -44,7 +77,14 @@
     "noQuotesYet": "No quotes yet.",
     "view": "View",
     "pending": "Pending",
-    "failedToLoad": "Failed to load dashboard."
+    "failedToLoad": "Failed to load dashboard.",
+    "quickRequestService": "Request service",
+    "quickRequestServiceHint": "Book a repair or check-up",
+    "quickViewInvoices": "Your invoices",
+    "quickViewInvoicesHint": "Bills and payment history",
+    "quickViewVehicles": "Your vehicles",
+    "quickViewVehiclesHint": "Service history and details",
+    "activeJobs": "Active jobs"
   },
   "invoices": {
     "title": "Invoices",
@@ -57,6 +97,7 @@
     "amount": "Amount",
     "payment": "Payment",
     "view": "View",
+    "download": "Download",
     "paid": "paid",
     "partial": "partial",
     "unpaid": "unpaid"

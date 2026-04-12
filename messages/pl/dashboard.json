@@ -22,6 +22,14 @@
   },
   "recentActivity": "Ostatnia aktywność",
   "noRecentActivity": "Brak ostatniej aktywności",
+  "recentObservations": "Ostatnie obserwacje",
+  "noRecentObservations": "Brak otwartych obserwacji",
+  "observations": {
+    "severity": "Ważność",
+    "vehicle": "Pojazd",
+    "description": "Opis",
+    "when": "Kiedy"
+  },
   "unknownUser": "Użytkownik",
   "stats": {
     "activeJobs": "Aktywne zlecenia",
@@ -41,7 +49,8 @@
     "sms": "Ostatnie wiadomości",
     "notifications": "Ostatnie powiadomienia",
     "recentCompleted": "Ostatnio ukończone",
-    "activeJobs": "Aktywne zlecenia"
+    "activeJobs": "Aktywne zlecenia",
+    "recentObservations": "Ostatnie obserwacje"
   },
   "maintenance": {
     "title": "Przewidywany termin konserwacji",

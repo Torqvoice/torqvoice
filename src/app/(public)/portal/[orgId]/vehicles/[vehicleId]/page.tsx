@@ -1,42 +1,39 @@
-import { PortalShell } from "@/features/portal/Components/PortalShell";
-import { getPortalVehicleDetail } from "@/features/portal/Actions/portalActions";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Link from "next/link";
-import { getTranslations } from "next-intl/server";
-import { db } from "@/lib/db";
+import { PortalShell } from '@/features/portal/Components/PortalShell'
+import { getPortalVehicleDetail } from '@/features/portal/Actions/portalActions'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Download } from 'lucide-react'
+import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
+import { db } from '@/lib/db'
 
 export default async function PortalVehicleDetailPage({
   params,
 }: {
-  params: Promise<{ orgId: string; vehicleId: string }>;
+  params: Promise<{ orgId: string; vehicleId: string }>
 }) {
-  const { orgId, vehicleId } = await params;
-  const t = await getTranslations('portal.vehicles');
+  const { orgId, vehicleId } = await params
+  const t = await getTranslations('portal.vehicles')
+  const tInvoices = await getTranslations('portal.invoices')
   const [result, serviceTypeSetting] = await Promise.all([
     getPortalVehicleDetail(vehicleId),
     db.appSetting.findUnique({
-      where: { organizationId_key: { organizationId: orgId, key: "workshop.serviceType" } },
+      where: { organizationId_key: { organizationId: orgId, key: 'workshop.serviceType' } },
       select: { value: true },
     }),
-  ]);
-  const serviceType = (serviceTypeSetting?.value || "automotive") as "automotive" | "marine";
+  ])
+  const serviceType = (serviceTypeSetting?.value || 'automotive') as 'automotive' | 'marine'
 
   if (!result.success || !result.data) {
     return (
       <PortalShell orgId={orgId}>
-        <p className="text-muted-foreground">
-          {result.error ?? t('vehicleNotFound')}
-        </p>
+        <p className="text-muted-foreground">{result.error ?? t('vehicleNotFound')}</p>
       </PortalShell>
-    );
+    )
   }
 
-  const v = result.data;
+  const v = result.data
 
   return (
     <PortalShell orgId={orgId}>
@@ -55,10 +52,22 @@ export default async function PortalVehicleDetailPage({
               {v.year} {v.make} {v.model}
             </h1>
             <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
-              {v.licensePlate && <span>{serviceType === 'marine' ? `Reg: ${v.licensePlate}` : t('plate', { plate: v.licensePlate })}</span>}
-              {v.vin && <span>{serviceType === 'marine' ? `HIN: ${v.vin}` : t('vin', { vin: v.vin })}</span>}
+              {v.licensePlate && (
+                <span>
+                  {serviceType === 'marine'
+                    ? `Reg: ${v.licensePlate}`
+                    : t('plate', { plate: v.licensePlate })}
+                </span>
+              )}
+              {v.vin && (
+                <span>{serviceType === 'marine' ? `HIN: ${v.vin}` : t('vin', { vin: v.vin })}</span>
+              )}
               {v.mileage > 0 && (
-                <span>{serviceType === 'marine' ? `${v.mileage.toLocaleString()} hrs` : `${v.mileage.toLocaleString()} mi`}</span>
+                <span>
+                  {serviceType === 'marine'
+                    ? `${v.mileage.toLocaleString()} hrs`
+                    : `${v.mileage.toLocaleString()} mi`}
+                </span>
               )}
               {v.color && <span>{v.color}</span>}
             </div>
@@ -87,20 +96,16 @@ export default async function PortalVehicleDetailPage({
                     <CardContent className="flex items-center justify-between py-4">
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium">
-                          {sr.invoiceNumber
-                            ? `#${sr.invoiceNumber} - `
-                            : ""}
+                          {sr.invoiceNumber ? `#${sr.invoiceNumber} - ` : ''}
                           {sr.title}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {new Date(sr.startDateTime ?? sr.serviceDate).toLocaleDateString()}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <Badge variant="outline">{sr.status}</Badge>
-                        <span className="text-sm font-medium">
-                          ${sr.totalAmount.toFixed(2)}
-                        </span>
+                        <span className="text-sm font-medium">${sr.totalAmount.toFixed(2)}</span>
                         {sr.publicToken && (
                           <Link
                             href={`/share/invoice/${orgId}/${sr.publicToken}`}
@@ -109,6 +114,14 @@ export default async function PortalVehicleDetailPage({
                             {t('view')}
                           </Link>
                         )}
+                        <a
+                          href={`/portal/${orgId}/invoices/${sr.id}/pdf`}
+                          download
+                          className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          {tInvoices('download')}
+                        </a>
                       </div>
                     </CardContent>
                   </Card>
@@ -119,27 +132,23 @@ export default async function PortalVehicleDetailPage({
 
           <TabsContent value="inspections" className="mt-4">
             {v.inspections.length === 0 ? (
-              <p className="py-8 text-center text-sm text-muted-foreground">
-                {t('noInspections')}
-              </p>
+              <p className="py-8 text-center text-sm text-muted-foreground">{t('noInspections')}</p>
             ) : (
               <div className="space-y-3">
                 {v.inspections.map((insp) => {
                   const conditions = insp.items.reduce(
                     (acc, item) => {
-                      acc[item.condition] = (acc[item.condition] || 0) + 1;
-                      return acc;
+                      acc[item.condition] = (acc[item.condition] || 0) + 1
+                      return acc
                     },
-                    {} as Record<string, number>,
-                  );
+                    {} as Record<string, number>
+                  )
 
                   return (
                     <Card key={insp.id}>
                       <CardContent className="flex items-center justify-between py-4">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-medium">
-                            {insp.template.name}
-                          </p>
+                          <p className="truncate text-sm font-medium">{insp.template.name}</p>
                           <p className="text-xs text-muted-foreground">
                             {new Date(insp.createdAt).toLocaleDateString()}
                             {insp.completedAt &&
@@ -176,7 +185,7 @@ export default async function PortalVehicleDetailPage({
                         </div>
                       </CardContent>
                     </Card>
-                  );
+                  )
                 })}
               </div>
             )}
@@ -184,5 +193,5 @@ export default async function PortalVehicleDetailPage({
         </Tabs>
       </div>
     </PortalShell>
-  );
+  )
 }

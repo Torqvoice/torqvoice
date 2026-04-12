@@ -27,6 +27,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   Clock,
+  Eye,
   EyeOff,
   FileText,
   Gauge,
@@ -187,6 +188,27 @@ interface DashboardNotification {
   createdAt: string | Date;
 }
 
+interface DashboardObservation {
+  id: string;
+  description: string;
+  severity: string;
+  notes: string | null;
+  createdAt: string | Date;
+  vehicle: {
+    id: string;
+    make: string;
+    model: string;
+    year: number;
+    licensePlate: string | null;
+  };
+}
+
+const observationSeverityColors: Record<string, string> = {
+  urgent: "bg-red-500/10 text-red-500 border-red-500/20",
+  needs_work: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+  monitor: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+};
+
 export function DashboardClient({
   stats,
   currencyCode = "USD",
@@ -202,6 +224,7 @@ export function DashboardClient({
   smsEnabled = false,
   notifications = [],
   recentAuditLogs = [],
+  recentObservations = [],
 }: {
   stats: DashboardStats;
   currencyCode?: string;
@@ -227,6 +250,7 @@ export function DashboardClient({
     metadata?: any;
     user: { id: string; name: string | null; email: string | null } | null;
   }[];
+  recentObservations?: DashboardObservation[];
 }) {
   const t = useTranslations("dashboard");
   const tAudit = useTranslations("audit");
@@ -1221,6 +1245,75 @@ export function DashboardClient({
             )}
           </CardContent>
         </Card>
+        {/* Recent Observations */}
+        {isVisible("recentObservations") && (
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-1">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Eye className="h-4 w-4" />
+                {t("recentObservations")}
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs gap-1"
+                onClick={() => router.push("/observations")}
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            {recentObservations.length === 0 ? (
+              <p className="px-5 py-4 text-xs text-muted-foreground">{t("noRecentObservations")}</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="h-8 w-20">{t("observations.severity")}</TableHead>
+                    <TableHead className="h-8 w-24">{t("observations.vehicle")}</TableHead>
+                    <TableHead className="h-8">{t("observations.description")}</TableHead>
+                    <TableHead className="h-8 w-16 text-right">{t("observations.when")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentObservations.map((obs) => {
+                    const vehicleLabel = obs.vehicle.licensePlate
+                      ?? `${obs.vehicle.year} ${obs.vehicle.make}`;
+                    return (
+                      <TableRow
+                        key={obs.id}
+                        className="cursor-pointer"
+                        onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
+                      >
+                        <TableCell className="py-1.5">
+                          <Badge
+                            variant="outline"
+                            className={`text-[10px] px-1.5 py-0 ${observationSeverityColors[obs.severity] || ""}`}
+                          >
+                            {obs.severity}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="py-1.5 font-mono text-xs text-muted-foreground truncate">
+                          {vehicleLabel}
+                        </TableCell>
+                        <TableCell className="py-1.5 text-xs font-medium truncate max-w-0">
+                          {obs.description}
+                        </TableCell>
+                        <TableCell className="py-1.5 text-right text-[11px] text-muted-foreground whitespace-nowrap">
+                          {formatRelativeTime(obs.createdAt)}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+        )}
       </div>
     </div>
   );

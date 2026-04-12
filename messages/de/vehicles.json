@@ -229,6 +229,20 @@
     "perPage": "pro Seite",
     "page": "Seite {page} von {totalPages}"
   },
+  "observationsPage": {
+    "searchPlaceholder": "Beschreibung, Notizen oder Fahrzeug suchen...",
+    "allStatuses": "Alle Status",
+    "allSeverities": "Alle Schweregrade",
+    "empty": "Keine Beobachtungen gefunden.",
+    "columns": {
+      "severity": "Schweregrad",
+      "status": "Status",
+      "vehicle": "Fahrzeug",
+      "description": "Beschreibung",
+      "notes": "Notizen",
+      "created": "Erstellt"
+    }
+  },
   "form": {
     "editTitle": "Fahrzeug bearbeiten",
     "addTitle": "Neues Fahrzeug hinzuf\u00fcgen",
