@@ -178,6 +178,7 @@
 
 /* Tiptap editor styles */
 .tiptap-content {
+  overflow-wrap: anywhere;
   &:focus {
     outline: none;
   }
@@ -222,6 +223,7 @@
 
 /* Notes display (rendered HTML) */
 .notes-content {
+  overflow-wrap: anywhere;
   h2 {
     font-size: 1.25rem;
     font-weight: 600;
