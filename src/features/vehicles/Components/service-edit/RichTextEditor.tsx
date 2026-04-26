@@ -5,11 +5,13 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
+import Link from '@tiptap/extension-link'
 import { Button } from '@/components/ui/button'
 import {
   Bold,
   Italic,
   Underline as UnderlineIcon,
+  Link as LinkIcon,
   List,
   ListOrdered,
   Heading2,
@@ -36,6 +38,15 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
         heading: { levels: [2, 3] },
       }),
       Underline,
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+        linkOnPaste: true,
+        HTMLAttributes: {
+          rel: 'noopener noreferrer',
+          target: '_blank',
+        },
+      }),
       Placeholder.configure({
         placeholder: placeholder || 'Write something...',
       }),
@@ -63,6 +74,20 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
 
   if (!editor) return null
 
+  const handleSetLink = () => {
+    const previous = editor.getAttributes('link').href as string | undefined
+    const url = window.prompt('URL', previous ?? 'https://')
+    if (url === null) return
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run()
+      return
+    }
+    const normalized = /^https?:\/\//i.test(url) || url.startsWith('mailto:')
+      ? url
+      : `https://${url}`
+    editor.chain().focus().extendMarkRange('link').setLink({ href: normalized }).run()
+  }
+
   return (
     <div className="overflow-hidden rounded-md border border-input bg-background flex flex-col resize-y" style={{ minHeight: 180 }}>
       <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/30 px-1 py-1 shrink-0">
@@ -86,6 +111,13 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
           title="Underline"
         >
           <UnderlineIcon className="h-3.5 w-3.5" />
+        </ToolbarButton>
+        <ToolbarButton
+          active={editor.isActive('link')}
+          onClick={handleSetLink}
+          title="Link"
+        >
+          <LinkIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
 
         <div className="mx-0.5 h-4 w-px bg-border" />

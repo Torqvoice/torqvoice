@@ -28,6 +28,7 @@
     "@react-pdf/renderer": "^4.3.2",
     "@sendgrid/mail": "^8.1.6",
     "@tanstack/react-query": "^5.90.21",
+    "@tiptap/extension-link": "^3.22.4",
     "@tiptap/extension-placeholder": "^3.19.0",
     "@tiptap/extension-underline": "^3.19.0",
     "@tiptap/pm": "^3.19.0",

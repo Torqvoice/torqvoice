@@ -212,6 +212,11 @@
     color: var(--muted-foreground);
     font-style: italic;
   }
+  a {
+    color: var(--primary);
+    text-decoration: underline;
+    cursor: pointer;
+  }
   p.is-editor-empty:first-child::before {
     content: attr(data-placeholder);
     float: left;
@@ -250,6 +255,10 @@
     padding-left: 0.75rem;
     color: var(--muted-foreground);
     font-style: italic;
+  }
+  a {
+    color: var(--primary);
+    text-decoration: underline;
   }
   > * + * {
     margin-top: 0.5em;
