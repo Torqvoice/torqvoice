@@ -23,10 +23,22 @@ interface DetailsRightColumnProps {
   organizationId: string
   currencyCode: string
   taxEnabled: boolean
-  initialVehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null }
+  initialVehicle: {
+    id: string
+    make: string
+    model: string
+    year: number
+    licensePlate: string | null
+  }
   boardTechnicians: BoardTechnicianOption[]
   orgMembers?: OrgMemberOption[]
-  notificationHistory?: { id: string; body: string; status: string; createdAt: string; toNumber: string }[]
+  notificationHistory?: {
+    id: string
+    body: string
+    status: string
+    createdAt: string
+    toNumber: string
+  }[]
 }
 
 export function DetailsRightColumn({
@@ -136,7 +148,11 @@ export function DetailsRightColumn({
   )
 }
 
-function NotificationHistory({ notifications }: { notifications: { id: string; body: string; status: string; createdAt: string; toNumber: string }[] }) {
+function NotificationHistory({
+  notifications,
+}: {
+  notifications: { id: string; body: string; status: string; createdAt: string; toNumber: string }[]
+}) {
   const t = useTranslations('service.notifications')
 
   function timeAgo(dateStr: string) {
@@ -159,7 +175,9 @@ function NotificationHistory({ notifications }: { notifications: { id: string; b
       <div className="space-y-2">
         {notifications.map((n) => (
           <div key={n.id} className="text-xs">
-            <p className="text-muted-foreground">{timeAgo(n.createdAt)} · {t('viaSms')}</p>
+            <p className="text-muted-foreground">
+              {timeAgo(n.createdAt)} · {t('viaSms')}
+            </p>
             <p className="mt-0.5 truncate">{n.body}</p>
           </div>
         ))}

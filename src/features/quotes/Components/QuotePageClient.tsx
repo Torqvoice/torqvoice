@@ -31,6 +31,7 @@ import { getCurrencySymbol } from '@/lib/format'
 import type { QuoteAttachment, QuoteRecord, TabType } from './quote-page-types'
 import { statusColors } from './quote-page-types'
 import { useQuoteFormState } from './useQuoteFormState'
+import { useSaveShortcut } from '@/hooks/use-save-shortcut'
 import { LaborPresetPickerDialog, type LaborPresetOption } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import { QuotePartsEditor } from './QuotePartsEditor'
 import { QuoteLaborEditor } from './QuoteLaborEditor'
@@ -93,6 +94,10 @@ export function QuotePageClient({
     taxEnabled,
     defaultLaborRate,
     t,
+  })
+
+  useSaveShortcut(() => {
+    if (state.hasUnsavedChanges) return state.saveNow()
   })
 
   const [showPresetPicker, setShowPresetPicker] = useState(false)
