@@ -186,13 +186,20 @@ export function ServiceDocumentsManager({
             key={file.id}
             className="flex items-center gap-3 rounded-md border p-2.5"
           >
-            {getFileIcon(file.fileType)}
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{file.fileName}</p>
-              <p className="text-xs text-muted-foreground">
-                {formatFileSize(file.fileSize)}
-              </p>
-            </div>
+            <a
+              href={file.fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex min-w-0 flex-1 items-center gap-3 hover:underline"
+            >
+              {getFileIcon(file.fileType)}
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{file.fileName}</p>
+                <p className="text-xs text-muted-foreground">
+                  {formatFileSize(file.fileSize)}
+                </p>
+              </div>
+            </a>
             <label className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
               <Switch
                 checked={file.includeInInvoice}
