@@ -9,6 +9,12 @@ interface ServiceDetailContentProps {
   rightColumn: React.ReactNode
 }
 
+// Bulletproof layout shell. The outer is a relative box that fills its flex parent.
+// Each scroll region is `position: absolute; inset: 0` inside its own relative cell,
+// so its size is dictated entirely by the cell's geometry (grid track width / parent
+// height) and never by its content's intrinsic min-size. This sidesteps the
+// `min-height: auto` flex-item rule that was letting tall right-column content push
+// the body taller than the viewport.
 export function ServiceDetailContent({ leftColumn, rightColumn }: ServiceDetailContentProps) {
   const [sidebarWidth, setSidebarWidth] = useState<number | null>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -32,38 +38,47 @@ export function ServiceDetailContent({ leftColumn, rightColumn }: ServiceDetailC
     }
   }, [isDragging])
 
+  const rightColTrack =
+    sidebarWidth != null ? `${sidebarWidth}px` : `minmax(${SIDEBAR_MIN_W}px, 22vw)`
+
   return (
-    <>
-      {/* Mobile: stacked layout */}
-      <div className="flex-1 overflow-y-auto overscroll-contain p-4 lg:hidden">
+    <div className="relative min-h-0 flex-1">
+      {/* Mobile: stacked, page scrolls inside the absolute layer */}
+      <div className="absolute inset-0 overflow-y-auto overscroll-contain p-4 lg:hidden">
         <div className="space-y-3 pb-40">
           {leftColumn}
           {rightColumn}
         </div>
       </div>
 
-      {/* Desktop: side-by-side with resizable sidebar */}
-      <div className="hidden lg:flex flex-1 overflow-hidden">
-        <div className="flex-1 min-w-0 overflow-y-auto overscroll-contain p-4 pr-2">
-          <div className="space-y-3 pb-40">{leftColumn}</div>
+      {/* Desktop: 3-track grid (left | resize handle | right sidebar) */}
+      <div
+        className="absolute inset-0 hidden lg:grid"
+        style={{ gridTemplateColumns: `minmax(0, 1fr) 6px ${rightColTrack}` }}
+      >
+        <div className="relative">
+          <div className="absolute inset-0 overflow-y-auto overscroll-contain p-4 pr-2">
+            <div className="space-y-3 pb-40">{leftColumn}</div>
+          </div>
         </div>
+
         <div
-          className="w-1.5 shrink-0 cursor-col-resize bg-border hover:bg-primary/30 transition-colors relative group"
+          className="relative cursor-col-resize bg-border transition-colors hover:bg-primary/30"
           onMouseDown={() => setIsDragging(true)}
         >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-4 flex items-center justify-center rounded-sm border bg-background shadow-sm">
+          <div className="absolute top-1/2 left-1/2 flex h-8 w-4 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-sm border bg-background shadow-sm">
             <svg width="6" height="14" viewBox="0 0 6 14" className="text-muted-foreground">
               <path d="M1 0v14M5 0v14" stroke="currentColor" strokeWidth="1" />
             </svg>
           </div>
         </div>
-        <div
-          className="shrink-0 overflow-y-auto overscroll-contain p-4 pl-2"
-          style={sidebarWidth != null ? { width: sidebarWidth } : { width: '22vw', minWidth: SIDEBAR_MIN_W }}
-        >
-          <div className="space-y-3 pb-40">{rightColumn}</div>
+
+        <div className="relative">
+          <div className="absolute inset-0 overflow-y-auto overscroll-contain p-4 pl-2">
+            <div className="space-y-3 pb-40">{rightColumn}</div>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
