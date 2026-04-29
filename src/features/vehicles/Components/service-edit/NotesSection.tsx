@@ -105,51 +105,51 @@ export function NotesSection({ initialData, onNotesChange, serviceRecordId, aiEn
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="flex items-center gap-2 text-sm font-semibold">
-          <FileText className="h-3.5 w-3.5" />
-          {t('title')}
-        </h3>
-        {aiEnabled && serviceRecordId && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-7 gap-1.5 text-xs"
-            onClick={handleAiClick}
-            disabled={generating}
-          >
-            {generating ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Sparkles className="h-3.5 w-3.5" />
-            )}
-            {t('aiWrite')}
-          </Button>
-        )}
-      </div>
+      <h3 className="flex items-center gap-2 text-sm font-semibold">
+        <FileText className="h-3.5 w-3.5" />
+        {t('title')}
+      </h3>
 
       <Tabs value={noteType} onValueChange={(v) => setNoteType(v as 'public' | 'internal')}>
-        <TabsList className="h-8">
-          <TabsTrigger value="public" className="text-xs">
-            {t('public')}
-            {publicHasContent && (
-              <span
-                aria-hidden
-                className="ml-1.5 h-1.5 w-1.5 rounded-full bg-sky-500"
-              />
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="internal" className="text-xs">
-            {t('internal')}
-            {internalHasContent && (
-              <span
-                aria-hidden
-                className="ml-1.5 h-1.5 w-1.5 rounded-full bg-orange-500"
-              />
-            )}
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex items-center justify-between gap-2">
+          <TabsList className="h-8">
+            <TabsTrigger value="public" className="text-xs">
+              {t('public')}
+              {publicHasContent && (
+                <span
+                  aria-hidden
+                  className="ml-1.5 h-1.5 w-1.5 rounded-full bg-sky-500"
+                />
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="internal" className="text-xs">
+              {t('internal')}
+              {internalHasContent && (
+                <span
+                  aria-hidden
+                  className="ml-1.5 h-1.5 w-1.5 rounded-full bg-orange-500"
+                />
+              )}
+            </TabsTrigger>
+          </TabsList>
+          {aiEnabled && serviceRecordId && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-7 gap-1.5 text-xs"
+              onClick={handleAiClick}
+              disabled={generating}
+            >
+              {generating ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="h-3.5 w-3.5" />
+              )}
+              {t('aiWrite')}
+            </Button>
+          )}
+        </div>
 
         <TabsContent value="public" className="space-y-1">
           <RichTextEditor
