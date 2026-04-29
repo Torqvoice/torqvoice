@@ -95,7 +95,8 @@
     "scanBarcode": "Skanuj",
     "scanTitle": "Skanuj kod kreskowy",
     "partFound": "Dodano \"{name}\" z magazynu",
-    "partNotFound": "Nie znaleziono części dla kodu kreskowego \"{barcode}\""
+    "partNotFound": "Nie znaleziono części dla kodu kreskowego \"{barcode}\"",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Praca",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Razem",
@@ -209,7 +211,9 @@
     "images": "Obrazy ({count})",
     "videos": "Wideo ({count})",
     "diagnostics": "Raporty Diagnostyczne ({count})",
-    "documents": "Dokumenty ({count})"
+    "documents": "Dokumenty ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Udostępnij Fakturę",
@@ -225,7 +229,8 @@
     "emailSent": "Email wysłany",
     "failedEmail": "Nie udało się wysłać email",
     "smsSent": "SMS wysłany",
-    "failedSms": "Nie udało się wysłać SMS"
+    "failedSms": "Nie udało się wysłać SMS",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Pojazd",

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Layers, Plus, Trash2, Wrench } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { QuoteLaborInput } from "./quote-page-types";
 
 const QuoteLaborRow = memo(function QuoteLaborRow({
@@ -20,6 +21,8 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
   tSwitchToService,
   tQty,
   tHours,
+  tDeleteRow,
+  tExcludeFromTotal,
 }: {
   labor: QuoteLaborInput;
   index: number;
@@ -33,6 +36,8 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
   tSwitchToService: string;
   tQty: string;
   tHours: string;
+  tDeleteRow: string;
+  tExcludeFromTotal: string;
 }) {
   const isService = labor.pricingType === "service";
   return (
@@ -56,8 +61,13 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
       <Input type="number" min="0" step="0.01" value={labor.rate} onChange={(e) => onUpdate(index, "rate", e.target.value)} />
       <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(labor.total, currencyCode)}</div>
       <div className="flex items-center gap-1">
-        <input type="checkbox" checked={labor.excluded ?? false} onChange={(e) => onUpdate(index, "excluded", e.target.checked)} className="h-4 w-4 rounded border-gray-300" title="Exclude from total" />
-        <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => onDelete(index)}><Trash2 className="h-4 w-4" /></Button>
+        <input type="checkbox" checked={labor.excluded ?? false} onChange={(e) => onUpdate(index, "excluded", e.target.checked)} className="h-4 w-4 rounded border-gray-300" title={tExcludeFromTotal} aria-label={tExcludeFromTotal} />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => onDelete(index)} aria-label={tDeleteRow}><Trash2 className="h-4 w-4" /></Button>
+          </TooltipTrigger>
+          <TooltipContent>{tDeleteRow}</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );
@@ -92,6 +102,7 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
   t,
 }: QuoteLaborEditorProps) {
   return (
+    <TooltipProvider>
     <div className="rounded-lg border p-3 space-y-2">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">{t("labor.title")}</h3>
@@ -128,6 +139,8 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
               tSwitchToService={t("labor.switchToServiceHint")}
               tQty={t("labor.qty")}
               tHours={t("labor.hours")}
+              tDeleteRow={t("labor.deleteRow")}
+              tExcludeFromTotal={t("labor.excludeFromTotal")}
             />
           ))}
           <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={onAdd}><Plus className="h-4 w-4" /></button>
@@ -147,5 +160,6 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
         </div>
       )}
     </div>
+    </TooltipProvider>
   );
 });

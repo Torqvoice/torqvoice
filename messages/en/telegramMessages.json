@@ -30,7 +30,8 @@
     "deleteDescription": "This will permanently delete this message. This action cannot be undone.",
     "messageDeleted": "Message deleted",
     "deleteError": "Failed to delete message",
-    "sendError": "Failed to send message"
+    "sendError": "Failed to send message",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Send {label}",

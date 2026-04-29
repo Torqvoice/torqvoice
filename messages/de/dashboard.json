@@ -64,7 +64,9 @@
     "dismissedTab": "Verworfen",
     "noActive": "Derzeit sind keine Fahrzeuge wartungsfällig.",
     "dismissedOn": "Verworfen am {date}",
-    "restore": "Wiederherstellen"
+    "restore": "Wiederherstellen",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Anstehende Erinnerungen",
@@ -95,7 +97,8 @@
     "pending": "Ausstehend",
     "createQuote": "Angebot erstellen",
     "itemsRequested": "{count, plural, one {# Position angefragt} other {# Positionen angefragt}}",
-    "noData": "Keine ausstehenden Angebotsanfragen."
+    "noData": "Keine ausstehenden Angebotsanfragen.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Angebotsantworten der Kunden",
@@ -106,7 +109,8 @@
     "convert": "Convert",
     "viewQuote": "Angebot anzeigen",
     "view": "View",
-    "noData": "Keine Kundenantworten."
+    "noData": "Keine Kundenantworten.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Kürzlich abgeschlossen",

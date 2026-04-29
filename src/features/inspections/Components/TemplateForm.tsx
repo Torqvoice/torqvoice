@@ -204,6 +204,7 @@ export function TemplateForm({
                       size="icon"
                       className="h-8 w-8 shrink-0 text-destructive"
                       onClick={() => removeSection(sIdx)}
+                      aria-label="Remove section"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -228,6 +229,7 @@ export function TemplateForm({
                           size="icon"
                           className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
                           onClick={() => removeItem(sIdx, iIdx)}
+                          aria-label="Remove item"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>

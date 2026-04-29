@@ -64,7 +64,9 @@
     "dismissedTab": "Dismissed",
     "noActive": "No vehicles currently due for service.",
     "dismissedOn": "Dismissed {date}",
-    "restore": "Restore"
+    "restore": "Restore",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Upcoming Reminders",
@@ -95,7 +97,8 @@
     "pending": "Pending",
     "createQuote": "Create Quote",
     "itemsRequested": "{count, plural, one {# item requested} other {# items requested}}",
-    "noData": "No pending quote requests."
+    "noData": "No pending quote requests.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Customer Quote Responses",
@@ -106,7 +109,8 @@
     "convert": "Convert",
     "viewQuote": "View Quote",
     "view": "View",
-    "noData": "No customer responses."
+    "noData": "No customer responses.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Recent Completed",

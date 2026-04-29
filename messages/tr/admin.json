@@ -1,9 +1,21 @@
 {
   "nav": {
-    "overview": { "title": "Genel Bakış", "description": "Platform istatistikleri ve durumu" },
-    "users": { "title": "Kullanıcılar", "description": "Tüm kullanıcıları yönet" },
-    "organizations": { "title": "Organizasyonlar", "description": "Tüm organizasyonları yönet" },
-    "settings": { "title": "Ayarlar", "description": "Platform yapılandırması" }
+    "overview": {
+      "title": "Genel Bakış",
+      "description": "Platform istatistikleri ve durumu"
+    },
+    "users": {
+      "title": "Kullanıcılar",
+      "description": "Tüm kullanıcıları yönet"
+    },
+    "organizations": {
+      "title": "Organizasyonlar",
+      "description": "Tüm organizasyonları yönet"
+    },
+    "settings": {
+      "title": "Ayarlar",
+      "description": "Platform yapılandırması"
+    }
   },
   "layout": {
     "title": "Yönetim Paneli",
@@ -104,5 +116,8 @@
     "postmarkApiKeyHint": "Server Token'ınızı postmarkapp.com adresinden alın",
     "mailgunApiKeyHint": "API anahtarınızı app.mailgun.com adresinden alın",
     "sendgridApiKeyHint": "API anahtarınızı app.sendgrid.com adresinden alın"
+  },
+  "common": {
+    "openMenu": "Open menu"
   }
 }

@@ -353,7 +353,10 @@
     "memberRemoved": "Lid verwijderd",
     "failedRemoveMember": "Lid verwijderen mislukt",
     "memberRoleUpdated": "Rol van lid bijgewerkt",
-    "failedUpdateRole": "Rol bijwerken mislukt"
+    "failedUpdateRole": "Rol bijwerken mislukt",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Factuurindeling",
@@ -718,7 +721,9 @@
     "fieldUpdated": "Aangepast veld bijgewerkt",
     "fieldDeleted": "Aangepast veld verwijderd",
     "failedSave": "Kan veld niet opslaan",
-    "failedDelete": "Kan niet verwijderen"
+    "failedDelete": "Kan niet verwijderen",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Werkplaatsstandaarden",
@@ -948,7 +953,8 @@
         "slate": "Leisteen",
         "sand": "Zand"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "E-mailprovider",
@@ -1023,7 +1029,8 @@
     "saved": "SMS-instellingen opgeslagen",
     "failedSave": "Instellingen opslaan mislukt",
     "testSentTo": "Test-SMS verzonden naar {phone}",
-    "testFailed": "SMS-test mislukt"
+    "testFailed": "SMS-test mislukt",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Abonnementsplan",
@@ -1074,6 +1081,7 @@
     "resumeSuccess": "Abonnement succesvol hervat",
     "resumeError": "Hervatten van abonnement mislukt",
     "billingPortalError": "Kan factureringsportaal niet openen",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Plan upgraden",
     "upgradeDescription": "Ontgrendel meer functies door uw plan te upgraden.",
     "upgradeToProDescription": "Upgrade om onbeperkte klanten, teamleden, rapporten, SMTP, API-toegang en meer te ontgrendelen.",
@@ -1165,6 +1173,10 @@
     "deleted": "Rapportplanning verwijderd",
     "toggledOn": "Rapportplanning ingeschakeld",
     "toggledOff": "Rapportplanning uitgeschakeld",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Geen teamleden gevonden",
     "addRecipient": "Ontvanger toevoegen...",
     "searchMembers": "Leden zoeken...",

@@ -11,7 +11,7 @@
   "months": {
     "january": "Januar",
     "february": "Februar",
-    "march": "M\u00e4rz",
+    "march": "März",
     "april": "April",
     "may": "Mai",
     "june": "Juni",
@@ -23,19 +23,19 @@
     "december": "Dezember"
   },
   "stats": {
-    "services": "Auftr\u00e4ge",
-    "overdue": "\u00dcberf\u00e4llig",
+    "services": "Aufträge",
+    "overdue": "Überfällig",
     "pendingQuotes": "Offene Angebote",
     "revenue": "Umsatz"
   },
   "today": "Heute",
   "workOrder": "Arbeitsauftrag",
   "filters": {
-    "services": "Auftr\u00e4ge",
+    "services": "Aufträge",
     "reminders": "Erinnerungen",
     "quotes": "Angebote"
   },
-  "selectVehicle": "Fahrzeug f\u00fcr Arbeitsauftrag ausw\u00e4hlen",
+  "selectVehicle": "Fahrzeug für Arbeitsauftrag auswählen",
   "dateChoice": {
     "title": "Work Order Date",
     "description": "You have {selectedDate} selected. Which date should this work order be for?",
@@ -53,7 +53,7 @@
       "approved": "Genehmigt",
       "draft": "Entwurf",
       "done": "Erledigt",
-      "overdue": "\u00dcberf\u00e4llig",
+      "overdue": "Überfällig",
       "upcoming": "Bevorstehend"
     },
     "type": {
@@ -62,6 +62,8 @@
       "quote": "Angebot"
     },
     "noEvents": "Keine Ereignisse",
-    "selectDay": "W\u00e4hlen Sie einen Tag mit Ereignissen oder erstellen Sie einen neuen Arbeitsauftrag."
-  }
+    "selectDay": "Wählen Sie einen Tag mit Ereignissen oder erstellen Sie einen neuen Arbeitsauftrag."
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month"
 }

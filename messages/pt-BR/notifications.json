@@ -6,5 +6,6 @@
     "confirmDelete": "Tem certeza?",
     "delete": "Excluir",
     "cancel": "Cancelar"
-  }
+  },
+  "openNotifications": "Open notifications"
 }

@@ -26,7 +26,11 @@
     "vehicleUnarchived": "Veículo desarquivado",
     "unarchiveError": "Falha ao desarquivar veículo",
     "deleteError": "Falha ao excluir veículo",
-    "error": "Falha ao carregar veículos"
+    "error": "Falha ao carregar veículos",
+    "viewTable": "Table view",
+    "viewGrid": "Grid view",
+    "viewLargeGrid": "Large grid view",
+    "openMenu": "Open menu"
   },
   "detail": {
     "vehicleArchived": "Este veículo está arquivado",
@@ -84,7 +88,9 @@
     "severityCommon": "Comum — problema relatado frequentemente",
     "severityModerate": "Moderado — relatado por alguns proprietários",
     "severityUncommon": "Incomum — relatado por poucos proprietários",
-    "severityRare": "Raro — relatos isolados, mas crítico quando ocorre"
+    "severityRare": "Raro — relatos isolados, mas crítico quando ocorre",
+    "openMenu": "Open menu",
+    "dismissMaintenance": "Dismiss"
   },
   "quotes": {
     "newQuote": "Novo orçamento",
@@ -163,7 +169,11 @@
     "empty": "Nenhum registro de serviço ainda.",
     "showing": "Exibindo {start}-{end} de {total}",
     "perPage": "por página",
-    "page": "Página {page} de {totalPages}"
+    "page": "Página {page} de {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "notes": {
     "addNote": "Adicionar Nota",
@@ -188,7 +198,12 @@
     "noteUpdated": "Nota atualizada",
     "noteCreated": "Nota criada",
     "titleRequired": "Título e conteúdo são obrigatórios",
-    "saveError": "Falha ao {action} nota"
+    "saveError": "Falha ao {action} nota",
+    "openMenu": "Open menu",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "findings": {
     "sectionTitle": "Observações",
@@ -236,7 +251,12 @@
     "resolveError": "Falha ao resolver observação",
     "showing": "Exibindo {start}-{end} de {total}",
     "perPage": "por página",
-    "page": "Página {page} de {totalPages}"
+    "page": "Página {page} de {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page",
+    "openMenu": "Open menu"
   },
   "observationsPage": {
     "searchPlaceholder": "Buscar descrição, notas ou veículo...",
@@ -306,5 +326,11 @@
     "reasonPlaceholder": "ex. Vendido, perda total, desativado...",
     "archived": "{name} arquivado",
     "archiveError": "Falha ao arquivar veículo"
+  },
+  "serviceRecords": {
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   }
 }

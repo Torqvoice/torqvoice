@@ -406,5 +406,9 @@
     "date": "Data",
     "title": "Pavadinimas"
   },
-  "empty": "Duomenys dar neįkelti. Spustelėkite \"Atnaujinti\", kad įkeltumėte ataskaitą."
+  "empty": "Duomenys dar neįkelti. Spustelėkite \"Atnaujinti\", kad įkeltumėte ataskaitą.",
+  "pagination": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
 }

@@ -4,7 +4,9 @@
   "botToken": {
     "label": "Bot Token",
     "placeholder": "Enter your bot token from @BotFather",
-    "help": "Create a bot via @BotFather on Telegram to get your token."
+    "help": "Create a bot via @BotFather on Telegram to get your token.",
+    "show": "Show token",
+    "hide": "Hide token"
   },
   "botUsername": {
     "label": "Bot Username",
@@ -17,7 +19,8 @@
   "deepLink": {
     "title": "Customer Connection Link",
     "description": "Share this link with customers so they can connect to your bot. Replace the customer ID placeholder with the actual customer ID.",
-    "copied": "Link copied!"
+    "copied": "Link copied!",
+    "copy": "Copy deep link"
   },
   "test": {
     "title": "Test Message",

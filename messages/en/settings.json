@@ -353,7 +353,10 @@
     "memberRemoved": "Member removed",
     "failedRemoveMember": "Failed to remove member",
     "memberRoleUpdated": "Member role updated",
-    "failedUpdateRole": "Failed to update role"
+    "failedUpdateRole": "Failed to update role",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Invoice & Quotes",
@@ -718,7 +721,9 @@
     "fieldUpdated": "Custom field updated",
     "fieldDeleted": "Custom field deleted",
     "failedSave": "Failed to save field",
-    "failedDelete": "Failed to delete"
+    "failedDelete": "Failed to delete",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Workshop Defaults",
@@ -948,7 +953,8 @@
         "slate": "Slate",
         "sand": "Sand"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "Email Provider",
@@ -1023,7 +1029,8 @@
     "saved": "SMS settings saved",
     "failedSave": "Failed to save settings",
     "testSentTo": "Test SMS sent to {phone}",
-    "testFailed": "SMS test failed"
+    "testFailed": "SMS test failed",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Subscription Plan",
@@ -1074,6 +1081,7 @@
     "resumeSuccess": "Subscription resumed successfully",
     "resumeError": "Failed to resume subscription",
     "billingPortalError": "Failed to open billing portal",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Upgrade Plan",
     "upgradeDescription": "Unlock more features by upgrading your plan.",
     "upgradeToProDescription": "Upgrade to unlock unlimited customers, team members, reports, SMTP, API access, and more.",
@@ -1165,6 +1173,10 @@
     "deleted": "Report schedule deleted",
     "toggledOn": "Report schedule enabled",
     "toggledOff": "Report schedule disabled",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "No team members found",
     "addRecipient": "Add recipient...",
     "searchMembers": "Search members...",

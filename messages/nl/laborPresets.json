@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Bewerken",
-    "delete": "Verwijderen"
+    "delete": "Verwijderen",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Arbeidssjabloon verwijderen",

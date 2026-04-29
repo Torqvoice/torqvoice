@@ -353,7 +353,10 @@
     "memberRemoved": "Mitglied entfernt",
     "failedRemoveMember": "Mitglied konnte nicht entfernt werden",
     "memberRoleUpdated": "Mitgliedsrolle aktualisiert",
-    "failedUpdateRole": "Rolle konnte nicht aktualisiert werden"
+    "failedUpdateRole": "Rolle konnte nicht aktualisiert werden",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Rechnungslayout",
@@ -718,7 +721,9 @@
     "fieldUpdated": "Benutzerdefiniertes Feld aktualisiert",
     "fieldDeleted": "Benutzerdefiniertes Feld gelöscht",
     "failedSave": "Feld konnte nicht gespeichert werden",
-    "failedDelete": "Konnte nicht gelöscht werden"
+    "failedDelete": "Konnte nicht gelöscht werden",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Werkstatt-Standards",
@@ -948,7 +953,8 @@
         "slate": "Schiefer",
         "sand": "Sand"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "E-Mail-Anbieter",
@@ -1023,7 +1029,8 @@
     "saved": "SMS-Einstellungen gespeichert",
     "failedSave": "Einstellungen konnten nicht gespeichert werden",
     "testSentTo": "Test-SMS gesendet an {phone}",
-    "testFailed": "SMS-Test fehlgeschlagen"
+    "testFailed": "SMS-Test fehlgeschlagen",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Abonnementplan",
@@ -1074,6 +1081,7 @@
     "resumeSuccess": "Abonnement erfolgreich fortgesetzt",
     "resumeError": "Abonnement konnte nicht fortgesetzt werden",
     "billingPortalError": "Abrechnungsportal konnte nicht geöffnet werden",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Plan upgraden",
     "upgradeDescription": "Schalten Sie weitere Funktionen frei, indem Sie Ihren Plan upgraden.",
     "upgradeToProDescription": "Upgraden Sie, um unbegrenzte Kunden, Teammitglieder, Berichte, SMTP, API-Zugang und mehr freizuschalten.",
@@ -1165,6 +1173,10 @@
     "deleted": "Berichtszeitplan gelöscht",
     "toggledOn": "Berichtszeitplan aktiviert",
     "toggledOff": "Berichtszeitplan deaktiviert",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Keine Teammitglieder gefunden",
     "addRecipient": "Empfänger hinzufügen...",
     "searchMembers": "Mitglieder suchen...",

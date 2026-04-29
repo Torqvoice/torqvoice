@@ -14,5 +14,6 @@
   "chatsPrivate": "Your chats are private and only visible to you.",
   "deleteChat": "Delete chat",
   "hideSidebar": "Hide sidebar",
-  "showSidebar": "Show sidebar"
+  "showSidebar": "Show sidebar",
+  "sendMessage": "Send message"
 }

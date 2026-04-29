@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Editar",
-    "delete": "Excluir"
+    "delete": "Excluir",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Excluir modelo de mão de obra",

@@ -95,7 +95,8 @@
     "scanBarcode": "Scannen",
     "scanTitle": "Barcode scannen",
     "partFound": "\"{name}\" toegevoegd uit voorraad",
-    "partNotFound": "Geen onderdeel gevonden voor barcode \"{barcode}\""
+    "partNotFound": "Geen onderdeel gevonden voor barcode \"{barcode}\"",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Arbeidskosten",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Totalen",
@@ -209,7 +211,9 @@
     "images": "Afbeeldingen ({count})",
     "videos": "Video's ({count})",
     "diagnostics": "Diagnostische verslagen ({count})",
-    "documents": "Documenten ({count})"
+    "documents": "Documenten ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Factuur delen",
@@ -225,7 +229,8 @@
     "emailSent": "E-mail verzonden",
     "failedEmail": "E-mail verzenden mislukt",
     "smsSent": "SMS verzonden",
-    "failedSms": "SMS verzenden mislukt"
+    "failedSms": "SMS verzenden mislukt",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Voertuig",

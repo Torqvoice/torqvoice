@@ -293,6 +293,7 @@ export function MessagesPageClient({
                 size="icon"
                 className="shrink-0 h-8 w-8 sm:hidden"
                 onClick={handleBack}
+                aria-label={t("back")}
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -310,7 +311,7 @@ export function MessagesPageClient({
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8">
+                  <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8" aria-label={t("conversationMenu")}>
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>

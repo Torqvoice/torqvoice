@@ -125,9 +125,9 @@ export function WorkBoardPresenter({ initialTechnicians, initialAssignments, ini
             <Button variant={viewMode === 'week' ? 'default' : 'ghost'} size="sm" className="rounded-none rounded-r-md" onClick={() => handleSetViewMode('week')}>{t('week')}</Button>
           </div>
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={handlePrev}><ChevronLeft className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" onClick={handlePrev} aria-label={t('previous')}><ChevronLeft className="h-5 w-5" /></Button>
             <Button variant="outline" size="sm" onClick={handleToday}>{t('today')}</Button>
-            <Button variant="ghost" size="icon" onClick={handleNext}><ChevronRight className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" onClick={handleNext} aria-label={t('next')}><ChevronRight className="h-5 w-5" /></Button>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             {store.isConnected ? <span className="flex items-center gap-1.5 text-green-600" title={t('live')}><Wifi className="h-4 w-4" /><span className="text-xs">{t('live')}</span></span> : <span className="flex items-center gap-1.5 animate-pulse text-red-500" title={t('disconnected')}><WifiOff className="h-4 w-4" /><span className="text-xs">{t('disconnected')}</span></span>}

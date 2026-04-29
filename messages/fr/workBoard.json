@@ -7,7 +7,11 @@
     "day": "Jour",
     "week": "Semaine",
     "presenter": "Présentateur",
-    "addTechnician": "Ajouter un Technicien"
+    "addTechnician": "Ajouter un Technicien",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "previousDay": "Previous day",
+    "nextDay": "Next day"
   },
   "board": {
     "days": {
@@ -70,6 +74,8 @@
       "inProgress": "En Cours",
       "waitingParts": "En Attente de Pièces",
       "completed": "Complété"
-    }
+    },
+    "previous": "Previous",
+    "next": "Next"
   }
 }

@@ -1,12 +1,12 @@
 {
   "weekdays": {
-    "sun": "S\u00f8n",
+    "sun": "Søn",
     "mon": "Man",
     "tue": "Tir",
     "wed": "Ons",
     "thu": "Tor",
     "fri": "Fre",
-    "sat": "L\u00f8r"
+    "sat": "Lør"
   },
   "months": {
     "january": "Januar",
@@ -32,10 +32,10 @@
   "workOrder": "Arbeidsordre",
   "filters": {
     "services": "Tjenester",
-    "reminders": "P\u00e5minnelser",
+    "reminders": "Påminnelser",
     "quotes": "Tilbud"
   },
-  "selectVehicle": "Velg kj\u00f8ret\u00f8y for arbeidsordre",
+  "selectVehicle": "Velg kjøretøy for arbeidsordre",
   "dateChoice": {
     "title": "Work Order Date",
     "description": "You have {selectedDate} selected. Which date should this work order be for?",
@@ -45,9 +45,9 @@
   "more": "+ {count} flere",
   "events": {
     "status": {
-      "completed": "Fullf\u00f8rt",
-      "inProgress": "P\u00e5g\u00e5r",
-      "waitingParts": "Venter p\u00e5 deler",
+      "completed": "Fullført",
+      "inProgress": "Pågår",
+      "waitingParts": "Venter på deler",
       "pending": "Ventende",
       "sent": "Sendt",
       "approved": "Godkjent",
@@ -58,10 +58,12 @@
     },
     "type": {
       "service": "Tjeneste",
-      "reminder": "P\u00e5minnelse",
+      "reminder": "Påminnelse",
       "quote": "Tilbud"
     },
     "noEvents": "Ingen hendelser",
     "selectDay": "Velg en dag med hendelser eller opprett en ny arbeidsordre."
-  }
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month"
 }

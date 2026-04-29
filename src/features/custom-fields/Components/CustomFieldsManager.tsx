@@ -268,6 +268,7 @@ export function CustomFieldsManager({
                     size="icon"
                     className="h-7 w-7"
                     onClick={() => openEdit(field)}
+                    aria-label={t('customFields.edit')}
                   >
                     <Pencil className="h-3 w-3" />
                   </Button>
@@ -276,6 +277,7 @@ export function CustomFieldsManager({
                     size="icon"
                     className="h-7 w-7 text-muted-foreground hover:text-destructive"
                     onClick={() => handleDelete(field)}
+                    aria-label={t('customFields.delete')}
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>

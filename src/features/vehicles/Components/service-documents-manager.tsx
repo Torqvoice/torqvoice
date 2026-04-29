@@ -216,6 +216,7 @@ export function ServiceDocumentsManager({
               size="icon"
               className="h-7 w-7 text-muted-foreground hover:text-destructive"
               onClick={() => handleDelete(file.id)}
+              aria-label={t("header.delete")}
             >
               <X className="h-3.5 w-3.5" />
             </Button>

@@ -6,5 +6,6 @@
     "confirmDelete": "Emin misiniz?",
     "delete": "Sil",
     "cancel": "İptal"
-  }
+  },
+  "openNotifications": "Open notifications"
 }

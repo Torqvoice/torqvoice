@@ -18,7 +18,9 @@
     "deleteTitle": "Удалить беседу?",
     "deleteDescription": "Все сообщения с {name} будут безвозвратно удалены. Это действие необратимо.",
     "deleted": "Беседа удалена",
-    "deleteError": "Не удалось удалить беседу"
+    "deleteError": "Не удалось удалить беседу",
+    "back": "Back",
+    "conversationMenu": "Conversation menu"
   },
   "conversation": {
     "noPhone": "У {name} не указан номер телефона. Добавьте номер для начала переписки.",
@@ -30,7 +32,8 @@
     "deleteDescription": "Это сообщение будет безвозвратно удалено из беседы. Это действие необратимо.",
     "messageDeleted": "Сообщение удалено",
     "deleteError": "Не удалось удалить сообщение",
-    "sendError": "Не удалось отправить SMS"
+    "sendError": "Не удалось отправить SMS",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Отправить {label}",

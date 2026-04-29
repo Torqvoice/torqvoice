@@ -4,7 +4,9 @@
   "botToken": {
     "label": "Bot-token",
     "placeholder": "Skriv inn bot-tokenet fra @BotFather",
-    "help": "Opprett en bot via @BotFather på Telegram for å få tokenet ditt."
+    "help": "Opprett en bot via @BotFather på Telegram for å få tokenet ditt.",
+    "show": "Show token",
+    "hide": "Hide token"
   },
   "botUsername": {
     "label": "Bot-brukernavn",
@@ -17,7 +19,8 @@
   "deepLink": {
     "title": "Kundetilkoblingslenke",
     "description": "Del denne lenken med kunder slik at de kan koble til boten din. Erstatt kunde-ID-plassholderen med den faktiske kunde-ID-en.",
-    "copied": "Lenke kopiert!"
+    "copied": "Lenke kopiert!",
+    "copy": "Copy deep link"
   },
   "test": {
     "title": "Testmelding",

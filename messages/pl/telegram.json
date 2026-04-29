@@ -4,7 +4,9 @@
   "botToken": {
     "label": "Token bota",
     "placeholder": "Wprowadź token od @BotFather",
-    "help": "Utwórz bota przez @BotFather na Telegramie, aby uzyskać token."
+    "help": "Utwórz bota przez @BotFather na Telegramie, aby uzyskać token.",
+    "show": "Show token",
+    "hide": "Hide token"
   },
   "botUsername": {
     "label": "Nazwa użytkownika bota",
@@ -17,7 +19,8 @@
   "deepLink": {
     "title": "Link połączenia klienta",
     "description": "Udostępnij ten link klientom, aby mogli połączyć się z botem. Zastąp symbol zastępczy ID klienta rzeczywistym ID.",
-    "copied": "Link skopiowany!"
+    "copied": "Link skopiowany!",
+    "copy": "Copy deep link"
   },
   "test": {
     "title": "Wiadomość testowa",

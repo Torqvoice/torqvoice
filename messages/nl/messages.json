@@ -18,7 +18,9 @@
     "deleteTitle": "Gesprek verwijderen?",
     "deleteDescription": "Alle berichten met {name} worden permanent verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
     "deleted": "Gesprek verwijderd",
-    "deleteError": "Gesprek kon niet worden verwijderd"
+    "deleteError": "Gesprek kon niet worden verwijderd",
+    "back": "Back",
+    "conversationMenu": "Conversation menu"
   },
   "conversation": {
     "noPhone": "Geen telefoonnummer geregistreerd voor {name}. Voeg een telefoonnummer toe om berichten te sturen.",
@@ -30,7 +32,8 @@
     "deleteDescription": "Dit bericht wordt permanent verwijderd uit het gesprek. Deze actie kan niet ongedaan worden gemaakt.",
     "messageDeleted": "Bericht verwijderd",
     "deleteError": "Bericht kon niet worden verwijderd",
-    "sendError": "SMS kon niet worden verzonden"
+    "sendError": "SMS kon niet worden verzonden",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "{label} verzenden",

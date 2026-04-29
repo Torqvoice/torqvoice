@@ -406,5 +406,9 @@
     "date": "Fecha",
     "title": "Título"
   },
-  "empty": "Aún no se han cargado datos. Haga clic en Actualizar para cargar el informe."
+  "empty": "Aún no se han cargado datos. Haga clic en Actualizar para cargar el informe.",
+  "pagination": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
 }

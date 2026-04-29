@@ -14,6 +14,7 @@
     "createAndSend": "Create & Send",
     "cancel": "Cancel",
     "uploadFailed": "Failed to upload video",
+    "createReportFailed": "Failed to create status report",
     "created": "Status report created",
     "noVideo": "Please upload a video first",
     "removeVideo": "Remove video",

@@ -95,7 +95,8 @@
     "scanBarcode": "Scannen",
     "scanTitle": "Barcode scannen",
     "partFound": "\"{name}\" aus dem Lager hinzugefügt",
-    "partNotFound": "Kein Teil für Barcode \"{barcode}\" gefunden"
+    "partNotFound": "Kein Teil für Barcode \"{barcode}\" gefunden",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Arbeit",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Summen",
@@ -209,7 +211,9 @@
     "images": "Bilder ({count})",
     "videos": "Videos ({count})",
     "diagnostics": "Diagnoseberichte ({count})",
-    "documents": "Dokumente ({count})"
+    "documents": "Dokumente ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Rechnung teilen",
@@ -225,7 +229,8 @@
     "emailSent": "E-Mail gesendet",
     "failedEmail": "E-Mail konnte nicht gesendet werden",
     "smsSent": "SMS gesendet",
-    "failedSms": "SMS konnte nicht gesendet werden"
+    "failedSms": "SMS konnte nicht gesendet werden",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Fahrzeug",

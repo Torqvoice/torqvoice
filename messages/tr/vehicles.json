@@ -26,7 +26,11 @@
     "vehicleUnarchived": "Araç arşivden çıkarıldı",
     "unarchiveError": "Araç arşivden çıkarılamadı",
     "deleteError": "Araç silinemedi",
-    "error": "Araçlar yüklenemedi"
+    "error": "Araçlar yüklenemedi",
+    "viewTable": "Table view",
+    "viewGrid": "Grid view",
+    "viewLargeGrid": "Large grid view",
+    "openMenu": "Open menu"
   },
   "detail": {
     "vehicleArchived": "Bu araç arşivlenmiş",
@@ -84,7 +88,9 @@
     "severityCommon": "Yaygın — sıkça bildirilen sorun",
     "severityModerate": "Orta düzey — bazı araç sahipleri tarafından bildirilmiş",
     "severityUncommon": "Nadir — az sayıda araç sahibi tarafından bildirilmiş",
-    "severityRare": "Çok nadir — tek tük bildirimler ancak gerçekleştiğinde kritik"
+    "severityRare": "Çok nadir — tek tük bildirimler ancak gerçekleştiğinde kritik",
+    "openMenu": "Open menu",
+    "dismissMaintenance": "Dismiss"
   },
   "quotes": {
     "newQuote": "Yeni teklif",
@@ -163,7 +169,11 @@
     "empty": "Henüz servis kaydı yok.",
     "showing": "{start}-{end} / {total} gösteriliyor",
     "perPage": "sayfa başına",
-    "page": "Sayfa {page} / {totalPages}"
+    "page": "Sayfa {page} / {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "notes": {
     "addNote": "Not Ekle",
@@ -188,7 +198,12 @@
     "noteUpdated": "Not güncellendi",
     "noteCreated": "Not oluşturuldu",
     "titleRequired": "Başlık ve içerik gereklidir",
-    "saveError": "Not {action} başarısız oldu"
+    "saveError": "Not {action} başarısız oldu",
+    "openMenu": "Open menu",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "findings": {
     "sectionTitle": "Gözlemler",
@@ -236,7 +251,12 @@
     "resolveError": "Gözlem çözülemedi",
     "showing": "{start}-{end} / {total} gösteriliyor",
     "perPage": "sayfa başına",
-    "page": "Sayfa {page} / {totalPages}"
+    "page": "Sayfa {page} / {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page",
+    "openMenu": "Open menu"
   },
   "observationsPage": {
     "searchPlaceholder": "Açıklama, not veya araç ara...",
@@ -306,5 +326,11 @@
     "reasonPlaceholder": "örn. Satıldı, pert oldu, hizmet dışı bırakıldı...",
     "archived": "{name} arşivlendi",
     "archiveError": "Araç arşivlenemedi"
+  },
+  "serviceRecords": {
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   }
 }

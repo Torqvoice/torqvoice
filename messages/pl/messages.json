@@ -18,7 +18,9 @@
     "deleteTitle": "Usunąć rozmowę?",
     "deleteDescription": "Wszystkie wiadomości z {name} zostaną trwale usunięte. Tej czynności nie można cofnąć.",
     "deleted": "Rozmowa usunięta",
-    "deleteError": "Nie udało się usunąć rozmowy"
+    "deleteError": "Nie udało się usunąć rozmowy",
+    "back": "Back",
+    "conversationMenu": "Conversation menu"
   },
   "conversation": {
     "noPhone": "Brak numeru telefonu dla {name}. Dodaj numer telefonu, aby rozpocząć wysyłanie wiadomości.",
@@ -30,7 +32,8 @@
     "deleteDescription": "Ta wiadomość zostanie trwale usunięta z rozmowy. Tej czynności nie można cofnąć.",
     "messageDeleted": "Wiadomość usunięta",
     "deleteError": "Nie udało się usunąć wiadomości",
-    "sendError": "Nie udało się wysłać SMS"
+    "sendError": "Nie udało się wysłać SMS",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Wyślij {label}",

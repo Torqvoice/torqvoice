@@ -71,6 +71,7 @@ export function WorkBoardToolbar({
             size="icon"
             className="h-8 w-8"
             onClick={view === "week" ? onPrevWeek : onPrevDay}
+            aria-label={view === "week" ? t("previousWeek") : t("previousDay")}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -84,6 +85,7 @@ export function WorkBoardToolbar({
             size="icon"
             className="h-8 w-8"
             onClick={view === "week" ? onNextWeek : onNextDay}
+            aria-label={view === "week" ? t("nextWeek") : t("nextDay")}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>

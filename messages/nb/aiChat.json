@@ -14,5 +14,6 @@
   "chatsPrivate": "Samtalene dine er private og kun synlige for deg.",
   "deleteChat": "Slett chat",
   "hideSidebar": "Skjul sidepanel",
-  "showSidebar": "Vis sidepanel"
+  "showSidebar": "Vis sidepanel",
+  "sendMessage": "Send message"
 }

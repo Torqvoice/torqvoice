@@ -168,7 +168,7 @@ export function NotesTable({
                   <TableCell className="px-2" onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={t("openMenu")}>
                           <MoreVertical className="h-3.5 w-3.5" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -225,6 +225,7 @@ export function NotesTable({
               className="h-8 w-8"
               disabled={page <= 1}
               onClick={() => navigate({ notesPage: 1 })}
+              aria-label={t("firstPage")}
             >
               <ChevronsLeft className="h-4 w-4" />
             </Button>
@@ -234,6 +235,7 @@ export function NotesTable({
               className="h-8 w-8"
               disabled={page <= 1}
               onClick={() => navigate({ notesPage: page - 1 })}
+              aria-label={t("previousPage")}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -246,6 +248,7 @@ export function NotesTable({
               className="h-8 w-8"
               disabled={page >= totalPages}
               onClick={() => navigate({ notesPage: page + 1 })}
+              aria-label={t("nextPage")}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -255,6 +258,7 @@ export function NotesTable({
               className="h-8 w-8"
               disabled={page >= totalPages}
               onClick={() => navigate({ notesPage: totalPages })}
+              aria-label={t("lastPage")}
             >
               <ChevronsRight className="h-4 w-4" />
             </Button>

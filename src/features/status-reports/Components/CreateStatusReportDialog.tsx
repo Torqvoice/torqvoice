@@ -110,14 +110,14 @@ export function CreateStatusReportDialog({
         expiresAt,
       });
       if (!result.success || !result.data) {
-        toast.error(result.error || "Failed to create status report");
+        toast.error(result.error || t("createReportFailed"));
         return;
       }
       toast.success(t("created"));
       onOpenChange(false);
       if (andSend && onCreated) onCreated(result.data.id);
     } catch {
-      toast.error("Failed to create status report");
+      toast.error(t("createReportFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -134,7 +134,9 @@ export function CreateStatusReportDialog({
               <span className="truncate text-sm">{videoFileName}</span>
             </div>
             <Button type="button" variant="ghost" size="icon" className="h-7 w-7 shrink-0"
-              onClick={() => { setVideoUrl(null); setVideoFileName(null); }}>
+              onClick={() => { setVideoUrl(null); setVideoFileName(null); }}
+              aria-label={t("removeVideo")}
+              title={t("removeVideo")}>
               <X className="h-4 w-4" />
             </Button>
           </div>

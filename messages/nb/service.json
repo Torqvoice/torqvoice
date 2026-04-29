@@ -95,7 +95,8 @@
     "scanBarcode": "Skann",
     "scanTitle": "Skann strekkode",
     "partFound": "\"{name}\" lagt til fra lageret",
-    "partNotFound": "Ingen del funnet for strekkode \"{barcode}\""
+    "partNotFound": "Ingen del funnet for strekkode \"{barcode}\"",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Arbeid",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Totalt",
@@ -209,7 +211,9 @@
     "images": "Bilder ({count})",
     "videos": "Videoer ({count})",
     "diagnostics": "Diagnostikkrapporter ({count})",
-    "documents": "Dokumenter ({count})"
+    "documents": "Dokumenter ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Del faktura",
@@ -225,7 +229,8 @@
     "emailSent": "E-post sendt",
     "failedEmail": "Kunne ikke sende e-post",
     "smsSent": "SMS sendt",
-    "failedSms": "Kunne ikke sende SMS"
+    "failedSms": "Kunne ikke sende SMS",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Kjøretøy",

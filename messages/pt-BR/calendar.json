@@ -6,12 +6,12 @@
     "wed": "Qua",
     "thu": "Qui",
     "fri": "Sex",
-    "sat": "S\u00e1b"
+    "sat": "Sáb"
   },
   "months": {
     "january": "Janeiro",
     "february": "Fevereiro",
-    "march": "Mar\u00e7o",
+    "march": "Março",
     "april": "Abril",
     "may": "Maio",
     "june": "Junho",
@@ -23,19 +23,19 @@
     "december": "Dezembro"
   },
   "stats": {
-    "services": "Servi\u00e7os",
+    "services": "Serviços",
     "overdue": "Atrasados",
-    "pendingQuotes": "Or\u00e7amentos pendentes",
+    "pendingQuotes": "Orçamentos pendentes",
     "revenue": "Receita"
   },
   "today": "Hoje",
-  "workOrder": "Ordem de servi\u00e7o",
+  "workOrder": "Ordem de serviço",
   "filters": {
-    "services": "Servi\u00e7os",
+    "services": "Serviços",
     "reminders": "Lembretes",
-    "quotes": "Or\u00e7amentos"
+    "quotes": "Orçamentos"
   },
-  "selectVehicle": "Selecionar ve\u00edculo para ordem de servi\u00e7o",
+  "selectVehicle": "Selecionar veículo para ordem de serviço",
   "dateChoice": {
     "title": "Work Order Date",
     "description": "You have {selectedDate} selected. Which date should this work order be for?",
@@ -45,23 +45,25 @@
   "more": "+ {count} mais",
   "events": {
     "status": {
-      "completed": "Conclu\u00eddo",
+      "completed": "Concluído",
       "inProgress": "Em andamento",
-      "waitingParts": "Aguardando pe\u00e7as",
+      "waitingParts": "Aguardando peças",
       "pending": "Pendente",
       "sent": "Enviado",
       "approved": "Aprovado",
       "draft": "Rascunho",
       "done": "Feito",
       "overdue": "Atrasado",
-      "upcoming": "Pr\u00f3ximo"
+      "upcoming": "Próximo"
     },
     "type": {
-      "service": "Servi\u00e7o",
+      "service": "Serviço",
       "reminder": "Lembrete",
-      "quote": "Or\u00e7amento"
+      "quote": "Orçamento"
     },
     "noEvents": "Sem eventos",
-    "selectDay": "Selecione um dia com eventos ou crie uma nova ordem de servi\u00e7o."
-  }
+    "selectDay": "Selecione um dia com eventos ou crie uma nova ordem de serviço."
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month"
 }

@@ -94,11 +94,11 @@ export function SubscriptionSettings({
       if (data.url) {
         window.location.href = data.url;
       } else {
-        toast.error(data.error ?? "Failed to start checkout");
+        toast.error(data.error ?? t("subscription.checkoutError"));
         setCheckoutLoading(null);
       }
     } catch {
-      toast.error("Failed to start checkout");
+      toast.error(t("subscription.checkoutError"));
       setCheckoutLoading(null);
     }
   };

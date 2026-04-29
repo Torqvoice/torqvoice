@@ -1990,10 +1990,10 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         {totalPages > 1 && (
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <span>{page * pageSize + 1}–{Math.min((page + 1) * pageSize, vehicleData.serviceHistory.length)} / {vehicleData.serviceHistory.length}</span>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page === 0} onClick={() => setHistoryPage(page - 1)}>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page === 0} onClick={() => setHistoryPage(page - 1)} aria-label={t("pagination.previousPage")}>
                               <ChevronLeft className="h-3.5 w-3.5" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page >= totalPages - 1} onClick={() => setHistoryPage(page + 1)}>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page >= totalPages - 1} onClick={() => setHistoryPage(page + 1)} aria-label={t("pagination.nextPage")}>
                               <ChevronRight className="h-3.5 w-3.5" />
                             </Button>
                           </div>

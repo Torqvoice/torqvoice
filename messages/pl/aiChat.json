@@ -14,5 +14,6 @@
   "chatsPrivate": "Twoje czaty są prywatne i widoczne tylko dla Ciebie.",
   "deleteChat": "Usuń czat",
   "hideSidebar": "Ukryj panel",
-  "showSidebar": "Pokaż panel"
+  "showSidebar": "Pokaż panel",
+  "sendMessage": "Send message"
 }

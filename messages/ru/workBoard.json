@@ -7,7 +7,11 @@
     "day": "День",
     "week": "Неделя",
     "presenter": "Презентация",
-    "addTechnician": "Добавить механика"
+    "addTechnician": "Добавить механика",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "previousDay": "Previous day",
+    "nextDay": "Next day"
   },
   "board": {
     "days": {
@@ -70,6 +74,8 @@
       "inProgress": "В работе",
       "waitingParts": "Ожидание запчастей",
       "completed": "Завершено"
-    }
+    },
+    "previous": "Previous",
+    "next": "Next"
   }
 }

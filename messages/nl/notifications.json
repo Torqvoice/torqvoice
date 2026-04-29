@@ -6,5 +6,6 @@
     "confirmDelete": "Weet je het zeker?",
     "delete": "Verwijderen",
     "cancel": "Annuleren"
-  }
+  },
+  "openNotifications": "Open notifications"
 }

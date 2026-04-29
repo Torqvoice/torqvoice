@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Düzenle",
-    "delete": "Sil"
+    "delete": "Sil",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "İşçilik Şablonunu Sil",

@@ -1,9 +1,21 @@
 {
   "nav": {
-    "overview": { "title": "Обзор", "description": "Статистика и состояние платформы" },
-    "users": { "title": "Пользователи", "description": "Управление всеми пользователями" },
-    "organizations": { "title": "Организации", "description": "Управление всеми организациями" },
-    "settings": { "title": "Настройки", "description": "Конфигурация платформы" }
+    "overview": {
+      "title": "Обзор",
+      "description": "Статистика и состояние платформы"
+    },
+    "users": {
+      "title": "Пользователи",
+      "description": "Управление всеми пользователями"
+    },
+    "organizations": {
+      "title": "Организации",
+      "description": "Управление всеми организациями"
+    },
+    "settings": {
+      "title": "Настройки",
+      "description": "Конфигурация платформы"
+    }
   },
   "layout": {
     "title": "Панель администратора",
@@ -104,5 +116,8 @@
     "postmarkApiKeyHint": "Получите токен сервера на postmarkapp.com",
     "mailgunApiKeyHint": "Получите ключ API на app.mailgun.com",
     "sendgridApiKeyHint": "Получите ключ API на app.sendgrid.com"
+  },
+  "common": {
+    "openMenu": "Open menu"
   }
 }

@@ -64,7 +64,9 @@
     "dismissedTab": "Ignorés",
     "noActive": "Aucun véhicule n'a besoin d'entretien actuellement.",
     "dismissedOn": "Ignoré le {date}",
-    "restore": "Restaurer"
+    "restore": "Restaurer",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Rappels à venir",
@@ -95,7 +97,8 @@
     "pending": "En attente",
     "createQuote": "Créer un devis",
     "itemsRequested": "{count, plural, one {# élément demandé} other {# éléments demandés}}",
-    "noData": "Aucune demande de devis en attente."
+    "noData": "Aucune demande de devis en attente.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Réponses des clients aux devis",
@@ -106,7 +109,8 @@
     "convert": "Convert",
     "viewQuote": "Voir le devis",
     "view": "View",
-    "noData": "Aucune réponse client."
+    "noData": "Aucune réponse client.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Terminés récemment",

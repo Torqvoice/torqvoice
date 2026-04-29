@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Delete Labor Package",

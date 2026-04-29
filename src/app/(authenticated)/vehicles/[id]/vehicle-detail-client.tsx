@@ -540,7 +540,7 @@ export function VehicleDetailClient({
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t('openMenu')}>
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -706,6 +706,7 @@ export function VehicleDetailClient({
                         className="h-5 w-5 text-muted-foreground hover:text-foreground ml-0.5"
                         disabled={isDismissPending}
                         onClick={handleDismissMaintenance}
+                        aria-label={t('dismissMaintenance')}
                       >
                         {isDismissPending ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
@@ -726,6 +727,7 @@ export function VehicleDetailClient({
                         className="h-5 w-5 text-muted-foreground hover:text-foreground ml-0.5"
                         disabled={isDismissPending}
                         onClick={handleDismissMaintenance}
+                        aria-label={t('dismissMaintenance')}
                       >
                         {isDismissPending ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
@@ -1422,7 +1424,7 @@ export function VehicleDetailClient({
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-7 w-7">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={t('openMenu')}>
                             <MoreVertical className="h-3.5 w-3.5" />
                           </Button>
                         </DropdownMenuTrigger>

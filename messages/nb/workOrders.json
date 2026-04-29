@@ -33,7 +33,8 @@
       "date": "Dato",
       "total": "Total"
     },
-    "emailSubject": "Kjøretøystatus oppdatert: {status}"
+    "emailSubject": "Kjøretøystatus oppdatert: {status}",
+    "changeStatus": "Change status"
   },
   "vehiclePicker": {
     "title": "Velg kjøretøy for arbeidsordre",

@@ -7,7 +7,11 @@
     "day": "Diena",
     "week": "Savaitė",
     "presenter": "Prezentacija",
-    "addTechnician": "Pridėti techniką"
+    "addTechnician": "Pridėti techniką",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "previousDay": "Previous day",
+    "nextDay": "Next day"
   },
   "board": {
     "days": {
@@ -70,6 +74,8 @@
       "inProgress": "Vykdoma",
       "waitingParts": "Laukia dalių",
       "completed": "Užbaigta"
-    }
+    },
+    "previous": "Previous",
+    "next": "Next"
   }
 }

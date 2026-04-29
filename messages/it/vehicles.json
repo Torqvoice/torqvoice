@@ -26,7 +26,11 @@
     "vehicleUnarchived": "Veicolo ripristinato",
     "unarchiveError": "Impossibile ripristinare il veicolo",
     "deleteError": "Impossibile eliminare il veicolo",
-    "error": "Impossibile caricare i veicoli"
+    "error": "Impossibile caricare i veicoli",
+    "viewTable": "Table view",
+    "viewGrid": "Grid view",
+    "viewLargeGrid": "Large grid view",
+    "openMenu": "Open menu"
   },
   "detail": {
     "vehicleArchived": "Questo veicolo è archiviato",
@@ -84,7 +88,9 @@
     "severityCommon": "Comune — problema segnalato frequentemente",
     "severityModerate": "Moderato — segnalato da alcuni proprietari",
     "severityUncommon": "Non comune — segnalato da pochi proprietari",
-    "severityRare": "Raro — segnalazioni isolate ma critico quando si verifica"
+    "severityRare": "Raro — segnalazioni isolate ma critico quando si verifica",
+    "openMenu": "Open menu",
+    "dismissMaintenance": "Dismiss"
   },
   "quotes": {
     "newQuote": "Nuovo preventivo",
@@ -163,7 +169,11 @@
     "empty": "Nessun intervento ancora.",
     "showing": "Visualizzando {start}-{end} di {total}",
     "perPage": "per pagina",
-    "page": "Pagina {page} di {totalPages}"
+    "page": "Pagina {page} di {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "notes": {
     "addNote": "Aggiungi Nota",
@@ -188,7 +198,12 @@
     "noteUpdated": "Nota aggiornata",
     "noteCreated": "Nota creata",
     "titleRequired": "Titolo e contenuto sono obbligatori",
-    "saveError": "Impossibile {action} la nota"
+    "saveError": "Impossibile {action} la nota",
+    "openMenu": "Open menu",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "findings": {
     "sectionTitle": "Osservazioni",
@@ -236,7 +251,12 @@
     "resolveError": "Impossibile risolvere l'osservazione",
     "showing": "Visualizzando {start}-{end} di {total}",
     "perPage": "per pagina",
-    "page": "Pagina {page} di {totalPages}"
+    "page": "Pagina {page} di {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page",
+    "openMenu": "Open menu"
   },
   "observationsPage": {
     "searchPlaceholder": "Cerca descrizione, note o veicolo...",
@@ -306,5 +326,11 @@
     "reasonPlaceholder": "es. Venduto, demolito, dismesso...",
     "archived": "{name} archiviato",
     "archiveError": "Impossibile archiviare il veicolo"
+  },
+  "serviceRecords": {
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   }
 }

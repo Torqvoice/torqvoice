@@ -270,23 +270,35 @@ export function QuotePageClient({
               <Button
                 variant="outline"
                 size="sm"
+                disabled={state.saving}
                 onClick={async () => {
+                  if (state.saving) return
                   if (state.hasUnsavedChanges) await state.saveNow()
                   state.setShowEmailDialog(true)
                 }}
               >
-                <Mail className="mr-1 h-3.5 w-3.5" />
+                {state.saving ? (
+                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Mail className="mr-1 h-3.5 w-3.5" />
+                )}
                 {t('page.email')}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
+                disabled={state.saving}
                 onClick={async () => {
+                  if (state.saving) return
                   if (state.hasUnsavedChanges) await state.saveNow()
                   state.setShowShareDialog(true)
                 }}
               >
-                <Globe className="mr-1 h-3.5 w-3.5" />
+                {state.saving ? (
+                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Globe className="mr-1 h-3.5 w-3.5" />
+                )}
                 {t('page.share')}
               </Button>
               <Button

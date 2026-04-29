@@ -64,7 +64,9 @@
     "dismissedTab": "Avvist",
     "noActive": "Ingen kjøretøy trenger service for øyeblikket.",
     "dismissedOn": "Avvist {date}",
-    "restore": "Gjenopprett"
+    "restore": "Gjenopprett",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Kommende påminnelser",
@@ -95,7 +97,8 @@
     "pending": "Ventende",
     "createQuote": "Opprett tilbud",
     "itemsRequested": "{count, plural, one {# punkt forespurt} other {# punkter forespurt}}",
-    "noData": "Ingen ventende tilbudsforespørsler."
+    "noData": "Ingen ventende tilbudsforespørsler.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Kundens tilbudssvar",
@@ -106,7 +109,8 @@
     "convert": "Convert",
     "viewQuote": "Vis tilbud",
     "view": "View",
-    "noData": "Ingen kundesvar."
+    "noData": "Ingen kundesvar.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Nylig fullført",

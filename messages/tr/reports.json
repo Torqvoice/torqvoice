@@ -406,5 +406,9 @@
     "date": "Tarih",
     "title": "Başlık"
   },
-  "empty": "Henüz veri yüklenmedi. Raporu yüklemek için Yenile'ye tıklayın."
+  "empty": "Henüz veri yüklenmedi. Raporu yüklemek için Yenile'ye tıklayın.",
+  "pagination": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
 }

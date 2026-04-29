@@ -132,6 +132,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
                 state.setSelectedVehicle(null)
                 state.markDirty()
               }}
+              aria-label={t('details.clearVehicle')}
             >
               <X className="h-3 w-3" />
             </Button>
@@ -176,6 +177,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
                 state.setSelectedCustomer(null)
                 state.markDirty()
               }}
+              aria-label={t('details.clearCustomer')}
             >
               <X className="h-3 w-3" />
             </Button>

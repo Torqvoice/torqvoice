@@ -6,5 +6,6 @@
     "confirmDelete": "Sei sicuro?",
     "delete": "Elimina",
     "cancel": "Annulla"
-  }
+  },
+  "openNotifications": "Open notifications"
 }

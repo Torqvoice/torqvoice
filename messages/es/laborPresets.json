@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Editar",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Eliminar plantilla de mano de obra",

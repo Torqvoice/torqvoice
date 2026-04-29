@@ -14,5 +14,6 @@
   "chatsPrivate": "Ihre Chats sind privat und nur für Sie sichtbar.",
   "deleteChat": "Chat löschen",
   "hideSidebar": "Seitenleiste ausblenden",
-  "showSidebar": "Seitenleiste einblenden"
+  "showSidebar": "Seitenleiste einblenden",
+  "sendMessage": "Send message"
 }

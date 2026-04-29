@@ -353,7 +353,10 @@
     "memberRemoved": "Üye kaldırıldı",
     "failedRemoveMember": "Üye kaldırılamadı",
     "memberRoleUpdated": "Üye rolü güncellendi",
-    "failedUpdateRole": "Rol güncellenemedi"
+    "failedUpdateRole": "Rol güncellenemedi",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Fatura Düzeni",
@@ -718,7 +721,9 @@
     "fieldUpdated": "Özel alan güncellendi",
     "fieldDeleted": "Özel alan silindi",
     "failedSave": "Alan kaydedilemedi",
-    "failedDelete": "Silinemedi"
+    "failedDelete": "Silinemedi",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Atölye Varsayılanları",
@@ -948,7 +953,8 @@
         "slate": "Arduvaz",
         "sand": "Kum"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "E-posta Sağlayıcısı",
@@ -1023,7 +1029,8 @@
     "saved": "SMS ayarları kaydedildi",
     "failedSave": "Ayarlar kaydedilemedi",
     "testSentTo": "Test SMS {phone} numarasına gönderildi",
-    "testFailed": "SMS testi başarısız"
+    "testFailed": "SMS testi başarısız",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Abonelik Planı",
@@ -1074,6 +1081,7 @@
     "resumeSuccess": "Abonelik başarıyla sürdürüldü",
     "resumeError": "Abonelik sürdürülemedi",
     "billingPortalError": "Fatura portalı açılamadı",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Planı Yükselt",
     "upgradeDescription": "Planınızı yükselterek daha fazla özelliğin kilidini açın.",
     "upgradeToProDescription": "Sınırsız müşteri, ekip üyesi, rapor, SMTP, API erişimi ve daha fazlasının kilidini açmak için yükseltin.",
@@ -1165,6 +1173,10 @@
     "deleted": "Rapor zamanlaması silindi",
     "toggledOn": "Rapor zamanlaması etkinleştirildi",
     "toggledOff": "Rapor zamanlaması devre dışı bırakıldı",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Ekip üyesi bulunamadı",
     "addRecipient": "Alıcı ekle...",
     "searchMembers": "Üye ara...",

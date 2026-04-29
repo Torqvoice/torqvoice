@@ -78,6 +78,10 @@
     "deleted": "Fatura recorrente excluída",
     "failedDelete": "Falha ao excluir",
     "processed": "{count} fatura(s) processada(s)",
-    "failedProcess": "Falha ao processar"
+    "failedProcess": "Falha ao processar",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "removeRow": "Remove row"
   }
 }

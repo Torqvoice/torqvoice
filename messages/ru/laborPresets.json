@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Редактировать",
-    "delete": "Удалить"
+    "delete": "Удалить",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Удалить шаблон",

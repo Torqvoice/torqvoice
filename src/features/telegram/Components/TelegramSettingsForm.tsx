@@ -103,7 +103,7 @@ export function TelegramSettingsForm({
                   <Label htmlFor="bot-token">{t("botToken.label")}</Label>
                   <div className="flex items-center gap-2">
                     <Input id="bot-token" type={showToken ? "text" : "password"} placeholder={t("botToken.placeholder")} value={botToken} onChange={(e) => setBotToken(e.target.value)} />
-                    <Button type="button" variant="outline" size="icon" onClick={() => setShowToken(!showToken)}>
+                    <Button type="button" variant="outline" size="icon" onClick={() => setShowToken(!showToken)} aria-label={showToken ? t("botToken.hide") : t("botToken.show")}>
                       {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
@@ -131,7 +131,7 @@ export function TelegramSettingsForm({
                     <p className="text-xs text-muted-foreground">{t("deepLink.description")}</p>
                     <div className="flex items-center gap-2">
                       <Input readOnly value={deepLink} className="font-mono text-xs" />
-                      <Button type="button" variant="outline" size="icon" onClick={handleCopyLink}>
+                      <Button type="button" variant="outline" size="icon" onClick={handleCopyLink} aria-label={t("deepLink.copy")}>
                         {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                       </Button>
                     </div>

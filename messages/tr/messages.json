@@ -18,7 +18,9 @@
     "deleteTitle": "Görüşme silinsin mi?",
     "deleteDescription": "{name} ile tüm mesajlar kalıcı olarak silinecek. Bu işlem geri alınamaz.",
     "deleted": "Görüşme silindi",
-    "deleteError": "Görüşme silinemedi"
+    "deleteError": "Görüşme silinemedi",
+    "back": "Back",
+    "conversationMenu": "Conversation menu"
   },
   "conversation": {
     "noPhone": "{name} için kayıtlı telefon numarası yok. Mesaj göndermeye başlamak için bir telefon numarası ekleyin.",
@@ -30,7 +32,8 @@
     "deleteDescription": "Bu mesaj görüşmeden kalıcı olarak silinecek. Bu işlem geri alınamaz.",
     "messageDeleted": "Mesaj silindi",
     "deleteError": "Mesaj silinemedi",
-    "sendError": "SMS gönderilemedi"
+    "sendError": "SMS gönderilemedi",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "{label} gönder",

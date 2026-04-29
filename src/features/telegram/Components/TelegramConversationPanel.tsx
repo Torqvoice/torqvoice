@@ -50,6 +50,7 @@ export function TelegramConversationPanel({
               size="icon"
               className="h-8 w-8 shrink-0 sm:hidden"
               onClick={onBack}
+              aria-label="Back"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -73,6 +74,7 @@ export function TelegramConversationPanel({
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 shrink-0"
+                  aria-label="Conversation menu"
                 >
                   <MoreVertical className="h-4 w-4" />
                 </Button>

@@ -10,32 +10,32 @@
   },
   "months": {
     "january": "Janvier",
-    "february": "F\u00e9vrier",
+    "february": "Février",
     "march": "Mars",
     "april": "Avril",
     "may": "Mai",
     "june": "Juin",
     "july": "Juillet",
-    "august": "Ao\u00fbt",
+    "august": "Août",
     "september": "Septembre",
     "october": "Octobre",
     "november": "Novembre",
-    "december": "D\u00e9cembre"
+    "december": "Décembre"
   },
   "stats": {
     "services": "Services",
     "overdue": "En retard",
     "pendingQuotes": "Devis en attente",
-    "revenue": "Chiffre d\u2019affaires"
+    "revenue": "Chiffre d’affaires"
   },
-  "today": "Aujourd\u2019hui",
+  "today": "Aujourd’hui",
   "workOrder": "Ordre de travail",
   "filters": {
     "services": "Services",
     "reminders": "Rappels",
     "quotes": "Devis"
   },
-  "selectVehicle": "S\u00e9lectionner un v\u00e9hicule pour l\u2019ordre de travail",
+  "selectVehicle": "Sélectionner un véhicule pour l’ordre de travail",
   "dateChoice": {
     "title": "Work Order Date",
     "description": "You have {selectedDate} selected. Which date should this work order be for?",
@@ -45,23 +45,25 @@
   "more": "+ {count} de plus",
   "events": {
     "status": {
-      "completed": "Termin\u00e9",
+      "completed": "Terminé",
       "inProgress": "En cours",
-      "waitingParts": "En attente de pi\u00e8ces",
+      "waitingParts": "En attente de pièces",
       "pending": "En attente",
-      "sent": "Envoy\u00e9",
-      "approved": "Approuv\u00e9",
+      "sent": "Envoyé",
+      "approved": "Approuvé",
       "draft": "Brouillon",
       "done": "Fait",
       "overdue": "En retard",
-      "upcoming": "\u00c0 venir"
+      "upcoming": "À venir"
     },
     "type": {
       "service": "Service",
       "reminder": "Rappel",
       "quote": "Devis"
     },
-    "noEvents": "Aucun \u00e9v\u00e9nement",
-    "selectDay": "S\u00e9lectionnez un jour avec des \u00e9v\u00e9nements ou cr\u00e9ez un nouvel ordre de travail."
-  }
+    "noEvents": "Aucun événement",
+    "selectDay": "Sélectionnez un jour avec des événements ou créez un nouvel ordre de travail."
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month"
 }

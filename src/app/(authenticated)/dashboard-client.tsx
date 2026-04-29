@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { statusColors } from "@/lib/table-utils";
 import {
   AlertTriangle,
@@ -294,6 +295,7 @@ export function DashboardClient({
   };
 
   return (
+    <TooltipProvider>
     <div className="space-y-4">
       {/* Quick stats row */}
       <div className={`grid grid-cols-2 gap-2 ${stats.isAdmin ? "sm:grid-cols-4" : "sm:grid-cols-2"}`}>
@@ -369,14 +371,20 @@ export function DashboardClient({
                   <Gauge className="h-4 w-4" />
                   {t("maintenance.title")}
                 </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                  onClick={() => router.push("/settings/maintenance")}
-                >
-                  <Settings className="h-3.5 w-3.5" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      onClick={() => router.push("/settings/maintenance")}
+                      aria-label={t("maintenance.settingsAriaLabel")}
+                    >
+                      <Settings className="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("maintenance.settingsAriaLabel")}</TooltipContent>
+                </Tooltip>
               </div>
               <p className="text-xs text-muted-foreground">
                 {t("maintenance.description")}
@@ -445,22 +453,28 @@ export function DashboardClient({
                             {t("maintenance.approaching")}
                           </Badge>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                          disabled={dismissingId === v.vehicleId}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDismiss(v.vehicleId);
-                          }}
-                        >
-                          {dismissingId === v.vehicleId ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            <X className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                              disabled={dismissingId === v.vehicleId}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDismiss(v.vehicleId);
+                              }}
+                              aria-label={t("maintenance.dismissAriaLabel")}
+                            >
+                              {dismissingId === v.vehicleId ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <X className="h-3.5 w-3.5" />
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{t("maintenance.dismissAriaLabel")}</TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   ))}
@@ -905,18 +919,24 @@ export function DashboardClient({
                         >
                           {t("quoteRequests.createQuote")}
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                          onClick={() => {
-                            startTransition(async () => {
-                              await updateQuoteRequestStatus(req.id, "dismissed");
-                            });
-                          }}
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                              onClick={() => {
+                                startTransition(async () => {
+                                  await updateQuoteRequestStatus(req.id, "dismissed");
+                                });
+                              }}
+                              aria-label={t("quoteRequests.dismissAriaLabel")}
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{t("quoteRequests.dismissAriaLabel")}</TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   );
@@ -1023,18 +1043,24 @@ export function DashboardClient({
                         <span className="hidden sm:inline">{t("quoteResponses.viewQuote")}</span>
                         <span className="sm:hidden">{t("quoteResponses.view")}</span>
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                        onClick={() => {
-                          startTransition(async () => {
-                            await acknowledgeQuoteResponse(resp.id);
-                          });
-                        }}
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                            onClick={() => {
+                              startTransition(async () => {
+                                await acknowledgeQuoteResponse(resp.id);
+                              });
+                            }}
+                            aria-label={t("quoteResponses.dismissAriaLabel")}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t("quoteResponses.dismissAriaLabel")}</TooltipContent>
+                      </Tooltip>
                     </div>
                   </div>
                 ))}
@@ -1316,5 +1342,6 @@ export function DashboardClient({
         )}
       </div>
     </div>
+    </TooltipProvider>
   );
 }

@@ -223,7 +223,7 @@ function ScheduleForm({
         router.refresh()
         onClose()
       } else {
-        toast.error(result.error || 'Failed to save')
+        toast.error(result.error || t('failedSave'))
       }
     })
   }
@@ -385,7 +385,7 @@ function ScheduleCard({
         toast.success(t('sentNow'))
         router.refresh()
       } else {
-        toast.error(result.error || 'Failed to send')
+        toast.error(result.error || t('failedSend'))
       }
       setSending(false)
     })
@@ -431,7 +431,7 @@ function ScheduleCard({
         toast.success(schedule.isActive ? t('toggledOff') : t('toggledOn'))
         router.refresh()
       } else {
-        toast.error(result.error || 'Failed to toggle')
+        toast.error(result.error || t('failedToggle'))
       }
     })
   }
@@ -444,7 +444,7 @@ function ScheduleCard({
         toast.success(t('deleted'))
         router.refresh()
       } else {
-        toast.error(result.error || 'Failed to delete')
+        toast.error(result.error || t('failedDelete'))
       }
       setDeleting(false)
     })

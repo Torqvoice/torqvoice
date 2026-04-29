@@ -14,5 +14,6 @@
   "chatsPrivate": "Ваши чаты приватны и видны только вам.",
   "deleteChat": "Удалить чат",
   "hideSidebar": "Скрыть боковую панель",
-  "showSidebar": "Показать боковую панель"
+  "showSidebar": "Показать боковую панель",
+  "sendMessage": "Send message"
 }

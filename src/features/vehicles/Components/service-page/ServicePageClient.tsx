@@ -27,7 +27,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { CalendarIcon, AlertTriangle } from 'lucide-react'
+import { CalendarIcon, AlertTriangle, Loader2 } from 'lucide-react'
 import { deleteFinding } from '@/features/vehicles/Actions/findingActions'
 import { updateServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { getSmsTemplates } from '@/features/sms/Actions/smsActions'
@@ -595,23 +595,29 @@ export function ServicePageClient({
             <Button
               disabled={updatingDates}
               onClick={async () => {
+                if (updatingDates) return
                 setUpdatingDates(true)
-                await updateServiceRecord({
-                  id: record.id,
-                  invoiceDate: toISODate(pendingInvoiceDate),
-                  invoiceDueDate: toISODate(pendingDueDate),
-                })
-                setUpdatingDates(false)
-                setShowDateCheck(false)
-                dateCheckResolveRef.current?.(true)
-                dateCheckResolveRef.current = null
-                router.refresh()
+                try {
+                  await updateServiceRecord({
+                    id: record.id,
+                    invoiceDate: toISODate(pendingInvoiceDate),
+                    invoiceDueDate: toISODate(pendingDueDate),
+                  })
+                  setShowDateCheck(false)
+                  dateCheckResolveRef.current?.(true)
+                  dateCheckResolveRef.current = null
+                  router.refresh()
+                } finally {
+                  setUpdatingDates(false)
+                }
               }}
             >
+              {updatingDates && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('page.datesExpiredUpdate')}
             </Button>
             <Button
               variant="outline"
+              disabled={updatingDates}
               onClick={() => {
                 setShowDateCheck(false)
                 dateCheckResolveRef.current?.(true)

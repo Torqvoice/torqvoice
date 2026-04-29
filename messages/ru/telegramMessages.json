@@ -30,7 +30,8 @@
     "deleteDescription": "Это сообщение будет удалено навсегда. Это действие нельзя отменить.",
     "messageDeleted": "Сообщение удалено",
     "deleteError": "Не удалось удалить сообщение",
-    "sendError": "Не удалось отправить сообщение"
+    "sendError": "Не удалось отправить сообщение",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Отправить {label}",

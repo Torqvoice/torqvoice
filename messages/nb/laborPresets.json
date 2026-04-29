@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Rediger",
-    "delete": "Slett"
+    "delete": "Slett",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Slett arbeidsmal",

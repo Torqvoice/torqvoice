@@ -6,5 +6,6 @@
     "confirmDelete": "Sind Sie sicher?",
     "delete": "Löschen",
     "cancel": "Abbrechen"
-  }
+  },
+  "openNotifications": "Open notifications"
 }

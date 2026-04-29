@@ -353,7 +353,10 @@
     "memberRemoved": "Narys pašalintas",
     "failedRemoveMember": "Nepavyko pašalinti nario",
     "memberRoleUpdated": "Nario rolė atnaujinta",
-    "failedUpdateRole": "Nepavyko atnaujinti rolės"
+    "failedUpdateRole": "Nepavyko atnaujinti rolės",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",
@@ -718,7 +721,9 @@
     "fieldUpdated": "Pasirinktinis laukas atnaujintas",
     "fieldDeleted": "Pasirinktinis laukas ištrintas",
     "failedSave": "Nepavyko išsaugoti lauko",
-    "failedDelete": "Nepavyko ištrinti"
+    "failedDelete": "Nepavyko ištrinti",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Dirbtuvių numatytosios reikšmės",
@@ -948,7 +953,8 @@
         "slate": "Skalūnas",
         "sand": "Smėlis"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "El. pašto tiekėjas",
@@ -1023,7 +1029,8 @@
     "saved": "SMS nustatymai išsaugoti",
     "failedSave": "Nepavyko išsaugoti nustatymų",
     "testSentTo": "Bandomoji SMS išsiųsta numeriu {phone}",
-    "testFailed": "SMS testas nepavyko"
+    "testFailed": "SMS testas nepavyko",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Prenumeratos planas",
@@ -1074,6 +1081,7 @@
     "resumeSuccess": "Prenumerata sėkmingai atnaujinta",
     "resumeError": "Nepavyko atnaujinti prenumeratos",
     "billingPortalError": "Nepavyko atidaryti atsiskaitymų portalo",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Atnaujinti planą",
     "upgradeDescription": "Atrakinkite daugiau funkcijų atnaujindami planą.",
     "upgradeToProDescription": "Atnaujinkite, kad atrakintumėte neribotą klientų, komandos narių, ataskaitų, SMTP, API prieigos skaičių ir daugiau.",
@@ -1165,6 +1173,10 @@
     "deleted": "Ataskaitų grafikas ištrintas",
     "toggledOn": "Ataskaitų grafikas įjungtas",
     "toggledOff": "Ataskaitų grafikas išjungtas",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Komandos narių nerasta",
     "addRecipient": "Pridėti gavėją...",
     "searchMembers": "Ieškoti narių...",

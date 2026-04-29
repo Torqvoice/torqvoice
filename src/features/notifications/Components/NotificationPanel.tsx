@@ -25,6 +25,7 @@ const entityIcons: Record<string, typeof FileText> = {
 
 export function NotificationBell() {
   const { unreadCount, setPanelOpen } = useNotificationStore();
+  const t = useTranslations("notifications");
 
   return (
     <Button
@@ -32,6 +33,7 @@ export function NotificationBell() {
       size="icon"
       className="relative h-8 w-8"
       onClick={() => setPanelOpen(true)}
+      aria-label={t("openNotifications")}
     >
       <Bell className="h-4 w-4" />
       {unreadCount > 0 && (

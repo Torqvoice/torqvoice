@@ -30,7 +30,8 @@
     "deleteDescription": "Bu mesaj kalıcı olarak silinecektir. Bu işlem geri alınamaz.",
     "messageDeleted": "Mesaj silindi",
     "deleteError": "Mesaj silinemedi",
-    "sendError": "Mesaj gönderilemedi"
+    "sendError": "Mesaj gönderilemedi",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "{label} gönder",

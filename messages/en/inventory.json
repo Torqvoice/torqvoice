@@ -118,5 +118,6 @@
     "cancel": "Cancel",
     "saveChanges": "Save Changes",
     "addPart": "Add Part"
-  }
+  },
+  "openMenu": "Open menu"
 }

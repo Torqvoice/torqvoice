@@ -108,6 +108,7 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
                 variant="ghost"
                 className="h-6 w-6"
                 onClick={() => onEditFinding?.(f)}
+                aria-label={t("edit")}
               >
                 <Pencil className="h-3 w-3" />
               </Button>
@@ -117,6 +118,7 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
                 className="h-6 w-6 text-destructive"
                 disabled={loading === f.id}
                 onClick={() => handleDelete(f.id)}
+                aria-label={t("delete")}
               >
                 <Trash2 className="h-3 w-3" />
               </Button>
