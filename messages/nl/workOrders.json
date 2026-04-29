@@ -33,7 +33,8 @@
       "date": "Datum",
       "total": "Totaal"
     },
-    "emailSubject": "Voertuigstatus bijgewerkt: {status}"
+    "emailSubject": "Voertuigstatus bijgewerkt: {status}",
+    "changeStatus": "Change status"
   },
   "vehiclePicker": {
     "title": "Voertuig selecteren voor werkorder",

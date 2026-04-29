@@ -70,7 +70,9 @@
     "qty": "Adet",
     "unitPrice": "Birim Fiyat",
     "total": "Toplam",
-    "subtotal": "Parçalar Ara Toplam: {amount}"
+    "subtotal": "Parçalar Ara Toplam: {amount}",
+    "deleteRow": "Delete row",
+    "excludeFromTotal": "Exclude from total"
   },
   "labor": {
     "title": "İşçilik",
@@ -90,7 +92,9 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row",
+    "excludeFromTotal": "Exclude from total"
   },
   "notes": {
     "title": "Notlar",
@@ -127,7 +131,9 @@
     "customer": "Müşteri",
     "selectVehicle": "Araç seçin...",
     "selectCustomer": "Müşteri seçin...",
-    "none": "Yok"
+    "none": "Yok",
+    "clearVehicle": "Clear vehicle",
+    "clearCustomer": "Clear customer"
   },
   "totals": {
     "title": "Toplamlar",
@@ -158,7 +164,8 @@
     "emailSent": "E-posta gönderildi",
     "failedEmail": "E-posta gönderilemedi",
     "smsSent": "SMS gönderildi",
-    "failedSms": "SMS gönderilemedi"
+    "failedSms": "SMS gönderilemedi",
+    "copyLink": "Copy link"
   },
   "images": {
     "title": "Teklif Görselleri",
@@ -173,6 +180,8 @@
     "uploadingCount": "{count} görsel yükleniyor...",
     "uploadedCount": "{count} görsel yüklendi",
     "uploadFailed": "Yükleme başarısız",
+    "failedUploadFile": "Failed to upload {name}",
+    "failedSaveFile": "Failed to save {name}",
     "deleted": "Görsel silindi",
     "failedDelete": "Görsel silinemedi",
     "failedUpdate": "Güncelleme başarısız",
@@ -191,6 +200,8 @@
     "uploadingCount": "{count} dosya yükleniyor...",
     "uploadedCount": "{count} dosya yüklendi",
     "uploadFailed": "Yükleme başarısız",
+    "failedUploadFile": "Failed to upload {name}",
+    "failedSaveFile": "Failed to save {name}",
     "deleted": "Dosya silindi",
     "failedDelete": "Dosya silinemedi",
     "failedUpdate": "Güncelleme başarısız",

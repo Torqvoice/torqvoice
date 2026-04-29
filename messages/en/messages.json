@@ -18,7 +18,9 @@
     "deleteTitle": "Delete conversation?",
     "deleteDescription": "This will permanently delete all messages with {name}. This action cannot be undone.",
     "deleted": "Conversation deleted",
-    "deleteError": "Failed to delete conversation"
+    "deleteError": "Failed to delete conversation",
+    "back": "Back",
+    "conversationMenu": "Conversation menu"
   },
   "conversation": {
     "noPhone": "No phone number on file for {name}. Add a phone number to start messaging.",
@@ -30,7 +32,8 @@
     "deleteDescription": "This will permanently delete this message from the conversation. This action cannot be undone.",
     "messageDeleted": "Message deleted",
     "deleteError": "Failed to delete message",
-    "sendError": "Failed to send SMS"
+    "sendError": "Failed to send SMS",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Send {label}",

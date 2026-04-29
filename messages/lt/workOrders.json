@@ -33,7 +33,8 @@
       "date": "Data",
       "total": "Suma"
     },
-    "emailSubject": "Transporto priemonės būsenos atnaujinimas: {status}"
+    "emailSubject": "Transporto priemonės būsenos atnaujinimas: {status}",
+    "changeStatus": "Change status"
   },
   "vehiclePicker": {
     "title": "Pasirinkite transporto priemonę darbo užsakymui",

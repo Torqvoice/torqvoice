@@ -26,7 +26,11 @@
     "vehicleUnarchived": "Pojazd przywrócony",
     "unarchiveError": "Nie udało się przywrócić pojazdu",
     "deleteError": "Nie udało się usunąć pojazdu",
-    "error": "Nie udało się załadować pojazdów"
+    "error": "Nie udało się załadować pojazdów",
+    "viewTable": "Table view",
+    "viewGrid": "Grid view",
+    "viewLargeGrid": "Large grid view",
+    "openMenu": "Open menu"
   },
   "detail": {
     "vehicleArchived": "Ten pojazd jest zarchiwizowany",
@@ -84,7 +88,9 @@
     "severityCommon": "Częste — często zgłaszany problem",
     "severityModerate": "Umiarkowane — zgłaszane przez niektórych właścicieli",
     "severityUncommon": "Rzadkie — zgłaszane przez niewielu właścicieli",
-    "severityRare": "Bardzo rzadkie — pojedyncze zgłoszenia, ale krytyczne gdy wystąpi"
+    "severityRare": "Bardzo rzadkie — pojedyncze zgłoszenia, ale krytyczne gdy wystąpi",
+    "openMenu": "Open menu",
+    "dismissMaintenance": "Dismiss"
   },
   "quotes": {
     "newQuote": "Nowa wycena",
@@ -163,7 +169,11 @@
     "empty": "Brak rekordów serwisowych.",
     "showing": "Wyświetlanie {start}-{end} z {total}",
     "perPage": "na stronę",
-    "page": "Strona {page} z {totalPages}"
+    "page": "Strona {page} z {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "notes": {
     "addNote": "Dodaj notatkę",
@@ -188,7 +198,12 @@
     "noteUpdated": "Notatka zaktualizowana",
     "noteCreated": "Notatka utworzona",
     "titleRequired": "Tytuł i treść są wymagane",
-    "saveError": "Nie udało się {action} notatki"
+    "saveError": "Nie udało się {action} notatki",
+    "openMenu": "Open menu",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "findings": {
     "sectionTitle": "Obserwacje",
@@ -236,7 +251,12 @@
     "resolveError": "Nie udało się rozwiązać obserwacji",
     "showing": "Wyświetlanie {start}-{end} z {total}",
     "perPage": "na stronę",
-    "page": "Strona {page} z {totalPages}"
+    "page": "Strona {page} z {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page",
+    "openMenu": "Open menu"
   },
   "observationsPage": {
     "searchPlaceholder": "Szukaj opisu, notatek lub pojazdu...",
@@ -306,5 +326,11 @@
     "reasonPlaceholder": "np. Sprzedany, skasowany, wycofany z eksploatacji...",
     "archived": "{name} zarchiwizowany",
     "archiveError": "Nie udało się zarchiwizować pojazdu"
+  },
+  "serviceRecords": {
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   }
 }

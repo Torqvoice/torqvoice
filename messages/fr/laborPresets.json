@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Modifier",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Supprimer le modèle de main-d'œuvre",

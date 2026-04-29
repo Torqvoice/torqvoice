@@ -64,7 +64,9 @@
     "dismissedTab": "Genegeerd",
     "noActive": "Geen voertuigen hebben momenteel onderhoud nodig.",
     "dismissedOn": "Genegeerd op {date}",
-    "restore": "Herstellen"
+    "restore": "Herstellen",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Aankomende herinneringen",
@@ -95,7 +97,8 @@
     "pending": "In afwachting",
     "createQuote": "Offerte aanmaken",
     "itemsRequested": "{count, plural, one {# item aangevraagd} other {# items aangevraagd}}",
-    "noData": "Geen openstaande offerteaanvragen."
+    "noData": "Geen openstaande offerteaanvragen.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Offerte-reacties van klanten",
@@ -106,7 +109,8 @@
     "convert": "Convert",
     "viewQuote": "Offerte bekijken",
     "view": "View",
-    "noData": "Geen klantreacties."
+    "noData": "Geen klantreacties.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Recent afgerond",

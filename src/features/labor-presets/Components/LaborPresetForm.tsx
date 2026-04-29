@@ -334,6 +334,7 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
                       className="h-9 w-9 text-muted-foreground hover:text-destructive"
                       onClick={() => removeSingleItem(i)}
                       disabled={singleItems.length <= 1}
+                      aria-label={t("actions.delete")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -440,6 +441,7 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
                       className="h-9 w-9 text-muted-foreground hover:text-destructive"
                       onClick={() => removeItem(i)}
                       disabled={items.length <= 1}
+                      aria-label={t("actions.delete")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

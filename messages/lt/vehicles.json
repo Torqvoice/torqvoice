@@ -26,7 +26,11 @@
     "vehicleUnarchived": "Transporto priemonė grąžinta iš archyvo",
     "unarchiveError": "Nepavyko grąžinti iš archyvo",
     "deleteError": "Nepavyko ištrinti transporto priemonės",
-    "error": "Nepavyko įkelti transporto priemonių"
+    "error": "Nepavyko įkelti transporto priemonių",
+    "viewTable": "Table view",
+    "viewGrid": "Grid view",
+    "viewLargeGrid": "Large grid view",
+    "openMenu": "Open menu"
   },
   "detail": {
     "vehicleArchived": "Ši transporto priemonė archyvuota",
@@ -84,7 +88,9 @@
     "severityCommon": "Dažna — dažnai pranešama problema",
     "severityModerate": "Vidutinė — pranešta kai kurių savininkų",
     "severityUncommon": "Nedažna — pranešta nedaugelio savininkų",
-    "severityRare": "Reta — pavieniai pranešimai, bet kritinė kai pasireiškia"
+    "severityRare": "Reta — pavieniai pranešimai, bet kritinė kai pasireiškia",
+    "openMenu": "Open menu",
+    "dismissMaintenance": "Dismiss"
   },
   "quotes": {
     "newQuote": "Naujas pasiūlymas",
@@ -163,7 +169,11 @@
     "empty": "Paslaugų įrašų dar nėra.",
     "showing": "Rodoma {start}–{end} iš {total}",
     "perPage": "puslapyje",
-    "page": "Puslapis {page} iš {totalPages}"
+    "page": "Puslapis {page} iš {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "notes": {
     "addNote": "Pridėti pastabą",
@@ -188,7 +198,12 @@
     "noteUpdated": "Pastaba atnaujinta",
     "noteCreated": "Pastaba sukurta",
     "titleRequired": "Pavadinimas ir turinys yra privalomi",
-    "saveError": "Nepavyko {action} pastabos"
+    "saveError": "Nepavyko {action} pastabos",
+    "openMenu": "Open menu",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "findings": {
     "sectionTitle": "Pastebėjimai",
@@ -236,7 +251,12 @@
     "resolveError": "Nepavyko išspręsti pastebėjimo",
     "showing": "Rodoma {start}–{end} iš {total}",
     "perPage": "puslapyje",
-    "page": "Puslapis {page} iš {totalPages}"
+    "page": "Puslapis {page} iš {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page",
+    "openMenu": "Open menu"
   },
   "observationsPage": {
     "searchPlaceholder": "Ieškoti pagal aprašymą, pastabas arba transporto priemonę...",
@@ -306,5 +326,11 @@
     "reasonPlaceholder": "pvz., Parduota, nurašyta, išregistruota...",
     "archived": "{name} archyvuota",
     "archiveError": "Nepavyko archyvuoti transporto priemonės"
+  },
+  "serviceRecords": {
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   }
 }

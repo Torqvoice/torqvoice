@@ -1,9 +1,21 @@
 {
   "nav": {
-    "overview": { "title": "Oversikt", "description": "Plattformstatistikk og helse" },
-    "users": { "title": "Brukere", "description": "Administrer alle brukere" },
-    "organizations": { "title": "Organisasjoner", "description": "Administrer alle organisasjoner" },
-    "settings": { "title": "Innstillinger", "description": "Plattformkonfigurasjon" }
+    "overview": {
+      "title": "Oversikt",
+      "description": "Plattformstatistikk og helse"
+    },
+    "users": {
+      "title": "Brukere",
+      "description": "Administrer alle brukere"
+    },
+    "organizations": {
+      "title": "Organisasjoner",
+      "description": "Administrer alle organisasjoner"
+    },
+    "settings": {
+      "title": "Innstillinger",
+      "description": "Plattformkonfigurasjon"
+    }
   },
   "layout": {
     "title": "Adminpanel",
@@ -104,5 +116,8 @@
     "postmarkApiKeyHint": "Hent din Server Token fra postmarkapp.com",
     "mailgunApiKeyHint": "Hent API-nøkkelen din fra app.mailgun.com",
     "sendgridApiKeyHint": "Hent API-nøkkelen din fra app.sendgrid.com"
+  },
+  "common": {
+    "openMenu": "Open menu"
   }
 }

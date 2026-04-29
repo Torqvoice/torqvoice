@@ -211,6 +211,7 @@ function ToolbarButton({
       disabled={disabled}
       onClick={onClick}
       title={title}
+      aria-label={title}
     >
       {children}
     </Button>

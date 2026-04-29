@@ -353,7 +353,10 @@
     "memberRemoved": "Czlonek usuniety",
     "failedRemoveMember": "Nie udalo sie usunac czlonka",
     "memberRoleUpdated": "Rola czlonka zaktualizowana",
-    "failedUpdateRole": "Nie udalo sie zaktualizowac roli"
+    "failedUpdateRole": "Nie udalo sie zaktualizowac roli",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Uklad faktury",
@@ -718,7 +721,9 @@
     "fieldUpdated": "Pole niestandardowe zaktualizowane",
     "fieldDeleted": "Pole niestandardowe usunięte",
     "failedSave": "Nie udało się zapisać pola",
-    "failedDelete": "Nie udało się usunąć"
+    "failedDelete": "Nie udało się usunąć",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Domyslne warsztatu",
@@ -948,7 +953,8 @@
         "slate": "Łupek",
         "sand": "Piasek"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "Dostawca poczty e-mail",
@@ -1023,7 +1029,8 @@
     "saved": "Ustawienia SMS zapisane",
     "failedSave": "Nie udalo sie zapisac ustawien",
     "testSentTo": "Testowy SMS wyslany do {phone}",
-    "testFailed": "Test SMS nie powiodl sie"
+    "testFailed": "Test SMS nie powiodl sie",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Plan subskrypcji",
@@ -1074,6 +1081,7 @@
     "resumeSuccess": "Subskrypcja wznowiona pomyślnie",
     "resumeError": "Nie udało się wznowić subskrypcji",
     "billingPortalError": "Nie udało się otworzyć portalu rozliczeniowego",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Ulepsz plan",
     "upgradeDescription": "Odblokuj więcej funkcji, ulepszając swój plan.",
     "upgradeToProDescription": "Ulepsz, aby odblokować nieograniczoną liczbę klientów, członków zespołu, raportów, SMTP, dostęp API i więcej.",
@@ -1165,6 +1173,10 @@
     "deleted": "Harmonogram raportów usunięty",
     "toggledOn": "Harmonogram raportów włączony",
     "toggledOff": "Harmonogram raportów wyłączony",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Nie znaleziono członków zespołu",
     "addRecipient": "Dodaj odbiorcę...",
     "searchMembers": "Szukaj członków...",

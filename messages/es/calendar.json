@@ -3,10 +3,10 @@
     "sun": "Dom",
     "mon": "Lun",
     "tue": "Mar",
-    "wed": "Mi\u00e9",
+    "wed": "Mié",
     "thu": "Jue",
     "fri": "Vie",
-    "sat": "S\u00e1b"
+    "sat": "Sáb"
   },
   "months": {
     "january": "Enero",
@@ -35,14 +35,14 @@
     "reminders": "Recordatorios",
     "quotes": "Presupuestos"
   },
-  "selectVehicle": "Seleccionar veh\u00edculo para orden de trabajo",
+  "selectVehicle": "Seleccionar vehículo para orden de trabajo",
   "dateChoice": {
     "title": "Work Order Date",
     "description": "You have {selectedDate} selected. Which date should this work order be for?",
     "useSelected": "Use {date}",
     "useToday": "Use today"
   },
-  "more": "+ {count} m\u00e1s",
+  "more": "+ {count} más",
   "events": {
     "status": {
       "completed": "Completado",
@@ -54,7 +54,7 @@
       "draft": "Borrador",
       "done": "Hecho",
       "overdue": "Vencido",
-      "upcoming": "Pr\u00f3ximo"
+      "upcoming": "Próximo"
     },
     "type": {
       "service": "Servicio",
@@ -62,6 +62,8 @@
       "quote": "Presupuesto"
     },
     "noEvents": "Sin eventos",
-    "selectDay": "Seleccione un d\u00eda con eventos o cree una nueva orden de trabajo."
-  }
+    "selectDay": "Seleccione un día con eventos o cree una nueva orden de trabajo."
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month"
 }

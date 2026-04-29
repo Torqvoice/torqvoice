@@ -7,5 +7,6 @@
   "selectVehicle": "Velg kjøretøy...",
   "searchVehicle": "Søk kjøretøy...",
   "noVehicle": "Ingen kjøretøy funnet.",
-  "pickDate": "Velg en dato"
+  "pickDate": "Velg en dato",
+  "openMenu": "Open menu"
 }

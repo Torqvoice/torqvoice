@@ -226,7 +226,7 @@ export function AdminUsers({
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled={isPending}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled={isPending} aria-label={t("common.openMenu")}>
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>

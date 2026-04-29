@@ -18,7 +18,9 @@
     "deleteTitle": "Supprimer la conversation ?",
     "deleteDescription": "Tous les messages avec {name} seront définitivement supprimés. Cette action est irréversible.",
     "deleted": "Conversation supprimée",
-    "deleteError": "Impossible de supprimer la conversation"
+    "deleteError": "Impossible de supprimer la conversation",
+    "back": "Back",
+    "conversationMenu": "Conversation menu"
   },
   "conversation": {
     "noPhone": "Aucun numéro de téléphone enregistré pour {name}. Ajoutez un numéro de téléphone pour commencer à envoyer des messages.",
@@ -30,7 +32,8 @@
     "deleteDescription": "Ce message sera définitivement supprimé de la conversation. Cette action est irréversible.",
     "messageDeleted": "Message supprimé",
     "deleteError": "Impossible de supprimer le message",
-    "sendError": "Impossible d'envoyer le SMS"
+    "sendError": "Impossible d'envoyer le SMS",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Envoyer {label}",

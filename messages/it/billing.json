@@ -78,6 +78,10 @@
     "deleted": "Fattura ricorrente eliminata",
     "failedDelete": "Eliminazione fallita",
     "processed": "{count} fattura/e elaborata/e",
-    "failedProcess": "Elaborazione fallita"
+    "failedProcess": "Elaborazione fallita",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "removeRow": "Remove row"
   }
 }

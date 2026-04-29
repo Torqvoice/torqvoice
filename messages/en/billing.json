@@ -78,6 +78,10 @@
     "deleted": "Recurring invoice deleted",
     "failedDelete": "Failed to delete",
     "processed": "Processed {count} invoice(s)",
-    "failedProcess": "Failed to process"
+    "failedProcess": "Failed to process",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "removeRow": "Remove row"
   }
 }

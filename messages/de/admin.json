@@ -1,9 +1,21 @@
 {
   "nav": {
-    "overview": { "title": "Übersicht", "description": "Plattformstatistiken & Zustand" },
-    "users": { "title": "Benutzer", "description": "Alle Benutzer verwalten" },
-    "organizations": { "title": "Organisationen", "description": "Alle Organisationen verwalten" },
-    "settings": { "title": "Einstellungen", "description": "Plattformkonfiguration" }
+    "overview": {
+      "title": "Übersicht",
+      "description": "Plattformstatistiken & Zustand"
+    },
+    "users": {
+      "title": "Benutzer",
+      "description": "Alle Benutzer verwalten"
+    },
+    "organizations": {
+      "title": "Organisationen",
+      "description": "Alle Organisationen verwalten"
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "description": "Plattformkonfiguration"
+    }
   },
   "layout": {
     "title": "Admin-Panel",
@@ -104,5 +116,8 @@
     "postmarkApiKeyHint": "Holen Sie Ihren Server-Token von postmarkapp.com",
     "mailgunApiKeyHint": "Holen Sie Ihren API-Schlüssel von app.mailgun.com",
     "sendgridApiKeyHint": "Holen Sie Ihren API-Schlüssel von app.sendgrid.com"
+  },
+  "common": {
+    "openMenu": "Open menu"
   }
 }

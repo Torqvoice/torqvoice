@@ -18,7 +18,9 @@
     "deleteTitle": "Slette samtale?",
     "deleteDescription": "Alle meldinger med {name} vil bli permanent slettet. Denne handlingen kan ikke angres.",
     "deleted": "Samtale slettet",
-    "deleteError": "Kunne ikke slette samtalen"
+    "deleteError": "Kunne ikke slette samtalen",
+    "back": "Back",
+    "conversationMenu": "Conversation menu"
   },
   "conversation": {
     "noPhone": "Ingen telefonnummer registrert for {name}. Legg til et telefonnummer for å starte meldinger.",
@@ -30,7 +32,8 @@
     "deleteDescription": "Denne meldingen vil bli permanent slettet fra samtalen. Denne handlingen kan ikke angres.",
     "messageDeleted": "Melding slettet",
     "deleteError": "Kunne ikke slette meldingen",
-    "sendError": "Kunne ikke sende SMS"
+    "sendError": "Kunne ikke sende SMS",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Send {label}",

@@ -30,7 +30,8 @@
     "deleteDescription": "Dit verwijdert dit bericht permanent. Deze actie kan niet ongedaan worden gemaakt.",
     "messageDeleted": "Bericht verwijderd",
     "deleteError": "Bericht verwijderen mislukt",
-    "sendError": "Bericht versturen mislukt"
+    "sendError": "Bericht versturen mislukt",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "{label} versturen",

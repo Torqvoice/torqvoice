@@ -63,5 +63,7 @@
     },
     "noEvents": "Geen evenementen",
     "selectDay": "Selecteer een dag met evenementen of maak een nieuwe werkorder aan."
-  }
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month"
 }

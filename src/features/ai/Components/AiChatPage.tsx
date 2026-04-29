@@ -338,6 +338,7 @@ export function AiChatPage() {
               className="shrink-0"
               onClick={() => sendMessage(input)}
               disabled={loading || !input.trim()}
+              aria-label={t("sendMessage")}
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

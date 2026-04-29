@@ -63,5 +63,7 @@
     },
     "noEvents": "Nessun evento",
     "selectDay": "Seleziona un giorno con eventi o crea un nuovo ordine di lavoro."
-  }
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month"
 }

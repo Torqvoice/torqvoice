@@ -26,7 +26,11 @@
     "vehicleUnarchived": "Vehicle unarchived",
     "unarchiveError": "Failed to unarchive vehicle",
     "deleteError": "Failed to delete vehicle",
-    "error": "Failed to load vehicles"
+    "error": "Failed to load vehicles",
+    "viewTable": "Table view",
+    "viewGrid": "Grid view",
+    "viewLargeGrid": "Large grid view",
+    "openMenu": "Open menu"
   },
   "detail": {
     "vehicleArchived": "This vehicle is archived",
@@ -84,7 +88,9 @@
     "severityCommon": "Common — frequently reported issue",
     "severityModerate": "Moderate — reported by some owners",
     "severityUncommon": "Uncommon — reported by few owners",
-    "severityRare": "Rare — isolated reports but critical when it occurs"
+    "severityRare": "Rare — isolated reports but critical when it occurs",
+    "openMenu": "Open menu",
+    "dismissMaintenance": "Dismiss"
   },
   "quotes": {
     "newQuote": "New Quote",
@@ -163,7 +169,11 @@
     "empty": "No service records yet.",
     "showing": "Showing {start}-{end} of {total}",
     "perPage": "per page",
-    "page": "Page {page} of {totalPages}"
+    "page": "Page {page} of {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "notes": {
     "addNote": "Add Note",
@@ -188,7 +198,12 @@
     "noteUpdated": "Note updated",
     "noteCreated": "Note created",
     "titleRequired": "Title and content are required",
-    "saveError": "Failed to {action} note"
+    "saveError": "Failed to {action} note",
+    "openMenu": "Open menu",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "findings": {
     "sectionTitle": "Observations",
@@ -236,7 +251,12 @@
     "resolveError": "Failed to resolve observation",
     "showing": "Showing {start}-{end} of {total}",
     "perPage": "per page",
-    "page": "Page {page} of {totalPages}"
+    "page": "Page {page} of {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page",
+    "openMenu": "Open menu"
   },
   "observationsPage": {
     "searchPlaceholder": "Search description, notes, or vehicle...",
@@ -306,5 +326,11 @@
     "reasonPlaceholder": "e.g. Sold, totaled, decommissioned...",
     "archived": "{name} archived",
     "archiveError": "Failed to archive vehicle"
+  },
+  "serviceRecords": {
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   }
 }

@@ -118,5 +118,6 @@
     "cancel": "Abbrechen",
     "saveChanges": "Änderungen speichern",
     "addPart": "Teil hinzufügen"
-  }
+  },
+  "openMenu": "Open menu"
 }

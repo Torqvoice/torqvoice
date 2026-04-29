@@ -406,5 +406,9 @@
     "date": "Data",
     "title": "Titolo"
   },
-  "empty": "Nessun dato caricato. Clicca su Aggiorna per caricare il report."
+  "empty": "Nessun dato caricato. Clicca su Aggiorna per caricare il report.",
+  "pagination": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
 }

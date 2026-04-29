@@ -78,6 +78,10 @@
     "deleted": "Tekrarlayan fatura silindi",
     "failedDelete": "Silme başarısız",
     "processed": "{count} fatura işlendi",
-    "failedProcess": "İşleme başarısız"
+    "failedProcess": "İşleme başarısız",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "removeRow": "Remove row"
   }
 }

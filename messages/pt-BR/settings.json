@@ -353,7 +353,10 @@
     "memberRemoved": "Membro removido",
     "failedRemoveMember": "Falha ao remover o membro",
     "memberRoleUpdated": "Funcao do membro atualizada",
-    "failedUpdateRole": "Falha ao atualizar a funcao"
+    "failedUpdateRole": "Falha ao atualizar a funcao",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Layout da fatura",
@@ -718,7 +721,9 @@
     "fieldUpdated": "Campo personalizado atualizado",
     "fieldDeleted": "Campo personalizado excluído",
     "failedSave": "Falha ao salvar campo",
-    "failedDelete": "Falha ao excluir"
+    "failedDelete": "Falha ao excluir",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Padroes da oficina",
@@ -948,7 +953,8 @@
         "slate": "Ardósia",
         "sand": "Areia"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "Provedor de e-mail",
@@ -1023,7 +1029,8 @@
     "saved": "Configuracoes SMS salvas",
     "failedSave": "Falha ao salvar configuracoes",
     "testSentTo": "SMS de teste enviado para {phone}",
-    "testFailed": "Teste de SMS falhou"
+    "testFailed": "Teste de SMS falhou",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Plano de assinatura",
@@ -1074,6 +1081,7 @@
     "resumeSuccess": "Assinatura retomada com sucesso",
     "resumeError": "Falha ao retomar a assinatura",
     "billingPortalError": "Falha ao abrir o portal de faturamento",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Atualizar plano",
     "upgradeDescription": "Desbloqueie mais recursos atualizando seu plano.",
     "upgradeToProDescription": "Atualize para desbloquear clientes ilimitados, membros da equipe, relatórios, SMTP, acesso à API e mais.",
@@ -1165,6 +1173,10 @@
     "deleted": "Agendamento de relatórios excluído",
     "toggledOn": "Agendamento de relatórios ativado",
     "toggledOff": "Agendamento de relatórios desativado",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Nenhum membro encontrado",
     "addRecipient": "Adicionar destinatário...",
     "searchMembers": "Buscar membros...",

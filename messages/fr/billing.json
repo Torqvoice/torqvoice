@@ -78,6 +78,10 @@
     "deleted": "Facture récurrente supprimée",
     "failedDelete": "Échec de la suppression",
     "processed": "{count} facture(s) traitée(s)",
-    "failedProcess": "Échec du traitement"
+    "failedProcess": "Échec du traitement",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "removeRow": "Remove row"
   }
 }

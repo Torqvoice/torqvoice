@@ -26,7 +26,11 @@
     "vehicleUnarchived": "Транспортное средство разархивировано",
     "unarchiveError": "Не удалось разархивировать транспортное средство",
     "deleteError": "Не удалось удалить транспортное средство",
-    "error": "Не удалось загрузить транспортные средства"
+    "error": "Не удалось загрузить транспортные средства",
+    "viewTable": "Table view",
+    "viewGrid": "Grid view",
+    "viewLargeGrid": "Large grid view",
+    "openMenu": "Open menu"
   },
   "detail": {
     "vehicleArchived": "Это транспортное средство архивировано",
@@ -84,7 +88,9 @@
     "severityCommon": "Распространено — часто встречающаяся проблема",
     "severityModerate": "Умеренно — отмечено некоторыми владельцами",
     "severityUncommon": "Нечасто — отмечено немногими владельцами",
-    "severityRare": "Редко — единичные случаи, но критично при возникновении"
+    "severityRare": "Редко — единичные случаи, но критично при возникновении",
+    "openMenu": "Open menu",
+    "dismissMaintenance": "Dismiss"
   },
   "quotes": {
     "newQuote": "Новое предложение",
@@ -163,7 +169,11 @@
     "empty": "Записей обслуживания пока нет.",
     "showing": "Показано {start}-{end} из {total}",
     "perPage": "на странице",
-    "page": "Страница {page} из {totalPages}"
+    "page": "Страница {page} из {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "notes": {
     "addNote": "Добавить заметку",
@@ -188,7 +198,12 @@
     "noteUpdated": "Заметка обновлена",
     "noteCreated": "Заметка создана",
     "titleRequired": "Название и содержание обязательны",
-    "saveError": "Не удалось {action} заметку"
+    "saveError": "Не удалось {action} заметку",
+    "openMenu": "Open menu",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "findings": {
     "sectionTitle": "Наблюдения",
@@ -236,7 +251,12 @@
     "resolveError": "Не удалось решить наблюдение",
     "showing": "Показано {start}-{end} из {total}",
     "perPage": "на странице",
-    "page": "Страница {page} из {totalPages}"
+    "page": "Страница {page} из {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page",
+    "openMenu": "Open menu"
   },
   "observationsPage": {
     "searchPlaceholder": "Поиск по описанию, заметкам или транспорту...",
@@ -306,5 +326,11 @@
     "reasonPlaceholder": "напр. Продано, списано, выведено из эксплуатации...",
     "archived": "{name} архивировано",
     "archiveError": "Не удалось архивировать транспортное средство"
+  },
+  "serviceRecords": {
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   }
 }

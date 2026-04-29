@@ -406,5 +406,9 @@
     "date": "Datum",
     "title": "Titel"
   },
-  "empty": "Noch keine Daten geladen. Klicken Sie auf Aktualisieren, um den Bericht zu laden."
+  "empty": "Noch keine Daten geladen. Klicken Sie auf Aktualisieren, um den Bericht zu laden.",
+  "pagination": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
 }

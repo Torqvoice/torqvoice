@@ -30,7 +30,8 @@
     "deleteDescription": "Questo eliminerà permanentemente questo messaggio. Questa azione non può essere annullata.",
     "messageDeleted": "Messaggio eliminato",
     "deleteError": "Eliminazione messaggio fallita",
-    "sendError": "Invio messaggio fallito"
+    "sendError": "Invio messaggio fallito",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Invia {label}",

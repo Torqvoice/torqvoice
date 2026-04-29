@@ -259,7 +259,7 @@ export function CustomerPortalSettings({
                   <Label>{t('portal.portalUrl')}</Label>
                   <div className="flex gap-2">
                     <Input value={portalUrl} readOnly className="font-mono text-sm" />
-                    <Button type="button" variant="outline" size="icon" onClick={handleCopy}>
+                    <Button type="button" variant="outline" size="icon" onClick={handleCopy} aria-label={t('portal.copyUrl')}>
                       {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                     </Button>
                   </div>

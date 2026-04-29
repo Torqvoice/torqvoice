@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Edytuj",
-    "delete": "Usuń"
+    "delete": "Usuń",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Usuń szablon robocizny",

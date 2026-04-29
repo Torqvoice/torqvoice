@@ -307,7 +307,7 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0">
+                        <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" aria-label={t("openMenu")}>
                           <MoreVertical className="h-3.5 w-3.5" />
                         </Button>
                       </DropdownMenuTrigger>

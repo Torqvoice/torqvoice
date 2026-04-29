@@ -30,7 +30,8 @@
     "deleteDescription": "Dies löscht diese Nachricht dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
     "messageDeleted": "Nachricht gelöscht",
     "deleteError": "Nachricht konnte nicht gelöscht werden",
-    "sendError": "Nachricht konnte nicht gesendet werden"
+    "sendError": "Nachricht konnte nicht gesendet werden",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "{label} senden",

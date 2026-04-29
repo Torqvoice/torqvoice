@@ -371,6 +371,7 @@ export default function RecurringInvoicesClient({
                             className="h-7 w-7"
                             onClick={() => handleToggle(inv.id)}
                             disabled={isPending}
+                            aria-label={inv.isActive ? t("recurring.pause") : t("recurring.resume")}
                           >
                             {inv.isActive ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                           </Button>
@@ -380,6 +381,7 @@ export default function RecurringInvoicesClient({
                             className="h-7 w-7 text-destructive"
                             onClick={() => handleDelete(inv.id)}
                             disabled={isPending}
+                            aria-label={t("recurring.delete")}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
@@ -505,7 +507,7 @@ export default function RecurringInvoicesClient({
                       <Input placeholder={t("recurring.partNumber")} value={p.partNumber} onChange={(e) => updatePart(i, "partNumber", e.target.value)} className="text-sm h-8 w-24" />
                       <Input type="number" min="1" value={p.quantity} onChange={(e) => updatePart(i, "quantity", parseInt(e.target.value) || 1)} className="text-sm h-8 w-16" />
                       <Input type="number" step="0.01" min="0" value={p.unitPrice} onChange={(e) => updatePart(i, "unitPrice", parseFloat(e.target.value) || 0)} className="text-sm h-8 w-20" />
-                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => removePart(i)}>
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => removePart(i)} aria-label={t("recurring.removeRow")}>
                         <X className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -531,7 +533,7 @@ export default function RecurringInvoicesClient({
                       <Input placeholder={t("recurring.description")} value={l.description} onChange={(e) => updateLabor(i, "description", e.target.value)} className="text-sm h-8" />
                       <Input type="number" step="0.5" min="0" placeholder={t("recurring.hours")} value={l.hours} onChange={(e) => updateLabor(i, "hours", parseFloat(e.target.value) || 0)} className="text-sm h-8 w-20" />
                       <Input type="number" step="0.01" min="0" placeholder={t("recurring.rate")} value={l.rate} onChange={(e) => updateLabor(i, "rate", parseFloat(e.target.value) || 0)} className="text-sm h-8 w-20" />
-                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => removeLabor(i)}>
+                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => removeLabor(i)} aria-label={t("recurring.removeRow")}>
                         <X className="h-3.5 w-3.5" />
                       </Button>
                     </div>

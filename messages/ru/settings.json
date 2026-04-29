@@ -353,7 +353,10 @@
     "memberRemoved": "Участник удалён",
     "failedRemoveMember": "Не удалось удалить участника",
     "memberRoleUpdated": "Роль участника обновлена",
-    "failedUpdateRole": "Не удалось обновить роль"
+    "failedUpdateRole": "Не удалось обновить роль",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Счета и предложения",
@@ -718,7 +721,9 @@
     "fieldUpdated": "Пользовательское поле обновлено",
     "fieldDeleted": "Пользовательское поле удалено",
     "failedSave": "Не удалось сохранить поле",
-    "failedDelete": "Не удалось удалить"
+    "failedDelete": "Не удалось удалить",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Настройки мастерской",
@@ -948,7 +953,8 @@
         "slate": "Сланец",
         "sand": "Песок"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "Провайдер эл. почты",
@@ -1023,7 +1029,8 @@
     "saved": "Настройки SMS сохранены",
     "failedSave": "Не удалось сохранить настройки",
     "testSentTo": "Тестовое SMS отправлено на {phone}",
-    "testFailed": "Тест SMS не удался"
+    "testFailed": "Тест SMS не удался",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Тарифный план",
@@ -1074,6 +1081,7 @@
     "resumeSuccess": "Подписка успешно возобновлена",
     "resumeError": "Не удалось возобновить подписку",
     "billingPortalError": "Не удалось открыть платёжный портал",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Обновить тариф",
     "upgradeDescription": "Разблокируйте больше функций, обновив тариф.",
     "upgradeToProDescription": "Обновитесь для неограниченных клиентов, участников команды, отчётов, SMTP, доступа к API и многого другого.",
@@ -1165,6 +1173,10 @@
     "deleted": "Расписание отчётов удалено",
     "toggledOn": "Расписание отчётов включено",
     "toggledOff": "Расписание отчётов отключено",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Участники команды не найдены",
     "addRecipient": "Добавить получателя...",
     "searchMembers": "Поиск участников...",

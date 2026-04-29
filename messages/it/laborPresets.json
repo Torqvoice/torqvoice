@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Modifica",
-    "delete": "Elimina"
+    "delete": "Elimina",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Elimina modello di manodopera",

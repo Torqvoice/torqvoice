@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Bearbeiten",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Arbeitsvorlage löschen",

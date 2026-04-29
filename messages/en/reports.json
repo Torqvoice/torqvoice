@@ -400,12 +400,15 @@
     "unitCost": "Unit Cost",
     "vehiclesSection": "Vehicle Report",
     "vehicleLabel": "Vehicle",
-    "customer": "Customer",
     "totalCost": "Total Cost",
     "partsCostLabel": "Parts Cost",
     "laborCostLabel": "Labor Cost",
     "date": "Date",
     "title": "Title"
   },
-  "empty": "No data loaded yet. Click Refresh to load the report."
+  "empty": "No data loaded yet. Click Refresh to load the report.",
+  "pagination": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
 }

@@ -95,7 +95,8 @@
     "scanBarcode": "Escanear",
     "scanTitle": "Escanear código de barras",
     "partFound": "\"{name}\" añadido del inventario",
-    "partNotFound": "No se encontró pieza para el código de barras \"{barcode}\""
+    "partNotFound": "No se encontró pieza para el código de barras \"{barcode}\"",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Mano de Obra",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Totales",
@@ -209,7 +211,9 @@
     "images": "Imágenes ({count})",
     "videos": "Videos ({count})",
     "diagnostics": "Reportes de Diagnóstico ({count})",
-    "documents": "Documentos ({count})"
+    "documents": "Documentos ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Compartir Factura",
@@ -225,7 +229,8 @@
     "emailSent": "Correo electrónico enviado",
     "failedEmail": "Error al enviar correo electrónico",
     "smsSent": "SMS enviado",
-    "failedSms": "Error al enviar SMS"
+    "failedSms": "Error al enviar SMS",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Vehículo",

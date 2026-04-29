@@ -353,7 +353,10 @@
     "memberRemoved": "Membre retire",
     "failedRemoveMember": "Echec du retrait du membre",
     "memberRoleUpdated": "Role du membre mis a jour",
-    "failedUpdateRole": "Echec de la mise a jour du role"
+    "failedUpdateRole": "Echec de la mise a jour du role",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Mise en page de facture",
@@ -718,7 +721,9 @@
     "fieldUpdated": "Champ personnalisé mis à jour",
     "fieldDeleted": "Champ personnalisé supprimé",
     "failedSave": "Impossible d'enregistrer le champ",
-    "failedDelete": "Impossible de supprimer"
+    "failedDelete": "Impossible de supprimer",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Valeurs par defaut de l'atelier",
@@ -948,7 +953,8 @@
         "slate": "Ardoise",
         "sand": "Sable"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "Fournisseur de messagerie",
@@ -1023,7 +1029,8 @@
     "saved": "Parametres SMS enregistres",
     "failedSave": "Echec de l'enregistrement des parametres",
     "testSentTo": "SMS de test envoye a {phone}",
-    "testFailed": "Echec du test SMS"
+    "testFailed": "Echec du test SMS",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Plan d'abonnement",
@@ -1074,6 +1081,7 @@
     "resumeSuccess": "Abonnement repris avec succès",
     "resumeError": "Échec de la reprise de l'abonnement",
     "billingPortalError": "Impossible d'ouvrir le portail de facturation",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Améliorer le plan",
     "upgradeDescription": "Débloquez plus de fonctionnalités en améliorant votre plan.",
     "upgradeToProDescription": "Améliorez pour débloquer des clients illimités, des membres d'équipe, des rapports, SMTP, l'accès API et plus encore.",
@@ -1165,6 +1173,10 @@
     "deleted": "Planning de rapports supprimé",
     "toggledOn": "Planning de rapports activé",
     "toggledOff": "Planning de rapports désactivé",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Aucun membre trouvé",
     "addRecipient": "Ajouter un destinataire...",
     "searchMembers": "Rechercher des membres...",

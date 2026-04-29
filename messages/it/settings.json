@@ -353,7 +353,10 @@
     "memberRemoved": "Membro rimosso",
     "failedRemoveMember": "Rimozione membro non riuscita",
     "memberRoleUpdated": "Ruolo membro aggiornato",
-    "failedUpdateRole": "Aggiornamento ruolo non riuscito"
+    "failedUpdateRole": "Aggiornamento ruolo non riuscito",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Layout fattura",
@@ -718,7 +721,9 @@
     "fieldUpdated": "Campo personalizzato aggiornato",
     "fieldDeleted": "Campo personalizzato eliminato",
     "failedSave": "Impossibile salvare il campo",
-    "failedDelete": "Impossibile eliminare"
+    "failedDelete": "Impossibile eliminare",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Predefiniti officina",
@@ -948,7 +953,8 @@
         "slate": "Ardesia",
         "sand": "Sabbia"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "Provider e-mail",
@@ -1023,7 +1029,8 @@
     "saved": "Impostazioni SMS salvate",
     "failedSave": "Salvataggio impostazioni non riuscito",
     "testSentTo": "SMS di test inviato a {phone}",
-    "testFailed": "Test SMS non riuscito"
+    "testFailed": "Test SMS non riuscito",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Piano di abbonamento",
@@ -1074,6 +1081,7 @@
     "resumeSuccess": "Abbonamento ripreso con successo",
     "resumeError": "Ripresa dell'abbonamento non riuscita",
     "billingPortalError": "Impossibile aprire il portale di fatturazione",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Aggiorna piano",
     "upgradeDescription": "Sblocca più funzionalità aggiornando il tuo piano.",
     "upgradeToProDescription": "Aggiorna per sbloccare clienti illimitati, membri del team, report, SMTP, accesso API e altro.",
@@ -1165,6 +1173,10 @@
     "deleted": "Pianificazione report eliminata",
     "toggledOn": "Pianificazione report attivata",
     "toggledOff": "Pianificazione report disattivata",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Nessun membro trovato",
     "addRecipient": "Aggiungi destinatario...",
     "searchMembers": "Cerca membri...",

@@ -18,7 +18,9 @@
     "deleteTitle": "Ištrinti pokalbį?",
     "deleteDescription": "Bus visam laikui ištrintos visos žinutės su {name}. Šio veiksmo negalima atšaukti.",
     "deleted": "Pokalbis ištrintas",
-    "deleteError": "Nepavyko ištrinti pokalbio"
+    "deleteError": "Nepavyko ištrinti pokalbio",
+    "back": "Back",
+    "conversationMenu": "Conversation menu"
   },
   "conversation": {
     "noPhone": "{name} neturi telefono numerio. Pridėkite telefono numerį, kad pradėtumėte susirašinėti.",
@@ -30,7 +32,8 @@
     "deleteDescription": "Ši žinutė bus visam laikui ištrinta iš pokalbio. Šio veiksmo negalima atšaukti.",
     "messageDeleted": "Žinutė ištrinta",
     "deleteError": "Nepavyko ištrinti žinutės",
-    "sendError": "Nepavyko išsiųsti SMS"
+    "sendError": "Nepavyko išsiųsti SMS",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Siųsti {label}",

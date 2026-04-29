@@ -78,6 +78,10 @@
     "deleted": "Gjentakende faktura slettet",
     "failedDelete": "Kunne ikke slette",
     "processed": "{count} faktura(er) behandlet",
-    "failedProcess": "Kunne ikke behandle"
+    "failedProcess": "Kunne ikke behandle",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "removeRow": "Remove row"
   }
 }

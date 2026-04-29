@@ -1,9 +1,21 @@
 {
   "nav": {
-    "overview": { "title": "Apžvalga", "description": "Platformos statistika ir būklė" },
-    "users": { "title": "Naudotojai", "description": "Valdyti visus naudotojus" },
-    "organizations": { "title": "Organizacijos", "description": "Valdyti visas organizacijas" },
-    "settings": { "title": "Nustatymai", "description": "Platformos konfigūracija" }
+    "overview": {
+      "title": "Apžvalga",
+      "description": "Platformos statistika ir būklė"
+    },
+    "users": {
+      "title": "Naudotojai",
+      "description": "Valdyti visus naudotojus"
+    },
+    "organizations": {
+      "title": "Organizacijos",
+      "description": "Valdyti visas organizacijas"
+    },
+    "settings": {
+      "title": "Nustatymai",
+      "description": "Platformos konfigūracija"
+    }
   },
   "layout": {
     "title": "Administravimo skydelis",
@@ -104,5 +116,8 @@
     "postmarkApiKeyHint": "Gaukite serverio žetoną iš postmarkapp.com",
     "mailgunApiKeyHint": "Gaukite API raktą iš app.mailgun.com",
     "sendgridApiKeyHint": "Gaukite API raktą iš app.sendgrid.com"
+  },
+  "common": {
+    "openMenu": "Open menu"
   }
 }

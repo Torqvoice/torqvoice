@@ -95,7 +95,8 @@
     "scanBarcode": "Сканировать",
     "scanTitle": "Сканировать штрихкод",
     "partFound": "\"{name}\" добавлено из склада",
-    "partNotFound": "Деталь для штрихкода \"{barcode}\" не найдена"
+    "partNotFound": "Деталь для штрихкода \"{barcode}\" не найдена",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Работа",
@@ -118,7 +119,8 @@
     "switchToHourly": "Изменить на почасовую оплату",
     "switchToService": "Изменить на оплату услуг",
     "switchToHourlyHint": "Почасовая: оценка по нормо-часам (часы 00d7 ствка/час). Нажмите для изменения.",
-    "switchToServiceHint": "Услуга: оценка по цене за услугу. Нажмите для изменения."
+    "switchToServiceHint": "Услуга: оценка по цене за услугу. Нажмите для изменения.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Итоги",
@@ -209,7 +211,9 @@
     "images": "Изображения ({count})",
     "videos": "Видео ({count})",
     "diagnostics": "Диагностические отчёты ({count})",
-    "documents": "Документы ({count})"
+    "documents": "Документы ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Поделиться счётом",
@@ -225,7 +229,8 @@
     "emailSent": "Письмо отправлено",
     "failedEmail": "Не удалось отправить письмо",
     "smsSent": "SMS отправлено",
-    "failedSms": "Не удалось отправить SMS"
+    "failedSms": "Не удалось отправить SMS",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Транспортное средство",

@@ -406,5 +406,9 @@
     "date": "Date",
     "title": "Titre"
   },
-  "empty": "Aucune donnée chargée. Cliquez sur Actualiser pour charger le rapport."
+  "empty": "Aucune donnée chargée. Cliquez sur Actualiser pour charger le rapport.",
+  "pagination": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
 }

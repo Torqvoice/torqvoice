@@ -406,5 +406,9 @@
     "date": "Dato",
     "title": "Tittel"
   },
-  "empty": "Ingen data lastet ennå. Klikk Oppdater for å laste rapporten."
+  "empty": "Ingen data lastet ennå. Klikk Oppdater for å laste rapporten.",
+  "pagination": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
 }

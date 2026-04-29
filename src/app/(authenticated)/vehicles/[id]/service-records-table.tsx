@@ -369,6 +369,7 @@ export function ServiceRecordsTable({
               className="h-8 w-8"
               disabled={page <= 1}
               onClick={() => navigate({ page: 1 })}
+              aria-label={t("firstPage")}
             >
               <ChevronsLeft className="h-4 w-4" />
             </Button>
@@ -378,6 +379,7 @@ export function ServiceRecordsTable({
               className="h-8 w-8"
               disabled={page <= 1}
               onClick={() => navigate({ page: page - 1 })}
+              aria-label={t("previousPage")}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -390,6 +392,7 @@ export function ServiceRecordsTable({
               className="h-8 w-8"
               disabled={page >= totalPages}
               onClick={() => navigate({ page: page + 1 })}
+              aria-label={t("nextPage")}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -399,6 +402,7 @@ export function ServiceRecordsTable({
               className="h-8 w-8"
               disabled={page >= totalPages}
               onClick={() => navigate({ page: totalPages })}
+              aria-label={t("lastPage")}
             >
               <ChevronsRight className="h-4 w-4" />
             </Button>

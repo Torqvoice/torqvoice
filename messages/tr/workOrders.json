@@ -33,7 +33,8 @@
       "date": "Tarih",
       "total": "Toplam"
     },
-    "emailSubject": "Araç Durum Güncellemesi: {status}"
+    "emailSubject": "Araç Durum Güncellemesi: {status}",
+    "changeStatus": "Change status"
   },
   "vehiclePicker": {
     "title": "İş Emri için Araç Seç",

@@ -95,7 +95,8 @@
     "scanBarcode": "Scan",
     "scanTitle": "Scan Barcode",
     "partFound": "Added \"{name}\" from inventory",
-    "partNotFound": "No part found for barcode \"{barcode}\""
+    "partNotFound": "No part found for barcode \"{barcode}\"",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Labor & Services",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Totals",
@@ -209,7 +211,9 @@
     "images": "Images ({count})",
     "videos": "Videos ({count})",
     "diagnostics": "Diagnostic Reports ({count})",
-    "documents": "Documents ({count})"
+    "documents": "Documents ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Share Invoice",
@@ -225,7 +229,8 @@
     "emailSent": "Email sent",
     "failedEmail": "Failed to send email",
     "smsSent": "SMS sent",
-    "failedSms": "Failed to send SMS"
+    "failedSms": "Failed to send SMS",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Vehicle",

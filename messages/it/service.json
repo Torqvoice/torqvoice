@@ -95,7 +95,8 @@
     "scanBarcode": "Scansiona",
     "scanTitle": "Scansiona codice a barre",
     "partFound": "\"{name}\" aggiunto dall'inventario",
-    "partNotFound": "Nessun pezzo trovato per il codice a barre \"{barcode}\""
+    "partNotFound": "Nessun pezzo trovato per il codice a barre \"{barcode}\"",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Manodopera",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Totali",
@@ -209,7 +211,9 @@
     "images": "Immagini ({count})",
     "videos": "Video ({count})",
     "diagnostics": "Rapporti Diagnostici ({count})",
-    "documents": "Documenti ({count})"
+    "documents": "Documenti ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Condividi Fattura",
@@ -225,7 +229,8 @@
     "emailSent": "Email inviata",
     "failedEmail": "Impossibile inviare email",
     "smsSent": "SMS inviato",
-    "failedSms": "Impossibile inviare SMS"
+    "failedSms": "Impossibile inviare SMS",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Veicolo",

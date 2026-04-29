@@ -14,6 +14,7 @@
     "createAndSend": "Opprett og send",
     "cancel": "Avbryt",
     "uploadFailed": "Kunne ikke laste opp video",
+    "createReportFailed": "Failed to create status report",
     "created": "Statusrapport opprettet",
     "noVideo": "Last opp en video først",
     "removeVideo": "Fjern video",

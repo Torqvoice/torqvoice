@@ -95,7 +95,8 @@
     "scanBarcode": "Nuskaityti",
     "scanTitle": "Nuskaityti brūkšninį kodą",
     "partFound": "Pridėta \"{name}\" iš inventoriaus",
-    "partNotFound": "Dalis brūkšniniam kodui \"{barcode}\" nerasta"
+    "partNotFound": "Dalis brūkšniniam kodui \"{barcode}\" nerasta",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Darbai ir paslaugos",
@@ -118,7 +119,8 @@
     "switchToHourly": "Perjungti į valandinį įkainį",
     "switchToService": "Perjungti į paslaugos įkainį",
     "switchToHourlyHint": "Valandinis: kainuojama pagal dirbtų valandų skaičių (valandos × tarifas/val.). Spustelėkite, kad perjungtumėte.",
-    "switchToServiceHint": "Paslaugos: fiksuota kaina už vienetą. Spustelėkite, kad perjungtumėte."
+    "switchToServiceHint": "Paslaugos: fiksuota kaina už vienetą. Spustelėkite, kad perjungtumėte.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Sumos",
@@ -209,7 +211,9 @@
     "images": "Vaizdai ({count})",
     "videos": "Vaizdo įrašai ({count})",
     "diagnostics": "Diagnostikos ataskaitos ({count})",
-    "documents": "Dokumentai ({count})"
+    "documents": "Dokumentai ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Dalintis sąskaita",
@@ -225,7 +229,8 @@
     "emailSent": "Laiškas išsiųstas",
     "failedEmail": "Nepavyko išsiųsti laiško",
     "smsSent": "SMS išsiųsta",
-    "failedSms": "Nepavyko išsiųsti SMS"
+    "failedSms": "Nepavyko išsiųsti SMS",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Transporto priemonė",

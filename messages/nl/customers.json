@@ -21,7 +21,8 @@
     "batchDelete": "Verwijderen ({count})",
     "batchDeleteTitle": "Klanten verwijderen",
     "batchDeleteDescription": "{count} klant(en) verwijderen? Hun voertuigen worden ontkoppeld.",
-    "batchDeleteSuccess": "{count} klant(en) verwijderd"
+    "batchDeleteSuccess": "{count} klant(en) verwijderd",
+    "openMenu": "Open menu"
   },
   "detail": {
     "backToCustomers": "Terug naar klanten",

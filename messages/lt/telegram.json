@@ -4,7 +4,9 @@
   "botToken": {
     "label": "Boto žetonas",
     "placeholder": "Įveskite boto žetoną iš @BotFather",
-    "help": "Sukurkite botą per @BotFather Telegram, kad gautumėte žetoną."
+    "help": "Sukurkite botą per @BotFather Telegram, kad gautumėte žetoną.",
+    "show": "Show token",
+    "hide": "Hide token"
   },
   "botUsername": {
     "label": "Boto naudotojo vardas",
@@ -17,7 +19,8 @@
   "deepLink": {
     "title": "Kliento prisijungimo nuoroda",
     "description": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti prie jūsų boto. Pakeiskite kliento ID vietos žymeklį tikruoju kliento ID.",
-    "copied": "Nuoroda nukopijuota!"
+    "copied": "Nuoroda nukopijuota!",
+    "copy": "Copy deep link"
   },
   "test": {
     "title": "Bandomoji žinutė",

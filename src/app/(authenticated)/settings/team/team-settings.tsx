@@ -417,6 +417,7 @@ export function TeamSettings({
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-destructive"
                       onClick={() => handleRemove(member)}
+                      aria-label={t('team.removeMember')}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -514,6 +515,7 @@ export function TeamSettings({
                       size="icon"
                       className="h-8 w-8 text-muted-foreground"
                       title={t('team.copyInviteLink')}
+                      aria-label={t('team.copyInviteLink')}
                       onClick={() => {
                         const url = `${window.location.origin}/auth/sign-up?invite=${invitation.token}`;
                         navigator.clipboard.writeText(url);
@@ -527,6 +529,7 @@ export function TeamSettings({
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-destructive"
                       onClick={() => handleCancelInvitation(invitation)}
+                      aria-label={t('team.cancelInvite')}
                     >
                       <X className="h-3.5 w-3.5" />
                     </Button>
@@ -720,6 +723,7 @@ export function TeamSettings({
                         size="icon"
                         className="h-8 w-8"
                         onClick={() => openRoleForm(role)}
+                        aria-label={t('team.editRole')}
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
@@ -728,6 +732,7 @@ export function TeamSettings({
                         size="icon"
                         className="h-8 w-8 text-muted-foreground hover:text-destructive"
                         onClick={() => handleDeleteRole(role)}
+                        aria-label={t('team.deleteRole')}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>

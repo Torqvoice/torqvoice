@@ -222,6 +222,7 @@ export function ServiceVideoManager({
                       size="icon"
                       className="h-7 w-7 text-muted-foreground hover:text-destructive"
                       onClick={() => handleDelete(video.id)}
+                      aria-label={t("header.delete")}
                     >
                       <X className="h-3.5 w-3.5" />
                     </Button>

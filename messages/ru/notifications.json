@@ -6,5 +6,6 @@
     "confirmDelete": "Вы уверены?",
     "delete": "Удалить",
     "cancel": "Отмена"
-  }
+  },
+  "openNotifications": "Open notifications"
 }

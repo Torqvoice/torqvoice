@@ -30,7 +30,8 @@
     "deleteDescription": "Dette vil permanent slette denne meldingen. Denne handlingen kan ikke angres.",
     "messageDeleted": "Melding slettet",
     "deleteError": "Kunne ikke slette melding",
-    "sendError": "Kunne ikke sende melding"
+    "sendError": "Kunne ikke sende melding",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Send {label}",
