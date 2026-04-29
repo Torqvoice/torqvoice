@@ -21,6 +21,12 @@ import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Badge } from '@/components/ui/badge'
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import {
   Drawer,
   DrawerContent,
   DrawerHeader,
@@ -57,10 +63,17 @@ const STATUS_COLOR: Record<string, string> = {
   'waiting-parts': 'bg-orange-500/10 text-orange-600',
 }
 
-export function MyActiveJobs({ jobs, smsEnabled, emailEnabled, telegramEnabled }: MyActiveJobsProps) {
+export function MyActiveJobs({
+  jobs,
+  smsEnabled,
+  emailEnabled,
+  telegramEnabled,
+}: MyActiveJobsProps) {
   const t = useTranslations('dashboard.myJobs')
   const router = useRouter()
-  const [uploading, setUploading] = useState<{ jobId: string; type: 'photo' | 'video' } | null>(null)
+  const [uploading, setUploading] = useState<{ jobId: string; type: 'photo' | 'video' } | null>(
+    null
+  )
   const [imageCounts, setImageCounts] = useState<Record<string, number>>(() =>
     Object.fromEntries(jobs.map((j) => [j.id, j.imageCount]))
   )
@@ -284,7 +297,7 @@ export function MyActiveJobs({ jobs, smsEnabled, emailEnabled, telegramEnabled }
   }
 
   return (
-    <>
+    <TooltipProvider>
       <Card className="border-0 shadow-sm">
         <CardHeader className="px-4 pb-1 pt-3">
           <CardTitle className="flex items-center gap-2 text-base">
@@ -329,22 +342,37 @@ export function MyActiveJobs({ jobs, smsEnabled, emailEnabled, telegramEnabled }
                     <div className="shrink-0 ml-3 hidden sm:flex items-center gap-2">
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                         {imgCount > 0 && (
-                          <span className="flex items-center gap-0.5">
-                            <ImageIcon className="h-3 w-3" />
-                            {imgCount}
-                          </span>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="flex items-center gap-0.5">
+                                <ImageIcon className="h-3 w-3" />
+                                {imgCount}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>{t('photo')}</TooltipContent>
+                          </Tooltip>
                         )}
                         {vidCount > 0 && (
-                          <span className="flex items-center gap-0.5">
-                            <Video className="h-3 w-3" />
-                            {vidCount}
-                          </span>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="flex items-center gap-0.5">
+                                <Video className="h-3 w-3" />
+                                {vidCount}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>{t('video')}</TooltipContent>
+                          </Tooltip>
                         )}
                         {prtCount > 0 && (
-                          <span className="flex items-center gap-0.5">
-                            <Package className="h-3 w-3" />
-                            {prtCount}
-                          </span>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="flex items-center gap-0.5">
+                                <Package className="h-3 w-3" />
+                                {prtCount}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>{t('parts')}</TooltipContent>
+                          </Tooltip>
                         )}
                       </div>
                       <Button
@@ -397,22 +425,37 @@ export function MyActiveJobs({ jobs, smsEnabled, emailEnabled, telegramEnabled }
                     {/* Mobile: counters only */}
                     <div className="shrink-0 ml-3 flex sm:hidden items-center gap-1.5 text-xs text-muted-foreground">
                       {imgCount > 0 && (
-                        <span className="flex items-center gap-0.5">
-                          <ImageIcon className="h-3 w-3" />
-                          {imgCount}
-                        </span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="flex items-center gap-0.5">
+                              <ImageIcon className="h-3 w-3" />
+                              {imgCount}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>{t('photo')}</TooltipContent>
+                        </Tooltip>
                       )}
                       {vidCount > 0 && (
-                        <span className="flex items-center gap-0.5">
-                          <Video className="h-3 w-3" />
-                          {vidCount}
-                        </span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="flex items-center gap-0.5">
+                              <Video className="h-3 w-3" />
+                              {vidCount}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>{t('video')}</TooltipContent>
+                        </Tooltip>
                       )}
                       {prtCount > 0 && (
-                        <span className="flex items-center gap-0.5">
-                          <Package className="h-3 w-3" />
-                          {prtCount}
-                        </span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="flex items-center gap-0.5">
+                              <Package className="h-3 w-3" />
+                              {prtCount}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>{t('parts')}</TooltipContent>
+                        </Tooltip>
                       )}
                     </div>
                   </div>
@@ -519,8 +562,14 @@ export function MyActiveJobs({ jobs, smsEnabled, emailEnabled, telegramEnabled }
                 <div className="min-w-0 flex-1">
                   <p className="font-medium truncate">{scannedPart.name}</p>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    {scannedPart.partNumber && <span className="font-mono text-xs">{scannedPart.partNumber}</span>}
-                    {scannedPart.category && <Badge variant="secondary" className="text-[10px]">{scannedPart.category}</Badge>}
+                    {scannedPart.partNumber && (
+                      <span className="font-mono text-xs">{scannedPart.partNumber}</span>
+                    )}
+                    {scannedPart.category && (
+                      <Badge variant="secondary" className="text-[10px]">
+                        {scannedPart.category}
+                      </Badge>
+                    )}
                   </div>
                 </div>
                 <div className="text-right text-sm text-muted-foreground shrink-0">
@@ -538,7 +587,9 @@ export function MyActiveJobs({ jobs, smsEnabled, emailEnabled, telegramEnabled }
                 >
                   -
                 </Button>
-                <span className="w-16 text-center text-3xl font-semibold tabular-nums">{addQty}</span>
+                <span className="w-16 text-center text-3xl font-semibold tabular-nums">
+                  {addQty}
+                </span>
                 <Button
                   variant="outline"
                   size="icon"
@@ -577,46 +628,55 @@ export function MyActiveJobs({ jobs, smsEnabled, emailEnabled, telegramEnabled }
         initialBarcode={pendingBarcode}
       />
 
-      {statusReportJobId && (() => {
-        const job = jobs.find(j => j.id === statusReportJobId)
-        if (!job) return null
-        return (
-          <CreateStatusReportDialog
-            open={!!statusReportJobId}
-            onOpenChange={(open) => { if (!open) setStatusReportJobId(null) }}
-            serviceRecordId={statusReportJobId}
-            vehicleName={`${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}`}
-            customer={job.customer}
-            smsEnabled={smsEnabled}
-            emailEnabled={emailEnabled}
-            telegramEnabled={telegramEnabled}
-            onCreated={(reportId) => {
-              const currentJobId = statusReportJobId
-              setStatusReportJobId(null)
-              if (job.customer) {
-                setSendReportId(reportId)
-                setSendReportJobId(currentJobId)
-              }
-            }}
-          />
-        )
-      })()}
+      {statusReportJobId &&
+        (() => {
+          const job = jobs.find((j) => j.id === statusReportJobId)
+          if (!job) return null
+          return (
+            <CreateStatusReportDialog
+              open={!!statusReportJobId}
+              onOpenChange={(open) => {
+                if (!open) setStatusReportJobId(null)
+              }}
+              serviceRecordId={statusReportJobId}
+              vehicleName={`${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}`}
+              customer={job.customer}
+              smsEnabled={smsEnabled}
+              emailEnabled={emailEnabled}
+              telegramEnabled={telegramEnabled}
+              onCreated={(reportId) => {
+                const currentJobId = statusReportJobId
+                setStatusReportJobId(null)
+                if (job.customer) {
+                  setSendReportId(reportId)
+                  setSendReportJobId(currentJobId)
+                }
+              }}
+            />
+          )
+        })()}
 
-      {sendReportId && (() => {
-        const job = sendReportJobId ? jobs.find(j => j.id === sendReportJobId) : null
-        if (!job?.customer) return null
-        return (
-          <SendStatusReportDialog
-            open={!!sendReportId}
-            onOpenChange={(open) => { if (!open) { setSendReportId(null); setSendReportJobId(null) } }}
-            reportId={sendReportId}
-            customer={job.customer}
-            smsEnabled={smsEnabled}
-            emailEnabled={emailEnabled}
-            telegramEnabled={telegramEnabled}
-          />
-        )
-      })()}
-    </>
+      {sendReportId &&
+        (() => {
+          const job = sendReportJobId ? jobs.find((j) => j.id === sendReportJobId) : null
+          if (!job?.customer) return null
+          return (
+            <SendStatusReportDialog
+              open={!!sendReportId}
+              onOpenChange={(open) => {
+                if (!open) {
+                  setSendReportId(null)
+                  setSendReportJobId(null)
+                }
+              }}
+              reportId={sendReportId}
+              customer={job.customer}
+              smsEnabled={smsEnabled}
+              emailEnabled={emailEnabled}
+              telegramEnabled={telegramEnabled}
+            />
+          )
+        })()}
+    </TooltipProvider>
   )
 }
