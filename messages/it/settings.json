@@ -1277,7 +1277,7 @@
     "helpTitle": "Verificare le firme dei webhook",
     "helpIntro": "Ogni consegna include una firma HMAC-SHA256 per confermare che la richiesta proviene da Torqvoice.",
     "helpHeadersTitle": "Header inviati con ogni richiesta",
-    "helpVerify": "Ricostruisci la stringa firmata come `<timestamp>.<raw body>` e confronta con uguaglianza a tempo costante:",
+    "helpVerify": "Ricostruisci la stringa firmata come `[timestamp].[body]` e confronta con uguaglianza a tempo costante:",
     "tabWebhooks": "Webhooks",
     "tabReference": "Riferimento eventi",
     "autoDisabled": "Pausa automatica",

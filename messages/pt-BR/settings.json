@@ -1277,7 +1277,7 @@
     "helpTitle": "Verificar assinaturas de webhook",
     "helpIntro": "Cada entrega inclui uma assinatura HMAC-SHA256 para que você possa confirmar que a requisição veio do Torqvoice.",
     "helpHeadersTitle": "Cabeçalhos enviados em cada requisição",
-    "helpVerify": "Reconstrua a string assinada como `<timestamp>.<raw body>` e compare com igualdade de tempo seguro:",
+    "helpVerify": "Reconstrua a string assinada como `[timestamp].[body]` e compare com igualdade de tempo seguro:",
     "tabWebhooks": "Webhooks",
     "tabReference": "Referência de eventos",
     "autoDisabled": "Pausado automaticamente",

@@ -1277,7 +1277,7 @@
     "helpTitle": "Webhook parašų tikrinimas",
     "helpIntro": "Kiekvienas pristatymas turi HMAC-SHA256 parašą, kad galėtumėte patvirtinti, jog užklausa atvyko iš Torqvoice.",
     "helpHeadersTitle": "Antraštės, siunčiamos su kiekviena užklausa",
-    "helpVerify": "Sudarykite pasirašytą eilutę kaip `<timestamp>.<raw body>` ir palyginkite su saugiu laiko atžvilgiu palyginimu:",
+    "helpVerify": "Sudarykite pasirašytą eilutę kaip `[timestamp].[body]` ir palyginkite su saugiu laiko atžvilgiu palyginimu:",
     "tabWebhooks": "Webhooks",
     "tabReference": "Įvykių žinynas",
     "autoDisabled": "Automatiškai pristabdyta",

@@ -1277,7 +1277,7 @@
     "helpTitle": "Weryfikacja podpisów webhook",
     "helpIntro": "Każde dostarczenie zawiera podpis HMAC-SHA256, dzięki czemu możesz potwierdzić, że żądanie pochodzi z Torqvoice.",
     "helpHeadersTitle": "Nagłówki wysyłane z każdym żądaniem",
-    "helpVerify": "Zbuduj podpisany ciąg jako `<timestamp>.<raw body>` i porównaj z bezpiecznym czasowo równaniem:",
+    "helpVerify": "Zbuduj podpisany ciąg jako `[timestamp].[body]` i porównaj z bezpiecznym czasowo równaniem:",
     "tabWebhooks": "Webhooks",
     "tabReference": "Dokumentacja zdarzeń",
     "autoDisabled": "Automatycznie wstrzymany",

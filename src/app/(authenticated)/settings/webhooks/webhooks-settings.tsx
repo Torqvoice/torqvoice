@@ -1124,12 +1124,12 @@ function EventsReference() {
           <h2 className="font-semibold">{t("referenceTitle")}</h2>
           <p className="text-muted-foreground">{t("referenceIntro")}</p>
           <div className="rounded-md bg-muted/40 p-3 font-mono text-[11px]">
-            <p>POST &lt;your-endpoint&gt;</p>
+            <p>POST [your-endpoint]</p>
             <p>Content-Type: application/json</p>
             <p>X-Torqvoice-Event: customer.create</p>
             <p>X-Torqvoice-Delivery: cmh3...</p>
             <p>X-Torqvoice-Attempt: 1</p>
-            <p>X-Torqvoice-Signature: t=1714397253123,v1=&lt;hex&gt;</p>
+            <p>X-Torqvoice-Signature: t=1714397253123,v1=[hex]</p>
           </div>
         </CardContent>
       </Card>

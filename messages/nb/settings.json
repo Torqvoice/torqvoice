@@ -1277,7 +1277,7 @@
     "helpTitle": "Verifisere webhook-signaturer",
     "helpIntro": "Hver levering inkluderer en HMAC-SHA256-signatur så du kan bekrefte at forespørselen kom fra Torqvoice.",
     "helpHeadersTitle": "Headers sendt med hver forespørsel",
-    "helpVerify": "Bygg opp den signerte strengen som `<timestamp>.<raw body>` og sammenlign med tidssikker likhet:",
+    "helpVerify": "Bygg opp den signerte strengen som `[timestamp].[body]` og sammenlign med tidssikker likhet:",
     "tabWebhooks": "Webhooks",
     "tabReference": "Hendelsesreferanse",
     "autoDisabled": "Auto-pauset",

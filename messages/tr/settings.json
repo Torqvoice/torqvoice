@@ -1277,7 +1277,7 @@
     "helpTitle": "Webhook imzalarını doğrulama",
     "helpIntro": "Her teslimat HMAC-SHA256 imzası içerir, böylece isteğin Torqvoice'tan geldiğini onaylayabilirsiniz.",
     "helpHeadersTitle": "Her istekle gönderilen başlıklar",
-    "helpVerify": "İmzalanmış dizeyi `<timestamp>.<raw body>` olarak yeniden oluşturun ve zamana karşı güvenli eşitlikle karşılaştırın:",
+    "helpVerify": "İmzalanmış dizeyi `[timestamp].[body]` olarak yeniden oluşturun ve zamana karşı güvenli eşitlikle karşılaştırın:",
     "tabWebhooks": "Webhooks",
     "tabReference": "Olay referansı",
     "autoDisabled": "Otomatik duraklatıldı",
