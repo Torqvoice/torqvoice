@@ -31,6 +31,7 @@ import {
   Sparkles,
   UserCog,
   UsersRound,
+  Webhook,
   Wrench,
 } from 'lucide-react'
 
@@ -89,6 +90,12 @@ const settingsCategories: SettingsCategory[] = [
       { key: 'maintenance', href: '/settings/maintenance', icon: Gauge },
       { key: 'ai', href: '/settings/ai', icon: Sparkles, gate: 'ai' },
       { key: 'reportSchedule', href: '/settings/report-schedule', icon: CalendarClock, gate: 'reports' },
+    ],
+  },
+  {
+    key: 'integrations',
+    items: [
+      { key: 'webhooks', href: '/settings/webhooks', icon: Webhook, gate: 'api' },
     ],
   },
   {
