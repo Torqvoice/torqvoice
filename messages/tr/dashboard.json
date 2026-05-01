@@ -128,7 +128,8 @@
     "serviceTitle": "Başlık",
     "status": "Durum",
     "tech": "Teknisyen",
-    "empty": "Aktif iş bulunmamaktadır"
+    "empty": "Aktif iş bulunmamaktadır",
+    "addObservation": "Gözlem ekle"
   },
   "relativeTime": {
     "now": "şimdi",

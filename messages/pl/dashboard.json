@@ -128,7 +128,8 @@
     "serviceTitle": "Tytuł",
     "status": "Status",
     "tech": "Technik",
-    "empty": "Brak aktywnych zleceń"
+    "empty": "Brak aktywnych zleceń",
+    "addObservation": "Dodaj obserwację"
   },
   "relativeTime": {
     "now": "teraz",

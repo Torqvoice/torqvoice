@@ -128,7 +128,8 @@
     "serviceTitle": "Título",
     "status": "Estado",
     "tech": "Técnico",
-    "empty": "No hay trabajos activos"
+    "empty": "No hay trabajos activos",
+    "addObservation": "Añadir observación"
   },
   "relativeTime": {
     "now": "ahora",

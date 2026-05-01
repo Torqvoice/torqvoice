@@ -128,7 +128,8 @@
     "serviceTitle": "Pavadinimas",
     "status": "Būsena",
     "tech": "Technikas",
-    "empty": "Aktyvių darbų nėra"
+    "empty": "Aktyvių darbų nėra",
+    "addObservation": "Pridėti pastebėjimą"
   },
   "relativeTime": {
     "now": "dabar",

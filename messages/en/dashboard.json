@@ -128,7 +128,8 @@
     "serviceTitle": "Title",
     "status": "Status",
     "tech": "Tech",
-    "empty": "No active jobs"
+    "empty": "No active jobs",
+    "addObservation": "Add observation"
   },
   "relativeTime": {
     "now": "now",

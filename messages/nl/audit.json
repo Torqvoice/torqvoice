@@ -93,6 +93,10 @@
     "statusReport_create": "Statusrapport aangemaakt",
     "statusReport_send": "Statusrapport verzonden",
     "statusReport_delete": "Statusrapport verwijderd",
-    "telegram_send": "Telegram-bericht verzonden"
+    "telegram_send": "Telegram-bericht verzonden",
+    "webhook_create": "Webhook aangemaakt",
+    "webhook_update": "Webhook bijgewerkt",
+    "webhook_delete": "Webhook verwijderd",
+    "webhook_rotateSecret": "Webhook-geheim geroteerd"
   }
 }

@@ -128,7 +128,8 @@
     "serviceTitle": "Tittel",
     "status": "Status",
     "tech": "Tekniker",
-    "empty": "Ingen aktive jobber"
+    "empty": "Ingen aktive jobber",
+    "addObservation": "Legg til observasjon"
   },
   "relativeTime": {
     "now": "nå",

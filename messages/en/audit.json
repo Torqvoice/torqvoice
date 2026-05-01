@@ -93,6 +93,10 @@
     "statusReport_create": "Created Status Report",
     "statusReport_send": "Sent Status Report",
     "statusReport_delete": "Deleted Status Report",
-    "telegram_send": "Sent Telegram Message"
+    "telegram_send": "Sent Telegram Message",
+    "webhook_create": "Created Webhook",
+    "webhook_update": "Updated Webhook",
+    "webhook_delete": "Deleted Webhook",
+    "webhook_rotateSecret": "Rotated Webhook Secret"
   }
 }

@@ -128,7 +128,8 @@
     "serviceTitle": "Titel",
     "status": "Status",
     "tech": "Monteur",
-    "empty": "Geen actieve opdrachten"
+    "empty": "Geen actieve opdrachten",
+    "addObservation": "Observatie toevoegen"
   },
   "relativeTime": {
     "now": "nu",
