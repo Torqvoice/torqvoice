@@ -673,6 +673,7 @@ model Organization {
   auditLogs              AuditLog[]
   statusReports          StatusReport[]
   reportSchedules        ReportSchedule[]
+  webhooks               Webhook[]
 
   @@map("organizations")
 }
@@ -1235,4 +1236,55 @@ model ReportSchedule {
   @@index([organizationId])
   @@index([nextRunDate, isActive])
   @@map("report_schedules")
+}
+
+model Webhook {
+  id              String    @id @default(cuid())
+  name            String
+  url             String
+  secret          String
+  events          String // JSON array of event names; "*" matches all
+  isActive        Boolean   @default(true)
+  description     String?
+  lastTriggeredAt DateTime?
+  lastSuccessAt   DateTime?
+  lastFailureAt   DateTime?
+  failureCount    Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdById String
+
+  deliveries WebhookDelivery[]
+
+  @@index([organizationId])
+  @@index([organizationId, isActive])
+  @@map("webhooks")
+}
+
+model WebhookDelivery {
+  id           String    @id @default(cuid())
+  event        String
+  payload      String // JSON-stringified event payload as sent
+  status       String    @default("pending") // pending | success | failed | retrying
+  statusCode   Int?
+  responseBody String?
+  errorMessage String?
+  attempt      Int       @default(0)
+  maxAttempts  Int       @default(5)
+  nextRetryAt  DateTime?
+  deliveredAt  DateTime?
+  durationMs   Int?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  webhookId String
+  webhook   Webhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId, createdAt(sort: Desc)])
+  @@index([status, nextRetryAt])
+  @@map("webhook_deliveries")
 }

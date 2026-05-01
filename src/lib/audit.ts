@@ -33,5 +33,25 @@ export async function logAudit(
     // Don't block core flows due to logging failure
     console.error("[audit] failed to write log:", err);
   }
-}
 
+  // Fan out to webhooks. Lazy-imported to avoid pulling Prisma webhook code
+  // into modules that only need audit logging (and to break a potential
+  // circular import if webhooks ever logs audits of its own).
+  if (ctx.organizationId && event.action) {
+    import("@/features/webhooks/Lib/dispatcher")
+      .then(({ dispatchWebhookEvent }) =>
+        dispatchWebhookEvent({
+          event: event.action,
+          organizationId: ctx.organizationId,
+          entity: event.entity ?? null,
+          entityId: event.entityId ?? null,
+          message: event.message ?? null,
+          data: event.metadata ?? null,
+          userId: ctx.userId || null,
+        }),
+      )
+      .catch((err) => {
+        console.error("[webhooks] dispatch failed:", err);
+      });
+  }
+}
