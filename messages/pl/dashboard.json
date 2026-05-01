@@ -18,7 +18,8 @@
     "quantity": "Ilość",
     "addToJob": "Dodaj {qty} do zlecenia",
     "statusReport": "Raport statusu",
-    "report": "Raport"
+    "report": "Raport",
+    "observation": "Obserwacja"
   },
   "recentActivity": "Ostatnia aktywność",
   "noRecentActivity": "Brak ostatniej aktywności",

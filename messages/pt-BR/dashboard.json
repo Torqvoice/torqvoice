@@ -18,7 +18,8 @@
     "quantity": "Quantidade",
     "addToJob": "Adicionar {qty} ao serviço",
     "statusReport": "Relatório de Status",
-    "report": "Relatório"
+    "report": "Relatório",
+    "observation": "Observação"
   },
   "recentActivity": "Atividade recente",
   "noRecentActivity": "Nenhuma atividade recente",

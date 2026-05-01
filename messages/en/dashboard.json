@@ -18,7 +18,8 @@
     "quantity": "Quantity",
     "addToJob": "Add {qty} to job",
     "statusReport": "Status Report",
-    "report": "Report"
+    "report": "Report",
+    "observation": "Observation"
   },
   "recentActivity": "Recent Activity",
   "noRecentActivity": "No recent activity",

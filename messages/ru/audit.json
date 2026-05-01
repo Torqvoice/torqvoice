@@ -93,6 +93,10 @@
     "statusReport_create": "Создан отчёт о состоянии",
     "statusReport_send": "Отправлен отчёт о состоянии",
     "statusReport_delete": "Удалён отчёт о состоянии",
-    "telegram_send": "Отправлено сообщение в Telegram"
+    "telegram_send": "Отправлено сообщение в Telegram",
+    "webhook_create": "Создан вебхук",
+    "webhook_update": "Обновлён вебхук",
+    "webhook_delete": "Удалён вебхук",
+    "webhook_rotateSecret": "Обновлён секрет вебхука"
   }
 }

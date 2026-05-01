@@ -93,6 +93,10 @@
     "statusReport_create": "Sukurta būsenos ataskaita",
     "statusReport_send": "Išsiųsta būsenos ataskaita",
     "statusReport_delete": "Ištrinta būsenos ataskaita",
-    "telegram_send": "Išsiųsta Telegram žinutė"
+    "telegram_send": "Išsiųsta Telegram žinutė",
+    "webhook_create": "Sukurtas webhook’as",
+    "webhook_update": "Atnaujintas webhook’as",
+    "webhook_delete": "Ištrintas webhook’as",
+    "webhook_rotateSecret": "Atnaujintas webhook’o slaptasis raktas"
   }
 }

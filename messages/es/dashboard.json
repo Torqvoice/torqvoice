@@ -18,7 +18,8 @@
     "quantity": "Cantidad",
     "addToJob": "Añadir {qty} al trabajo",
     "statusReport": "Informe de estado",
-    "report": "Informe"
+    "report": "Informe",
+    "observation": "Observación"
   },
   "recentActivity": "Actividad reciente",
   "noRecentActivity": "Sin actividad reciente",

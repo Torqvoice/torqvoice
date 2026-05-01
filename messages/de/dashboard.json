@@ -18,7 +18,8 @@
     "quantity": "Menge",
     "addToJob": "{qty} zum Auftrag hinzufügen",
     "statusReport": "Statusbericht",
-    "report": "Bericht"
+    "report": "Bericht",
+    "observation": "Beobachtung"
   },
   "recentActivity": "Letzte Aktivitäten",
   "noRecentActivity": "Keine aktuellen Aktivitäten",

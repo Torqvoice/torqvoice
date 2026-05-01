@@ -93,6 +93,10 @@
     "statusReport_create": "Utworzono raport statusu",
     "statusReport_send": "Wysłano raport statusu",
     "statusReport_delete": "Usunięto raport statusu",
-    "telegram_send": "Wysłano wiadomość Telegram"
+    "telegram_send": "Wysłano wiadomość Telegram",
+    "webhook_create": "Utworzono webhook",
+    "webhook_update": "Zaktualizowano webhook",
+    "webhook_delete": "Usunięto webhook",
+    "webhook_rotateSecret": "Zrotowano sekret webhooka"
   }
 }

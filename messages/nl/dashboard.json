@@ -18,7 +18,8 @@
     "quantity": "Aantal",
     "addToJob": "{qty} toevoegen aan klus",
     "statusReport": "Statusrapport",
-    "report": "Rapport"
+    "report": "Rapport",
+    "observation": "Observatie"
   },
   "recentActivity": "Recente activiteit",
   "noRecentActivity": "Geen recente activiteit",
