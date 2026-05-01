@@ -18,7 +18,8 @@
     "quantity": "Menge",
     "addToJob": "{qty} zum Auftrag hinzufügen",
     "statusReport": "Statusbericht",
-    "report": "Bericht"
+    "report": "Bericht",
+    "observation": "Beobachtung"
   },
   "recentActivity": "Letzte Aktivitäten",
   "noRecentActivity": "Keine aktuellen Aktivitäten",
@@ -128,8 +129,7 @@
     "serviceTitle": "Bezeichnung",
     "status": "Status",
     "tech": "Techniker",
-    "empty": "Keine aktiven Aufträge",
-    "addObservation": "Beobachtung hinzufügen"
+    "empty": "Keine aktiven Aufträge"
   },
   "relativeTime": {
     "now": "jetzt",

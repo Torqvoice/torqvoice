@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
   Camera,
+  ClipboardCheck,
   FileVideo,
   ImageIcon,
   Loader2,
@@ -16,6 +17,7 @@ import {
   ScanBarcode,
   Package,
 } from 'lucide-react'
+import { FindingForm } from '@/features/vehicles/Components/FindingForm'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
@@ -108,6 +110,7 @@ export function MyActiveJobs({
   const [statusReportJobId, setStatusReportJobId] = useState<string | null>(null)
   const [sendReportId, setSendReportId] = useState<string | null>(null)
   const [sendReportJobId, setSendReportJobId] = useState<string | null>(null)
+  const [observationTarget, setObservationTarget] = useState<{ vehicleId: string; serviceRecordId: string } | null>(null)
 
   if (jobs.length === 0) return null
 
@@ -421,6 +424,17 @@ export function MyActiveJobs({
                         <FileVideo className="mr-1.5 h-4 w-4" />
                         {t('statusReport')}
                       </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9"
+                        onClick={() =>
+                          setObservationTarget({ vehicleId: job.vehicleId, serviceRecordId: job.id })
+                        }
+                      >
+                        <ClipboardCheck className="mr-1.5 h-4 w-4" />
+                        {t('observation')}
+                      </Button>
                     </div>
                     {/* Mobile: counters only */}
                     <div className="shrink-0 ml-3 flex sm:hidden items-center gap-1.5 text-xs text-muted-foreground">
@@ -509,6 +523,17 @@ export function MyActiveJobs({
                       >
                         <FileVideo className="mr-1 h-3.5 w-3.5" />
                         {t('report')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 h-9"
+                        onClick={() =>
+                          setObservationTarget({ vehicleId: job.vehicleId, serviceRecordId: job.id })
+                        }
+                      >
+                        <ClipboardCheck className="mr-1 h-3.5 w-3.5" />
+                        {t('observation')}
                       </Button>
                     </ButtonGroup>
                   </div>
@@ -677,6 +702,17 @@ export function MyActiveJobs({
             />
           )
         })()}
+
+      {observationTarget && (
+        <FindingForm
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setObservationTarget(null)
+          }}
+          vehicleId={observationTarget.vehicleId}
+          serviceRecordId={observationTarget.serviceRecordId}
+        />
+      )}
     </TooltipProvider>
   )
 }

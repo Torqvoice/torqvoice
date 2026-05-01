@@ -18,7 +18,8 @@
     "quantity": "Antall",
     "addToJob": "Legg til {qty} i jobb",
     "statusReport": "Statusrapport",
-    "report": "Rapport"
+    "report": "Rapport",
+    "observation": "Observasjon"
   },
   "recentActivity": "Nylig aktivitet",
   "noRecentActivity": "Ingen nylig aktivitet",
@@ -128,8 +129,7 @@
     "serviceTitle": "Tittel",
     "status": "Status",
     "tech": "Tekniker",
-    "empty": "Ingen aktive jobber",
-    "addObservation": "Legg til observasjon"
+    "empty": "Ingen aktive jobber"
   },
   "relativeTime": {
     "now": "nå",

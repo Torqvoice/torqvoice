@@ -18,7 +18,8 @@
     "quantity": "Kiekis",
     "addToJob": "Pridėti {qty} prie darbo",
     "statusReport": "Būsenos ataskaita",
-    "report": "Ataskaita"
+    "report": "Ataskaita",
+    "observation": "Pastebėjimas"
   },
   "recentActivity": "Naujausios veiklos",
   "noRecentActivity": "Naujausių veiklų nėra",
@@ -128,8 +129,7 @@
     "serviceTitle": "Pavadinimas",
     "status": "Būsena",
     "tech": "Technikas",
-    "empty": "Aktyvių darbų nėra",
-    "addObservation": "Pridėti pastebėjimą"
+    "empty": "Aktyvių darbų nėra"
   },
   "relativeTime": {
     "now": "dabar",

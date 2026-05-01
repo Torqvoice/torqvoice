@@ -18,7 +18,8 @@
     "quantity": "Quantity",
     "addToJob": "Add {qty} to job",
     "statusReport": "Status Report",
-    "report": "Report"
+    "report": "Report",
+    "observation": "Observation"
   },
   "recentActivity": "Recent Activity",
   "noRecentActivity": "No recent activity",
@@ -128,8 +129,7 @@
     "serviceTitle": "Title",
     "status": "Status",
     "tech": "Tech",
-    "empty": "No active jobs",
-    "addObservation": "Add observation"
+    "empty": "No active jobs"
   },
   "relativeTime": {
     "now": "now",

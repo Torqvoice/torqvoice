@@ -18,7 +18,8 @@
     "quantity": "Cantidad",
     "addToJob": "Añadir {qty} al trabajo",
     "statusReport": "Informe de estado",
-    "report": "Informe"
+    "report": "Informe",
+    "observation": "Observación"
   },
   "recentActivity": "Actividad reciente",
   "noRecentActivity": "Sin actividad reciente",
@@ -128,8 +129,7 @@
     "serviceTitle": "Título",
     "status": "Estado",
     "tech": "Técnico",
-    "empty": "No hay trabajos activos",
-    "addObservation": "Añadir observación"
+    "empty": "No hay trabajos activos"
   },
   "relativeTime": {
     "now": "ahora",

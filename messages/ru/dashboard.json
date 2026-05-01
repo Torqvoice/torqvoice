@@ -18,7 +18,8 @@
     "quantity": "Количество",
     "addToJob": "Добавить {qty} к заказу",
     "statusReport": "Отчёт о состоянии",
-    "report": "Отчёт"
+    "report": "Отчёт",
+    "observation": "Наблюдение"
   },
   "recentActivity": "Последняя активность",
   "noRecentActivity": "Нет недавней активности",
@@ -128,8 +129,7 @@
     "serviceTitle": "Название",
     "status": "Статус",
     "tech": "Механик",
-    "empty": "Нет активных работ",
-    "addObservation": "Добавить наблюдение"
+    "empty": "Нет активных работ"
   },
   "relativeTime": {
     "now": "сейчас",

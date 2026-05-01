@@ -35,14 +35,12 @@ import {
   Loader2,
   BellRing,
   MessageSquare,
-  Plus,
   Settings,
   SlidersHorizontal,
   Undo2,
   Users,
   X,
 } from "lucide-react";
-import { FindingForm } from "@/features/vehicles/Components/FindingForm";
 import { formatCurrency } from "@/lib/format";
 import { dismissMaintenance, undismissMaintenance } from "@/features/vehicles/Actions/dismissMaintenance";
 import { updateQuoteRequestStatus } from "@/features/inspections/Actions/quoteRequestActions";
@@ -263,7 +261,6 @@ export function DashboardClient({
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [dismissingId, setDismissingId] = useState<string | null>(null);
   const [maintenanceTab, setMaintenanceTab] = useState<"active" | "dismissed">("active");
-  const [observationTarget, setObservationTarget] = useState<{ vehicleId: string; serviceRecordId: string } | null>(null);
   const [restoringId, setRestoringId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
   const { toggleCard, isVisible, visibleCount, totalCount } = useDashboardVisibility(smsEnabled ? "notifications" : "sms");
@@ -1161,13 +1158,12 @@ export function DashboardClient({
                     <TableHead>{t("activeJobsTable.serviceTitle")}</TableHead>
                     <TableHead className="w-27.5">{t("activeJobsTable.status")}</TableHead>
                     <TableHead className="hidden md:table-cell">{t("activeJobsTable.tech")}</TableHead>
-                    <TableHead className="w-10" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {stats.todaysServices.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="h-20 text-center text-muted-foreground">
+                      <TableCell colSpan={5} className="h-20 text-center text-muted-foreground">
                         {t("activeJobsTable.empty")}
                       </TableCell>
                     </TableRow>
@@ -1207,25 +1203,6 @@ export function DashboardClient({
                         </TableCell>
                         <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
                           {s.techName || "-"}
-                        </TableCell>
-                        <TableCell className="w-10 p-0 pr-2 text-right">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setObservationTarget({ vehicleId: s.vehicle.id, serviceRecordId: s.id });
-                                }}
-                                aria-label={t("activeJobsTable.addObservation")}
-                              >
-                                <Plus className="h-3.5 w-3.5" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>{t("activeJobsTable.addObservation")}</TooltipContent>
-                          </Tooltip>
                         </TableCell>
                       </TableRow>
                     ))
@@ -1364,16 +1341,6 @@ export function DashboardClient({
         </Card>
         )}
       </div>
-      {observationTarget && (
-        <FindingForm
-          open={true}
-          onOpenChange={(open) => {
-            if (!open) setObservationTarget(null);
-          }}
-          vehicleId={observationTarget.vehicleId}
-          serviceRecordId={observationTarget.serviceRecordId}
-        />
-      )}
     </div>
     </TooltipProvider>
   );

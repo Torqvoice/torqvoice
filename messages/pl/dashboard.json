@@ -18,7 +18,8 @@
     "quantity": "Ilość",
     "addToJob": "Dodaj {qty} do zlecenia",
     "statusReport": "Raport statusu",
-    "report": "Raport"
+    "report": "Raport",
+    "observation": "Obserwacja"
   },
   "recentActivity": "Ostatnia aktywność",
   "noRecentActivity": "Brak ostatniej aktywności",
@@ -128,8 +129,7 @@
     "serviceTitle": "Tytuł",
     "status": "Status",
     "tech": "Technik",
-    "empty": "Brak aktywnych zleceń",
-    "addObservation": "Dodaj obserwację"
+    "empty": "Brak aktywnych zleceń"
   },
   "relativeTime": {
     "now": "teraz",

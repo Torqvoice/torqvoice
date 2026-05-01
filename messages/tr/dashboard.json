@@ -18,7 +18,8 @@
     "quantity": "Miktar",
     "addToJob": "{qty} işe ekle",
     "statusReport": "Durum Raporu",
-    "report": "Rapor"
+    "report": "Rapor",
+    "observation": "Gözlem"
   },
   "recentActivity": "Son aktivite",
   "noRecentActivity": "Son aktivite yok",
@@ -128,8 +129,7 @@
     "serviceTitle": "Başlık",
     "status": "Durum",
     "tech": "Teknisyen",
-    "empty": "Aktif iş bulunmamaktadır",
-    "addObservation": "Gözlem ekle"
+    "empty": "Aktif iş bulunmamaktadır"
   },
   "relativeTime": {
     "now": "şimdi",
