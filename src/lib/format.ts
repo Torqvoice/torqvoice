@@ -41,6 +41,7 @@ const CURRENCY_LOCALES: Record<string, string> = {
   IDR: "id-ID",
   MYR: "ms-MY",
   VND: "vi-VN",
+  LKR: "en-LK",
 };
 
 /**

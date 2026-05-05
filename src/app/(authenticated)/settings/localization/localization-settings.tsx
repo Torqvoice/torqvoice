@@ -80,6 +80,7 @@ const CURRENCIES = [
   { code: 'PHP', key: 'PHP' },
   { code: 'IDR', key: 'IDR' },
   { code: 'MYR', key: 'MYR' },
+  { code: 'LKR', key: 'LKR' },
   { code: 'AED', key: 'AED' },
   { code: 'SAR', key: 'SAR' },
   { code: 'RUB', key: 'RUB' },
