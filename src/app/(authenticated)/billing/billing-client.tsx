@@ -86,7 +86,7 @@ export default function BillingClient({
   search,
   statusFilter,
 }: BillingClientProps) {
-  const formatCurrency = useFormatCurrency()
+  const formatCurrency = useFormatCurrency();
   const router = useRouter();
   const t = useTranslations("billing");
   const { formatDate } = useFormatDate();

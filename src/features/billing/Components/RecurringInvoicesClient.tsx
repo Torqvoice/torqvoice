@@ -132,7 +132,7 @@ export default function RecurringInvoicesClient({
   vehicles,
   currencyCode,
 }: RecurringInvoicesClientProps) {
-  const formatCurrency = useFormatCurrency()
+  const formatCurrency = useFormatCurrency();
   const router = useRouter();
   const t = useTranslations("billing");
   const { formatDate } = useFormatDate();

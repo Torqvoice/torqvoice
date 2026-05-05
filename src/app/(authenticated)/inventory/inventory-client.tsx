@@ -114,7 +114,7 @@ export function InventoryClient({
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }) {
-  const formatCurrency = useFormatCurrency()
+  const formatCurrency = useFormatCurrency();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

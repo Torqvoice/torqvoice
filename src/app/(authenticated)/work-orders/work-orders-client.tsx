@@ -143,7 +143,7 @@ export function WorkOrdersClient({
   smsEnabled?: boolean;
   emailEnabled?: boolean;
 }) {
-  const formatCurrency = useFormatCurrency()
+  const formatCurrency = useFormatCurrency();
   const router = useRouter();
   const { formatDate } = useFormatDate();
   const pathname = usePathname();

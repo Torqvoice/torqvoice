@@ -253,7 +253,7 @@ export function DashboardClient({
   }[];
   recentObservations?: DashboardObservation[];
 }) {
-  const formatCurrency = useFormatCurrency()
+  const formatCurrency = useFormatCurrency();
   const t = useTranslations("dashboard");
   const tAudit = useTranslations("audit");
   const distUnit = unitSystem === "metric" ? "km" : "mi";
