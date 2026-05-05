@@ -89,6 +89,7 @@ export interface InvoiceSettingsProps {
   showOrgNumber?: boolean
   dueDays?: number
   currencyCode?: string
+  currencyFormat?: 'symbol' | 'code'
   unitSystem?: string
   dateFormat?: string
   timezone?: string

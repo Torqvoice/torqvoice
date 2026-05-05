@@ -79,6 +79,7 @@ export default async function PublicInvoicePage({
             "workshop.email",
             "workshop.logo",
             "workshop.currencyCode",
+            "workshop.currencyFormat",
             "invoice.bankAccount",
             "invoice.orgNumber",
             "invoice.paymentTerms",
@@ -143,6 +144,7 @@ export default async function PublicInvoicePage({
   };
 
   const currencyCode = settingsMap["workshop.currencyCode"] || "USD";
+  const currencyFormat: "symbol" | "code" = settingsMap["workshop.currencyFormat"] === "code" ? "code" : "symbol";
 
   const invoiceSettings = {
     bankAccount: settingsMap["invoice.bankAccount"] || "",
@@ -202,6 +204,7 @@ export default async function PublicInvoicePage({
       record={publicRecord}
       workshop={workshop}
       currencyCode={currencyCode}
+      currencyFormat={currencyFormat}
       orgId={orgId}
       token={token}
       enabledProviders={enabledProviders}

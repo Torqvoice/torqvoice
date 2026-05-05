@@ -28,6 +28,7 @@ async function getWorkshopSettings(organizationId: string) {
             "workshop.email",
             "workshop.logo",
             "workshop.currencyCode",
+            "workshop.currencyFormat",
             "workshop.emailFromName",
             "workshop.emailEnabled",
             "invoice.primaryColor",
@@ -98,6 +99,7 @@ export async function sendQuoteEmail(input: {
 
     const logoDataUri = await loadLogoDataUri(settings["workshop.logo"]);
     const currencyCode = settings["workshop.currencyCode"] || "USD";
+    const currencyFormat: "symbol" | "code" = settings["workshop.currencyFormat"] === "code" ? "code" : "symbol";
     const fromName = settings["workshop.emailFromName"] || settings["workshop.name"] || "Workshop";
 
     const template = {
@@ -118,6 +120,7 @@ export async function sendQuoteEmail(input: {
         email: settings["workshop.email"] || "",
       },
       currencyCode,
+      currencyFormat,
       logoDataUri,
       template,
     }) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -236,6 +239,7 @@ export async function sendInvoiceEmail(input: {
 
     const logoDataUri = await loadLogoDataUri(settings["workshop.logo"]);
     const currencyCode = settings["workshop.currencyCode"] || "USD";
+    const currencyFormat: "symbol" | "code" = settings["workshop.currencyFormat"] === "code" ? "code" : "symbol";
     const fromName = settings["workshop.emailFromName"] || settings["workshop.name"] || "Workshop";
 
     const invoiceTemplate = {
@@ -255,7 +259,7 @@ export async function sendInvoiceEmail(input: {
         phone: settings["workshop.phone"] || "",
         email: settings["workshop.email"] || "",
       },
-      invoiceSettings: { currencyCode },
+      invoiceSettings: { currencyCode, currencyFormat },
       logoDataUri,
       template: invoiceTemplate,
     }) as any; // eslint-disable-line @typescript-eslint/no-explicit-any

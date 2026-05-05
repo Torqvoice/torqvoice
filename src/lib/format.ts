@@ -1,48 +1,96 @@
 const CURRENCY_LOCALES: Record<string, string> = {
-  USD: "en-US",
-  EUR: "de-DE",
-  GBP: "en-GB",
-  NOK: "nb-NO",
-  SEK: "sv-SE",
-  DKK: "da-DK",
-  CHF: "de-CH",
-  JPY: "ja-JP",
-  CAD: "en-CA",
-  AUD: "en-AU",
-  NZD: "en-NZ",
-  PLN: "pl-PL",
-  CZK: "cs-CZ",
-  HUF: "hu-HU",
-  BRL: "pt-BR",
-  MXN: "es-MX",
-  INR: "en-IN",
-  CNY: "zh-CN",
-  KRW: "ko-KR",
-  TRY: "tr-TR",
-  ZAR: "en-ZA",
-  RUB: "ru-RU",
-  ISK: "is-IS",
-  THB: "th-TH",
-  SGD: "en-SG",
-  HKD: "zh-HK",
-  TWD: "zh-TW",
-  PHP: "en-PH",
-  ILS: "he-IL",
-  AED: "ar-AE",
-  SAR: "ar-SA",
-  RON: "ro-RO",
-  BGN: "bg-BG",
-  HRK: "hr-HR",
-  UAH: "uk-UA",
-  CLP: "es-CL",
-  COP: "es-CO",
-  ARS: "es-AR",
-  PEN: "es-PE",
-  IDR: "id-ID",
-  MYR: "ms-MY",
-  VND: "vi-VN",
-  LKR: "en-LK",
-};
+  USD: 'en-US',
+  EUR: 'de-DE',
+  GBP: 'en-GB',
+  NOK: 'nb-NO',
+  SEK: 'sv-SE',
+  DKK: 'da-DK',
+  CHF: 'de-CH',
+  JPY: 'ja-JP',
+  CAD: 'en-CA',
+  AUD: 'en-AU',
+  NZD: 'en-NZ',
+  PLN: 'pl-PL',
+  CZK: 'cs-CZ',
+  HUF: 'hu-HU',
+  BRL: 'pt-BR',
+  MXN: 'es-MX',
+  INR: 'en-IN',
+  CNY: 'zh-CN',
+  KRW: 'ko-KR',
+  TRY: 'tr-TR',
+  ZAR: 'en-ZA',
+  RUB: 'ru-RU',
+  ISK: 'is-IS',
+  THB: 'th-TH',
+  SGD: 'en-SG',
+  HKD: 'zh-HK',
+  TWD: 'zh-TW',
+  PHP: 'en-PH',
+  ILS: 'en',
+  AED: 'en',
+  SAR: 'en',
+  RON: 'ro-RO',
+  BGN: 'bg-BG',
+  HRK: 'hr-HR',
+  UAH: 'uk-UA',
+  CLP: 'es-CL',
+  COP: 'es-CO',
+  ARS: 'es-AR',
+  PEN: 'es-PE',
+  IDR: 'id-ID',
+  MYR: 'ms-MY',
+  VND: 'vi-VN',
+  LKR: 'en-LK',
+  PKR: 'en-PK',
+  BDT: 'en-BD',
+  NPR: 'en-NP',
+  EGP: 'en-EG',
+  NGN: 'en-NG',
+  KES: 'en-KE',
+  MAD: 'en-MA',
+  GHS: 'en-GH',
+  QAR: 'en',
+  KWD: 'en',
+  BHD: 'en',
+  OMR: 'en',
+  JOD: 'en',
+}
+
+/**
+ * Currencies whose narrow symbol falls outside the WinAnsi encoding used by
+ * the default Helvetica font in @react-pdf/renderer (renders as "?" in PDFs).
+ * For these we fall back to the ISO code in symbol mode.
+ */
+const LATIN_FALLBACK_CURRENCIES = new Set([
+  'JPY',
+  'PLN',
+  'CZK',
+  'INR',
+  'KRW',
+  'TRY',
+  'RUB',
+  'THB',
+  'PHP',
+  'ILS',
+  'BGN',
+  'UAH',
+  'VND',
+  'BDT',
+  'NGN',
+  'GHS',
+])
+
+/**
+ * Symbol overrides for currencies where CLDR's narrowSymbol is ambiguous or
+ * locally non-idiomatic on business documents. Applied only in 'symbol' mode.
+ */
+const CURRENCY_SYMBOL_OVERRIDES: Record<string, string> = {
+  CNY: 'RMB', // disambiguates from JPY ¥; matches Chinese invoice convention
+}
+
+export type CurrencyFormat = 'symbol' | 'code'
+export const DEFAULT_CURRENCY_FORMAT: CurrencyFormat = 'symbol'
 
 /**
  * Format a number as currency using the correct locale for the given ISO 4217 currency code.
@@ -54,20 +102,47 @@ const CURRENCY_LOCALES: Record<string, string> = {
  */
 export function formatCurrency(
   amount: number,
-  currencyCode: string = "USD",
+  currencyCode: string = 'USD',
+  format: CurrencyFormat = DEFAULT_CURRENCY_FORMAT
 ): string {
-  const locale = CURRENCY_LOCALES[currencyCode] || "en-US";
+  const locale = CURRENCY_LOCALES[currencyCode] || 'en-US'
+  // 'code' mode: always render the ISO code.
+  // 'symbol' mode: prefer narrowSymbol, but fall back to code for currencies
+  // whose symbol isn't WinAnsi-safe in the default PDF font.
+  const useCode = format === 'code' || LATIN_FALLBACK_CURRENCIES.has(currencyCode)
+  const display = useCode ? 'code' : 'narrowSymbol'
   try {
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
+    let result = new Intl.NumberFormat(locale, {
+      style: 'currency',
       currency: currencyCode,
-      currencyDisplay: "narrowSymbol",
+      currencyDisplay: display,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(amount);
+    }).format(amount)
+    if (format === 'symbol' && CURRENCY_SYMBOL_OVERRIDES[currencyCode]) {
+      // Replace CLDR's currency token with our override (e.g. ¥ → RMB).
+      const parts = new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: currencyCode,
+        currencyDisplay: 'narrowSymbol',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).formatToParts(amount)
+      const sym = parts.find((p) => p.type === 'currency')?.value
+      if (sym) {
+        const override = CURRENCY_SYMBOL_OVERRIDES[currencyCode]
+        // If the original symbol was glued to a digit/letter (e.g. "¥1,234.56"),
+        // a multi-character override needs a space for readability.
+        result = result.replace(sym, override).replace(
+          new RegExp(`(${override.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?=\\d)`),
+          '$1 '
+        )
+      }
+    }
+    return result
   } catch {
     // Fallback if the currency code is not recognized by Intl
-    return `${currencyCode} ${amount.toFixed(2)}`;
+    return `${currencyCode} ${amount.toFixed(2)}`
   }
 }
 
@@ -80,16 +155,22 @@ export function formatCurrency(
  *   getCurrencySymbol("USD") → "$"
  *   getCurrencySymbol("EUR") → "€"
  */
-export function getCurrencySymbol(currencyCode: string = "USD"): string {
+export function getCurrencySymbol(
+  currencyCode: string = 'USD',
+  format: CurrencyFormat = DEFAULT_CURRENCY_FORMAT
+): string {
+  if (format === 'code') return currencyCode
+  if (CURRENCY_SYMBOL_OVERRIDES[currencyCode]) return CURRENCY_SYMBOL_OVERRIDES[currencyCode]
+  if (LATIN_FALLBACK_CURRENCIES.has(currencyCode)) return currencyCode
   try {
-    const parts = new Intl.NumberFormat("en", {
-      style: "currency",
+    const parts = new Intl.NumberFormat('en', {
+      style: 'currency',
       currency: currencyCode,
-      currencyDisplay: "narrowSymbol",
-    }).formatToParts(0);
-    return parts.find((p) => p.type === "currency")?.value || currencyCode;
+      currencyDisplay: 'narrowSymbol',
+    }).formatToParts(0)
+    return parts.find((p) => p.type === 'currency')?.value || currencyCode
   } catch {
-    return currencyCode;
+    return currencyCode
   }
 }
 
@@ -100,38 +181,38 @@ export function getCurrencySymbol(currencyCode: string = "USD"): string {
  */
 function toTimezone(date: Date, timezone: string): Date {
   try {
-    const parts = new Intl.DateTimeFormat("en-US", {
+    const parts = new Intl.DateTimeFormat('en-US', {
       timeZone: timezone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
       hour12: false,
-    }).formatToParts(date);
+    }).formatToParts(date)
 
     const get = (type: Intl.DateTimeFormatPartTypes) =>
-      Number(parts.find((p) => p.type === type)?.value || 0);
+      Number(parts.find((p) => p.type === type)?.value || 0)
 
     return new Date(
-      get("year"),
-      get("month") - 1,
-      get("day"),
-      get("hour") === 24 ? 0 : get("hour"),
-      get("minute"),
-      get("second"),
-    );
+      get('year'),
+      get('month') - 1,
+      get('day'),
+      get('hour') === 24 ? 0 : get('hour'),
+      get('minute'),
+      get('second')
+    )
   } catch {
-    return date;
+    return date
   }
 }
 
 /**
  * Default date format matching the most common existing pattern.
  */
-export const DEFAULT_DATE_FORMAT = "MMM d, yyyy";
-export const DEFAULT_TIME_FORMAT = "12h" as const;
+export const DEFAULT_DATE_FORMAT = 'MMM d, yyyy'
+export const DEFAULT_TIME_FORMAT = '12h' as const
 
 /**
  * Simple date-fns-style format function that handles common tokens.
@@ -139,43 +220,63 @@ export const DEFAULT_TIME_FORMAT = "12h" as const;
  */
 function formatWithPattern(date: Date, pattern: string): string {
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
-  ];
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
   const monthsShort = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-  ];
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ]
 
-  const y = date.getFullYear();
-  const M = date.getMonth();
-  const d = date.getDate();
-  const H = date.getHours();
-  const m = date.getMinutes();
-  const s = date.getSeconds();
-  const h12 = H % 12 || 12;
-  const ampm = H < 12 ? "AM" : "PM";
+  const y = date.getFullYear()
+  const M = date.getMonth()
+  const d = date.getDate()
+  const H = date.getHours()
+  const m = date.getMinutes()
+  const s = date.getSeconds()
+  const h12 = H % 12 || 12
+  const ampm = H < 12 ? 'AM' : 'PM'
 
   // Use placeholders for month names to avoid collisions with later replacements
   // (e.g. "a" in "May" being replaced by the AM/PM token)
-  const MONTH_LONG = "\x01";
-  const MONTH_SHORT = "\x02";
+  const MONTH_LONG = '\x01'
+  const MONTH_SHORT = '\x02'
 
   return pattern
-    .replace("yyyy", String(y))
-    .replace("yy", String(y).slice(-2))
-    .replace("MMMM", MONTH_LONG)
-    .replace("MMM", MONTH_SHORT)
-    .replace("MM", String(M + 1).padStart(2, "0"))
-    .replace(/\bdd\b/, String(d).padStart(2, "0"))
+    .replace('yyyy', String(y))
+    .replace('yy', String(y).slice(-2))
+    .replace('MMMM', MONTH_LONG)
+    .replace('MMM', MONTH_SHORT)
+    .replace('MM', String(M + 1).padStart(2, '0'))
+    .replace(/\bdd\b/, String(d).padStart(2, '0'))
     .replace(/\bd\b/, String(d))
-    .replace("HH", String(H).padStart(2, "0"))
-    .replace("hh", String(h12).padStart(2, "0"))
-    .replace("mm", String(m).padStart(2, "0"))
-    .replace("ss", String(s).padStart(2, "0"))
-    .replace("a", ampm)
+    .replace('HH', String(H).padStart(2, '0'))
+    .replace('hh', String(h12).padStart(2, '0'))
+    .replace('mm', String(m).padStart(2, '0'))
+    .replace('ss', String(s).padStart(2, '0'))
+    .replace('a', ampm)
     .replace(MONTH_LONG, months[M])
-    .replace(MONTH_SHORT, monthsShort[M]);
+    .replace(MONTH_SHORT, monthsShort[M])
 }
 
 /**
@@ -184,11 +285,11 @@ function formatWithPattern(date: Date, pattern: string): string {
 export function formatDate(
   date: Date | string,
   dateFormat: string = DEFAULT_DATE_FORMAT,
-  timezone?: string,
+  timezone?: string
 ): string {
-  let d = typeof date === "string" ? new Date(date) : date;
-  if (timezone) d = toTimezone(d, timezone);
-  return formatWithPattern(d, dateFormat);
+  let d = typeof date === 'string' ? new Date(date) : date
+  if (timezone) d = toTimezone(d, timezone)
+  return formatWithPattern(d, dateFormat)
 }
 
 /**
@@ -197,16 +298,15 @@ export function formatDate(
 export function formatDateTime(
   date: Date | string,
   dateFormat: string = DEFAULT_DATE_FORMAT,
-  timeFormat: "12h" | "24h" = "12h",
-  timezone?: string,
+  timeFormat: '12h' | '24h' = '12h',
+  timezone?: string
 ): string {
-  let d = typeof date === "string" ? new Date(date) : date;
-  if (timezone) d = toTimezone(d, timezone);
-  const datePart = formatWithPattern(d, dateFormat);
-  const timePart = timeFormat === "24h"
-    ? formatWithPattern(d, "HH:mm")
-    : formatWithPattern(d, "hh:mm a");
-  return `${datePart} ${timePart}`;
+  let d = typeof date === 'string' ? new Date(date) : date
+  if (timezone) d = toTimezone(d, timezone)
+  const datePart = formatWithPattern(d, dateFormat)
+  const timePart =
+    timeFormat === '24h' ? formatWithPattern(d, 'HH:mm') : formatWithPattern(d, 'hh:mm a')
+  return `${datePart} ${timePart}`
 }
 
 /**
@@ -214,14 +314,12 @@ export function formatDateTime(
  */
 export function formatTime(
   date: Date | string,
-  timeFormat: "12h" | "24h" = "12h",
-  timezone?: string,
+  timeFormat: '12h' | '24h' = '12h',
+  timezone?: string
 ): string {
-  let d = typeof date === "string" ? new Date(date) : date;
-  if (timezone) d = toTimezone(d, timezone);
-  return timeFormat === "24h"
-    ? formatWithPattern(d, "HH:mm")
-    : formatWithPattern(d, "hh:mm a");
+  let d = typeof date === 'string' ? new Date(date) : date
+  if (timezone) d = toTimezone(d, timezone)
+  return timeFormat === '24h' ? formatWithPattern(d, 'HH:mm') : formatWithPattern(d, 'hh:mm a')
 }
 
 /**
@@ -231,11 +329,11 @@ export function formatTime(
 export function formatDateForPdf(
   date: Date | string,
   dateFormat: string = DEFAULT_DATE_FORMAT,
-  timezone?: string,
+  timezone?: string
 ): string {
-  let d = typeof date === "string" ? new Date(date) : date;
+  let d = typeof date === 'string' ? new Date(date) : date
   if (timezone) {
-    d = toTimezone(d, timezone);
+    d = toTimezone(d, timezone)
   }
-  return formatWithPattern(d, dateFormat);
+  return formatWithPattern(d, dateFormat)
 }

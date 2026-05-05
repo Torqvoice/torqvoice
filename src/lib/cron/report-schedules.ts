@@ -362,11 +362,12 @@ export async function processOneSchedule(schedule: {
 
   // Fetch org settings
   const settings = await db.appSetting.findMany({
-    where: { organizationId: schedule.organizationId, key: { in: [SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.INVOICE_PRIMARY_COLOR] } },
+    where: { organizationId: schedule.organizationId, key: { in: [SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.CURRENCY_FORMAT, SETTING_KEYS.INVOICE_PRIMARY_COLOR] } },
   });
   const settingsMap: Record<string, string> = {};
   for (const s of settings) settingsMap[s.key] = s.value;
   const currencyCode = settingsMap[SETTING_KEYS.CURRENCY_CODE] || "USD";
+  const currencyFormat: "symbol" | "code" = settingsMap[SETTING_KEYS.CURRENCY_FORMAT] === "code" ? "code" : "symbol";
   const primaryColor = settingsMap[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || "#d97706";
 
   // Fetch report data for selected sections
@@ -387,6 +388,7 @@ export async function processOneSchedule(schedule: {
   const element = React.createElement(ReportPDF, {
     dateRange: dateRangeStr,
     currencyCode,
+    currencyFormat,
     primaryColor,
     labels: {},
     revenueData,

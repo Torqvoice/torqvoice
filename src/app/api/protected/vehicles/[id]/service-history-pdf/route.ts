@@ -131,6 +131,7 @@ export async function GET(
 
     const invoiceSettings = {
       currencyCode: settingsMap["workshop.currencyCode"] || "USD",
+      currencyFormat: (settingsMap["workshop.currencyFormat"] === "code" ? "code" : "symbol") as "symbol" | "code",
       unitSystem: settingsMap["workshop.unitSystem"] || "imperial",
       dateFormat: settingsMap["workshop.dateFormat"] || undefined,
       timezone: settingsMap["workshop.timezone"] || undefined,

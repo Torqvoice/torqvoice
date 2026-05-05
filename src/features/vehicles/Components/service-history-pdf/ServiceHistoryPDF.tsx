@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
-import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { formatDateForPdf, DEFAULT_DATE_FORMAT, formatCurrency as formatCurrencyPdf } from '@/lib/format'
 import { createStyles, gray, getFontBold } from '../invoice-pdf/styles'
 import type { WorkshopInfo, InvoiceSettingsProps } from '../invoice-pdf/types'
 
@@ -48,18 +48,6 @@ interface ServiceHistoryPDFProps {
   labels?: Record<string, string>
 }
 
-function formatCurrencyPdf(amount: number, currencyCode: string): string {
-  try {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currencyCode,
-      currencyDisplay: 'narrowSymbol',
-      minimumFractionDigits: 2,
-    }).format(amount)
-  } catch {
-    return `${currencyCode} ${amount.toFixed(2)}`
-  }
-}
 
 export function ServiceHistoryPDF({
   vehicle,
@@ -78,6 +66,7 @@ export function ServiceHistoryPDF({
   const styles = createStyles(primaryColor, fontFamily)
   const fontBold = getFontBold(fontFamily)
   const cc = invoiceSettings?.currencyCode || 'USD'
+  const cf: 'symbol' | 'code' = invoiceSettings?.currencyFormat === 'code' ? 'code' : 'symbol'
   const df = invoiceSettings?.dateFormat || DEFAULT_DATE_FORMAT
   const tz = invoiceSettings?.timezone || undefined
   const unitLabel = invoiceSettings?.unitSystem === 'metric' ? (labels.km || 'km') : (labels.mi || 'mi')
@@ -207,7 +196,7 @@ export function ServiceHistoryPDF({
           </View>
           <View style={{ flex: 1, padding: 8, backgroundColor: '#f3f4f6', borderRadius: 4, alignItems: 'center' }}>
             <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
-              {formatCurrencyPdf(grandTotal, cc)}
+              {formatCurrencyPdf(grandTotal, cc, cf)}
             </Text>
             <Text style={{ fontSize: 8, color: gray }}>
               {labels.grandTotal || 'Grand Total'}
@@ -252,7 +241,7 @@ export function ServiceHistoryPDF({
                   {record.mileage ? record.mileage.toLocaleString() : '-'}
                 </Text>
                 <Text style={[styles.tableCellBold, { width: '18%', textAlign: 'right' }]}>
-                  {formatCurrencyPdf(displayTotal, cc)}
+                  {formatCurrencyPdf(displayTotal, cc, cf)}
                 </Text>
               </View>
             )
@@ -264,7 +253,7 @@ export function ServiceHistoryPDF({
           <View style={styles.totalDivider} />
           <View style={styles.grandTotalRow}>
             <Text style={styles.grandTotalLabel}>{labels.grandTotal || 'Grand Total'}</Text>
-            <Text style={styles.grandTotalValue}>{formatCurrencyPdf(grandTotal, cc)}</Text>
+            <Text style={styles.grandTotalValue}>{formatCurrencyPdf(grandTotal, cc, cf)}</Text>
           </View>
         </View>
 

@@ -17,6 +17,8 @@ type AuthResult =
       timeFormat: string | undefined;
       timezone: string | undefined;
       serviceType: string | undefined;
+      currencyCode: string | undefined;
+      currencyFormat: string | undefined;
       organizations: { id: string; name: string; role: string }[];
     };
 
@@ -51,6 +53,8 @@ export async function getLayoutData(): Promise<AuthResult> {
                 SETTING_KEYS.TIME_FORMAT,
                 SETTING_KEYS.TIMEZONE,
                 SETTING_KEYS.SERVICE_TYPE,
+                SETTING_KEYS.CURRENCY_CODE,
+                SETTING_KEYS.CURRENCY_FORMAT,
               ],
             },
           },
@@ -80,6 +84,8 @@ export async function getLayoutData(): Promise<AuthResult> {
     timeFormat: orgMap.get(SETTING_KEYS.TIME_FORMAT) || undefined,
     timezone: orgMap.get(SETTING_KEYS.TIMEZONE) || undefined,
     serviceType: orgMap.get(SETTING_KEYS.SERVICE_TYPE) || undefined,
+    currencyCode: orgMap.get(SETTING_KEYS.CURRENCY_CODE) || undefined,
+    currencyFormat: orgMap.get(SETTING_KEYS.CURRENCY_FORMAT) || undefined,
     organizations: memberships.map((m) => ({
       id: m.organization.id,
       name: m.organization.name,

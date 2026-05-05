@@ -66,6 +66,7 @@ export default async function PublicQuotePage({
             "workshop.email",
             "workshop.logo",
             "workshop.currencyCode",
+            "workshop.currencyFormat",
             "workshop.dateFormat",
             "workshop.timezone",
             "quote.primaryColor",
@@ -110,6 +111,7 @@ export default async function PublicQuotePage({
   };
 
   const currencyCode = settingsMap["workshop.currencyCode"] || "USD";
+  const currencyFormat: "symbol" | "code" = settingsMap["workshop.currencyFormat"] === "code" ? "code" : "symbol";
 
   // Rewrite logo URL for public access
   const rawLogoUrl = settingsMap["workshop.logo"] || "";
@@ -161,6 +163,7 @@ export default async function PublicQuotePage({
       quote={quote}
       workshop={workshop}
       currencyCode={currencyCode}
+      currencyFormat={currencyFormat}
       orgId={orgId}
       token={token}
       logoUrl={logoUrl}

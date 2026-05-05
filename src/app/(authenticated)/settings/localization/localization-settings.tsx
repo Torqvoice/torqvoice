@@ -81,8 +81,29 @@ const CURRENCIES = [
   { code: 'IDR', key: 'IDR' },
   { code: 'MYR', key: 'MYR' },
   { code: 'LKR', key: 'LKR' },
+  { code: 'TWD', key: 'TWD' },
+  { code: 'VND', key: 'VND' },
+  { code: 'PKR', key: 'PKR' },
+  { code: 'BDT', key: 'BDT' },
+  { code: 'NPR', key: 'NPR' },
+  { code: 'BGN', key: 'BGN' },
+  { code: 'UAH', key: 'UAH' },
+  { code: 'CLP', key: 'CLP' },
+  { code: 'COP', key: 'COP' },
+  { code: 'ARS', key: 'ARS' },
+  { code: 'PEN', key: 'PEN' },
+  { code: 'EGP', key: 'EGP' },
+  { code: 'NGN', key: 'NGN' },
+  { code: 'KES', key: 'KES' },
+  { code: 'MAD', key: 'MAD' },
+  { code: 'GHS', key: 'GHS' },
   { code: 'AED', key: 'AED' },
   { code: 'SAR', key: 'SAR' },
+  { code: 'QAR', key: 'QAR' },
+  { code: 'KWD', key: 'KWD' },
+  { code: 'BHD', key: 'BHD' },
+  { code: 'OMR', key: 'OMR' },
+  { code: 'JOD', key: 'JOD' },
   { code: 'RUB', key: 'RUB' },
 ]
 
@@ -156,6 +177,9 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
 
   // Currency
   const [currencyCode, setCurrencyCode] = useState(settings[SETTING_KEYS.CURRENCY_CODE] || 'USD')
+  const [currencyFormat, setCurrencyFormat] = useState<'symbol' | 'code'>(
+    settings[SETTING_KEYS.CURRENCY_FORMAT] === 'code' ? 'code' : 'symbol'
+  )
 
   // Date & Time
   const [dateFormat, setDateFormat] = useState(
@@ -207,6 +231,7 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
     setSaving(true)
     await setSettings({
       [SETTING_KEYS.CURRENCY_CODE]: currencyCode,
+      [SETTING_KEYS.CURRENCY_FORMAT]: currencyFormat,
       [SETTING_KEYS.DATE_FORMAT]: dateFormat,
       [SETTING_KEYS.TIME_FORMAT]: timeFormat,
       [SETTING_KEYS.TIMEZONE]: timezone,
@@ -364,8 +389,40 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
                     </Command>
                   </PopoverContent>
                 </Popover>
-                <p className="text-xs text-muted-foreground">
-                  {t('currency.previewLabel', { value: formatCurrency(1234.56, currencyCode) })}
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t('currency.formatTitle')}</Label>
+                <Select
+                  value={currencyFormat}
+                  onValueChange={(v) => setCurrencyFormat(v === 'code' ? 'code' : 'symbol')}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="symbol" suppressHydrationWarning>
+                      {mounted
+                        ? t('currency.formatSymbolLabel', {
+                            value: formatCurrency(1000, currencyCode, 'symbol'),
+                          })
+                        : t('currency.formatSymbolName')}
+                    </SelectItem>
+                    <SelectItem value="code" suppressHydrationWarning>
+                      {mounted
+                        ? t('currency.formatCodeLabel', {
+                            value: formatCurrency(1000, currencyCode, 'code'),
+                          })
+                        : t('currency.formatCodeName')}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground" suppressHydrationWarning>
+                  {mounted
+                    ? t('currency.previewLabel', {
+                        value: formatCurrency(1234.56, currencyCode, currencyFormat),
+                      })
+                    : ' '}
                 </p>
               </div>
             </div>
