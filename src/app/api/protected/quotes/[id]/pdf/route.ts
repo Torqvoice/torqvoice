@@ -178,6 +178,7 @@ export async function GET(
         email: settingsMap["workshop.email"] || "",
       },
       currencyCode: settingsMap["workshop.currencyCode"] || "USD",
+      currencyFormat: (settingsMap["workshop.currencyFormat"] === "code" ? "code" : "symbol") as "symbol" | "code",
       logoDataUri,
       torqvoiceLogoDataUri,
       dateFormat: settingsMap["workshop.dateFormat"] || undefined,

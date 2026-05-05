@@ -13,6 +13,7 @@ export const SETTING_KEYS = {
   INVOICE_START_NUMBER: 'workshop.invoiceStartNumber',
   CURRENCY_SYMBOL: 'workshop.currencySymbol',
   CURRENCY_CODE: 'workshop.currencyCode',
+  CURRENCY_FORMAT: 'workshop.currencyFormat',
   INVOICE_BANK_ACCOUNT: 'invoice.bankAccount',
   INVOICE_ORG_NUMBER: 'invoice.orgNumber',
   INVOICE_PAYMENT_TERMS: 'invoice.paymentTerms',

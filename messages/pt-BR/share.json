@@ -52,6 +52,7 @@
     "bankAccount": "Conta Bancária",
     "orgNumber": "CNPJ",
     "paymentTerms": "Condições de Pagamento",
+    "netDays": "{days} dias",
     "dueDate": "Data de Vencimento",
     "serviceImages": "Imagens do Serviço ({count})",
     "serviceVideos": "Vídeos do Serviço ({count})",

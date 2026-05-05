@@ -81,6 +81,7 @@ export function QuotePDF({
   data,
   workshop,
   currencyCode = 'USD',
+  currencyFormat = 'symbol',
   logoDataUri,
   torqvoiceLogoDataUri,
   dateFormat,
@@ -97,6 +98,7 @@ export function QuotePDF({
   data: QuoteData
   workshop?: WorkshopInfo
   currencyCode?: string
+  currencyFormat?: 'symbol' | 'code'
   logoDataUri?: string
   torqvoiceLogoDataUri?: string
   dateFormat?: string
@@ -463,10 +465,10 @@ export function QuotePDF({
                   {p.quantity}
                 </Text>
                 <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                  {formatCurrency(netUnitPrice, currencyCode)}
+                  {formatCurrency(netUnitPrice, currencyCode, currencyFormat)}
                 </Text>
                 <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                  {formatCurrency(netLineValue, currencyCode)}
+                  {formatCurrency(netLineValue, currencyCode, currencyFormat)}
                 </Text>
               </View>
             )
@@ -508,13 +510,13 @@ export function QuotePDF({
                 </Text>
                 <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
                   {isService
-                    ? formatCurrency(netRate, currencyCode)
+                    ? formatCurrency(netRate, currencyCode, currencyFormat)
                     : labels.ratePerHour
-                      ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(netRate, currencyCode) })
-                      : `${formatCurrency(netRate, currencyCode)}/hr`}
+                      ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(netRate, currencyCode, currencyFormat) })
+                      : `${formatCurrency(netRate, currencyCode, currencyFormat)}/hr`}
                 </Text>
                 <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
-                  {formatCurrency(netLineValue, currencyCode)}
+                  {formatCurrency(netLineValue, currencyCode, currencyFormat)}
                 </Text>
               </View>
             )
@@ -556,7 +558,7 @@ export function QuotePDF({
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
             <Text style={styles.totalValue}>
-              {formatCurrency(laborTotalDisplay, currencyCode)}
+              {formatCurrency(laborTotalDisplay, currencyCode, currencyFormat)}
             </Text>
           </View>
         )}
@@ -564,14 +566,14 @@ export function QuotePDF({
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
             <Text style={styles.totalValue}>
-              {formatCurrency(partsTotalDisplay, currencyCode)}
+              {formatCurrency(partsTotalDisplay, currencyCode, currencyFormat)}
             </Text>
           </View>
         )}
         {subDisplay > 0 && (
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
-            <Text style={styles.totalValue}>{formatCurrency(subDisplay, currencyCode)}</Text>
+            <Text style={styles.totalValue}>{formatCurrency(subDisplay, currencyCode, currencyFormat)}</Text>
           </View>
         )}
         {discDisplay > 0 && (
@@ -582,7 +584,7 @@ export function QuotePDF({
                 : (labels.discount || 'Discount')}
             </Text>
             <Text style={{ ...styles.totalValue, color: '#dc2626' }}>
-              {formatCurrency(-discDisplay, currencyCode)}
+              {formatCurrency(-discDisplay, currencyCode, currencyFormat)}
             </Text>
           </View>
         )}
@@ -593,14 +595,14 @@ export function QuotePDF({
                 ? fillTemplate(labels.tax, { rate: String(data.taxRate) })
                 : `Tax (${data.taxRate}%)`}
             </Text>
-            <Text style={styles.totalValue}>{formatCurrency(tax, currencyCode)}</Text>
+            <Text style={styles.totalValue}>{formatCurrency(tax, currencyCode, currencyFormat)}</Text>
           </View>
         )}
         <View style={styles.totalDivider} />
         <View style={styles.grandTotalRow}>
           <Text style={styles.grandTotalLabel}>{labels.total || 'Total'}</Text>
           <Text style={styles.grandTotalValue}>
-            {formatCurrency(total, currencyCode)}
+            {formatCurrency(total, currencyCode, currencyFormat)}
           </Text>
         </View>
       </View>

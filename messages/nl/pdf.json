@@ -40,6 +40,7 @@
     "paymentInformation": "Betalingsinformatie",
     "orgNumberLabel": "Org.nr.",
     "paymentTermsLabel": "Betalingsvoorwaarden",
+    "netDays": "{days} dagen",
     "dueDateLabel": "Vervaldatum",
     "warrantyTitle": "Garantie",
     "warrantyDuration": "Duur",

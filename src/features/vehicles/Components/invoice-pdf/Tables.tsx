@@ -15,11 +15,12 @@ function fillTemplate(template: string, values: Record<string, string>): string 
 interface TablesProps {
   data: InvoiceData
   currencyCode: string
+  currencyFormat?: 'symbol' | 'code'
   styles: Record<string, Style>
   labels: Record<string, string>
 }
 
-export function PartsTable({ data, currencyCode, styles, labels }: TablesProps) {
+export function PartsTable({ data, currencyCode, currencyFormat = 'symbol', styles, labels }: TablesProps) {
   if (data.partItems.length === 0) return null
 
   // Universal display: when an inclusive record is rendered, line item prices
@@ -52,10 +53,10 @@ export function PartsTable({ data, currencyCode, styles, labels }: TablesProps) 
                 {part.quantity}
               </Text>
               <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right' }}>
-                {formatCurrency(netUnitPrice, currencyCode)}
+                {formatCurrency(netUnitPrice, currencyCode, currencyFormat)}
               </Text>
               <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
-                {formatCurrency(netLineTotalValue, currencyCode)}
+                {formatCurrency(netLineTotalValue, currencyCode, currencyFormat)}
               </Text>
             </View>
           )
@@ -65,7 +66,7 @@ export function PartsTable({ data, currencyCode, styles, labels }: TablesProps) 
   )
 }
 
-export function LaborTable({ data, currencyCode, styles, labels }: TablesProps) {
+export function LaborTable({ data, currencyCode, currencyFormat = 'symbol', styles, labels }: TablesProps) {
   if (data.laborItems.length === 0) return null
 
   // See PartsTable for the rationale on netLineTotal usage.
@@ -96,13 +97,13 @@ export function LaborTable({ data, currencyCode, styles, labels }: TablesProps) 
               </Text>
               <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right' }}>
                 {isService
-                  ? formatCurrency(netRate, currencyCode)
+                  ? formatCurrency(netRate, currencyCode, currencyFormat)
                   : labels.ratePerHour
-                    ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(netRate, currencyCode) })
-                    : `${formatCurrency(netRate, currencyCode)}/hr`}
+                    ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(netRate, currencyCode, currencyFormat) })
+                    : `${formatCurrency(netRate, currencyCode, currencyFormat)}/hr`}
               </Text>
               <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
-                {formatCurrency(netLineTotalValue, currencyCode)}
+                {formatCurrency(netLineTotalValue, currencyCode, currencyFormat)}
               </Text>
             </View>
           )

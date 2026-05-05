@@ -52,6 +52,7 @@
     "bankAccount": "Banko sąskaita",
     "orgNumber": "Įmonės kodas",
     "paymentTerms": "Mokėjimo sąlygos",
+    "netDays": "{days} d.",
     "dueDate": "Mokėjimo terminas",
     "serviceImages": "Paslaugos vaizdai ({count})",
     "serviceVideos": "Paslaugos vaizdo įrašai ({count})",

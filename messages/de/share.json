@@ -52,6 +52,7 @@
     "bankAccount": "Bankkonto",
     "orgNumber": "Org.-Nummer",
     "paymentTerms": "Zahlungsbedingungen",
+    "netDays": "{days} Tage",
     "dueDate": "Fälligkeitsdatum",
     "serviceImages": "Service-Bilder ({count})",
     "serviceVideos": "Service-Videos ({count})",
