@@ -41,6 +41,7 @@
     "paymentInformation": "Mokėjimo informacija",
     "orgNumberLabel": "Įmonės kodas",
     "paymentTermsLabel": "Mokėjimo sąlygos",
+    "netDays": "{days} d.",
     "dueDateLabel": "Mokėjimo terminas",
     "warrantyTitle": "Garantija",
     "warrantyDuration": "Trukmė",

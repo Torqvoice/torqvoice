@@ -52,6 +52,7 @@
     "bankAccount": "Bankrekening",
     "orgNumber": "KvK-nummer",
     "paymentTerms": "Betalingsvoorwaarden",
+    "netDays": "{days} dagen",
     "dueDate": "Vervaldatum",
     "serviceImages": "Serviceafbeeldingen ({count})",
     "serviceVideos": "Servicevideo's ({count})",

@@ -260,7 +260,7 @@ export function BankAccountSection({
     ? Math.ceil((new Date(dueDate).getTime() - new Date(invoiceDate).getTime()) / 86400000)
     : null
   const paymentTermsText = netDays !== null && netDays > 0
-    ? `Net ${netDays} Days`
+    ? (labels.netDays ? labels.netDays.replace('{days}', String(netDays)) : `Net ${netDays} Days`)
     : invoiceSettings?.paymentTerms || null
   const hasPaymentTerms = !!paymentTermsText
   const hasDueDate = !!dueDate

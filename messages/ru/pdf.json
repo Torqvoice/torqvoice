@@ -40,6 +40,7 @@
     "paymentInformation": "Платёжная информация",
     "orgNumberLabel": "Номер организации",
     "paymentTermsLabel": "Условия оплаты",
+    "netDays": "{days} дней",
     "dueDateLabel": "Срок оплаты",
     "warrantyTitle": "Гарантия",
     "warrantyDuration": "Срок",

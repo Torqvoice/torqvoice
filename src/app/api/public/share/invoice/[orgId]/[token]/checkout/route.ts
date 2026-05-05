@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { getPaymentProvider, getEnabledProviders } from "@/lib/payment-providers";
 import { rateLimit } from "@/lib/rate-limit";
 import { resolvePortalOrg } from "@/lib/portal-slug";
+import { calculateTotals } from "@/lib/tax";
 
 const checkoutSchema = z.object({
   provider: z.enum(["stripe", "vipps", "paypal"]),
@@ -28,6 +29,8 @@ export async function POST(
       where: { publicToken: token },
       include: {
         payments: true,
+        partItems: true,
+        laborItems: true,
         vehicle: {
           select: { organizationId: true },
         },
@@ -49,9 +52,29 @@ export async function POST(
 
     const { provider, amount } = parsed.data;
 
-    // Calculate balance due
+    // Calculate balance due — mirrors invoice-view.tsx so the server's
+    // notion of total matches what the customer sees on the share page.
+    const partsSubtotal = record.partItems.reduce((sum, p) => sum + p.total, 0);
+    const laborSubtotal = record.laborItems.reduce((sum, l) => sum + l.total, 0);
+    const computedSubtotal = partsSubtotal + laborSubtotal;
+    const computedDiscount =
+      record.discountType === "percentage"
+        ? computedSubtotal * (record.discountValue / 100)
+        : record.discountType === "fixed"
+          ? Math.min(record.discountValue, computedSubtotal)
+          : 0;
+    const { totalAmount: computedTotal } = calculateTotals({
+      subtotal: computedSubtotal,
+      discountAmount: computedDiscount,
+      taxRate: record.taxRate,
+      taxInclusive: record.taxInclusive ?? false,
+    });
     const displayTotal =
-      record.totalAmount > 0 ? record.totalAmount : record.cost;
+      record.totalAmount > 0
+        ? record.totalAmount
+        : computedTotal > 0
+          ? computedTotal
+          : record.cost;
     const paidFromPayments = record.payments.reduce((sum, p) => sum + p.amount, 0);
     const totalPaid = record.manuallyPaid ? displayTotal : paidFromPayments;
     const balanceDue = displayTotal - totalPaid;

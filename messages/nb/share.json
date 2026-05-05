@@ -52,6 +52,7 @@
     "bankAccount": "Bankkontonummer",
     "orgNumber": "Org.nummer",
     "paymentTerms": "Betalingsbetingelser",
+    "netDays": "{days} Dager",
     "dueDate": "Forfallsdato",
     "serviceImages": "Servicebilder ({count})",
     "serviceVideos": "Servicevideoer ({count})",
