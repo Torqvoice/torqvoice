@@ -52,6 +52,7 @@
     "bankAccount": "Банковский счёт",
     "orgNumber": "Номер организации",
     "paymentTerms": "Условия оплаты",
+    "netDays": "{days} дней",
     "dueDate": "Срок оплаты",
     "serviceImages": "Фотографии обслуживания ({count})",
     "serviceVideos": "Видео обслуживания ({count})",

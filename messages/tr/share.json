@@ -52,6 +52,7 @@
     "bankAccount": "Banka Hesabı",
     "orgNumber": "Org. Numarası",
     "paymentTerms": "Ödeme Koşulları",
+    "netDays": "{days} Gün",
     "dueDate": "Son Ödeme Tarihi",
     "serviceImages": "Servis Görselleri ({count})",
     "serviceVideos": "Servis Videoları ({count})",

@@ -1126,7 +1126,7 @@ export function InvoiceView({
                       return netDays !== null && netDays > 0 ? (
                         <div>
                           <p className="text-xs text-gray-500 dark:text-gray-400">{t('paymentTerms')}</p>
-                          <p className="font-medium">Net {netDays} Days</p>
+                          <p className="font-medium">{t('netDays', { days: netDays })}</p>
                         </div>
                       ) : invoiceSettings.paymentTerms ? (
                         <div>

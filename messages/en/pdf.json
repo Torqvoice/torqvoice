@@ -41,6 +41,7 @@
     "paymentInformation": "Payment Information",
     "orgNumberLabel": "Org. Number",
     "paymentTermsLabel": "Payment Terms",
+    "netDays": "{days} Days",
     "dueDateLabel": "Due Date",
     "warrantyTitle": "Warranty",
     "warrantyDuration": "Duration",

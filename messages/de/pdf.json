@@ -40,6 +40,7 @@
     "paymentInformation": "Zahlungsinformationen",
     "orgNumberLabel": "Org.-Nr.",
     "paymentTermsLabel": "Zahlungsbedingungen",
+    "netDays": "{days} Tage",
     "dueDateLabel": "Fälligkeitsdatum",
     "warrantyTitle": "Garantie",
     "warrantyDuration": "Dauer",
