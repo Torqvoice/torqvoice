@@ -33,7 +33,7 @@ import {
   Plus,
   Search,
 } from "lucide-react";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
 import { NotifyCustomerDialog } from "@/components/notify-customer-dialog";
 import { useTranslations } from "next-intl";
@@ -143,6 +143,7 @@ export function WorkOrdersClient({
   smsEnabled?: boolean;
   emailEnabled?: boolean;
 }) {
+  const formatCurrency = useFormatCurrency()
   const router = useRouter();
   const { formatDate } = useFormatDate();
   const pathname = usePathname();

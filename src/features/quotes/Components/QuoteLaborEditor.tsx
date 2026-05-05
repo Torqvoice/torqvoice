@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Layers, Plus, Trash2, Wrench } from "lucide-react";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { QuoteLaborInput } from "./quote-page-types";
 
@@ -40,6 +40,7 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
   tExcludeFromTotal: string;
 }) {
   const isService = labor.pricingType === "service";
+  const formatCurrency = useFormatCurrency();
   return (
     <div className={`grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]${labor.excluded ? " line-through opacity-50" : ""}`}>
       <div className="col-span-2 flex gap-2 sm:col-span-1">
@@ -101,6 +102,7 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
   onOpenPresets,
   t,
 }: QuoteLaborEditorProps) {
+  const formatCurrency = useFormatCurrency()
   return (
     <TooltipProvider>
     <div className="rounded-lg border p-3 space-y-2">

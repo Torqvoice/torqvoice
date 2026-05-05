@@ -215,7 +215,8 @@ export function InvoicePDF({
       <>
         <Totals
           data={data}
-          currencyCode={cc} currencyFormat={cf}
+          currencyCode={cc}
+          currencyFormat={cf}
           primaryColor={primaryColor}
           fontFamily={fontFamily}
           displayTotal={displayTotal}

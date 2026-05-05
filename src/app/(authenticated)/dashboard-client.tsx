@@ -41,7 +41,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import { dismissMaintenance, undismissMaintenance } from "@/features/vehicles/Actions/dismissMaintenance";
 import { updateQuoteRequestStatus } from "@/features/inspections/Actions/quoteRequestActions";
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
@@ -253,6 +253,7 @@ export function DashboardClient({
   }[];
   recentObservations?: DashboardObservation[];
 }) {
+  const formatCurrency = useFormatCurrency()
   const t = useTranslations("dashboard");
   const tAudit = useTranslations("audit");
   const distUnit = unitSystem === "metric" ? "km" : "mi";

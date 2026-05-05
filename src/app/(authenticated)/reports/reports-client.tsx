@@ -73,7 +73,7 @@ import {
   getPastDueInvoicesReport,
   getVehicleReport,
 } from "@/features/reports/Actions/reportActions";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import type {
   RevenueReport,
   ServiceReport,
@@ -128,6 +128,7 @@ const VALID_TABS: ReportTab[] = ["financial", "services", "customers", "inventor
 const VALID_SUB_TABS: FinancialSubTab[] = ["revenue", "past-due-invoices", "tax"];
 
 export default function ReportsClient({ currencyCode, primaryColor, organizationName }: ReportsClientProps) {
+  const formatCurrency = useFormatCurrency()
   const t = useTranslations("reports");
   const searchParams = useSearchParams();
   const router = useRouter();

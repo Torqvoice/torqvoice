@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Search } from 'lucide-react'
-import { formatCurrency } from '@/lib/format'
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { InventoryPartOption } from './form-types'
 
@@ -26,6 +26,7 @@ export function InventoryPickerDialog({
   currencyCode,
   onSelectPart,
 }: InventoryPickerDialogProps) {
+  const formatCurrency = useFormatCurrency()
   const t = useTranslations('service.parts')
   const [search, setSearch] = useState('')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)

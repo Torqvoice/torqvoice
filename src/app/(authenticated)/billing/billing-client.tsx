@@ -26,7 +26,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 
 interface BillingRecord {
   id: string;
@@ -86,6 +86,7 @@ export default function BillingClient({
   search,
   statusFilter,
 }: BillingClientProps) {
+  const formatCurrency = useFormatCurrency()
   const router = useRouter();
   const t = useTranslations("billing");
   const { formatDate } = useFormatDate();

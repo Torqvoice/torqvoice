@@ -40,7 +40,7 @@ import {
 import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
 import { aiSummarizeVehicleHistory, aiGetCommonIssues, aiClearMessage } from '@/features/ai/Actions/aiActions'
 import { AI_MESSAGE_TYPES } from '@/features/ai/constants'
-import { formatCurrency } from '@/lib/format'
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import {
   AlertTriangle,
   Archive,
@@ -270,6 +270,7 @@ export function VehicleDetailClient({
   quotes?: QuoteRecord[]
   aiEnabled?: boolean
 }) {
+  const formatCurrency = useFormatCurrency()
   const serviceType = useServiceType()
   const isMarine = serviceType === 'marine'
   const distUnit = isMarine ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'

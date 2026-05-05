@@ -185,6 +185,7 @@ export async function buildInvoicePdfBuffer(
     showOrgNumber: settingsMap['invoice.showOrgNumber'] === 'true',
     dueDays: Number(settingsMap['invoice.dueDays']) || 0,
     currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
+    currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as 'symbol' | 'code',
     unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
     timezone: settingsMap['workshop.timezone'] || undefined,

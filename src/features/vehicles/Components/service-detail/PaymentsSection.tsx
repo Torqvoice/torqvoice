@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Check, CreditCard, Loader2, Plus, Trash2, X } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from "@/components/currency-settings-context";
 import { useFormatDate } from "@/lib/use-format-date";
 import { paymentStatusColors, paymentStatusLabels } from "./types";
 import type { Payment } from "./types";
@@ -49,6 +49,7 @@ export function PaymentsSection({
   paymentLoading,
   deletingPayment,
 }: PaymentsSectionProps) {
+  const formatCurrency = useFormatCurrency()
   const t = useTranslations("service.payments");
   const tc = useTranslations("common.buttons");
   const [showForm, setShowForm] = useState(false);
