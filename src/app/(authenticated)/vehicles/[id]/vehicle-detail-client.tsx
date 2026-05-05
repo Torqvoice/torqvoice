@@ -166,6 +166,7 @@ interface VehicleDetail {
   fuelType: string | null
   transmission: string | null
   engineSize: string | null
+  engineCode: string | null
   purchaseDate: Date | null
   purchasePrice: number | null
   imageUrl: string | null
@@ -591,8 +592,14 @@ export function VehicleDetailClient({
                 {vehicle.licensePlate && <span className="font-mono">{vehicle.licensePlate}</span>}
                 {vehicle.vin && (
                   <>
-                    <span>&middot;</span>
+                    {vehicle.licensePlate && <span>&middot;</span>}
                     <span className="font-mono">{vehicle.vin}</span>
+                  </>
+                )}
+                {vehicle.engineCode && (
+                  <>
+                    {(vehicle.licensePlate || vehicle.vin) && <span>&middot;</span>}
+                    <span className="font-mono">{vehicle.engineCode}</span>
                   </>
                 )}
               </div>

@@ -14,6 +14,7 @@ export const createVehicleSchema = z.object({
   fuelType: z.string().optional(),
   transmission: z.string().optional(),
   engineSize: z.string().optional(),
+  engineCode: z.string().optional(),
   purchaseDate: z.string().optional(),
   purchasePrice: z.coerce.number().optional(),
   imageUrl: z.string().optional(),

@@ -306,6 +306,7 @@
     "manual": "Schaltgetriebe",
     "cvt": "CVT",
     "engineSize": "Hubraum",
+    "engineCode": "Motorcode",
     "makeMarine": "Hersteller *",
     "mileageMarine": "Betriebsstunden",
     "transmissionMarine": "Motortyp",

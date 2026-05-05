@@ -306,6 +306,7 @@
     "manual": "Manuell",
     "cvt": "CVT",
     "engineSize": "Motorstorrelse",
+    "engineCode": "Motorkode",
     "makeMarine": "Produsent *",
     "mileageMarine": "Motortimer",
     "transmissionMarine": "Motortype",

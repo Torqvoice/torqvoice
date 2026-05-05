@@ -306,6 +306,7 @@
     "manual": "Manuel",
     "cvt": "CVT",
     "engineSize": "Motor Hacmi",
+    "engineCode": "Motor Kodu",
     "makeMarine": "Üretici *",
     "mileageMarine": "Motor Saatleri",
     "transmissionMarine": "Motor Tipi",

@@ -306,6 +306,7 @@
     "manual": "Механическая",
     "cvt": "Вариатор",
     "engineSize": "Объём двигателя",
+    "engineCode": "Код двигателя",
     "makeMarine": "Производитель *",
     "mileageMarine": "Моточасы",
     "transmissionMarine": "Тип Двигателя",

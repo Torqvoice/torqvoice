@@ -60,6 +60,7 @@ interface Vehicle {
   fuelType: string | null
   transmission: string | null
   engineSize: string | null
+  engineCode: string | null
   imageUrl: string | null
   customerId: string | null
   customer: { id: string; name: string; company: string | null } | null

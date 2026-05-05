@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -86,6 +87,9 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
           <DialogTitle>
             {customer ? t("editTitle") : t("addTitle")}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {customer ? t("editTitle") : t("addTitle")}
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
