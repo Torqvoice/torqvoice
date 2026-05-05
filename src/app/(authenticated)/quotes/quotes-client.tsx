@@ -19,7 +19,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { DataTablePagination } from '@/components/data-table-pagination'
 import { Loader2, Plus, Search } from 'lucide-react'
-import { formatCurrency } from '@/lib/format'
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import { toast } from 'sonner'
 import { createQuote } from '@/features/quotes/Actions/quoteActions'
 import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
@@ -81,6 +81,7 @@ export function QuotesClient({
   search: string
   statusFilter: string
 }) {
+  const formatCurrency = useFormatCurrency()
   const router = useRouter()
   const { formatDate } = useFormatDate()
   const pathname = usePathname()

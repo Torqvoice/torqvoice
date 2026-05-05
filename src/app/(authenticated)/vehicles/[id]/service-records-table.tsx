@@ -23,7 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { typeColors, statusColors } from "@/lib/table-utils";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import { getWarrantyStatus, type WarrantyStatus } from "@/lib/warranty";
 import {
   ChevronLeft,
@@ -102,6 +102,7 @@ export function ServiceRecordsTable({
   currencyCode = "USD",
   vehicleMileage,
 }: ServiceRecordsTableProps) {
+  const formatCurrency = useFormatCurrency()
   const router = useRouter();
   const { formatDate } = useFormatDate();
   const pathname = usePathname();

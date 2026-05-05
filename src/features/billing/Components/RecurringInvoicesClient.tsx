@@ -41,7 +41,7 @@ import {
   Zap,
   X,
 } from "lucide-react";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import { calculateTotals } from "@/lib/tax";
 import {
   createRecurringInvoice,
@@ -132,6 +132,7 @@ export default function RecurringInvoicesClient({
   vehicles,
   currencyCode,
 }: RecurringInvoicesClientProps) {
+  const formatCurrency = useFormatCurrency();
   const router = useRouter();
   const t = useTranslations("billing");
   const { formatDate } = useFormatDate();

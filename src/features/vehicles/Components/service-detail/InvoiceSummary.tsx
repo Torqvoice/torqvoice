@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Separator } from "@/components/ui/separator";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from "@/components/currency-settings-context";
 import { netLineTotal } from "@/lib/tax";
 
 interface InvoiceSummaryProps {
@@ -42,6 +42,7 @@ export function InvoiceSummary({
   hasPayments,
   currencyCode,
 }: InvoiceSummaryProps) {
+  const formatCurrency = useFormatCurrency()
   const t = useTranslations("service.invoice");
 
   // Universal display: net per category, net subtotal, net discount, tax, gross total.

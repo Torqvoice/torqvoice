@@ -11,7 +11,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { formatCurrency, getCurrencySymbol } from '@/lib/format'
+import { getCurrencySymbol } from '@/lib/format'
+import { useFormatCurrency, useCurrencySettings } from '@/components/currency-settings-context'
 import { useTranslations } from 'next-intl'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import { makeEmptyLabor, makeEmptyService } from './form-types'
@@ -66,6 +67,7 @@ function SortableLaborRow({
   t: (key: string) => string
   dragEnabled: boolean
 }) {
+  const formatCurrency = useFormatCurrency()
   const {
     attributes,
     listeners,
@@ -164,7 +166,9 @@ export function LaborEditor({
   onShowExistingObservations,
 }: LaborEditorProps) {
   const t = useTranslations('service.labor')
-  const cs = getCurrencySymbol(currencyCode)
+  const formatCurrency = useFormatCurrency()
+  const { currencyFormat } = useCurrencySettings()
+  const cs = getCurrencySymbol(currencyCode, currencyFormat)
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   const keyCounterRef = useRef(0)

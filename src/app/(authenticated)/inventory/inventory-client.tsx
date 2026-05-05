@@ -64,7 +64,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import { toast } from "sonner";
 
 interface InventoryPart {
@@ -114,6 +114,7 @@ export function InventoryClient({
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }) {
+  const formatCurrency = useFormatCurrency();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

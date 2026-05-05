@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2 } from "lucide-react";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import type { QuotePartInput } from "./quote-page-types";
 
 const QuotePartRow = memo(function QuotePartRow({
@@ -28,6 +28,7 @@ const QuotePartRow = memo(function QuotePartRow({
   tDeleteRow: string;
   tExcludeFromTotal: string;
 }) {
+  const formatCurrency = useFormatCurrency();
   return (
     <div className={`grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto]${part.excluded ? " line-through opacity-50" : ""}`}>
       <Input placeholder={tPartNumber} value={part.partNumber ?? ""} onChange={(e) => onUpdate(index, "partNumber", e.target.value)} />
@@ -63,6 +64,7 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
   onAdd,
   t,
 }: QuotePartsEditorProps) {
+  const formatCurrency = useFormatCurrency()
   return (
     <div className="rounded-lg border p-3 space-y-2">
       <div className="flex items-center justify-between">
