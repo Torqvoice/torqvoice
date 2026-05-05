@@ -194,6 +194,7 @@ export async function updateVehicle(input: unknown) {
         fuelType: data.fuelType !== undefined ? (data.fuelType || null) : undefined,
         transmission: data.transmission !== undefined ? (data.transmission || null) : undefined,
         engineSize: data.engineSize !== undefined ? (data.engineSize || null) : undefined,
+        engineCode: data.engineCode !== undefined ? (data.engineCode || null) : undefined,
         purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : undefined,
         customerId: data.customerId !== undefined ? (data.customerId || null) : undefined,
       },

@@ -142,6 +142,7 @@ model Vehicle {
   fuelType               String?              @default("gasoline")
   transmission           String?              @default("automatic")
   engineSize             String?
+  engineCode             String?
   purchaseDate           DateTime?
   purchasePrice          Float?
   imageUrl               String?

@@ -306,6 +306,7 @@
     "manual": "Handgeschakeld",
     "cvt": "CVT",
     "engineSize": "Motorinhoud",
+    "engineCode": "Motorcode",
     "makeMarine": "Fabrikant *",
     "mileageMarine": "Motoruren",
     "transmissionMarine": "Motortype",

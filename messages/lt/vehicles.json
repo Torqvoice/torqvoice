@@ -306,6 +306,7 @@
     "manual": "Mechaninė",
     "cvt": "CVT",
     "engineSize": "Variklio tūris",
+    "engineCode": "Variklio kodas",
     "makeMarine": "Gamintojas *",
     "mileageMarine": "Variklio valandos",
     "transmissionMarine": "Variklio tipas",

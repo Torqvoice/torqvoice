@@ -306,6 +306,7 @@
     "manual": "Manualna",
     "cvt": "CVT",
     "engineSize": "Pojemność silnika",
+    "engineCode": "Kod silnika",
     "makeMarine": "Producent *",
     "mileageMarine": "Godziny Pracy Silnika",
     "transmissionMarine": "Typ Silnika",

@@ -57,6 +57,7 @@ interface VehicleFormProps {
     fuelType?: string | null;
     transmission?: string | null;
     engineSize?: string | null;
+    engineCode?: string | null;
     imageUrl?: string | null;
     customerId?: string | null;
   };
@@ -160,6 +161,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
         fuelType: (formData.get("fuelType") as string) || undefined,
         transmission: (formData.get("transmission") as string) || undefined,
         engineSize: (formData.get("engineSize") as string) || undefined,
+        engineCode: (formData.get("engineCode") as string) || undefined,
         customerId: selectedCustomerId === "none" ? undefined : selectedCustomerId || undefined,
       };
 
@@ -435,14 +437,25 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="engineSize">{isMarine ? t("engineSizeMarine") : t("engineSize")}</Label>
-            <Input
-              id="engineSize"
-              name="engineSize"
-              placeholder={isMarine ? "Mercury F 350 XXL Verado V-10 (350 hp)" : "2.5L"}
-              defaultValue={vehicle?.engineSize ?? ""}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="engineSize">{isMarine ? t("engineSizeMarine") : t("engineSize")}</Label>
+              <Input
+                id="engineSize"
+                name="engineSize"
+                placeholder={isMarine ? "Mercury F 350 XXL Verado V-10 (350 hp)" : "2.5L"}
+                defaultValue={vehicle?.engineSize ?? ""}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="engineCode">{t("engineCode")}</Label>
+              <Input
+                id="engineCode"
+                name="engineCode"
+                placeholder="2AR-FE"
+                defaultValue={vehicle?.engineCode ?? ""}
+              />
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
