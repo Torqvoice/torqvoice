@@ -406,5 +406,9 @@
     "date": "Datum",
     "title": "Titel"
   },
-  "empty": "Nog geen gegevens geladen. Klik op Vernieuwen om het rapport te laden."
+  "empty": "Nog geen gegevens geladen. Klik op Vernieuwen om het rapport te laden.",
+  "pagination": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
 }

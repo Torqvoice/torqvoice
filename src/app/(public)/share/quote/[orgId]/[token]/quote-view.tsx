@@ -134,6 +134,7 @@ export function QuoteView({
   quote,
   workshop,
   currencyCode,
+  currencyFormat = 'symbol',
   orgId,
   token,
   logoUrl,
@@ -153,7 +154,8 @@ export function QuoteView({
 }: {
   quote: QuoteRecord;
   workshop: { name: string; address: string; phone: string; email: string };
-  currencyCode: string;
+  currencyCode: string
+  currencyFormat?: 'symbol' | 'code';
   orgId: string;
   token: string;
   logoUrl?: string;
@@ -570,8 +572,8 @@ export function QuoteView({
                               <td className="p-2 font-mono text-xs">{p.partNumber || "-"}</td>
                               <td className="p-2">{p.name}</td>
                               <td className="p-2 text-right">{p.quantity}</td>
-                              <td className="p-2 text-right">{formatCurrency(netUnitPrice, currencyCode)}</td>
-                              <td className="p-2 text-right font-medium">{formatCurrency(netLineValue, currencyCode)}</td>
+                              <td className="p-2 text-right">{formatCurrency(netUnitPrice, currencyCode, currencyFormat)}</td>
+                              <td className="p-2 text-right font-medium">{formatCurrency(netLineValue, currencyCode, currencyFormat)}</td>
                             </tr>
                           )
                         })}
@@ -604,8 +606,8 @@ export function QuoteView({
                             <tr key={i} className={l.excluded ? "line-through text-gray-400" : ""}>
                               <td className="p-2">{l.description}</td>
                               <td className="p-2 text-right">{l.pricingType === 'service' ? `${l.hours} ${t('unit')}` : `${l.hours} ${t('hrs')}`}</td>
-                              <td className="p-2 text-right">{l.pricingType === 'service' ? formatCurrency(netRate, currencyCode) : t('ratePerHour', { rate: formatCurrency(netRate, currencyCode) })}</td>
-                              <td className="p-2 text-right font-medium">{formatCurrency(netLineValue, currencyCode)}</td>
+                              <td className="p-2 text-right">{l.pricingType === 'service' ? formatCurrency(netRate, currencyCode, currencyFormat) : t('ratePerHour', { rate: formatCurrency(netRate, currencyCode, currencyFormat) })}</td>
+                              <td className="p-2 text-right font-medium">{formatCurrency(netLineValue, currencyCode, currencyFormat)}</td>
                             </tr>
                           )
                         })}
@@ -645,19 +647,19 @@ export function QuoteView({
                         {quote.laborItems.length > 0 && (
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-500">{t('labor')}</span>
-                            <span>{formatCurrency(laborTotal, currencyCode)}</span>
+                            <span>{formatCurrency(laborTotal, currencyCode, currencyFormat)}</span>
                           </div>
                         )}
                         {quote.partItems.length > 0 && (
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-500">{t('parts')}</span>
-                            <span>{formatCurrency(partsTotal, currencyCode)}</span>
+                            <span>{formatCurrency(partsTotal, currencyCode, currencyFormat)}</span>
                           </div>
                         )}
                         {sub > 0 && (
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-500">{t('subtotal')}</span>
-                            <span>{formatCurrency(sub, currencyCode)}</span>
+                            <span>{formatCurrency(sub, currencyCode, currencyFormat)}</span>
                           </div>
                         )}
                         {disc > 0 && (
@@ -665,7 +667,7 @@ export function QuoteView({
                             <span className="text-gray-500">
                               {quote.discountType === "percentage" ? t('discountPercent', { percent: quote.discountValue }) : t('discount')}
                             </span>
-                            <span className="text-red-500">{formatCurrency(-disc, currencyCode)}</span>
+                            <span className="text-red-500">{formatCurrency(-disc, currencyCode, currencyFormat)}</span>
                           </div>
                         )}
                         {quote.taxRate > 0 && (
@@ -675,13 +677,13 @@ export function QuoteView({
                                 ? `${taxLabel} (${quote.taxRate}%)`
                                 : t('tax', { rate: quote.taxRate })}
                             </span>
-                            <span>{formatCurrency(tax, currencyCode)}</span>
+                            <span>{formatCurrency(tax, currencyCode, currencyFormat)}</span>
                           </div>
                         )}
                         <div className="border-t pt-2" style={{ borderColor: primaryColor }}>
                           <div className="flex justify-between text-lg font-bold">
                             <span>{t('total')}</span>
-                            <span style={{ color: primaryColor }}>{formatCurrency(total, currencyCode)}</span>
+                            <span style={{ color: primaryColor }}>{formatCurrency(total, currencyCode, currencyFormat)}</span>
                           </div>
                         </div>
                       </>

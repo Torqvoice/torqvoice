@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { formatDateHeader } from "./calendar-utils";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import type { CalendarEvent } from "../Actions/calendarActions";
 
 function getStatusColor(event: CalendarEvent) {
@@ -70,6 +70,7 @@ interface CalendarEventListProps {
 }
 
 export function CalendarEventList({ events, dateStr, selectedDate, currencyCode }: CalendarEventListProps) {
+  const formatCurrency = useFormatCurrency()
   const t = useTranslations('calendar');
   const dayEvents = events.filter((e) => e.date === dateStr);
 

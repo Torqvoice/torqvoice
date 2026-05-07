@@ -95,7 +95,8 @@
     "scanBarcode": "Scanner",
     "scanTitle": "Scanner le code-barres",
     "partFound": "\"{name}\" ajouté depuis l'inventaire",
-    "partNotFound": "Aucune pièce trouvée pour le code-barres \"{barcode}\""
+    "partNotFound": "Aucune pièce trouvée pour le code-barres \"{barcode}\"",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Main-d'œuvre",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Totaux",
@@ -209,7 +211,9 @@
     "images": "Images ({count})",
     "videos": "Vidéos ({count})",
     "diagnostics": "Rapports Diagnostiques ({count})",
-    "documents": "Documents ({count})"
+    "documents": "Documents ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Partager la Facture",
@@ -225,7 +229,8 @@
     "emailSent": "Email envoyé",
     "failedEmail": "Impossible d'envoyer l'email",
     "smsSent": "SMS envoyé",
-    "failedSms": "Impossible d'envoyer le SMS"
+    "failedSms": "Impossible d'envoyer le SMS",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Véhicule",
@@ -333,5 +338,32 @@
     "minutesAgo": "il y a {count}m",
     "hoursAgo": "il y a {count}h",
     "daysAgo": "il y a {count}j"
+  },
+  "table": {
+    "warranty": "Garantie"
+  },
+  "warranty": {
+    "title": "Garantie",
+    "months": "Durée (mois)",
+    "mileage": "Limite de kilométrage",
+    "notes": "Conditions de garantie",
+    "notesPlaceholder": "ex. Garantie de 12 mois sur toutes les pièces et la main-d'œuvre...",
+    "expiresAt": "Expire",
+    "presets": {
+      "3months": "3 m",
+      "6months": "6 m",
+      "12months": "12 m",
+      "24months": "24 m"
+    },
+    "status": {
+      "active": "Active",
+      "expiring": "Expire bientôt",
+      "expired": "Expirée",
+      "none": "Aucune"
+    },
+    "defaults": {
+      "title": "Paramètres de garantie par défaut",
+      "description": "Définir les conditions de garantie par défaut pour les nouveaux dossiers de service"
+    }
   }
 }

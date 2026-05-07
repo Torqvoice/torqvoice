@@ -78,6 +78,10 @@
     "deleted": "Wiederkehrende Rechnung gelöscht",
     "failedDelete": "Löschen fehlgeschlagen",
     "processed": "{count} Rechnung(en) verarbeitet",
-    "failedProcess": "Verarbeitung fehlgeschlagen"
+    "failedProcess": "Verarbeitung fehlgeschlagen",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "removeRow": "Remove row"
   }
 }

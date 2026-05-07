@@ -14,6 +14,7 @@
     "createAndSend": "Utwórz i wyślij",
     "cancel": "Anuluj",
     "uploadFailed": "Nie udało się przesłać wideo",
+    "createReportFailed": "Failed to create status report",
     "created": "Raport statusu utworzony",
     "noVideo": "Najpierw prześlij wideo",
     "removeVideo": "Usuń wideo",

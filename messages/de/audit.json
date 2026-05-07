@@ -93,6 +93,10 @@
     "statusReport_create": "Statusbericht erstellt",
     "statusReport_send": "Statusbericht gesendet",
     "statusReport_delete": "Statusbericht gelöscht",
-    "telegram_send": "Telegram-Nachricht gesendet"
+    "telegram_send": "Telegram-Nachricht gesendet",
+    "webhook_create": "Webhook erstellt",
+    "webhook_update": "Webhook aktualisiert",
+    "webhook_delete": "Webhook gelöscht",
+    "webhook_rotateSecret": "Webhook-Schlüssel rotiert"
   }
 }

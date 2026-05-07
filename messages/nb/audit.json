@@ -93,6 +93,10 @@
     "statusReport_create": "Opprettet statusrapport",
     "statusReport_send": "Sendt statusrapport",
     "statusReport_delete": "Slettet statusrapport",
-    "telegram_send": "Sendt Telegram-melding"
+    "telegram_send": "Sendt Telegram-melding",
+    "webhook_create": "Opprettet webhook",
+    "webhook_update": "Oppdatert webhook",
+    "webhook_delete": "Slettet webhook",
+    "webhook_rotateSecret": "Roterte webhook-hemmelighet"
   }
 }

@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2 } from "lucide-react";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import type { QuotePartInput } from "./quote-page-types";
 
 const QuotePartRow = memo(function QuotePartRow({
@@ -15,6 +15,8 @@ const QuotePartRow = memo(function QuotePartRow({
   onDelete,
   tPartNumber,
   tNamePlaceholder,
+  tDeleteRow,
+  tExcludeFromTotal,
 }: {
   part: QuotePartInput;
   index: number;
@@ -23,7 +25,10 @@ const QuotePartRow = memo(function QuotePartRow({
   onDelete: (index: number) => void;
   tPartNumber: string;
   tNamePlaceholder: string;
+  tDeleteRow: string;
+  tExcludeFromTotal: string;
 }) {
+  const formatCurrency = useFormatCurrency();
   return (
     <div className={`grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto]${part.excluded ? " line-through opacity-50" : ""}`}>
       <Input placeholder={tPartNumber} value={part.partNumber ?? ""} onChange={(e) => onUpdate(index, "partNumber", e.target.value)} />
@@ -32,8 +37,8 @@ const QuotePartRow = memo(function QuotePartRow({
       <Input type="number" min="0" step="0.01" value={part.unitPrice} onChange={(e) => onUpdate(index, "unitPrice", e.target.value)} />
       <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(part.total, currencyCode)}</div>
       <div className="flex items-center gap-1">
-        <input type="checkbox" checked={part.excluded ?? false} onChange={(e) => onUpdate(index, "excluded", e.target.checked)} className="h-4 w-4 rounded border-gray-300" title="Exclude from total" />
-        <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => onDelete(index)}><Trash2 className="h-4 w-4" /></Button>
+        <input type="checkbox" checked={part.excluded ?? false} onChange={(e) => onUpdate(index, "excluded", e.target.checked)} className="h-4 w-4 rounded border-gray-300" title={tExcludeFromTotal} aria-label={tExcludeFromTotal} />
+        <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => onDelete(index)} aria-label={tDeleteRow}><Trash2 className="h-4 w-4" /></Button>
       </div>
     </div>
   );
@@ -59,6 +64,7 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
   onAdd,
   t,
 }: QuotePartsEditorProps) {
+  const formatCurrency = useFormatCurrency()
   return (
     <div className="rounded-lg border p-3 space-y-2">
       <div className="flex items-center justify-between">
@@ -84,6 +90,8 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
               onDelete={onDelete}
               tPartNumber={t("parts.partNumber")}
               tNamePlaceholder={t("parts.namePlaceholder")}
+              tDeleteRow={t("parts.deleteRow")}
+              tExcludeFromTotal={t("parts.excludeFromTotal")}
             />
           ))}
           <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={onAdd}><Plus className="h-4 w-4" /></button>

@@ -95,7 +95,8 @@
     "scanBarcode": "Scannen",
     "scanTitle": "Barcode scannen",
     "partFound": "\"{name}\" toegevoegd uit voorraad",
-    "partNotFound": "Geen onderdeel gevonden voor barcode \"{barcode}\""
+    "partNotFound": "Geen onderdeel gevonden voor barcode \"{barcode}\"",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Arbeidskosten",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Totalen",
@@ -209,7 +211,9 @@
     "images": "Afbeeldingen ({count})",
     "videos": "Video's ({count})",
     "diagnostics": "Diagnostische verslagen ({count})",
-    "documents": "Documenten ({count})"
+    "documents": "Documenten ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Factuur delen",
@@ -225,7 +229,8 @@
     "emailSent": "E-mail verzonden",
     "failedEmail": "E-mail verzenden mislukt",
     "smsSent": "SMS verzonden",
-    "failedSms": "SMS verzenden mislukt"
+    "failedSms": "SMS verzenden mislukt",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Voertuig",
@@ -333,5 +338,32 @@
     "minutesAgo": "{count}m geleden",
     "hoursAgo": "{count}u geleden",
     "daysAgo": "{count}d geleden"
+  },
+  "table": {
+    "warranty": "Garantie"
+  },
+  "warranty": {
+    "title": "Garantie",
+    "months": "Duur (maanden)",
+    "mileage": "Kilometerlimiet",
+    "notes": "Garantievoorwaarden",
+    "notesPlaceholder": "bijv. 12 maanden garantie op alle onderdelen en arbeid...",
+    "expiresAt": "Verloopt",
+    "presets": {
+      "3months": "3 md",
+      "6months": "6 md",
+      "12months": "12 md",
+      "24months": "24 md"
+    },
+    "status": {
+      "active": "Actief",
+      "expiring": "Verloopt binnenkort",
+      "expired": "Verlopen",
+      "none": "Geen"
+    },
+    "defaults": {
+      "title": "Standaard garantie-instellingen",
+      "description": "Stel standaard garantievoorwaarden in voor nieuwe serviceregistraties"
+    }
   }
 }

@@ -63,5 +63,7 @@
     },
     "noEvents": "Нет событий",
     "selectDay": "Выберите день с событиями или создайте новый заказ-наряд."
-  }
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month"
 }

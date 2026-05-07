@@ -7,7 +7,11 @@
     "day": "Dag",
     "week": "Uke",
     "presenter": "Presentatør",
-    "addTechnician": "Legg til tekniker"
+    "addTechnician": "Legg til tekniker",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "previousDay": "Previous day",
+    "nextDay": "Next day"
   },
   "board": {
     "days": {
@@ -70,6 +74,8 @@
       "inProgress": "Pågår",
       "waitingParts": "Venter på deler",
       "completed": "Fullført"
-    }
+    },
+    "previous": "Previous",
+    "next": "Next"
   }
 }

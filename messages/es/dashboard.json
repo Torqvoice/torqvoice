@@ -18,7 +18,8 @@
     "quantity": "Cantidad",
     "addToJob": "Añadir {qty} al trabajo",
     "statusReport": "Informe de estado",
-    "report": "Informe"
+    "report": "Informe",
+    "observation": "Observación"
   },
   "recentActivity": "Actividad reciente",
   "noRecentActivity": "Sin actividad reciente",
@@ -64,7 +65,9 @@
     "dismissedTab": "Descartados",
     "noActive": "No hay vehículos que requieran servicio actualmente.",
     "dismissedOn": "Descartado el {date}",
-    "restore": "Restaurar"
+    "restore": "Restaurar",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Recordatorios pendientes",
@@ -95,7 +98,8 @@
     "pending": "Pendientes",
     "createQuote": "Crear presupuesto",
     "itemsRequested": "{count, plural, one {# elemento solicitado} other {# elementos solicitados}}",
-    "noData": "No hay solicitudes de presupuesto pendientes."
+    "noData": "No hay solicitudes de presupuesto pendientes.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Respuestas de presupuesto de clientes",
@@ -106,7 +110,8 @@
     "convert": "Convert",
     "viewQuote": "Ver presupuesto",
     "view": "View",
-    "noData": "No hay respuestas de clientes."
+    "noData": "No hay respuestas de clientes.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Completados recientemente",

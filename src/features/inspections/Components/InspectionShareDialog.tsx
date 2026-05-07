@@ -157,7 +157,7 @@ export function InspectionShareDialog({
             <>
               <div className="flex items-center gap-2">
                 <Input value={shareUrl} readOnly className="font-mono text-xs" />
-                <Button size="icon" variant="outline" onClick={handleCopy}>
+                <Button size="icon" variant="outline" onClick={handleCopy} aria-label="Copy link">
                   {copied ? (
                     <Check className="h-4 w-4 text-emerald-500" />
                   ) : (

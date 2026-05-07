@@ -33,7 +33,8 @@
       "date": "Data",
       "total": "Razem"
     },
-    "emailSubject": "Aktualizacja Statusu Pojazdu: {status}"
+    "emailSubject": "Aktualizacja Statusu Pojazdu: {status}",
+    "changeStatus": "Change status"
   },
   "vehiclePicker": {
     "title": "Wybierz Pojazd do Zlecenia Pracy",

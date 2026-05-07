@@ -30,7 +30,8 @@
     "deleteDescription": "Esto eliminará permanentemente este mensaje. Esta acción no se puede deshacer.",
     "messageDeleted": "Mensaje eliminado",
     "deleteError": "No se pudo eliminar el mensaje",
-    "sendError": "No se pudo enviar el mensaje"
+    "sendError": "No se pudo enviar el mensaje",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Enviar {label}",

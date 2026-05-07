@@ -26,7 +26,11 @@
     "vehicleUnarchived": "Vehiculo desarchivado",
     "unarchiveError": "Error al desarchivar vehiculo",
     "deleteError": "Error al eliminar vehiculo",
-    "error": "Error al cargar vehiculos"
+    "error": "Error al cargar vehiculos",
+    "viewTable": "Table view",
+    "viewGrid": "Grid view",
+    "viewLargeGrid": "Large grid view",
+    "openMenu": "Open menu"
   },
   "detail": {
     "vehicleArchived": "Este vehiculo esta archivado",
@@ -84,7 +88,9 @@
     "severityCommon": "Común — problema reportado frecuentemente",
     "severityModerate": "Moderado — reportado por algunos propietarios",
     "severityUncommon": "Poco común — reportado por pocos propietarios",
-    "severityRare": "Raro — reportes aislados pero crítico cuando ocurre"
+    "severityRare": "Raro — reportes aislados pero crítico cuando ocurre",
+    "openMenu": "Open menu",
+    "dismissMaintenance": "Dismiss"
   },
   "quotes": {
     "newQuote": "Nueva cotización",
@@ -148,13 +154,26 @@
       "mileageMarine": "Horas de Motor",
       "technician": "Tecnico",
       "files": "Archivos",
-      "total": "Total"
+      "total": "Total",
+      "warranty": "Garantia"
+    },
+    "warranty": {
+      "status": {
+        "active": "Activa",
+        "expiring": "Por vencer",
+        "expired": "Vencida",
+        "none": "N/A"
+      }
     },
     "emptyFiltered": "Ningun registro de servicio coincide con sus filtros.",
     "empty": "Aun no hay registros de servicio.",
     "showing": "Mostrando {start}-{end} de {total}",
     "perPage": "por pagina",
-    "page": "Pagina {page} de {totalPages}"
+    "page": "Pagina {page} de {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "notes": {
     "addNote": "Agregar nota",
@@ -179,7 +198,12 @@
     "noteUpdated": "Nota actualizada",
     "noteCreated": "Nota creada",
     "titleRequired": "El titulo y el contenido son obligatorios",
-    "saveError": "Error al {action} nota"
+    "saveError": "Error al {action} nota",
+    "openMenu": "Open menu",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "findings": {
     "sectionTitle": "Observaciones",
@@ -227,7 +251,12 @@
     "resolveError": "Error al resolver observación",
     "showing": "Mostrando {start}-{end} de {total}",
     "perPage": "por página",
-    "page": "Página {page} de {totalPages}"
+    "page": "Página {page} de {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page",
+    "openMenu": "Open menu"
   },
   "observationsPage": {
     "searchPlaceholder": "Buscar descripción, notas o vehículo...",
@@ -277,6 +306,7 @@
     "manual": "Manual",
     "cvt": "CVT",
     "engineSize": "Tamano del motor",
+    "engineCode": "Código del motor",
     "makeMarine": "Fabricante *",
     "mileageMarine": "Horas de Motor",
     "transmissionMarine": "Tipo de Motor",
@@ -297,5 +327,11 @@
     "reasonPlaceholder": "ej. Vendido, siniestrado, dado de baja...",
     "archived": "{name} archivado",
     "archiveError": "Error al archivar vehiculo"
+  },
+  "serviceRecords": {
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   }
 }

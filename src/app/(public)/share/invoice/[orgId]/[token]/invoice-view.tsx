@@ -46,6 +46,10 @@ interface InvoiceRecord {
   discountType: string | null
   discountValue: number
   discountAmount: number
+  warrantyMonths: number | null
+  warrantyMileage: number | null
+  warrantyExpiresAt: Date | string | null
+  warrantyNotes: string | null
   partItems: {
     partNumber: string | null
     name: string
@@ -181,6 +185,7 @@ export function InvoiceView({
   record,
   workshop,
   currencyCode,
+  currencyFormat = 'symbol',
   orgId,
   token,
   enabledProviders = [],
@@ -206,6 +211,7 @@ export function InvoiceView({
   record: InvoiceRecord
   workshop: { name: string; address: string; phone: string; email: string }
   currencyCode: string
+  currencyFormat?: 'symbol' | 'code'
   orgId: string
   token: string
   enabledProviders?: string[]
@@ -422,7 +428,7 @@ export function InvoiceView({
       return
     }
     if (amount > balanceDue + 0.01) {
-      setPaymentError(t('errorExceedsBalance', { amount: formatCurrency(balanceDue, currencyCode) }))
+      setPaymentError(t('errorExceedsBalance', { amount: formatCurrency(balanceDue, currencyCode, currencyFormat) }))
       return
     }
 
@@ -479,7 +485,7 @@ export function InvoiceView({
             {t('paymentReceived')}
           </p>
           <p className="text-sm text-emerald-600 dark:text-emerald-500">
-            {t('paymentApplied', { amount: formatCurrency(paymentSuccess.amount, currencyCode) })}
+            {t('paymentApplied', { amount: formatCurrency(paymentSuccess.amount, currencyCode, currencyFormat) })}
           </p>
         </div>
       )}
@@ -502,7 +508,7 @@ export function InvoiceView({
                 <span className="text-sm font-semibold">{t('balanceDue')}</span>
               </div>
               <span className="text-lg font-bold text-white">
-                {formatCurrency(balanceDue, currencyCode)}
+                {formatCurrency(balanceDue, currencyCode, currencyFormat)}
               </span>
             </div>
           </div>
@@ -842,10 +848,10 @@ export function InvoiceView({
                               <td className="p-2">{p.name}</td>
                               <td className="p-2 text-right">{p.quantity}</td>
                               <td className="p-2 text-right">
-                                {formatCurrency(netUnitPrice, currencyCode)}
+                                {formatCurrency(netUnitPrice, currencyCode, currencyFormat)}
                               </td>
                               <td className="p-2 text-right font-medium">
-                                {formatCurrency(netLineValue, currencyCode)}
+                                {formatCurrency(netLineValue, currencyCode, currencyFormat)}
                               </td>
                             </tr>
                           )
@@ -879,9 +885,9 @@ export function InvoiceView({
                             <tr key={i}>
                               <td className="p-2">{l.description}</td>
                               <td className="p-2 text-right">{l.pricingType === 'service' ? `${l.hours} ${t('unit')}` : `${l.hours} ${t('hrs')}`}</td>
-                              <td className="p-2 text-right">{l.pricingType === 'service' ? formatCurrency(netRate, currencyCode) : t('ratePerHour', { rate: formatCurrency(netRate, currencyCode) })}</td>
+                              <td className="p-2 text-right">{l.pricingType === 'service' ? formatCurrency(netRate, currencyCode, currencyFormat) : t('ratePerHour', { rate: formatCurrency(netRate, currencyCode, currencyFormat) })}</td>
                               <td className="p-2 text-right font-medium">
-                                {formatCurrency(netLineValue, currencyCode)}
+                                {formatCurrency(netLineValue, currencyCode, currencyFormat)}
                               </td>
                             </tr>
                           )
@@ -900,15 +906,15 @@ export function InvoiceView({
                       <>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-500">{t('parts')}</span>
-                          <span>{formatCurrency(partsSubtotal, currencyCode)}</span>
+                          <span>{formatCurrency(partsSubtotal, currencyCode, currencyFormat)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-500">{t('labor')}</span>
-                          <span>{formatCurrency(laborSubtotal, currencyCode)}</span>
+                          <span>{formatCurrency(laborSubtotal, currencyCode, currencyFormat)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-500">{t('subtotal')}</span>
-                          <span>{formatCurrency(computedSubtotal, currencyCode)}</span>
+                          <span>{formatCurrency(computedSubtotal, currencyCode, currencyFormat)}</span>
                         </div>
                       </>
                     )}
@@ -918,7 +924,7 @@ export function InvoiceView({
                           {record.discountType === 'percentage' ? t('discountPercent', { percent: record.discountValue }) : t('discount')}
                         </span>
                         <span className="text-red-500">
-                          {formatCurrency(-displayDiscountAmount, currencyCode)}
+                          {formatCurrency(-displayDiscountAmount, currencyCode, currencyFormat)}
                         </span>
                       </div>
                     )}
@@ -929,7 +935,7 @@ export function InvoiceView({
                             ? `${taxLabel} (${record.taxRate}%)`
                             : t('tax', { rate: record.taxRate })}
                         </span>
-                        <span>{formatCurrency(computedTax, currencyCode)}</span>
+                        <span>{formatCurrency(computedTax, currencyCode, currencyFormat)}</span>
                       </div>
                     )}
                     <div
@@ -941,7 +947,7 @@ export function InvoiceView({
                       >
                         <span>{t('total')}</span>
                         <span style={totalPaid > 0 ? undefined : { color: primaryColor }}>
-                          {formatCurrency(displayTotal, currencyCode)}
+                          {formatCurrency(displayTotal, currencyCode, currencyFormat)}
                         </span>
                       </div>
                     </div>
@@ -949,7 +955,7 @@ export function InvoiceView({
                       <>
                         <div className="flex justify-between text-sm text-emerald-600">
                           <span>{t('paid')}</span>
-                          <span>{formatCurrency(-totalPaid, currencyCode)}</span>
+                          <span>{formatCurrency(-totalPaid, currencyCode, currencyFormat)}</span>
                         </div>
                         {balanceDue <= 0 ? (
                           <div className="rounded-lg bg-emerald-50 px-4 py-3 dark:bg-emerald-900/20">
@@ -963,7 +969,7 @@ export function InvoiceView({
                             <div className="flex items-center justify-between gap-2 text-lg font-bold">
                               <span className="whitespace-nowrap">{t('amountDue')}</span>
                               <span className="text-amber-700 dark:text-amber-400">
-                                {formatCurrency(balanceDue, currencyCode)}
+                                {formatCurrency(balanceDue, currencyCode, currencyFormat)}
                               </span>
                             </div>
                           </div>
@@ -1026,6 +1032,28 @@ export function InvoiceView({
                   />
                 </div>
               )
+
+            case 'warranty': {
+              if (!record.warrantyMonths && !record.warrantyNotes) return null
+              const parts: string[] = []
+              if (record.warrantyMonths) parts.push(`${record.warrantyMonths} ${record.warrantyMonths === 1 ? t('warrantyMonth', { defaultValue: 'month' }) : t('warrantyMonths', { defaultValue: 'months' })}`)
+              if (record.warrantyMileage) parts.push(`${record.warrantyMileage.toLocaleString()} ${t('warrantyKm', { defaultValue: 'km' })}`)
+              const expiresAt = record.warrantyExpiresAt ? fmtDate(new Date(record.warrantyExpiresAt), df) : null
+              return (
+                <div key="warranty" className="mt-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                  <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('warrantyTitle', { defaultValue: 'Warranty' })}</p>
+                  {parts.length > 0 && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{parts.join(' / ')}</p>
+                  )}
+                  {expiresAt && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('warrantyExpires', { defaultValue: 'Expires' })}: {expiresAt}</p>
+                  )}
+                  {record.warrantyNotes && (
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{record.warrantyNotes}</p>
+                  )}
+                </div>
+              )
+            }
 
             case 'findings':
               if (!findings || findings.length === 0) return null
@@ -1098,7 +1126,7 @@ export function InvoiceView({
                       return netDays !== null && netDays > 0 ? (
                         <div>
                           <p className="text-xs text-gray-500 dark:text-gray-400">{t('paymentTerms')}</p>
-                          <p className="font-medium">Net {netDays} Days</p>
+                          <p className="font-medium">{t('netDays', { days: netDays })}</p>
                         </div>
                       ) : invoiceSettings.paymentTerms ? (
                         <div>

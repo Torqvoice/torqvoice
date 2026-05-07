@@ -78,6 +78,10 @@
     "deleted": "Periodinė sąskaita ištrinta",
     "failedDelete": "Nepavyko ištrinti",
     "processed": "Apdorota {count} sąskaita(-ų)",
-    "failedProcess": "Nepavyko apdoroti"
+    "failedProcess": "Nepavyko apdoroti",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "removeRow": "Remove row"
   }
 }

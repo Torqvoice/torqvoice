@@ -406,5 +406,9 @@
     "date": "Data",
     "title": "Título"
   },
-  "empty": "Nenhum dado carregado ainda. Clique em Atualizar para carregar o relatório."
+  "empty": "Nenhum dado carregado ainda. Clique em Atualizar para carregar o relatório.",
+  "pagination": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
 }

@@ -4,7 +4,9 @@
   "botToken": {
     "label": "Bot Token",
     "placeholder": "@BotFather'dan aldığınız bot tokenini girin",
-    "help": "Tokeninizi almak için Telegram'da @BotFather üzerinden bir bot oluşturun."
+    "help": "Tokeninizi almak için Telegram'da @BotFather üzerinden bir bot oluşturun.",
+    "show": "Show token",
+    "hide": "Hide token"
   },
   "botUsername": {
     "label": "Bot Kullanıcı Adı",
@@ -17,7 +19,8 @@
   "deepLink": {
     "title": "Müşteri Bağlantı Linki",
     "description": "Müşterilerin botunuza bağlanabilmesi için bu linki paylaşın. Müşteri kimliği yer tutucusunu gerçek müşteri kimliğiyle değiştirin.",
-    "copied": "Link kopyalandı!"
+    "copied": "Link kopyalandı!",
+    "copy": "Copy deep link"
   },
   "test": {
     "title": "Test Mesajı",

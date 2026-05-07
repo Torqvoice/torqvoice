@@ -18,7 +18,8 @@
     "quantity": "Kiekis",
     "addToJob": "Pridėti {qty} prie darbo",
     "statusReport": "Būsenos ataskaita",
-    "report": "Ataskaita"
+    "report": "Ataskaita",
+    "observation": "Pastebėjimas"
   },
   "recentActivity": "Naujausios veiklos",
   "noRecentActivity": "Naujausių veiklų nėra",
@@ -64,7 +65,9 @@
     "dismissedTab": "Atmesti",
     "noActive": "Šiuo metu nėra transporto priemonių, kurioms reikia aptarnavimo.",
     "dismissedOn": "Atmesta {date}",
-    "restore": "Atkurti"
+    "restore": "Atkurti",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Artėjantys priminimai",
@@ -95,7 +98,8 @@
     "pending": "Laukia",
     "createQuote": "Sukurti pasiūlymą",
     "itemsRequested": "{count, plural, one {# elementas prašomas} other {# elementai prašomi}}",
-    "noData": "Laukiančių pasiūlymų užklausų nėra."
+    "noData": "Laukiančių pasiūlymų užklausų nėra.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Klientų atsakymai į pasiūlymus",
@@ -106,7 +110,8 @@
     "convert": "Konvertuoti",
     "viewQuote": "Peržiūrėti pasiūlymą",
     "view": "Peržiūrėti",
-    "noData": "Klientų atsakymų nėra."
+    "noData": "Klientų atsakymų nėra.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Neseniai užbaigti",

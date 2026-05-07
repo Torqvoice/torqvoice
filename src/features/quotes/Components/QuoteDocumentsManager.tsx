@@ -91,7 +91,7 @@ export function QuoteDocumentsManager({
           });
           if (!res.ok) {
             const err = await res.json();
-            toast.error(err.error || `Failed to upload ${file.name}`);
+            toast.error(err.error || t("documents.failedUploadFile", { name: file.name }));
             continue;
           }
           const data = await res.json();
@@ -112,10 +112,10 @@ export function QuoteDocumentsManager({
             setFiles((prev) => [...prev, result.data as Attachment]);
             successCount++;
           } else {
-            toast.error(result.error || `Failed to save ${file.name}`);
+            toast.error(result.error || t("documents.failedSaveFile", { name: file.name }));
           }
         } catch {
-          toast.error(`Failed to upload ${file.name}`);
+          toast.error(t("documents.failedUploadFile", { name: file.name }));
         }
       }
 
@@ -263,6 +263,7 @@ export function QuoteDocumentsManager({
                   size="icon"
                   className="h-7 w-7 text-muted-foreground hover:text-destructive"
                   onClick={() => handleDelete(file.id)}
+                  aria-label={t("page.delete")}
                 >
                   <X className="h-3.5 w-3.5" />
                 </Button>

@@ -21,7 +21,8 @@
     "batchDelete": "Löschen ({count})",
     "batchDeleteTitle": "Kunden löschen",
     "batchDeleteDescription": "{count} Kunde(n) löschen? Die zugehörigen Fahrzeuge werden dabei entknüpft.",
-    "batchDeleteSuccess": "{count} Kunde(n) gelöscht"
+    "batchDeleteSuccess": "{count} Kunde(n) gelöscht",
+    "openMenu": "Open menu"
   },
   "detail": {
     "backToCustomers": "Zurück zur Kundenliste",

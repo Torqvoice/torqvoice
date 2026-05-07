@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { formatCurrency } from '@/lib/format'
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import { netLineTotal } from '@/lib/tax'
 
 interface TotalsSectionProps {
@@ -47,6 +47,7 @@ export function TotalsSection({
   totalAmount,
   currencyCode,
 }: TotalsSectionProps) {
+  const formatCurrency = useFormatCurrency()
   const t = useTranslations('service.totals')
 
   // Universal display: net per category, net subtotal, net discount, tax, gross total.

@@ -265,10 +265,10 @@ export default function CalendarClient({
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Button size="icon" variant="outline" className="h-8 w-8" onClick={goToPrev}>
+                  <Button size="icon" variant="outline" className="h-8 w-8" onClick={goToPrev} aria-label={t('previousMonth')}>
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <Button size="icon" variant="outline" className="h-8 w-8" onClick={goToNext}>
+                  <Button size="icon" variant="outline" className="h-8 w-8" onClick={goToNext} aria-label={t('nextMonth')}>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                   <h2 className="text-lg font-semibold ml-2">

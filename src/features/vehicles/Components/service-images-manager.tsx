@@ -262,6 +262,7 @@ export function ServiceImagesManager({
                     size="icon"
                     className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
                     onClick={() => handleDelete(file.id)}
+                    aria-label={t("header.delete")}
                   >
                     <X className="h-3 w-3" />
                   </Button>

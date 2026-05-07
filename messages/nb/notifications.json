@@ -6,5 +6,6 @@
     "confirmDelete": "Er du sikker?",
     "delete": "Slett",
     "cancel": "Avbryt"
-  }
+  },
+  "openNotifications": "Open notifications"
 }

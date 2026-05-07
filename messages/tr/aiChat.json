@@ -14,5 +14,6 @@
   "chatsPrivate": "Sohbetleriniz özeldir ve yalnızca size görünür.",
   "deleteChat": "Sohbeti sil",
   "hideSidebar": "Paneli gizle",
-  "showSidebar": "Paneli göster"
+  "showSidebar": "Paneli göster",
+  "sendMessage": "Send message"
 }

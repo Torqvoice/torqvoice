@@ -406,5 +406,9 @@
     "date": "Data",
     "title": "Tytuł"
   },
-  "empty": "Nie załadowano jeszcze danych. Kliknij Odśwież, aby załadować raport."
+  "empty": "Nie załadowano jeszcze danych. Kliknij Odśwież, aby załadować raport.",
+  "pagination": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  }
 }

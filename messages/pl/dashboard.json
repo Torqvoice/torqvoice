@@ -18,7 +18,8 @@
     "quantity": "Ilość",
     "addToJob": "Dodaj {qty} do zlecenia",
     "statusReport": "Raport statusu",
-    "report": "Raport"
+    "report": "Raport",
+    "observation": "Obserwacja"
   },
   "recentActivity": "Ostatnia aktywność",
   "noRecentActivity": "Brak ostatniej aktywności",
@@ -64,7 +65,9 @@
     "dismissedTab": "Odrzucone",
     "noActive": "Żaden pojazd nie wymaga obecnie serwisu.",
     "dismissedOn": "Odrzucono {date}",
-    "restore": "Przywróć"
+    "restore": "Przywróć",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Nadchodzące przypomnienia",
@@ -95,7 +98,8 @@
     "pending": "Oczekujące",
     "createQuote": "Utwórz wycenę",
     "itemsRequested": "{count, plural, one {# pozycja zgłoszona} few {# pozycje zgłoszone} many {# pozycji zgłoszonych} other {# pozycji zgłoszonych}}",
-    "noData": "Brak oczekujących zapytań ofertowych."
+    "noData": "Brak oczekujących zapytań ofertowych.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Odpowiedzi klientów na wyceny",
@@ -106,7 +110,8 @@
     "convert": "Convert",
     "viewQuote": "Pokaż wycenę",
     "view": "View",
-    "noData": "Brak odpowiedzi klientów."
+    "noData": "Brak odpowiedzi klientów.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Ostatnio ukończone",

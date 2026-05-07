@@ -70,7 +70,9 @@
     "qty": "Qtà",
     "unitPrice": "Prezzo unitario",
     "total": "Totale",
-    "subtotal": "Subtotale ricambi: {amount}"
+    "subtotal": "Subtotale ricambi: {amount}",
+    "deleteRow": "Delete row",
+    "excludeFromTotal": "Exclude from total"
   },
   "labor": {
     "title": "Manodopera",
@@ -90,7 +92,9 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row",
+    "excludeFromTotal": "Exclude from total"
   },
   "notes": {
     "title": "Note",
@@ -127,7 +131,9 @@
     "customer": "Cliente",
     "selectVehicle": "Seleziona veicolo...",
     "selectCustomer": "Seleziona cliente...",
-    "none": "Nessuno"
+    "none": "Nessuno",
+    "clearVehicle": "Clear vehicle",
+    "clearCustomer": "Clear customer"
   },
   "totals": {
     "title": "Totali",
@@ -158,7 +164,8 @@
     "emailSent": "E-mail inviata",
     "failedEmail": "Invio e-mail non riuscito",
     "smsSent": "SMS inviato",
-    "failedSms": "Invio SMS non riuscito"
+    "failedSms": "Invio SMS non riuscito",
+    "copyLink": "Copy link"
   },
   "images": {
     "title": "Immagini del preventivo",
@@ -173,6 +180,8 @@
     "uploadingCount": "Caricamento di {count} immagine/i...",
     "uploadedCount": "{count} immagine/i caricata/e",
     "uploadFailed": "Caricamento non riuscito",
+    "failedUploadFile": "Failed to upload {name}",
+    "failedSaveFile": "Failed to save {name}",
     "deleted": "Immagine eliminata",
     "failedDelete": "Eliminazione immagine non riuscita",
     "failedUpdate": "Aggiornamento non riuscito",
@@ -191,6 +200,8 @@
     "uploadingCount": "Caricamento di {count} file...",
     "uploadedCount": "{count} file caricato/i",
     "uploadFailed": "Caricamento non riuscito",
+    "failedUploadFile": "Failed to upload {name}",
+    "failedSaveFile": "Failed to save {name}",
     "deleted": "File eliminato",
     "failedDelete": "Eliminazione file non riuscita",
     "failedUpdate": "Aggiornamento non riuscito",

@@ -21,7 +21,8 @@
     "batchDelete": "Delete ({count})",
     "batchDeleteTitle": "Delete Customers",
     "batchDeleteDescription": "Delete {count} customer(s)? This will unlink their vehicles.",
-    "batchDeleteSuccess": "{count} customer(s) deleted"
+    "batchDeleteSuccess": "{count} customer(s) deleted",
+    "openMenu": "Open menu"
   },
   "detail": {
     "backToCustomers": "Back to customers",

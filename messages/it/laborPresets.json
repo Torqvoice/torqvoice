@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Modifica",
-    "delete": "Elimina"
+    "delete": "Elimina",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Elimina modello di manodopera",
@@ -45,7 +46,16 @@
     "itemQty": "Qty",
     "itemQtyOrHours": "Unit / Hours",
     "hourlyTag": "HR",
-    "serviceTag": "SVC"
+    "serviceTag": "SVC",
+    "partsTitle": "Ricambi",
+    "addPart": "Aggiungi ricambio",
+    "partName": "Nome ricambio",
+    "partNumber": "Ricambio #",
+    "partQty": "Qtà",
+    "partPrice": "Prezzo unitario",
+    "importFromInventory": "Importa dal magazzino",
+    "searchInventory": "Cerca nel magazzino...",
+    "noPartsFound": "Nessun ricambio trovato"
   },
   "picker": {
     "title": "Seleziona modello di manodopera",
@@ -53,7 +63,8 @@
     "noPackages": "Nessun modello di manodopera trovato.",
     "items": "{count} voci",
     "totalHours": "{hours}h in totale",
-    "totalUnits": "{units} unit(s)"
+    "totalUnits": "{units} unit(s)",
+    "totalParts": "{count} ricambi"
   },
   "errors": {
     "error": "Errore",

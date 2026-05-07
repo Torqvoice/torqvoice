@@ -31,6 +31,7 @@ import { getCurrencySymbol } from '@/lib/format'
 import type { QuoteAttachment, QuoteRecord, TabType } from './quote-page-types'
 import { statusColors } from './quote-page-types'
 import { useQuoteFormState } from './useQuoteFormState'
+import { useSaveShortcut } from '@/hooks/use-save-shortcut'
 import { LaborPresetPickerDialog, type LaborPresetOption } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import { QuotePartsEditor } from './QuotePartsEditor'
 import { QuoteLaborEditor } from './QuoteLaborEditor'
@@ -95,6 +96,10 @@ export function QuotePageClient({
     t,
   })
 
+  useSaveShortcut(() => {
+    if (state.hasUnsavedChanges) return state.saveNow()
+  })
+
   const [showPresetPicker, setShowPresetPicker] = useState(false)
 
   const handleSelectPreset = useCallback(
@@ -108,6 +113,18 @@ export function QuotePageClient({
         excluded: false,
       }))
       state.addLaborBulk(newItems)
+
+      if (preset.parts?.length) {
+        const newParts = preset.parts.map((part) => ({
+          name: part.name,
+          partNumber: part.partNumber || '',
+          quantity: part.quantity,
+          unitPrice: part.unitPrice,
+          total: part.quantity * part.unitPrice,
+          excluded: false,
+        }))
+        state.addPartBulk(newParts)
+      }
     },
     [defaultLaborRate, state]
   )
@@ -253,23 +270,35 @@ export function QuotePageClient({
               <Button
                 variant="outline"
                 size="sm"
+                disabled={state.saving}
                 onClick={async () => {
+                  if (state.saving) return
                   if (state.hasUnsavedChanges) await state.saveNow()
                   state.setShowEmailDialog(true)
                 }}
               >
-                <Mail className="mr-1 h-3.5 w-3.5" />
+                {state.saving ? (
+                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Mail className="mr-1 h-3.5 w-3.5" />
+                )}
                 {t('page.email')}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
+                disabled={state.saving}
                 onClick={async () => {
+                  if (state.saving) return
                   if (state.hasUnsavedChanges) await state.saveNow()
                   state.setShowShareDialog(true)
                 }}
               >
-                <Globe className="mr-1 h-3.5 w-3.5" />
+                {state.saving ? (
+                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Globe className="mr-1 h-3.5 w-3.5" />
+                )}
                 {t('page.share')}
               </Button>
               <Button

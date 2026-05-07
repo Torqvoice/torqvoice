@@ -8,10 +8,11 @@ import { revalidatePath } from "next/cache";
 export async function archiveVehicle(vehicleId: string, reason?: string) {
   return withAuth(
     async ({ organizationId }) => {
-      await db.vehicle.updateMany({
+      const result = await db.vehicle.updateMany({
         where: { id: vehicleId, organizationId },
         data: { isArchived: true, archiveReason: reason || null },
       });
+      if (result.count === 0) throw new Error("Vehicle not found");
 
       revalidatePath("/");
       revalidatePath("/vehicles");

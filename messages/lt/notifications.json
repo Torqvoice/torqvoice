@@ -6,5 +6,6 @@
     "confirmDelete": "Ar tikrai?",
     "delete": "Ištrinti",
     "cancel": "Atšaukti"
-  }
+  },
+  "openNotifications": "Open notifications"
 }

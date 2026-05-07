@@ -14,6 +14,7 @@
     "createAndSend": "Oluştur ve Gönder",
     "cancel": "İptal",
     "uploadFailed": "Video yüklenemedi",
+    "createReportFailed": "Failed to create status report",
     "created": "Durum raporu oluşturuldu",
     "noVideo": "Lütfen önce bir video yükleyin",
     "removeVideo": "Videoyu kaldır",

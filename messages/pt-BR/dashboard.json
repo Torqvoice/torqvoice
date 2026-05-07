@@ -18,7 +18,8 @@
     "quantity": "Quantidade",
     "addToJob": "Adicionar {qty} ao serviço",
     "statusReport": "Relatório de Status",
-    "report": "Relatório"
+    "report": "Relatório",
+    "observation": "Observação"
   },
   "recentActivity": "Atividade recente",
   "noRecentActivity": "Nenhuma atividade recente",
@@ -64,7 +65,9 @@
     "dismissedTab": "Dispensados",
     "noActive": "Nenhum veículo precisa de manutenção no momento.",
     "dismissedOn": "Dispensado em {date}",
-    "restore": "Restaurar"
+    "restore": "Restaurar",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Lembretes Próximos",
@@ -95,7 +98,8 @@
     "pending": "Pendente",
     "createQuote": "Criar Orçamento",
     "itemsRequested": "{count, plural, one {# item solicitado} other {# itens solicitados}}",
-    "noData": "Nenhuma solicitação de orçamento pendente."
+    "noData": "Nenhuma solicitação de orçamento pendente.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Respostas de Orçamento dos Clientes",
@@ -106,7 +110,8 @@
     "convert": "Convert",
     "viewQuote": "Ver Orçamento",
     "view": "View",
-    "noData": "Nenhuma resposta de cliente."
+    "noData": "Nenhuma resposta de cliente.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Concluídos Recentemente",

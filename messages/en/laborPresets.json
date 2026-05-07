@@ -15,7 +15,8 @@
   },
   "actions": {
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "openMenu": "Open menu"
   },
   "deletePreset": {
     "title": "Delete Labor Package",
@@ -45,7 +46,16 @@
     "create": "Create Package",
     "saveChanges": "Save Changes",
     "hourlyTag": "HR",
-    "serviceTag": "SVC"
+    "serviceTag": "SVC",
+    "partsTitle": "Parts",
+    "addPart": "Add Part",
+    "partName": "Part name",
+    "partNumber": "Part #",
+    "partQty": "Qty",
+    "partPrice": "Unit price",
+    "importFromInventory": "Import from inventory",
+    "searchInventory": "Search inventory...",
+    "noPartsFound": "No parts found"
   },
   "picker": {
     "title": "Select Labor Package",
@@ -53,7 +63,8 @@
     "noPackages": "No labor packages found.",
     "items": "{count} items",
     "totalHours": "{hours}h total",
-    "totalUnits": "{units} unit(s)"
+    "totalUnits": "{units} unit(s)",
+    "totalParts": "{count} parts"
   },
   "errors": {
     "error": "Error",

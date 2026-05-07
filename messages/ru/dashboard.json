@@ -18,7 +18,8 @@
     "quantity": "Количество",
     "addToJob": "Добавить {qty} к заказу",
     "statusReport": "Отчёт о состоянии",
-    "report": "Отчёт"
+    "report": "Отчёт",
+    "observation": "Наблюдение"
   },
   "recentActivity": "Последняя активность",
   "noRecentActivity": "Нет недавней активности",
@@ -64,7 +65,9 @@
     "dismissedTab": "Отклонённые",
     "noActive": "Нет транспортных средств, требующих обслуживания.",
     "dismissedOn": "Отклонено {date}",
-    "restore": "Восстановить"
+    "restore": "Восстановить",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Предстоящие напоминания",
@@ -95,7 +98,8 @@
     "pending": "Ожидающие",
     "createQuote": "Создать предложение",
     "itemsRequested": "{count, plural, one {# пункт запрошен} few {# пункта запрошено} other {# пунктов запрошено}}",
-    "noData": "Нет ожидающих запросов на предложения."
+    "noData": "Нет ожидающих запросов на предложения.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Ответы клиентов на предложения",
@@ -106,7 +110,8 @@
     "convert": "Convert",
     "viewQuote": "Просмотреть предложение",
     "view": "View",
-    "noData": "Нет ответов от клиентов."
+    "noData": "Нет ответов от клиентов.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Недавно завершённые",

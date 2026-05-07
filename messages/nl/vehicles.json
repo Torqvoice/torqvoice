@@ -26,7 +26,11 @@
     "vehicleUnarchived": "Voertuig gedearchiveerd",
     "unarchiveError": "Dearchiveren van voertuig mislukt",
     "deleteError": "Verwijderen van voertuig mislukt",
-    "error": "Laden van voertuigen mislukt"
+    "error": "Laden van voertuigen mislukt",
+    "viewTable": "Table view",
+    "viewGrid": "Grid view",
+    "viewLargeGrid": "Large grid view",
+    "openMenu": "Open menu"
   },
   "detail": {
     "vehicleArchived": "Dit voertuig is gearchiveerd",
@@ -84,7 +88,9 @@
     "severityCommon": "Veel voorkomend — veelgemeld probleem",
     "severityModerate": "Matig — gemeld door sommige eigenaren",
     "severityUncommon": "Ongebruikelijk — gemeld door weinig eigenaren",
-    "severityRare": "Zeldzaam — geïsoleerde meldingen maar kritiek wanneer het optreedt"
+    "severityRare": "Zeldzaam — geïsoleerde meldingen maar kritiek wanneer het optreedt",
+    "openMenu": "Open menu",
+    "dismissMaintenance": "Dismiss"
   },
   "quotes": {
     "newQuote": "Nieuwe offerte",
@@ -148,13 +154,26 @@
       "mileageMarine": "Motoruren",
       "technician": "Monteur",
       "files": "Bestanden",
-      "total": "Totaal"
+      "total": "Totaal",
+      "warranty": "Garantie"
+    },
+    "warranty": {
+      "status": {
+        "active": "Actief",
+        "expiring": "Verloopt binnenkort",
+        "expired": "Verlopen",
+        "none": "N/A"
+      }
     },
     "emptyFiltered": "Geen servicegegevens gevonden voor uw filters.",
     "empty": "Nog geen servicegegevens.",
     "showing": "{start}-{end} van {total} weergegeven",
     "perPage": "per pagina",
-    "page": "Pagina {page} van {totalPages}"
+    "page": "Pagina {page} van {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "notes": {
     "addNote": "Notitie toevoegen",
@@ -179,7 +198,12 @@
     "noteUpdated": "Notitie bijgewerkt",
     "noteCreated": "Notitie aangemaakt",
     "titleRequired": "Titel en inhoud zijn verplicht",
-    "saveError": "{action} van notitie mislukt"
+    "saveError": "{action} van notitie mislukt",
+    "openMenu": "Open menu",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "findings": {
     "sectionTitle": "Observaties",
@@ -227,7 +251,12 @@
     "resolveError": "Kan observatie niet oplossen",
     "showing": "{start}-{end} van {total} weergegeven",
     "perPage": "per pagina",
-    "page": "Pagina {page} van {totalPages}"
+    "page": "Pagina {page} van {totalPages}",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page",
+    "openMenu": "Open menu"
   },
   "observationsPage": {
     "searchPlaceholder": "Zoek in beschrijving, notities of voertuig...",
@@ -277,6 +306,7 @@
     "manual": "Handgeschakeld",
     "cvt": "CVT",
     "engineSize": "Motorinhoud",
+    "engineCode": "Motorcode",
     "makeMarine": "Fabrikant *",
     "mileageMarine": "Motoruren",
     "transmissionMarine": "Motortype",
@@ -297,5 +327,11 @@
     "reasonPlaceholder": "bijv. Verkocht, total loss, uit dienst genomen...",
     "archived": "{name} gearchiveerd",
     "archiveError": "Archiveren van voertuig mislukt"
+  },
+  "serviceRecords": {
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   }
 }

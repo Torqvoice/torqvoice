@@ -14,5 +14,6 @@
   "chatsPrivate": "Vos conversations sont privées et visibles uniquement par vous.",
   "deleteChat": "Supprimer le chat",
   "hideSidebar": "Masquer le panneau",
-  "showSidebar": "Afficher le panneau"
+  "showSidebar": "Afficher le panneau",
+  "sendMessage": "Send message"
 }

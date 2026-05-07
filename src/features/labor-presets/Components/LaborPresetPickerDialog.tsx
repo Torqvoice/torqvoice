@@ -11,6 +11,7 @@ export interface LaborPresetOption {
   name: string;
   description: string | null;
   items: { description: string; hours: number; rate: number; pricingType?: string; sortOrder: number }[];
+  parts?: { name: string; partNumber: string | null; quantity: number; unitPrice: number; inventoryPartId: string | null; sortOrder: number }[];
 }
 
 interface LaborPresetPickerDialogProps {
@@ -50,7 +51,7 @@ export function LaborPresetPickerDialog({
         }
       }}
     >
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
@@ -70,7 +71,7 @@ export function LaborPresetPickerDialog({
             const totalHours = hourlyItems.reduce((sum, i) => sum + i.hours, 0);
             const totalUnits = serviceItems.reduce((sum, i) => sum + i.hours, 0);
             const isExpanded = expandedId === preset.id;
-            const isSingleItem = preset.items.length === 1;
+            const hasDetails = preset.items.length > 1 || (preset.parts && preset.parts.length > 0);
 
             return (
               <div key={preset.id} className="rounded-md border border-transparent hover:border-border">
@@ -99,10 +100,13 @@ export function LaborPresetPickerDialog({
                     )}
                   </div>
                   <div className="flex items-center gap-3 shrink-0 text-xs text-muted-foreground">
-                    {!isSingleItem && <span>{t("items", { count: preset.items.length })}</span>}
+                    {hasDetails && <span>{t("items", { count: preset.items.length })}</span>}
                     {totalHours > 0 && <span>{t("totalHours", { hours: totalHours.toFixed(1) })}</span>}
                     {totalUnits > 0 && <span>{t("totalUnits", { units: totalUnits })}</span>}
-                    {!isSingleItem && (
+                    {preset.parts && preset.parts.length > 0 && (
+                      <span>{t("totalParts", { count: preset.parts.length })}</span>
+                    )}
+                    {hasDetails && (
                       <button
                         type="button"
                         className="p-1 hover:text-foreground"
@@ -116,7 +120,7 @@ export function LaborPresetPickerDialog({
                     )}
                   </div>
                 </div>
-                {isExpanded && !isSingleItem && (
+                {isExpanded && hasDetails && (
                   <div className="px-3 pb-2 space-y-0.5">
                     {preset.items.map((item, i) => (
                       <div key={i} className="flex items-center justify-between text-xs text-muted-foreground py-0.5 pl-2 border-l-2 border-muted">
@@ -124,6 +128,16 @@ export function LaborPresetPickerDialog({
                         <span className="shrink-0 ml-2">{item.pricingType === "service" ? `${item.hours} unit${item.hours !== 1 ? "s" : ""}` : `${item.hours}h`}</span>
                       </div>
                     ))}
+                    {preset.parts && preset.parts.length > 0 && (
+                      <>
+                        {preset.parts.map((part, i) => (
+                          <div key={`part-${i}`} className="flex items-center justify-between text-xs text-muted-foreground py-0.5 pl-2 border-l-2 border-blue-400/50">
+                            <span className="truncate">{part.name}{part.partNumber ? ` (${part.partNumber})` : ''}</span>
+                            <span className="shrink-0 ml-2">x{part.quantity}</span>
+                          </div>
+                        ))}
+                      </>
+                    )}
                   </div>
                 )}
               </div>

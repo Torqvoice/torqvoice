@@ -70,7 +70,9 @@
     "qty": "Ant.",
     "unitPrice": "Enhetspris",
     "total": "Totalt",
-    "subtotal": "Deler delsum: {amount}"
+    "subtotal": "Deler delsum: {amount}",
+    "deleteRow": "Delete row",
+    "excludeFromTotal": "Exclude from total"
   },
   "labor": {
     "title": "Arbeid",
@@ -90,7 +92,9 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row",
+    "excludeFromTotal": "Exclude from total"
   },
   "notes": {
     "title": "Notater",
@@ -127,7 +131,9 @@
     "customer": "Kunde",
     "selectVehicle": "Velg kjøretøy...",
     "selectCustomer": "Velg kunde...",
-    "none": "Ingen"
+    "none": "Ingen",
+    "clearVehicle": "Clear vehicle",
+    "clearCustomer": "Clear customer"
   },
   "totals": {
     "title": "Totaler",
@@ -158,7 +164,8 @@
     "emailSent": "E-post sendt",
     "failedEmail": "Kunne ikke sende e-post",
     "smsSent": "SMS sendt",
-    "failedSms": "Kunne ikke sende SMS"
+    "failedSms": "Kunne ikke sende SMS",
+    "copyLink": "Copy link"
   },
   "images": {
     "title": "Tilbudsbilder",
@@ -173,6 +180,8 @@
     "uploadingCount": "Laster opp {count} bilde(r)...",
     "uploadedCount": "{count} bilde(r) lastet opp",
     "uploadFailed": "Opplasting mislyktes",
+    "failedUploadFile": "Failed to upload {name}",
+    "failedSaveFile": "Failed to save {name}",
     "deleted": "Bilde slettet",
     "failedDelete": "Kunne ikke slette bildet",
     "failedUpdate": "Kunne ikke oppdatere",
@@ -191,6 +200,8 @@
     "uploadingCount": "Laster opp {count} fil(er)...",
     "uploadedCount": "{count} fil(er) lastet opp",
     "uploadFailed": "Opplasting mislyktes",
+    "failedUploadFile": "Failed to upload {name}",
+    "failedSaveFile": "Failed to save {name}",
     "deleted": "Fil slettet",
     "failedDelete": "Kunne ikke slette filen",
     "failedUpdate": "Kunne ikke oppdatere",

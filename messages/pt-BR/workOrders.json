@@ -33,7 +33,8 @@
       "date": "Data",
       "total": "Total"
     },
-    "emailSubject": "Atualização de Status do Veículo: {status}"
+    "emailSubject": "Atualização de Status do Veículo: {status}",
+    "changeStatus": "Change status"
   },
   "vehiclePicker": {
     "title": "Selecionar Veículo para Ordem de Serviço",

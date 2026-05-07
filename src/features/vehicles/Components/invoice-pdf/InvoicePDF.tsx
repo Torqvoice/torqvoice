@@ -8,6 +8,7 @@ import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable, FindingsPdfSection } from './Tables'
 import { Totals } from './Totals'
 import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
+import { WarrantySection } from './Warranty'
 import { CustomFields } from './CustomFields'
 import { Footer, AttachmentsFooter } from './Footer'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -88,6 +89,7 @@ export function InvoicePDF({
   const fontBold = getFontBold(fontFamily)
 
   const cc = invoiceSettings?.currencyCode || 'USD'
+  const cf: 'symbol' | 'code' = invoiceSettings?.currencyFormat === 'code' ? 'code' : 'symbol'
   const vehicleName = `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}`
   const partsSubtotal = data.partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
@@ -205,15 +207,16 @@ export function InvoicePDF({
       />
     ),
 
-    parts_table: <PartsTable data={data} currencyCode={cc} styles={styles} labels={labels} />,
+    parts_table: <PartsTable data={data} currencyCode={cc} currencyFormat={cf} styles={styles} labels={labels} />,
 
-    labor_table: <LaborTable data={data} currencyCode={cc} styles={styles} labels={labels} />,
+    labor_table: <LaborTable data={data} currencyCode={cc} currencyFormat={cf} styles={styles} labels={labels} />,
 
     totals: (
       <>
         <Totals
           data={data}
           currencyCode={cc}
+          currencyFormat={cf}
           primaryColor={primaryColor}
           fontFamily={fontFamily}
           displayTotal={displayTotal}
@@ -256,6 +259,20 @@ export function InvoicePDF({
         fontFamily={fontFamily}
         styles={styles}
         labels={labels}
+      />
+    ),
+
+    warranty: (
+      <WarrantySection
+        warrantyMonths={data.warrantyMonths}
+        warrantyMileage={data.warrantyMileage}
+        warrantyExpiresAt={data.warrantyExpiresAt}
+        warrantyNotes={data.warrantyNotes}
+        fontFamily={fontFamily}
+        styles={styles}
+        labels={labels}
+        dateFormat={invoiceSettings?.dateFormat}
+        timezone={invoiceSettings?.timezone}
       />
     ),
 

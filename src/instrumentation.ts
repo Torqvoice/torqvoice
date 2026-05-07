@@ -1,6 +1,16 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    const { checkLicenses, checkSubscriptions, processRecurringInvoices, cleanupPortalSessions, cleanupAuditLogs, processReportSchedules, startDemoResetCron } = await import('./cronTasks')
+    const {
+      checkLicenses,
+      checkSubscriptions,
+      processRecurringInvoices,
+      cleanupPortalSessions,
+      cleanupAuditLogs,
+      processReportSchedules,
+      processWebhookDeliveries,
+      cleanupWebhookDeliveries,
+      startDemoResetCron,
+    } = await import('./cronTasks')
     checkLicenses()
     checkSubscriptions()
     processRecurringInvoices()
@@ -8,5 +18,7 @@ export async function register() {
     cleanupAuditLogs()
     processReportSchedules()
     startDemoResetCron()
+    processWebhookDeliveries()
+    cleanupWebhookDeliveries()
   }
 }

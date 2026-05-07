@@ -30,7 +30,8 @@
     "deleteDescription": "Spowoduje to trwałe usunięcie tej wiadomości. Tej akcji nie można cofnąć.",
     "messageDeleted": "Wiadomość usunięta",
     "deleteError": "Nie udało się usunąć wiadomości",
-    "sendError": "Nie udało się wysłać wiadomości"
+    "sendError": "Nie udało się wysłać wiadomości",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Wyślij {label}",

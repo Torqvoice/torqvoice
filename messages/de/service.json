@@ -95,7 +95,8 @@
     "scanBarcode": "Scannen",
     "scanTitle": "Barcode scannen",
     "partFound": "\"{name}\" aus dem Lager hinzugefügt",
-    "partNotFound": "Kein Teil für Barcode \"{barcode}\" gefunden"
+    "partNotFound": "Kein Teil für Barcode \"{barcode}\" gefunden",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Arbeit",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Summen",
@@ -209,7 +211,9 @@
     "images": "Bilder ({count})",
     "videos": "Videos ({count})",
     "diagnostics": "Diagnoseberichte ({count})",
-    "documents": "Dokumente ({count})"
+    "documents": "Dokumente ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Rechnung teilen",
@@ -225,7 +229,8 @@
     "emailSent": "E-Mail gesendet",
     "failedEmail": "E-Mail konnte nicht gesendet werden",
     "smsSent": "SMS gesendet",
-    "failedSms": "SMS konnte nicht gesendet werden"
+    "failedSms": "SMS konnte nicht gesendet werden",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Fahrzeug",
@@ -333,5 +338,32 @@
     "minutesAgo": "vor {count}m",
     "hoursAgo": "vor {count}h",
     "daysAgo": "vor {count}d"
+  },
+  "table": {
+    "warranty": "Garantie"
+  },
+  "warranty": {
+    "title": "Garantie",
+    "months": "Dauer (Monate)",
+    "mileage": "Kilometergrenze",
+    "notes": "Garantiebedingungen",
+    "notesPlaceholder": "z.B. 12 Monate Garantie auf alle Teile und Arbeit...",
+    "expiresAt": "Läuft ab",
+    "presets": {
+      "3months": "3 Mo.",
+      "6months": "6 Mo.",
+      "12months": "12 Mo.",
+      "24months": "24 Mo."
+    },
+    "status": {
+      "active": "Aktiv",
+      "expiring": "Läuft bald ab",
+      "expired": "Abgelaufen",
+      "none": "Keine"
+    },
+    "defaults": {
+      "title": "Standard-Garantieeinstellungen",
+      "description": "Standardgarantiebedingungen für neue Serviceeinträge festlegen"
+    }
   }
 }

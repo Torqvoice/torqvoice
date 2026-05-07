@@ -78,6 +78,10 @@
     "deleted": "Периодический счёт удалён",
     "failedDelete": "Не удалось удалить",
     "processed": "Обработано счетов: {count}",
-    "failedProcess": "Не удалось обработать"
+    "failedProcess": "Не удалось обработать",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "removeRow": "Remove row"
   }
 }

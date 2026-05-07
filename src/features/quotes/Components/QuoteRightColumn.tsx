@@ -23,7 +23,7 @@ import {
   X,
 } from 'lucide-react'
 import { SharedLinkCard } from '@/components/shared-link-card'
-import { formatCurrency } from '@/lib/format'
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import { netLineTotal } from '@/lib/tax'
 import type { QuoteFormState } from './useQuoteFormState'
 import type { QuoteRecord } from './quote-page-types'
@@ -48,6 +48,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
   t,
   onRevoke,
 }: QuoteRightColumnProps) {
+  const formatCurrency = useFormatCurrency()
   return (
     <div className="space-y-3">
       {/* Convert to Work Order */}
@@ -132,6 +133,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
                 state.setSelectedVehicle(null)
                 state.markDirty()
               }}
+              aria-label={t('details.clearVehicle')}
             >
               <X className="h-3 w-3" />
             </Button>
@@ -176,6 +178,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
                 state.setSelectedCustomer(null)
                 state.markDirty()
               }}
+              aria-label={t('details.clearCustomer')}
             >
               <X className="h-3 w-3" />
             </Button>

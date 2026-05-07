@@ -1,42 +1,53 @@
-import { getTranslations } from "next-intl/server";
-import { getVehicle } from "@/features/vehicles/Actions/vehicleActions";
-import { getServiceRecordsPaginated } from "@/features/vehicles/Actions/serviceActions";
-import { getNotesPaginated } from "@/features/vehicles/Actions/noteActions";
-import { getCustomersList } from "@/features/customers/Actions/customerActions";
-import { getSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { getVehiclePredictedMileage } from "@/features/vehicles/Actions/predictedMaintenanceActions";
-import { getVehicleInspections } from "@/features/inspections/Actions/inspectionActions";
-import { getTemplates } from "@/features/inspections/Actions/templateActions";
-import { getVehicleQuotes } from "@/features/quotes/Actions/quoteActions";
-import { getVehicleFindings } from "@/features/vehicles/Actions/findingActions";
-import { getFeatures } from "@/lib/features";
-import { getAuthContext } from "@/lib/get-auth-context";
-import { db } from "@/lib/db";
-import { VehicleDetailClient } from "./vehicle-detail-client";
-import { PageHeader } from "@/components/page-header";
+import { getTranslations } from 'next-intl/server'
+import { getVehicle } from '@/features/vehicles/Actions/vehicleActions'
+import { getServiceRecordsPaginated } from '@/features/vehicles/Actions/serviceActions'
+import { getNotesPaginated } from '@/features/vehicles/Actions/noteActions'
+import { getCustomersList } from '@/features/customers/Actions/customerActions'
+import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { getVehiclePredictedMileage } from '@/features/vehicles/Actions/predictedMaintenanceActions'
+import { getVehicleInspections } from '@/features/inspections/Actions/inspectionActions'
+import { getTemplates } from '@/features/inspections/Actions/templateActions'
+import { getVehicleQuotes } from '@/features/quotes/Actions/quoteActions'
+import { getVehicleFindings } from '@/features/vehicles/Actions/findingActions'
+import { getFeatures } from '@/lib/features'
+import { getAuthContext } from '@/lib/get-auth-context'
+import { db } from '@/lib/db'
+import { VehicleDetailClient } from './vehicle-detail-client'
+import { PageHeader } from '@/components/page-header'
 
 export default async function VehicleDetailPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const { id } = await params;
-  const sp = await searchParams;
+  const { id } = await params
+  const sp = await searchParams
 
-  const page = Number(sp.page) || 1;
-  const pageSize = Number(sp.pageSize) || 10;
-  const search = typeof sp.search === "string" ? sp.search : "";
-  const type = typeof sp.type === "string" ? sp.type : "all";
+  const page = Number(sp.page) || 1
+  const pageSize = Number(sp.pageSize) || 10
+  const search = typeof sp.search === 'string' ? sp.search : ''
+  const type = typeof sp.type === 'string' ? sp.type : 'all'
 
-  const notesPage = Number(sp.notesPage) || 1;
-  const notesPageSize = Number(sp.notesPageSize) || 10;
-  const findingsPage = Number(sp.findingsPage) || 1;
-  const findingsPageSize = Number(sp.findingsPageSize) || 10;
+  const notesPage = Number(sp.notesPage) || 1
+  const notesPageSize = Number(sp.notesPageSize) || 10
+  const findingsPage = Number(sp.findingsPage) || 1
+  const findingsPageSize = Number(sp.findingsPageSize) || 10
 
-  const [result, customersResult, serviceResult, notesResult, settingsResult, maintenanceSettingsResult, inspectionsResult, templatesResult, quotesResult, findingsResult] = await Promise.all([
+  const [
+    result,
+    customersResult,
+    serviceResult,
+    notesResult,
+    settingsResult,
+    maintenanceSettingsResult,
+    inspectionsResult,
+    templatesResult,
+    quotesResult,
+    findingsResult,
+  ] = await Promise.all([
     getVehicle(id),
     getCustomersList(),
     getServiceRecordsPaginated(id, { page, pageSize, search, type }),
@@ -51,7 +62,7 @@ export default async function VehicleDetailPage({
     getTemplates(),
     getVehicleQuotes(id),
     getVehicleFindings(id, { page: findingsPage, pageSize: findingsPageSize }),
-  ]);
+  ])
 
   if (!result.success || !result.data) {
     return (
@@ -59,59 +70,72 @@ export default async function VehicleDetailPage({
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-muted-foreground">
-            {result.error || (await getTranslations("vehicles.detail"))("notFound")}
+            {result.error || (await getTranslations('vehicles.detail'))('notFound')}
           </p>
         </div>
       </>
-    );
+    )
   }
 
-  const paginatedServices = serviceResult.success && serviceResult.data
-    ? serviceResult.data
-    : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
+  const paginatedServices =
+    serviceResult.success && serviceResult.data
+      ? serviceResult.data
+      : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
 
-  const paginatedNotes = notesResult.success && notesResult.data
-    ? notesResult.data
-    : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
+  const paginatedNotes =
+    notesResult.success && notesResult.data
+      ? notesResult.data
+      : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
 
-  const paginatedFindings = findingsResult.success && findingsResult.data
-    ? findingsResult.data
-    : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
+  const paginatedFindings =
+    findingsResult.success && findingsResult.data
+      ? findingsResult.data
+      : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
 
-  const currencySettings = settingsResult.success && settingsResult.data ? settingsResult.data : {};
-  const currencyCode = currencySettings[SETTING_KEYS.CURRENCY_CODE] || "USD";
-  const unitSystem = (currencySettings[SETTING_KEYS.UNIT_SYSTEM] || "imperial") as "metric" | "imperial";
+  const currencySettings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
+  const currencyCode = currencySettings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const unitSystem = (currencySettings[SETTING_KEYS.UNIT_SYSTEM] || 'imperial') as
+    | 'metric'
+    | 'imperial'
 
-  const maintenanceSettings = maintenanceSettingsResult.success && maintenanceSettingsResult.data
-    ? maintenanceSettingsResult.data
-    : {};
-  const maintenanceEnabled = maintenanceSettings[SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED] === "true";
-  const serviceInterval = parseInt(maintenanceSettings[SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL] || "15000", 10);
+  const maintenanceSettings =
+    maintenanceSettingsResult.success && maintenanceSettingsResult.data
+      ? maintenanceSettingsResult.data
+      : {}
+  const maintenanceEnabled =
+    maintenanceSettings[SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED] === 'true'
+  const serviceInterval = parseInt(
+    maintenanceSettings[SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL] || '15000',
+    10
+  )
 
   let predictionData: {
-    predictedMileage: number;
-    avgPerDay: number;
-    lastServiceMileage: number;
-    serviceInterval: number;
-    mileageSinceLastService: number;
-    status: "overdue" | "approaching" | "ok" | null;
-    maintenanceDismissed: boolean;
-    confidencePercent: number;
-  } | null = null;
+    predictedMileage: number
+    avgPerDay: number
+    lastServiceMileage: number
+    serviceInterval: number
+    mileageSinceLastService: number
+    status: 'overdue' | 'approaching' | 'ok' | null
+    maintenanceDismissed: boolean
+    confidencePercent: number
+  } | null = null
 
-  const predResult = await getVehiclePredictedMileage(id);
+  const predResult = await getVehiclePredictedMileage(id)
   if (predResult.success && predResult.data) {
-    const p = predResult.data;
-    const mileageSinceLastService = p.predictedMileage - p.lastServiceMileage;
+    const p = predResult.data
+    const mileageSinceLastService = p.predictedMileage - p.lastServiceMileage
 
-    let status: "overdue" | "approaching" | "ok" | null = null;
+    let status: 'overdue' | 'approaching' | 'ok' | null = null
     if (maintenanceEnabled) {
-      const approachingThreshold = parseInt(maintenanceSettings[SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD] || "1000", 10);
-      status = "ok";
+      const approachingThreshold = parseInt(
+        maintenanceSettings[SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD] || '1000',
+        10
+      )
+      status = 'ok'
       if (mileageSinceLastService >= serviceInterval) {
-        status = "overdue";
+        status = 'overdue'
       } else if (mileageSinceLastService >= serviceInterval - approachingThreshold) {
-        status = "approaching";
+        status = 'approaching'
       }
     }
 
@@ -124,23 +148,29 @@ export default async function VehicleDetailPage({
       status,
       maintenanceDismissed: result.data.maintenanceDismissed,
       confidencePercent: p.confidencePercent,
-    };
+    }
   }
 
   // Check AI enabled
-  const authContext = await getAuthContext();
-  const orgId = authContext?.organizationId;
-  let aiEnabled = false;
+  const authContext = await getAuthContext()
+  const orgId = authContext?.organizationId
+  let aiEnabled = false
   if (orgId) {
     const [features, aiSettings] = await Promise.all([
       getFeatures(orgId),
       db.appSetting.findMany({
-        where: { organizationId: orgId, key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] } },
+        where: {
+          organizationId: orgId,
+          key: { in: [SETTING_KEYS.AI_ENABLED, SETTING_KEYS.AI_API_KEY] },
+        },
         select: { key: true, value: true },
       }),
-    ]);
-    const aiMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]));
-    aiEnabled = features?.ai === true && aiMap[SETTING_KEYS.AI_ENABLED] === "true" && !!aiMap[SETTING_KEYS.AI_API_KEY];
+    ])
+    const aiMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]))
+    aiEnabled =
+      features?.ai === true &&
+      aiMap[SETTING_KEYS.AI_ENABLED] === 'true' &&
+      !!aiMap[SETTING_KEYS.AI_API_KEY]
   }
 
   return (
@@ -157,13 +187,17 @@ export default async function VehicleDetailPage({
           currencyCode={currencyCode}
           unitSystem={unitSystem}
           predictionData={predictionData}
-          inspections={inspectionsResult.success && inspectionsResult.data ? inspectionsResult.data : []}
-          inspectionTemplates={templatesResult.success && templatesResult.data ? templatesResult.data : []}
+          inspections={
+            inspectionsResult.success && inspectionsResult.data ? inspectionsResult.data : []
+          }
+          inspectionTemplates={
+            templatesResult.success && templatesResult.data ? templatesResult.data : []
+          }
           quotes={quotesResult.success && quotesResult.data ? quotesResult.data : []}
           aiEnabled={aiEnabled}
           paginatedFindings={paginatedFindings}
         />
       </div>
     </>
-  );
+  )
 }

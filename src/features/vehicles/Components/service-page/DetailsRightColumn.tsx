@@ -8,6 +8,7 @@ import { ScheduleTimesSection } from '../service-edit/ScheduleTimesSection'
 import { TotalsSection } from '../service-edit/TotalsSection'
 import { ServiceAttachments } from '../service-detail/ServiceAttachments'
 import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
+import { WarrantySection } from './WarrantySection'
 import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
@@ -22,10 +23,22 @@ interface DetailsRightColumnProps {
   organizationId: string
   currencyCode: string
   taxEnabled: boolean
-  initialVehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null }
+  initialVehicle: {
+    id: string
+    make: string
+    model: string
+    year: number
+    licensePlate: string | null
+  }
   boardTechnicians: BoardTechnicianOption[]
   orgMembers?: OrgMemberOption[]
-  notificationHistory?: { id: string; body: string; status: string; createdAt: string; toNumber: string }[]
+  notificationHistory?: {
+    id: string
+    body: string
+    status: string
+    createdAt: string
+    toNumber: string
+  }[]
 }
 
 export function DetailsRightColumn({
@@ -106,6 +119,15 @@ export function DetailsRightColumn({
         totalAmount={formState.totalAmount}
         currencyCode={currencyCode}
       />
+      <WarrantySection
+        warrantyMonths={formState.warrantyMonths}
+        warrantyMileage={formState.warrantyMileage}
+        warrantyNotes={formState.warrantyNotes}
+        serviceDate={formState.initialData.serviceDate}
+        onWarrantyMonthsChange={formState.dirtySetWarrantyMonths}
+        onWarrantyMileageChange={formState.dirtySetWarrantyMileage}
+        onWarrantyNotesChange={formState.dirtySetWarrantyNotes}
+      />
       <ServiceAttachments
         attachments={record.attachments || []}
         imageAttachments={formState.imageAttachments}
@@ -126,7 +148,11 @@ export function DetailsRightColumn({
   )
 }
 
-function NotificationHistory({ notifications }: { notifications: { id: string; body: string; status: string; createdAt: string; toNumber: string }[] }) {
+function NotificationHistory({
+  notifications,
+}: {
+  notifications: { id: string; body: string; status: string; createdAt: string; toNumber: string }[]
+}) {
   const t = useTranslations('service.notifications')
 
   function timeAgo(dateStr: string) {
@@ -149,7 +175,9 @@ function NotificationHistory({ notifications }: { notifications: { id: string; b
       <div className="space-y-2">
         {notifications.map((n) => (
           <div key={n.id} className="text-xs">
-            <p className="text-muted-foreground">{timeAgo(n.createdAt)} · {t('viaSms')}</p>
+            <p className="text-muted-foreground">
+              {timeAgo(n.createdAt)} · {t('viaSms')}
+            </p>
             <p className="mt-0.5 truncate">{n.body}</p>
           </div>
         ))}

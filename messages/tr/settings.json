@@ -7,6 +7,7 @@
       "billing": "Fatura & Belgeler",
       "communications": "İletişim",
       "workshop": "Atölye",
+      "integrations": "Entegrasyonlar",
       "system": "Sistem"
     },
     "items": {
@@ -89,6 +90,10 @@
       "reportSchedule": {
         "title": "Rapor zamanlayıcı",
         "description": "Otomatik rapor gönderimi"
+      },
+      "webhooks": {
+        "title": "Webhooks",
+        "description": "Gerçek zamanlı olay bildirimleri"
       },
       "appearance": {
         "title": "Görünüm",
@@ -353,7 +358,10 @@
     "memberRemoved": "Üye kaldırıldı",
     "failedRemoveMember": "Üye kaldırılamadı",
     "memberRoleUpdated": "Üye rolü güncellendi",
-    "failedUpdateRole": "Rol güncellenemedi"
+    "failedUpdateRole": "Rol güncellenemedi",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Fatura Düzeni",
@@ -662,10 +670,37 @@
       "PHP": "Filipin Pesosu",
       "IDR": "Endonezya Rupisi",
       "MYR": "Malezya Ringgiti",
+      "LKR": "Sri Lanka Rupisi",
       "AED": "BAE Dirhemi",
       "SAR": "Suudi Riyali",
-      "RUB": "Rus Rublesi"
-    }
+      "RUB": "Rus Rublesi",
+      "TWD": "Tayvan Doları",
+      "VND": "Vietnam Dongu",
+      "PKR": "Pakistan Rupisi",
+      "BDT": "Bangladeş Takası",
+      "NPR": "Nepal Rupisi",
+      "BGN": "Bulgar Levası",
+      "UAH": "Ukrayna Grivnası",
+      "CLP": "Şili Pesosu",
+      "COP": "Kolombiya Pesosu",
+      "ARS": "Arjantin Pesosu",
+      "PEN": "Peru Solu",
+      "EGP": "Mısır Lirası",
+      "NGN": "Nijerya Nairası",
+      "KES": "Kenya Şilini",
+      "MAD": "Fas Dirhemi",
+      "GHS": "Gana Sedisi",
+      "QAR": "Katar Riyali",
+      "KWD": "Kuveyt Dinarı",
+      "BHD": "Bahreyn Dinarı",
+      "OMR": "Umman Riyali",
+      "JOD": "Ürdün Dinarı"
+    },
+    "formatTitle": "Para Birimi Formatı",
+    "formatSymbolName": "Sembol",
+    "formatCodeName": "Kod",
+    "formatSymbolLabel": "Sembol: {value}",
+    "formatCodeLabel": "Kod: {value}"
   },
   "localization": {
     "languageTitle": "Dil",
@@ -718,7 +753,9 @@
     "fieldUpdated": "Özel alan güncellendi",
     "fieldDeleted": "Özel alan silindi",
     "failedSave": "Alan kaydedilemedi",
-    "failedDelete": "Silinemedi"
+    "failedDelete": "Silinemedi",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Atölye Varsayılanları",
@@ -948,7 +985,8 @@
         "slate": "Arduvaz",
         "sand": "Kum"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "E-posta Sağlayıcısı",
@@ -1023,7 +1061,8 @@
     "saved": "SMS ayarları kaydedildi",
     "failedSave": "Ayarlar kaydedilemedi",
     "testSentTo": "Test SMS {phone} numarasına gönderildi",
-    "testFailed": "SMS testi başarısız"
+    "testFailed": "SMS testi başarısız",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Abonelik Planı",
@@ -1074,6 +1113,7 @@
     "resumeSuccess": "Abonelik başarıyla sürdürüldü",
     "resumeError": "Abonelik sürdürülemedi",
     "billingPortalError": "Fatura portalı açılamadı",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Planı Yükselt",
     "upgradeDescription": "Planınızı yükselterek daha fazla özelliğin kilidini açın.",
     "upgradeToProDescription": "Sınırsız müşteri, ekip üyesi, rapor, SMTP, API erişimi ve daha fazlasının kilidini açmak için yükseltin.",
@@ -1165,6 +1205,10 @@
     "deleted": "Rapor zamanlaması silindi",
     "toggledOn": "Rapor zamanlaması etkinleştirildi",
     "toggledOff": "Rapor zamanlaması devre dışı bırakıldı",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Ekip üyesi bulunamadı",
     "addRecipient": "Alıcı ekle...",
     "searchMembers": "Üye ara...",
@@ -1188,6 +1232,104 @@
       "jobAnalytics": "İş analizleri",
       "retention": "Müşteri sadakati",
       "inventory": "Envanter"
+    }
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "subtitle": "HTTPS üzerinden kendi sistemlerinize gerçek zamanlı olay bildirimleri gönderin. Her olay HMAC-SHA256 ile imzalanır, böylece gerçekliği doğrulayabilirsiniz.",
+    "create": "Webhook ekle",
+    "createTitle": "Webhook ekle",
+    "editTitle": "Webhook düzenle",
+    "createDescription": "Webhook'lar JSON olarak POST ile gönderilir. Başarısız teslimatlar üstel geri çekilme ile 5 kez yeniden denenir.",
+    "name": "Ad",
+    "namePlaceholder": "örn. Muhasebe senkronu",
+    "url": "Endpoint URL'si",
+    "urlHint": "http:// veya https:// ile başlamalı. HTTPS şiddetle önerilir.",
+    "description": "Açıklama (isteğe bağlı)",
+    "events": "Olaylar",
+    "eventsHint": "Bu webhook'u tetikleyecek olayları seçin.",
+    "subscribeToAll": "Tüm olaylar",
+    "selectAtLeastOneEvent": "En az bir olay seçin",
+    "groups": {
+      "customers": "Müşteriler",
+      "vehicles": "Araçlar",
+      "services": "İş emirleri",
+      "quotes": "Teklifler",
+      "payments": "Ödemeler",
+      "inspections": "Muayeneler",
+      "inventory": "Envanter",
+      "findings": "Bulgular"
+    },
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "rotate": "Yenile",
+    "done": "Bitti",
+    "paused": "Duraklatıldı",
+    "statusOk": "Sağlıklı",
+    "statusFailing": "{count, plural, other {# yakın zamanda hata}}",
+    "lastDelivery": "Son teslimat {when}",
+    "totalDeliveries": "{count, plural, other {# teslimat}}",
+    "toggleAria": "Bu webhook'u etkinleştir veya devre dışı bırak",
+    "deliveries": "Teslimatlar",
+    "sendTest": "Test gönder",
+    "testSent": "Test olayı gönderildi",
+    "testFailed": "Test olayı gönderilemedi",
+    "rotateSecret": "İmzalama anahtarını yenile",
+    "confirmRotateTitle": "İmzalama anahtarı yenilensin mi?",
+    "confirmRotateDescription": "Mevcut anahtar derhal çalışmayı durduracak. Endpoint'inizi yeni anahtarla güncelleyin.",
+    "secretRotated": "Anahtar yenilendi",
+    "secretRotatedDescription": "Bu anahtarı şimdi kaydedin — daha sonra kurtarılamaz.",
+    "confirmDeleteTitle": "Webhook silinsin mi?",
+    "confirmDeleteDescription": "“{name}” derhal olay almayı durduracak. Bu işlem geri alınamaz.",
+    "secretShownOnceTitle": "“{name}” webhook'u oluşturuldu",
+    "secretShownOnceDescription": "Bu imzalama anahtarını şimdi kopyalayın. Tekrar gösterilmeyecek.",
+    "secretCopyHint": "Her isteğin X-Torqvoice-Signature başlığını doğrulamak için bu anahtarı kullanın.",
+    "deliveriesTitle": "Teslimatlar — {name}",
+    "deliveriesDescription": "Son 50 deneme. Başarısız olaylar üstel geri çekilme ile otomatik olarak yeniden denenir.",
+    "deliveriesEmpty": "Henüz teslimat yok. Denemek için bir test olayı gönderin.",
+    "attempt": "Deneme {n}/{max}",
+    "nextRetry": "Sonraki deneme {when}",
+    "retryQueued": "Yeniden deneme kuyrukta",
+    "retryFailed": "Yeniden deneme başarısız",
+    "saveFailed": "Kaydetme başarısız",
+    "deleteFailed": "Silme başarısız",
+    "toggleFailed": "Geçiş başarısız",
+    "rotateFailed": "Yenileme başarısız",
+    "created": "Webhook oluşturuldu",
+    "updated": "Webhook güncellendi",
+    "deleted": "Webhook silindi",
+    "emptyTitle": "Henüz webhook yok",
+    "emptyDescription": "Olayları kendi sistemlerinize göndermek için webhook ekleyin — muhasebe senkronu, özel panolar, Zapier, HTTP konuşan her şey.",
+    "helpTitle": "Webhook imzalarını doğrulama",
+    "helpIntro": "Her teslimat HMAC-SHA256 imzası içerir, böylece isteğin Torqvoice'tan geldiğini onaylayabilirsiniz.",
+    "helpHeadersTitle": "Her istekle gönderilen başlıklar",
+    "helpVerify": "İmzalanmış dizeyi `[timestamp].[body]` olarak yeniden oluşturun ve zamana karşı güvenli eşitlikle karşılaştırın:",
+    "tabWebhooks": "Webhooks",
+    "tabReference": "Olay referansı",
+    "autoDisabled": "Otomatik duraklatıldı",
+    "autoDisabledBanner": "Bu webhook 20 ardışık başarısızlıktan sonra otomatik olarak duraklatıldı. Teslimatları sürdürmek için yeniden etkinleştirin.",
+    "reEnable": "Yeniden etkinleştir",
+    "resumed": "Webhook sürdürüldü",
+    "copyUrl": "URL'yi kopyala",
+    "refresh": "Yenile",
+    "noMatches": "Bu filtreye uyan teslimat yok.",
+    "retry": "Yeniden dene",
+    "viewPayload": "Payload'u görüntüle",
+    "payloadCopied": "Payload kopyalandı",
+    "loadingPayload": "Payload yükleniyor…",
+    "requestPayload": "İstek payload’u",
+    "response": "Yanıt",
+    "close": "Kapat",
+    "samplePayload": "Örnek zarf",
+    "referenceTitle": "Olay referansı",
+    "referenceIntro": "Her teslimat bu zarf biçimini takip eder. Endpoint’inizin alacağı örnek bir payload görmek için bir olaya tıklayın.",
+    "filter": {
+      "all": "Tümü",
+      "success": "Başarılı",
+      "failed": "Başarısız",
+      "retrying": "Yeniden deneniyor",
+      "pending": "Beklemede"
     }
   }
 }

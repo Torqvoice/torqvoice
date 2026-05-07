@@ -3,13 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -106,15 +100,38 @@ export function NotesSection({ initialData, onNotesChange, serviceRecordId, aiEn
   }
 
   const notesHaveContent = hasContent(noteType === 'public' ? publicNotes : internalNotes)
+  const publicHasContent = hasContent(publicNotes)
+  const internalHasContent = hasContent(internalNotes)
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-sm font-semibold">
-          <FileText className="h-3.5 w-3.5" />
-          {t('title')}
-        </h3>
-        <div className="flex items-center gap-2">
+      <h3 className="flex items-center gap-2 text-sm font-semibold">
+        <FileText className="h-3.5 w-3.5" />
+        {t('title')}
+      </h3>
+
+      <Tabs value={noteType} onValueChange={(v) => setNoteType(v as 'public' | 'internal')}>
+        <div className="flex items-center justify-between gap-2">
+          <TabsList className="h-8">
+            <TabsTrigger value="public" className="text-xs">
+              {t('public')}
+              {publicHasContent && (
+                <span
+                  aria-hidden
+                  className="ml-1.5 h-1.5 w-1.5 rounded-full bg-sky-500"
+                />
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="internal" className="text-xs">
+              {t('internal')}
+              {internalHasContent && (
+                <span
+                  aria-hidden
+                  className="ml-1.5 h-1.5 w-1.5 rounded-full bg-orange-500"
+                />
+              )}
+            </TabsTrigger>
+          </TabsList>
           {aiEnabled && serviceRecordId && (
             <Button
               type="button"
@@ -132,39 +149,26 @@ export function NotesSection({ initialData, onNotesChange, serviceRecordId, aiEn
               {t('aiWrite')}
             </Button>
           )}
-          <Select value={noteType} onValueChange={(v) => setNoteType(v as 'public' | 'internal')}>
-            <SelectTrigger className="h-7 w-[120px] text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="public">{t('public')}</SelectItem>
-              <SelectItem value="internal">{t('internal')}</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
-      </div>
 
-      {noteType === 'public' && (
-        <div className="space-y-1">
+        <TabsContent value="public" className="space-y-1">
           <RichTextEditor
             content={publicNotes}
             onChange={handlePublicChange}
             placeholder={t('publicPlaceholder')}
           />
           <p className="text-xs text-muted-foreground">{t('publicHelper')}</p>
-        </div>
-      )}
+        </TabsContent>
 
-      {noteType === 'internal' && (
-        <div className="space-y-1">
+        <TabsContent value="internal" className="space-y-1">
           <RichTextEditor
             content={internalNotes}
             onChange={handleInternalChange}
             placeholder={t('internalPlaceholder')}
           />
           <p className="text-xs text-muted-foreground">{t('internalHelper')}</p>
-        </div>
-      )}
+        </TabsContent>
+      </Tabs>
 
       <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
         <AlertDialogContent>

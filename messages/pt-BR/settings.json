@@ -7,6 +7,7 @@
       "billing": "Faturamento e documentos",
       "communications": "Comunicacoes",
       "workshop": "Oficina",
+      "integrations": "Integrações",
       "system": "Sistema"
     },
     "items": {
@@ -89,6 +90,10 @@
       "reportSchedule": {
         "title": "Agendamento de relatórios",
         "description": "Envio automático de relatórios"
+      },
+      "webhooks": {
+        "title": "Webhooks",
+        "description": "Notificações de eventos em tempo real"
       },
       "appearance": {
         "title": "Aparencia",
@@ -353,7 +358,10 @@
     "memberRemoved": "Membro removido",
     "failedRemoveMember": "Falha ao remover o membro",
     "memberRoleUpdated": "Funcao do membro atualizada",
-    "failedUpdateRole": "Falha ao atualizar a funcao"
+    "failedUpdateRole": "Falha ao atualizar a funcao",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Layout da fatura",
@@ -662,10 +670,37 @@
       "PHP": "Peso filipino",
       "IDR": "Rupia indonesia",
       "MYR": "Ringgit malaio",
+      "LKR": "Rupia do Sri Lanka",
       "AED": "Dirham dos EAU",
       "SAR": "Rial saudita",
-      "RUB": "Rublo russo"
-    }
+      "RUB": "Rublo russo",
+      "TWD": "Dolar taiwanes",
+      "VND": "Dong vietnamita",
+      "PKR": "Rupia paquistanesa",
+      "BDT": "Taka bengalesa",
+      "NPR": "Rupia nepalesa",
+      "BGN": "Lev bulgaro",
+      "UAH": "Hryvnia ucraniana",
+      "CLP": "Peso chileno",
+      "COP": "Peso colombiano",
+      "ARS": "Peso argentino",
+      "PEN": "Sol peruano",
+      "EGP": "Libra egipcia",
+      "NGN": "Naira nigeriana",
+      "KES": "Xelim queniano",
+      "MAD": "Dirham marroquino",
+      "GHS": "Cedi ganes",
+      "QAR": "Rial catariano",
+      "KWD": "Dinar kuwaitiano",
+      "BHD": "Dinar do Bahrein",
+      "OMR": "Rial omanense",
+      "JOD": "Dinar jordaniano"
+    },
+    "formatTitle": "Formato da moeda",
+    "formatSymbolName": "Simbolo",
+    "formatCodeName": "Codigo",
+    "formatSymbolLabel": "Simbolo: {value}",
+    "formatCodeLabel": "Codigo: {value}"
   },
   "localization": {
     "languageTitle": "Idioma",
@@ -718,7 +753,9 @@
     "fieldUpdated": "Campo personalizado atualizado",
     "fieldDeleted": "Campo personalizado excluído",
     "failedSave": "Falha ao salvar campo",
-    "failedDelete": "Falha ao excluir"
+    "failedDelete": "Falha ao excluir",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Padroes da oficina",
@@ -948,7 +985,8 @@
         "slate": "Ardósia",
         "sand": "Areia"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "Provedor de e-mail",
@@ -1023,7 +1061,8 @@
     "saved": "Configuracoes SMS salvas",
     "failedSave": "Falha ao salvar configuracoes",
     "testSentTo": "SMS de teste enviado para {phone}",
-    "testFailed": "Teste de SMS falhou"
+    "testFailed": "Teste de SMS falhou",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Plano de assinatura",
@@ -1074,6 +1113,7 @@
     "resumeSuccess": "Assinatura retomada com sucesso",
     "resumeError": "Falha ao retomar a assinatura",
     "billingPortalError": "Falha ao abrir o portal de faturamento",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Atualizar plano",
     "upgradeDescription": "Desbloqueie mais recursos atualizando seu plano.",
     "upgradeToProDescription": "Atualize para desbloquear clientes ilimitados, membros da equipe, relatórios, SMTP, acesso à API e mais.",
@@ -1165,6 +1205,10 @@
     "deleted": "Agendamento de relatórios excluído",
     "toggledOn": "Agendamento de relatórios ativado",
     "toggledOff": "Agendamento de relatórios desativado",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Nenhum membro encontrado",
     "addRecipient": "Adicionar destinatário...",
     "searchMembers": "Buscar membros...",
@@ -1188,6 +1232,104 @@
       "jobAnalytics": "Análises de serviços",
       "retention": "Retenção de clientes",
       "inventory": "Estoque"
+    }
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "subtitle": "Envie notificações de eventos em tempo real para seus próprios sistemas via HTTPS. Cada evento é assinado com HMAC-SHA256 para que você possa verificar a autenticidade.",
+    "create": "Adicionar webhook",
+    "createTitle": "Adicionar webhook",
+    "editTitle": "Editar webhook",
+    "createDescription": "Os webhooks são enviados como JSON via POST. Entregas com falha são tentadas novamente com backoff exponencial até 5 vezes.",
+    "name": "Nome",
+    "namePlaceholder": "ex.: Sincronização contábil",
+    "url": "URL do endpoint",
+    "urlHint": "Deve começar com http:// ou https://. Recomendamos fortemente HTTPS.",
+    "description": "Descrição (opcional)",
+    "events": "Eventos",
+    "eventsHint": "Escolha quais eventos disparam este webhook.",
+    "subscribeToAll": "Todos os eventos",
+    "selectAtLeastOneEvent": "Selecione pelo menos um evento",
+    "groups": {
+      "customers": "Clientes",
+      "vehicles": "Veículos",
+      "services": "Ordens de serviço",
+      "quotes": "Orçamentos",
+      "payments": "Pagamentos",
+      "inspections": "Inspeções",
+      "inventory": "Estoque",
+      "findings": "Apontamentos"
+    },
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "rotate": "Renovar",
+    "done": "Pronto",
+    "paused": "Pausado",
+    "statusOk": "OK",
+    "statusFailing": "{count, plural, one {# falha recente} other {# falhas recentes}}",
+    "lastDelivery": "Última entrega {when}",
+    "totalDeliveries": "{count, plural, one {# entrega} other {# entregas}}",
+    "toggleAria": "Ativar ou desativar este webhook",
+    "deliveries": "Entregas",
+    "sendTest": "Enviar teste",
+    "testSent": "Evento de teste enviado",
+    "testFailed": "Falha ao enviar evento de teste",
+    "rotateSecret": "Renovar chave de assinatura",
+    "confirmRotateTitle": "Renovar chave de assinatura?",
+    "confirmRotateDescription": "A chave atual deixará de funcionar imediatamente. Atualize seu endpoint com a nova chave.",
+    "secretRotated": "Chave renovada",
+    "secretRotatedDescription": "Salve esta chave agora — ela não poderá ser recuperada depois.",
+    "confirmDeleteTitle": "Excluir webhook?",
+    "confirmDeleteDescription": "“{name}” deixará de receber eventos imediatamente. Isso não pode ser desfeito.",
+    "secretShownOnceTitle": "Webhook “{name}” criado",
+    "secretShownOnceDescription": "Copie esta chave de assinatura agora. Ela não será exibida novamente.",
+    "secretCopyHint": "Use esta chave para verificar o cabeçalho X-Torqvoice-Signature em cada requisição.",
+    "deliveriesTitle": "Entregas — {name}",
+    "deliveriesDescription": "Últimas 50 tentativas. Eventos com falha são tentados automaticamente com backoff exponencial.",
+    "deliveriesEmpty": "Nenhuma entrega ainda. Envie um evento de teste para experimentar.",
+    "attempt": "Tentativa {n}/{max}",
+    "nextRetry": "Próxima tentativa {when}",
+    "retryQueued": "Nova tentativa na fila",
+    "retryFailed": "Nova tentativa falhou",
+    "saveFailed": "Falha ao salvar",
+    "deleteFailed": "Falha ao excluir",
+    "toggleFailed": "Falha ao alternar",
+    "rotateFailed": "Falha ao renovar",
+    "created": "Webhook criado",
+    "updated": "Webhook atualizado",
+    "deleted": "Webhook excluído",
+    "emptyTitle": "Nenhum webhook ainda",
+    "emptyDescription": "Adicione um webhook para enviar eventos aos seus próprios sistemas — sincronização contábil, painéis personalizados, Zapier, qualquer coisa que fale HTTP.",
+    "helpTitle": "Verificar assinaturas de webhook",
+    "helpIntro": "Cada entrega inclui uma assinatura HMAC-SHA256 para que você possa confirmar que a requisição veio do Torqvoice.",
+    "helpHeadersTitle": "Cabeçalhos enviados em cada requisição",
+    "helpVerify": "Reconstrua a string assinada como `[timestamp].[body]` e compare com igualdade de tempo seguro:",
+    "tabWebhooks": "Webhooks",
+    "tabReference": "Referência de eventos",
+    "autoDisabled": "Pausado automaticamente",
+    "autoDisabledBanner": "Este webhook foi pausado automaticamente após 20 falhas consecutivas. Reative para retomar as entregas.",
+    "reEnable": "Reativar",
+    "resumed": "Webhook retomado",
+    "copyUrl": "Copiar URL",
+    "refresh": "Atualizar",
+    "noMatches": "Nenhuma entrega corresponde a este filtro.",
+    "retry": "Tentar novamente",
+    "viewPayload": "Ver payload",
+    "payloadCopied": "Payload copiado",
+    "loadingPayload": "Carregando payload…",
+    "requestPayload": "Payload da requisição",
+    "response": "Resposta",
+    "close": "Fechar",
+    "samplePayload": "Envelope de exemplo",
+    "referenceTitle": "Referência de eventos",
+    "referenceIntro": "Toda entrega segue esta forma de envelope. Clique em um evento para ver um payload de exemplo que seu endpoint receberá.",
+    "filter": {
+      "all": "Todas",
+      "success": "Sucesso",
+      "failed": "Falhou",
+      "retrying": "Tentando novamente",
+      "pending": "Pendente"
     }
   }
 }

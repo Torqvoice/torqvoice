@@ -18,7 +18,8 @@
     "quantity": "Miktar",
     "addToJob": "{qty} işe ekle",
     "statusReport": "Durum Raporu",
-    "report": "Rapor"
+    "report": "Rapor",
+    "observation": "Gözlem"
   },
   "recentActivity": "Son aktivite",
   "noRecentActivity": "Son aktivite yok",
@@ -64,7 +65,9 @@
     "dismissedTab": "Kapatılan",
     "noActive": "Şu anda bakım gerektiren araç bulunmuyor.",
     "dismissedOn": "{date} tarihinde kapatıldı",
-    "restore": "Geri Yükle"
+    "restore": "Geri Yükle",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Yaklaşan Hatırlatmalar",
@@ -95,7 +98,8 @@
     "pending": "Beklemede",
     "createQuote": "Teklif Oluştur",
     "itemsRequested": "{count, plural, one {# öğe talep edildi} other {# öğe talep edildi}}",
-    "noData": "Bekleyen teklif talebi yok."
+    "noData": "Bekleyen teklif talebi yok.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Müşteri Teklif Yanıtları",
@@ -106,7 +110,8 @@
     "convert": "Convert",
     "viewQuote": "Teklifi Görüntüle",
     "view": "View",
-    "noData": "Müşteri yanıtı yok."
+    "noData": "Müşteri yanıtı yok.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Son Tamamlananlar",

@@ -7,5 +7,6 @@
   "selectVehicle": "Pasirinkite transporto priemonę...",
   "searchVehicle": "Ieškoti transporto priemonių...",
   "noVehicle": "Transporto priemonių nerasta.",
-  "pickDate": "Pasirinkite datą"
+  "pickDate": "Pasirinkite datą",
+  "openMenu": "Open menu"
 }

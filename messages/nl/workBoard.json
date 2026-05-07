@@ -7,7 +7,11 @@
     "day": "Dag",
     "week": "Week",
     "presenter": "Presentator",
-    "addTechnician": "Technicus toevoegen"
+    "addTechnician": "Technicus toevoegen",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "previousDay": "Previous day",
+    "nextDay": "Next day"
   },
   "board": {
     "days": {
@@ -70,6 +74,8 @@
       "inProgress": "In uitvoering",
       "waitingParts": "Wacht op onderdelen",
       "completed": "Voltooid"
-    }
+    },
+    "previous": "Previous",
+    "next": "Next"
   }
 }

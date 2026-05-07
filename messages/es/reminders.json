@@ -7,5 +7,6 @@
   "selectVehicle": "Seleccionar vehículo...",
   "searchVehicle": "Buscar vehículos...",
   "noVehicle": "No se encontraron vehículos.",
-  "pickDate": "Seleccionar fecha"
+  "pickDate": "Seleccionar fecha",
+  "openMenu": "Open menu"
 }

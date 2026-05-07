@@ -320,6 +320,7 @@ export function SmsSettingsForm({
                         variant="outline"
                         size="icon"
                         onClick={handleCopyWebhook}
+                        aria-label={t("sms.copyWebhookUrl")}
                       >
                         {copied ? (
                           <Check className="h-4 w-4" />

@@ -7,6 +7,7 @@
       "billing": "Fakturering og dokumenter",
       "communications": "Kommunikasjon",
       "workshop": "Verksted",
+      "integrations": "Integrasjoner",
       "system": "System"
     },
     "items": {
@@ -89,6 +90,10 @@
       "reportSchedule": {
         "title": "Planlagte rapporter",
         "description": "Automatisk rapportlevering"
+      },
+      "webhooks": {
+        "title": "Webhooks",
+        "description": "Sanntidsvarsler om hendelser"
       },
       "appearance": {
         "title": "Utseende",
@@ -353,7 +358,10 @@
     "memberRemoved": "Medlem fjernet",
     "failedRemoveMember": "Kunne ikke fjerne medlem",
     "memberRoleUpdated": "Medlemsrolle oppdatert",
-    "failedUpdateRole": "Kunne ikke oppdatere rolle"
+    "failedUpdateRole": "Kunne ikke oppdatere rolle",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Faktura og tilbud",
@@ -662,10 +670,37 @@
       "PHP": "Filippinske pesos",
       "IDR": "Indonesiske rupiah",
       "MYR": "Malaysiske ringgit",
+      "LKR": "Srilankiske rupier",
       "AED": "Emiratiske dirham",
       "SAR": "Saudiarabiske riyal",
-      "RUB": "Russisk rubel"
-    }
+      "RUB": "Russisk rubel",
+      "TWD": "Taiwanske dollar",
+      "VND": "Vietnamesisk dong",
+      "PKR": "Pakistanske rupier",
+      "BDT": "Bangladeshisk taka",
+      "NPR": "Nepalesiske rupier",
+      "BGN": "Bulgarsk lev",
+      "UAH": "Ukrainsk hryvnia",
+      "CLP": "Chilenske pesos",
+      "COP": "Colombianske pesos",
+      "ARS": "Argentinske pesos",
+      "PEN": "Peruansk sol",
+      "EGP": "Egyptisk pund",
+      "NGN": "Nigerianske naira",
+      "KES": "Kenyansk shilling",
+      "MAD": "Marokkansk dirham",
+      "GHS": "Ghanesisk cedi",
+      "QAR": "Qatarske riyal",
+      "KWD": "Kuwaitiske dinar",
+      "BHD": "Bahrainske dinar",
+      "OMR": "Omanske rial",
+      "JOD": "Jordanske dinar"
+    },
+    "formatTitle": "Valutaformat",
+    "formatSymbolName": "Symbol",
+    "formatCodeName": "Kode",
+    "formatSymbolLabel": "Symbol: {value}",
+    "formatCodeLabel": "Kode: {value}"
   },
   "localization": {
     "languageTitle": "Språk",
@@ -718,7 +753,9 @@
     "fieldUpdated": "Egendefinert felt oppdatert",
     "fieldDeleted": "Egendefinert felt slettet",
     "failedSave": "Kunne ikke lagre felt",
-    "failedDelete": "Kunne ikke slette"
+    "failedDelete": "Kunne ikke slette",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Verkstedstandarder",
@@ -948,7 +985,8 @@
         "slate": "Skifer",
         "sand": "Sand"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "E-postleverandor",
@@ -1023,7 +1061,8 @@
     "saved": "SMS-innstillinger lagret",
     "failedSave": "Kunne ikke lagre innstillinger",
     "testSentTo": "Test-SMS sendt til {phone}",
-    "testFailed": "SMS-test mislyktes"
+    "testFailed": "SMS-test mislyktes",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Abonnementsplan",
@@ -1074,6 +1113,7 @@
     "resumeSuccess": "Abonnementet er gjenopptatt",
     "resumeError": "Kunne ikke gjenoppta abonnementet",
     "billingPortalError": "Kunne ikke apne faktureringsportalen",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Oppgrader plan",
     "upgradeDescription": "Las opp flere funksjoner ved a oppgradere planen din.",
     "upgradeToProDescription": "Oppgrader for a lase opp ubegrensede kunder, teammedlemmer, rapporter, SMTP, API-tilgang og mer.",
@@ -1165,6 +1205,10 @@
     "deleted": "Rapporttidsplan slettet",
     "toggledOn": "Rapporttidsplan aktivert",
     "toggledOff": "Rapporttidsplan deaktivert",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Ingen teammedlemmer funnet",
     "addRecipient": "Legg til mottaker...",
     "searchMembers": "Søk etter medlemmer...",
@@ -1188,6 +1232,104 @@
       "jobAnalytics": "Jobbanalyser",
       "retention": "Kundelojalitet",
       "inventory": "Inventar"
+    }
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "subtitle": "Send sanntidsvarsler om hendelser til dine egne systemer via HTTPS. Hver hendelse signeres med HMAC-SHA256 så du kan verifisere autentisiteten.",
+    "create": "Legg til webhook",
+    "createTitle": "Legg til webhook",
+    "editTitle": "Rediger webhook",
+    "createDescription": "Webhooks sendes som JSON via POST. Mislykkede leveranser prøves på nytt med eksponentiell backoff opptil 5 ganger.",
+    "name": "Navn",
+    "namePlaceholder": "f.eks. Regnskapssynk",
+    "url": "Endepunkt-URL",
+    "urlHint": "Må starte med http:// eller https://. Vi anbefaler sterkt HTTPS.",
+    "description": "Beskrivelse (valgfritt)",
+    "events": "Hendelser",
+    "eventsHint": "Velg hvilke hendelser som utløser denne webhooken.",
+    "subscribeToAll": "Alle hendelser",
+    "selectAtLeastOneEvent": "Velg minst én hendelse",
+    "groups": {
+      "customers": "Kunder",
+      "vehicles": "Kjøretøy",
+      "services": "Arbeidsordrer",
+      "quotes": "Tilbud",
+      "payments": "Betalinger",
+      "inspections": "Inspeksjoner",
+      "inventory": "Lager",
+      "findings": "Funn"
+    },
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "delete": "Slett",
+    "rotate": "Forny",
+    "done": "Ferdig",
+    "paused": "Pauset",
+    "statusOk": "Sunn",
+    "statusFailing": "{count, plural, one {# nylig feil} other {# nylige feil}}",
+    "lastDelivery": "Siste levering {when}",
+    "totalDeliveries": "{count, plural, one {# levering} other {# leveringer}}",
+    "toggleAria": "Aktiver eller deaktiver denne webhooken",
+    "deliveries": "Leveringer",
+    "sendTest": "Send test",
+    "testSent": "Testhendelse sendt",
+    "testFailed": "Kunne ikke sende testhendelse",
+    "rotateSecret": "Forny signeringsnøkkel",
+    "confirmRotateTitle": "Fornye signeringsnøkkel?",
+    "confirmRotateDescription": "Den gjeldende nøkkelen vil slutte å virke umiddelbart. Oppdater endepunktet ditt med den nye nøkkelen.",
+    "secretRotated": "Nøkkel fornyet",
+    "secretRotatedDescription": "Lagre denne nøkkelen nå — den kan ikke gjenopprettes senere.",
+    "confirmDeleteTitle": "Slette webhook?",
+    "confirmDeleteDescription": "«{name}» vil slutte å motta hendelser umiddelbart. Dette kan ikke angres.",
+    "secretShownOnceTitle": "Webhook «{name}» opprettet",
+    "secretShownOnceDescription": "Kopier denne signeringsnøkkelen nå. Den vil ikke vises igjen.",
+    "secretCopyHint": "Bruk denne nøkkelen til å verifisere X-Torqvoice-Signature-headeren i hver forespørsel.",
+    "deliveriesTitle": "Leveringer — {name}",
+    "deliveriesDescription": "Siste 50 forsøk. Mislykkede hendelser prøves automatisk på nytt med eksponentiell backoff.",
+    "deliveriesEmpty": "Ingen leveringer ennå. Send en testhendelse for å prøve.",
+    "attempt": "Forsøk {n}/{max}",
+    "nextRetry": "Neste forsøk {when}",
+    "retryQueued": "Nytt forsøk i kø",
+    "retryFailed": "Nytt forsøk mislyktes",
+    "saveFailed": "Lagring mislyktes",
+    "deleteFailed": "Sletting mislyktes",
+    "toggleFailed": "Veksling mislyktes",
+    "rotateFailed": "Fornying mislyktes",
+    "created": "Webhook opprettet",
+    "updated": "Webhook oppdatert",
+    "deleted": "Webhook slettet",
+    "emptyTitle": "Ingen webhooks ennå",
+    "emptyDescription": "Legg til en webhook for å sende hendelser til dine egne systemer — regnskapssynk, egendefinerte dashbord, Zapier, alt som snakker HTTP.",
+    "helpTitle": "Verifisere webhook-signaturer",
+    "helpIntro": "Hver levering inkluderer en HMAC-SHA256-signatur så du kan bekrefte at forespørselen kom fra Torqvoice.",
+    "helpHeadersTitle": "Headers sendt med hver forespørsel",
+    "helpVerify": "Bygg opp den signerte strengen som `[timestamp].[body]` og sammenlign med tidssikker likhet:",
+    "tabWebhooks": "Webhooks",
+    "tabReference": "Hendelsesreferanse",
+    "autoDisabled": "Auto-pauset",
+    "autoDisabledBanner": "Denne webhooken ble automatisk pauset etter 20 påfølgende feil. Aktiver den igjen for å gjenoppta leveringer.",
+    "reEnable": "Aktiver igjen",
+    "resumed": "Webhook gjenopptatt",
+    "copyUrl": "Kopier URL",
+    "refresh": "Oppdater",
+    "noMatches": "Ingen leveringer matcher dette filteret.",
+    "retry": "Prøv igjen",
+    "viewPayload": "Vis payload",
+    "payloadCopied": "Payload kopiert",
+    "loadingPayload": "Laster payload…",
+    "requestPayload": "Forespørsels-payload",
+    "response": "Svar",
+    "close": "Lukk",
+    "samplePayload": "Eksempel-konvolutt",
+    "referenceTitle": "Hendelsesreferanse",
+    "referenceIntro": "Hver levering følger denne konvolutt-formen. Klikk på en hendelse for å se en eksempel-payload som endepunktet ditt vil motta.",
+    "filter": {
+      "all": "Alle",
+      "success": "Vellykket",
+      "failed": "Mislyktes",
+      "retrying": "Prøver på nytt",
+      "pending": "Venter"
     }
   }
 }

@@ -1,9 +1,21 @@
 {
   "nav": {
-    "overview": { "title": "Overzicht", "description": "Platformstatistieken & status" },
-    "users": { "title": "Gebruikers", "description": "Alle gebruikers beheren" },
-    "organizations": { "title": "Organisaties", "description": "Alle organisaties beheren" },
-    "settings": { "title": "Instellingen", "description": "Platformconfiguratie" }
+    "overview": {
+      "title": "Overzicht",
+      "description": "Platformstatistieken & status"
+    },
+    "users": {
+      "title": "Gebruikers",
+      "description": "Alle gebruikers beheren"
+    },
+    "organizations": {
+      "title": "Organisaties",
+      "description": "Alle organisaties beheren"
+    },
+    "settings": {
+      "title": "Instellingen",
+      "description": "Platformconfiguratie"
+    }
   },
   "layout": {
     "title": "Beheerderspaneel",
@@ -104,5 +116,8 @@
     "postmarkApiKeyHint": "Haal uw Server Token op via postmarkapp.com",
     "mailgunApiKeyHint": "Haal uw API-sleutel op via app.mailgun.com",
     "sendgridApiKeyHint": "Haal uw API-sleutel op via app.sendgrid.com"
+  },
+  "common": {
+    "openMenu": "Open menu"
   }
 }

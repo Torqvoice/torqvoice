@@ -156,16 +156,14 @@ describe("getVehicles — org scoping", () => {
 // ---------------------------------------------------------------------------
 
 describe("updateVehicle — cross-org isolation", () => {
-  it("🐛 BUG-1: silently returns success when targeting another org's vehicle — nothing is actually changed", async () => {
+  it("returns error when targeting another org's vehicle", async () => {
     setupOrgAOwner();
     // updateMany with org filter matches 0 rows for a cross-org id
     vi.mocked(db.vehicle.updateMany).mockResolvedValue({ count: 0 } as any);
 
     const result = await updateVehicle({ id: `${ORG_B}-vehicle-id`, make: "Hacked" });
 
-    // BUG: should be { success: false, error: "Vehicle not found" }
-    // Fix: check `result.count === 0` in updateVehicle and throw.
-    expect(result.success).toBe(false); // FAILS until bug is fixed
+    expect(result.success).toBe(false);
   });
 
   it("update query always includes organizationId to prevent cross-org writes", async () => {
@@ -198,7 +196,7 @@ describe("updateVehicle — cross-org isolation", () => {
 // ---------------------------------------------------------------------------
 
 describe("deleteVehicle — cross-org isolation", () => {
-  it("🐛 BUG-2: silently returns success when targeting another org's vehicle — nothing is actually deleted", async () => {
+  it("returns error when deleting another org's vehicle", async () => {
     setupOrgAOwner();
     // findFirst returns null (cross-org vehicle invisible to caller)
     vi.mocked(db.vehicle.findFirst).mockResolvedValue(null);
@@ -207,9 +205,7 @@ describe("deleteVehicle — cross-org isolation", () => {
 
     const result = await deleteVehicle(`${ORG_B}-vehicle-id`);
 
-    // BUG: should be { success: false, error: "Vehicle not found" }
-    // Fix: throw when findFirst returns null (before deleteMany).
-    expect(result.success).toBe(false); // FAILS until bug is fixed
+    expect(result.success).toBe(false);
   });
 
   it("delete query always includes organizationId to prevent cross-org deletes", async () => {

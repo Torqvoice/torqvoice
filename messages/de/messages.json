@@ -18,7 +18,9 @@
     "deleteTitle": "Unterhaltung löschen?",
     "deleteDescription": "Alle Nachrichten mit {name} werden dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
     "deleted": "Unterhaltung gelöscht",
-    "deleteError": "Unterhaltung konnte nicht gelöscht werden"
+    "deleteError": "Unterhaltung konnte nicht gelöscht werden",
+    "back": "Back",
+    "conversationMenu": "Conversation menu"
   },
   "conversation": {
     "noPhone": "Keine Telefonnummer für {name} hinterlegt. Fügen Sie eine Telefonnummer hinzu, um Nachrichten zu senden.",
@@ -30,7 +32,8 @@
     "deleteDescription": "Diese Nachricht wird dauerhaft aus der Unterhaltung gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
     "messageDeleted": "Nachricht gelöscht",
     "deleteError": "Nachricht konnte nicht gelöscht werden",
-    "sendError": "SMS konnte nicht gesendet werden"
+    "sendError": "SMS konnte nicht gesendet werden",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "{label} senden",

@@ -43,6 +43,9 @@ export interface InitialData {
   discountType?: string
   discountValue?: number
   discountAmount?: number
+  warrantyMonths?: number | null
+  warrantyMileage?: number | null
+  warrantyNotes?: string | null
 }
 
 export interface VehicleOption {

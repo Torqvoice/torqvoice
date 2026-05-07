@@ -165,6 +165,7 @@ export function PasskeySettings() {
                         setNewName(pk.name || '')
                         setRenameDialogOpen(true)
                       }}
+                      aria-label={t('account.passkey.rename')}
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -177,6 +178,7 @@ export function PasskeySettings() {
                         setPassKeyToDelete(pk)
                         setDeleteDialogOpen(true)
                       }}
+                      aria-label={t('account.passkey.delete')}
                     >
                       {deletingId === pk.id ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />

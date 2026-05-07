@@ -18,7 +18,8 @@
     "quantity": "Quantità",
     "addToJob": "Aggiungi {qty} al lavoro",
     "statusReport": "Rapporto di stato",
-    "report": "Rapporto"
+    "report": "Rapporto",
+    "observation": "Osservazione"
   },
   "recentActivity": "Attività recente",
   "noRecentActivity": "Nessuna attività recente",
@@ -64,7 +65,9 @@
     "dismissedTab": "Ignorati",
     "noActive": "Nessun veicolo attualmente in scadenza per la manutenzione.",
     "dismissedOn": "Ignorato il {date}",
-    "restore": "Ripristina"
+    "restore": "Ripristina",
+    "settingsAriaLabel": "Maintenance settings",
+    "dismissAriaLabel": "Dismiss"
   },
   "reminders": {
     "title": "Promemoria in scadenza",
@@ -95,7 +98,8 @@
     "pending": "In attesa",
     "createQuote": "Crea preventivo",
     "itemsRequested": "{count, plural, one {# elemento richiesto} other {# elementi richiesti}}",
-    "noData": "Nessuna richiesta di preventivo in sospeso."
+    "noData": "Nessuna richiesta di preventivo in sospeso.",
+    "dismissAriaLabel": "Dismiss quote request"
   },
   "quoteResponses": {
     "title": "Risposte ai preventivi dei clienti",
@@ -106,7 +110,8 @@
     "convert": "Convert",
     "viewQuote": "Visualizza preventivo",
     "view": "View",
-    "noData": "Nessuna risposta dai clienti."
+    "noData": "Nessuna risposta dai clienti.",
+    "dismissAriaLabel": "Dismiss response"
   },
   "recentCompleted": {
     "title": "Completati di recente",

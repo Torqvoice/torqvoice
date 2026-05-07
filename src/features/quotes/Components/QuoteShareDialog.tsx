@@ -144,7 +144,7 @@ export function QuoteShareDialog({
             <>
               <div className="flex items-center gap-2">
                 <Input value={publicUrl} readOnly className="text-xs font-mono" />
-                <Button variant="outline" size="icon" onClick={handleCopy}>
+                <Button variant="outline" size="icon" onClick={handleCopy} aria-label={t("shareDialog.copyLink")}>
                   {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
                 </Button>
               </div>

@@ -95,7 +95,8 @@
     "scanBarcode": "Scansiona",
     "scanTitle": "Scansiona codice a barre",
     "partFound": "\"{name}\" aggiunto dall'inventario",
-    "partNotFound": "Nessun pezzo trovato per il codice a barre \"{barcode}\""
+    "partNotFound": "Nessun pezzo trovato per il codice a barre \"{barcode}\"",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Manodopera",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Totali",
@@ -209,7 +211,9 @@
     "images": "Immagini ({count})",
     "videos": "Video ({count})",
     "diagnostics": "Rapporti Diagnostici ({count})",
-    "documents": "Documenti ({count})"
+    "documents": "Documenti ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Condividi Fattura",
@@ -225,7 +229,8 @@
     "emailSent": "Email inviata",
     "failedEmail": "Impossibile inviare email",
     "smsSent": "SMS inviato",
-    "failedSms": "Impossibile inviare SMS"
+    "failedSms": "Impossibile inviare SMS",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Veicolo",
@@ -333,5 +338,32 @@
     "minutesAgo": "{count}m fa",
     "hoursAgo": "{count}h fa",
     "daysAgo": "{count}g fa"
+  },
+  "table": {
+    "warranty": "Garanzia"
+  },
+  "warranty": {
+    "title": "Garanzia",
+    "months": "Durata (mesi)",
+    "mileage": "Limite chilometrico",
+    "notes": "Termini di garanzia",
+    "notesPlaceholder": "es. Garanzia di 12 mesi su tutti i ricambi e la manodopera...",
+    "expiresAt": "Scadenza",
+    "presets": {
+      "3months": "3 m",
+      "6months": "6 m",
+      "12months": "12 m",
+      "24months": "24 m"
+    },
+    "status": {
+      "active": "Attiva",
+      "expiring": "In scadenza",
+      "expired": "Scaduta",
+      "none": "Nessuna"
+    },
+    "defaults": {
+      "title": "Impostazioni garanzia predefinite",
+      "description": "Imposta i termini di garanzia predefiniti per i nuovi interventi"
+    }
   }
 }

@@ -3,39 +3,39 @@
     "sun": "Paz",
     "mon": "Pzt",
     "tue": "Sal",
-    "wed": "\u00c7ar",
+    "wed": "Çar",
     "thu": "Per",
     "fri": "Cum",
     "sat": "Cmt"
   },
   "months": {
     "january": "Ocak",
-    "february": "\u015eubat",
+    "february": "Şubat",
     "march": "Mart",
     "april": "Nisan",
-    "may": "May\u0131s",
+    "may": "Mayıs",
     "june": "Haziran",
     "july": "Temmuz",
-    "august": "A\u011fustos",
-    "september": "Eyl\u00fcl",
+    "august": "Ağustos",
+    "september": "Eylül",
     "october": "Ekim",
-    "november": "Kas\u0131m",
-    "december": "Aral\u0131k"
+    "november": "Kasım",
+    "december": "Aralık"
   },
   "stats": {
     "services": "Servisler",
-    "overdue": "Gecikmi\u015f",
+    "overdue": "Gecikmiş",
     "pendingQuotes": "Bekleyen teklifler",
     "revenue": "Gelir"
   },
-  "today": "Bug\u00fcn",
-  "workOrder": "\u0130\u015f emri",
+  "today": "Bugün",
+  "workOrder": "İş emri",
   "filters": {
     "services": "Servisler",
-    "reminders": "Hat\u0131rlat\u0131c\u0131lar",
+    "reminders": "Hatırlatıcılar",
     "quotes": "Teklifler"
   },
-  "selectVehicle": "\u0130\u015f emri i\u00e7in ara\u00e7 se\u00e7in",
+  "selectVehicle": "İş emri için araç seçin",
   "dateChoice": {
     "title": "Work Order Date",
     "description": "You have {selectedDate} selected. Which date should this work order be for?",
@@ -45,23 +45,25 @@
   "more": "+ {count} daha",
   "events": {
     "status": {
-      "completed": "Tamamland\u0131",
+      "completed": "Tamamlandı",
       "inProgress": "Devam ediyor",
-      "waitingParts": "Par\u00e7a bekleniyor",
+      "waitingParts": "Parça bekleniyor",
       "pending": "Beklemede",
-      "sent": "G\u00f6nderildi",
-      "approved": "Onayland\u0131",
+      "sent": "Gönderildi",
+      "approved": "Onaylandı",
       "draft": "Taslak",
       "done": "Bitti",
-      "overdue": "Gecikmi\u015f",
-      "upcoming": "Yakla\u015fan"
+      "overdue": "Gecikmiş",
+      "upcoming": "Yaklaşan"
     },
     "type": {
       "service": "Servis",
-      "reminder": "Hat\u0131rlat\u0131c\u0131",
+      "reminder": "Hatırlatıcı",
       "quote": "Teklif"
     },
     "noEvents": "Etkinlik yok",
-    "selectDay": "Etkinli\u011fi olan bir g\u00fcn se\u00e7in veya yeni bir i\u015f emri olu\u015fturun."
-  }
+    "selectDay": "Etkinliği olan bir gün seçin veya yeni bir iş emri oluşturun."
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month"
 }

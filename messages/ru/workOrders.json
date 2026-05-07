@@ -33,7 +33,8 @@
       "date": "Дата",
       "total": "Итого"
     },
-    "emailSubject": "Обновление статуса транспортного средства: {status}"
+    "emailSubject": "Обновление статуса транспортного средства: {status}",
+    "changeStatus": "Change status"
   },
   "vehiclePicker": {
     "title": "Выберите транспортное средство для заказ-наряда",

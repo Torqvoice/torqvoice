@@ -18,7 +18,9 @@
     "deleteTitle": "Excluir conversa?",
     "deleteDescription": "Todas as mensagens com {name} serão excluídas permanentemente. Esta ação não pode ser desfeita.",
     "deleted": "Conversa excluída",
-    "deleteError": "Falha ao excluir a conversa"
+    "deleteError": "Falha ao excluir a conversa",
+    "back": "Back",
+    "conversationMenu": "Conversation menu"
   },
   "conversation": {
     "noPhone": "Nenhum número de telefone registrado para {name}. Adicione um número de telefone para começar a enviar mensagens.",
@@ -30,7 +32,8 @@
     "deleteDescription": "Esta mensagem será excluída permanentemente da conversa. Esta ação não pode ser desfeita.",
     "messageDeleted": "Mensagem excluída",
     "deleteError": "Falha ao excluir a mensagem",
-    "sendError": "Falha ao enviar o SMS"
+    "sendError": "Falha ao enviar o SMS",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Enviar {label}",

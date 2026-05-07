@@ -8,6 +8,7 @@ import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { WhiteLabelCtaProvider } from "@/components/white-label-cta-context";
 import { DateSettingsProvider } from "@/components/date-settings-context";
+import { CurrencySettingsProvider } from "@/components/currency-settings-context";
 import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { OnlineTracker } from "@/components/online-tracker";
@@ -116,6 +117,10 @@ export default async function DashboardLayout({
         timeFormat={data.timeFormat}
         timezone={data.timezone}
       >
+      <CurrencySettingsProvider
+        currencyCode={data.currencyCode}
+        currencyFormat={data.currencyFormat}
+      >
       <ConfirmProvider>
         <AppSidebar
           companyLogo={data.companyLogo}
@@ -136,6 +141,7 @@ export default async function DashboardLayout({
         <OnlineTracker />
         <InstallBanner />
       </ConfirmProvider>
+      </CurrencySettingsProvider>
       </DateSettingsProvider>
     </SidebarProvider>
     <MobileBottomNav isSuperAdmin={data.isSuperAdmin} />

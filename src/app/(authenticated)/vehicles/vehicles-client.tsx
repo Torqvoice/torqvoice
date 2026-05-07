@@ -60,6 +60,7 @@ interface Vehicle {
   fuelType: string | null
   transmission: string | null
   engineSize: string | null
+  engineCode: string | null
   imageUrl: string | null
   customerId: string | null
   customer: { id: string; name: string; company: string | null } | null
@@ -242,6 +243,7 @@ export function VehiclesClient({
               size="icon"
               className="h-8 w-8 rounded-r-none"
               onClick={() => toggleView('table')}
+              aria-label={t('viewTable')}
             >
               <List className="h-4 w-4" />
             </Button>
@@ -250,6 +252,7 @@ export function VehiclesClient({
               size="icon"
               className="h-8 w-8 rounded-l-none lg:rounded-none border-l lg:border-x"
               onClick={() => toggleView('grid')}
+              aria-label={t('viewGrid')}
             >
               <LayoutGrid className="h-4 w-4" />
             </Button>
@@ -258,6 +261,7 @@ export function VehiclesClient({
               size="icon"
               className="h-8 w-8 rounded-l-none hidden lg:inline-flex"
               onClick={() => toggleView('grid6')}
+              aria-label={t('viewLargeGrid')}
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
@@ -312,7 +316,7 @@ export function VehiclesClient({
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t('openMenu')}>
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -411,7 +415,7 @@ export function VehiclesClient({
                   <div className="absolute right-2 top-2 hidden sm:block opacity-0 transition-opacity group-hover:opacity-100">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
-                        <Button variant="secondary" size="icon" className="h-8 w-8">
+                        <Button variant="secondary" size="icon" className="h-8 w-8" aria-label={t('openMenu')}>
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>

@@ -18,7 +18,9 @@
     "deleteTitle": "Eliminare la conversazione?",
     "deleteDescription": "Tutti i messaggi con {name} verranno eliminati definitivamente. Questa azione non può essere annullata.",
     "deleted": "Conversazione eliminata",
-    "deleteError": "Impossibile eliminare la conversazione"
+    "deleteError": "Impossibile eliminare la conversazione",
+    "back": "Back",
+    "conversationMenu": "Conversation menu"
   },
   "conversation": {
     "noPhone": "Nessun numero di telefono registrato per {name}. Aggiungi un numero di telefono per iniziare a inviare messaggi.",
@@ -30,7 +32,8 @@
     "deleteDescription": "Questo messaggio verrà eliminato definitivamente dalla conversazione. Questa azione non può essere annullata.",
     "messageDeleted": "Messaggio eliminato",
     "deleteError": "Impossibile eliminare il messaggio",
-    "sendError": "Impossibile inviare l'SMS"
+    "sendError": "Impossibile inviare l'SMS",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Invia {label}",

@@ -7,6 +7,11 @@
     "noResults": "Żaden warsztat nie pasuje do wyszukiwania.",
     "openPortal": "Otwórz portal"
   },
+  "directLink": {
+    "title": "Portal klienta",
+    "description": "Użyj bezpośredniego linku podanego przez Twój warsztat, aby uzyskać dostęp do portalu klienta.",
+    "hint": "Twój warsztat udostępni Ci link do portalu e-mailem lub SMS-em."
+  },
   "landing": {
     "contactTitle": "Skontaktuj się z nami",
     "aboutTitle": "O nas",

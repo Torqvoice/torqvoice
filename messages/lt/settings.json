@@ -7,6 +7,7 @@
       "billing": "Atsiskaitymai ir dokumentai",
       "communications": "Komunikacija",
       "workshop": "Dirbtuvės",
+      "integrations": "Integracijos",
       "system": "Sistema"
     },
     "items": {
@@ -89,6 +90,10 @@
       "reportSchedule": {
         "title": "Ataskaitų grafikas",
         "description": "Automatinis ataskaitų siuntimas"
+      },
+      "webhooks": {
+        "title": "Webhooks",
+        "description": "Realaus laiko įvykių pranešimai"
       },
       "appearance": {
         "title": "Išvaizda",
@@ -353,7 +358,10 @@
     "memberRemoved": "Narys pašalintas",
     "failedRemoveMember": "Nepavyko pašalinti nario",
     "memberRoleUpdated": "Nario rolė atnaujinta",
-    "failedUpdateRole": "Nepavyko atnaujinti rolės"
+    "failedUpdateRole": "Nepavyko atnaujinti rolės",
+    "removeMember": "Remove member",
+    "cancelInvite": "Cancel invitation",
+    "editRole": "Edit role"
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",
@@ -662,10 +670,37 @@
       "PHP": "Filipinų pesas",
       "IDR": "Indonezijos rupija",
       "MYR": "Malaizijos ringitas",
+      "LKR": "Šri Lankos rupija",
       "AED": "JAE dirhamas",
       "SAR": "Saudo Arabijos rijalas",
-      "RUB": "Rusijos rublis"
-    }
+      "RUB": "Rusijos rublis",
+      "TWD": "Taivano doleris",
+      "VND": "Vietnamo donas",
+      "PKR": "Pakistano rupija",
+      "BDT": "Bangladešo taka",
+      "NPR": "Nepalo rupija",
+      "BGN": "Bulgarijos levas",
+      "UAH": "Ukrainos grivina",
+      "CLP": "Čilės pesas",
+      "COP": "Kolumbijos pesas",
+      "ARS": "Argentinos pesas",
+      "PEN": "Peru solis",
+      "EGP": "Egipto svaras",
+      "NGN": "Nigerijos naira",
+      "KES": "Kenijos šilingas",
+      "MAD": "Maroko dirhamas",
+      "GHS": "Ganos sedis",
+      "QAR": "Kataro rialas",
+      "KWD": "Kuveito dinaras",
+      "BHD": "Bahreino dinaras",
+      "OMR": "Omano rialas",
+      "JOD": "Jordanijos dinaras"
+    },
+    "formatTitle": "Valiutos formatas",
+    "formatSymbolName": "Simbolis",
+    "formatCodeName": "Kodas",
+    "formatSymbolLabel": "Simbolis: {value}",
+    "formatCodeLabel": "Kodas: {value}"
   },
   "localization": {
     "languageTitle": "Kalba",
@@ -718,7 +753,9 @@
     "fieldUpdated": "Pasirinktinis laukas atnaujintas",
     "fieldDeleted": "Pasirinktinis laukas ištrintas",
     "failedSave": "Nepavyko išsaugoti lauko",
-    "failedDelete": "Nepavyko ištrinti"
+    "failedDelete": "Nepavyko ištrinti",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "workshop": {
     "title": "Dirbtuvių numatytosios reikšmės",
@@ -948,7 +985,8 @@
         "slate": "Skalūnas",
         "sand": "Smėlis"
       }
-    }
+    },
+    "copyUrl": "Copy portal URL"
   },
   "email": {
     "title": "El. pašto tiekėjas",
@@ -1023,7 +1061,8 @@
     "saved": "SMS nustatymai išsaugoti",
     "failedSave": "Nepavyko išsaugoti nustatymų",
     "testSentTo": "Bandomoji SMS išsiųsta numeriu {phone}",
-    "testFailed": "SMS testas nepavyko"
+    "testFailed": "SMS testas nepavyko",
+    "copyWebhookUrl": "Copy webhook URL"
   },
   "subscription": {
     "title": "Prenumeratos planas",
@@ -1074,6 +1113,7 @@
     "resumeSuccess": "Prenumerata sėkmingai atnaujinta",
     "resumeError": "Nepavyko atnaujinti prenumeratos",
     "billingPortalError": "Nepavyko atidaryti atsiskaitymų portalo",
+    "checkoutError": "Failed to start checkout",
     "upgradeTitle": "Atnaujinti planą",
     "upgradeDescription": "Atrakinkite daugiau funkcijų atnaujindami planą.",
     "upgradeToProDescription": "Atnaujinkite, kad atrakintumėte neribotą klientų, komandos narių, ataskaitų, SMTP, API prieigos skaičių ir daugiau.",
@@ -1165,6 +1205,10 @@
     "deleted": "Ataskaitų grafikas ištrintas",
     "toggledOn": "Ataskaitų grafikas įjungtas",
     "toggledOff": "Ataskaitų grafikas išjungtas",
+    "failedSave": "Failed to save",
+    "failedSend": "Failed to send",
+    "failedToggle": "Failed to toggle",
+    "failedDelete": "Failed to delete",
     "noMembers": "Komandos narių nerasta",
     "addRecipient": "Pridėti gavėją...",
     "searchMembers": "Ieškoti narių...",
@@ -1188,6 +1232,104 @@
       "jobAnalytics": "Darbų analitika",
       "retention": "Klientų grįžtamumas",
       "inventory": "Inventorius"
+    }
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "subtitle": "Siųskite realaus laiko įvykių pranešimus į savo sistemas per HTTPS. Kiekvienas įvykis pasirašomas HMAC-SHA256, kad galėtumėte patikrinti autentiškumą.",
+    "create": "Pridėti webhook",
+    "createTitle": "Pridėti webhook",
+    "editTitle": "Redaguoti webhook",
+    "createDescription": "Webhooks siunčiami POST užklausa kaip JSON. Nepavykę pristatymai bandomi pakartotinai su eksponentine atidėjimo strategija iki 5 kartų.",
+    "name": "Pavadinimas",
+    "namePlaceholder": "pvz. Apskaitos sinchronizavimas",
+    "url": "Galinio taško URL",
+    "urlHint": "Turi prasidėti http:// arba https://. Primygtinai rekomenduojame HTTPS.",
+    "description": "Aprašymas (neprivaloma)",
+    "events": "Įvykiai",
+    "eventsHint": "Pasirinkite, kurie įvykiai suaktyvins šį webhook.",
+    "subscribeToAll": "Visi įvykiai",
+    "selectAtLeastOneEvent": "Pasirinkite bent vieną įvykį",
+    "groups": {
+      "customers": "Klientai",
+      "vehicles": "Transporto priemonės",
+      "services": "Darbo užsakymai",
+      "quotes": "Sąmatos",
+      "payments": "Mokėjimai",
+      "inspections": "Apžiūros",
+      "inventory": "Atsargos",
+      "findings": "Pastabos"
+    },
+    "save": "Išsaugoti",
+    "cancel": "Atšaukti",
+    "delete": "Ištrinti",
+    "rotate": "Atnaujinti",
+    "done": "Atlikta",
+    "paused": "Pristabdyta",
+    "statusOk": "Sveikas",
+    "statusFailing": "{count, plural, one {# nesena nesėkmė} few {# nesenos nesėkmės} many {# nesenos nesėkmės} other {# nesenų nesėkmių}}",
+    "lastDelivery": "Paskutinis pristatymas {when}",
+    "totalDeliveries": "{count, plural, one {# pristatymas} few {# pristatymai} many {# pristatymo} other {# pristatymų}}",
+    "toggleAria": "Įjungti arba išjungti šį webhook",
+    "deliveries": "Pristatymai",
+    "sendTest": "Siųsti testą",
+    "testSent": "Testo įvykis išsiųstas",
+    "testFailed": "Nepavyko išsiųsti testo įvykio",
+    "rotateSecret": "Atnaujinti pasirašymo raktą",
+    "confirmRotateTitle": "Atnaujinti pasirašymo raktą?",
+    "confirmRotateDescription": "Dabartinis raktas iš karto nustos veikti. Atnaujinkite savo galinį tašką nauju raktu.",
+    "secretRotated": "Raktas atnaujintas",
+    "secretRotatedDescription": "Išsaugokite šį raktą dabar — vėliau jo nepavyks atkurti.",
+    "confirmDeleteTitle": "Ištrinti webhook?",
+    "confirmDeleteDescription": "„{name}“ iš karto nustos gauti įvykius. Šio veiksmo negalima atšaukti.",
+    "secretShownOnceTitle": "Webhook „{name}“ sukurtas",
+    "secretShownOnceDescription": "Nukopijuokite šį pasirašymo raktą dabar. Jis nebus rodomas dar kartą.",
+    "secretCopyHint": "Naudokite šį raktą, kad patikrintumėte X-Torqvoice-Signature antraštę kiekvienoje užklausoje.",
+    "deliveriesTitle": "Pristatymai — {name}",
+    "deliveriesDescription": "Paskutiniai 50 bandymų. Nepavykę įvykiai automatiškai bandomi pakartotinai su eksponentine atidėjimo strategija.",
+    "deliveriesEmpty": "Pristatymų dar nėra. Siųskite testo įvykį, kad išbandytumėte.",
+    "attempt": "Bandymas {n}/{max}",
+    "nextRetry": "Kitas bandymas {when}",
+    "retryQueued": "Bandymas eilėje",
+    "retryFailed": "Bandymas nepavyko",
+    "saveFailed": "Nepavyko išsaugoti",
+    "deleteFailed": "Nepavyko ištrinti",
+    "toggleFailed": "Nepavyko perjungti",
+    "rotateFailed": "Nepavyko atnaujinti",
+    "created": "Webhook sukurtas",
+    "updated": "Webhook atnaujintas",
+    "deleted": "Webhook ištrintas",
+    "emptyTitle": "Webhook dar nėra",
+    "emptyDescription": "Pridėkite webhook, kad siųstumėte įvykius į savo sistemas — apskaitos sinchronizavimą, pasirinktinus skydelius, Zapier, viską, kas kalba HTTP.",
+    "helpTitle": "Webhook parašų tikrinimas",
+    "helpIntro": "Kiekvienas pristatymas turi HMAC-SHA256 parašą, kad galėtumėte patvirtinti, jog užklausa atvyko iš Torqvoice.",
+    "helpHeadersTitle": "Antraštės, siunčiamos su kiekviena užklausa",
+    "helpVerify": "Sudarykite pasirašytą eilutę kaip `[timestamp].[body]` ir palyginkite su saugiu laiko atžvilgiu palyginimu:",
+    "tabWebhooks": "Webhooks",
+    "tabReference": "Įvykių žinynas",
+    "autoDisabled": "Automatiškai pristabdyta",
+    "autoDisabledBanner": "Šis webhook buvo automatiškai pristabdytas po 20 nuoseklių nesėkmių. Įjunkite jį iš naujo, kad atnaujintumėte pristatymus.",
+    "reEnable": "Įjungti iš naujo",
+    "resumed": "Webhook atnaujintas",
+    "copyUrl": "Kopijuoti URL",
+    "refresh": "Atnaujinti",
+    "noMatches": "Šiam filtrui pristatymų nerasta.",
+    "retry": "Bandyti dar kartą",
+    "viewPayload": "Peržiūrėti payload",
+    "payloadCopied": "Payload nukopijuotas",
+    "loadingPayload": "Įkeliamas payload…",
+    "requestPayload": "Užklausos payload",
+    "response": "Atsakymas",
+    "close": "Uždaryti",
+    "samplePayload": "Pavyzdinis vokas",
+    "referenceTitle": "Įvykių žinynas",
+    "referenceIntro": "Kiekvienas pristatymas seka šią voko formą. Spustelėkite įvykį, kad pamatytumėte pavyzdinį payload, kurį gaus jūsų galinis taškas.",
+    "filter": {
+      "all": "Visi",
+      "success": "Sėkmingi",
+      "failed": "Nepavykę",
+      "retrying": "Bandoma dar kartą",
+      "pending": "Laukiama"
     }
   }
 }

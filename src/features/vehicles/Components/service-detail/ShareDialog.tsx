@@ -49,6 +49,7 @@ export function ShareDialog({
   const t = useTranslations("service.share");
   const [publicToken, setPublicToken] = useState<string | null>(initialToken);
   const [generatingLink, setGeneratingLink] = useState(false);
+  const [revoking, setRevoking] = useState(false);
   const [copied, setCopied] = useState(false);
   const [notifyEmail, setNotifyEmail] = useState(false);
   const [notifySms, setNotifySms] = useState(false);
@@ -69,8 +70,14 @@ export function ShareDialog({
   };
 
   const handleRevoke = async () => {
-    await revokePublicLink(recordId);
-    setPublicToken(null);
+    if (revoking) return;
+    setRevoking(true);
+    try {
+      await revokePublicLink(recordId);
+      setPublicToken(null);
+    } finally {
+      setRevoking(false);
+    }
   };
 
   const handleCopy = () => {
@@ -144,7 +151,7 @@ export function ShareDialog({
             <>
               <div className="flex items-center gap-2">
                 <Input value={publicUrl} readOnly className="text-xs font-mono" />
-                <Button variant="outline" size="icon" onClick={handleCopy}>
+                <Button variant="outline" size="icon" onClick={handleCopy} aria-label={t("copyLink")}>
                   {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
                 </Button>
               </div>
@@ -205,7 +212,9 @@ export function ShareDialog({
                 size="sm"
                 className="text-destructive hover:text-destructive"
                 onClick={handleRevoke}
+                disabled={revoking}
               >
+                {revoking && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t("revokeLink")}
               </Button>
             </>

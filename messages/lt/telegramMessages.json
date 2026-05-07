@@ -30,7 +30,8 @@
     "deleteDescription": "Ši žinutė bus visam laikui ištrinta. Šio veiksmo negalima atšaukti.",
     "messageDeleted": "Žinutė ištrinta",
     "deleteError": "Nepavyko ištrinti žinutės",
-    "sendError": "Nepavyko išsiųsti žinutės"
+    "sendError": "Nepavyko išsiųsti žinutės",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Siųsti {label}",

@@ -7,6 +7,11 @@
     "noResults": "Aramanızla eşleşen servis bulunamadı.",
     "openPortal": "Portalı aç"
   },
+  "directLink": {
+    "title": "Müşteri Portalı",
+    "description": "Müşteri portalına erişmek için servisinizden aldığınız doğrudan bağlantıyı kullanın.",
+    "hint": "Servisiniz portal bağlantısını e-posta veya SMS ile sizinle paylaşacaktır."
+  },
   "landing": {
     "contactTitle": "Bize ulaşın",
     "aboutTitle": "Hakkımızda",

@@ -63,5 +63,7 @@
     },
     "noEvents": "No events",
     "selectDay": "Select a day with events or create a new work order."
-  }
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month"
 }

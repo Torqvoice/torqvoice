@@ -118,5 +118,6 @@
     "cancel": "Отмена",
     "saveChanges": "Сохранить изменения",
     "addPart": "Добавить запчасть"
-  }
+  },
+  "openMenu": "Open menu"
 }

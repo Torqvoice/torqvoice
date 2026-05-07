@@ -140,6 +140,7 @@ function createReportStyles(primary: string) {
 interface ReportPDFProps {
   dateRange: string;
   currencyCode: string;
+  currencyFormat?: 'symbol' | 'code';
   primaryColor: string;
   organizationName?: string;
   labels: Record<string, string>;
@@ -271,6 +272,7 @@ function PageFooter({ s }: { s: ReportStyles }) {
 export function ReportPDF({
   dateRange,
   currencyCode,
+  currencyFormat = 'symbol',
   primaryColor,
   labels: l,
   revenueData,
@@ -286,7 +288,7 @@ export function ReportPDF({
   vehicleData,
   organizationName,
 }: ReportPDFProps) {
-  const fmt = (n: number) => formatCurrency(n, currencyCode);
+  const fmt = (n: number) => formatCurrency(n, currencyCode, currencyFormat);
   const s = createReportStyles(primaryColor);
 
   const ReportHeader = ({ title, subtitle }: { title: string; subtitle: string }) => (

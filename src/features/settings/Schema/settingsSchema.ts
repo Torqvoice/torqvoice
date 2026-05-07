@@ -13,6 +13,7 @@ export const SETTING_KEYS = {
   INVOICE_START_NUMBER: 'workshop.invoiceStartNumber',
   CURRENCY_SYMBOL: 'workshop.currencySymbol',
   CURRENCY_CODE: 'workshop.currencyCode',
+  CURRENCY_FORMAT: 'workshop.currencyFormat',
   INVOICE_BANK_ACCOUNT: 'invoice.bankAccount',
   INVOICE_ORG_NUMBER: 'invoice.orgNumber',
   INVOICE_PAYMENT_TERMS: 'invoice.paymentTerms',
@@ -99,6 +100,9 @@ export const SETTING_KEYS = {
   WORKSHOP_LOCALE: 'workshop.locale',
   WORKSHOP_DEFAULT_COUNTRY_CODE: 'workshop.defaultCountryCode',
   FORCE_CUSTOMER_LOCALE: 'workshop.forceCustomerLocale',
+  DEFAULT_WARRANTY_MONTHS: 'defaultWarrantyMonths',
+  DEFAULT_WARRANTY_MILEAGE: 'defaultWarrantyMileage',
+  DEFAULT_WARRANTY_NOTES: 'defaultWarrantyNotes',
 } as const
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS]

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { GripVertical, Package, Plus, ScanBarcode, Trash2 } from 'lucide-react'
-import { formatCurrency } from '@/lib/format'
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useTranslations } from 'next-intl'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
 import { emptyPart } from './form-types'
@@ -57,6 +57,7 @@ function SortablePartRow({
   t: (key: string) => string
   dragEnabled: boolean
 }) {
+  const formatCurrency = useFormatCurrency()
   const {
     attributes,
     listeners,
@@ -120,6 +121,7 @@ function SortablePartRow({
           size="icon"
           className="h-9 w-9 text-muted-foreground hover:text-destructive"
           onClick={onDelete}
+          aria-label={t('deleteRow')}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
@@ -138,6 +140,7 @@ export function PartsEditor({
   onOpenInventory,
   onScanBarcode,
 }: PartsEditorProps) {
+  const formatCurrency = useFormatCurrency()
   const t = useTranslations('service.parts')
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])

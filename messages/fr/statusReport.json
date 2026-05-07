@@ -14,6 +14,7 @@
     "createAndSend": "Créer et envoyer",
     "cancel": "Annuler",
     "uploadFailed": "Échec du téléversement de la vidéo",
+    "createReportFailed": "Failed to create status report",
     "created": "Rapport d'état créé",
     "noVideo": "Veuillez d'abord téléverser une vidéo",
     "removeVideo": "Supprimer la vidéo",

@@ -190,6 +190,7 @@ const DUMMY_INVOICE_SETTINGS = {
   showOrgNumber: true,
   dueDays: 14,
   currencyCode: "USD",
+  currencyFormat: "symbol" as const,
   unitSystem: "imperial",
 };
 

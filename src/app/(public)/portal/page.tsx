@@ -1,14 +1,22 @@
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
+import { isCloudMode } from '@/lib/features'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   PortalDirectory,
   type PortalDirectoryEntry,
 } from '@/features/portal/Components/PortalDirectory'
+import { PortalDirectLink } from '@/features/portal/Components/PortalDirectLink'
 
 export const dynamic = 'force-dynamic'
 
 export default async function PortalIndexPage() {
+  // In cloud mode, don't expose a directory of all organizations.
+  // Customers should use the direct portal link provided by their workshop.
+  if (isCloudMode()) {
+    return <PortalDirectLink />
+  }
+
   // Fetch all orgs that have the portal enabled.
   const enabledOrgs = await db.organization.findMany({
     where: {

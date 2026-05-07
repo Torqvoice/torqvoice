@@ -73,7 +73,7 @@ import {
   getPastDueInvoicesReport,
   getVehicleReport,
 } from "@/features/reports/Actions/reportActions";
-import { formatCurrency } from "@/lib/format";
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import type {
   RevenueReport,
   ServiceReport,
@@ -128,6 +128,7 @@ const VALID_TABS: ReportTab[] = ["financial", "services", "customers", "inventor
 const VALID_SUB_TABS: FinancialSubTab[] = ["revenue", "past-due-invoices", "tax"];
 
 export default function ReportsClient({ currencyCode, primaryColor, organizationName }: ReportsClientProps) {
+  const formatCurrency = useFormatCurrency();
   const t = useTranslations("reports");
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -1990,10 +1991,10 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         {totalPages > 1 && (
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <span>{page * pageSize + 1}–{Math.min((page + 1) * pageSize, vehicleData.serviceHistory.length)} / {vehicleData.serviceHistory.length}</span>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page === 0} onClick={() => setHistoryPage(page - 1)}>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page === 0} onClick={() => setHistoryPage(page - 1)} aria-label={t("pagination.previousPage")}>
                               <ChevronLeft className="h-3.5 w-3.5" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page >= totalPages - 1} onClick={() => setHistoryPage(page + 1)}>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page >= totalPages - 1} onClick={() => setHistoryPage(page + 1)} aria-label={t("pagination.nextPage")}>
                               <ChevronRight className="h-3.5 w-3.5" />
                             </Button>
                           </div>

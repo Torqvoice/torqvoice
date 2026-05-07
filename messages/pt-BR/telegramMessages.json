@@ -30,7 +30,8 @@
     "deleteDescription": "Isso excluirá permanentemente esta mensagem. Esta ação não pode ser desfeita.",
     "messageDeleted": "Mensagem excluída",
     "deleteError": "Falha ao excluir mensagem",
-    "sendError": "Falha ao enviar mensagem"
+    "sendError": "Falha ao enviar mensagem",
+    "sendMessage": "Send message"
   },
   "sendDialog": {
     "send": "Enviar {label}",

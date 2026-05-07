@@ -40,7 +40,7 @@ import {
 import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
 import { aiSummarizeVehicleHistory, aiGetCommonIssues, aiClearMessage } from '@/features/ai/Actions/aiActions'
 import { AI_MESSAGE_TYPES } from '@/features/ai/constants'
-import { formatCurrency } from '@/lib/format'
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import {
   AlertTriangle,
   Archive,
@@ -110,6 +110,10 @@ interface PaginatedServices {
     techName: string | null
     totalAmount: number
     invoiceNumber: string | null
+    warrantyMonths: number | null
+    warrantyMileage: number | null
+    warrantyExpiresAt: Date | null
+    warrantyNotes: string | null
     _count: { partItems: number; laborItems: number; attachments: number }
   }[]
   total: number
@@ -162,6 +166,7 @@ interface VehicleDetail {
   fuelType: string | null
   transmission: string | null
   engineSize: string | null
+  engineCode: string | null
   purchaseDate: Date | null
   purchasePrice: number | null
   imageUrl: string | null
@@ -265,6 +270,7 @@ export function VehicleDetailClient({
   quotes?: QuoteRecord[]
   aiEnabled?: boolean
 }) {
+  const formatCurrency = useFormatCurrency()
   const serviceType = useServiceType()
   const isMarine = serviceType === 'marine'
   const distUnit = isMarine ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
@@ -536,7 +542,7 @@ export function VehicleDetailClient({
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t('openMenu')}>
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -587,8 +593,14 @@ export function VehicleDetailClient({
                 {vehicle.licensePlate && <span className="font-mono">{vehicle.licensePlate}</span>}
                 {vehicle.vin && (
                   <>
-                    <span>&middot;</span>
+                    {vehicle.licensePlate && <span>&middot;</span>}
                     <span className="font-mono">{vehicle.vin}</span>
+                  </>
+                )}
+                {vehicle.engineCode && (
+                  <>
+                    {(vehicle.licensePlate || vehicle.vin) && <span>&middot;</span>}
+                    <span className="font-mono">{vehicle.engineCode}</span>
                   </>
                 )}
               </div>
@@ -702,6 +714,7 @@ export function VehicleDetailClient({
                         className="h-5 w-5 text-muted-foreground hover:text-foreground ml-0.5"
                         disabled={isDismissPending}
                         onClick={handleDismissMaintenance}
+                        aria-label={t('dismissMaintenance')}
                       >
                         {isDismissPending ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
@@ -722,6 +735,7 @@ export function VehicleDetailClient({
                         className="h-5 w-5 text-muted-foreground hover:text-foreground ml-0.5"
                         disabled={isDismissPending}
                         onClick={handleDismissMaintenance}
+                        aria-label={t('dismissMaintenance')}
                       >
                         {isDismissPending ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
@@ -1118,6 +1132,7 @@ export function VehicleDetailClient({
             search={serviceSearch}
             type={serviceRecordType}
             currencyCode={currencyCode}
+            vehicleMileage={vehicle.mileage}
           />
         </TabsContent>
 
@@ -1417,7 +1432,7 @@ export function VehicleDetailClient({
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-7 w-7">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={t('openMenu')}>
                             <MoreVertical className="h-3.5 w-3.5" />
                           </Button>
                         </DropdownMenuTrigger>

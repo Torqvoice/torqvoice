@@ -95,7 +95,8 @@
     "scanBarcode": "Escanear",
     "scanTitle": "Escanear código de barras",
     "partFound": "\"{name}\" adicionado do estoque",
-    "partNotFound": "Nenhuma peça encontrada para o código de barras \"{barcode}\""
+    "partNotFound": "Nenhuma peça encontrada para o código de barras \"{barcode}\"",
+    "deleteRow": "Delete row"
   },
   "labor": {
     "title": "Mão de Obra",
@@ -118,7 +119,8 @@
     "switchToHourly": "Switch to hourly pricing",
     "switchToService": "Switch to service pricing",
     "switchToHourlyHint": "Hourly: priced by hours worked (hours 00d7 rate/hr). Click to switch.",
-    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch."
+    "switchToServiceHint": "Service: priced as a flat fee per unit. Click to switch.",
+    "deleteRow": "Delete row"
   },
   "totals": {
     "title": "Totais",
@@ -209,7 +211,9 @@
     "images": "Imagens ({count})",
     "videos": "Vídeos ({count})",
     "diagnostics": "Relatórios de Diagnóstico ({count})",
-    "documents": "Documentos ({count})"
+    "documents": "Documentos ({count})",
+    "download": "Download",
+    "close": "Close"
   },
   "share": {
     "title": "Compartilhar Fatura",
@@ -225,7 +229,8 @@
     "emailSent": "Email enviado",
     "failedEmail": "Falha ao enviar email",
     "smsSent": "SMS enviado",
-    "failedSms": "Falha ao enviar SMS"
+    "failedSms": "Falha ao enviar SMS",
+    "copyLink": "Copy link"
   },
   "sidebar": {
     "vehicle": "Veículo",
@@ -333,5 +338,32 @@
     "minutesAgo": "{count}m atrás",
     "hoursAgo": "{count}h atrás",
     "daysAgo": "{count}d atrás"
+  },
+  "table": {
+    "warranty": "Garantia"
+  },
+  "warranty": {
+    "title": "Garantia",
+    "months": "Duração (meses)",
+    "mileage": "Limite de quilometragem",
+    "notes": "Termos de garantia",
+    "notesPlaceholder": "ex. Garantia de 12 meses em todas as peças e mão de obra...",
+    "expiresAt": "Expira",
+    "presets": {
+      "3months": "3 m",
+      "6months": "6 m",
+      "12months": "12 m",
+      "24months": "24 m"
+    },
+    "status": {
+      "active": "Ativa",
+      "expiring": "Expirando",
+      "expired": "Expirada",
+      "none": "N/A"
+    },
+    "defaults": {
+      "title": "Configurações padrão de garantia",
+      "description": "Definir termos de garantia padrão para novos registros de serviço"
+    }
   }
 }

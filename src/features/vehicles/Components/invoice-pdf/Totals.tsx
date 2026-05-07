@@ -15,6 +15,7 @@ function fillTemplate(template: string, values: Record<string, string>): string 
 interface TotalsProps {
   data: InvoiceData
   currencyCode: string
+  currencyFormat?: 'symbol' | 'code'
   primaryColor: string
   fontFamily: string
   displayTotal: number
@@ -30,6 +31,7 @@ interface TotalsProps {
 export function Totals({
   data,
   currencyCode,
+  currencyFormat = 'symbol',
   primaryColor,
   fontFamily,
   displayTotal,
@@ -59,19 +61,19 @@ export function Totals({
       {data.partItems.length > 0 && (
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
-          <Text style={styles.totalValue}>{formatCurrency(displayPartsSubtotal, currencyCode)}</Text>
+          <Text style={styles.totalValue}>{formatCurrency(displayPartsSubtotal, currencyCode, currencyFormat)}</Text>
         </View>
       )}
       {data.laborItems.length > 0 && (
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
-          <Text style={styles.totalValue}>{formatCurrency(displayLaborSubtotal, currencyCode)}</Text>
+          <Text style={styles.totalValue}>{formatCurrency(displayLaborSubtotal, currencyCode, currencyFormat)}</Text>
         </View>
       )}
       {displaySubtotal > 0 && (
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
-          <Text style={styles.totalValue}>{formatCurrency(displaySubtotal, currencyCode)}</Text>
+          <Text style={styles.totalValue}>{formatCurrency(displaySubtotal, currencyCode, currencyFormat)}</Text>
         </View>
       )}
       {displayDiscountAmount > 0 && (
@@ -82,7 +84,7 @@ export function Totals({
               : (labels.discount || 'Discount')}
           </Text>
           <Text style={{ ...styles.totalValue, color: '#dc2626' }}>
-            {formatCurrency(-displayDiscountAmount, currencyCode)}
+            {formatCurrency(-displayDiscountAmount, currencyCode, currencyFormat)}
           </Text>
         </View>
       )}
@@ -93,7 +95,7 @@ export function Totals({
               ? fillTemplate(labels.tax, { rate: String(taxRate) })
               : `Tax (${taxRate}%)`}
           </Text>
-          <Text style={styles.totalValue}>{formatCurrency(data.taxAmount, currencyCode)}</Text>
+          <Text style={styles.totalValue}>{formatCurrency(data.taxAmount, currencyCode, currencyFormat)}</Text>
         </View>
       )}
       <View style={styles.totalDivider} />
@@ -102,7 +104,7 @@ export function Totals({
           <View style={styles.totalRow}>
             <Text style={{ fontSize: 10, fontFamily: fontBold }}>{labels.total || 'Total'}</Text>
             <Text style={{ fontSize: 10, fontFamily: fontBold }}>
-              {formatCurrency(displayTotal, currencyCode)}
+              {formatCurrency(displayTotal, currencyCode, currencyFormat)}
             </Text>
           </View>
           <View style={{ ...styles.totalDivider, marginVertical: 6 }} />
@@ -115,7 +117,7 @@ export function Totals({
                 {p.date} ({p.method})
               </Text>
               <Text style={{ fontSize: 9, color: '#059669' }}>
-                {formatCurrency(-p.amount, currencyCode)}
+                {formatCurrency(-p.amount, currencyCode, currencyFormat)}
               </Text>
             </View>
           ))}
@@ -143,14 +145,14 @@ export function Totals({
                 color: isPaidInFull ? '#059669' : primaryColor,
               }}
             >
-              {isPaidInFull ? '' : formatCurrency(balanceDue, currencyCode)}
+              {isPaidInFull ? '' : formatCurrency(balanceDue, currencyCode, currencyFormat)}
             </Text>
           </View>
         </>
       ) : (
         <View style={styles.grandTotalRow}>
           <Text style={styles.grandTotalLabel}>{labels.total || 'Total'}</Text>
-          <Text style={styles.grandTotalValue}>{formatCurrency(displayTotal, currencyCode)}</Text>
+          <Text style={styles.grandTotalValue}>{formatCurrency(displayTotal, currencyCode, currencyFormat)}</Text>
         </View>
       )}
     </View>

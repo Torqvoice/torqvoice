@@ -15,6 +15,7 @@ import {
   Video,
   X,
 } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { formatFileSize } from './types'
 import type { Attachment } from './types'
 
@@ -28,10 +29,14 @@ function AttachmentRow({
   attachment,
   onDelete,
   deleting,
+  tDownload,
+  tDelete,
 }: {
   attachment: Attachment
   onDelete: (id: string) => void
   deleting: boolean
+  tDownload: string
+  tDelete: string
 }) {
   return (
     <div className="grid grid-cols-[2rem_1fr_auto] items-center gap-2 rounded border p-2">
@@ -45,20 +50,31 @@ function AttachmentRow({
         <p className="text-xs text-muted-foreground">{formatFileSize(attachment.fileSize)}</p>
       </div>
       <div className="flex items-center gap-0.5">
-        <Button variant="ghost" size="icon" className="h-6 w-6" asChild>
-          <a href={attachment.fileUrl} download={attachment.fileName}>
-            <Download className="h-3 w-3" />
-          </a>
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6 text-muted-foreground hover:text-destructive"
-          disabled={deleting}
-          onClick={() => onDelete(attachment.id)}
-        >
-          {deleting ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-6 w-6" asChild>
+              <a href={attachment.fileUrl} download={attachment.fileName} aria-label={tDownload}>
+                <Download className="h-3 w-3" />
+              </a>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tDownload}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-muted-foreground hover:text-destructive"
+              disabled={deleting}
+              onClick={() => onDelete(attachment.id)}
+              aria-label={tDelete}
+            >
+              {deleting ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tDelete}</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   )
@@ -80,12 +96,17 @@ export function ServiceAttachments({
   deletingAttachment,
 }: ServiceAttachmentsProps) {
   const t = useTranslations('service.attachments')
+  const tButtons = useTranslations('common.buttons')
+  const tDownload = t('download')
+  const tDelete = tButtons('delete')
+  const tClose = t('close')
   const diagnostics = attachments.filter((a) => a.category === 'diagnostic')
   const documents = attachments.filter((a) => a.category === 'document')
   const videos = attachments.filter((a) => a.category === 'video')
   const [activeVideo, setActiveVideo] = useState<Attachment | null>(null)
 
   return (
+    <TooltipProvider>
     <>
       {imageAttachments.length > 0 && (
         <div className="rounded-lg border p-3">
@@ -109,24 +130,35 @@ export function ServiceAttachments({
                     />
                   </button>
                   <div className="absolute right-0.5 top-0.5 flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-                    <Button variant="secondary" size="icon" className="h-5 w-5" asChild>
-                      <a href={attachment.fileUrl} download={attachment.fileName}>
-                        <Download className="h-2.5 w-2.5" />
-                      </a>
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="icon"
-                      className="h-5 w-5 hover:text-destructive"
-                      disabled={deletingAttachment === attachment.id}
-                      onClick={() => onDeleteAttachment(attachment.id)}
-                    >
-                      {deletingAttachment === attachment.id ? (
-                        <Loader2 className="h-2.5 w-2.5 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-2.5 w-2.5" />
-                      )}
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="secondary" size="icon" className="h-5 w-5" asChild>
+                          <a href={attachment.fileUrl} download={attachment.fileName} aria-label={tDownload}>
+                            <Download className="h-2.5 w-2.5" />
+                          </a>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{tDownload}</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          className="h-5 w-5 hover:text-destructive"
+                          disabled={deletingAttachment === attachment.id}
+                          onClick={() => onDeleteAttachment(attachment.id)}
+                          aria-label={tDelete}
+                        >
+                          {deletingAttachment === attachment.id ? (
+                            <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-2.5 w-2.5" />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{tDelete}</TooltipContent>
+                    </Tooltip>
                   </div>
                 </div>
               </div>
@@ -165,24 +197,35 @@ export function ServiceAttachments({
                   <p className="text-xs text-muted-foreground">{formatFileSize(a.fileSize)}</p>
                 </button>
                 <div className="flex items-center gap-0.5">
-                  <Button variant="ghost" size="icon" className="h-6 w-6" asChild>
-                    <a href={a.fileUrl} download={a.fileName}>
-                      <Download className="h-3 w-3" />
-                    </a>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 text-muted-foreground hover:text-destructive"
-                    disabled={deletingAttachment === a.id}
-                    onClick={() => onDeleteAttachment(a.id)}
-                  >
-                    {deletingAttachment === a.id ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <Trash2 className="h-3 w-3" />
-                    )}
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" asChild>
+                        <a href={a.fileUrl} download={a.fileName} aria-label={tDownload}>
+                          <Download className="h-3 w-3" />
+                        </a>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{tDownload}</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                        disabled={deletingAttachment === a.id}
+                        onClick={() => onDeleteAttachment(a.id)}
+                        aria-label={tDelete}
+                      >
+                        {deletingAttachment === a.id ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-3 w-3" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{tDelete}</TooltipContent>
+                  </Tooltip>
                 </div>
               </div>
             ))}
@@ -203,6 +246,8 @@ export function ServiceAttachments({
                 attachment={a}
                 onDelete={onDeleteAttachment}
                 deleting={deletingAttachment === a.id}
+                tDownload={tDownload}
+                tDelete={tDelete}
               />
             ))}
           </div>
@@ -222,6 +267,8 @@ export function ServiceAttachments({
                 attachment={a}
                 onDelete={onDeleteAttachment}
                 deleting={deletingAttachment === a.id}
+                tDownload={tDownload}
+                tDelete={tDelete}
               />
             ))}
           </div>
@@ -239,6 +286,7 @@ export function ServiceAttachments({
             size="icon"
             className="absolute right-4 top-4 h-10 w-10 text-white hover:bg-white/10"
             onClick={() => setActiveVideo(null)}
+            aria-label={tClose}
           >
             <X className="h-6 w-6" />
           </Button>
@@ -252,5 +300,6 @@ export function ServiceAttachments({
         </div>
       )}
     </>
+    </TooltipProvider>
   )
 }

@@ -14,7 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Check, CreditCard, Loader2, Plus, Trash2, X } from "lucide-react";
-import { formatCurrency } from "@/lib/format";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useFormatCurrency } from "@/components/currency-settings-context";
 import { useFormatDate } from "@/lib/use-format-date";
 import { paymentStatusColors, paymentStatusLabels } from "./types";
 import type { Payment } from "./types";
@@ -48,6 +49,7 @@ export function PaymentsSection({
   paymentLoading,
   deletingPayment,
 }: PaymentsSectionProps) {
+  const formatCurrency = useFormatCurrency()
   const t = useTranslations("service.payments");
   const tc = useTranslations("common.buttons");
   const [showForm, setShowForm] = useState(false);
@@ -74,6 +76,7 @@ export function PaymentsSection({
   };
 
   return (
+    <TooltipProvider>
     <div className="rounded-lg border p-3">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -186,17 +189,23 @@ export function PaymentsSection({
                     </td>
                     <td className="py-1.5 text-muted-foreground">{payment.note || "-"}</td>
                     <td className="py-1.5">
-                      <Button
-                        type="button"
-                        variant="ghost" size="icon"
-                        className="h-6 w-6 text-muted-foreground hover:text-destructive"
-                        disabled={deletingPayment === payment.id}
-                        onClick={() => onDeletePayment(payment.id)}
-                      >
-                        {deletingPayment === payment.id
-                          ? <Loader2 className="h-3 w-3 animate-spin" />
-                          : <Trash2 className="h-3 w-3" />}
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="ghost" size="icon"
+                            className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                            disabled={deletingPayment === payment.id}
+                            onClick={() => onDeletePayment(payment.id)}
+                            aria-label={tc("delete")}
+                          >
+                            {deletingPayment === payment.id
+                              ? <Loader2 className="h-3 w-3 animate-spin" />
+                              : <Trash2 className="h-3 w-3" />}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{tc("delete")}</TooltipContent>
+                      </Tooltip>
                     </td>
                   </tr>
                 ))}
@@ -206,5 +215,6 @@ export function PaymentsSection({
         )}
       </div>
     </div>
+    </TooltipProvider>
   );
 }

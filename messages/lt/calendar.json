@@ -63,5 +63,7 @@
     },
     "noEvents": "Įvykių nėra",
     "selectDay": "Pasirinkite dieną su įvykiais arba sukurkite naują darbo užsakymą."
-  }
+  },
+  "previousMonth": "Previous month",
+  "nextMonth": "Next month"
 }

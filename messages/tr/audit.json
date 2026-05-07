@@ -93,6 +93,10 @@
     "statusReport_create": "Durum raporu oluşturuldu",
     "statusReport_send": "Durum raporu gönderildi",
     "statusReport_delete": "Durum raporu silindi",
-    "telegram_send": "Telegram mesajı gönderildi"
+    "telegram_send": "Telegram mesajı gönderildi",
+    "webhook_create": "Webhook oluşturuldu",
+    "webhook_update": "Webhook güncellendi",
+    "webhook_delete": "Webhook silindi",
+    "webhook_rotateSecret": "Webhook gizli anahtarı yenilendi"
   }
 }

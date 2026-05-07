@@ -274,7 +274,7 @@ export async function createServiceRecord(input: unknown) {
       });
     }
 
-    const { partItems, laborItems, attachments, serviceDate, invoiceDate, invoiceDueDate, ...recordData } = data;
+    const { partItems, laborItems, attachments, serviceDate, invoiceDate, invoiceDueDate, warrantyMonths, warrantyMileage, warrantyNotes, ...recordData } = data;
 
     const record = await db.$transaction(async (tx) => {
       const created = await tx.serviceRecord.create({
@@ -286,6 +286,16 @@ export async function createServiceRecord(input: unknown) {
           serviceDate: new Date(serviceDate),
           invoiceDate: invoiceDate ? new Date(invoiceDate) : new Date(serviceDate),
           invoiceDueDate: invoiceDueDate ? new Date(invoiceDueDate) : undefined,
+          warrantyMonths: warrantyMonths || null,
+          warrantyMileage: warrantyMileage || null,
+          warrantyNotes: warrantyNotes || null,
+          warrantyExpiresAt: warrantyMonths
+            ? (() => {
+                const base = new Date(serviceDate || Date.now());
+                base.setMonth(base.getMonth() + warrantyMonths);
+                return base;
+              })()
+            : null,
         },
       });
 
@@ -390,7 +400,7 @@ export async function updateServiceRecord(input: unknown) {
     });
     if (!existing) throw new Error("Service record not found");
 
-    const { id, partItems, laborItems, attachments, serviceDate: _sd, invoiceDate: _id, invoiceDueDate: _idd, ...recordData } = data;
+    const { id, partItems, laborItems, attachments, serviceDate: _sd, invoiceDate: _id, invoiceDueDate: _idd, warrantyMonths: _wm, warrantyMileage: _wmil, warrantyNotes: _wn, ...recordData } = data;
 
     // Determine which categories are being replaced and which files were removed
     let removedFileUrls: string[] = [];
@@ -420,6 +430,19 @@ export async function updateServiceRecord(input: unknown) {
           serviceDate: data.serviceDate ? new Date(data.serviceDate) : undefined,
           invoiceDate: data.invoiceDate ? new Date(data.invoiceDate) : undefined,
           invoiceDueDate: data.invoiceDueDate ? new Date(data.invoiceDueDate) : undefined,
+          warrantyMonths: data.warrantyMonths !== undefined ? (data.warrantyMonths || null) : undefined,
+          warrantyMileage: data.warrantyMileage !== undefined ? (data.warrantyMileage || null) : undefined,
+          warrantyNotes: data.warrantyNotes !== undefined ? (data.warrantyNotes || null) : undefined,
+          warrantyExpiresAt: data.warrantyMonths !== undefined
+            ? (data.warrantyMonths
+              ? (() => {
+                  const serviceDate = data.serviceDate || existing.serviceDate;
+                  const base = new Date(serviceDate);
+                  base.setMonth(base.getMonth() + data.warrantyMonths);
+                  return base;
+                })()
+              : null)
+            : undefined,
         },
       });
 
