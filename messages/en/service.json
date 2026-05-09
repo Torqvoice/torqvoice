@@ -11,6 +11,9 @@
     "datesExpiredDescription": "The invoice date or due date has passed. Would you like to update them before proceeding?",
     "datesExpiredUpdate": "Update dates and proceed",
     "datesExpiredProceed": "Proceed without changes",
+    "datesExpiredUseToday": "Update to today's date",
+    "datesExpiredCustomize": "Choose dates manually",
+    "datesExpiredBack": "Back",
     "datesExpiredSetToday": "Set to today",
     "customFieldsInvalid": "Please fill in all required custom fields",
     "customFieldsSaveFailed": "Failed to save custom fields"

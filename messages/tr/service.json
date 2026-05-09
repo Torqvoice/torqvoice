@@ -11,6 +11,9 @@
     "datesExpiredDescription": "Fatura tarihi veya vade tarihi geçmiş. Devam etmeden önce tarihleri güncellemek ister misiniz?",
     "datesExpiredUpdate": "Tarihleri güncelle ve devam et",
     "datesExpiredProceed": "Değişiklik yapmadan devam et",
+    "datesExpiredUseToday": "Bugünün tarihine güncelle",
+    "datesExpiredCustomize": "Tarihleri manuel olarak seç",
+    "datesExpiredBack": "Geri",
     "datesExpiredSetToday": "Bugüne ayarla",
     "customFieldsInvalid": "Lütfen tüm zorunlu özel alanları doldurun",
     "customFieldsSaveFailed": "Özel alanlar kaydedilemedi"

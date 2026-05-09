@@ -11,6 +11,9 @@
     "datesExpiredDescription": "Data faktury lub termin płatności już minął. Czy chcesz zaktualizować daty przed kontynuowaniem?",
     "datesExpiredUpdate": "Zaktualizuj daty i kontynuuj",
     "datesExpiredProceed": "Kontynuuj bez zmian",
+    "datesExpiredUseToday": "Zaktualizuj do dzisiejszej daty",
+    "datesExpiredCustomize": "Wybierz daty ręcznie",
+    "datesExpiredBack": "Wstecz",
     "datesExpiredSetToday": "Ustaw na dziś",
     "customFieldsInvalid": "Proszę wypełnić wszystkie wymagane pola niestandardowe",
     "customFieldsSaveFailed": "Nie udało się zapisać pól niestandardowych"

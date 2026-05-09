@@ -11,6 +11,9 @@
     "datesExpiredDescription": "De factuurdatum of vervaldatum is verstreken. Wilt u de datums bijwerken voordat u verdergaat?",
     "datesExpiredUpdate": "Datums bijwerken en doorgaan",
     "datesExpiredProceed": "Doorgaan zonder wijzigingen",
+    "datesExpiredUseToday": "Bijwerken naar vandaag",
+    "datesExpiredCustomize": "Datums handmatig kiezen",
+    "datesExpiredBack": "Terug",
     "datesExpiredSetToday": "Instellen op vandaag",
     "customFieldsInvalid": "Vul alle verplichte aangepaste velden in",
     "customFieldsSaveFailed": "Kan aangepaste velden niet opslaan"

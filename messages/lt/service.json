@@ -11,6 +11,9 @@
     "datesExpiredDescription": "Sąskaitos data arba mokėjimo terminas pasibaigė. Ar norite jas atnaujinti prieš tęsiant?",
     "datesExpiredUpdate": "Atnaujinti datas ir tęsti",
     "datesExpiredProceed": "Tęsti be pakeitimų",
+    "datesExpiredUseToday": "Atnaujinti į šiandienos datą",
+    "datesExpiredCustomize": "Pasirinkti datas rankiniu būdu",
+    "datesExpiredBack": "Atgal",
     "datesExpiredSetToday": "Nustatyti šiandienos datą",
     "customFieldsInvalid": "Užpildykite visus privalomus pasirinktinius laukus",
     "customFieldsSaveFailed": "Nepavyko išsaugoti pasirinktinių laukų"

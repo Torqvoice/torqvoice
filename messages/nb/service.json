@@ -11,6 +11,9 @@
     "datesExpiredDescription": "Fakturadatoen eller forfallsdatoen har passert. Vil du oppdatere dem før du fortsetter?",
     "datesExpiredUpdate": "Oppdater datoer og fortsett",
     "datesExpiredProceed": "Fortsett uten endringer",
+    "datesExpiredUseToday": "Oppdater til dagens dato",
+    "datesExpiredCustomize": "Velg datoer manuelt",
+    "datesExpiredBack": "Tilbake",
     "datesExpiredSetToday": "Sett til i dag",
     "customFieldsInvalid": "Vennligst fyll ut alle obligatoriske egendefinerte felt",
     "customFieldsSaveFailed": "Kunne ikke lagre egendefinerte felt"

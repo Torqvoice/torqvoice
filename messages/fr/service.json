@@ -11,6 +11,9 @@
     "datesExpiredDescription": "La date de facturation ou la date d'échéance est dépassée. Souhaitez-vous les mettre à jour avant de continuer ?",
     "datesExpiredUpdate": "Mettre à jour les dates et continuer",
     "datesExpiredProceed": "Continuer sans modifications",
+    "datesExpiredUseToday": "Mettre à jour à la date du jour",
+    "datesExpiredCustomize": "Choisir les dates manuellement",
+    "datesExpiredBack": "Retour",
     "datesExpiredSetToday": "Définir à aujourd'hui",
     "customFieldsInvalid": "Veuillez remplir tous les champs personnalisés obligatoires",
     "customFieldsSaveFailed": "Échec de l'enregistrement des champs personnalisés"

@@ -11,6 +11,9 @@
     "datesExpiredDescription": "Das Rechnungsdatum oder Fälligkeitsdatum ist überschritten. Möchten Sie die Daten vor dem Fortfahren aktualisieren?",
     "datesExpiredUpdate": "Daten aktualisieren und fortfahren",
     "datesExpiredProceed": "Ohne Änderungen fortfahren",
+    "datesExpiredUseToday": "Auf heutiges Datum aktualisieren",
+    "datesExpiredCustomize": "Daten manuell auswählen",
+    "datesExpiredBack": "Zurück",
     "datesExpiredSetToday": "Auf heute setzen",
     "customFieldsInvalid": "Bitte füllen Sie alle erforderlichen benutzerdefinierten Felder aus",
     "customFieldsSaveFailed": "Benutzerdefinierte Felder konnten nicht gespeichert werden"

@@ -11,6 +11,9 @@
     "datesExpiredDescription": "Дата счёта или срок оплаты истёк. Хотите обновить даты перед продолжением?",
     "datesExpiredUpdate": "Обновить даты и продолжить",
     "datesExpiredProceed": "Продолжить без изменений",
+    "datesExpiredUseToday": "Обновить до сегодняшней даты",
+    "datesExpiredCustomize": "Выбрать даты вручную",
+    "datesExpiredBack": "Назад",
     "datesExpiredSetToday": "Установить на сегодня",
     "customFieldsInvalid": "Заполните все обязательные пользовательские поля",
     "customFieldsSaveFailed": "Не удалось сохранить пользовательские поля"

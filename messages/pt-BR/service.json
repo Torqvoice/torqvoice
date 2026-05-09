@@ -11,6 +11,9 @@
     "datesExpiredDescription": "A data da fatura ou a data de vencimento já passou. Deseja atualizar as datas antes de prosseguir?",
     "datesExpiredUpdate": "Atualizar datas e prosseguir",
     "datesExpiredProceed": "Prosseguir sem alterações",
+    "datesExpiredUseToday": "Atualizar para a data de hoje",
+    "datesExpiredCustomize": "Escolher datas manualmente",
+    "datesExpiredBack": "Voltar",
     "datesExpiredSetToday": "Definir para hoje",
     "customFieldsInvalid": "Preencha todos os campos personalizados obrigatórios",
     "customFieldsSaveFailed": "Falha ao salvar campos personalizados"
