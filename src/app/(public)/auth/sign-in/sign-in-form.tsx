@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -20,6 +20,7 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [passkeyLoading, setPasskeyLoading] = useState(false)
+  const passwordRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -36,6 +37,9 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
         } else {
           setError(result.error.message || t('errors.invalidCredentials'))
         }
+        // Clear password and refocus so the retry is one keystroke away
+        setPassword('')
+        passwordRef.current?.focus()
       } else {
         const redirect = searchParams.get('redirect') || '/'
         router.push(redirect)
@@ -81,9 +85,17 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
       </div>
 
       {error && (
-        <div className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
-          <XCircle className="h-4 w-4 shrink-0" />
-          <span>{error}</span>
+        <div className="mb-4 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+          <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <div className="flex-1">
+            <p>{error}</p>
+            <p className="mt-1 text-xs">
+              {t('forgotPassword')}{' '}
+              <Link href="/auth/forgot-password" className="font-medium underline">
+                {t('resetPasswordCta')}
+              </Link>
+            </p>
+          </div>
         </div>
       )}
 
@@ -105,6 +117,7 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
         <div className="space-y-2">
           <Label htmlFor="password">{tc('form.password')}</Label>
           <Input
+            ref={passwordRef}
             id="password"
             type="password"
             placeholder={t('passwordPlaceholder')}
@@ -114,7 +127,10 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
             className="h-11 bg-background/50"
           />
           <div className="flex justify-end">
-            <Link href="/auth/forgot-password" className="text-xs text-muted-foreground hover:underline">
+            <Link
+              href="/auth/forgot-password"
+              className="text-xs text-muted-foreground hover:underline"
+            >
               {t('forgotPassword')}
             </Link>
           </div>
@@ -153,7 +169,10 @@ function SignInFormInner({ registrationDisabled }: { registrationDisabled: boole
       {!registrationDisabled && (
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {t('noAccount')}{' '}
-          <Link href={`/auth/sign-up${searchParams.get('redirect') ? `?redirect=${encodeURIComponent(searchParams.get('redirect')!)}` : ''}`} className="font-medium text-primary hover:underline">
+          <Link
+            href={`/auth/sign-up${searchParams.get('redirect') ? `?redirect=${encodeURIComponent(searchParams.get('redirect')!)}` : ''}`}
+            className="font-medium text-primary hover:underline"
+          >
             {t('createOne')}
           </Link>
         </p>

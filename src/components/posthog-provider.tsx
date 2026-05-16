@@ -22,7 +22,7 @@ export function PostHogProvider({
       posthog.init(posthogKey, {
         api_host: posthogHost || 'https://us.i.posthog.com',
         person_profiles: 'identified_only',
-        capture_pageview: true,
+        capture_pageview: 'history_change',
         capture_pageleave: true,
       })
     }

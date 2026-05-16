@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import { useState, useCallback, useTransition } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-import { useConfirm } from "@/components/confirm-dialog";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useState, useCallback, useTransition } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
+import { useConfirm } from '@/components/confirm-dialog'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -15,140 +15,175 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { DataTablePagination } from "@/components/data-table-pagination";
-import { BadgeCheck, Loader2, MoreHorizontal, Search, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
-import { useFormatDate } from "@/lib/use-format-date";
-import { toggleSuperAdmin } from "../Actions/toggleSuperAdmin";
-import { deleteUser } from "../Actions/deleteUser";
+} from '@/components/ui/dropdown-menu'
+import { DataTablePagination } from '@/components/data-table-pagination'
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  BadgeCheck,
+  Loader2,
+  MoreHorizontal,
+  Search,
+  ShieldCheck,
+  ShieldOff,
+  Trash2,
+} from 'lucide-react'
+import { useFormatDate } from '@/lib/use-format-date'
+import { toggleSuperAdmin } from '../Actions/toggleSuperAdmin'
+import { deleteUser } from '../Actions/deleteUser'
 
 type UserRow = {
-  id: string;
-  name: string;
-  email: string;
-  isSuperAdmin: boolean;
-  emailVerified: boolean;
-  createdAt: string;
-  lastSeen: string | null;
-  organizationCount: number;
-};
+  id: string
+  name: string
+  email: string
+  isSuperAdmin: boolean
+  emailVerified: boolean
+  createdAt: string
+  lastSeen: string | null
+  organizationCount: number
+}
 
 function OnlineDot({ lastSeen }: { lastSeen: string | null }) {
-  if (!lastSeen) return null;
-  const isOnline = Date.now() - new Date(lastSeen).getTime() < 5 * 60 * 1000;
-  if (!isOnline) return null;
+  if (!lastSeen) return null
+  const isOnline = Date.now() - new Date(lastSeen).getTime() < 5 * 60 * 1000
+  if (!isOnline) return null
   return (
     <span className="relative flex h-2 w-2" title="Online">
       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
       <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
     </span>
-  );
+  )
 }
 
 type PaginatedData = {
-  users: UserRow[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-};
+  users: UserRow[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
 
 export function AdminUsers({
   data,
   search,
+  sortBy,
+  sortOrder,
 }: {
-  data: PaginatedData;
-  search: string;
+  data: PaginatedData
+  search: string
+  sortBy: string
+  sortOrder: 'asc' | 'desc'
 }) {
-  const t = useTranslations("admin");
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const confirm = useConfirm();
-  const { formatDate, formatDateTime } = useFormatDate();
-  const [isPending, startTransition] = useTransition();
-  const [searchInput, setSearchInput] = useState(search);
+  const t = useTranslations('admin')
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const confirm = useConfirm()
+  const { formatDate, formatDateTime } = useFormatDate()
+  const [isPending, startTransition] = useTransition()
+  const [searchInput, setSearchInput] = useState(search)
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
-      const newParams = new URLSearchParams(searchParams.toString());
+      const newParams = new URLSearchParams(searchParams.toString())
       for (const [key, value] of Object.entries(params)) {
-        if (value === undefined || value === "") {
-          newParams.delete(key);
+        if (value === undefined || value === '') {
+          newParams.delete(key)
         } else {
-          newParams.set(key, String(value));
+          newParams.set(key, String(value))
         }
       }
-      if (!("page" in params) && "search" in params) {
-        newParams.delete("page");
+      if (!('page' in params) && 'search' in params) {
+        newParams.delete('page')
       }
       startTransition(() => {
-        router.push(`${pathname}?${newParams.toString()}`);
-      });
+        router.push(`${pathname}?${newParams.toString()}`)
+      })
     },
-    [router, pathname, searchParams],
-  );
+    [router, pathname, searchParams]
+  )
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
-      e.preventDefault();
-      navigate({ search: searchInput || undefined });
+      e.preventDefault()
+      navigate({ search: searchInput || undefined })
     },
-    [navigate, searchInput],
-  );
+    [navigate, searchInput]
+  )
+
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc'
+      navigate({ sortBy: column, sortOrder: newOrder, page: undefined })
+    },
+    [navigate, sortBy, sortOrder]
+  )
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
+    return sortOrder === 'asc' ? (
+      <ArrowUp className="ml-1 h-3 w-3" />
+    ) : (
+      <ArrowDown className="ml-1 h-3 w-3" />
+    )
+  }
 
   const handleToggleSuperAdmin = async (user: UserRow) => {
-    const action = user.isSuperAdmin ? "demote" : "promote";
+    const action = user.isSuperAdmin ? 'demote' : 'promote'
     const confirmed = await confirm({
-      title: action === "promote" ? t("users.promoteTitle") : t("users.demoteTitle"),
-      description: action === "promote" ? t("users.promoteConfirm", { name: user.name }) : t("users.demoteConfirm", { name: user.name }),
-      confirmLabel: action === "promote" ? t("users.promote") : t("users.demote"),
-      destructive: action === "demote",
-    });
+      title: action === 'promote' ? t('users.promoteTitle') : t('users.demoteTitle'),
+      description:
+        action === 'promote'
+          ? t('users.promoteConfirm', { name: user.name })
+          : t('users.demoteConfirm', { name: user.name }),
+      confirmLabel: action === 'promote' ? t('users.promote') : t('users.demote'),
+      destructive: action === 'demote',
+    })
 
-    if (!confirmed) return;
+    if (!confirmed) return
 
     startTransition(async () => {
       const result = await toggleSuperAdmin({
         userId: user.id,
         isSuperAdmin: !user.isSuperAdmin,
-      });
+      })
 
       if (result.success) {
-        toast.success(action === "promote" ? t("users.promotedSuccess") : t("users.demotedSuccess"));
-        router.refresh();
+        toast.success(action === 'promote' ? t('users.promotedSuccess') : t('users.demotedSuccess'))
+        router.refresh()
       } else {
-        toast.error(result.error ?? t("users.failedUpdate"));
+        toast.error(result.error ?? t('users.failedUpdate'))
       }
-    });
-  };
+    })
+  }
 
   const handleDeleteUser = async (user: UserRow) => {
     const confirmed = await confirm({
-      title: t("users.deleteTitle"),
-      description: t("users.deleteConfirm", { name: user.name, email: user.email }),
-      confirmLabel: t("users.delete"),
+      title: t('users.deleteTitle'),
+      description: t('users.deleteConfirm', { name: user.name, email: user.email }),
+      confirmLabel: t('users.delete'),
       destructive: true,
-    });
+    })
 
-    if (!confirmed) return;
+    if (!confirmed) return
 
     startTransition(async () => {
-      const result = await deleteUser({ userId: user.id });
+      const result = await deleteUser({ userId: user.id })
       if (result.success) {
-        toast.success(t("users.deletedSuccess"));
-        router.refresh();
+        toast.success(t('users.deletedSuccess'))
+        router.refresh()
       } else {
-        toast.error(result.error ?? t("users.failedDelete"));
+        toast.error(result.error ?? t('users.failedDelete'))
       }
-    });
-  };
+    })
+  }
 
   return (
     <div className="space-y-4">
@@ -156,7 +191,7 @@ export function AdminUsers({
         <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder={t("users.searchPlaceholder")}
+            placeholder={t('users.searchPlaceholder')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="pl-9"
@@ -169,12 +204,57 @@ export function AdminUsers({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("users.name")}</TableHead>
-              <TableHead>{t("users.email")}</TableHead>
-              <TableHead>{t("users.role")}</TableHead>
-              <TableHead className="text-center">{t("users.orgs")}</TableHead>
-              <TableHead>{t("users.created")}</TableHead>
-              <TableHead>{t("users.lastSeen")}</TableHead>
+              <TableHead>
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('name')}
+                >
+                  {t('users.name')}
+                  <SortIcon column="name" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('email')}
+                >
+                  {t('users.email')}
+                  <SortIcon column="email" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('isSuperAdmin')}
+                >
+                  {t('users.role')}
+                  <SortIcon column="isSuperAdmin" />
+                </button>
+              </TableHead>
+              <TableHead className="text-center">{t('users.orgs')}</TableHead>
+              <TableHead>
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('createdAt')}
+                >
+                  {t('users.created')}
+                  <SortIcon column="createdAt" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('lastSeen')}
+                >
+                  {t('users.lastSeen')}
+                  <SortIcon column="lastSeen" />
+                </button>
+              </TableHead>
               <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
@@ -182,7 +262,7 @@ export function AdminUsers({
             {data.users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                  {search ? t("users.noResults") : t("users.noUsers")}
+                  {search ? t('users.noResults') : t('users.noUsers')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -193,7 +273,9 @@ export function AdminUsers({
                     <span className="flex items-center gap-1.5">
                       {user.email}
                       {user.emailVerified && (
-                        <span title={t("users.emailVerified")}><BadgeCheck className="h-4 w-4 text-blue-500" /></span>
+                        <span title={t('users.emailVerified')}>
+                          <BadgeCheck className="h-4 w-4 text-blue-500" />
+                        </span>
                       )}
                     </span>
                   </TableCell>
@@ -201,32 +283,39 @@ export function AdminUsers({
                     {user.isSuperAdmin ? (
                       <Badge variant="default" className="gap-1">
                         <ShieldCheck className="h-3 w-3" />
-                        {t("users.superAdmin")}
+                        {t('users.superAdmin')}
                       </Badge>
                     ) : (
-                      <Badge variant="secondary">{t("users.user")}</Badge>
+                      <Badge variant="secondary">{t('users.user')}</Badge>
                     )}
                   </TableCell>
                   <TableCell className="text-center">{user.organizationCount}</TableCell>
+                  <TableCell>{formatDate(user.createdAt)}</TableCell>
                   <TableCell>
-                    {formatDate(user.createdAt)}
-                  </TableCell>
-                  <TableCell>
-                    {user.lastSeen && Date.now() - new Date(user.lastSeen).getTime() < 5 * 60 * 1000 ? (
+                    {user.lastSeen &&
+                    Date.now() - new Date(user.lastSeen).getTime() < 5 * 60 * 1000 ? (
                       <span className="flex items-center gap-1.5">
                         <OnlineDot lastSeen={user.lastSeen} />
-                        <span className="text-sm text-green-600 dark:text-green-400">{t("users.online")}</span>
+                        <span className="text-sm text-green-600 dark:text-green-400">
+                          {t('users.online')}
+                        </span>
                       </span>
                     ) : (
                       <span className="text-sm text-muted-foreground">
-                        {user.lastSeen ? formatDateTime(user.lastSeen) : "—"}
+                        {user.lastSeen ? formatDateTime(user.lastSeen) : '—'}
                       </span>
                     )}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled={isPending} aria-label={t("common.openMenu")}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          disabled={isPending}
+                          aria-label={t('common.openMenu')}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -235,12 +324,12 @@ export function AdminUsers({
                           {user.isSuperAdmin ? (
                             <>
                               <ShieldOff className="mr-2 h-4 w-4" />
-                              {t("users.demoteFromSuperAdmin")}
+                              {t('users.demoteFromSuperAdmin')}
                             </>
                           ) : (
                             <>
                               <ShieldCheck className="mr-2 h-4 w-4" />
-                              {t("users.promoteToSuperAdmin")}
+                              {t('users.promoteToSuperAdmin')}
                             </>
                           )}
                         </DropdownMenuItem>
@@ -249,7 +338,7 @@ export function AdminUsers({
                           className="text-destructive focus:text-destructive"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          {t("users.deleteUser")}
+                          {t('users.deleteUser')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -269,5 +358,5 @@ export function AdminUsers({
         onNavigate={navigate}
       />
     </div>
-  );
+  )
 }

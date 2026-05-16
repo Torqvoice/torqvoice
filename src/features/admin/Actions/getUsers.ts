@@ -1,21 +1,34 @@
-"use server";
+'use server'
 
-import { withSuperAdmin } from "@/lib/with-super-admin";
-import { db } from "@/lib/db";
-import { adminSearchSchema } from "../Schema/adminSchema";
+import { withSuperAdmin } from '@/lib/with-super-admin'
+import { db } from '@/lib/db'
+import { adminSearchSchema } from '../Schema/adminSchema'
 
-export async function getUsers(input?: { search?: string; page?: number; pageSize?: number }) {
+export async function getUsers(input?: {
+  search?: string
+  page?: number
+  pageSize?: number
+  sortBy?: string
+  sortOrder?: string
+}) {
   return withSuperAdmin(async () => {
-    const { search, page, pageSize } = adminSearchSchema.parse(input ?? {});
+    const { search, page, pageSize, sortBy, sortOrder } = adminSearchSchema.parse(input ?? {})
 
     const where = search
       ? {
           OR: [
-            { name: { contains: search, mode: "insensitive" as const } },
-            { email: { contains: search, mode: "insensitive" as const } },
+            { name: { contains: search, mode: 'insensitive' as const } },
+            { email: { contains: search, mode: 'insensitive' as const } },
           ],
         }
-      : {};
+      : {}
+
+    // For sortable nullable date columns, place nulls last in desc order so users
+    // who have actually signed in are surfaced before never-signed-in accounts.
+    const orderBy =
+      sortBy === 'lastSeen'
+        ? { lastSeen: { sort: sortOrder, nulls: 'last' as const } }
+        : { [sortBy]: sortOrder }
 
     const [users, total] = await Promise.all([
       db.user.findMany({
@@ -29,21 +42,21 @@ export async function getUsers(input?: { search?: string; page?: number; pageSiz
           lastSeen: true,
           emailVerified: true,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy,
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),
       db.user.count({ where }),
-    ]);
+    ])
 
-    const userIds = users.map((u) => u.id);
+    const userIds = users.map((u) => u.id)
     const membershipCounts = await db.organizationMember.groupBy({
-      by: ["userId"],
+      by: ['userId'],
       where: { userId: { in: userIds } },
       _count: true,
-    });
+    })
 
-    const countMap = new Map(membershipCounts.map((m) => [m.userId, m._count]));
+    const countMap = new Map(membershipCounts.map((m) => [m.userId, m._count]))
 
     return {
       users: users.map((u) => ({
@@ -60,6 +73,6 @@ export async function getUsers(input?: { search?: string; page?: number; pageSiz
       page,
       pageSize,
       totalPages: Math.ceil(total / pageSize),
-    };
-  });
+    }
+  })
 }
