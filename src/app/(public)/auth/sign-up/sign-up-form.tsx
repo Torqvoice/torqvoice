@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -12,7 +12,15 @@ import { Loader2, XCircle } from 'lucide-react'
 import { AuthLogo } from '@/components/auth-logo'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 
-export function SignUpForm({ inviteToken, emailVerificationRequired, redirectTo }: { inviteToken?: string; emailVerificationRequired?: boolean; redirectTo?: string }) {
+export function SignUpForm({
+  inviteToken,
+  emailVerificationRequired,
+  redirectTo,
+}: {
+  inviteToken?: string
+  emailVerificationRequired?: boolean
+  redirectTo?: string
+}) {
   const t = useTranslations('auth.signUp')
   const tc = useTranslations('common')
   const [name, setName] = useState('')
@@ -20,26 +28,47 @@ export function SignUpForm({ inviteToken, emailVerificationRequired, redirectTo 
   const [password, setPassword] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [error, setError] = useState('')
+  const [emailAlreadyExists, setEmailAlreadyExists] = useState(false)
+  const [showTermsError, setShowTermsError] = useState(false)
   const [loading, setLoading] = useState(false)
+  const termsRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Validate terms before hitting the API — gives clear feedback instead of a silent disabled button
+    if (!termsAccepted) {
+      setError(t('errors.termsRequired'))
+      setShowTermsError(true)
+      termsRef.current?.focus()
+      termsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
+
     setLoading(true)
     setError('')
+    setEmailAlreadyExists(false)
+    setShowTermsError(false)
 
     try {
       const result = await signUp.email({ name, email, password })
       if (result.error) {
         const message = result.error.message || t('errors.couldNotCreate')
-        const isDisabled =
-          message.toLowerCase().includes('disabled') ||
-          message.toLowerCase().includes('failed to create')
-        setError(
-          isDisabled
-            ? t('errors.registrationDisabled')
-            : message,
-        )
+        const lower = message.toLowerCase()
+        const isDisabled = lower.includes('disabled') || lower.includes('failed to create')
+        const isDuplicate =
+          ('code' in result.error &&
+            typeof result.error.code === 'string' &&
+            result.error.code.toLowerCase().includes('exist')) ||
+          lower.includes('already') ||
+          lower.includes('exist')
+        if (isDuplicate) {
+          setEmailAlreadyExists(true)
+          setError(t('errors.emailExists'))
+        } else {
+          setError(isDisabled ? t('errors.registrationDisabled') : message)
+        }
       } else if (inviteToken) {
         const acceptResult = await acceptInvitation({ token: inviteToken })
         if (acceptResult.success) {
@@ -48,14 +77,18 @@ export function SignUpForm({ inviteToken, emailVerificationRequired, redirectTo 
           router.refresh()
         } else {
           setError(acceptResult.error || t('errors.invitationFailed'))
-          router.push(redirectTo ? `/onboarding?redirect=${encodeURIComponent(redirectTo)}` : '/onboarding')
+          router.push(
+            redirectTo ? `/onboarding?redirect=${encodeURIComponent(redirectTo)}` : '/onboarding'
+          )
           router.refresh()
         }
       } else if (emailVerificationRequired) {
         router.push('/auth/verify-email')
         router.refresh()
       } else {
-        router.push(redirectTo ? `/onboarding?redirect=${encodeURIComponent(redirectTo)}` : '/onboarding')
+        router.push(
+          redirectTo ? `/onboarding?redirect=${encodeURIComponent(redirectTo)}` : '/onboarding'
+        )
         router.refresh()
       }
     } catch {
@@ -79,16 +112,23 @@ export function SignUpForm({ inviteToken, emailVerificationRequired, redirectTo 
           </div>
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {inviteToken
-              ? t('descriptionInvite')
-              : t('descriptionDefault')}
+            {inviteToken ? t('descriptionInvite') : t('descriptionDefault')}
           </p>
         </div>
 
         {error && (
-          <div className="mb-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
-            <XCircle className="h-4 w-4 shrink-0" />
-            <span>{error}</span>
+          <div className="mb-4 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+            <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <div className="flex-1">
+              <p>{error}</p>
+              {emailAlreadyExists && (
+                <p className="mt-1 text-xs">
+                  <Link href="/auth/sign-in" className="font-medium underline">
+                    {t('signInInstead')}
+                  </Link>
+                </p>
+              )}
+            </div>
           </div>
         )}
 
@@ -131,26 +171,38 @@ export function SignUpForm({ inviteToken, emailVerificationRequired, redirectTo 
               minLength={8}
               className="h-11 bg-background/50"
             />
+            <p className="text-xs text-muted-foreground">{t('passwordHint')}</p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div
+            className={`flex items-center gap-2 rounded-md p-2 transition-colors ${
+              showTermsError ? 'bg-destructive/10 ring-1 ring-destructive/40' : ''
+            }`}
+          >
             <input
+              ref={termsRef}
               id="terms"
               type="checkbox"
               checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
-              required
+              onChange={(e) => {
+                setTermsAccepted(e.target.checked)
+                if (e.target.checked) setShowTermsError(false)
+              }}
               className="h-4 w-4 shrink-0 rounded border-border accent-primary"
             />
             <Label htmlFor="terms" className="text-sm font-normal text-muted-foreground">
               {t('agreeToTerms')}{' '}
-              <Link href="/terms" target="_blank" className="font-medium text-primary hover:underline">
+              <Link
+                href="/terms"
+                target="_blank"
+                className="font-medium text-primary hover:underline"
+              >
                 {tc('terms.termsOfService')}
               </Link>
             </Label>
           </div>
 
-          <Button type="submit" className="h-11 w-full" disabled={loading || !termsAccepted}>
+          <Button type="submit" className="h-11 w-full" disabled={loading}>
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {inviteToken ? t('createAccountJoin') : t('createAccount')}
           </Button>
