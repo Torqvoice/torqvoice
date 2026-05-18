@@ -88,6 +88,8 @@ export default async function RootLayout({
       <head>
         <meta name="google" content="notranslate" />
         <meta name="theme-color" content="#09090b" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <script
           dangerouslySetInnerHTML={{
