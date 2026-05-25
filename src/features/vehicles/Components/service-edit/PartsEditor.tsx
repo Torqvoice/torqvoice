@@ -4,7 +4,7 @@ import { useRef, useCallback, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { GripVertical, Package, Plus, ScanBarcode, Trash2 } from 'lucide-react'
+import { GripVertical, Package, Percent, Plus, ScanBarcode, Trash2 } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useTranslations } from 'next-intl'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -36,6 +36,10 @@ interface PartsEditorProps {
   hasInventory: boolean
   onOpenInventory: () => void
   onScanBarcode?: () => void
+  /** Default markup % applied to new manually-added rows. Hidden from customers. */
+  defaultMarkupPercent?: number
+  /** When true, the bulk "Apply markup" button affects inventory-sourced rows too. */
+  markupAppliesToInventory?: boolean
 }
 
 function SortablePartRow({
@@ -76,7 +80,7 @@ function SortablePartRow({
     <div
       ref={dragEnabled ? setNodeRef : undefined}
       style={style}
-      className={`grid grid-cols-[auto_1fr] gap-2 sm:grid-cols-[auto_1fr_2fr_0.7fr_1fr_1fr_auto] ${isDragging && dragEnabled ? 'z-10 opacity-75' : ''}`}
+      className={`grid grid-cols-[auto_1fr] gap-2 sm:grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] ${isDragging && dragEnabled ? 'z-10 opacity-75' : ''}`}
     >
       <button
         type="button"
@@ -105,6 +109,28 @@ function SortablePartRow({
           value={part.quantity}
           onChange={(e) => updatePart(index, 'quantity', e.target.value)}
         />
+        <Input
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder={t('unitCost')}
+          title={t('unitCostHint')}
+          value={part.unitCost ?? 0}
+          onChange={(e) => updatePart(index, 'unitCost', e.target.value)}
+        />
+        <div className="relative">
+          <Input
+            type="number"
+            min="0"
+            step="0.1"
+            placeholder={t('markupPercent')}
+            title={t('markupPercentHint')}
+            value={part.markupPercent ?? 0}
+            onChange={(e) => updatePart(index, 'markupPercent', e.target.value)}
+            className="pr-6"
+          />
+          <Percent className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+        </div>
         <Input
           type="number"
           min="0"
@@ -139,6 +165,8 @@ export function PartsEditor({
   hasInventory,
   onOpenInventory,
   onScanBarcode,
+  defaultMarkupPercent = 0,
+  markupAppliesToInventory = false,
 }: PartsEditorProps) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('service.parts')
@@ -173,25 +201,64 @@ export function PartsEditor({
   const addPartAtStart = useCallback(() => {
     const key = `part-${keyCounterRef.current++}`
     keysRef.current = [key, ...keysRef.current]
-    setPartItems((prev) => [emptyPart(), ...prev])
-  }, [setPartItems])
+    setPartItems((prev) => [emptyPart(defaultMarkupPercent), ...prev])
+  }, [setPartItems, defaultMarkupPercent])
 
   const addPartAtEnd = useCallback(() => {
     const key = `part-${keyCounterRef.current++}`
     keysRef.current = [...keysRef.current, key]
-    setPartItems((prev) => [...prev, emptyPart()])
-  }, [setPartItems])
+    setPartItems((prev) => [...prev, emptyPart(defaultMarkupPercent)])
+  }, [setPartItems, defaultMarkupPercent])
 
   const deletePart = useCallback((index: number) => {
     keysRef.current = keysRef.current.filter((_, j) => j !== index)
     setPartItems((prev) => prev.filter((_, j) => j !== index))
   }, [setPartItems])
 
+  /**
+   * Apply the default markup % to every eligible row. Eligible means:
+   *  - non-inventory rows always, OR
+   *  - all rows when `markupAppliesToInventory` is true.
+   * Recomputes unitPrice = unitCost * (1 + markup/100) and total = qty * unitPrice.
+   * Customer never sees cost or markup — only unitPrice/total.
+   */
+  const applyMarkupToAll = useCallback(() => {
+    setPartItems((prev) =>
+      prev.map((p) => {
+        const eligible = markupAppliesToInventory || !p.inventoryPartId
+        if (!eligible) return p
+        const cost = Number(p.unitCost) || 0
+        const markup = defaultMarkupPercent
+        const unitPrice = Math.round(cost * (1 + markup / 100) * 100) / 100
+        return {
+          ...p,
+          markupPercent: markup,
+          unitPrice,
+          total: Number(p.quantity) * unitPrice,
+        }
+      })
+    )
+  }, [setPartItems, defaultMarkupPercent, markupAppliesToInventory])
+
   return (
     <div className="rounded-lg border p-3 space-y-2">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">{t('title')}</h3>
         <div className="flex gap-1.5">
+          {defaultMarkupPercent > 0 && partItems.length > 0 && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={applyMarkupToAll}
+              title={t('applyMarkupHint', { percent: defaultMarkupPercent })}
+            >
+              <Percent className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">
+                {t('applyMarkup', { percent: defaultMarkupPercent })}
+              </span>
+            </Button>
+          )}
           {hasInventory && (
             <Button type="button" variant="outline" size="sm" onClick={onOpenInventory}>
               <Package className="h-3.5 w-3.5 sm:mr-1" />
@@ -218,11 +285,13 @@ export function PartsEditor({
 
       {partItems.length > 0 && (
         <>
-          <div className="hidden grid-cols-[auto_1fr_2fr_0.7fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
+          <div className="hidden grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
             <span className="w-6" />
             <span>{t('partNumber')}</span>
             <span>{t('name')}</span>
             <span>{t('qty')}</span>
+            <span title={t('unitCostHint')}>{t('unitCost')}</span>
+            <span title={t('markupPercentHint')}>{t('markupPercent')}</span>
             <span>{t('unitPrice')}</span>
             <span>{t('total')}</span>
             <span />

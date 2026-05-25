@@ -324,6 +324,7 @@ export async function createServiceRecord(input: unknown) {
             unitPrice: p.unitPrice,
             total: p.total,
             unitCost: resolvedUnitCost,
+            markupPercent: p.markupPercent ?? 0,
             inventoryPartId: p.inventoryPartId || null,
             serviceRecordId: created.id,
           });
@@ -458,6 +459,7 @@ export async function updateServiceRecord(input: unknown) {
               unitPrice: p.unitPrice,
               total: p.total,
               unitCost: p.unitCost ?? 0,
+              markupPercent: p.markupPercent ?? 0,
               inventoryPartId: p.inventoryPartId || null,
               serviceRecordId: id,
             })),

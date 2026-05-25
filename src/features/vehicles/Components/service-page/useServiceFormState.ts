@@ -135,12 +135,41 @@ export function useServiceFormState({
   const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
 
   // Part/labor update helpers
+  //
+  // The three pricing fields (unitCost, markupPercent, unitPrice) are linked by:
+  //   unitPrice = unitCost × (1 + markupPercent / 100)
+  // The user can edit any one and the others auto-sync so the row stays
+  // mathematically consistent — Markup % never lies about real margin.
   const updatePart = useCallback(
     (index: number, field: keyof ServicePartInput, value: string | number) => {
       setPartItems((prev) => {
         const updated = [...prev]
         const part = { ...updated[index], [field]: value }
-        if (field === 'quantity' || field === 'unitPrice') {
+        const cost = Number(part.unitCost) || 0
+
+        if (field === 'unitCost' || field === 'markupPercent') {
+          // Cost or markup changed → recompute the customer-facing price.
+          const markup = Number(part.markupPercent) || 0
+          part.unitPrice = Math.round(cost * (1 + markup / 100) * 100) / 100
+        } else if (field === 'unitPrice') {
+          // Price was edited directly → derive markup back from cost so the
+          // displayed margin matches reality. If cost is 0 there's no
+          // meaningful percentage; leave markup at 0 and treat price as a
+          // free override.
+          const price = Number(part.unitPrice) || 0
+          if (cost > 0) {
+            part.markupPercent = Math.round(((price / cost) - 1) * 1000) / 10
+          } else {
+            part.markupPercent = 0
+          }
+        }
+
+        if (
+          field === 'quantity' ||
+          field === 'unitPrice' ||
+          field === 'unitCost' ||
+          field === 'markupPercent'
+        ) {
           part.total = Number(part.quantity) * Number(part.unitPrice)
         }
         updated[index] = part

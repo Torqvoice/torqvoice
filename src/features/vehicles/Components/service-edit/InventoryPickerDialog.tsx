@@ -17,6 +17,10 @@ interface InventoryPickerDialogProps {
   inventoryParts: InventoryPartOption[]
   currencyCode: string
   onSelectPart: (part: ServicePartInput) => void
+  /** Default markup % to apply when markupAppliesToInventory is true. */
+  defaultMarkupPercent?: number
+  /** When true, picked inventory parts use cost + default markup instead of sellPrice. */
+  markupAppliesToInventory?: boolean
 }
 
 export function InventoryPickerDialog({
@@ -25,6 +29,8 @@ export function InventoryPickerDialog({
   inventoryParts,
   currencyCode,
   onSelectPart,
+  defaultMarkupPercent = 0,
+  markupAppliesToInventory = false,
 }: InventoryPickerDialogProps) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('service.parts')
@@ -89,7 +95,15 @@ export function InventoryPickerDialog({
               type="button"
               className="w-full text-left rounded-md px-2.5 py-1.5 hover:bg-accent transition-colors flex items-center justify-between gap-4"
               onClick={() => {
-                const price = ip.sellPrice > 0 ? ip.sellPrice : ip.unitCost
+                // When markup-applies-to-inventory is enabled, recompute the sell price
+                // from cost + default markup. Otherwise fall back to the inventory's
+                // own sellPrice (which has its own separate markup system).
+                const useGlobalMarkup = markupAppliesToInventory && defaultMarkupPercent > 0
+                const price = useGlobalMarkup
+                  ? Math.round(ip.unitCost * (1 + defaultMarkupPercent / 100) * 100) / 100
+                  : ip.sellPrice > 0
+                    ? ip.sellPrice
+                    : ip.unitCost
                 onSelectPart({
                   partNumber: ip.partNumber || '',
                   name: ip.name,
@@ -97,6 +111,7 @@ export function InventoryPickerDialog({
                   unitPrice: price,
                   total: price,
                   unitCost: ip.unitCost,
+                  markupPercent: useGlobalMarkup ? defaultMarkupPercent : 0,
                   inventoryPartId: ip.id,
                 })
                 onOpenChange(false)
