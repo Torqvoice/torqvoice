@@ -44,8 +44,7 @@ const DUMMY_INVOICE_DATA = {
   shopName: "Your Workshop",
   techName: "Mike Johnson",
   mileage: 45230,
-  diagnosticNotes:
-    "<p>Brake wear at 15%. Recommended replacement within 5,000 miles.</p>",
+  diagnosticNotes: null,
   findings: [
     { description: "Rear brake pads worn to 15%", severity: "needs_work", notes: "Recommend replacement within 5,000 miles" },
     { description: "Minor oil leak at valve cover gasket", severity: "monitor", notes: null },
