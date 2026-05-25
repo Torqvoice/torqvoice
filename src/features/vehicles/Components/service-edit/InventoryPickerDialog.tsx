@@ -75,7 +75,7 @@ export function InventoryPickerDialog({
         if (!v) setSearch('')
       }}
     >
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{t('inventoryTitle')}</DialogTitle>
         </DialogHeader>

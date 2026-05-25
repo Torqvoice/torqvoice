@@ -105,7 +105,7 @@ function SortablePartRow({
         <Input
           type="number"
           min="0"
-          step="0.01"
+          step="0.1"
           value={part.quantity}
           onChange={(e) => updatePart(index, 'quantity', e.target.value)}
         />
