@@ -59,7 +59,7 @@ export async function GET(
   const ext = filename.split('.').pop()?.toLowerCase() || ''
   const contentType = MIME_TYPES[ext] || 'application/octet-stream'
 
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       'Content-Type': contentType,
       'Cache-Control': 'private, max-age=31536000, immutable',

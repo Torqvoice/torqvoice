@@ -58,7 +58,7 @@ export async function GET(
   const ext = filename.split(".").pop()?.toLowerCase() || "";
   const contentType = MIME_TYPES[ext] || "image/png";
 
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       "Content-Type": contentType,
       "Cache-Control": "public, max-age=3600",
