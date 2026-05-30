@@ -5,7 +5,6 @@ import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { getTranslations } from "next-intl/server";
 import { sendStatusReportSchema } from "../Schema/statusReportSchema";
-import { sendSmsToCustomer } from "@/features/sms/Actions/smsActions";
 import { sendNotificationEmail } from "@/features/email/Actions/emailActions";
 import { sendTelegramToCustomer } from "@/features/telegram/Actions/telegramActions";
 
@@ -66,14 +65,12 @@ export async function sendStatusReport(input: unknown) {
         sentChannels.push("email");
       }
 
-      if (data.channels.sms && customer.phone) {
-        await sendSmsToCustomer({
-          customerId: customer.id,
-          body: messageBody,
-          relatedEntityType: "status_report",
-          relatedEntityId: report.id,
-        });
-        sentChannels.push("sms");
+      let whatsappUrl: string | null = null;
+
+      if (data.channels.whatsapp && customer.phone) {
+        const cleanPhone = customer.phone.replace(/\D/g, "");
+        whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageBody)}`;
+        sentChannels.push("whatsapp");
       }
 
       if (data.channels.telegram && customer.telegramChatId) {
@@ -96,7 +93,7 @@ export async function sendStatusReport(input: unknown) {
         },
       });
 
-      return { sent: true, channels: sentChannels, statusReportId: data.statusReportId };
+      return { sent: true, channels: sentChannels, statusReportId: data.statusReportId, whatsappUrl };
     },
     {
       requiredPermissions: [

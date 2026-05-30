@@ -12,7 +12,8 @@ export const createStatusReportSchema = z.object({
 export const sendStatusReportSchema = z.object({
   statusReportId: z.string(),
   channels: z.object({
-    sms: z.boolean(),
+    sms: z.boolean().optional(),
+    whatsapp: z.boolean().optional(),
     email: z.boolean(),
     telegram: z.boolean(),
   }),

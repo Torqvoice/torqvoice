@@ -2,21 +2,21 @@ import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 
 export const SMS_TEMPLATE_DEFAULTS: Record<string, string> = {
   [SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY]:
-    "Your invoice is ready. View it here: {share_link}",
+    "Tu factura está lista. Mírala aquí: {share_link}",
   [SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY]:
-    "Your quote is ready for review. View it here: {share_link}",
+    "Tu presupuesto está listo para revisión. Míralo aquí: {share_link}",
   [SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY]:
-    "Your vehicle inspection report is ready. View it here: {share_link}",
+    "El informe de inspección de tu vehículo está listo. Míralo aquí: {share_link}",
   [SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS]:
-    "Work has started on your vehicle. We'll keep you updated.",
+    "Hemos comenzado a trabajar en tu vehículo. Te mantendremos informado.",
   [SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS]:
-    "Your vehicle is waiting for parts. We'll notify you when work resumes.",
+    "Tu vehículo está en espera de repuestos. Te notificaremos cuando se reanude el trabajo.",
   [SETTING_KEYS.SMS_TEMPLATE_STATUS_READY]:
-    "Your vehicle is ready for pickup!",
+    "¡Tu vehículo está listo para retirar!",
   [SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED]:
-    "Your service is complete. Thank you for your business!",
+    "Tu servicio ha finalizado. ¡Gracias por confiar en nosotros!",
   [SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED]:
-    "Payment of {amount} received for invoice {invoice_number}. Thank you!",
+    "Pago de {amount} recibido para la factura {invoice_number}. ¡Muchas gracias!",
 };
 
 /**
