@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { readFile, stat } from 'fs/promises'
-import path from 'path'
+import { getFileBuffer } from '@/lib/storage'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
@@ -42,15 +41,13 @@ export async function GET(_request: Request, { params }: { params: Promise<{ org
     return NextResponse.json({ error: 'Invalid' }, { status: 400 })
   }
 
-  const filePath = path.join(process.cwd(), 'data', 'uploads', orgId, 'portal', filename)
-
+  let buffer: Buffer
   try {
-    await stat(filePath)
+    buffer = await getFileBuffer(orgId, 'portal', filename)
   } catch {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const buffer = await readFile(filePath)
   const ext = filename.split('.').pop()?.toLowerCase() || ''
   const contentType = MIME_TYPES[ext] || 'image/png'
 

@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
-import { writeFile, mkdir, unlink } from "fs/promises";
-import path from "path";
 import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
-import { resolveUploadPath } from "@/lib/resolve-upload-path";
+import { uploadFile, deleteFile } from "@/lib/storage";
 
 export async function POST(request: Request) {
   try {
@@ -25,20 +23,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Only image files are allowed" }, { status: 400 });
     }
 
-    if (file.size > 2 * 1024 * 1024) {
-      return NextResponse.json({ error: "File size must be under 2MB" }, { status: 400 });
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: "File size must be under 10MB" }, { status: 400 });
     }
 
     const ext = file.name.split(".").pop() || "png";
     const fileName = `${randomUUID()}.${ext}`;
-    const uploadDir = path.join(process.cwd(), "data", "uploads", ctx.organizationId, "logos");
-
-    await mkdir(uploadDir, { recursive: true });
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(uploadDir, fileName), buffer);
-
-    const url = `/api/protected/files/${ctx.organizationId}/logos/${fileName}`;
+    const url = await uploadFile("logos", fileName, buffer, file.type, ctx.organizationId);
 
     // Delete old logo file if one exists
     const oldLogo = await db.appSetting.findFirst({
@@ -47,7 +40,7 @@ export async function POST(request: Request) {
     });
     if (oldLogo?.value) {
       try {
-        await unlink(resolveUploadPath(oldLogo.value));
+        await deleteFile(oldLogo.value);
       } catch {
         // Old file may already be gone
       }

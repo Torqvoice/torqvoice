@@ -6,8 +6,7 @@ import { createQuoteSchema, updateQuoteSchema } from "../Schema/quoteSchema";
 import { revalidatePath } from "next/cache";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { copyFile, mkdir } from "fs/promises";
-import path from "path";
+import { copyFile as storageCopyFile } from "@/lib/storage";
 
 export async function getQuotesPaginated(params: {
   page?: number;
@@ -411,17 +410,11 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
 
       // Copy attachments from quote to service record
       if (quote.attachments.length > 0) {
-        const quotesDir = path.join(process.cwd(), "data", "uploads", organizationId, "quotes");
-        const servicesDir = path.join(process.cwd(), "data", "uploads", organizationId, "services");
-        await mkdir(servicesDir, { recursive: true });
-
         for (const att of quote.attachments) {
           try {
             // Extract filename from URL and build paths
             const filename = att.fileUrl.split("/").pop()!;
-            const srcPath = path.join(quotesDir, filename);
-            const destPath = path.join(servicesDir, filename);
-            await copyFile(srcPath, destPath);
+            await storageCopyFile("quotes", filename, "services", filename, organizationId);
 
             const newUrl = att.fileUrl.replace("/quotes/", "/services/");
             await tx.serviceAttachment.create({

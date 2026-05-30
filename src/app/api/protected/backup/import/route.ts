@@ -3,8 +3,8 @@ import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
 import JSZip from "jszip";
-import { mkdir, rm, writeFile } from "fs/promises";
 import path from "path";
+import { uploadFile, deleteOrganizationFiles } from "@/lib/storage";
 
 // Zip magic bytes: PK\x03\x04
 const ZIP_MAGIC = [0x50, 0x4b, 0x03, 0x04];
@@ -50,19 +50,31 @@ async function parseBackup(
   return { backup, files: null };
 }
 
-async function restoreFiles(zip: JSZip, organizationId: string) {
-  const uploadsDir = path.join(
-    process.cwd(),
-    "data",
-    "uploads",
-    organizationId
-  );
+function getMimeType(filename: string): string {
+  const ext = filename.split(".").pop()?.toLowerCase() || "";
+  const map: Record<string, string> = {
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+    webp: "image/webp",
+    avif: "image/avif",
+    svg: "image/svg+xml",
+    pdf: "application/pdf",
+    csv: "text/csv",
+    txt: "text/plain",
+    mp4: "video/mp4",
+    webm: "video/webm",
+    mov: "video/quicktime",
+  };
+  return map[ext] || "application/octet-stream";
+}
 
+async function restoreFiles(zip: JSZip, organizationId: string) {
   // Clear existing uploads for this org
   try {
-    await rm(uploadsDir, { recursive: true, force: true });
+    await deleteOrganizationFiles(organizationId);
   } catch {
-    // Directory may not exist
+    // Best effort
   }
 
   const allowedCategories = ["logos", "vehicles", "inventory", "services", "quotes"];
@@ -91,13 +103,11 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
     )
       continue;
 
-    const targetDir = path.join(uploadsDir, category);
-    await mkdir(targetDir, { recursive: true });
-
     const fileData = await zip.files[filePath].async("nodebuffer");
-    await writeFile(path.join(targetDir, filename), fileData);
+    await uploadFile(category, filename, fileData, getMimeType(filename), organizationId);
   }
 }
+
 
 /** Rewrite file URLs to use the importing org's ID */
 function rewriteFileUrl(

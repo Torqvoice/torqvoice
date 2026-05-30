@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { readFile, stat } from 'fs/promises'
-import path from 'path'
+import { getFileBuffer } from '@/lib/storage'
 
 const MIME_TYPES: Record<string, string> = {
   jpg: 'image/jpeg',
@@ -50,15 +49,13 @@ export async function GET(
     return NextResponse.json({ error: 'Invalid filename' }, { status: 400 })
   }
 
-  const filePath = path.join(process.cwd(), 'data', 'uploads', orgId, category, filename)
-
+  let buffer: Buffer
   try {
-    await stat(filePath)
+    buffer = await getFileBuffer(orgId, category, filename)
   } catch {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const buffer = await readFile(filePath)
   const ext = filename.split('.').pop()?.toLowerCase() || ''
   const contentType = MIME_TYPES[ext] || 'application/octet-stream'
 

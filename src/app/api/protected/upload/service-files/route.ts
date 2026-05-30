@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
-import { writeFile, mkdir, unlink, stat } from "fs/promises";
+import { writeFile, mkdir, unlink, readFile } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
+import os from "os";
 import { execFile } from "child_process";
 import { promisify } from "util";
+import { uploadFile } from "@/lib/storage";
 
 const execFileAsync = promisify(execFile);
 
@@ -74,36 +76,46 @@ export async function POST(request: NextRequest) {
   const isVideo = VIDEO_TYPES.includes(file.type);
   const ext = isVideo ? "mp4" : (file.name.split(".").pop() || "bin");
   const filename = `${crypto.randomUUID()}.${ext}`;
-  const uploadDir = path.join(process.cwd(), "data", "uploads", ctx.organizationId, "services");
-
-  await mkdir(uploadDir, { recursive: true });
 
   const bytes = new Uint8Array(await file.arrayBuffer());
-  const finalPath = path.join(uploadDir, filename);
+  let uploadBuffer: Buffer | Uint8Array = bytes;
 
   if (isVideo) {
-    // Write original to temp file, compress, then clean up
-    const tempFilename = `${crypto.randomUUID()}_orig.${file.name.split(".").pop() || "mp4"}`;
-    const tempPath = path.join(uploadDir, tempFilename);
-    await writeFile(tempPath, bytes);
+    const tempDir = path.join(os.tmpdir(), "taller-compress");
+    await mkdir(tempDir, { recursive: true });
 
-    const compressed = await compressVideo(tempPath, finalPath);
-    await unlink(tempPath).catch(() => { /* temp file cleanup */ });
+    const tempOrigPath = path.join(tempDir, `${crypto.randomUUID()}_orig.${file.name.split(".").pop() || "mp4"}`);
+    const tempCompPath = path.join(tempDir, `${crypto.randomUUID()}_comp.mp4`);
 
-    if (!compressed) {
-      // Fallback: save original as-is
-      await writeFile(finalPath, bytes);
+    await writeFile(tempOrigPath, bytes);
+    const compressed = await compressVideo(tempOrigPath, tempCompPath);
+    await unlink(tempOrigPath).catch(() => {});
+
+    if (compressed) {
+      try {
+        uploadBuffer = await readFile(tempCompPath);
+        await unlink(tempCompPath).catch(() => {});
+      } catch {
+        // Fallback: original
+        uploadBuffer = bytes;
+      }
+    } else {
+      uploadBuffer = bytes;
     }
-  } else {
-    await writeFile(finalPath, bytes);
   }
 
-  const finalStat = await stat(finalPath);
+  const url = await uploadFile(
+    "services",
+    filename,
+    uploadBuffer,
+    isVideo ? "video/mp4" : file.type,
+    ctx.organizationId
+  );
 
   return NextResponse.json({
-    url: `/api/protected/files/${ctx.organizationId}/services/${filename}`,
+    url,
     fileName: file.name,
     fileType: isVideo ? "video/mp4" : file.type,
-    fileSize: finalStat.size,
+    fileSize: uploadBuffer.length,
   });
 }

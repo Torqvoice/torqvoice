@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
 import { mkdir, writeFile, rm } from "fs/promises";
 import path from "path";
+import { uploadFile } from "@/lib/storage";
 import os from "os";
 import JSZip from "jszip";
 
@@ -301,14 +302,6 @@ export async function POST(request: NextRequest) {
       if (match) nextInvoiceNum = Number.parseInt(match[1], 10) + 1;
     }
 
-    // Uploads directory for this org
-    const uploadsBase = path.join(
-      process.cwd(),
-      "data",
-      "uploads",
-      organizationId
-    );
-
     // Maps: IN hashed_id → Torqvoice ID
     const clientIdMap = new Map<string, string>();
     const invoiceIdMap = new Map<string, string>();
@@ -487,14 +480,15 @@ export async function POST(request: NextRequest) {
             continue; // File not found in zip
           }
 
-          const targetDir = path.join(uploadsBase, "services");
-          await mkdir(targetDir, { recursive: true });
           const safeName = doc.name.replace(/[^a-zA-Z0-9._-]/g, "_");
           const filename = `in-${invoice.number}-${safeName}`;
-          const targetPath = path.join(targetDir, filename);
-          await writeFile(targetPath, fileData);
-
-          const fileUrl = `/api/protected/files/${organizationId}/services/${filename}`;
+          const fileUrl = await uploadFile(
+            "services",
+            filename,
+            fileData,
+            getMimeType(doc.name),
+            organizationId
+          );
           const isImage = /\.(jpg|jpeg|png|webp)$/i.test(doc.name);
 
           await tx.serviceAttachment.create({

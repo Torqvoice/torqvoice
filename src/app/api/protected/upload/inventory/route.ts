@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import crypto from "crypto";
+import { uploadFile } from "@/lib/storage";
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,14 +35,11 @@ export async function POST(request: NextRequest) {
 
     const ext = file.name.split(".").pop() || "jpg";
     const filename = `${crypto.randomUUID()}.${ext}`;
-    const uploadDir = path.join(process.cwd(), "data", "uploads", ctx.organizationId, "inventory");
-
-    await mkdir(uploadDir, { recursive: true });
 
     const bytes = new Uint8Array(await file.arrayBuffer());
-    await writeFile(path.join(uploadDir, filename), bytes);
+    const url = await uploadFile("inventory", filename, bytes, file.type, ctx.organizationId);
 
-    return NextResponse.json({ url: `/api/protected/files/${ctx.organizationId}/inventory/${filename}` });
+    return NextResponse.json({ url });
   } catch (error) {
     console.error("[Upload/Inventory] Error:", error);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });

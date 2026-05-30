@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
 import JSZip from "jszip";
-import { readdir, readFile, stat } from "fs/promises";
-import path from "path";
+import { getFileBuffer, listOrganizationFiles } from "@/lib/storage";
 
 export const maxDuration = 300;
 
@@ -227,29 +226,18 @@ export async function POST(request: NextRequest) {
 
   // Add uploaded files if requested
   if (options.files) {
-    const uploadsDir = path.join(
-      process.cwd(),
-      "data",
-      "uploads",
-      ctx.organizationId
-    );
-
     const categories = ["logos", "vehicles", "inventory", "services"];
 
     for (const category of categories) {
-      const categoryDir = path.join(uploadsDir, category);
       try {
-        const dirStat = await stat(categoryDir);
-        if (!dirStat.isDirectory()) continue;
-
-        const files = await readdir(categoryDir);
+        const files = await listOrganizationFiles(ctx.organizationId, category);
         for (const file of files) {
-          const filePath = path.join(categoryDir, file);
-          const fileStat = await stat(filePath);
-          if (!fileStat.isFile()) continue;
-
-          const fileBuffer = await readFile(filePath);
-          zip.file(`files/${category}/${file}`, fileBuffer);
+          try {
+            const fileBuffer = await getFileBuffer(ctx.organizationId, category, file);
+            zip.file(`files/${category}/${file}`, fileBuffer);
+          } catch {
+            // Skip individual file if not found or error
+          }
         }
       } catch {
         // Category directory doesn't exist, skip

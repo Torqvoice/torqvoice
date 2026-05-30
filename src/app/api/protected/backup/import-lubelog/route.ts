@@ -5,6 +5,7 @@ import { resolveInvoicePrefix } from "@/lib/invoice-utils";
 import { mkdir, writeFile, stat, readdir, rm } from "fs/promises";
 import { readFileSync } from "fs";
 import path from "path";
+import { uploadFile } from "@/lib/storage";
 import os from "os";
 import { BSON } from "bson";
 import JSZip from "jszip";
@@ -272,24 +273,12 @@ export async function POST(request: NextRequest) {
       if (sr.Mileage > current) vehicleMileage.set(sr.VehicleId, sr.Mileage);
     }
 
-    // Uploads directory for this org
-    const uploadsBase = path.join(
-      process.cwd(),
-      "data",
-      "uploads",
-      organizationId
-    );
-
     // ── Copy a file from the backup to the uploads directory ──────────────
     async function copyFile(
       sourcePath: string,
       category: string,
       filename: string
     ): Promise<{ fileUrl: string; fileSize: number } | null> {
-      const targetDir = path.join(uploadsBase, category);
-      await mkdir(targetDir, { recursive: true });
-      const targetPath = path.join(targetDir, filename);
-
       // Normalize source paths: strip leading /
       const normalizedSource = sourcePath.replace(/^\//, "");
       const localPath = path.join(backupDir, normalizedSource);
@@ -301,10 +290,10 @@ export async function POST(request: NextRequest) {
         return null;
       }
 
-      await writeFile(targetPath, fileData);
-      const fileUrl = `/api/protected/files/${organizationId}/${category}/${filename}`;
+      const fileUrl = await uploadFile(category, filename, fileData, getMimeType(filename), organizationId);
       return { fileUrl, fileSize: fileData.length };
     }
+
 
     // ── Database transaction ─────────────────────────────────────────────
     await db.$transaction(async (tx) => {

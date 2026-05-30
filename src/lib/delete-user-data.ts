@@ -1,41 +1,12 @@
 import { db } from '@/lib/db'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { unlink, rm } from 'fs/promises'
-import path from 'path'
 import { getStripeClient } from '@/lib/stripe-config'
+import { deleteOrganizationFiles } from '@/lib/storage'
 
 /**
  * Clean up a single organization where the user is the last member.
  * Cancels Stripe subscription, deletes org (cascades all data), and removes upload files.
  */
 async function deleteOrganization(organizationId: string, userId: string) {
-  // Collect file paths to clean up from disk
-  const filePaths: string[] = []
-
-  const attachments = await db.serviceAttachment.findMany({
-    where: { serviceRecord: { vehicle: { organizationId } } },
-    select: { fileUrl: true },
-  })
-  for (const att of attachments) {
-    filePaths.push(resolveUploadPath(att.fileUrl))
-  }
-
-  const inventoryParts = await db.inventoryPart.findMany({
-    where: { organizationId },
-    select: { imageUrl: true },
-  })
-  for (const part of inventoryParts) {
-    if (part.imageUrl) filePaths.push(resolveUploadPath(part.imageUrl))
-  }
-
-  const vehicles = await db.vehicle.findMany({
-    where: { organizationId },
-    select: { imageUrl: true },
-  })
-  for (const v of vehicles) {
-    if (v.imageUrl) filePaths.push(resolveUploadPath(v.imageUrl))
-  }
-
   // Cancel Stripe subscription before deleting org data
   const subscription = await db.subscription.findUnique({
     where: { organizationId },
@@ -62,21 +33,11 @@ async function deleteOrganization(organizationId: string, userId: string) {
     where: { id: organizationId },
   })
 
-  // Clean up files from disk (best effort)
-  for (const filePath of filePaths) {
-    try {
-      await unlink(filePath)
-    } catch {
-      // File may already be missing
-    }
-  }
-
-  // Try to remove the org upload directory
+  // Clean up files from storage (best effort)
   try {
-    const orgUploadDir = path.join(process.cwd(), 'data', 'uploads', organizationId)
-    await rm(orgUploadDir, { recursive: true, force: true })
-  } catch {
-    // Directory may not exist
+    await deleteOrganizationFiles(organizationId)
+  } catch (err) {
+    console.warn(`[deleteOrganization] Failed to delete files for org ${organizationId}:`, err)
   }
 }
 

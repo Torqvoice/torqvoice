@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getAuthContext } from '@/lib/get-auth-context'
-import { writeFile, mkdir, unlink } from 'fs/promises'
-import path from 'path'
 import { randomUUID } from 'crypto'
 import { db } from '@/lib/db'
-import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { uploadFile, deleteFile } from '@/lib/storage'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
 export async function POST(request: Request) {
@@ -33,14 +31,9 @@ export async function POST(request: Request) {
 
     const ext = file.name.split('.').pop() || 'png'
     const fileName = `${randomUUID()}.${ext}`
-    const uploadDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId, 'portal')
-
-    await mkdir(uploadDir, { recursive: true })
 
     const buffer = Buffer.from(await file.arrayBuffer())
-    await writeFile(path.join(uploadDir, fileName), buffer)
-
-    const url = `/api/protected/files/${ctx.organizationId}/portal/${fileName}`
+    const url = await uploadFile('portal', fileName, buffer, file.type, ctx.organizationId)
 
     // Delete the previous background image if one exists.
     const previous = await db.appSetting.findFirst({
@@ -52,7 +45,7 @@ export async function POST(request: Request) {
     })
     if (previous?.value) {
       try {
-        await unlink(resolveUploadPath(previous.value))
+        await deleteFile(previous.value)
       } catch {
         // File may already be gone — best effort.
       }

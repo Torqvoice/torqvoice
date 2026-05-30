@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import crypto from "crypto";
+import { uploadFile } from "@/lib/storage";
 
 const ALLOWED_TYPES = [
   "image/jpeg",
@@ -49,15 +48,12 @@ export async function POST(request: NextRequest) {
 
     const ext = file.name.split(".").pop() || "bin";
     const filename = `${crypto.randomUUID()}.${ext}`;
-    const uploadDir = path.join(process.cwd(), "data", "uploads", ctx.organizationId, "quotes");
-
-    await mkdir(uploadDir, { recursive: true });
 
     const bytes = new Uint8Array(await file.arrayBuffer());
-    await writeFile(path.join(uploadDir, filename), bytes);
+    const url = await uploadFile("quotes", filename, bytes, file.type, ctx.organizationId);
 
     return NextResponse.json({
-      url: `/api/protected/files/${ctx.organizationId}/quotes/${filename}`,
+      url,
       fileName: file.name,
       fileType: file.type,
       fileSize: file.size,
