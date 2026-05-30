@@ -817,7 +817,7 @@
   },
   "appearance": {
     "title": "Apariencia",
-    "description": "Personalice como se ve y se siente Torqvoice.",
+    "description": "Personalice como se ve y se siente Taller El Moni.",
     "darkMode": "Modo oscuro",
     "darkModeHint": "Cambiar entre temas claro y oscuro",
     "dateTimeTitle": "Fecha y hora",
@@ -917,7 +917,7 @@
   },
   "license": {
     "title": "Licencia marca blanca",
-    "description": "Active una licencia de marca blanca para eliminar la marca Torqvoice de las facturas y la aplicacion.",
+    "description": "Active una licencia de marca blanca para eliminar la marca de la plataforma de las facturas y la aplicacion.",
     "purchaseWhiteLabel": "Comprar marca blanca",
     "status": "Estado:",
     "active": "Activa",
@@ -931,8 +931,8 @@
     "keyHint": "Cada clave de licencia esta vinculada a esta organizacion y no puede compartirse entre varias organizaciones."
   },
   "about": {
-    "title": "Acerca de Torqvoice",
-    "description": "Torqvoice es su solucion completa de gestion de servicios de vehiculos. Rastree historial de servicio, reparaciones y mas.",
+    "title": "Acerca de Taller El Moni",
+    "description": "Taller El Moni es su solucion completa de gestion de servicios de vehiculos. Rastree historial de servicio, reparaciones y mas.",
     "version": "Version",
     "website": "Sitio web",
     "documentation": "Documentacion",
@@ -1066,7 +1066,7 @@
   },
   "subscription": {
     "title": "Plan de suscripción",
-    "description": "El nivel de suscripción actual de Torqvoice de su organización y las funciones disponibles.",
+    "description": "El nivel de suscripción actual de Taller El Moni de su organización y las funciones disponibles.",
     "currentPlan": "Plan actual",
     "planFree": "Gratis",
     "planPro": "Torq Pro",
@@ -1302,7 +1302,7 @@
     "emptyTitle": "Aún no hay webhooks",
     "emptyDescription": "Añade un webhook para enviar eventos a tus propios sistemas — sincronización contable, paneles personalizados, Zapier, cualquier cosa que hable HTTP.",
     "helpTitle": "Verificar firmas de webhook",
-    "helpIntro": "Cada entrega incluye una firma HMAC-SHA256 para que puedas confirmar que la solicitud proviene de Torqvoice.",
+    "helpIntro": "Cada entrega incluye una firma HMAC-SHA256 para que puedas confirmar que la solicitud proviene de Taller El Moni.",
     "helpHeadersTitle": "Encabezados enviados con cada solicitud",
     "helpVerify": "Reconstruye la cadena firmada como `[timestamp].[body]` y compara con igualdad de tiempo seguro:",
     "tabWebhooks": "Webhooks",

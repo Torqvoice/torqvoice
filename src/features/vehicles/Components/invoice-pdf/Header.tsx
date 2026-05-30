@@ -139,7 +139,7 @@ export function Header({
             }}
           >
             <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-            <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+            <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Taller El Moni</Text>
           </View>
         )}
       </View>
@@ -223,7 +223,7 @@ export function Header({
             >
               <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
               <Text style={{ fontSize: 7, fontFamily: fontBold, color: 'rgba(255,255,255,0.7)' }}>
-                Torqvoice
+                Taller El Moni
               </Text>
             </View>
           )}
@@ -306,7 +306,7 @@ export function Header({
             }}
           >
             <Image src={torqvoiceLogoDataUri} style={{ width: 16, height: 16 }} />
-            <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+            <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Taller El Moni</Text>
           </View>
         )}
       </View>

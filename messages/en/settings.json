@@ -817,7 +817,7 @@
   },
   "appearance": {
     "title": "Appearance",
-    "description": "Customize how Torqvoice looks and feels.",
+    "description": "Customize how Taller El Moni looks and feels.",
     "darkMode": "Dark Mode",
     "darkModeHint": "Switch between light and dark themes",
     "dateTimeTitle": "Date & Time",
@@ -917,7 +917,7 @@
   },
   "license": {
     "title": "White-Label License",
-    "description": "Activate a white-label license to remove Torqvoice branding from invoices and the application.",
+    "description": "Activate a white-label license to remove platform branding from invoices and the application.",
     "purchaseWhiteLabel": "Purchase White-Label",
     "status": "Status:",
     "active": "Active",
@@ -931,8 +931,8 @@
     "keyHint": "Each license key is tied to this organization and cannot be shared across multiple organizations."
   },
   "about": {
-    "title": "About Torqvoice",
-    "description": "Torqvoice is your complete vehicle service management solution. Track service history, repairs and more.",
+    "title": "About Taller El Moni",
+    "description": "Taller El Moni is your complete vehicle service management solution. Track service history, repairs and more.",
     "version": "Version",
     "website": "Website",
     "documentation": "Documentation",
@@ -1066,7 +1066,7 @@
   },
   "subscription": {
     "title": "Subscription Plan",
-    "description": "Your organization's current Torqvoice subscription tier and available features.",
+    "description": "Your organization's current Taller El Moni subscription tier and available features.",
     "currentPlan": "Current Plan",
     "planFree": "Free",
     "planPro": "Torq Pro",
@@ -1302,7 +1302,7 @@
     "emptyTitle": "No webhooks yet",
     "emptyDescription": "Add a webhook to push events to your own systems — accounting sync, custom dashboards, Zapier, anything that speaks HTTP.",
     "helpTitle": "Verifying webhook signatures",
-    "helpIntro": "Each delivery includes an HMAC-SHA256 signature so you can confirm the request came from Torqvoice.",
+    "helpIntro": "Each delivery includes an HMAC-SHA256 signature so you can confirm the request came from Taller El Moni.",
     "helpHeadersTitle": "Headers sent with every request",
     "helpVerify": "Reconstruct the signed string as `[timestamp].[body]` and compare with timing-safe equality:",
     "tabWebhooks": "Webhooks",

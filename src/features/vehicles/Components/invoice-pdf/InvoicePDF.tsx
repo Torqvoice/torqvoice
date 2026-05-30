@@ -129,7 +129,7 @@ export function InvoicePDF({
   const balanceDue = paymentSummary ? displayTotal - paymentSummary.totalPaid : displayTotal
   const isPaidInFull = paymentSummary ? paymentSummary.totalPaid >= displayTotal : false
 
-  const shopDisplayName = workshop?.name || data.shopName || 'Torqvoice'
+  const shopDisplayName = workshop?.name || data.shopName || 'Taller El Moni'
   const hasAttachments = imageAttachments.length > 0 || otherAttachments.length > 0
 
   // ---------------------------------------------------------------------------
@@ -240,7 +240,7 @@ export function InvoicePDF({
           >
             <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
             <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
+            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Taller El Moni</Text>
           </View>
         )}
       </>

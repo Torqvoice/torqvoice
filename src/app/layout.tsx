@@ -27,14 +27,14 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'TorqVoice',
+    title: 'Taller El Moni',
   },
   other: {
     'mobile-web-app-capable': 'yes',
   },
   title: {
-    default: 'TorqVoice - Workshop Management Platform',
-    template: '%s | TorqVoice',
+    default: 'Taller El Moni - Workshop Management Platform',
+    template: '%s | Taller El Moni',
   },
   description:
     'Self-hosted workshop management platform for automotive service businesses. Manage work orders, invoices, customers, inventory, and vehicle service history.',
@@ -48,13 +48,13 @@ export const metadata: Metadata = {
     'repair shop software',
     'self-hosted',
   ],
-  authors: [{ name: 'TorqVoice' }],
-  creator: 'TorqVoice',
+  authors: [{ name: 'Diego Assia', url: 'mailto:diegoassia@gmail.com' }],
+  creator: 'Diego Assia',
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    siteName: 'TorqVoice',
-    title: 'TorqVoice - Workshop Management Platform',
+    siteName: 'Taller El Moni',
+    title: 'Taller El Moni - Workshop Management Platform',
     description:
       'Self-hosted workshop management platform for automotive service businesses. Manage work orders, invoices, customers, inventory, and vehicle service history.',
     images: [
@@ -62,13 +62,13 @@ export const metadata: Metadata = {
         url: '/images/torqvoice_opengraph.png',
         width: 1200,
         height: 630,
-        alt: 'TorqVoice - Workshop Management Platform',
+        alt: 'Taller El Moni - Workshop Management Platform',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'TorqVoice - Workshop Management Platform',
+    title: 'Taller El Moni - Workshop Management Platform',
     description:
       'Self-hosted workshop management platform for automotive service businesses. Manage work orders, invoices, customers, inventory, and vehicle service history.',
     images: ['/images/torqvoice_opengraph.png'],

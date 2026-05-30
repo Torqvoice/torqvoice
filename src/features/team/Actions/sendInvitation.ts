@@ -73,11 +73,11 @@ export async function sendInvitation(input: unknown) {
       await sendOrgMail(organizationId, {
         from,
         to: data.email,
-        subject: `You've been invited to join ${membership.organization.name} on Torqvoice`,
+        subject: `You've been invited to join ${membership.organization.name} on Taller El Moni`,
         html: `
           <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
             <h2>Team Invitation</h2>
-            <p>You've been invited to join <strong>${membership.organization.name}</strong> on Torqvoice as a <strong>${roleLabel}</strong>.</p>
+            <p>You've been invited to join <strong>${membership.organization.name}</strong> on Taller El Moni as a <strong>${roleLabel}</strong>.</p>
             <p>Click the button below to create your account and join the team:</p>
             <div style="margin: 24px 0;">
               <a href="${signupUrl}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">

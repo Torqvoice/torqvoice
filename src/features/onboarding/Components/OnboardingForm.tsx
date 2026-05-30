@@ -40,7 +40,7 @@ export function OnboardingForm({ redirectTo }: { redirectTo?: string }) {
         <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2">
           <Gauge className="h-5 w-5 text-primary" />
           <span className="gradient-text text-sm font-bold tracking-wider uppercase">
-            Torqvoice
+            Taller El Moni
           </span>
         </div>
         <h1 className="text-2xl font-bold tracking-tight">Set up your workshop</h1>

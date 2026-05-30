@@ -207,7 +207,7 @@ export function QuoteView({
   const tz = timezone || undefined;
   const createdDate = fmtDate(quote.createdAt, df, tz);
   const validUntilDate = quote.validUntil ? fmtDate(quote.validUntil, df, tz) : null;
-  const shopName = workshop.name || "Torqvoice";
+  const shopName = workshop.name || "Taller El Moni";
 
   // Layout config overrides for header field visibility & ordering
   const headerVisibleFields = getVisibleFieldsForSection(layoutConfig, 'header');
@@ -350,7 +350,7 @@ export function QuoteView({
                     )
                     const renderModernField = (fid: string) => {
                       switch (fid) {
-                        case 'logo': return effectiveShowLogo ? <img key="logo" src={logoUrl || "/torqvoice_app_logo.png"} alt={shopName} className="mx-auto mb-2 object-contain" style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }} /> : null
+                        case 'logo': return effectiveShowLogo ? <img key="logo" src={logoUrl || "/logo-taller-el-moni.jpg"} alt={shopName} className="mx-auto mb-2 object-contain" style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }} /> : null
                         case 'company_name': return effectiveShowCompanyName ? <h2 key="cn" className="text-xl font-bold sm:text-2xl">{shopName}</h2> : null
                         case 'company_address': return workshop.address ? <p key="addr" className="mt-1 text-sm opacity-80">{workshop.address}</p> : null
                         case 'company_phone': return workshop.phone ? <p key="ph" className="text-sm opacity-70">{t('tel', { phone: workshop.phone })}</p> : null
@@ -360,7 +360,7 @@ export function QuoteView({
                     }
                     const renderCompactField = (fid: string) => {
                       switch (fid) {
-                        case 'logo': return effectiveShowLogo ? <img key="logo" src={logoUrl || "/torqvoice_app_logo.png"} alt={shopName} className="rounded object-contain" style={{ height: 48 * (logoSize / 100), width: 48 * (logoSize / 100) }} /> : null
+                        case 'logo': return effectiveShowLogo ? <img key="logo" src={logoUrl || "/logo-taller-el-moni.jpg"} alt={shopName} className="rounded object-contain" style={{ height: 48 * (logoSize / 100), width: 48 * (logoSize / 100) }} /> : null
                         case 'company_name': return effectiveShowCompanyName ? <h2 key="cn" className="text-lg font-bold" style={{ color: primaryColor }}>{shopName}</h2> : null
                         case 'company_address': return workshop.address ? <p key="addr" className="text-sm text-gray-500">{workshop.address}</p> : null
                         case 'company_phone': return workshop.phone ? <p key="ph" className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p> : null
@@ -370,7 +370,7 @@ export function QuoteView({
                     }
                     const renderStandardField = (fid: string) => {
                       switch (fid) {
-                        case 'logo': return effectiveShowLogo ? <img key="logo" src={logoUrl || "/torqvoice_app_logo.png"} alt={shopName} className="mb-2 object-contain object-left" style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }} /> : null
+                        case 'logo': return effectiveShowLogo ? <img key="logo" src={logoUrl || "/logo-taller-el-moni.jpg"} alt={shopName} className="mb-2 object-contain object-left" style={{ maxHeight: 64 * (logoSize / 100), maxWidth: 180 * (logoSize / 100) }} /> : null
                         case 'company_name': return effectiveShowCompanyName ? <h2 key="cn" className="text-xl font-bold sm:text-2xl" style={{ color: primaryColor }}>{shopName}</h2> : null
                         case 'company_address': return workshop.address ? <p key="addr" className="mt-1 text-sm text-gray-500">{workshop.address}</p> : null
                         case 'company_phone': return workshop.phone ? <p key="ph" className="text-sm text-gray-500">{t('tel', { phone: workshop.phone })}</p> : null
@@ -422,8 +422,8 @@ export function QuoteView({
                         <div className="sm:text-right">
                           {showTorqvoiceBranding && (
                             <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 dark:bg-gray-800">
-                              <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
-                              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+                              <img src="/logo-taller-el-moni.jpg" alt="Taller El Moni" className="h-4 w-4" />
+                              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Taller El Moni</span>
                             </div>
                           )}
                           <h3 className="text-xl font-bold" style={{ color: primaryColor }}>{t('title').toUpperCase()}</h3>
@@ -853,8 +853,8 @@ export function QuoteView({
         {showTorqvoiceBranding && (
           <div className="mt-3 flex items-center justify-end gap-1.5">
             <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
-            <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-3.5 w-3.5" />
-            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+            <img src="/logo-taller-el-moni.jpg" alt="Taller El Moni" className="h-3.5 w-3.5" />
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Taller El Moni</span>
           </div>
         )}
       </div>
@@ -874,14 +874,14 @@ export function QuoteView({
         {showTorqvoiceBranding ? (
           <>
             <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
-            <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
+            <img src="/logo-taller-el-moni.jpg" alt="Taller El Moni" className="h-4 w-4" />
             <a
-              href="https://torqvoice.com"
+              href="/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs font-semibold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
             >
-              Torqvoice
+              Taller El Moni
             </a>
           </>
         ) : (

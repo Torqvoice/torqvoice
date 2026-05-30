@@ -210,7 +210,7 @@ export function AppSidebar({
                 >
                   <div className="flex aspect-square size-12 items-center justify-center overflow-hidden rounded-lg">
                     <Image
-                      src={companyLogo || '/torqvoice_app_logo.png'}
+                      src={companyLogo || '/logo-taller-el-moni.jpg'}
                       alt={activeOrg?.name ?? 'Company'}
                       width={38}
                       height={38}

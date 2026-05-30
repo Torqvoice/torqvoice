@@ -106,7 +106,7 @@ export async function getFromAddress(): Promise<string> {
 
   const fromEmail =
     map.get(keys.email) || process.env.SMTP_FROM_EMAIL || "noreply@example.com";
-  const fromName = map.get(keys.name) || "Torqvoice";
+  const fromName = map.get(keys.name) || "Taller El Moni";
 
   return `${fromName} <${fromEmail}>`;
 }
@@ -601,7 +601,7 @@ export async function getOrgFromAddress(
   ]);
 
   const fromEmail = settings.get(keys.email) || "noreply@example.com";
-  const fromName = settings.get(keys.name) || "Torqvoice";
+  const fromName = settings.get(keys.name) || "Taller El Moni";
 
   return `${fromName} <${fromEmail}>`;
 }

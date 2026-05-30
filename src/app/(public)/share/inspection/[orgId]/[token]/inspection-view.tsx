@@ -445,14 +445,14 @@ export function InspectionView({
       {showTorqvoiceBranding && (
         <div className="mt-8 flex items-center justify-center gap-1.5">
           <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
-          <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
+          <img src="/logo-taller-el-moni.jpg" alt="Taller El Moni" className="h-4 w-4" />
           <a
-            href="https://torqvoice.com"
+            href="/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs font-semibold text-gray-500 hover:text-gray-700"
           >
-            Torqvoice
+            Taller El Moni
           </a>
         </div>
       )}

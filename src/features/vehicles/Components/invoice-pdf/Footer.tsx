@@ -61,7 +61,7 @@ export function Footer({
           ) : null}
           <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
           <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
-          <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
+          <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Taller El Moni</Text>
         </View>
       ) : (
         <Text style={styles.footer}>

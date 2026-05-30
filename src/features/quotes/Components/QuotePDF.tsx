@@ -152,7 +152,7 @@ export function QuotePDF({
   const tz = timezone || undefined
   const createdDate = formatDateForPdf(data.createdAt, df, tz)
   const validDate = data.validUntil ? formatDateForPdf(data.validUntil, df, tz) : null
-  const shopName = workshop?.name || 'Torqvoice'
+  const shopName = workshop?.name || 'Taller El Moni'
 
   const renderCompactField = (fieldId: string) => {
     switch (fieldId) {
@@ -202,7 +202,7 @@ export function QuotePDF({
       {torqvoiceLogoDataUri && (
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginTop: 6, paddingHorizontal: 2 }}>
           <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-          <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+          <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Taller El Moni</Text>
         </View>
       )}
     </View>
@@ -262,7 +262,7 @@ export function QuotePDF({
           >
             <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
             <Text style={{ fontSize: 7, fontFamily: fontBold, color: 'rgba(255,255,255,0.7)' }}>
-              Torqvoice
+              Taller El Moni
             </Text>
           </View>
         )}
@@ -316,7 +316,7 @@ export function QuotePDF({
         {torqvoiceLogoDataUri && (
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginBottom: 6 }}>
             <Image src={torqvoiceLogoDataUri} style={{ width: 16, height: 16 }} />
-            <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+            <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Taller El Moni</Text>
           </View>
         )}
         <Text style={{ ...styles.invoiceTitle, color: primaryColor }}>{labels.title || 'QUOTE'}</Text>
@@ -670,7 +670,7 @@ export function QuotePDF({
           </Text>
           <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
           <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
-          <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
+          <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Taller El Moni</Text>
         </View>
       ) : (
         <Text style={styles.footer}>
@@ -710,7 +710,7 @@ export function QuotePDF({
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginTop: 6 }}>
                 <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
                 <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-                <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
+                <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Taller El Moni</Text>
               </View>
             )}
           </>

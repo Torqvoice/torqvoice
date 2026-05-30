@@ -75,7 +75,7 @@ export async function testSmsSend(testPhone: string) {
 
       const result = await sendOrgSms(organizationId, {
         to: testPhone.trim(),
-        body: 'SMS test from Torqvoice — your SMS provider is configured correctly.',
+        body: 'SMS test from Taller El Moni — your SMS provider is configured correctly.',
       })
 
       return { sentTo: result.to }

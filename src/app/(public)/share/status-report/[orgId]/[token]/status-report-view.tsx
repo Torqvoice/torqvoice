@@ -170,7 +170,7 @@ export function StatusReportView({
 
         {/* Footer */}
         {showBranding && (
-          <p className="text-center text-xs text-gray-400 py-4">Powered by Torqvoice</p>
+          <p className="text-center text-xs text-gray-400 py-4">Powered by Taller El Moni</p>
         )}
       </div>
     </div>

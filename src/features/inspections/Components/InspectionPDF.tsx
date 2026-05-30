@@ -92,7 +92,7 @@ export function InspectionPDF({
   const df = dateFormat || DEFAULT_DATE_FORMAT
   const tz = timezone || undefined
   const createdDate = formatDateForPdf(data.createdAt, df, tz)
-  const shopName = workshop?.name || 'Torqvoice'
+  const shopName = workshop?.name || 'Taller El Moni'
 
   // Filter out not_inspected items and group by section
   const inspectedItems = data.items
@@ -171,7 +171,7 @@ export function InspectionPDF({
         {torqvoiceLogoDataUri && (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
             <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-            <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+            <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Taller El Moni</Text>
           </View>
         )}
       </View>
@@ -239,7 +239,7 @@ export function InspectionPDF({
           >
             <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
             <Text style={{ fontSize: 7, fontFamily: fontBold, color: 'rgba(255,255,255,0.7)' }}>
-              Torqvoice
+              Taller El Moni
             </Text>
           </View>
         )}
@@ -279,7 +279,7 @@ export function InspectionPDF({
         {torqvoiceLogoDataUri && (
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginBottom: 6 }}>
             <Image src={torqvoiceLogoDataUri} style={{ width: 16, height: 16 }} />
-            <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+            <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Taller El Moni</Text>
           </View>
         )}
         <Text style={{ ...styles.invoiceTitle, color: primaryColor }}>{labels.title || 'VEHICLE INSPECTION'}</Text>
@@ -471,7 +471,7 @@ export function InspectionPDF({
             </Text>
             <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
             <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
-            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
+            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Taller El Moni</Text>
           </View>
         ) : (
           <Text style={styles.footer}>{labels.footerText ? fillTemplate(labels.footerText, { shopName }) : `Vehicle Inspection — ${shopName}`}</Text>

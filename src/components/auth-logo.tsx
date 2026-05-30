@@ -19,7 +19,7 @@ export function AuthLogo({ alt }: { alt: string }) {
 
   return (
     <Image
-      src="/torqvoice_app_logo.png"
+      src="/logo-taller-el-moni.jpg"
       alt={alt}
       width={48}
       height={44}

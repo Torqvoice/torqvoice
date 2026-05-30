@@ -72,7 +72,7 @@ export function ServiceHistoryPDF({
   const unitLabel = invoiceSettings?.unitSystem === 'metric' ? (labels.km || 'km') : (labels.mi || 'mi')
 
   const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
-  const shopDisplayName = workshop?.name || 'Torqvoice'
+  const shopDisplayName = workshop?.name || 'Taller El Moni'
 
   const grandTotal = records.reduce((sum, r) => {
     const display = r.totalAmount > 0 ? r.totalAmount : r.cost
@@ -114,7 +114,7 @@ export function ServiceHistoryPDF({
             {torqvoiceLogoDataUri && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 4 }}>
                 <Image src={torqvoiceLogoDataUri} style={{ width: 16, height: 16 }} />
-                <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+                <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Taller El Moni</Text>
               </View>
             )}
           </View>
@@ -273,7 +273,7 @@ export function ServiceHistoryPDF({
             </Text>
             <Text style={{ fontSize: 7, color: gray }}> · {labels.poweredBy || 'Powered by'}</Text>
             <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
-            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
+            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Taller El Moni</Text>
           </View>
         ) : (
           <Text style={styles.footer}>

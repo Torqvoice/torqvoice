@@ -61,7 +61,7 @@ export const auth = betterAuth({
         await sendMail({
           from,
           to: user.email,
-          subject: 'Verify your Torqvoice email',
+          subject: 'Verify your Taller El Moni email',
           html: `
             <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
               <h2>Email Verification</h2>
@@ -95,7 +95,7 @@ export const auth = betterAuth({
       await sendMail({
         from,
         to: user.email,
-        subject: 'Reset your Torqvoice password',
+        subject: 'Reset your Taller El Moni password',
         html: `
           <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
             <h2>Password Reset</h2>
@@ -196,10 +196,10 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    twoFactor({ issuer: 'Torqvoice' }),
+    twoFactor({ issuer: 'Taller El Moni' }),
     passkey({
       rpID: baseURL ? new URL(baseURL).hostname : 'localhost',
-      rpName: 'Torqvoice',
+      rpName: 'Taller El Moni',
       origin: baseURL || 'http://localhost:3000',
     }),
     nextCookies(), // Must be last plugin

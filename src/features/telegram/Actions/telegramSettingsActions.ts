@@ -104,7 +104,7 @@ export async function testTelegramSend(input: {
         chatId: input.chatId.trim(),
         text:
           input.message?.trim() ||
-          "Test message from Torqvoice -- your Telegram bot is configured correctly.",
+          "Test message from Taller El Moni -- your Telegram bot is configured correctly.",
       });
 
       return { sentTo: input.chatId.trim() };

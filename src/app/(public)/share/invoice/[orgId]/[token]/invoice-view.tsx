@@ -288,7 +288,7 @@ export function InvoiceView({
   const paidFromPayments = record.payments.reduce((sum, p) => sum + p.amount, 0)
   const totalPaid = record.manuallyPaid ? displayTotal : paidFromPayments
   const balanceDue = displayTotal - totalPaid
-  const shopName = workshop.name || record.shopName || 'Torqvoice'
+  const shopName = workshop.name || record.shopName || 'Taller El Moni'
 
   // Layout config overrides for header field visibility & ordering
   const headerVisibleFields = getVisibleFieldsForSection(layoutConfig, 'header')
@@ -711,8 +711,8 @@ export function InvoiceView({
                         <div className="sm:text-right">
                           {showTorqvoiceBranding && (
                             <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 dark:bg-gray-800">
-                              <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
-                              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+                              <img src="/logo-taller-el-moni.jpg" alt="Taller El Moni" className="h-4 w-4" />
+                              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Taller El Moni</span>
                             </div>
                           )}
                           <h3 className="text-xl font-bold uppercase" style={{ color: primaryColor }}>{t('title')}</h3>
@@ -982,8 +982,8 @@ export function InvoiceView({
                   {showTorqvoiceBranding && (
                     <div className="mt-3 flex items-center justify-end gap-1.5">
                       <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
-                      <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-3.5 w-3.5" />
-                      <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Torqvoice</span>
+                      <img src="/logo-taller-el-moni.jpg" alt="Taller El Moni" className="h-3.5 w-3.5" />
+                      <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Taller El Moni</span>
                     </div>
                   )}
                 </div>
@@ -1304,14 +1304,14 @@ export function InvoiceView({
         {showTorqvoiceBranding ? (
           <div className="flex items-center justify-center gap-1.5">
             <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
-            <img src="/torqvoice_app_logo.png" alt="Torqvoice" className="h-4 w-4" />
+            <img src="/logo-taller-el-moni.jpg" alt="Taller El Moni" className="h-4 w-4" />
             <a
-              href="https://torqvoice.com"
+              href="/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs font-semibold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
             >
-              Torqvoice
+              Taller El Moni
             </a>
           </div>
         ) : (
