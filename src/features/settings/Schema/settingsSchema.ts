@@ -66,6 +66,8 @@ export const SETTING_KEYS = {
   MAINTENANCE_SERVICE_INTERVAL: 'maintenance.serviceInterval',
   MAINTENANCE_APPROACHING_THRESHOLD: 'maintenance.approachingThreshold',
   INVENTORY_MARKUP_MULTIPLIER: 'inventory.markupMultiplier',
+  PARTS_DEFAULT_MARKUP_PERCENT: 'parts.defaultMarkupPercent',
+  PARTS_MARKUP_APPLIES_TO_INVENTORY: 'parts.markupAppliesToInventory',
   SMS_TEMPLATE_INVOICE_READY: 'sms.template.invoiceReady',
   SMS_TEMPLATE_QUOTE_READY: 'sms.template.quoteReady',
   SMS_TEMPLATE_INSPECTION_READY: 'sms.template.inspectionReady',

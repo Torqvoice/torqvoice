@@ -77,6 +77,8 @@ export function ServicePageClient({
   telegramEnabled = false,
   aiEnabled = false,
   defaultDueDays = 0,
+  defaultMarkupPercent = 0,
+  markupAppliesToInventory = false,
   statusReports = [],
   initialTab,
   findings = [],
@@ -160,7 +162,13 @@ export function ServicePageClient({
       const result = await lookupPartByBarcode(barcode)
       if (result.success && result.data) {
         const part = result.data
-        const price = part.sellPrice > 0 ? part.sellPrice : part.unitCost
+        // Same rule as the inventory picker — opt-in markup applies to inventory parts too.
+        const useGlobalMarkup = markupAppliesToInventory && defaultMarkupPercent > 0
+        const price = useGlobalMarkup
+          ? Math.round(part.unitCost * (1 + defaultMarkupPercent / 100) * 100) / 100
+          : part.sellPrice > 0
+            ? part.sellPrice
+            : part.unitCost
         formState.dirtySetPartItems((prev) => [
           {
             partNumber: part.partNumber || '',
@@ -169,6 +177,7 @@ export function ServicePageClient({
             unitPrice: price,
             total: price,
             unitCost: part.unitCost,
+            markupPercent: useGlobalMarkup ? defaultMarkupPercent : 0,
             inventoryPartId: part.id,
           },
           ...prev,
@@ -178,7 +187,7 @@ export function ServicePageClient({
         toast.error(t('parts.partNotFound', { barcode }))
       }
     },
-    [formState, t]
+    [formState, t, defaultMarkupPercent, markupAppliesToInventory]
   )
 
   useHardwareScanner({ onScan: handleBarcodeScan, enabled: activeTab === 'details' })
@@ -261,6 +270,7 @@ export function ServicePageClient({
         unitPrice: part.unitPrice,
         total: part.quantity * part.unitPrice,
         unitCost: 0,
+        markupPercent: 0,
         inventoryPartId: part.inventoryPartId || '',
       }))
       formState.dirtySetPartItems((prev) => [...newParts, ...prev])
@@ -336,6 +346,8 @@ export function ServicePageClient({
                   currencyCode={currencyCode}
                   defaultLaborRate={defaultLaborRate}
                   inventoryParts={inventoryParts}
+                  defaultMarkupPercent={defaultMarkupPercent}
+                  markupAppliesToInventory={markupAppliesToInventory}
                   hasPresets={laborPresets.length > 0}
                   onOpenPresets={() => formState.setShowPresetPicker(true)}
                   onScanBarcode={() => formState.setShowBarcodeScanner(true)}
@@ -438,6 +450,8 @@ export function ServicePageClient({
         inventoryParts={inventoryParts}
         currencyCode={currencyCode}
         onSelectPart={(part) => formState.dirtySetPartItems((prev) => [part, ...prev])}
+        defaultMarkupPercent={defaultMarkupPercent}
+        markupAppliesToInventory={markupAppliesToInventory}
       />
 
       <LaborPresetPickerDialog

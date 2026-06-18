@@ -7,6 +7,7 @@ export const servicePartSchema = z.object({
   unitPrice: z.coerce.number().min(0).default(0),
   total: z.coerce.number().min(0).default(0),
   unitCost: z.coerce.number().min(0).default(0),
+  markupPercent: z.coerce.number().min(0).default(0),
   inventoryPartId: z.string().optional(),
 });
 

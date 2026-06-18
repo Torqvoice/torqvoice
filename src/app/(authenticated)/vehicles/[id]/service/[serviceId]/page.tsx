@@ -46,6 +46,8 @@ export default async function ServiceDetailPage({
       SETTING_KEYS.TAX_ENABLED,
       SETTING_KEYS.DEFAULT_LABOR_RATE,
       SETTING_KEYS.INVOICE_DUE_DAYS,
+      SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
+      SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY,
     ]),
     getInventoryPartsList(),
     getTechnicians(),
@@ -78,6 +80,9 @@ export default async function ServiceDetailPage({
   const defaultTaxRate = taxEnabled ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0 : 0
   const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
   const defaultDueDays = Number(settings[SETTING_KEYS.INVOICE_DUE_DAYS]) || 0
+  const defaultMarkupPercent = Number(settings[SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]) || 0
+  const markupAppliesToInventory =
+    settings[SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY] === 'true'
   const inventoryParts = inventoryResult.success && inventoryResult.data ? inventoryResult.data : []
   const laborPresets = presetsResult.success && presetsResult.data ? presetsResult.data : []
   const initialVehicle = {
@@ -156,6 +161,7 @@ export default async function ServiceDetailPage({
       unitPrice: p.unitPrice,
       total: p.total,
       unitCost: p.unitCost ?? 0,
+      markupPercent: p.markupPercent ?? 0,
     })),
     laborItems: record.laborItems.map((l) => ({
       description: l.description,
@@ -244,6 +250,8 @@ export default async function ServiceDetailPage({
         telegramEnabled={features?.telegram ?? false}
         aiEnabled={aiEnabled}
         defaultDueDays={defaultDueDays}
+        defaultMarkupPercent={defaultMarkupPercent}
+        markupAppliesToInventory={markupAppliesToInventory}
         statusReports={(statusReportsResult.success && statusReportsResult.data
           ? statusReportsResult.data
           : []
