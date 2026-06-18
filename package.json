@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.1045.0",
-    "@better-auth/passkey": "^1.6.11",
+    "@better-auth/passkey": "^1.6.19",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
@@ -34,7 +34,7 @@
     "@tiptap/react": "^3.19.0",
     "@tiptap/starter-kit": "^3.19.0",
     "@types/qrcode": "^1.5.6",
-    "better-auth": "^1.6.11",
+    "better-auth": "^1.6.19",
     "bson": "^7.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
