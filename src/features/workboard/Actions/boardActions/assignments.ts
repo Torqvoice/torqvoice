@@ -214,6 +214,12 @@ export async function assignTechnician(input: unknown) {
         : {};
 
       if (data.type === "serviceRecord") {
+        const owned = await db.serviceRecord.findFirst({
+          where: { id: data.id, vehicle: { organizationId } },
+          select: { id: true },
+        });
+        if (!owned) throw new Error("Service record not found");
+
         const sr = await db.serviceRecord.update({
           where: { id: data.id },
           data: { technicianId: data.technicianId, techName: tech.name, ...timeData },
@@ -230,6 +236,12 @@ export async function assignTechnician(input: unknown) {
         });
         job = serviceRecordToJob(sr);
       } else {
+        const owned = await db.inspection.findFirst({
+          where: { id: data.id, organizationId },
+          select: { id: true },
+        });
+        if (!owned) throw new Error("Inspection not found");
+
         const insp = await db.inspection.update({
           where: { id: data.id },
           data: { technicianId: data.technicianId, ...timeData },
@@ -277,6 +289,12 @@ export async function moveJob(input: unknown) {
       let job: WorkBoardJob;
 
       if (data.type === "serviceRecord") {
+        const owned = await db.serviceRecord.findFirst({
+          where: { id: data.id, vehicle: { organizationId } },
+          select: { id: true },
+        });
+        if (!owned) throw new Error("Service record not found");
+
         const sr = await db.serviceRecord.update({
           where: { id: data.id },
           data: {
@@ -297,6 +315,12 @@ export async function moveJob(input: unknown) {
         });
         job = serviceRecordToJob(sr);
       } else {
+        const owned = await db.inspection.findFirst({
+          where: { id: data.id, organizationId },
+          select: { id: true },
+        });
+        if (!owned) throw new Error("Inspection not found");
+
         const insp = await db.inspection.update({
           where: { id: data.id },
           data: {
