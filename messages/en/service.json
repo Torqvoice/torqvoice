@@ -105,7 +105,9 @@
     "scanTitle": "Scan Barcode",
     "partFound": "Added \"{name}\" from inventory",
     "partNotFound": "No part found for barcode \"{barcode}\"",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Out of stock",
+    "onBackorder": "On backorder ({count})"
   },
   "labor": {
     "title": "Labor & Services",

@@ -105,7 +105,9 @@
     "scanTitle": "Escanear código de barras",
     "partFound": "\"{name}\" adicionado do estoque",
     "partNotFound": "Nenhuma peça encontrada para o código de barras \"{barcode}\"",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Fora de estoque",
+    "onBackorder": "Sob encomenda ({count})"
   },
   "labor": {
     "title": "Mão de Obra",

@@ -302,8 +302,11 @@ export async function getInventoryCategories() {
 
 export async function getInventoryPartsList() {
   return withAuth(async ({ userId, organizationId }) => {
+    // Include out-of-stock and backordered (negative) parts too — the picker
+    // shows their stock state so a part can still be added to a work order
+    // when depleted (which then correctly drives stock negative / backorder).
     return db.inventoryPart.findMany({
-      where: { organizationId, isArchived: false, quantity: { gt: 0 } },
+      where: { organizationId, isArchived: false },
       select: {
         id: true,
         partNumber: true,

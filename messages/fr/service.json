@@ -105,7 +105,9 @@
     "scanTitle": "Scanner le code-barres",
     "partFound": "\"{name}\" ajouté depuis l'inventaire",
     "partNotFound": "Aucune pièce trouvée pour le code-barres \"{barcode}\"",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "En rupture de stock",
+    "onBackorder": "En réapprovisionnement ({count})"
   },
   "labor": {
     "title": "Main-d'œuvre",

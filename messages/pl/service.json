@@ -105,7 +105,9 @@
     "scanTitle": "Skanuj kod kreskowy",
     "partFound": "Dodano \"{name}\" z magazynu",
     "partNotFound": "Nie znaleziono części dla kodu kreskowego \"{barcode}\"",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Brak w magazynie",
+    "onBackorder": "W zamówieniu ({count})"
   },
   "labor": {
     "title": "Praca",

@@ -105,7 +105,9 @@
     "scanTitle": "Barkod tara",
     "partFound": "\"{name}\" envanterden eklendi",
     "partNotFound": "\"{barcode}\" barkodu için parça bulunamadı",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Stokta yok",
+    "onBackorder": "Ön siparişte ({count})"
   },
   "labor": {
     "title": "İşçilik",

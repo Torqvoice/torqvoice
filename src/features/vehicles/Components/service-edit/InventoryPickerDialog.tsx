@@ -151,7 +151,17 @@ export function InventoryPickerDialog({
                 ) : (
                   <span>{formatCurrency(ip.unitCost, currencyCode)}</span>
                 )}
-                <span>{t('inStock', { quantity: ip.quantity })}</span>
+                {ip.quantity > 0 ? (
+                  <span>{t('inStock', { quantity: ip.quantity })}</span>
+                ) : ip.quantity === 0 ? (
+                  <span className="font-medium text-amber-600 dark:text-amber-500">
+                    {t('outOfStock')}
+                  </span>
+                ) : (
+                  <span className="font-medium text-red-600 dark:text-red-500">
+                    {t('onBackorder', { count: Math.abs(ip.quantity) })}
+                  </span>
+                )}
               </div>
             </button>
           ))}

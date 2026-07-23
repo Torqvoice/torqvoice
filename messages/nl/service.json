@@ -105,7 +105,9 @@
     "scanTitle": "Barcode scannen",
     "partFound": "\"{name}\" toegevoegd uit voorraad",
     "partNotFound": "Geen onderdeel gevonden voor barcode \"{barcode}\"",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Niet op voorraad",
+    "onBackorder": "In nabestelling ({count})"
   },
   "labor": {
     "title": "Arbeidskosten",

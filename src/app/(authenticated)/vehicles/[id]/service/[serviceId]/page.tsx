@@ -162,6 +162,10 @@ export default async function ServiceDetailPage({
       total: p.total,
       unitCost: p.unitCost ?? 0,
       markupPercent: p.markupPercent ?? 0,
+      // Preserve the inventory link so editing/saving a work order keeps
+      // deducting the right stock. Without this, a saved edit sends unlinked
+      // parts and inventory reconciliation restocks the "removed" part.
+      inventoryPartId: p.inventoryPartId ?? undefined,
     })),
     laborItems: record.laborItems.map((l) => ({
       description: l.description,

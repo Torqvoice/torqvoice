@@ -105,7 +105,9 @@
     "scanTitle": "Nuskaityti brūkšninį kodą",
     "partFound": "Pridėta \"{name}\" iš inventoriaus",
     "partNotFound": "Dalis brūkšniniam kodui \"{barcode}\" nerasta",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Nėra sandėlyje",
+    "onBackorder": "Užsakoma ({count})"
   },
   "labor": {
     "title": "Darbai ir paslaugos",
