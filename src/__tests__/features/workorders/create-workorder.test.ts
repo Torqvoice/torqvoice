@@ -257,14 +257,14 @@ describe("createServiceRecord — parts and inventory", () => {
 
     const mockCreate = vi.fn().mockResolvedValue({ id: "sr-inv" });
     const mockInvFind = vi.fn().mockResolvedValue({ id: "inv-1", quantity: 10, organizationId: ORG });
-    const mockInvUpdate = vi.fn();
+    const mockInvUpdateMany = vi.fn().mockResolvedValue({ count: 1 });
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         serviceRecord: { create: mockCreate },
         servicePart: { createMany: vi.fn() },
         serviceLabor: { createMany: vi.fn() },
         serviceAttachment: { createMany: vi.fn() },
-        inventoryPart: { findFirst: mockInvFind, update: mockInvUpdate },
+        inventoryPart: { findFirst: mockInvFind, updateMany: mockInvUpdateMany },
       })
     );
 
@@ -280,28 +280,29 @@ describe("createServiceRecord — parts and inventory", () => {
       totalAmount: 15,
     });
 
-    expect(mockInvUpdate).toHaveBeenCalledWith(
+    // Stock is deducted atomically and scoped to the org.
+    expect(mockInvUpdateMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: "inv-1" },
-        data: { quantity: 9 }, // 10 - 1
+        where: { id: "inv-1", organizationId: ORG },
+        data: { quantity: { decrement: 1 } },
       })
     );
   });
 
-  it("does not allow negative inventory (floors at 0)", async () => {
+  it("allows stock to go negative when consuming more than on hand (reversible over-consumption)", async () => {
     setupAuth();
     setupCommonMocks();
 
     const mockCreate = vi.fn().mockResolvedValue({ id: "sr-neg" });
     const mockInvFind = vi.fn().mockResolvedValue({ id: "inv-2", quantity: 1, organizationId: ORG });
-    const mockInvUpdate = vi.fn();
+    const mockInvUpdateMany = vi.fn().mockResolvedValue({ count: 1 });
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         serviceRecord: { create: mockCreate },
         servicePart: { createMany: vi.fn() },
         serviceLabor: { createMany: vi.fn() },
         serviceAttachment: { createMany: vi.fn() },
-        inventoryPart: { findFirst: mockInvFind, update: mockInvUpdate },
+        inventoryPart: { findFirst: mockInvFind, updateMany: mockInvUpdateMany },
       })
     );
 
@@ -317,9 +318,12 @@ describe("createServiceRecord — parts and inventory", () => {
       totalAmount: 500,
     });
 
-    expect(mockInvUpdate).toHaveBeenCalledWith(
+    // Decrement the full 5 (1 on hand -> -4). Clamping at 0 would corrupt the
+    // count once the record is later edited or deleted, so the true signed
+    // value is kept.
+    expect(mockInvUpdateMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: { quantity: 0 },
+        data: { quantity: { decrement: 5 } },
       })
     );
   });

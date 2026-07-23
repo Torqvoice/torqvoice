@@ -105,7 +105,9 @@
     "scanTitle": "Сканировать штрихкод",
     "partFound": "\"{name}\" добавлено из склада",
     "partNotFound": "Деталь для штрихкода \"{barcode}\" не найдена",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Нет в наличии",
+    "onBackorder": "Под заказ ({count})"
   },
   "labor": {
     "title": "Работа",

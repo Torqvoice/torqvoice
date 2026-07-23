@@ -10,6 +10,7 @@ import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
 import { notificationBus } from "@/lib/notification-bus";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { reconcileInventoryForParts } from "@/features/inventory/Lib/reconcileStock";
 
 export async function getServiceRecords(vehicleId: string) {
   return withAuth(async ({ organizationId }) => {
@@ -300,7 +301,8 @@ export async function createServiceRecord(input: unknown) {
       });
 
       if (partItems && partItems.length > 0) {
-        // Enrich parts with unitCost from inventory and deduct stock
+        // Enrich parts with unitCost from inventory (stock movement is handled
+        // by reconcileInventoryForParts below).
         const enrichedParts = [];
         for (const p of partItems) {
           let resolvedUnitCost = p.unitCost ?? 0;
@@ -310,11 +312,6 @@ export async function createServiceRecord(input: unknown) {
             });
             if (invPart) {
               resolvedUnitCost = invPart.unitCost ?? resolvedUnitCost;
-              const newQty = invPart.quantity - Math.ceil(p.quantity);
-              await tx.inventoryPart.update({
-                where: { id: p.inventoryPartId },
-                data: { quantity: Math.max(0, newQty) },
-              });
             }
           }
           enrichedParts.push({
@@ -331,6 +328,9 @@ export async function createServiceRecord(input: unknown) {
         }
 
         await tx.servicePart.createMany({ data: enrichedParts });
+
+        // Deduct stock for inventory-linked parts (delta from an empty set).
+        await reconcileInventoryForParts(tx, organizationId, [], partItems);
       }
 
       if (laborItems && laborItems.length > 0) {
@@ -449,6 +449,15 @@ export async function updateServiceRecord(input: unknown) {
 
       // Replace parts if provided
       if (partItems !== undefined) {
+        // Snapshot the parts being replaced BEFORE deleting them, so inventory
+        // can be reconciled by the delta between the old and new linked parts
+        // (this is what keeps stock correct when parts are added, edited,
+        // reduced or removed on an existing work order).
+        const previousParts = await tx.servicePart.findMany({
+          where: { serviceRecordId: id },
+          select: { inventoryPartId: true, quantity: true },
+        });
+
         await tx.servicePart.deleteMany({ where: { serviceRecordId: id } });
         if (partItems.length > 0) {
           await tx.servicePart.createMany({
@@ -465,6 +474,8 @@ export async function updateServiceRecord(input: unknown) {
             })),
           });
         }
+
+        await reconcileInventoryForParts(tx, organizationId, previousParts, partItems);
       }
 
       // Replace labor if provided
@@ -728,7 +739,18 @@ export async function deleteServiceRecord(recordId: string) {
       }
     }
 
-    await db.serviceRecord.delete({ where: { id: recordId } });
+    // Restock any inventory-linked parts, then delete the record (its parts
+    // cascade-delete). Both happen in one transaction so stock is only
+    // returned if the delete actually commits.
+    await db.$transaction(async (tx) => {
+      const parts = await tx.servicePart.findMany({
+        where: { serviceRecordId: recordId },
+        select: { inventoryPartId: true, quantity: true },
+      });
+      await reconcileInventoryForParts(tx, organizationId, parts, []);
+      await tx.serviceRecord.delete({ where: { id: recordId } });
+    });
+
     revalidatePath("/");
     revalidatePath(`/vehicles/${record.vehicleId}`);
     revalidatePath("/services");

@@ -105,7 +105,9 @@
     "scanTitle": "Skann strekkode",
     "partFound": "\"{name}\" lagt til fra lageret",
     "partNotFound": "Ingen del funnet for strekkode \"{barcode}\"",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Utsolgt",
+    "onBackorder": "På restordre ({count})"
   },
   "labor": {
     "title": "Arbeid",
