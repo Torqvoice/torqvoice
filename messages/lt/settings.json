@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Skaičiuojama proporcinga suma…",
     "upgradeAmountDue": "Mokėtina suma dabar",
     "upgradeSuccess": "Sėkmingai atnaujinta į Enterprise!",
-    "upgradeError": "Nepavyko atnaujinti prenumeratos"
+    "upgradeError": "Nepavyko atnaujinti prenumeratos",
+    "demoBadge": "Demo",
+    "demoExpiresIn": "Baigsis po {days, plural, =0 {mažiau nei dienos} one {# dienos} other {# dienų}} ({date})"
   },
   "ai": {
     "title": "DI asistentas",

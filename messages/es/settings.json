@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Calculando el monto prorrateado…",
     "upgradeAmountDue": "Monto a pagar ahora",
     "upgradeSuccess": "¡Mejorado a Enterprise con éxito!",
-    "upgradeError": "Error al mejorar la suscripción"
+    "upgradeError": "Error al mejorar la suscripción",
+    "demoBadge": "Demo",
+    "demoExpiresIn": "Caduca en {days, plural, =0 {menos de un día} one {# día} other {# días}} ({date})"
   },
   "ai": {
     "title": "Asistente de IA",

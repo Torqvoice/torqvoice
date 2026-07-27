@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Calculating prorated amount…",
     "upgradeAmountDue": "Amount due now",
     "upgradeSuccess": "Successfully upgraded to Enterprise!",
-    "upgradeError": "Failed to upgrade subscription"
+    "upgradeError": "Failed to upgrade subscription",
+    "demoBadge": "Demo",
+    "demoExpiresIn": "Expires in {days, plural, =0 {less than a day} one {# day} other {# days}} ({date})"
   },
   "ai": {
     "title": "AI Assistant",

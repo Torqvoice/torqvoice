@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Calcul du montant au prorata…",
     "upgradeAmountDue": "Montant dû maintenant",
     "upgradeSuccess": "Mis à niveau vers Enterprise avec succès !",
-    "upgradeError": "Échec de la mise à niveau de l'abonnement"
+    "upgradeError": "Échec de la mise à niveau de l'abonnement",
+    "demoBadge": "Démo",
+    "demoExpiresIn": "Expire dans {days, plural, =0 {moins d'un jour} one {# jour} other {# jours}} ({date})"
   },
   "ai": {
     "title": "Assistant IA",

@@ -21,6 +21,11 @@ export default async function SubscriptionPage() {
     ? (subscription.plan.name.toLowerCase() === "enterprise" ? "enterprise" : "pro")
     : "free";
 
+  // A demo is a trialing subscription not backed by Stripe (granted from the
+  // admin panel). It carries full plan features but expires at currentPeriodEnd.
+  const isDemo =
+    subscription?.status === "trialing" && !subscription?.stripeSubscriptionId;
+
   const features = PLAN_FEATURES[plan];
 
   const [customerCount, memberCount] = await Promise.all([
@@ -35,6 +40,7 @@ export default async function SubscriptionPage() {
   return (
     <SubscriptionSettings
       plan={plan}
+      isDemo={isDemo}
       status={subscription?.status ?? null}
       cancelAtPeriodEnd={subscription?.cancelAtPeriodEnd ?? false}
       currentPeriodEnd={subscription?.currentPeriodEnd?.toISOString() ?? null}
