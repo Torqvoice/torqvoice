@@ -72,7 +72,8 @@
     "total": "Total",
     "subtotal": "Subtotal de repuestos: {amount}",
     "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "excludeFromTotal": "Exclude from total",
+    "addFromInventory": "Del inventario"
   },
   "labor": {
     "title": "Mano de obra",

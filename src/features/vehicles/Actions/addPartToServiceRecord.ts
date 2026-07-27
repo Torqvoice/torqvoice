@@ -18,10 +18,10 @@ export async function addPartToServiceRecord(input: {
   inventoryPartId?: string;
 }) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ userId, organizationId }) => {
       const record = await db.serviceRecord.findFirst({
         where: { id: input.serviceRecordId, vehicle: { organizationId } },
-        select: { id: true, vehicleId: true, subtotal: true, taxRate: true, taxInclusive: true, discountType: true, discountValue: true },
+        select: { id: true, vehicleId: true, subtotal: true, taxRate: true, taxInclusive: true, discountType: true, discountValue: true, title: true, invoiceNumber: true },
       });
       if (!record) throw new Error("Service record not found");
 
@@ -73,9 +73,18 @@ export async function addPartToServiceRecord(input: {
         });
 
         // Deduct inventory stock for the newly added line (delta from empty).
-        await reconcileInventoryForParts(tx, organizationId, [], [
-          { inventoryPartId: input.inventoryPartId, quantity: input.quantity },
-        ]);
+        await reconcileInventoryForParts(
+          tx,
+          organizationId,
+          [],
+          [{ inventoryPartId: input.inventoryPartId, quantity: input.quantity }],
+          {
+            reason: "service_record",
+            userId,
+            serviceRecordId: record.id,
+            serviceRecordLabel: record.invoiceNumber || record.title,
+          },
+        );
 
         return created;
       });

@@ -1,7 +1,10 @@
 "use client";
 
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+
 import { useState, useCallback, useTransition, useEffect } from "react";
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog';
+import { StockHistoryDialog } from '@/features/inventory/Components/StockHistoryDialog';
 import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog';
 import { useHardwareScanner } from '@/hooks/use-hardware-scanner';
 import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode';
@@ -52,6 +55,7 @@ import {
   ArrowUp,
   ArrowUpDown,
   ExternalLink,
+  History,
   Loader2,
   MoreVertical,
   Pencil,
@@ -120,9 +124,9 @@ export function InventoryClient({
   const searchParams = useSearchParams();
   const t = useTranslations('inventory');
   const [isPending, startTransition] = useTransition();
-  const [searchInput, setSearchInput] = useState(search);
   const [showForm, setShowForm] = useState(false);
   const [editPart, setEditPart] = useState<InventoryPart | null>(null);
+  const [historyPart, setHistoryPart] = useState<{ id: string; name: string } | null>(null);
   const [showMarkup, setShowMarkup] = useState(false);
   const [markupValue, setMarkupValue] = useState(String(initialMarkup));
   const [applyingMarkup, setApplyingMarkup] = useState(false);
@@ -203,13 +207,13 @@ export function InventoryClient({
       : <ArrowDown className="ml-1 h-3 w-3" />;
   };
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      navigate({ search: searchInput || undefined });
-    },
-    [navigate, searchInput]
-  );
+  // Live search: filters as you type, no Enter required. Submitting the
+  // form (Enter) commits immediately, bypassing the debounce.
+  const {
+    value: searchInput,
+    setValue: setSearchInput,
+    commitNow: handleSearch,
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
 
   const handleDelete = async (id: string, name: string) => {
     const ok = await confirm({
@@ -554,6 +558,12 @@ export function InventoryClient({
                             {t('actions.edit')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
+                            onClick={() => setHistoryPart({ id: part.id, name: part.name })}
+                          >
+                            <History className="mr-2 h-4 w-4" />
+                            {t('actions.history')}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
                             className="text-destructive"
                             onClick={() => handleDelete(part.id, part.name)}
                           >
@@ -597,6 +607,13 @@ export function InventoryClient({
           setGalleryImages(urls);
           setGalleryIndex(startIndex);
         }}
+      />
+
+      <StockHistoryDialog
+        partId={historyPart?.id ?? null}
+        partName={historyPart?.name ?? ''}
+        open={!!historyPart}
+        onOpenChange={(o) => !o && setHistoryPart(null)}
       />
 
       {/* Bulk Markup Dialog */}

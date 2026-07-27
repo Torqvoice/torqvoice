@@ -73,6 +73,8 @@ interface DashboardStats {
   activeJobs: number;
   pendingJobs: number;
   totalParts: number;
+  /** Parts at or below their reorder point (minQuantity). */
+  lowStockParts: number;
   totalCustomers: number;
   todaysServices: ServiceItem[];
   recentServices: ServiceItem[];
@@ -299,7 +301,7 @@ export function DashboardClient({
     <TooltipProvider>
     <div className="space-y-4">
       {/* Quick stats row */}
-      <div className={`grid grid-cols-2 gap-2 ${stats.isAdmin ? "sm:grid-cols-4" : "sm:grid-cols-2"}`}>
+      <div className={`grid grid-cols-2 gap-2 ${stats.isAdmin ? (stats.lowStockParts > 0 ? "sm:grid-cols-5" : "sm:grid-cols-4") : "sm:grid-cols-2"}`}>
         <Link href="/work-orders?status=active" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
           <div className="flex items-center justify-between">
             <span className="text-[11px] text-muted-foreground">{t("stats.activeJobs")}</span>
@@ -321,6 +323,18 @@ export function DashboardClient({
               <Settings className="h-3.5 w-3.5 text-muted-foreground/50" />
             </div>
             <p className="text-lg font-bold">{stats.totalParts}</p>
+          </Link>
+        )}
+        {stats.isAdmin && stats.lowStockParts > 0 && (
+          <Link
+            href="/inventory?lowStock=1"
+            className="rounded-lg border-0 bg-amber-50 px-3 py-2 shadow-sm transition-colors hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/60"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-amber-700 dark:text-amber-500">{t("stats.lowStock")}</span>
+              <AlertTriangle className="h-3.5 w-3.5 text-amber-600/70" />
+            </div>
+            <p className="text-lg font-bold text-amber-700 dark:text-amber-500">{stats.lowStockParts}</p>
           </Link>
         )}
         {stats.isAdmin && (

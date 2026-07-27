@@ -1,5 +1,7 @@
 "use client";
 
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+
 import { useState, useCallback, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -150,7 +152,6 @@ export function WorkOrdersClient({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const t = useTranslations("workOrders.list");
-  const [searchInput, setSearchInput] = useState(search);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
   const [showNotifyDialog, setShowNotifyDialog] = useState(false);
@@ -193,13 +194,13 @@ export function WorkOrdersClient({
       : <ArrowDown className="ml-1 h-3 w-3" />;
   };
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      navigate({ search: searchInput || undefined });
-    },
-    [navigate, searchInput]
-  );
+  // Live search: filters as you type, no Enter required. Submitting the
+  // form (Enter) commits immediately, bypassing the debounce.
+  const {
+    value: searchInput,
+    setValue: setSearchInput,
+    commitNow: handleSearch,
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
 
   const handleStatusChange = async (workOrder: WorkOrder, newStatus: string) => {
     await updateServiceStatus(workOrder.id, newStatus);

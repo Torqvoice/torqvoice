@@ -22,7 +22,8 @@
   },
   "actions": {
     "edit": "Bearbeiten",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "history": "Verlauf"
   },
   "deletePart": {
     "title": "Teil löschen",
@@ -119,5 +120,22 @@
     "saveChanges": "Änderungen speichern",
     "addPart": "Teil hinzufügen"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Bestandsverlauf",
+    "description": "Alle erfassten Änderungen an {name}, neueste zuerst.",
+    "empty": "Noch keine Bestandsbewegungen erfasst.",
+    "when": "Datum",
+    "change": "Änderung",
+    "balance": "Bestand",
+    "usedOn": "Verwendet in",
+    "by": "Von",
+    "reasons": {
+      "service_record": "Auftrag",
+      "service_record_deleted": "Auftrag gelöscht",
+      "quote_conversion": "Angebot umgewandelt",
+      "manual_adjustment": "Manuelle Anpassung",
+      "bulk_markup": "Massenaufschlag"
+    }
+  }
 }

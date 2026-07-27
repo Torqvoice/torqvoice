@@ -2,6 +2,7 @@ import { getQuote } from '@/features/quotes/Actions/quoteActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPresetActions'
+import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { getFeatures } from '@/lib/features'
 import { PageHeader } from '@/components/page-header'
@@ -9,7 +10,7 @@ import { QuotePageClient } from '@/features/quotes/Components/QuotePageClient'
 
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [result, settingsResult, presetsResult, authContext] = await Promise.all([
+  const [result, settingsResult, presetsResult, inventoryResult, authContext] = await Promise.all([
     getQuote(id),
     getSettings([
       SETTING_KEYS.CURRENCY_CODE,
@@ -18,8 +19,11 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       SETTING_KEYS.DEFAULT_LABOR_RATE,
     ]),
     getLaborPresetsList(),
+    getInventoryPartsList(),
     getAuthContext(),
   ])
+  const inventoryParts =
+    inventoryResult.success && inventoryResult.data ? inventoryResult.data : []
 
   const orgId = authContext?.organizationId
   const features = orgId ? await getFeatures(orgId) : null
@@ -66,6 +70,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         taxEnabled={taxEnabled}
         defaultLaborRate={defaultLaborRate}
         laborPresets={laborPresets}
+        inventoryParts={inventoryParts}
         smsEnabled={features?.sms ?? false}
         emailEnabled={features?.smtp ?? false}
       />

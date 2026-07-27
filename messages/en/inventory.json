@@ -22,7 +22,8 @@
   },
   "actions": {
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "history": "History"
   },
   "deletePart": {
     "title": "Delete Part",
@@ -119,5 +120,22 @@
     "saveChanges": "Save Changes",
     "addPart": "Add Part"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Stock history",
+    "description": "Every recorded change to {name}, newest first.",
+    "empty": "No stock movements recorded yet.",
+    "when": "Date",
+    "change": "Change",
+    "balance": "Balance",
+    "usedOn": "Used on",
+    "by": "By",
+    "reasons": {
+      "service_record": "Work order",
+      "service_record_deleted": "Work order deleted",
+      "quote_conversion": "Quote converted",
+      "manual_adjustment": "Manual adjustment",
+      "bulk_markup": "Bulk markup"
+    }
+  }
 }

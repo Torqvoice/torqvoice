@@ -1,5 +1,7 @@
 "use client";
 
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+
 import { useState, useCallback, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -62,7 +64,6 @@ export function LaborPresetsClient({
   const searchParams = useSearchParams();
   const t = useTranslations("laborPresets");
   const [isPending, startTransition] = useTransition();
-  const [searchInput, setSearchInput] = useState(search);
   const [showForm, setShowForm] = useState(false);
   const [editPreset, setEditPreset] = useState<{
     id: string;
@@ -93,13 +94,13 @@ export function LaborPresetsClient({
     [router, pathname, searchParams]
   );
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      navigate({ search: searchInput || undefined });
-    },
-    [navigate, searchInput]
-  );
+  // Live search: filters as you type, no Enter required. Submitting the
+  // form (Enter) commits immediately, bypassing the debounce.
+  const {
+    value: searchInput,
+    setValue: setSearchInput,
+    commitNow: handleSearch,
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
 
   const handleSort = useCallback(
     (column: string) => {

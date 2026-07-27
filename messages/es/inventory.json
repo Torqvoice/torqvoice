@@ -22,7 +22,8 @@
   },
   "actions": {
     "edit": "Editar",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "history": "Historial"
   },
   "deletePart": {
     "title": "Eliminar pieza",
@@ -119,5 +120,22 @@
     "saveChanges": "Guardar cambios",
     "addPart": "Añadir pieza"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Historial de stock",
+    "description": "Todos los cambios registrados en {name}, más recientes primero.",
+    "empty": "Aún no hay movimientos de stock.",
+    "when": "Fecha",
+    "change": "Cambio",
+    "balance": "Saldo",
+    "usedOn": "Usado en",
+    "by": "Por",
+    "reasons": {
+      "service_record": "Orden de trabajo",
+      "service_record_deleted": "Orden eliminada",
+      "quote_conversion": "Presupuesto convertido",
+      "manual_adjustment": "Ajuste manual",
+      "bulk_markup": "Margen masivo"
+    }
+  }
 }

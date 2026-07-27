@@ -22,7 +22,8 @@
   },
   "actions": {
     "edit": "Redaguoti",
-    "delete": "Ištrinti"
+    "delete": "Ištrinti",
+    "history": "Istorija"
   },
   "deletePart": {
     "title": "Ištrinti dalį",
@@ -119,5 +120,22 @@
     "saveChanges": "Išsaugoti pakeitimus",
     "addPart": "Pridėti dalį"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Atsargų istorija",
+    "description": "Visi užfiksuoti {name} pakeitimai, naujausi viršuje.",
+    "empty": "Atsargų judėjimo dar nėra.",
+    "when": "Data",
+    "change": "Pokytis",
+    "balance": "Likutis",
+    "usedOn": "Panaudota",
+    "by": "Kas",
+    "reasons": {
+      "service_record": "Darbo užsakymas",
+      "service_record_deleted": "Užsakymas ištrintas",
+      "quote_conversion": "Pasiūlymas konvertuotas",
+      "manual_adjustment": "Rankinis koregavimas",
+      "bulk_markup": "Masinis antkainis"
+    }
+  }
 }

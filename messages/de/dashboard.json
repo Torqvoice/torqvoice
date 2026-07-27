@@ -36,7 +36,8 @@
     "activeJobs": "Aktive Aufträge",
     "pending": "Ausstehend",
     "totalParts": "Teile gesamt",
-    "totalCustomers": "Kunden gesamt"
+    "totalCustomers": "Kunden gesamt",
+    "lowStock": "Geringer Bestand"
   },
   "customize": "Anpassen",
   "viewAll": "Alle anzeigen",

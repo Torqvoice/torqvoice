@@ -36,7 +36,8 @@
     "activeJobs": "Trabajos activos",
     "pending": "Pendientes",
     "totalParts": "Total de piezas",
-    "totalCustomers": "Total de clientes"
+    "totalCustomers": "Total de clientes",
+    "lowStock": "Stock bajo"
   },
   "customize": "Personalizar",
   "viewAll": "Ver todo",

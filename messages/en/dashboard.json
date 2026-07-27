@@ -36,7 +36,8 @@
     "activeJobs": "Active Jobs",
     "pending": "Pending",
     "totalParts": "Total Parts",
-    "totalCustomers": "Total Customers"
+    "totalCustomers": "Total Customers",
+    "lowStock": "Low stock"
   },
   "customize": "Customize",
   "viewAll": "View All",

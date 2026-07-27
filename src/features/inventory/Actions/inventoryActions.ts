@@ -9,6 +9,7 @@ import { z } from "zod";
 import { unlink } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { normalizeBarcode, withBarcodeConflictMessage } from "../Lib/barcode";
 
 export async function getInventoryPartsPaginated(params: {
   page?: number;
@@ -17,6 +18,8 @@ export async function getInventoryPartsPaginated(params: {
   category?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  /** Restrict to parts at or below their reorder point. */
+  lowStock?: boolean;
 }) {
   return withAuth(async ({ userId, organizationId }) => {
     const page = params.page || 1;
@@ -41,6 +44,22 @@ export async function getInventoryPartsPaginated(params: {
 
     if (params.category && params.category !== "all") {
       where.category = params.category;
+    }
+
+    if (params.lowStock) {
+      // Prisma cannot compare two columns of the same row in a `where`, so the
+      // matching ids are resolved in SQL first. The low-stock set is small by
+      // definition (parts at or below their reorder point), so the extra query
+      // stays cheap and pagination/sorting below is unaffected.
+      const lowRows = await db.$queryRaw<{ id: string }[]>`
+        SELECT "id"
+        FROM "inventory_parts"
+        WHERE "organizationId" = ${organizationId}
+          AND "isArchived" = false
+          AND "minQuantity" > 0
+          AND "quantity" <= "minQuantity"
+      `;
+      where.id = { in: lowRows.map((r) => r.id) };
     }
 
     const dir = params.sortOrder || "desc";
@@ -83,11 +102,13 @@ export async function createInventoryPart(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const data = createInventoryPartSchema.parse(input);
     const { gallery, ...rest } = data;
-    const part = await db.inventoryPart.create({
+    const barcode = normalizeBarcode(rest.barcode);
+    const part = await withBarcodeConflictMessage(organizationId, barcode, () =>
+      db.inventoryPart.create({
       data: {
         ...rest,
         partNumber: rest.partNumber || undefined,
-        barcode: rest.barcode || undefined,
+        barcode: barcode ?? undefined,
         description: rest.description || undefined,
         category: rest.category || undefined,
         supplier: rest.supplier || undefined,
@@ -99,7 +120,8 @@ export async function createInventoryPart(input: unknown) {
         userId,
         organizationId,
       },
-    });
+      }),
+    );
 
     if (gallery && gallery.length > 0) {
       await db.storedImage.createMany({
@@ -162,12 +184,15 @@ export async function updateInventoryPart(input: unknown) {
       });
     }
 
-    const result = await db.inventoryPart.updateMany({
+    const nextBarcode =
+      updateData.barcode !== undefined ? normalizeBarcode(updateData.barcode) : undefined;
+    const result = await withBarcodeConflictMessage(organizationId, nextBarcode ?? null, () =>
+      db.inventoryPart.updateMany({
       where: { id, organizationId },
       data: {
         ...updateData,
         partNumber: updateData.partNumber !== undefined ? (updateData.partNumber || null) : undefined,
-        barcode: updateData.barcode !== undefined ? (updateData.barcode || null) : undefined,
+        barcode: nextBarcode,
         description: updateData.description !== undefined ? (updateData.description || null) : undefined,
         category: updateData.category !== undefined ? (updateData.category || null) : undefined,
         supplier: updateData.supplier !== undefined ? (updateData.supplier || null) : undefined,
@@ -176,7 +201,8 @@ export async function updateInventoryPart(input: unknown) {
         supplierUrl: updateData.supplierUrl !== undefined ? (updateData.supplierUrl || null) : undefined,
         location: updateData.location !== undefined ? (updateData.location || null) : undefined,
       },
-    });
+      }),
+    );
     if (result.count === 0) throw new Error("Part not found");
     revalidatePath("/inventory");
     return { updated: true, partId: id };

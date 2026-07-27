@@ -72,7 +72,8 @@
     "total": "Totalt",
     "subtotal": "Deler delsum: {amount}",
     "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "excludeFromTotal": "Exclude from total",
+    "addFromInventory": "Fra lager"
   },
   "labor": {
     "title": "Arbeid",

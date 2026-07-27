@@ -22,7 +22,8 @@
   },
   "actions": {
     "edit": "Bewerken",
-    "delete": "Verwijderen"
+    "delete": "Verwijderen",
+    "history": "Geschiedenis"
   },
   "deletePart": {
     "title": "Onderdeel verwijderen",
@@ -119,5 +120,22 @@
     "saveChanges": "Wijzigingen opslaan",
     "addPart": "Onderdeel toevoegen"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Voorraadgeschiedenis",
+    "description": "Alle geregistreerde wijzigingen aan {name}, nieuwste eerst.",
+    "empty": "Nog geen voorraadmutaties geregistreerd.",
+    "when": "Datum",
+    "change": "Wijziging",
+    "balance": "Saldo",
+    "usedOn": "Gebruikt bij",
+    "by": "Door",
+    "reasons": {
+      "service_record": "Werkorder",
+      "service_record_deleted": "Werkorder verwijderd",
+      "quote_conversion": "Offerte omgezet",
+      "manual_adjustment": "Handmatige aanpassing",
+      "bulk_markup": "Bulkopslag"
+    }
+  }
 }

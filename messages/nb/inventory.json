@@ -22,7 +22,8 @@
   },
   "actions": {
     "edit": "Rediger",
-    "delete": "Slett"
+    "delete": "Slett",
+    "history": "Historikk"
   },
   "deletePart": {
     "title": "Slett del",
@@ -119,5 +120,22 @@
     "saveChanges": "Lagre endringer",
     "addPart": "Legg til del"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Lagerhistorikk",
+    "description": "Alle registrerte endringer for {name}, nyeste først.",
+    "empty": "Ingen lagerbevegelser registrert ennå.",
+    "when": "Dato",
+    "change": "Endring",
+    "balance": "Saldo",
+    "usedOn": "Brukt på",
+    "by": "Av",
+    "reasons": {
+      "service_record": "Arbeidsordre",
+      "service_record_deleted": "Arbeidsordre slettet",
+      "quote_conversion": "Tilbud konvertert",
+      "manual_adjustment": "Manuell justering",
+      "bulk_markup": "Masse-påslag"
+    }
+  }
 }

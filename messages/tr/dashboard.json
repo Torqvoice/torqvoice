@@ -36,7 +36,8 @@
     "activeJobs": "Aktif İşler",
     "pending": "Beklemede",
     "totalParts": "Toplam Parça",
-    "totalCustomers": "Toplam Müşteriler"
+    "totalCustomers": "Toplam Müşteriler",
+    "lowStock": "Düşük stok"
   },
   "customize": "Özelleştir",
   "viewAll": "Tümünü Gör",

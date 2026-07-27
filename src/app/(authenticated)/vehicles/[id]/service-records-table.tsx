@@ -1,5 +1,7 @@
 "use client";
 
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import Link from "next/link";
@@ -108,7 +110,6 @@ export function ServiceRecordsTable({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [searchInput, setSearchInput] = useState(search);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const t = useTranslations("vehicles.services");
@@ -144,13 +145,13 @@ export function ServiceRecordsTable({
     [router, createUrl]
   );
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      navigate({ search: searchInput || undefined });
-    },
-    [navigate, searchInput]
-  );
+  // Live search: filters as you type, no Enter required. Submitting the
+  // form (Enter) commits immediately, bypassing the debounce.
+  const {
+    value: searchInput,
+    setValue: setSearchInput,
+    commitNow: handleSearch,
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
 
   const handlePageSizeChange = useCallback(
     (newSize: string) => {

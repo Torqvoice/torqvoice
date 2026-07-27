@@ -72,7 +72,8 @@
     "total": "Totaal",
     "subtotal": "Subtotaal onderdelen: {amount}",
     "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "excludeFromTotal": "Exclude from total",
+    "addFromInventory": "Uit voorraad"
   },
   "labor": {
     "title": "Arbeid",

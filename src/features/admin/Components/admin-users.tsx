@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useCallback, useTransition } from 'react'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+
+import { useCallback, useTransition } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -88,7 +90,6 @@ export function AdminUsers({
   const confirm = useConfirm()
   const { formatDate, formatDateTime } = useFormatDate()
   const [isPending, startTransition] = useTransition()
-  const [searchInput, setSearchInput] = useState(search)
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -110,13 +111,13 @@ export function AdminUsers({
     [router, pathname, searchParams]
   )
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault()
-      navigate({ search: searchInput || undefined })
-    },
-    [navigate, searchInput]
-  )
+  // Live search: filters as you type, no Enter required. Submitting the
+  // form (Enter) commits immediately, bypassing the debounce.
+  const {
+    value: searchInput,
+    setValue: setSearchInput,
+    commitNow: handleSearch,
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
 
   const handleSort = useCallback(
     (column: string) => {

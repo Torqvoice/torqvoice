@@ -22,7 +22,8 @@
   },
   "actions": {
     "edit": "Düzenle",
-    "delete": "Sil"
+    "delete": "Sil",
+    "history": "Geçmiş"
   },
   "deletePart": {
     "title": "Parçayı sil",
@@ -119,5 +120,22 @@
     "saveChanges": "Değişiklikleri kaydet",
     "addPart": "Parça ekle"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Stok geçmişi",
+    "description": "{name} için kaydedilen tüm değişiklikler, en yeniden.",
+    "empty": "Henüz stok hareketi kaydedilmedi.",
+    "when": "Tarih",
+    "change": "Değişim",
+    "balance": "Bakiye",
+    "usedOn": "Kullanıldığı iş",
+    "by": "Yapan",
+    "reasons": {
+      "service_record": "İş emri",
+      "service_record_deleted": "İş emri silindi",
+      "quote_conversion": "Teklif dönüştürüldü",
+      "manual_adjustment": "Manuel düzeltme",
+      "bulk_markup": "Toplu kâr marjı"
+    }
+  }
 }

@@ -72,7 +72,8 @@
     "total": "Toplam",
     "subtotal": "Parçalar Ara Toplam: {amount}",
     "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "excludeFromTotal": "Exclude from total",
+    "addFromInventory": "Stoktan"
   },
   "labor": {
     "title": "İşçilik",

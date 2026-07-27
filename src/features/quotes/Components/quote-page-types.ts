@@ -40,7 +40,7 @@ export interface QuoteRecord {
   inspectionId: string | null;
   createdAt: Date;
   updatedAt: Date;
-  partItems: { id: string; partNumber: string | null; name: string; quantity: number; unitPrice: number; total: number; excluded?: boolean }[];
+  partItems: { id: string; partNumber: string | null; name: string; quantity: number; unitPrice: number; total: number; excluded?: boolean; inventoryPartId?: string | null }[];
   laborItems: { id: string; description: string; hours: number; rate: number; total: number; pricingType?: string; excluded?: boolean }[];
   customer: { id: string; name: string; email: string | null; phone: string | null; address: string | null; company: string | null } | null;
   vehicle: { id: string; make: string; model: string; year: number; vin: string | null; licensePlate: string | null; mileage: number } | null;
@@ -63,6 +63,8 @@ export const emptyPart = (): QuotePartInput => ({
   unitPrice: 0,
   total: 0,
   excluded: false,
+  // Free-text line by default; set when picked from stock.
+  inventoryPartId: null,
 });
 
 export const makeEmptyLabor = (defaultRate: number): QuoteLaborInput => ({

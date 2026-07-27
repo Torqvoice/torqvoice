@@ -22,7 +22,8 @@
   },
   "actions": {
     "edit": "Modifica",
-    "delete": "Elimina"
+    "delete": "Elimina",
+    "history": "Storico"
   },
   "deletePart": {
     "title": "Elimina ricambio",
@@ -119,5 +120,22 @@
     "saveChanges": "Salva modifiche",
     "addPart": "Aggiungi ricambio"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Storico magazzino",
+    "description": "Tutte le modifiche registrate a {name}, dalla più recente.",
+    "empty": "Nessun movimento di magazzino registrato.",
+    "when": "Data",
+    "change": "Variazione",
+    "balance": "Saldo",
+    "usedOn": "Usato in",
+    "by": "Da",
+    "reasons": {
+      "service_record": "Ordine di lavoro",
+      "service_record_deleted": "Ordine eliminato",
+      "quote_conversion": "Preventivo convertito",
+      "manual_adjustment": "Rettifica manuale",
+      "bulk_markup": "Ricarico massivo"
+    }
+  }
 }

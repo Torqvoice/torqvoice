@@ -34,6 +34,7 @@ import { useQuoteFormState } from './useQuoteFormState'
 import { useSaveShortcut } from '@/hooks/use-save-shortcut'
 import { LaborPresetPickerDialog, type LaborPresetOption } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import { QuotePartsEditor } from './QuotePartsEditor'
+import type { InventoryPartOption } from '@/features/vehicles/Components/service-edit/form-types'
 import { QuoteLaborEditor } from './QuoteLaborEditor'
 import { QuoteNotesEditor } from './QuoteNotesEditor'
 import { QuoteRightColumn } from './QuoteRightColumn'
@@ -61,6 +62,7 @@ export function QuotePageClient({
   taxEnabled = true,
   defaultLaborRate = 0,
   laborPresets = [],
+  inventoryParts = [],
   smsEnabled = false,
   emailEnabled = false,
   imageAttachments = [],
@@ -75,6 +77,7 @@ export function QuotePageClient({
   taxEnabled?: boolean
   defaultLaborRate?: number
   laborPresets?: LaborPresetOption[]
+  inventoryParts?: InventoryPartOption[]
   smsEnabled?: boolean
   emailEnabled?: boolean
   imageAttachments?: QuoteAttachment[]
@@ -122,6 +125,7 @@ export function QuotePageClient({
           unitPrice: part.unitPrice,
           total: part.quantity * part.unitPrice,
           excluded: false,
+          inventoryPartId: part.inventoryPartId ?? null,
         }))
         state.addPartBulk(newParts)
       }
@@ -163,6 +167,8 @@ export function QuotePageClient({
         onUpdate={state.updatePart}
         onDelete={state.deletePart}
         onAdd={state.addPart}
+        onAddBulk={state.addPartBulk}
+        inventoryParts={inventoryParts}
         t={t}
       />
       <QuoteLaborEditor

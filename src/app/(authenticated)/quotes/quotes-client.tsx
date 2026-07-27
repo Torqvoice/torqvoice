@@ -1,5 +1,7 @@
 'use client'
 
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+
 import { useState, useCallback, useTransition, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -87,7 +89,6 @@ export function QuotesClient({
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
-  const [searchInput, setSearchInput] = useState(search)
   const t = useTranslations('quotes')
 
   // New quote dialog state
@@ -125,13 +126,13 @@ export function QuotesClient({
     [router, pathname, searchParams]
   )
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault()
-      navigate({ search: searchInput || undefined })
-    },
-    [navigate, searchInput]
-  )
+  // Live search: filters as you type, no Enter required. Submitting the
+  // form (Enter) commits immediately, bypassing the debounce.
+  const {
+    value: searchInput,
+    setValue: setSearchInput,
+    commitNow: handleSearch,
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
 
   const openNewDialog = () => {
     setNewTitle('')

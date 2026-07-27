@@ -12,6 +12,7 @@ export async function getDashboardStats() {
       activeJobs,
       pendingJobs,
       totalParts,
+      lowStockRows,
       totalCustomers,
       todaysServices,
       recentServices,
@@ -25,6 +26,16 @@ export async function getDashboardStats() {
       db.inventoryPart.count({
         where: { organizationId, isArchived: false },
       }),
+      // Parts at or below their reorder point. Needs raw SQL because Prisma
+      // cannot compare two columns of the same row in a `where` clause.
+      db.$queryRaw<{ count: bigint }[]>`
+        SELECT COUNT(*) AS count
+        FROM "inventory_parts"
+        WHERE "organizationId" = ${organizationId}
+          AND "isArchived" = false
+          AND "minQuantity" > 0
+          AND "quantity" <= "minQuantity"
+      `,
       db.customer.count({ where: { organizationId } }),
       db.serviceRecord.findMany({
         where: {
@@ -73,6 +84,7 @@ export async function getDashboardStats() {
       activeJobs,
       pendingJobs,
       totalParts,
+      lowStockParts: Number(lowStockRows[0]?.count ?? 0),
       totalCustomers,
       todaysServices,
       recentServices,

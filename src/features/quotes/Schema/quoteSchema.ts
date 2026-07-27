@@ -7,6 +7,11 @@ export const quotePartSchema = z.object({
   unitPrice: z.coerce.number().min(0).default(0),
   total: z.coerce.number().min(0).default(0),
   excluded: z.boolean().optional().default(false),
+  /**
+   * Set when the line was picked from stock. Carried through to ServicePart on
+   * conversion so the resulting job deducts this exact inventory item.
+   */
+  inventoryPartId: z.string().nullish(),
 });
 
 export const quoteLaborSchema = z.object({

@@ -22,7 +22,8 @@
   },
   "actions": {
     "edit": "Modifier",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+    "history": "Historique"
   },
   "deletePart": {
     "title": "Supprimer la pièce",
@@ -119,5 +120,22 @@
     "saveChanges": "Enregistrer les modifications",
     "addPart": "Ajouter une pièce"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Historique du stock",
+    "description": "Toutes les modifications enregistrées de {name}, les plus récentes d'abord.",
+    "empty": "Aucun mouvement de stock enregistré.",
+    "when": "Date",
+    "change": "Variation",
+    "balance": "Solde",
+    "usedOn": "Utilisé sur",
+    "by": "Par",
+    "reasons": {
+      "service_record": "Ordre de travail",
+      "service_record_deleted": "Ordre supprimé",
+      "quote_conversion": "Devis converti",
+      "manual_adjustment": "Ajustement manuel",
+      "bulk_markup": "Marge en masse"
+    }
+  }
 }

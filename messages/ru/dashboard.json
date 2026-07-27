@@ -36,7 +36,8 @@
     "activeJobs": "Активные работы",
     "pending": "Ожидающие",
     "totalParts": "Всего запчастей",
-    "totalCustomers": "Всего клиентов"
+    "totalCustomers": "Всего клиентов",
+    "lowStock": "Мало на складе"
   },
   "customize": "Настроить",
   "viewAll": "Показать все",
