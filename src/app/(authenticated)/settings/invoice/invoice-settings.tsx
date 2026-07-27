@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
@@ -87,6 +88,12 @@ export function InvoiceSettings({
   )
   const [dueDays, setDueDays] = useState(settings[SETTING_KEYS.INVOICE_DUE_DAYS] || '14')
   const [footerNote, setFooterNote] = useState(settings[SETTING_KEYS.INVOICE_FOOTER_NOTE] || '')
+  const [defaultMarkupPercent, setDefaultMarkupPercent] = useState(
+    settings[SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT] || '0'
+  )
+  const [markupAppliesToInventory, setMarkupAppliesToInventory] = useState(
+    settings[SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY] === 'true'
+  )
 
   // Sections to hide from layout editor when features are disabled
   const hiddenLayoutSections = useMemo(() => {
@@ -121,6 +128,8 @@ export function InvoiceSettings({
       [SETTING_KEYS.INVOICE_START_NUMBER]: invoiceStartNumber,
       [SETTING_KEYS.INVOICE_DUE_DAYS]: dueDays,
       [SETTING_KEYS.INVOICE_FOOTER_NOTE]: footerNote,
+      [SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]: defaultMarkupPercent,
+      [SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY]: markupAppliesToInventory ? 'true' : 'false',
     })
     setSaving(false)
     router.refresh()
@@ -270,6 +279,53 @@ export function InvoiceSettings({
                   onChange={(e) => setFooterNote(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">{t('invoice.footerHint')}</p>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-sm font-semibold">{t('invoice.partsMarkupTitle')}</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {t('invoice.partsMarkupDescription')}
+                  </p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="defaultMarkupPercent">
+                      {t('invoice.defaultMarkupPercent')}
+                    </Label>
+                    <Input
+                      id="defaultMarkupPercent"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      placeholder="0"
+                      value={defaultMarkupPercent}
+                      onChange={(e) => setDefaultMarkupPercent(e.target.value)}
+                      className="w-32"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {t('invoice.defaultMarkupPercentHint')}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="markupAppliesToInventory"
+                      className="flex items-center justify-between gap-3"
+                    >
+                      <span>{t('invoice.markupAppliesToInventory')}</span>
+                      <Switch
+                        id="markupAppliesToInventory"
+                        checked={markupAppliesToInventory}
+                        onCheckedChange={setMarkupAppliesToInventory}
+                      />
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      {t('invoice.markupAppliesToInventoryHint')}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <SaveButton>

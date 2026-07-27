@@ -72,13 +72,14 @@ export interface ServiceRecordFormProps {
   currentUserName?: string
 }
 
-export const emptyPart = (): ServicePartInput => ({
+export const emptyPart = (defaultMarkupPercent: number = 0): ServicePartInput => ({
   partNumber: '',
   name: '',
   quantity: 1,
   unitPrice: 0,
   total: 0,
   unitCost: 0,
+  markupPercent: defaultMarkupPercent,
 })
 
 export const makeEmptyLabor = (defaultRate: number): ServiceLaborInput => ({

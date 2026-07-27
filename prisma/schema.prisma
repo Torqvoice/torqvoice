@@ -392,6 +392,7 @@ model ServicePart {
   unitPrice       Float   @default(0)
   total           Float   @default(0)
   unitCost        Float   @default(0)
+  markupPercent   Float   @default(0)
   inventoryPartId String?
 
   serviceRecordId String

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -48,6 +48,18 @@ export function InvoiceDetailsSection({
   const [invoiceDueDate, setInvoiceDueDate] = useState<Date | undefined>(
     initialData.invoiceDueDate ? new Date(initialData.invoiceDueDate + 'T00:00:00') : undefined
   )
+
+  useEffect(() => {
+    setInvoiceDate(
+      initialData.invoiceDate ? new Date(initialData.invoiceDate + 'T00:00:00') : undefined
+    )
+  }, [initialData.invoiceDate])
+
+  useEffect(() => {
+    setInvoiceDueDate(
+      initialData.invoiceDueDate ? new Date(initialData.invoiceDueDate + 'T00:00:00') : undefined
+    )
+  }, [initialData.invoiceDueDate])
 
   const formatDate = (date: Date | undefined) => {
     if (!date) return ''

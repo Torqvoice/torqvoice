@@ -40,6 +40,7 @@ import type { PlanFeatures } from "@/lib/features";
 
 type Props = {
   plan: string;
+  isDemo: boolean;
   status: string | null;
   cancelAtPeriodEnd: boolean;
   currentPeriodEnd: string | null;
@@ -53,6 +54,7 @@ type Props = {
 
 export function SubscriptionSettings({
   plan,
+  isDemo,
   status,
   cancelAtPeriodEnd,
   currentPeriodEnd,
@@ -81,6 +83,17 @@ export function SubscriptionSettings({
   const isPaid = plan === "pro" || plan === "enterprise";
   const isCanceling = cancelAtPeriodEnd && status === "active";
   const isPastDue = status === "past_due";
+
+  // Whole days left until a demo expires (0 once past the expiry date).
+  const demoDaysRemaining =
+    isDemo && currentPeriodEnd
+      ? Math.max(
+          0,
+          Math.ceil(
+            (new Date(currentPeriodEnd).getTime() - Date.now()) / 86_400_000,
+          ),
+        )
+      : null;
 
   const handleCheckout = async (selectedPlan: "pro" | "enterprise") => {
     setCheckoutLoading(selectedPlan);
@@ -271,16 +284,31 @@ export function SubscriptionSettings({
           <div className="flex items-center gap-3">
             <Label>{t("subscription.currentPlan")}:</Label>
             {planBadge}
-            {statusBadge}
+            {isDemo ? (
+              <Badge variant="outline" className="border-amber-500 text-amber-600">
+                {t("subscription.demoBadge")}
+              </Badge>
+            ) : (
+              statusBadge
+            )}
           </div>
 
-          {isPaid && planPrice > 0 && (
+          {isDemo && currentPeriodEnd && (
+            <div className="text-sm text-amber-600">
+              {t("subscription.demoExpiresIn", {
+                days: demoDaysRemaining ?? 0,
+                date: formatDate(currentPeriodEnd),
+              })}
+            </div>
+          )}
+
+          {isPaid && !isDemo && planPrice > 0 && (
             <div className="text-sm text-muted-foreground">
               ${planPrice}/{intervalLabel}
             </div>
           )}
 
-          {isPaid && currentPeriodStart && currentPeriodEnd && (
+          {isPaid && !isDemo && currentPeriodStart && currentPeriodEnd && (
             <div className="flex flex-col gap-1 text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">{t("subscription.billingPeriod")}:</span>
@@ -353,8 +381,8 @@ export function SubscriptionSettings({
         </CardContent>
       </Card>
 
-      {/* Card 3: Manage Subscription */}
-      {isPaid && (
+      {/* Card 3: Manage Subscription — demos have no Stripe billing to manage */}
+      {isPaid && !isDemo && (
         <Card>
           <CardHeader>
             <CardTitle>{t("subscription.manageTitle")}</CardTitle>
@@ -420,8 +448,8 @@ export function SubscriptionSettings({
         </Card>
       )}
 
-      {/* Upgrade Section */}
-      {plan === "free" && (
+      {/* Upgrade Section — free users and demo users subscribe via Stripe Checkout */}
+      {(plan === "free" || isDemo) && (
         <Card>
           <CardHeader>
             <CardTitle>{t("subscription.upgradeTitle")}</CardTitle>
@@ -460,7 +488,7 @@ export function SubscriptionSettings({
         </Card>
       )}
 
-      {plan === "pro" && (
+      {plan === "pro" && !isDemo && (
         <Card>
           <CardHeader>
             <CardTitle>{t("subscription.upgradeTitle")}</CardTitle>

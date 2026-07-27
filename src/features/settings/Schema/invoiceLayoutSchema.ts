@@ -64,7 +64,6 @@ export const BUILTIN_SECTIONS = [
   { id: "totals", name: "Totals" },
   { id: "notes", name: "Notes" },
   { id: "warranty", name: "Warranty" },
-  { id: "diagnostic_notes", name: "Diagnostic Notes" },
   { id: "bank_account", name: "Bank Account" },
   { id: "footer", name: "Footer" },
   { id: "telegram_qr", name: "Telegram QR" },
@@ -139,7 +138,6 @@ export const COLUMN_ELIGIBLE_SECTIONS = new Set<string>([
   "service",
   "general",
   "notes",
-  "diagnostic_notes",
   "bank_account",
 ]);
 

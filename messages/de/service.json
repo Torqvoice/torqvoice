@@ -11,6 +11,9 @@
     "datesExpiredDescription": "Das Rechnungsdatum oder Fälligkeitsdatum ist überschritten. Möchten Sie die Daten vor dem Fortfahren aktualisieren?",
     "datesExpiredUpdate": "Daten aktualisieren und fortfahren",
     "datesExpiredProceed": "Ohne Änderungen fortfahren",
+    "datesExpiredUseToday": "Auf heutiges Datum aktualisieren",
+    "datesExpiredCustomize": "Daten manuell auswählen",
+    "datesExpiredBack": "Zurück",
     "datesExpiredSetToday": "Auf heute setzen",
     "customFieldsInvalid": "Bitte füllen Sie alle erforderlichen benutzerdefinierten Felder aus",
     "customFieldsSaveFailed": "Benutzerdefinierte Felder konnten nicht gespeichert werden"
@@ -84,6 +87,12 @@
     "partNumber": "Teil #",
     "name": "Name",
     "qty": "Menge",
+    "unitCost": "Kosten",
+    "unitCostHint": "Einkaufspreis (intern — wird dem Kunden nicht angezeigt)",
+    "markupPercent": "Aufschlag %",
+    "markupPercentHint": "Aufschlag auf den Einkaufspreis (intern — wird dem Kunden nicht angezeigt)",
+    "applyMarkup": "{percent}% anwenden",
+    "applyMarkupHint": "{percent}% Aufschlag auf den Einkaufspreis in allen Zeilen erneut anwenden",
     "unitPrice": "Stückpreis",
     "total": "Gesamt",
     "namePlaceholder": "Name *",
@@ -96,7 +105,9 @@
     "scanTitle": "Barcode scannen",
     "partFound": "\"{name}\" aus dem Lager hinzugefügt",
     "partNotFound": "Kein Teil für Barcode \"{barcode}\" gefunden",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Nicht auf Lager",
+    "onBackorder": "Im Rückstand ({count})"
   },
   "labor": {
     "title": "Arbeit",

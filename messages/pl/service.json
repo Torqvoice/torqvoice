@@ -11,6 +11,9 @@
     "datesExpiredDescription": "Data faktury lub termin płatności już minął. Czy chcesz zaktualizować daty przed kontynuowaniem?",
     "datesExpiredUpdate": "Zaktualizuj daty i kontynuuj",
     "datesExpiredProceed": "Kontynuuj bez zmian",
+    "datesExpiredUseToday": "Zaktualizuj do dzisiejszej daty",
+    "datesExpiredCustomize": "Wybierz daty ręcznie",
+    "datesExpiredBack": "Wstecz",
     "datesExpiredSetToday": "Ustaw na dziś",
     "customFieldsInvalid": "Proszę wypełnić wszystkie wymagane pola niestandardowe",
     "customFieldsSaveFailed": "Nie udało się zapisać pól niestandardowych"
@@ -84,6 +87,12 @@
     "partNumber": "Nr Części",
     "name": "Nazwa",
     "qty": "Ilość",
+    "unitCost": "Koszt",
+    "unitCostHint": "Cena zakupu (wewnętrzne — nie pokazywane klientowi)",
+    "markupPercent": "Marża %",
+    "markupPercentHint": "Marża doliczana do kosztu (wewnętrzne — nie pokazywane klientowi)",
+    "applyMarkup": "Zastosuj {percent}%",
+    "applyMarkupHint": "Zastosuj ponownie marżę {percent}% do kosztu w każdym wierszu",
     "unitPrice": "Cena Jednostkowa",
     "total": "Razem",
     "namePlaceholder": "Nazwa *",
@@ -96,7 +105,9 @@
     "scanTitle": "Skanuj kod kreskowy",
     "partFound": "Dodano \"{name}\" z magazynu",
     "partNotFound": "Nie znaleziono części dla kodu kreskowego \"{barcode}\"",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Brak w magazynie",
+    "onBackorder": "W zamówieniu ({count})"
   },
   "labor": {
     "title": "Praca",

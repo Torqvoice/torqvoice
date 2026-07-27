@@ -119,5 +119,29 @@
   },
   "common": {
     "openMenu": "Open menu"
+  },
+  "userDetails": {
+    "back": "Kullanıcılara dön",
+    "never": "Hiçbir zaman",
+    "lastLogin": "Son giriş",
+    "organizations": "Organizasyonlar",
+    "noOrganizations": "Hiçbir organizasyonun üyesi değil",
+    "role": "Rol"
+  },
+  "orgDetails": {
+    "back": "Geri",
+    "vehicles": "Araçlar",
+    "workOrders": "İş emirleri",
+    "customers": "Müşteriler",
+    "quotes": "Teklifler",
+    "inspections": "Muayeneler",
+    "inventoryParts": "Stok parçaları",
+    "members": "Üyeler",
+    "owner": "Sahibi",
+    "noOwner": "Sahibi yok",
+    "subscription": "Abonelik",
+    "noSubscription": "Etkin abonelik yok",
+    "renews": "Yenileniyor",
+    "cancelsAt": "Sona eriyor"
   }
 }

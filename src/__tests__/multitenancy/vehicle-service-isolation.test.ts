@@ -38,6 +38,9 @@ vi.mock("@/lib/db", () => ({
       findFirst: vi.fn(),
       delete: vi.fn(),
     },
+    servicePart: { findMany: vi.fn() },
+    inventoryPart: { updateMany: vi.fn() },
+    $transaction: vi.fn(),
   },
 }));
 
@@ -91,6 +94,11 @@ const ORG_A_VEHICLE = {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  // deleteServiceRecord restocks inventory inside a transaction; run the
+  // callback against the mock db and default to a record with no parts.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  vi.mocked(db.$transaction).mockImplementation(async (cb: any) => cb(db));
+  vi.mocked(db.servicePart.findMany).mockResolvedValue([] as any);
 });
 
 // ---------------------------------------------------------------------------

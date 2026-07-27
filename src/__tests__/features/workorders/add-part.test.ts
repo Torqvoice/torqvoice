@@ -16,15 +16,19 @@ vi.mock("@/lib/cached-session", () => ({
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
-vi.mock("@/lib/db", () => ({
-  db: {
+vi.mock("@/lib/db", () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db: any = {
     user: { findUnique: vi.fn() },
     serviceRecord: { findFirst: vi.fn(), update: vi.fn() },
     servicePart: { create: vi.fn(), aggregate: vi.fn() },
     serviceLabor: { aggregate: vi.fn() },
-    inventoryPart: { update: vi.fn() },
-  },
-}));
+    inventoryPart: { update: vi.fn(), updateMany: vi.fn() },
+  };
+  // Run the transaction callback against the same mock db (tx === db).
+  db.$transaction = vi.fn(async (cb: any) => cb(db));
+  return { db };
+});
 
 import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
 import { db } from "@/lib/db";
@@ -51,6 +55,10 @@ function setupAuth() {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  // resetAllMocks clears implementations, so restore the transaction runner
+  // (invoke the callback with the mock db as the transaction client).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  vi.mocked(db.$transaction).mockImplementation(async (cb: any) => cb(db));
 });
 
 describe("addPartToServiceRecord — totals recalculation", () => {

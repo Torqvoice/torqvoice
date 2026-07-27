@@ -59,6 +59,30 @@
     "deleteUser": "Delete User",
     "emailVerified": "Email verified"
   },
+  "userDetails": {
+    "back": "Back to users",
+    "never": "Never",
+    "lastLogin": "Last login",
+    "organizations": "Organizations",
+    "noOrganizations": "Not a member of any organization",
+    "role": "Role"
+  },
+  "orgDetails": {
+    "back": "Back",
+    "vehicles": "Vehicles",
+    "workOrders": "Work Orders",
+    "customers": "Customers",
+    "quotes": "Quotes",
+    "inspections": "Inspections",
+    "inventoryParts": "Inventory Parts",
+    "members": "Members",
+    "owner": "Owner",
+    "noOwner": "No owner",
+    "subscription": "Subscription",
+    "noSubscription": "No active subscription",
+    "renews": "Renews",
+    "cancelsAt": "Cancels at"
+  },
   "organizations": {
     "searchPlaceholder": "Search by organization name...",
     "name": "Name",

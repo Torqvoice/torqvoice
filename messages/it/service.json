@@ -11,6 +11,9 @@
     "datesExpiredDescription": "La data della fattura o la data di scadenza è passata. Vuoi aggiornare le date prima di procedere?",
     "datesExpiredUpdate": "Aggiorna le date e procedi",
     "datesExpiredProceed": "Procedi senza modifiche",
+    "datesExpiredUseToday": "Aggiorna alla data di oggi",
+    "datesExpiredCustomize": "Scegli le date manualmente",
+    "datesExpiredBack": "Indietro",
     "datesExpiredSetToday": "Imposta a oggi",
     "customFieldsInvalid": "Compila tutti i campi personalizzati obbligatori",
     "customFieldsSaveFailed": "Impossibile salvare i campi personalizzati"
@@ -84,6 +87,12 @@
     "partNumber": "Numero Pezzo",
     "name": "Nome",
     "qty": "Qty",
+    "unitCost": "Costo",
+    "unitCostHint": "Costo fornitore (interno — non mostrato al cliente)",
+    "markupPercent": "Ricarico %",
+    "markupPercentHint": "Ricarico applicato al costo (interno — non mostrato al cliente)",
+    "applyMarkup": "Applica {percent}%",
+    "applyMarkupHint": "Riapplicare il ricarico del {percent}% al costo su ogni riga",
     "unitPrice": "Prezzo Unitario",
     "total": "Totale",
     "namePlaceholder": "Nome *",
@@ -96,7 +105,9 @@
     "scanTitle": "Scansiona codice a barre",
     "partFound": "\"{name}\" aggiunto dall'inventario",
     "partNotFound": "Nessun pezzo trovato per il codice a barre \"{barcode}\"",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Esaurito",
+    "onBackorder": "In arretrato ({count})"
   },
   "labor": {
     "title": "Manodopera",

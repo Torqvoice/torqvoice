@@ -119,5 +119,29 @@
   },
   "common": {
     "openMenu": "Open menu"
+  },
+  "userDetails": {
+    "back": "Zurück zu Benutzern",
+    "never": "Nie",
+    "lastLogin": "Letzte Anmeldung",
+    "organizations": "Organisationen",
+    "noOrganizations": "Kein Mitglied einer Organisation",
+    "role": "Rolle"
+  },
+  "orgDetails": {
+    "back": "Zurück",
+    "vehicles": "Fahrzeuge",
+    "workOrders": "Arbeitsaufträge",
+    "customers": "Kunden",
+    "quotes": "Angebote",
+    "inspections": "Inspektionen",
+    "inventoryParts": "Lagerteile",
+    "members": "Mitglieder",
+    "owner": "Inhaber",
+    "noOwner": "Kein Inhaber",
+    "subscription": "Abonnement",
+    "noSubscription": "Kein aktives Abonnement",
+    "renews": "Verlängert sich",
+    "cancelsAt": "Endet am"
   }
 }

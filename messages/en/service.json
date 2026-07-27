@@ -11,6 +11,9 @@
     "datesExpiredDescription": "The invoice date or due date has passed. Would you like to update them before proceeding?",
     "datesExpiredUpdate": "Update dates and proceed",
     "datesExpiredProceed": "Proceed without changes",
+    "datesExpiredUseToday": "Update to today's date",
+    "datesExpiredCustomize": "Choose dates manually",
+    "datesExpiredBack": "Back",
     "datesExpiredSetToday": "Set to today",
     "customFieldsInvalid": "Please fill in all required custom fields",
     "customFieldsSaveFailed": "Failed to save custom fields"
@@ -84,6 +87,12 @@
     "partNumber": "Part #",
     "name": "Name",
     "qty": "Qty",
+    "unitCost": "Cost",
+    "unitCostHint": "Vendor cost (internal — not shown to customer)",
+    "markupPercent": "Markup %",
+    "markupPercentHint": "Markup applied to cost (internal — not shown to customer)",
+    "applyMarkup": "Apply {percent}%",
+    "applyMarkupHint": "Re-apply {percent}% markup to cost on every row",
     "unitPrice": "Unit Price",
     "total": "Total",
     "namePlaceholder": "Name *",
@@ -96,7 +105,9 @@
     "scanTitle": "Scan Barcode",
     "partFound": "Added \"{name}\" from inventory",
     "partNotFound": "No part found for barcode \"{barcode}\"",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Out of stock",
+    "onBackorder": "On backorder ({count})"
   },
   "labor": {
     "title": "Labor & Services",

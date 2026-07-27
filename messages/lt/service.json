@@ -11,6 +11,9 @@
     "datesExpiredDescription": "Sąskaitos data arba mokėjimo terminas pasibaigė. Ar norite jas atnaujinti prieš tęsiant?",
     "datesExpiredUpdate": "Atnaujinti datas ir tęsti",
     "datesExpiredProceed": "Tęsti be pakeitimų",
+    "datesExpiredUseToday": "Atnaujinti į šiandienos datą",
+    "datesExpiredCustomize": "Pasirinkti datas rankiniu būdu",
+    "datesExpiredBack": "Atgal",
     "datesExpiredSetToday": "Nustatyti šiandienos datą",
     "customFieldsInvalid": "Užpildykite visus privalomus pasirinktinius laukus",
     "customFieldsSaveFailed": "Nepavyko išsaugoti pasirinktinių laukų"
@@ -84,6 +87,12 @@
     "partNumber": "Dalies Nr.",
     "name": "Pavadinimas",
     "qty": "Kiekis",
+    "unitCost": "Savikaina",
+    "unitCostHint": "Tiekėjo kaina (vidinė — nematoma klientui)",
+    "markupPercent": "Antkainis %",
+    "markupPercentHint": "Antkainis pridėtas prie savikainos (vidinis — nematomas klientui)",
+    "applyMarkup": "Taikyti {percent}%",
+    "applyMarkupHint": "Iš naujo taikyti {percent}% antkainį savikainai kiekvienoje eilutėje",
     "unitPrice": "Vnt. kaina",
     "total": "Suma",
     "namePlaceholder": "Pavadinimas *",
@@ -96,7 +105,9 @@
     "scanTitle": "Nuskaityti brūkšninį kodą",
     "partFound": "Pridėta \"{name}\" iš inventoriaus",
     "partNotFound": "Dalis brūkšniniam kodui \"{barcode}\" nerasta",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Nėra sandėlyje",
+    "onBackorder": "Užsakoma ({count})"
   },
   "labor": {
     "title": "Darbai ir paslaugos",

@@ -22,8 +22,8 @@
     "total": "Total",
     "labor": "Main-d'œuvre",
     "hours": "Heures",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "h",
+    "unit": "unité",
     "rate": "Taux",
     "ratePerHour": "{rate}/h",
     "subtotal": "Sous-total",
@@ -36,7 +36,7 @@
     "paidInFull": "ENTIÈREMENT PAYÉ",
     "amountDue": "Montant dû",
     "notes": "Notes",
-    "bankAccount": "Til Konto / Compte bancaire",
+    "bankAccount": "Compte bancaire",
     "paymentInformation": "Informations de paiement",
     "orgNumberLabel": "N° d'org.",
     "paymentTermsLabel": "Conditions de paiement",
@@ -64,7 +64,7 @@
     "professionalWorkshop": "Gestion professionnelle d'atelier",
     "tel": "Tél. : {phone}",
     "org": "Org. : {org}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unité / Heures"
   },
   "quote": {
     "title": "DEVIS",
@@ -82,8 +82,8 @@
     "total": "Total",
     "labor": "Main-d'œuvre",
     "hours": "Heures",
-    "hrs": "hrs",
-    "unit": "unit",
+    "hrs": "h",
+    "unit": "unité",
     "rate": "Taux",
     "ratePerHour": "{rate}/h",
     "subtotal": "Sous-total",
@@ -100,7 +100,7 @@
     "validityFooter30": "Ce devis est valable 30 jours",
     "viewPortal": "Consultez votre portail : {url}",
     "tel": "Tél. : {phone}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unité / Heures"
   },
   "inspection": {
     "title": "INSPECTION DU VÉHICULE",
@@ -127,7 +127,7 @@
   },
   "serviceHistory": {
     "serviceHistoryTitle": "HISTORIQUE D'ENTRETIEN",
-    "totalServices": "Total Services",
+    "totalServices": "Total des services",
     "totalPartsUsed": "Pièces Utilisées",
     "totalLaborItems": "Éléments Main-d'œuvre",
     "grandTotal": "Total Général",

@@ -119,5 +119,29 @@
   },
   "common": {
     "openMenu": "Open menu"
+  },
+  "userDetails": {
+    "back": "Tilbake til brukere",
+    "never": "Aldri",
+    "lastLogin": "Sist innlogget",
+    "organizations": "Organisasjoner",
+    "noOrganizations": "Ikke medlem av noen organisasjon",
+    "role": "Rolle"
+  },
+  "orgDetails": {
+    "back": "Tilbake",
+    "vehicles": "Kjøretøy",
+    "workOrders": "Arbeidsordrer",
+    "customers": "Kunder",
+    "quotes": "Tilbud",
+    "inspections": "Inspeksjoner",
+    "inventoryParts": "Lagerdeler",
+    "members": "Medlemmer",
+    "owner": "Eier",
+    "noOwner": "Ingen eier",
+    "subscription": "Abonnement",
+    "noSubscription": "Ingen aktivt abonnement",
+    "renews": "Fornyes",
+    "cancelsAt": "Avsluttes"
   }
 }

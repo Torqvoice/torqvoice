@@ -11,6 +11,9 @@
     "datesExpiredDescription": "La fecha de la factura o la fecha de vencimiento ha pasado. ¿Desea actualizarlas antes de continuar?",
     "datesExpiredUpdate": "Actualizar fechas y continuar",
     "datesExpiredProceed": "Continuar sin cambios",
+    "datesExpiredUseToday": "Actualizar a la fecha de hoy",
+    "datesExpiredCustomize": "Elegir fechas manualmente",
+    "datesExpiredBack": "Atrás",
     "datesExpiredSetToday": "Establecer a hoy",
     "customFieldsInvalid": "Por favor complete todos los campos personalizados obligatorios",
     "customFieldsSaveFailed": "Error al guardar los campos personalizados"
@@ -84,6 +87,12 @@
     "partNumber": "N° de Pieza",
     "name": "Nombre",
     "qty": "Cantidad",
+    "unitCost": "Costo",
+    "unitCostHint": "Costo del proveedor (interno — no se muestra al cliente)",
+    "markupPercent": "Margen %",
+    "markupPercentHint": "Margen aplicado al costo (interno — no se muestra al cliente)",
+    "applyMarkup": "Aplicar {percent}%",
+    "applyMarkupHint": "Volver a aplicar {percent}% de margen al costo en cada fila",
     "unitPrice": "Precio Unitario",
     "total": "Total",
     "namePlaceholder": "Nombre *",
@@ -96,7 +105,9 @@
     "scanTitle": "Escanear código de barras",
     "partFound": "\"{name}\" añadido del inventario",
     "partNotFound": "No se encontró pieza para el código de barras \"{barcode}\"",
-    "deleteRow": "Delete row"
+    "deleteRow": "Delete row",
+    "outOfStock": "Agotado",
+    "onBackorder": "En pedido pendiente ({count})"
   },
   "labor": {
     "title": "Mano de Obra",

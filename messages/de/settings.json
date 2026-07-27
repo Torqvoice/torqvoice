@@ -390,6 +390,12 @@
     "customFooter": "Benutzerdefinierte Rechnungsfusszeile",
     "footerPlaceholder": "Vielen Dank fur Ihren Auftrag!",
     "footerHint": "Dieser Text erscheint am Ende jeder Rechnung",
+    "partsMarkupTitle": "Teile-Aufschlag",
+    "partsMarkupDescription": "Aufschlag auf den Einkaufspreis beim Hinzufügen von Teilen. Nur intern — der Kunde sieht weder Kosten noch Aufschlag, nur den Endpreis.",
+    "defaultMarkupPercent": "Standard-Aufschlag %",
+    "defaultMarkupPercentHint": "Neue manuell hinzugefügte Teile werden mit diesem Aufschlag vorausgefüllt. Auf 0 lassen, um Preise manuell einzugeben.",
+    "markupAppliesToInventory": "Aufschlag auf Lagerteile anwenden",
+    "markupAppliesToInventoryHint": "Wenn aktiviert, verwenden aus dem Lager gewählte Teile ebenfalls Einkaufspreis + Standard-Aufschlag (überschreibt den Verkaufspreis des Lagers).",
     "saveInvoice": "Rechnungseinstellungen speichern",
     "saved": "Rechnungseinstellungen gespeichert",
     "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
@@ -1126,7 +1132,9 @@
     "upgradeCalculating": "Anteiligen Betrag berechnen…",
     "upgradeAmountDue": "Jetzt fälliger Betrag",
     "upgradeSuccess": "Erfolgreich auf Enterprise upgegradet!",
-    "upgradeError": "Abonnement konnte nicht upgegradet werden"
+    "upgradeError": "Abonnement konnte nicht upgegradet werden",
+    "demoBadge": "Demo",
+    "demoExpiresIn": "Läuft in {days, plural, =0 {weniger als einem Tag} one {# Tag} other {# Tagen}} ab ({date})"
   },
   "ai": {
     "title": "KI-Assistent",

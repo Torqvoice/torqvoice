@@ -119,5 +119,29 @@
   },
   "common": {
     "openMenu": "Open menu"
+  },
+  "userDetails": {
+    "back": "Terug naar gebruikers",
+    "never": "Nooit",
+    "lastLogin": "Laatste aanmelding",
+    "organizations": "Organisaties",
+    "noOrganizations": "Geen lid van een organisatie",
+    "role": "Rol"
+  },
+  "orgDetails": {
+    "back": "Terug",
+    "vehicles": "Voertuigen",
+    "workOrders": "Werkorders",
+    "customers": "Klanten",
+    "quotes": "Offertes",
+    "inspections": "Inspecties",
+    "inventoryParts": "Voorraadonderdelen",
+    "members": "Leden",
+    "owner": "Eigenaar",
+    "noOwner": "Geen eigenaar",
+    "subscription": "Abonnement",
+    "noSubscription": "Geen actief abonnement",
+    "renews": "Verlengt",
+    "cancelsAt": "Eindigt op"
   }
 }

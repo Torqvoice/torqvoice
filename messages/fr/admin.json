@@ -119,5 +119,29 @@
   },
   "common": {
     "openMenu": "Open menu"
+  },
+  "userDetails": {
+    "back": "Retour aux utilisateurs",
+    "never": "Jamais",
+    "lastLogin": "Dernière connexion",
+    "organizations": "Organisations",
+    "noOrganizations": "Membre d'aucune organisation",
+    "role": "Rôle"
+  },
+  "orgDetails": {
+    "back": "Retour",
+    "vehicles": "Véhicules",
+    "workOrders": "Ordres de travail",
+    "customers": "Clients",
+    "quotes": "Devis",
+    "inspections": "Inspections",
+    "inventoryParts": "Pièces en stock",
+    "members": "Membres",
+    "owner": "Propriétaire",
+    "noOwner": "Aucun propriétaire",
+    "subscription": "Abonnement",
+    "noSubscription": "Aucun abonnement actif",
+    "renews": "Renouvellement",
+    "cancelsAt": "Se termine le"
   }
 }

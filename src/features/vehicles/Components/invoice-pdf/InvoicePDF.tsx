@@ -7,7 +7,7 @@ import { Header } from './Header'
 import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable, FindingsPdfSection } from './Tables'
 import { Totals } from './Totals'
-import { NotesOnly, BankAccountSection, DiagnosticNotesSection } from './Notes'
+import { NotesOnly, BankAccountSection } from './Notes'
 import { WarrantySection } from './Warranty'
 import { CustomFields } from './CustomFields'
 import { Footer, AttachmentsFooter } from './Footer'
@@ -273,15 +273,6 @@ export function InvoicePDF({
         labels={labels}
         dateFormat={invoiceSettings?.dateFormat}
         timezone={invoiceSettings?.timezone}
-      />
-    ),
-
-    diagnostic_notes: (
-      <DiagnosticNotesSection
-        diagnosticNotes={data.diagnosticNotes}
-        fontFamily={fontFamily}
-        styles={styles}
-        labels={labels}
       />
     ),
 

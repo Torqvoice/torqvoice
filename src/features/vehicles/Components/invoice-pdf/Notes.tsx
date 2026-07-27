@@ -12,17 +12,6 @@ function fillTemplate(template: string, values: Record<string, string>): string 
   )
 }
 
-interface NotesProps {
-  invoiceNotes: string | null
-  diagnosticNotes: string | null
-  invoiceSettings?: InvoiceSettingsProps
-  otherAttachments: OtherAttachment[]
-  pdfAttachmentNames: string[]
-  fontFamily: string
-  styles: Record<string, Style>
-  labels: Record<string, string>
-}
-
 // Simple HTML token types
 type Token =
   | { type: 'open'; tag: string }
@@ -336,64 +325,3 @@ export function BankAccountSection({
   )
 }
 
-export function DiagnosticNotesSection({
-  diagnosticNotes,
-  fontFamily,
-  styles,
-  labels,
-}: {
-  diagnosticNotes: string | null
-  fontFamily: string
-  styles: Record<string, Style>
-  labels: Record<string, string>
-}) {
-  const fontBold = getFontBold(fontFamily)
-  if (!hasContent(diagnosticNotes)) return null
-  return (
-    <View wrap={false} style={{ ...styles.notesSection, marginTop: 8 }}>
-      <Text style={styles.notesLabel}>{labels.diagnosticNotes || 'Diagnostic Notes'}</Text>
-      <HtmlToPdf html={diagnosticNotes!} baseStyle={styles.notesText} fontBold={fontBold} />
-    </View>
-  )
-}
-
-
-// ---------------------------------------------------------------------------
-// Composite Notes component – kept for backward compatibility
-// ---------------------------------------------------------------------------
-
-export function Notes({
-  invoiceNotes,
-  diagnosticNotes,
-  invoiceSettings,
-  otherAttachments,
-  pdfAttachmentNames,
-  fontFamily,
-  styles,
-  labels,
-}: NotesProps) {
-  return (
-    <>
-      <NotesOnly
-        invoiceNotes={invoiceNotes}
-        otherAttachments={otherAttachments}
-        pdfAttachmentNames={pdfAttachmentNames}
-        fontFamily={fontFamily}
-        styles={styles}
-        labels={labels}
-      />
-      <BankAccountSection
-        invoiceSettings={invoiceSettings}
-        fontFamily={fontFamily}
-        styles={styles}
-        labels={labels}
-      />
-      <DiagnosticNotesSection
-        diagnosticNotes={diagnosticNotes}
-        fontFamily={fontFamily}
-        styles={styles}
-        labels={labels}
-      />
-    </>
-  )
-}

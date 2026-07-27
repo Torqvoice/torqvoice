@@ -139,7 +139,7 @@ function isFieldVisible(config: InvoiceLayoutConfig | undefined, sectionId: stri
 }
 
 function getSectionOrder(config: InvoiceLayoutConfig | undefined): string[] {
-  if (!config) return ['header', 'customer', 'vehicle', 'service', 'parts_table', 'labor_table', 'findings', 'totals', 'general', 'notes', 'diagnostic_notes', 'bank_account', 'footer']
+  if (!config) return ['header', 'customer', 'vehicle', 'service', 'parts_table', 'labor_table', 'findings', 'totals', 'general', 'notes', 'bank_account', 'footer']
   return [...config.sections].sort((a, b) => a.order - b.order).map(s => s.id)
 }
 
@@ -1017,18 +1017,6 @@ export function InvoiceView({
                   <div
                     className="notes-content text-sm text-gray-600 dark:text-gray-400"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.invoiceNotes!) }}
-                  />
-                </div>
-              )
-
-            case 'diagnostic_notes':
-              if (!hasContent(record.diagnosticNotes)) return null
-              return (
-                <div key="diagnostic_notes" className="mt-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-                  <p className="mb-1 text-xs font-bold uppercase" style={{ color: primaryColor }}>{t('diagnosticNotes')}</p>
-                  <div
-                    className="notes-content text-sm text-gray-600 dark:text-gray-400"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(record.diagnosticNotes!) }}
                   />
                 </div>
               )

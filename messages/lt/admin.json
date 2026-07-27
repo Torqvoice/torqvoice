@@ -119,5 +119,29 @@
   },
   "common": {
     "openMenu": "Open menu"
+  },
+  "userDetails": {
+    "back": "Atgal į vartotojus",
+    "never": "Niekada",
+    "lastLogin": "Paskutinis prisijungimas",
+    "organizations": "Organizacijos",
+    "noOrganizations": "Nepriklauso jokiai organizacijai",
+    "role": "Rolė"
+  },
+  "orgDetails": {
+    "back": "Atgal",
+    "vehicles": "Transporto priemonės",
+    "workOrders": "Darbo užsakymai",
+    "customers": "Klientai",
+    "quotes": "Pasiūlymai",
+    "inspections": "Patikrinimai",
+    "inventoryParts": "Atsargų dalys",
+    "members": "Nariai",
+    "owner": "Savininkas",
+    "noOwner": "Nėra savininko",
+    "subscription": "Prenumerata",
+    "noSubscription": "Nėra aktyvios prenumeratos",
+    "renews": "Atsinaujina",
+    "cancelsAt": "Baigiasi"
   }
 }

@@ -119,5 +119,29 @@
   },
   "common": {
     "openMenu": "Open menu"
+  },
+  "userDetails": {
+    "back": "Назад к пользователям",
+    "never": "Никогда",
+    "lastLogin": "Последний вход",
+    "organizations": "Организации",
+    "noOrganizations": "Не состоит ни в одной организации",
+    "role": "Роль"
+  },
+  "orgDetails": {
+    "back": "Назад",
+    "vehicles": "Транспортные средства",
+    "workOrders": "Рабочие заказы",
+    "customers": "Клиенты",
+    "quotes": "Предложения",
+    "inspections": "Осмотры",
+    "inventoryParts": "Складские детали",
+    "members": "Участники",
+    "owner": "Владелец",
+    "noOwner": "Нет владельца",
+    "subscription": "Подписка",
+    "noSubscription": "Нет активной подписки",
+    "renews": "Продлевается",
+    "cancelsAt": "Заканчивается"
   }
 }

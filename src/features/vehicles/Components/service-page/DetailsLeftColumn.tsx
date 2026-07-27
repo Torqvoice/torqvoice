@@ -16,6 +16,8 @@ interface DetailsLeftColumnProps {
   currencyCode: string
   defaultLaborRate: number
   inventoryParts: InventoryPartOption[]
+  defaultMarkupPercent?: number
+  markupAppliesToInventory?: boolean
   hasPresets?: boolean
   onOpenPresets?: () => void
   onScanBarcode?: () => void
@@ -35,6 +37,8 @@ export function DetailsLeftColumn({
   currencyCode,
   defaultLaborRate,
   inventoryParts,
+  defaultMarkupPercent = 0,
+  markupAppliesToInventory = false,
   hasPresets,
   onOpenPresets,
   onScanBarcode,
@@ -57,6 +61,8 @@ export function DetailsLeftColumn({
         hasInventory={inventoryParts.length > 0}
         onOpenInventory={() => formState.setShowInventoryPicker(true)}
         onScanBarcode={onScanBarcode}
+        defaultMarkupPercent={defaultMarkupPercent}
+        markupAppliesToInventory={markupAppliesToInventory}
       />
       <LaborEditor
         laborItems={formState.laborItems}

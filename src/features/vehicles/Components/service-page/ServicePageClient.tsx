@@ -77,6 +77,8 @@ export function ServicePageClient({
   telegramEnabled = false,
   aiEnabled = false,
   defaultDueDays = 0,
+  defaultMarkupPercent = 0,
+  markupAppliesToInventory = false,
   statusReports = [],
   initialTab,
   findings = [],
@@ -111,6 +113,7 @@ export function ServicePageClient({
   const [pendingInvoiceDate, setPendingInvoiceDate] = useState<Date>(today)
   const [pendingDueDate, setPendingDueDate] = useState<Date>(suggestedDueDate)
   const [updatingDates, setUpdatingDates] = useState(false)
+  const [customizingDates, setCustomizingDates] = useState(false)
 
   const formatDate = (date: Date) =>
     date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
@@ -159,7 +162,13 @@ export function ServicePageClient({
       const result = await lookupPartByBarcode(barcode)
       if (result.success && result.data) {
         const part = result.data
-        const price = part.sellPrice > 0 ? part.sellPrice : part.unitCost
+        // Same rule as the inventory picker — opt-in markup applies to inventory parts too.
+        const useGlobalMarkup = markupAppliesToInventory && defaultMarkupPercent > 0
+        const price = useGlobalMarkup
+          ? Math.round(part.unitCost * (1 + defaultMarkupPercent / 100) * 100) / 100
+          : part.sellPrice > 0
+            ? part.sellPrice
+            : part.unitCost
         formState.dirtySetPartItems((prev) => [
           {
             partNumber: part.partNumber || '',
@@ -168,6 +177,7 @@ export function ServicePageClient({
             unitPrice: price,
             total: price,
             unitCost: part.unitCost,
+            markupPercent: useGlobalMarkup ? defaultMarkupPercent : 0,
             inventoryPartId: part.id,
           },
           ...prev,
@@ -177,7 +187,7 @@ export function ServicePageClient({
         toast.error(t('parts.partNotFound', { barcode }))
       }
     },
-    [formState, t]
+    [formState, t, defaultMarkupPercent, markupAppliesToInventory]
   )
 
   useHardwareScanner({ onScan: handleBarcodeScan, enabled: activeTab === 'details' })
@@ -260,6 +270,7 @@ export function ServicePageClient({
         unitPrice: part.unitPrice,
         total: part.quantity * part.unitPrice,
         unitCost: 0,
+        markupPercent: 0,
         inventoryPartId: part.inventoryPartId || '',
       }))
       formState.dirtySetPartItems((prev) => [...newParts, ...prev])
@@ -335,6 +346,8 @@ export function ServicePageClient({
                   currencyCode={currencyCode}
                   defaultLaborRate={defaultLaborRate}
                   inventoryParts={inventoryParts}
+                  defaultMarkupPercent={defaultMarkupPercent}
+                  markupAppliesToInventory={markupAppliesToInventory}
                   hasPresets={laborPresets.length > 0}
                   onOpenPresets={() => formState.setShowPresetPicker(true)}
                   onScanBarcode={() => formState.setShowBarcodeScanner(true)}
@@ -437,6 +450,8 @@ export function ServicePageClient({
         inventoryParts={inventoryParts}
         currencyCode={currencyCode}
         onSelectPart={(part) => formState.dirtySetPartItems((prev) => [part, ...prev])}
+        defaultMarkupPercent={defaultMarkupPercent}
+        markupAppliesToInventory={markupAppliesToInventory}
       />
 
       <LaborPresetPickerDialog
@@ -515,6 +530,7 @@ export function ServicePageClient({
           if (!open) {
             dateCheckResolveRef.current?.(false)
             dateCheckResolveRef.current = null
+            setCustomizingDates(false)
           }
           setShowDateCheck(open)
         }}
@@ -528,105 +544,141 @@ export function ServicePageClient({
             <DialogDescription>{t('page.datesExpiredDescription')}</DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3">
-            <Button
-              variant="secondary"
-              size="sm"
-              className="w-full"
-              onClick={() => {
-                const now = new Date(new Date().toISOString().split('T')[0])
-                setPendingInvoiceDate(now)
-                setPendingDueDate(
-                  defaultDueDays > 0
-                    ? new Date(now.getTime() + defaultDueDays * 86400000)
-                    : new Date(now.getTime() + 14 * 86400000)
-                )
-              }}
-            >
-              {t('page.datesExpiredSetToday')}
-            </Button>
-
-            <div className="space-y-1">
-              <Label className="text-xs">{t('basicInfo.invoiceDate')}</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal h-9 text-sm"
-                  >
-                    <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                    <span suppressHydrationWarning>{formatDate(pendingInvoiceDate)}</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={pendingInvoiceDate}
-                    onSelect={(d) => d && setPendingInvoiceDate(d)}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="space-y-1">
-              <Label className="text-xs">{t('basicInfo.invoiceDueDate')}</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal h-9 text-sm"
-                  >
-                    <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                    <span suppressHydrationWarning>{formatDate(pendingDueDate)}</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={pendingDueDate}
-                    onSelect={(d) => d && setPendingDueDate(d)}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2 pt-2">
-            <Button
-              disabled={updatingDates}
-              onClick={async () => {
-                if (updatingDates) return
-                setUpdatingDates(true)
-                try {
-                  await updateServiceRecord({
-                    id: record.id,
-                    invoiceDate: toISODate(pendingInvoiceDate),
-                    invoiceDueDate: toISODate(pendingDueDate),
-                  })
+          {!customizingDates ? (
+            <div className="flex flex-col gap-2 pt-2">
+              <Button
+                disabled={updatingDates}
+                onClick={async () => {
+                  if (updatingDates) return
+                  const now = new Date(new Date().toISOString().split('T')[0])
+                  const due =
+                    defaultDueDays > 0
+                      ? new Date(now.getTime() + defaultDueDays * 86400000)
+                      : new Date(now.getTime() + 14 * 86400000)
+                  setPendingInvoiceDate(now)
+                  setPendingDueDate(due)
+                  setUpdatingDates(true)
+                  try {
+                    await updateServiceRecord({
+                      id: record.id,
+                      invoiceDate: toISODate(now),
+                      invoiceDueDate: toISODate(due),
+                    })
+                    setShowDateCheck(false)
+                    dateCheckResolveRef.current?.(true)
+                    dateCheckResolveRef.current = null
+                    router.refresh()
+                  } finally {
+                    setUpdatingDates(false)
+                  }
+                }}
+              >
+                {updatingDates && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t('page.datesExpiredUseToday')}
+              </Button>
+              <Button
+                variant="outline"
+                disabled={updatingDates}
+                onClick={() => {
                   setShowDateCheck(false)
                   dateCheckResolveRef.current?.(true)
                   dateCheckResolveRef.current = null
-                  router.refresh()
-                } finally {
-                  setUpdatingDates(false)
-                }
-              }}
-            >
-              {updatingDates && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('page.datesExpiredUpdate')}
-            </Button>
-            <Button
-              variant="outline"
-              disabled={updatingDates}
-              onClick={() => {
-                setShowDateCheck(false)
-                dateCheckResolveRef.current?.(true)
-                dateCheckResolveRef.current = null
-              }}
-            >
-              {t('page.datesExpiredProceed')}
-            </Button>
-          </div>
+                }}
+              >
+                {t('page.datesExpiredProceed')}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={updatingDates}
+                onClick={() => setCustomizingDates(true)}
+              >
+                {t('page.datesExpiredCustomize')}
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">{t('basicInfo.invoiceDate')}</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal h-9 text-sm"
+                      >
+                        <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                        <span suppressHydrationWarning>{formatDate(pendingInvoiceDate)}</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={pendingInvoiceDate}
+                        onSelect={(d) => d && setPendingInvoiceDate(d)}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">{t('basicInfo.invoiceDueDate')}</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal h-9 text-sm"
+                      >
+                        <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                        <span suppressHydrationWarning>{formatDate(pendingDueDate)}</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={pendingDueDate}
+                        onSelect={(d) => d && setPendingDueDate(d)}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 pt-2">
+                <Button
+                  disabled={updatingDates}
+                  onClick={async () => {
+                    if (updatingDates) return
+                    setUpdatingDates(true)
+                    try {
+                      await updateServiceRecord({
+                        id: record.id,
+                        invoiceDate: toISODate(pendingInvoiceDate),
+                        invoiceDueDate: toISODate(pendingDueDate),
+                      })
+                      setShowDateCheck(false)
+                      setCustomizingDates(false)
+                      dateCheckResolveRef.current?.(true)
+                      dateCheckResolveRef.current = null
+                      router.refresh()
+                    } finally {
+                      setUpdatingDates(false)
+                    }
+                  }}
+                >
+                  {updatingDates && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {t('page.datesExpiredUpdate')}
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={updatingDates}
+                  onClick={() => setCustomizingDates(false)}
+                >
+                  {t('page.datesExpiredBack')}
+                </Button>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>

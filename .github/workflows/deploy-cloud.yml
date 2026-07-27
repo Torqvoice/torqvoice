@@ -73,6 +73,18 @@ jobs:
           mkdir -p "$DATA_DIR"
           docker run --rm -v "$DATA_DIR":/data alpine chown -R 1001:1001 /data
 
+      - name: Check free disk space
+        run: |
+          MIN_GB=5
+          DOCKER_ROOT=$(docker info --format '{{.DockerRootDir}}' 2>/dev/null || echo /var/lib/docker)
+          AVAIL_KB=$(df -Pk "$DOCKER_ROOT" | awk 'NR==2 {print $4}')
+          AVAIL_GB=$(awk "BEGIN {printf \"%.1f\", $AVAIL_KB/1024/1024}")
+          echo "Free space on $DOCKER_ROOT: ${AVAIL_GB} GB (minimum ${MIN_GB} GB)"
+          if [ "$AVAIL_KB" -lt $((MIN_GB * 1024 * 1024)) ]; then
+            echo "::error::Not enough disk space to pull image: ${AVAIL_GB} GB free, need ${MIN_GB} GB. Aborting deploy."
+            exit 1
+          fi
+
       - name: Deploy
         run: |
           cd $HOME/torqvoice-deploy/prod
