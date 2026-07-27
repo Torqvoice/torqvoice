@@ -116,7 +116,7 @@ export function formatLowStockLine(
 ): string {
   const ref = part.partNumber ? ` (${part.partNumber})` : "";
   const threshold = effectiveThreshold(part, defaultThreshold);
-  return `${part.name}${ref} — ${part.quantity} left, reorder at ${threshold}`;
+  return `${part.name}${ref}: ${part.quantity} left, reorder at ${threshold}`;
 }
 
 /**

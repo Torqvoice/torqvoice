@@ -107,7 +107,7 @@ async function sendDigest(
           `<p>The following parts at <strong>${org?.name ?? "your workshop"}</strong> ` +
           `have reached their reorder point:</p><ul>${rows}</ul>` +
           `<p>You are receiving this because low-stock alerts are enabled in ` +
-          `Settings. Each part is reported once — you will not be reminded ` +
+          `Settings. Each part is reported once. You will not be reminded ` +
           `again until it is restocked and drops low a second time.</p>`,
       });
       sent++;

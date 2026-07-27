@@ -81,7 +81,7 @@ describe("effectiveThreshold — org-wide default", () => {
 
   it("quotes the threshold actually applied in the digest line", () => {
     expect(formatLowStockLine(part({ quantity: 1, minQuantity: 0 }), 3)).toBe(
-      "Brake pad (BP-1) — 1 left, reorder at 3",
+      "Brake pad (BP-1): 1 left, reorder at 3",
     );
   });
 });
@@ -169,13 +169,13 @@ describe("canSendDigestEmail — throttle", () => {
 describe("digest formatting", () => {
   it("states the shortfall and the reorder point", () => {
     expect(formatLowStockLine(part({ quantity: 2, minQuantity: 5 }))).toBe(
-      "Brake pad (BP-1) — 2 left, reorder at 5",
+      "Brake pad (BP-1): 2 left, reorder at 5",
     );
   });
 
   it("omits an absent part number", () => {
     expect(formatLowStockLine(part({ partNumber: null, quantity: 0 }))).toBe(
-      "Brake pad — 0 left, reorder at 5",
+      "Brake pad: 0 left, reorder at 5",
     );
   });
 
