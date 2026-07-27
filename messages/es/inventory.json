@@ -18,7 +18,10 @@
   },
   "empty": {
     "noMatch": "Ninguna pieza coincide con su búsqueda.",
-    "noParts": "Aún no hay piezas en el inventario."
+    "noParts": "Aún no hay piezas en el inventario.",
+    "noLowStock": "Ahora mismo nada está por debajo de su punto de pedido.",
+    "noReorderPoints": "No hay puntos de pedido definidos, así que ninguna pieza puede considerarse baja.",
+    "configureReorderPoints": "Definir un punto de pedido predeterminado"
   },
   "actions": {
     "edit": "Editar",

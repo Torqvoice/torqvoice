@@ -1349,7 +1349,7 @@
     "description": "Kies over welke gebeurtenissen u bericht wilt, en hoe.",
     "lowStock": {
       "title": "Meldingen lage voorraad",
-      "description": "Waarschuw wanneer een onderdeel het bestelpunt bereikt. Elk onderdeel wordt één keer per daling gemeld en blijft stil tot het is aangevuld.",
+      "description": "Waarschuwt wanneer een onderdeel zijn bestelpunt bereikt. Een onderdeel is laag als de voorraad daalt tot of onder het \"Min. aantal\", of de standaardwaarde hieronder als het er geen heeft. Elk onderdeel wordt één keer per daling gemeld en blijft stil tot het is aangevuld.",
       "enable": "Meldingen lage voorraad inschakelen",
       "enableHint": "Standaard uit. Alleen onderdelen met een bestelpunt worden gevolgd.",
       "inApp": "Melding in de app",
@@ -1361,12 +1361,14 @@
       "save": "Meldingen opslaan",
       "saved": "Meldingen lage voorraad opgeslagen",
       "defaultThreshold": "Standaard bestelpunt",
-      "defaultThresholdHint": "Geldt voor onderdelen zonder eigen bestelpunt. 0 betekent dat alleen individueel ingestelde onderdelen worden gevolgd.",
+      "defaultThresholdHint": "Alleen gebruikt voor onderdelen zonder eigen bestelpunt. De \"Min. aantal\" van een onderdeel — ingesteld bij het bewerken — gaat altijd voor. Laat op 0 om alleen individueel ingestelde onderdelen te volgen.",
       "checkNow": "Nu controleren",
       "checkDisabled": "Meldingen staan uit.",
       "checkNothingNew": "Niets nieuws — alle lage onderdelen zijn al gemeld.",
       "checkAlerted": "{count} nieuw laag onderdeel/onderdelen gemeld",
-      "checkFailed": "Controle mislukt"
+      "checkFailed": "Controle mislukt",
+      "configurePerPart": "Stel het min. aantal van een onderdeel in op de voorraadpagina →",
+      "readMore": "Lees meer"
     }
   }
 }

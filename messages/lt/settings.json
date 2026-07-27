@@ -1349,7 +1349,7 @@
     "description": "Pasirinkite, apie kuriuos įvykius ir kaip norite gauti pranešimus.",
     "lowStock": {
       "title": "Mažų atsargų įspėjimai",
-      "description": "Įspėti, kai dalis pasiekia užsakymo ribą. Kiekviena dalis pranešama vieną kartą per kritimą ir tyli, kol bus papildyta.",
+      "description": "Įspėja, kai dalis pasiekia užsakymo ribą. Dalis laikoma mažėjančia, kai kiekis nukrenta iki arba žemiau \"Min. kiekis\", arba žemiau numatytosios ribos, jei jos nėra. Kiekviena dalis pranešama vieną kartą per kritimą ir tyli, kol bus papildyta.",
       "enable": "Įjungti mažų atsargų įspėjimus",
       "enableHint": "Pagal nutylėjimą išjungta. Stebimos tik dalys su nustatyta užsakymo riba.",
       "inApp": "Pranešimas programoje",
@@ -1361,12 +1361,14 @@
       "save": "Išsaugoti įspėjimus",
       "saved": "Mažų atsargų įspėjimai išsaugoti",
       "defaultThreshold": "Numatytoji užsakymo riba",
-      "defaultThresholdHint": "Taikoma dalims, neturinčioms savo ribos. 0 reiškia, kad stebimos tik atskirai sukonfigūruotos dalys.",
+      "defaultThresholdHint": "Naudojama tik dalims, neturinčioms savo užsakymo ribos. Pačios dalies \"Min. kiekis\" — nustatomas redaguojant dalį — visada svarbesnis. Palikite 0, kad būtų stebimos tik atskirai sukonfigūruotos dalys.",
       "checkNow": "Tikrinti dabar",
       "checkDisabled": "Įspėjimai išjungti.",
       "checkNothingNew": "Nieko naujo — visos mažos atsargos jau praneštos.",
       "checkAlerted": "Pranešta apie {count} naujai sumažėjusią (-ias) dalį (-is)",
-      "checkFailed": "Patikra nepavyko"
+      "checkFailed": "Patikra nepavyko",
+      "configurePerPart": "Nustatykite dalies min. kiekį sandėlio puslapyje →",
+      "readMore": "Skaityti daugiau"
     }
   }
 }

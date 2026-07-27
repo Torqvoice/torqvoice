@@ -18,7 +18,10 @@
   },
   "empty": {
     "noMatch": "Nessun ricambio corrisponde alla ricerca.",
-    "noParts": "Nessun ricambio in inventario."
+    "noParts": "Nessun ricambio in inventario.",
+    "noLowStock": "Al momento nulla è sotto il punto di riordino.",
+    "noReorderPoints": "Non è impostato alcun punto di riordino, quindi nessun ricambio può risultare basso.",
+    "configureReorderPoints": "Imposta un punto di riordino predefinito"
   },
   "actions": {
     "edit": "Modifica",

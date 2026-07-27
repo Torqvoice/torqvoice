@@ -18,7 +18,10 @@
   },
   "empty": {
     "noMatch": "Geen onderdelen gevonden voor uw zoekopdracht.",
-    "noParts": "Nog geen onderdelen in de voorraad."
+    "noParts": "Nog geen onderdelen in de voorraad.",
+    "noLowStock": "Er staat op dit moment niets onder het bestelpunt.",
+    "noReorderPoints": "Er zijn geen bestelpunten ingesteld, dus geen onderdeel kan als laag gelden.",
+    "configureReorderPoints": "Standaard bestelpunt instellen"
   },
   "actions": {
     "edit": "Bewerken",

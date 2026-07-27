@@ -18,7 +18,10 @@
   },
   "empty": {
     "noMatch": "Żadne części nie pasują do wyszukiwania.",
-    "noParts": "Brak części w magazynie."
+    "noParts": "Brak części w magazynie.",
+    "noLowStock": "Nic nie jest obecnie poniżej progu zamawiania.",
+    "noReorderPoints": "Nie ustawiono progów zamawiania, więc żadna część nie może być uznana za niską.",
+    "configureReorderPoints": "Ustaw domyślny próg zamawiania"
   },
   "actions": {
     "edit": "Edytuj",

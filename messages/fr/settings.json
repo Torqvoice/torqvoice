@@ -1349,7 +1349,7 @@
     "description": "Choisissez les événements dont vous voulez être averti, et comment.",
     "lowStock": {
       "title": "Alertes de stock bas",
-      "description": "Alerter quand une pièce atteint son seuil de réapprovisionnement. Chaque pièce est signalée une fois par baisse et reste silencieuse jusqu'au réassort.",
+      "description": "Alerte quand une pièce atteint son seuil de réapprovisionnement. Une pièce est basse lorsque sa quantité descend à ou sous sa \"Qté min\", ou sous la valeur par défaut ci-dessous si elle n'en a pas. Chaque pièce est signalée une fois par baisse et reste silencieuse jusqu'au réassort.",
       "enable": "Activer les alertes de stock bas",
       "enableHint": "Désactivé par défaut. Seules les pièces avec un seuil défini sont surveillées.",
       "inApp": "Notification dans l'app",
@@ -1361,12 +1361,14 @@
       "save": "Enregistrer les alertes",
       "saved": "Alertes de stock bas enregistrées",
       "defaultThreshold": "Seuil de réapprovisionnement par défaut",
-      "defaultThresholdHint": "S'applique aux pièces sans seuil propre. 0 signifie que seules les pièces configurées individuellement sont surveillées.",
+      "defaultThresholdHint": "Utilisé uniquement pour les pièces sans seuil propre. La \"Qté min\" d'une pièce — définie lors de sa modification — est toujours prioritaire. Laissez 0 pour ne surveiller que les pièces configurées individuellement.",
       "checkNow": "Vérifier maintenant",
       "checkDisabled": "Les alertes sont désactivées.",
       "checkNothingNew": "Rien de nouveau — toutes les pièces basses ont déjà été signalées.",
       "checkAlerted": "{count} pièce(s) nouvellement basse(s) signalée(s)",
-      "checkFailed": "Échec de la vérification"
+      "checkFailed": "Échec de la vérification",
+      "configurePerPart": "Définir la Qté min d'une pièce sur la page inventaire →",
+      "readMore": "En savoir plus"
     }
   }
 }

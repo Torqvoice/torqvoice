@@ -1349,7 +1349,7 @@
     "description": "Scegli di quali eventi vuoi essere avvisato e come.",
     "lowStock": {
       "title": "Avvisi scorte basse",
-      "description": "Avvisa quando un ricambio raggiunge il punto di riordino. Ogni ricambio viene segnalato una volta per calo e resta silenzioso fino al riassortimento.",
+      "description": "Avvisa quando un ricambio raggiunge il punto di riordino. Un ricambio è basso quando la quantità scende a o sotto la sua \"Qtà min\", o il valore predefinito se non ne ha. Ogni ricambio viene segnalato una volta per calo e resta silenzioso fino al riassortimento.",
       "enable": "Attiva avvisi scorte basse",
       "enableHint": "Disattivo di default. Vengono monitorati solo i ricambi con punto di riordino.",
       "inApp": "Notifica in app",
@@ -1361,12 +1361,14 @@
       "save": "Salva avvisi",
       "saved": "Avvisi scorte basse salvati",
       "defaultThreshold": "Punto di riordino predefinito",
-      "defaultThresholdHint": "Si applica ai ricambi senza un punto di riordino proprio. 0 significa che vengono monitorati solo i ricambi configurati singolarmente.",
+      "defaultThresholdHint": "Usato solo per i ricambi senza un punto di riordino proprio. La \"Qtà min\" del ricambio — impostata modificandolo — ha sempre la precedenza. Lascia 0 per monitorare solo i ricambi configurati singolarmente.",
       "checkNow": "Controlla ora",
       "checkDisabled": "Gli avvisi sono disattivati.",
       "checkNothingNew": "Niente di nuovo: tutti i ricambi bassi sono già stati segnalati.",
       "checkAlerted": "{count} ricambio/i appena sotto soglia segnalato/i",
-      "checkFailed": "Controllo non riuscito"
+      "checkFailed": "Controllo non riuscito",
+      "configurePerPart": "Imposta la Qtà min di un ricambio nella pagina magazzino →",
+      "readMore": "Scopri di più"
     }
   }
 }

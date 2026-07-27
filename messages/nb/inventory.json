@@ -18,7 +18,10 @@
   },
   "empty": {
     "noMatch": "Ingen deler samsvarer med søket ditt.",
-    "noParts": "Ingen deler i lageret ennå."
+    "noParts": "Ingen deler i lageret ennå.",
+    "noLowStock": "Ingenting er under bestillingspunktet akkurat nå.",
+    "noReorderPoints": "Ingen bestillingspunkter er satt, så ingen deler kan regnes som lave.",
+    "configureReorderPoints": "Sett et standard bestillingspunkt"
   },
   "actions": {
     "edit": "Rediger",

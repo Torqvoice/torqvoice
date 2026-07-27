@@ -1349,7 +1349,7 @@
     "description": "Choose which events you want to be told about, and how.",
     "lowStock": {
       "title": "Low stock alerts",
-      "description": "Alert when a part reaches its reorder point. Each part is reported once per dip and stays quiet until it is restocked, so nothing repeats.",
+      "description": "Alerts when a part reaches its reorder point. A part is low when its quantity drops to or below its \"Min Qty\", or the default below if it has none. Each part is reported once per dip and stays quiet until it is restocked.",
       "enable": "Enable low stock alerts",
       "enableHint": "Off by default. Only parts with a reorder point set are watched.",
       "inApp": "In-app notification",
@@ -1361,12 +1361,14 @@
       "save": "Save alert settings",
       "saved": "Low stock alert settings saved",
       "defaultThreshold": "Default reorder point",
-      "defaultThresholdHint": "Applied to parts that have no reorder point of their own. 0 means only parts you configure individually are watched.",
+      "defaultThresholdHint": "Used only for parts that have no reorder point of their own. A part's own \"Min Qty\" — set when you edit that part — always overrides this. Leave at 0 to watch only the parts you have configured individually.",
       "checkNow": "Check now",
       "checkDisabled": "Alerts are turned off.",
       "checkNothingNew": "Nothing new — every low part has already been reported.",
       "checkAlerted": "{count} newly low part(s) reported",
-      "checkFailed": "Check failed"
+      "checkFailed": "Check failed",
+      "configurePerPart": "Set a part's own Min Qty on the inventory page →",
+      "readMore": "Read More"
     }
   }
 }

@@ -18,7 +18,10 @@
   },
   "empty": {
     "noMatch": "Keine Teile entsprechen Ihrer Suche.",
-    "noParts": "Noch keine Teile im Lager."
+    "noParts": "Noch keine Teile im Lager.",
+    "noLowStock": "Derzeit liegt nichts unter dem Meldebestand.",
+    "noReorderPoints": "Es sind keine Meldebestände gesetzt, daher kann kein Teil als knapp gelten.",
+    "configureReorderPoints": "Standard-Meldebestand festlegen"
   },
   "actions": {
     "edit": "Bearbeiten",

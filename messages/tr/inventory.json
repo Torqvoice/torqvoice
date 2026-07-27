@@ -18,7 +18,10 @@
   },
   "empty": {
     "noMatch": "Aramanızla eşleşen parça bulunamadı.",
-    "noParts": "Envanterde henüz parça yok."
+    "noParts": "Envanterde henüz parça yok.",
+    "noLowStock": "Şu anda hiçbir şey sipariş noktasının altında değil.",
+    "noReorderPoints": "Sipariş noktası tanımlanmadığı için hiçbir parça düşük sayılamaz.",
+    "configureReorderPoints": "Varsayılan sipariş noktası ayarla"
   },
   "actions": {
     "edit": "Düzenle",

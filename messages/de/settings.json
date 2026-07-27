@@ -1349,7 +1349,7 @@
     "description": "Wählen Sie, über welche Ereignisse Sie wie informiert werden.",
     "lowStock": {
       "title": "Bestandswarnungen",
-      "description": "Warnen, wenn ein Teil den Meldebestand erreicht. Jedes Teil wird pro Unterschreitung einmal gemeldet und bleibt bis zum Auffüllen still.",
+      "description": "Warnt, wenn ein Teil seinen Meldebestand erreicht. Ein Teil gilt als knapp, wenn der Bestand auf oder unter die \"Mindestmenge\" fällt — oder unter den Standardwert unten, falls keine gesetzt ist. Jedes Teil wird pro Unterschreitung einmal gemeldet und bleibt bis zum Auffüllen still.",
       "enable": "Bestandswarnungen aktivieren",
       "enableHint": "Standardmäßig aus. Nur Teile mit Meldebestand werden überwacht.",
       "inApp": "In-App-Benachrichtigung",
@@ -1361,12 +1361,14 @@
       "save": "Warneinstellungen speichern",
       "saved": "Bestandswarnungen gespeichert",
       "defaultThreshold": "Standard-Meldebestand",
-      "defaultThresholdHint": "Gilt für Teile ohne eigenen Meldebestand. 0 bedeutet, dass nur individuell konfigurierte Teile überwacht werden.",
+      "defaultThresholdHint": "Gilt nur für Teile ohne eigenen Meldebestand. Die \"Mindestmenge\" eines Teils — beim Bearbeiten des Teils gesetzt — hat immer Vorrang. Bei 0 werden nur individuell konfigurierte Teile überwacht.",
       "checkNow": "Jetzt prüfen",
       "checkDisabled": "Warnungen sind deaktiviert.",
       "checkNothingNew": "Nichts Neues — alle knappen Teile wurden bereits gemeldet.",
       "checkAlerted": "{count} neu unterschrittene(s) Teil(e) gemeldet",
-      "checkFailed": "Prüfung fehlgeschlagen"
+      "checkFailed": "Prüfung fehlgeschlagen",
+      "configurePerPart": "Mindestmenge eines Teils auf der Lagerseite festlegen →",
+      "readMore": "Mehr erfahren"
     }
   }
 }

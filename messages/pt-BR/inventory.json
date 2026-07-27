@@ -18,7 +18,10 @@
   },
   "empty": {
     "noMatch": "Nenhuma peça corresponde à sua busca.",
-    "noParts": "Nenhuma peça no inventário ainda."
+    "noParts": "Nenhuma peça no inventário ainda.",
+    "noLowStock": "Nada está abaixo do ponto de reposição no momento.",
+    "noReorderPoints": "Nenhum ponto de reposição foi definido, então nenhuma peça pode ser considerada baixa.",
+    "configureReorderPoints": "Definir um ponto de reposição padrão"
   },
   "actions": {
     "edit": "Editar",

@@ -18,7 +18,10 @@
   },
   "empty": {
     "noMatch": "No parts match your search.",
-    "noParts": "No parts in inventory yet."
+    "noParts": "No parts in inventory yet.",
+    "noLowStock": "Nothing is below its reorder point right now.",
+    "noReorderPoints": "No reorder points are set, so no part can count as low.",
+    "configureReorderPoints": "Set a default reorder point"
   },
   "actions": {
     "edit": "Edit",

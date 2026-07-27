@@ -1349,7 +1349,7 @@
     "description": "Velg hvilke hendelser du vil varsles om, og hvordan.",
     "lowStock": {
       "title": "Varsler om lavt lager",
-      "description": "Varsle når en del når bestillingspunktet. Hver del rapporteres én gang per fall og er stille til den er fylt opp igjen.",
+      "description": "Varsler når en del når bestillingspunktet. En del er lav når antallet faller til eller under \"Min. antall\", eller standardverdien under hvis den mangler. Hver del rapporteres én gang per fall og er stille til den er fylt opp igjen.",
       "enable": "Aktiver varsler om lavt lager",
       "enableHint": "Av som standard. Bare deler med bestillingspunkt overvåkes.",
       "inApp": "Varsel i appen",
@@ -1361,12 +1361,14 @@
       "save": "Lagre varselinnstillinger",
       "saved": "Varsler om lavt lager lagret",
       "defaultThreshold": "Standard bestillingspunkt",
-      "defaultThresholdHint": "Gjelder deler uten eget bestillingspunkt. 0 betyr at bare deler du setter opp enkeltvis overvåkes.",
+      "defaultThresholdHint": "Brukes bare for deler uten eget bestillingspunkt. Delens egen \"Min. antall\" — satt når du redigerer delen — går alltid foran. La stå på 0 for kun å overvåke deler du har satt opp enkeltvis.",
       "checkNow": "Sjekk nå",
       "checkDisabled": "Varsler er slått av.",
       "checkNothingNew": "Ingenting nytt — alle lave deler er allerede rapportert.",
       "checkAlerted": "{count} nylig lav(e) del(er) rapportert",
-      "checkFailed": "Sjekken mislyktes"
+      "checkFailed": "Sjekken mislyktes",
+      "configurePerPart": "Sett delens min. antall på lagersiden →",
+      "readMore": "Les mer"
     }
   }
 }

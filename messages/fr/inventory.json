@@ -18,7 +18,10 @@
   },
   "empty": {
     "noMatch": "Aucune pièce ne correspond à votre recherche.",
-    "noParts": "Aucune pièce dans l'inventaire pour l'instant."
+    "noParts": "Aucune pièce dans l'inventaire pour l'instant.",
+    "noLowStock": "Rien n'est actuellement sous son seuil de réapprovisionnement.",
+    "noReorderPoints": "Aucun seuil n'est défini, donc aucune pièce ne peut être considérée comme basse.",
+    "configureReorderPoints": "Définir un seuil par défaut"
   },
   "actions": {
     "edit": "Modifier",

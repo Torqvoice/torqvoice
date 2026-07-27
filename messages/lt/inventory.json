@@ -18,7 +18,10 @@
   },
   "empty": {
     "noMatch": "Nėra dalių, atitinkančių paiešką.",
-    "noParts": "Inventoriuje dalių dar nėra."
+    "noParts": "Inventoriuje dalių dar nėra.",
+    "noLowStock": "Šiuo metu niekas nėra žemiau užsakymo ribos.",
+    "noReorderPoints": "Užsakymo ribų nenustatyta, todėl jokia dalis negali būti laikoma mažėjančia.",
+    "configureReorderPoints": "Nustatyti numatytąją užsakymo ribą"
   },
   "actions": {
     "edit": "Redaguoti",

@@ -1349,7 +1349,7 @@
     "description": "Wybierz, o których zdarzeniach chcesz być informowany i w jaki sposób.",
     "lowStock": {
       "title": "Alerty niskiego stanu",
-      "description": "Ostrzegaj, gdy część osiągnie próg zamawiania. Każda część jest zgłaszana raz na spadek i milczy do czasu uzupełnienia.",
+      "description": "Ostrzega, gdy część osiąga próg zamawiania. Część jest niska, gdy jej ilość spadnie do lub poniżej \"Min. ilość\", albo wartości domyślnej poniżej, jeśli jej nie ustawiono. Każda część jest zgłaszana raz na spadek i milczy do czasu uzupełnienia.",
       "enable": "Włącz alerty niskiego stanu",
       "enableHint": "Domyślnie wyłączone. Monitorowane są tylko części z ustawionym progiem.",
       "inApp": "Powiadomienie w aplikacji",
@@ -1361,12 +1361,14 @@
       "save": "Zapisz alerty",
       "saved": "Zapisano alerty niskiego stanu",
       "defaultThreshold": "Domyślny próg zamawiania",
-      "defaultThresholdHint": "Dotyczy części bez własnego progu. 0 oznacza, że monitorowane są tylko części skonfigurowane indywidualnie.",
+      "defaultThresholdHint": "Używane tylko dla części bez własnego progu zamawiania. Własna \"Min. ilość\" części — ustawiana podczas jej edycji — zawsze ma pierwszeństwo. Zostaw 0, aby monitorować tylko części skonfigurowane indywidualnie.",
       "checkNow": "Sprawdź teraz",
       "checkDisabled": "Alerty są wyłączone.",
       "checkNothingNew": "Nic nowego — wszystkie niskie części już zgłoszono.",
       "checkAlerted": "Zgłoszono {count} nowo niskich części",
-      "checkFailed": "Sprawdzenie nie powiodło się"
+      "checkFailed": "Sprawdzenie nie powiodło się",
+      "configurePerPart": "Ustaw min. ilość części na stronie magazynu →",
+      "readMore": "Czytaj więcej"
     }
   }
 }

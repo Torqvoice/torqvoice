@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -108,9 +109,19 @@ function LowStockAlertCard({ settings }: { settings: Record<string, string> }) {
 
   return (
     <Card className="border-0 shadow-sm">
-      <CardHeader className="flex flex-row items-center gap-3 pb-4">
-        <PackageSearch className="h-5 w-5 text-muted-foreground" />
-        <CardTitle className="text-lg">{t("alerts.lowStock.title")}</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between pb-4">
+        <div className="flex items-center gap-3">
+          <PackageSearch className="h-5 w-5 text-muted-foreground" />
+          <CardTitle className="text-lg">{t("alerts.lowStock.title")}</CardTitle>
+        </div>
+        <a
+          href="https://torqvoice.com/docs/features/low-stock-alerts"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+        >
+          {t("alerts.lowStock.readMore")} →
+        </a>
       </CardHeader>
       <CardContent className="space-y-6">
         <p className="text-sm text-muted-foreground">
@@ -146,6 +157,16 @@ function LowStockAlertCard({ settings }: { settings: Record<string, string> }) {
               <p className="text-xs text-muted-foreground">
                 {t("alerts.lowStock.defaultThresholdHint")}
               </p>
+              {/* At 0 nothing org-wide is watched, so point at where the
+                  per-part value actually lives instead of leaving the operator
+                  to work it out. */}
+              {Number(defaultThreshold) === 0 && (
+                <p className="text-xs text-muted-foreground">
+                  <Link href="/inventory" className="text-primary hover:underline">
+                    {t("alerts.lowStock.configurePerPart")}
+                  </Link>
+                </p>
+              )}
             </div>
 
             <Separator />

@@ -112,6 +112,7 @@ export function InventoryClient({
   sortOrder: initialSortOrder = "desc",
   lowStockDefault = 0,
   lowStockOnly = false,
+  hasAnyReorderPoint = false,
 }: {
   data: PaginatedData;
   search: string;
@@ -125,6 +126,8 @@ export function InventoryClient({
   lowStockDefault?: number;
   /** Whether the list is currently filtered to low-stock parts. */
   lowStockOnly?: boolean;
+  /** False when no part and no org default defines a reorder point. */
+  hasAnyReorderPoint?: boolean;
 }) {
   const formatCurrency = useFormatCurrency();
   const router = useRouter();
@@ -450,7 +453,29 @@ export function InventoryClient({
             {data.parts.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={11} className="h-32 text-center text-muted-foreground">
-                  {search || category ? t('empty.noMatch') : t('empty.noParts')}
+                  {lowStockOnly ? (
+                    // An empty Low view is ambiguous on its own: it means either
+                    // "nothing is running out" (good) or "nothing is being
+                    // watched" (needs setup). Say which, and link to the fix.
+                    hasAnyReorderPoint ? (
+                      t('empty.noLowStock')
+                    ) : (
+                      <div className="space-y-2">
+                        <p>{t('empty.noReorderPoints')}</p>
+                        <Link
+                          href="/settings/alerts"
+                          className="inline-flex items-center gap-1 text-primary hover:underline"
+                        >
+                          {t('empty.configureReorderPoints')}
+                          <ExternalLink className="h-3 w-3" />
+                        </Link>
+                      </div>
+                    )
+                  ) : search || category ? (
+                    t('empty.noMatch')
+                  ) : (
+                    t('empty.noParts')
+                  )}
                 </TableCell>
               </TableRow>
             ) : (

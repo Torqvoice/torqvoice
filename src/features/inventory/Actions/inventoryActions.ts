@@ -398,3 +398,26 @@ export async function deleteOrphanedUploads(fileUrls: string[]) {
     return { success: true };
   });
 }
+
+/**
+ * Whether low-stock tracking can produce results at all: either the org has a
+ * default reorder point, or at least one part defines its own.
+ *
+ * Used to tell "nothing is low right now" apart from "nothing is being
+ * watched", so the Low filter can explain an empty result instead of just
+ * showing a blank table.
+ */
+export async function hasAnyReorderPoint() {
+  return withAuth(async ({ organizationId }) => {
+    const setting = await db.appSetting.findFirst({
+      where: { organizationId, key: SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD },
+      select: { value: true },
+    });
+    if ((Number(setting?.value) || 0) > 0) return true;
+
+    const configured = await db.inventoryPart.count({
+      where: { organizationId, isArchived: false, minQuantity: { gt: 0 } },
+    });
+    return configured > 0;
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INVENTORY }] });
+}
