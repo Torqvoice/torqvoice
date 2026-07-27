@@ -18,11 +18,15 @@
   },
   "empty": {
     "noMatch": "Aramanızla eşleşen parça bulunamadı.",
-    "noParts": "Envanterde henüz parça yok."
+    "noParts": "Envanterde henüz parça yok.",
+    "noLowStock": "Şu anda hiçbir şey sipariş noktasının altında değil.",
+    "noReorderPoints": "Sipariş noktası tanımlanmadığı için hiçbir parça düşük sayılamaz.",
+    "configureReorderPoints": "Varsayılan sipariş noktası ayarla"
   },
   "actions": {
     "edit": "Düzenle",
-    "delete": "Sil"
+    "delete": "Sil",
+    "details": "Ayrıntılar ve geçmiş"
   },
   "deletePart": {
     "title": "Parçayı sil",
@@ -119,5 +123,25 @@
     "saveChanges": "Değişiklikleri kaydet",
     "addPart": "Parça ekle"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Stok geçmişi",
+    "description": "{name} için kaydedilen tüm değişiklikler, en yeniden.",
+    "empty": "Henüz stok hareketi kaydedilmedi.",
+    "when": "Tarih",
+    "change": "Değişim",
+    "balance": "Bakiye",
+    "usedOn": "Kullanıldığı iş",
+    "by": "Yapan",
+    "reasons": {
+      "service_record": "İş emri",
+      "service_record_deleted": "İş emri silindi",
+      "quote_conversion": "Teklif dönüştürüldü",
+      "manual_adjustment": "Manuel düzeltme",
+      "bulk_markup": "Toplu kâr marjı"
+    },
+    "backToInventory": "Stok",
+    "reason": "Neden",
+    "allReasons": "Tüm nedenler"
+  }
 }

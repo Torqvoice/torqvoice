@@ -36,7 +36,8 @@
     "activeJobs": "Aktyvūs darbai",
     "pending": "Laukiantys",
     "totalParts": "Iš viso dalių",
-    "totalCustomers": "Iš viso klientų"
+    "totalCustomers": "Iš viso klientų",
+    "lowStock": "Mažos atsargos"
   },
   "customize": "Tinkinti",
   "viewAll": "Peržiūrėti visus",

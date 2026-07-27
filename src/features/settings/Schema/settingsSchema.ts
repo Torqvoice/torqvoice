@@ -66,6 +66,16 @@ export const SETTING_KEYS = {
   MAINTENANCE_SERVICE_INTERVAL: 'maintenance.serviceInterval',
   MAINTENANCE_APPROACHING_THRESHOLD: 'maintenance.approachingThreshold',
   INVENTORY_MARKUP_MULTIPLIER: 'inventory.markupMultiplier',
+  LOW_STOCK_ALERTS_ENABLED: 'inventory.lowStockAlerts.enabled',
+  /// Org-wide fallback reorder point, applied to parts with no minQuantity of
+  /// their own. 0 means only explicitly configured parts are watched.
+  LOW_STOCK_DEFAULT_THRESHOLD: 'inventory.lowStockAlerts.defaultThreshold',
+  LOW_STOCK_ALERTS_IN_APP: 'inventory.lowStockAlerts.inApp',
+  LOW_STOCK_ALERTS_EMAIL: 'inventory.lowStockAlerts.email',
+  LOW_STOCK_ALERTS_EMAIL_MIN_INTERVAL_HOURS: 'inventory.lowStockAlerts.emailMinIntervalHours',
+  /// Internal bookkeeping — the last time a digest actually went out, used to
+  /// enforce the minimum interval. Not user-editable.
+  LOW_STOCK_ALERTS_LAST_EMAIL_AT: 'inventory.lowStockAlerts.lastEmailAt',
   PARTS_DEFAULT_MARKUP_PERCENT: 'parts.defaultMarkupPercent',
   PARTS_MARKUP_APPLIES_TO_INVENTORY: 'parts.markupAppliesToInventory',
   SMS_TEMPLATE_INVOICE_READY: 'sms.template.invoiceReady',

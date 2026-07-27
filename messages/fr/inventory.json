@@ -18,11 +18,15 @@
   },
   "empty": {
     "noMatch": "Aucune pièce ne correspond à votre recherche.",
-    "noParts": "Aucune pièce dans l'inventaire pour l'instant."
+    "noParts": "Aucune pièce dans l'inventaire pour l'instant.",
+    "noLowStock": "Rien n'est actuellement sous son seuil de réapprovisionnement.",
+    "noReorderPoints": "Aucun seuil n'est défini, donc aucune pièce ne peut être considérée comme basse.",
+    "configureReorderPoints": "Définir un seuil par défaut"
   },
   "actions": {
     "edit": "Modifier",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+    "details": "Détails et historique"
   },
   "deletePart": {
     "title": "Supprimer la pièce",
@@ -119,5 +123,25 @@
     "saveChanges": "Enregistrer les modifications",
     "addPart": "Ajouter une pièce"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Historique du stock",
+    "description": "Toutes les modifications enregistrées de {name}, les plus récentes d'abord.",
+    "empty": "Aucun mouvement de stock enregistré.",
+    "when": "Date",
+    "change": "Variation",
+    "balance": "Solde",
+    "usedOn": "Utilisé sur",
+    "by": "Par",
+    "reasons": {
+      "service_record": "Ordre de travail",
+      "service_record_deleted": "Ordre supprimé",
+      "quote_conversion": "Devis converti",
+      "manual_adjustment": "Ajustement manuel",
+      "bulk_markup": "Marge en masse"
+    },
+    "backToInventory": "Inventaire",
+    "reason": "Motif",
+    "allReasons": "Tous les motifs"
+  }
 }

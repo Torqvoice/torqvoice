@@ -18,11 +18,15 @@
   },
   "empty": {
     "noMatch": "Nenhuma peça corresponde à sua busca.",
-    "noParts": "Nenhuma peça no inventário ainda."
+    "noParts": "Nenhuma peça no inventário ainda.",
+    "noLowStock": "Nada está abaixo do ponto de reposição no momento.",
+    "noReorderPoints": "Nenhum ponto de reposição foi definido, então nenhuma peça pode ser considerada baixa.",
+    "configureReorderPoints": "Definir um ponto de reposição padrão"
   },
   "actions": {
     "edit": "Editar",
-    "delete": "Excluir"
+    "delete": "Excluir",
+    "details": "Detalhes e histórico"
   },
   "deletePart": {
     "title": "Excluir peça",
@@ -119,5 +123,25 @@
     "saveChanges": "Salvar alterações",
     "addPart": "Adicionar peça"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Histórico de estoque",
+    "description": "Todas as alterações registradas em {name}, mais recentes primeiro.",
+    "empty": "Nenhuma movimentação de estoque registrada.",
+    "when": "Data",
+    "change": "Alteração",
+    "balance": "Saldo",
+    "usedOn": "Usado em",
+    "by": "Por",
+    "reasons": {
+      "service_record": "Ordem de serviço",
+      "service_record_deleted": "Ordem excluída",
+      "quote_conversion": "Orçamento convertido",
+      "manual_adjustment": "Ajuste manual",
+      "bulk_markup": "Margem em massa"
+    },
+    "backToInventory": "Estoque",
+    "reason": "Motivo",
+    "allReasons": "Todos os motivos"
+  }
 }

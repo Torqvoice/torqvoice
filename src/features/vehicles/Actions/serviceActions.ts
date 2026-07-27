@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { createServiceSchema, updateServiceSchema } from "../Schema/serviceSchema";
 import { revalidatePath } from "next/cache";
+import { onInventoryChanged } from "@/features/inventory/Lib/onInventoryChanged";
 import { unlink } from "fs/promises";
 import { randomUUID } from "crypto";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
@@ -330,7 +331,12 @@ export async function createServiceRecord(input: unknown) {
         await tx.servicePart.createMany({ data: enrichedParts });
 
         // Deduct stock for inventory-linked parts (delta from an empty set).
-        await reconcileInventoryForParts(tx, organizationId, [], partItems);
+        await reconcileInventoryForParts(tx, organizationId, [], partItems, {
+          reason: "service_record",
+          userId,
+          serviceRecordId: created.id,
+          serviceRecordLabel: created.invoiceNumber || created.title,
+        });
       }
 
       if (laborItems && laborItems.length > 0) {
@@ -357,7 +363,7 @@ export async function createServiceRecord(input: unknown) {
     // Revalidate inventory if any parts were sourced from inventory
     const hasInventoryParts = partItems?.some((p) => p.inventoryPartId);
     if (hasInventoryParts) {
-      revalidatePath("/inventory");
+      await onInventoryChanged(organizationId);
     }
 
     // Update vehicle mileage if service mileage is higher, and reset maintenance dismissed
@@ -390,7 +396,7 @@ export async function createServiceRecord(input: unknown) {
 }
 
 export async function updateServiceRecord(input: unknown) {
-  return withAuth(async ({ organizationId }) => {
+  return withAuth(async ({ userId, organizationId }) => {
     const data = updateServiceSchema.parse(input);
     const existing = await db.serviceRecord.findFirst({
       where: { id: data.id, vehicle: { organizationId } },
@@ -475,7 +481,12 @@ export async function updateServiceRecord(input: unknown) {
           });
         }
 
-        await reconcileInventoryForParts(tx, organizationId, previousParts, partItems);
+        await reconcileInventoryForParts(tx, organizationId, previousParts, partItems, {
+          reason: "service_record",
+          userId,
+          serviceRecordId: id,
+          serviceRecordLabel: existing.invoiceNumber || existing.title,
+        });
       }
 
       // Replace labor if provided
@@ -555,6 +566,8 @@ export async function updateServiceRecord(input: unknown) {
     revalidatePath(`/vehicles/${existing.vehicleId}`);
     revalidatePath(`/vehicles/${existing.vehicleId}/service/${id}`);
     revalidatePath("/services");
+    // Parts may have been added, changed or removed on this record.
+    await onInventoryChanged(organizationId);
     return record;
   }, {
     requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }],
@@ -722,7 +735,7 @@ export async function getWorkOrders(params: {
 }
 
 export async function deleteServiceRecord(recordId: string) {
-  return withAuth(async ({ organizationId }) => {
+  return withAuth(async ({ userId, organizationId }) => {
     const record = await db.serviceRecord.findFirst({
       where: { id: recordId, vehicle: { organizationId } },
       include: { attachments: true },
@@ -747,13 +760,22 @@ export async function deleteServiceRecord(recordId: string) {
         where: { serviceRecordId: recordId },
         select: { inventoryPartId: true, quantity: true },
       });
-      await reconcileInventoryForParts(tx, organizationId, parts, []);
+      await reconcileInventoryForParts(tx, organizationId, parts, [], {
+        reason: "service_record_deleted",
+        userId,
+        // Deliberately no serviceRecordId: the record is deleted in this same
+        // transaction, so the FK would immediately null out. The label is what
+        // preserves "this stock came back from job X".
+        serviceRecordLabel: record.invoiceNumber || record.title,
+      });
       await tx.serviceRecord.delete({ where: { id: recordId } });
     });
 
     revalidatePath("/");
     revalidatePath(`/vehicles/${record.vehicleId}`);
     revalidatePath("/services");
+    // Deleting the record restocked its linked parts.
+    await onInventoryChanged(organizationId);
     return { recordId };
   }, {
     requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.SERVICES }],

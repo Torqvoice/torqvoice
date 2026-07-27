@@ -110,6 +110,10 @@
       "about": {
         "title": "Sobre",
         "description": "Versao e informacoes"
+      },
+      "alerts": {
+        "title": "Alertas",
+        "description": "Aviso quando peças precisam ser repostas"
       }
     },
     "pro": "PRO"
@@ -1338,6 +1342,33 @@
       "failed": "Falhou",
       "retrying": "Tentando novamente",
       "pending": "Pendente"
+    }
+  },
+  "alerts": {
+    "title": "Alertas",
+    "description": "Escolha sobre quais eventos deseja ser avisado e como.",
+    "lowStock": {
+      "title": "Alertas de estoque baixo",
+      "description": "Avisa quando uma peça atinge seu ponto de reposição. Uma peça está baixa quando a quantidade cai para ou abaixo da \"Qtd. mín.\", ou do padrão abaixo se não tiver. Cada peça é informada uma vez por queda e fica em silêncio até ser reposta.",
+      "enable": "Ativar alertas de estoque baixo",
+      "enableHint": "Desativado por padrão. Só peças com ponto de reposição são monitoradas.",
+      "inApp": "Notificação no app",
+      "inAppHint": "Uma notificação agrupada no sino, não uma por peça.",
+      "email": "Resumo por e-mail",
+      "emailHint": "Um único e-mail listando todas as peças que acabaram de ficar baixas.",
+      "emailInterval": "Horas mínimas entre e-mails",
+      "emailIntervalHint": "No máximo um resumo a cada tantas horas. 0 desativa o limite.",
+      "save": "Salvar alertas",
+      "saved": "Alertas de estoque baixo salvos",
+      "defaultThreshold": "Ponto de reposição padrão",
+      "defaultThresholdHint": "Usado apenas para peças sem ponto de reposição próprio. A \"Qtd. mín.\" da peça — definida ao editá-la — sempre prevalece. Deixe em 0 para monitorar só as peças configuradas individualmente.",
+      "checkNow": "Verificar agora",
+      "checkDisabled": "Os alertas estão desativados.",
+      "checkNothingNew": "Nada novo — todas as peças baixas já foram informadas.",
+      "checkAlerted": "{count} peça(s) recém-baixa(s) informada(s)",
+      "checkFailed": "Falha na verificação",
+      "configurePerPart": "Defina a Qtd. mín. de uma peça na página de estoque →",
+      "readMore": "Saiba mais"
     }
   }
 }

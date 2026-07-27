@@ -1,10 +1,12 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2 } from "lucide-react";
+import { Package, Plus, Trash2 } from "lucide-react";
 import { useFormatCurrency } from '@/components/currency-settings-context'
+import { InventoryPickerDialog } from "@/features/vehicles/Components/service-edit/InventoryPickerDialog";
+import type { InventoryPartOption } from "@/features/vehicles/Components/service-edit/form-types";
 import type { QuotePartInput } from "./quote-page-types";
 
 const QuotePartRow = memo(function QuotePartRow({
@@ -51,6 +53,8 @@ interface QuotePartsEditorProps {
   onUpdate: (index: number, field: keyof QuotePartInput, value: string | number | boolean) => void;
   onDelete: (index: number) => void;
   onAdd: () => void;
+  onAddBulk?: (items: QuotePartInput[]) => void;
+  inventoryParts?: InventoryPartOption[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string;
 }
@@ -62,14 +66,23 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
   onUpdate,
   onDelete,
   onAdd,
+  onAddBulk,
+  inventoryParts = [],
   t,
 }: QuotePartsEditorProps) {
   const formatCurrency = useFormatCurrency()
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const canPickFromStock = inventoryParts.length > 0 && !!onAddBulk
   return (
     <div className="rounded-lg border p-3 space-y-2">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">{t("parts.title")}</h3>
         <div className="flex items-center gap-2">
+          {canPickFromStock && (
+            <Button type="button" variant="outline" size="sm" onClick={() => setPickerOpen(true)}>
+              <Package className="mr-1 h-3.5 w-3.5" /> {t("parts.addFromInventory")}
+            </Button>
+          )}
           <Button type="button" variant="outline" size="sm" onClick={onAdd}>
             <Plus className="mr-1 h-3.5 w-3.5" /> {t("parts.addPart")}
           </Button>
@@ -97,6 +110,27 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
           <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={onAdd}><Plus className="h-4 w-4" /></button>
           <div className="flex justify-end pt-1 text-sm"><span className="font-medium">{t("parts.subtotal", { amount: formatCurrency(partsSubtotal, currencyCode) })}</span></div>
         </>
+      )}
+      {canPickFromStock && (
+        <InventoryPickerDialog
+          open={pickerOpen}
+          onOpenChange={setPickerOpen}
+          inventoryParts={inventoryParts}
+          currencyCode={currencyCode}
+          onSelectPart={(picked) => {
+            onAddBulk?.([
+              {
+                partNumber: picked.partNumber ?? "",
+                name: picked.name,
+                quantity: picked.quantity,
+                unitPrice: picked.unitPrice,
+                total: picked.quantity * picked.unitPrice,
+                excluded: false,
+                inventoryPartId: picked.inventoryPartId ?? null,
+              },
+            ])
+          }}
+        />
       )}
       {partItems.length === 0 && (
         <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={onAdd}>

@@ -18,11 +18,15 @@
   },
   "empty": {
     "noMatch": "Żadne części nie pasują do wyszukiwania.",
-    "noParts": "Brak części w magazynie."
+    "noParts": "Brak części w magazynie.",
+    "noLowStock": "Nic nie jest obecnie poniżej progu zamawiania.",
+    "noReorderPoints": "Nie ustawiono progów zamawiania, więc żadna część nie może być uznana za niską.",
+    "configureReorderPoints": "Ustaw domyślny próg zamawiania"
   },
   "actions": {
     "edit": "Edytuj",
-    "delete": "Usuń"
+    "delete": "Usuń",
+    "details": "Szczegóły i historia"
   },
   "deletePart": {
     "title": "Usuń część",
@@ -119,5 +123,25 @@
     "saveChanges": "Zapisz zmiany",
     "addPart": "Dodaj część"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Historia stanu",
+    "description": "Wszystkie zapisane zmiany dla {name}, od najnowszych.",
+    "empty": "Brak zarejestrowanych ruchów magazynowych.",
+    "when": "Data",
+    "change": "Zmiana",
+    "balance": "Stan",
+    "usedOn": "Użyto w",
+    "by": "Przez",
+    "reasons": {
+      "service_record": "Zlecenie",
+      "service_record_deleted": "Zlecenie usunięte",
+      "quote_conversion": "Wycena przekształcona",
+      "manual_adjustment": "Korekta ręczna",
+      "bulk_markup": "Marża zbiorcza"
+    },
+    "backToInventory": "Magazyn",
+    "reason": "Powód",
+    "allReasons": "Wszystkie powody"
+  }
 }

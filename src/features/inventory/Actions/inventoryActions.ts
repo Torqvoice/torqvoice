@@ -3,12 +3,14 @@
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { createInventoryPartSchema, updateInventoryPartSchema, adjustStockSchema } from "../Schema/inventorySchema";
-import { revalidatePath } from "next/cache";
+import { onInventoryChanged } from "../Lib/onInventoryChanged";
 import { Prisma } from "@/generated/prisma/client";
 import { z } from "zod";
 import { unlink } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { normalizeBarcode, withBarcodeConflictMessage } from "../Lib/barcode";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 
 export async function getInventoryPartsPaginated(params: {
   page?: number;
@@ -17,6 +19,8 @@ export async function getInventoryPartsPaginated(params: {
   category?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  /** Restrict to parts at or below their reorder point. */
+  lowStock?: boolean;
 }) {
   return withAuth(async ({ userId, organizationId }) => {
     const page = params.page || 1;
@@ -41,6 +45,32 @@ export async function getInventoryPartsPaginated(params: {
 
     if (params.category && params.category !== "all") {
       where.category = params.category;
+    }
+
+    if (params.lowStock) {
+      // Prisma cannot compare two columns of the same row in a `where`, so the
+      // matching ids are resolved in SQL first. The low-stock set is small by
+      // definition (parts at or below their reorder point), so the extra query
+      // stays cheap and pagination/sorting below is unaffected.
+      // Same rule as isLow() in Lib/lowStockAlerts and the dashboard count:
+      // the part's own reorder point wins, else the org-wide default.
+      const thresholdRow = await db.appSetting.findFirst({
+        where: { organizationId, key: SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD },
+        select: { value: true },
+      });
+      const parsedDefault = Number(thresholdRow?.value);
+      const lowStockDefault =
+        Number.isFinite(parsedDefault) && parsedDefault > 0 ? parsedDefault : 0;
+
+      const lowRows = await db.$queryRaw<{ id: string }[]>`
+        SELECT "id"
+        FROM "inventory_parts"
+        WHERE "organizationId" = ${organizationId}
+          AND "isArchived" = false
+          AND COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault}) > 0
+          AND "quantity" <= COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault})
+      `;
+      where.id = { in: lowRows.map((r) => r.id) };
     }
 
     const dir = params.sortOrder || "desc";
@@ -83,11 +113,13 @@ export async function createInventoryPart(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const data = createInventoryPartSchema.parse(input);
     const { gallery, ...rest } = data;
-    const part = await db.inventoryPart.create({
+    const barcode = normalizeBarcode(rest.barcode);
+    const part = await withBarcodeConflictMessage(organizationId, barcode, () =>
+      db.inventoryPart.create({
       data: {
         ...rest,
         partNumber: rest.partNumber || undefined,
-        barcode: rest.barcode || undefined,
+        barcode: barcode ?? undefined,
         description: rest.description || undefined,
         category: rest.category || undefined,
         supplier: rest.supplier || undefined,
@@ -99,7 +131,8 @@ export async function createInventoryPart(input: unknown) {
         userId,
         organizationId,
       },
-    });
+      }),
+    );
 
     if (gallery && gallery.length > 0) {
       await db.storedImage.createMany({
@@ -113,7 +146,7 @@ export async function createInventoryPart(input: unknown) {
       });
     }
 
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return part;
   }, {
     requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INVENTORY }],
@@ -162,12 +195,15 @@ export async function updateInventoryPart(input: unknown) {
       });
     }
 
-    const result = await db.inventoryPart.updateMany({
+    const nextBarcode =
+      updateData.barcode !== undefined ? normalizeBarcode(updateData.barcode) : undefined;
+    const result = await withBarcodeConflictMessage(organizationId, nextBarcode ?? null, () =>
+      db.inventoryPart.updateMany({
       where: { id, organizationId },
       data: {
         ...updateData,
         partNumber: updateData.partNumber !== undefined ? (updateData.partNumber || null) : undefined,
-        barcode: updateData.barcode !== undefined ? (updateData.barcode || null) : undefined,
+        barcode: nextBarcode,
         description: updateData.description !== undefined ? (updateData.description || null) : undefined,
         category: updateData.category !== undefined ? (updateData.category || null) : undefined,
         supplier: updateData.supplier !== undefined ? (updateData.supplier || null) : undefined,
@@ -176,9 +212,10 @@ export async function updateInventoryPart(input: unknown) {
         supplierUrl: updateData.supplierUrl !== undefined ? (updateData.supplierUrl || null) : undefined,
         location: updateData.location !== undefined ? (updateData.location || null) : undefined,
       },
-    });
+      }),
+    );
     if (result.count === 0) throw new Error("Part not found");
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return { updated: true, partId: id };
   }, {
     requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }],
@@ -216,7 +253,7 @@ export async function deleteInventoryPart(partId: string) {
       }
     }
 
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return { deleted: true, partId };
   }, {
     requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INVENTORY }],
@@ -254,7 +291,7 @@ export async function deleteInventoryParts(partIds: string[]) {
       try { await unlink(resolveUploadPath(url)); } catch { /* already gone */ }
     }
 
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return { deleted: result.count };
   }, {
     requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INVENTORY }],
@@ -283,7 +320,7 @@ export async function adjustInventoryStock(input: unknown) {
       where: { id, organizationId },
       data: { quantity: newQuantity },
     });
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return { quantity: newQuantity };
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }] });
 }
@@ -342,7 +379,7 @@ export async function applyMarkupToAll(input: unknown) {
         ${overrideExisting ? Prisma.sql`` : Prisma.sql`AND ("sellPrice" = 0 OR "sellPrice" IS NULL)`}
     `;
 
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return { updated: result };
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }] });
 }
@@ -360,4 +397,27 @@ export async function deleteOrphanedUploads(fileUrls: string[]) {
     }
     return { success: true };
   });
+}
+
+/**
+ * Whether low-stock tracking can produce results at all: either the org has a
+ * default reorder point, or at least one part defines its own.
+ *
+ * Used to tell "nothing is low right now" apart from "nothing is being
+ * watched", so the Low filter can explain an empty result instead of just
+ * showing a blank table.
+ */
+export async function hasAnyReorderPoint() {
+  return withAuth(async ({ organizationId }) => {
+    const setting = await db.appSetting.findFirst({
+      where: { organizationId, key: SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD },
+      select: { value: true },
+    });
+    if ((Number(setting?.value) || 0) > 0) return true;
+
+    const configured = await db.inventoryPart.count({
+      where: { organizationId, isArchived: false, minQuantity: { gt: 0 } },
+    });
+    return configured > 0;
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INVENTORY }] });
 }

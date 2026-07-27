@@ -18,11 +18,15 @@
   },
   "empty": {
     "noMatch": "Nessun ricambio corrisponde alla ricerca.",
-    "noParts": "Nessun ricambio in inventario."
+    "noParts": "Nessun ricambio in inventario.",
+    "noLowStock": "Al momento nulla è sotto il punto di riordino.",
+    "noReorderPoints": "Non è impostato alcun punto di riordino, quindi nessun ricambio può risultare basso.",
+    "configureReorderPoints": "Imposta un punto di riordino predefinito"
   },
   "actions": {
     "edit": "Modifica",
-    "delete": "Elimina"
+    "delete": "Elimina",
+    "details": "Dettagli e storico"
   },
   "deletePart": {
     "title": "Elimina ricambio",
@@ -119,5 +123,25 @@
     "saveChanges": "Salva modifiche",
     "addPart": "Aggiungi ricambio"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Storico magazzino",
+    "description": "Tutte le modifiche registrate a {name}, dalla più recente.",
+    "empty": "Nessun movimento di magazzino registrato.",
+    "when": "Data",
+    "change": "Variazione",
+    "balance": "Saldo",
+    "usedOn": "Usato in",
+    "by": "Da",
+    "reasons": {
+      "service_record": "Ordine di lavoro",
+      "service_record_deleted": "Ordine eliminato",
+      "quote_conversion": "Preventivo convertito",
+      "manual_adjustment": "Rettifica manuale",
+      "bulk_markup": "Ricarico massivo"
+    },
+    "backToInventory": "Magazzino",
+    "reason": "Motivo",
+    "allReasons": "Tutti i motivi"
+  }
 }

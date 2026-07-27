@@ -36,7 +36,8 @@
     "activeJobs": "Actieve opdrachten",
     "pending": "In afwachting",
     "totalParts": "Totaal onderdelen",
-    "totalCustomers": "Totaal klanten"
+    "totalCustomers": "Totaal klanten",
+    "lowStock": "Lage voorraad"
   },
   "customize": "Aanpassen",
   "viewAll": "Alles bekijken",

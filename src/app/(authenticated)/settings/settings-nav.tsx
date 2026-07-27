@@ -33,6 +33,7 @@ import {
   UsersRound,
   Webhook,
   Wrench,
+  BellRing,
 } from 'lucide-react'
 
 type SettingsNavItem = {
@@ -88,6 +89,7 @@ const settingsCategories: SettingsCategory[] = [
     items: [
       { key: 'workshop', href: '/settings/workshop', icon: Wrench },
       { key: 'maintenance', href: '/settings/maintenance', icon: Gauge },
+      { key: 'alerts', href: '/settings/alerts', icon: BellRing },
       { key: 'ai', href: '/settings/ai', icon: Sparkles, gate: 'ai' },
       { key: 'reportSchedule', href: '/settings/report-schedule', icon: CalendarClock, gate: 'reports' },
     ],

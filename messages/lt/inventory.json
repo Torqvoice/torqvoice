@@ -18,11 +18,15 @@
   },
   "empty": {
     "noMatch": "Nėra dalių, atitinkančių paiešką.",
-    "noParts": "Inventoriuje dalių dar nėra."
+    "noParts": "Inventoriuje dalių dar nėra.",
+    "noLowStock": "Šiuo metu niekas nėra žemiau užsakymo ribos.",
+    "noReorderPoints": "Užsakymo ribų nenustatyta, todėl jokia dalis negali būti laikoma mažėjančia.",
+    "configureReorderPoints": "Nustatyti numatytąją užsakymo ribą"
   },
   "actions": {
     "edit": "Redaguoti",
-    "delete": "Ištrinti"
+    "delete": "Ištrinti",
+    "details": "Informacija ir istorija"
   },
   "deletePart": {
     "title": "Ištrinti dalį",
@@ -119,5 +123,25 @@
     "saveChanges": "Išsaugoti pakeitimus",
     "addPart": "Pridėti dalį"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Atsargų istorija",
+    "description": "Visi užfiksuoti {name} pakeitimai, naujausi viršuje.",
+    "empty": "Atsargų judėjimo dar nėra.",
+    "when": "Data",
+    "change": "Pokytis",
+    "balance": "Likutis",
+    "usedOn": "Panaudota",
+    "by": "Kas",
+    "reasons": {
+      "service_record": "Darbo užsakymas",
+      "service_record_deleted": "Užsakymas ištrintas",
+      "quote_conversion": "Pasiūlymas konvertuotas",
+      "manual_adjustment": "Rankinis koregavimas",
+      "bulk_markup": "Masinis antkainis"
+    },
+    "backToInventory": "Sandėlis",
+    "reason": "Priežastis",
+    "allReasons": "Visos priežastys"
+  }
 }

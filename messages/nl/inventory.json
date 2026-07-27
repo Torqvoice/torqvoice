@@ -18,11 +18,15 @@
   },
   "empty": {
     "noMatch": "Geen onderdelen gevonden voor uw zoekopdracht.",
-    "noParts": "Nog geen onderdelen in de voorraad."
+    "noParts": "Nog geen onderdelen in de voorraad.",
+    "noLowStock": "Er staat op dit moment niets onder het bestelpunt.",
+    "noReorderPoints": "Er zijn geen bestelpunten ingesteld, dus geen onderdeel kan als laag gelden.",
+    "configureReorderPoints": "Standaard bestelpunt instellen"
   },
   "actions": {
     "edit": "Bewerken",
-    "delete": "Verwijderen"
+    "delete": "Verwijderen",
+    "details": "Details en geschiedenis"
   },
   "deletePart": {
     "title": "Onderdeel verwijderen",
@@ -119,5 +123,25 @@
     "saveChanges": "Wijzigingen opslaan",
     "addPart": "Onderdeel toevoegen"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Voorraadgeschiedenis",
+    "description": "Alle geregistreerde wijzigingen aan {name}, nieuwste eerst.",
+    "empty": "Nog geen voorraadmutaties geregistreerd.",
+    "when": "Datum",
+    "change": "Wijziging",
+    "balance": "Saldo",
+    "usedOn": "Gebruikt bij",
+    "by": "Door",
+    "reasons": {
+      "service_record": "Werkorder",
+      "service_record_deleted": "Werkorder verwijderd",
+      "quote_conversion": "Offerte omgezet",
+      "manual_adjustment": "Handmatige aanpassing",
+      "bulk_markup": "Bulkopslag"
+    },
+    "backToInventory": "Voorraad",
+    "reason": "Reden",
+    "allReasons": "Alle redenen"
+  }
 }

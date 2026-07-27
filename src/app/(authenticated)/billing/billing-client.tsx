@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useCallback, useTransition } from "react";
+
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+import { useCallback, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -93,7 +95,6 @@ export default function BillingClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [searchValue, setSearchValue] = useState(search);
 
   const createQueryString = useCallback(
     (params: Record<string, string>) => {
@@ -121,17 +122,22 @@ export default function BillingClient({
     });
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Live search: filters as you type, no Enter required. Submitting the
+  // form (Enter) commits immediately, bypassing the debounce.
+  const {
+    value: searchValue,
+    setValue: setSearchValue,
+    commitNow: handleSearch,
+  } = useDebouncedSearch(search, (term) => {
     startTransition(() => {
       router.push(
         `${pathname}?${createQueryString({
-          search: searchValue,
+          search: term ?? "",
           page: "1",
         })}`
       );
     });
-  };
+  });
 
   const handleNavigate = (params: Record<string, string | number | undefined>) => {
     const merged: Record<string, string> = {};

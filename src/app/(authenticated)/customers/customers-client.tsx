@@ -1,5 +1,7 @@
 "use client";
 
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+
 import { useState, useCallback, useTransition, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -72,7 +74,6 @@ export function CustomersClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [searchInput, setSearchInput] = useState(search);
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
@@ -111,13 +112,13 @@ export function CustomersClient({
     [router, pathname, searchParams]
   );
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      navigate({ search: searchInput || undefined });
-    },
-    [navigate, searchInput]
-  );
+  // Live search: filters as you type, no Enter required. Submitting the
+  // form (Enter) commits immediately, bypassing the debounce.
+  const {
+    value: searchInput,
+    setValue: setSearchInput,
+    commitNow: handleSearch,
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => {

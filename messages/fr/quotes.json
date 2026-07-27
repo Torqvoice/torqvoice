@@ -72,7 +72,8 @@
     "total": "Total",
     "subtotal": "Sous-total pièces : {amount}",
     "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "excludeFromTotal": "Exclude from total",
+    "addFromInventory": "Du stock"
   },
   "labor": {
     "title": "Main-d'œuvre",

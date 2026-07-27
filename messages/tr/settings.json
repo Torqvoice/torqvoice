@@ -110,6 +110,10 @@
       "about": {
         "title": "Hakkında",
         "description": "Sürüm & bilgi"
+      },
+      "alerts": {
+        "title": "Uyarılar",
+        "description": "Parça sipariş etmeniz gerektiğinde haber alın"
       }
     },
     "pro": "PRO"
@@ -1338,6 +1342,33 @@
       "failed": "Başarısız",
       "retrying": "Yeniden deneniyor",
       "pending": "Beklemede"
+    }
+  },
+  "alerts": {
+    "title": "Uyarılar",
+    "description": "Hangi olaylardan nasıl haberdar olmak istediğinizi seçin.",
+    "lowStock": {
+      "title": "Düşük stok uyarıları",
+      "description": "Bir parça sipariş noktasına ulaştığında uyarır. Bir parça, miktarı \"Min. miktar\" değerine veya altına düştüğünde düşüktür; tanımlı değilse aşağıdaki varsayılan kullanılır. Her parça düşüş başına bir kez bildirilir ve stok yenilenene kadar sessiz kalır.",
+      "enable": "Düşük stok uyarılarını etkinleştir",
+      "enableHint": "Varsayılan olarak kapalı. Yalnızca sipariş noktası tanımlı parçalar izlenir.",
+      "inApp": "Uygulama içi bildirim",
+      "inAppHint": "Zilde tek bir toplu bildirim, parça başına bir tane değil.",
+      "email": "E-posta özeti",
+      "emailHint": "Yeni düşen tüm parçaları listeleyen tek bir e-posta.",
+      "emailInterval": "E-postalar arası minimum saat",
+      "emailIntervalHint": "Bu kadar saatte en fazla bir özet. 0 sınırı kaldırır.",
+      "save": "Uyarı ayarlarını kaydet",
+      "saved": "Düşük stok uyarıları kaydedildi",
+      "defaultThreshold": "Varsayılan sipariş noktası",
+      "defaultThresholdHint": "Yalnızca kendi sipariş noktası olmayan parçalar için kullanılır. Parçanın kendi \"Min. miktar\" değeri — parçayı düzenlerken ayarlanır — her zaman önceliklidir. Sadece tek tek ayarladığınız parçaları izlemek için 0 bırakın.",
+      "checkNow": "Şimdi kontrol et",
+      "checkDisabled": "Uyarılar kapalı.",
+      "checkNothingNew": "Yeni bir şey yok — düşük olan tüm parçalar zaten bildirildi.",
+      "checkAlerted": "{count} yeni düşük parça bildirildi",
+      "checkFailed": "Kontrol başarısız",
+      "configurePerPart": "Bir parçanın min. miktarını stok sayfasında ayarlayın →",
+      "readMore": "Devamını oku"
     }
   }
 }
