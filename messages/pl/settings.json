@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Obliczanie proporcjonalnej kwoty…",
     "upgradeAmountDue": "Kwota do zapłaty teraz",
     "upgradeSuccess": "Pomyślnie ulepszono do Enterprise!",
-    "upgradeError": "Nie udało się ulepszyć subskrypcji"
+    "upgradeError": "Nie udało się ulepszyć subskrypcji",
+    "demoBadge": "Demo",
+    "demoExpiresIn": "Wygasa za {days, plural, =0 {mniej niż dzień} one {# dzień} other {# dni}} ({date})"
   },
   "ai": {
     "title": "Asystent AI",

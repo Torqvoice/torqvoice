@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Orantılı tutar hesaplanıyor…",
     "upgradeAmountDue": "Şimdi ödenecek tutar",
     "upgradeSuccess": "Enterprise'a başarıyla yükseltildi!",
-    "upgradeError": "Abonelik yükseltilemedi"
+    "upgradeError": "Abonelik yükseltilemedi",
+    "demoBadge": "Demo",
+    "demoExpiresIn": "{days, plural, =0 {bir günden az} one {# gün} other {# gün}} içinde sona erer ({date})"
   },
   "ai": {
     "title": "Yapay Zeka Asistani",

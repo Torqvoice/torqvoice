@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Evenredig bedrag berekenen…",
     "upgradeAmountDue": "Nu te betalen bedrag",
     "upgradeSuccess": "Succesvol geüpgraded naar Enterprise!",
-    "upgradeError": "Upgrade van abonnement mislukt"
+    "upgradeError": "Upgrade van abonnement mislukt",
+    "demoBadge": "Demo",
+    "demoExpiresIn": "Verloopt over {days, plural, =0 {minder dan een dag} one {# dag} other {# dagen}} ({date})"
   },
   "ai": {
     "title": "AI-assistent",

@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Calcolo dell'importo proporzionale…",
     "upgradeAmountDue": "Importo dovuto ora",
     "upgradeSuccess": "Aggiornato a Enterprise con successo!",
-    "upgradeError": "Aggiornamento dell'abbonamento non riuscito"
+    "upgradeError": "Aggiornamento dell'abbonamento non riuscito",
+    "demoBadge": "Demo",
+    "demoExpiresIn": "Scade tra {days, plural, =0 {meno di un giorno} one {# giorno} other {# giorni}} ({date})"
   },
   "ai": {
     "title": "Assistente IA",

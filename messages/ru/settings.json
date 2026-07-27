@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Расчёт пропорциональной суммы...",
     "upgradeAmountDue": "К оплате сейчас",
     "upgradeSuccess": "Успешно обновлено до корпоративного тарифа!",
-    "upgradeError": "Не удалось обновить подписку"
+    "upgradeError": "Не удалось обновить подписку",
+    "demoBadge": "Демо",
+    "demoExpiresIn": "Истекает через {days, plural, =0 {меньше дня} one {# день} other {# дней}} ({date})"
   },
   "ai": {
     "title": "ИИ-ассистент",

@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Calculando o valor proporcional…",
     "upgradeAmountDue": "Valor a pagar agora",
     "upgradeSuccess": "Atualizado para Enterprise com sucesso!",
-    "upgradeError": "Falha ao atualizar a assinatura"
+    "upgradeError": "Falha ao atualizar a assinatura",
+    "demoBadge": "Demo",
+    "demoExpiresIn": "Expira em {days, plural, =0 {menos de um dia} one {# dia} other {# dias}} ({date})"
   },
   "ai": {
     "title": "Assistente de IA",

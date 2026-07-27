@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Beregner forholdsmessig beløp…",
     "upgradeAmountDue": "Beløp å betale nå",
     "upgradeSuccess": "Vellykket oppgradert til Enterprise!",
-    "upgradeError": "Kunne ikke oppgradere abonnementet"
+    "upgradeError": "Kunne ikke oppgradere abonnementet",
+    "demoBadge": "Demo",
+    "demoExpiresIn": "Utløper om {days, plural, =0 {mindre enn én dag} one {# dag} other {# dager}} ({date})"
   },
   "ai": {
     "title": "AI-assistent",

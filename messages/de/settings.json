@@ -1132,7 +1132,9 @@
     "upgradeCalculating": "Anteiligen Betrag berechnen…",
     "upgradeAmountDue": "Jetzt fälliger Betrag",
     "upgradeSuccess": "Erfolgreich auf Enterprise upgegradet!",
-    "upgradeError": "Abonnement konnte nicht upgegradet werden"
+    "upgradeError": "Abonnement konnte nicht upgegradet werden",
+    "demoBadge": "Demo",
+    "demoExpiresIn": "Läuft in {days, plural, =0 {weniger als einem Tag} one {# Tag} other {# Tagen}} ab ({date})"
   },
   "ai": {
     "title": "KI-Assistent",
