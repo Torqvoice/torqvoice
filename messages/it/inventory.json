@@ -23,7 +23,7 @@
   "actions": {
     "edit": "Modifica",
     "delete": "Elimina",
-    "history": "Storico"
+    "details": "Dettagli e storico"
   },
   "deletePart": {
     "title": "Elimina ricambio",
@@ -136,6 +136,9 @@
       "quote_conversion": "Preventivo convertito",
       "manual_adjustment": "Rettifica manuale",
       "bulk_markup": "Ricarico massivo"
-    }
+    },
+    "backToInventory": "Magazzino",
+    "reason": "Motivo",
+    "allReasons": "Tutti i motivi"
   }
 }

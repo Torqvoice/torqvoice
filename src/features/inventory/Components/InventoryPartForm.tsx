@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +19,7 @@ import { toast } from "sonner";
 import { useGlassModal } from "@/components/glass-modal";
 import { createInventoryPart, updateInventoryPart, deleteOrphanedUploads } from "../Actions/inventoryActions";
 import { aiAnalyzePartImage } from "../Actions/aiAnalyzePartImage";
-import { Camera, Check, ChevronsUpDown, ExternalLink, ImageIcon, Loader2, Plus, Sparkles, Upload, X } from "lucide-react";
+import { Camera, Check, ChevronsUpDown, ExternalLink, History, ImageIcon, Loader2, Plus, Sparkles, Upload, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
@@ -331,9 +332,22 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>
-            {part ? t('form.editPart') : t('form.addNewPart')}
-          </DialogTitle>
+          <div className="flex items-center justify-between gap-4 pr-6">
+            <DialogTitle>
+              {part ? t('form.editPart') : t('form.addNewPart')}
+            </DialogTitle>
+            {/* Only meaningful for a saved part — a new one has no history yet.
+                Opens on top of this dialog rather than replacing it, so
+                in-progress edits and uploads are not discarded. */}
+            {part && (
+              <Button type="button" variant="outline" size="sm" asChild>
+                <Link href={`/inventory/${part.id}`}>
+                  <History className="mr-2 h-4 w-4" />
+                  {t('actions.details')}
+                </Link>
+              </Button>
+            )}
+          </div>
           <DialogDescription className="sr-only">
             {part ? t('form.editPart') : t('form.addNewPart')}
           </DialogDescription>

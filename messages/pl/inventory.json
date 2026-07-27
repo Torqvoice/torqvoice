@@ -23,7 +23,7 @@
   "actions": {
     "edit": "Edytuj",
     "delete": "Usuń",
-    "history": "Historia"
+    "details": "Szczegóły i historia"
   },
   "deletePart": {
     "title": "Usuń część",
@@ -136,6 +136,9 @@
       "quote_conversion": "Wycena przekształcona",
       "manual_adjustment": "Korekta ręczna",
       "bulk_markup": "Marża zbiorcza"
-    }
+    },
+    "backToInventory": "Magazyn",
+    "reason": "Powód",
+    "allReasons": "Wszystkie powody"
   }
 }

@@ -23,7 +23,7 @@
   "actions": {
     "edit": "Bearbeiten",
     "delete": "Löschen",
-    "history": "Verlauf"
+    "details": "Details & Verlauf"
   },
   "deletePart": {
     "title": "Teil löschen",
@@ -136,6 +136,9 @@
       "quote_conversion": "Angebot umgewandelt",
       "manual_adjustment": "Manuelle Anpassung",
       "bulk_markup": "Massenaufschlag"
-    }
+    },
+    "backToInventory": "Lager",
+    "reason": "Grund",
+    "allReasons": "Alle Gründe"
   }
 }

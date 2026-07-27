@@ -23,7 +23,7 @@
   "actions": {
     "edit": "Edit",
     "delete": "Delete",
-    "history": "History"
+    "details": "Details & history"
   },
   "deletePart": {
     "title": "Delete Part",
@@ -136,6 +136,9 @@
       "quote_conversion": "Quote converted",
       "manual_adjustment": "Manual adjustment",
       "bulk_markup": "Bulk markup"
-    }
+    },
+    "backToInventory": "Inventory",
+    "reason": "Reason",
+    "allReasons": "All reasons"
   }
 }

@@ -23,7 +23,7 @@
   "actions": {
     "edit": "Bewerken",
     "delete": "Verwijderen",
-    "history": "Geschiedenis"
+    "details": "Details en geschiedenis"
   },
   "deletePart": {
     "title": "Onderdeel verwijderen",
@@ -136,6 +136,9 @@
       "quote_conversion": "Offerte omgezet",
       "manual_adjustment": "Handmatige aanpassing",
       "bulk_markup": "Bulkopslag"
-    }
+    },
+    "backToInventory": "Voorraad",
+    "reason": "Reden",
+    "allReasons": "Alle redenen"
   }
 }

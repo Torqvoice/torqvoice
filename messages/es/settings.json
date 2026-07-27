@@ -110,6 +110,10 @@
       "about": {
         "title": "Acerca de",
         "description": "Version e informacion"
+      },
+      "alerts": {
+        "title": "Alertas",
+        "description": "Avisos cuando haya que reponer piezas"
       }
     },
     "pro": "PRO"
@@ -1338,6 +1342,31 @@
       "failed": "Fallida",
       "retrying": "Reintentando",
       "pending": "Pendiente"
+    }
+  },
+  "alerts": {
+    "title": "Alertas",
+    "description": "Elija sobre qué eventos quiere recibir avisos y cómo.",
+    "lowStock": {
+      "title": "Alertas de stock bajo",
+      "description": "Avisar cuando una pieza alcance su punto de pedido. Cada pieza se informa una vez por caída y no vuelve a avisar hasta reponerla.",
+      "enable": "Activar alertas de stock bajo",
+      "enableHint": "Desactivado por defecto. Solo se vigilan piezas con punto de pedido.",
+      "inApp": "Notificación en la app",
+      "inAppHint": "Una notificación agrupada en la campana, no una por pieza.",
+      "email": "Resumen por correo",
+      "emailHint": "Un único correo con todas las piezas que acaban de bajar.",
+      "emailInterval": "Horas mínimas entre correos",
+      "emailIntervalHint": "Como máximo un resumen cada tantas horas. 0 desactiva el límite.",
+      "save": "Guardar alertas",
+      "saved": "Alertas de stock bajo guardadas",
+      "defaultThreshold": "Punto de pedido predeterminado",
+      "defaultThresholdHint": "Se aplica a piezas sin punto de pedido propio. 0 significa que solo se vigilan las piezas configuradas individualmente.",
+      "checkNow": "Comprobar ahora",
+      "checkDisabled": "Las alertas están desactivadas.",
+      "checkNothingNew": "Nada nuevo: todas las piezas bajas ya se informaron.",
+      "checkAlerted": "{count} pieza(s) recién baja(s) informada(s)",
+      "checkFailed": "Error al comprobar"
     }
   }
 }

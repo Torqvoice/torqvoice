@@ -23,7 +23,7 @@
   "actions": {
     "edit": "Modifier",
     "delete": "Supprimer",
-    "history": "Historique"
+    "details": "Détails et historique"
   },
   "deletePart": {
     "title": "Supprimer la pièce",
@@ -136,6 +136,9 @@
       "quote_conversion": "Devis converti",
       "manual_adjustment": "Ajustement manuel",
       "bulk_markup": "Marge en masse"
-    }
+    },
+    "backToInventory": "Inventaire",
+    "reason": "Motif",
+    "allReasons": "Tous les motifs"
   }
 }

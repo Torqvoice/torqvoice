@@ -1,14 +1,15 @@
 "use client";
 
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+import { isLow as isLowStock } from '@/features/inventory/Lib/lowStockAlerts';
 
 import { useState, useCallback, useTransition, useEffect } from "react";
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog';
-import { StockHistoryDialog } from '@/features/inventory/Components/StockHistoryDialog';
 import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog';
 import { useHardwareScanner } from '@/hooks/use-hardware-scanner';
 import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode';
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +55,7 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  AlertTriangle,
   ExternalLink,
   History,
   Loader2,
@@ -108,6 +110,8 @@ export function InventoryClient({
   markupMultiplier: initialMarkup = 1.0,
   sortBy: initialSortBy = "updatedAt",
   sortOrder: initialSortOrder = "desc",
+  lowStockDefault = 0,
+  lowStockOnly = false,
 }: {
   data: PaginatedData;
   search: string;
@@ -117,6 +121,10 @@ export function InventoryClient({
   markupMultiplier?: number;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  /** Org-wide fallback reorder point for parts with no minQuantity. */
+  lowStockDefault?: number;
+  /** Whether the list is currently filtered to low-stock parts. */
+  lowStockOnly?: boolean;
 }) {
   const formatCurrency = useFormatCurrency();
   const router = useRouter();
@@ -126,7 +134,6 @@ export function InventoryClient({
   const [isPending, startTransition] = useTransition();
   const [showForm, setShowForm] = useState(false);
   const [editPart, setEditPart] = useState<InventoryPart | null>(null);
-  const [historyPart, setHistoryPart] = useState<{ id: string; name: string } | null>(null);
   const [showMarkup, setShowMarkup] = useState(false);
   const [markupValue, setMarkupValue] = useState(String(initialMarkup));
   const [applyingMarkup, setApplyingMarkup] = useState(false);
@@ -182,7 +189,7 @@ export function InventoryClient({
           newParams.set(key, String(value));
         }
       }
-      if (!("page" in params) && ("search" in params || "category" in params)) {
+      if (!("page" in params) && ("search" in params || "category" in params || "lowStock" in params)) {
         newParams.delete("page");
       }
       startTransition(() => {
@@ -335,6 +342,18 @@ export function InventoryClient({
                 ))}
               </SelectContent>
             </Select>
+            {/* Toggle rather than a third dropdown: low stock is a yes/no lens
+                on the list, and it needs to be reachable from the page itself
+                (the dashboard card links straight here with ?lowStock=1). */}
+            <Button
+              size="sm"
+              variant={lowStockOnly ? "default" : "outline"}
+              onClick={() => navigate({ lowStock: lowStockOnly ? undefined : "1" })}
+              aria-pressed={lowStockOnly}
+            >
+              <AlertTriangle className="mr-1 h-3.5 w-3.5" />
+              {t('table.low')}
+            </Button>
             {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </div>
         )}
@@ -436,7 +455,7 @@ export function InventoryClient({
               </TableRow>
             ) : (
               data.parts.map((part) => {
-                const isLow = part.minQuantity > 0 && part.quantity <= part.minQuantity;
+                const isLow = isLowStock(part, lowStockDefault);
                 return (
                   <TableRow
                     key={part.id}
@@ -557,11 +576,11 @@ export function InventoryClient({
                             <Pencil className="mr-2 h-4 w-4" />
                             {t('actions.edit')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => setHistoryPart({ id: part.id, name: part.name })}
-                          >
-                            <History className="mr-2 h-4 w-4" />
-                            {t('actions.history')}
+                          <DropdownMenuItem asChild>
+                            <Link href={`/inventory/${part.id}`}>
+                              <History className="mr-2 h-4 w-4" />
+                              {t('actions.details')}
+                            </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive"
@@ -607,13 +626,6 @@ export function InventoryClient({
           setGalleryImages(urls);
           setGalleryIndex(startIndex);
         }}
-      />
-
-      <StockHistoryDialog
-        partId={historyPart?.id ?? null}
-        partName={historyPart?.name ?? ''}
-        open={!!historyPart}
-        onOpenChange={(o) => !o && setHistoryPart(null)}
       />
 
       {/* Bulk Markup Dialog */}

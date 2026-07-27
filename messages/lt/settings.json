@@ -110,6 +110,10 @@
       "about": {
         "title": "Apie",
         "description": "Versija ir informacija"
+      },
+      "alerts": {
+        "title": "Įspėjimai",
+        "description": "Pranešimai, kada užsakyti dalis"
       }
     },
     "pro": "PRO"
@@ -1338,6 +1342,31 @@
       "failed": "Nepavykę",
       "retrying": "Bandoma dar kartą",
       "pending": "Laukiama"
+    }
+  },
+  "alerts": {
+    "title": "Įspėjimai",
+    "description": "Pasirinkite, apie kuriuos įvykius ir kaip norite gauti pranešimus.",
+    "lowStock": {
+      "title": "Mažų atsargų įspėjimai",
+      "description": "Įspėti, kai dalis pasiekia užsakymo ribą. Kiekviena dalis pranešama vieną kartą per kritimą ir tyli, kol bus papildyta.",
+      "enable": "Įjungti mažų atsargų įspėjimus",
+      "enableHint": "Pagal nutylėjimą išjungta. Stebimos tik dalys su nustatyta užsakymo riba.",
+      "inApp": "Pranešimas programoje",
+      "inAppHint": "Vienas bendras pranešimas varpelyje, ne po vieną kiekvienai daliai.",
+      "email": "El. pašto suvestinė",
+      "emailHint": "Vienas laiškas su visomis ką tik sumažėjusiomis dalimis.",
+      "emailInterval": "Minimalus valandų tarpas tarp laiškų",
+      "emailIntervalHint": "Daugiausia viena suvestinė per tiek valandų. 0 panaikina ribą.",
+      "save": "Išsaugoti įspėjimus",
+      "saved": "Mažų atsargų įspėjimai išsaugoti",
+      "defaultThreshold": "Numatytoji užsakymo riba",
+      "defaultThresholdHint": "Taikoma dalims, neturinčioms savo ribos. 0 reiškia, kad stebimos tik atskirai sukonfigūruotos dalys.",
+      "checkNow": "Tikrinti dabar",
+      "checkDisabled": "Įspėjimai išjungti.",
+      "checkNothingNew": "Nieko naujo — visos mažos atsargos jau praneštos.",
+      "checkAlerted": "Pranešta apie {count} naujai sumažėjusią (-ias) dalį (-is)",
+      "checkFailed": "Patikra nepavyko"
     }
   }
 }

@@ -110,6 +110,10 @@
       "about": {
         "title": "Over",
         "description": "Versie en informatie"
+      },
+      "alerts": {
+        "title": "Meldingen",
+        "description": "Bericht wanneer onderdelen bijbesteld moeten worden"
       }
     },
     "pro": "PRO"
@@ -1338,6 +1342,31 @@
       "failed": "Mislukt",
       "retrying": "Opnieuw proberen",
       "pending": "In afwachting"
+    }
+  },
+  "alerts": {
+    "title": "Meldingen",
+    "description": "Kies over welke gebeurtenissen u bericht wilt, en hoe.",
+    "lowStock": {
+      "title": "Meldingen lage voorraad",
+      "description": "Waarschuw wanneer een onderdeel het bestelpunt bereikt. Elk onderdeel wordt één keer per daling gemeld en blijft stil tot het is aangevuld.",
+      "enable": "Meldingen lage voorraad inschakelen",
+      "enableHint": "Standaard uit. Alleen onderdelen met een bestelpunt worden gevolgd.",
+      "inApp": "Melding in de app",
+      "inAppHint": "Eén gegroepeerde melding in de bel, niet één per onderdeel.",
+      "email": "E-mailoverzicht",
+      "emailHint": "Eén e-mail met alle onderdelen die net onder het bestelpunt kwamen.",
+      "emailInterval": "Minimum uren tussen e-mails",
+      "emailIntervalHint": "Hooguit één overzicht per zoveel uur. 0 schakelt de limiet uit.",
+      "save": "Meldingen opslaan",
+      "saved": "Meldingen lage voorraad opgeslagen",
+      "defaultThreshold": "Standaard bestelpunt",
+      "defaultThresholdHint": "Geldt voor onderdelen zonder eigen bestelpunt. 0 betekent dat alleen individueel ingestelde onderdelen worden gevolgd.",
+      "checkNow": "Nu controleren",
+      "checkDisabled": "Meldingen staan uit.",
+      "checkNothingNew": "Niets nieuws — alle lage onderdelen zijn al gemeld.",
+      "checkAlerted": "{count} nieuw laag onderdeel/onderdelen gemeld",
+      "checkFailed": "Controle mislukt"
     }
   }
 }

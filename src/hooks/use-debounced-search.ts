@@ -35,36 +35,65 @@ export function useDebouncedSearch(
     onCommitRef.current = onCommit
   }, [onCommit])
 
-  // The term currently reflected in the URL. Seeded with the initial value so
-  // the first render never re-commits what the server already applied.
+  // The term currently reflected in the URL, always stored trimmed so it can be
+  // compared directly against the server-provided `initial`. Seeded so the
+  // first render never re-commits what the server already applied.
   const committedRef = useRef(initial)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Adopt external changes to the URL (back/forward, filter chips, reset).
+  const clearPending = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+  }
+
+  // Adopt genuinely external changes to the URL (back/forward, a filter chip,
+  // a reset link).
+  //
+  // Crucially this must NOT react to the echo of our own commit. Navigation is
+  // asynchronous, so characters typed while the server round-trips would be
+  // overwritten by the older term coming back down as a prop — the input would
+  // visibly drop a letter. Comparing against the last committed term
+  // distinguishes "someone else changed the URL" from "our own search landed".
   useEffect(() => {
+    if (initial === committedRef.current) return
     committedRef.current = initial
     setValue(initial)
   }, [initial])
 
-  useEffect(() => {
-    if (value === committedRef.current) return
+  // Debounce on the trimmed term: `committedRef` also holds a trimmed value, so
+  // typing a trailing space is not treated as a new search.
+  const term = value.trim()
 
-    const timer = setTimeout(() => {
-      committedRef.current = value
-      onCommitRef.current(value.trim() || undefined)
+  useEffect(() => {
+    if (term === committedRef.current) return
+
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null
+      committedRef.current = term
+      onCommitRef.current(term || undefined)
     }, delayMs)
 
-    return () => clearTimeout(timer)
-  }, [value, delayMs])
+    return clearPending
+  }, [term, delayMs])
 
   /**
    * Commit immediately, skipping the debounce. Wired to the form's onSubmit so
-   * pressing Enter still works and never double-fires.
+   * pressing Enter still works; cancelling the pending timer first stops it
+   * firing a duplicate navigation a moment later.
    */
-  const commitNow = useCallback((e?: React.FormEvent) => {
-    e?.preventDefault()
-    committedRef.current = value
-    onCommitRef.current(value.trim() || undefined)
-  }, [value])
+  const commitNow = useCallback(
+    (e?: React.FormEvent) => {
+      e?.preventDefault()
+      clearPending()
+      const next = value.trim()
+      if (next === committedRef.current) return
+      committedRef.current = next
+      onCommitRef.current(next || undefined)
+    },
+    [value],
+  )
 
   return { value, setValue, commitNow }
 }

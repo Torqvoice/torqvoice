@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { createQuoteSchema, updateQuoteSchema } from "../Schema/quoteSchema";
 import { revalidatePath } from "next/cache";
+import { onInventoryChanged } from "@/features/inventory/Lib/onInventoryChanged";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { reconcileInventoryForParts } from "@/features/inventory/Lib/reconcileStock";
@@ -469,6 +470,8 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
     revalidatePath("/quotes");
     revalidatePath("/work-orders");
     revalidatePath(`/vehicles/${vehicleId}`);
+    // Conversion consumed stock for any inventory-linked quote lines.
+    await onInventoryChanged(organizationId);
     return { ...record, convertedFromQuoteId: quoteId };
   }, {
     requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES }],

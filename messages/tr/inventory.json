@@ -23,7 +23,7 @@
   "actions": {
     "edit": "Düzenle",
     "delete": "Sil",
-    "history": "Geçmiş"
+    "details": "Ayrıntılar ve geçmiş"
   },
   "deletePart": {
     "title": "Parçayı sil",
@@ -136,6 +136,9 @@
       "quote_conversion": "Teklif dönüştürüldü",
       "manual_adjustment": "Manuel düzeltme",
       "bulk_markup": "Toplu kâr marjı"
-    }
+    },
+    "backToInventory": "Stok",
+    "reason": "Neden",
+    "allReasons": "Tüm nedenler"
   }
 }

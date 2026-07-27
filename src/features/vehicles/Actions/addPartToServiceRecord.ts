@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
+import { onInventoryChanged } from "@/features/inventory/Lib/onInventoryChanged";
 import { calculateTotals } from "@/lib/tax";
 import { reconcileInventoryForParts } from "@/features/inventory/Lib/reconcileStock";
 
@@ -90,6 +91,7 @@ export async function addPartToServiceRecord(input: {
       });
 
       revalidatePath(`/vehicles/${record.vehicleId}/service/${record.id}`);
+      if (input.inventoryPartId) await onInventoryChanged(organizationId);
 
       return part;
     },

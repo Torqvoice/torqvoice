@@ -110,6 +110,10 @@
       "about": {
         "title": "Sobre",
         "description": "Versao e informacoes"
+      },
+      "alerts": {
+        "title": "Alertas",
+        "description": "Aviso quando peças precisam ser repostas"
       }
     },
     "pro": "PRO"
@@ -1338,6 +1342,31 @@
       "failed": "Falhou",
       "retrying": "Tentando novamente",
       "pending": "Pendente"
+    }
+  },
+  "alerts": {
+    "title": "Alertas",
+    "description": "Escolha sobre quais eventos deseja ser avisado e como.",
+    "lowStock": {
+      "title": "Alertas de estoque baixo",
+      "description": "Avisar quando uma peça atingir o ponto de reposição. Cada peça é informada uma vez por queda e fica em silêncio até ser reposta.",
+      "enable": "Ativar alertas de estoque baixo",
+      "enableHint": "Desativado por padrão. Só peças com ponto de reposição são monitoradas.",
+      "inApp": "Notificação no app",
+      "inAppHint": "Uma notificação agrupada no sino, não uma por peça.",
+      "email": "Resumo por e-mail",
+      "emailHint": "Um único e-mail listando todas as peças que acabaram de ficar baixas.",
+      "emailInterval": "Horas mínimas entre e-mails",
+      "emailIntervalHint": "No máximo um resumo a cada tantas horas. 0 desativa o limite.",
+      "save": "Salvar alertas",
+      "saved": "Alertas de estoque baixo salvos",
+      "defaultThreshold": "Ponto de reposição padrão",
+      "defaultThresholdHint": "Aplicado a peças sem ponto de reposição próprio. 0 significa que só peças configuradas individualmente são monitoradas.",
+      "checkNow": "Verificar agora",
+      "checkDisabled": "Os alertas estão desativados.",
+      "checkNothingNew": "Nada novo — todas as peças baixas já foram informadas.",
+      "checkAlerted": "{count} peça(s) recém-baixa(s) informada(s)",
+      "checkFailed": "Falha na verificação"
     }
   }
 }

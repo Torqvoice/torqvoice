@@ -55,6 +55,10 @@ export default async function InventoryPage({
           markupMultiplier={markupMultiplier}
           sortBy={params.sortBy || "updatedAt"}
           sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
+          lowStockDefault={
+            Number(settings[SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD]) || 0
+          }
+          lowStockOnly={params.lowStock === "1"}
         />
       </div>
     </>

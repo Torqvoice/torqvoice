@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { createServiceSchema, updateServiceSchema } from "../Schema/serviceSchema";
 import { revalidatePath } from "next/cache";
+import { onInventoryChanged } from "@/features/inventory/Lib/onInventoryChanged";
 import { unlink } from "fs/promises";
 import { randomUUID } from "crypto";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
@@ -362,7 +363,7 @@ export async function createServiceRecord(input: unknown) {
     // Revalidate inventory if any parts were sourced from inventory
     const hasInventoryParts = partItems?.some((p) => p.inventoryPartId);
     if (hasInventoryParts) {
-      revalidatePath("/inventory");
+      await onInventoryChanged(organizationId);
     }
 
     // Update vehicle mileage if service mileage is higher, and reset maintenance dismissed
@@ -565,6 +566,8 @@ export async function updateServiceRecord(input: unknown) {
     revalidatePath(`/vehicles/${existing.vehicleId}`);
     revalidatePath(`/vehicles/${existing.vehicleId}/service/${id}`);
     revalidatePath("/services");
+    // Parts may have been added, changed or removed on this record.
+    await onInventoryChanged(organizationId);
     return record;
   }, {
     requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }],
@@ -771,6 +774,8 @@ export async function deleteServiceRecord(recordId: string) {
     revalidatePath("/");
     revalidatePath(`/vehicles/${record.vehicleId}`);
     revalidatePath("/services");
+    // Deleting the record restocked its linked parts.
+    await onInventoryChanged(organizationId);
     return { recordId };
   }, {
     requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.SERVICES }],

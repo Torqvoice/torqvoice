@@ -3,13 +3,14 @@
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { createInventoryPartSchema, updateInventoryPartSchema, adjustStockSchema } from "../Schema/inventorySchema";
-import { revalidatePath } from "next/cache";
+import { onInventoryChanged } from "../Lib/onInventoryChanged";
 import { Prisma } from "@/generated/prisma/client";
 import { z } from "zod";
 import { unlink } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { normalizeBarcode, withBarcodeConflictMessage } from "../Lib/barcode";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 
 export async function getInventoryPartsPaginated(params: {
   page?: number;
@@ -51,13 +52,23 @@ export async function getInventoryPartsPaginated(params: {
       // matching ids are resolved in SQL first. The low-stock set is small by
       // definition (parts at or below their reorder point), so the extra query
       // stays cheap and pagination/sorting below is unaffected.
+      // Same rule as isLow() in Lib/lowStockAlerts and the dashboard count:
+      // the part's own reorder point wins, else the org-wide default.
+      const thresholdRow = await db.appSetting.findFirst({
+        where: { organizationId, key: SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD },
+        select: { value: true },
+      });
+      const parsedDefault = Number(thresholdRow?.value);
+      const lowStockDefault =
+        Number.isFinite(parsedDefault) && parsedDefault > 0 ? parsedDefault : 0;
+
       const lowRows = await db.$queryRaw<{ id: string }[]>`
         SELECT "id"
         FROM "inventory_parts"
         WHERE "organizationId" = ${organizationId}
           AND "isArchived" = false
-          AND "minQuantity" > 0
-          AND "quantity" <= "minQuantity"
+          AND COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault}) > 0
+          AND "quantity" <= COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault})
       `;
       where.id = { in: lowRows.map((r) => r.id) };
     }
@@ -135,7 +146,7 @@ export async function createInventoryPart(input: unknown) {
       });
     }
 
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return part;
   }, {
     requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INVENTORY }],
@@ -204,7 +215,7 @@ export async function updateInventoryPart(input: unknown) {
       }),
     );
     if (result.count === 0) throw new Error("Part not found");
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return { updated: true, partId: id };
   }, {
     requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }],
@@ -242,7 +253,7 @@ export async function deleteInventoryPart(partId: string) {
       }
     }
 
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return { deleted: true, partId };
   }, {
     requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INVENTORY }],
@@ -280,7 +291,7 @@ export async function deleteInventoryParts(partIds: string[]) {
       try { await unlink(resolveUploadPath(url)); } catch { /* already gone */ }
     }
 
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return { deleted: result.count };
   }, {
     requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.INVENTORY }],
@@ -309,7 +320,7 @@ export async function adjustInventoryStock(input: unknown) {
       where: { id, organizationId },
       data: { quantity: newQuantity },
     });
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return { quantity: newQuantity };
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }] });
 }
@@ -368,7 +379,7 @@ export async function applyMarkupToAll(input: unknown) {
         ${overrideExisting ? Prisma.sql`` : Prisma.sql`AND ("sellPrice" = 0 OR "sellPrice" IS NULL)`}
     `;
 
-    revalidatePath("/inventory");
+    await onInventoryChanged(organizationId);
     return { updated: result };
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INVENTORY }] });
 }

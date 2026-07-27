@@ -484,6 +484,13 @@ model InventoryPart {
   imageUrl      String?
   location      String?
   isArchived    Boolean  @default(false)
+
+  /// Set when a low-stock alert has been sent for the current dip below
+  /// `minQuantity`, and cleared once stock climbs back above it. This
+  /// hysteresis is what stops a part that sits at zero from re-alerting on
+  /// every check — it alerts once per descent, not once per run.
+  lowStockAlertedAt DateTime?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

@@ -110,6 +110,10 @@
       "about": {
         "title": "About",
         "description": "Version & info"
+      },
+      "alerts": {
+        "title": "Alerts",
+        "description": "Get told when parts need reordering"
       }
     },
     "pro": "PRO"
@@ -1338,6 +1342,31 @@
       "failed": "Failed",
       "retrying": "Retrying",
       "pending": "Pending"
+    }
+  },
+  "alerts": {
+    "title": "Alerts",
+    "description": "Choose which events you want to be told about, and how.",
+    "lowStock": {
+      "title": "Low stock alerts",
+      "description": "Alert when a part reaches its reorder point. Each part is reported once per dip and stays quiet until it is restocked, so nothing repeats.",
+      "enable": "Enable low stock alerts",
+      "enableHint": "Off by default. Only parts with a reorder point set are watched.",
+      "inApp": "In-app notification",
+      "inAppHint": "One grouped notification in the bell, not one per part.",
+      "email": "Email digest",
+      "emailHint": "A single email listing every part that just went low.",
+      "emailInterval": "Minimum hours between emails",
+      "emailIntervalHint": "At most one digest per this many hours. 0 disables the limit.",
+      "save": "Save alert settings",
+      "saved": "Low stock alert settings saved",
+      "defaultThreshold": "Default reorder point",
+      "defaultThresholdHint": "Applied to parts that have no reorder point of their own. 0 means only parts you configure individually are watched.",
+      "checkNow": "Check now",
+      "checkDisabled": "Alerts are turned off.",
+      "checkNothingNew": "Nothing new — every low part has already been reported.",
+      "checkAlerted": "{count} newly low part(s) reported",
+      "checkFailed": "Check failed"
     }
   }
 }

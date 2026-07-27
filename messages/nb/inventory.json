@@ -23,7 +23,7 @@
   "actions": {
     "edit": "Rediger",
     "delete": "Slett",
-    "history": "Historikk"
+    "details": "Detaljer og historikk"
   },
   "deletePart": {
     "title": "Slett del",
@@ -136,6 +136,9 @@
       "quote_conversion": "Tilbud konvertert",
       "manual_adjustment": "Manuell justering",
       "bulk_markup": "Masse-påslag"
-    }
+    },
+    "backToInventory": "Lager",
+    "reason": "Årsak",
+    "allReasons": "Alle årsaker"
   }
 }

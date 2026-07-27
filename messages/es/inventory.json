@@ -23,7 +23,7 @@
   "actions": {
     "edit": "Editar",
     "delete": "Eliminar",
-    "history": "Historial"
+    "details": "Detalles e historial"
   },
   "deletePart": {
     "title": "Eliminar pieza",
@@ -136,6 +136,9 @@
       "quote_conversion": "Presupuesto convertido",
       "manual_adjustment": "Ajuste manual",
       "bulk_markup": "Margen masivo"
-    }
+    },
+    "backToInventory": "Inventario",
+    "reason": "Motivo",
+    "allReasons": "Todos los motivos"
   }
 }

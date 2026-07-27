@@ -23,7 +23,7 @@
   "actions": {
     "edit": "Redaguoti",
     "delete": "Ištrinti",
-    "history": "Istorija"
+    "details": "Informacija ir istorija"
   },
   "deletePart": {
     "title": "Ištrinti dalį",
@@ -136,6 +136,9 @@
       "quote_conversion": "Pasiūlymas konvertuotas",
       "manual_adjustment": "Rankinis koregavimas",
       "bulk_markup": "Masinis antkainis"
-    }
+    },
+    "backToInventory": "Sandėlis",
+    "reason": "Priežastis",
+    "allReasons": "Visos priežastys"
   }
 }

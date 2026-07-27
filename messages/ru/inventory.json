@@ -23,7 +23,7 @@
   "actions": {
     "edit": "Редактировать",
     "delete": "Удалить",
-    "history": "История"
+    "details": "Детали и история"
   },
   "deletePart": {
     "title": "Удалить запчасть",
@@ -136,6 +136,9 @@
       "quote_conversion": "Предложение конвертировано",
       "manual_adjustment": "Ручная корректировка",
       "bulk_markup": "Массовая наценка"
-    }
+    },
+    "backToInventory": "Склад",
+    "reason": "Причина",
+    "allReasons": "Все причины"
   }
 }
