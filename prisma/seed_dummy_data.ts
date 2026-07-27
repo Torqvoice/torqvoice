@@ -152,8 +152,78 @@ async function provisionDemoAccount() {
   console.log(`  Owner: ${DEMO_EMAIL} (org: ${DEMO_ORG_NAME})\n`);
 }
 
+/**
+ * Remove files a demo visitor uploaded, while preserving the seed's own cached
+ * vehicle images. `prisma/seed-assets/vehicles/` ships empty, so those images
+ * were fetched from Unsplash once and cached in the data volume — deleting them
+ * would trigger a full re-download on every 3-hourly reset.
+ */
+function cleanupUploads() {
+  const orgRoot = path.join(DATA_ROOT, "uploads", ORG_ID);
+  if (!fs.existsSync(orgRoot)) return;
+
+  const keep = new Set(Object.keys(vehicleImages));
+  let removed = 0;
+
+  const walk = (dir: string) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+        // Drop directories that are now empty (e.g. documents/, diagnostics/).
+        if (fs.readdirSync(full).length === 0) fs.rmdirSync(full);
+        continue;
+      }
+      // Preserve the cached seed images living in uploads/<org>/vehicles/.
+      if (dir === UPLOAD_DIR && keep.has(entry.name)) continue;
+      fs.unlinkSync(full);
+      removed++;
+    }
+  };
+
+  try {
+    walk(orgRoot);
+    console.log(`  Removed ${removed} visitor-uploaded file(s).`);
+  } catch (err) {
+    console.warn("  Upload cleanup failed:", err);
+  }
+}
+
 async function cleanup() {
   console.log("Cleaning existing data...");
+
+  // Config/state a visitor can change that would otherwise survive every reset:
+  // branding, invoice templates, webhooks pointing at external URLs, schedules,
+  // custom presets. Deleting a Webhook cascades its WebhookDelivery rows.
+  await prisma.webhook.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.reportSchedule.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.teamInvitation.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.laborPreset.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.inspectionTemplate.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.customFieldDefinition.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.subscription.deleteMany({ where: { organizationId: ORG_ID } });
+  // Wipes branding, logo, invoice layout, localization, tax config. The
+  // maintenance.* keys are re-upserted later in the seed.
+  await prisma.appSetting.deleteMany({ where: { organizationId: ORG_ID } });
+
+  // Transient/accumulating records.
+  await prisma.aiChat.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.notification.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.telegramMessage.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.customerMagicLink.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.customerSmsCode.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.auditLog.deleteMany({ where: { organizationId: ORG_ID } });
+
+  // Any team member a visitor added — but never the demo owner, which
+  // provisionDemoAccount() upserts just before this runs.
+  await prisma.organizationMember.deleteMany({
+    where: { organizationId: ORG_ID, userId: { not: USER_ID } },
+  });
+  // Custom roles; OrganizationMember.roleId is onDelete: SetNull, so safe.
+  await prisma.role.deleteMany({ where: { organizationId: ORG_ID } });
+
+  // Core CRUD data. Inspection, ServiceRequest, CustomerSession, StatusReport
+  // and InspectionQuoteRequest cascade from Vehicle/Customer/ServiceRecord.
   await prisma.technician.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.smsMessage.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.quote.deleteMany({ where: { organizationId: ORG_ID } });
@@ -164,6 +234,8 @@ async function cleanup() {
   await prisma.vehicle.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.customer.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.inventoryPart.deleteMany({ where: { organizationId: ORG_ID } });
+
+  cleanupUploads();
   console.log("  Done.\n");
 }
 
