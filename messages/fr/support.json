@@ -1,0 +1,33 @@
+{
+  "title": "Demande d'assistance",
+  "open": "Contacter l'assistance",
+  "close": "Fermer",
+  "subjectLabel": "Objet",
+  "subjectPlaceholder": "Bref résumé du problème",
+  "messageLabel": "Description",
+  "messagePlaceholder": "Que s'est-il passé et qu'attendiez-vous à la place ?",
+  "takeScreenshot": "Faire une capture",
+  "addFiles": "Ajouter des fichiers",
+  "removeAttachment": "Retirer la pièce jointe",
+  "attachmentSummary": "{count} sur {max} pièces jointes · {size} Mo",
+  "send": "Envoyer la demande",
+  "sending": "Envoi…",
+  "sentTitle": "Demande envoyée",
+  "sentDescription": "Nous répondrons à l'adresse e-mail de votre compte.",
+  "sendAnother": "En envoyer une autre",
+  "hideButton": "Masquer le bouton d'assistance",
+  "dragHint": "Faites glisser pour déplacer",
+  "move": "Déplacer",
+  "restore": "Afficher le bouton d'assistance",
+  "errors": {
+    "sendFailed": "La demande n'a pas pu être envoyée. Veuillez réessayer.",
+    "screenshotFailed": "La capture d'écran n'a pas pu être réalisée.",
+    "subject-required": "Ajoutez un objet.",
+    "subject-too-long": "L'objet est trop long.",
+    "message-required": "Ajoutez une description.",
+    "message-too-long": "La description est trop longue.",
+    "too-many-attachments": "Vous pouvez joindre jusqu'à {max} fichiers.",
+    "attachment-type-not-allowed": "Ce type de fichier ne peut pas être joint.",
+    "attachments-too-large": "Les pièces jointes sont trop volumineuses. La limite est de 10 Mo au total."
+  }
+}

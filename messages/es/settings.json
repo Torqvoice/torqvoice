@@ -114,6 +114,10 @@
       "alerts": {
         "title": "Alertas",
         "description": "Avisos cuando haya que reponer piezas"
+      },
+      "support": {
+        "title": "Soporte",
+        "description": "Contactar con soporte y gestionar el botón"
       }
     },
     "pro": "PRO"
@@ -1370,5 +1374,14 @@
       "configurePerPart": "Defina la cantidad mínima de una pieza en la página de inventario →",
       "readMore": "Leer más"
     }
+  },
+  "support": {
+    "title": "Soporte",
+    "description": "Contacte con el equipo de soporte de Torqvoice sin salir de la aplicación. Su solicitud incluye su organización y la página en la que estaba.",
+    "showButton": "Mostrar el botón de soporte",
+    "showButtonHint": "Un botón que puede arrastrar, en todas las páginas de este dispositivo. Cuando está oculto, una pequeña pestaña en el borde derecho lo recupera.",
+    "contactTitle": "Contactar con soporte",
+    "contactHint": "Abrir el formulario de soporte directamente.",
+    "contactAction": "Abrir formulario"
   }
 }

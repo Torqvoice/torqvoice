@@ -1,0 +1,33 @@
+{
+  "title": "Richiesta di assistenza",
+  "open": "Contatta l'assistenza",
+  "close": "Chiudi",
+  "subjectLabel": "Oggetto",
+  "subjectPlaceholder": "Breve riepilogo del problema",
+  "messageLabel": "Descrizione",
+  "messagePlaceholder": "Cosa è successo e cosa ti aspettavi invece?",
+  "takeScreenshot": "Cattura schermata",
+  "addFiles": "Aggiungi file",
+  "removeAttachment": "Rimuovi allegato",
+  "attachmentSummary": "{count} di {max} allegati · {size} MB",
+  "send": "Invia richiesta",
+  "sending": "Invio…",
+  "sentTitle": "Richiesta inviata",
+  "sentDescription": "Risponderemo all'indirizzo e-mail del tuo account.",
+  "sendAnother": "Invia un'altra",
+  "hideButton": "Nascondi il pulsante di assistenza",
+  "dragHint": "Trascina per spostare",
+  "move": "Sposta",
+  "restore": "Mostra il pulsante di assistenza",
+  "errors": {
+    "sendFailed": "Impossibile inviare la richiesta. Riprova.",
+    "screenshotFailed": "Impossibile catturare la schermata.",
+    "subject-required": "Aggiungi un oggetto.",
+    "subject-too-long": "L'oggetto è troppo lungo.",
+    "message-required": "Aggiungi una descrizione.",
+    "message-too-long": "La descrizione è troppo lunga.",
+    "too-many-attachments": "Puoi allegare fino a {max} file.",
+    "attachment-type-not-allowed": "Questo tipo di file non può essere allegato.",
+    "attachments-too-large": "Gli allegati sono troppo grandi. Il limite è di 10 MB in totale."
+  }
+}

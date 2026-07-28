@@ -114,6 +114,10 @@
       "alerts": {
         "title": "Alerty",
         "description": "Powiadomienia o konieczności zamówienia części"
+      },
+      "support": {
+        "title": "Pomoc",
+        "description": "Skontaktuj się z pomocą i zarządzaj przyciskiem"
       }
     },
     "pro": "PRO"
@@ -1370,5 +1374,14 @@
       "configurePerPart": "Ustaw min. ilość części na stronie magazynu →",
       "readMore": "Czytaj więcej"
     }
+  },
+  "support": {
+    "title": "Pomoc",
+    "description": "Skontaktuj się z zespołem pomocy Torqvoice bez opuszczania aplikacji. Zgłoszenie zawiera Twoją organizację i stronę, na której byłeś.",
+    "showButton": "Pokaż przycisk pomocy",
+    "showButtonHint": "Przeciągalny przycisk na każdej stronie, na tym urządzeniu. Po ukryciu przywraca go mała zakładka przy prawej krawędzi.",
+    "contactTitle": "Skontaktuj się z pomocą",
+    "contactHint": "Otwórz formularz pomocy od razu.",
+    "contactAction": "Otwórz formularz"
   }
 }

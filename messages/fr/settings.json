@@ -114,6 +114,10 @@
       "alerts": {
         "title": "Alertes",
         "description": "Être averti quand il faut réapprovisionner"
+      },
+      "support": {
+        "title": "Assistance",
+        "description": "Contacter l'assistance et gérer le bouton"
       }
     },
     "pro": "PRO"
@@ -1370,5 +1374,14 @@
       "configurePerPart": "Définir la Qté min d'une pièce sur la page inventaire →",
       "readMore": "En savoir plus"
     }
+  },
+  "support": {
+    "title": "Assistance",
+    "description": "Contactez l'équipe d'assistance Torqvoice sans quitter l'application. Votre demande inclut votre organisation et la page consultée.",
+    "showButton": "Afficher le bouton d'assistance",
+    "showButtonHint": "Un bouton déplaçable sur chaque page, sur cet appareil. Une fois masqué, un petit onglet sur le bord droit le fait revenir.",
+    "contactTitle": "Contacter l'assistance",
+    "contactHint": "Ouvrir directement le formulaire d'assistance.",
+    "contactAction": "Ouvrir le formulaire"
   }
 }

@@ -114,6 +114,10 @@
       "alerts": {
         "title": "Alertas",
         "description": "Aviso quando peças precisam ser repostas"
+      },
+      "support": {
+        "title": "Suporte",
+        "description": "Falar com o suporte e gerenciar o botão"
       }
     },
     "pro": "PRO"
@@ -1370,5 +1374,14 @@
       "configurePerPart": "Defina a Qtd. mín. de uma peça na página de estoque →",
       "readMore": "Saiba mais"
     }
+  },
+  "support": {
+    "title": "Suporte",
+    "description": "Fale com a equipe de suporte da Torqvoice sem sair do aplicativo. Sua solicitação inclui sua organização e a página em que você estava.",
+    "showButton": "Mostrar o botão de suporte",
+    "showButtonHint": "Um botão arrastável em todas as páginas, neste dispositivo. Quando oculto, uma pequena aba na borda direita o traz de volta.",
+    "contactTitle": "Falar com o suporte",
+    "contactHint": "Abrir o formulário de suporte imediatamente.",
+    "contactAction": "Abrir formulário"
   }
 }

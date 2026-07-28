@@ -114,6 +114,10 @@
       "alerts": {
         "title": "Warnungen",
         "description": "Benachrichtigung bei Nachbestellbedarf"
+      },
+      "support": {
+        "title": "Support",
+        "description": "Support kontaktieren und die Support-Schaltfläche verwalten"
       }
     },
     "pro": "PRO"
@@ -1370,5 +1374,14 @@
       "configurePerPart": "Mindestmenge eines Teils auf der Lagerseite festlegen →",
       "readMore": "Mehr erfahren"
     }
+  },
+  "support": {
+    "title": "Support",
+    "description": "Erreichen Sie das Torqvoice-Supportteam, ohne die App zu verlassen. Ihre Anfrage enthält Ihre Organisation und die Seite, auf der Sie waren.",
+    "showButton": "Support-Schaltfläche anzeigen",
+    "showButtonHint": "Eine verschiebbare Schaltfläche auf jeder Seite, auf diesem Gerät. Wenn sie ausgeblendet ist, holt sie ein kleiner Reiter am rechten Rand zurück.",
+    "contactTitle": "Support kontaktieren",
+    "contactHint": "Öffnet das Supportformular direkt.",
+    "contactAction": "Formular öffnen"
   }
 }

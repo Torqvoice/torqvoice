@@ -49,6 +49,12 @@ export const SYSTEM_SETTING_KEYS = {
   SES_REGION: "ses.region",
   SES_FROM_EMAIL: "ses.fromEmail",
   SES_FROM_NAME: "ses.fromName",
+
+  // In-app support requests. Written from the torqvoice.com admin dashboard
+  // rather than from this app: whether a workshop may reach support is a
+  // platform decision, not one the workshop makes for itself.
+  SUPPORT_ENABLED: "support.enabled",
+  SUPPORT_RECIPIENT_EMAIL: "support.recipientEmail",
 } as const;
 
 export type SystemSettingKey =

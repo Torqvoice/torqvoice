@@ -1,0 +1,33 @@
+{
+  "title": "Supportverzoek",
+  "open": "Contact met support",
+  "close": "Sluiten",
+  "subjectLabel": "Onderwerp",
+  "subjectPlaceholder": "Korte samenvatting van het probleem",
+  "messageLabel": "Omschrijving",
+  "messagePlaceholder": "Wat gebeurde er en wat verwachtte u in plaats daarvan?",
+  "takeScreenshot": "Schermafbeelding maken",
+  "addFiles": "Bestanden toevoegen",
+  "removeAttachment": "Bijlage verwijderen",
+  "attachmentSummary": "{count} van {max} bijlagen · {size} MB",
+  "send": "Verzoek versturen",
+  "sending": "Versturen…",
+  "sentTitle": "Verzoek verstuurd",
+  "sentDescription": "We reageren op het e-mailadres van uw account.",
+  "sendAnother": "Nog een versturen",
+  "hideButton": "Supportknop verbergen",
+  "dragHint": "Sleep om te verplaatsen",
+  "move": "Verplaatsen",
+  "restore": "Supportknop tonen",
+  "errors": {
+    "sendFailed": "Het verzoek kon niet worden verstuurd. Probeer het opnieuw.",
+    "screenshotFailed": "De schermafbeelding kon niet worden gemaakt.",
+    "subject-required": "Voeg een onderwerp toe.",
+    "subject-too-long": "Het onderwerp is te lang.",
+    "message-required": "Voeg een omschrijving toe.",
+    "message-too-long": "De omschrijving is te lang.",
+    "too-many-attachments": "U kunt maximaal {max} bestanden bijvoegen.",
+    "attachment-type-not-allowed": "Dit bestandstype kan niet worden bijgevoegd.",
+    "attachments-too-large": "De bijlagen zijn te groot. De limiet is in totaal 10 MB."
+  }
+}

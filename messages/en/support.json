@@ -1,0 +1,33 @@
+{
+  "title": "Support request",
+  "open": "Contact support",
+  "close": "Close",
+  "subjectLabel": "Subject",
+  "subjectPlaceholder": "Short summary of the problem",
+  "messageLabel": "Description",
+  "messagePlaceholder": "What happened, and what did you expect instead?",
+  "takeScreenshot": "Take Screenshot",
+  "addFiles": "Add Files",
+  "removeAttachment": "Remove attachment",
+  "attachmentSummary": "{count} of {max} attachments · {size} MB",
+  "send": "Send request",
+  "sending": "Sending…",
+  "sentTitle": "Request sent",
+  "sentDescription": "We will reply to the email address on your account.",
+  "sendAnother": "Send another",
+  "hideButton": "Hide the support button",
+  "dragHint": "Drag to move",
+  "move": "Move",
+  "restore": "Show support button",
+  "errors": {
+    "sendFailed": "The request could not be sent. Please try again.",
+    "screenshotFailed": "The screenshot could not be captured.",
+    "subject-required": "Add a subject.",
+    "subject-too-long": "The subject is too long.",
+    "message-required": "Add a description.",
+    "message-too-long": "The description is too long.",
+    "too-many-attachments": "You can attach up to {max} files.",
+    "attachment-type-not-allowed": "That file type cannot be attached.",
+    "attachments-too-large": "The attachments are too large. The limit is 10 MB in total."
+  }
+}

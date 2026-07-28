@@ -114,6 +114,10 @@
       "alerts": {
         "title": "Alerts",
         "description": "Get told when parts need reordering"
+      },
+      "support": {
+        "title": "Support",
+        "description": "Contact support and manage the support button"
       }
     },
     "pro": "PRO"
@@ -1370,5 +1374,14 @@
       "configurePerPart": "Set a part's own Min Qty on the inventory page →",
       "readMore": "Read More"
     }
+  },
+  "support": {
+    "title": "Support",
+    "description": "Reach the Torqvoice support team without leaving the app. Your request includes your organisation and the page you were on.",
+    "showButton": "Show the support button",
+    "showButtonHint": "A draggable button on every page, on this device. When hidden, a small tab on the right edge brings it back.",
+    "contactTitle": "Contact support",
+    "contactHint": "Open the support form straight away.",
+    "contactAction": "Open form"
   }
 }

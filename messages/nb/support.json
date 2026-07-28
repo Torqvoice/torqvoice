@@ -1,0 +1,33 @@
+{
+  "title": "Supporthenvendelse",
+  "open": "Kontakt support",
+  "close": "Lukk",
+  "subjectLabel": "Emne",
+  "subjectPlaceholder": "Kort oppsummering av problemet",
+  "messageLabel": "Beskrivelse",
+  "messagePlaceholder": "Hva skjedde, og hva forventet du i stedet?",
+  "takeScreenshot": "Ta skjermbilde",
+  "addFiles": "Legg ved filer",
+  "removeAttachment": "Fjern vedlegg",
+  "attachmentSummary": "{count} av {max} vedlegg · {size} MB",
+  "send": "Send henvendelse",
+  "sending": "Sender…",
+  "sentTitle": "Henvendelsen er sendt",
+  "sentDescription": "Vi svarer til e-postadressen på kontoen din.",
+  "sendAnother": "Send en til",
+  "hideButton": "Skjul supportknappen",
+  "dragHint": "Dra for å flytte",
+  "move": "Flytt",
+  "restore": "Vis supportknappen",
+  "errors": {
+    "sendFailed": "Henvendelsen kunne ikke sendes. Prøv igjen.",
+    "screenshotFailed": "Skjermbildet kunne ikke tas.",
+    "subject-required": "Legg til et emne.",
+    "subject-too-long": "Emnet er for langt.",
+    "message-required": "Legg til en beskrivelse.",
+    "message-too-long": "Beskrivelsen er for lang.",
+    "too-many-attachments": "Du kan legge ved inntil {max} filer.",
+    "attachment-type-not-allowed": "Denne filtypen kan ikke legges ved.",
+    "attachments-too-large": "Vedleggene er for store. Grensen er 10 MB totalt."
+  }
+}

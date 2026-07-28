@@ -3,6 +3,7 @@ import { SettingsNav } from "./settings-nav";
 import { SettingsPermissionProvider } from "./settings-permission-context";
 import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
+import { isSupportEnabled } from "@/lib/support";
 import { redirect } from "next/navigation";
 import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
@@ -41,6 +42,7 @@ export default async function SettingsLayout({
   }
 
   const features = await getFeatures(data.organizationId);
+  const supportEnabled = await isSupportEnabled();
   const t = await getTranslations("settings");
 
   return (
@@ -56,11 +58,11 @@ export default async function SettingsLayout({
           </div>
           <div className="flex min-h-0 flex-1 flex-col gap-6 md:flex-row">
             <aside className="hidden shrink-0 overflow-y-auto md:block md:w-56 lg:w-64">
-              <SettingsNav features={features} isCloud={isCloudMode()} />
+              <SettingsNav features={features} isCloud={isCloudMode()} supportEnabled={supportEnabled} />
             </aside>
             <div className="min-w-0 flex-1 overflow-y-auto pb-8">
               <div className="mb-4 md:hidden">
-                <SettingsNav features={features} isCloud={isCloudMode()} mobile />
+                <SettingsNav features={features} isCloud={isCloudMode()} supportEnabled={supportEnabled} mobile />
               </div>
               {children}
             </div>

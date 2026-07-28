@@ -114,6 +114,10 @@
       "alerts": {
         "title": "Avvisi",
         "description": "Segnalazione quando riordinare"
+      },
+      "support": {
+        "title": "Assistenza",
+        "description": "Contatta l'assistenza e gestisci il pulsante"
       }
     },
     "pro": "PRO"
@@ -1370,5 +1374,14 @@
       "configurePerPart": "Imposta la Qtà min di un ricambio nella pagina magazzino →",
       "readMore": "Scopri di più"
     }
+  },
+  "support": {
+    "title": "Assistenza",
+    "description": "Contatta il team di assistenza Torqvoice senza uscire dall'app. La richiesta include la tua organizzazione e la pagina in cui ti trovavi.",
+    "showButton": "Mostra il pulsante di assistenza",
+    "showButtonHint": "Un pulsante trascinabile su ogni pagina, su questo dispositivo. Quando è nascosto, una piccola linguetta sul bordo destro lo riporta.",
+    "contactTitle": "Contatta l'assistenza",
+    "contactHint": "Apri subito il modulo di assistenza.",
+    "contactAction": "Apri il modulo"
   }
 }

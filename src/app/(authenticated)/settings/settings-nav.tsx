@@ -34,6 +34,7 @@ import {
   Webhook,
   Wrench,
   BellRing,
+  LifeBuoy,
 } from 'lucide-react'
 
 type SettingsNavItem = {
@@ -43,6 +44,11 @@ type SettingsNavItem = {
   gate?: keyof PlanFeatures
   cloudOnly?: boolean
   selfHostedOnly?: boolean
+  /**
+   * Hidden unless the platform has switched support requests on. Implies cloud
+   * already, since the flag is only ever true in cloud mode.
+   */
+  supportOnly?: boolean
 }
 
 type SettingsCategory = {
@@ -59,6 +65,7 @@ const settingsCategories: SettingsCategory[] = [
       { key: 'account', href: '/settings/account', icon: UserCog },
       { key: 'team', href: '/settings/team', icon: UsersRound },
       { key: 'localization', href: '/settings/localization', icon: Globe },
+      { key: 'support', href: '/settings/support', icon: LifeBuoy, supportOnly: true },
     ],
   },
   {
@@ -113,10 +120,12 @@ const settingsCategories: SettingsCategory[] = [
 export function SettingsNav({
   features,
   isCloud,
+  supportEnabled,
   mobile,
 }: {
   features?: PlanFeatures
   isCloud?: boolean
+  supportEnabled?: boolean
   mobile?: boolean
 }) {
   const pathname = usePathname()
@@ -126,6 +135,7 @@ export function SettingsNav({
   const filterItem = (item: SettingsNavItem) => {
     if (item.cloudOnly && !isCloud) return false
     if (item.selfHostedOnly && isCloud) return false
+    if (item.supportOnly && !supportEnabled) return false
     return true
   }
 

@@ -1,0 +1,33 @@
+{
+  "title": "Supportanfrage",
+  "open": "Support kontaktieren",
+  "close": "Schließen",
+  "subjectLabel": "Betreff",
+  "subjectPlaceholder": "Kurze Zusammenfassung des Problems",
+  "messageLabel": "Beschreibung",
+  "messagePlaceholder": "Was ist passiert und was haben Sie stattdessen erwartet?",
+  "takeScreenshot": "Screenshot aufnehmen",
+  "addFiles": "Dateien hinzufügen",
+  "removeAttachment": "Anhang entfernen",
+  "attachmentSummary": "{count} von {max} Anhängen · {size} MB",
+  "send": "Anfrage senden",
+  "sending": "Wird gesendet…",
+  "sentTitle": "Anfrage gesendet",
+  "sentDescription": "Wir antworten an die E-Mail-Adresse Ihres Kontos.",
+  "sendAnother": "Weitere senden",
+  "hideButton": "Support-Schaltfläche ausblenden",
+  "dragHint": "Zum Verschieben ziehen",
+  "move": "Verschieben",
+  "restore": "Support-Schaltfläche anzeigen",
+  "errors": {
+    "sendFailed": "Die Anfrage konnte nicht gesendet werden. Bitte erneut versuchen.",
+    "screenshotFailed": "Der Screenshot konnte nicht aufgenommen werden.",
+    "subject-required": "Bitte einen Betreff angeben.",
+    "subject-too-long": "Der Betreff ist zu lang.",
+    "message-required": "Bitte eine Beschreibung angeben.",
+    "message-too-long": "Die Beschreibung ist zu lang.",
+    "too-many-attachments": "Sie können bis zu {max} Dateien anhängen.",
+    "attachment-type-not-allowed": "Dieser Dateityp kann nicht angehängt werden.",
+    "attachments-too-large": "Die Anhänge sind zu groß. Das Limit beträgt insgesamt 10 MB."
+  }
+}
