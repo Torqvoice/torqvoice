@@ -12,6 +12,7 @@ import {
 } from "../Schema/recurringInvoiceSchema";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
 import { calculateTotals } from "@/lib/tax";
+import { lineTotal } from "@/features/inventory/Lib/partPricing";
 
 export async function getRecurringInvoices() {
   return withAuth(async ({ organizationId }) => {
@@ -337,7 +338,7 @@ export async function processRecurringInvoices() {
                 partNumber: p.partNumber,
                 quantity: p.quantity,
                 unitPrice: p.unitPrice,
-                total: p.quantity * p.unitPrice,
+                total: lineTotal(p.quantity, p.unitPrice),
               })),
             },
             laborItems: {

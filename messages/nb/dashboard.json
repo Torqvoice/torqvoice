@@ -36,7 +36,8 @@
     "activeJobs": "Aktive jobber",
     "pending": "Ventende",
     "totalParts": "Totale deler",
-    "totalCustomers": "Totalt antall kunder"
+    "totalCustomers": "Totalt antall kunder",
+    "lowStock": "Lavt lager"
   },
   "customize": "Tilpass",
   "viewAll": "Vis alle",

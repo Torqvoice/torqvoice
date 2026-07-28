@@ -18,11 +18,15 @@
   },
   "empty": {
     "noMatch": "Ninguna pieza coincide con su búsqueda.",
-    "noParts": "Aún no hay piezas en el inventario."
+    "noParts": "Aún no hay piezas en el inventario.",
+    "noLowStock": "Ahora mismo nada está por debajo de su punto de pedido.",
+    "noReorderPoints": "No hay puntos de pedido definidos, así que ninguna pieza puede considerarse baja.",
+    "configureReorderPoints": "Definir un punto de pedido predeterminado"
   },
   "actions": {
     "edit": "Editar",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "details": "Detalles e historial"
   },
   "deletePart": {
     "title": "Eliminar pieza",
@@ -119,5 +123,31 @@
     "saveChanges": "Guardar cambios",
     "addPart": "Añadir pieza"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Historial de stock",
+    "description": "Todos los cambios registrados en {name}, más recientes primero.",
+    "empty": "Aún no hay movimientos de stock.",
+    "when": "Fecha",
+    "change": "Cambio",
+    "balance": "Saldo",
+    "usedOn": "Usado en",
+    "by": "Por",
+    "reasons": {
+      "service_record": "Orden de trabajo",
+      "service_record_deleted": "Orden eliminada",
+      "quote_conversion": "Presupuesto convertido",
+      "manual_adjustment": "Ajuste manual",
+      "bulk_markup": "Margen masivo"
+    },
+    "backToInventory": "Inventario",
+    "reason": "Motivo",
+    "allReasons": "Todos los motivos"
+  },
+  "suggestions": {
+    "title": "De su inventario",
+    "inStock": "{quantity} en stock",
+    "outOfStock": "Agotado",
+    "onBackorder": "En pedido pendiente ({count})"
+  }
 }

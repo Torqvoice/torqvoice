@@ -10,6 +10,7 @@ export async function register() {
       processWebhookDeliveries,
       cleanupWebhookDeliveries,
       startDemoResetCron,
+      checkLowStock,
     } = await import('./cronTasks')
     checkLicenses()
     checkSubscriptions()
@@ -20,5 +21,6 @@ export async function register() {
     startDemoResetCron()
     processWebhookDeliveries()
     cleanupWebhookDeliveries()
+    checkLowStock()
   }
 }

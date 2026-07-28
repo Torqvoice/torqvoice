@@ -257,14 +257,19 @@ describe("createServiceRecord — parts and inventory", () => {
 
     const mockCreate = vi.fn().mockResolvedValue({ id: "sr-inv" });
     const mockInvFind = vi.fn().mockResolvedValue({ id: "inv-1", quantity: 10, organizationId: ORG });
-    const mockInvUpdateMany = vi.fn().mockResolvedValue({ count: 1 });
+    // Stock moves via an atomic `UPDATE ... RETURNING`; params arrive as
+    // (strings, decrement, inventoryPartId, organizationId).
+    const mockQueryRaw = vi.fn().mockResolvedValue([{ quantity: 9 }]);
+    const mockMovementCreateMany = vi.fn().mockResolvedValue({ count: 1 });
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         serviceRecord: { create: mockCreate },
         servicePart: { createMany: vi.fn() },
         serviceLabor: { createMany: vi.fn() },
         serviceAttachment: { createMany: vi.fn() },
-        inventoryPart: { findFirst: mockInvFind, updateMany: mockInvUpdateMany },
+        inventoryPart: { findFirst: mockInvFind },
+        stockMovement: { createMany: mockMovementCreateMany },
+        $queryRaw: mockQueryRaw,
       })
     );
 
@@ -281,12 +286,25 @@ describe("createServiceRecord — parts and inventory", () => {
     });
 
     // Stock is deducted atomically and scoped to the org.
-    expect(mockInvUpdateMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: "inv-1", organizationId: ORG },
-        data: { quantity: { decrement: 1 } },
-      })
-    );
+    expect(mockQueryRaw).toHaveBeenCalledTimes(1);
+    const [, decrement, partId, orgId] = mockQueryRaw.mock.calls[0];
+    expect(decrement).toBe(1);
+    expect(partId).toBe("inv-1");
+    expect(orgId).toBe(ORG);
+
+    // ...and the movement is mirrored into the audit ledger.
+    expect(mockMovementCreateMany).toHaveBeenCalledWith({
+      data: [
+        expect.objectContaining({
+          inventoryPartId: "inv-1",
+          organizationId: ORG,
+          delta: -1,
+          quantityAfter: 9,
+          reason: "service_record",
+          serviceRecordId: "sr-inv",
+        }),
+      ],
+    });
   });
 
   it("allows stock to go negative when consuming more than on hand (reversible over-consumption)", async () => {
@@ -295,14 +313,18 @@ describe("createServiceRecord — parts and inventory", () => {
 
     const mockCreate = vi.fn().mockResolvedValue({ id: "sr-neg" });
     const mockInvFind = vi.fn().mockResolvedValue({ id: "inv-2", quantity: 1, organizationId: ORG });
-    const mockInvUpdateMany = vi.fn().mockResolvedValue({ count: 1 });
+    // 1 on hand, 5 consumed -> the DB returns the resulting negative balance.
+    const mockQueryRaw = vi.fn().mockResolvedValue([{ quantity: -4 }]);
+    const mockMovementCreateMany = vi.fn().mockResolvedValue({ count: 1 });
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         serviceRecord: { create: mockCreate },
         servicePart: { createMany: vi.fn() },
         serviceLabor: { createMany: vi.fn() },
         serviceAttachment: { createMany: vi.fn() },
-        inventoryPart: { findFirst: mockInvFind, updateMany: mockInvUpdateMany },
+        inventoryPart: { findFirst: mockInvFind },
+        stockMovement: { createMany: mockMovementCreateMany },
+        $queryRaw: mockQueryRaw,
       })
     );
 
@@ -321,11 +343,12 @@ describe("createServiceRecord — parts and inventory", () => {
     // Decrement the full 5 (1 on hand -> -4). Clamping at 0 would corrupt the
     // count once the record is later edited or deleted, so the true signed
     // value is kept.
-    expect(mockInvUpdateMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: { quantity: { decrement: 5 } },
-      })
-    );
+    const [, decrement] = mockQueryRaw.mock.calls[0];
+    expect(decrement).toBe(5);
+    // The ledger records the true signed balance, including going negative.
+    expect(mockMovementCreateMany).toHaveBeenCalledWith({
+      data: [expect.objectContaining({ delta: -5, quantityAfter: -4 })],
+    });
   });
 });
 

@@ -1,0 +1,33 @@
+{
+  "title": "Zgłoszenie do pomocy",
+  "open": "Skontaktuj się z pomocą",
+  "close": "Zamknij",
+  "subjectLabel": "Temat",
+  "subjectPlaceholder": "Krótkie podsumowanie problemu",
+  "messageLabel": "Opis",
+  "messagePlaceholder": "Co się stało i czego oczekiwano zamiast tego?",
+  "takeScreenshot": "Zrób zrzut ekranu",
+  "addFiles": "Dodaj pliki",
+  "removeAttachment": "Usuń załącznik",
+  "attachmentSummary": "{count} z {max} załączników · {size} MB",
+  "send": "Wyślij zgłoszenie",
+  "sending": "Wysyłanie…",
+  "sentTitle": "Zgłoszenie wysłane",
+  "sentDescription": "Odpowiemy na adres e-mail przypisany do konta.",
+  "sendAnother": "Wyślij kolejne",
+  "hideButton": "Ukryj przycisk pomocy",
+  "dragHint": "Przeciągnij, aby przenieść",
+  "move": "Przenieś",
+  "restore": "Pokaż przycisk pomocy",
+  "errors": {
+    "sendFailed": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie.",
+    "screenshotFailed": "Nie udało się zrobić zrzutu ekranu.",
+    "subject-required": "Dodaj temat.",
+    "subject-too-long": "Temat jest za długi.",
+    "message-required": "Dodaj opis.",
+    "message-too-long": "Opis jest za długi.",
+    "too-many-attachments": "Możesz dołączyć maksymalnie {max} plików.",
+    "attachment-type-not-allowed": "Tego typu pliku nie można dołączyć.",
+    "attachments-too-large": "Załączniki są za duże. Limit to łącznie 10 MB."
+  }
+}

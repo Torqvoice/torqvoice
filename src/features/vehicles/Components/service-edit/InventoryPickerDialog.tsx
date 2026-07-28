@@ -8,6 +8,7 @@ import { Search } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { InventoryPartOption } from './form-types'
+import { resolvePartPrice } from '@/features/inventory/Lib/partPricing'
 
 const PAGE_SIZE = 100
 
@@ -98,12 +99,10 @@ export function InventoryPickerDialog({
                 // When markup-applies-to-inventory is enabled, recompute the sell price
                 // from cost + default markup. Otherwise fall back to the inventory's
                 // own sellPrice (which has its own separate markup system).
-                const useGlobalMarkup = markupAppliesToInventory && defaultMarkupPercent > 0
-                const price = useGlobalMarkup
-                  ? Math.round(ip.unitCost * (1 + defaultMarkupPercent / 100) * 100) / 100
-                  : ip.sellPrice > 0
-                    ? ip.sellPrice
-                    : ip.unitCost
+                const { unitPrice: price, markupPercent } = resolvePartPrice(ip, {
+                  defaultMarkupPercent,
+                  markupAppliesToInventory,
+                })
                 onSelectPart({
                   partNumber: ip.partNumber || '',
                   name: ip.name,
@@ -111,7 +110,7 @@ export function InventoryPickerDialog({
                   unitPrice: price,
                   total: price,
                   unitCost: ip.unitCost,
-                  markupPercent: useGlobalMarkup ? defaultMarkupPercent : 0,
+                  markupPercent,
                   inventoryPartId: ip.id,
                 })
                 onOpenChange(false)

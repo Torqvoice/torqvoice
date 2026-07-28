@@ -36,7 +36,8 @@
     "activeJobs": "Aktywne zlecenia",
     "pending": "Oczekujące",
     "totalParts": "Łączna liczba części",
-    "totalCustomers": "Łączna liczba klientów"
+    "totalCustomers": "Łączna liczba klientów",
+    "lowStock": "Niski stan"
   },
   "customize": "Dostosuj",
   "viewAll": "Pokaż wszystkie",

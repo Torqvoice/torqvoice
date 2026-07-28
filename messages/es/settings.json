@@ -110,6 +110,14 @@
       "about": {
         "title": "Acerca de",
         "description": "Version e informacion"
+      },
+      "alerts": {
+        "title": "Alertas",
+        "description": "Avisos cuando haya que reponer piezas"
+      },
+      "support": {
+        "title": "Soporte",
+        "description": "Contactar con soporte y gestionar el botón"
       }
     },
     "pro": "PRO"
@@ -1339,5 +1347,41 @@
       "retrying": "Reintentando",
       "pending": "Pendiente"
     }
+  },
+  "alerts": {
+    "title": "Alertas",
+    "description": "Elija sobre qué eventos quiere recibir avisos y cómo.",
+    "lowStock": {
+      "title": "Alertas de stock bajo",
+      "description": "Avisa cuando una pieza alcanza su punto de pedido. Una pieza está baja cuando su cantidad cae a o por debajo de su \"Cant. mínima\", o del valor predeterminado si no tiene. Cada pieza se informa una vez por caída y no vuelve a avisar hasta reponerla.",
+      "enable": "Activar alertas de stock bajo",
+      "enableHint": "Desactivado por defecto. Solo se vigilan piezas con punto de pedido.",
+      "inApp": "Notificación en la app",
+      "inAppHint": "Una notificación agrupada en la campana, no una por pieza.",
+      "email": "Resumen por correo",
+      "emailHint": "Un único correo con todas las piezas que acaban de bajar.",
+      "emailInterval": "Horas mínimas entre correos",
+      "emailIntervalHint": "Como máximo un resumen cada tantas horas. 0 desactiva el límite.",
+      "save": "Guardar alertas",
+      "saved": "Alertas de stock bajo guardadas",
+      "defaultThreshold": "Punto de pedido predeterminado",
+      "defaultThresholdHint": "Solo se usa para piezas sin punto de pedido propio. La \"Cant. mínima\" de la pieza — definida al editarla — siempre tiene prioridad. Deje 0 para vigilar únicamente las piezas configuradas individualmente.",
+      "checkNow": "Comprobar ahora",
+      "checkDisabled": "Las alertas están desactivadas.",
+      "checkNothingNew": "Nada nuevo: todas las piezas bajas ya se informaron.",
+      "checkAlerted": "{count} pieza(s) recién baja(s) informada(s)",
+      "checkFailed": "Error al comprobar",
+      "configurePerPart": "Defina la cantidad mínima de una pieza en la página de inventario →",
+      "readMore": "Leer más"
+    }
+  },
+  "support": {
+    "title": "Soporte",
+    "description": "Contacte con el equipo de soporte de Torqvoice sin salir de la aplicación. Su solicitud incluye su organización y la página en la que estaba.",
+    "showButton": "Mostrar el botón de soporte",
+    "showButtonHint": "Un botón que puede arrastrar, en todas las páginas de este dispositivo. Cuando está oculto, una pequeña pestaña en el borde derecho lo recupera.",
+    "contactTitle": "Contactar con soporte",
+    "contactHint": "Abrir el formulario de soporte directamente.",
+    "contactAction": "Abrir formulario"
   }
 }

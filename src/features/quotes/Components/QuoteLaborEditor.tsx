@@ -42,7 +42,7 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
   const isService = labor.pricingType === "service";
   const formatCurrency = useFormatCurrency();
   return (
-    <div className={`grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto]${labor.excluded ? " line-through opacity-50" : ""}`}>
+    <div className={`grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto] ${labor.excluded ? "line-through opacity-50" : ""}`}>
       <div className="col-span-2 flex gap-2 sm:col-span-1">
         <Input placeholder={tDescriptionPlaceholder} value={labor.description} onChange={(e) => onUpdate(index, "description", e.target.value)} className="flex-1" />
         <button

@@ -110,6 +110,14 @@
       "about": {
         "title": "A propos",
         "description": "Version et informations"
+      },
+      "alerts": {
+        "title": "Alertes",
+        "description": "Être averti quand il faut réapprovisionner"
+      },
+      "support": {
+        "title": "Assistance",
+        "description": "Contacter l'assistance et gérer le bouton"
       }
     },
     "pro": "PRO"
@@ -1339,5 +1347,41 @@
       "retrying": "Nouvelle tentative",
       "pending": "En attente"
     }
+  },
+  "alerts": {
+    "title": "Alertes",
+    "description": "Choisissez les événements dont vous voulez être averti, et comment.",
+    "lowStock": {
+      "title": "Alertes de stock bas",
+      "description": "Alerte quand une pièce atteint son seuil de réapprovisionnement. Une pièce est basse lorsque sa quantité descend à ou sous sa \"Qté min\", ou sous la valeur par défaut ci-dessous si elle n'en a pas. Chaque pièce est signalée une fois par baisse et reste silencieuse jusqu'au réassort.",
+      "enable": "Activer les alertes de stock bas",
+      "enableHint": "Désactivé par défaut. Seules les pièces avec un seuil défini sont surveillées.",
+      "inApp": "Notification dans l'app",
+      "inAppHint": "Une notification groupée dans la cloche, pas une par pièce.",
+      "email": "Résumé par e-mail",
+      "emailHint": "Un seul e-mail listant toutes les pièces passées sous le seuil.",
+      "emailInterval": "Heures minimum entre e-mails",
+      "emailIntervalHint": "Au plus un résumé par tranche d'heures. 0 supprime la limite.",
+      "save": "Enregistrer les alertes",
+      "saved": "Alertes de stock bas enregistrées",
+      "defaultThreshold": "Seuil de réapprovisionnement par défaut",
+      "defaultThresholdHint": "Utilisé uniquement pour les pièces sans seuil propre. La \"Qté min\" d'une pièce — définie lors de sa modification — est toujours prioritaire. Laissez 0 pour ne surveiller que les pièces configurées individuellement.",
+      "checkNow": "Vérifier maintenant",
+      "checkDisabled": "Les alertes sont désactivées.",
+      "checkNothingNew": "Rien de nouveau — toutes les pièces basses ont déjà été signalées.",
+      "checkAlerted": "{count} pièce(s) nouvellement basse(s) signalée(s)",
+      "checkFailed": "Échec de la vérification",
+      "configurePerPart": "Définir la Qté min d'une pièce sur la page inventaire →",
+      "readMore": "En savoir plus"
+    }
+  },
+  "support": {
+    "title": "Assistance",
+    "description": "Contactez l'équipe d'assistance Torqvoice sans quitter l'application. Votre demande inclut votre organisation et la page consultée.",
+    "showButton": "Afficher le bouton d'assistance",
+    "showButtonHint": "Un bouton déplaçable sur chaque page, sur cet appareil. Une fois masqué, un petit onglet sur le bord droit le fait revenir.",
+    "contactTitle": "Contacter l'assistance",
+    "contactHint": "Ouvrir directement le formulaire d'assistance.",
+    "contactAction": "Ouvrir le formulaire"
   }
 }

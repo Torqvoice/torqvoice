@@ -72,7 +72,8 @@
     "total": "Gesamt",
     "subtotal": "Teile Zwischensumme: {amount}",
     "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "excludeFromTotal": "Exclude from total",
+    "addFromInventory": "Aus Lager"
   },
   "labor": {
     "title": "Arbeitszeit",

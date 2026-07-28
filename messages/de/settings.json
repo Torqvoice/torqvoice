@@ -110,6 +110,14 @@
       "about": {
         "title": "Info",
         "description": "Version & Informationen"
+      },
+      "alerts": {
+        "title": "Warnungen",
+        "description": "Benachrichtigung bei Nachbestellbedarf"
+      },
+      "support": {
+        "title": "Support",
+        "description": "Support kontaktieren und die Support-Schaltfläche verwalten"
       }
     },
     "pro": "PRO"
@@ -1339,5 +1347,41 @@
       "retrying": "Wiederholt",
       "pending": "Ausstehend"
     }
+  },
+  "alerts": {
+    "title": "Warnungen",
+    "description": "Wählen Sie, über welche Ereignisse Sie wie informiert werden.",
+    "lowStock": {
+      "title": "Bestandswarnungen",
+      "description": "Warnt, wenn ein Teil seinen Meldebestand erreicht. Ein Teil gilt als knapp, wenn der Bestand auf oder unter die \"Mindestmenge\" fällt — oder unter den Standardwert unten, falls keine gesetzt ist. Jedes Teil wird pro Unterschreitung einmal gemeldet und bleibt bis zum Auffüllen still.",
+      "enable": "Bestandswarnungen aktivieren",
+      "enableHint": "Standardmäßig aus. Nur Teile mit Meldebestand werden überwacht.",
+      "inApp": "In-App-Benachrichtigung",
+      "inAppHint": "Eine gebündelte Benachrichtigung in der Glocke, nicht eine pro Teil.",
+      "email": "E-Mail-Zusammenfassung",
+      "emailHint": "Eine einzige E-Mail mit allen neu unterschrittenen Teilen.",
+      "emailInterval": "Mindeststunden zwischen E-Mails",
+      "emailIntervalHint": "Höchstens eine Zusammenfassung pro so vielen Stunden. 0 hebt das Limit auf.",
+      "save": "Warneinstellungen speichern",
+      "saved": "Bestandswarnungen gespeichert",
+      "defaultThreshold": "Standard-Meldebestand",
+      "defaultThresholdHint": "Gilt nur für Teile ohne eigenen Meldebestand. Die \"Mindestmenge\" eines Teils — beim Bearbeiten des Teils gesetzt — hat immer Vorrang. Bei 0 werden nur individuell konfigurierte Teile überwacht.",
+      "checkNow": "Jetzt prüfen",
+      "checkDisabled": "Warnungen sind deaktiviert.",
+      "checkNothingNew": "Nichts Neues — alle knappen Teile wurden bereits gemeldet.",
+      "checkAlerted": "{count} neu unterschrittene(s) Teil(e) gemeldet",
+      "checkFailed": "Prüfung fehlgeschlagen",
+      "configurePerPart": "Mindestmenge eines Teils auf der Lagerseite festlegen →",
+      "readMore": "Mehr erfahren"
+    }
+  },
+  "support": {
+    "title": "Support",
+    "description": "Erreichen Sie das Torqvoice-Supportteam, ohne die App zu verlassen. Ihre Anfrage enthält Ihre Organisation und die Seite, auf der Sie waren.",
+    "showButton": "Support-Schaltfläche anzeigen",
+    "showButtonHint": "Eine verschiebbare Schaltfläche auf jeder Seite, auf diesem Gerät. Wenn sie ausgeblendet ist, holt sie ein kleiner Reiter am rechten Rand zurück.",
+    "contactTitle": "Support kontaktieren",
+    "contactHint": "Öffnet das Supportformular direkt.",
+    "contactAction": "Formular öffnen"
   }
 }

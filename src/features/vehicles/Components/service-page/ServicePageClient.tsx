@@ -47,6 +47,7 @@ import { DetailsLeftColumn } from './DetailsLeftColumn'
 import { DetailsRightColumn } from './DetailsRightColumn'
 import { ObservationsManager, type ObservationsControls } from './ObservationsManager'
 import type { ServicePageClientProps } from './service-page-types'
+import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
 
@@ -162,22 +163,22 @@ export function ServicePageClient({
       const result = await lookupPartByBarcode(barcode)
       if (result.success && result.data) {
         const part = result.data
-        // Same rule as the inventory picker — opt-in markup applies to inventory parts too.
-        const useGlobalMarkup = markupAppliesToInventory && defaultMarkupPercent > 0
-        const price = useGlobalMarkup
-          ? Math.round(part.unitCost * (1 + defaultMarkupPercent / 100) * 100) / 100
-          : part.sellPrice > 0
-            ? part.sellPrice
-            : part.unitCost
+        // Same rule as the inventory picker — opt-in markup applies to
+        // inventory parts too. Scanning a part must price it identically to
+        // picking it, so both go through resolvePartPrice.
+        const { unitPrice, markupPercent } = resolvePartPrice(part, {
+          defaultMarkupPercent,
+          markupAppliesToInventory,
+        })
         formState.dirtySetPartItems((prev) => [
           {
             partNumber: part.partNumber || '',
             name: part.name,
             quantity: 1,
-            unitPrice: price,
-            total: price,
+            unitPrice,
+            total: lineTotal(1, unitPrice),
             unitCost: part.unitCost,
-            markupPercent: useGlobalMarkup ? defaultMarkupPercent : 0,
+            markupPercent,
             inventoryPartId: part.id,
           },
           ...prev,
@@ -268,7 +269,7 @@ export function ServicePageClient({
         partNumber: part.partNumber || '',
         quantity: part.quantity,
         unitPrice: part.unitPrice,
-        total: part.quantity * part.unitPrice,
+        total: lineTotal(part.quantity, part.unitPrice),
         unitCost: 0,
         markupPercent: 0,
         inventoryPartId: part.inventoryPartId || '',

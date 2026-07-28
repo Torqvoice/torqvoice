@@ -72,7 +72,8 @@
     "total": "Suma",
     "subtotal": "Części suma częściowa: {amount}",
     "deleteRow": "Delete row",
-    "excludeFromTotal": "Exclude from total"
+    "excludeFromTotal": "Exclude from total",
+    "addFromInventory": "Z magazynu"
   },
   "labor": {
     "title": "Robocizna",

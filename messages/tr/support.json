@@ -1,0 +1,33 @@
+{
+  "title": "Destek talebi",
+  "open": "Destekle iletişime geç",
+  "close": "Kapat",
+  "subjectLabel": "Konu",
+  "subjectPlaceholder": "Sorunun kısa özeti",
+  "messageLabel": "Açıklama",
+  "messagePlaceholder": "Ne oldu ve bunun yerine ne bekliyordunuz?",
+  "takeScreenshot": "Ekran görüntüsü al",
+  "addFiles": "Dosya ekle",
+  "removeAttachment": "Eki kaldır",
+  "attachmentSummary": "{max} ekten {count} tanesi · {size} MB",
+  "send": "Talebi gönder",
+  "sending": "Gönderiliyor…",
+  "sentTitle": "Talep gönderildi",
+  "sentDescription": "Hesabınızdaki e-posta adresine yanıt vereceğiz.",
+  "sendAnother": "Bir tane daha gönder",
+  "hideButton": "Destek düğmesini gizle",
+  "dragHint": "Taşımak için sürükleyin",
+  "move": "Taşı",
+  "restore": "Destek düğmesini göster",
+  "errors": {
+    "sendFailed": "Talep gönderilemedi. Lütfen tekrar deneyin.",
+    "screenshotFailed": "Ekran görüntüsü alınamadı.",
+    "subject-required": "Bir konu ekleyin.",
+    "subject-too-long": "Konu çok uzun.",
+    "message-required": "Bir açıklama ekleyin.",
+    "message-too-long": "Açıklama çok uzun.",
+    "too-many-attachments": "En fazla {max} dosya ekleyebilirsiniz.",
+    "attachment-type-not-allowed": "Bu dosya türü eklenemez.",
+    "attachments-too-large": "Ekler çok büyük. Toplam sınır 10 MB."
+  }
+}

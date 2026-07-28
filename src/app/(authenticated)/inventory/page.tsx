@@ -1,4 +1,4 @@
-import { getInventoryPartsPaginated, getInventoryCategories } from "@/features/inventory/Actions/inventoryActions";
+import { getInventoryPartsPaginated, getInventoryCategories, hasAnyReorderPoint } from "@/features/inventory/Actions/inventoryActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { InventoryClient } from "./inventory-client";
@@ -7,10 +7,10 @@ import { PageHeader } from "@/components/page-header";
 export default async function InventoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; pageSize?: string; search?: string; category?: string; sortBy?: string; sortOrder?: string }>;
+  searchParams: Promise<{ page?: string; pageSize?: string; search?: string; category?: string; sortBy?: string; sortOrder?: string; lowStock?: string }>;
 }) {
   const params = await searchParams;
-  const [result, categoriesResult, settingsResult] = await Promise.all([
+  const [result, categoriesResult, settingsResult, reorderResult] = await Promise.all([
     getInventoryPartsPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
@@ -18,9 +18,15 @@ export default async function InventoryPage({
       category: params.category,
       sortBy: params.sortBy,
       sortOrder: (params.sortOrder as "asc" | "desc") || undefined,
+      lowStock: params.lowStock === "1",
     }),
     getInventoryCategories(),
-    getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]),
+    getSettings([
+      SETTING_KEYS.CURRENCY_CODE,
+      SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
+      SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD,
+    ]),
+    hasAnyReorderPoint(),
   ]);
 
   if (!result.success || !result.data) {
@@ -54,6 +60,11 @@ export default async function InventoryPage({
           markupMultiplier={markupMultiplier}
           sortBy={params.sortBy || "updatedAt"}
           sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
+          lowStockDefault={
+            Number(settings[SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD]) || 0
+          }
+          lowStockOnly={params.lowStock === "1"}
+          hasAnyReorderPoint={reorderResult.data ?? false}
         />
       </div>
     </>

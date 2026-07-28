@@ -36,7 +36,8 @@
     "activeJobs": "Lavori attivi",
     "pending": "In attesa",
     "totalParts": "Ricambi totali",
-    "totalCustomers": "Clienti totali"
+    "totalCustomers": "Clienti totali",
+    "lowStock": "Scorte basse"
   },
   "customize": "Personalizza",
   "viewAll": "Vedi tutto",

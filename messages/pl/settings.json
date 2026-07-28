@@ -110,6 +110,14 @@
       "about": {
         "title": "Informacje",
         "description": "Wersja i informacje"
+      },
+      "alerts": {
+        "title": "Alerty",
+        "description": "Powiadomienia o konieczności zamówienia części"
+      },
+      "support": {
+        "title": "Pomoc",
+        "description": "Skontaktuj się z pomocą i zarządzaj przyciskiem"
       }
     },
     "pro": "PRO"
@@ -1339,5 +1347,41 @@
       "retrying": "Ponawianie",
       "pending": "Oczekujące"
     }
+  },
+  "alerts": {
+    "title": "Alerty",
+    "description": "Wybierz, o których zdarzeniach chcesz być informowany i w jaki sposób.",
+    "lowStock": {
+      "title": "Alerty niskiego stanu",
+      "description": "Ostrzega, gdy część osiąga próg zamawiania. Część jest niska, gdy jej ilość spadnie do lub poniżej \"Min. ilość\", albo wartości domyślnej poniżej, jeśli jej nie ustawiono. Każda część jest zgłaszana raz na spadek i milczy do czasu uzupełnienia.",
+      "enable": "Włącz alerty niskiego stanu",
+      "enableHint": "Domyślnie wyłączone. Monitorowane są tylko części z ustawionym progiem.",
+      "inApp": "Powiadomienie w aplikacji",
+      "inAppHint": "Jedno zbiorcze powiadomienie w dzwonku, nie jedno na część.",
+      "email": "Podsumowanie e-mail",
+      "emailHint": "Jeden e-mail z listą wszystkich części, których stan właśnie spadł.",
+      "emailInterval": "Minimalne godziny między e-mailami",
+      "emailIntervalHint": "Najwyżej jedno podsumowanie na tyle godzin. 0 wyłącza limit.",
+      "save": "Zapisz alerty",
+      "saved": "Zapisano alerty niskiego stanu",
+      "defaultThreshold": "Domyślny próg zamawiania",
+      "defaultThresholdHint": "Używane tylko dla części bez własnego progu zamawiania. Własna \"Min. ilość\" części — ustawiana podczas jej edycji — zawsze ma pierwszeństwo. Zostaw 0, aby monitorować tylko części skonfigurowane indywidualnie.",
+      "checkNow": "Sprawdź teraz",
+      "checkDisabled": "Alerty są wyłączone.",
+      "checkNothingNew": "Nic nowego — wszystkie niskie części już zgłoszono.",
+      "checkAlerted": "Zgłoszono {count} nowo niskich części",
+      "checkFailed": "Sprawdzenie nie powiodło się",
+      "configurePerPart": "Ustaw min. ilość części na stronie magazynu →",
+      "readMore": "Czytaj więcej"
+    }
+  },
+  "support": {
+    "title": "Pomoc",
+    "description": "Skontaktuj się z zespołem pomocy Torqvoice bez opuszczania aplikacji. Zgłoszenie zawiera Twoją organizację i stronę, na której byłeś.",
+    "showButton": "Pokaż przycisk pomocy",
+    "showButtonHint": "Przeciągalny przycisk na każdej stronie, na tym urządzeniu. Po ukryciu przywraca go mała zakładka przy prawej krawędzi.",
+    "contactTitle": "Skontaktuj się z pomocą",
+    "contactHint": "Otwórz formularz pomocy od razu.",
+    "contactAction": "Otwórz formularz"
   }
 }

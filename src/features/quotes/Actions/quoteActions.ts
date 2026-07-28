@@ -4,8 +4,10 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { createQuoteSchema, updateQuoteSchema } from "../Schema/quoteSchema";
 import { revalidatePath } from "next/cache";
+import { onInventoryChanged } from "@/features/inventory/Lib/onInventoryChanged";
 import { resolveInvoicePrefix } from "@/lib/invoice-utils";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { reconcileInventoryForParts } from "@/features/inventory/Lib/reconcileStock";
 import { copyFile, mkdir } from "fs/promises";
 import path from "path";
 
@@ -390,8 +392,22 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             quantity: p.quantity,
             unitPrice: p.unitPrice,
             total: p.total,
+            // Preserve the stock link so the job — and any later edit or
+            // deletion of it — reconciles against the right inventory item.
+            inventoryPartId: p.inventoryPartId,
             serviceRecordId: created.id,
           })),
+        });
+
+        // The quote itself never moved stock (it is only an estimate). The
+        // conversion is the point of consumption, so deduct here — exactly
+        // once, inside the same transaction that creates the job.
+        await reconcileInventoryForParts(tx, organizationId, [], includedParts, {
+          reason: "quote_conversion",
+          userId,
+          serviceRecordId: created.id,
+          serviceRecordLabel: created.invoiceNumber || created.title,
+          note: `Converted from quote ${quote.quoteNumber ?? quote.id}`,
         });
       }
 
@@ -454,6 +470,8 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
     revalidatePath("/quotes");
     revalidatePath("/work-orders");
     revalidatePath(`/vehicles/${vehicleId}`);
+    // Conversion consumed stock for any inventory-linked quote lines.
+    await onInventoryChanged(organizationId);
     return { ...record, convertedFromQuoteId: quoteId };
   }, {
     requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES }],

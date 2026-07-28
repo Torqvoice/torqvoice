@@ -8,6 +8,7 @@ import { useConfirm } from "@/components/confirm-dialog";
 import { updateQuote, deleteQuote, convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
 import { calculateTotals } from "@/lib/tax";
+import { lineTotal } from "@/features/inventory/Lib/partPricing";
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from "./quote-page-types";
 import { emptyPart, makeEmptyLabor, makeEmptyService } from "./quote-page-types";
 
@@ -57,7 +58,7 @@ export function useQuoteFormState({
   const [customerId, setCustomerId] = useState(quote.customer?.id || "");
   const [vehicleId, setVehicleId] = useState(quote.vehicle?.id || "");
   const [partItems, setPartItems] = useState<QuotePartInput[]>(
-    quote.partItems.map((p) => ({ partNumber: p.partNumber || "", name: p.name, quantity: p.quantity, unitPrice: p.unitPrice, total: p.total, excluded: p.excluded ?? false }))
+    quote.partItems.map((p) => ({ partNumber: p.partNumber || "", name: p.name, quantity: p.quantity, unitPrice: p.unitPrice, total: p.total, excluded: p.excluded ?? false, inventoryPartId: p.inventoryPartId ?? null }))
   );
   const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(
     quote.laborItems.map((l) => ({ description: l.description, hours: l.hours, rate: l.rate, total: l.total, pricingType: (l.pricingType as "hourly" | "service") || "hourly", excluded: l.excluded ?? false }))
@@ -155,7 +156,7 @@ export function useQuoteFormState({
     setPartItems((prev) => {
       const updated = [...prev];
       const part = { ...updated[index], [field]: value };
-      if (field === "quantity" || field === "unitPrice") part.total = Number(part.quantity) * Number(part.unitPrice);
+      if (field === "quantity" || field === "unitPrice") part.total = lineTotal(part.quantity, part.unitPrice);
       updated[index] = part;
       return updated;
     });

@@ -18,11 +18,15 @@
   },
   "empty": {
     "noMatch": "Нет запчастей, соответствующих поиску.",
-    "noParts": "На складе пока нет запчастей."
+    "noParts": "На складе пока нет запчастей.",
+    "noLowStock": "Сейчас ничего не ниже точки заказа.",
+    "noReorderPoints": "Точки заказа не заданы, поэтому ни одна деталь не может считаться заканчивающейся.",
+    "configureReorderPoints": "Задать точку заказа по умолчанию"
   },
   "actions": {
     "edit": "Редактировать",
-    "delete": "Удалить"
+    "delete": "Удалить",
+    "details": "Детали и история"
   },
   "deletePart": {
     "title": "Удалить запчасть",
@@ -119,5 +123,31 @@
     "saveChanges": "Сохранить изменения",
     "addPart": "Добавить запчасть"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "История склада",
+    "description": "Все изменения по «{name}», сначала новые.",
+    "empty": "Движений по складу пока нет.",
+    "when": "Дата",
+    "change": "Изменение",
+    "balance": "Остаток",
+    "usedOn": "Использовано в",
+    "by": "Кем",
+    "reasons": {
+      "service_record": "Заказ-наряд",
+      "service_record_deleted": "Заказ-наряд удалён",
+      "quote_conversion": "Предложение конвертировано",
+      "manual_adjustment": "Ручная корректировка",
+      "bulk_markup": "Массовая наценка"
+    },
+    "backToInventory": "Склад",
+    "reason": "Причина",
+    "allReasons": "Все причины"
+  },
+  "suggestions": {
+    "title": "Из вашего склада",
+    "inStock": "{quantity} в наличии",
+    "outOfStock": "Нет в наличии",
+    "onBackorder": "Под заказ ({count})"
+  }
 }

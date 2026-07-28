@@ -1,5 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { calculateTotals } from '@/lib/tax'
+import {
+  lineTotal,
+  markupFromCostAndPrice,
+  priceFromCostAndMarkup,
+} from '@/features/inventory/Lib/partPricing'
 import type { ServicePartInput, ServiceLaborInput, InitialData } from './service-page-types'
 import type { ServiceDetail } from '../service-detail/types'
 
@@ -145,23 +150,14 @@ export function useServiceFormState({
       setPartItems((prev) => {
         const updated = [...prev]
         const part = { ...updated[index], [field]: value }
-        const cost = Number(part.unitCost) || 0
 
         if (field === 'unitCost' || field === 'markupPercent') {
           // Cost or markup changed → recompute the customer-facing price.
-          const markup = Number(part.markupPercent) || 0
-          part.unitPrice = Math.round(cost * (1 + markup / 100) * 100) / 100
+          part.unitPrice = priceFromCostAndMarkup(part.unitCost, part.markupPercent)
         } else if (field === 'unitPrice') {
           // Price was edited directly → derive markup back from cost so the
-          // displayed margin matches reality. If cost is 0 there's no
-          // meaningful percentage; leave markup at 0 and treat price as a
-          // free override.
-          const price = Number(part.unitPrice) || 0
-          if (cost > 0) {
-            part.markupPercent = Math.round(((price / cost) - 1) * 1000) / 10
-          } else {
-            part.markupPercent = 0
-          }
+          // displayed margin matches reality.
+          part.markupPercent = markupFromCostAndPrice(part.unitCost, part.unitPrice)
         }
 
         if (
@@ -170,7 +166,7 @@ export function useServiceFormState({
           field === 'unitCost' ||
           field === 'markupPercent'
         ) {
-          part.total = Number(part.quantity) * Number(part.unitPrice)
+          part.total = lineTotal(part.quantity, part.unitPrice)
         }
         updated[index] = part
         return updated

@@ -18,11 +18,15 @@
   },
   "empty": {
     "noMatch": "Keine Teile entsprechen Ihrer Suche.",
-    "noParts": "Noch keine Teile im Lager."
+    "noParts": "Noch keine Teile im Lager.",
+    "noLowStock": "Derzeit liegt nichts unter dem Meldebestand.",
+    "noReorderPoints": "Es sind keine Meldebestände gesetzt, daher kann kein Teil als knapp gelten.",
+    "configureReorderPoints": "Standard-Meldebestand festlegen"
   },
   "actions": {
     "edit": "Bearbeiten",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "details": "Details & Verlauf"
   },
   "deletePart": {
     "title": "Teil löschen",
@@ -119,5 +123,31 @@
     "saveChanges": "Änderungen speichern",
     "addPart": "Teil hinzufügen"
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "history": {
+    "title": "Bestandsverlauf",
+    "description": "Alle erfassten Änderungen an {name}, neueste zuerst.",
+    "empty": "Noch keine Bestandsbewegungen erfasst.",
+    "when": "Datum",
+    "change": "Änderung",
+    "balance": "Bestand",
+    "usedOn": "Verwendet in",
+    "by": "Von",
+    "reasons": {
+      "service_record": "Auftrag",
+      "service_record_deleted": "Auftrag gelöscht",
+      "quote_conversion": "Angebot umgewandelt",
+      "manual_adjustment": "Manuelle Anpassung",
+      "bulk_markup": "Massenaufschlag"
+    },
+    "backToInventory": "Lager",
+    "reason": "Grund",
+    "allReasons": "Alle Gründe"
+  },
+  "suggestions": {
+    "title": "Aus Ihrem Lager",
+    "inStock": "{quantity} auf Lager",
+    "outOfStock": "Nicht auf Lager",
+    "onBackorder": "Im Rückstand ({count})"
+  }
 }

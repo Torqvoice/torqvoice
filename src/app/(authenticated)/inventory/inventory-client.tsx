@@ -1,11 +1,15 @@
 "use client";
 
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+import { isLow as isLowStock } from '@/features/inventory/Lib/lowStockAlerts';
+
 import { useState, useCallback, useTransition, useEffect } from "react";
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog';
 import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog';
 import { useHardwareScanner } from '@/hooks/use-hardware-scanner';
 import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode';
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,7 +55,9 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  AlertTriangle,
   ExternalLink,
+  History,
   Loader2,
   MoreVertical,
   Pencil,
@@ -104,6 +110,9 @@ export function InventoryClient({
   markupMultiplier: initialMarkup = 1.0,
   sortBy: initialSortBy = "updatedAt",
   sortOrder: initialSortOrder = "desc",
+  lowStockDefault = 0,
+  lowStockOnly = false,
+  hasAnyReorderPoint = false,
 }: {
   data: PaginatedData;
   search: string;
@@ -113,6 +122,12 @@ export function InventoryClient({
   markupMultiplier?: number;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  /** Org-wide fallback reorder point for parts with no minQuantity. */
+  lowStockDefault?: number;
+  /** Whether the list is currently filtered to low-stock parts. */
+  lowStockOnly?: boolean;
+  /** False when no part and no org default defines a reorder point. */
+  hasAnyReorderPoint?: boolean;
 }) {
   const formatCurrency = useFormatCurrency();
   const router = useRouter();
@@ -120,7 +135,6 @@ export function InventoryClient({
   const searchParams = useSearchParams();
   const t = useTranslations('inventory');
   const [isPending, startTransition] = useTransition();
-  const [searchInput, setSearchInput] = useState(search);
   const [showForm, setShowForm] = useState(false);
   const [editPart, setEditPart] = useState<InventoryPart | null>(null);
   const [showMarkup, setShowMarkup] = useState(false);
@@ -178,7 +192,7 @@ export function InventoryClient({
           newParams.set(key, String(value));
         }
       }
-      if (!("page" in params) && ("search" in params || "category" in params)) {
+      if (!("page" in params) && ("search" in params || "category" in params || "lowStock" in params)) {
         newParams.delete("page");
       }
       startTransition(() => {
@@ -203,13 +217,13 @@ export function InventoryClient({
       : <ArrowDown className="ml-1 h-3 w-3" />;
   };
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      navigate({ search: searchInput || undefined });
-    },
-    [navigate, searchInput]
-  );
+  // Live search: filters as you type, no Enter required. Submitting the
+  // form (Enter) commits immediately, bypassing the debounce.
+  const {
+    value: searchInput,
+    setValue: setSearchInput,
+    commitNow: handleSearch,
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
 
   const handleDelete = async (id: string, name: string) => {
     const ok = await confirm({
@@ -331,6 +345,18 @@ export function InventoryClient({
                 ))}
               </SelectContent>
             </Select>
+            {/* Toggle rather than a third dropdown: low stock is a yes/no lens
+                on the list, and it needs to be reachable from the page itself
+                (the dashboard card links straight here with ?lowStock=1). */}
+            <Button
+              size="sm"
+              variant={lowStockOnly ? "default" : "outline"}
+              onClick={() => navigate({ lowStock: lowStockOnly ? undefined : "1" })}
+              aria-pressed={lowStockOnly}
+            >
+              <AlertTriangle className="mr-1 h-3.5 w-3.5" />
+              {t('table.low')}
+            </Button>
             {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </div>
         )}
@@ -427,12 +453,34 @@ export function InventoryClient({
             {data.parts.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={11} className="h-32 text-center text-muted-foreground">
-                  {search || category ? t('empty.noMatch') : t('empty.noParts')}
+                  {lowStockOnly ? (
+                    // An empty Low view is ambiguous on its own: it means either
+                    // "nothing is running out" (good) or "nothing is being
+                    // watched" (needs setup). Say which, and link to the fix.
+                    hasAnyReorderPoint ? (
+                      t('empty.noLowStock')
+                    ) : (
+                      <div className="space-y-2">
+                        <p>{t('empty.noReorderPoints')}</p>
+                        <Link
+                          href="/settings/alerts"
+                          className="inline-flex items-center gap-1 text-primary hover:underline"
+                        >
+                          {t('empty.configureReorderPoints')}
+                          <ExternalLink className="h-3 w-3" />
+                        </Link>
+                      </div>
+                    )
+                  ) : search || category ? (
+                    t('empty.noMatch')
+                  ) : (
+                    t('empty.noParts')
+                  )}
                 </TableCell>
               </TableRow>
             ) : (
               data.parts.map((part) => {
-                const isLow = part.minQuantity > 0 && part.quantity <= part.minQuantity;
+                const isLow = isLowStock(part, lowStockDefault);
                 return (
                   <TableRow
                     key={part.id}
@@ -552,6 +600,12 @@ export function InventoryClient({
                           >
                             <Pencil className="mr-2 h-4 w-4" />
                             {t('actions.edit')}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href={`/inventory/${part.id}`}>
+                              <History className="mr-2 h-4 w-4" />
+                              {t('actions.details')}
+                            </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive"

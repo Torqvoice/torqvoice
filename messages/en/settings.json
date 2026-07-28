@@ -110,6 +110,14 @@
       "about": {
         "title": "About",
         "description": "Version & info"
+      },
+      "alerts": {
+        "title": "Alerts",
+        "description": "Get told when parts need reordering"
+      },
+      "support": {
+        "title": "Support",
+        "description": "Contact support and manage the support button"
       }
     },
     "pro": "PRO"
@@ -1339,5 +1347,41 @@
       "retrying": "Retrying",
       "pending": "Pending"
     }
+  },
+  "alerts": {
+    "title": "Alerts",
+    "description": "Choose which events you want to be told about, and how.",
+    "lowStock": {
+      "title": "Low stock alerts",
+      "description": "Alerts when a part reaches its reorder point. A part is low when its quantity drops to or below its \"Min Qty\", or the default below if it has none. Each part is reported once per dip and stays quiet until it is restocked.",
+      "enable": "Enable low stock alerts",
+      "enableHint": "Off by default. Only parts with a reorder point set are watched.",
+      "inApp": "In-app notification",
+      "inAppHint": "One grouped notification in the bell, not one per part.",
+      "email": "Email digest",
+      "emailHint": "A single email listing every part that just went low.",
+      "emailInterval": "Minimum hours between emails",
+      "emailIntervalHint": "At most one digest per this many hours. 0 disables the limit.",
+      "save": "Save alert settings",
+      "saved": "Low stock alert settings saved",
+      "defaultThreshold": "Default reorder point",
+      "defaultThresholdHint": "Used only for parts that have no reorder point of their own. A part's own \"Min Qty\" — set when you edit that part — always overrides this. Leave at 0 to watch only the parts you have configured individually.",
+      "checkNow": "Check now",
+      "checkDisabled": "Alerts are turned off.",
+      "checkNothingNew": "Nothing new — every low part has already been reported.",
+      "checkAlerted": "{count} newly low part(s) reported",
+      "checkFailed": "Check failed",
+      "configurePerPart": "Set a part's own Min Qty on the inventory page →",
+      "readMore": "Read More"
+    }
+  },
+  "support": {
+    "title": "Support",
+    "description": "Reach the Torqvoice support team without leaving the app. Your request includes your organisation and the page you were on.",
+    "showButton": "Show the support button",
+    "showButtonHint": "A draggable button on every page, on this device. When hidden, a small tab on the right edge brings it back.",
+    "contactTitle": "Contact support",
+    "contactHint": "Open the support form straight away.",
+    "contactAction": "Open form"
   }
 }
