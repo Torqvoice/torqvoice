@@ -143,5 +143,11 @@
     "backToInventory": "Estoque",
     "reason": "Motivo",
     "allReasons": "Todos os motivos"
+  },
+  "suggestions": {
+    "title": "Do seu estoque",
+    "inStock": "{quantity} em estoque",
+    "outOfStock": "Fora de estoque",
+    "onBackorder": "Sob encomenda ({count})"
   }
 }

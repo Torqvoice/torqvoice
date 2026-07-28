@@ -59,6 +59,7 @@ export function DetailsLeftColumn({
         partsSubtotal={formState.partsSubtotal}
         currencyCode={currencyCode}
         hasInventory={inventoryParts.length > 0}
+        inventoryParts={inventoryParts}
         onOpenInventory={() => formState.setShowInventoryPicker(true)}
         onScanBarcode={onScanBarcode}
         defaultMarkupPercent={defaultMarkupPercent}

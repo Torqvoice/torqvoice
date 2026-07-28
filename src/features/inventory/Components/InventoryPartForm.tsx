@@ -24,6 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { compressImage } from "@/lib/compress-image";
+import { priceFromCostAndMultiplier } from "@/features/inventory/Lib/partPricing";
 
 interface InventoryPartFormProps {
   open: boolean;
@@ -672,7 +673,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
                       const cost = Number(e.target.value) || 0;
                       const sellPriceInput = document.getElementById("sellPrice") as HTMLInputElement | null;
                       if (sellPriceInput) {
-                        sellPriceInput.value = String(Math.round(cost * markupMultiplier * 100) / 100);
+                        sellPriceInput.value = String(priceFromCostAndMultiplier(cost, markupMultiplier));
                       }
                     }}
                   />

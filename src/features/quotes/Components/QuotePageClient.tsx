@@ -39,6 +39,7 @@ import { QuoteLaborEditor } from './QuoteLaborEditor'
 import { QuoteNotesEditor } from './QuoteNotesEditor'
 import { QuoteRightColumn } from './QuoteRightColumn'
 import { VehicleCombobox } from './VehicleCombobox'
+import { lineTotal } from '@/features/inventory/Lib/partPricing'
 
 const LG_BREAKPOINT = 1024
 
@@ -123,7 +124,7 @@ export function QuotePageClient({
           partNumber: part.partNumber || '',
           quantity: part.quantity,
           unitPrice: part.unitPrice,
-          total: part.quantity * part.unitPrice,
+          total: lineTotal(part.quantity, part.unitPrice),
           excluded: false,
           inventoryPartId: part.inventoryPartId ?? null,
         }))

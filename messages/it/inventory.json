@@ -143,5 +143,11 @@
     "backToInventory": "Magazzino",
     "reason": "Motivo",
     "allReasons": "Tutti i motivi"
+  },
+  "suggestions": {
+    "title": "Dal tuo magazzino",
+    "inStock": "{quantity} in magazzino",
+    "outOfStock": "Esaurito",
+    "onBackorder": "In arretrato ({count})"
   }
 }
