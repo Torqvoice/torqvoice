@@ -10,6 +10,7 @@
 import { describe, it, expect } from "vitest";
 import {
   ALLOWED_ATTACHMENT_TYPES,
+  ATTACHMENT_ACCEPT,
   MAX_ATTACHMENTS,
   MAX_MESSAGE_LENGTH,
   MAX_REQUEST_BYTES,
@@ -116,6 +117,19 @@ describe("validateSupportRequest", () => {
         true,
       );
     }
+  });
+
+  it("offers the picker exactly the types the server accepts", () => {
+    // These were written out separately once and drifted: the picker allowed
+    // image/*, so an SVG or an iPhone HEIC could be chosen and was only refused
+    // after the upload had already happened.
+    expect(ATTACHMENT_ACCEPT.split(",")).toEqual(ALLOWED_ATTACHMENT_TYPES);
+    for (const offered of ATTACHMENT_ACCEPT.split(",")) {
+      expect(validateSupportRequest(request({ attachments: [attachment({ contentType: offered })] })).ok).toBe(
+        true,
+      );
+    }
+    expect(ATTACHMENT_ACCEPT).not.toContain("image/*");
   });
 
   it("rejects attachments whose combined size exceeds the budget", () => {

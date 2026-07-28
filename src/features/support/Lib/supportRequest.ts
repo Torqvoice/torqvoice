@@ -64,6 +64,14 @@ export const ALLOWED_ATTACHMENT_TYPES = [
   "text/csv",
 ];
 
+/**
+ * The file picker's `accept` attribute, derived from the allow list rather than
+ * written out again. Spelling it separately let the two drift: the picker
+ * offered `image/*`, so a small SVG or an iPhone HEIC could be chosen and was
+ * only refused after upload, by which point the user had already waited.
+ */
+export const ATTACHMENT_ACCEPT = ALLOWED_ATTACHMENT_TYPES.join(",");
+
 export interface SupportAttachmentInput {
   filename: string;
   contentType: string;

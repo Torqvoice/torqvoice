@@ -78,8 +78,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "No reply address for this account" }, { status: 400 });
   }
 
-  // Read the files only after validation has cleared the declared sizes, so an
-  // oversized upload is rejected without being pulled into memory first.
+  // The body is already buffered by this point — formData() did that, and the
+  // Content-Length check above is what keeps that bounded. Reading the files
+  // last only avoids a second copy: it skips allocating Buffers for a request
+  // that validation was going to reject anyway.
   let consumed = 0;
   const attachments: { filename: string; content: Buffer }[] = [];
   for (const [index, file] of files.entries()) {

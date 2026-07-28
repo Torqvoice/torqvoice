@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { compressImage } from "@/lib/compress-image";
 import {
+  ATTACHMENT_ACCEPT,
   MAX_ATTACHMENTS,
   MAX_MESSAGE_LENGTH,
   MAX_SUBJECT_LENGTH,
@@ -276,14 +277,18 @@ export function SupportBubble() {
           className="fixed z-50 overflow-hidden rounded-xl border bg-popover shadow-2xl ring-1 ring-black/5 dark:ring-white/10"
         >
           <div className="flex items-center gap-1 border-b bg-muted/40 py-2 pl-1 pr-2">
+            {/* Hidden from assistive tech rather than announced as a button.
+                Dragging is pointer-only, so exposing it as a control would
+                advertise something a keyboard user cannot operate. Nothing is
+                lost: every control in the panel is reachable regardless of
+                where it sits, and the position is only a convenience. */}
             <span
               {...dragHandlers}
+              aria-hidden="true"
+              title={t("move")}
               className={`flex h-7 w-6 shrink-0 touch-none items-center justify-center text-muted-foreground/60 hover:text-muted-foreground ${
                 dragging ? "cursor-grabbing" : "cursor-grab"
               }`}
-              aria-label={t("move")}
-              role="button"
-              tabIndex={-1}
             >
               <GripVertical className="h-4 w-4" />
             </span>
@@ -376,7 +381,7 @@ export function SupportBubble() {
                     ref={fileInputRef}
                     type="file"
                     multiple
-                    accept="image/*,application/pdf,text/plain,text/csv"
+                    accept={ATTACHMENT_ACCEPT}
                     className="hidden"
                     onChange={(e) => {
                       void addFiles(Array.from(e.target.files ?? []));
