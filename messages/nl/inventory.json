@@ -143,5 +143,11 @@
     "backToInventory": "Voorraad",
     "reason": "Reden",
     "allReasons": "Alle redenen"
+  },
+  "suggestions": {
+    "title": "Uit uw voorraad",
+    "inStock": "{quantity} in voorraad",
+    "outOfStock": "Niet op voorraad",
+    "onBackorder": "In nabestelling ({count})"
   }
 }

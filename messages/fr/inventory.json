@@ -143,5 +143,11 @@
     "backToInventory": "Inventaire",
     "reason": "Motif",
     "allReasons": "Tous les motifs"
+  },
+  "suggestions": {
+    "title": "Depuis votre stock",
+    "inStock": "{quantity} en stock",
+    "outOfStock": "En rupture de stock",
+    "onBackorder": "En réapprovisionnement ({count})"
   }
 }

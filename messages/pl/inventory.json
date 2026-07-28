@@ -143,5 +143,11 @@
     "backToInventory": "Magazyn",
     "reason": "Powód",
     "allReasons": "Wszystkie powody"
+  },
+  "suggestions": {
+    "title": "Z Twojego magazynu",
+    "inStock": "{quantity} w magazynie",
+    "outOfStock": "Brak w magazynie",
+    "onBackorder": "W zamówieniu ({count})"
   }
 }

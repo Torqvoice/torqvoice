@@ -143,5 +143,11 @@
     "backToInventory": "Склад",
     "reason": "Причина",
     "allReasons": "Все причины"
+  },
+  "suggestions": {
+    "title": "Из вашего склада",
+    "inStock": "{quantity} в наличии",
+    "outOfStock": "Нет в наличии",
+    "onBackorder": "Под заказ ({count})"
   }
 }

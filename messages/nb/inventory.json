@@ -143,5 +143,11 @@
     "backToInventory": "Lager",
     "reason": "Årsak",
     "allReasons": "Alle årsaker"
+  },
+  "suggestions": {
+    "title": "Fra lageret ditt",
+    "inStock": "{quantity} på lager",
+    "outOfStock": "Utsolgt",
+    "onBackorder": "På restordre ({count})"
   }
 }

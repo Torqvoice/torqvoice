@@ -143,5 +143,11 @@
     "backToInventory": "Lager",
     "reason": "Grund",
     "allReasons": "Alle Gründe"
+  },
+  "suggestions": {
+    "title": "Aus Ihrem Lager",
+    "inStock": "{quantity} auf Lager",
+    "outOfStock": "Nicht auf Lager",
+    "onBackorder": "Im Rückstand ({count})"
   }
 }

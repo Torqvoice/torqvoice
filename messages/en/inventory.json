@@ -143,5 +143,11 @@
     "backToInventory": "Inventory",
     "reason": "Reason",
     "allReasons": "All reasons"
+  },
+  "suggestions": {
+    "title": "From your inventory",
+    "inStock": "{quantity} in stock",
+    "outOfStock": "Out of stock",
+    "onBackorder": "On backorder ({count})"
   }
 }

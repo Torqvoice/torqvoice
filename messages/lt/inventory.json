@@ -143,5 +143,11 @@
     "backToInventory": "Sandėlis",
     "reason": "Priežastis",
     "allReasons": "Visos priežastys"
+  },
+  "suggestions": {
+    "title": "Iš jūsų sandėlio",
+    "inStock": "{quantity} sandėlyje",
+    "outOfStock": "Nėra sandėlyje",
+    "onBackorder": "Užsakoma ({count})"
   }
 }

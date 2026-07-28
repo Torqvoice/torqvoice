@@ -27,6 +27,12 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
+import {
+  PartNameSuggestions,
+  type PartSuggestion,
+} from '@/features/inventory/Components/PartNameSuggestions'
+import { resolvePartPrice } from '@/features/inventory/Lib/partPricing'
+
 interface PartsEditorProps {
   partItems: ServicePartInput[]
   setPartItems: React.Dispatch<React.SetStateAction<ServicePartInput[]>>
@@ -34,6 +40,8 @@ interface PartsEditorProps {
   partsSubtotal: number
   currencyCode: string
   hasInventory: boolean
+  /** Stocked parts, used for the inline name suggestions. */
+  inventoryParts?: PartSuggestion[]
   onOpenInventory: () => void
   onScanBarcode?: () => void
   /** Default markup % applied to new manually-added rows. Hidden from customers. */
@@ -51,6 +59,10 @@ function SortablePartRow({
   currencyCode,
   t,
   dragEnabled,
+  inventoryParts,
+  onSelectSuggestion,
+  defaultMarkupPercent,
+  markupAppliesToInventory,
 }: {
   id: string
   part: ServicePartInput
@@ -58,6 +70,10 @@ function SortablePartRow({
   updatePart: (index: number, field: keyof ServicePartInput, value: string | number) => void
   onDelete: () => void
   currencyCode: string
+  inventoryParts: PartSuggestion[]
+  onSelectSuggestion: (index: number, part: PartSuggestion) => void
+  defaultMarkupPercent: number
+  markupAppliesToInventory: boolean
   t: (key: string) => string
   dragEnabled: boolean
 }) {
@@ -95,13 +111,24 @@ function SortablePartRow({
           value={part.partNumber ?? ''}
           onChange={(e) => updatePart(index, 'partNumber', e.target.value)}
         />
-        <Textarea
-          placeholder={t('namePlaceholder')}
-          value={part.name}
-          onChange={(e) => updatePart(index, 'name', e.target.value)}
-          rows={1}
-          className="min-h-9 resize-none"
-        />
+        <div className="relative">
+          <Textarea
+            placeholder={t('namePlaceholder')}
+            value={part.name}
+            onChange={(e) => updatePart(index, 'name', e.target.value)}
+            rows={1}
+            className="min-h-9 w-full resize-none"
+          />
+          <PartNameSuggestions
+            query={part.name}
+            parts={inventoryParts}
+            disabled={!!part.inventoryPartId}
+            currencyCode={currencyCode}
+            defaultMarkupPercent={defaultMarkupPercent}
+            markupAppliesToInventory={markupAppliesToInventory}
+            onSelect={(picked) => onSelectSuggestion(index, picked)}
+          />
+        </div>
         <Input
           type="number"
           min="0"
@@ -163,6 +190,7 @@ export function PartsEditor({
   partsSubtotal,
   currencyCode,
   hasInventory,
+  inventoryParts = [],
   onOpenInventory,
   onScanBarcode,
   defaultMarkupPercent = 0,
@@ -173,6 +201,38 @@ export function PartsEditor({
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   const keyCounterRef = useRef(0)
+
+  // Applying a suggestion sets name, number, cost, price and the stock link
+  // together. Doing it in one setPartItems pass keeps the row consistent and
+  // avoids five renders; the inventoryPartId is what makes the job deduct
+  // stock when it is saved.
+  const handleSelectSuggestion = useCallback(
+    (index: number, picked: PartSuggestion) => {
+      setPartItems((prev) =>
+        prev.map((row, i) => {
+          if (i !== index) return row
+          const quantity = row.quantity || 1
+          // Same pricing rule as the inventory picker, so a part costs the
+          // same however it was added to the line.
+          const { unitPrice, markupPercent } = resolvePartPrice(picked, {
+            defaultMarkupPercent,
+            markupAppliesToInventory,
+          })
+          return {
+            ...row,
+            name: picked.name,
+            partNumber: picked.partNumber ?? '',
+            unitCost: picked.unitCost,
+            unitPrice,
+            markupPercent,
+            total: quantity * unitPrice,
+            inventoryPartId: picked.id,
+          }
+        }),
+      )
+    },
+    [setPartItems, defaultMarkupPercent, markupAppliesToInventory],
+  )
   const keysRef = useRef<string[]>([])
 
   // Keep keys array in sync with items length
@@ -310,6 +370,10 @@ export function PartsEditor({
                     currencyCode={currencyCode}
                     t={t}
                     dragEnabled
+                    inventoryParts={inventoryParts}
+                    onSelectSuggestion={handleSelectSuggestion}
+                    defaultMarkupPercent={defaultMarkupPercent}
+                    markupAppliesToInventory={markupAppliesToInventory}
                   />
                 ))}
               </SortableContext>
@@ -326,6 +390,10 @@ export function PartsEditor({
                 currencyCode={currencyCode}
                 t={t}
                 dragEnabled={false}
+                inventoryParts={inventoryParts}
+                onSelectSuggestion={handleSelectSuggestion}
+                defaultMarkupPercent={defaultMarkupPercent}
+                markupAppliesToInventory={markupAppliesToInventory}
               />
             ))
           )}

@@ -143,5 +143,11 @@
     "backToInventory": "Inventario",
     "reason": "Motivo",
     "allReasons": "Todos los motivos"
+  },
+  "suggestions": {
+    "title": "De su inventario",
+    "inStock": "{quantity} en stock",
+    "outOfStock": "Agotado",
+    "onBackorder": "En pedido pendiente ({count})"
   }
 }

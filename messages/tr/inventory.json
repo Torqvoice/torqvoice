@@ -143,5 +143,11 @@
     "backToInventory": "Stok",
     "reason": "Neden",
     "allReasons": "Tüm nedenler"
+  },
+  "suggestions": {
+    "title": "Stoğunuzdan",
+    "inStock": "{quantity} stokta",
+    "outOfStock": "Stokta yok",
+    "onBackorder": "Ön siparişte ({count})"
   }
 }
