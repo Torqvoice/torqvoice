@@ -8,6 +8,7 @@ import { useConfirm } from "@/components/confirm-dialog";
 import { updateQuote, deleteQuote, convertQuoteToServiceRecord } from "@/features/quotes/Actions/quoteActions";
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
 import { calculateTotals } from "@/lib/tax";
+import { lineTotal } from "@/features/inventory/Lib/partPricing";
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from "./quote-page-types";
 import { emptyPart, makeEmptyLabor, makeEmptyService } from "./quote-page-types";
 
@@ -155,7 +156,7 @@ export function useQuoteFormState({
     setPartItems((prev) => {
       const updated = [...prev];
       const part = { ...updated[index], [field]: value };
-      if (field === "quantity" || field === "unitPrice") part.total = Number(part.quantity) * Number(part.unitPrice);
+      if (field === "quantity" || field === "unitPrice") part.total = lineTotal(part.quantity, part.unitPrice);
       updated[index] = part;
       return updated;
     });

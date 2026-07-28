@@ -182,7 +182,11 @@ export function PartNameSuggestions({
             <span className="font-medium text-foreground">
               {formatCurrency(priceOf(part), currencyCode)}
             </span>
-            {part.sellPrice > 0 && part.sellPrice !== part.unitCost && (
+            {/* Show cost whenever the billed price differs from it, which is
+                what makes the margin readable. Gating on sellPrice instead hid
+                the cost in the one case it matters most: markup pricing on a
+                part whose sell price was never set. */}
+            {part.unitCost > 0 && priceOf(part) !== part.unitCost && (
               <span className="line-through">
                 {formatCurrency(part.unitCost, currencyCode)}
               </span>

@@ -1,6 +1,7 @@
 import { getServiceRecord } from '@/features/vehicles/Actions/serviceActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { readPartsPricingSettings } from '@/features/inventory/Lib/partPricing'
 import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
 import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPresetActions'
 
@@ -80,9 +81,10 @@ export default async function ServiceDetailPage({
   const defaultTaxRate = taxEnabled ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0 : 0
   const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
   const defaultDueDays = Number(settings[SETTING_KEYS.INVOICE_DUE_DAYS]) || 0
-  const defaultMarkupPercent = Number(settings[SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]) || 0
-  const markupAppliesToInventory =
-    settings[SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY] === 'true'
+  const { defaultMarkupPercent, markupAppliesToInventory } = readPartsPricingSettings(settings, {
+    defaultMarkupPercent: SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
+    markupAppliesToInventory: SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY,
+  })
   const inventoryParts = inventoryResult.success && inventoryResult.data ? inventoryResult.data : []
   const laborPresets = presetsResult.success && presetsResult.data ? presetsResult.data : []
   const initialVehicle = {

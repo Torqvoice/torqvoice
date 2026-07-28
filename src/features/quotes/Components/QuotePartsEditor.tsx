@@ -12,7 +12,7 @@ import {
   PartNameSuggestions,
   type PartSuggestion,
 } from "@/features/inventory/Components/PartNameSuggestions";
-import { resolvePartPrice } from "@/features/inventory/Lib/partPricing";
+import { lineTotal, parseQuantity, resolvePartPrice } from "@/features/inventory/Lib/partPricing";
 
 const QuotePartRow = memo(function QuotePartRow({
   part,
@@ -98,14 +98,17 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
   const handleSelectSuggestion = useCallback(
     (index: number, picked: PartSuggestion) => {
       const current = partItems[index]
-      const quantity = current?.quantity || 1
+      // Derive from the row's own quantity so the line still satisfies
+      // total === quantity * unitPrice. Defaulting an empty or zero quantity
+      // to 1 would bill a total the row's own fields do not add up to.
+      const quantity = parseQuantity(current?.quantity)
       // Quotes carry no cost/markup model, so this resolves to the part's sell
       // price, falling back to cost rather than billing at zero.
       const { unitPrice } = resolvePartPrice(picked)
       onUpdate(index, "name", picked.name)
       onUpdate(index, "partNumber", picked.partNumber ?? "")
       onUpdate(index, "unitPrice", unitPrice)
-      onUpdate(index, "total", quantity * unitPrice)
+      onUpdate(index, "total", lineTotal(quantity, unitPrice))
       onUpdate(index, "inventoryPartId", picked.id)
     },
     [onUpdate, partItems],
@@ -164,7 +167,7 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
                 name: picked.name,
                 quantity: picked.quantity,
                 unitPrice: picked.unitPrice,
-                total: picked.quantity * picked.unitPrice,
+                total: lineTotal(picked.quantity, picked.unitPrice),
                 excluded: false,
                 inventoryPartId: picked.inventoryPartId ?? null,
               },

@@ -31,7 +31,11 @@ import {
   PartNameSuggestions,
   type PartSuggestion,
 } from '@/features/inventory/Components/PartNameSuggestions'
-import { resolvePartPrice } from '@/features/inventory/Lib/partPricing'
+import {
+  lineTotal,
+  priceFromCostAndMarkup,
+  resolvePartPrice,
+} from '@/features/inventory/Lib/partPricing'
 
 interface PartsEditorProps {
   partItems: ServicePartInput[]
@@ -211,7 +215,6 @@ export function PartsEditor({
       setPartItems((prev) =>
         prev.map((row, i) => {
           if (i !== index) return row
-          const quantity = row.quantity || 1
           // Same pricing rule as the inventory picker, so a part costs the
           // same however it was added to the line.
           const { unitPrice, markupPercent } = resolvePartPrice(picked, {
@@ -225,7 +228,10 @@ export function PartsEditor({
             unitCost: picked.unitCost,
             unitPrice,
             markupPercent,
-            total: quantity * unitPrice,
+            // Derived from the row's own quantity, so the line still satisfies
+            // total === quantity * unitPrice. Defaulting an empty or zero
+            // quantity to 1 would bill a total its fields do not add up to.
+            total: lineTotal(row.quantity, unitPrice),
             inventoryPartId: picked.id,
           }
         }),
@@ -287,14 +293,12 @@ export function PartsEditor({
       prev.map((p) => {
         const eligible = markupAppliesToInventory || !p.inventoryPartId
         if (!eligible) return p
-        const cost = Number(p.unitCost) || 0
-        const markup = defaultMarkupPercent
-        const unitPrice = Math.round(cost * (1 + markup / 100) * 100) / 100
+        const unitPrice = priceFromCostAndMarkup(p.unitCost, defaultMarkupPercent)
         return {
           ...p,
-          markupPercent: markup,
+          markupPercent: defaultMarkupPercent,
           unitPrice,
-          total: Number(p.quantity) * unitPrice,
+          total: lineTotal(p.quantity, unitPrice),
         }
       })
     )

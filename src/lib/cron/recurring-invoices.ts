@@ -2,6 +2,7 @@ import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { calculateTotals } from '@/lib/tax'
+import { lineTotal } from '@/features/inventory/Lib/partPricing'
 
 function calculateNextRunDate(current: Date, frequency: string): Date {
   const next = new Date(current)
@@ -109,7 +110,7 @@ export function processRecurringInvoices() {
                 partItems: {
                   create: ri.templateParts.map((p) => ({
                     name: p.name, partNumber: p.partNumber,
-                    quantity: p.quantity, unitPrice: p.unitPrice, total: p.quantity * p.unitPrice,
+                    quantity: p.quantity, unitPrice: p.unitPrice, total: lineTotal(p.quantity, p.unitPrice),
                   })),
                 },
                 laborItems: {
