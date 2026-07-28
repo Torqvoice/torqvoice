@@ -114,6 +114,10 @@
       "alerts": {
         "title": "Meldingen",
         "description": "Bericht wanneer onderdelen bijbesteld moeten worden"
+      },
+      "support": {
+        "title": "Support",
+        "description": "Contact opnemen met support en de knop beheren"
       }
     },
     "pro": "PRO"
@@ -1370,5 +1374,14 @@
       "configurePerPart": "Stel het min. aantal van een onderdeel in op de voorraadpagina →",
       "readMore": "Lees meer"
     }
+  },
+  "support": {
+    "title": "Support",
+    "description": "Bereik het Torqvoice-supportteam zonder de app te verlaten. Uw verzoek bevat uw organisatie en de pagina waarop u was.",
+    "showButton": "Supportknop tonen",
+    "showButtonHint": "Een versleepbare knop op elke pagina, op dit apparaat. Wanneer verborgen, haalt een klein tabblad aan de rechterrand hem terug.",
+    "contactTitle": "Contact met support",
+    "contactHint": "Open het supportformulier meteen.",
+    "contactAction": "Formulier openen"
   }
 }

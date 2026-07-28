@@ -114,6 +114,10 @@
       "alerts": {
         "title": "Varsler",
         "description": "Få beskjed når deler må bestilles"
+      },
+      "support": {
+        "title": "Support",
+        "description": "Kontakt support og styr supportknappen"
       }
     },
     "pro": "PRO"
@@ -1370,5 +1374,14 @@
       "configurePerPart": "Sett delens min. antall på lagersiden →",
       "readMore": "Les mer"
     }
+  },
+  "support": {
+    "title": "Support",
+    "description": "Nå Torqvoice-supporten uten å forlate appen. Henvendelsen inkluderer organisasjonen din og siden du var på.",
+    "showButton": "Vis supportknappen",
+    "showButtonHint": "En flyttbar knapp på alle sider, på denne enheten. Når den er skjult, henter en liten fane i høyre kant den tilbake.",
+    "contactTitle": "Kontakt support",
+    "contactHint": "Åpne supportskjemaet med en gang.",
+    "contactAction": "Åpne skjema"
   }
 }

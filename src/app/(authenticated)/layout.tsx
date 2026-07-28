@@ -14,6 +14,8 @@ import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permis
 import { OnlineTracker } from "@/components/online-tracker";
 import { InstallBanner } from "@/components/pwa-install-prompt";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
+import { SupportBubble } from "@/features/support/Components/SupportBubble";
+import { isSupportEnabled } from "@/lib/support";
 import { ServiceTypeProvider } from "@/components/service-type-context";
 import { LicenseExpiryProvider } from "@/components/license-expiry-context";
 import { db } from "@/lib/db";
@@ -41,6 +43,9 @@ export default async function DashboardLayout({
 
   const features = await getFeatures(data.organizationId);
   const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved;
+  // Cloud only, and off until a platform admin turns it on. Resolved here so
+  // the widget's code never reaches a self-hosted install's page.
+  const supportEnabled = await isSupportEnabled();
 
   // Check user-level messaging enabled settings
   let smsEnabled = false;
@@ -144,6 +149,7 @@ export default async function DashboardLayout({
       </DateSettingsProvider>
     </SidebarProvider>
     <MobileBottomNav isSuperAdmin={data.isSuperAdmin} />
+    {supportEnabled && <SupportBubble />}
     </WhiteLabelCtaProvider>
     </LicenseExpiryProvider>
     </ServiceTypeProvider>

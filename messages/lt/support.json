@@ -1,0 +1,33 @@
+{
+  "title": "Pagalbos užklausa",
+  "open": "Susisiekti su pagalba",
+  "close": "Uždaryti",
+  "subjectLabel": "Tema",
+  "subjectPlaceholder": "Trumpa problemos santrauka",
+  "messageLabel": "Aprašymas",
+  "messagePlaceholder": "Kas nutiko ir ko tikėjotės vietoje to?",
+  "takeScreenshot": "Padaryti ekrano nuotrauką",
+  "addFiles": "Pridėti failų",
+  "removeAttachment": "Pašalinti priedą",
+  "attachmentSummary": "{count} iš {max} priedų · {size} MB",
+  "send": "Siųsti užklausą",
+  "sending": "Siunčiama…",
+  "sentTitle": "Užklausa išsiųsta",
+  "sentDescription": "Atsakysime jūsų paskyros el. pašto adresu.",
+  "sendAnother": "Siųsti dar vieną",
+  "hideButton": "Slėpti pagalbos mygtuką",
+  "dragHint": "Vilkite, kad perkeltumėte",
+  "move": "Perkelti",
+  "restore": "Rodyti pagalbos mygtuką",
+  "errors": {
+    "sendFailed": "Užklausos išsiųsti nepavyko. Bandykite dar kartą.",
+    "screenshotFailed": "Ekrano nuotraukos padaryti nepavyko.",
+    "subject-required": "Įrašykite temą.",
+    "subject-too-long": "Tema per ilga.",
+    "message-required": "Įrašykite aprašymą.",
+    "message-too-long": "Aprašymas per ilgas.",
+    "too-many-attachments": "Galite pridėti iki {max} failų.",
+    "attachment-type-not-allowed": "Tokio tipo failo pridėti negalima.",
+    "attachments-too-large": "Priedai per dideli. Bendra riba – 10 MB."
+  }
+}

@@ -114,6 +114,10 @@
       "alerts": {
         "title": "Įspėjimai",
         "description": "Pranešimai, kada užsakyti dalis"
+      },
+      "support": {
+        "title": "Pagalba",
+        "description": "Susisiekti su pagalba ir tvarkyti mygtuką"
       }
     },
     "pro": "PRO"
@@ -1370,5 +1374,14 @@
       "configurePerPart": "Nustatykite dalies min. kiekį sandėlio puslapyje →",
       "readMore": "Skaityti daugiau"
     }
+  },
+  "support": {
+    "title": "Pagalba",
+    "description": "Susisiekite su Torqvoice pagalbos komanda neišeidami iš programos. Užklausoje nurodoma jūsų organizacija ir puslapis, kuriame buvote.",
+    "showButton": "Rodyti pagalbos mygtuką",
+    "showButtonHint": "Velkamas mygtukas kiekviename puslapyje šiame įrenginyje. Kai paslėptas, jį grąžina maža kortelė dešiniajame krašte.",
+    "contactTitle": "Susisiekti su pagalba",
+    "contactHint": "Iš karto atidaryti pagalbos formą.",
+    "contactAction": "Atidaryti formą"
   }
 }

@@ -1,0 +1,33 @@
+{
+  "title": "Запрос в поддержку",
+  "open": "Связаться с поддержкой",
+  "close": "Закрыть",
+  "subjectLabel": "Тема",
+  "subjectPlaceholder": "Кратко опишите проблему",
+  "messageLabel": "Описание",
+  "messagePlaceholder": "Что произошло и что вы ожидали вместо этого?",
+  "takeScreenshot": "Сделать снимок экрана",
+  "addFiles": "Добавить файлы",
+  "removeAttachment": "Удалить вложение",
+  "attachmentSummary": "{count} из {max} вложений · {size} МБ",
+  "send": "Отправить запрос",
+  "sending": "Отправка…",
+  "sentTitle": "Запрос отправлен",
+  "sentDescription": "Мы ответим на адрес электронной почты вашей учётной записи.",
+  "sendAnother": "Отправить ещё",
+  "hideButton": "Скрыть кнопку поддержки",
+  "dragHint": "Перетащите, чтобы переместить",
+  "move": "Переместить",
+  "restore": "Показать кнопку поддержки",
+  "errors": {
+    "sendFailed": "Не удалось отправить запрос. Попробуйте ещё раз.",
+    "screenshotFailed": "Не удалось сделать снимок экрана.",
+    "subject-required": "Укажите тему.",
+    "subject-too-long": "Тема слишком длинная.",
+    "message-required": "Добавьте описание.",
+    "message-too-long": "Описание слишком длинное.",
+    "too-many-attachments": "Можно прикрепить не более {max} файлов.",
+    "attachment-type-not-allowed": "Файл этого типа прикрепить нельзя.",
+    "attachments-too-large": "Вложения слишком большие. Общий лимит — 10 МБ."
+  }
+}

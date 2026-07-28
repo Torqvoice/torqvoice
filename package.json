@@ -34,6 +34,7 @@
     "@tiptap/react": "^3.19.0",
     "@tiptap/starter-kit": "^3.19.0",
     "@types/qrcode": "^1.5.6",
+    "@zumer/snapdom": "^2.23.1",
     "axios": "^1.18.1",
     "better-auth": "^1.6.19",
     "bson": "^7.2.0",

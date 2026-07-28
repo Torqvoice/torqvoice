@@ -114,6 +114,10 @@
       "alerts": {
         "title": "Uyarılar",
         "description": "Parça sipariş etmeniz gerektiğinde haber alın"
+      },
+      "support": {
+        "title": "Destek",
+        "description": "Destekle iletişime geç ve düğmeyi yönet"
       }
     },
     "pro": "PRO"
@@ -1370,5 +1374,14 @@
       "configurePerPart": "Bir parçanın min. miktarını stok sayfasında ayarlayın →",
       "readMore": "Devamını oku"
     }
+  },
+  "support": {
+    "title": "Destek",
+    "description": "Uygulamadan çıkmadan Torqvoice destek ekibine ulaşın. Talebiniz kuruluşunuzu ve bulunduğunuz sayfayı içerir.",
+    "showButton": "Destek düğmesini göster",
+    "showButtonHint": "Bu cihazda her sayfada sürüklenebilir bir düğme. Gizlendiğinde sağ kenardaki küçük bir sekme onu geri getirir.",
+    "contactTitle": "Destekle iletişime geç",
+    "contactHint": "Destek formunu hemen açın.",
+    "contactAction": "Formu aç"
   }
 }
