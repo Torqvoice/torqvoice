@@ -17,6 +17,35 @@ export const MAX_TOTAL_ATTACHMENT_BYTES = 10 * 1024 * 1024;
 /** One screenshot plus a handful of files. Beyond this it is a bug report, not a ticket. */
 export const MAX_ATTACHMENTS = 6;
 
+/**
+ * Hard ceiling on the whole request, checked against Content-Length before the
+ * body is read.
+ *
+ * This is the only limit that actually protects the server. Every other check
+ * here runs on a parsed FormData, and parsing buffers the entire upload into
+ * memory first — so by the time an oversized attachment is rejected, the box
+ * has already absorbed it. An authenticated user could otherwise post
+ * gigabytes and exhaust memory.
+ *
+ * The allowance over the attachment budget covers multipart boundaries and the
+ * subject and message fields.
+ */
+export const MAX_REQUEST_BYTES = MAX_TOTAL_ATTACHMENT_BYTES + 1024 * 1024;
+
+/**
+ * Whether a request should be refused before its body is read.
+ *
+ * A missing Content-Length means a chunked upload, where the size is not known
+ * up front. Those are allowed through to the byte counter that runs while
+ * attachments are read; the reverse proxy caps them in the meantime.
+ */
+export function exceedsRequestLimit(contentLength: string | null): boolean {
+  if (!contentLength) return false;
+  const declared = Number(contentLength);
+  if (!Number.isFinite(declared)) return false;
+  return declared > MAX_REQUEST_BYTES;
+}
+
 export const MAX_SUBJECT_LENGTH = 200;
 export const MAX_MESSAGE_LENGTH = 5000;
 

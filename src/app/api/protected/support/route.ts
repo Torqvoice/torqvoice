@@ -14,7 +14,7 @@ import { getFromAddress, sendMail } from "@/lib/email";
 import { getSupportRecipient, isSupportEnabled } from "@/lib/support";
 import {
   buildSupportEmailHtml,
-  MAX_ATTACHMENTS,
+  exceedsRequestLimit,
   MAX_TOTAL_ATTACHMENT_BYTES,
   sanitizeFilename,
   validateSupportRequest,
@@ -31,6 +31,13 @@ export async function POST(request: NextRequest) {
   // its own or a disabled feature is still reachable.
   if (!(await isSupportEnabled())) {
     return NextResponse.json({ error: "Support requests are not enabled" }, { status: 404 });
+  }
+
+  // Before the body is touched. request.formData() buffers the whole upload
+  // into memory, so anything checked after it has already cost us the memory
+  // it was meant to protect.
+  if (exceedsRequestLimit(request.headers.get("content-length"))) {
+    return NextResponse.json({ error: "attachments-too-large" }, { status: 413 });
   }
 
   let formData: FormData;

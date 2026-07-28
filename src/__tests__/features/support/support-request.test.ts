@@ -12,10 +12,12 @@ import {
   ALLOWED_ATTACHMENT_TYPES,
   MAX_ATTACHMENTS,
   MAX_MESSAGE_LENGTH,
+  MAX_REQUEST_BYTES,
   MAX_SUBJECT_LENGTH,
   MAX_TOTAL_ATTACHMENT_BYTES,
   buildSupportEmailHtml,
   escapeHtml,
+  exceedsRequestLimit,
   sanitizeFilename,
   validateSupportRequest,
 } from "@/features/support/Lib/supportRequest";
@@ -132,6 +134,43 @@ describe("validateSupportRequest", () => {
   it("accepts attachments exactly at the budget", () => {
     const attachments = [attachment({ size: MAX_TOTAL_ATTACHMENT_BYTES })];
     expect(validateSupportRequest(request({ attachments })).ok).toBe(true);
+  });
+});
+
+/**
+ * The only check that runs before the body is read. Everything else in this
+ * file operates on a parsed FormData, and parsing has already buffered the
+ * whole upload into memory by then.
+ */
+describe("exceedsRequestLimit", () => {
+  it("refuses a request that declares more than the ceiling", () => {
+    expect(exceedsRequestLimit(String(MAX_REQUEST_BYTES + 1))).toBe(true);
+    expect(exceedsRequestLimit(String(1024 * 1024 * 1024))).toBe(true);
+  });
+
+  it("allows a request at or under the ceiling", () => {
+    expect(exceedsRequestLimit(String(MAX_REQUEST_BYTES))).toBe(false);
+    expect(exceedsRequestLimit(String(MAX_TOTAL_ATTACHMENT_BYTES))).toBe(false);
+    expect(exceedsRequestLimit("0")).toBe(false);
+  });
+
+  it("leaves room above the attachment budget for the form fields themselves", () => {
+    // A request carrying the maximum attachments plus a full-length subject and
+    // message must not be refused by the very limit meant to allow it.
+    expect(MAX_REQUEST_BYTES).toBeGreaterThan(
+      MAX_TOTAL_ATTACHMENT_BYTES + MAX_SUBJECT_LENGTH + MAX_MESSAGE_LENGTH,
+    );
+  });
+
+  it("allows a chunked upload through to the byte counter", () => {
+    // No Content-Length means the size is not knowable up front. Refusing these
+    // outright would break any client that streams.
+    expect(exceedsRequestLimit(null)).toBe(false);
+    expect(exceedsRequestLimit("")).toBe(false);
+  });
+
+  it("does not refuse on a header it cannot parse", () => {
+    expect(exceedsRequestLimit("not-a-number")).toBe(false);
   });
 });
 
