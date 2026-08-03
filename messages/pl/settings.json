@@ -969,6 +969,8 @@
     "portalUrl": "URL portalu",
     "urlCopied": "URL portalu skopiowany",
     "shareHint": "Udostepnij ten link swoim klientom, aby mogli zalogowac sie do swojego portalu.",
+    "serviceRequestAlertsHint": "Zgłoszenia serwisowe z portalu zawsze pojawiają się w dzwonku powiadomień. Możesz je otrzymywać także e-mailem.",
+    "serviceRequestAlertsLink": "Ustawienia powiadomień →",
     "descriptionLabel": "O Twoim warsztacie",
     "descriptionPlaceholder": "Opowiedz klientom o swoim warsztacie, oferowanych usługach i tym, co Cię wyróżnia.",
     "descriptionHint": "Wyświetlane odwiedzającym na górze strony portalu.",
@@ -1351,6 +1353,19 @@
   "alerts": {
     "title": "Alerty",
     "description": "Wybierz, o których zdarzeniach chcesz być informowany i w jaki sposób.",
+    "serviceRequest": {
+      "title": "Powiadomienia o zgłoszeniach serwisowych",
+      "description": "Zgłoszenia serwisowe wysłane przez portal klienta zawsze pojawiają się w dzwonku powiadomień. Włącz tę opcję, aby otrzymywać je także e-mailem.",
+      "email": "Powiadomienie e-mail",
+      "emailHint": "Domyślnie wyłączone. Jeden e-mail na zgłoszenie, wysyłany zaraz po jego złożeniu przez klienta.",
+      "recipients": "Wyślij do",
+      "recipientsHint": "Pozostaw puste, aby powiadomić wszystkich właścicieli i administratorów. Kilka adresów oddziel przecinkami.",
+      "invalidRecipients": "Nieprawidłowy adres: {list}",
+      "emailSetupHint": "Powiadomienia są wysyłane przez skonfigurowanego dostawcę poczty.",
+      "emailSetupLink": "Ustawienia e-mail →",
+      "save": "Zapisz ustawienia powiadomień",
+      "saved": "Zapisano ustawienia powiadomień o zgłoszeniach"
+    },
     "lowStock": {
       "title": "Alerty niskiego stanu",
       "description": "Ostrzega, gdy część osiąga próg zamawiania. Część jest niska, gdy jej ilość spadnie do lub poniżej \"Min. ilość\", albo wartości domyślnej poniżej, jeśli jej nie ustawiono. Każda część jest zgłaszana raz na spadek i milczy do czasu uzupełnienia.",

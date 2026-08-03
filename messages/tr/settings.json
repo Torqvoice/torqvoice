@@ -969,6 +969,8 @@
     "portalUrl": "Portal URL'si",
     "urlCopied": "Portal URL'si kopyalandı",
     "shareHint": "Bu bağlantıyı müşterilerinizle paylaşarak portallarına giriş yapmalarını sağlayın.",
+    "serviceRequestAlertsHint": "Portaldan gelen servis talepleri her zaman bildirim zilinizde görünür. Bunları e-posta ile de alabilirsiniz.",
+    "serviceRequestAlertsLink": "Bildirim ayarları →",
     "descriptionLabel": "Servisiniz hakkında",
     "descriptionPlaceholder": "Müşterilerinize servisinizi, sunduğunuz hizmetleri ve sizi özel kılan şeyi anlatın.",
     "descriptionHint": "Ziyaretçilere portal ana sayfanızın üst kısmında gösterilir.",
@@ -1351,6 +1353,19 @@
   "alerts": {
     "title": "Uyarılar",
     "description": "Hangi olaylardan nasıl haberdar olmak istediğinizi seçin.",
+    "serviceRequest": {
+      "title": "Servis talebi bildirimleri",
+      "description": "Müşteri portalı üzerinden gönderilen servis talepleri her zaman bildirim zilinde görünür. E-posta ile de almak için bunu açın.",
+      "email": "E-posta bildirimi",
+      "emailHint": "Varsayılan olarak kapalı. Her talep için bir e-posta, müşteri gönderir göndermez iletilir.",
+      "recipients": "Gönderilecek adres",
+      "recipientsHint": "Tüm sahipleri ve yöneticileri bilgilendirmek için boş bırakın. Birden fazla adresi virgülle ayırın.",
+      "invalidRecipients": "Geçerli bir adres değil: {list}",
+      "emailSetupHint": "Bildirimler yapılandırdığınız e-posta sağlayıcısı ile gönderilir.",
+      "emailSetupLink": "E-posta ayarları →",
+      "save": "Bildirim ayarlarını kaydet",
+      "saved": "Servis talebi bildirim ayarları kaydedildi"
+    },
     "lowStock": {
       "title": "Düşük stok uyarıları",
       "description": "Bir parça sipariş noktasına ulaştığında uyarır. Bir parça, miktarı \"Min. miktar\" değerine veya altına düştüğünde düşüktür; tanımlı değilse aşağıdaki varsayılan kullanılır. Her parça düşüş başına bir kez bildirilir ve stok yenilenene kadar sessiz kalır.",

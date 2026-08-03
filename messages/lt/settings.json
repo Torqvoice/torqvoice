@@ -969,6 +969,8 @@
     "portalUrl": "Portalo URL",
     "urlCopied": "Portalo URL nukopijuotas",
     "shareHint": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti prie savo portalo.",
+    "serviceRequestAlertsHint": "Serviso užklausos iš portalo visada rodomos pranešimų varpelyje. Jas taip pat galite gauti el. paštu.",
+    "serviceRequestAlertsLink": "Pranešimų nustatymai →",
     "descriptionLabel": "Apie jūsų dirbtuves",
     "descriptionPlaceholder": "Papasakokite klientams apie savo dirbtuves, siūlomas paslaugas ir kuo esate unikalūs.",
     "descriptionHint": "Rodoma lankytojams jūsų portalo pradžios puslapio viršuje.",
@@ -1351,6 +1353,19 @@
   "alerts": {
     "title": "Įspėjimai",
     "description": "Pasirinkite, apie kuriuos įvykius ir kaip norite gauti pranešimus.",
+    "serviceRequest": {
+      "title": "Pranešimai apie serviso užklausas",
+      "description": "Serviso užklausos, pateiktos per klientų portalą, visada rodomos pranešimų varpelyje. Įjunkite, kad jas gautumėte ir el. paštu.",
+      "email": "Pranešimas el. paštu",
+      "emailHint": "Pagal nutylėjimą išjungta. Vienas laiškas kiekvienai užklausai, siunčiamas iškart ją pateikus.",
+      "recipients": "Siųsti adresu",
+      "recipientsHint": "Palikite tuščią, kad būtų informuoti visi savininkai ir administratoriai. Kelis adresus atskirkite kableliais.",
+      "invalidRecipients": "Netinkamas adresas: {list}",
+      "emailSetupHint": "Pranešimai siunčiami per jūsų sukonfigūruotą pašto tiekėją.",
+      "emailSetupLink": "El. pašto nustatymai →",
+      "save": "Įrašyti pranešimų nustatymus",
+      "saved": "Serviso užklausų pranešimų nustatymai įrašyti"
+    },
     "lowStock": {
       "title": "Mažų atsargų įspėjimai",
       "description": "Įspėja, kai dalis pasiekia užsakymo ribą. Dalis laikoma mažėjančia, kai kiekis nukrenta iki arba žemiau \"Min. kiekis\", arba žemiau numatytosios ribos, jei jos nėra. Kiekviena dalis pranešama vieną kartą per kritimą ir tyli, kol bus papildyta.",

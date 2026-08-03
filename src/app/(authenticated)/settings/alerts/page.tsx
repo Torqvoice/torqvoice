@@ -9,6 +9,8 @@ export default async function AlertsSettingsPage() {
     SETTING_KEYS.LOW_STOCK_ALERTS_IN_APP,
     SETTING_KEYS.LOW_STOCK_ALERTS_EMAIL,
     SETTING_KEYS.LOW_STOCK_ALERTS_EMAIL_MIN_INTERVAL_HOURS,
+    SETTING_KEYS.SERVICE_REQUEST_ALERTS_EMAIL,
+    SETTING_KEYS.SERVICE_REQUEST_ALERTS_RECIPIENTS,
   ]);
   const settings = result.success && result.data ? result.data : {};
 
