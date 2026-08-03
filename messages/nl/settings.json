@@ -969,6 +969,8 @@
     "portalUrl": "Portaal-URL",
     "urlCopied": "Portaal-URL gekopieerd",
     "shareHint": "Deel deze link met uw klanten zodat ze kunnen inloggen op hun portaal.",
+    "serviceRequestAlertsHint": "Serviceaanvragen uit het portaal verschijnen altijd in je meldingsbel. Je kunt ze ook per e-mail ontvangen.",
+    "serviceRequestAlertsLink": "Meldingsinstellingen →",
     "descriptionLabel": "Over uw werkplaats",
     "descriptionPlaceholder": "Vertel klanten iets over uw werkplaats, de diensten die u aanbiedt en wat u uniek maakt.",
     "descriptionHint": "Wordt aan bezoekers getoond bovenaan uw portaalpagina.",
@@ -1351,6 +1353,19 @@
   "alerts": {
     "title": "Meldingen",
     "description": "Kies over welke gebeurtenissen u bericht wilt, en hoe.",
+    "serviceRequest": {
+      "title": "Meldingen voor serviceaanvragen",
+      "description": "Serviceaanvragen via het klantenportaal verschijnen altijd in de meldingsbel. Zet dit aan om ze ook per e-mail te ontvangen.",
+      "email": "E-mailmelding",
+      "emailHint": "Standaard uit. Eén e-mail per aanvraag, verstuurd zodra een klant deze indient.",
+      "recipients": "Sturen naar",
+      "recipientsHint": "Laat leeg om alle eigenaren en beheerders te informeren. Scheid meerdere adressen met komma's.",
+      "invalidRecipients": "Geen geldig adres: {list}",
+      "emailSetupHint": "Meldingen worden verstuurd via de e-mailprovider die je hebt ingesteld.",
+      "emailSetupLink": "E-mailinstellingen →",
+      "save": "Meldingsinstellingen opslaan",
+      "saved": "Instellingen voor serviceaanvragen opgeslagen"
+    },
     "lowStock": {
       "title": "Meldingen lage voorraad",
       "description": "Waarschuwt wanneer een onderdeel zijn bestelpunt bereikt. Een onderdeel is laag als de voorraad daalt tot of onder het \"Min. aantal\", of de standaardwaarde hieronder als het er geen heeft. Elk onderdeel wordt één keer per daling gemeld en blijft stil tot het is aangevuld.",

@@ -969,6 +969,8 @@
     "portalUrl": "URL du portail",
     "urlCopied": "URL du portail copiee",
     "shareHint": "Partagez ce lien avec vos clients pour qu'ils puissent se connecter a leur portail.",
+    "serviceRequestAlertsHint": "Les demandes de service du portail apparaissent toujours dans votre cloche de notifications. Vous pouvez aussi les recevoir par e-mail.",
+    "serviceRequestAlertsLink": "Paramètres d'alerte →",
     "descriptionLabel": "À propos de votre garage",
     "descriptionPlaceholder": "Présentez votre garage à vos clients : vos services, votre équipe, ce qui vous rend unique.",
     "descriptionHint": "Affiché aux visiteurs en haut de la page d'accueil de votre portail.",
@@ -1351,6 +1353,19 @@
   "alerts": {
     "title": "Alertes",
     "description": "Choisissez les événements dont vous voulez être averti, et comment.",
+    "serviceRequest": {
+      "title": "Alertes de demandes de service",
+      "description": "Les demandes de service envoyées via le portail client apparaissent toujours dans la cloche de notifications. Activez cette option pour les recevoir aussi par e-mail.",
+      "email": "Notification par e-mail",
+      "emailHint": "Désactivé par défaut. Un e-mail par demande, envoyé dès qu'un client la soumet.",
+      "recipients": "Envoyer à",
+      "recipientsHint": "Laissez vide pour avertir tous les propriétaires et administrateurs. Séparez plusieurs adresses par des virgules.",
+      "invalidRecipients": "Adresse non valide : {list}",
+      "emailSetupHint": "Les alertes sont envoyées via le fournisseur de messagerie que vous avez configuré.",
+      "emailSetupLink": "Paramètres e-mail →",
+      "save": "Enregistrer les paramètres d'alerte",
+      "saved": "Paramètres d'alerte des demandes enregistrés"
+    },
     "lowStock": {
       "title": "Alertes de stock bas",
       "description": "Alerte quand une pièce atteint son seuil de réapprovisionnement. Une pièce est basse lorsque sa quantité descend à ou sous sa \"Qté min\", ou sous la valeur par défaut ci-dessous si elle n'en a pas. Chaque pièce est signalée une fois par baisse et reste silencieuse jusqu'au réassort.",

@@ -3,6 +3,7 @@
 import { db } from '@/lib/db'
 import { getCustomerSession, type CustomerSessionData } from '@/lib/customer-session'
 import { notify } from '@/lib/notify'
+import { sendServiceRequestAlert } from '@/features/portal/Lib/sendServiceRequestAlert'
 import { withAuth, type ActionResult } from '@/lib/with-auth'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -320,7 +321,7 @@ export async function createServiceRequest(input: {
     // Validate vehicle belongs to customer
     const vehicle = await db.vehicle.findFirst({
       where: { id: input.vehicleId, customerId, organizationId },
-      select: { id: true, make: true, model: true },
+      select: { id: true, make: true, model: true, licensePlate: true },
     })
 
     if (!vehicle) {
@@ -329,7 +330,7 @@ export async function createServiceRequest(input: {
 
     const customer = await db.customer.findUnique({
       where: { id: customerId },
-      select: { name: true },
+      select: { name: true, email: true, phone: true },
     })
 
     const serviceRequest = await db.serviceRequest.create({
@@ -345,6 +346,11 @@ export async function createServiceRequest(input: {
     // Notify staff
     const vehicleName = `${vehicle.make} ${vehicle.model}`
     const customerName = customer?.name ?? 'A customer'
+    // The plate is what the workshop actually looks a car up by, so it goes in
+    // the email even though the in-app message stays short.
+    const vehicleLabel = vehicle.licensePlate
+      ? `${vehicleName} (${vehicle.licensePlate})`
+      : vehicleName
 
     await notify({
       organizationId,
@@ -355,6 +361,26 @@ export async function createServiceRequest(input: {
       entityId: serviceRequest.id,
       entityUrl: `/customers/${customerId}?tab=requests`,
     })
+
+    // Email the workshop, if it asked to be emailed. Isolated on purpose: the
+    // request is committed and the bell has already rung, so a misconfigured
+    // mail provider must not surface to the customer as a failed submission.
+    // sendServiceRequestAlert swallows its own errors; this is the backstop for
+    // anything it cannot anticipate.
+    try {
+      await sendServiceRequestAlert({
+        organizationId,
+        customerId,
+        customerName,
+        customerEmail: customer?.email ?? null,
+        customerPhone: customer?.phone ?? null,
+        vehicleLabel,
+        description: input.description,
+        preferredDate: serviceRequest.preferredDate,
+      })
+    } catch (error) {
+      console.error('[createServiceRequest] alert email failed:', error)
+    }
 
     return serviceRequest
   })

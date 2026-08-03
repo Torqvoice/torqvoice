@@ -969,6 +969,8 @@
     "portalUrl": "Portal-URL",
     "urlCopied": "Portal-URL kopiert",
     "shareHint": "Teilen Sie diesen Link mit Ihren Kunden, damit sie sich in ihr Portal einloggen konnen.",
+    "serviceRequestAlertsHint": "Serviceanfragen aus dem Portal erscheinen immer in Ihrer Benachrichtigungsglocke. Sie können sie zusätzlich per E-Mail erhalten.",
+    "serviceRequestAlertsLink": "Benachrichtigungseinstellungen →",
     "descriptionLabel": "Über Ihre Werkstatt",
     "descriptionPlaceholder": "Erzählen Sie Ihren Kunden etwas über Ihre Werkstatt, die angebotenen Leistungen und was Sie auszeichnet.",
     "descriptionHint": "Wird Besuchern oben auf Ihrer Portal-Startseite angezeigt.",
@@ -1351,6 +1353,19 @@
   "alerts": {
     "title": "Warnungen",
     "description": "Wählen Sie, über welche Ereignisse Sie wie informiert werden.",
+    "serviceRequest": {
+      "title": "Benachrichtigungen zu Serviceanfragen",
+      "description": "Serviceanfragen aus dem Kundenportal erscheinen immer in der Benachrichtigungsglocke. Aktivieren Sie diese Option, um sie zusätzlich per E-Mail zu erhalten.",
+      "email": "E-Mail-Benachrichtigung",
+      "emailHint": "Standardmäßig aus. Eine E-Mail pro Anfrage, versendet sobald ein Kunde sie absendet.",
+      "recipients": "Senden an",
+      "recipientsHint": "Leer lassen, um alle Inhaber und Administratoren zu benachrichtigen. Mehrere Adressen mit Komma trennen.",
+      "invalidRecipients": "Keine gültige Adresse: {list}",
+      "emailSetupHint": "Benachrichtigungen werden über Ihren eingerichteten E-Mail-Anbieter versendet.",
+      "emailSetupLink": "E-Mail-Einstellungen →",
+      "save": "Benachrichtigungseinstellungen speichern",
+      "saved": "Einstellungen für Serviceanfragen gespeichert"
+    },
     "lowStock": {
       "title": "Bestandswarnungen",
       "description": "Warnt, wenn ein Teil seinen Meldebestand erreicht. Ein Teil gilt als knapp, wenn der Bestand auf oder unter die \"Mindestmenge\" fällt — oder unter den Standardwert unten, falls keine gesetzt ist. Jedes Teil wird pro Unterschreitung einmal gemeldet und bleibt bis zum Auffüllen still.",

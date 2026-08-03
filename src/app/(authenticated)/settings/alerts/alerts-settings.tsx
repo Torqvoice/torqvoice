@@ -14,7 +14,8 @@ import { toast } from "sonner";
 import { setSettings } from "@/features/settings/Actions/settingsActions";
 import { runLowStockCheck } from "@/features/inventory/Actions/runLowStockCheck";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { Loader2, PackageSearch, PlayCircle, Save } from "lucide-react";
+import { parseInvalidRecipients } from "@/features/portal/Lib/serviceRequestAlert";
+import { Loader2, PackageSearch, PlayCircle, Save, Wrench } from "lucide-react";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
 /**
@@ -36,10 +37,118 @@ export function AlertsSettings({ settings }: { settings: Record<string, string> 
       </div>
       <ReadOnlyWrapper>
         <div className="space-y-6">
+          <ServiceRequestAlertCard settings={settings} />
           <LowStockAlertCard settings={settings} />
         </div>
       </ReadOnlyWrapper>
     </div>
+  );
+}
+
+function ServiceRequestAlertCard({ settings }: { settings: Record<string, string> }) {
+  const router = useRouter();
+  const t = useTranslations("settings");
+  const [saving, setSaving] = useState(false);
+
+  const [email, setEmail] = useState(
+    settings[SETTING_KEYS.SERVICE_REQUEST_ALERTS_EMAIL] === "true",
+  );
+  const [recipients, setRecipients] = useState(
+    settings[SETTING_KEYS.SERVICE_REQUEST_ALERTS_RECIPIENTS] || "",
+  );
+
+  // Addresses are validated on save rather than while typing, so the field does
+  // not flag a half-written address on every keystroke.
+  const invalid = parseInvalidRecipients(recipients);
+
+  const handleSave = async () => {
+    if (email && invalid.length > 0) {
+      toast.error(t("alerts.serviceRequest.invalidRecipients", { list: invalid.join(", ") }));
+      return;
+    }
+    setSaving(true);
+    await setSettings({
+      [SETTING_KEYS.SERVICE_REQUEST_ALERTS_EMAIL]: email ? "true" : "false",
+      [SETTING_KEYS.SERVICE_REQUEST_ALERTS_RECIPIENTS]: recipients.trim(),
+    });
+    setSaving(false);
+    router.refresh();
+    toast.success(t("alerts.serviceRequest.saved"));
+  };
+
+  return (
+    <Card className="border-0 shadow-sm">
+      <CardHeader className="flex flex-row items-center justify-between pb-4">
+        <div className="flex items-center gap-3">
+          <Wrench className="h-5 w-5 text-muted-foreground" />
+          <CardTitle className="text-lg">{t("alerts.serviceRequest.title")}</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <p className="text-sm text-muted-foreground">
+          {t("alerts.serviceRequest.description")}
+        </p>
+
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5 pr-4">
+            <Label htmlFor="serviceRequestEmail">{t("alerts.serviceRequest.email")}</Label>
+            <p className="text-xs text-muted-foreground">
+              {t("alerts.serviceRequest.emailHint")}
+            </p>
+          </div>
+          <Switch
+            id="serviceRequestEmail"
+            checked={email}
+            onCheckedChange={setEmail}
+          />
+        </div>
+
+        {email && (
+          <>
+            <Separator />
+
+            <div className="space-y-2">
+              <Label htmlFor="serviceRequestRecipients">
+                {t("alerts.serviceRequest.recipients")}
+              </Label>
+              <Input
+                id="serviceRequestRecipients"
+                type="text"
+                placeholder="service@example.com, owner@example.com"
+                value={recipients}
+                onChange={(e) => setRecipients(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                {t("alerts.serviceRequest.recipientsHint")}
+              </p>
+              {invalid.length > 0 && (
+                <p className="text-xs text-destructive">
+                  {t("alerts.serviceRequest.invalidRecipients", { list: invalid.join(", ") })}
+                </p>
+              )}
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+              {t("alerts.serviceRequest.emailSetupHint")}{" "}
+              <Link href="/settings/email" className="text-primary hover:underline">
+                {t("alerts.serviceRequest.emailSetupLink")}
+              </Link>
+            </p>
+          </>
+        )}
+
+        <SaveButton>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
+            {t("alerts.serviceRequest.save")}
+          </Button>
+        </SaveButton>
+      </CardContent>
+    </Card>
   );
 }
 

@@ -969,6 +969,8 @@
     "portalUrl": "URL del portal",
     "urlCopied": "URL del portal copiada",
     "shareHint": "Comparta este enlace con sus clientes para que puedan iniciar sesion en su portal.",
+    "serviceRequestAlertsHint": "Las solicitudes de servicio del portal siempre aparecen en tu campana de notificaciones. También puedes recibirlas por correo.",
+    "serviceRequestAlertsLink": "Ajustes de avisos →",
     "descriptionLabel": "Sobre tu taller",
     "descriptionPlaceholder": "Cuenta a tus clientes algo sobre tu taller, los servicios que ofreces y lo que te hace único.",
     "descriptionHint": "Se muestra a los visitantes en la parte superior de la página de tu portal.",
@@ -1351,6 +1353,19 @@
   "alerts": {
     "title": "Alertas",
     "description": "Elija sobre qué eventos quiere recibir avisos y cómo.",
+    "serviceRequest": {
+      "title": "Avisos de solicitudes de servicio",
+      "description": "Las solicitudes de servicio enviadas desde el portal del cliente siempre aparecen en la campana de notificaciones. Activa esta opción para recibirlas también por correo.",
+      "email": "Notificación por correo",
+      "emailHint": "Desactivado por defecto. Un correo por solicitud, enviado en cuanto el cliente la envía.",
+      "recipients": "Enviar a",
+      "recipientsHint": "Déjalo vacío para avisar a todos los propietarios y administradores. Separa varias direcciones con comas.",
+      "invalidRecipients": "Dirección no válida: {list}",
+      "emailSetupHint": "Los avisos se envían con el proveedor de correo que tengas configurado.",
+      "emailSetupLink": "Ajustes de correo →",
+      "save": "Guardar ajustes de avisos",
+      "saved": "Ajustes de avisos de solicitudes guardados"
+    },
     "lowStock": {
       "title": "Alertas de stock bajo",
       "description": "Avisa cuando una pieza alcanza su punto de pedido. Una pieza está baja cuando su cantidad cae a o por debajo de su \"Cant. mínima\", o del valor predeterminado si no tiene. Cada pieza se informa una vez por caída y no vuelve a avisar hasta reponerla.",

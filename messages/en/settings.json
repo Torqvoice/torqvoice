@@ -969,6 +969,8 @@
     "portalUrl": "Portal URL",
     "urlCopied": "Portal URL copied",
     "shareHint": "Share this link with your customers so they can log in to their portal.",
+    "serviceRequestAlertsHint": "Service requests from the portal always appear in your notification bell. You can also get them by email.",
+    "serviceRequestAlertsLink": "Alert settings →",
     "descriptionLabel": "About your workshop",
     "descriptionPlaceholder": "Tell customers a bit about your workshop, the services you offer, and what makes you unique.",
     "descriptionHint": "Shown to visitors at the top of your portal landing page.",
@@ -1351,6 +1353,19 @@
   "alerts": {
     "title": "Alerts",
     "description": "Choose which events you want to be told about, and how.",
+    "serviceRequest": {
+      "title": "Service request alerts",
+      "description": "Service requests submitted through the customer portal always show up in the notification bell. Turn this on to also get them by email.",
+      "email": "Email notification",
+      "emailHint": "Off by default. One email per request, sent as soon as a customer submits it.",
+      "recipients": "Send to",
+      "recipientsHint": "Leave empty to notify every owner and admin. Separate several addresses with commas.",
+      "invalidRecipients": "Not a valid address: {list}",
+      "emailSetupHint": "Alerts are sent with your configured mail provider.",
+      "emailSetupLink": "Email settings →",
+      "save": "Save alert settings",
+      "saved": "Service request alert settings saved"
+    },
     "lowStock": {
       "title": "Low stock alerts",
       "description": "Alerts when a part reaches its reorder point. A part is low when its quantity drops to or below its \"Min Qty\", or the default below if it has none. Each part is reported once per dip and stays quiet until it is restocked.",

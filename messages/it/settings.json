@@ -969,6 +969,8 @@
     "portalUrl": "URL del portale",
     "urlCopied": "URL del portale copiato",
     "shareHint": "Condividi questo link con i tuoi clienti per permettere loro di accedere al portale.",
+    "serviceRequestAlertsHint": "Le richieste di servizio dal portale compaiono sempre nella campanella delle notifiche. Puoi riceverle anche via e-mail.",
+    "serviceRequestAlertsLink": "Impostazioni avvisi →",
     "descriptionLabel": "La tua officina",
     "descriptionPlaceholder": "Racconta ai clienti qualcosa sulla tua officina, i servizi che offri e ciò che ti rende unico.",
     "descriptionHint": "Mostrato ai visitatori in cima alla pagina del portale.",
@@ -1351,6 +1353,19 @@
   "alerts": {
     "title": "Avvisi",
     "description": "Scegli di quali eventi vuoi essere avvisato e come.",
+    "serviceRequest": {
+      "title": "Avvisi per richieste di servizio",
+      "description": "Le richieste di servizio inviate dal portale clienti compaiono sempre nella campanella delle notifiche. Attiva questa opzione per riceverle anche via e-mail.",
+      "email": "Notifica e-mail",
+      "emailHint": "Disattivato per impostazione predefinita. Una e-mail per richiesta, inviata appena il cliente la invia.",
+      "recipients": "Invia a",
+      "recipientsHint": "Lascia vuoto per avvisare tutti i proprietari e gli amministratori. Separa più indirizzi con virgole.",
+      "invalidRecipients": "Indirizzo non valido: {list}",
+      "emailSetupHint": "Gli avvisi vengono inviati con il provider e-mail che hai configurato.",
+      "emailSetupLink": "Impostazioni e-mail →",
+      "save": "Salva impostazioni avvisi",
+      "saved": "Impostazioni avvisi richieste salvate"
+    },
     "lowStock": {
       "title": "Avvisi scorte basse",
       "description": "Avvisa quando un ricambio raggiunge il punto di riordino. Un ricambio è basso quando la quantità scende a o sotto la sua \"Qtà min\", o il valore predefinito se non ne ha. Ogni ricambio viene segnalato una volta per calo e resta silenzioso fino al riassortimento.",

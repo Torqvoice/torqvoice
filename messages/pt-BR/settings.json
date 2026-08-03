@@ -969,6 +969,8 @@
     "portalUrl": "URL do portal",
     "urlCopied": "URL do portal copiada",
     "shareHint": "Compartilhe este link com seus clientes para que possam fazer login no portal.",
+    "serviceRequestAlertsHint": "As solicitações de serviço do portal sempre aparecem no seu sino de notificações. Você também pode recebê-las por e-mail.",
+    "serviceRequestAlertsLink": "Configurações de alerta →",
     "descriptionLabel": "Sobre sua oficina",
     "descriptionPlaceholder": "Conte aos clientes sobre sua oficina, os serviços que você oferece e o que torna seu trabalho único.",
     "descriptionHint": "Mostrado aos visitantes no topo da página inicial do seu portal.",
@@ -1351,6 +1353,19 @@
   "alerts": {
     "title": "Alertas",
     "description": "Escolha sobre quais eventos deseja ser avisado e como.",
+    "serviceRequest": {
+      "title": "Alertas de solicitações de serviço",
+      "description": "Solicitações de serviço enviadas pelo portal do cliente sempre aparecem no sino de notificações. Ative esta opção para recebê-las também por e-mail.",
+      "email": "Notificação por e-mail",
+      "emailHint": "Desativado por padrão. Um e-mail por solicitação, enviado assim que o cliente a envia.",
+      "recipients": "Enviar para",
+      "recipientsHint": "Deixe vazio para avisar todos os proprietários e administradores. Separe vários endereços com vírgulas.",
+      "invalidRecipients": "Endereço inválido: {list}",
+      "emailSetupHint": "Os alertas são enviados pelo provedor de e-mail que você configurou.",
+      "emailSetupLink": "Configurações de e-mail →",
+      "save": "Salvar configurações de alerta",
+      "saved": "Configurações de alerta de solicitações salvas"
+    },
     "lowStock": {
       "title": "Alertas de estoque baixo",
       "description": "Avisa quando uma peça atinge seu ponto de reposição. Uma peça está baixa quando a quantidade cai para ou abaixo da \"Qtd. mín.\", ou do padrão abaixo se não tiver. Cada peça é informada uma vez por queda e fica em silêncio até ser reposta.",
