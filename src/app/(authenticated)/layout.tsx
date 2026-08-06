@@ -120,6 +120,7 @@ export default async function DashboardLayout({
         dateFormat={data.dateFormat}
         timeFormat={data.timeFormat}
         timezone={data.timezone}
+        weekStartDay={data.weekStartDay}
       >
       <CurrencySettingsProvider
         currencyCode={data.currencyCode}

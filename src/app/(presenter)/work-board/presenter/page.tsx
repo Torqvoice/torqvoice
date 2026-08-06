@@ -6,11 +6,10 @@ import { WorkBoardPresenter } from "@/features/workboard/Components/WorkBoardPre
 
 export const dynamic = "force-dynamic";
 
-function getMonday(date: Date): string {
+function getWeekStart(date: Date, weekStartDay: number): string {
   const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
+  const diff = (d.getDay() - weekStartDay + 7) % 7;
+  d.setDate(d.getDate() - diff);
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
@@ -24,17 +23,18 @@ export default async function WorkBoardPresenterPage({
 }) {
   const params = await searchParams;
   const baseDate = params.date ? new Date(params.date + "T12:00:00") : new Date();
-  const weekStart = getMonday(baseDate);
 
-  const [techResult, assignResult, settingsResult] = await Promise.all([
+  const [techResult, settingsResult] = await Promise.all([
     getTechnicians(),
-    getBoardJobs(weekStart),
     getWorkBoardSettings(),
   ]);
 
   const boardSettings = settingsResult.success && settingsResult.data
     ? settingsResult.data
     : { weekStartDay: 1, workDayStart: "07:00", workDayEnd: "15:00" };
+
+  const weekStart = getWeekStart(baseDate, boardSettings.weekStartDay);
+  const assignResult = await getBoardJobs(weekStart);
 
   if (!techResult.success) {
     return (
@@ -62,6 +62,7 @@ export default async function WorkBoardPresenterPage({
         initialWeekStart={weekStart}
         workDayStart={boardSettings.workDayStart}
         workDayEnd={boardSettings.workDayEnd}
+        weekStartDay={boardSettings.weekStartDay}
       />
     </Suspense>
   );

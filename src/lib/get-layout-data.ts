@@ -16,6 +16,7 @@ type AuthResult =
       dateFormat: string | undefined;
       timeFormat: string | undefined;
       timezone: string | undefined;
+      weekStartDay: number;
       serviceType: string | undefined;
       currencyCode: string | undefined;
       currencyFormat: string | undefined;
@@ -52,6 +53,7 @@ export async function getLayoutData(): Promise<AuthResult> {
                 SETTING_KEYS.DATE_FORMAT,
                 SETTING_KEYS.TIME_FORMAT,
                 SETTING_KEYS.TIMEZONE,
+                SETTING_KEYS.WORKBOARD_WEEK_START_DAY,
                 SETTING_KEYS.SERVICE_TYPE,
                 SETTING_KEYS.CURRENCY_CODE,
                 SETTING_KEYS.CURRENCY_FORMAT,
@@ -83,6 +85,7 @@ export async function getLayoutData(): Promise<AuthResult> {
     dateFormat: orgMap.get(SETTING_KEYS.DATE_FORMAT) || undefined,
     timeFormat: orgMap.get(SETTING_KEYS.TIME_FORMAT) || undefined,
     timezone: orgMap.get(SETTING_KEYS.TIMEZONE) || undefined,
+    weekStartDay: parseInt(orgMap.get(SETTING_KEYS.WORKBOARD_WEEK_START_DAY) || "1", 10),
     serviceType: orgMap.get(SETTING_KEYS.SERVICE_TYPE) || undefined,
     currencyCode: orgMap.get(SETTING_KEYS.CURRENCY_CODE) || undefined,
     currencyFormat: orgMap.get(SETTING_KEYS.CURRENCY_FORMAT) || undefined,
