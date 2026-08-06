@@ -418,8 +418,11 @@ export async function getWorkBoardSettings() {
         map[s.key] = s.value;
       }
 
+      // Clamp so a corrupt stored value can never produce NaN week starts downstream
+      const parsedWeekStart = parseInt(map["workboard.weekStartDay"] || "1", 10);
+
       return {
-        weekStartDay: parseInt(map["workboard.weekStartDay"] || "1", 10),
+        weekStartDay: Number.isInteger(parsedWeekStart) && parsedWeekStart >= 0 && parsedWeekStart <= 6 ? parsedWeekStart : 1,
         workDayStart: map["workboard.workDayStart"] || "07:00",
         workDayEnd: map["workboard.workDayEnd"] || "15:00",
       } as WorkBoardSettings;

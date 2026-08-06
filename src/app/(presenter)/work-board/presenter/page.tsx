@@ -24,17 +24,18 @@ export default async function WorkBoardPresenterPage({
   const params = await searchParams;
   const baseDate = params.date ? new Date(params.date + "T12:00:00") : new Date();
 
-  const [techResult, settingsResult] = await Promise.all([
-    getTechnicians(),
-    getWorkBoardSettings(),
-  ]);
+  const techPromise = getTechnicians();
+  const settingsResult = await getWorkBoardSettings();
 
   const boardSettings = settingsResult.success && settingsResult.data
     ? settingsResult.data
     : { weekStartDay: 1, workDayStart: "07:00", workDayEnd: "15:00" };
 
   const weekStart = getWeekStart(baseDate, boardSettings.weekStartDay);
-  const assignResult = await getBoardJobs(weekStart);
+  const [techResult, assignResult] = await Promise.all([
+    techPromise,
+    getBoardJobs(weekStart),
+  ]);
 
   if (!techResult.success) {
     return (
