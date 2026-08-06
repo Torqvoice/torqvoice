@@ -6,6 +6,7 @@ import { mkdir, writeFile, rm } from "fs/promises";
 import path from "path";
 import os from "os";
 import JSZip from "jszip";
+import { resolveWithinDir } from "@/lib/safe-path";
 
 // Allow up to 5 minutes for large imports
 export const maxDuration = 300;
@@ -259,7 +260,13 @@ export async function POST(request: NextRequest) {
       if (entry.dir) continue;
       // Only extract document files, not the full backup
       if (!relativePath.startsWith("documents/")) continue;
-      const targetPath = path.join(tmpDir, relativePath);
+      // Guard against zip-slip: `startsWith("documents/")` alone is bypassable
+      // with `documents/../../..`, so verify the resolved path stays in tmpDir.
+      const targetPath = resolveWithinDir(tmpDir, relativePath);
+      if (!targetPath) {
+        console.warn(`[import-invoice-ninja] Skipping unsafe zip entry: ${relativePath}`);
+        continue;
+      }
       await mkdir(path.dirname(targetPath), { recursive: true });
       const content = await entry.async("nodebuffer");
       await writeFile(targetPath, content);
@@ -477,8 +484,14 @@ export async function POST(request: NextRequest) {
         // ── Copy attached documents ─────────────────────────────────
         const invoiceDocs = docsByInvoice.get(invoice.hashed_id) || [];
         for (const doc of invoiceDocs) {
-          // Try to read the file from the extracted zip
-          const docPath = path.join(tmpDir!, "documents", doc.url);
+          // Try to read the file from the extracted zip.
+          // Guard against path traversal: doc.url comes from backup.json and
+          // must not escape the extracted documents dir.
+          const docPath = resolveWithinDir(path.join(tmpDir!, "documents"), doc.url);
+          if (!docPath) {
+            console.warn(`[import-invoice-ninja] Skipping document with unsafe path: ${doc.url}`);
+            continue;
+          }
           let fileData: Buffer;
           try {
             const { readFileSync } = await import("fs");
