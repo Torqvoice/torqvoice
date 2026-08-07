@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { checkWebhookUrl } from "@/features/webhooks/Lib/ssrf";
+
+// Cap the redirect chain we will follow (mirrors browser/undici defaults) so a
+// malicious or misconfigured target can't loop us indefinitely.
+const MAX_REDIRECTS = 20;
 
 interface Metadata {
   name?: string;
@@ -38,31 +43,69 @@ export async function POST(request: NextRequest) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
 
-    // Strip fragment from URL (servers don't receive it)
-    const fetchUrl = url.split("#")[0];
+    const requestHeaders = {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      Accept:
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9,no;q=0.8",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+      "Sec-Ch-Ua": '"Chromium";v="131", "Not_A Brand";v="24"',
+      "Sec-Ch-Ua-Mobile": "?0",
+      "Sec-Ch-Ua-Platform": '"Windows"',
+      "Sec-Fetch-Dest": "document",
+      "Sec-Fetch-Mode": "navigate",
+      "Sec-Fetch-Site": "none",
+      "Sec-Fetch-User": "?1",
+      "Upgrade-Insecure-Requests": "1",
+    };
 
-    const response = await fetch(fetchUrl, {
-      signal: controller.signal,
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-        Accept:
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9,no;q=0.8",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Cache-Control": "no-cache",
-        Pragma: "no-cache",
-        "Sec-Ch-Ua": '"Chromium";v="131", "Not_A Brand";v="24"',
-        "Sec-Ch-Ua-Mobile": "?0",
-        "Sec-Ch-Ua-Platform": '"Windows"',
-        "Sec-Fetch-Dest": "document",
-        "Sec-Fetch-Mode": "navigate",
-        "Sec-Fetch-Site": "none",
-        "Sec-Fetch-User": "?1",
-        "Upgrade-Insecure-Requests": "1",
-      },
-      redirect: "follow",
-    });
+    // Follow redirects manually so the SSRF guard runs on EVERY hop. Plain
+    // `redirect: "follow"` would let an allowed public URL bounce (via 3xx) into
+    // the internal network; here the initial URL and every Location target are
+    // validated by checkWebhookUrl (blocks private/loopback/link-local/metadata
+    // hosts and non-http(s) schemes, with DNS resolution) before we fetch them.
+    // Strip fragment from URL (servers don't receive it).
+    let currentUrl = url.split("#")[0];
+    let response: Response;
+    for (let redirects = 0; ; redirects++) {
+      const safety = await checkWebhookUrl(currentUrl);
+      if (!safety.ok) {
+        clearTimeout(timeout);
+        return NextResponse.json(
+          { error: "This URL is not allowed." },
+          { status: 400 }
+        );
+      }
+
+      response = await fetch(currentUrl, {
+        signal: controller.signal,
+        headers: requestHeaders,
+        redirect: "manual",
+      });
+
+      // Non-3xx → this is the final response (its body is read below).
+      if (response.status < 300 || response.status >= 400) break;
+
+      // It's a redirect: capture the target, then release this intermediate
+      // response body so undici can free the socket instead of holding it open
+      // across the chain until GC.
+      const location = response.headers.get("location");
+      await response.body?.cancel();
+      if (!location) break; // redirect without a target — treat as final
+
+      if (redirects >= MAX_REDIRECTS) {
+        clearTimeout(timeout);
+        return NextResponse.json(
+          { error: "Too many redirects" },
+          { status: 422 }
+        );
+      }
+      // Resolve relative redirects against the current URL; drop any fragment.
+      currentUrl = new URL(location, currentUrl).toString().split("#")[0];
+    }
 
     clearTimeout(timeout);
 
