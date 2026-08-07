@@ -40,4 +40,20 @@ describe("resolveWithinDir", () => {
     // /tmp/import-123 must not accept /tmp/import-123-evil
     expect(resolveWithinDir(base, "../import-123-evil/x")).toBeNull();
   });
+
+  it("rejects an absolute input even when it lies within the base dir", () => {
+    // The contract is 'relative entries only' — absolute inputs are always null.
+    const inside = path.join(base, "x");
+    expect(resolveWithinDir(base, inside)).toBeNull();
+  });
+
+  it("does not reject everything when base is the filesystem root", () => {
+    // Guards the `base + path.sep` === "//" edge: a normal relative entry must
+    // still resolve when baseDir is the root.
+    const root = path.sep;
+    expect(resolveWithinDir(root, "srv/app/file")).toBe(path.join(root, "srv/app/file"));
+    // (Nothing can climb above the root, so a `..` there stays inside root by
+    // definition; the meaningful negative case at root is an absolute input.)
+    expect(resolveWithinDir(root, path.join(root, "etc"))).toBeNull();
+  });
 });

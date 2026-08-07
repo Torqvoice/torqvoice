@@ -12,9 +12,19 @@ import path from "path";
  * raw joined path.
  */
 export function resolveWithinDir(baseDir: string, relativePath: string): string | null {
+  // Callers pass archive-/backup-relative entry paths; an absolute input is
+  // never legitimate and could escape via a drive/root, so reject it outright.
+  if (path.isAbsolute(relativePath)) {
+    return null;
+  }
   const base = path.resolve(baseDir);
   const target = path.resolve(base, relativePath);
-  if (target === base || target.startsWith(base + path.sep)) {
+  // Use path.relative rather than a string prefix check so this stays correct
+  // when base is the filesystem root (where `base + sep` would be `//`) and on
+  // Windows. `target` is inside `base` iff the relative path neither climbs
+  // out ("..") nor is itself absolute.
+  const rel = path.relative(base, target);
+  if (rel === "" || (rel !== ".." && !rel.startsWith(".." + path.sep) && !path.isAbsolute(rel))) {
     return target;
   }
   return null;
