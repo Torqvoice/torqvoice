@@ -21,6 +21,7 @@ vi.mock("@/features/webhooks/Lib/ssrf", () => ({
 }));
 
 import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { checkWebhookUrl } from "@/features/webhooks/Lib/ssrf";
 import { POST } from "@/app/api/protected/fetch-metadata/route";
 import type { NextRequest } from "next/server";
@@ -49,6 +50,8 @@ function res(
 beforeEach(() => {
   vi.resetAllMocks();
   vi.stubGlobal("fetch", mockFetch);
+  // resetAllMocks wipes implementations, so re-establish the default mocks.
+  vi.mocked(headers).mockResolvedValue(new Headers());
   mockGetSession.mockResolvedValue({ user: { id: "user-1" } } as never);
 });
 

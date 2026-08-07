@@ -86,10 +86,14 @@ export async function POST(request: NextRequest) {
         redirect: "manual",
       });
 
-      // Non-3xx → this is the final response.
+      // Non-3xx → this is the final response (its body is read below).
       if (response.status < 300 || response.status >= 400) break;
 
+      // It's a redirect: capture the target, then release this intermediate
+      // response body so undici can free the socket instead of holding it open
+      // across the chain until GC.
       const location = response.headers.get("location");
+      await response.body?.cancel();
       if (!location) break; // redirect without a target — treat as final
 
       if (redirects >= MAX_REDIRECTS) {
