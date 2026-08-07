@@ -8,16 +8,9 @@ export async function POST(request: Request) {
     const body = await request.text();
     const signature = request.headers.get("stripe-signature");
 
-    if (!signature) {
-      return NextResponse.json(
-        { error: "Missing stripe-signature header" },
-        { status: 400 },
-      );
-    }
-
-    // We need to determine which org this webhook belongs to.
-    // Parse the event without verification first to get orgId from metadata,
-    // then verify with the org's webhook secret.
+    // Parse the raw body without trusting it — only to discover which org this
+    // webhook targets, so we can load that org's Stripe credentials. Nothing
+    // from this unverified payload is trusted for recording a payment.
     let unverifiedEvent: Stripe.Event;
     try {
       unverifiedEvent = JSON.parse(body) as Stripe.Event;
@@ -32,36 +25,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true });
     }
 
-    const session = (unverifiedEvent.data as Stripe.Event.Data)
+    const unverifiedSession = (unverifiedEvent.data as Stripe.Event.Data)
       .object as Stripe.Checkout.Session;
-    const orgId = session.metadata?.orgId;
-    const serviceRecordId = session.metadata?.serviceRecordId;
+    const routingOrgId = unverifiedSession.metadata?.orgId;
+    const unverifiedSessionId = unverifiedSession.id;
 
-    if (!orgId || !serviceRecordId) {
+    if (!routingOrgId || !unverifiedSessionId) {
       return NextResponse.json(
         { error: "Missing metadata" },
         { status: 400 },
       );
     }
 
-    // Load org's webhook secret and verify
-    const webhookSecretSetting = await db.appSetting.findUnique({
-      where: {
-        organizationId_key: {
-          organizationId: orgId,
-          key: SETTING_KEYS.PAYMENT_STRIPE_WEBHOOK_SECRET,
+    const [webhookSecretSetting, secretKeySetting] = await Promise.all([
+      db.appSetting.findUnique({
+        where: {
+          organizationId_key: {
+            organizationId: routingOrgId,
+            key: SETTING_KEYS.PAYMENT_STRIPE_WEBHOOK_SECRET,
+          },
         },
-      },
-    });
-
-    const secretKeySetting = await db.appSetting.findUnique({
-      where: {
-        organizationId_key: {
-          organizationId: orgId,
-          key: SETTING_KEYS.PAYMENT_STRIPE_SECRET_KEY,
+      }),
+      db.appSetting.findUnique({
+        where: {
+          organizationId_key: {
+            organizationId: routingOrgId,
+            key: SETTING_KEYS.PAYMENT_STRIPE_SECRET_KEY,
+          },
         },
-      },
-    });
+      }),
+    ]);
 
     if (!secretKeySetting?.value) {
       return NextResponse.json(
@@ -70,11 +63,26 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verify webhook signature if webhook secret is configured
+    const stripe = new Stripe(secretKeySetting.value);
+
+    // Establish an AUTHENTIC session object. Two trust paths, never the body:
+    //  - webhook secret configured → verify the signature over the raw body;
+    //  - no webhook secret → re-fetch the session straight from Stripe with the
+    //    org's secret key. A forged session id will not resolve to a paid
+    //    session in the org's own Stripe account, so forgery is closed either
+    //    way while real payments keep recording.
+    let session: Stripe.Checkout.Session;
+
     if (webhookSecretSetting?.value) {
-      const stripe = new Stripe(secretKeySetting.value);
+      if (!signature) {
+        return NextResponse.json(
+          { error: "Missing stripe-signature header" },
+          { status: 400 },
+        );
+      }
+      let event: Stripe.Event;
       try {
-        stripe.webhooks.constructEvent(
+        event = stripe.webhooks.constructEvent(
           body,
           signature,
           webhookSecretSetting.value,
@@ -85,6 +93,30 @@ export async function POST(request: Request) {
           { status: 400 },
         );
       }
+      if (event.type !== "checkout.session.completed") {
+        return NextResponse.json({ received: true });
+      }
+      session = event.data.object as Stripe.Checkout.Session;
+    } else {
+      try {
+        session = await stripe.checkout.sessions.retrieve(unverifiedSessionId);
+      } catch {
+        return NextResponse.json(
+          { error: "Unknown session" },
+          { status: 400 },
+        );
+      }
+    }
+
+    // From here on `session` is authentic; read every field from it.
+    const orgId = session.metadata?.orgId;
+    const serviceRecordId = session.metadata?.serviceRecordId;
+
+    if (!orgId || !serviceRecordId) {
+      return NextResponse.json(
+        { error: "Missing metadata" },
+        { status: 400 },
+      );
     }
 
     // Verify the session is actually paid
