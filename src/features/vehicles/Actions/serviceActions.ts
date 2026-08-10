@@ -8,7 +8,7 @@ import { onInventoryChanged } from "@/features/inventory/Lib/onInventoryChanged"
 import { unlink } from "fs/promises";
 import { randomUUID } from "crypto";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
-import { resolveInvoicePrefix } from "@/lib/invoice-utils";
+import { resolveInvoicePrefix, toSafeDate } from "@/lib/invoice-utils";
 import { notificationBus } from "@/lib/notification-bus";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { reconcileInventoryForParts } from "@/features/inventory/Lib/reconcileStock";
@@ -289,9 +289,9 @@ export async function createServiceRecord(input: unknown) {
           taxInclusive,
           shopName,
           invoiceNumber,
-          serviceDate: new Date(serviceDate),
-          invoiceDate: invoiceDate ? new Date(invoiceDate) : new Date(serviceDate),
-          invoiceDueDate: invoiceDueDate ? new Date(invoiceDueDate) : undefined,
+          serviceDate: toSafeDate(serviceDate) ?? new Date(),
+          invoiceDate: toSafeDate(invoiceDate) ?? toSafeDate(serviceDate) ?? new Date(),
+          invoiceDueDate: toSafeDate(invoiceDueDate),
           warrantyMonths: warrantyMonths || null,
           warrantyMileage: warrantyMileage || null,
           warrantyNotes: warrantyNotes || null,
@@ -438,9 +438,9 @@ export async function updateServiceRecord(input: unknown) {
           invoiceNotes: recordData.invoiceNotes !== undefined ? (recordData.invoiceNotes || null) : undefined,
           invoiceNumber: recordData.invoiceNumber !== undefined ? (recordData.invoiceNumber || null) : undefined,
           mileage: recordData.mileage !== undefined ? (recordData.mileage ?? null) : undefined,
-          serviceDate: data.serviceDate ? new Date(data.serviceDate) : undefined,
-          invoiceDate: data.invoiceDate ? new Date(data.invoiceDate) : undefined,
-          invoiceDueDate: data.invoiceDueDate ? new Date(data.invoiceDueDate) : undefined,
+          serviceDate: toSafeDate(data.serviceDate),
+          invoiceDate: toSafeDate(data.invoiceDate),
+          invoiceDueDate: toSafeDate(data.invoiceDueDate),
           warrantyMonths: data.warrantyMonths !== undefined ? (data.warrantyMonths || null) : undefined,
           warrantyMileage: data.warrantyMileage !== undefined ? (data.warrantyMileage || null) : undefined,
           warrantyNotes: data.warrantyNotes !== undefined ? (data.warrantyNotes || null) : undefined,

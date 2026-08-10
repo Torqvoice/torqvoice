@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
-import { resolveInvoicePrefix } from "@/lib/invoice-utils";
+import { resolveInvoicePrefix, toSafeDate } from "@/lib/invoice-utils";
 import { mkdir, writeFile, rm } from "fs/promises";
 import path from "path";
 import os from "os";
@@ -423,7 +423,7 @@ export async function POST(request: NextRequest) {
             type: "repair",
             status: "completed",
             cost: amount,
-            serviceDate: new Date(invoice.date),
+            serviceDate: toSafeDate(invoice.date) ?? new Date(),
             invoiceNumber,
             subtotal: partsTotal + laborTotal,
             discountType:
@@ -541,7 +541,7 @@ export async function POST(request: NextRequest) {
           await tx.payment.create({
             data: {
               amount: parseNum(payable.amount),
-              date: new Date(payment.date),
+              date: toSafeDate(payment.date) ?? new Date(),
               method: getPaymentMethod(payment.type_id),
               note: payment.private_notes || null,
               externalId: payment.transaction_reference || null,

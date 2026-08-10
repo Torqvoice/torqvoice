@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { DateInput } from "@/components/ui/date-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -452,11 +453,11 @@ export default function RecurringInvoicesClient({
               </div>
               <div className="space-y-1.5">
                 <Label>{t("recurring.startDate")}</Label>
-                <Input type="date" value={nextRunDate} onChange={(e) => setNextRunDate(e.target.value)} />
+                <DateInput value={nextRunDate} onChange={setNextRunDate} />
               </div>
               <div className="space-y-1.5">
                 <Label>{t("recurring.endDate")}</Label>
-                <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                <DateInput value={endDate} onChange={setEndDate} />
               </div>
             </div>
 

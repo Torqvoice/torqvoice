@@ -1,5 +1,6 @@
 "use server";
 
+import { toSafeDate } from "@/lib/invoice-utils";
 import { randomBytes } from "crypto";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
@@ -35,7 +36,7 @@ export async function createStatusReport(input: unknown) {
           organizationId,
           technicianId: technician?.id || serviceRecord.technicianId,
           status: data.videoUrl ? "published" : "draft",
-          expiresAt: data.expiresAt ? new Date(data.expiresAt) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+          expiresAt: toSafeDate(data.expiresAt) ?? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
         },
       });
 

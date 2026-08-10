@@ -1,5 +1,6 @@
 "use server";
 
+import { toSafeDate } from "@/lib/invoice-utils";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
@@ -97,7 +98,7 @@ export async function createReportSchedule(input: unknown) {
           sections: JSON.stringify(data.sections),
           recipients: JSON.stringify(data.recipients),
           nextRunDate,
-          endDate: data.endDate ? new Date(data.endDate) : null,
+          endDate: toSafeDate(data.endDate) ?? null,
           organizationId,
           createdById: userId,
         },
@@ -141,7 +142,7 @@ export async function updateReportSchedule(input: unknown) {
           sections: JSON.stringify(data.sections),
           recipients: JSON.stringify(data.recipients),
           nextRunDate,
-          endDate: data.endDate ? new Date(data.endDate) : null,
+          endDate: toSafeDate(data.endDate) ?? null,
           isActive: data.isActive ?? existing.isActive,
         },
       });

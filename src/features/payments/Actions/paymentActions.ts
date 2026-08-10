@@ -1,5 +1,6 @@
 "use server";
 
+import { toSafeDate } from "@/lib/invoice-utils";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
@@ -21,7 +22,7 @@ export async function createPayment(input: unknown) {
       data: {
         serviceRecordId: data.serviceRecordId,
         amount: data.amount,
-        date: new Date(data.date),
+        date: toSafeDate(data.date) ?? new Date(),
         method: data.method,
         note: data.note || null,
       },

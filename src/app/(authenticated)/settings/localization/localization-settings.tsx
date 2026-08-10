@@ -110,6 +110,7 @@ const CURRENCIES = [
 const DATE_FORMAT_OPTIONS = [
   { value: 'MMM d, yyyy', label: 'MMM D, YYYY', example: 'Feb 15, 2026' },
   { value: 'dd/MM/yyyy', label: 'DD/MM/YYYY', example: '15/02/2026' },
+  { value: 'dd.MM.yyyy', label: 'DD.MM.YYYY', example: '15.02.2026' },
   { value: 'MM/dd/yyyy', label: 'MM/DD/YYYY', example: '02/15/2026' },
   { value: 'yyyy-MM-dd', label: 'YYYY-MM-DD', example: '2026-02-15' },
   { value: 'd. MMM yyyy', label: 'D. MMM YYYY', example: '15. Feb 2026' },

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
-import { resolveInvoicePrefix } from "@/lib/invoice-utils";
+import { resolveInvoicePrefix, toSafeDate } from "@/lib/invoice-utils";
 import { mkdir, writeFile, stat, readdir, rm } from "fs/promises";
 import { readFileSync } from "fs";
 import path from "path";
@@ -386,7 +386,7 @@ export async function POST(request: NextRequest) {
             status: "completed",
             cost,
             mileage: sr.Mileage || null,
-            serviceDate: new Date(sr.Date),
+            serviceDate: toSafeDate(sr.Date) ?? new Date(),
             invoiceNumber,
             subtotal: cost,
             totalAmount: cost,

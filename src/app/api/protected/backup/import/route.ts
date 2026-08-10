@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
+import { toSafeDate } from "@/lib/invoice-utils";
 import { Prisma } from "@/generated/prisma/client";
 import JSZip from "jszip";
 import { mkdir, rm, writeFile } from "fs/promises";
@@ -229,12 +230,8 @@ export async function POST(request: NextRequest) {
               address: (c.address as string) || null,
               company: (c.company as string) || null,
               notes: (c.notes as string) || null,
-              createdAt: c.createdAt
-                ? new Date(c.createdAt as string)
-                : undefined,
-              updatedAt: c.updatedAt
-                ? new Date(c.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(c.createdAt as string),
+              updatedAt: toSafeDate(c.updatedAt as string),
               userId: ctx.userId,
               organizationId: ctx.organizationId,
             })
@@ -254,12 +251,8 @@ export async function POST(request: NextRequest) {
               sortOrder: (t.sortOrder as number) || 0,
               dailyCapacity: (t.dailyCapacity as number) || 480,
               userId: (t.userId as string) || null, // memberId from old backups ignored — no FK to users
-              createdAt: t.createdAt
-                ? new Date(t.createdAt as string)
-                : undefined,
-              updatedAt: t.updatedAt
-                ? new Date(t.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(t.createdAt as string),
+              updatedAt: toSafeDate(t.updatedAt as string),
               organizationId: ctx.organizationId,
             })
           ),
@@ -283,12 +276,8 @@ export async function POST(request: NextRequest) {
               entityType: def.entityType as string,
               sortOrder: (def.sortOrder as number) || 0,
               isActive: def.isActive !== false,
-              createdAt: def.createdAt
-                ? new Date(def.createdAt as string)
-                : undefined,
-              updatedAt: def.updatedAt
-                ? new Date(def.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(def.createdAt as string),
+              updatedAt: toSafeDate(def.updatedAt as string),
               userId: ctx.userId,
               organizationId: ctx.organizationId,
             },
@@ -330,12 +319,8 @@ export async function POST(request: NextRequest) {
               imageUrl: rewriteFileUrl(p.imageUrl as string, ctx.organizationId),
               location: (p.location as string) || null,
               isArchived: (p.isArchived as boolean) || false,
-              createdAt: p.createdAt
-                ? new Date(p.createdAt as string)
-                : undefined,
-              updatedAt: p.updatedAt
-                ? new Date(p.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(p.createdAt as string),
+              updatedAt: toSafeDate(p.updatedAt as string),
               userId: ctx.userId,
               organizationId: ctx.organizationId,
             })
@@ -364,18 +349,12 @@ export async function POST(request: NextRequest) {
               fuelType: (v.fuelType as string) || null,
               transmission: (v.transmission as string) || null,
               engineSize: (v.engineSize as string) || null,
-              purchaseDate: v.purchaseDate
-                ? new Date(v.purchaseDate as string)
-                : null,
+              purchaseDate: toSafeDate(v.purchaseDate as string) ?? null,
               purchasePrice: (v.purchasePrice as number) || null,
               imageUrl: rewriteFileUrl(v.imageUrl as string, ctx.organizationId),
               isArchived: (v.isArchived as boolean) || false,
-              createdAt: v.createdAt
-                ? new Date(v.createdAt as string)
-                : undefined,
-              updatedAt: v.updatedAt
-                ? new Date(v.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(v.createdAt as string),
+              updatedAt: toSafeDate(v.updatedAt as string),
               userId: ctx.userId,
               organizationId: ctx.organizationId,
               customerId: (v.customerId as string) || null,
@@ -391,12 +370,8 @@ export async function POST(request: NextRequest) {
                 title: n.title as string,
                 content: n.content as string,
                 isPinned: (n.isPinned as boolean) || false,
-                createdAt: n.createdAt
-                  ? new Date(n.createdAt as string)
-                  : undefined,
-                updatedAt: n.updatedAt
-                  ? new Date(n.updatedAt as string)
-                  : undefined,
+                createdAt: toSafeDate(n.createdAt as string),
+                updatedAt: toSafeDate(n.updatedAt as string),
                 vehicleId: v.id as string,
               })),
             });
@@ -408,7 +383,7 @@ export async function POST(request: NextRequest) {
             await tx.fuelLog.createMany({
               data: fuelLogs.map((f) => ({
                 id: f.id as string,
-                date: f.date ? new Date(f.date as string) : undefined,
+                date: toSafeDate(f.date as string),
                 mileage: f.mileage as number,
                 gallons: f.gallons as number,
                 pricePerGallon: f.pricePerGallon as number,
@@ -416,12 +391,8 @@ export async function POST(request: NextRequest) {
                 isFillUp: f.isFillUp !== false,
                 station: (f.station as string) || null,
                 notes: (f.notes as string) || null,
-                createdAt: f.createdAt
-                  ? new Date(f.createdAt as string)
-                  : undefined,
-                updatedAt: f.updatedAt
-                  ? new Date(f.updatedAt as string)
-                  : undefined,
+                createdAt: toSafeDate(f.createdAt as string),
+                updatedAt: toSafeDate(f.updatedAt as string),
                 vehicleId: v.id as string,
               })),
             });
@@ -437,15 +408,11 @@ export async function POST(request: NextRequest) {
                 id: r.id as string,
                 title: r.title as string,
                 description: (r.description as string) || null,
-                dueDate: r.dueDate ? new Date(r.dueDate as string) : null,
+                dueDate: toSafeDate(r.dueDate as string) ?? null,
                 dueMileage: (r.dueMileage as number) || null,
                 isCompleted: (r.isCompleted as boolean) || false,
-                createdAt: r.createdAt
-                  ? new Date(r.createdAt as string)
-                  : undefined,
-                updatedAt: r.updatedAt
-                  ? new Date(r.updatedAt as string)
-                  : undefined,
+                createdAt: toSafeDate(r.createdAt as string),
+                updatedAt: toSafeDate(r.updatedAt as string),
                 vehicleId: v.id as string,
               })),
             });
@@ -461,15 +428,19 @@ export async function POST(request: NextRequest) {
               let startDT: Date | undefined;
               let endDT: Date | undefined;
               if (sr.startDateTime) {
-                startDT = new Date(sr.startDateTime as string);
-              } else if (sr.serviceDate) {
-                const sd = new Date(sr.serviceDate as string);
-                const [h, m] = workDayStartTime.split(":").map(Number);
-                startDT = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate(), h, m, 0, 0);
+                startDT = toSafeDate(sr.startDateTime as string);
+              }
+              if (!startDT && sr.serviceDate) {
+                const sd = toSafeDate(sr.serviceDate as string);
+                if (sd) {
+                  const [h, m] = workDayStartTime.split(":").map(Number);
+                  startDT = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate(), h, m, 0, 0);
+                }
               }
               if (sr.endDateTime) {
-                endDT = new Date(sr.endDateTime as string);
-              } else if (startDT) {
+                endDT = toSafeDate(sr.endDateTime as string);
+              }
+              if (!endDT && startDT) {
                 endDT = new Date(startDT.getTime() + 3600000);
               }
 
@@ -482,9 +453,7 @@ export async function POST(request: NextRequest) {
                   status: (sr.status as string) || "completed",
                   cost: (sr.cost as number) || 0,
                   mileage: (sr.mileage as number) || null,
-                  serviceDate: sr.serviceDate
-                    ? new Date(sr.serviceDate as string)
-                    : undefined,
+                  serviceDate: toSafeDate(sr.serviceDate as string),
                   startDateTime: startDT ?? undefined,
                   endDateTime: endDT ?? undefined,
                   shopName: (sr.shopName as string) || null,
@@ -505,12 +474,8 @@ export async function POST(request: NextRequest) {
                   publicToken: (sr.publicToken as string) || null,
                   technicianId: (sr.technicianId as string) || null,
                   sortOrder: (sr.sortOrder as number) || 0,
-                  createdAt: sr.createdAt
-                    ? new Date(sr.createdAt as string)
-                    : undefined,
-                  updatedAt: sr.updatedAt
-                    ? new Date(sr.updatedAt as string)
-                    : undefined,
+                  createdAt: toSafeDate(sr.createdAt as string),
+                  updatedAt: toSafeDate(sr.updatedAt as string),
                   vehicleId: v.id as string,
                 },
               });
@@ -565,9 +530,7 @@ export async function POST(request: NextRequest) {
                     category: (a.category as string) || "diagnostic",
                     description: (a.description as string) || null,
                     includeInInvoice: a.includeInInvoice !== false,
-                    createdAt: a.createdAt
-                      ? new Date(a.createdAt as string)
-                      : undefined,
+                    createdAt: toSafeDate(a.createdAt as string),
                     serviceRecordId: sr.id as string,
                   })),
                 });
@@ -582,15 +545,11 @@ export async function POST(request: NextRequest) {
                   data: payments.map((p) => ({
                     id: p.id as string,
                     amount: p.amount as number,
-                    date: p.date ? new Date(p.date as string) : undefined,
+                    date: toSafeDate(p.date as string),
                     method: (p.method as string) || "other",
                     note: (p.note as string) || null,
-                    createdAt: p.createdAt
-                      ? new Date(p.createdAt as string)
-                      : undefined,
-                    updatedAt: p.updatedAt
-                      ? new Date(p.updatedAt as string)
-                      : undefined,
+                    createdAt: toSafeDate(p.createdAt as string),
+                    updatedAt: toSafeDate(p.updatedAt as string),
                     serviceRecordId: sr.id as string,
                   })),
                 });
@@ -610,9 +569,7 @@ export async function POST(request: NextRequest) {
               title: q.title as string,
               description: (q.description as string) || null,
               status: (q.status as string) || "draft",
-              validUntil: q.validUntil
-                ? new Date(q.validUntil as string)
-                : null,
+              validUntil: toSafeDate(q.validUntil as string) ?? null,
               subtotal: (q.subtotal as number) || 0,
               taxRate: (q.taxRate as number) || 0,
               taxAmount: (q.taxAmount as number) || 0,
@@ -623,12 +580,8 @@ export async function POST(request: NextRequest) {
               totalAmount: (q.totalAmount as number) || 0,
               notes: (q.notes as string) || null,
               convertedToId: (q.convertedToId as string) || null,
-              createdAt: q.createdAt
-                ? new Date(q.createdAt as string)
-                : undefined,
-              updatedAt: q.updatedAt
-                ? new Date(q.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(q.createdAt as string),
+              updatedAt: toSafeDate(q.updatedAt as string),
               userId: ctx.userId,
               organizationId: ctx.organizationId,
               customerId: (q.customerId as string) || null,
@@ -682,12 +635,8 @@ export async function POST(request: NextRequest) {
               name: tmpl.name as string,
               description: (tmpl.description as string) || null,
               isDefault: (tmpl.isDefault as boolean) || false,
-              createdAt: tmpl.createdAt
-                ? new Date(tmpl.createdAt as string)
-                : undefined,
-              updatedAt: tmpl.updatedAt
-                ? new Date(tmpl.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(tmpl.createdAt as string),
+              updatedAt: toSafeDate(tmpl.updatedAt as string),
               organizationId: ctx.organizationId,
             },
           });
@@ -729,23 +678,13 @@ export async function POST(request: NextRequest) {
               status: (insp.status as string) || "in_progress",
               mileage: (insp.mileage as number) || null,
               notes: (insp.notes as string) || null,
-              startDateTime: insp.startDateTime
-                ? new Date(insp.startDateTime as string)
-                : null,
-              endDateTime: insp.endDateTime
-                ? new Date(insp.endDateTime as string)
-                : null,
+              startDateTime: toSafeDate(insp.startDateTime as string) ?? null,
+              endDateTime: toSafeDate(insp.endDateTime as string) ?? null,
               publicToken: (insp.publicToken as string) || null,
-              completedAt: insp.completedAt
-                ? new Date(insp.completedAt as string)
-                : null,
+              completedAt: toSafeDate(insp.completedAt as string) ?? null,
               sortOrder: (insp.sortOrder as number) || 0,
-              createdAt: insp.createdAt
-                ? new Date(insp.createdAt as string)
-                : undefined,
-              updatedAt: insp.updatedAt
-                ? new Date(insp.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(insp.createdAt as string),
+              updatedAt: toSafeDate(insp.updatedAt as string),
               vehicleId: insp.vehicleId as string,
               templateId: insp.templateId as string,
               technicianId: (insp.technicianId as string) || null,
@@ -777,9 +716,7 @@ export async function POST(request: NextRequest) {
                 status: (qr.status as string) || "pending",
                 message: (qr.message as string) || null,
                 selectedItemIds: (qr.selectedItemIds as string[]) || [],
-                createdAt: qr.createdAt
-                  ? new Date(qr.createdAt as string)
-                  : undefined,
+                createdAt: toSafeDate(qr.createdAt as string),
                 inspectionId: insp.id as string,
                 organizationId: ctx.organizationId,
               })),
@@ -794,9 +731,7 @@ export async function POST(request: NextRequest) {
           data: (data.auditLogs as Record<string, unknown>[]).map(
             (log: Record<string, unknown>) => ({
               id: log.id as string,
-              timestamp: log.timestamp
-                ? new Date(log.timestamp as string)
-                : undefined,
+              timestamp: toSafeDate(log.timestamp as string),
               action: log.action as string,
               entity: (log.entity as string) || null,
               entityId: (log.entityId as string) || null,
@@ -826,12 +761,8 @@ export async function POST(request: NextRequest) {
               errorMessage: (msg.errorMessage as string) || null,
               relatedEntityType: (msg.relatedEntityType as string) || null,
               relatedEntityId: (msg.relatedEntityId as string) || null,
-              createdAt: msg.createdAt
-                ? new Date(msg.createdAt as string)
-                : undefined,
-              updatedAt: msg.updatedAt
-                ? new Date(msg.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(msg.createdAt as string),
+              updatedAt: toSafeDate(msg.updatedAt as string),
               organizationId: ctx.organizationId,
               customerId: (msg.customerId as string) || null,
             })
@@ -852,9 +783,7 @@ export async function POST(request: NextRequest) {
               entityId: n.entityId as string,
               entityUrl: n.entityUrl as string,
               read: (n.read as boolean) || false,
-              createdAt: n.createdAt
-                ? new Date(n.createdAt as string)
-                : undefined,
+              createdAt: toSafeDate(n.createdAt as string),
               organizationId: ctx.organizationId,
             })
           ),

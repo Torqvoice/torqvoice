@@ -5,8 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { DateInput } from '@/components/ui/date-input'
 import {
   Select,
   SelectContent,
@@ -14,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { CalendarIcon, Check, Loader2 } from 'lucide-react'
+import { Check, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { InitialData } from './form-types'
 
@@ -42,34 +41,17 @@ export function InvoiceDetailsSection({
   paymentLoading,
 }: InvoiceDetailsSectionProps) {
   const t = useTranslations('service.basicInfo')
-  const [invoiceDate, setInvoiceDate] = useState<Date | undefined>(
-    initialData.invoiceDate ? new Date(initialData.invoiceDate + 'T00:00:00') : undefined
-  )
-  const [invoiceDueDate, setInvoiceDueDate] = useState<Date | undefined>(
-    initialData.invoiceDueDate ? new Date(initialData.invoiceDueDate + 'T00:00:00') : undefined
-  )
+  // ISO YYYY-MM-DD strings, matching the native date input's value format
+  const [invoiceDate, setInvoiceDate] = useState(initialData.invoiceDate || '')
+  const [invoiceDueDate, setInvoiceDueDate] = useState(initialData.invoiceDueDate || '')
 
   useEffect(() => {
-    setInvoiceDate(
-      initialData.invoiceDate ? new Date(initialData.invoiceDate + 'T00:00:00') : undefined
-    )
+    setInvoiceDate(initialData.invoiceDate || '')
   }, [initialData.invoiceDate])
 
   useEffect(() => {
-    setInvoiceDueDate(
-      initialData.invoiceDueDate ? new Date(initialData.invoiceDueDate + 'T00:00:00') : undefined
-    )
+    setInvoiceDueDate(initialData.invoiceDueDate || '')
   }, [initialData.invoiceDueDate])
-
-  const formatDate = (date: Date | undefined) => {
-    if (!date) return ''
-    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-  }
-
-  const toISODate = (date: Date | undefined) => {
-    if (!date) return ''
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-  }
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
@@ -154,40 +136,24 @@ export function InvoiceDetailsSection({
 
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1">
-          <Label className="text-xs">{t('invoiceDate')}</Label>
-          <input type="hidden" name="invoiceDate" value={toISODate(invoiceDate)} />
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn('w-full justify-start text-left font-normal h-9 text-sm', !invoiceDate && 'text-muted-foreground')}
-              >
-                <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                <span suppressHydrationWarning>{invoiceDate ? formatDate(invoiceDate) : t('invoiceDate')}</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={invoiceDate} onSelect={(d) => { setInvoiceDate(d); onDirty?.() }} />
-            </PopoverContent>
-          </Popover>
+          <Label htmlFor="invoiceDate" className="text-xs">{t('invoiceDate')}</Label>
+          <DateInput
+            id="invoiceDate"
+            name="invoiceDate"
+            value={invoiceDate}
+            onChange={(v) => { setInvoiceDate(v); onDirty?.() }}
+            className="h-9 text-sm"
+          />
         </div>
         <div className="space-y-1">
-          <Label className="text-xs">{t('invoiceDueDate')}</Label>
-          <input type="hidden" name="invoiceDueDate" value={toISODate(invoiceDueDate)} />
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn('w-full justify-start text-left font-normal h-9 text-sm', !invoiceDueDate && 'text-muted-foreground')}
-              >
-                <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                <span suppressHydrationWarning>{invoiceDueDate ? formatDate(invoiceDueDate) : t('invoiceDueDate')}</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={invoiceDueDate} onSelect={(d) => { setInvoiceDueDate(d); onDirty?.() }} />
-            </PopoverContent>
-          </Popover>
+          <Label htmlFor="invoiceDueDate" className="text-xs">{t('invoiceDueDate')}</Label>
+          <DateInput
+            id="invoiceDueDate"
+            name="invoiceDueDate"
+            value={invoiceDueDate}
+            onChange={(v) => { setInvoiceDueDate(v); onDirty?.() }}
+            className="h-9 text-sm"
+          />
         </div>
       </div>
     </div>

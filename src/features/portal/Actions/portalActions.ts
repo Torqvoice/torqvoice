@@ -1,5 +1,6 @@
 'use server'
 
+import { toSafeDate } from "@/lib/invoice-utils";
 import { db } from '@/lib/db'
 import { getCustomerSession, type CustomerSessionData } from '@/lib/customer-session'
 import { notify } from '@/lib/notify'
@@ -336,7 +337,7 @@ export async function createServiceRequest(input: {
     const serviceRequest = await db.serviceRequest.create({
       data: {
         description: input.description,
-        preferredDate: input.preferredDate ? new Date(input.preferredDate) : null,
+        preferredDate: toSafeDate(input.preferredDate) ?? null,
         customerId,
         vehicleId: input.vehicleId,
         organizationId,

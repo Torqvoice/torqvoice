@@ -5,7 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { createQuoteSchema, updateQuoteSchema } from "../Schema/quoteSchema";
 import { revalidatePath } from "next/cache";
 import { onInventoryChanged } from "@/features/inventory/Lib/onInventoryChanged";
-import { resolveInvoicePrefix } from "@/lib/invoice-utils";
+import { resolveInvoicePrefix, toSafeDate } from "@/lib/invoice-utils";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { reconcileInventoryForParts } from "@/features/inventory/Lib/reconcileStock";
 import { copyFile, mkdir } from "fs/promises";
@@ -196,9 +196,9 @@ export async function createQuote(input: unknown) {
           organizationId,
           taxRate: quoteData.taxRate > 0 ? quoteData.taxRate : defaultTaxRate,
           taxInclusive,
-          validUntil: quoteData.validUntil
-            ? new Date(quoteData.validUntil)
-            : defaultValidUntil(settingsMap["workshop.quoteValidDays"]),
+          validUntil:
+            toSafeDate(quoteData.validUntil) ??
+            defaultValidUntil(settingsMap["workshop.quoteValidDays"]),
           discountType: quoteData.discountType === "none" ? null : quoteData.discountType,
         },
       });
@@ -247,7 +247,7 @@ export async function updateQuote(input: unknown) {
         where: { id },
         data: {
           ...quoteData,
-          validUntil: quoteData.validUntil ? new Date(quoteData.validUntil) : undefined,
+          validUntil: toSafeDate(quoteData.validUntil),
           discountType: quoteData.discountType === "none" ? null : quoteData.discountType,
         },
       });
