@@ -7,26 +7,68 @@ import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { CalendarIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useDateSettings } from '@/components/date-settings-context'
+import { formatDate as formatWithOrgPattern } from '@/lib/format'
 
 function toISODate(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-function formatDisplay(date: Date | undefined): string {
-  if (!date) return ''
-  return date.toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' })
-}
+/**
+ * Parse typed text into a Date. Numeric inputs (25.05.2026, 25/05/2026,
+ * 2026-05-25) accept dot/slash/dash/space separators; day-vs-month order
+ * follows the workshop date format when ambiguous, and a value over 12 is
+ * always taken as the day. Anything else falls back to new Date() parsing
+ * ("February 01, 2001", "March 15 2025").
+ */
+function parseDateText(raw: string, dateFormat: string): Date | undefined {
+  const text = raw.trim()
+  if (!text) return undefined
 
-function isValidDate(date: Date | undefined): boolean {
-  return !!date && !isNaN(date.getTime())
+  const m = text.match(/^(\d{1,4})[./\-\s](\d{1,2})[./\-\s](\d{1,4})$/)
+  if (m) {
+    const [a, b, c] = [Number(m[1]), Number(m[2]), Number(m[3])]
+    let year: number
+    let month: number
+    let day: number
+    if (m[1].length === 4) {
+      // Year first: 2026-05-25
+      year = a
+      month = b
+      day = c
+    } else {
+      year = c < 100 ? 2000 + c : c
+      const monthFirst = dateFormat.trimStart().startsWith('M')
+      if (a > 12 && b <= 12) {
+        day = a
+        month = b
+      } else if (b > 12 && a <= 12) {
+        day = b
+        month = a
+      } else if (monthFirst) {
+        month = a
+        day = b
+      } else {
+        day = a
+        month = b
+      }
+    }
+    const d = new Date(year, month - 1, day)
+    // Reject overflowed dates like 32.13.2026
+    return d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day
+      ? d
+      : undefined
+  }
+
+  const d = new Date(text)
+  return isNaN(d.getTime()) ? undefined : d
 }
 
 /**
- * Typeable date field with a calendar picker, following shadcn's date picker
- * "Input" example: free-text typing parsed via new Date() (so "March 15 2025",
- * "2025-03-15" and "03/15/2025" all work) plus the Calendar in a popover.
- * The external value is an ISO YYYY-MM-DD string ('' when empty); when `name`
- * is set, a hidden input carries the ISO value for form submission.
+ * Typeable date field with a calendar picker (shadcn date picker "Input"
+ * pattern). Displays and parses using the workshop date format setting.
+ * The external value is an ISO YYYY-MM-DD string ('' when empty); when
+ * `name` is set, a hidden input carries the ISO value for form submission.
  */
 export function DateInput({
   id,
@@ -34,7 +76,7 @@ export function DateInput({
   value,
   onChange,
   className,
-  placeholder = 'June 01, 2025',
+  placeholder,
 }: {
   id?: string
   name?: string
@@ -43,9 +85,12 @@ export function DateInput({
   className?: string
   placeholder?: string
 }) {
+  const { dateFormat } = useDateSettings()
+  const display = (d: Date | undefined) => (d ? formatWithOrgPattern(d, dateFormat) : '')
+
   const [open, setOpen] = useState(false)
   const initial = value ? new Date(value + 'T00:00:00') : undefined
-  const [text, setText] = useState(formatDisplay(initial))
+  const [text, setText] = useState(display(initial))
   const [month, setMonth] = useState<Date | undefined>(initial)
   // Tracks the last ISO value this component emitted, so external value
   // changes (reload, reset) update the text without clobbering typing.
@@ -54,10 +99,11 @@ export function DateInput({
   useEffect(() => {
     if (value !== lastEmitted.current) {
       const d = value ? new Date(value + 'T00:00:00') : undefined
-      setText(formatDisplay(d))
+      setText(display(d))
       setMonth(d)
       lastEmitted.current = value
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   const emit = (iso: string) => {
@@ -71,8 +117,8 @@ export function DateInput({
       emit('')
       return
     }
-    const parsed = new Date(raw)
-    if (isValidDate(parsed)) {
+    const parsed = parseDateText(raw, dateFormat)
+    if (parsed) {
       emit(toISODate(parsed))
       setMonth(parsed)
     }
@@ -81,7 +127,7 @@ export function DateInput({
   const handleBlur = () => {
     // Normalize to the display format, or clear leftover unparseable text
     const d = value ? new Date(value + 'T00:00:00') : undefined
-    setText(formatDisplay(d))
+    setText(display(d))
   }
 
   const selected = value ? new Date(value + 'T00:00:00') : undefined
@@ -92,7 +138,7 @@ export function DateInput({
       <Input
         id={id}
         value={text}
-        placeholder={placeholder}
+        placeholder={placeholder ?? display(new Date())}
         onChange={(e) => handleTextChange(e.target.value)}
         onBlur={handleBlur}
         onKeyDown={(e) => {
@@ -124,7 +170,7 @@ export function DateInput({
             onSelect={(d) => {
               if (d) {
                 emit(toISODate(d))
-                setText(formatDisplay(d))
+                setText(display(d))
               }
               setOpen(false)
             }}
