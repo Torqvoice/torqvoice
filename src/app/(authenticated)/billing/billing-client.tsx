@@ -333,7 +333,7 @@ export default function BillingClient({
                       {record.vehicle.customer?.name || "\u2014"}
                     </TableCell>
                     <TableCell>
-                      {formatDate(new Date(record.startDateTime ?? record.serviceDate))}
+                      {formatDate(new Date(record.serviceDate))}
                     </TableCell>
                     <TableCell className="text-right">
                       {fmt(record.totalAmount)}

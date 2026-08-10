@@ -27,6 +27,7 @@ import {
 import { typeColors, statusColors } from "@/lib/table-utils";
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { getWarrantyStatus, type WarrantyStatus } from "@/lib/warranty";
+import { effectiveInvoiceDate } from "@/lib/invoice-utils";
 import {
   ChevronLeft,
   ChevronRight,
@@ -67,6 +68,7 @@ interface ServiceRecordRow {
   mileage: number | null;
   serviceDate: Date;
   startDateTime: Date | null;
+  invoiceDate: Date | null;
   shopName: string | null;
   techName: string | null;
   totalAmount: number;
@@ -276,7 +278,7 @@ export function ServiceRecordsTable({
                     }}
                   >
                     <TableCell className="font-mono text-xs">
-                      {formatDate(new Date(record.serviceDate))}
+                      {formatDate(effectiveInvoiceDate(record))}
                     </TableCell>
                     <TableCell className="max-w-0">
                       <div className="truncate">
