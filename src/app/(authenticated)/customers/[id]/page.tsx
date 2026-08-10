@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { getCustomer } from "@/features/customers/Actions/customerActions";
+import { getCustomer, getCustomersList } from "@/features/customers/Actions/customerActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { getConversation } from "@/features/sms/Actions/smsActions";
@@ -17,10 +17,11 @@ export default async function CustomerDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [result, settingsResult, layoutData] = await Promise.all([
+  const [result, settingsResult, layoutData, customersResult] = await Promise.all([
     getCustomer(id),
     getSettings([SETTING_KEYS.UNIT_SYSTEM]),
     getLayoutData(),
+    getCustomersList(),
   ]);
 
   if (!result.success || !result.data) {
@@ -82,6 +83,7 @@ export default async function CustomerDetailPage({
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <CustomerDetailClient
           customer={result.data}
+          customers={customersResult.success && customersResult.data ? customersResult.data : []}
           unitSystem={(settingsResult.success && settingsResult.data?.[SETTING_KEYS.UNIT_SYSTEM] || "imperial") as "metric" | "imperial"}
           smsEnabled={smsEnabled}
           smsMessages={smsMessages}
