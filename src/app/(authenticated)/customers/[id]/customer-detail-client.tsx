@@ -342,7 +342,7 @@ export function CustomerDetailClient({
                       <TableRow
                         key={v.id}
                         className="cursor-pointer"
-                        onClick={() => router.push(`/vehicles/${v.id}`)}
+                        onClick={() => router.push(`/vehicles/${v.id}?back=${encodeURIComponent(`/customers/${customer.id}`)}`)}
                       >
                         <TableCell className="font-mono text-sm">
                           {v.licensePlate || "-"}

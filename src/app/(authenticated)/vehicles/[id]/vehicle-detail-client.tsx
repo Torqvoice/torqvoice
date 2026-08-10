@@ -291,6 +291,11 @@ export function VehicleDetailClient({
     ? (tabParam as string)
     : 'services'
 
+  // Where to return after leaving this page (e.g. arrived from a customer
+  // page). Restricted to internal paths; tab changes preserve the param.
+  const rawBack = searchParams.get('back')
+  const backHref = rawBack && rawBack.startsWith('/') && !rawBack.startsWith('//') ? rawBack : '/vehicles'
+
   const handleTabChange = useCallback(
     (value: string) => {
       const params = new URLSearchParams(searchParams.toString())
@@ -499,7 +504,7 @@ export function VehicleDetailClient({
     const result = await deleteVehicle(vehicle.id)
     if (result.success) {
       toast.success(t('vehicleDeleted'))
-      router.push('/vehicles')
+      router.push(backHref)
     } else {
       modal.open('error', 'Error', result.error || t('vehicleDeleteError'))
     }
@@ -528,11 +533,11 @@ export function VehicleDetailClient({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <Link
-            href="/vehicles"
+            href={backHref}
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            {t('backToVehicles')}
+            {rawBack ? tc('back') : t('backToVehicles')}
           </Link>
           <div className="flex items-center gap-2">
             {!vehicle.isArchived && (
