@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { DateInput } from '@/components/ui/date-input'
 import {
   Select,
   SelectContent,
@@ -136,23 +137,21 @@ export function InvoiceDetailsSection({
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1">
           <Label htmlFor="invoiceDate" className="text-xs">{t('invoiceDate')}</Label>
-          <Input
+          <DateInput
             id="invoiceDate"
             name="invoiceDate"
-            type="date"
             value={invoiceDate}
-            onChange={(e) => { setInvoiceDate(e.target.value); onDirty?.() }}
+            onChange={(v) => { setInvoiceDate(v); onDirty?.() }}
             className="h-9 text-sm"
           />
         </div>
         <div className="space-y-1">
           <Label htmlFor="invoiceDueDate" className="text-xs">{t('invoiceDueDate')}</Label>
-          <Input
+          <DateInput
             id="invoiceDueDate"
             name="invoiceDueDate"
-            type="date"
             value={invoiceDueDate}
-            onChange={(e) => { setInvoiceDueDate(e.target.value); onDirty?.() }}
+            onChange={(v) => { setInvoiceDueDate(v); onDirty?.() }}
             className="h-9 text-sm"
           />
         </div>
