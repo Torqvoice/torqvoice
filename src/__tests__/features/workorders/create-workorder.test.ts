@@ -23,7 +23,8 @@ vi.mock("@/lib/cached-session", () => ({
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
-vi.mock("@/lib/invoice-utils", () => ({
+vi.mock("@/lib/invoice-utils", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/invoice-utils")>()),
   resolveInvoicePrefix: vi.fn((p: string) => {
     const now = new Date();
     return p
