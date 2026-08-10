@@ -1,5 +1,6 @@
 "use server";
 
+import { toSafeDate } from "@/lib/invoice-utils";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
@@ -139,7 +140,7 @@ export async function createVehicle(input: unknown) {
     const vehicle = await db.vehicle.create({
       data: {
         ...data,
-        purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : null,
+        purchaseDate: toSafeDate(data.purchaseDate) ?? null,
         customerId: data.customerId || null,
         userId,
         organizationId,
@@ -197,7 +198,7 @@ export async function updateVehicle(input: unknown) {
         transmission: data.transmission !== undefined ? (data.transmission || null) : undefined,
         engineSize: data.engineSize !== undefined ? (data.engineSize || null) : undefined,
         engineCode: data.engineCode !== undefined ? (data.engineCode || null) : undefined,
-        purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : undefined,
+        purchaseDate: toSafeDate(data.purchaseDate),
         customerId: data.customerId !== undefined ? (data.customerId || null) : undefined,
       },
     });

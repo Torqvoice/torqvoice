@@ -1,9 +1,10 @@
 'use client'
 
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -49,6 +50,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
   onRevoke,
 }: QuoteRightColumnProps) {
   const formatCurrency = useFormatCurrency()
+  const [validUntil, setValidUntil] = useState(state.defaultValidDate)
   return (
     <div className="space-y-3">
       {/* Convert to Work Order */}
@@ -227,12 +229,14 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
             <Label htmlFor="validUntil" className="text-xs">
               {t('details.validUntil')}
             </Label>
-            <Input
+            <DateInput
               id="validUntil"
               name="validUntil"
-              type="date"
-              defaultValue={state.defaultValidDate}
-              onChange={state.markDirty}
+              value={validUntil}
+              onChange={(v) => {
+                setValidUntil(v)
+                state.markDirty()
+              }}
             />
           </div>
         </div>

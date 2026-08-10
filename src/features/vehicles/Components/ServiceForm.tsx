@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DateInput } from "@/components/ui/date-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -38,6 +39,7 @@ export function ServiceForm({
   const modal = useGlassModal();
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState("maintenance");
+  const [serviceDate, setServiceDate] = useState(new Date().toISOString().split("T")[0]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -104,11 +106,11 @@ export function ServiceForm({
             </div>
             <div className="space-y-2">
               <Label htmlFor="serviceDate">Date</Label>
-              <Input
+              <DateInput
                 id="serviceDate"
                 name="serviceDate"
-                type="date"
-                defaultValue={new Date().toISOString().split("T")[0]}
+                value={serviceDate}
+                onChange={setServiceDate}
               />
             </div>
           </div>

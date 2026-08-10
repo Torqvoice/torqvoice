@@ -1,5 +1,6 @@
 "use server";
 
+import { toSafeDate } from "@/lib/invoice-utils";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
@@ -40,7 +41,7 @@ export async function createReminder(input: unknown) {
     const reminder = await db.reminder.create({
       data: {
         ...data,
-        dueDate: data.dueDate ? new Date(data.dueDate) : null,
+        dueDate: toSafeDate(data.dueDate) ?? null,
       },
     });
     revalidatePath(`/vehicles/${data.vehicleId}`);
@@ -72,7 +73,7 @@ export async function updateReminder(input: unknown) {
       data: {
         ...data,
         description: data.description !== undefined ? (data.description || null) : undefined,
-        dueDate: data.dueDate !== undefined ? (data.dueDate ? new Date(data.dueDate) : null) : undefined,
+        dueDate: data.dueDate !== undefined ? (toSafeDate(data.dueDate) ?? null) : undefined,
         dueMileage: data.dueMileage !== undefined ? (data.dueMileage ?? null) : undefined,
       },
     });

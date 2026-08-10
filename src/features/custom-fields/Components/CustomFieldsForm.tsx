@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
+import { DateInput } from "@/components/ui/date-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -156,10 +157,9 @@ export function CustomFieldsForm({
               )}
 
               {field.fieldType === "date" && (
-                <Input
-                  type="date"
+                <DateInput
                   value={val}
-                  onChange={(e) => updateValue(field.id, e.target.value)}
+                  onChange={(v) => updateValue(field.id, v)}
                   className={cn(hasError && "border-destructive focus-visible:ring-destructive")}
                 />
               )}
