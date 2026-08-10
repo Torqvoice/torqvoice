@@ -385,6 +385,8 @@
     "quoteNumberFormatHint": "Naudokite <code>{year}</code> einamiesiems metams. Peržiūra: <bold>{preview}</bold>",
     "quoteValidDays": "Pasiūlymo galiojimas (dienos)",
     "quoteValidDaysHint": "Nauji pasiūlymai gauna galiojimo datą po tiek dienų. 0 išjungia.",
+    "sectionInvoices": "Sąskaitos faktūros",
+    "sectionQuotes": "Pasiūlymai",
     "nextInvoiceNumber": "Kitas sąskaitos numeris",
     "nextInvoiceNumberPlaceholder": "pvz., 94",
     "nextInvoiceNumberHint": "Kita sąskaita naudos šį numerį (pvz., {example})",

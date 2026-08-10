@@ -385,6 +385,8 @@
     "quoteNumberFormatHint": "Gebruik <code>{year}</code> voor het huidige jaar. Voorbeeld: <bold>{preview}</bold>",
     "quoteValidDays": "Geldigheid offerte (dagen)",
     "quoteValidDaysHint": "Nieuwe offertes krijgen een geldig-tot-datum zoveel dagen vooruit. 0 schakelt dit uit.",
+    "sectionInvoices": "Facturen",
+    "sectionQuotes": "Offertes",
     "nextInvoiceNumber": "Volgend factuurnummer",
     "nextInvoiceNumberPlaceholder": "Bijv. 94",
     "nextInvoiceNumberHint": "De volgende factuur gebruikt dit nummer (bijv. {example})",

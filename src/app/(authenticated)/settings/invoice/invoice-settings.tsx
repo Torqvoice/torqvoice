@@ -221,7 +221,9 @@ export function InvoiceSettings({
               <CardTitle className="text-lg">{t('invoice.tabs.general')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold">{t('invoice.sectionInvoices')}</h3>
+                <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="invoicePrefix">{t('invoice.invoiceNumberFormat')}</Label>
                   <Input
@@ -239,39 +241,6 @@ export function InvoiceSettings({
                         invoicePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) +
                         (invoiceStartNumber || '1001'),
                     })}
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="quotePrefix">{t('invoice.quoteNumberFormat')}</Label>
-                  <Input
-                    id="quotePrefix"
-                    placeholder="QT-"
-                    value={quotePrefix}
-                    onChange={(e) => setQuotePrefix(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t.rich('invoice.quoteNumberFormatHint', {
-                      code: (chunks) => <code className="rounded bg-muted px-1">{chunks}</code>,
-                      bold: (chunks) => <span className="font-medium">{chunks}</span>,
-                      year: '{year}',
-                      preview:
-                        quotePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) + '1001',
-                    })}
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="quoteValidDays">{t('invoice.quoteValidDays')}</Label>
-                  <Input
-                    id="quoteValidDays"
-                    type="number"
-                    min="0"
-                    placeholder="30"
-                    value={quoteValidDays}
-                    onChange={(e) => setQuoteValidDays(e.target.value)}
-                    className="w-32"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t('invoice.quoteValidDaysHint')}
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -304,20 +273,60 @@ export function InvoiceSettings({
                   />
                   <p className="text-xs text-muted-foreground">{t('invoice.dueDaysHint')}</p>
                 </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="footerNote">{t('invoice.customFooter')}</Label>
+                  <Textarea
+                    id="footerNote"
+                    placeholder={t('invoice.footerPlaceholder')}
+                    rows={2}
+                    value={footerNote}
+                    onChange={(e) => setFooterNote(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">{t('invoice.footerHint')}</p>
+                </div>
               </div>
 
               <Separator />
 
-              <div className="space-y-2">
-                <Label htmlFor="footerNote">{t('invoice.customFooter')}</Label>
-                <Textarea
-                  id="footerNote"
-                  placeholder={t('invoice.footerPlaceholder')}
-                  rows={2}
-                  value={footerNote}
-                  onChange={(e) => setFooterNote(e.target.value)}
-                />
-                <p className="text-xs text-muted-foreground">{t('invoice.footerHint')}</p>
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold">{t('invoice.sectionQuotes')}</h3>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="quotePrefix">{t('invoice.quoteNumberFormat')}</Label>
+                    <Input
+                      id="quotePrefix"
+                      placeholder="QT-"
+                      value={quotePrefix}
+                      onChange={(e) => setQuotePrefix(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {t.rich('invoice.quoteNumberFormatHint', {
+                        code: (chunks) => <code className="rounded bg-muted px-1">{chunks}</code>,
+                        bold: (chunks) => <span className="font-medium">{chunks}</span>,
+                        year: '{year}',
+                        preview:
+                          quotePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) + '1001',
+                      })}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="quoteValidDays">{t('invoice.quoteValidDays')}</Label>
+                    <Input
+                      id="quoteValidDays"
+                      type="number"
+                      min="0"
+                      placeholder="30"
+                      value={quoteValidDays}
+                      onChange={(e) => setQuoteValidDays(e.target.value)}
+                      className="w-32"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {t('invoice.quoteValidDaysHint')}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <Separator />

@@ -385,6 +385,8 @@
     "quoteNumberFormatHint": "Utilisez <code>{year}</code> pour l'annee en cours. Apercu : <bold>{preview}</bold>",
     "quoteValidDays": "Validité du devis (jours)",
     "quoteValidDaysHint": "Les nouveaux devis reçoivent une date de validité de ce nombre de jours. 0 désactive cette option.",
+    "sectionInvoices": "Factures",
+    "sectionQuotes": "Devis",
     "nextInvoiceNumber": "Prochain numero de facture",
     "nextInvoiceNumberPlaceholder": "Ex. 94",
     "nextInvoiceNumberHint": "La prochaine facture utilisera ce numero (ex. {example})",

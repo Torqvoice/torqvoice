@@ -385,6 +385,8 @@
     "quoteNumberFormatHint": "Используйте <code>{year}</code> для текущего года. Предпросмотр: <bold>{preview}</bold>",
     "quoteValidDays": "Срок действия предложения (дни)",
     "quoteValidDaysHint": "Новые предложения получают дату действия через указанное число дней. 0 отключает.",
+    "sectionInvoices": "Счета",
+    "sectionQuotes": "Предложения",
     "nextInvoiceNumber": "Следующий номер счёта",
     "nextInvoiceNumberPlaceholder": "напр. 94",
     "nextInvoiceNumberHint": "Следующий счёт будет использовать этот номер (напр. {example})",

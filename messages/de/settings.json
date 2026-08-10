@@ -385,6 +385,8 @@
     "quoteNumberFormatHint": "Verwenden Sie <code>{year}</code> fur das aktuelle Jahr. Vorschau: <bold>{preview}</bold>",
     "quoteValidDays": "Angebotsgültigkeit (Tage)",
     "quoteValidDaysHint": "Neue Angebote erhalten ein Gültig-bis-Datum so viele Tage im Voraus. 0 deaktiviert dies.",
+    "sectionInvoices": "Rechnungen",
+    "sectionQuotes": "Angebote",
     "nextInvoiceNumber": "Nachste Rechnungsnummer",
     "nextInvoiceNumberPlaceholder": "z.B. 94",
     "nextInvoiceNumberHint": "Die nachste Rechnung verwendet diese Nummer (z.B. {example})",

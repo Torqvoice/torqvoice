@@ -385,6 +385,8 @@
     "quoteNumberFormatHint": "Use <code>{year}</code> para el ano actual. Vista previa: <bold>{preview}</bold>",
     "quoteValidDays": "Validez del presupuesto (días)",
     "quoteValidDaysHint": "Los nuevos presupuestos reciben una fecha de validez con esta cantidad de días. 0 lo desactiva.",
+    "sectionInvoices": "Facturas",
+    "sectionQuotes": "Presupuestos",
     "nextInvoiceNumber": "Siguiente numero de factura",
     "nextInvoiceNumberPlaceholder": "Ej. 94",
     "nextInvoiceNumberHint": "La siguiente factura usara este numero (ej. {example})",

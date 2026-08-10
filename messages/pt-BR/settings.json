@@ -385,6 +385,8 @@
     "quoteNumberFormatHint": "Use <code>{year}</code> para o ano atual. Visualizacao: <bold>{preview}</bold>",
     "quoteValidDays": "Validade do orçamento (dias)",
     "quoteValidDaysHint": "Novos orçamentos recebem uma data de validade com esse número de dias. 0 desativa.",
+    "sectionInvoices": "Faturas",
+    "sectionQuotes": "Orçamentos",
     "nextInvoiceNumber": "Proximo numero da fatura",
     "nextInvoiceNumberPlaceholder": "Ex. 94",
     "nextInvoiceNumberHint": "A proxima fatura usara este numero (ex. {example})",

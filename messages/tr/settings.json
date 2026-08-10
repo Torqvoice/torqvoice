@@ -385,6 +385,8 @@
     "quoteNumberFormatHint": "Geçerli yıl için <code>{year}</code> kullanın. Önizleme: <bold>{preview}</bold>",
     "quoteValidDays": "Teklif Geçerliliği (Gün)",
     "quoteValidDaysHint": "Yeni teklifler bu kadar gün ileri bir geçerlilik tarihi alır. 0 devre dışı bırakır.",
+    "sectionInvoices": "Faturalar",
+    "sectionQuotes": "Teklifler",
     "nextInvoiceNumber": "Sonraki Fatura Numarası",
     "nextInvoiceNumberPlaceholder": "ör. 94",
     "nextInvoiceNumberHint": "Sonraki fatura bu numarayı kullanacak (ör. {example})",
