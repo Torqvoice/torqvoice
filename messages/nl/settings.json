@@ -564,7 +564,7 @@
     "readMore": "Lees meer",
     "detailsTitle": "Betalingsgegevens",
     "detailsDescription": "Bankrekening en betalingsvoorwaarden op facturen.",
-    "bankAccount": "Bankrekening (IBAN / Til Konto)",
+    "bankAccount": "Bankrekening (IBAN)",
     "bankAccountPlaceholder": "NO93 8601 1117 947",
     "bankAccountHint": "Uw bankrekeningnummer of IBAN voor het ontvangen van betalingen",
     "paymentTerms": "Betalingsvoorwaarden",

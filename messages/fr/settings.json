@@ -564,7 +564,7 @@
     "readMore": "En savoir plus",
     "detailsTitle": "Details de paiement",
     "detailsDescription": "Compte bancaire et conditions de paiement sur les factures.",
-    "bankAccount": "Compte bancaire (IBAN / Til Konto)",
+    "bankAccount": "Compte bancaire (IBAN)",
     "bankAccountPlaceholder": "NO93 8601 1117 947",
     "bankAccountHint": "Votre numero de compte bancaire ou IBAN pour recevoir les paiements",
     "paymentTerms": "Conditions de paiement",

@@ -564,7 +564,7 @@
     "readMore": "Czytaj więcej",
     "detailsTitle": "Szczegoly platnosci",
     "detailsDescription": "Konto bankowe i warunki platnosci wyswietlane na fakturach.",
-    "bankAccount": "Konto bankowe (IBAN / Til Konto)",
+    "bankAccount": "Konto bankowe (IBAN)",
     "bankAccountPlaceholder": "NO93 8601 1117 947",
     "bankAccountHint": "Numer konta bankowego lub IBAN do odbierania platnosci",
     "paymentTerms": "Warunki platnosci",
