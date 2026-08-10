@@ -132,6 +132,7 @@ export async function getBillingHistory(params: {
           invoiceNumber: string | null;
           serviceDate: Date;
           startDateTime: Date | null;
+          invoiceDate: Date | null;
           effective_total: number;
           paid_amount: number;
           manually_paid: boolean;
@@ -150,6 +151,7 @@ export async function getBillingHistory(params: {
           sub."invoiceNumber",
           sub."serviceDate",
           sub."startDateTime",
+          sub."invoiceDate",
           sub.effective_total,
           sub.paid_amount,
           sub.manually_paid,
@@ -167,6 +169,7 @@ export async function getBillingHistory(params: {
             sr."invoiceNumber",
             sr."serviceDate",
             sr."startDateTime",
+            sr."invoiceDate",
             sr."manuallyPaid" AS manually_paid,
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
             CASE WHEN sr."manuallyPaid" = true
@@ -187,7 +190,7 @@ export async function getBillingHistory(params: {
           ${searchCondition}
         ) sub
         WHERE 1=1 ${statusCondition}
-        ORDER BY COALESCE(sub."startDateTime", sub."serviceDate") DESC
+        ORDER BY COALESCE(sub."invoiceDate", sub."startDateTime", sub."serviceDate") DESC
         LIMIT ${pageSize} OFFSET ${skip}
       `);
 
@@ -206,7 +209,7 @@ export async function getBillingHistory(params: {
           title: r.title || "",
           invoiceNumber: r.invoiceNumber,
           startDateTime: r.startDateTime,
-          serviceDate: r.startDateTime ?? r.serviceDate,
+          serviceDate: r.invoiceDate ?? r.startDateTime ?? r.serviceDate,
           totalAmount: effectiveTotal,
           totalPaid: paidAmount,
           status: paymentStatus,
@@ -245,7 +248,11 @@ export async function getBillingHistory(params: {
             },
           },
         },
-        orderBy: { startDateTime: "desc" },
+        orderBy: [
+          { invoiceDate: { sort: "desc", nulls: "last" } },
+          { startDateTime: { sort: "desc", nulls: "last" } },
+          { serviceDate: "desc" },
+        ],
         skip,
         take: pageSize,
       }),
@@ -267,7 +274,7 @@ export async function getBillingHistory(params: {
           title: r.title,
           invoiceNumber: r.invoiceNumber,
           startDateTime: r.startDateTime,
-          serviceDate: r.startDateTime ?? r.serviceDate,
+          serviceDate: r.invoiceDate ?? r.startDateTime ?? r.serviceDate,
           totalAmount: effectiveTotal,
           totalPaid,
           status: paymentStatus,

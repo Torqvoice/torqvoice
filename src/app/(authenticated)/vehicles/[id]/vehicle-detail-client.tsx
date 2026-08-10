@@ -106,6 +106,7 @@ interface PaginatedServices {
     mileage: number | null
     serviceDate: Date
     startDateTime: Date | null
+    invoiceDate: Date | null
     shopName: string | null
     techName: string | null
     totalAmount: number
