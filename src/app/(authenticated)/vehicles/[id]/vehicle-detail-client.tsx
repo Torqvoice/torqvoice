@@ -69,6 +69,7 @@ import {
   X,
 } from 'lucide-react'
 import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
+import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -323,6 +324,7 @@ export function VehicleDetailClient({
   const [showImage, setShowImage] = useState(false)
   const [selectedNote, setSelectedNote] = useState<PaginatedNotes['records'][number] | null>(null)
   const [showArchiveDialog, setShowArchiveDialog] = useState(false)
+  const [showNewQuoteDialog, setShowNewQuoteDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showNewInspection, setShowNewInspection] = useState(false)
   const [isDismissPending, startDismissTransition] = useTransition()
@@ -1145,13 +1147,29 @@ export function VehicleDetailClient({
         {/* Quotes Tab */}
         <TabsContent value="quotes" className="space-y-4">
           <div className="flex justify-end">
-            <Button size="sm" asChild>
-              <Link href="/quotes">
-                <Plus className="mr-1 h-3.5 w-3.5" />
-                {tq('newQuote')}
-              </Link>
+            <Button size="sm" onClick={() => setShowNewQuoteDialog(true)}>
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              {tq('newQuote')}
             </Button>
           </div>
+          <NewQuoteDialog
+            open={showNewQuoteDialog}
+            onOpenChange={setShowNewQuoteDialog}
+            defaultVehicle={{
+              id: vehicle.id,
+              make: vehicle.make,
+              model: vehicle.model,
+              year: vehicle.year,
+              licensePlate: vehicle.licensePlate,
+              customerId: vehicle.customerId,
+              customer: vehicle.customer ? { id: vehicle.customer.id, name: vehicle.customer.name } : null,
+            }}
+            defaultCustomer={
+              vehicle.customer
+                ? { id: vehicle.customer.id, name: vehicle.customer.name, company: vehicle.customer.company }
+                : null
+            }
+          />
 
           {quotes.length === 0 ? (
             <Card className="border-dashed">
