@@ -9,7 +9,6 @@ import { useFormatDate } from '@/lib/use-format-date'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Table,
   TableBody,
@@ -18,14 +17,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { DataTablePagination } from '@/components/data-table-pagination'
 import { Loader2, Plus, Search } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { toast } from 'sonner'
-import { createQuote } from '@/features/quotes/Actions/quoteActions'
-import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
-import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
+import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
 
 interface QuoteRecord {
   id: string
@@ -93,10 +88,6 @@ export function QuotesClient({
 
   // New quote dialog state
   const [showNewDialog, setShowNewDialog] = useState(false)
-  const [newTitle, setNewTitle] = useState('')
-  const [newVehicleId, setNewVehicleId] = useState('')
-  const [newCustomerId, setNewCustomerId] = useState('')
-  const [creating, setCreating] = useState(false)
 
   useEffect(() => {
     if (searchParams.get('create') === 'true') {
@@ -134,40 +125,7 @@ export function QuotesClient({
     commitNow: handleSearch,
   } = useDebouncedSearch(search, (term) => navigate({ search: term }));
 
-  const openNewDialog = () => {
-    setNewTitle('')
-    setNewVehicleId('')
-    setNewCustomerId('')
-    setShowNewDialog(true)
-  }
-
-  const handleCreateQuote = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newTitle.trim()) return
-    setCreating(true)
-
-    const result = await createQuote({
-      title: newTitle.trim(),
-      vehicleId: newVehicleId || undefined,
-      customerId: newCustomerId || undefined,
-      status: 'draft',
-      subtotal: 0,
-      taxRate: 0,
-      taxAmount: 0,
-      discountValue: 0,
-      discountAmount: 0,
-      totalAmount: 0,
-    })
-
-    if (result.success && result.data) {
-      toast.success(t('form.created'))
-      setShowNewDialog(false)
-      router.push(`/quotes/${result.data.id}`)
-    } else {
-      toast.error(result.error || t('form.failedCreate'))
-    }
-    setCreating(false)
-  }
+  const openNewDialog = () => setShowNewDialog(true)
 
   return (
     <div className="space-y-4">
@@ -275,62 +233,7 @@ export function QuotesClient({
         onNavigate={navigate}
       />
 
-      {/* New Quote Dialog */}
-      <Dialog open={showNewDialog} onOpenChange={setShowNewDialog}>
-        <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
-          <DialogHeader>
-            <DialogTitle>{t('form.newQuote')}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleCreateQuote} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="new-quote-title">{t('details.titleLabel')}</Label>
-              <Input
-                id="new-quote-title"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                placeholder={t('details.titlePlaceholder')}
-                required
-                autoFocus
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('details.vehicle')}</Label>
-              <VehicleCombobox
-                value={newVehicleId}
-                placeholder={t('details.selectVehicle')}
-                noneLabel={t('details.none')}
-                onChange={(id, vehicle) => {
-                  setNewVehicleId(id)
-                  if (vehicle?.customerId) {
-                    setNewCustomerId(vehicle.customerId)
-                  }
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('details.customer')}</Label>
-              <CustomerCombobox
-                value={newCustomerId}
-                placeholder={t('details.selectCustomer')}
-                noneLabel={t('details.none')}
-                onChange={(id) => setNewCustomerId(id)}
-              />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setShowNewDialog(false)}>
-                {t('form.cancel')}
-              </Button>
-              <Button type="submit" disabled={creating || !newTitle.trim()}>
-                {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('form.createQuote')}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <NewQuoteDialog open={showNewDialog} onOpenChange={setShowNewDialog} />
     </div>
   )
 }

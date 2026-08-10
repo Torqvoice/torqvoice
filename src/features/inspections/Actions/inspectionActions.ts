@@ -98,7 +98,9 @@ export async function getInspection(id: string) {
         },
       },
     });
-    if (!inspection) throw new Error("Inspection not found");
+    // Missing or foreign-org inspection yields null rather than an error: the
+    // page renders its not-found state, and this also runs during the
+    // post-delete re-render of the inspection route.
     return inspection;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INSPECTIONS }] });
 }

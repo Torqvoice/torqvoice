@@ -63,7 +63,9 @@ export async function getVehicle(vehicleId: string) {
       },
     });
 
-    if (!vehicle) throw new Error("Vehicle not found");
+    // Missing or foreign-org vehicle yields null rather than an error: the
+    // page renders its not-found state, and this also runs during the
+    // post-delete re-render of the vehicle route.
     return vehicle;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
 }

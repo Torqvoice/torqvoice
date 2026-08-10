@@ -110,7 +110,9 @@ export async function getQuote(quoteId: string) {
         },
       },
     });
-    if (!quote) throw new Error("Quote not found");
+    // Missing or foreign-org quote yields null rather than an error: the page
+    // renders its not-found state, and this also runs during the post-delete
+    // re-render of the quote route.
     return quote;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] });
 }
