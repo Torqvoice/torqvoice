@@ -135,7 +135,7 @@ export async function createQuote(input: unknown) {
     });
     const settingsMap: Record<string, string> = {};
     for (const s of settings) settingsMap[s.key] = s.value;
-    const prefix = settingsMap["workshop.quotePrefix"] || "QT-";
+    const prefix = resolveInvoicePrefix(settingsMap["workshop.quotePrefix"] ?? "QT-");
 
     // Apply default tax rate from settings when the caller hasn't set one.
     // All current call sites send taxRate: 0 at creation, so 0 means "unset".

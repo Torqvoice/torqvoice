@@ -381,6 +381,8 @@
     },
     "invoiceNumberFormat": "Fakturanummerformat",
     "invoiceNumberFormatHint": "Bruk <code>{year}</code> for innevarende ar. Forhandsvisning: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Tilbudsnummerformat",
+    "quoteNumberFormatHint": "Bruk <code>{year}</code> for innevarende ar. Forhandsvisning: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Neste fakturanummer",
     "nextInvoiceNumberPlaceholder": "F.eks. 94",
     "nextInvoiceNumberHint": "Neste faktura bruker dette nummeret (f.eks. {example})",

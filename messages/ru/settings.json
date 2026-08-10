@@ -381,6 +381,8 @@
     },
     "invoiceNumberFormat": "Формат номера счёта",
     "invoiceNumberFormatHint": "Используйте <code>{year}</code> для текущего года. Предпросмотр: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Формат номера предложения",
+    "quoteNumberFormatHint": "Используйте <code>{year}</code> для текущего года. Предпросмотр: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Следующий номер счёта",
     "nextInvoiceNumberPlaceholder": "напр. 94",
     "nextInvoiceNumberHint": "Следующий счёт будет использовать этот номер (напр. {example})",

@@ -86,6 +86,7 @@ export function InvoiceSettings({
   const [invoiceStartNumber, setInvoiceStartNumber] = useState(
     settings[SETTING_KEYS.INVOICE_START_NUMBER] || ''
   )
+  const [quotePrefix, setQuotePrefix] = useState(settings[SETTING_KEYS.QUOTE_PREFIX] ?? 'QT-')
   const [dueDays, setDueDays] = useState(settings[SETTING_KEYS.INVOICE_DUE_DAYS] || '14')
   const [footerNote, setFooterNote] = useState(settings[SETTING_KEYS.INVOICE_FOOTER_NOTE] || '')
   const [defaultMarkupPercent, setDefaultMarkupPercent] = useState(
@@ -125,6 +126,7 @@ export function InvoiceSettings({
     setSaving(true)
     await setSettings({
       [SETTING_KEYS.INVOICE_PREFIX]: invoicePrefix,
+      [SETTING_KEYS.QUOTE_PREFIX]: quotePrefix,
       [SETTING_KEYS.INVOICE_START_NUMBER]: invoiceStartNumber,
       [SETTING_KEYS.INVOICE_DUE_DAYS]: dueDays,
       [SETTING_KEYS.INVOICE_FOOTER_NOTE]: footerNote,
@@ -232,6 +234,24 @@ export function InvoiceSettings({
                       preview:
                         invoicePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) +
                         (invoiceStartNumber || '1001'),
+                    })}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="quotePrefix">{t('invoice.quoteNumberFormat')}</Label>
+                  <Input
+                    id="quotePrefix"
+                    placeholder="QT-"
+                    value={quotePrefix}
+                    onChange={(e) => setQuotePrefix(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t.rich('invoice.quoteNumberFormatHint', {
+                      code: (chunks) => <code className="rounded bg-muted px-1">{chunks}</code>,
+                      bold: (chunks) => <span className="font-medium">{chunks}</span>,
+                      year: '{year}',
+                      preview:
+                        quotePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) + '1001',
                     })}
                   </p>
                 </div>

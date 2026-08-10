@@ -381,6 +381,8 @@
     },
     "invoiceNumberFormat": "Factuurnummerformaat",
     "invoiceNumberFormatHint": "Gebruik <code>{year}</code> voor het huidige jaar. Voorbeeld: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Offertenummerformaat",
+    "quoteNumberFormatHint": "Gebruik <code>{year}</code> voor het huidige jaar. Voorbeeld: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Volgend factuurnummer",
     "nextInvoiceNumberPlaceholder": "Bijv. 94",
     "nextInvoiceNumberHint": "De volgende factuur gebruikt dit nummer (bijv. {example})",

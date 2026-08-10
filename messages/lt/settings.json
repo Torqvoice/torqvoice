@@ -381,6 +381,8 @@
     },
     "invoiceNumberFormat": "Sąskaitos numerio formatas",
     "invoiceNumberFormatHint": "Naudokite <code>{year}</code> einamiesiems metams. Peržiūra: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Pasiūlymo numerio formatas",
+    "quoteNumberFormatHint": "Naudokite <code>{year}</code> einamiesiems metams. Peržiūra: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Kitas sąskaitos numeris",
     "nextInvoiceNumberPlaceholder": "pvz., 94",
     "nextInvoiceNumberHint": "Kita sąskaita naudos šį numerį (pvz., {example})",

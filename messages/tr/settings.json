@@ -381,6 +381,8 @@
     },
     "invoiceNumberFormat": "Fatura Numara Formatı",
     "invoiceNumberFormatHint": "Geçerli yıl için <code>{year}</code> kullanın. Önizleme: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Teklif Numara Formatı",
+    "quoteNumberFormatHint": "Geçerli yıl için <code>{year}</code> kullanın. Önizleme: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Sonraki Fatura Numarası",
     "nextInvoiceNumberPlaceholder": "ör. 94",
     "nextInvoiceNumberHint": "Sonraki fatura bu numarayı kullanacak (ör. {example})",

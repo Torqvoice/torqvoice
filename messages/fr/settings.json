@@ -381,6 +381,8 @@
     },
     "invoiceNumberFormat": "Format du numero de facture",
     "invoiceNumberFormatHint": "Utilisez <code>{year}</code> pour l'annee en cours. Apercu : <bold>{preview}</bold>",
+    "quoteNumberFormat": "Format du numero de devis",
+    "quoteNumberFormatHint": "Utilisez <code>{year}</code> pour l'annee en cours. Apercu : <bold>{preview}</bold>",
     "nextInvoiceNumber": "Prochain numero de facture",
     "nextInvoiceNumberPlaceholder": "Ex. 94",
     "nextInvoiceNumberHint": "La prochaine facture utilisera ce numero (ex. {example})",

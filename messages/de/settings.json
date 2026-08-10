@@ -381,6 +381,8 @@
     },
     "invoiceNumberFormat": "Rechnungsnummernformat",
     "invoiceNumberFormatHint": "Verwenden Sie <code>{year}</code> fur das aktuelle Jahr. Vorschau: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Angebotsnummernformat",
+    "quoteNumberFormatHint": "Verwenden Sie <code>{year}</code> fur das aktuelle Jahr. Vorschau: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Nachste Rechnungsnummer",
     "nextInvoiceNumberPlaceholder": "z.B. 94",
     "nextInvoiceNumberHint": "Die nachste Rechnung verwendet diese Nummer (z.B. {example})",

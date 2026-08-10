@@ -381,6 +381,8 @@
     },
     "invoiceNumberFormat": "Format numeru faktury",
     "invoiceNumberFormatHint": "Uzyj <code>{year}</code> dla biezacego roku. Podglad: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Format numeru wyceny",
+    "quoteNumberFormatHint": "Uzyj <code>{year}</code> dla biezacego roku. Podglad: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Nastepny numer faktury",
     "nextInvoiceNumberPlaceholder": "Np. 94",
     "nextInvoiceNumberHint": "Nastepna faktura uzyje tego numeru (np. {example})",

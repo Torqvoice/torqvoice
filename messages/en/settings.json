@@ -381,6 +381,8 @@
     },
     "invoiceNumberFormat": "Invoice Number Format",
     "invoiceNumberFormatHint": "Use <code>{year}</code> for the current year. Preview: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Quote Number Format",
+    "quoteNumberFormatHint": "Use <code>{year}</code> for the current year. Preview: <bold>{preview}</bold>",
     "nextInvoiceNumber": "Next Invoice Number",
     "nextInvoiceNumberPlaceholder": "e.g. 94",
     "nextInvoiceNumberHint": "Next invoice will use this number (e.g. {example})",
