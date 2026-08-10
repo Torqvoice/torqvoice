@@ -87,7 +87,7 @@ export async function createDraftServiceRecord(
         if (tech) techName = tech.name;
       }
 
-      const rawPrefix = settingsMap["workshop.invoicePrefix"] || "{year}-";
+      const rawPrefix = settingsMap["workshop.invoicePrefix"] ?? "{year}-";
       const now = new Date();
       const prefix = rawPrefix
         .replace("{year}", now.getFullYear().toString())

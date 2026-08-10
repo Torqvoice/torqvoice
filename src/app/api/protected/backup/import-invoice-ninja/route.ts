@@ -293,7 +293,7 @@ export async function POST(request: NextRequest) {
       where: { organizationId, key: "workshop.invoicePrefix" },
     });
     const invoicePrefix = resolveInvoicePrefix(
-      prefixSetting?.value || "{year}-"
+      prefixSetting?.value ?? "{year}-"
     );
 
     // Get the current highest invoice number

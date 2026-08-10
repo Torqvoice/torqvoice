@@ -81,7 +81,7 @@ export function InvoiceSettings({
 
   // General tab state
   const [invoicePrefix, setInvoicePrefix] = useState(
-    settings[SETTING_KEYS.INVOICE_PREFIX] || '{year}-'
+    settings[SETTING_KEYS.INVOICE_PREFIX] ?? '{year}-'
   )
   const [invoiceStartNumber, setInvoiceStartNumber] = useState(
     settings[SETTING_KEYS.INVOICE_START_NUMBER] || ''
