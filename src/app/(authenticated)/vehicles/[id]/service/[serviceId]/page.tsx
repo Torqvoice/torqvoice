@@ -129,6 +129,13 @@ export default async function ServiceDetailPage({
     aiSettingsMap[SETTING_KEYS.AI_ENABLED] === 'true' &&
     !!aiSettingsMap[SETTING_KEYS.AI_API_KEY]
 
+  // A timestamp outside JS date range (bad legacy data) must degrade to a
+  // fallback date, not crash the page on toISOString().
+  const isRenderable = (d: Date | null | undefined): d is Date =>
+    !!d && !isNaN(new Date(d).getTime())
+  const effectiveInvoiceDate =
+    [record.invoiceDate, record.startDateTime, record.serviceDate].find(isRenderable) ?? new Date()
+
   const initialData = {
     id: record.id,
     title: record.title,
@@ -136,23 +143,20 @@ export default async function ServiceDetailPage({
     type: record.type,
     status: record.status,
     mileage: record.mileage,
-    serviceDate: new Date(record.serviceDate).toISOString().split('T')[0],
-    startDateTime: record.startDateTime?.toISOString() ?? null,
-    endDateTime: record.endDateTime?.toISOString() ?? null,
+    serviceDate: (isRenderable(record.serviceDate) ? new Date(record.serviceDate) : new Date())
+      .toISOString()
+      .split('T')[0],
+    startDateTime: isRenderable(record.startDateTime) ? record.startDateTime.toISOString() : null,
+    endDateTime: isRenderable(record.endDateTime) ? record.endDateTime.toISOString() : null,
     techName: record.techName || '',
     diagnosticNotes: record.diagnosticNotes || '',
     invoiceNotes: record.invoiceNotes || '',
     invoiceNumber: record.invoiceNumber || '',
-    invoiceDate: (record.invoiceDate ?? record.startDateTime ?? record.serviceDate)
-      .toISOString()
-      .split('T')[0],
-    invoiceDueDate: record.invoiceDueDate
+    invoiceDate: effectiveInvoiceDate.toISOString().split('T')[0],
+    invoiceDueDate: isRenderable(record.invoiceDueDate)
       ? record.invoiceDueDate.toISOString().split('T')[0]
       : defaultDueDays > 0
-        ? new Date(
-            (record.invoiceDate ?? record.startDateTime ?? record.serviceDate).getTime() +
-              defaultDueDays * 86400000
-          )
+        ? new Date(effectiveInvoiceDate.getTime() + defaultDueDays * 86400000)
             .toISOString()
             .split('T')[0]
         : '',
