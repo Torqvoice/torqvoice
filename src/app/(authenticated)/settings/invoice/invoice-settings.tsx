@@ -87,6 +87,9 @@ export function InvoiceSettings({
     settings[SETTING_KEYS.INVOICE_START_NUMBER] || ''
   )
   const [quotePrefix, setQuotePrefix] = useState(settings[SETTING_KEYS.QUOTE_PREFIX] ?? 'QT-')
+  const [quoteValidDays, setQuoteValidDays] = useState(
+    settings[SETTING_KEYS.QUOTE_VALID_DAYS] ?? '30'
+  )
   const [dueDays, setDueDays] = useState(settings[SETTING_KEYS.INVOICE_DUE_DAYS] || '14')
   const [footerNote, setFooterNote] = useState(settings[SETTING_KEYS.INVOICE_FOOTER_NOTE] || '')
   const [defaultMarkupPercent, setDefaultMarkupPercent] = useState(
@@ -127,6 +130,7 @@ export function InvoiceSettings({
     await setSettings({
       [SETTING_KEYS.INVOICE_PREFIX]: invoicePrefix,
       [SETTING_KEYS.QUOTE_PREFIX]: quotePrefix,
+      [SETTING_KEYS.QUOTE_VALID_DAYS]: quoteValidDays,
       [SETTING_KEYS.INVOICE_START_NUMBER]: invoiceStartNumber,
       [SETTING_KEYS.INVOICE_DUE_DAYS]: dueDays,
       [SETTING_KEYS.INVOICE_FOOTER_NOTE]: footerNote,
@@ -253,6 +257,21 @@ export function InvoiceSettings({
                       preview:
                         quotePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) + '1001',
                     })}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="quoteValidDays">{t('invoice.quoteValidDays')}</Label>
+                  <Input
+                    id="quoteValidDays"
+                    type="number"
+                    min="0"
+                    placeholder="30"
+                    value={quoteValidDays}
+                    onChange={(e) => setQuoteValidDays(e.target.value)}
+                    className="w-32"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t('invoice.quoteValidDaysHint')}
                   </p>
                 </div>
                 <div className="space-y-2">

@@ -383,6 +383,8 @@
     "invoiceNumberFormatHint": "Usa <code>{year}</code> per l'anno corrente. Anteprima: <bold>{preview}</bold>",
     "quoteNumberFormat": "Formato numero preventivo",
     "quoteNumberFormatHint": "Usa <code>{year}</code> per l'anno corrente. Anteprima: <bold>{preview}</bold>",
+    "quoteValidDays": "Validità del preventivo (giorni)",
+    "quoteValidDaysHint": "I nuovi preventivi ricevono una data di validità di questo numero di giorni. 0 disattiva la funzione.",
     "nextInvoiceNumber": "Prossimo numero fattura",
     "nextInvoiceNumberPlaceholder": "es. 94",
     "nextInvoiceNumberHint": "La prossima fattura usera questo numero (es. {example})",

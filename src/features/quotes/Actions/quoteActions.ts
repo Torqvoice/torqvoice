@@ -11,6 +11,18 @@ import { reconcileInventoryForParts } from "@/features/inventory/Lib/reconcileSt
 import { copyFile, mkdir } from "fs/promises";
 import path from "path";
 
+/**
+ * Default valid-until for new quotes: today plus workshop.quoteValidDays
+ * (30 when unset). An explicit 0 or negative disables the prefill.
+ */
+function defaultValidUntil(validDaysSetting: string | undefined): Date | undefined {
+  const days = validDaysSetting === undefined ? 30 : Number.parseInt(validDaysSetting, 10);
+  if (!Number.isFinite(days) || days <= 0) return undefined;
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
 export async function getQuotesPaginated(params: {
   page?: number;
   pageSize?: number;
@@ -126,6 +138,7 @@ export async function createQuote(input: unknown) {
         key: {
           in: [
             "workshop.quotePrefix",
+            "workshop.quoteValidDays",
             "workshop.defaultTaxRate",
             "workshop.taxEnabled",
             "workshop.taxInclusive",
@@ -181,7 +194,9 @@ export async function createQuote(input: unknown) {
           organizationId,
           taxRate: quoteData.taxRate > 0 ? quoteData.taxRate : defaultTaxRate,
           taxInclusive,
-          validUntil: quoteData.validUntil ? new Date(quoteData.validUntil) : undefined,
+          validUntil: quoteData.validUntil
+            ? new Date(quoteData.validUntil)
+            : defaultValidUntil(settingsMap["workshop.quoteValidDays"]),
           discountType: quoteData.discountType === "none" ? null : quoteData.discountType,
         },
       });

@@ -383,6 +383,8 @@
     "invoiceNumberFormatHint": "Uzyj <code>{year}</code> dla biezacego roku. Podglad: <bold>{preview}</bold>",
     "quoteNumberFormat": "Format numeru wyceny",
     "quoteNumberFormatHint": "Uzyj <code>{year}</code> dla biezacego roku. Podglad: <bold>{preview}</bold>",
+    "quoteValidDays": "Ważność wyceny (dni)",
+    "quoteValidDaysHint": "Nowe wyceny otrzymują datę ważności o tyle dni do przodu. 0 wyłącza tę opcję.",
     "nextInvoiceNumber": "Nastepny numer faktury",
     "nextInvoiceNumberPlaceholder": "Np. 94",
     "nextInvoiceNumberHint": "Nastepna faktura uzyje tego numeru (np. {example})",

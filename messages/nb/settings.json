@@ -383,6 +383,8 @@
     "invoiceNumberFormatHint": "Bruk <code>{year}</code> for innevarende ar. Forhandsvisning: <bold>{preview}</bold>",
     "quoteNumberFormat": "Tilbudsnummerformat",
     "quoteNumberFormatHint": "Bruk <code>{year}</code> for innevarende ar. Forhandsvisning: <bold>{preview}</bold>",
+    "quoteValidDays": "Tilbudets gyldighet (dager)",
+    "quoteValidDaysHint": "Nye tilbud får en gyldig til-dato så mange dager frem. 0 deaktiverer dette.",
     "nextInvoiceNumber": "Neste fakturanummer",
     "nextInvoiceNumberPlaceholder": "F.eks. 94",
     "nextInvoiceNumberHint": "Neste faktura bruker dette nummeret (f.eks. {example})",
