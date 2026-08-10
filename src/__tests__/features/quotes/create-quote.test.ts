@@ -164,6 +164,70 @@ describe("createQuote — quote number generation", () => {
       })
     );
   });
+
+  it("defaults validUntil from workshop.quoteValidDays when not provided", async () => {
+    setupAuth();
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.quoteValidDays", value: "14" } as any,
+    ]);
+    vi.mocked(db.quote.findFirst).mockResolvedValue(null);
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: "q-4" });
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        quote: { create: mockCreate },
+        quotePart: { createMany: vi.fn() },
+        quoteLabor: { createMany: vi.fn() },
+      })
+    );
+
+    await createQuote({
+      title: "Test",
+      status: "draft",
+      subtotal: 0,
+      taxRate: 0,
+      taxAmount: 0,
+      discountValue: 0,
+      discountAmount: 0,
+      totalAmount: 0,
+    });
+
+    const validUntil = mockCreate.mock.calls[0][0].data.validUntil as Date;
+    const expected = new Date();
+    expected.setDate(expected.getDate() + 14);
+    expect(validUntil).toBeInstanceOf(Date);
+    expect(validUntil.toDateString()).toBe(expected.toDateString());
+  });
+
+  it("does not default validUntil when quoteValidDays is 0", async () => {
+    setupAuth();
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.quoteValidDays", value: "0" } as any,
+    ]);
+    vi.mocked(db.quote.findFirst).mockResolvedValue(null);
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: "q-5" });
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        quote: { create: mockCreate },
+        quotePart: { createMany: vi.fn() },
+        quoteLabor: { createMany: vi.fn() },
+      })
+    );
+
+    await createQuote({
+      title: "Test",
+      status: "draft",
+      subtotal: 0,
+      taxRate: 0,
+      taxAmount: 0,
+      discountValue: 0,
+      discountAmount: 0,
+      totalAmount: 0,
+    });
+
+    expect(mockCreate.mock.calls[0][0].data.validUntil).toBeUndefined();
+  });
 });
 
 // ---------------------------------------------------------------------------
