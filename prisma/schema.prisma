@@ -21,6 +21,9 @@ model User {
   termsAcceptedAt  DateTime?
   lastLogin        DateTime?
   lastSeen         DateTime?
+  /// App version this user last saw/dismissed the update banner for.
+  /// Null = never seeded (seeded silently on first load, no banner).
+  lastSeenVersion  String?
 
   sessions               Session[]
   accounts               Account[]

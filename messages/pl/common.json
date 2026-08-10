@@ -39,5 +39,10 @@
     "title": "Nie znaleziono strony",
     "description": "Wygląda na to, że ta część jest jeszcze w warsztacie. Strona, której szukasz, nie istnieje lub została przeniesiona.",
     "backToDashboard": "Wróć do panelu"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice zaktualizowano do wersji {version}",
+    "whatsNew": "Zobacz nowości",
+    "dismiss": "Zamknij"
   }
 }
