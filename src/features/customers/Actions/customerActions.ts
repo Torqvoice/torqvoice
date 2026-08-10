@@ -42,7 +42,9 @@ export async function getCustomer(customerId: string) {
       },
     });
 
-    if (!customer) throw new Error("Customer not found");
+    // Missing or foreign-org customer yields null rather than an error: the
+    // page renders its not-found state, and this also runs during the
+    // post-delete re-render of the customer route.
     return customer;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS }] });
 }

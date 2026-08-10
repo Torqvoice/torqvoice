@@ -118,14 +118,14 @@ beforeEach(() => {
 // ---------------------------------------------------------------------------
 
 describe("getQuote — cross-org isolation", () => {
-  it("returns 'Quote not found' error when requesting another org's quote ID", async () => {
+  it("returns null (no data) when requesting another org's quote ID", async () => {
     setupOrgAOwner();
     vi.mocked(db.quote.findFirst).mockResolvedValue(null);
 
     const result = await getQuote(`${ORG_B}-quote-id`);
 
-    expect(result.success).toBe(false);
-    expect(result.error).toBe("Quote not found");
+    expect(result.success).toBe(true);
+    expect(result.data).toBeNull();
   });
 
   it("returns quote data when requesting the caller's own quote", async () => {
@@ -310,14 +310,14 @@ describe("deleteQuote — cross-org isolation", () => {
 // ---------------------------------------------------------------------------
 
 describe("getInspection — cross-org isolation", () => {
-  it("returns 'Inspection not found' error when requesting another org's inspection", async () => {
+  it("returns null (no data) when requesting another org's inspection", async () => {
     setupOrgAOwner();
     vi.mocked(db.inspection.findFirst).mockResolvedValue(null);
 
     const result = await getInspection(`${ORG_B}-insp-id`);
 
-    expect(result.success).toBe(false);
-    expect(result.error).toBe("Inspection not found");
+    expect(result.success).toBe(true);
+    expect(result.data).toBeNull();
   });
 
   it("returns inspection data when requesting the caller's own inspection", async () => {

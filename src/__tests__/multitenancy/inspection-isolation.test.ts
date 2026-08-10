@@ -64,14 +64,14 @@ beforeEach(() => {
 });
 
 describe("getInspection — cross-org isolation", () => {
-  it("returns error when requesting another org's inspection", async () => {
+  it("returns null (no data) when requesting another org's inspection", async () => {
     setupOrgAOwner();
     vi.mocked(db.inspection.findFirst).mockResolvedValue(null);
 
     const result = await getInspection(`${ORG_B}-inspection-id`);
 
-    expect(result.success).toBe(false);
-    expect(result.error).toBe("Inspection not found");
+    expect(result.success).toBe(true);
+    expect(result.data).toBeNull();
   });
 
   it("read query is scoped to organizationId", async () => {
