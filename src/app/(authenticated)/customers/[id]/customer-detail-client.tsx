@@ -111,6 +111,7 @@ export function CustomerDetailClient({
   telegramChatId?: string | null;
 }) {
   const t = useTranslations("customers.detail");
+  const tVehicles = useTranslations("vehicles.list");
   const serviceType = useServiceType();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -300,6 +301,14 @@ export function CustomerDetailClient({
 
         {activeTab === "vehicles" && (
           <>
+            <div className="mb-3 flex justify-end">
+              <Button size="sm" asChild>
+                <Link href={`/vehicles?create=true&customerId=${customer.id}`}>
+                  <Plus className="mr-1 h-4 w-4" />
+                  {tVehicles("addVehicle")}
+                </Link>
+              </Button>
+            </div>
             {customer.vehicles.length === 0 ? (
               <Card className="border-dashed">
                 <CardContent className="flex flex-col items-center py-12">

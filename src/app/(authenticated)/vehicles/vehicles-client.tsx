@@ -107,6 +107,7 @@ export function VehiclesClient({
   const t = useTranslations('vehicles.list')
   const tc = useTranslations('common.buttons')
   const [showForm, setShowForm] = useState(false)
+  const [createCustomerId, setCreateCustomerId] = useState<string | undefined>(undefined)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
   const [view, setView] = useState<'table' | 'grid' | 'grid6'>(initialView)
   const [archiveTarget, setArchiveTarget] = useState<{ id: string; name: string } | null>(null)
@@ -115,9 +116,11 @@ export function VehiclesClient({
 
   useEffect(() => {
     if (searchParams.get('create') === 'true') {
+      setCreateCustomerId(searchParams.get('customerId') || undefined)
       setShowForm(true)
       const params = new URLSearchParams(searchParams.toString())
       params.delete('create')
+      params.delete('customerId')
       const cleanUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname
       window.history.replaceState(null, '', cleanUrl)
     }
@@ -498,10 +501,14 @@ export function VehiclesClient({
         open={showForm}
         onOpenChange={(open) => {
           setShowForm(open)
-          if (!open) setEditVehicle(null)
+          if (!open) {
+            setEditVehicle(null)
+            setCreateCustomerId(undefined)
+          }
         }}
         vehicle={editVehicle ?? undefined}
         customers={customers}
+        defaultCustomerId={createCustomerId}
       />
 
       <ArchiveVehicleDialog

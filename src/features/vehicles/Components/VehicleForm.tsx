@@ -63,9 +63,11 @@ interface VehicleFormProps {
     customerId?: string | null;
   };
   customers?: { id: string; name: string; company: string | null }[];
+  /** Preselects the customer when creating a new vehicle (ignored when editing) */
+  defaultCustomerId?: string;
 }
 
-export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleFormProps) {
+export function VehicleForm({ open, onOpenChange, vehicle, customers, defaultCustomerId }: VehicleFormProps) {
   const serviceType = useServiceType();
   const isMarine = serviceType === "marine";
   const router = useRouter();
@@ -76,7 +78,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
   const [preview, setPreview] = useState<string | null>(vehicle?.imageUrl ?? null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>(
-    vehicle?.customerId || "none"
+    vehicle?.customerId || defaultCustomerId || "none"
   );
   const [customerOpen, setCustomerOpen] = useState(false);
   const [showCustomerForm, setShowCustomerForm] = useState(false);
@@ -85,10 +87,10 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers }: VehicleF
 
   // Sync state when vehicle prop changes (e.g. opening edit for a different vehicle)
   useEffect(() => {
-    setSelectedCustomerId(vehicle?.customerId || "none");
+    setSelectedCustomerId(vehicle?.customerId || defaultCustomerId || "none");
     setPreview(vehicle?.imageUrl ?? null);
     setImageFile(null);
-  }, [vehicle?.id, vehicle?.customerId, vehicle?.imageUrl]);
+  }, [vehicle?.id, vehicle?.customerId, vehicle?.imageUrl, defaultCustomerId]);
 
   const selectedCustomerLabel = useMemo(() => {
     if (!selectedCustomerId || selectedCustomerId === "none") return t("noCustomer");
