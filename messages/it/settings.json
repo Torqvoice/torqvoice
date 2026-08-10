@@ -564,7 +564,7 @@
     "readMore": "Scopri di più",
     "detailsTitle": "Dettagli pagamento",
     "detailsDescription": "Conto bancario e termini di pagamento mostrati sulle fatture.",
-    "bankAccount": "Conto bancario (IBAN / Til Konto)",
+    "bankAccount": "Conto bancario (IBAN)",
     "bankAccountPlaceholder": "NO93 8601 1117 947",
     "bankAccountHint": "Il tuo numero di conto bancario o IBAN per ricevere pagamenti",
     "paymentTerms": "Termini di pagamento",

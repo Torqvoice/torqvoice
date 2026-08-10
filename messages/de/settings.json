@@ -564,7 +564,7 @@
     "readMore": "Mehr erfahren",
     "detailsTitle": "Zahlungsdetails",
     "detailsDescription": "Bankkonto und Zahlungsbedingungen auf Rechnungen.",
-    "bankAccount": "Bankkonto (IBAN / Til Konto)",
+    "bankAccount": "Bankkonto (IBAN)",
     "bankAccountPlaceholder": "NO93 8601 1117 947",
     "bankAccountHint": "Ihre Bankkontonummer oder IBAN fur den Zahlungsempfang",
     "paymentTerms": "Zahlungsbedingungen",

@@ -1093,7 +1093,7 @@ export function InvoiceView({
                     {effectiveShowBankAccount && invoiceSettings.bankAccount && (
                       <div>
                         <p className="text-xs text-gray-500 dark:text-gray-400">{t('bankAccount')}</p>
-                        <p className="font-medium">{invoiceSettings.bankAccount}</p>
+                        <p className="whitespace-pre-line font-medium">{invoiceSettings.bankAccount}</p>
                       </div>
                     )}
                     {effectiveShowOrgNumber && invoiceSettings.orgNumber && (

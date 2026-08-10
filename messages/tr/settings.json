@@ -564,7 +564,7 @@
     "readMore": "Devamını oku",
     "detailsTitle": "Ödeme Bilgileri",
     "detailsDescription": "Faturalarda gösterilen banka hesabı ve ödeme koşulları.",
-    "bankAccount": "Banka Hesabı (IBAN / Til Konto)",
+    "bankAccount": "Banka Hesabı (IBAN)",
     "bankAccountPlaceholder": "NO93 8601 1117 947",
     "bankAccountHint": "Ödeme almak için banka hesap numaranız veya IBAN",
     "paymentTerms": "Ödeme Koşulları",
