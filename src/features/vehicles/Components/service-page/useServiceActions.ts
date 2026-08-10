@@ -172,11 +172,17 @@ export function useServiceActions({
       destructive: true,
     })
     if (!ok) return
+    // A pending autosave firing after the delete would hit a record that no
+    // longer exists, so cancel it and block further saves before deleting.
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    isSavingRef.current = true
     const result = await deleteServiceRecord(record.id)
     if (result.success) {
+      setHasUnsavedChanges(false)
       router.push(`/vehicles/${vehicleId}`)
       router.refresh()
     } else {
+      isSavingRef.current = false
       modal.open('error', tc('errors.error'), result.error || t('page.failedDelete'))
     }
   }
