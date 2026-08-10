@@ -234,7 +234,7 @@ export async function createServiceRecord(input: unknown) {
     for (const s of settings) settingsMap[s.key] = s.value;
 
     const shopName = data.shopName || org?.name || undefined;
-    const prefix = resolveInvoicePrefix(settingsMap["workshop.invoicePrefix"] || "{year}-");
+    const prefix = resolveInvoicePrefix(settingsMap["workshop.invoicePrefix"] ?? "{year}-");
 
     // If the caller didn't pass taxInclusive, inherit the org's current setting.
     // Existing callers (vehicle-detail-client, ServiceForm) don't send the field,

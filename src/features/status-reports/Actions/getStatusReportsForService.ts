@@ -7,12 +7,15 @@ import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 export async function getStatusReportsForService(serviceRecordId: string) {
   return withAuth(
     async ({ organizationId }) => {
-      // Validate the service record belongs to this org
+      // A missing or foreign-org record yields an empty list rather than an
+      // error: the reports query below is org-scoped anyway, and this action
+      // runs during page renders of just-deleted records (see deleteServiceRecord
+      // revalidating the current route).
       const serviceRecord = await db.serviceRecord.findFirst({
         where: { id: serviceRecordId, vehicle: { organizationId } },
         select: { id: true },
       });
-      if (!serviceRecord) throw new Error("Service record not found");
+      if (!serviceRecord) return [];
 
       const reports = await db.statusReport.findMany({
         where: { serviceRecordId, organizationId },

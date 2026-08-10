@@ -34,7 +34,7 @@ async function generateInvoiceNumber(organizationId: string): Promise<string> {
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
 
-  const prefix = resolveInvoicePrefix(settingsMap['workshop.invoicePrefix'] || '{year}-')
+  const prefix = resolveInvoicePrefix(settingsMap['workshop.invoicePrefix'] ?? '{year}-')
   const startNumber = parseInt(settingsMap['workshop.invoiceStartNumber'] || '0', 10)
 
   const lastRecord = await db.serviceRecord.findFirst({
