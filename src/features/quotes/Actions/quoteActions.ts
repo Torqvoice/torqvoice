@@ -28,6 +28,8 @@ export async function getQuotesPaginated(params: {
   pageSize?: number;
   search?: string;
   status?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ userId, organizationId }) => {
     const page = params.page || 1;
@@ -56,7 +58,25 @@ export async function getQuotesPaginated(params: {
           customer: { select: { id: true, name: true } },
           vehicle: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: (() => {
+          const dir = params.sortOrder || "desc";
+          switch (params.sortBy) {
+            case "quoteNumber": return { quoteNumber: { sort: dir, nulls: "last" as const } };
+            case "title": return { title: dir };
+            case "customer": return { customer: { name: dir } };
+            // Column shows "year make model"; sort make, model, year so
+            // identical models group together
+            case "vehicle": return [
+              { vehicle: { make: dir } },
+              { vehicle: { model: dir } },
+              { vehicle: { year: dir } },
+            ];
+            case "status": return { status: dir };
+            case "totalAmount": return { totalAmount: dir };
+            case "createdAt": return { createdAt: dir };
+            default: return { createdAt: "desc" as const };
+          }
+        })(),
         skip,
         take: pageSize,
       }),

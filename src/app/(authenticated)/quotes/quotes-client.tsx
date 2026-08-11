@@ -18,7 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination } from '@/components/data-table-pagination'
-import { Loader2, Plus, Search } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, Search } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
 
@@ -72,11 +72,15 @@ export function QuotesClient({
   currencyCode = 'USD',
   search,
   statusFilter,
+  sortBy = '',
+  sortOrder = 'desc',
 }: {
   data: PaginatedData
   currencyCode?: string
   search: string
   statusFilter: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
 }) {
   const formatCurrency = useFormatCurrency()
   const router = useRouter()
@@ -127,6 +131,21 @@ export function QuotesClient({
 
   const openNewDialog = () => setShowNewDialog(true)
 
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc'
+      navigate({ sortBy: column, sortOrder: newOrder })
+    },
+    [navigate, sortBy, sortOrder]
+  )
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
+    return sortOrder === 'asc'
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
@@ -171,16 +190,44 @@ export function QuotesClient({
       </div>
 
       <div className="rounded-lg border">
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-25">{t('list.columnQuoteNumber')}</TableHead>
-              <TableHead>{t('list.columnTitle')}</TableHead>
-              <TableHead className="hidden md:table-cell">{t('list.columnCustomer')}</TableHead>
-              <TableHead className="hidden lg:table-cell">{t('list.columnVehicle')}</TableHead>
-              <TableHead className="w-27.5">{t('list.columnStatus')}</TableHead>
-              <TableHead className="w-22.5">{t('list.columnDate')}</TableHead>
-              <TableHead className="w-22.5 text-right">{t('list.columnTotal')}</TableHead>
+              <TableHead className="w-25">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('quoteNumber')}>
+                  {t('list.columnQuoteNumber')}<SortIcon column="quoteNumber" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('title')}>
+                  {t('list.columnTitle')}<SortIcon column="title" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden w-[18%] md:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('customer')}>
+                  {t('list.columnCustomer')}<SortIcon column="customer" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden w-[18%] lg:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('vehicle')}>
+                  {t('list.columnVehicle')}<SortIcon column="vehicle" />
+                </button>
+              </TableHead>
+              <TableHead className="w-27.5">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('status')}>
+                  {t('list.columnStatus')}<SortIcon column="status" />
+                </button>
+              </TableHead>
+              <TableHead className="w-22.5">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('createdAt')}>
+                  {t('list.columnDate')}<SortIcon column="createdAt" />
+                </button>
+              </TableHead>
+              <TableHead className="w-22.5">
+                <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort('totalAmount')}>
+                  {t('list.columnTotal')}<SortIcon column="totalAmount" />
+                </button>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -200,11 +247,11 @@ export function QuotesClient({
                   <TableCell className="font-mono text-xs text-muted-foreground">
                     {q.quoteNumber || '-'}
                   </TableCell>
-                  <TableCell className="font-medium">{q.title}</TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground">
+                  <TableCell className="truncate font-medium">{q.title}</TableCell>
+                  <TableCell className="hidden truncate md:table-cell text-muted-foreground">
                     {q.customer?.name || '-'}
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell text-muted-foreground">
+                  <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
                     {q.vehicle ? `${q.vehicle.year} ${q.vehicle.make} ${q.vehicle.model}` : '-'}
                   </TableCell>
                   <TableCell>
