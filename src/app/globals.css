@@ -358,8 +358,35 @@
   transition: none;
   box-shadow: 0 12px 32px -8px rgb(0 0 0 / 0.25);
 }
+/* Replace the faint default resize arrow with a clear corner grip in the
+   theme color; only rendered in edit mode (when resizing is enabled) */
 .dashboard-grid .react-grid-item > .react-resizable-handle {
   z-index: 20;
+  width: 28px;
+  height: 28px;
+  bottom: 0;
+  right: 0;
+  padding: 0;
+  background-image: none;
+  cursor: se-resize;
+}
+.dashboard-grid .react-grid-item > .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  width: 13px;
+  height: 13px;
+  border-right: 3px solid var(--primary);
+  border-bottom: 3px solid var(--primary);
+  border-bottom-right-radius: 5px;
+  opacity: 0.9;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+.dashboard-grid .react-grid-item > .react-resizable-handle:hover::after,
+.dashboard-grid .react-grid-item.resizing > .react-resizable-handle::after {
+  transform: scale(1.25);
+  opacity: 1;
 }
 .dashboard-grid-editing .react-grid-item {
   user-select: none;
