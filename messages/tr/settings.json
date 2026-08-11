@@ -418,7 +418,14 @@
     "layoutDocInvoice": "Fatura",
     "layoutDocQuote": "Teklif",
     "saveLayout": "Düzeni kaydet",
-    "resetLayout": "Sıfırla"
+    "resetLayout": "Sıfırla",
+    "sectionCustomers": "Müşteriler",
+    "assignCustomerNumbers": "Müşteri numaralarını ata",
+    "assignCustomerNumbersHint": "{count} müşterinin henüz numarası yok. Sıralı numaralar atayın (mevcutlar korunur).",
+    "customerNumbersAssigned": "{count} müşteriye numara atandı",
+    "allCustomersNumbered": "Tüm müşterilerin numarası var.",
+    "assignCustomerNumbersConfirmTitle": "Müşteri numaraları atansın mı?",
+    "assignCustomerNumbersConfirmDescription": "Numarası olmayan {count} müşteriye, oluşturulma sırasına göre ve mevcut en yüksek numaradan devam eden sıralı numaralar verilecek. Numarası olan müşteriler değişmez. Numaralar sonradan düzenlenebilir."
   },
   "layoutEditor": {
     "helpText": "Sıralamak için sürükleyin. Bölümleri yan yana yerleştirmek için genişlik değiştiriciyi kullanın. Ardışık yarım genişlik bölümleri (S/S) iki sütun halinde görüntülenir.",

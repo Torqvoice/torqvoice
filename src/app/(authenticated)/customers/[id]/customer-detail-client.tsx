@@ -58,6 +58,7 @@ interface ServiceRequestItem {
 
 interface CustomerDetail {
   id: string;
+  customerNumber: string | null;
   name: string;
   email: string | null;
   phone: string | null;
@@ -163,7 +164,14 @@ export function CustomerDetailClient({
             <Users className="h-7 w-7 text-primary" />
           </div>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold">{customer.name}</h1>
+            <h1 className="flex items-baseline gap-2 text-2xl font-bold">
+              {customer.name}
+              {customer.customerNumber && (
+                <span className="font-mono text-sm font-normal text-muted-foreground">
+                  #{customer.customerNumber}
+                </span>
+              )}
+            </h1>
             {hasContactInfo && (
               <div className="mt-1.5 flex flex-wrap gap-x-5 gap-y-1.5 text-sm">
                 {customer.company && (

@@ -23,6 +23,9 @@ export default async function InvoiceSettingsPage() {
   ]);
 
   const settings = result.success && result.data ? result.data : {};
+  const unnumberedCustomers = await db.customer.count({
+    where: { organizationId: data.organizationId, customerNumber: null },
+  });
   const customFields = customFieldsResult.success && customFieldsResult.data ? customFieldsResult.data : [];
 
   // Check if Telegram is enabled (plan feature + user setting)
@@ -38,6 +41,7 @@ export default async function InvoiceSettingsPage() {
   return (
     <InvoiceSettings
       settings={settings}
+      unnumberedCustomers={unnumberedCustomers}
       initialInvoiceLayout={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
       initialQuoteLayout={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
       customFields={customFields}

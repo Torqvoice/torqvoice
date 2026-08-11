@@ -7,7 +7,8 @@
       "company": "Įmonė",
       "phone": "Telefonas",
       "email": "El. paštas",
-      "vehicles": "Transporto priemonės"
+      "vehicles": "Transporto priemonės",
+      "number": "Nr."
     },
     "emptySearch": "Nėra klientų, atitinkančių paiešką.",
     "empty": "Klientų dar nėra.",
@@ -65,7 +66,9 @@
     "notesPlaceholder": "Papildomos pastabos...",
     "customerUpdated": "Klientas atnaujintas",
     "customerCreated": "Klientas sukurtas",
-    "saveError": "Nepavyko išsaugoti kliento"
+    "saveError": "Nepavyko išsaugoti kliento",
+    "customerNumber": "Kliento nr.",
+    "customerNumberAuto": "Autom."
   },
   "serviceRequests": {
     "statusNew": "Nauja",

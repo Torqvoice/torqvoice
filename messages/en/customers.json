@@ -7,7 +7,8 @@
       "company": "Company",
       "phone": "Phone",
       "email": "Email",
-      "vehicles": "Vehicles"
+      "vehicles": "Vehicles",
+      "number": "No."
     },
     "emptySearch": "No customers match your search.",
     "empty": "No customers yet.",
@@ -65,7 +66,9 @@
     "notesPlaceholder": "Additional notes...",
     "customerUpdated": "Customer updated",
     "customerCreated": "Customer created",
-    "saveError": "Failed to save customer"
+    "saveError": "Failed to save customer",
+    "customerNumber": "Customer no.",
+    "customerNumberAuto": "Auto"
   },
   "serviceRequests": {
     "statusNew": "New",

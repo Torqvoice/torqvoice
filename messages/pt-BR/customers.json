@@ -7,7 +7,8 @@
       "company": "Empresa",
       "phone": "Telefone",
       "email": "E-mail",
-      "vehicles": "Veículos"
+      "vehicles": "Veículos",
+      "number": "Nº"
     },
     "emptySearch": "Nenhum cliente encontrado para sua busca.",
     "empty": "Nenhum cliente cadastrado.",
@@ -65,7 +66,9 @@
     "notesPlaceholder": "Observações adicionais...",
     "customerUpdated": "Cliente atualizado",
     "customerCreated": "Cliente cadastrado",
-    "saveError": "Falha ao salvar cliente"
+    "saveError": "Falha ao salvar cliente",
+    "customerNumber": "Nº do cliente",
+    "customerNumberAuto": "Auto"
   },
   "serviceRequests": {
     "statusNew": "Novo",

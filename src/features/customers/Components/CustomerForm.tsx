@@ -25,6 +25,7 @@ interface CustomerFormProps {
   onOpenChange: (open: boolean) => void;
   customer?: {
     id: string;
+    customerNumber?: string | null;
     name: string;
     email?: string | null;
     phone?: string | null;
@@ -52,6 +53,7 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
     const formData = new FormData(e.currentTarget);
     const data = {
       name: formData.get("name") as string,
+      customerNumber: (formData.get("customerNumber") as string) || undefined,
       email: (formData.get("email") as string) || undefined,
       phone: (formData.get("phone") as string) || undefined,
       address: (formData.get("address") as string) || undefined,
@@ -93,15 +95,27 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">{t("nameRequired")}</Label>
-            <Input
-              id="name"
-              name="name"
-              placeholder={t("namePlaceholder")}
-              defaultValue={customer?.name}
-              required
-            />
+          <div className="grid grid-cols-[1fr_120px] gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">{t("nameRequired")}</Label>
+              <Input
+                id="name"
+                name="name"
+                placeholder={t("namePlaceholder")}
+                defaultValue={customer?.name}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="customerNumber">{t("customerNumber")}</Label>
+              <Input
+                id="customerNumber"
+                name="customerNumber"
+                placeholder={t("customerNumberAuto")}
+                defaultValue={customer?.customerNumber ?? ""}
+                maxLength={20}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

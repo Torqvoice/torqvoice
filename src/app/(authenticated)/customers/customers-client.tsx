@@ -44,6 +44,7 @@ import {
 } from "lucide-react";
 
 interface Customer {
+  customerNumber: string | null;
   id: string;
   name: string;
   email: string | null;
@@ -265,6 +266,11 @@ export function CustomersClient({
                   onClick={(e) => e.stopPropagation()}
                 />
               </TableHead>
+              <TableHead className="w-[80px]">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("number")}>
+                  {t("table.number")}<SortIcon column="number" />
+                </button>
+              </TableHead>
               <TableHead>
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("name")}>
                   {t("table.name")}<SortIcon column="name" />
@@ -296,7 +302,7 @@ export function CustomersClient({
           <TableBody>
             {data.customers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
                   {search ? t("emptySearch") : t("empty")}
                 </TableCell>
               </TableRow>
@@ -313,6 +319,9 @@ export function CustomersClient({
                       onCheckedChange={() => toggleSelect(c.id)}
                       onClick={(e) => e.stopPropagation()}
                     />
+                  </TableCell>
+                  <TableCell className="font-mono text-xs text-muted-foreground">
+                    {c.customerNumber || "-"}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">

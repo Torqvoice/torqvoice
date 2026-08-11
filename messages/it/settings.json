@@ -418,7 +418,14 @@
     "layoutDocInvoice": "Fattura",
     "layoutDocQuote": "Preventivo",
     "saveLayout": "Salva layout",
-    "resetLayout": "Ripristina"
+    "resetLayout": "Ripristina",
+    "sectionCustomers": "Clienti",
+    "assignCustomerNumbers": "Assegna numeri cliente",
+    "assignCustomerNumbersHint": "{count} clienti non hanno ancora un numero. Assegna numeri sequenziali (quelli esistenti restano invariati).",
+    "customerNumbersAssigned": "Numeri assegnati a {count} clienti",
+    "allCustomersNumbered": "Tutti i clienti hanno un numero.",
+    "assignCustomerNumbersConfirmTitle": "Assegnare i numeri cliente?",
+    "assignCustomerNumbersConfirmDescription": "I {count} clienti senza numero riceveranno numeri sequenziali nell'ordine di creazione, proseguendo dal numero esistente più alto. I clienti che hanno già un numero non vengono modificati. I numeri restano modificabili."
   },
   "layoutEditor": {
     "helpText": "Trascina per riordinare. Usa il selettore di larghezza per posizionare le sezioni affiancate. Le sezioni consecutive a mezza larghezza (S/D) verranno visualizzate in due colonne.",
