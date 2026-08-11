@@ -110,6 +110,13 @@ export default async function DashboardLayout({
     <ServiceTypeProvider serviceType={data.serviceType}>
     <LicenseExpiryProvider daysUntilExpiry={daysUntilExpiry} dismissed={licenseExpiryDismissed}>
     <WhiteLabelCtaProvider show={showWhiteLabelCta}>
+    <UpdateBanner
+      currentVersion={process.env.APP_VERSION || "development"}
+      lastSeenVersion={data.lastSeenVersion}
+      releaseNotesUrl={
+        process.env.RELEASE_NOTES_URL || "https://github.com/Torqvoice/torqvoice/releases"
+      }
+    />
     <SidebarProvider
       style={
         {
@@ -140,14 +147,6 @@ export default async function DashboardLayout({
           isAdminOrOwner={isOwnerOrAdmin}
         />
         <SidebarInset>
-          <UpdateBanner
-            currentVersion={process.env.APP_VERSION || "development"}
-            lastSeenVersion={data.lastSeenVersion}
-            releaseNotesUrl={
-              process.env.RELEASE_NOTES_URL ||
-              "https://github.com/Torqvoice/torqvoice/releases"
-            }
-          />
           <div className="pb-14 md:pb-0">{children}</div>
         </SidebarInset>
         <SearchCommand />

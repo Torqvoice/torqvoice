@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Sparkles, X } from "lucide-react";
+import { X } from "lucide-react";
 import { markVersionSeen } from "@/features/users/Actions/versionActions";
 
 /**
@@ -47,29 +46,25 @@ export function UpdateBanner({
   };
 
   return (
-    <div className="flex items-center justify-between gap-3 border-b bg-primary/5 px-4 py-2 text-sm">
-      <div className="flex min-w-0 items-center gap-2">
-        <Sparkles className="h-4 w-4 shrink-0 text-primary" />
-        <span className="truncate">{t("updated", { version: currentVersion })}</span>
-        <a
-          href={releaseNotesUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={acknowledge}
-          className="shrink-0 font-medium text-primary underline-offset-2 hover:underline"
-        >
-          {t("whatsNew")}
-        </a>
-      </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
+    <div className="relative bg-amber-500 px-8 py-1.5 text-center text-xs font-medium text-amber-950">
+      {t("updated", { version: currentVersion })}{" "}
+      <a
+        href={releaseNotesUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         onClick={acknowledge}
+        className="underline underline-offset-2 hover:text-amber-900"
+      >
+        {t("whatsNew")} →
+      </a>
+      <button
+        type="button"
+        onClick={acknowledge}
+        className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-amber-950/70 transition-colors hover:text-amber-950"
       >
         <X className="h-3.5 w-3.5" />
         <span className="sr-only">{t("dismiss")}</span>
-      </Button>
+      </button>
     </div>
   );
 }
