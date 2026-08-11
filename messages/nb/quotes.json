@@ -73,7 +73,10 @@
     "subtotal": "Deler delsum: {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "Fra lager"
+    "addFromInventory": "Fra lager",
+    "unitCost": "Kostnad",
+    "markupPercent": "Påslag %",
+    "nameMissingHint": "Rader uten delenavn lagres ikke."
   },
   "labor": {
     "title": "Arbeid",

@@ -109,6 +109,12 @@ export function useServiceFormState({
 
   // Computed totals
   const partsSubtotal = partItems.reduce((sum, p) => sum + p.total, 0)
+  // Internal-only: what the parts cost the workshop before markup. Shown in
+  // the totals card for the mechanic, never on the PDF or share views.
+  const partsCostSubtotal = partItems.reduce(
+    (sum, p) => sum + (Number(p.unitCost) || 0) * (Number(p.quantity) || 0),
+    0
+  )
   const laborSubtotal = laborItems.reduce((sum, l) => sum + l.total, 0)
   const subtotal = partsSubtotal + laborSubtotal
   const discountAmount =
@@ -232,7 +238,7 @@ export function useServiceFormState({
     // Custom fields
     customFieldsSaveRef, onCustomFieldsReady,
     // Computed
-    partsSubtotal, laborSubtotal, subtotal,
+    partsSubtotal, partsCostSubtotal, laborSubtotal, subtotal,
     discountAmount, taxAmount, totalAmount,
     displayTotal, totalPaid, balanceDue, paymentStatus, setLocalManuallyPaid,
     imageAttachments, vehicleName,

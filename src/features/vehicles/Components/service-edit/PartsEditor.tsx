@@ -121,7 +121,8 @@ function SortablePartRow({
             value={part.name}
             onChange={(e) => updatePart(index, 'name', e.target.value)}
             rows={1}
-            className="min-h-9 w-full resize-none"
+            aria-invalid={!part.name.trim() && !!(part.partNumber || Number(part.unitCost) > 0 || Number(part.unitPrice) > 0)}
+            className={`min-h-9 w-full resize-none ${!part.name.trim() && (part.partNumber || Number(part.unitCost) > 0 || Number(part.unitPrice) > 0) ? 'border-destructive focus-visible:ring-destructive' : ''}`}
           />
           <PartNameSuggestions
             query={part.name}
@@ -408,6 +409,9 @@ export function PartsEditor({
           >
             <Plus className="h-4 w-4" />
           </button>
+          {partItems.some(
+            (p) => !p.name.trim() && (p.partNumber || Number(p.unitCost) > 0 || Number(p.unitPrice) > 0)
+          ) && <p className="text-xs text-destructive">{t('nameMissingHint')}</p>}
           <div className="flex justify-end pt-1 text-sm">
             <span className="font-medium">
               {t('subtotal', { amount: formatCurrency(partsSubtotal, currencyCode) })}

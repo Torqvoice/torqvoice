@@ -73,7 +73,10 @@
     "subtotal": "Подитог запчастей: {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "Со склада"
+    "addFromInventory": "Со склада",
+    "unitCost": "Себестоимость",
+    "markupPercent": "Наценка %",
+    "nameMissingHint": "Строки без названия детали не сохраняются."
   },
   "labor": {
     "title": "Работа",

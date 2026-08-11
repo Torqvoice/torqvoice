@@ -104,6 +104,7 @@ export function DetailsRightColumn({
       />
       <TotalsSection
         partsSubtotal={formState.partsSubtotal}
+        partsCostSubtotal={formState.partsCostSubtotal}
         laborSubtotal={formState.laborSubtotal}
         subtotal={formState.subtotal}
         discountType={formState.discountType}

@@ -34,7 +34,18 @@ export default async function PublicInvoicePage({
   const record = await db.serviceRecord.findUnique({
     where: { publicToken: token },
     include: {
-      partItems: true,
+      // Explicit select: internal unitCost/markupPercent must never reach
+      // the public customer-facing payload
+      partItems: {
+        select: {
+          id: true,
+          partNumber: true,
+          name: true,
+          quantity: true,
+          unitPrice: true,
+          total: true,
+        },
+      },
       laborItems: true,
       attachments: true,
       payments: { orderBy: { date: "desc" } },

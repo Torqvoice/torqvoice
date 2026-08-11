@@ -73,7 +73,10 @@
     "subtotal": "Dalių tarpinė suma: {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "Iš sandėlio"
+    "addFromInventory": "Iš sandėlio",
+    "unitCost": "Savikaina",
+    "markupPercent": "Antkainis %",
+    "nameMissingHint": "Eilutės be dalies pavadinimo neišsaugomos."
   },
   "labor": {
     "title": "Darbai ir paslaugos",

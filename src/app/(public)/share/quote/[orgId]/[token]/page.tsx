@@ -26,7 +26,19 @@ export default async function PublicQuotePage({
   const quote = await db.quote.findFirst({
     where: { publicToken: token, organizationId: orgId },
     include: {
-      partItems: true,
+      // Explicit select: internal unitCost/markupPercent must never reach
+      // the public customer-facing payload
+      partItems: {
+        select: {
+          id: true,
+          partNumber: true,
+          name: true,
+          quantity: true,
+          unitPrice: true,
+          total: true,
+          excluded: true,
+        },
+      },
       laborItems: true,
       attachments: true,
       customer: {

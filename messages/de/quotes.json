@@ -73,7 +73,10 @@
     "subtotal": "Teile Zwischensumme: {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "Aus Lager"
+    "addFromInventory": "Aus Lager",
+    "unitCost": "Kosten",
+    "markupPercent": "Aufschlag %",
+    "nameMissingHint": "Zeilen ohne Teilenamen werden nicht gespeichert."
   },
   "labor": {
     "title": "Arbeitszeit",
