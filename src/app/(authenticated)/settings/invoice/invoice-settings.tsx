@@ -17,6 +17,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { FileText, Loader2, Save } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
+import { useConfirm } from '@/components/confirm-dialog'
 import { InvoiceLayoutEditor } from '@/features/settings/Components/InvoiceLayoutEditor'
 import { InvoiceLayoutPreview } from '@/features/settings/Components/InvoiceLayoutPreview'
 import {
@@ -145,9 +146,16 @@ export function InvoiceSettings({
     toast.success(t('invoice.saved'))
   }
 
+  const confirm = useConfirm()
   const [assigning, setAssigning] = useState(false)
   const [unnumbered, setUnnumbered] = useState(unnumberedCustomers)
   const handleAssignCustomerNumbers = async () => {
+    const ok = await confirm({
+      title: t('invoice.assignCustomerNumbersConfirmTitle'),
+      description: t('invoice.assignCustomerNumbersConfirmDescription', { count: unnumbered }),
+      confirmLabel: t('invoice.assignCustomerNumbers'),
+    })
+    if (!ok) return
     setAssigning(true)
     const result = await backfillCustomerNumbers()
     setAssigning(false)

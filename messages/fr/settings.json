@@ -423,7 +423,9 @@
     "assignCustomerNumbers": "Attribuer des numéros clients",
     "assignCustomerNumbersHint": "{count} clients n'ont pas encore de numéro. Leur attribuer des numéros séquentiels (les existants sont conservés).",
     "customerNumbersAssigned": "Numéros attribués à {count} clients",
-    "allCustomersNumbered": "Tous les clients ont un numéro."
+    "allCustomersNumbered": "Tous les clients ont un numéro.",
+    "assignCustomerNumbersConfirmTitle": "Attribuer des numéros clients ?",
+    "assignCustomerNumbersConfirmDescription": "Les {count} clients sans numéro recevront des numéros séquentiels dans leur ordre de création, à la suite du numéro existant le plus élevé. Les clients ayant déjà un numéro ne sont pas modifiés. Les numéros restent modifiables ensuite."
   },
   "layoutEditor": {
     "helpText": "Glissez pour réorganiser. Utilisez le sélecteur de largeur pour placer les sections côte à côte. Les sections consécutives en demi-largeur (G/D) s'afficheront en deux colonnes.",

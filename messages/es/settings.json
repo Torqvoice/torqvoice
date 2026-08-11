@@ -423,7 +423,9 @@
     "assignCustomerNumbers": "Asignar números de cliente",
     "assignCustomerNumbersHint": "{count} clientes aún no tienen número. Asignarles números secuenciales (los existentes se conservan).",
     "customerNumbersAssigned": "Números asignados a {count} clientes",
-    "allCustomersNumbered": "Todos los clientes tienen número."
+    "allCustomersNumbered": "Todos los clientes tienen número.",
+    "assignCustomerNumbersConfirmTitle": "¿Asignar números de cliente?",
+    "assignCustomerNumbersConfirmDescription": "Los {count} clientes sin número recibirán números secuenciales en el orden en que se crearon, continuando después del número existente más alto. Los clientes que ya tienen número no cambian. Los números se pueden editar después."
   },
   "layoutEditor": {
     "helpText": "Arrastra para reordenar. Usa el selector de ancho para colocar secciones lado a lado. Las secciones consecutivas de medio ancho (I/D) se mostrarán en dos columnas.",

@@ -423,7 +423,9 @@
     "assignCustomerNumbers": "Klantnummers toewijzen",
     "assignCustomerNumbersHint": "{count} klanten hebben nog geen nummer. Wijs opeenvolgende nummers toe (bestaande blijven behouden).",
     "customerNumbersAssigned": "Nummers toegewezen aan {count} klanten",
-    "allCustomersNumbered": "Alle klanten hebben een nummer."
+    "allCustomersNumbered": "Alle klanten hebben een nummer.",
+    "assignCustomerNumbersConfirmTitle": "Klantnummers toewijzen?",
+    "assignCustomerNumbersConfirmDescription": "De {count} klanten zonder nummer krijgen opeenvolgende nummers in volgorde van aanmaak, doorlopend na het hoogste bestaande nummer. Klanten met een nummer worden niet gewijzigd. Nummers zijn achteraf te bewerken."
   },
   "layoutEditor": {
     "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",
