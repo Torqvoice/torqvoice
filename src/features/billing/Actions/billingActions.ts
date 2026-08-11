@@ -64,6 +64,8 @@ export async function getBillingHistory(params: {
   pageSize?: number;
   search?: string;
   status?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ organizationId }) => {
     const page = params.page || 1;
@@ -190,7 +192,18 @@ export async function getBillingHistory(params: {
           ${searchCondition}
         ) sub
         WHERE 1=1 ${statusCondition}
-        ORDER BY COALESCE(sub."invoiceDate", sub."startDateTime", sub."serviceDate") DESC
+        ORDER BY ${(() => {
+          const dir = params.sortOrder === "asc" ? Prisma.sql`ASC` : Prisma.sql`DESC`;
+          switch (params.sortBy) {
+            case "invoiceNumber": return Prisma.sql`sub."invoiceNumber" ${dir} NULLS LAST`;
+            case "title": return Prisma.sql`sub.title ${dir}`;
+            case "vehicle": return Prisma.sql`sub.vehicle_make ${dir}, sub.vehicle_model ${dir}, sub.vehicle_year ${dir}`;
+            case "customer": return Prisma.sql`sub.customer_name ${dir} NULLS LAST`;
+            case "total": return Prisma.sql`sub.effective_total ${dir}`;
+            case "date": return Prisma.sql`COALESCE(sub."invoiceDate", sub."startDateTime", sub."serviceDate") ${dir}`;
+            default: return Prisma.sql`COALESCE(sub."invoiceDate", sub."startDateTime", sub."serviceDate") DESC`;
+          }
+        })()}
         LIMIT ${pageSize} OFFSET ${skip}
       `);
 
@@ -248,11 +261,28 @@ export async function getBillingHistory(params: {
             },
           },
         },
-        orderBy: [
-          { invoiceDate: { sort: "desc", nulls: "last" } },
-          { startDateTime: { sort: "desc", nulls: "last" } },
-          { serviceDate: "desc" },
-        ],
+        orderBy: (() => {
+          const dir = params.sortOrder || "desc";
+          switch (params.sortBy) {
+            case "invoiceNumber": return { invoiceNumber: { sort: dir, nulls: "last" as const } };
+            case "title": return { title: dir };
+            case "vehicle": return [
+              { vehicle: { make: dir } },
+              { vehicle: { model: dir } },
+              { vehicle: { year: dir } },
+            ];
+            case "customer": return { vehicle: { customer: { name: dir } } };
+            // Approximates the SQL path's effective_total (totalAmount, or
+            // cost for drafts where totalAmount is 0)
+            case "total": return [{ totalAmount: dir }, { cost: dir }];
+            case "date":
+            default: return [
+              { invoiceDate: { sort: dir, nulls: "last" as const } },
+              { startDateTime: { sort: dir, nulls: "last" as const } },
+              { serviceDate: dir },
+            ];
+          }
+        })(),
         skip,
         take: pageSize,
       }),

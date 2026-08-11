@@ -26,6 +26,9 @@ import {
   DollarSign,
   TrendingUp,
   AlertCircle,
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFormatCurrency } from '@/components/currency-settings-context'
@@ -73,6 +76,8 @@ interface BillingClientProps {
   currencyCode?: string;
   search: string;
   statusFilter: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }
 
 const STATUS_TABS = [
@@ -87,6 +92,8 @@ export default function BillingClient({
   currencyCode = "USD",
   search,
   statusFilter,
+  sortBy = "",
+  sortOrder = "desc",
 }: BillingClientProps) {
   const formatCurrency = useFormatCurrency();
   const router = useRouter();
@@ -110,6 +117,25 @@ export default function BillingClient({
     },
     [searchParams]
   );
+
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
+      startTransition(() => {
+        router.push(
+          `${pathname}?${createQueryString({ sortBy: column, sortOrder: newOrder, page: "1" })}`
+        );
+      });
+    },
+    [createQueryString, pathname, router, sortBy, sortOrder]
+  );
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
+    return sortOrder === "asc"
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />;
+  };
 
   const handleStatusChange = (status: string) => {
     startTransition(() => {
@@ -292,17 +318,41 @@ export default function BillingClient({
 
       {/* Billing Table */}
       <div className="rounded-md border">
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead>{t("history.columnInvoice")}</TableHead>
-              <TableHead>{t("history.columnTitle")}</TableHead>
-              <TableHead>{t("history.columnVehicle")}</TableHead>
-              <TableHead>{t("history.columnCustomer")}</TableHead>
-              <TableHead>{t("history.columnDate")}</TableHead>
-              <TableHead className="text-right">{t("history.columnTotal")}</TableHead>
-              <TableHead className="text-right">{t("history.columnPaid")}</TableHead>
-              <TableHead className="text-right">{t("history.columnBalance")}</TableHead>
+              <TableHead className="w-[110px]">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("invoiceNumber")}>
+                  {t("history.columnInvoice")}<SortIcon column="invoiceNumber" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("title")}>
+                  {t("history.columnTitle")}<SortIcon column="title" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[16%]">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("vehicle")}>
+                  {t("history.columnVehicle")}<SortIcon column="vehicle" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[14%]">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("customer")}>
+                  {t("history.columnCustomer")}<SortIcon column="customer" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[110px]">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("date")}>
+                  {t("history.columnDate")}<SortIcon column="date" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[100px]">
+                <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort("total")}>
+                  {t("history.columnTotal")}<SortIcon column="total" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[100px] text-right">{t("history.columnPaid")}</TableHead>
+              <TableHead className="w-[100px] text-right">{t("history.columnBalance")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -321,15 +371,15 @@ export default function BillingClient({
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleRowClick(record)}
                   >
-                    <TableCell className="font-medium">
+                    <TableCell className="truncate font-medium">
                       {record.invoiceNumber || "\u2014"}
                     </TableCell>
-                    <TableCell>{record.title}</TableCell>
-                    <TableCell>
+                    <TableCell className="truncate">{record.title}</TableCell>
+                    <TableCell className="truncate">
                       {record.vehicle.year} {record.vehicle.make}{" "}
                       {record.vehicle.model}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="truncate">
                       {record.vehicle.customer?.name || "\u2014"}
                     </TableCell>
                     <TableCell>

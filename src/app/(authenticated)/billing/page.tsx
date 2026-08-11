@@ -12,6 +12,8 @@ export default async function BillingPage({
     pageSize?: string;
     search?: string;
     status?: string;
+    sortBy?: string;
+    sortOrder?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -19,9 +21,11 @@ export default async function BillingPage({
   const pageSize = Number(params.pageSize) || 20;
   const search = params.search || "";
   const statusFilter = params.status || "all";
+  const sortBy = params.sortBy || "";
+  const sortOrder = (params.sortOrder as "asc" | "desc") || "desc";
 
   const [result, settingsResult] = await Promise.all([
-    getBillingHistory({ page, pageSize, search, status: statusFilter }),
+    getBillingHistory({ page, pageSize, search, status: statusFilter, sortBy, sortOrder }),
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
   ]);
 
@@ -48,6 +52,8 @@ export default async function BillingPage({
           currencyCode={currencyCode}
           search={search}
           statusFilter={statusFilter}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
         />
       </div>
     </>
