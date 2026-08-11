@@ -9,6 +9,7 @@ import { unlink } from "fs/promises";
 import { randomUUID } from "crypto";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { resolveInvoicePrefix, toSafeDate } from "@/lib/invoice-utils";
+import { serviceDateOrderBy } from "@/lib/date-sort";
 import { notificationBus } from "@/lib/notification-bus";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { reconcileInventoryForParts } from "@/features/inventory/Lib/reconcileStock";
@@ -716,7 +717,7 @@ export async function getWorkOrders(params: {
             ];
             case "customer": return { vehicle: { customer: { name: dir } } };
             case "serviceDate":
-            default: return [{ startDateTime: { sort: dir, nulls: dir === "desc" ? "last" : "first" } }, { serviceDate: dir }];
+            default: return serviceDateOrderBy(dir);
           }
         })(),
         skip,

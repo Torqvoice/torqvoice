@@ -352,7 +352,7 @@ export default function BillingClient({
                 </button>
               </TableHead>
               <TableHead className="w-[100px] text-right">{t("history.columnPaid")}</TableHead>
-              <TableHead className="w-[100px] text-right">{t("history.columnBalance")}</TableHead>
+              <TableHead className="w-[180px] text-right">{t("history.columnBalance")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -393,7 +393,7 @@ export default function BillingClient({
                     </TableCell>
                     <TableCell
                       className={cn(
-                        "text-right font-medium",
+                        "whitespace-nowrap text-right font-medium",
                         getBalanceColor(record.status)
                       )}
                     >

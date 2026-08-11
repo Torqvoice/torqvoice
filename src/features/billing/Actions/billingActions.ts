@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { Prisma } from "@/generated/prisma/client";
+import { effectiveDateSql } from "@/lib/date-sort";
 
 interface BillingSummary {
   totalRevenue: number;
@@ -74,21 +75,10 @@ export async function getBillingHistory(params: {
 
     const summary = await getBillingSummary(organizationId);
 
-    // Build where clause
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: any = { vehicle: { organizationId } };
-
-    if (params.search) {
-      where.OR = [
-        { title: { contains: params.search, mode: "insensitive" } },
-        { invoiceNumber: { contains: params.search, mode: "insensitive" } },
-        { vehicle: { make: { contains: params.search, mode: "insensitive" } } },
-        { vehicle: { model: { contains: params.search, mode: "insensitive" } } },
-      ];
-    }
-
-    // When filtering by payment status, use raw SQL for efficiency
-    if (params.status === "paid" || params.status === "partial" || params.status === "unpaid") {
+    // Raw SQL for every path: payment status and effective total are computed
+    // values, and the displayed date is COALESCE(invoiceDate, startDateTime,
+    // serviceDate) — only SQL can filter and sort by them exactly.
+    {
       const searchCondition = params.search
         ? Prisma.sql`AND (
             sr.title ILIKE ${`%${params.search}%`}
@@ -103,8 +93,10 @@ export async function getBillingHistory(params: {
         statusCondition = Prisma.sql`AND (manually_paid = true OR (paid_amount >= effective_total AND effective_total > 0))`;
       } else if (params.status === "partial") {
         statusCondition = Prisma.sql`AND manually_paid = false AND paid_amount > 0 AND paid_amount < effective_total`;
-      } else {
+      } else if (params.status === "unpaid") {
         statusCondition = Prisma.sql`AND manually_paid = false AND paid_amount = 0`;
+      } else {
+        statusCondition = Prisma.empty;
       }
 
       const countRows = await db.$queryRaw<{ cnt: bigint }[]>(Prisma.sql`
@@ -200,8 +192,8 @@ export async function getBillingHistory(params: {
             case "vehicle": return Prisma.sql`sub.vehicle_make ${dir}, sub.vehicle_model ${dir}, sub.vehicle_year ${dir}`;
             case "customer": return Prisma.sql`sub.customer_name ${dir} NULLS LAST`;
             case "total": return Prisma.sql`sub.effective_total ${dir}`;
-            case "date": return Prisma.sql`COALESCE(sub."invoiceDate", sub."startDateTime", sub."serviceDate") ${dir}`;
-            default: return Prisma.sql`COALESCE(sub."invoiceDate", sub."startDateTime", sub."serviceDate") DESC`;
+            case "date": return Prisma.sql`${effectiveDateSql("sub")} ${dir}`;
+            default: return Prisma.sql`${effectiveDateSql("sub")} DESC`;
           }
         })()}
         LIMIT ${pageSize} OFFSET ${skip}
@@ -243,79 +235,5 @@ export async function getBillingHistory(params: {
         summary,
       };
     }
-
-    // No status filter — use Prisma for clean pagination
-    const [records, total] = await Promise.all([
-      db.serviceRecord.findMany({
-        where,
-        include: {
-          payments: { select: { amount: true } },
-          vehicle: {
-            select: {
-              id: true,
-              make: true,
-              model: true,
-              year: true,
-              licensePlate: true,
-              customer: { select: { id: true, name: true } },
-            },
-          },
-        },
-        orderBy: (() => {
-          const dir = params.sortOrder || "desc";
-          switch (params.sortBy) {
-            case "invoiceNumber": return { invoiceNumber: { sort: dir, nulls: "last" as const } };
-            case "title": return { title: dir };
-            case "vehicle": return [
-              { vehicle: { make: dir } },
-              { vehicle: { model: dir } },
-              { vehicle: { year: dir } },
-            ];
-            case "customer": return { vehicle: { customer: { name: dir } } };
-            // Approximates the SQL path's effective_total (totalAmount, or
-            // cost for drafts where totalAmount is 0)
-            case "total": return [{ totalAmount: dir }, { cost: dir }];
-            case "date":
-            default: return [
-              { invoiceDate: { sort: dir, nulls: "last" as const } },
-              { startDateTime: { sort: dir, nulls: "last" as const } },
-              { serviceDate: dir },
-            ];
-          }
-        })(),
-        skip,
-        take: pageSize,
-      }),
-      db.serviceRecord.count({ where }),
-    ]);
-
-    return {
-      records: records.map((r) => {
-        const effectiveTotal = r.totalAmount > 0 ? r.totalAmount : r.cost;
-        const paidFromPayments = r.payments.reduce((s, p) => s + p.amount, 0);
-        const totalPaid = r.manuallyPaid ? effectiveTotal : paidFromPayments;
-        const paymentStatus = r.manuallyPaid || (totalPaid >= effectiveTotal && effectiveTotal > 0)
-          ? "paid"
-          : totalPaid > 0
-            ? "partial"
-            : "unpaid";
-        return {
-          id: r.id,
-          title: r.title,
-          invoiceNumber: r.invoiceNumber,
-          startDateTime: r.startDateTime,
-          serviceDate: r.invoiceDate ?? r.startDateTime ?? r.serviceDate,
-          totalAmount: effectiveTotal,
-          totalPaid,
-          status: paymentStatus,
-          vehicle: r.vehicle,
-        };
-      }),
-      total,
-      page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
-      summary,
-    };
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.BILLING }] });
 }
