@@ -146,7 +146,8 @@
     "tax": "Belasting",
     "taxIncluded": "Belasting (incl.)",
     "total": "Totaal",
-    "inclusiveModeHint": "Regelprijzen worden inclusief belasting ingevoerd. De totalen tonen de uitsplitsing netto + belasting."
+    "inclusiveModeHint": "Regelprijzen worden inclusief belasting ingevoerd. De totalen tonen de uitsplitsing netto + belasting.",
+    "partsCost": "Onderdelenkosten (intern)"
   },
   "notes": {
     "title": "Opmerkingen",

@@ -146,7 +146,8 @@
     "tax": "Vergi",
     "taxIncluded": "Vergi (dahil)",
     "total": "Toplam",
-    "inclusiveModeHint": "Satır fiyatları KDV dahil girilir. Toplamlar net + vergi dağılımını gösterir."
+    "inclusiveModeHint": "Satır fiyatları KDV dahil girilir. Toplamlar net + vergi dağılımını gösterir.",
+    "partsCost": "Parça maliyeti (dahili)"
   },
   "notes": {
     "title": "Notlar",

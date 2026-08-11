@@ -146,7 +146,8 @@
     "tax": "Taxe",
     "taxIncluded": "Taxe (incl.)",
     "total": "Total",
-    "inclusiveModeHint": "Les prix de ligne sont saisis taxe incluse. Les totaux affichent la répartition net + taxe."
+    "inclusiveModeHint": "Les prix de ligne sont saisis taxe incluse. Les totaux affichent la répartition net + taxe.",
+    "partsCost": "Coût des pièces (interne)"
   },
   "notes": {
     "title": "Notes",

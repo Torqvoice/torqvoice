@@ -146,7 +146,8 @@
     "tax": "Imposta",
     "taxIncluded": "Imposta (incl.)",
     "total": "Totale",
-    "inclusiveModeHint": "I prezzi delle righe sono inseriti con imposta inclusa. I totali mostrano la suddivisione netto + imposta."
+    "inclusiveModeHint": "I prezzi delle righe sono inseriti con imposta inclusa. I totali mostrano la suddivisione netto + imposta.",
+    "partsCost": "Costo ricambi (interno)"
   },
   "notes": {
     "title": "Note",

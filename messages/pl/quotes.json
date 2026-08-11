@@ -73,7 +73,9 @@
     "subtotal": "Części suma częściowa: {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "Z magazynu"
+    "addFromInventory": "Z magazynu",
+    "unitCost": "Koszt",
+    "markupPercent": "Marża %"
   },
   "labor": {
     "title": "Robocizna",

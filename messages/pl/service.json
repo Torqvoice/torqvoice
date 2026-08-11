@@ -146,7 +146,8 @@
     "tax": "Podatek",
     "taxIncluded": "Podatek (zaw.)",
     "total": "Razem",
-    "inclusiveModeHint": "Ceny pozycji są wprowadzane z podatkiem. Sumy pokazują podział netto + podatek."
+    "inclusiveModeHint": "Ceny pozycji są wprowadzane z podatkiem. Sumy pokazują podział netto + podatek.",
+    "partsCost": "Koszt części (wewnętrzny)"
   },
   "notes": {
     "title": "Notatki",

@@ -146,7 +146,8 @@
     "tax": "Impuesto",
     "taxIncluded": "Impuesto (incl.)",
     "total": "Total",
-    "inclusiveModeHint": "Los precios por línea se introducen con impuesto incluido. Los totales muestran el desglose neto + impuesto."
+    "inclusiveModeHint": "Los precios por línea se introducen con impuesto incluido. Los totales muestran el desglose neto + impuesto.",
+    "partsCost": "Costo de repuestos (interno)"
   },
   "notes": {
     "title": "Notas",

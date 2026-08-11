@@ -146,7 +146,8 @@
     "tax": "Tax",
     "taxIncluded": "Tax (incl.)",
     "total": "Total",
-    "inclusiveModeHint": "Line item prices are entered with tax included. Totals show the net + tax breakdown."
+    "inclusiveModeHint": "Line item prices are entered with tax included. Totals show the net + tax breakdown.",
+    "partsCost": "Parts cost (internal)"
   },
   "notes": {
     "title": "Notes",

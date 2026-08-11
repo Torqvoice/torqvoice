@@ -12,7 +12,7 @@ import {
   PartNameSuggestions,
   type PartSuggestion,
 } from "@/features/inventory/Components/PartNameSuggestions";
-import { lineTotal, parseQuantity, resolvePartPrice } from "@/features/inventory/Lib/partPricing";
+import { lineTotal, markupFromCostAndPrice, parseQuantity, resolvePartPrice } from "@/features/inventory/Lib/partPricing";
 
 const QuotePartRow = memo(function QuotePartRow({
   part,
@@ -41,7 +41,7 @@ const QuotePartRow = memo(function QuotePartRow({
 }) {
   const formatCurrency = useFormatCurrency();
   return (
-    <div className={`grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto] ${part.excluded ? "line-through opacity-50" : ""}`}>
+    <div className={`grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] ${part.excluded ? "line-through opacity-50" : ""}`}>
       <Input placeholder={tPartNumber} value={part.partNumber ?? ""} onChange={(e) => onUpdate(index, "partNumber", e.target.value)} />
       <div className="relative">
         <Input placeholder={tNamePlaceholder} value={part.name} onChange={(e) => onUpdate(index, "name", e.target.value)} />
@@ -54,6 +54,8 @@ const QuotePartRow = memo(function QuotePartRow({
         />
       </div>
       <Input type="number" min="0" step="1" value={part.quantity} onChange={(e) => onUpdate(index, "quantity", e.target.value)} />
+      <Input type="number" min="0" step="0.01" value={part.unitCost} onChange={(e) => onUpdate(index, "unitCost", e.target.value)} />
+      <Input type="number" min="0" step="0.1" value={part.markupPercent} onChange={(e) => onUpdate(index, "markupPercent", e.target.value)} />
       <Input type="number" min="0" step="0.01" value={part.unitPrice} onChange={(e) => onUpdate(index, "unitPrice", e.target.value)} />
       <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(part.total, currencyCode)}</div>
       <div className="flex items-center gap-1">
@@ -102,11 +104,12 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
       // total === quantity * unitPrice. Defaulting an empty or zero quantity
       // to 1 would bill a total the row's own fields do not add up to.
       const quantity = parseQuantity(current?.quantity)
-      // Quotes carry no cost/markup model, so this resolves to the part's sell
-      // price, falling back to cost rather than billing at zero.
       const { unitPrice } = resolvePartPrice(picked)
+      const unitCost = Number(picked.unitCost) || 0
       onUpdate(index, "name", picked.name)
       onUpdate(index, "partNumber", picked.partNumber ?? "")
+      onUpdate(index, "unitCost", unitCost)
+      onUpdate(index, "markupPercent", markupFromCostAndPrice(unitCost, unitPrice))
       onUpdate(index, "unitPrice", unitPrice)
       onUpdate(index, "total", lineTotal(quantity, unitPrice))
       onUpdate(index, "inventoryPartId", picked.id)
@@ -131,8 +134,8 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
       </div>
       {partItems.length > 0 && (
         <>
-          <div className="hidden grid-cols-[1fr_2fr_0.7fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
-            <span>{t("parts.partNumber")}</span><span>{t("parts.name")}</span><span>{t("parts.qty")}</span><span>{t("parts.unitPrice")}</span><span>{t("parts.total")}</span><span />
+          <div className="hidden grid-cols-[1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
+            <span>{t("parts.partNumber")}</span><span>{t("parts.name")}</span><span>{t("parts.qty")}</span><span>{t("parts.unitCost")}</span><span>{t("parts.markupPercent")}</span><span>{t("parts.unitPrice")}</span><span>{t("parts.total")}</span><span />
           </div>
           {partItems.map((part, i) => (
             <QuotePartRow
@@ -166,6 +169,8 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
                 partNumber: picked.partNumber ?? "",
                 name: picked.name,
                 quantity: picked.quantity,
+                unitCost: Number(picked.unitCost) || 0,
+                markupPercent: Number(picked.markupPercent) || 0,
                 unitPrice: picked.unitPrice,
                 total: lineTotal(picked.quantity, picked.unitPrice),
                 excluded: false,

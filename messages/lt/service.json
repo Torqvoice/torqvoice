@@ -146,7 +146,8 @@
     "tax": "Mokestis",
     "taxIncluded": "Mokestis (įsk.)",
     "total": "Iš viso",
-    "inclusiveModeHint": "Eilučių kainos įvedamos su mokesčiu. Sumos rodo paskirstymą be mokesčio + mokestis."
+    "inclusiveModeHint": "Eilučių kainos įvedamos su mokesčiu. Sumos rodo paskirstymą be mokesčio + mokestis.",
+    "partsCost": "Dalių savikaina (vidinė)"
   },
   "notes": {
     "title": "Pastabos",

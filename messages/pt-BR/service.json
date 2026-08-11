@@ -146,7 +146,8 @@
     "tax": "Imposto",
     "taxIncluded": "Imposto (incl.)",
     "total": "Total",
-    "inclusiveModeHint": "Os preços das linhas são inseridos com imposto incluído. Os totais mostram a divisão líquido + imposto."
+    "inclusiveModeHint": "Os preços das linhas são inseridos com imposto incluído. Os totais mostram a divisão líquido + imposto.",
+    "partsCost": "Custo das peças (interno)"
   },
   "notes": {
     "title": "Notas",

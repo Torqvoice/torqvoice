@@ -14,6 +14,8 @@ import { netLineTotal } from '@/lib/tax'
 
 interface TotalsSectionProps {
   partsSubtotal: number
+  /** Internal pre-markup parts cost; rendered muted, never on PDF/share */
+  partsCostSubtotal: number
   laborSubtotal: number
   subtotal: number
   discountType: string
@@ -32,6 +34,7 @@ interface TotalsSectionProps {
 
 export function TotalsSection({
   partsSubtotal,
+  partsCostSubtotal,
   laborSubtotal,
   subtotal,
   discountType,
@@ -66,6 +69,12 @@ export function TotalsSection({
           <span className="text-muted-foreground">{t('parts')}</span>
           <span>{formatCurrency(displayPartsSubtotal, currencyCode)}</span>
         </div>
+        {partsCostSubtotal > 0 && (
+          <div className="flex items-center justify-between text-xs text-muted-foreground/70">
+            <span>{t('partsCost')}</span>
+            <span>{formatCurrency(partsCostSubtotal, currencyCode)}</span>
+          </div>
+        )}
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">{t('labor')}</span>
           <span>{formatCurrency(displayLaborSubtotal, currencyCode)}</span>

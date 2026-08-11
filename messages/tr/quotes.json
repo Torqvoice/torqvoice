@@ -73,7 +73,9 @@
     "subtotal": "Parçalar Ara Toplam: {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "Stoktan"
+    "addFromInventory": "Stoktan",
+    "unitCost": "Maliyet",
+    "markupPercent": "Kâr Marjı %"
   },
   "labor": {
     "title": "İşçilik",

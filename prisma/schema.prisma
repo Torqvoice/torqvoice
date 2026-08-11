@@ -644,6 +644,10 @@ model QuotePart {
   partNumber String?
   name       String
   quantity   Float   @default(1)
+  /// Internal purchase cost — never shown to customers (quote PDF/share
+  /// render unitPrice only)
+  unitCost      Float @default(0)
+  markupPercent Float @default(0)
   unitPrice  Float   @default(0)
   total      Float   @default(0)
   excluded   Boolean @default(false)

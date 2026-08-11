@@ -73,7 +73,9 @@
     "subtotal": "Subtotaal onderdelen: {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "Uit voorraad"
+    "addFromInventory": "Uit voorraad",
+    "unitCost": "Inkoop",
+    "markupPercent": "Marge %"
   },
   "labor": {
     "title": "Arbeid",

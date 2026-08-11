@@ -146,7 +146,8 @@
     "tax": "Steuern",
     "taxIncluded": "Steuer (inkl.)",
     "total": "Gesamt",
-    "inclusiveModeHint": "Zeilenpreise werden inklusive Steuer eingegeben. Die Summen zeigen die Aufteilung netto + Steuer."
+    "inclusiveModeHint": "Zeilenpreise werden inklusive Steuer eingegeben. Die Summen zeigen die Aufteilung netto + Steuer.",
+    "partsCost": "Teilekosten (intern)"
   },
   "notes": {
     "title": "Notizen",

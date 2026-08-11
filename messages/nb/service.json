@@ -146,7 +146,8 @@
     "tax": "Skatt",
     "taxIncluded": "Avgift (inkl.)",
     "total": "Total",
-    "inclusiveModeHint": "Linjepriser legges inn med avgift inkludert. Totalene viser fordelingen netto + avgift."
+    "inclusiveModeHint": "Linjepriser legges inn med avgift inkludert. Totalene viser fordelingen netto + avgift.",
+    "partsCost": "Delekostnad (intern)"
   },
   "notes": {
     "title": "Notater",
