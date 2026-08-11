@@ -707,6 +707,14 @@ export async function getWorkOrders(params: {
             case "status": return { status: dir };
             case "techName": return { techName: dir };
             case "totalAmount": return { totalAmount: dir };
+            // Column shows "year make model"; sort make, model, year so
+            // identical models group together
+            case "vehicle": return [
+              { vehicle: { make: dir } },
+              { vehicle: { model: dir } },
+              { vehicle: { year: dir } },
+            ];
+            case "customer": return { vehicle: { customer: { name: dir } } };
             case "serviceDate":
             default: return [{ startDateTime: { sort: dir, nulls: dir === "desc" ? "last" : "first" } }, { serviceDate: dir }];
           }

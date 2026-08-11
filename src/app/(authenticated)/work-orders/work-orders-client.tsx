@@ -275,7 +275,7 @@ export function WorkOrdersClient({
 
       {/* Table */}
       <div className="rounded-lg border">
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
               <TableHead className="hidden sm:table-cell w-[100px]">
@@ -283,8 +283,16 @@ export function WorkOrdersClient({
                   {t("table.invoice")}<SortIcon column="invoiceNumber" />
                 </button>
               </TableHead>
-              <TableHead>{t("table.vehicle")}</TableHead>
-              <TableHead className="hidden md:table-cell">{t("table.customer")}</TableHead>
+              <TableHead className="w-[18%]">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("vehicle")}>
+                  {t("table.vehicle")}<SortIcon column="vehicle" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden w-[14%] md:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("customer")}>
+                  {t("table.customer")}<SortIcon column="customer" />
+                </button>
+              </TableHead>
               <TableHead>
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("title")}>
                   {t("table.title")}<SortIcon column="title" />
@@ -295,7 +303,7 @@ export function WorkOrdersClient({
                   {t("table.status")}<SortIcon column="status" />
                 </button>
               </TableHead>
-              <TableHead className="hidden lg:table-cell">
+              <TableHead className="hidden w-[12%] lg:table-cell">
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("techName")}>
                   {t("table.tech")}<SortIcon column="techName" />
                 </button>
@@ -337,19 +345,19 @@ export function WorkOrdersClient({
                       {r.invoiceNumber || "-"}
                     </TableCell>
                     <TableCell>
-                      <div>
+                      <div className="min-w-0">
                         {r.vehicle.licensePlate && (
                           <span className="font-mono text-sm font-medium">{r.vehicle.licensePlate}</span>
                         )}
-                        <p className="text-xs text-muted-foreground">
+                        <p className="truncate text-xs text-muted-foreground">
                           {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
                         </p>
                       </div>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-muted-foreground">
+                    <TableCell className="hidden truncate md:table-cell text-muted-foreground">
                       {r.vehicle.customer?.name || "-"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="truncate">
                       <span className="font-medium">{r.title}</span>
                     </TableCell>
                     <TableCell>
