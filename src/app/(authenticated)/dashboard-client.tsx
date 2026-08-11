@@ -36,6 +36,7 @@ import {
   BellRing,
   MessageSquare,
   Settings,
+  RotateCcw,
   SlidersHorizontal,
   Undo2,
   Users,
@@ -47,7 +48,19 @@ import { updateQuoteRequestStatus } from "@/features/inspections/Actions/quoteRe
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
 import { toast } from "sonner";
 import { convertQuoteToServiceRecord, createQuote } from "@/features/quotes/Actions/quoteActions";
-import { useDashboardVisibility, DASHBOARD_CARD_IDS } from "@/hooks/use-dashboard-visibility";
+import type { ReactNode } from "react";
+import { DashboardGrid } from "@/features/dashboard/Components/DashboardGrid";
+import {
+  saveDashboardLayout,
+  resetDashboardLayout,
+} from "@/features/dashboard/Actions/dashboardLayoutActions";
+import {
+  DASHBOARD_CARD_IDS,
+  DEFAULT_LAYOUT,
+  normalizeLayout,
+  type DashboardCardId,
+  type DashboardLayout,
+} from "@/features/dashboard/dashboard-grid-config";
 
 interface ServiceItem {
   id: string;
@@ -228,6 +241,7 @@ export function DashboardClient({
   notifications = [],
   recentAuditLogs = [],
   recentObservations = [],
+  initialLayout = null,
 }: {
   stats: DashboardStats;
   currencyCode?: string;
@@ -254,6 +268,7 @@ export function DashboardClient({
     user: { id: string; name: string | null; email: string | null } | null;
   }[];
   recentObservations?: DashboardObservation[];
+  initialLayout?: unknown;
 }) {
   const formatCurrency = useFormatCurrency();
   const t = useTranslations("dashboard");
@@ -266,7 +281,32 @@ export function DashboardClient({
   const [maintenanceTab, setMaintenanceTab] = useState<"active" | "dismissed">("active");
   const [restoringId, setRestoringId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
-  const { toggleCard, isVisible, visibleCount, totalCount } = useDashboardVisibility(smsEnabled ? "notifications" : "sms");
+  // Grid layout: per-user, server-persisted. sms and notifications are
+  // mutually exclusive cards, so one of them is never available.
+  const [layout, setLayout] = useState<DashboardLayout>(() => normalizeLayout(initialLayout));
+  const [editing, setEditing] = useState(false);
+  const excludedCard: DashboardCardId = smsEnabled ? "notifications" : "sms";
+  const availableIds = DASHBOARD_CARD_IDS.filter((id) => id !== excludedCard);
+  const hiddenSet = new Set<DashboardCardId>(layout.hidden);
+  const visibleIds = availableIds.filter((id) => !hiddenSet.has(id));
+
+  const persistLayout = (next: DashboardLayout) => {
+    setLayout(next);
+    void saveDashboardLayout(next);
+  };
+  const commitCards = (cards: DashboardLayout["cards"]) =>
+    persistLayout({ ...layout, cards });
+  const toggleCard = (id: DashboardCardId) =>
+    persistLayout({
+      ...layout,
+      hidden: hiddenSet.has(id)
+        ? layout.hidden.filter((h) => h !== id)
+        : [...layout.hidden, id],
+    });
+  const handleResetLayout = () => {
+    setLayout(DEFAULT_LAYOUT);
+    void resetDashboardLayout();
+  };
 
   const formatRelativeTime = (date: string | Date) => {
     const now = new Date();
@@ -349,36 +389,68 @@ export function DashboardClient({
       </div>
 
       {/* Customize Dashboard */}
-      <div className="flex justify-end">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
-              <SlidersHorizontal className="h-3.5 w-3.5" />
-              {t("customize")} ({visibleCount}/{totalCount})
+      <div className="flex items-center justify-end gap-2">
+        {editing ? (
+          <>
+            <p className="mr-auto hidden text-xs text-muted-foreground sm:block">
+              {t("editHint")}
+            </p>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
+                  <SlidersHorizontal className="h-3.5 w-3.5" />
+                  {t("showCards")} ({visibleIds.length}/{availableIds.length})
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-56 p-3">
+                <p className="text-sm font-medium mb-2">{t("showCards")}</p>
+                <div className="space-y-2">
+                  {availableIds.map((id) => (
+                    <label key={id} className="flex items-center justify-between gap-2 cursor-pointer">
+                      <span className="text-sm">{t(`cards.${id}`)}</span>
+                      <Switch
+                        size="sm"
+                        checked={!hiddenSet.has(id)}
+                        onCheckedChange={() => toggleCard(id)}
+                      />
+                    </label>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs gap-1.5"
+              onClick={handleResetLayout}
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              {t("resetLayout")}
             </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-56 p-3">
-            <p className="text-sm font-medium mb-2">{t("showCards")}</p>
-            <div className="space-y-2">
-              {DASHBOARD_CARD_IDS.filter((id) => smsEnabled ? id !== "notifications" : id !== "sms").map((id) => (
-                <label key={id} className="flex items-center justify-between gap-2 cursor-pointer">
-                  <span className="text-sm">{t(`cards.${id}`)}</span>
-                  <Switch
-                    size="sm"
-                    checked={isVisible(id)}
-                    onCheckedChange={() => toggleCard(id)}
-                  />
-                </label>
-              ))}
-            </div>
-          </PopoverContent>
-        </Popover>
+            <Button size="sm" className="h-8 text-xs gap-1.5" onClick={() => setEditing(false)}>
+              <Check className="h-3.5 w-3.5" />
+              {t("doneEditing")}
+            </Button>
+          </>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs gap-1.5"
+            onClick={() => setEditing(true)}
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            {t("customize")}
+          </Button>
+        )}
       </div>
 
-      {/* Card grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Vehicles Due for Service */}
-        {isVisible("maintenance") && (
+      {/* Card grid: nodes keyed by card id, rendered by DashboardGrid in the
+          user's saved arrangement */}
+      {(() => {
+        const cardNodes: Partial<Record<DashboardCardId, ReactNode>> = {
+        // Vehicles Due for Service
+        maintenance: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-1">
               <div className="flex items-center justify-between">
@@ -540,10 +612,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Upcoming Reminders */}
-        {isVisible("reminders") && (
+        // Upcoming Reminders
+        reminders: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -624,10 +696,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* SMS Messages */}
-        {isVisible("sms") && smsEnabled && (
+        // SMS Messages (only offered when SMS is enabled; see availableIds)
+        sms: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -678,10 +750,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Recent Notifications (shown when SMS is not configured) */}
-        {isVisible("notifications") && !smsEnabled && (
+        // Recent Notifications (only offered when SMS is not configured)
+        notifications: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -720,10 +792,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Inspections */}
-        {isVisible("inspections") && (
+        // Inspections
+        inspections: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -834,10 +906,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Quote Requests */}
-        {isVisible("quoteRequests") && (
+        // Quote Requests
+        quoteRequests: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -960,10 +1032,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Customer Quote Responses */}
-        {isVisible("quoteResponses") && (
+        // Customer Quote Responses
+        quoteResponses: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -1083,10 +1155,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Recent Completed table */}
-        {isVisible("recentCompleted") && (
+        // Recent Completed table
+        recentCompleted: (
           <Card className="border-0 shadow-sm lg:col-span-2">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">{t("recentCompleted.title")}</CardTitle>
@@ -1156,10 +1228,10 @@ export function DashboardClient({
               </Table>
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Active Jobs table */}
-        {isVisible("activeJobs") && (
+        // Active Jobs table
+        activeJobs: (
           <Card className="border-0 shadow-sm lg:col-span-2">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">{t("activeJobsTable.title")}</CardTitle>
@@ -1226,8 +1298,9 @@ export function DashboardClient({
               </Table>
             </CardContent>
           </Card>
-        )}
-        {/* Recent Activity (Audit Logs) */}
+        ),
+        // Recent Activity (Audit Logs)
+        recentActivity: (
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-1">
             <div className="flex items-center justify-between">
@@ -1286,8 +1359,9 @@ export function DashboardClient({
             )}
           </CardContent>
         </Card>
-        {/* Recent Observations */}
-        {isVisible("recentObservations") && (
+        ),
+        // Recent Observations
+        recentObservations: (
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-1">
             <div className="flex items-center justify-between">
@@ -1354,8 +1428,18 @@ export function DashboardClient({
             )}
           </CardContent>
         </Card>
-        )}
-      </div>
+        ),
+        };
+        return (
+          <DashboardGrid
+            cards={layout.cards}
+            visibleIds={visibleIds}
+            editing={editing}
+            onCardsCommit={commitCards}
+            cardNodes={cardNodes}
+          />
+        );
+      })()}
     </div>
     </TooltipProvider>
   );

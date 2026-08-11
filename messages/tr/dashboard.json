@@ -52,7 +52,8 @@
     "notifications": "Son Bildirimler",
     "recentCompleted": "Son Tamamlananlar",
     "activeJobs": "Aktif İşler",
-    "recentObservations": "Son Gözlemler"
+    "recentObservations": "Son Gözlemler",
+    "recentActivity": "Son Etkinlik"
   },
   "maintenance": {
     "title": "Tahmini Bakım Zamanı",
@@ -138,5 +139,8 @@
     "hours": "{count}sa",
     "days": "{count}g"
   },
-  "error": "Kontrol paneli yüklenemedi"
+  "error": "Kontrol paneli yüklenemedi",
+  "editHint": "Kartları sürükleyerek taşıyın, köşeden boyutlandırın.",
+  "resetLayout": "Düzeni Sıfırla",
+  "doneEditing": "Bitti"
 }

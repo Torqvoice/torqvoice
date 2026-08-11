@@ -52,7 +52,8 @@
     "notifications": "Naujausi pranešimai",
     "recentCompleted": "Neseniai užbaigti",
     "activeJobs": "Aktyvūs darbai",
-    "recentObservations": "Naujausi pastebėjimai"
+    "recentObservations": "Naujausi pastebėjimai",
+    "recentActivity": "Naujausia veikla"
   },
   "maintenance": {
     "title": "Numatoma priežiūra",
@@ -138,5 +139,8 @@
     "hours": "{count} val.",
     "days": "{count} d."
   },
-  "error": "Nepavyko įkelti valdymo skydelio"
+  "error": "Nepavyko įkelti valdymo skydelio",
+  "editHint": "Vilkite korteles išdėstymui, tempkite kampą dydžiui keisti.",
+  "resetLayout": "Atstatyti išdėstymą",
+  "doneEditing": "Atlikta"
 }

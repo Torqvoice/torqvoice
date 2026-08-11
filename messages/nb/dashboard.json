@@ -52,7 +52,8 @@
     "notifications": "Siste varsler",
     "recentCompleted": "Nylig fullført",
     "activeJobs": "Aktive jobber",
-    "recentObservations": "Nylige observasjoner"
+    "recentObservations": "Nylige observasjoner",
+    "recentActivity": "Nylig aktivitet"
   },
   "maintenance": {
     "title": "Forventet vedlikehold",
@@ -138,5 +139,8 @@
     "hours": "{count}t",
     "days": "{count}d"
   },
-  "error": "Kunne ikke laste dashbord"
+  "error": "Kunne ikke laste dashbord",
+  "editHint": "Dra kortene for å flytte, dra i hjørnet for å endre størrelse.",
+  "resetLayout": "Tilbakestill oppsett",
+  "doneEditing": "Ferdig"
 }

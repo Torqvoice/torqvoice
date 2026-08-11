@@ -14,6 +14,7 @@ import { getRecentAuditLogs } from "@/features/audit/Actions/auditActions";
 import { getRecentObservations } from "@/features/vehicles/Actions/findingActions";
 import { getMyActiveJobs } from "@/features/vehicles/Actions/getMyActiveJobs";
 import { DashboardClient } from "./dashboard-client";
+import { db } from "@/lib/db";
 import { MyActiveJobs } from "@/features/vehicles/Components/MyActiveJobs";
 import { PageHeader } from "@/components/page-header";
 
@@ -38,6 +39,13 @@ export default async function DashboardPage() {
     getRecentObservations(),
     getMyActiveJobs(),
   ]);
+
+  const layoutUser = auth
+    ? await db.user.findUnique({
+        where: { id: auth.userId },
+        select: { dashboardLayout: true },
+      })
+    : null;
 
   if (!result.success || !result.data) {
     const t = await getTranslations("dashboard");
@@ -84,6 +92,7 @@ export default async function DashboardPage() {
           notifications={notifications}
           recentAuditLogs={recentAuditLogs}
           recentObservations={recentObservations}
+          initialLayout={layoutUser?.dashboardLayout ?? null}
         />
       </div>
     </>

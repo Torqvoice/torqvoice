@@ -52,7 +52,8 @@
     "notifications": "Notifiche recenti",
     "recentCompleted": "Completati di recente",
     "activeJobs": "Lavori attivi",
-    "recentObservations": "Osservazioni recenti"
+    "recentObservations": "Osservazioni recenti",
+    "recentActivity": "Attività recente"
   },
   "maintenance": {
     "title": "Manutenzione prevista in scadenza",
@@ -138,5 +139,8 @@
     "hours": "{count}h",
     "days": "{count}g"
   },
-  "error": "Impossibile caricare la dashboard"
+  "error": "Impossibile caricare la dashboard",
+  "editHint": "Trascina le schede per riordinarle, tira l’angolo per ridimensionare.",
+  "resetLayout": "Reimposta layout",
+  "doneEditing": "Fatto"
 }

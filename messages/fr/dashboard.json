@@ -52,7 +52,8 @@
     "notifications": "Notifications récentes",
     "recentCompleted": "Terminés récemment",
     "activeJobs": "Travaux en cours",
-    "recentObservations": "Observations récentes"
+    "recentObservations": "Observations récentes",
+    "recentActivity": "Activité récente"
   },
   "maintenance": {
     "title": "Maintenance prévue à effectuer",
@@ -138,5 +139,8 @@
     "hours": "{count} h",
     "days": "{count} j"
   },
-  "error": "Échec du chargement du tableau de bord"
+  "error": "Échec du chargement du tableau de bord",
+  "editHint": "Faites glisser les cartes pour les réorganiser, tirez le coin pour redimensionner.",
+  "resetLayout": "Réinitialiser la disposition",
+  "doneEditing": "Terminé"
 }

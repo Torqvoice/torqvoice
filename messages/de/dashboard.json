@@ -52,7 +52,8 @@
     "notifications": "Letzte Benachrichtigungen",
     "recentCompleted": "Kürzlich abgeschlossen",
     "activeJobs": "Aktive Aufträge",
-    "recentObservations": "Aktuelle Beobachtungen"
+    "recentObservations": "Aktuelle Beobachtungen",
+    "recentActivity": "Letzte Aktivitäten"
   },
   "maintenance": {
     "title": "Voraussichtlich fällige Wartung",
@@ -138,5 +139,8 @@
     "hours": "{count}h",
     "days": "{count}T"
   },
-  "error": "Dashboard konnte nicht geladen werden"
+  "error": "Dashboard konnte nicht geladen werden",
+  "editHint": "Karten ziehen zum Anordnen, Ecke ziehen zum Vergrößern.",
+  "resetLayout": "Layout zurücksetzen",
+  "doneEditing": "Fertig"
 }

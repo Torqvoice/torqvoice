@@ -52,7 +52,8 @@
     "notifications": "Ostatnie powiadomienia",
     "recentCompleted": "Ostatnio ukończone",
     "activeJobs": "Aktywne zlecenia",
-    "recentObservations": "Ostatnie obserwacje"
+    "recentObservations": "Ostatnie obserwacje",
+    "recentActivity": "Ostatnia aktywność"
   },
   "maintenance": {
     "title": "Przewidywany termin konserwacji",
@@ -138,5 +139,8 @@
     "hours": "{count}godz.",
     "days": "{count}d"
   },
-  "error": "Nie udało się załadować pulpitu"
+  "error": "Nie udało się załadować pulpitu",
+  "editHint": "Przeciągaj karty, aby zmienić układ; przeciągnij róg, aby zmienić rozmiar.",
+  "resetLayout": "Przywróć układ",
+  "doneEditing": "Gotowe"
 }

@@ -52,7 +52,8 @@
     "notifications": "Notificaciones recientes",
     "recentCompleted": "Completados recientemente",
     "activeJobs": "Trabajos activos",
-    "recentObservations": "Observaciones recientes"
+    "recentObservations": "Observaciones recientes",
+    "recentActivity": "Actividad reciente"
   },
   "maintenance": {
     "title": "Mantenimiento previsto pendiente",
@@ -138,5 +139,8 @@
     "hours": "{count}h",
     "days": "{count}d"
   },
-  "error": "Error al cargar el panel de control"
+  "error": "Error al cargar el panel de control",
+  "editHint": "Arrastra las tarjetas para reordenar; tira de la esquina para cambiar el tamaño.",
+  "resetLayout": "Restablecer diseño",
+  "doneEditing": "Listo"
 }

@@ -10,6 +10,8 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { PWAServiceWorker } from '@/components/pwa-service-worker'
 import { PostHogProvider } from '@/components/posthog-provider'
 import { isCloudMode } from '@/lib/features'
+import 'react-grid-layout/css/styles.css'
+import 'react-resizable/css/styles.css'
 import './globals.css'
 
 const geistSans = Geist({

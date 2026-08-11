@@ -52,7 +52,8 @@
     "notifications": "Notificações Recentes",
     "recentCompleted": "Concluídos Recentemente",
     "activeJobs": "Trabalhos Ativos",
-    "recentObservations": "Observações recentes"
+    "recentObservations": "Observações recentes",
+    "recentActivity": "Atividade recente"
   },
   "maintenance": {
     "title": "Manutenção Prevista",
@@ -138,5 +139,8 @@
     "hours": "{count}h",
     "days": "{count}d"
   },
-  "error": "Falha ao carregar o painel"
+  "error": "Falha ao carregar o painel",
+  "editHint": "Arraste os cartões para reorganizar; puxe o canto para redimensionar.",
+  "resetLayout": "Redefinir layout",
+  "doneEditing": "Concluído"
 }

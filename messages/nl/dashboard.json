@@ -52,7 +52,8 @@
     "notifications": "Recente meldingen",
     "recentCompleted": "Recent afgerond",
     "activeJobs": "Actieve opdrachten",
-    "recentObservations": "Recente waarnemingen"
+    "recentObservations": "Recente waarnemingen",
+    "recentActivity": "Recente activiteit"
   },
   "maintenance": {
     "title": "Verwacht onderhoud gepland",
@@ -138,5 +139,8 @@
     "hours": "{count}u",
     "days": "{count}d"
   },
-  "error": "Laden van dashboard mislukt"
+  "error": "Laden van dashboard mislukt",
+  "editHint": "Sleep kaarten om te herschikken, trek aan de hoek om te vergroten.",
+  "resetLayout": "Indeling herstellen",
+  "doneEditing": "Klaar"
 }

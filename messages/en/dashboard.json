@@ -52,7 +52,8 @@
     "notifications": "Recent Notifications",
     "recentCompleted": "Recent Completed",
     "activeJobs": "Active Jobs",
-    "recentObservations": "Recent Observations"
+    "recentObservations": "Recent Observations",
+    "recentActivity": "Recent Activity"
   },
   "maintenance": {
     "title": "Predicted Maintenance Due",
@@ -138,5 +139,8 @@
     "hours": "{count}h",
     "days": "{count}d"
   },
-  "error": "Failed to load dashboard"
+  "error": "Failed to load dashboard",
+  "editHint": "Drag cards to rearrange, pull the corner to resize.",
+  "resetLayout": "Reset layout",
+  "doneEditing": "Done"
 }

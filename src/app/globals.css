@@ -341,3 +341,41 @@
     border-bottom: none;
   }
 }
+
+/* ─── Dashboard grid (react-grid-layout) ─────────────────────────────── */
+.dashboard-grid .react-grid-item {
+  transition: transform 200ms ease, width 200ms ease, height 200ms ease;
+}
+.dashboard-grid .react-grid-item.react-grid-placeholder {
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  border: 2px dashed color-mix(in oklab, var(--primary) 50%, transparent);
+  border-radius: var(--radius, 0.75rem);
+  opacity: 1;
+}
+.dashboard-grid .react-grid-item.react-draggable-dragging,
+.dashboard-grid .react-grid-item.resizing {
+  z-index: 30;
+  transition: none;
+  box-shadow: 0 12px 32px -8px rgb(0 0 0 / 0.25);
+}
+.dashboard-grid .react-grid-item > .react-resizable-handle {
+  z-index: 20;
+}
+.dashboard-grid-editing .react-grid-item {
+  user-select: none;
+}
+/* Cards fill their grid tile; the last section (CardContent) scrolls */
+.dashboard-card-wrap {
+  height: 100%;
+}
+.dashboard-card-wrap > *:first-child {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.dashboard-card-wrap > *:first-child > *:last-child {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
