@@ -418,7 +418,12 @@
     "layoutDocInvoice": "Invoice",
     "layoutDocQuote": "Quote",
     "saveLayout": "Save Layout",
-    "resetLayout": "Reset to Default"
+    "resetLayout": "Reset to Default",
+    "sectionCustomers": "Customers",
+    "assignCustomerNumbers": "Assign customer numbers",
+    "assignCustomerNumbersHint": "{count} customers have no number yet. Assign sequential numbers to them (existing numbers are kept).",
+    "customerNumbersAssigned": "Assigned numbers to {count} customers",
+    "allCustomersNumbered": "All customers have a number."
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",

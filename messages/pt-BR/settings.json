@@ -418,7 +418,12 @@
     "layoutDocInvoice": "Fatura",
     "layoutDocQuote": "Orçamento",
     "saveLayout": "Salvar layout",
-    "resetLayout": "Redefinir"
+    "resetLayout": "Redefinir",
+    "sectionCustomers": "Clientes",
+    "assignCustomerNumbers": "Atribuir números de cliente",
+    "assignCustomerNumbersHint": "{count} clientes ainda não têm número. Atribuir números sequenciais (os existentes são mantidos).",
+    "customerNumbersAssigned": "Números atribuídos a {count} clientes",
+    "allCustomersNumbered": "Todos os clientes têm número."
   },
   "layoutEditor": {
     "helpText": "Arraste para reordenar. Use o alternador de largura para posicionar seções lado a lado. Seções consecutivas de meia largura (E/D) serão exibidas em duas colunas.",

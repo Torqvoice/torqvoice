@@ -418,7 +418,12 @@
     "layoutDocInvoice": "Factuur",
     "layoutDocQuote": "Offerte",
     "saveLayout": "Layout opslaan",
-    "resetLayout": "Herstellen"
+    "resetLayout": "Herstellen",
+    "sectionCustomers": "Klanten",
+    "assignCustomerNumbers": "Klantnummers toewijzen",
+    "assignCustomerNumbersHint": "{count} klanten hebben nog geen nummer. Wijs opeenvolgende nummers toe (bestaande blijven behouden).",
+    "customerNumbersAssigned": "Nummers toegewezen aan {count} klanten",
+    "allCustomersNumbered": "Alle klanten hebben een nummer."
   },
   "layoutEditor": {
     "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",

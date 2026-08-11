@@ -418,7 +418,12 @@
     "layoutDocInvoice": "Faktura",
     "layoutDocQuote": "Tilbud",
     "saveLayout": "Lagre oppsett",
-    "resetLayout": "Tilbakestill"
+    "resetLayout": "Tilbakestill",
+    "sectionCustomers": "Kunder",
+    "assignCustomerNumbers": "Tildel kundenumre",
+    "assignCustomerNumbersHint": "{count} kunder mangler nummer. Tildel fortløpende numre (eksisterende beholdes).",
+    "customerNumbersAssigned": "Tildelte numre til {count} kunder",
+    "allCustomersNumbered": "Alle kunder har et nummer."
   },
   "layoutEditor": {
     "helpText": "Dra for å sortere. Bruk bredde-veksler for å plassere seksjoner side om side. Påfølgende halvbredde-seksjoner (V/H) vises i to kolonner.",

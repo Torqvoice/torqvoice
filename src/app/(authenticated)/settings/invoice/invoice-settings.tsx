@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
+import { backfillCustomerNumbers } from '@/features/customers/Actions/customerActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { FileText, Loader2, Save } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
@@ -44,6 +45,7 @@ interface FieldDef {
 
 interface InvoiceSettingsProps {
   settings: Record<string, string>
+  unnumberedCustomers?: number
   initialInvoiceLayout?: InvoiceLayoutConfig
   initialQuoteLayout?: InvoiceLayoutConfig
   customFields: FieldDef[]
@@ -53,6 +55,7 @@ interface InvoiceSettingsProps {
 
 export function InvoiceSettings({
   settings,
+  unnumberedCustomers = 0,
   initialInvoiceLayout,
   initialQuoteLayout,
   customFields,
@@ -140,6 +143,21 @@ export function InvoiceSettings({
     setSaving(false)
     router.refresh()
     toast.success(t('invoice.saved'))
+  }
+
+  const [assigning, setAssigning] = useState(false)
+  const [unnumbered, setUnnumbered] = useState(unnumberedCustomers)
+  const handleAssignCustomerNumbers = async () => {
+    setAssigning(true)
+    const result = await backfillCustomerNumbers()
+    setAssigning(false)
+    if (result.success && result.data) {
+      setUnnumbered(0)
+      toast.success(t('invoice.customerNumbersAssigned', { count: result.data.assigned }))
+      router.refresh()
+    } else {
+      toast.error(result.error || t('templates.failedSave'))
+    }
   }
 
   const handleSaveLayout = async () => {
@@ -326,6 +344,29 @@ export function InvoiceSettings({
                       {t('invoice.quoteValidDaysHint')}
                     </p>
                   </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold">{t('invoice.sectionCustomers')}</h3>
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-xs text-muted-foreground">
+                    {unnumbered > 0
+                      ? t('invoice.assignCustomerNumbersHint', { count: unnumbered })
+                      : t('invoice.allCustomersNumbered')}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={assigning || unnumbered === 0}
+                    onClick={handleAssignCustomerNumbers}
+                  >
+                    {assigning && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                    {t('invoice.assignCustomerNumbers')}
+                  </Button>
                 </div>
               </div>
 

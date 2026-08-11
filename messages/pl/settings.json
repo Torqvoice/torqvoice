@@ -418,7 +418,12 @@
     "layoutDocInvoice": "Faktura",
     "layoutDocQuote": "Wycena",
     "saveLayout": "Zapisz układ",
-    "resetLayout": "Resetuj"
+    "resetLayout": "Resetuj",
+    "sectionCustomers": "Klienci",
+    "assignCustomerNumbers": "Przydziel numery klientów",
+    "assignCustomerNumbersHint": "{count} klientów nie ma jeszcze numeru. Przydziel im kolejne numery (istniejące pozostają).",
+    "customerNumbersAssigned": "Przydzielono numery {count} klientom",
+    "allCustomersNumbered": "Wszyscy klienci mają numer."
   },
   "layoutEditor": {
     "helpText": "Przeciągnij, aby zmienić kolejność. Użyj przełącznika szerokości, aby umieścić sekcje obok siebie. Kolejne sekcje o połowie szerokości (L/P) będą wyświetlane w dwóch kolumnach.",

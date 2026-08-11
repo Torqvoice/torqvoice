@@ -418,7 +418,12 @@
     "layoutDocInvoice": "Sąskaita",
     "layoutDocQuote": "Pasiūlymas",
     "saveLayout": "Išsaugoti išdėstymą",
-    "resetLayout": "Atstatyti numatytuosius"
+    "resetLayout": "Atstatyti numatytuosius",
+    "sectionCustomers": "Klientai",
+    "assignCustomerNumbers": "Priskirti klientų numerius",
+    "assignCustomerNumbersHint": "{count} klientai dar neturi numerio. Priskirti eilės numerius (esami išlieka).",
+    "customerNumbersAssigned": "Numeriai priskirti {count} klientams",
+    "allCustomersNumbered": "Visi klientai turi numerį."
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",

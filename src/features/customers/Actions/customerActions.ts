@@ -174,6 +174,53 @@ export async function deleteCustomers(customerIds: string[]) {
   }, { requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS }] });
 }
 
+/**
+ * Assigns sequential numbers to every customer that has none, oldest first,
+ * continuing after the highest existing numeric number (min 1001). Customers
+ * that already have a number — auto or manual — are never touched.
+ */
+export async function backfillCustomerNumbers() {
+  return withAuth(async ({ organizationId }) => {
+    const [numbered, unnumbered] = await Promise.all([
+      db.customer.findMany({
+        where: { organizationId, customerNumber: { not: null } },
+        select: { customerNumber: true },
+      }),
+      db.customer.findMany({
+        where: { organizationId, customerNumber: null },
+        select: { id: true },
+        orderBy: { createdAt: "asc" },
+      }),
+    ]);
+
+    let next = numbered.reduce((acc, c) => {
+      const n = Number.parseInt(c.customerNumber ?? "", 10);
+      return Number.isFinite(n) && n > acc ? n : acc;
+    }, 1000) + 1;
+
+    await db.$transaction(
+      unnumbered.map((c) =>
+        db.customer.update({
+          where: { id: c.id },
+          data: { customerNumber: String(next++) },
+        })
+      )
+    );
+
+    revalidatePath("/customers");
+    revalidatePath("/settings/invoice");
+    return { assigned: unnumbered.length };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.CUSTOMERS }],
+    audit: ({ result }) => ({
+      action: "customer.backfillNumbers",
+      entity: "Customer",
+      message: `Assigned customer numbers to ${result.assigned} customers`,
+      metadata: { assigned: result.assigned },
+    }),
+  });
+}
+
 export async function getCustomersPaginated(params: {
   page?: number;
   pageSize?: number;

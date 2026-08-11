@@ -418,7 +418,12 @@
     "layoutDocInvoice": "Rechnung",
     "layoutDocQuote": "Angebot",
     "saveLayout": "Layout speichern",
-    "resetLayout": "Zurücksetzen"
+    "resetLayout": "Zurücksetzen",
+    "sectionCustomers": "Kunden",
+    "assignCustomerNumbers": "Kundennummern vergeben",
+    "assignCustomerNumbersHint": "{count} Kunden haben noch keine Nummer. Fortlaufende Nummern vergeben (bestehende bleiben erhalten).",
+    "customerNumbersAssigned": "{count} Kunden nummeriert",
+    "allCustomersNumbered": "Alle Kunden haben eine Nummer."
   },
   "layoutEditor": {
     "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",

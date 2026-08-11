@@ -418,7 +418,12 @@
     "layoutDocInvoice": "Facture",
     "layoutDocQuote": "Devis",
     "saveLayout": "Enregistrer la mise en page",
-    "resetLayout": "Réinitialiser"
+    "resetLayout": "Réinitialiser",
+    "sectionCustomers": "Clients",
+    "assignCustomerNumbers": "Attribuer des numéros clients",
+    "assignCustomerNumbersHint": "{count} clients n'ont pas encore de numéro. Leur attribuer des numéros séquentiels (les existants sont conservés).",
+    "customerNumbersAssigned": "Numéros attribués à {count} clients",
+    "allCustomersNumbered": "Tous les clients ont un numéro."
   },
   "layoutEditor": {
     "helpText": "Glissez pour réorganiser. Utilisez le sélecteur de largeur pour placer les sections côte à côte. Les sections consécutives en demi-largeur (G/D) s'afficheront en deux colonnes.",
