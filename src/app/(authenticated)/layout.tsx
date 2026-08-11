@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { cookies } from "next/headers";
 import { SearchCommand } from "@/features/search/Components/SearchCommand";
 import { NotificationInitializer } from "@/features/notifications/Components/NotificationInitializer";
 import { ConfirmProvider } from "@/components/confirm-dialog";
@@ -27,6 +28,11 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const data = await getLayoutData();
+  // Render the sidebar in its saved state from the first paint: without this
+  // the server always renders it expanded, and collapsed-sidebar users get a
+  // ~300px layout shift after hydration (which also mismeasured the
+  // dashboard grid).
+  const sidebarOpen = (await cookies()).get("sidebar_state")?.value !== "false";
 
   if (data.status === "unauthenticated") redirect("/auth/sign-in");
   if (data.status === "no-organization") redirect("/onboarding");
@@ -118,6 +124,7 @@ export default async function DashboardLayout({
       }
     />
     <SidebarProvider
+      defaultOpen={sidebarOpen}
       style={
         {
           "--sidebar-width": "19rem",
