@@ -73,7 +73,10 @@
     "subtotal": "Sous-total pièces : {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "Du stock"
+    "addFromInventory": "Du stock",
+    "unitCost": "Coût",
+    "markupPercent": "Marge %",
+    "nameMissingHint": "Les lignes sans nom de pièce ne sont pas enregistrées."
   },
   "labor": {
     "title": "Main-d'œuvre",

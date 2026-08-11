@@ -73,7 +73,10 @@
     "subtotal": "Subtotal de repuestos: {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "Del inventario"
+    "addFromInventory": "Del inventario",
+    "unitCost": "Costo",
+    "markupPercent": "Margen %",
+    "nameMissingHint": "Las filas sin nombre de pieza no se guardan."
   },
   "labor": {
     "title": "Mano de obra",

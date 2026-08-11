@@ -107,7 +107,8 @@
     "partNotFound": "Nessun pezzo trovato per il codice a barre \"{barcode}\"",
     "deleteRow": "Delete row",
     "outOfStock": "Esaurito",
-    "onBackorder": "In arretrato ({count})"
+    "onBackorder": "In arretrato ({count})",
+    "nameMissingHint": "Le righe senza nome del ricambio non vengono salvate."
   },
   "labor": {
     "title": "Manodopera",
@@ -146,7 +147,8 @@
     "tax": "Imposta",
     "taxIncluded": "Imposta (incl.)",
     "total": "Totale",
-    "inclusiveModeHint": "I prezzi delle righe sono inseriti con imposta inclusa. I totali mostrano la suddivisione netto + imposta."
+    "inclusiveModeHint": "I prezzi delle righe sono inseriti con imposta inclusa. I totali mostrano la suddivisione netto + imposta.",
+    "partsCost": "Costo ricambi (interno)"
   },
   "notes": {
     "title": "Note",

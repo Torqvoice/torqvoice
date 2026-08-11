@@ -427,6 +427,8 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             partNumber: p.partNumber,
             name: p.name,
             quantity: p.quantity,
+            unitCost: p.unitCost,
+            markupPercent: p.markupPercent,
             unitPrice: p.unitPrice,
             total: p.total,
             // Preserve the stock link so the job — and any later edit or
