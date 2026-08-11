@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Responsive, useContainerWidth, type Layout } from "react-grid-layout";
 import { cn } from "@/lib/utils";
@@ -35,6 +35,14 @@ export function DashboardGrid({
 }) {
   const { width, containerRef, mounted } = useContainerWidth();
   const [breakpoint, setBreakpoint] = useState("lg");
+  // Animations stay off for the first moments after mount while the width
+  // measurement (scrollbar appearance etc.) settles; see globals.css
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    if (!mounted) return;
+    const timer = setTimeout(() => setReady(true), 250);
+    return () => clearTimeout(timer);
+  }, [mounted]);
   const interactive = editing && breakpoint === "lg";
 
   const layout: Layout = visibleIds.map((id) => ({
@@ -66,7 +74,7 @@ export function DashboardGrid({
     <div ref={containerRef}>
       {mounted && (
         <Responsive
-          className={cn("dashboard-grid", editing && "dashboard-grid-editing")}
+          className={cn("dashboard-grid", ready && "dashboard-grid-ready", editing && "dashboard-grid-editing")}
           width={width}
           layouts={{ lg: layout }}
           breakpoints={{ lg: 900, xs: 0 }}

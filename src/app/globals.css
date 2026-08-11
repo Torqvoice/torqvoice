@@ -343,6 +343,13 @@
 }
 
 /* ─── Dashboard grid (react-grid-layout) ─────────────────────────────── */
+/* Suppress ALL grid animation (ours and the library's) until the grid has
+   settled after mount, so the initial width-measurement correction applies
+   instantly instead of playing as a visible grow effect */
+.dashboard-grid:not(.dashboard-grid-ready),
+.dashboard-grid:not(.dashboard-grid-ready) .react-grid-item {
+  transition: none !important;
+}
 .dashboard-grid .react-grid-item {
   transition: transform 200ms ease, width 200ms ease, height 200ms ease;
 }
