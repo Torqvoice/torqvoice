@@ -107,7 +107,8 @@
     "partNotFound": "Aucune pièce trouvée pour le code-barres \"{barcode}\"",
     "deleteRow": "Delete row",
     "outOfStock": "En rupture de stock",
-    "onBackorder": "En réapprovisionnement ({count})"
+    "onBackorder": "En réapprovisionnement ({count})",
+    "nameMissingHint": "Les lignes sans nom de pièce ne sont pas enregistrées."
   },
   "labor": {
     "title": "Main-d'œuvre",

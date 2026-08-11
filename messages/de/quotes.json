@@ -75,7 +75,8 @@
     "excludeFromTotal": "Exclude from total",
     "addFromInventory": "Aus Lager",
     "unitCost": "Kosten",
-    "markupPercent": "Aufschlag %"
+    "markupPercent": "Aufschlag %",
+    "nameMissingHint": "Zeilen ohne Teilenamen werden nicht gespeichert."
   },
   "labor": {
     "title": "Arbeitszeit",

@@ -107,7 +107,8 @@
     "partNotFound": "\"{barcode}\" barkodu için parça bulunamadı",
     "deleteRow": "Delete row",
     "outOfStock": "Stokta yok",
-    "onBackorder": "Ön siparişte ({count})"
+    "onBackorder": "Ön siparişte ({count})",
+    "nameMissingHint": "Parça adı olmayan satırlar kaydedilmez."
   },
   "labor": {
     "title": "İşçilik",

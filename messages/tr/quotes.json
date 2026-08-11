@@ -75,7 +75,8 @@
     "excludeFromTotal": "Exclude from total",
     "addFromInventory": "Stoktan",
     "unitCost": "Maliyet",
-    "markupPercent": "Kâr Marjı %"
+    "markupPercent": "Kâr Marjı %",
+    "nameMissingHint": "Parça adı olmayan satırlar kaydedilmez."
   },
   "labor": {
     "title": "İşçilik",

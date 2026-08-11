@@ -75,7 +75,8 @@
     "excludeFromTotal": "Exclude from total",
     "addFromInventory": "Uit voorraad",
     "unitCost": "Inkoop",
-    "markupPercent": "Marge %"
+    "markupPercent": "Marge %",
+    "nameMissingHint": "Rijen zonder onderdeelnaam worden niet opgeslagen."
   },
   "labor": {
     "title": "Arbeid",

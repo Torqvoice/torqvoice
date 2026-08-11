@@ -107,7 +107,8 @@
     "partNotFound": "Деталь для штрихкода \"{barcode}\" не найдена",
     "deleteRow": "Delete row",
     "outOfStock": "Нет в наличии",
-    "onBackorder": "Под заказ ({count})"
+    "onBackorder": "Под заказ ({count})",
+    "nameMissingHint": "Строки без названия детали не сохраняются."
   },
   "labor": {
     "title": "Работа",

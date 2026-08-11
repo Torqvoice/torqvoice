@@ -107,7 +107,8 @@
     "partNotFound": "Ingen del funnet for strekkode \"{barcode}\"",
     "deleteRow": "Delete row",
     "outOfStock": "Utsolgt",
-    "onBackorder": "På restordre ({count})"
+    "onBackorder": "På restordre ({count})",
+    "nameMissingHint": "Rader uten delenavn lagres ikke."
   },
   "labor": {
     "title": "Arbeid",

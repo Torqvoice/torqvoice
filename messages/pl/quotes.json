@@ -75,7 +75,8 @@
     "excludeFromTotal": "Exclude from total",
     "addFromInventory": "Z magazynu",
     "unitCost": "Koszt",
-    "markupPercent": "Marża %"
+    "markupPercent": "Marża %",
+    "nameMissingHint": "Wiersze bez nazwy części nie są zapisywane."
   },
   "labor": {
     "title": "Robocizna",

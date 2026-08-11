@@ -40,11 +40,16 @@ const QuotePartRow = memo(function QuotePartRow({
   tExcludeFromTotal: string;
 }) {
   const formatCurrency = useFormatCurrency();
+  // Content without a name would be silently dropped on save (name is
+  // required); flag it loudly instead
+  const nameMissing =
+    !part.name.trim() &&
+    !!(part.partNumber || Number(part.unitCost) > 0 || Number(part.unitPrice) > 0 || Number(part.total) > 0);
   return (
     <div className={`grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] ${part.excluded ? "line-through opacity-50" : ""}`}>
       <Input placeholder={tPartNumber} value={part.partNumber ?? ""} onChange={(e) => onUpdate(index, "partNumber", e.target.value)} />
       <div className="relative">
-        <Input placeholder={tNamePlaceholder} value={part.name} onChange={(e) => onUpdate(index, "name", e.target.value)} />
+        <Input placeholder={tNamePlaceholder} value={part.name} onChange={(e) => onUpdate(index, "name", e.target.value)} aria-invalid={nameMissing} className={nameMissing ? "border-destructive focus-visible:ring-destructive" : undefined} />
         <PartNameSuggestions
           query={part.name}
           parts={inventoryParts}
@@ -154,6 +159,9 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
             />
           ))}
           <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={onAdd}><Plus className="h-4 w-4" /></button>
+          {partItems.some((p) => !p.name.trim() && (p.partNumber || Number(p.unitCost) > 0 || Number(p.unitPrice) > 0 || Number(p.total) > 0)) && (
+            <p className="text-xs text-destructive">{t("parts.nameMissingHint")}</p>
+          )}
           <div className="flex justify-end pt-1 text-sm"><span className="font-medium">{t("parts.subtotal", { amount: formatCurrency(partsSubtotal, currencyCode) })}</span></div>
         </>
       )}

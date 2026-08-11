@@ -107,7 +107,8 @@
     "partNotFound": "Nessun pezzo trovato per il codice a barre \"{barcode}\"",
     "deleteRow": "Delete row",
     "outOfStock": "Esaurito",
-    "onBackorder": "In arretrato ({count})"
+    "onBackorder": "In arretrato ({count})",
+    "nameMissingHint": "Le righe senza nome del ricambio non vengono salvate."
   },
   "labor": {
     "title": "Manodopera",

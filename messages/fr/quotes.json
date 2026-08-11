@@ -75,7 +75,8 @@
     "excludeFromTotal": "Exclude from total",
     "addFromInventory": "Du stock",
     "unitCost": "Coût",
-    "markupPercent": "Marge %"
+    "markupPercent": "Marge %",
+    "nameMissingHint": "Les lignes sans nom de pièce ne sont pas enregistrées."
   },
   "labor": {
     "title": "Main-d'œuvre",

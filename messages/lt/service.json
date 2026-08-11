@@ -107,7 +107,8 @@
     "partNotFound": "Dalis brūkšniniam kodui \"{barcode}\" nerasta",
     "deleteRow": "Delete row",
     "outOfStock": "Nėra sandėlyje",
-    "onBackorder": "Užsakoma ({count})"
+    "onBackorder": "Užsakoma ({count})",
+    "nameMissingHint": "Eilutės be dalies pavadinimo neišsaugomos."
   },
   "labor": {
     "title": "Darbai ir paslaugos",

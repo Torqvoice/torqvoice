@@ -107,7 +107,8 @@
     "partNotFound": "Geen onderdeel gevonden voor barcode \"{barcode}\"",
     "deleteRow": "Delete row",
     "outOfStock": "Niet op voorraad",
-    "onBackorder": "In nabestelling ({count})"
+    "onBackorder": "In nabestelling ({count})",
+    "nameMissingHint": "Rijen zonder onderdeelnaam worden niet opgeslagen."
   },
   "labor": {
     "title": "Arbeidskosten",

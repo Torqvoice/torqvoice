@@ -75,7 +75,8 @@
     "excludeFromTotal": "Exclude from total",
     "addFromInventory": "Dal magazzino",
     "unitCost": "Costo",
-    "markupPercent": "Ricarico %"
+    "markupPercent": "Ricarico %",
+    "nameMissingHint": "Le righe senza nome del ricambio non vengono salvate."
   },
   "labor": {
     "title": "Manodopera",

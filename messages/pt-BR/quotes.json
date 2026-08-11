@@ -75,7 +75,8 @@
     "excludeFromTotal": "Exclude from total",
     "addFromInventory": "Do estoque",
     "unitCost": "Custo",
-    "markupPercent": "Margem %"
+    "markupPercent": "Margem %",
+    "nameMissingHint": "Linhas sem nome da peça não são salvas."
   },
   "labor": {
     "title": "Mão de obra",

@@ -107,7 +107,8 @@
     "partNotFound": "Kein Teil für Barcode \"{barcode}\" gefunden",
     "deleteRow": "Delete row",
     "outOfStock": "Nicht auf Lager",
-    "onBackorder": "Im Rückstand ({count})"
+    "onBackorder": "Im Rückstand ({count})",
+    "nameMissingHint": "Zeilen ohne Teilenamen werden nicht gespeichert."
   },
   "labor": {
     "title": "Arbeit",

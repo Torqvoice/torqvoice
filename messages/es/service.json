@@ -107,7 +107,8 @@
     "partNotFound": "No se encontró pieza para el código de barras \"{barcode}\"",
     "deleteRow": "Delete row",
     "outOfStock": "Agotado",
-    "onBackorder": "En pedido pendiente ({count})"
+    "onBackorder": "En pedido pendiente ({count})",
+    "nameMissingHint": "Las filas sin nombre de pieza no se guardan."
   },
   "labor": {
     "title": "Mano de Obra",

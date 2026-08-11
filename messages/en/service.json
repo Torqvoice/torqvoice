@@ -107,7 +107,8 @@
     "partNotFound": "No part found for barcode \"{barcode}\"",
     "deleteRow": "Delete row",
     "outOfStock": "Out of stock",
-    "onBackorder": "On backorder ({count})"
+    "onBackorder": "On backorder ({count})",
+    "nameMissingHint": "Rows without a part name are not saved."
   },
   "labor": {
     "title": "Labor & Services",

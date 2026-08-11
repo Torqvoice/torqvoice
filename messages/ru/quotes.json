@@ -75,7 +75,8 @@
     "excludeFromTotal": "Exclude from total",
     "addFromInventory": "Со склада",
     "unitCost": "Себестоимость",
-    "markupPercent": "Наценка %"
+    "markupPercent": "Наценка %",
+    "nameMissingHint": "Строки без названия детали не сохраняются."
   },
   "labor": {
     "title": "Работа",
