@@ -6,13 +6,21 @@ import { PageHeader } from "@/components/page-header";
 export default async function CustomersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; pageSize?: string; search?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    pageSize?: string;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }>;
 }) {
   const params = await searchParams;
   const result = await getCustomersPaginated({
     page: params.page ? parseInt(params.page) : 1,
     pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
     search: params.search,
+    sortBy: params.sortBy,
+    sortOrder: params.sortOrder as "asc" | "desc" | undefined,
   });
 
   if (!result.success || !result.data) {
@@ -36,6 +44,8 @@ export default async function CustomersPage({
         <CustomersClient
           data={result.data}
           search={params.search || ""}
+          sortBy={params.sortBy || ""}
+          sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
         />
       </div>
     </>

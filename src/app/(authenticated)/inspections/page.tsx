@@ -11,6 +11,8 @@ export default async function InspectionsPage({
     pageSize?: string;
     search?: string;
     status?: string;
+    sortBy?: string;
+    sortOrder?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -20,6 +22,8 @@ export default async function InspectionsPage({
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       status: params.status || "all",
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder as "asc" | "desc" | undefined,
     }),
     getTemplates(),
   ]);
@@ -48,6 +52,8 @@ export default async function InspectionsPage({
           templates={templates}
           search={params.search || ""}
           statusFilter={params.status || "all"}
+          sortBy={params.sortBy || ""}
+          sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
         />
       </div>
     </>

@@ -33,6 +33,9 @@ import { toast } from 'sonner'
 import {
   Archive,
   ArchiveRestore,
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   Gauge,
   Grid3X3,
   LayoutGrid,
@@ -88,6 +91,8 @@ export function VehiclesClient({
   data,
   customers,
   search,
+  sortBy = '',
+  sortOrder = 'desc',
   initialView = 'table',
   isArchived = false,
   archivedCount = 0,
@@ -95,6 +100,8 @@ export function VehiclesClient({
   data: PaginatedData
   customers: CustomerOption[]
   search: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
   initialView?: 'table' | 'grid' | 'grid6'
   isArchived?: boolean
   archivedCount?: number
@@ -141,7 +148,7 @@ export function VehiclesClient({
           newParams.set(key, String(value))
         }
       }
-      if (!('page' in params) && 'search' in params) {
+      if (!('page' in params) && ('search' in params || 'sortBy' in params)) {
         newParams.delete('page')
       }
       startTransition(() => {
@@ -150,6 +157,21 @@ export function VehiclesClient({
     },
     [router, pathname, searchParams]
   )
+
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc'
+      navigate({ sortBy: column, sortOrder: newOrder })
+    },
+    [navigate, sortBy, sortOrder]
+  )
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
+    return sortOrder === 'asc'
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />
+  }
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -285,14 +307,34 @@ export function VehiclesClient({
       ) : view === 'table' ? (
         /* Table view */
         <div className="rounded-lg border">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[120px]">{t('table.plate')}</TableHead>
-                <TableHead>{t('table.vehicle')}</TableHead>
-                <TableHead className="hidden sm:table-cell">{t('table.customer')}</TableHead>
-                <TableHead className="hidden md:table-cell w-[100px] text-right">{serviceType === 'marine' ? t('table.mileageMarine') : t('table.mileage')}</TableHead>
-                <TableHead className="w-[80px] text-center">{t('table.services')}</TableHead>
+                <TableHead className="w-[120px]">
+                  <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('plate')}>
+                    {t('table.plate')}<SortIcon column="plate" />
+                  </button>
+                </TableHead>
+                <TableHead>
+                  <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('vehicle')}>
+                    {t('table.vehicle')}<SortIcon column="vehicle" />
+                  </button>
+                </TableHead>
+                <TableHead className="hidden w-[24%] sm:table-cell">
+                  <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('customer')}>
+                    {t('table.customer')}<SortIcon column="customer" />
+                  </button>
+                </TableHead>
+                <TableHead className="hidden md:table-cell w-[100px]">
+                  <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort('mileage')}>
+                    {serviceType === 'marine' ? t('table.mileageMarine') : t('table.mileage')}<SortIcon column="mileage" />
+                  </button>
+                </TableHead>
+                <TableHead className="w-[80px]">
+                  <button type="button" className="mx-auto flex items-center hover:text-foreground" onClick={() => handleSort('services')}>
+                    {t('table.services')}<SortIcon column="services" />
+                  </button>
+                </TableHead>
                 <TableHead className="w-[50px]" />
               </TableRow>
             </TableHeader>
@@ -304,12 +346,12 @@ export function VehiclesClient({
                   onClick={() => router.push(`/vehicles/${v.id}`)}
                 >
                   <TableCell className="font-mono text-sm">{v.licensePlate || '-'}</TableCell>
-                  <TableCell>
+                  <TableCell className="truncate">
                     <span className="font-medium">
                       {v.year} {v.make} {v.model}
                     </span>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell text-muted-foreground">
+                  <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
                     {v.customer?.name || '-'}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-right font-mono text-sm">

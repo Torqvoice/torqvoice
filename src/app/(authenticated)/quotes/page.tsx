@@ -12,6 +12,8 @@ export default async function QuotesPage({
     pageSize?: string
     search?: string
     status?: string
+    sortBy?: string
+    sortOrder?: string
   }>
 }) {
   const params = await searchParams
@@ -21,6 +23,8 @@ export default async function QuotesPage({
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       status: params.status || 'all',
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder as 'asc' | 'desc' | undefined,
     }),
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
   ])
@@ -48,6 +52,8 @@ export default async function QuotesPage({
           currencyCode={currencyCode}
           search={params.search || ''}
           statusFilter={params.status || 'all'}
+          sortBy={params.sortBy || ''}
+          sortOrder={(params.sortOrder as 'asc' | 'desc') || 'desc'}
         />
       </div>
     </>

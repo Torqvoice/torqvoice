@@ -12,7 +12,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { DataTablePagination } from "@/components/data-table-pagination";
-import { Loader2, Plus, Search } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, Search } from "lucide-react";
 import { NewInspectionDialog } from "@/features/inspections/Components/NewInspectionDialog";
 
 interface InspectionRecord {
@@ -93,11 +93,15 @@ export function InspectionsClient({
   templates,
   search,
   statusFilter,
+  sortBy = "",
+  sortOrder = "desc",
 }: {
   data: PaginatedData;
   templates: TemplateOption[];
   search: string;
   statusFilter: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -131,6 +135,21 @@ export function InspectionsClient({
     setValue: setSearchInput,
     commitNow: handleSearch,
   } = useDebouncedSearch(search, (term) => navigate({ search: term }));
+
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
+      navigate({ sortBy: column, sortOrder: newOrder });
+    },
+    [navigate, sortBy, sortOrder]
+  );
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
+    return sortOrder === "asc"
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />;
+  };
 
   return (
     <div className="space-y-4">
@@ -176,14 +195,30 @@ export function InspectionsClient({
       </div>
 
       <div className="rounded-lg border">
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead>Vehicle</TableHead>
-              <TableHead className="hidden md:table-cell">Template</TableHead>
+              <TableHead>
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("vehicle")}>
+                  Vehicle<SortIcon column="vehicle" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden w-[24%] md:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("template")}>
+                  Template<SortIcon column="template" />
+                </button>
+              </TableHead>
               <TableHead className="w-32">Progress</TableHead>
-              <TableHead className="w-28">Status</TableHead>
-              <TableHead className="w-24">Date</TableHead>
+              <TableHead className="w-28">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("status")}>
+                  Status<SortIcon column="status" />
+                </button>
+              </TableHead>
+              <TableHead className="w-24">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("createdAt")}>
+                  Date<SortIcon column="createdAt" />
+                </button>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -201,8 +236,8 @@ export function InspectionsClient({
                   onClick={() => router.push(`/inspections/${insp.id}`)}
                 >
                   <TableCell>
-                    <div>
-                      <p className="font-medium">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">
                         {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
                       </p>
                       {insp.vehicle.licensePlate && (
@@ -212,7 +247,7 @@ export function InspectionsClient({
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground">
+                  <TableCell className="hidden truncate md:table-cell text-muted-foreground">
                     {insp.template.name}
                   </TableCell>
                   <TableCell>
