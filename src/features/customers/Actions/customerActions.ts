@@ -58,16 +58,40 @@ export async function createCustomer(input: unknown) {
     }
 
     const data = createCustomerSchema.parse(input);
-    const customer = await db.customer.create({
-      data: {
-        ...data,
-        email: data.email || null,
-        userId,
-        organizationId,
-      },
-    });
-    revalidatePath("/customers");
-    return customer;
+
+    // Auto-assign the next sequential number when none was provided; the
+    // per-org unique index guards against races and manual duplicates.
+    let customerNumber = data.customerNumber?.trim() || null;
+    if (!customerNumber) {
+      const existing = await db.customer.findMany({
+        where: { organizationId, customerNumber: { not: null } },
+        select: { customerNumber: true },
+      });
+      const max = existing.reduce((acc, c) => {
+        const n = Number.parseInt(c.customerNumber ?? "", 10);
+        return Number.isFinite(n) && n > acc ? n : acc;
+      }, 1000);
+      customerNumber = String(max + 1);
+    }
+
+    try {
+      const customer = await db.customer.create({
+        data: {
+          ...data,
+          customerNumber,
+          email: data.email || null,
+          userId,
+          organizationId,
+        },
+      });
+      revalidatePath("/customers");
+      return customer;
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && (err as { code?: string }).code === "P2002") {
+        throw new Error("Customer number is already in use");
+      }
+      throw err;
+    }
   }, {
     requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.CUSTOMERS }],
     audit: ({ result }) => ({
@@ -83,16 +107,28 @@ export async function createCustomer(input: unknown) {
 export async function updateCustomer(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const { id, ...data } = updateCustomerSchema.parse(input);
-    const result = await db.customer.updateMany({
-      where: { id, organizationId },
-      data: {
-        ...data,
-        email: data.email || null,
-        company: data.company || null,
-        phone: data.phone || null,
-        address: data.address || null,
-      },
-    });
+    let result;
+    try {
+      result = await db.customer.updateMany({
+        where: { id, organizationId },
+        data: {
+          ...data,
+          customerNumber:
+            data.customerNumber !== undefined
+              ? data.customerNumber.trim() || null
+              : undefined,
+          email: data.email || null,
+          company: data.company || null,
+          phone: data.phone || null,
+          address: data.address || null,
+        },
+      });
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && (err as { code?: string }).code === "P2002") {
+        throw new Error("Customer number is already in use");
+      }
+      throw err;
+    }
     if (result.count === 0) throw new Error("Customer not found");
     revalidatePath("/customers");
     revalidatePath(`/customers/${id}`);
@@ -162,6 +198,7 @@ export async function getCustomersPaginated(params: {
             { email: { contains: word, mode: "insensitive" } },
             { phone: { contains: word, mode: "insensitive" } },
             { company: { contains: word, mode: "insensitive" } },
+            { customerNumber: { contains: word, mode: "insensitive" } },
           ],
         }));
       } else {
@@ -170,6 +207,7 @@ export async function getCustomersPaginated(params: {
           { email: { contains: params.search, mode: "insensitive" } },
           { phone: { contains: params.search, mode: "insensitive" } },
           { company: { contains: params.search, mode: "insensitive" } },
+          { customerNumber: { contains: params.search, mode: "insensitive" } },
         ];
       }
     }
@@ -184,6 +222,7 @@ export async function getCustomersPaginated(params: {
           const dir = params.sortOrder || "desc";
           const nullable = { sort: dir, nulls: "last" } as const;
           switch (params.sortBy) {
+            case "number": return { customerNumber: { sort: dir, nulls: "last" as const } };
             case "name": return { name: dir };
             case "company": return { company: nullable };
             case "phone": return { phone: nullable };
@@ -414,6 +453,7 @@ export async function searchCustomers(search?: string, limit = 20, offset = 0) {
             { email: { contains: word, mode: "insensitive" } },
             { phone: { contains: word, mode: "insensitive" } },
             { company: { contains: word, mode: "insensitive" } },
+            { customerNumber: { contains: word, mode: "insensitive" } },
           ],
         }));
       } else {

@@ -328,6 +328,10 @@ model VehicleFinding {
 
 model Customer {
   id             String   @id @default(cuid())
+  /// Human-facing customer number: auto-assigned sequentially on create,
+  /// editable afterwards. Unique per organization (nulls allowed for
+  /// legacy customers).
+  customerNumber String?
   name           String
   email          String?
   phone          String?
@@ -354,6 +358,7 @@ model Customer {
   serviceRequests  ServiceRequest[]
 
   @@index([organizationId])
+  @@unique([organizationId, customerNumber])
   @@map("customers")
 }
 

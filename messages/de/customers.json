@@ -7,7 +7,8 @@
       "company": "Unternehmen",
       "phone": "Telefon",
       "email": "E-Mail",
-      "vehicles": "Fahrzeuge"
+      "vehicles": "Fahrzeuge",
+      "number": "Nr."
     },
     "emptySearch": "Keine Kunden entsprechen Ihrer Suche.",
     "empty": "Noch keine Kunden vorhanden.",
@@ -65,7 +66,9 @@
     "notesPlaceholder": "Weitere Anmerkungen...",
     "customerUpdated": "Kunde aktualisiert",
     "customerCreated": "Kunde angelegt",
-    "saveError": "Kunde konnte nicht gespeichert werden"
+    "saveError": "Kunde konnte nicht gespeichert werden",
+    "customerNumber": "Kundennr.",
+    "customerNumberAuto": "Auto"
   },
   "serviceRequests": {
     "statusNew": "Neu",

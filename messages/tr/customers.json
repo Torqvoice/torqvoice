@@ -7,7 +7,8 @@
       "company": "Şirket",
       "phone": "Telefon",
       "email": "E-posta",
-      "vehicles": "Araçlar"
+      "vehicles": "Araçlar",
+      "number": "No"
     },
     "emptySearch": "Aramanızla eşleşen müşteri bulunamadı.",
     "empty": "Henüz müşteri yok.",
@@ -65,7 +66,9 @@
     "notesPlaceholder": "Ek notlar...",
     "customerUpdated": "Müşteri güncellendi",
     "customerCreated": "Müşteri oluşturuldu",
-    "saveError": "Müşteri kaydedilemedi"
+    "saveError": "Müşteri kaydedilemedi",
+    "customerNumber": "Müşteri no",
+    "customerNumberAuto": "Oto"
   },
   "serviceRequests": {
     "statusNew": "Yeni",
