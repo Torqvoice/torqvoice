@@ -35,14 +35,17 @@ export function DashboardGrid({
 }) {
   const { width, containerRef, mounted } = useContainerWidth();
   const [breakpoint, setBreakpoint] = useState("lg");
-  // Animations stay off for the first moments after mount while the width
-  // measurement (scrollbar appearance etc.) settles; see globals.css
+  // The container width keeps moving briefly after mount (sidebar mount /
+  // collapse transition, scrollbar appearance). The grid stays invisible and
+  // unanimated until the measured width has been stable for a beat, then
+  // fades in at its final layout — `width` in the deps restarts the timer on
+  // every change, and once ready it stays ready.
   const [ready, setReady] = useState(false);
   useEffect(() => {
-    if (!mounted) return;
-    const timer = setTimeout(() => setReady(true), 250);
+    if (!mounted || ready) return;
+    const timer = setTimeout(() => setReady(true), 300);
     return () => clearTimeout(timer);
-  }, [mounted]);
+  }, [mounted, width, ready]);
   const interactive = editing && breakpoint === "lg";
 
   const layout: Layout = visibleIds.map((id) => ({
@@ -71,7 +74,11 @@ export function DashboardGrid({
   };
 
   return (
-    <div ref={containerRef}>
+    <div
+      ref={containerRef}
+      className="transition-opacity duration-200"
+      style={{ opacity: ready ? 1 : 0 }}
+    >
       {mounted && (
         <Responsive
           className={cn("dashboard-grid", ready && "dashboard-grid-ready", editing && "dashboard-grid-editing")}

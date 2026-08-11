@@ -121,6 +121,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    /* Reserve scrollbar space so its appearance never shifts layout width
+       (the dashboard grid measures its container on mount) */
+    scrollbar-gutter: stable;
+  }
   body {
     @apply bg-background text-foreground;
   }
