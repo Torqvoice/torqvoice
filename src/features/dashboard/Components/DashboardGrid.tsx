@@ -75,12 +75,17 @@ export function DashboardGrid({
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="transition-opacity duration-200"
-      style={{ opacity: ready ? 1 : 0 }}
-    >
-      {mounted && (
+    <div ref={containerRef}>
+      {!ready && (
+        // Placeholder mirroring the default two-column card layout while the
+        // container width settles; the real grid mounts only at stable width
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-[480px] rounded-xl" />
+          ))}
+        </div>
+      )}
+      {ready && (
         <Responsive
           className={cn("dashboard-grid animate-in fade-in duration-200", editing && "dashboard-grid-editing")}
           width={width}
