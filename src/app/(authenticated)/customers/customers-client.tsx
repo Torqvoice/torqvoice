@@ -249,7 +249,7 @@ export function CustomersClient({
 
       {/* Table - only this scrolls */}
       <div className="overflow-auto rounded-lg border max-h-[calc(100vh-220px)]">
-        <Table>
+        <Table className="table-fixed">
           <TableHeader className="sticky top-0 z-10 bg-background">
             <TableRow>
               <TableHead className="w-[40px]">
@@ -270,17 +270,17 @@ export function CustomersClient({
                   {t("table.name")}<SortIcon column="name" />
                 </button>
               </TableHead>
-              <TableHead className="hidden sm:table-cell">
+              <TableHead className="hidden w-[20%] sm:table-cell">
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("company")}>
                   {t("table.company")}<SortIcon column="company" />
                 </button>
               </TableHead>
-              <TableHead className="hidden md:table-cell">
+              <TableHead className="hidden w-[16%] md:table-cell">
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("phone")}>
                   {t("table.phone")}<SortIcon column="phone" />
                 </button>
               </TableHead>
-              <TableHead className="hidden lg:table-cell">
+              <TableHead className="hidden w-[22%] lg:table-cell">
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("email")}>
                   {t("table.email")}<SortIcon column="email" />
                 </button>
@@ -317,16 +317,16 @@ export function CustomersClient({
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <span className="font-medium">{c.name}</span>
+                      <span className="truncate font-medium">{c.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell text-muted-foreground">
+                  <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
                     {c.company || "-"}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground">
+                  <TableCell className="hidden truncate md:table-cell text-muted-foreground">
                     {c.phone || "-"}
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell text-muted-foreground">
+                  <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
                     {c.email || "-"}
                   </TableCell>
                   <TableCell className="text-center">{c._count.vehicles}</TableCell>

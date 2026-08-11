@@ -307,7 +307,7 @@ export function VehiclesClient({
       ) : view === 'table' ? (
         /* Table view */
         <div className="rounded-lg border">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[120px]">
@@ -320,7 +320,7 @@ export function VehiclesClient({
                     {t('table.vehicle')}<SortIcon column="vehicle" />
                   </button>
                 </TableHead>
-                <TableHead className="hidden sm:table-cell">
+                <TableHead className="hidden w-[24%] sm:table-cell">
                   <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('customer')}>
                     {t('table.customer')}<SortIcon column="customer" />
                   </button>
@@ -346,12 +346,12 @@ export function VehiclesClient({
                   onClick={() => router.push(`/vehicles/${v.id}`)}
                 >
                   <TableCell className="font-mono text-sm">{v.licensePlate || '-'}</TableCell>
-                  <TableCell>
+                  <TableCell className="truncate">
                     <span className="font-medium">
                       {v.year} {v.make} {v.model}
                     </span>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell text-muted-foreground">
+                  <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
                     {v.customer?.name || '-'}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-right font-mono text-sm">
