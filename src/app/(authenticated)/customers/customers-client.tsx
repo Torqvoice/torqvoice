@@ -30,6 +30,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { deleteCustomer, deleteCustomers } from "@/features/customers/Actions/customerActions";
 import { toast } from "sonner";
 import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   Loader2,
   MoreVertical,
   Pencil,
@@ -64,9 +67,13 @@ interface PaginatedData {
 export function CustomersClient({
   data,
   search,
+  sortBy,
+  sortOrder,
 }: {
   data: PaginatedData;
   search: string;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
 }) {
   const t = useTranslations("customers.list");
   const tc = useTranslations("common");
@@ -102,7 +109,7 @@ export function CustomersClient({
           newParams.set(key, String(value));
         }
       }
-      if (!("page" in params) && "search" in params) {
+      if (!("page" in params) && ("search" in params || "sortBy" in params)) {
         newParams.delete("page");
       }
       startTransition(() => {
@@ -111,6 +118,21 @@ export function CustomersClient({
     },
     [router, pathname, searchParams]
   );
+
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
+      navigate({ sortBy: column, sortOrder: newOrder });
+    },
+    [navigate, sortBy, sortOrder]
+  );
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
+    return sortOrder === "asc"
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />;
+  };
 
   // Live search: filters as you type, no Enter required. Submitting the
   // form (Enter) commits immediately, bypassing the debounce.
@@ -243,11 +265,31 @@ export function CustomersClient({
                   onClick={(e) => e.stopPropagation()}
                 />
               </TableHead>
-              <TableHead>{t("table.name")}</TableHead>
-              <TableHead className="hidden sm:table-cell">{t("table.company")}</TableHead>
-              <TableHead className="hidden md:table-cell">{t("table.phone")}</TableHead>
-              <TableHead className="hidden lg:table-cell">{t("table.email")}</TableHead>
-              <TableHead className="w-[80px] text-center">{t("table.vehicles")}</TableHead>
+              <TableHead>
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("name")}>
+                  {t("table.name")}<SortIcon column="name" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden sm:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("company")}>
+                  {t("table.company")}<SortIcon column="company" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden md:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("phone")}>
+                  {t("table.phone")}<SortIcon column="phone" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden lg:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("email")}>
+                  {t("table.email")}<SortIcon column="email" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[80px]">
+                <button type="button" className="mx-auto flex items-center hover:text-foreground" onClick={() => handleSort("vehicles")}>
+                  {t("table.vehicles")}<SortIcon column="vehicles" />
+                </button>
+              </TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>

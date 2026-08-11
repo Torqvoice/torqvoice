@@ -142,6 +142,8 @@ export async function getCustomersPaginated(params: {
   page?: number;
   pageSize?: number;
   search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ userId, organizationId }) => {
     const page = params.page || 1;
@@ -178,7 +180,18 @@ export async function getCustomersPaginated(params: {
         include: {
           _count: { select: { vehicles: true } },
         },
-        orderBy: { updatedAt: "desc" },
+        orderBy: (() => {
+          const dir = params.sortOrder || "desc";
+          const nullable = { sort: dir, nulls: "last" } as const;
+          switch (params.sortBy) {
+            case "name": return { name: dir };
+            case "company": return { company: nullable };
+            case "phone": return { phone: nullable };
+            case "email": return { email: nullable };
+            case "vehicles": return { vehicles: { _count: dir } };
+            default: return { updatedAt: "desc" as const };
+          }
+        })(),
         skip,
         take: pageSize,
       }),

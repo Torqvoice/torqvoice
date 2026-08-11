@@ -76,6 +76,8 @@ export async function getVehiclesPaginated(params: {
   pageSize?: number;
   search?: string;
   archived?: boolean;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ organizationId }) => {
     const page = params.page || 1;
@@ -115,7 +117,19 @@ export async function getVehiclesPaginated(params: {
           customer: { select: { id: true, name: true, company: true } },
           _count: { select: { serviceRecords: true } },
         },
-        orderBy: { updatedAt: "desc" },
+        orderBy: (() => {
+          const dir = params.sortOrder || "desc";
+          switch (params.sortBy) {
+            case "plate": return { licensePlate: { sort: dir, nulls: "last" as const } };
+            // The column shows "year make model" as one value; sort by make,
+            // then model, then year so identical models group together
+            case "vehicle": return [{ make: dir }, { model: dir }, { year: dir }];
+            case "customer": return { customer: { name: dir } };
+            case "mileage": return { mileage: dir };
+            case "services": return { serviceRecords: { _count: dir } };
+            default: return { updatedAt: "desc" as const };
+          }
+        })(),
         skip,
         take: pageSize,
       }),
