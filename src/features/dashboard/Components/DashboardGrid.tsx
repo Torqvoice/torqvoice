@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Responsive, useContainerWidth, type Layout } from "react-grid-layout";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   CARD_MIN_H,
   CARD_MIN_W,
@@ -81,7 +82,7 @@ export function DashboardGrid({
     >
       {mounted && (
         <Responsive
-          className={cn("dashboard-grid", ready && "dashboard-grid-ready", editing && "dashboard-grid-editing")}
+          className={cn("dashboard-grid animate-in fade-in duration-200", editing && "dashboard-grid-editing")}
           width={width}
           layouts={{ lg: layout }}
           breakpoints={{ lg: 900, xs: 0 }}
