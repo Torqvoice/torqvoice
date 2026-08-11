@@ -39,5 +39,10 @@
     "title": "Página no encontrada",
     "description": "Parece que esta pieza aún está en el taller. La página que buscas no existe o ha sido movida.",
     "backToDashboard": "Volver al panel"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice se ha actualizado a {version}",
+    "whatsNew": "Ver novedades",
+    "dismiss": "Cerrar"
   }
 }

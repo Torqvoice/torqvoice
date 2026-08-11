@@ -39,5 +39,10 @@
     "title": "Puslapis nerastas",
     "description": "Atrodo, ši dalis vis dar servise. Puslapis, kurio ieškote, neegzistuoja arba buvo perkeltas.",
     "backToDashboard": "Grįžti į valdymo skydelį"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice atnaujinta į {version}",
+    "whatsNew": "Žiūrėti naujienas",
+    "dismiss": "Uždaryti"
   }
 }

@@ -7,11 +7,13 @@ import { ExternalLink, Info } from 'lucide-react'
 export default async function AboutSettingsPage() {
   const t = await getTranslations('settings')
   const version = process.env.APP_VERSION || 'development'
+  const releaseNotesUrl =
+    process.env.RELEASE_NOTES_URL || 'https://github.com/Torqvoice/torqvoice/releases'
 
   const links = [
     { label: t('about.website'), href: 'https://torqvoice.com/' },
     { label: t('about.documentation'), href: 'https://torqvoice.com/docs' },
-    { label: t('about.changelog'), href: 'https://github.com/Torqvoice/torqvoice/releases' },
+    { label: t('about.changelog'), href: releaseNotesUrl },
   ]
 
   return (

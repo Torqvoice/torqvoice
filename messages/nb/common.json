@@ -39,5 +39,10 @@
     "title": "Siden ble ikke funnet",
     "description": "Det ser ut som denne delen fortsatt er på verkstedet. Siden du leter etter finnes ikke eller har blitt flyttet.",
     "backToDashboard": "Tilbake til dashbordet"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice er oppdatert til {version}",
+    "whatsNew": "Se hva som er nytt",
+    "dismiss": "Lukk"
   }
 }

@@ -39,5 +39,10 @@
     "title": "Pagina niet gevonden",
     "description": "Het lijkt erop dat dit onderdeel nog in de werkplaats is. De pagina die je zoekt bestaat niet of is verplaatst.",
     "backToDashboard": "Terug naar dashboard"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice is bijgewerkt naar {version}",
+    "whatsNew": "Bekijk wat er nieuw is",
+    "dismiss": "Sluiten"
   }
 }

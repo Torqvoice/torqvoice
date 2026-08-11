@@ -39,5 +39,10 @@
     "title": "Sayfa Bulunamadı",
     "description": "Bu parça hâlâ atölyede gibi görünüyor. Aradığınız sayfa mevcut değil veya taşınmış olabilir.",
     "backToDashboard": "Panele Dön"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice {version} sürümüne güncellendi",
+    "whatsNew": "Yenilikleri gör",
+    "dismiss": "Kapat"
   }
 }

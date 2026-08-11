@@ -8,6 +8,7 @@ import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { WhiteLabelCtaProvider } from "@/components/white-label-cta-context";
 import { DateSettingsProvider } from "@/components/date-settings-context";
+import { UpdateBanner } from "@/components/update-banner";
 import { CurrencySettingsProvider } from "@/components/currency-settings-context";
 import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
@@ -109,6 +110,13 @@ export default async function DashboardLayout({
     <ServiceTypeProvider serviceType={data.serviceType}>
     <LicenseExpiryProvider daysUntilExpiry={daysUntilExpiry} dismissed={licenseExpiryDismissed}>
     <WhiteLabelCtaProvider show={showWhiteLabelCta}>
+    <UpdateBanner
+      currentVersion={process.env.APP_VERSION || "development"}
+      lastSeenVersion={data.lastSeenVersion}
+      releaseNotesUrl={
+        process.env.RELEASE_NOTES_URL || "https://github.com/Torqvoice/torqvoice/releases"
+      }
+    />
     <SidebarProvider
       style={
         {
