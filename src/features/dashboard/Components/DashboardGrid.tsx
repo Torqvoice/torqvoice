@@ -11,7 +11,6 @@ import {
   GRID_MARGIN,
   GRID_ROW_HEIGHT,
   type CardLayout,
-  type DashboardCardId,
 } from "../dashboard-grid-config";
 
 /**
@@ -28,11 +27,11 @@ export function DashboardGrid({
   onCardsCommit,
   cardNodes,
 }: {
-  cards: Record<DashboardCardId, CardLayout>;
-  visibleIds: DashboardCardId[];
+  cards: Record<string, CardLayout>;
+  visibleIds: string[];
   editing: boolean;
-  onCardsCommit: (cards: Record<DashboardCardId, CardLayout>) => void;
-  cardNodes: Partial<Record<DashboardCardId, ReactNode>>;
+  onCardsCommit: (cards: Record<string, CardLayout>) => void;
+  cardNodes: Partial<Record<string, ReactNode>>;
 }) {
   const { width, containerRef, mounted } = useContainerWidth();
   const [breakpoint, setBreakpoint] = useState("lg");
@@ -52,7 +51,7 @@ export function DashboardGrid({
     const merged = { ...cards };
     let changed = false;
     for (const item of next) {
-      const id = item.i as DashboardCardId;
+      const id = item.i;
       const prev = merged[id];
       if (!prev) continue;
       if (prev.x !== item.x || prev.y !== item.y || prev.w !== item.w || prev.h !== item.h) {
@@ -75,7 +74,7 @@ export function DashboardGrid({
           rowHeight={GRID_ROW_HEIGHT}
           margin={GRID_MARGIN}
           containerPadding={[0, 0]}
-          dragConfig={{ enabled: interactive }}
+          dragConfig={{ enabled: interactive, cancel: ".dashboard-no-drag" }}
           resizeConfig={{ enabled: interactive, handles: ["se"] }}
           onBreakpointChange={(bp) => setBreakpoint(bp)}
           onLayoutChange={handleLayoutChange}

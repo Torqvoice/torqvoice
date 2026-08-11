@@ -29,8 +29,10 @@ export interface CardLayout {
 
 export interface DashboardLayout {
   version: 1;
-  hidden: DashboardCardId[];
-  cards: Record<DashboardCardId, CardLayout>;
+  /** Hidden card ids: built-in ids or custom:<widgetId> */
+  hidden: string[];
+  /** Positions keyed by built-in id or custom:<widgetId> */
+  cards: Record<string, CardLayout>;
 }
 
 export const GRID_COLS = 12;
@@ -70,39 +72,54 @@ function isCardLayout(v: unknown): v is CardLayout {
   );
 }
 
+function clampCard(stored: CardLayout): CardLayout {
+  return {
+    x: Math.max(0, Math.min(GRID_COLS - CARD_MIN_W, Math.round(stored.x))),
+    y: Math.max(0, Math.round(stored.y)),
+    w: Math.max(CARD_MIN_W, Math.min(GRID_COLS, Math.round(stored.w))),
+    h: Math.max(CARD_MIN_H, Math.min(40, Math.round(stored.h))),
+  };
+}
+
+/** A default spot for a card with no stored position: full row at the bottom */
+export function placeAtBottom(cards: Record<string, CardLayout>): CardLayout {
+  const bottom = Object.values(cards).reduce((max, c) => Math.max(max, c.y + c.h), 0);
+  return { x: 0, y: bottom, w: 6, h: 5 };
+}
+
 /**
  * Merges a stored layout with the defaults: unknown card ids are dropped,
  * missing cards (added after the user saved) fall back to their default
- * position, and malformed values reset. Never throws.
+ * position, and malformed values reset. `customIds` are the currently
+ * existing custom:<widgetId> card ids; stored entries for deleted widgets
+ * are discarded, and new widgets get a spot at the bottom. Never throws.
  */
-export function normalizeLayout(raw: unknown): DashboardLayout {
+export function normalizeLayout(raw: unknown, customIds: string[] = []): DashboardLayout {
   const result: DashboardLayout = {
     version: 1,
     hidden: [],
     cards: { ...DEFAULT_LAYOUT.cards },
   };
-  if (!raw || typeof raw !== "object") return result;
-  const data = raw as Record<string, unknown>;
+  const knownIds = new Set<string>([...DASHBOARD_CARD_IDS, ...customIds]);
+  const data = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
 
   if (Array.isArray(data.hidden)) {
-    result.hidden = data.hidden.filter((id): id is DashboardCardId =>
-      (DASHBOARD_CARD_IDS as readonly string[]).includes(id as string)
+    result.hidden = data.hidden.filter(
+      (id): id is string => typeof id === "string" && knownIds.has(id)
     );
   }
 
-  if (data.cards && typeof data.cards === "object") {
-    const cards = data.cards as Record<string, unknown>;
-    for (const id of DASHBOARD_CARD_IDS) {
-      const stored = cards[id];
-      if (isCardLayout(stored)) {
-        result.cards[id] = {
-          x: Math.max(0, Math.min(GRID_COLS - CARD_MIN_W, Math.round(stored.x))),
-          y: Math.max(0, Math.round(stored.y)),
-          w: Math.max(CARD_MIN_W, Math.min(GRID_COLS, Math.round(stored.w))),
-          h: Math.max(CARD_MIN_H, Math.min(40, Math.round(stored.h))),
-        };
-      }
-    }
+  const cards =
+    data.cards && typeof data.cards === "object"
+      ? (data.cards as Record<string, unknown>)
+      : {};
+  for (const id of DASHBOARD_CARD_IDS) {
+    const stored = cards[id];
+    if (isCardLayout(stored)) result.cards[id] = clampCard(stored);
+  }
+  for (const id of customIds) {
+    const stored = cards[id];
+    result.cards[id] = isCardLayout(stored) ? clampCard(stored) : placeAtBottom(result.cards);
   }
 
   return result;

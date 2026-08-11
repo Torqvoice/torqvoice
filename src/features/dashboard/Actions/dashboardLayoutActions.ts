@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
 import { getCachedSession } from "@/lib/cached-session";
 import { normalizeLayout } from "../dashboard-grid-config";
+import { customCardId } from "../custom-cards/registry";
 
 /**
  * Persists the current user's dashboard layout. Input is normalized against
@@ -15,7 +16,11 @@ export async function saveDashboardLayout(input: unknown) {
   const session = await getCachedSession();
   if (!session?.user?.id) return { success: false };
 
-  const layout = normalizeLayout(input);
+  const widgets = await db.dashboardWidget.findMany({
+    where: { userId: session.user.id },
+    select: { id: true },
+  });
+  const layout = normalizeLayout(input, widgets.map((w) => customCardId(w.id)));
   await db.user.update({
     where: { id: session.user.id },
     data: { dashboardLayout: layout as unknown as Prisma.InputJsonValue },

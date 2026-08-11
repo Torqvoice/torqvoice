@@ -39,6 +39,7 @@ model User {
   twoFactor              TwoFactor?
   passkeys               Passkey[]
   organizationMembers    OrganizationMember[]
+  dashboardWidgets       DashboardWidget[]
   auditLogs              AuditLog[]
   technicians            Technician[]
   stockMovements         StockMovement[]
@@ -712,6 +713,23 @@ model CustomFieldValue {
   @@unique([fieldId, entityId])
   @@index([fieldId])
   @@map("custom_field_values")
+}
+
+/// A user-defined dashboard card: a named, filtered table over one entity.
+/// The config shape (entity, filters, columns, limit) is validated against
+/// the field registry in customCardActions — nothing here reaches SQL raw.
+model DashboardWidget {
+  id             String   @id @default(cuid())
+  name           String
+  config         Json
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId, organizationId])
+  @@map("dashboard_widgets")
 }
 
 model Organization {

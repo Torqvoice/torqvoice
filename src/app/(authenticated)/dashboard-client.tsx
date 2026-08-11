@@ -36,6 +36,7 @@ import {
   BellRing,
   MessageSquare,
   Settings,
+  Plus,
   RotateCcw,
   SlidersHorizontal,
   Undo2,
@@ -58,9 +59,15 @@ import {
   DASHBOARD_CARD_IDS,
   DEFAULT_LAYOUT,
   normalizeLayout,
+  placeAtBottom,
   type DashboardCardId,
   type DashboardLayout,
 } from "@/features/dashboard/dashboard-grid-config";
+import { CustomTableCard } from "@/features/dashboard/Components/CustomTableCard";
+import { CustomCardDialog } from "@/features/dashboard/Components/CustomCardDialog";
+import { deleteDashboardWidget } from "@/features/dashboard/Actions/customCardActions";
+import { customCardId, type CustomWidget } from "@/features/dashboard/custom-cards/registry";
+import { useConfirm } from "@/components/confirm-dialog";
 
 interface ServiceItem {
   id: string;
@@ -242,6 +249,7 @@ export function DashboardClient({
   recentAuditLogs = [],
   recentObservations = [],
   initialLayout = null,
+  customWidgets = [],
 }: {
   stats: DashboardStats;
   currencyCode?: string;
@@ -269,6 +277,7 @@ export function DashboardClient({
   }[];
   recentObservations?: DashboardObservation[];
   initialLayout?: unknown;
+  customWidgets?: CustomWidget[];
 }) {
   const formatCurrency = useFormatCurrency();
   const t = useTranslations("dashboard");
@@ -283,12 +292,21 @@ export function DashboardClient({
   const [, startTransition] = useTransition();
   // Grid layout: per-user, server-persisted. sms and notifications are
   // mutually exclusive cards, so one of them is never available.
-  const [layout, setLayout] = useState<DashboardLayout>(() => normalizeLayout(initialLayout));
+  const confirm = useConfirm();
+  const [widgets, setWidgets] = useState<CustomWidget[]>(customWidgets);
+  const [layout, setLayout] = useState<DashboardLayout>(() =>
+    normalizeLayout(initialLayout, customWidgets.map((w) => customCardId(w.id)))
+  );
   const [editing, setEditing] = useState(false);
+  const [cardDialogOpen, setCardDialogOpen] = useState(false);
+  const [editingWidget, setEditingWidget] = useState<CustomWidget | null>(null);
   const excludedCard: DashboardCardId = smsEnabled ? "notifications" : "sms";
   const availableIds = DASHBOARD_CARD_IDS.filter((id) => id !== excludedCard);
-  const hiddenSet = new Set<DashboardCardId>(layout.hidden);
-  const visibleIds = availableIds.filter((id) => !hiddenSet.has(id));
+  const hiddenSet = new Set<string>(layout.hidden);
+  const visibleIds = [
+    ...availableIds,
+    ...widgets.map((w) => customCardId(w.id)),
+  ].filter((id) => !hiddenSet.has(id));
 
   const persistLayout = (next: DashboardLayout) => {
     setLayout(next);
@@ -296,7 +314,7 @@ export function DashboardClient({
   };
   const commitCards = (cards: DashboardLayout["cards"]) =>
     persistLayout({ ...layout, cards });
-  const toggleCard = (id: DashboardCardId) =>
+  const toggleCard = (id: string) =>
     persistLayout({
       ...layout,
       hidden: hiddenSet.has(id)
@@ -304,8 +322,47 @@ export function DashboardClient({
         : [...layout.hidden, id],
     });
   const handleResetLayout = () => {
-    setLayout(DEFAULT_LAYOUT);
+    setLayout(normalizeLayout(DEFAULT_LAYOUT, widgets.map((w) => customCardId(w.id))));
     void resetDashboardLayout();
+  };
+
+  const handleWidgetSaved = (w: CustomWidget) => {
+    setWidgets((prev) =>
+      prev.some((p) => p.id === w.id)
+        ? prev.map((p) => (p.id === w.id ? w : p))
+        : [...prev, w]
+    );
+    const cid = customCardId(w.id);
+    if (!layout.cards[cid]) {
+      persistLayout({
+        ...layout,
+        cards: { ...layout.cards, [cid]: placeAtBottom(layout.cards) },
+      });
+    }
+  };
+
+  const handleDeleteWidget = async (w: CustomWidget) => {
+    const ok = await confirm({
+      title: t("customCards.deleteConfirmTitle"),
+      description: t("customCards.deleteConfirmDescription", { name: w.name }),
+      confirmLabel: t("customCards.deleteCard"),
+      destructive: true,
+    });
+    if (!ok) return;
+    const result = await deleteDashboardWidget(w.id);
+    if (!result.success) {
+      toast.error(result.error || t("customCards.saveError"));
+      return;
+    }
+    setWidgets((prev) => prev.filter((p) => p.id !== w.id));
+    const cid = customCardId(w.id);
+    const cards = { ...layout.cards };
+    delete cards[cid];
+    persistLayout({
+      ...layout,
+      cards,
+      hidden: layout.hidden.filter((h) => h !== cid),
+    });
   };
 
   const formatRelativeTime = (date: string | Date) => {
@@ -415,9 +472,31 @@ export function DashboardClient({
                       />
                     </label>
                   ))}
+                  {widgets.map((w) => (
+                    <label key={w.id} className="flex items-center justify-between gap-2 cursor-pointer">
+                      <span className="truncate text-sm">{w.name}</span>
+                      <Switch
+                        size="sm"
+                        checked={!hiddenSet.has(customCardId(w.id))}
+                        onCheckedChange={() => toggleCard(customCardId(w.id))}
+                      />
+                    </label>
+                  ))}
                 </div>
               </PopoverContent>
             </Popover>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs gap-1.5"
+              onClick={() => {
+                setEditingWidget(null);
+                setCardDialogOpen(true);
+              }}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              {t("customCards.addCard")}
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -448,7 +527,7 @@ export function DashboardClient({
       {/* Card grid: nodes keyed by card id, rendered by DashboardGrid in the
           user's saved arrangement */}
       {(() => {
-        const cardNodes: Partial<Record<DashboardCardId, ReactNode>> = {
+        const cardNodes: Partial<Record<string, ReactNode>> = {
         // Vehicles Due for Service
         maintenance: (
           <Card className="border-0 shadow-sm">
@@ -1430,6 +1509,19 @@ export function DashboardClient({
         </Card>
         ),
         };
+        for (const w of widgets) {
+          cardNodes[customCardId(w.id)] = (
+            <CustomTableCard
+              widget={w}
+              editing={editing}
+              onEdit={() => {
+                setEditingWidget(w);
+                setCardDialogOpen(true);
+              }}
+              onDelete={() => handleDeleteWidget(w)}
+            />
+          );
+        }
         return (
           <DashboardGrid
             cards={layout.cards}
@@ -1440,6 +1532,12 @@ export function DashboardClient({
           />
         );
       })()}
+      <CustomCardDialog
+        open={cardDialogOpen}
+        onOpenChange={setCardDialogOpen}
+        widget={editingWidget}
+        onSaved={handleWidgetSaved}
+      />
     </div>
     </TooltipProvider>
   );

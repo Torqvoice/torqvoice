@@ -15,6 +15,7 @@ import { getRecentObservations } from "@/features/vehicles/Actions/findingAction
 import { getMyActiveJobs } from "@/features/vehicles/Actions/getMyActiveJobs";
 import { DashboardClient } from "./dashboard-client";
 import { db } from "@/lib/db";
+import { sanitizeConfig, type CustomWidget } from "@/features/dashboard/custom-cards/registry";
 import { MyActiveJobs } from "@/features/vehicles/Components/MyActiveJobs";
 import { PageHeader } from "@/components/page-header";
 
@@ -40,12 +41,24 @@ export default async function DashboardPage() {
     getMyActiveJobs(),
   ]);
 
-  const layoutUser = auth
-    ? await db.user.findUnique({
-        where: { id: auth.userId },
-        select: { dashboardLayout: true },
-      })
-    : null;
+  const [layoutUser, widgetRows] = auth
+    ? await Promise.all([
+        db.user.findUnique({
+          where: { id: auth.userId },
+          select: { dashboardLayout: true },
+        }),
+        db.dashboardWidget.findMany({
+          where: { userId: auth.userId, organizationId: auth.organizationId },
+          select: { id: true, name: true, config: true },
+          orderBy: { createdAt: "asc" },
+        }),
+      ])
+    : [null, []];
+
+  const customWidgets: CustomWidget[] = widgetRows.flatMap((w) => {
+    const config = sanitizeConfig(w.config);
+    return config ? [{ id: w.id, name: w.name, config }] : [];
+  });
 
   if (!result.success || !result.data) {
     const t = await getTranslations("dashboard");
@@ -93,6 +106,7 @@ export default async function DashboardPage() {
           recentAuditLogs={recentAuditLogs}
           recentObservations={recentObservations}
           initialLayout={layoutUser?.dashboardLayout ?? null}
+          customWidgets={customWidgets}
         />
       </div>
     </>
