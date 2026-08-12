@@ -20,7 +20,7 @@ export async function POST(request: Request) {
           // We need orgId from the service record lookup
           const record = await db.serviceRecord.findUnique({
             where: { id: parts[1] },
-            include: { vehicle: { select: { organizationId: true } } },
+            select: { id: true, organizationId: true },
           });
 
           if (record) {

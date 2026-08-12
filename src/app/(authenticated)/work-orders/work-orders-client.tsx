@@ -18,11 +18,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { statusColors } from "@/lib/table-utils";
 import { updateServiceStatus } from "@/features/vehicles/Actions/serviceActions";
@@ -30,10 +31,13 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
-  ChevronDown,
+  Car,
+  ExternalLink,
   Loader2,
+  MousePointerClick,
   Plus,
   Search,
+  User,
 } from "lucide-react";
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
@@ -277,6 +281,10 @@ export function WorkOrdersClient({
 
       {/* Table */}
       <div className="rounded-lg border">
+        <div className="hidden items-center gap-1.5 border-b bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground md:flex">
+          <MousePointerClick className="h-3.5 w-3.5" />
+          {t("contextMenu.hint")}
+        </div>
         <Table className="table-fixed">
           <TableHeader>
             <TableRow>
@@ -320,13 +328,12 @@ export function WorkOrdersClient({
                   {t("table.total")}<SortIcon column="totalAmount" />
                 </button>
               </TableHead>
-              <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
                   {t("empty")}
                 </TableCell>
               </TableRow>
@@ -334,13 +341,16 @@ export function WorkOrdersClient({
               data.records.map((r) => {
                 const displayTotal = r.totalAmount > 0 ? r.totalAmount : r.cost;
                 const transitions = statusTransitions[r.status] || [];
+                const recordHref = r.vehicle ? `/vehicles/${r.vehicle.id}/service/${r.id}` : `/sales/${r.id}`;
+                const rowCustomer = r.customer ?? r.vehicle?.customer;
                 return (
+                  <ContextMenu key={r.id} modal={false}>
+                  <ContextMenuTrigger asChild>
                   <TableRow
-                    key={r.id}
                     className={`cursor-pointer transition-opacity ${navigatingId === r.id ? "opacity-50" : ""}`}
                     onClick={() => {
                       setNavigatingId(r.id);
-                      router.push(r.vehicle ? `/vehicles/${r.vehicle.id}/service/${r.id}` : `/sales/${r.id}`);
+                      router.push(recordHref);
                     }}
                   >
                     <TableCell className="hidden sm:table-cell font-mono text-xs text-muted-foreground">
@@ -374,35 +384,52 @@ export function WorkOrdersClient({
                       {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
                     </TableCell>
                     <TableCell className="text-right font-semibold">
-                      {formatCurrency(displayTotal, currencyCode)}
-                    </TableCell>
-                    <TableCell>
-                      {navigatingId === r.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                      ) : transitions.length > 0 ? (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("changeStatus")}>
-                              <ChevronDown className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {transitions.map((tr) => (
-                              <DropdownMenuItem
-                                key={tr.target}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleStatusChange(r, tr.target);
-                                }}
-                              >
-                                {t(`statusActions.${tr.actionKey}`)}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      ) : null}
+                      <span className="inline-flex items-center gap-2">
+                        {navigatingId === r.id && (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                        )}
+                        {formatCurrency(displayTotal, currencyCode)}
+                      </span>
                     </TableCell>
                   </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="w-52">
+                    <ContextMenuItem
+                      onClick={() => {
+                        setNavigatingId(r.id);
+                        router.push(recordHref);
+                      }}
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {t("contextMenu.open")}
+                    </ContextMenuItem>
+                    {r.vehicle && (
+                      <ContextMenuItem onClick={() => router.push(`/vehicles/${r.vehicle?.id}`)}>
+                        <Car className="mr-2 h-4 w-4" />
+                        {t("contextMenu.openVehicle")}
+                      </ContextMenuItem>
+                    )}
+                    {rowCustomer && (
+                      <ContextMenuItem onClick={() => router.push(`/customers/${rowCustomer.id}`)}>
+                        <User className="mr-2 h-4 w-4" />
+                        {t("contextMenu.openCustomer")}
+                      </ContextMenuItem>
+                    )}
+                    {transitions.length > 0 && (
+                      <>
+                        <ContextMenuSeparator />
+                        {transitions.map((tr) => (
+                          <ContextMenuItem
+                            key={tr.target}
+                            onClick={() => handleStatusChange(r, tr.target)}
+                          >
+                            {t(`statusActions.${tr.actionKey}`)}
+                          </ContextMenuItem>
+                        ))}
+                      </>
+                    )}
+                  </ContextMenuContent>
+                  </ContextMenu>
                 );
               })
             )}

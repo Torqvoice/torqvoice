@@ -34,7 +34,13 @@
       "total": "Gesamt"
     },
     "emailSubject": "Fahrzeugstatusupdate: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Arbeitsauftrag öffnen",
+      "openVehicle": "Fahrzeug öffnen",
+      "openCustomer": "Kunde öffnen",
+      "hint": "Tipp: Rechtsklick auf eine Zeile für Aktionen"
+    }
   },
   "vehiclePicker": {
     "title": "Fahrzeug für Arbeitsauftrag auswählen",

@@ -34,7 +34,13 @@
       "total": "Total"
     },
     "emailSubject": "Kjøretøystatus oppdatert: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Åpne arbeidsordre",
+      "openVehicle": "Åpne kjøretøy",
+      "openCustomer": "Åpne kunde",
+      "hint": "Tips: høyreklikk på en rad for handlinger"
+    }
   },
   "vehiclePicker": {
     "title": "Velg kjøretøy for arbeidsordre",

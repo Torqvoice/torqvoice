@@ -34,7 +34,13 @@
       "total": "Итого"
     },
     "emailSubject": "Обновление статуса транспортного средства: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Открыть заказ-наряд",
+      "openVehicle": "Открыть автомобиль",
+      "openCustomer": "Открыть клиента",
+      "hint": "Подсказка: правый клик по строке — действия"
+    }
   },
   "vehiclePicker": {
     "title": "Выберите транспортное средство для заказ-наряда",

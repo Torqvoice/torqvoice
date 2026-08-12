@@ -205,6 +205,9 @@ async function executeOrgScopedQuery(sql: string, orgId: string): Promise<unknow
       "technicians",
       "inspections",
       "inspection_quote_requests",
+      // Service records carry their own organizationId (counter sales have no
+      // vehicle, so scoping through vehicles would hide them).
+      "service_records",
     ];
 
     for (const table of orgDirectTables) {
@@ -219,7 +222,6 @@ async function executeOrgScopedQuery(sql: string, orgId: string): Promise<unknow
 
     // Children of vehicles (via vehicleId → vehicles.id)
     const vehicleChildren = [
-      "service_records",
       "notes",
       "fuel_logs",
       "reminders",
@@ -317,7 +319,7 @@ PostgreSQL database schema (use these exact table/column names in queries):
 
 vehicles (id, make, model, year, vin, "licensePlate", color, mileage, "fuelType", transmission, "engineSize", "purchaseDate", "purchasePrice", "isArchived", "createdAt", "updatedAt", "customerId")
 
-service_records (id, title, description, type, status, cost, mileage, "serviceDate", "startDateTime", "endDateTime", "shopName", "techName", parts, "laborHours", "diagnosticNotes", "invoiceNotes", subtotal, "taxRate", "taxAmount", "totalAmount", "invoiceNumber", "discountType", "discountValue", "discountAmount", "manuallyPaid", "createdAt", "updatedAt", "vehicleId", "technicianId", "sortOrder")
+service_records (id, title, description, type, status, cost, mileage, "serviceDate", "startDateTime", "endDateTime", "shopName", "techName", parts, "laborHours", "diagnosticNotes", "invoiceNotes", subtotal, "taxRate", "taxAmount", "totalAmount", "invoiceNumber", "discountType", "discountValue", "discountAmount", "manuallyPaid", "createdAt", "updatedAt", "vehicleId", "customerId", "technicianId", "sortOrder") -- "vehicleId" is NULL for parts-only counter sales; those link "customerId" directly
 
 service_parts (id, "partNumber", name, quantity, "unitPrice", total, "serviceRecordId")
 
@@ -357,7 +359,8 @@ service_attachments (id, "fileName", "fileUrl", "fileType", "fileSize", category
 
 Key relationships:
 - vehicles."customerId" → customers.id
-- service_records."vehicleId" → vehicles.id
+- service_records."vehicleId" → vehicles.id (NULL for counter sales)
+- service_records."customerId" → customers.id (set only for counter sales)
 - service_parts."serviceRecordId" → service_records.id
 - service_labor."serviceRecordId" → service_records.id
 - payments."serviceRecordId" → service_records.id

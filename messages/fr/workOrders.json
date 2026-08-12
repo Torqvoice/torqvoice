@@ -34,7 +34,13 @@
       "total": "Total"
     },
     "emailSubject": "Mise à jour du Statut du Véhicule: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Ouvrir l'ordre de travail",
+      "openVehicle": "Ouvrir le véhicule",
+      "openCustomer": "Ouvrir le client",
+      "hint": "Astuce : clic droit sur une ligne pour les actions"
+    }
   },
   "vehiclePicker": {
     "title": "Sélectionner un Véhicule pour l'Ordre de Travail",

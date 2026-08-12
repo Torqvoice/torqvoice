@@ -34,7 +34,13 @@
       "total": "Totaal"
     },
     "emailSubject": "Voertuigstatus bijgewerkt: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Werkorder openen",
+      "openVehicle": "Voertuig openen",
+      "openCustomer": "Klant openen",
+      "hint": "Tip: rechtsklik op een rij voor acties"
+    }
   },
   "vehiclePicker": {
     "title": "Voertuig selecteren voor werkorder",

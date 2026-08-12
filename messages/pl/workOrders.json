@@ -34,7 +34,13 @@
       "total": "Razem"
     },
     "emailSubject": "Aktualizacja Statusu Pojazdu: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Otwórz zlecenie",
+      "openVehicle": "Otwórz pojazd",
+      "openCustomer": "Otwórz klienta",
+      "hint": "Wskazówka: kliknij wiersz prawym przyciskiem, aby zobaczyć akcje"
+    }
   },
   "vehiclePicker": {
     "title": "Wybierz Pojazd do Zlecenia Pracy",

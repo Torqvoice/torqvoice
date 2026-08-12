@@ -34,7 +34,13 @@
       "total": "Total"
     },
     "emailSubject": "Vehicle Status Update: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Open work order",
+      "openVehicle": "Open vehicle",
+      "openCustomer": "Open customer",
+      "hint": "Tip: right-click a row for actions"
+    }
   },
   "vehiclePicker": {
     "title": "Select Vehicle for Work Order",
