@@ -38,6 +38,7 @@
     "customer_create": "Cliente creato",
     "customer_update": "Cliente aggiornato",
     "customer_delete": "Cliente eliminato",
+    "customer_backfillNumbers": "Numeri cliente completati",
     "inventory_create": "Pezzo di inventario creato",
     "inventory_update": "Pezzo di inventario aggiornato",
     "inventory_delete": "Pezzo di inventario eliminato",

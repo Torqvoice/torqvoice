@@ -38,6 +38,7 @@
     "customer_create": "Klant aangemaakt",
     "customer_update": "Klant bijgewerkt",
     "customer_delete": "Klant verwijderd",
+    "customer_backfillNumbers": "Klantnummers aangevuld",
     "inventory_create": "Inventarisonderdeel aangemaakt",
     "inventory_update": "Inventarisonderdeel bijgewerkt",
     "inventory_delete": "Inventarisonderdeel verwijderd",

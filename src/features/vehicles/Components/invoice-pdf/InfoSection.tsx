@@ -61,7 +61,7 @@ interface CustomerRenderCtx {
 
 function renderCustomerField(fieldId: string, ctx: CustomerRenderCtx): React.ReactNode {
   const { data, styles, labels } = ctx
-  const c = data.vehicle.customer
+  const c = data.customer ?? data.vehicle?.customer
   if (!c) return null
 
   switch (fieldId) {
@@ -96,6 +96,7 @@ interface VehicleRenderCtx {
 
 function renderVehicleField(fieldId: string, ctx: VehicleRenderCtx): React.ReactNode {
   const { data, vehicleName, invoiceSettings, styles, labels } = ctx
+  if (!data.vehicle) return null
 
   switch (fieldId) {
     case 'vehicle_name':
@@ -137,6 +138,9 @@ function renderServiceField(fieldId: string, ctx: ServiceRenderCtx): React.React
     case 'service_title':
       return <Text key={fieldId} style={styles.infoTextBold}>{data.title}</Text>
     case 'service_type':
+      // Counter sales (no vehicle) aren't a service — the default
+      // "maintenance" type would just be noise on the invoice.
+      if (!data.vehicle) return null
       return (
         <Text key={fieldId} style={styles.infoTextSmall}>
           {labels.type ? fillTemplate(labels.type, { type: data.type }) : `Type: ${data.type}`}
@@ -189,12 +193,13 @@ export function CustomerSection({
   const show = (id: string) => !visibleFields || visibleFields.has(id)
   const fieldOrder = getOrderedFieldIds(visibleFields, DEFAULT_CUSTOMER_FIELDS)
 
-  const hasCustomer = data.vehicle.customer &&
+  const invoiceCustomer = data.customer ?? data.vehicle?.customer
+  const hasCustomer = invoiceCustomer &&
     (show('customer_name') ||
-      (show('customer_company') && data.vehicle.customer.company) ||
-      (show('customer_address') && data.vehicle.customer.address) ||
-      (show('customer_email') && data.vehicle.customer.email) ||
-      (show('customer_phone') && data.vehicle.customer.phone))
+      (show('customer_company') && invoiceCustomer.company) ||
+      (show('customer_address') && invoiceCustomer.address) ||
+      (show('customer_email') && invoiceCustomer.email) ||
+      (show('customer_phone') && invoiceCustomer.phone))
 
   const hasCf = customFields?.some(cf => cf.value !== '' && cf.value != null)
 
@@ -205,7 +210,7 @@ export function CustomerSection({
   return (
     <View style={styles.infoBox}>
       <Text style={styles.infoLabel}>{labels.billTo || 'Bill To'}</Text>
-      {data.vehicle.customer && (
+      {invoiceCustomer && (
         <>
           {fieldOrder.filter(id => show(id)).map(id => renderCustomerField(id, ctx))}
         </>
@@ -237,6 +242,8 @@ export function VehicleSection({
 }) {
   const show = (id: string) => !visibleFields || visibleFields.has(id)
   const fieldOrder = getOrderedFieldIds(visibleFields, DEFAULT_VEHICLE_FIELDS)
+
+  if (!data.vehicle) return null
 
   const hasVehicle =
     show('vehicle_name') ||

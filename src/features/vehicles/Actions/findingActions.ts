@@ -25,7 +25,7 @@ export async function getObservationsPaginated(params: {
 
       const search = params.search?.trim();
       const where = {
-        vehicle: { organizationId },
+        organizationId,
         ...(params.status && params.status !== "all" ? { status: params.status } : {}),
         ...(params.severity && params.severity !== "all" ? { severity: params.severity } : {}),
         ...(search

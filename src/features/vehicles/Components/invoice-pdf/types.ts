@@ -55,6 +55,14 @@ export interface InvoiceData {
   warrantyMileage?: number | null;
   warrantyExpiresAt?: Date | string | null;
   warrantyNotes?: string | null;
+  customer?: {
+    name: string
+    email: string | null
+    phone: string | null
+    address: string | null
+    company: string | null
+    taxId?: string | null
+  } | null
   vehicle: {
     make: string
     model: string
@@ -70,7 +78,7 @@ export interface InvoiceData {
       company: string | null
       taxId?: string | null
     } | null
-  }
+  } | null
 }
 
 export interface WorkshopInfo {

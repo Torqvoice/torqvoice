@@ -14,7 +14,7 @@ export async function createStatusReport(input: unknown) {
 
       // Verify the service record belongs to this org
       const serviceRecord = await db.serviceRecord.findFirst({
-        where: { id: data.serviceRecordId, vehicle: { organizationId } },
+        where: { id: data.serviceRecordId, organizationId },
         select: { id: true, technicianId: true },
       });
       if (!serviceRecord) throw new Error("Service record not found");

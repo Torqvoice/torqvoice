@@ -41,7 +41,9 @@ export async function GET(
       select: {
         id: true,
         status: true,
-        vehicle: { select: { customerId: true, organizationId: true } },
+        customerId: true,
+        organizationId: true,
+        vehicle: { select: { customerId: true } },
       },
     })
 
@@ -49,9 +51,10 @@ export async function GET(
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
 
+    const recordCustomerId = record.customerId ?? record.vehicle?.customerId ?? null
     if (
-      record.vehicle.customerId !== session.customerId ||
-      record.vehicle.organizationId !== session.organizationId
+      recordCustomerId !== session.customerId ||
+      record.organizationId !== session.organizationId
     ) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }

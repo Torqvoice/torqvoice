@@ -326,7 +326,7 @@ export function MyActiveJobs({
                   <div className="flex items-center justify-between">
                     <div
                       className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
-                      onClick={() => router.push(`/vehicles/${job.vehicleId}/service/${job.id}`)}
+                      onClick={() => router.push(job.vehicleId ? `/vehicles/${job.vehicleId}/service/${job.id}` : `/sales/${job.id}`)}
                     >
                       <div
                         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${statusColor}`}
@@ -336,8 +336,9 @@ export function MyActiveJobs({
                       <div className="min-w-0">
                         <p className="font-medium text-sm truncate">{job.title}</p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
-                          {job.vehicle.licensePlate && ` · ${job.vehicle.licensePlate}`}
+                          {job.vehicle
+                            ? `${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}${job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}`
+                            : job.customer?.name ?? ''}
                         </p>
                       </div>
                     </div>
@@ -424,17 +425,19 @@ export function MyActiveJobs({
                         <FileVideo className="mr-1.5 h-4 w-4" />
                         {t('statusReport')}
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-9"
-                        onClick={() =>
-                          setObservationTarget({ vehicleId: job.vehicleId, serviceRecordId: job.id })
-                        }
-                      >
-                        <ClipboardCheck className="mr-1.5 h-4 w-4" />
-                        {t('observation')}
-                      </Button>
+                      {job.vehicleId && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-9"
+                          onClick={() =>
+                            setObservationTarget({ vehicleId: job.vehicleId as string, serviceRecordId: job.id })
+                          }
+                        >
+                          <ClipboardCheck className="mr-1.5 h-4 w-4" />
+                          {t('observation')}
+                        </Button>
+                      )}
                     </div>
                     {/* Mobile: counters only */}
                     <div className="shrink-0 ml-3 flex sm:hidden items-center gap-1.5 text-xs text-muted-foreground">
@@ -524,17 +527,19 @@ export function MyActiveJobs({
                         <FileVideo className="mr-1 h-3.5 w-3.5" />
                         {t('report')}
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 h-9"
-                        onClick={() =>
-                          setObservationTarget({ vehicleId: job.vehicleId, serviceRecordId: job.id })
-                        }
-                      >
-                        <ClipboardCheck className="mr-1 h-3.5 w-3.5" />
-                        {t('observation')}
-                      </Button>
+                      {job.vehicleId && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 h-9"
+                          onClick={() =>
+                            setObservationTarget({ vehicleId: job.vehicleId as string, serviceRecordId: job.id })
+                          }
+                        >
+                          <ClipboardCheck className="mr-1 h-3.5 w-3.5" />
+                          {t('observation')}
+                        </Button>
+                      )}
                     </ButtonGroup>
                   </div>
                   <input
@@ -664,7 +669,7 @@ export function MyActiveJobs({
                 if (!open) setStatusReportJobId(null)
               }}
               serviceRecordId={statusReportJobId}
-              vehicleName={`${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}`}
+              vehicleName={job.vehicle ? `${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}` : job.title}
               customer={job.customer}
               smsEnabled={smsEnabled}
               emailEnabled={emailEnabled}

@@ -38,6 +38,7 @@
     "customer_create": "Kunde erstellt",
     "customer_update": "Kunde aktualisiert",
     "customer_delete": "Kunde gelöscht",
+    "customer_backfillNumbers": "Kundennummern nachgetragen",
     "inventory_create": "Lagerteil erstellt",
     "inventory_update": "Lagerteil aktualisiert",
     "inventory_delete": "Lagerteil gelöscht",

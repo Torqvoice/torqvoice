@@ -41,8 +41,7 @@ async function getBillingSummary(organizationId: string): Promise<BillingSummary
           ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
         END AS paid
       FROM service_records sr
-      JOIN vehicles v ON v.id = sr."vehicleId"
-      WHERE v."organizationId" = ${organizationId}
+      WHERE sr."organizationId" = ${organizationId}
     ) sub
   `);
 
@@ -110,8 +109,8 @@ export async function getBillingHistory(params: {
               ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
             END AS paid_amount
           FROM service_records sr
-          JOIN vehicles v ON v.id = sr."vehicleId"
-          WHERE v."organizationId" = ${organizationId}
+          LEFT JOIN vehicles v ON v.id = sr."vehicleId"
+          WHERE sr."organizationId" = ${organizationId}
           ${searchCondition}
         ) sub
         WHERE 1=1 ${statusCondition}
@@ -130,7 +129,7 @@ export async function getBillingHistory(params: {
           effective_total: number;
           paid_amount: number;
           manually_paid: boolean;
-          vehicle_id: string;
+          vehicle_id: string | null;
           vehicle_make: string | null;
           vehicle_model: string | null;
           vehicle_year: number | null;
@@ -178,9 +177,9 @@ export async function getBillingHistory(params: {
             c.id AS customer_id,
             c.name AS customer_name
           FROM service_records sr
-          JOIN vehicles v ON v.id = sr."vehicleId"
-          LEFT JOIN customers c ON c.id = v."customerId"
-          WHERE v."organizationId" = ${organizationId}
+          LEFT JOIN vehicles v ON v.id = sr."vehicleId"
+          LEFT JOIN customers c ON c.id = COALESCE(sr."customerId", v."customerId")
+          WHERE sr."organizationId" = ${organizationId}
           ${searchCondition}
         ) sub
         WHERE 1=1 ${statusCondition}
@@ -218,14 +217,16 @@ export async function getBillingHistory(params: {
           totalAmount: effectiveTotal,
           totalPaid: paidAmount,
           status: paymentStatus,
-          vehicle: {
-            id: r.vehicle_id,
-            make: r.vehicle_make || "",
-            model: r.vehicle_model || "",
-            year: r.vehicle_year || 0,
-            licensePlate: r.vehicle_license_plate,
-            customer: r.customer_id ? { id: r.customer_id, name: r.customer_name || "" } : null,
-          },
+          vehicle: r.vehicle_id
+            ? {
+                id: r.vehicle_id,
+                make: r.vehicle_make || "",
+                model: r.vehicle_model || "",
+                year: r.vehicle_year || 0,
+                licensePlate: r.vehicle_license_plate,
+              }
+            : null,
+          customer: r.customer_id ? { id: r.customer_id, name: r.customer_name || "" } : null,
         };
         }),
         total,

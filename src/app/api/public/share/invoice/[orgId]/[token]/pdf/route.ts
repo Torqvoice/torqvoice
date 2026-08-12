@@ -26,11 +26,11 @@ export async function GET(
       where: { publicToken: token },
       select: {
         id: true,
-        vehicle: { select: { organizationId: true } },
+        organizationId: true,
       },
     })
 
-    if (!record || record.vehicle.organizationId !== orgId) {
+    if (!record || record.organizationId !== orgId) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
 

@@ -8,7 +8,7 @@ export async function getServiceRecordTechnician(serviceRecordId: string) {
   return withAuth(
     async ({ organizationId }) => {
       const sr = await db.serviceRecord.findFirst({
-        where: { id: serviceRecordId, vehicle: { organizationId } },
+        where: { id: serviceRecordId, organizationId },
         select: {
           technicianId: true,
           technician: { select: { id: true, name: true } },

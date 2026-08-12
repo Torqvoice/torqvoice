@@ -61,7 +61,11 @@
     "customerNameRequired": "Kliento vardas yra privalomas",
     "failedCreateCustomer": "Nepavyko sukurti kliento",
     "failedCreateVehicle": "Nepavyko sukurti transporto priemonės",
-    "somethingWentWrong": "Kažkas nutiko"
+    "somethingWentWrong": "Kažkas nutiko",
+    "partsSale": "Tik dalių pardavimas",
+    "partsSaleDescription": "Sukurkite sąskaitą be transporto priemonės, dalių pardavimui prie prekystalio.",
+    "createSale": "Sukurti pardavimą",
+    "none": "Nėra"
   },
   "notify": {
     "title": "Pranešti {name}",

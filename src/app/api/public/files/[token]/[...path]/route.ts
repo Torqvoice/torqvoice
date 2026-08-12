@@ -46,11 +46,11 @@ export async function GET(
 
   const serviceRecord = await db.serviceRecord.findUnique({
     where: { publicToken: token },
-    select: { vehicle: { select: { organizationId: true } } },
+    select: { organizationId: true },
   });
 
-  if (serviceRecord?.vehicle.organizationId) {
-    orgId = serviceRecord.vehicle.organizationId;
+  if (serviceRecord?.organizationId) {
+    orgId = serviceRecord.organizationId;
   } else {
     const quote = await db.quote.findFirst({
       where: { publicToken: token },

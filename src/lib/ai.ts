@@ -115,9 +115,9 @@ export async function visionCompletion(
 // ─── AI Feature Functions ────────────────────────────────────────────────────
 
 export interface ServiceContext {
-  vehicleMake: string;
-  vehicleModel: string;
-  vehicleYear: number;
+  vehicleMake: string | null;
+  vehicleModel: string | null;
+  vehicleYear: number | null;
   licensePlate?: string | null;
   serviceType: string;
   serviceTitle: string;
@@ -144,7 +144,11 @@ export async function generateServiceDescription(
           .join("\n")
       : "No labor listed";
 
-  const userPrompt = `Vehicle: ${context.vehicleYear} ${context.vehicleMake} ${context.vehicleModel}${context.licensePlate ? ` (${context.licensePlate})` : ""}
+  const vehicleStr = context.vehicleMake
+    ? `${context.vehicleYear} ${context.vehicleMake} ${context.vehicleModel}${context.licensePlate ? ` (${context.licensePlate})` : ""}`
+    : "None (parts-only sale, no vehicle)";
+
+  const userPrompt = `Vehicle: ${vehicleStr}
 Service type: ${context.serviceType}
 Title: ${context.serviceTitle}
 

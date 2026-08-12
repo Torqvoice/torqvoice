@@ -61,7 +61,11 @@
     "customerNameRequired": "Kundenname ist erforderlich",
     "failedCreateCustomer": "Kunde konnte nicht erstellt werden",
     "failedCreateVehicle": "Fahrzeug konnte nicht erstellt werden",
-    "somethingWentWrong": "Etwas ist schief gelaufen"
+    "somethingWentWrong": "Etwas ist schief gelaufen",
+    "partsSale": "Reiner Teileverkauf",
+    "partsSaleDescription": "Rechnung ohne Fahrzeug erstellen, für Teileverkauf über die Theke.",
+    "createSale": "Verkauf erstellen",
+    "none": "Keiner"
   },
   "notify": {
     "title": "{name} benachrichtigen",

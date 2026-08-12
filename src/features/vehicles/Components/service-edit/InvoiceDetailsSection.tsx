@@ -21,6 +21,8 @@ interface InvoiceDetailsSectionProps {
   initialData: InitialData
   type: string
   setType: (type: string) => void
+  /** Counter sales (no vehicle) have no meaningful service type; hide the field. */
+  showType?: boolean
   status: string
   setStatus: (status: string) => void
   onDirty?: () => void
@@ -33,6 +35,7 @@ export function InvoiceDetailsSection({
   initialData,
   type,
   setType,
+  showType = true,
   status,
   setStatus,
   onDirty,
@@ -93,21 +96,23 @@ export function InvoiceDetailsSection({
         value={initialData.serviceDate || new Date().toISOString().split('T')[0]}
       />
 
-      <div className="grid grid-cols-2 gap-2">
-        <div className="space-y-1">
-          <Label className="text-xs">{t('type')}</Label>
-          <Select value={type} onValueChange={setType}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="maintenance">{t('typeOptions.maintenance')}</SelectItem>
-              <SelectItem value="repair">{t('typeOptions.repair')}</SelectItem>
-              <SelectItem value="upgrade">{t('typeOptions.upgrade')}</SelectItem>
-              <SelectItem value="inspection">{t('typeOptions.inspection')}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <div className={showType ? "grid grid-cols-2 gap-2" : "grid grid-cols-1 gap-2"}>
+        {showType && (
+          <div className="space-y-1">
+            <Label className="text-xs">{t('type')}</Label>
+            <Select value={type} onValueChange={setType}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="maintenance">{t('typeOptions.maintenance')}</SelectItem>
+                <SelectItem value="repair">{t('typeOptions.repair')}</SelectItem>
+                <SelectItem value="upgrade">{t('typeOptions.upgrade')}</SelectItem>
+                <SelectItem value="inspection">{t('typeOptions.inspection')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         <div className="space-y-1">
           <Label className="text-xs">{t('status')}</Label>
           <Select value={status} onValueChange={setStatus}>

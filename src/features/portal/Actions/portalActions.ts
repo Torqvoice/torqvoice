@@ -52,7 +52,8 @@ export async function getPortalDashboard() {
         // is still a work-order in progress and not really an invoice yet.
         db.serviceRecord.findMany({
           where: {
-            vehicle: { customerId, organizationId },
+            organizationId,
+            OR: [{ vehicle: { customerId } }, { customerId }],
             status: 'completed',
           },
           select: {
@@ -72,7 +73,8 @@ export async function getPortalDashboard() {
         // Active jobs: work currently being done on the customer's vehicles.
         db.serviceRecord.findMany({
           where: {
-            vehicle: { customerId, organizationId },
+            organizationId,
+            OR: [{ vehicle: { customerId } }, { customerId }],
             status: { in: ['pending', 'in-progress', 'waiting-parts'] },
           },
           select: {
@@ -118,7 +120,7 @@ export async function getPortalDashboard() {
     // Open invoices: completed records that the customer still owes money on.
     // Pre-completion records are not counted — they're not yet invoices.
     const completedInvoices = await db.serviceRecord.findMany({
-      where: { vehicle: { customerId, organizationId }, status: 'completed' },
+      where: { organizationId, OR: [{ vehicle: { customerId } }, { customerId }], status: 'completed' },
       select: {
         totalAmount: true,
         manuallyPaid: true,
@@ -243,7 +245,8 @@ export async function getPortalInvoices() {
     // change, customer can't act on them).
     const invoices = await db.serviceRecord.findMany({
       where: {
-        vehicle: { customerId, organizationId },
+        organizationId,
+        OR: [{ vehicle: { customerId } }, { customerId }],
         status: 'completed',
       },
       select: {

@@ -61,7 +61,11 @@
     "customerNameRequired": "Имя клиента обязательно",
     "failedCreateCustomer": "Не удалось создать клиента",
     "failedCreateVehicle": "Не удалось создать транспортное средство",
-    "somethingWentWrong": "Что-то пошло не так"
+    "somethingWentWrong": "Что-то пошло не так",
+    "partsSale": "Продажа только запчастей",
+    "partsSaleDescription": "Создайте счёт без автомобиля для продажи запчастей у прилавка.",
+    "createSale": "Создать продажу",
+    "none": "Нет"
   },
   "notify": {
     "title": "Уведомить {name}",

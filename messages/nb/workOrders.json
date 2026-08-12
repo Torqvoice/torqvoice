@@ -61,7 +61,11 @@
     "customerNameRequired": "Kundenavn er påkrevd",
     "failedCreateCustomer": "Kunne ikke opprette kunde",
     "failedCreateVehicle": "Kunne ikke opprette kjøretøy",
-    "somethingWentWrong": "Noe gikk galt"
+    "somethingWentWrong": "Noe gikk galt",
+    "partsSale": "Kun delesalg",
+    "partsSaleDescription": "Opprett en faktura uten kjøretøy, for salg av deler over disk.",
+    "createSale": "Opprett salg",
+    "none": "Ingen"
   },
   "notify": {
     "title": "Varsle {name}",

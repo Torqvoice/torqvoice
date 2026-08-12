@@ -126,6 +126,27 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (options.vehicles) {
+    // Counter sales: service records without a vehicle, linked directly to a
+    // customer. They are not nested under any vehicle, so export them
+    // separately or they would be lost from backups.
+    queries.push(
+      db.serviceRecord
+        .findMany({
+          where: { organizationId: ctx.organizationId, vehicleId: null },
+          include: {
+            partItems: true,
+            laborItems: true,
+            attachments: true,
+            payments: true,
+          },
+        })
+        .then((result) => {
+          data.counterSales = result;
+        })
+    );
+  }
+
   if (options.quotes) {
     queries.push(
       db.quote
@@ -277,7 +298,7 @@ export async function GET() {
   }
 
   const [
-    settings, customers, customFieldDefinitions, inventoryParts, vehicles, quotes,
+    settings, customers, customFieldDefinitions, inventoryParts, vehicles, counterSales, quotes,
     technicians, inspectionTemplates, inspections, auditLogs, smsMessages, notifications,
   ] = await Promise.all([
       db.appSetting.findMany({ where: { organizationId: ctx.organizationId } }),
@@ -301,6 +322,15 @@ export async function GET() {
               payments: true,
             },
           },
+        },
+      }),
+      db.serviceRecord.findMany({
+        where: { organizationId: ctx.organizationId, vehicleId: null },
+        include: {
+          partItems: true,
+          laborItems: true,
+          attachments: true,
+          payments: true,
         },
       }),
       db.quote.findMany({
@@ -333,6 +363,7 @@ export async function GET() {
       customFieldDefinitions,
       inventoryParts,
       vehicles,
+      counterSales,
       quotes,
       technicians,
       inspectionTemplates,

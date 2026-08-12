@@ -50,7 +50,9 @@ export interface ServiceDetail {
   laborItems: LaborItem[];
   attachments: Attachment[];
   payments: Payment[];
-  vehicle: Vehicle;
+  // Counter sales (parts-only) have no vehicle and link a customer directly.
+  vehicle: Vehicle | null;
+  customer: Vehicle["customer"];
 }
 
 export interface PartItem {

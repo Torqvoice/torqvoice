@@ -28,11 +28,12 @@ export async function POST(
     const record = await db.serviceRecord.findUnique({
       where: { publicToken: token },
       include: {
-        vehicle: { select: { id: true, organizationId: true, customer: { select: { name: true } } } },
+        customer: { select: { name: true } },
+        vehicle: { select: { id: true, customer: { select: { name: true } } } },
       },
     });
 
-    if (!record || record.vehicle.organizationId !== orgId) {
+    if (!record || record.organizationId !== orgId) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
@@ -89,10 +90,12 @@ export async function POST(
         organizationId: orgId,
         type: "invoice_payment",
         title: "Invoice Payment Received",
-        message: `${record.vehicle.customer?.name || "A customer"} paid ${result.amount.toFixed(2)} for invoice ${record.invoiceNumber || record.title}`,
+        message: `${(record.customer ?? record.vehicle?.customer)?.name || "A customer"} paid ${result.amount.toFixed(2)} for invoice ${record.invoiceNumber || record.title}`,
         entityType: "invoice",
         entityId: record.id,
-        entityUrl: `/vehicles/${record.vehicle.id}?tab=service&record=${record.id}`,
+        entityUrl: record.vehicle
+          ? `/vehicles/${record.vehicle.id}?tab=service&record=${record.id}`
+          : `/sales/${record.id}`,
       });
     }
 

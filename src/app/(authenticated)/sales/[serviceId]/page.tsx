@@ -1,10 +1,13 @@
 import { ServiceRecordPage } from '@/features/vehicles/Components/service-page/ServiceRecordPage'
 
-export default async function ServiceDetailPage({
+// Counter sales (service records without a vehicle) live here; the shared
+// ServiceRecordPage renders vehicle-linked records identically under
+// /vehicles/[id]/service/[serviceId].
+export default async function SalesDetailPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string; serviceId: string }>
+  params: Promise<{ serviceId: string }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const { serviceId } = await params

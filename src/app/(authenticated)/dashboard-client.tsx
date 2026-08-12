@@ -78,6 +78,7 @@ interface ServiceItem {
   cost: number;
   serviceDate: Date;
   startDateTime: Date | null;
+  customer: { id: string; name: string } | null;
   vehicle: {
     id: string;
     make: string;
@@ -85,7 +86,7 @@ interface ServiceItem {
     year: number;
     licensePlate: string | null;
     customer: { id: string; name: string } | null;
-  };
+  } | null;
 }
 
 interface DashboardStats {
@@ -1269,7 +1270,7 @@ export function DashboardClient({
                           className={`cursor-pointer transition-opacity ${navigatingId === s.id ? "opacity-50" : ""}`}
                           onClick={() => {
                             setNavigatingId(s.id);
-                            router.push(`/vehicles/${s.vehicle.id}/service/${s.id}`);
+                            router.push(s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`);
                           }}
                         >
                           <TableCell className="font-mono text-xs">
@@ -1277,16 +1278,16 @@ export function DashboardClient({
                           </TableCell>
                           <TableCell>
                             <div>
-                              {s.vehicle.licensePlate && (
+                              {s.vehicle?.licensePlate && (
                                 <span className="font-mono text-sm">{s.vehicle.licensePlate}</span>
                               )}
                               <p className="text-xs text-muted-foreground">
-                                {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                                {s.vehicle ? `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}` : "-"}
                               </p>
                             </div>
                           </TableCell>
                           <TableCell className="hidden sm:table-cell text-muted-foreground">
-                            {s.vehicle.customer?.name || "-"}
+                            {(s.customer ?? s.vehicle?.customer)?.name || "-"}
                           </TableCell>
                           <TableCell className="font-medium">{s.title}</TableCell>
                           {stats.isAdmin && (
@@ -1340,21 +1341,21 @@ export function DashboardClient({
                         className={`cursor-pointer transition-opacity ${navigatingId === s.id ? "opacity-50" : ""}`}
                         onClick={() => {
                           setNavigatingId(s.id);
-                          router.push(`/vehicles/${s.vehicle.id}/service/${s.id}`);
+                          router.push(s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`);
                         }}
                       >
                         <TableCell>
                           <div>
-                            {s.vehicle.licensePlate && (
+                            {s.vehicle?.licensePlate && (
                               <span className="font-mono text-sm font-medium">{s.vehicle.licensePlate}</span>
                             )}
                             <p className="text-xs text-muted-foreground">
-                              {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                              {s.vehicle ? `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}` : "-"}
                             </p>
                           </div>
                         </TableCell>
                         <TableCell className="hidden sm:table-cell text-muted-foreground">
-                          {s.vehicle.customer?.name || "-"}
+                          {(s.customer ?? s.vehicle?.customer)?.name || "-"}
                         </TableCell>
                         <TableCell className="font-medium">{s.title}</TableCell>
                         <TableCell>

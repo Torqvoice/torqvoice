@@ -48,11 +48,11 @@ interface BillingRecord {
     model: string;
     year: number;
     licensePlate: string | null;
-    customer: {
-      id: string;
-      name: string;
-    } | null;
-  };
+  } | null;
+  customer: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 interface PaginatedBillingData {
@@ -179,7 +179,9 @@ export default function BillingClient({
 
   const handleRowClick = (record: BillingRecord) => {
     router.push(
-      `/vehicles/${record.vehicle.id}/service/${record.id}`
+      record.vehicle
+        ? `/vehicles/${record.vehicle.id}/service/${record.id}`
+        : `/sales/${record.id}`
     );
   };
 
@@ -376,11 +378,12 @@ export default function BillingClient({
                     </TableCell>
                     <TableCell className="truncate">{record.title}</TableCell>
                     <TableCell className="truncate">
-                      {record.vehicle.year} {record.vehicle.make}{" "}
-                      {record.vehicle.model}
+                      {record.vehicle
+                        ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
+                        : "\u2014"}
                     </TableCell>
                     <TableCell className="truncate">
-                      {record.vehicle.customer?.name || "\u2014"}
+                      {record.customer?.name || "\u2014"}
                     </TableCell>
                     <TableCell>
                       {formatDate(new Date(record.serviceDate))}

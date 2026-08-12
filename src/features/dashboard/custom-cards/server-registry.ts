@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { toSafeDate } from "@/lib/invoice-utils";
 import { PermissionSubject } from "@/lib/permissions";
+import { serviceRecordHref } from "@/lib/service-record";
 import type { CardEntity, CardFilter, CustomCardConfig } from "./registry";
 import { getField } from "./registry";
 
@@ -168,11 +169,12 @@ export async function runEntityQuery(
     }
     case "workOrders": {
       const rows = await db.serviceRecord.findMany({
-        where: buildWhere(config, { vehicle: { organizationId } }),
+        where: buildWhere(config, { organizationId }),
         select: {
           id: true, invoiceNumber: true, title: true, type: true, status: true,
           techName: true, totalAmount: true, serviceDate: true,
           invoiceDate: true, startDateTime: true,
+          customer: { select: { name: true } },
           vehicle: {
             select: {
               id: true, make: true, model: true, year: true,
@@ -185,13 +187,13 @@ export async function runEntityQuery(
       });
       return rows.map((r) => ({
         id: r.id,
-        href: `/vehicles/${r.vehicle.id}/service/${r.id}`,
+        href: serviceRecordHref(r),
         cells: {
           invoiceNumber: r.invoiceNumber, title: r.title, type: r.type,
           status: r.status, techName: r.techName, totalAmount: r.totalAmount,
           serviceDate: iso(r.invoiceDate ?? r.startDateTime ?? r.serviceDate),
-          vehicle: `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}`,
-          customer: r.vehicle.customer?.name ?? null,
+          vehicle: r.vehicle ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}` : null,
+          customer: (r.customer ?? r.vehicle?.customer)?.name ?? null,
         },
       }));
     }

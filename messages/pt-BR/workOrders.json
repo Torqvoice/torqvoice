@@ -61,7 +61,11 @@
     "customerNameRequired": "Nome do cliente é obrigatório",
     "failedCreateCustomer": "Falha ao criar cliente",
     "failedCreateVehicle": "Falha ao criar veículo",
-    "somethingWentWrong": "Algo deu errado"
+    "somethingWentWrong": "Algo deu errado",
+    "partsSale": "Venda apenas de peças",
+    "partsSaleDescription": "Crie uma fatura sem veículo, para vendas de peças no balcão.",
+    "createSale": "Criar venda",
+    "none": "Nenhum"
   },
   "notify": {
     "title": "Notificar {name}",

@@ -49,7 +49,7 @@ export async function deleteContent(input: unknown) {
       }
 
       const attachments = await db.serviceAttachment.findMany({
-        where: { serviceRecord: { vehicle: { organizationId } } },
+        where: { serviceRecord: { organizationId } },
         select: { fileUrl: true },
       });
       for (const att of attachments) {
@@ -57,6 +57,10 @@ export async function deleteContent(input: unknown) {
       }
 
       await db.vehicle.deleteMany({ where: { organizationId } });
+      // Counter sales have no vehicle so the cascade above misses them, but
+      // their attachment files were already collected for cleanup — delete the
+      // records too so no orphaned work orders survive.
+      await db.serviceRecord.deleteMany({ where: { organizationId } });
       deleted.push("vehicles");
     }
 

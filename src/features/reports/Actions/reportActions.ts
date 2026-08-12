@@ -16,7 +16,7 @@ export async function getRevenueReport(params: {
 
     const records = await db.serviceRecord.findMany({
       where: {
-        vehicle: { organizationId },
+        organizationId,
         startDateTime: { gte: start, lte: end },
       },
       select: {
@@ -119,7 +119,7 @@ export async function getServiceReport(params: {
 
     const records = await db.serviceRecord.findMany({
       where: {
-        vehicle: { organizationId },
+        organizationId,
         startDateTime: { gte: start, lte: end },
       },
       select: {
@@ -206,7 +206,7 @@ export async function getTechnicianReport(params: {
 
     const records = await db.serviceRecord.findMany({
       where: {
-        vehicle: { organizationId },
+        organizationId,
         startDateTime: { gte: start, lte: end },
         OR: [{ technicianId: { not: null } }, { techName: { not: null } }],
       },
@@ -263,7 +263,7 @@ export async function getPartsUsageReport(params: {
     const parts = await db.servicePart.findMany({
       where: {
         serviceRecord: {
-          vehicle: { organizationId },
+          organizationId,
           startDateTime: { gte: start, lte: end },
         },
       },
@@ -339,7 +339,7 @@ export async function getJobAnalyticsReport(params: {
 
     const records = await db.serviceRecord.findMany({
       where: {
-        vehicle: { organizationId },
+        organizationId,
         startDateTime: { gte: start, lte: end },
       },
       select: {
@@ -540,7 +540,7 @@ export async function getPastDueInvoicesReport() {
 
     const records = await db.serviceRecord.findMany({
       where: {
-        vehicle: { organizationId },
+        organizationId,
         invoiceDueDate: { lt: now },
         status: { not: "cancelled" },
       },
@@ -552,6 +552,7 @@ export async function getPastDueInvoicesReport() {
         cost: true,
         manuallyPaid: true,
         payments: { select: { amount: true } },
+        customer: { select: { name: true, company: true } },
         vehicle: {
           select: {
             year: true,
@@ -592,14 +593,15 @@ export async function getPastDueInvoicesReport() {
       const dueDate = r.invoiceDueDate!;
       const daysPastDue = Math.floor((now.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
 
-      const vehicleParts = [r.vehicle.year, r.vehicle.make, r.vehicle.model].filter(Boolean);
+      const vehicleParts = r.vehicle ? [r.vehicle.year, r.vehicle.make, r.vehicle.model].filter(Boolean) : [];
       const vehicleInfo = vehicleParts.length > 0 ? vehicleParts.join(" ") : "N/A";
+      const invoiceCustomer = r.customer ?? r.vehicle?.customer;
 
       invoices.push({
         id: r.id,
         invoiceNumber: r.invoiceNumber,
-        customerName: r.vehicle.customer?.name ?? "Unknown",
-        customerCompany: r.vehicle.customer?.company ?? null,
+        customerName: invoiceCustomer?.name ?? "Unknown",
+        customerCompany: invoiceCustomer?.company ?? null,
         vehicleInfo,
         totalAmount: total,
         amountPaid: paid,
@@ -651,7 +653,7 @@ export async function getVehicleReport(params: {
     const records = await db.serviceRecord.findMany({
       where: {
         vehicleId: params.vehicleId,
-        vehicle: { organizationId },
+        organizationId,
         startDateTime: { gte: start, lte: end },
       },
       select: {
@@ -769,7 +771,7 @@ export async function getTaxReport(params: {
 
     const records = await db.serviceRecord.findMany({
       where: {
-        vehicle: { organizationId },
+        organizationId,
         startDateTime: { gte: start, lte: end },
       },
       select: {

@@ -61,7 +61,11 @@
     "customerNameRequired": "Customer name is required",
     "failedCreateCustomer": "Failed to create customer",
     "failedCreateVehicle": "Failed to create vehicle",
-    "somethingWentWrong": "Something went wrong"
+    "somethingWentWrong": "Something went wrong",
+    "partsSale": "Parts-Only Sale",
+    "partsSaleDescription": "Create an invoice without a vehicle, for over-the-counter parts sales.",
+    "createSale": "Create Sale",
+    "none": "None"
   },
   "notify": {
     "title": "Notify {name}",

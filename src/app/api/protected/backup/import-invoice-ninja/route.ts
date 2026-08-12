@@ -298,7 +298,7 @@ export async function POST(request: NextRequest) {
 
     // Get the current highest invoice number
     const lastRecord = await db.serviceRecord.findFirst({
-      where: { vehicle: { organizationId } },
+      where: { organizationId },
       orderBy: { createdAt: "desc" },
       select: { invoiceNumber: true },
     });
@@ -417,6 +417,7 @@ export async function POST(request: NextRequest) {
 
         const record = await tx.serviceRecord.create({
           data: {
+            organizationId,
             title,
             description: invoice.private_notes || invoice.public_notes || null,
             invoiceNotes: invoice.terms || null,

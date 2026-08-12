@@ -45,7 +45,7 @@ interface SearchResult {
       model: string;
       year: number;
       licensePlate: string | null;
-    };
+    } | null;
   }[];
   parts: {
     id: string;
@@ -312,8 +312,8 @@ export function SearchCommand() {
                 {results.services.map((s) => (
                   <CommandItem
                     key={s.id}
-                    value={`${s.title} ${s.invoiceNumber || ""} ${s.vehicle.make} ${s.vehicle.model}`}
-                    onSelect={() => handleSelect(`/vehicles/${s.vehicle.id}/service/${s.id}`)}
+                    value={`${s.title} ${s.invoiceNumber || ""} ${s.vehicle ? `${s.vehicle.make} ${s.vehicle.model}` : ""}`}
+                    onSelect={() => handleSelect(s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`)}
                   >
                     <Wrench className="mr-2 h-4 w-4 text-muted-foreground" />
                     <div className="flex flex-col">
@@ -321,8 +321,8 @@ export function SearchCommand() {
                       <span className="text-xs text-muted-foreground">
                         {[
                           s.invoiceNumber,
-                          `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}`,
-                          s.vehicle.licensePlate,
+                          s.vehicle ? `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}` : null,
+                          s.vehicle?.licensePlate,
                         ].filter(Boolean).join(" · ")}
                       </span>
                     </div>

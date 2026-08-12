@@ -54,6 +54,7 @@ interface WorkOrder {
   startDateTime: Date | null;
   techName: string | null;
   invoiceNumber: string | null;
+  customer: { id: string; name: string; email: string | null; phone: string | null } | null;
   vehicle: {
     id: string;
     make: string;
@@ -61,7 +62,7 @@ interface WorkOrder {
     year: number;
     licensePlate: string | null;
     customer: { id: string; name: string; email: string | null; phone: string | null } | null;
-  };
+  } | null;
 }
 
 interface VehicleOption {
@@ -208,18 +209,19 @@ export function WorkOrdersClient({
     router.refresh();
 
     const templateKey = statusTemplateKeys[newStatus];
-    if (workOrder.vehicle.customer && templateKey) {
+    const notifyTarget = workOrder.customer ?? workOrder.vehicle?.customer;
+    if (notifyTarget && templateKey) {
       const tplResult = await getSmsTemplates();
       const tplData = tplResult.success && tplResult.data ? tplResult.data : null;
       const tpl = tplData?.templates[templateKey] || SMS_TEMPLATE_DEFAULTS[templateKey] || "";
-      const vehicle = `${workOrder.vehicle.year} ${workOrder.vehicle.make} ${workOrder.vehicle.model}`;
+      const vehicle = workOrder.vehicle ? `${workOrder.vehicle.year} ${workOrder.vehicle.make} ${workOrder.vehicle.model}` : workOrder.title;
       const message = interpolateSmsTemplate(tpl, {
-        customer_name: workOrder.vehicle.customer.name,
+        customer_name: notifyTarget.name,
         vehicle,
         company_name: tplData?.companyName || "",
         current_user: tplData?.currentUser || "",
       });
-      setNotifyCustomer(workOrder.vehicle.customer);
+      setNotifyCustomer(notifyTarget);
       setNotifyMessage(message);
       setNotifyStatus(newStatus);
       setShowNotifyDialog(true);
@@ -338,7 +340,7 @@ export function WorkOrdersClient({
                     className={`cursor-pointer transition-opacity ${navigatingId === r.id ? "opacity-50" : ""}`}
                     onClick={() => {
                       setNavigatingId(r.id);
-                      router.push(`/vehicles/${r.vehicle.id}/service/${r.id}`);
+                      router.push(r.vehicle ? `/vehicles/${r.vehicle.id}/service/${r.id}` : `/sales/${r.id}`);
                     }}
                   >
                     <TableCell className="hidden sm:table-cell font-mono text-xs text-muted-foreground">
@@ -346,16 +348,16 @@ export function WorkOrdersClient({
                     </TableCell>
                     <TableCell>
                       <div className="min-w-0">
-                        {r.vehicle.licensePlate && (
+                        {r.vehicle?.licensePlate && (
                           <span className="font-mono text-sm font-medium">{r.vehicle.licensePlate}</span>
                         )}
                         <p className="truncate text-xs text-muted-foreground">
-                          {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
+                          {r.vehicle ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}` : "-"}
                         </p>
                       </div>
                     </TableCell>
                     <TableCell className="hidden truncate md:table-cell text-muted-foreground">
-                      {r.vehicle.customer?.name || "-"}
+                      {(r.customer ?? r.vehicle?.customer)?.name || "-"}
                     </TableCell>
                     <TableCell className="truncate">
                       <span className="font-medium">{r.title}</span>

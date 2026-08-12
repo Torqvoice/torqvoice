@@ -89,6 +89,9 @@ export function ServicePageClient({
   const t = useTranslations('service')
   const router = useRouter()
 
+  // Counter sales carry the customer directly; vehicle jobs resolve it via the vehicle.
+  const customer = record.customer ?? record.vehicle?.customer ?? null
+
   const validTabs: ServiceTab[] = ['details', 'images', 'video', 'documents', 'statusReports']
   const resolvedInitialTab =
     initialTab && validTabs.includes(initialTab as ServiceTab)
@@ -203,15 +206,17 @@ export function ServicePageClient({
   const [notifyMessage, setNotifyMessage] = useState('')
 
   const handleNotifyCustomer = useCallback(async () => {
-    if (!record.vehicle.customer) return
+    if (!customer) return
     const templateKey =
       statusTemplateKeys[formState.status] || SETTING_KEYS.SMS_TEMPLATE_STATUS_READY
     const tplResult = await getSmsTemplates()
     const tplData = tplResult.success && tplResult.data ? tplResult.data : null
     const tpl = tplData?.templates[templateKey] || SMS_TEMPLATE_DEFAULTS[templateKey] || ''
-    const vehicle = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
+    const vehicle = record.vehicle
+      ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
+      : record.title
     const message = interpolateSmsTemplate(tpl, {
-      customer_name: record.vehicle.customer.name,
+      customer_name: customer.name,
       vehicle,
       company_name: tplData?.companyName || '',
       current_user: tplData?.currentUser || '',
@@ -220,10 +225,9 @@ export function ServicePageClient({
     setShowNotifyDialog(true)
   }, [
     formState.status,
-    record.vehicle.customer,
-    record.vehicle.year,
-    record.vehicle.make,
-    record.vehicle.model,
+    customer,
+    record.vehicle,
+    record.title,
   ]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Observations state
@@ -326,7 +330,7 @@ export function ServicePageClient({
           actions.setShowShareDialog(true)
         }}
         onNotifyCustomer={handleNotifyCustomer}
-        hasCustomer={!!record.vehicle.customer}
+        hasCustomer={!!customer}
       />
 
       {activeTab === 'details' && (
@@ -380,6 +384,7 @@ export function ServicePageClient({
               }
             />
           </form>
+          {vehicleId && (
           <ObservationsManager
             vehicleId={vehicleId}
             serviceRecordId={record.id}
@@ -390,6 +395,7 @@ export function ServicePageClient({
               obsControlsRef.current = c
             }}
           />
+          )}
         </>
       )}
 
@@ -427,13 +433,13 @@ export function ServicePageClient({
             organizationId={organizationId}
             vehicleName={formState.vehicleName}
             customer={
-              record.vehicle.customer
+              customer
                 ? {
-                    id: record.vehicle.customer.id,
-                    name: record.vehicle.customer.name,
-                    email: record.vehicle.customer.email,
-                    phone: record.vehicle.customer.phone,
-                    telegramChatId: record.vehicle.customer.telegramChatId || null,
+                    id: customer.id,
+                    name: customer.name,
+                    email: customer.email,
+                    phone: customer.phone,
+                    telegramChatId: customer.telegramChatId || null,
                   }
                 : null
             }
@@ -479,7 +485,7 @@ export function ServicePageClient({
       <SendEmailDialog
         open={actions.showEmailDialog}
         onOpenChange={actions.setShowEmailDialog}
-        defaultEmail={record.vehicle.customer?.email || ''}
+        defaultEmail={customer?.email || ''}
         entityLabel={t('invoice.entityLabel')}
         onSend={async (email, message) =>
           sendInvoiceEmail({ serviceRecordId: record.id, recipientEmail: email, message })
@@ -492,17 +498,17 @@ export function ServicePageClient({
         recordId={record.id}
         organizationId={organizationId}
         initialToken={record.publicToken}
-        customer={record.vehicle.customer}
+        customer={customer}
         smsEnabled={smsEnabled}
         emailEnabled={emailEnabled}
       />
 
-      {record.vehicle.customer && (
+      {customer && (
         <>
           <NotifyCustomerDialog
             open={actions.showPaymentNotifyDialog}
             onOpenChange={actions.setShowPaymentNotifyDialog}
-            customer={record.vehicle.customer}
+            customer={customer}
             defaultMessage={actions.paymentNotifyMessage}
             emailSubject={t('invoice.emailSubject')}
             smsEnabled={smsEnabled}
@@ -513,7 +519,7 @@ export function ServicePageClient({
           <NotifyCustomerDialog
             open={showNotifyDialog}
             onOpenChange={setShowNotifyDialog}
-            customer={record.vehicle.customer}
+            customer={customer}
             defaultMessage={notifyMessage}
             emailSubject={t('invoice.statusEmailSubject')}
             smsEnabled={smsEnabled}

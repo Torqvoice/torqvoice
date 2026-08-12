@@ -133,7 +133,7 @@ export async function globalSearch(query: string) {
       })(),
       db.serviceRecord.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           AND: words.map((word) => ({
             OR: [
               { title: { contains: word, mode } },
@@ -229,7 +229,7 @@ export async function globalSearch(query: string) {
       }),
       db.inspection.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           AND: words.map((word) => ({
             OR: [
               { template: { name: { contains: word, mode } } },
