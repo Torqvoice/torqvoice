@@ -34,7 +34,13 @@
       "total": "Gesamt"
     },
     "emailSubject": "Fahrzeugstatusupdate: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Arbeitsauftrag öffnen",
+      "openVehicle": "Fahrzeug öffnen",
+      "openCustomer": "Kunde öffnen",
+      "hint": "Tipp: Rechtsklick auf eine Zeile für Aktionen"
+    }
   },
   "vehiclePicker": {
     "title": "Fahrzeug für Arbeitsauftrag auswählen",
@@ -61,7 +67,11 @@
     "customerNameRequired": "Kundenname ist erforderlich",
     "failedCreateCustomer": "Kunde konnte nicht erstellt werden",
     "failedCreateVehicle": "Fahrzeug konnte nicht erstellt werden",
-    "somethingWentWrong": "Etwas ist schief gelaufen"
+    "somethingWentWrong": "Etwas ist schief gelaufen",
+    "partsSale": "Reiner Teileverkauf",
+    "partsSaleDescription": "Rechnung ohne Fahrzeug erstellen, für Teileverkauf über die Theke.",
+    "createSale": "Verkauf erstellen",
+    "none": "Keiner"
   },
   "notify": {
     "title": "{name} benachrichtigen",

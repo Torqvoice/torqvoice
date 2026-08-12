@@ -385,7 +385,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
     const prefix = resolveInvoicePrefix(settingsMap["workshop.invoicePrefix"] ?? "{year}-");
 
     const lastRecord = await db.serviceRecord.findFirst({
-      where: { vehicle: { organizationId } },
+      where: { organizationId },
       orderBy: { createdAt: "desc" },
       select: { invoiceNumber: true },
     });
@@ -399,6 +399,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
     const record = await db.$transaction(async (tx) => {
       const created = await tx.serviceRecord.create({
         data: {
+          organizationId,
           title: quote.title,
           description: quote.description,
           type: "repair",

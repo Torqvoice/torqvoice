@@ -258,7 +258,7 @@ async function generateInvoiceNumber(organizationId: string): Promise<string> {
   const startNumber = parseInt(settingsMap["workshop.invoiceStartNumber"] || "0", 10);
 
   const lastRecord = await db.serviceRecord.findFirst({
-    where: { vehicle: { organizationId } },
+    where: { organizationId },
     orderBy: { createdAt: "desc" },
     select: { invoiceNumber: true },
   });
@@ -317,6 +317,7 @@ export async function processRecurringInvoices() {
       const serviceRecord = await db.$transaction(async (tx) => {
         const sr = await tx.serviceRecord.create({
           data: {
+            organizationId,
             title: ri.title,
             description: ri.description,
             type: ri.type,

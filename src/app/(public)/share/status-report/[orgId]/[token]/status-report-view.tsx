@@ -19,7 +19,7 @@ interface StatusReportViewProps {
     customerFeedback: string | null;
     feedbackAt: string | null;
   };
-  vehicle: { make: string; model: string; year: number; licensePlate: string | null };
+  vehicle: { make: string; model: string; year: number; licensePlate: string | null } | null;
   serviceTitle: string;
   technicianName: string | null;
   workshopName: string;
@@ -40,7 +40,7 @@ export function StatusReportView({
   const createdDate = new Date(report.createdAt).toLocaleDateString(undefined, {
     year: "numeric", month: "long", day: "numeric",
   });
-  const vehicleLabel = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+  const vehicleLabel = vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : null;
 
   async function handleSubmitFeedback() {
     if (!feedback.trim() || submitting) return;
@@ -74,16 +74,18 @@ export function StatusReportView({
                 <p className="font-medium">{serviceTitle}</p>
               </div>
             </div>
-            <div className="flex items-start gap-3">
-              <CarFront className="mt-0.5 h-5 w-5 text-gray-400 shrink-0" />
-              <div>
-                <p className="text-sm text-gray-500">Vehicle</p>
-                <p className="font-medium">{vehicleLabel}</p>
-                {vehicle.licensePlate && (
-                  <p className="text-sm text-gray-500">Plate: {vehicle.licensePlate}</p>
-                )}
+            {vehicle && (
+              <div className="flex items-start gap-3">
+                <CarFront className="mt-0.5 h-5 w-5 text-gray-400 shrink-0" />
+                <div>
+                  <p className="text-sm text-gray-500">Vehicle</p>
+                  <p className="font-medium">{vehicleLabel}</p>
+                  {vehicle.licensePlate && (
+                    <p className="text-sm text-gray-500">Plate: {vehicle.licensePlate}</p>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
             {report.title && (
               <div className="pt-2 border-t">
                 <p className="font-semibold text-lg">{report.title}</p>

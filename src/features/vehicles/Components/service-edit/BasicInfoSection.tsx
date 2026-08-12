@@ -17,9 +17,9 @@ interface CustomerInfo {
 
 interface BasicInfoSectionProps {
   initialData: InitialData
-  vehicleId: string
+  vehicleId: string | null
   vehicleName: string
-  selectedVehicleId: string
+  selectedVehicleId: string | null
   setSelectedVehicleId: (id: string) => void
   techName: string
   customer?: CustomerInfo | null
@@ -45,16 +45,18 @@ export function BasicInfoSection({
       <div className="space-y-1">
         <div className="flex items-center justify-between">
           <Label className="text-xs">{t('vehicle')}</Label>
-          <Link
-            href={`/vehicles/${selectedVehicleId}`}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {t('open')}
-            <ExternalLink className="h-3 w-3" />
-          </Link>
+          {selectedVehicleId && (
+            <Link
+              href={`/vehicles/${selectedVehicleId}`}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t('open')}
+              <ExternalLink className="h-3 w-3" />
+            </Link>
+          )}
         </div>
         <VehicleCombobox
-          value={selectedVehicleId}
+          value={selectedVehicleId ?? ''}
           initialVehicle={initialVehicle ? { ...initialVehicle, customerId: null, customer: null } : null}
           placeholder={vehicleName || t('searchVehicles')}
           noneLabel={t('noVehicleFound')}
@@ -88,16 +90,18 @@ export function BasicInfoSection({
         </div>
       )}
 
-      <div className="space-y-1">
-        <Label htmlFor="mileage" className="text-xs">{serviceType === 'marine' ? t('mileageMarine') : t('mileage')}</Label>
-        <Input
-          id="mileage"
-          name="mileage"
-          type="number"
-          placeholder="50000"
-          defaultValue={initialData.mileage ?? ''}
-        />
-      </div>
+      {selectedVehicleId && (
+        <div className="space-y-1">
+          <Label htmlFor="mileage" className="text-xs">{serviceType === 'marine' ? t('mileageMarine') : t('mileage')}</Label>
+          <Input
+            id="mileage"
+            name="mileage"
+            type="number"
+            placeholder="50000"
+            defaultValue={initialData.mileage ?? ''}
+          />
+        </div>
+      )}
 
       <input type="hidden" name="techName" value={techName} />
     </div>

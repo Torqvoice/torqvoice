@@ -219,10 +219,11 @@ export async function sendInvoiceEmail(input: {
     const { serviceRecordId, recipientEmail, message } = input;
 
     const record = await db.serviceRecord.findFirst({
-      where: { id: serviceRecordId, vehicle: { organizationId } },
+      where: { id: serviceRecordId, organizationId },
       include: {
         partItems: true,
         laborItems: true,
+        customer: { select: { name: true, email: true, phone: true, address: true, company: true } },
         vehicle: {
           include: {
             customer: { select: { name: true, email: true, phone: true, address: true, company: true } },

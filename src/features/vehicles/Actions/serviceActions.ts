@@ -98,7 +98,7 @@ export async function getServiceRecordsPaginated(
 export async function getAllServiceRecords() {
   return withAuth(async ({ organizationId }) => {
     return db.serviceRecord.findMany({
-      where: { vehicle: { organizationId } },
+      where: { organizationId },
       include: {
         vehicle: { select: { make: true, model: true, year: true } },
         _count: { select: { partItems: true, laborItems: true } },
@@ -122,7 +122,7 @@ export async function getAllServiceRecordsPaginated(params: {
     const skip = (page - 1) * pageSize;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: any = { vehicle: { organizationId } };
+    const where: any = { organizationId };
 
     if (params.search) {
       where.OR = [
@@ -178,12 +178,23 @@ export async function getAllServiceRecordsPaginated(params: {
 export async function getServiceRecord(recordId: string) {
   return withAuth(async ({ organizationId }) => {
     const record = await db.serviceRecord.findFirst({
-      where: { id: recordId, vehicle: { organizationId } },
+      where: { id: recordId, organizationId },
       include: {
         partItems: true,
         laborItems: true,
         attachments: true,
         payments: { orderBy: { date: "desc" } },
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            address: true,
+            company: true,
+            telegramChatId: true,
+          },
+        },
         vehicle: {
           select: {
             id: true,
@@ -216,11 +227,25 @@ export async function getServiceRecord(recordId: string) {
 export async function createServiceRecord(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const data = createServiceSchema.parse(input);
-    const vehicle = await db.vehicle.findFirst({
-      where: { id: data.vehicleId, organizationId },
-      include: { customer: { select: { taxExempt: true } } },
-    });
-    if (!vehicle) throw new Error("Vehicle not found");
+
+    // Two shapes: a vehicle-linked work order, or a counter sale (no vehicle)
+    // that must be linked directly to a customer instead.
+    let vehicle: { id: string; mileage: number; customer: { taxExempt: boolean } | null } | null = null;
+    let directCustomer: { id: string; taxExempt: boolean } | null = null;
+    if (data.vehicleId) {
+      vehicle = await db.vehicle.findFirst({
+        where: { id: data.vehicleId, organizationId },
+        select: { id: true, mileage: true, customer: { select: { taxExempt: true } } },
+      });
+      if (!vehicle) throw new Error("Vehicle not found");
+    } else {
+      if (!data.customerId) throw new Error("A customer is required for a sale without a vehicle");
+      directCustomer = await db.customer.findFirst({
+        where: { id: data.customerId, organizationId },
+        select: { id: true, taxExempt: true },
+      });
+      if (!directCustomer) throw new Error("Customer not found");
+    }
 
     // Auto-populate shop name and invoice prefix from settings
     const [settings, org] = await Promise.all([
@@ -251,7 +276,7 @@ export async function createServiceRecord(input: unknown) {
         : settingsMap["workshop.taxInclusive"] === "true";
 
     // Tax-exempt customer: force taxRate to 0 (overrides whatever the caller sent).
-    if (vehicle.customer?.taxExempt) {
+    if (vehicle?.customer?.taxExempt || directCustomer?.taxExempt) {
       data.taxRate = 0;
       data.taxAmount = 0;
     }
@@ -259,7 +284,7 @@ export async function createServiceRecord(input: unknown) {
     // Generate sequential invoice number
     const startNumber = parseInt(settingsMap["workshop.invoiceStartNumber"] || "0", 10);
     const lastRecord = await db.serviceRecord.findFirst({
-      where: { vehicle: { organizationId } },
+      where: { organizationId },
       orderBy: { createdAt: "desc" },
       select: { invoiceNumber: true },
     });
@@ -287,6 +312,10 @@ export async function createServiceRecord(input: unknown) {
       const created = await tx.serviceRecord.create({
         data: {
           ...recordData,
+          organizationId,
+          // Only vehicle-less records link a customer directly; vehicle-linked
+          // records always resolve their customer through the vehicle.
+          customerId: data.vehicleId ? null : data.customerId,
           taxInclusive,
           shopName,
           invoiceNumber,
@@ -372,20 +401,22 @@ export async function createServiceRecord(input: unknown) {
     }
 
     // Update vehicle mileage if service mileage is higher, and reset maintenance dismissed
-    const vehicleUpdate: { mileage?: number; maintenanceDismissed: boolean; maintenanceDismissedAt: null } = {
-      maintenanceDismissed: false,
-      maintenanceDismissedAt: null,
-    };
-    if (data.mileage && data.mileage > vehicle.mileage) {
-      vehicleUpdate.mileage = data.mileage;
+    if (vehicle) {
+      const vehicleUpdate: { mileage?: number; maintenanceDismissed: boolean; maintenanceDismissedAt: null } = {
+        maintenanceDismissed: false,
+        maintenanceDismissedAt: null,
+      };
+      if (data.mileage && data.mileage > vehicle.mileage) {
+        vehicleUpdate.mileage = data.mileage;
+      }
+      await db.vehicle.update({
+        where: { id: vehicle.id },
+        data: vehicleUpdate,
+      });
     }
-    await db.vehicle.update({
-      where: { id: vehicle.id },
-      data: vehicleUpdate,
-    });
 
     revalidatePath("/");
-    revalidatePath(`/vehicles/${data.vehicleId}`);
+    if (data.vehicleId) revalidatePath(`/vehicles/${data.vehicleId}`);
     revalidatePath("/services");
     return record;
   }, {
@@ -404,7 +435,7 @@ export async function updateServiceRecord(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
     const data = updateServiceSchema.parse(input);
     const existing = await db.serviceRecord.findFirst({
-      where: { id: data.id, vehicle: { organizationId } },
+      where: { id: data.id, organizationId },
       include: {
         attachments: { select: { fileUrl: true, category: true } },
         vehicle: { select: { id: true, mileage: true, make: true, model: true, year: true, licensePlate: true } },
@@ -412,7 +443,21 @@ export async function updateServiceRecord(input: unknown) {
     });
     if (!existing) throw new Error("Service record not found");
 
-    const { id, partItems, laborItems, attachments, serviceDate: _sd, invoiceDate: _id, invoiceDueDate: _idd, warrantyMonths: _wm, warrantyMileage: _wmil, warrantyNotes: _wn, ...recordData } = data;
+    const { id, partItems, laborItems, attachments, customerId: _cid, serviceDate: _sd, invoiceDate: _id, invoiceDueDate: _idd, warrantyMonths: _wm, warrantyMileage: _wmil, warrantyNotes: _wn, ...recordData } = data;
+
+    // A null vehicleId from the client means "no vehicle" (counter sale) —
+    // treat it as no-change rather than detaching an existing vehicle.
+    if (recordData.vehicleId == null) {
+      delete recordData.vehicleId;
+    } else if (recordData.vehicleId !== existing.vehicleId) {
+      // Moving the record to another vehicle: it must belong to this org, and
+      // the record's customer then follows the vehicle again.
+      const targetVehicle = await db.vehicle.findFirst({
+        where: { id: recordData.vehicleId, organizationId },
+        select: { id: true },
+      });
+      if (!targetVehicle) throw new Error("Vehicle not found");
+    }
 
     // Determine which categories are being replaced and which files were removed
     let removedFileUrls: string[] = [];
@@ -433,6 +478,12 @@ export async function updateServiceRecord(input: unknown) {
         where: { id },
         data: {
           ...recordData,
+          // Attaching a vehicle to a counter sale: the direct customer link is
+          // cleared so the invoice follows the vehicle's customer again.
+          customerId:
+            recordData.vehicleId && recordData.vehicleId !== existing.vehicleId && existing.customerId
+              ? null
+              : undefined,
           description: recordData.description !== undefined ? (recordData.description || null) : undefined,
           techName: recordData.techName !== undefined ? (recordData.techName || null) : undefined,
           diagnosticNotes: recordData.diagnosticNotes !== undefined ? (recordData.diagnosticNotes || null) : undefined,
@@ -528,7 +579,7 @@ export async function updateServiceRecord(input: unknown) {
     });
 
     // Update vehicle mileage if this is the latest service record and mileage is higher
-    if (recordData.mileage && recordData.mileage > existing.vehicle.mileage) {
+    if (existing.vehicle && recordData.mileage && recordData.mileage > existing.vehicle.mileage) {
       const latestRecord = await db.serviceRecord.findFirst({
         where: { vehicleId: existing.vehicle.id },
         orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
@@ -568,8 +619,12 @@ export async function updateServiceRecord(input: unknown) {
     }
 
     revalidatePath("/");
-    revalidatePath(`/vehicles/${existing.vehicleId}`);
-    revalidatePath(`/vehicles/${existing.vehicleId}/service/${id}`);
+    if (existing.vehicleId) {
+      revalidatePath(`/vehicles/${existing.vehicleId}`);
+      revalidatePath(`/vehicles/${existing.vehicleId}/service/${id}`);
+    } else {
+      revalidatePath(`/sales/${id}`);
+    }
     revalidatePath("/services");
     // Parts may have been added, changed or removed on this record.
     await onInventoryChanged(organizationId);
@@ -589,7 +644,7 @@ export async function updateServiceRecord(input: unknown) {
 export async function updateServiceStatus(recordId: string, status: string) {
   return withAuth(async ({ organizationId }) => {
     const record = await db.serviceRecord.findFirst({
-      where: { id: recordId, vehicle: { organizationId } },
+      where: { id: recordId, organizationId },
       include: {
         vehicle: {
           select: { id: true, make: true, model: true, year: true, licensePlate: true },
@@ -619,7 +674,8 @@ export async function updateServiceStatus(recordId: string, status: string) {
     revalidatePath("/");
     revalidatePath("/work-orders");
     revalidatePath("/services");
-    revalidatePath(`/vehicles/${record.vehicleId}`);
+    if (record.vehicleId) revalidatePath(`/vehicles/${record.vehicleId}`);
+    else revalidatePath(`/sales/${recordId}`);
     return { success: true, recordId, status };
   }, {
     requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }],
@@ -636,7 +692,7 @@ export async function updateServiceStatus(recordId: string, status: string) {
 export async function toggleManuallyPaid(recordId: string) {
   return withAuth(async ({ organizationId }) => {
     const record = await db.serviceRecord.findFirst({
-      where: { id: recordId, vehicle: { organizationId } },
+      where: { id: recordId, organizationId },
     });
     if (!record) throw new Error("Record not found");
 
@@ -647,8 +703,12 @@ export async function toggleManuallyPaid(recordId: string) {
 
     revalidatePath("/");
     revalidatePath("/services");
-    revalidatePath(`/vehicles/${record.vehicleId}`);
-    revalidatePath(`/vehicles/${record.vehicleId}/service/${recordId}`);
+    if (record.vehicleId) {
+      revalidatePath(`/vehicles/${record.vehicleId}`);
+      revalidatePath(`/vehicles/${record.vehicleId}/service/${recordId}`);
+    } else {
+      revalidatePath(`/sales/${recordId}`);
+    }
     return { success: true, manuallyPaid: !record.manuallyPaid };
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }] });
 }
@@ -667,7 +727,7 @@ export async function getWorkOrders(params: {
     const skip = (page - 1) * pageSize;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: any = { vehicle: { organizationId } };
+    const where: any = { organizationId };
 
     if (params.status === "active") {
       where.status = { not: "completed" };
@@ -682,6 +742,7 @@ export async function getWorkOrders(params: {
         { techName: { contains: params.search, mode: "insensitive" } },
         { vehicle: { licensePlate: { contains: params.search, mode: "insensitive" } } },
         { vehicle: { customer: { name: { contains: params.search, mode: "insensitive" } } } },
+        { customer: { name: { contains: params.search, mode: "insensitive" } } },
       ];
     }
 
@@ -689,6 +750,7 @@ export async function getWorkOrders(params: {
       db.serviceRecord.findMany({
         where,
         include: {
+          customer: { select: { id: true, name: true, email: true, phone: true } },
           vehicle: {
             select: {
               id: true,
@@ -726,7 +788,7 @@ export async function getWorkOrders(params: {
       db.serviceRecord.count({ where }),
       db.serviceRecord.groupBy({
         by: ["status"],
-        where: { vehicle: { organizationId } },
+        where: { organizationId },
         _count: true,
       }),
     ]);
@@ -750,7 +812,7 @@ export async function getWorkOrders(params: {
 export async function deleteServiceRecord(recordId: string) {
   return withAuth(async ({ userId, organizationId }) => {
     const record = await db.serviceRecord.findFirst({
-      where: { id: recordId, vehicle: { organizationId } },
+      where: { id: recordId, organizationId },
       include: { attachments: true },
     });
     if (!record) throw new Error("Record not found");
@@ -785,7 +847,7 @@ export async function deleteServiceRecord(recordId: string) {
     });
 
     revalidatePath("/");
-    revalidatePath(`/vehicles/${record.vehicleId}`);
+    if (record.vehicleId) revalidatePath(`/vehicles/${record.vehicleId}`);
     revalidatePath("/services");
     // Deleting the record restocked its linked parts.
     await onInventoryChanged(organizationId);
@@ -805,7 +867,7 @@ export async function deleteServiceRecord(recordId: string) {
 export async function deleteServiceAttachment(attachmentId: string) {
   return withAuth(async ({ organizationId }) => {
     const attachment = await db.serviceAttachment.findFirst({
-      where: { id: attachmentId, serviceRecord: { vehicle: { organizationId } } },
+      where: { id: attachmentId, serviceRecord: { organizationId } },
       include: { serviceRecord: { select: { vehicleId: true, id: true } } },
     });
     if (!attachment) throw new Error("Attachment not found");
@@ -821,7 +883,9 @@ export async function deleteServiceAttachment(attachmentId: string) {
     await db.serviceAttachment.delete({ where: { id: attachmentId } });
 
     const { vehicleId, id: serviceId } = attachment.serviceRecord;
-    revalidatePath(`/vehicles/${vehicleId}/service/${serviceId}`);
+    revalidatePath(
+      vehicleId ? `/vehicles/${vehicleId}/service/${serviceId}` : `/sales/${serviceId}`
+    );
     return { deleted: true };
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }] });
 }
@@ -829,7 +893,7 @@ export async function deleteServiceAttachment(attachmentId: string) {
 export async function generatePublicLink(serviceRecordId: string) {
   return withAuth(async ({ organizationId }) => {
     const record = await db.serviceRecord.findFirst({
-      where: { id: serviceRecordId, vehicle: { organizationId } },
+      where: { id: serviceRecordId, organizationId },
     });
     if (!record) throw new Error("Record not found");
 
@@ -839,7 +903,11 @@ export async function generatePublicLink(serviceRecordId: string) {
       data: { publicToken: token, sharedAt: new Date() },
     });
 
-    revalidatePath(`/vehicles/${record.vehicleId}/service/${serviceRecordId}`);
+    revalidatePath(
+      record.vehicleId
+        ? `/vehicles/${record.vehicleId}/service/${serviceRecordId}`
+        : `/sales/${serviceRecordId}`
+    );
     return { token, organizationId };
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES }] });
 }
@@ -847,7 +915,7 @@ export async function generatePublicLink(serviceRecordId: string) {
 export async function revokePublicLink(serviceRecordId: string) {
   return withAuth(async ({ organizationId }) => {
     const record = await db.serviceRecord.findFirst({
-      where: { id: serviceRecordId, vehicle: { organizationId } },
+      where: { id: serviceRecordId, organizationId },
     });
     if (!record) throw new Error("Record not found");
 

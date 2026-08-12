@@ -34,8 +34,8 @@ export async function getOrganizationDetails(organizationId: string) {
 
     // Service records and inspections are linked via Vehicle.organizationId
     const [serviceRecordCount, inspectionCount, members] = await Promise.all([
-      db.serviceRecord.count({ where: { vehicle: { organizationId } } }),
-      db.inspection.count({ where: { vehicle: { organizationId } } }),
+      db.serviceRecord.count({ where: { organizationId } }),
+      db.inspection.count({ where: { organizationId } }),
       db.organizationMember.findMany({
         where: { organizationId },
         select: {

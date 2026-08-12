@@ -17,7 +17,7 @@ export async function updateServiceTimes(input: unknown) {
       }
 
       const record = await db.serviceRecord.findFirst({
-        where: { id: data.id, vehicle: { organizationId } },
+        where: { id: data.id, organizationId },
       });
       if (!record) throw new Error("Service record not found");
 

@@ -43,7 +43,7 @@ export async function GET(
 
     const [record, settings, org] = await Promise.all([
       db.serviceRecord.findFirst({
-        where: { id, vehicle: { organizationId: ctx.organizationId } },
+        where: { id, organizationId: ctx.organizationId },
         include: {
           partItems: true,
           laborItems: true,
@@ -54,6 +54,16 @@ export async function GET(
           // relation is always correct. The PDF prefers technician.name and
           // falls back to techName for legacy records that have no FK.
           technician: { select: { name: true } },
+          customer: {
+            select: {
+              name: true,
+              email: true,
+              phone: true,
+              address: true,
+              company: true,
+              taxId: true,
+            },
+          },
           vehicle: {
             select: {
               make: true,

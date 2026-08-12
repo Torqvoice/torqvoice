@@ -90,7 +90,7 @@ export function InvoicePDF({
 
   const cc = invoiceSettings?.currencyCode || 'USD'
   const cf: 'symbol' | 'code' = invoiceSettings?.currencyFormat === 'code' ? 'code' : 'symbol'
-  const vehicleName = `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}`
+  const vehicleName = data.vehicle ? `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}` : ''
   const partsSubtotal = data.partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
   const computedSubtotal = partsSubtotal + laborSubtotal

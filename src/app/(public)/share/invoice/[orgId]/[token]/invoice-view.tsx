@@ -78,6 +78,14 @@ interface InvoiceRecord {
     category: string
     description: string | null
   }[]
+  customer?: {
+    name: string
+    email: string | null
+    phone: string | null
+    address: string | null
+    company: string | null
+    taxId?: string | null
+  } | null
   vehicle: {
     make: string
     model: string
@@ -93,7 +101,7 @@ interface InvoiceRecord {
       company: string | null
       taxId?: string | null
     } | null
-  }
+  } | null
 }
 
 interface InvoiceSettings {
@@ -255,7 +263,7 @@ export function InvoiceView({
     }).catch(() => { /* fire-and-forget */ })
   }, [token])
 
-  const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
+  const vehicleName = record.vehicle ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}` : ''
   const partsSubtotalStored = record.partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotalStored = record.laborItems.reduce((sum, l) => sum + l.total, 0)
   const computedSubtotalStored = partsSubtotalStored + laborSubtotalStored
@@ -730,7 +738,7 @@ export function InvoiceView({
             case 'service': {
               const renderInfoCard = (sid: string) => {
                 if (sid === 'customer') {
-                  const c = record.vehicle.customer
+                  const c = record.customer ?? record.vehicle?.customer
                   if (!c) return null
                   const vf = getVisibleFieldsForSection(layoutConfig, 'customer')
                   const show = (fid: string) => !vf || vf.has(fid)
@@ -759,6 +767,8 @@ export function InvoiceView({
                   );
                 }
                 if (sid === 'vehicle') {
+                  const vehicle = record.vehicle
+                  if (!vehicle) return null
                   const vf = getVisibleFieldsForSection(layoutConfig, 'vehicle')
                   const show = (fid: string) => !vf || vf.has(fid)
                   if (!(show('vehicle_name') || show('vin') || show('license_plate') || show('mileage'))) return null
@@ -767,9 +777,9 @@ export function InvoiceView({
                     if (!show(fid)) return null
                     switch (fid) {
                       case 'vehicle_name': return <p key={fid} className="font-semibold">{vehicleName}</p>
-                      case 'vin': return record.vehicle.vin ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `HIN: ${record.vehicle.vin}` : t('vin', { vin: record.vehicle.vin })}</p> : null
-                      case 'license_plate': return record.vehicle.licensePlate ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `Reg: ${record.vehicle.licensePlate}` : t('plate', { plate: record.vehicle.licensePlate })}</p> : null
-                      case 'mileage': return record.vehicle.mileage > 0 ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `Engine Hours: ${record.vehicle.mileage.toLocaleString(locale)}` : record.vehicle.mileage.toLocaleString(locale)}</p> : null
+                      case 'vin': return vehicle.vin ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `HIN: ${vehicle.vin}` : t('vin', { vin: vehicle.vin })}</p> : null
+                      case 'license_plate': return vehicle.licensePlate ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `Reg: ${vehicle.licensePlate}` : t('plate', { plate: vehicle.licensePlate })}</p> : null
+                      case 'mileage': return vehicle.mileage > 0 ? <p key={fid} className="text-sm text-gray-500">{serviceType === 'marine' ? `Engine Hours: ${vehicle.mileage.toLocaleString(locale)}` : vehicle.mileage.toLocaleString(locale)}</p> : null
                       default: return null
                     }
                   }
@@ -792,7 +802,7 @@ export function InvoiceView({
                     if (!show(fid)) return null
                     switch (fid) {
                       case 'service_title': return <p key={fid} className="font-semibold">{record.title}</p>
-                      case 'service_type': return <p key={fid} className="text-sm text-gray-500">{t('type', { type: record.type })}</p>
+                      case 'service_type': return record.vehicle ? <p key={fid} className="text-sm text-gray-500">{t('type', { type: record.type })}</p> : null
                       case 'tech_name': return record.techName ? <p key={fid} className="text-sm text-gray-500">{t('tech', { tech: record.techName })}</p> : null
                       default: return null
                     }

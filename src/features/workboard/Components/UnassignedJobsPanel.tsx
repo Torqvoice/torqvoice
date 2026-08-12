@@ -27,9 +27,9 @@ export function UnassignedJobsPanel() {
     if (!search) return true;
     return (
       sr.title.toLowerCase().includes(lowerSearch) ||
-      sr.vehicle.make.toLowerCase().includes(lowerSearch) ||
-      sr.vehicle.model.toLowerCase().includes(lowerSearch) ||
-      sr.vehicle.licensePlate?.toLowerCase().includes(lowerSearch)
+      sr.vehicle?.make.toLowerCase().includes(lowerSearch) ||
+      sr.vehicle?.model.toLowerCase().includes(lowerSearch) ||
+      sr.vehicle?.licensePlate?.toLowerCase().includes(lowerSearch)
     );
   });
 

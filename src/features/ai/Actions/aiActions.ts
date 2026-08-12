@@ -18,7 +18,7 @@ export async function aiGenerateServiceNotes(serviceRecordId: string) {
     async ({ organizationId }) => {
       const locale = (await getLocale()) as Locale;
       const sr = await db.serviceRecord.findFirst({
-        where: { id: serviceRecordId, vehicle: { organizationId } },
+        where: { id: serviceRecordId, organizationId },
         include: {
           vehicle: { select: { make: true, model: true, year: true, licensePlate: true } },
           partItems: { select: { name: true, quantity: true } },
@@ -29,10 +29,10 @@ export async function aiGenerateServiceNotes(serviceRecordId: string) {
       if (!sr) throw new Error("Service record not found");
 
       return generateServiceDescription(organizationId, {
-        vehicleMake: sr.vehicle.make,
-        vehicleModel: sr.vehicle.model,
-        vehicleYear: sr.vehicle.year,
-        licensePlate: sr.vehicle.licensePlate,
+        vehicleMake: sr.vehicle?.make ?? null,
+        vehicleModel: sr.vehicle?.model ?? null,
+        vehicleYear: sr.vehicle?.year ?? null,
+        licensePlate: sr.vehicle?.licensePlate ?? null,
         serviceType: sr.type,
         serviceTitle: sr.title,
         parts: sr.partItems.map((p) => ({ name: p.name, quantity: p.quantity })),

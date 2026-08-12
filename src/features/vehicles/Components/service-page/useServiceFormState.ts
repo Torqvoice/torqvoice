@@ -15,7 +15,7 @@ export function useServiceFormState({
   currentUserName,
   record,
 }: {
-  vehicleId: string
+  vehicleId: string | null
   initialData: InitialData
   defaultTaxRate: number
   currentUserName: string
@@ -23,7 +23,7 @@ export function useServiceFormState({
 }) {
   // Form state
   const [loading, setLoading] = useState(false)
-  const [selectedVehicleId, setSelectedVehicleId] = useState(vehicleId)
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(vehicleId)
 
   const [techName] = useState(initialData.techName || currentUserName)
   const [type, setType] = useState(initialData.type || 'maintenance')
@@ -143,7 +143,7 @@ export function useServiceFormState({
         ? 'paid'
         : 'partial'
   const imageAttachments = record.attachments?.filter((a) => a.category === 'image') || []
-  const vehicleName = `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
+  const vehicleName = record.vehicle ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}` : ''
 
   // Part/labor update helpers
   //

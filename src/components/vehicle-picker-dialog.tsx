@@ -25,8 +25,11 @@ import {
   Search,
   ArrowLeft,
   UserPlus,
+  ShoppingCart,
 } from "lucide-react";
 import { createVehicle } from "@/features/vehicles/Actions/vehicleActions";
+import { createDraftCounterSale } from "@/features/vehicles/Actions/createDraftServiceRecord";
+import { CustomerCombobox } from "@/features/quotes/Components/CustomerCombobox";
 import { createCustomer } from "@/features/customers/Actions/customerActions";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -69,7 +72,7 @@ export function VehiclePickerDialog({
   const displayTitle = title || t("title");
 
   const [vehicleSearch, setVehicleSearch] = useState("");
-  const [pickerStep, setPickerStep] = useState<"select" | "create">("select");
+  const [pickerStep, setPickerStep] = useState<"select" | "create" | "sale">("select");
 
   const [newMake, setNewMake] = useState("");
   const [newModel, setNewModel] = useState("");
@@ -104,6 +107,46 @@ export function VehiclePickerDialog({
     setNewCustomerName("");
     setNewCustomerPhone("");
     setCreating(false);
+  };
+
+  const handleCreateSale = async () => {
+    if (showNewCustomer && !newCustomerName.trim()) {
+      toast.error(t("customerNameRequired"));
+      return;
+    }
+    if (!showNewCustomer && !selectedCustomerId) return;
+
+    setCreating(true);
+    try {
+      let customerId = selectedCustomerId;
+
+      if (showNewCustomer && newCustomerName.trim()) {
+        const customerResult = await createCustomer({
+          name: newCustomerName.trim(),
+          phone: newCustomerPhone.trim() || undefined,
+        });
+        if (!customerResult.success || !customerResult.data) {
+          toast.error(customerResult.error || t("failedCreateCustomer"));
+          setCreating(false);
+          return;
+        }
+        customerId = customerResult.data.id;
+      }
+
+      const result = await createDraftCounterSale(customerId);
+      if (!result.success || !result.data) {
+        toast.error(result.error || t("somethingWentWrong"));
+        setCreating(false);
+        return;
+      }
+
+      onOpenChange(false);
+      resetState();
+      router.push(`/sales/${result.data.id}`);
+    } catch {
+      toast.error(t("somethingWentWrong"));
+      setCreating(false);
+    }
   };
 
   const handleSelect = (vehicleId: string) => {
@@ -229,13 +272,119 @@ export function VehiclePickerDialog({
                   </div>
                 )}
               </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  className="flex-1"
+                  onClick={() => setPickerStep("create")}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  {t("addNewVehicle")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="flex-1"
+                  onClick={() => setPickerStep("sale")}
+                >
+                  <ShoppingCart className="h-4 w-4 mr-1" />
+                  {t("partsSale")}
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : pickerStep === "sale" ? (
+          <>
+            <DialogHeader>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 shrink-0"
+                  onClick={() => setPickerStep("select")}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <DialogTitle>{t("partsSale")}</DialogTitle>
+              </div>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">{t("partsSaleDescription")}</p>
+              <div className="space-y-1.5">
+                <Label>{t("customer")}</Label>
+                {!showNewCustomer ? (
+                  <>
+                    <CustomerCombobox
+                      value={selectedCustomerId}
+                      placeholder={t("selectCustomer")}
+                      noneLabel={t("none")}
+                      onChange={(id) => setSelectedCustomerId(id)}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 px-2 text-xs text-muted-foreground"
+                      onClick={() => {
+                        setShowNewCustomer(true);
+                        setSelectedCustomerId("");
+                      }}
+                    >
+                      <UserPlus className="h-3.5 w-3.5 mr-1" />
+                      {t("createNewCustomer")}
+                    </Button>
+                  </>
+                ) : (
+                  <div className="space-y-3 rounded-md border p-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium">{t("newCustomer")}</p>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={() => {
+                          setShowNewCustomer(false);
+                          setNewCustomerName("");
+                          setNewCustomerPhone("");
+                        }}
+                      >
+                        {tc("cancel")}
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="sale-customer-name">{t("customerName")}</Label>
+                        <Input
+                          id="sale-customer-name"
+                          placeholder={t("customerNamePlaceholder")}
+                          value={newCustomerName}
+                          onChange={(e) => setNewCustomerName(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="sale-customer-phone">{t("phone")}</Label>
+                        <Input
+                          id="sale-customer-phone"
+                          placeholder={t("phonePlaceholder")}
+                          value={newCustomerPhone}
+                          onChange={(e) => setNewCustomerPhone(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
               <Button
-                variant="ghost"
                 className="w-full"
-                onClick={() => setPickerStep("create")}
+                disabled={creating || (showNewCustomer ? !newCustomerName.trim() : !selectedCustomerId)}
+                onClick={handleCreateSale}
               >
-                <Plus className="h-4 w-4 mr-1" />
-                Add New Vehicle
+                {creating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    {t("creating")}
+                  </>
+                ) : (
+                  t("createSale")
+                )}
               </Button>
             </div>
           </>

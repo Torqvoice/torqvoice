@@ -13,7 +13,7 @@ export async function createPayment(input: unknown) {
 
     // Verify ownership: serviceRecord -> vehicle -> organizationId
     const serviceRecord = await db.serviceRecord.findFirst({
-      where: { id: data.serviceRecordId, vehicle: { organizationId } },
+      where: { id: data.serviceRecordId, organizationId },
       select: { id: true, vehicleId: true },
     });
     if (!serviceRecord) throw new Error("Service record not found");
@@ -28,7 +28,11 @@ export async function createPayment(input: unknown) {
       },
     });
 
-    revalidatePath(`/vehicles/${serviceRecord.vehicleId}/service/${data.serviceRecordId}`);
+    revalidatePath(
+      serviceRecord.vehicleId
+        ? `/vehicles/${serviceRecord.vehicleId}/service/${data.serviceRecordId}`
+        : `/sales/${data.serviceRecordId}`
+    );
     return { ...payment, serviceRecordId: data.serviceRecordId, amount: data.amount, method: data.method };
   }, {
     requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.BILLING }],
@@ -45,7 +49,7 @@ export async function createPayment(input: unknown) {
 export async function deletePayment(paymentId: string) {
   return withAuth(async ({ organizationId }) => {
     const payment = await db.payment.findFirst({
-      where: { id: paymentId, serviceRecord: { vehicle: { organizationId } } },
+      where: { id: paymentId, serviceRecord: { organizationId } },
       include: { serviceRecord: { select: { vehicleId: true, id: true } } },
     });
     if (!payment) throw new Error("Payment not found");
@@ -53,7 +57,9 @@ export async function deletePayment(paymentId: string) {
     await db.payment.delete({ where: { id: paymentId } });
 
     const { vehicleId, id: serviceId } = payment.serviceRecord;
-    revalidatePath(`/vehicles/${vehicleId}/service/${serviceId}`);
+    revalidatePath(
+      vehicleId ? `/vehicles/${vehicleId}/service/${serviceId}` : `/sales/${serviceId}`
+    );
     return { deleted: true, paymentId };
   }, {
     requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.BILLING }],

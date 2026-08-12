@@ -20,7 +20,7 @@ export async function updateServiceAttachment(input: unknown) {
       const attachment = await db.serviceAttachment.findFirst({
         where: {
           id: data.id,
-          serviceRecord: { vehicle: { organizationId } },
+          serviceRecord: { organizationId },
         },
         include: {
           serviceRecord: { select: { vehicleId: true, id: true } },

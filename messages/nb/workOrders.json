@@ -34,7 +34,13 @@
       "total": "Total"
     },
     "emailSubject": "Kjøretøystatus oppdatert: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Åpne arbeidsordre",
+      "openVehicle": "Åpne kjøretøy",
+      "openCustomer": "Åpne kunde",
+      "hint": "Tips: høyreklikk på en rad for handlinger"
+    }
   },
   "vehiclePicker": {
     "title": "Velg kjøretøy for arbeidsordre",
@@ -61,7 +67,11 @@
     "customerNameRequired": "Kundenavn er påkrevd",
     "failedCreateCustomer": "Kunne ikke opprette kunde",
     "failedCreateVehicle": "Kunne ikke opprette kjøretøy",
-    "somethingWentWrong": "Noe gikk galt"
+    "somethingWentWrong": "Noe gikk galt",
+    "partsSale": "Kun delesalg",
+    "partsSaleDescription": "Opprett en faktura uten kjøretøy, for salg av deler over disk.",
+    "createSale": "Opprett salg",
+    "none": "Ingen"
   },
   "notify": {
     "title": "Varsle {name}",

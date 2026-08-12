@@ -90,7 +90,7 @@ export function UnassignedJobCard({
         id: string;
         title: string;
         status: string;
-        vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null };
+        vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null } | null;
       }
     | {
         id: string;
@@ -139,10 +139,12 @@ export function UnassignedJobCard({
           )}
           <span className="truncate font-medium">{title}</span>
         </div>
-        <p className="truncate text-muted-foreground">
-          {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
-          {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ""}
-        </p>
+        {job.vehicle && (
+          <p className="truncate text-muted-foreground">
+            {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+            {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ""}
+          </p>
+        )}
       </div>
     </div>
   );

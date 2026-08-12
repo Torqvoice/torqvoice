@@ -20,6 +20,15 @@ export async function sendStatusReport(input: unknown) {
         include: {
           serviceRecord: {
             include: {
+              customer: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  phone: true,
+                  telegramChatId: true,
+                },
+              },
               vehicle: {
                 include: {
                   customer: {
@@ -40,7 +49,7 @@ export async function sendStatusReport(input: unknown) {
 
       if (!report) throw new Error("Status report not found");
 
-      const customer = report.serviceRecord.vehicle.customer;
+      const customer = report.serviceRecord.customer ?? report.serviceRecord.vehicle?.customer;
       if (!customer) throw new Error("No customer linked to this vehicle");
 
       // Build the public URL for the status report
@@ -48,7 +57,7 @@ export async function sendStatusReport(input: unknown) {
       const publicUrl = `${appUrl}/share/status-report/${organizationId}/${report.publicToken}`;
 
       const vehicle = report.serviceRecord.vehicle;
-      const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+      const vehicleName = vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : report.serviceRecord.title;
 
       const t = await getTranslations("statusReport.notify");
       const messageBody = data.customMessage

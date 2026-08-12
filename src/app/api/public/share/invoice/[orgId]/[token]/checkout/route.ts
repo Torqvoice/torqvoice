@@ -37,7 +37,7 @@ export async function POST(
       },
     });
 
-    if (!record || record.vehicle.organizationId !== orgId) {
+    if (!record || record.organizationId !== orgId) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 

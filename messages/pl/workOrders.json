@@ -34,7 +34,13 @@
       "total": "Razem"
     },
     "emailSubject": "Aktualizacja Statusu Pojazdu: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Otwórz zlecenie",
+      "openVehicle": "Otwórz pojazd",
+      "openCustomer": "Otwórz klienta",
+      "hint": "Wskazówka: kliknij wiersz prawym przyciskiem, aby zobaczyć akcje"
+    }
   },
   "vehiclePicker": {
     "title": "Wybierz Pojazd do Zlecenia Pracy",
@@ -61,7 +67,11 @@
     "customerNameRequired": "Nazwa klienta jest wymagana",
     "failedCreateCustomer": "Nie udało się utworzyć klienta",
     "failedCreateVehicle": "Nie udało się utworzyć pojazdu",
-    "somethingWentWrong": "Coś poszło nie tak"
+    "somethingWentWrong": "Coś poszło nie tak",
+    "partsSale": "Sprzedaż samych części",
+    "partsSaleDescription": "Utwórz fakturę bez pojazdu, do sprzedaży części przy ladzie.",
+    "createSale": "Utwórz sprzedaż",
+    "none": "Brak"
   },
   "notify": {
     "title": "Powiadom {name}",

@@ -24,6 +24,8 @@ export async function getObservationsPaginated(params: {
       const skip = (page - 1) * pageSize;
 
       const search = params.search?.trim();
+      // VehicleFinding has no organizationId of its own — findings are always
+      // vehicle-scoped, so the org check must go through the vehicle relation.
       const where = {
         vehicle: { organizationId },
         ...(params.status && params.status !== "all" ? { status: params.status } : {}),

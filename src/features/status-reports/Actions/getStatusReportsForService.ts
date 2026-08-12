@@ -12,7 +12,7 @@ export async function getStatusReportsForService(serviceRecordId: string) {
       // runs during page renders of just-deleted records (see deleteServiceRecord
       // revalidating the current route).
       const serviceRecord = await db.serviceRecord.findFirst({
-        where: { id: serviceRecordId, vehicle: { organizationId } },
+        where: { id: serviceRecordId, organizationId },
         select: { id: true },
       });
       if (!serviceRecord) return [];

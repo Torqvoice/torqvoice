@@ -38,6 +38,7 @@
     "customer_create": "Sukurtas klientas",
     "customer_update": "Atnaujintas klientas",
     "customer_delete": "Ištrintas klientas",
+    "customer_backfillNumbers": "Užpildyti klientų numeriai",
     "inventory_create": "Sukurta inventoriaus dalis",
     "inventory_update": "Atnaujinta inventoriaus dalis",
     "inventory_delete": "Ištrinta inventoriaus dalis",

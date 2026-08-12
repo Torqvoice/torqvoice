@@ -38,6 +38,7 @@
     "customer_create": "Opprettet kunde",
     "customer_update": "Oppdaterte kunde",
     "customer_delete": "Slettet kunde",
+    "customer_backfillNumbers": "Etterfylte kundenumre",
     "inventory_create": "Opprettet lagerdel",
     "inventory_update": "Oppdaterte lagerdel",
     "inventory_delete": "Slettet lagerdel",

@@ -61,10 +61,10 @@ const ORG_A_RECORD = {
   vehicle: { id: "veh-a", mileage: 50000, make: "Toyota", model: "Camry", year: 2020, licensePlate: "ABC123" },
 };
 
+// Service records carry their own organizationId (counter sales have no
+// vehicle), so every ownership check scopes on the record directly.
 const orgWhereClause = expect.objectContaining({
-  where: expect.objectContaining({
-    vehicle: expect.objectContaining({ organizationId: ORG_A }),
-  }),
+  where: expect.objectContaining({ organizationId: ORG_A }),
 });
 
 beforeEach(() => { vi.resetAllMocks(); });
@@ -78,7 +78,7 @@ describe("getServiceRecord — cross-org isolation", () => {
     expect(result.data).toBeNull();
   });
 
-  it("scopes the query to the caller's organizationId via vehicle relation", async () => {
+  it("scopes the query to the caller's organizationId", async () => {
     setupOrgAOwner();
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null);
     await getServiceRecord("sr-a");
@@ -103,7 +103,7 @@ describe("updateServiceRecord — cross-org isolation", () => {
     expect(result.error).toBe("Service record not found");
   });
 
-  it("ownership check always includes organizationId via vehicle relation", async () => {
+  it("ownership check always includes organizationId", async () => {
     setupOrgAOwner();
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null);
     await updateServiceRecord({ id: "sr-x" });
@@ -132,7 +132,7 @@ describe("deleteServiceRecord — cross-org isolation", () => {
     expect(result.error).toBe("Record not found");
   });
 
-  it("ownership check always includes organizationId via vehicle relation", async () => {
+  it("ownership check always includes organizationId", async () => {
     setupOrgAOwner();
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null);
     await deleteServiceRecord("sr-x");

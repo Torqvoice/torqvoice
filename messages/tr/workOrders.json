@@ -34,7 +34,13 @@
       "total": "Toplam"
     },
     "emailSubject": "Araç Durum Güncellemesi: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "İş emrini aç",
+      "openVehicle": "Aracı aç",
+      "openCustomer": "Müşteriyi aç",
+      "hint": "İpucu: işlemler için bir satıra sağ tıklayın"
+    }
   },
   "vehiclePicker": {
     "title": "İş Emri için Araç Seç",
@@ -61,7 +67,11 @@
     "customerNameRequired": "Müşteri adı gereklidir",
     "failedCreateCustomer": "Müşteri oluşturulamadı",
     "failedCreateVehicle": "Araç oluşturulamadı",
-    "somethingWentWrong": "Bir sorun oluştu"
+    "somethingWentWrong": "Bir sorun oluştu",
+    "partsSale": "Yalnızca parça satışı",
+    "partsSaleDescription": "Tezgahtan parça satışları için araçsız bir fatura oluşturun.",
+    "createSale": "Satış oluştur",
+    "none": "Yok"
   },
   "notify": {
     "title": "{name} Bilgilendir",

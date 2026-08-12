@@ -259,17 +259,17 @@ describe("getServiceRecord — cross-org isolation", () => {
     expect(result.data).toBeNull();
   });
 
-  it("db query scopes service records to the caller's org via vehicle relation", async () => {
+  it("db query scopes service records to the caller's org", async () => {
     setupOrgAOwner();
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null);
 
     await getServiceRecord("sr-a");
 
+    // Records carry their own organizationId now (counter sales have no
+    // vehicle), so scoping is on the record itself.
     expect(vi.mocked(db.serviceRecord.findFirst)).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: expect.objectContaining({
-          vehicle: expect.objectContaining({ organizationId: ORG_A }),
-        }),
+        where: expect.objectContaining({ organizationId: ORG_A }),
       })
     );
   });
@@ -323,7 +323,7 @@ describe("deleteServiceAttachment — cross-org isolation", () => {
     expect(result.error).toBe("Attachment not found");
   });
 
-  it("attachment lookup always scopes through vehicle's organizationId", async () => {
+  it("attachment lookup always scopes through the record's organizationId", async () => {
     setupOrgAOwner();
     vi.mocked(db.serviceAttachment.findFirst).mockResolvedValue(null);
 
@@ -332,9 +332,7 @@ describe("deleteServiceAttachment — cross-org isolation", () => {
     expect(vi.mocked(db.serviceAttachment.findFirst)).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          serviceRecord: expect.objectContaining({
-            vehicle: expect.objectContaining({ organizationId: ORG_A }),
-          }),
+          serviceRecord: expect.objectContaining({ organizationId: ORG_A }),
         }),
       })
     );

@@ -101,7 +101,7 @@ function formatDateRange(start: Date, end: Date): string {
 
 async function fetchRevenue(orgId: string, start: Date, end: Date) {
   const records = await db.serviceRecord.findMany({
-    where: { vehicle: { organizationId: orgId }, startDateTime: { gte: start, lte: end } },
+    where: { organizationId: orgId, startDateTime: { gte: start, lte: end } },
     select: {
       serviceDate: true, startDateTime: true, totalAmount: true, cost: true, type: true,
       taxRate: true, taxInclusive: true,
@@ -152,7 +152,7 @@ async function fetchRevenue(orgId: string, start: Date, end: Date) {
 
 async function fetchServices(orgId: string, start: Date, end: Date) {
   const records = await db.serviceRecord.findMany({
-    where: { vehicle: { organizationId: orgId }, startDateTime: { gte: start, lte: end } },
+    where: { organizationId: orgId, startDateTime: { gte: start, lte: end } },
     select: { type: true, status: true },
   });
   const byStatus: Record<string, number> = {};
@@ -183,7 +183,7 @@ async function fetchCustomers(orgId: string, start: Date, end: Date) {
 
 async function fetchTechnicians(orgId: string, start: Date, end: Date) {
   const records = await db.serviceRecord.findMany({
-    where: { vehicle: { organizationId: orgId }, startDateTime: { gte: start, lte: end }, OR: [{ technicianId: { not: null } }, { techName: { not: null } }] },
+    where: { organizationId: orgId, startDateTime: { gte: start, lte: end }, OR: [{ technicianId: { not: null } }, { techName: { not: null } }] },
     select: { techName: true, technicianId: true, technician: { select: { name: true } }, totalAmount: true, cost: true, laborItems: { select: { hours: true } } },
   });
   const byTech: Record<string, { techName: string; jobCount: number; totalRevenue: number; totalLaborHours: number }> = {};
@@ -205,7 +205,7 @@ async function fetchTechnicians(orgId: string, start: Date, end: Date) {
 
 async function fetchParts(orgId: string, start: Date, end: Date) {
   const parts = await db.servicePart.findMany({
-    where: { serviceRecord: { vehicle: { organizationId: orgId }, startDateTime: { gte: start, lte: end } } },
+    where: { serviceRecord: { organizationId: orgId, startDateTime: { gte: start, lte: end } } },
     select: {
       name: true, partNumber: true, quantity: true, total: true, unitCost: true,
       serviceRecord: { select: { taxRate: true, taxInclusive: true } },
@@ -231,7 +231,7 @@ async function fetchParts(orgId: string, start: Date, end: Date) {
 
 async function fetchJobAnalytics(orgId: string, start: Date, end: Date) {
   const records = await db.serviceRecord.findMany({
-    where: { vehicle: { organizationId: orgId }, startDateTime: { gte: start, lte: end } },
+    where: { organizationId: orgId, startDateTime: { gte: start, lte: end } },
     select: { type: true, totalAmount: true, cost: true, serviceDate: true, startDateTime: true, laborItems: { select: { hours: true } } },
   });
   const totalValue = records.reduce((s, r) => s + (r.totalAmount > 0 ? r.totalAmount : r.cost), 0);
@@ -295,8 +295,8 @@ async function fetchInventory(orgId: string) {
 async function fetchPastDue(orgId: string) {
   const now = new Date();
   const records = await db.serviceRecord.findMany({
-    where: { vehicle: { organizationId: orgId }, invoiceDueDate: { lt: now }, status: { not: "cancelled" } },
-    select: { id: true, invoiceNumber: true, invoiceDueDate: true, totalAmount: true, cost: true, manuallyPaid: true, payments: { select: { amount: true } }, vehicle: { select: { year: true, make: true, model: true, customer: { select: { name: true, company: true } } } } },
+    where: { organizationId: orgId, invoiceDueDate: { lt: now }, status: { not: "cancelled" } },
+    select: { id: true, invoiceNumber: true, invoiceDueDate: true, totalAmount: true, cost: true, manuallyPaid: true, payments: { select: { amount: true } }, customer: { select: { name: true, company: true } }, vehicle: { select: { year: true, make: true, model: true, customer: { select: { name: true, company: true } } } } },
     orderBy: { invoiceDueDate: "asc" },
   });
   const invoices: { id: string; invoiceNumber: string | null; customerName: string; customerCompany: string | null; vehicleInfo: string; totalAmount: number; amountPaid: number; amountDue: number; dueDate: string; daysPastDue: number }[] = [];
@@ -308,7 +308,7 @@ async function fetchPastDue(orgId: string) {
     if (amountDue <= 0) continue;
     const dueDate = r.invoiceDueDate!;
     const days = Math.floor((now.getTime() - dueDate.getTime()) / 86400000);
-    invoices.push({ id: r.id, invoiceNumber: r.invoiceNumber, customerName: r.vehicle.customer?.name ?? "Unknown", customerCompany: r.vehicle.customer?.company ?? null, vehicleInfo: [r.vehicle.year, r.vehicle.make, r.vehicle.model].filter(Boolean).join(" ") || "N/A", totalAmount: total, amountPaid: paid, amountDue, dueDate: dueDate.toISOString().split("T")[0], daysPastDue: days });
+    invoices.push({ id: r.id, invoiceNumber: r.invoiceNumber, customerName: (r.customer ?? r.vehicle?.customer)?.name ?? "Unknown", customerCompany: (r.customer ?? r.vehicle?.customer)?.company ?? null, vehicleInfo: (r.vehicle ? [r.vehicle.year, r.vehicle.make, r.vehicle.model].filter(Boolean).join(" ") : "") || "N/A", totalAmount: total, amountPaid: paid, amountDue, dueDate: dueDate.toISOString().split("T")[0], daysPastDue: days });
     totalAmountDue += amountDue; if (days > 30) over30++; if (days > 60) over60++; if (days > 90) over90++;
   }
   return { invoices, summary: { totalPastDue: invoices.length, totalAmountDue, totalInvoices: invoices.length, over30, over60, over90 } };
@@ -316,7 +316,7 @@ async function fetchPastDue(orgId: string) {
 
 async function fetchTax(orgId: string, start: Date, end: Date) {
   const records = await db.serviceRecord.findMany({
-    where: { vehicle: { organizationId: orgId }, startDateTime: { gte: start, lte: end } },
+    where: { organizationId: orgId, startDateTime: { gte: start, lte: end } },
     select: { serviceDate: true, startDateTime: true, subtotal: true, taxRate: true, taxAmount: true, taxInclusive: true, totalAmount: true },
     orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
   });
