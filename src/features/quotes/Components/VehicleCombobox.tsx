@@ -65,6 +65,10 @@ export function VehicleCombobox({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const loadingMoreRef = useRef(false);
+  const valueRef = useRef(value);
+  valueRef.current = value;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   const mapVehicle = (v: VehicleOption) => ({
     id: v.id,
@@ -86,8 +90,9 @@ export function VehicleCombobox({
 
       const result = await searchVehicles(query || undefined, PAGE_SIZE, offset, customerId || undefined);
 
+      let mapped: VehicleOption[] = [];
       if (result.success && result.data) {
-        const mapped = result.data.map(mapVehicle);
+        mapped = result.data.map(mapVehicle);
         if (append) {
           setOptions((prev) => [...prev, ...mapped]);
         } else {
@@ -99,14 +104,27 @@ export function VehicleCombobox({
       setSearching(false);
       setLoadingMore(false);
       loadingMoreRef.current = false;
+      return mapped;
     },
     [customerId]
   );
 
-  // Prefetch on mount and whenever the customer filter changes
+  // Prefetch on mount and whenever the customer filter changes. When a
+  // customer filter is active and they own exactly one vehicle, select it
+  // automatically so the user doesn't have to.
   useEffect(() => {
-    loadOptions();
-  }, [loadOptions]);
+    let cancelled = false;
+    loadOptions().then((opts) => {
+      if (cancelled || !customerId) return;
+      if (opts.length === 1 && !valueRef.current) {
+        setSelected(opts[0]);
+        onChangeRef.current(opts[0].id, opts[0]);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [loadOptions, customerId]);
 
   // Debounced search — resets to page 0
   useEffect(() => {
