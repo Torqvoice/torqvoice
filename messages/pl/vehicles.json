@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "np. 50000",
     "reminderUpdated": "Przypomnienie zaktualizowane",
     "reminderCreated": "Przypomnienie utworzone",
-    "saveError": "Nie udało się {action} przypomnienia"
+    "saveError": "Nie udało się {action} przypomnienia",
+    "notifyLabel": "Powiadom mnie w terminie",
+    "notifyInApp": "Powiadomienie w aplikacji",
+    "notifyEmail": "E-mail"
   },
   "services": {
     "searchPlaceholder": "Szukaj rekordów...",

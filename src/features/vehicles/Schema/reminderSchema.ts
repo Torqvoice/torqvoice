@@ -6,6 +6,9 @@ export const createReminderSchema = z.object({
   description: z.string().optional(),
   dueDate: z.string().optional(),
   dueMileage: z.coerce.number().optional(),
+  // How the workshop wants to be notified when the reminder comes due
+  notifyInApp: z.boolean().optional(),
+  notifyEmail: z.boolean().optional(),
 });
 
 export type CreateReminderInput = z.infer<typeof createReminderSchema>;

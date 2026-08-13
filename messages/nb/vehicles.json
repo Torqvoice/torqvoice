@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "f.eks. 50000",
     "reminderUpdated": "Paminnelse oppdatert",
     "reminderCreated": "Paminnelse opprettet",
-    "saveError": "Kunne ikke {action} paminnelse"
+    "saveError": "Kunne ikke {action} paminnelse",
+    "notifyLabel": "Varsle meg ved forfall",
+    "notifyInApp": "Varsel i appen",
+    "notifyEmail": "E-post"
   },
   "services": {
     "searchPlaceholder": "Sok i oppforinger...",

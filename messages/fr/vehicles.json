@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "ex. 50000",
     "reminderUpdated": "Rappel mis à jour",
     "reminderCreated": "Rappel créé",
-    "saveError": "Échec de {action} du rappel"
+    "saveError": "Échec de {action} du rappel",
+    "notifyLabel": "Me notifier à l'échéance",
+    "notifyInApp": "Notification dans l'app",
+    "notifyEmail": "E-mail"
   },
   "services": {
     "searchPlaceholder": "Rechercher des dossiers...",

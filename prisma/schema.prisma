@@ -307,6 +307,11 @@ model Reminder {
   dueDate     DateTime?
   dueMileage  Int?
   isCompleted Boolean   @default(false)
+  /// Per-reminder notification channels, chosen when creating the reminder
+  notifyInApp Boolean   @default(true)
+  notifyEmail Boolean   @default(false)
+  /// Set by the due-reminder cron once notified; cleared when dueDate changes
+  notifiedAt  DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

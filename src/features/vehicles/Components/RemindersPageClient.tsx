@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -64,6 +65,8 @@ interface Reminder {
   dueDate: Date | null;
   dueMileage: number | null;
   isCompleted: boolean;
+  notifyInApp: boolean;
+  notifyEmail: boolean;
   createdAt: Date;
   vehicle: {
     id: string;
@@ -123,6 +126,8 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
   const [formDescription, setFormDescription] = useState("");
   const [formDueDate, setFormDueDate] = useState<Date | undefined>();
   const [formDueMileage, setFormDueMileage] = useState("");
+  const [formNotifyInApp, setFormNotifyInApp] = useState(true);
+  const [formNotifyEmail, setFormNotifyEmail] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [vehicleOpen, setVehicleOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -157,6 +162,8 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
     setFormDescription("");
     setFormDueDate(undefined);
     setFormDueMileage("");
+    setFormNotifyInApp(true);
+    setFormNotifyEmail(false);
     setShowForm(true);
   };
 
@@ -167,6 +174,8 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
     setFormDescription(r.description || "");
     setFormDueDate(r.dueDate ? new Date(r.dueDate) : undefined);
     setFormDueMileage(r.dueMileage ? String(r.dueMileage) : "");
+    setFormNotifyInApp(r.notifyInApp ?? true);
+    setFormNotifyEmail(r.notifyEmail ?? false);
     setShowForm(true);
   };
 
@@ -181,6 +190,8 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
       description: formDescription || undefined,
       dueDate: formDueDate ? formDueDate.toISOString().split("T")[0] : undefined,
       dueMileage: formDueMileage ? Number(formDueMileage) : undefined,
+      notifyInApp: formNotifyInApp,
+      notifyEmail: formNotifyEmail,
     };
 
     const result = editingReminder
@@ -460,6 +471,26 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
                   onChange={(e) => setFormDueMileage(e.target.value)}
                   placeholder={tv("dueMileagePlaceholder")}
                 />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{tv("notifyLabel")}</Label>
+              <div className="flex gap-6">
+                <label className="flex items-center gap-2 text-sm font-normal">
+                  <Checkbox
+                    checked={formNotifyInApp}
+                    onCheckedChange={(v) => setFormNotifyInApp(v === true)}
+                  />
+                  {tv("notifyInApp")}
+                </label>
+                <label className="flex items-center gap-2 text-sm font-normal">
+                  <Checkbox
+                    checked={formNotifyEmail}
+                    onCheckedChange={(v) => setFormNotifyEmail(v === true)}
+                  />
+                  {tv("notifyEmail")}
+                </label>
               </div>
             </div>
 

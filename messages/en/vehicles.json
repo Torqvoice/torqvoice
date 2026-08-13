@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "e.g. 50000",
     "reminderUpdated": "Reminder updated",
     "reminderCreated": "Reminder created",
-    "saveError": "Failed to {action} reminder"
+    "saveError": "Failed to {action} reminder",
+    "notifyLabel": "Notify me when due",
+    "notifyInApp": "In-app notification",
+    "notifyEmail": "Email"
   },
   "services": {
     "searchPlaceholder": "Search records...",

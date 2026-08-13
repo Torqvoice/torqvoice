@@ -68,13 +68,19 @@ export async function updateReminder(input: unknown) {
     });
     if (!reminder) throw new Error("Reminder not found");
 
+    const newDueDate = data.dueDate !== undefined ? (toSafeDate(data.dueDate) ?? null) : undefined;
     const updated = await db.reminder.update({
       where: { id },
       data: {
         ...data,
         description: data.description !== undefined ? (data.description || null) : undefined,
-        dueDate: data.dueDate !== undefined ? (toSafeDate(data.dueDate) ?? null) : undefined,
+        dueDate: newDueDate,
         dueMileage: data.dueMileage !== undefined ? (data.dueMileage ?? null) : undefined,
+        // A rescheduled reminder should notify again when the new date comes due
+        notifiedAt:
+          newDueDate !== undefined && newDueDate?.getTime() !== reminder.dueDate?.getTime()
+            ? null
+            : undefined,
       },
     });
     revalidatePath(`/vehicles/${reminder.vehicleId}`);

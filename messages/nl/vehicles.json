@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "bijv. 50000",
     "reminderUpdated": "Herinnering bijgewerkt",
     "reminderCreated": "Herinnering aangemaakt",
-    "saveError": "{action} van herinnering mislukt"
+    "saveError": "{action} van herinnering mislukt",
+    "notifyLabel": "Waarschuw mij bij vervaldatum",
+    "notifyInApp": "In-app melding",
+    "notifyEmail": "E-mail"
   },
   "services": {
     "searchPlaceholder": "Zoek in records...",

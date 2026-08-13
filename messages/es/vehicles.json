@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "ej. 50000",
     "reminderUpdated": "Recordatorio actualizado",
     "reminderCreated": "Recordatorio creado",
-    "saveError": "Error al {action} recordatorio"
+    "saveError": "Error al {action} recordatorio",
+    "notifyLabel": "Notificarme al vencer",
+    "notifyInApp": "Notificación en la app",
+    "notifyEmail": "Correo electrónico"
   },
   "services": {
     "searchPlaceholder": "Buscar registros...",
