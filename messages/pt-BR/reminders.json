@@ -8,5 +8,10 @@
   "searchVehicle": "Buscar veículos...",
   "noVehicle": "Nenhum veículo encontrado.",
   "pickDate": "Escolher uma data",
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "relatesTo": "Refere-se a (opcional)",
+  "selectCustomer": "Cliente (opcional)",
+  "noneOption": "Nenhum",
+  "workshopHint": "Nenhum cliente ou veículo selecionado: este é um lembrete geral da oficina.",
+  "workshopReminder": "Oficina"
 }

@@ -8,5 +8,10 @@
   "searchVehicle": "Поиск транспортных средств...",
   "noVehicle": "Транспортные средства не найдены.",
   "pickDate": "Выберите дату",
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "relatesTo": "Относится к (необязательно)",
+  "selectCustomer": "Клиент (необязательно)",
+  "noneOption": "Нет",
+  "workshopHint": "Клиент или автомобиль не выбраны: это общее напоминание для мастерской.",
+  "workshopReminder": "Мастерская"
 }

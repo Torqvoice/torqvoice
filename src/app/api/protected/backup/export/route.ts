@@ -127,6 +127,17 @@ export async function POST(request: NextRequest) {
   }
 
   if (options.vehicles) {
+    // Customer/workshop reminders have no vehicle to nest under.
+    queries.push(
+      db.reminder
+        .findMany({ where: { organizationId: ctx.organizationId, vehicleId: null } })
+        .then((result) => {
+          data.orgReminders = result;
+        })
+    );
+  }
+
+  if (options.vehicles) {
     // Counter sales: service records without a vehicle, linked directly to a
     // customer. They are not nested under any vehicle, so export them
     // separately or they would be lost from backups.
@@ -298,7 +309,7 @@ export async function GET() {
   }
 
   const [
-    settings, customers, customFieldDefinitions, inventoryParts, vehicles, counterSales, quotes,
+    settings, customers, customFieldDefinitions, inventoryParts, vehicles, orgReminders, counterSales, quotes,
     technicians, inspectionTemplates, inspections, auditLogs, smsMessages, notifications,
   ] = await Promise.all([
       db.appSetting.findMany({ where: { organizationId: ctx.organizationId } }),
@@ -323,6 +334,9 @@ export async function GET() {
             },
           },
         },
+      }),
+      db.reminder.findMany({
+        where: { organizationId: ctx.organizationId, vehicleId: null },
       }),
       db.serviceRecord.findMany({
         where: { organizationId: ctx.organizationId, vehicleId: null },
@@ -363,6 +377,7 @@ export async function GET() {
       customFieldDefinitions,
       inventoryParts,
       vehicles,
+      orgReminders,
       counterSales,
       quotes,
       technicians,

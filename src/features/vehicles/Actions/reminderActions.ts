@@ -7,12 +7,16 @@ import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { createReminderSchema, updateReminderSchema } from "../Schema/reminderSchema";
 import { revalidatePath } from "next/cache";
 
+function revalidateReminderPaths(vehicleId: string | null) {
+  if (vehicleId) revalidatePath(`/vehicles/${vehicleId}`);
+  revalidatePath("/");
+  revalidatePath("/reminders");
+}
+
 export async function getAllReminders() {
   return withAuth(async ({ organizationId }) => {
     return db.reminder.findMany({
-      where: {
-        vehicle: { organizationId },
-      },
+      where: { organizationId },
       include: {
         vehicle: {
           select: {
@@ -24,6 +28,9 @@ export async function getAllReminders() {
             mileage: true,
           },
         },
+        customer: {
+          select: { id: true, name: true },
+        },
       },
       orderBy: [{ isCompleted: "asc" }, { dueDate: "asc" }],
     });
@@ -33,20 +40,36 @@ export async function getAllReminders() {
 export async function createReminder(input: unknown) {
   return withAuth(async ({ organizationId }) => {
     const data = createReminderSchema.parse(input);
-    const vehicle = await db.vehicle.findFirst({
-      where: { id: data.vehicleId, organizationId },
-    });
-    if (!vehicle) throw new Error("Vehicle not found");
+
+    // A reminder relates to a vehicle, a customer, or just the workshop.
+    // Whatever it relates to must belong to this organization.
+    let customerId = data.customerId ?? null;
+    if (data.vehicleId) {
+      const vehicle = await db.vehicle.findFirst({
+        where: { id: data.vehicleId, organizationId },
+        select: { id: true, customerId: true },
+      });
+      if (!vehicle) throw new Error("Vehicle not found");
+      // The vehicle wins: keep its customer link consistent with the vehicle
+      customerId = vehicle.customerId;
+    } else if (customerId) {
+      const customer = await db.customer.findFirst({
+        where: { id: customerId, organizationId },
+        select: { id: true },
+      });
+      if (!customer) throw new Error("Customer not found");
+    }
 
     const reminder = await db.reminder.create({
       data: {
         ...data,
+        organizationId,
+        vehicleId: data.vehicleId ?? null,
+        customerId,
         dueDate: toSafeDate(data.dueDate) ?? null,
       },
     });
-    revalidatePath(`/vehicles/${data.vehicleId}`);
-    revalidatePath("/");
-    revalidatePath("/reminders");
+    revalidateReminderPaths(data.vehicleId ?? null);
     return reminder;
   }, {
     requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }],
@@ -64,22 +87,45 @@ export async function updateReminder(input: unknown) {
   return withAuth(async ({ organizationId }) => {
     const { id, ...data } = updateReminderSchema.parse(input);
     const reminder = await db.reminder.findFirst({
-      where: { id, vehicle: { organizationId } },
+      where: { id, organizationId },
     });
     if (!reminder) throw new Error("Reminder not found");
 
+    // Ownership checks when the target changes
+    let customerId = data.customerId;
+    if (data.vehicleId) {
+      const vehicle = await db.vehicle.findFirst({
+        where: { id: data.vehicleId, organizationId },
+        select: { id: true, customerId: true },
+      });
+      if (!vehicle) throw new Error("Vehicle not found");
+      customerId = vehicle.customerId;
+    } else if (data.customerId) {
+      const customer = await db.customer.findFirst({
+        where: { id: data.customerId, organizationId },
+        select: { id: true },
+      });
+      if (!customer) throw new Error("Customer not found");
+    }
+
+    const newDueDate = data.dueDate !== undefined ? (toSafeDate(data.dueDate) ?? null) : undefined;
     const updated = await db.reminder.update({
       where: { id },
       data: {
         ...data,
+        vehicleId: data.vehicleId !== undefined ? (data.vehicleId ?? null) : undefined,
+        customerId: customerId !== undefined ? (customerId ?? null) : undefined,
         description: data.description !== undefined ? (data.description || null) : undefined,
-        dueDate: data.dueDate !== undefined ? (toSafeDate(data.dueDate) ?? null) : undefined,
+        dueDate: newDueDate,
         dueMileage: data.dueMileage !== undefined ? (data.dueMileage ?? null) : undefined,
+        // A rescheduled reminder should notify again when the new date comes due
+        notifiedAt:
+          newDueDate !== undefined && newDueDate?.getTime() !== reminder.dueDate?.getTime()
+            ? null
+            : undefined,
       },
     });
-    revalidatePath(`/vehicles/${reminder.vehicleId}`);
-    revalidatePath("/");
-    revalidatePath("/reminders");
+    revalidateReminderPaths(reminder.vehicleId);
     return updated;
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });
 }
@@ -87,7 +133,7 @@ export async function updateReminder(input: unknown) {
 export async function toggleReminder(reminderId: string) {
   return withAuth(async ({ organizationId }) => {
     const reminder = await db.reminder.findFirst({
-      where: { id: reminderId, vehicle: { organizationId } },
+      where: { id: reminderId, organizationId },
     });
     if (!reminder) throw new Error("Reminder not found");
 
@@ -95,23 +141,19 @@ export async function toggleReminder(reminderId: string) {
       where: { id: reminderId },
       data: { isCompleted: !reminder.isCompleted },
     });
-    revalidatePath(`/vehicles/${reminder.vehicleId}`);
-    revalidatePath("/");
-    revalidatePath("/reminders");
+    revalidateReminderPaths(reminder.vehicleId);
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }] });
 }
 
 export async function deleteReminder(reminderId: string) {
   return withAuth(async ({ organizationId }) => {
     const reminder = await db.reminder.findFirst({
-      where: { id: reminderId, vehicle: { organizationId } },
+      where: { id: reminderId, organizationId },
     });
     if (!reminder) throw new Error("Reminder not found");
 
     await db.reminder.delete({ where: { id: reminderId } });
-    revalidatePath(`/vehicles/${reminder.vehicleId}`);
-    revalidatePath("/");
-    revalidatePath("/reminders");
+    revalidateReminderPaths(reminder.vehicleId);
     return { reminderId };
   }, {
     requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }],

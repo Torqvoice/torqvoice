@@ -69,7 +69,7 @@ export async function getCalendarEvents(params: {
       }),
       db.reminder.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           dueDate: { gte: start, lte: end },
         },
         select: {
@@ -78,6 +78,7 @@ export async function getCalendarEvents(params: {
           dueDate: true,
           isCompleted: true,
           vehicleId: true,
+          customer: { select: { name: true } },
           vehicle: {
             select: {
               make: true,
@@ -141,8 +142,8 @@ export async function getCalendarEvents(params: {
           type: "reminder" as const,
           status: r.isCompleted ? "completed" : new Date(r.dueDate!) < new Date() ? "overdue" : "upcoming",
           vehicleId: r.vehicleId,
-          vehicleLabel: `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}`,
-          customerName: r.vehicle.customer?.name ?? null,
+          vehicleLabel: r.vehicle ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}` : "",
+          customerName: (r.customer ?? r.vehicle?.customer)?.name ?? null,
           invoiceNumber: null,
           amount: null,
         })),

@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "es. 50000",
     "reminderUpdated": "Promemoria aggiornato",
     "reminderCreated": "Promemoria creato",
-    "saveError": "Impossibile {action} il promemoria"
+    "saveError": "Impossibile {action} il promemoria",
+    "notifyLabel": "Avvisami alla scadenza",
+    "notifyInApp": "Notifica in app",
+    "notifyEmail": "E-mail"
   },
   "services": {
     "searchPlaceholder": "Cerca interventi...",

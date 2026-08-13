@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "напр. 50000",
     "reminderUpdated": "Напоминание обновлено",
     "reminderCreated": "Напоминание создано",
-    "saveError": "Не удалось {action} напоминание"
+    "saveError": "Не удалось {action} напоминание",
+    "notifyLabel": "Уведомить при наступлении срока",
+    "notifyInApp": "Уведомление в приложении",
+    "notifyEmail": "Эл. почта"
   },
   "services": {
     "searchPlaceholder": "Поиск записей...",

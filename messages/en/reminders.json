@@ -8,5 +8,10 @@
   "searchVehicle": "Search vehicles...",
   "noVehicle": "No vehicles found.",
   "pickDate": "Pick a date",
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "relatesTo": "Relates to (optional)",
+  "selectCustomer": "Customer (optional)",
+  "noneOption": "None",
+  "workshopHint": "No customer or vehicle selected: this is a general workshop reminder.",
+  "workshopReminder": "Workshop"
 }
