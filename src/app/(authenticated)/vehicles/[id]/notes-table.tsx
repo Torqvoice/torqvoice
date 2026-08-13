@@ -26,6 +26,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -152,7 +158,9 @@ export function NotesTable({
               </TableRow>
             ) : (
               records.map((n) => (
-                <TableRow key={n.id} className="cursor-pointer" onClick={() => onSelectNote(n)}>
+                <ContextMenu key={n.id} modal={false}>
+                <ContextMenuTrigger asChild>
+                <TableRow className="cursor-pointer" onClick={() => onSelectNote(n)}>
                   <TableCell className="w-[30px] px-2">
                     {n.isPinned && <Pin className="h-3.5 w-3.5 text-primary" />}
                   </TableCell>
@@ -192,6 +200,25 @@ export function NotesTable({
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => onTogglePin(n.id)}>
+                    {n.isPinned ? (
+                      <PinOff className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Pin className="mr-2 h-4 w-4" />
+                    )}
+                    {n.isPinned ? t("unpin") : t("pin")}
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    variant="destructive"
+                    onClick={() => onDeleteNote(n.id)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t("delete")}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+                </ContextMenu>
               ))
             )}
           </TableBody>

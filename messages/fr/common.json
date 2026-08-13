@@ -12,6 +12,14 @@
     "edit": "Modifier",
     "add": "Ajouter"
   },
+  "contextMenu": {
+    "hint": "Astuce : clic droit sur une ligne pour les actions",
+    "open": "Ouvrir",
+    "openVehicle": "Ouvrir le véhicule",
+    "openCustomer": "Ouvrir le client",
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  },
   "form": {
     "email": "Adresse e-mail",
     "password": "Mot de passe",

@@ -12,6 +12,14 @@
     "edit": "Editar",
     "add": "Agregar"
   },
+  "contextMenu": {
+    "hint": "Consejo: clic derecho en una fila para ver acciones",
+    "open": "Abrir",
+    "openVehicle": "Abrir vehículo",
+    "openCustomer": "Abrir cliente",
+    "edit": "Editar",
+    "delete": "Eliminar"
+  },
   "form": {
     "email": "Correo electronico",
     "password": "Contrasena",

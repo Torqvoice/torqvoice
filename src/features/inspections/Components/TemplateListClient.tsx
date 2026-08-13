@@ -11,6 +11,10 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
@@ -82,6 +86,7 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
       </div>
 
       <div className="rounded-lg border">
+        <TableContextMenuHint />
         <Table>
           <TableHeader>
             <TableRow>
@@ -101,7 +106,9 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
               </TableRow>
             ) : (
               templates.map((t) => (
-                <TableRow key={t.id}>
+                <ContextMenu key={t.id} modal={false}>
+                <ContextMenuTrigger asChild>
+                <TableRow>
                   <TableCell>
                     <div>
                       <p className="font-medium">{t.name}</p>
@@ -142,6 +149,21 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => handleEdit(t)}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    variant="destructive"
+                    onClick={() => setDeleteId(t.id)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
+                  </ContextMenuItem>
+                </ContextMenuContent>
+                </ContextMenu>
               ))
             )}
           </TableBody>

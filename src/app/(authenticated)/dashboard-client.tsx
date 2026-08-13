@@ -16,6 +16,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -24,10 +30,12 @@ import {
   AlertTriangle,
   ArrowRight,
   Bell,
+  Car,
   Check,
   ClipboardCheck,
   ClipboardList,
   Clock,
+  ExternalLink,
   Eye,
   EyeOff,
   FileText,
@@ -283,6 +291,7 @@ export function DashboardClient({
 }) {
   const formatCurrency = useFormatCurrency();
   const t = useTranslations("dashboard");
+  const tcm = useTranslations("common.contextMenu");
   const tAudit = useTranslations("audit");
   const distUnit = unitSystem === "metric" ? "km" : "mi";
   const router = useRouter();
@@ -1266,13 +1275,16 @@ export function DashboardClient({
                   ) : (
                     stats.recentServices.map((s) => {
                       const displayTotal = s.totalAmount > 0 ? s.totalAmount : s.cost;
+                      const recordHref = s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`;
+                      const rowCustomer = s.customer ?? s.vehicle?.customer;
                       return (
+                        <ContextMenu key={s.id} modal={false}>
+                        <ContextMenuTrigger asChild>
                         <TableRow
-                          key={s.id}
                           className={`cursor-pointer transition-opacity ${navigatingId === s.id ? "opacity-50" : ""}`}
                           onClick={() => {
                             setNavigatingId(s.id);
-                            router.push(s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`);
+                            router.push(recordHref);
                           }}
                         >
                           <TableCell className="font-mono text-xs">
@@ -1303,6 +1315,31 @@ export function DashboardClient({
                             </TableCell>
                           )}
                         </TableRow>
+                        </ContextMenuTrigger>
+                        <ContextMenuContent className="min-w-52">
+                          <ContextMenuItem
+                            onClick={() => {
+                              setNavigatingId(s.id);
+                              router.push(recordHref);
+                            }}
+                          >
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            {tcm("open")}
+                          </ContextMenuItem>
+                          {s.vehicle && (
+                            <ContextMenuItem onClick={() => router.push(`/vehicles/${s.vehicle?.id}`)}>
+                              <Car className="mr-2 h-4 w-4" />
+                              {tcm("openVehicle")}
+                            </ContextMenuItem>
+                          )}
+                          {rowCustomer && (
+                            <ContextMenuItem onClick={() => router.push(`/customers/${rowCustomer.id}`)}>
+                              <Users className="mr-2 h-4 w-4" />
+                              {tcm("openCustomer")}
+                            </ContextMenuItem>
+                          )}
+                        </ContextMenuContent>
+                        </ContextMenu>
                       );
                     })
                   )}
@@ -1337,13 +1374,17 @@ export function DashboardClient({
                       </TableCell>
                     </TableRow>
                   ) : (
-                    stats.todaysServices.map((s) => (
+                    stats.todaysServices.map((s) => {
+                      const recordHref = s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`;
+                      const rowCustomer = s.customer ?? s.vehicle?.customer;
+                      return (
+                      <ContextMenu key={s.id} modal={false}>
+                      <ContextMenuTrigger asChild>
                       <TableRow
-                        key={s.id}
                         className={`cursor-pointer transition-opacity ${navigatingId === s.id ? "opacity-50" : ""}`}
                         onClick={() => {
                           setNavigatingId(s.id);
-                          router.push(s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`);
+                          router.push(recordHref);
                         }}
                       >
                         <TableCell>
@@ -1374,7 +1415,33 @@ export function DashboardClient({
                           {s.techName || "-"}
                         </TableCell>
                       </TableRow>
-                    ))
+                      </ContextMenuTrigger>
+                      <ContextMenuContent className="min-w-52">
+                        <ContextMenuItem
+                          onClick={() => {
+                            setNavigatingId(s.id);
+                            router.push(recordHref);
+                          }}
+                        >
+                          <ExternalLink className="mr-2 h-4 w-4" />
+                          {tcm("open")}
+                        </ContextMenuItem>
+                        {s.vehicle && (
+                          <ContextMenuItem onClick={() => router.push(`/vehicles/${s.vehicle?.id}`)}>
+                            <Car className="mr-2 h-4 w-4" />
+                            {tcm("openVehicle")}
+                          </ContextMenuItem>
+                        )}
+                        {rowCustomer && (
+                          <ContextMenuItem onClick={() => router.push(`/customers/${rowCustomer.id}`)}>
+                            <Users className="mr-2 h-4 w-4" />
+                            {tcm("openCustomer")}
+                          </ContextMenuItem>
+                        )}
+                      </ContextMenuContent>
+                      </ContextMenu>
+                      );
+                    })
                   )}
                 </TableBody>
               </Table>
@@ -1480,8 +1547,9 @@ export function DashboardClient({
                     const vehicleLabel = obs.vehicle.licensePlate
                       ?? `${obs.vehicle.year} ${obs.vehicle.make}`;
                     return (
+                      <ContextMenu key={obs.id} modal={false}>
+                      <ContextMenuTrigger asChild>
                       <TableRow
-                        key={obs.id}
                         className="cursor-pointer"
                         onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
                       >
@@ -1503,6 +1571,20 @@ export function DashboardClient({
                           {formatRelativeTime(obs.createdAt)}
                         </TableCell>
                       </TableRow>
+                      </ContextMenuTrigger>
+                      <ContextMenuContent className="min-w-52">
+                        <ContextMenuItem
+                          onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
+                        >
+                          <ExternalLink className="mr-2 h-4 w-4" />
+                          {tcm("open")}
+                        </ContextMenuItem>
+                        <ContextMenuItem onClick={() => router.push(`/vehicles/${obs.vehicle.id}`)}>
+                          <Car className="mr-2 h-4 w-4" />
+                          {tcm("openVehicle")}
+                        </ContextMenuItem>
+                      </ContextMenuContent>
+                      </ContextMenu>
                     );
                   })}
                 </TableBody>

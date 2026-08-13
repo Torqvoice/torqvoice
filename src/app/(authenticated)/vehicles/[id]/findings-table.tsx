@@ -29,6 +29,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -214,7 +220,9 @@ export function FindingsTable({
               </TableRow>
             ) : (
               records.map((f) => (
-                <TableRow key={f.id}>
+                <ContextMenu key={f.id} modal={false}>
+                <ContextMenuTrigger asChild>
+                <TableRow>
                   <TableCell className="px-2">
                     <Checkbox
                       checked={selected.has(f.id)}
@@ -282,6 +290,31 @@ export function FindingsTable({
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => onEditFinding(f)}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    {t("edit")}
+                  </ContextMenuItem>
+                  {f.serviceRecord && (
+                    <ContextMenuItem
+                      onClick={() =>
+                        router.push(`/vehicles/${vehicleId}/service/${f.serviceRecord?.id}`)
+                      }
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {t("discoveredIn")}
+                    </ContextMenuItem>
+                  )}
+                  <ContextMenuItem
+                    variant="destructive"
+                    onClick={() => onDeleteFinding(f.id)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t("delete")}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+                </ContextMenu>
               ))
             )}
           </TableBody>

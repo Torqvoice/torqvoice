@@ -12,6 +12,14 @@
     "edit": "Redaguoti",
     "add": "Pridėti"
   },
+  "contextMenu": {
+    "hint": "Patarimas: spustelėkite eilutę dešiniuoju mygtuku veiksmams",
+    "open": "Atidaryti",
+    "openVehicle": "Atidaryti transporto priemonę",
+    "openCustomer": "Atidaryti klientą",
+    "edit": "Redaguoti",
+    "delete": "Ištrinti"
+  },
   "form": {
     "email": "El. paštas",
     "password": "Slaptažodis",

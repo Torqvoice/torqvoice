@@ -12,6 +12,14 @@
     "edit": "Modifica",
     "add": "Aggiungi"
   },
+  "contextMenu": {
+    "hint": "Suggerimento: clic destro su una riga per le azioni",
+    "open": "Apri",
+    "openVehicle": "Apri veicolo",
+    "openCustomer": "Apri cliente",
+    "edit": "Modifica",
+    "delete": "Elimina"
+  },
   "form": {
     "email": "Email",
     "password": "Password",

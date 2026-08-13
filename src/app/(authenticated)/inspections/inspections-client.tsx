@@ -11,8 +11,16 @@ import { Input } from "@/components/ui/input";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
-import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, Search } from "lucide-react";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import { ArrowDown, ArrowUp, ArrowUpDown, Car, ExternalLink, Loader2, Plus, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { NewInspectionDialog } from "@/features/inspections/Components/NewInspectionDialog";
 
 interface InspectionRecord {
@@ -109,6 +117,7 @@ export function InspectionsClient({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [showNewDialog, setShowNewDialog] = useState(false);
+  const tcm = useTranslations("common.contextMenu");
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -195,6 +204,7 @@ export function InspectionsClient({
       </div>
 
       <div className="rounded-lg border">
+        <TableContextMenuHint />
         <Table className="table-fixed">
           <TableHeader>
             <TableRow>
@@ -230,8 +240,9 @@ export function InspectionsClient({
               </TableRow>
             ) : (
               data.records.map((insp) => (
+                <ContextMenu key={insp.id} modal={false}>
+                <ContextMenuTrigger asChild>
                 <TableRow
-                  key={insp.id}
                   className="cursor-pointer"
                   onClick={() => router.push(`/inspections/${insp.id}`)}
                 >
@@ -262,6 +273,18 @@ export function InspectionsClient({
                     {formatDate(new Date(insp.createdAt))}
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => router.push(`/inspections/${insp.id}`)}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {tcm("open")}
+                  </ContextMenuItem>
+                  <ContextMenuItem onClick={() => router.push(`/vehicles/${insp.vehicle.id}`)}>
+                    <Car className="mr-2 h-4 w-4" />
+                    {tcm("openVehicle")}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+                </ContextMenu>
               ))
             )}
           </TableBody>

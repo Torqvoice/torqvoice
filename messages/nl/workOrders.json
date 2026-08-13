@@ -38,8 +38,7 @@
     "contextMenu": {
       "open": "Werkorder openen",
       "openVehicle": "Voertuig openen",
-      "openCustomer": "Klant openen",
-      "hint": "Tip: rechtsklik op een rij voor acties"
+      "openCustomer": "Klant openen"
     }
   },
   "vehiclePicker": {

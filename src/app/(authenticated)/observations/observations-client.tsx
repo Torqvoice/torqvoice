@@ -20,9 +20,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
 import { useFormatDate } from "@/lib/use-format-date";
-import { Search, Loader2 } from "lucide-react";
+import { Car, ExternalLink, Search, Loader2 } from "lucide-react";
 
 type ObservationsData = {
   records: {
@@ -77,6 +84,7 @@ export function ObservationsClient({
   const { formatDate } = useFormatDate();
   const t = useTranslations("vehicles.observationsPage");
   const tf = useTranslations("vehicles.findings");
+  const tcm = useTranslations("common.contextMenu");
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -143,6 +151,7 @@ export function ObservationsClient({
 
       {/* Table */}
       <div className="rounded-md border">
+        <TableContextMenuHint />
         <Table>
           <TableHeader>
             <TableRow>
@@ -166,8 +175,9 @@ export function ObservationsClient({
                 const vehicleLabel = obs.vehicle.licensePlate
                   ?? `${obs.vehicle.year} ${obs.vehicle.make} ${obs.vehicle.model}`;
                 return (
+                  <ContextMenu key={obs.id} modal={false}>
+                  <ContextMenuTrigger asChild>
                   <TableRow
-                    key={obs.id}
                     className="cursor-pointer"
                     onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
                   >
@@ -199,6 +209,20 @@ export function ObservationsClient({
                       {formatDate(new Date(obs.createdAt))}
                     </TableCell>
                   </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="min-w-52">
+                    <ContextMenuItem
+                      onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {tcm("open")}
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => router.push(`/vehicles/${obs.vehicle.id}`)}>
+                      <Car className="mr-2 h-4 w-4" />
+                      {tcm("openVehicle")}
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                  </ContextMenu>
                 );
               })
             )}

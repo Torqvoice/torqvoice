@@ -22,7 +22,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
+import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
@@ -36,6 +44,7 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  ExternalLink,
   Gauge,
   Grid3X3,
   LayoutGrid,
@@ -46,6 +55,7 @@ import {
   Plus,
   Search,
   Trash2,
+  Users,
   Wrench,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -113,6 +123,7 @@ export function VehiclesClient({
   const [isPending, startTransition] = useTransition()
   const t = useTranslations('vehicles.list')
   const tc = useTranslations('common.buttons')
+  const tcm = useTranslations('common.contextMenu')
   const [showForm, setShowForm] = useState(false)
   const [createCustomerId, setCreateCustomerId] = useState<string | undefined>(undefined)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
@@ -307,6 +318,7 @@ export function VehiclesClient({
       ) : view === 'table' ? (
         /* Table view */
         <div className="rounded-lg border">
+          <TableContextMenuHint />
           <Table className="table-fixed">
             <TableHeader>
               <TableRow>
@@ -340,8 +352,9 @@ export function VehiclesClient({
             </TableHeader>
             <TableBody>
               {data.vehicles.map((v) => (
+                <ContextMenu key={v.id} modal={false}>
+                <ContextMenuTrigger asChild>
                 <TableRow
-                  key={v.id}
                   className="cursor-pointer"
                   onClick={() => router.push(`/vehicles/${v.id}`)}
                 >
@@ -413,6 +426,54 @@ export function VehiclesClient({
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => router.push(`/vehicles/${v.id}`)}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {tcm('open')}
+                  </ContextMenuItem>
+                  {v.customer && (
+                    <ContextMenuItem onClick={() => router.push(`/customers/${v.customer?.id}`)}>
+                      <Users className="mr-2 h-4 w-4" />
+                      {tcm('openCustomer')}
+                    </ContextMenuItem>
+                  )}
+                  <ContextMenuSeparator />
+                  {!isArchived && (
+                    <ContextMenuItem
+                      onClick={() => {
+                        setEditVehicle(v)
+                        setShowForm(true)
+                      }}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {t('edit')}
+                    </ContextMenuItem>
+                  )}
+                  {isArchived ? (
+                    <ContextMenuItem
+                      onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
+                    >
+                      <ArchiveRestore className="mr-2 h-4 w-4" />
+                      {t('unarchive')}
+                    </ContextMenuItem>
+                  ) : (
+                    <ContextMenuItem
+                      onClick={() => setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })}
+                    >
+                      <Archive className="mr-2 h-4 w-4" />
+                      {t('archive')}
+                    </ContextMenuItem>
+                  )}
+                  <ContextMenuItem
+                    variant="destructive"
+                    onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t('delete')}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+                </ContextMenu>
               ))}
             </TableBody>
           </Table>

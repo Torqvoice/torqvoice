@@ -38,8 +38,7 @@
     "contextMenu": {
       "open": "Atidaryti darbo užsakymą",
       "openVehicle": "Atidaryti transporto priemonę",
-      "openCustomer": "Atidaryti klientą",
-      "hint": "Patarimas: spustelėkite eilutę dešiniuoju mygtuku veiksmams"
+      "openCustomer": "Atidaryti klientą"
     }
   },
   "vehiclePicker": {

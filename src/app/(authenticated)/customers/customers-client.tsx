@@ -21,7 +21,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
 import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { CustomerForm } from "@/features/customers/Components/CustomerForm";
@@ -33,6 +41,7 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  ExternalLink,
   Loader2,
   MoreVertical,
   Pencil,
@@ -78,6 +87,7 @@ export function CustomersClient({
 }) {
   const t = useTranslations("customers.list");
   const tc = useTranslations("common");
+  const tcm = useTranslations("common.contextMenu");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -249,7 +259,9 @@ export function CustomersClient({
       </div>
 
       {/* Table - only this scrolls */}
-      <div className="overflow-auto rounded-lg border max-h-[calc(100vh-220px)]">
+      <div className="rounded-lg border">
+        <TableContextMenuHint />
+        <div className="overflow-auto max-h-[calc(100vh-220px)]">
         <Table className="table-fixed">
           <TableHeader className="sticky top-0 z-10 bg-background">
             <TableRow>
@@ -308,8 +320,9 @@ export function CustomersClient({
               </TableRow>
             ) : (
               data.customers.map((c) => (
+                <ContextMenu key={c.id} modal={false}>
+                <ContextMenuTrigger asChild>
                 <TableRow
-                  key={c.id}
                   className={`cursor-pointer ${selected.has(c.id) ? "bg-muted/50" : ""}`}
                   onClick={() => router.push(`/customers/${c.id}`)}
                 >
@@ -371,10 +384,36 @@ export function CustomersClient({
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => router.push(`/customers/${c.id}`)}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {tcm("open")}
+                  </ContextMenuItem>
+                  <ContextMenuSeparator />
+                  <ContextMenuItem
+                    onClick={() => {
+                      setEditCustomer(c);
+                      setShowForm(true);
+                    }}
+                  >
+                    <Pencil className="mr-2 h-4 w-4" />
+                    {tc("buttons.edit")}
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    variant="destructive"
+                    onClick={() => handleDelete(c.id, c.name)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {tc("buttons.delete")}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+                </ContextMenu>
               ))
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
 
       <DataTablePagination

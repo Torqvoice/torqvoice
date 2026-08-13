@@ -38,8 +38,7 @@
     "contextMenu": {
       "open": "Åpne arbeidsordre",
       "openVehicle": "Åpne kjøretøy",
-      "openCustomer": "Åpne kunde",
-      "hint": "Tips: høyreklikk på en rad for handlinger"
+      "openCustomer": "Åpne kunde"
     }
   },
   "vehiclePicker": {

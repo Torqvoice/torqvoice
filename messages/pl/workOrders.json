@@ -38,8 +38,7 @@
     "contextMenu": {
       "open": "Otwórz zlecenie",
       "openVehicle": "Otwórz pojazd",
-      "openCustomer": "Otwórz klienta",
-      "hint": "Wskazówka: kliknij wiersz prawym przyciskiem, aby zobaczyć akcje"
+      "openCustomer": "Otwórz klienta"
     }
   },
   "vehiclePicker": {

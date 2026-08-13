@@ -12,6 +12,14 @@
     "edit": "Bearbeiten",
     "add": "Hinzufügen"
   },
+  "contextMenu": {
+    "hint": "Tipp: Rechtsklick auf eine Zeile für Aktionen",
+    "open": "Öffnen",
+    "openVehicle": "Fahrzeug öffnen",
+    "openCustomer": "Kunde öffnen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
+  },
   "form": {
     "email": "E-Mail",
     "password": "Passwort",
