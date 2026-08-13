@@ -84,9 +84,60 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
       {/* Vehicle & Customer */}
       <div className="rounded-lg border p-3 space-y-3">
         <div className="space-y-1">
+          <Label className="text-xs">{t('details.customer')}</Label>
+          <CustomerCombobox
+            value={state.customerId}
+            initialCustomer={state.selectedCustomer}
+            placeholder={t('details.selectCustomer')}
+            noneLabel={t('details.none')}
+            onChange={(id, customer) => {
+              state.setCustomerId(id)
+              state.setSelectedCustomer(customer)
+              // A vehicle belonging to another customer no longer fits
+              if (id && state.selectedVehicle && state.selectedVehicle.customerId !== id) {
+                state.setVehicleId('')
+                state.setSelectedVehicle(null)
+              }
+              state.markDirty()
+            }}
+          />
+        </div>
+        {state.selectedCustomer && (
+          <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
+            <Users className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+            <Link
+              href={`/customers/${state.selectedCustomer.id}`}
+              target="_blank"
+              className="min-w-0 flex-1 text-sm hover:underline"
+            >
+              <span className="font-medium">{state.selectedCustomer.name}</span>
+              {state.selectedCustomer.company && (
+                <span className="ml-1.5 text-muted-foreground">
+                  {state.selectedCustomer.company}
+                </span>
+              )}
+            </Link>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                state.setCustomerId('')
+                state.setSelectedCustomer(null)
+                state.markDirty()
+              }}
+              aria-label={t('details.clearCustomer')}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+        )}
+        <div className="space-y-1">
           <Label className="text-xs">{t('details.vehicle')}</Label>
           <VehicleCombobox
             value={state.vehicleId}
+            customerId={state.customerId || undefined}
             initialVehicle={state.selectedVehicle}
             placeholder={t('details.selectVehicle')}
             noneLabel={t('details.none')}
@@ -136,51 +187,6 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
                 state.markDirty()
               }}
               aria-label={t('details.clearVehicle')}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
-        )}
-        <div className="space-y-1">
-          <Label className="text-xs">{t('details.customer')}</Label>
-          <CustomerCombobox
-            value={state.customerId}
-            initialCustomer={state.selectedCustomer}
-            placeholder={t('details.selectCustomer')}
-            noneLabel={t('details.none')}
-            onChange={(id, customer) => {
-              state.setCustomerId(id)
-              state.setSelectedCustomer(customer)
-              state.markDirty()
-            }}
-          />
-        </div>
-        {state.selectedCustomer && (
-          <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
-            <Users className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-            <Link
-              href={`/customers/${state.selectedCustomer.id}`}
-              target="_blank"
-              className="min-w-0 flex-1 text-sm hover:underline"
-            >
-              <span className="font-medium">{state.selectedCustomer.name}</span>
-              {state.selectedCustomer.company && (
-                <span className="ml-1.5 text-muted-foreground">
-                  {state.selectedCustomer.company}
-                </span>
-              )}
-            </Link>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground"
-              onClick={() => {
-                state.setCustomerId('')
-                state.setSelectedCustomer(null)
-                state.markDirty()
-              }}
-              aria-label={t('details.clearCustomer')}
             >
               <X className="h-3 w-3" />
             </Button>

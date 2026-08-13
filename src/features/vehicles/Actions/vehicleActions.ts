@@ -289,10 +289,11 @@ export async function deleteVehicle(vehicleId: string) {
   });
 }
 
-export async function searchVehicles(search?: string, limit = 20, offset = 0) {
+export async function searchVehicles(search?: string, limit = 20, offset = 0, customerId?: string) {
   return withAuth(async ({ organizationId }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = { organizationId, isArchived: false };
+    if (customerId) where.customerId = customerId;
     if (search) {
       const words = search.trim().split(/\s+/).filter(Boolean);
       const fieldMatch = (word: string) => {

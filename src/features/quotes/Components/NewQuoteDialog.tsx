@@ -45,6 +45,7 @@ export function NewQuoteDialog({
   const t = useTranslations('quotes')
   const [title, setTitle] = useState('')
   const [vehicleId, setVehicleId] = useState(defaultVehicle?.id ?? '')
+  const [vehicleCustomerId, setVehicleCustomerId] = useState(defaultVehicle?.customerId ?? null)
   const [customerId, setCustomerId] = useState(defaultCustomer?.id ?? '')
   const [creating, setCreating] = useState(false)
 
@@ -53,6 +54,7 @@ export function NewQuoteDialog({
     if (open) {
       setTitle('')
       setVehicleId(defaultVehicle?.id ?? '')
+      setVehicleCustomerId(defaultVehicle?.customerId ?? null)
       setCustomerId(defaultCustomer?.id ?? '')
     }
   }, [open, defaultVehicle?.id, defaultCustomer?.id])
@@ -105,29 +107,38 @@ export function NewQuoteDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>{t('details.vehicle')}</Label>
-            <VehicleCombobox
-              value={vehicleId}
-              initialVehicle={vehicleId === defaultVehicle?.id ? defaultVehicle : null}
-              placeholder={t('details.selectVehicle')}
-              noneLabel={t('details.none')}
-              onChange={(id, vehicle) => {
-                setVehicleId(id)
-                if (vehicle?.customerId) {
-                  setCustomerId(vehicle.customerId)
-                }
-              }}
-            />
-          </div>
-
-          <div className="space-y-2">
             <Label>{t('details.customer')}</Label>
             <CustomerCombobox
               value={customerId}
               initialCustomer={customerId === defaultCustomer?.id ? defaultCustomer : null}
               placeholder={t('details.selectCustomer')}
               noneLabel={t('details.none')}
-              onChange={(id) => setCustomerId(id)}
+              onChange={(id) => {
+                setCustomerId(id)
+                // A vehicle belonging to another customer no longer fits
+                if (id && vehicleId && vehicleCustomerId !== id) {
+                  setVehicleId('')
+                  setVehicleCustomerId(null)
+                }
+              }}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>{t('details.vehicle')}</Label>
+            <VehicleCombobox
+              value={vehicleId}
+              customerId={customerId || undefined}
+              initialVehicle={vehicleId === defaultVehicle?.id ? defaultVehicle : null}
+              placeholder={t('details.selectVehicle')}
+              noneLabel={t('details.none')}
+              onChange={(id, vehicle) => {
+                setVehicleId(id)
+                setVehicleCustomerId(vehicle?.customerId ?? null)
+                if (vehicle?.customerId) {
+                  setCustomerId(vehicle.customerId)
+                }
+              }}
             />
           </div>
 

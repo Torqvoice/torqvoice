@@ -37,6 +37,8 @@ interface VehicleComboboxProps {
   initialVehicle?: VehicleOption | null;
   placeholder?: string;
   noneLabel?: string;
+  /** When set, only this customer's vehicles are offered */
+  customerId?: string;
 }
 
 function formatVehicle(v: VehicleOption) {
@@ -49,6 +51,7 @@ export function VehicleCombobox({
   initialVehicle,
   placeholder = "Select vehicle...",
   noneLabel = "None",
+  customerId,
 }: VehicleComboboxProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -81,7 +84,7 @@ export function VehicleCombobox({
         loadingMoreRef.current = true;
       }
 
-      const result = await searchVehicles(query || undefined, PAGE_SIZE, offset);
+      const result = await searchVehicles(query || undefined, PAGE_SIZE, offset, customerId || undefined);
 
       if (result.success && result.data) {
         const mapped = result.data.map(mapVehicle);
@@ -97,10 +100,10 @@ export function VehicleCombobox({
       setLoadingMore(false);
       loadingMoreRef.current = false;
     },
-    []
+    [customerId]
   );
 
-  // Prefetch on mount
+  // Prefetch on mount and whenever the customer filter changes
   useEffect(() => {
     loadOptions();
   }, [loadOptions]);
@@ -124,6 +127,11 @@ export function VehicleCombobox({
   useEffect(() => {
     if (initialVehicle) setSelected(initialVehicle);
   }, [initialVehicle]);
+
+  // Parent can clear the selection (e.g. customer changed); drop the label too
+  useEffect(() => {
+    if (!value) setSelected(null);
+  }, [value]);
 
   // Infinite scroll
   const handleScroll = useCallback(() => {
