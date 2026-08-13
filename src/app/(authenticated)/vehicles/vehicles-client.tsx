@@ -502,8 +502,9 @@ export function VehiclesClient({
         /* Grid view */
         <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}>
           {data.vehicles.map((v) => (
+            <ContextMenu key={v.id} modal={false}>
+            <ContextMenuTrigger asChild>
             <Card
-              key={v.id}
               className="group overflow-hidden border-0 py-0 gap-0 shadow-sm transition-all hover:shadow-lg hover:-translate-y-0.5"
             >
               <Link href={`/vehicles/${v.id}`}>
@@ -595,6 +596,54 @@ export function VehiclesClient({
                 </CardContent>
               </Link>
             </Card>
+            </ContextMenuTrigger>
+            <ContextMenuContent className="min-w-52">
+              <ContextMenuItem onClick={() => router.push(`/vehicles/${v.id}`)}>
+                <ExternalLink className="mr-2 h-4 w-4" />
+                {tcm('open')}
+              </ContextMenuItem>
+              {v.customer && (
+                <ContextMenuItem onClick={() => router.push(`/customers/${v.customer?.id}`)}>
+                  <Users className="mr-2 h-4 w-4" />
+                  {tcm('openCustomer')}
+                </ContextMenuItem>
+              )}
+              <ContextMenuSeparator />
+              {!isArchived && (
+                <ContextMenuItem
+                  onClick={() => {
+                    setEditVehicle(v)
+                    setShowForm(true)
+                  }}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  {t('edit')}
+                </ContextMenuItem>
+              )}
+              {isArchived ? (
+                <ContextMenuItem
+                  onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
+                >
+                  <ArchiveRestore className="mr-2 h-4 w-4" />
+                  {t('unarchive')}
+                </ContextMenuItem>
+              ) : (
+                <ContextMenuItem
+                  onClick={() => setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })}
+                >
+                  <Archive className="mr-2 h-4 w-4" />
+                  {t('archive')}
+                </ContextMenuItem>
+              )}
+              <ContextMenuItem
+                variant="destructive"
+                onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                {t('delete')}
+              </ContextMenuItem>
+            </ContextMenuContent>
+            </ContextMenu>
           ))}
         </div>
       )}
