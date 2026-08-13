@@ -12,6 +12,14 @@
     "edit": "Bewerken",
     "add": "Toevoegen"
   },
+  "contextMenu": {
+    "hint": "Tip: rechtsklik op een rij voor acties",
+    "open": "Openen",
+    "openVehicle": "Voertuig openen",
+    "openCustomer": "Klant openen",
+    "edit": "Bewerken",
+    "delete": "Verwijderen"
+  },
   "form": {
     "email": "E-mail",
     "password": "Wachtwoord",

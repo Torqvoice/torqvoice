@@ -20,6 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DataTablePagination } from "@/components/data-table-pagination";
+import { TableCellLink } from "@/components/table-cell-link";
 import {
   Loader2,
   Search,
@@ -378,12 +379,22 @@ export default function BillingClient({
                     </TableCell>
                     <TableCell className="truncate">{record.title}</TableCell>
                     <TableCell className="truncate">
-                      {record.vehicle
-                        ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
-                        : "\u2014"}
+                      {record.vehicle ? (
+                        <TableCellLink href={`/vehicles/${record.vehicle.id}`}>
+                          {record.vehicle.year} {record.vehicle.make} {record.vehicle.model}
+                        </TableCellLink>
+                      ) : (
+                        "\u2014"
+                      )}
                     </TableCell>
                     <TableCell className="truncate">
-                      {record.customer?.name || "\u2014"}
+                      {record.customer ? (
+                        <TableCellLink href={`/customers/${record.customer.id}`}>
+                          {record.customer.name}
+                        </TableCellLink>
+                      ) : (
+                        "\u2014"
+                      )}
                     </TableCell>
                     <TableCell>
                       {formatDate(new Date(record.serviceDate))}

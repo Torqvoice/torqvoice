@@ -36,9 +36,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import { TableCellLink } from "@/components/table-cell-link";
+import {
   AlertTriangle,
   Bell,
   CalendarIcon,
+  Car,
   Check,
   CheckCircle2,
   ChevronsUpDown,
@@ -47,6 +57,7 @@ import {
   Pencil,
   Plus,
   Trash2,
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -114,6 +125,7 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
   const t = useTranslations("reminders");
   const tv = useTranslations("vehicles.reminders");
   const tc = useTranslations("common.buttons");
+  const tcm = useTranslations("common.contextMenu");
   const router = useRouter();
   const modal = useGlassModal();
   const { formatDate } = useFormatDate();
@@ -271,12 +283,14 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
       ) : (
         <Card className="border-0 shadow-sm">
           <CardContent className="p-0">
+            <TableContextMenuHint />
             <div className="divide-y">
               {filtered.map((r) => {
                 const urgency = getUrgency(r);
                 return (
+                  <ContextMenu key={r.id} modal={false}>
+                  <ContextMenuTrigger asChild>
                   <div
-                    key={r.id}
                     className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50 transition-colors"
                   >
                     <button
@@ -309,22 +323,16 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
                       )}
                       {r.vehicle ? (
                         <span className="text-xs text-muted-foreground">
-                          <span
-                            className="hover:underline cursor-pointer"
-                            onClick={() => router.push(`/vehicles/${r.vehicle?.id}?tab=reminders`)}
-                          >
+                          <TableCellLink href={`/vehicles/${r.vehicle.id}?tab=reminders`}>
                             {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
                             {r.vehicle.licensePlate && ` · ${r.vehicle.licensePlate}`}
-                          </span>
+                          </TableCellLink>
                         </span>
                       ) : r.customer ? (
                         <span className="text-xs text-muted-foreground">
-                          <span
-                            className="hover:underline cursor-pointer"
-                            onClick={() => router.push(`/customers/${r.customer?.id}`)}
-                          >
+                          <TableCellLink href={`/customers/${r.customer.id}`}>
                             {r.customer.name}
-                          </span>
+                          </TableCellLink>
                         </span>
                       ) : (
                         <span className="text-xs text-muted-foreground">{t("workshopReminder")}</span>
@@ -359,6 +367,36 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="min-w-52">
+                    {r.vehicle && (
+                      <ContextMenuItem
+                        onClick={() => router.push(`/vehicles/${r.vehicle?.id}?tab=reminders`)}
+                      >
+                        <Car className="mr-2 h-4 w-4" />
+                        {tcm("openVehicle")}
+                      </ContextMenuItem>
+                    )}
+                    {r.customer && (
+                      <ContextMenuItem onClick={() => router.push(`/customers/${r.customer?.id}`)}>
+                        <User className="mr-2 h-4 w-4" />
+                        {tcm("openCustomer")}
+                      </ContextMenuItem>
+                    )}
+                    {(r.vehicle || r.customer) && <ContextMenuSeparator />}
+                    <ContextMenuItem onClick={() => openEditForm(r)}>
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {tc("edit")}
+                    </ContextMenuItem>
+                    <ContextMenuItem
+                      variant="destructive"
+                      onClick={() => handleDelete(r.id)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {tc("delete")}
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                  </ContextMenu>
                 );
               })}
             </div>

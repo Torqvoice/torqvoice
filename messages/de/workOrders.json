@@ -38,8 +38,7 @@
     "contextMenu": {
       "open": "Arbeitsauftrag öffnen",
       "openVehicle": "Fahrzeug öffnen",
-      "openCustomer": "Kunde öffnen",
-      "hint": "Tipp: Rechtsklick auf eine Zeile für Aktionen"
+      "openCustomer": "Kunde öffnen"
     }
   },
   "vehiclePicker": {

@@ -12,6 +12,14 @@
     "edit": "Düzenle",
     "add": "Ekle"
   },
+  "contextMenu": {
+    "hint": "İpucu: işlemler için bir satıra sağ tıklayın",
+    "open": "Aç",
+    "openVehicle": "Aracı aç",
+    "openCustomer": "Müşteriyi aç",
+    "edit": "Düzenle",
+    "delete": "Sil"
+  },
   "form": {
     "email": "E-posta",
     "password": "Şifre",

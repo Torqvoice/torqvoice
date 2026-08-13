@@ -25,6 +25,8 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import { TableCellLink } from "@/components/table-cell-link";
 import { statusColors } from "@/lib/table-utils";
 import { updateServiceStatus } from "@/features/vehicles/Actions/serviceActions";
 import {
@@ -34,7 +36,6 @@ import {
   Car,
   ExternalLink,
   Loader2,
-  MousePointerClick,
   Plus,
   Search,
   User,
@@ -281,10 +282,7 @@ export function WorkOrdersClient({
 
       {/* Table */}
       <div className="rounded-lg border">
-        <div className="hidden items-center gap-1.5 border-b bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground md:flex">
-          <MousePointerClick className="h-3.5 w-3.5" />
-          {t("contextMenu.hint")}
-        </div>
+        <TableContextMenuHint />
         <Table className="table-fixed">
           <TableHeader>
             <TableRow>
@@ -357,17 +355,29 @@ export function WorkOrdersClient({
                       {r.invoiceNumber || "-"}
                     </TableCell>
                     <TableCell>
-                      <div className="min-w-0">
-                        {r.vehicle?.licensePlate && (
-                          <span className="font-mono text-sm font-medium">{r.vehicle.licensePlate}</span>
-                        )}
-                        <p className="truncate text-xs text-muted-foreground">
-                          {r.vehicle ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}` : "-"}
-                        </p>
-                      </div>
+                      {r.vehicle ? (
+                        <TableCellLink href={`/vehicles/${r.vehicle.id}`} block>
+                          {r.vehicle.licensePlate && (
+                            <span className="font-mono text-sm font-medium">{r.vehicle.licensePlate}</span>
+                          )}
+                          <p className="truncate text-xs text-muted-foreground">
+                            {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
+                          </p>
+                        </TableCellLink>
+                      ) : (
+                        <div className="min-w-0">
+                          <p className="truncate text-xs text-muted-foreground">-</p>
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell className="hidden truncate md:table-cell text-muted-foreground">
-                      {(r.customer ?? r.vehicle?.customer)?.name || "-"}
+                      {rowCustomer ? (
+                        <TableCellLink href={`/customers/${rowCustomer.id}`}>
+                          {rowCustomer.name}
+                        </TableCellLink>
+                      ) : (
+                        "-"
+                      )}
                     </TableCell>
                     <TableCell className="truncate">
                       <span className="font-medium">{r.title}</span>
@@ -393,7 +403,7 @@ export function WorkOrdersClient({
                     </TableCell>
                   </TableRow>
                   </ContextMenuTrigger>
-                  <ContextMenuContent className="w-52">
+                  <ContextMenuContent className="min-w-52">
                     <ContextMenuItem
                       onClick={() => {
                         setNavigatingId(r.id);

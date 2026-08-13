@@ -17,8 +17,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
-import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, Search } from 'lucide-react'
+import { TableContextMenuHint } from '@/components/table-context-menu-hint'
+import { TableCellLink } from '@/components/table-cell-link'
+import { ArrowDown, ArrowUp, ArrowUpDown, Car, ExternalLink, Loader2, Plus, Search, User } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
 
@@ -89,6 +97,7 @@ export function QuotesClient({
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const t = useTranslations('quotes')
+  const tcm = useTranslations('common.contextMenu')
 
   // New quote dialog state
   const [showNewDialog, setShowNewDialog] = useState(false)
@@ -190,6 +199,7 @@ export function QuotesClient({
       </div>
 
       <div className="rounded-lg border">
+        <TableContextMenuHint />
         <Table className="table-fixed">
           <TableHeader>
             <TableRow>
@@ -239,8 +249,9 @@ export function QuotesClient({
               </TableRow>
             ) : (
               data.records.map((q) => (
+                <ContextMenu key={q.id} modal={false}>
+                <ContextMenuTrigger asChild>
                 <TableRow
-                  key={q.id}
                   className="cursor-pointer"
                   onClick={() => router.push(`/quotes/${q.id}`)}
                 >
@@ -249,10 +260,22 @@ export function QuotesClient({
                   </TableCell>
                   <TableCell className="truncate font-medium">{q.title}</TableCell>
                   <TableCell className="hidden truncate md:table-cell text-muted-foreground">
-                    {q.customer?.name || '-'}
+                    {q.customer ? (
+                      <TableCellLink href={`/customers/${q.customer.id}`}>
+                        {q.customer.name}
+                      </TableCellLink>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
-                    {q.vehicle ? `${q.vehicle.year} ${q.vehicle.make} ${q.vehicle.model}` : '-'}
+                    {q.vehicle ? (
+                      <TableCellLink href={`/vehicles/${q.vehicle.id}`}>
+                        {q.vehicle.year} {q.vehicle.make} {q.vehicle.model}
+                      </TableCellLink>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ''}`}>
@@ -266,6 +289,26 @@ export function QuotesClient({
                     {formatCurrency(q.totalAmount, currencyCode)}
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => router.push(`/quotes/${q.id}`)}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {tcm('open')}
+                  </ContextMenuItem>
+                  {q.vehicle && (
+                    <ContextMenuItem onClick={() => router.push(`/vehicles/${q.vehicle?.id}`)}>
+                      <Car className="mr-2 h-4 w-4" />
+                      {tcm('openVehicle')}
+                    </ContextMenuItem>
+                  )}
+                  {q.customer && (
+                    <ContextMenuItem onClick={() => router.push(`/customers/${q.customer?.id}`)}>
+                      <User className="mr-2 h-4 w-4" />
+                      {tcm('openCustomer')}
+                    </ContextMenuItem>
+                  )}
+                </ContextMenuContent>
+                </ContextMenu>
               ))
             )}
           </TableBody>

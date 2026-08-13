@@ -34,11 +34,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import { TableCellLink } from "@/components/table-cell-link";
+import {
+  Car,
   Loader2,
   Plus,
   Pause,
   Play,
   Trash2,
+  User,
   Zap,
   X,
 } from "lucide-react";
@@ -136,6 +147,7 @@ export default function RecurringInvoicesClient({
   const formatCurrency = useFormatCurrency();
   const router = useRouter();
   const t = useTranslations("billing");
+  const tcm = useTranslations("common.contextMenu");
   const { formatDate } = useFormatDate();
   const [isPending, startTransition] = useTransition();
   const [showCreate, setShowCreate] = useState(false);
@@ -321,6 +333,7 @@ export default function RecurringInvoicesClient({
       ) : (
         <Card className="border-0 shadow-sm">
           <CardContent className="p-0">
+            <TableContextMenuHint />
             <Table>
               <TableHeader>
                 <TableRow>
@@ -348,12 +361,24 @@ export default function RecurringInvoicesClient({
                   });
 
                   return (
-                    <TableRow key={inv.id}>
+                    <ContextMenu key={inv.id} modal={false}>
+                    <ContextMenuTrigger asChild>
+                    <TableRow>
                       <TableCell className="text-sm font-medium">{inv.title}</TableCell>
                       <TableCell className="text-sm">
-                        {inv.vehicle.year} {inv.vehicle.make} {inv.vehicle.model}
+                        <TableCellLink href={`/vehicles/${inv.vehicle.id}`}>
+                          {inv.vehicle.year} {inv.vehicle.make} {inv.vehicle.model}
+                        </TableCellLink>
                       </TableCell>
-                      <TableCell className="text-sm">{inv.vehicle.customer?.name ?? "-"}</TableCell>
+                      <TableCell className="text-sm">
+                        {inv.vehicle.customer ? (
+                          <TableCellLink href={`/customers/${inv.vehicle.customer.id}`}>
+                            {inv.vehicle.customer.name}
+                          </TableCellLink>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
                       <TableCell className="text-sm">{t(frequencyKey[inv.frequency] ?? inv.frequency)}</TableCell>
                       <TableCell className="text-sm">
                         {formatDate(new Date(inv.nextRunDate))}
@@ -390,6 +415,39 @@ export default function RecurringInvoicesClient({
                         </div>
                       </TableCell>
                     </TableRow>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className="min-w-52">
+                      <ContextMenuItem onClick={() => router.push(`/vehicles/${inv.vehicle.id}`)}>
+                        <Car className="mr-2 h-4 w-4" />
+                        {tcm("openVehicle")}
+                      </ContextMenuItem>
+                      {inv.vehicle.customer && (
+                        <ContextMenuItem
+                          onClick={() => router.push(`/customers/${inv.vehicle.customer?.id}`)}
+                        >
+                          <User className="mr-2 h-4 w-4" />
+                          {tcm("openCustomer")}
+                        </ContextMenuItem>
+                      )}
+                      <ContextMenuSeparator />
+                      <ContextMenuItem onClick={() => handleToggle(inv.id)} disabled={isPending}>
+                        {inv.isActive ? (
+                          <Pause className="mr-2 h-4 w-4" />
+                        ) : (
+                          <Play className="mr-2 h-4 w-4" />
+                        )}
+                        {inv.isActive ? t("recurring.pause") : t("recurring.resume")}
+                      </ContextMenuItem>
+                      <ContextMenuItem
+                        variant="destructive"
+                        onClick={() => handleDelete(inv.id)}
+                        disabled={isPending}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        {t("recurring.delete")}
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                    </ContextMenu>
                   );
                 })}
               </TableBody>

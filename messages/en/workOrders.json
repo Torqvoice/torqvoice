@@ -38,8 +38,7 @@
     "contextMenu": {
       "open": "Open work order",
       "openVehicle": "Open vehicle",
-      "openCustomer": "Open customer",
-      "hint": "Tip: right-click a row for actions"
+      "openCustomer": "Open customer"
     }
   },
   "vehiclePicker": {

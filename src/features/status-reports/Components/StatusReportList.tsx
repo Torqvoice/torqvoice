@@ -16,6 +16,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -149,6 +157,7 @@ export function StatusReportList({
           </Card>
         ) : (
           <div className="rounded-md border">
+            <TableContextMenuHint />
             <Table>
               <TableHeader>
                 <TableRow>
@@ -161,8 +170,9 @@ export function StatusReportList({
               </TableHeader>
               <TableBody>
                 {initialReports.map((report) => (
+                  <ContextMenu key={report.id} modal={false}>
+                  <ContextMenuTrigger asChild>
                   <TableRow
-                    key={report.id}
                     className="cursor-pointer"
                     onClick={() => setDetailReport(report)}
                   >
@@ -220,6 +230,32 @@ export function StatusReportList({
                       </div>
                     </TableCell>
                   </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="min-w-52">
+                    <ContextMenuItem onClick={() => openReport(report.publicToken)}>
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {t("view")}
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => copyLink(report.publicToken)}>
+                      <Copy className="mr-2 h-4 w-4" />
+                      {t("copyLink")}
+                    </ContextMenuItem>
+                    {customer && (
+                      <ContextMenuItem onClick={() => setSendReportId(report.id)}>
+                        <Send className="mr-2 h-4 w-4" />
+                        {t("send")}
+                      </ContextMenuItem>
+                    )}
+                    <ContextMenuSeparator />
+                    <ContextMenuItem
+                      variant="destructive"
+                      onClick={() => setDeleteReportId(report.id)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t("delete")}
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                  </ContextMenu>
                 ))}
               </TableBody>
             </Table>

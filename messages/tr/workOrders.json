@@ -38,8 +38,7 @@
     "contextMenu": {
       "open": "İş emrini aç",
       "openVehicle": "Aracı aç",
-      "openCustomer": "Müşteriyi aç",
-      "hint": "İpucu: işlemler için bir satıra sağ tıklayın"
+      "openCustomer": "Müşteriyi aç"
     }
   },
   "vehiclePicker": {

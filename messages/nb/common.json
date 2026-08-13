@@ -12,6 +12,14 @@
     "edit": "Rediger",
     "add": "Legg til"
   },
+  "contextMenu": {
+    "hint": "Tips: høyreklikk på en rad for handlinger",
+    "open": "Åpne",
+    "openVehicle": "Åpne kjøretøy",
+    "openCustomer": "Åpne kunde",
+    "edit": "Rediger",
+    "delete": "Slett"
+  },
   "form": {
     "email": "E-post",
     "password": "Passord",

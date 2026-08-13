@@ -38,8 +38,7 @@
     "contextMenu": {
       "open": "Abrir ordem de serviço",
       "openVehicle": "Abrir veículo",
-      "openCustomer": "Abrir cliente",
-      "hint": "Dica: clique com o botão direito em uma linha para ver ações"
+      "openCustomer": "Abrir cliente"
     }
   },
   "vehiclePicker": {
