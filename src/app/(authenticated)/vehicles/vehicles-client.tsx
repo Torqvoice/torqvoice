@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/context-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
+import { TableCellLink } from '@/components/table-cell-link'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
@@ -365,7 +366,13 @@ export function VehiclesClient({
                     </span>
                   </TableCell>
                   <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
-                    {v.customer?.name || '-'}
+                    {v.customer ? (
+                      <TableCellLink href={`/customers/${v.customer.id}`}>
+                        {v.customer.name}
+                      </TableCellLink>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-right font-mono text-sm">
                     {new Intl.NumberFormat('en-US').format(v.mileage)}

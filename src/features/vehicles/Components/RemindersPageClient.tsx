@@ -43,6 +43,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import { TableCellLink } from "@/components/table-cell-link";
 import {
   AlertTriangle,
   Bell,
@@ -322,22 +323,16 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
                       )}
                       {r.vehicle ? (
                         <span className="text-xs text-muted-foreground">
-                          <span
-                            className="hover:underline cursor-pointer"
-                            onClick={() => router.push(`/vehicles/${r.vehicle?.id}?tab=reminders`)}
-                          >
+                          <TableCellLink href={`/vehicles/${r.vehicle.id}?tab=reminders`}>
                             {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
                             {r.vehicle.licensePlate && ` · ${r.vehicle.licensePlate}`}
-                          </span>
+                          </TableCellLink>
                         </span>
                       ) : r.customer ? (
                         <span className="text-xs text-muted-foreground">
-                          <span
-                            className="hover:underline cursor-pointer"
-                            onClick={() => router.push(`/customers/${r.customer?.id}`)}
-                          >
+                          <TableCellLink href={`/customers/${r.customer.id}`}>
                             {r.customer.name}
-                          </span>
+                          </TableCellLink>
                         </span>
                       ) : (
                         <span className="text-xs text-muted-foreground">{t("workshopReminder")}</span>

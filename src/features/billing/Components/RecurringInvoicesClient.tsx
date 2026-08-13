@@ -41,6 +41,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import { TableCellLink } from "@/components/table-cell-link";
 import {
   Car,
   Loader2,
@@ -365,9 +366,19 @@ export default function RecurringInvoicesClient({
                     <TableRow>
                       <TableCell className="text-sm font-medium">{inv.title}</TableCell>
                       <TableCell className="text-sm">
-                        {inv.vehicle.year} {inv.vehicle.make} {inv.vehicle.model}
+                        <TableCellLink href={`/vehicles/${inv.vehicle.id}`}>
+                          {inv.vehicle.year} {inv.vehicle.make} {inv.vehicle.model}
+                        </TableCellLink>
                       </TableCell>
-                      <TableCell className="text-sm">{inv.vehicle.customer?.name ?? "-"}</TableCell>
+                      <TableCell className="text-sm">
+                        {inv.vehicle.customer ? (
+                          <TableCellLink href={`/customers/${inv.vehicle.customer.id}`}>
+                            {inv.vehicle.customer.name}
+                          </TableCellLink>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
                       <TableCell className="text-sm">{t(frequencyKey[inv.frequency] ?? inv.frequency)}</TableCell>
                       <TableCell className="text-sm">
                         {formatDate(new Date(inv.nextRunDate))}

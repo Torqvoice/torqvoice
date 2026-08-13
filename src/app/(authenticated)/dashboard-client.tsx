@@ -22,6 +22,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { TableCellLink } from "@/components/table-cell-link";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -1291,17 +1292,27 @@ export function DashboardClient({
                             {formatDate(new Date(s.startDateTime ?? s.serviceDate))}
                           </TableCell>
                           <TableCell>
-                            <div>
-                              {s.vehicle?.licensePlate && (
-                                <span className="font-mono text-sm">{s.vehicle.licensePlate}</span>
-                              )}
-                              <p className="text-xs text-muted-foreground">
-                                {s.vehicle ? `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}` : "-"}
-                              </p>
-                            </div>
+                            {s.vehicle ? (
+                              <TableCellLink href={`/vehicles/${s.vehicle.id}`} block>
+                                {s.vehicle.licensePlate && (
+                                  <span className="font-mono text-sm">{s.vehicle.licensePlate}</span>
+                                )}
+                                <p className="text-xs text-muted-foreground">
+                                  {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                                </p>
+                              </TableCellLink>
+                            ) : (
+                              <p className="text-xs text-muted-foreground">-</p>
+                            )}
                           </TableCell>
                           <TableCell className="hidden sm:table-cell text-muted-foreground">
-                            {(s.customer ?? s.vehicle?.customer)?.name || "-"}
+                            {rowCustomer ? (
+                              <TableCellLink href={`/customers/${rowCustomer.id}`}>
+                                {rowCustomer.name}
+                              </TableCellLink>
+                            ) : (
+                              "-"
+                            )}
                           </TableCell>
                           <TableCell className="font-medium">{s.title}</TableCell>
                           {stats.isAdmin && (
@@ -1388,17 +1399,27 @@ export function DashboardClient({
                         }}
                       >
                         <TableCell>
-                          <div>
-                            {s.vehicle?.licensePlate && (
-                              <span className="font-mono text-sm font-medium">{s.vehicle.licensePlate}</span>
-                            )}
-                            <p className="text-xs text-muted-foreground">
-                              {s.vehicle ? `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}` : "-"}
-                            </p>
-                          </div>
+                          {s.vehicle ? (
+                            <TableCellLink href={`/vehicles/${s.vehicle.id}`} block>
+                              {s.vehicle.licensePlate && (
+                                <span className="font-mono text-sm font-medium">{s.vehicle.licensePlate}</span>
+                              )}
+                              <p className="text-xs text-muted-foreground">
+                                {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                              </p>
+                            </TableCellLink>
+                          ) : (
+                            <p className="text-xs text-muted-foreground">-</p>
+                          )}
                         </TableCell>
                         <TableCell className="hidden sm:table-cell text-muted-foreground">
-                          {(s.customer ?? s.vehicle?.customer)?.name || "-"}
+                          {rowCustomer ? (
+                            <TableCellLink href={`/customers/${rowCustomer.id}`}>
+                              {rowCustomer.name}
+                            </TableCellLink>
+                          ) : (
+                            "-"
+                          )}
                         </TableCell>
                         <TableCell className="font-medium">{s.title}</TableCell>
                         <TableCell>
@@ -1562,7 +1583,9 @@ export function DashboardClient({
                           </Badge>
                         </TableCell>
                         <TableCell className="py-1.5 font-mono text-xs text-muted-foreground truncate">
-                          {vehicleLabel}
+                          <TableCellLink href={`/vehicles/${obs.vehicle.id}`}>
+                            {vehicleLabel}
+                          </TableCellLink>
                         </TableCell>
                         <TableCell className="py-1.5 text-xs font-medium truncate max-w-0">
                           {obs.description}

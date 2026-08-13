@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import { TableCellLink } from "@/components/table-cell-link";
 import { statusColors } from "@/lib/table-utils";
 import { updateServiceStatus } from "@/features/vehicles/Actions/serviceActions";
 import {
@@ -354,17 +355,29 @@ export function WorkOrdersClient({
                       {r.invoiceNumber || "-"}
                     </TableCell>
                     <TableCell>
-                      <div className="min-w-0">
-                        {r.vehicle?.licensePlate && (
-                          <span className="font-mono text-sm font-medium">{r.vehicle.licensePlate}</span>
-                        )}
-                        <p className="truncate text-xs text-muted-foreground">
-                          {r.vehicle ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}` : "-"}
-                        </p>
-                      </div>
+                      {r.vehicle ? (
+                        <TableCellLink href={`/vehicles/${r.vehicle.id}`} block>
+                          {r.vehicle.licensePlate && (
+                            <span className="font-mono text-sm font-medium">{r.vehicle.licensePlate}</span>
+                          )}
+                          <p className="truncate text-xs text-muted-foreground">
+                            {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
+                          </p>
+                        </TableCellLink>
+                      ) : (
+                        <div className="min-w-0">
+                          <p className="truncate text-xs text-muted-foreground">-</p>
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell className="hidden truncate md:table-cell text-muted-foreground">
-                      {(r.customer ?? r.vehicle?.customer)?.name || "-"}
+                      {rowCustomer ? (
+                        <TableCellLink href={`/customers/${rowCustomer.id}`}>
+                          {rowCustomer.name}
+                        </TableCellLink>
+                      ) : (
+                        "-"
+                      )}
                     </TableCell>
                     <TableCell className="truncate">
                       <span className="font-medium">{r.title}</span>

@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/context-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
+import { TableCellLink } from '@/components/table-cell-link'
 import { ArrowDown, ArrowUp, ArrowUpDown, Car, ExternalLink, Loader2, Plus, Search, User } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
@@ -259,10 +260,22 @@ export function QuotesClient({
                   </TableCell>
                   <TableCell className="truncate font-medium">{q.title}</TableCell>
                   <TableCell className="hidden truncate md:table-cell text-muted-foreground">
-                    {q.customer?.name || '-'}
+                    {q.customer ? (
+                      <TableCellLink href={`/customers/${q.customer.id}`}>
+                        {q.customer.name}
+                      </TableCellLink>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
-                    {q.vehicle ? `${q.vehicle.year} ${q.vehicle.make} ${q.vehicle.model}` : '-'}
+                    {q.vehicle ? (
+                      <TableCellLink href={`/vehicles/${q.vehicle.id}`}>
+                        {q.vehicle.year} {q.vehicle.make} {q.vehicle.model}
+                      </TableCellLink>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ''}`}>

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import { TableCellLink } from "@/components/table-cell-link";
 import { ArrowDown, ArrowUp, ArrowUpDown, Car, ExternalLink, Loader2, Plus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { NewInspectionDialog } from "@/features/inspections/Components/NewInspectionDialog";
@@ -247,7 +248,7 @@ export function InspectionsClient({
                   onClick={() => router.push(`/inspections/${insp.id}`)}
                 >
                   <TableCell>
-                    <div className="min-w-0">
+                    <TableCellLink href={`/vehicles/${insp.vehicle.id}`} block>
                       <p className="truncate font-medium">
                         {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
                       </p>
@@ -256,7 +257,7 @@ export function InspectionsClient({
                           {insp.vehicle.licensePlate}
                         </p>
                       )}
-                    </div>
+                    </TableCellLink>
                   </TableCell>
                   <TableCell className="hidden truncate md:table-cell text-muted-foreground">
                     {insp.template.name}

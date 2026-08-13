@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import { TableCellLink } from "@/components/table-cell-link";
 import { useFormatDate } from "@/lib/use-format-date";
 import { Car, ExternalLink, Search, Loader2 } from "lucide-react";
 
@@ -192,14 +193,14 @@ export function ObservationsClient({
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col">
-                        <span className="font-mono text-xs font-medium">{vehicleLabel}</span>
+                      <TableCellLink href={`/vehicles/${obs.vehicle.id}`} block>
+                        <span className="block font-mono text-xs font-medium">{vehicleLabel}</span>
                         {obs.vehicle.licensePlate && (
-                          <span className="text-[11px] text-muted-foreground">
+                          <span className="block text-[11px] text-muted-foreground">
                             {obs.vehicle.year} {obs.vehicle.make} {obs.vehicle.model}
                           </span>
                         )}
-                      </div>
+                      </TableCellLink>
                     </TableCell>
                     <TableCell className="text-sm font-medium">{obs.description}</TableCell>
                     <TableCell className="hidden md:table-cell text-sm text-muted-foreground truncate max-w-[300px]">
