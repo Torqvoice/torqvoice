@@ -8,5 +8,10 @@
   "searchVehicle": "Ieškoti transporto priemonių...",
   "noVehicle": "Transporto priemonių nerasta.",
   "pickDate": "Pasirinkite datą",
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "relatesTo": "Susijęs su (neprivaloma)",
+  "selectCustomer": "Klientas (neprivaloma)",
+  "noneOption": "Nėra",
+  "workshopHint": "Nepasirinktas klientas ar transporto priemonė: tai bendras dirbtuvių priminimas.",
+  "workshopReminder": "Dirbtuvės"
 }

@@ -111,7 +111,7 @@ export async function getUpcomingReminders() {
     return db.reminder.findMany({
       where: {
         isCompleted: false,
-        vehicle: { organizationId },
+        organizationId,
       },
       include: {
         vehicle: {
@@ -123,6 +123,7 @@ export async function getUpcomingReminders() {
             licensePlate: true,
           },
         },
+        customer: { select: { id: true, name: true } },
       },
       orderBy: { dueDate: "asc" },
       take: 10,

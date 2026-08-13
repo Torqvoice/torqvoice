@@ -17,7 +17,9 @@ vi.mock("@/lib/email", () => ({
 vi.mock("@/lib/db", () => ({
   db: {
     user: { findUnique: vi.fn() },
-    reminder: { findFirst: vi.fn(), findMany: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
+    vehicle: { findFirst: vi.fn() },
+    customer: { findFirst: vi.fn() },
+    reminder: { findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
     organizationMember: { findMany: vi.fn() },
     organization: { findUnique: vi.fn() },
   },
@@ -28,7 +30,7 @@ import { notify } from "@/lib/notify";
 import { sendOrgMail } from "@/lib/email";
 import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
 import { processDueReminders } from "@/lib/cron/reminder-alerts";
-import { updateReminder } from "@/features/vehicles/Actions/reminderActions";
+import { createReminder, updateReminder } from "@/features/vehicles/Actions/reminderActions";
 
 const ORG_A = "org-a";
 
@@ -39,13 +41,14 @@ const dueReminder = (overrides: Record<string, unknown> = {}) => ({
   dueDate: new Date("2026-08-13T07:00:00Z"),
   notifyInApp: true,
   notifyEmail: false,
+  organizationId: ORG_A,
+  customer: null,
   vehicle: {
     id: "veh-1",
     make: "Volvo",
     model: "V70",
     year: 2019,
     licensePlate: "AB12345",
-    organizationId: ORG_A,
     customer: { name: "Kari" },
   },
   ...overrides,
@@ -138,6 +141,7 @@ describe("updateReminder — re-arm on reschedule", () => {
 
   it("clears notifiedAt when the due date changes", async () => {
     setupOrgAOwner();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ id: "veh-1", customerId: null } as never);
     vi.mocked(db.reminder.findFirst).mockResolvedValue({
       id: "rem-1", vehicleId: "veh-1", dueDate: new Date("2026-08-01T00:00:00Z"),
     } as never);
@@ -154,6 +158,7 @@ describe("updateReminder — re-arm on reschedule", () => {
 
   it("keeps notifiedAt when the due date is unchanged", async () => {
     setupOrgAOwner();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ id: "veh-1", customerId: null } as never);
     const same = new Date("2026-09-01T00:00:00.000Z");
     vi.mocked(db.reminder.findFirst).mockResolvedValue({
       id: "rem-1", vehicleId: "veh-1", dueDate: same,
@@ -164,5 +169,94 @@ describe("updateReminder — re-arm on reschedule", () => {
 
     const call = vi.mocked(db.reminder.update).mock.calls[0][0] as { data: { notifiedAt?: unknown } };
     expect(call.data.notifiedAt).toBeUndefined();
+  });
+});
+
+describe("reminder targets — vehicle, customer, or workshop", () => {
+  function setupOrgAOwner() {
+    vi.mocked(getCachedSession).mockResolvedValue({ user: { id: "user-a", email: "a@x.no" } } as never);
+    vi.mocked(getCachedMembership).mockResolvedValue({
+      organizationId: ORG_A, role: "owner", roleId: null, customRole: null,
+    } as never);
+    vi.mocked(db.user.findUnique).mockResolvedValue({ isSuperAdmin: false } as never);
+  }
+
+  it("workshop reminder: no vehicle, no customer, org-stamped", async () => {
+    setupOrgAOwner();
+    vi.mocked(db.reminder.create).mockResolvedValue({ id: "rem-w", title: "Petter has birthday", vehicleId: null } as never);
+
+    const result = await createReminder({ title: "Petter has birthday", dueDate: "2026-09-01" });
+
+    expect(result.success).toBe(true);
+    expect(vi.mocked(db.reminder.create)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          organizationId: ORG_A,
+          vehicleId: null,
+          customerId: null,
+        }),
+      })
+    );
+  });
+
+  it("customer reminder: verifies the customer belongs to the org", async () => {
+    setupOrgAOwner();
+    vi.mocked(db.customer.findFirst).mockResolvedValue(null);
+
+    const result = await createReminder({ title: "Follow up", customerId: "cust-other-org" });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Customer not found");
+  });
+
+  it("vehicle reminder: takes the vehicle's customer automatically", async () => {
+    setupOrgAOwner();
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ id: "veh-1", customerId: "cust-a" } as never);
+    vi.mocked(db.reminder.create).mockResolvedValue({ id: "rem-v", title: "EU", vehicleId: "veh-1" } as never);
+
+    const result = await createReminder({ title: "EU", vehicleId: "veh-1" });
+
+    expect(result.success).toBe(true);
+    expect(vi.mocked(db.reminder.create)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          organizationId: ORG_A,
+          vehicleId: "veh-1",
+          customerId: "cust-a",
+        }),
+      })
+    );
+  });
+
+  it("cron notifies a workshop reminder with a plain title and /reminders link", async () => {
+    vi.mocked(db.reminder.updateMany).mockResolvedValue({ count: 1 } as never);
+    vi.mocked(db.reminder.findMany).mockResolvedValue([
+      dueReminder({ vehicle: null, customer: null, title: "Petter has birthday" }),
+    ] as never);
+
+    await processDueReminders(new Date("2026-08-13T12:00:00Z"));
+
+    expect(vi.mocked(notify)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "Petter has birthday",
+        entityUrl: "/reminders",
+      })
+    );
+  });
+
+  it("cron links a customer reminder to the customer page", async () => {
+    vi.mocked(db.reminder.updateMany).mockResolvedValue({ count: 1 } as never);
+    vi.mocked(db.reminder.findMany).mockResolvedValue([
+      dueReminder({ vehicle: null, customer: { id: "cust-a", name: "Petter" } }),
+    ] as never);
+
+    await processDueReminders(new Date("2026-08-13T12:00:00Z"));
+
+    expect(vi.mocked(notify)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "EU-kontroll — Petter",
+        entityUrl: "/customers/cust-a",
+      })
+    );
   });
 });

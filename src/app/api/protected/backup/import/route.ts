@@ -552,9 +552,13 @@ export async function POST(request: NextRequest) {
                 dueDate: toSafeDate(r.dueDate as string) ?? null,
                 dueMileage: (r.dueMileage as number) || null,
                 isCompleted: (r.isCompleted as boolean) || false,
+                notifyInApp: (r.notifyInApp as boolean) ?? true,
+                notifyEmail: (r.notifyEmail as boolean) ?? false,
                 createdAt: toSafeDate(r.createdAt as string),
                 updatedAt: toSafeDate(r.updatedAt as string),
                 vehicleId: v.id as string,
+                customerId: (r.customerId as string) || null,
+                organizationId: ctx.organizationId,
               })),
             });
           }
@@ -576,7 +580,29 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // 6b. Counter sales (service records without a vehicle, linked directly
+      // 6b. Customer/workshop reminders (no vehicle). Older backups don't
+      // have this key.
+      if (data.orgReminders?.length) {
+        await tx.reminder.createMany({
+          data: (data.orgReminders as Record<string, unknown>[]).map((r) => ({
+            id: r.id as string,
+            title: r.title as string,
+            description: (r.description as string) || null,
+            dueDate: toSafeDate(r.dueDate as string) ?? null,
+            dueMileage: (r.dueMileage as number) || null,
+            isCompleted: (r.isCompleted as boolean) || false,
+            notifyInApp: (r.notifyInApp as boolean) ?? true,
+            notifyEmail: (r.notifyEmail as boolean) ?? false,
+            createdAt: toSafeDate(r.createdAt as string),
+            updatedAt: toSafeDate(r.updatedAt as string),
+            vehicleId: null,
+            customerId: (r.customerId as string) || null,
+            organizationId: ctx.organizationId,
+          })),
+        });
+      }
+
+      // 6c. Counter sales (service records without a vehicle, linked directly
       // to a customer). Older backups don't have this key.
       if (data.counterSales?.length) {
         for (const sr of data.counterSales as Record<string, unknown>[]) {

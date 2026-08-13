@@ -12,20 +12,31 @@ type DueReminder = {
   dueDate: Date | null;
   notifyInApp: boolean;
   notifyEmail: boolean;
+  organizationId: string | null;
+  customer: { id: string; name: string } | null;
   vehicle: {
     id: string;
     make: string;
     model: string;
     year: number;
     licensePlate: string | null;
-    organizationId: string | null;
     customer: { name: string } | null;
-  };
+  } | null;
 };
 
-function vehicleLabel(r: DueReminder) {
-  const base = `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}`;
-  return r.vehicle.licensePlate ? `${base} (${r.vehicle.licensePlate})` : base;
+/** What the reminder relates to: vehicle, customer, or the workshop itself. */
+function targetLabel(r: DueReminder) {
+  if (r.vehicle) {
+    const base = `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}`;
+    return r.vehicle.licensePlate ? `${base} (${r.vehicle.licensePlate})` : base;
+  }
+  return r.customer?.name ?? null;
+}
+
+function targetUrl(r: DueReminder) {
+  if (r.vehicle) return `/vehicles/${r.vehicle.id}?tab=reminders`;
+  if (r.customer) return `/customers/${r.customer.id}`;
+  return "/reminders";
 }
 
 /** Owners and admins receive the email. */
@@ -57,9 +68,11 @@ async function sendReminderEmail(organizationId: string, reminders: DueReminder[
   const rows = reminders
     .map(
       (r) =>
-        `<li style="margin-bottom:6px;"><strong>${r.title}</strong> — ${vehicleLabel(r)}${
-          r.vehicle.customer ? ` · ${r.vehicle.customer.name}` : ""
-        }${r.description ? `<br/><span style="color:#666;">${r.description}</span>` : ""}</li>`,
+        `<li style="margin-bottom:6px;"><strong>${r.title}</strong>${
+          targetLabel(r) ? ` — ${targetLabel(r)}` : ""
+        }${r.vehicle?.customer ? ` · ${r.vehicle.customer.name}` : ""}${
+          r.description ? `<br/><span style="color:#666;">${r.description}</span>` : ""
+        }</li>`,
     )
     .join("");
 
@@ -72,7 +85,7 @@ async function sendReminderEmail(organizationId: string, reminders: DueReminder[
     <div style="font-family: sans-serif; max-width: 600px;">
       <h2 style="margin-bottom: 4px;">${subject}</h2>
       <ul style="padding-left: 18px;">${rows}</ul>
-      <p style="color: #666; font-size: 13px;">Open the vehicle in Torqvoice to complete or reschedule the reminder.</p>
+      <p style="color: #666; font-size: 13px;">Open Torqvoice to complete or reschedule the reminder.</p>
     </div>`;
 
   for (const recipient of recipients) {
@@ -105,6 +118,8 @@ export async function processDueReminders(now = new Date()) {
       dueDate: true,
       notifyInApp: true,
       notifyEmail: true,
+      organizationId: true,
+      customer: { select: { id: true, name: true } },
       vehicle: {
         select: {
           id: true,
@@ -112,7 +127,6 @@ export async function processDueReminders(now = new Date()) {
           model: true,
           year: true,
           licensePlate: true,
-          organizationId: true,
           customer: { select: { name: true } },
         },
       },
@@ -125,7 +139,7 @@ export async function processDueReminders(now = new Date()) {
   // Group by organization so email becomes one digest per org per run
   const byOrg = new Map<string, DueReminder[]>();
   for (const r of due) {
-    const orgId = r.vehicle.organizationId;
+    const orgId = r.organizationId;
     if (!orgId) continue;
     const list = byOrg.get(orgId) ?? [];
     list.push(r);
@@ -141,10 +155,10 @@ export async function processDueReminders(now = new Date()) {
         organizationId,
         type: "reminder.due",
         title: "Reminder Due",
-        message: `${r.title} — ${vehicleLabel(r)}`,
+        message: targetLabel(r) ? `${r.title} — ${targetLabel(r)}` : r.title,
         entityType: "Reminder",
         entityId: r.id,
-        entityUrl: `/vehicles/${r.vehicle.id}?tab=reminders`,
+        entityUrl: targetUrl(r),
       });
     }
 

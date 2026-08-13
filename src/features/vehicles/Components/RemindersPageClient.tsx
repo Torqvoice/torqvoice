@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CustomerCombobox } from "@/features/quotes/Components/CustomerCombobox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -68,6 +69,7 @@ interface Reminder {
   notifyInApp: boolean;
   notifyEmail: boolean;
   createdAt: Date;
+  customer: { id: string; name: string } | null;
   vehicle: {
     id: string;
     make: string;
@@ -75,7 +77,7 @@ interface Reminder {
     year: number;
     licensePlate: string | null;
     mileage: number;
-  };
+  } | null;
 }
 
 interface VehicleOption {
@@ -85,6 +87,7 @@ interface VehicleOption {
   year: number;
   licensePlate: string | null;
   customerName: string | null;
+  customerId: string | null;
 }
 
 interface RemindersPageClientProps {
@@ -128,6 +131,8 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
   const [formDueMileage, setFormDueMileage] = useState("");
   const [formNotifyInApp, setFormNotifyInApp] = useState(true);
   const [formNotifyEmail, setFormNotifyEmail] = useState(false);
+  const [formCustomerId, setFormCustomerId] = useState("");
+  const [formCustomer, setFormCustomer] = useState<{ id: string; name: string; company: string | null } | null>(null);
   const [formLoading, setFormLoading] = useState(false);
   const [vehicleOpen, setVehicleOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -164,28 +169,32 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
     setFormDueMileage("");
     setFormNotifyInApp(true);
     setFormNotifyEmail(false);
+    setFormCustomerId("");
+    setFormCustomer(null);
     setShowForm(true);
   };
 
   const openEditForm = (r: Reminder) => {
     setEditingReminder(r);
-    setFormVehicleId(r.vehicle.id);
+    setFormVehicleId(r.vehicle?.id ?? "");
     setFormTitle(r.title);
     setFormDescription(r.description || "");
     setFormDueDate(r.dueDate ? new Date(r.dueDate) : undefined);
     setFormDueMileage(r.dueMileage ? String(r.dueMileage) : "");
     setFormNotifyInApp(r.notifyInApp ?? true);
     setFormNotifyEmail(r.notifyEmail ?? false);
+    setFormCustomerId(r.customer?.id ?? "");
+    setFormCustomer(r.customer ? { ...r.customer, company: null } : null);
     setShowForm(true);
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formVehicleId) return;
     setFormLoading(true);
 
     const payload = {
-      vehicleId: formVehicleId,
+      vehicleId: formVehicleId || null,
+      customerId: formCustomerId || null,
       title: formTitle,
       description: formDescription || undefined,
       dueDate: formDueDate ? formDueDate.toISOString().split("T")[0] : undefined,
@@ -298,15 +307,28 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
                           {tv("dueSoon")}
                         </Badge>
                       )}
-                      <span className="text-xs text-muted-foreground">
-                        <span
-                          className="hover:underline cursor-pointer"
-                          onClick={() => router.push(`/vehicles/${r.vehicle.id}?tab=reminders`)}
-                        >
-                          {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
-                          {r.vehicle.licensePlate && ` · ${r.vehicle.licensePlate}`}
+                      {r.vehicle ? (
+                        <span className="text-xs text-muted-foreground">
+                          <span
+                            className="hover:underline cursor-pointer"
+                            onClick={() => router.push(`/vehicles/${r.vehicle?.id}?tab=reminders`)}
+                          >
+                            {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
+                            {r.vehicle.licensePlate && ` · ${r.vehicle.licensePlate}`}
+                          </span>
                         </span>
-                      </span>
+                      ) : r.customer ? (
+                        <span className="text-xs text-muted-foreground">
+                          <span
+                            className="hover:underline cursor-pointer"
+                            onClick={() => router.push(`/customers/${r.customer?.id}`)}
+                          >
+                            {r.customer.name}
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">{t("workshopReminder")}</span>
+                      )}
                     </div>
                     <div className="shrink-0 flex items-center gap-2 text-xs text-muted-foreground">
                       {r.dueDate && (
@@ -351,9 +373,23 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
             <DialogTitle>{editingReminder ? tv("editTitle") : tv("addTitle")}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleFormSubmit} className="space-y-4">
-            {/* Vehicle selector */}
+            {/* Target: workshop (nothing), customer, or vehicle */}
             <div className="space-y-2">
-              <Label>{t("vehicle")}</Label>
+              <Label>{t("relatesTo")}</Label>
+              <CustomerCombobox
+                value={formCustomerId}
+                initialCustomer={formCustomer}
+                placeholder={t("selectCustomer")}
+                noneLabel={t("noneOption")}
+                onChange={(id) => {
+                  setFormCustomerId(id);
+                  // A vehicle belonging to another customer no longer fits
+                  const current = vehicles.find((v) => v.id === formVehicleId);
+                  if (id && current && current.customerId !== id) {
+                    setFormVehicleId("");
+                  }
+                }}
+              />
               <Popover open={vehicleOpen} onOpenChange={setVehicleOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -361,7 +397,6 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
                     role="combobox"
                     aria-expanded={vehicleOpen}
                     className="w-full justify-between font-normal"
-                    disabled={!!editingReminder}
                   >
                     {selectedVehicle
                       ? `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}${selectedVehicle.licensePlate ? ` · ${selectedVehicle.licensePlate}` : ""}`
@@ -375,12 +410,31 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
                     <CommandList>
                       <CommandEmpty>{t("noVehicle")}</CommandEmpty>
                       <CommandGroup>
-                        {vehicles.map((v) => (
+                        <CommandItem
+                          value="__none__"
+                          onSelect={() => {
+                            setFormVehicleId("");
+                            setVehicleOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn("mr-2 h-4 w-4", !formVehicleId ? "opacity-100" : "opacity-0")}
+                          />
+                          {t("noneOption")}
+                        </CommandItem>
+                        {vehicles
+                          .filter((v) => !formCustomerId || v.customerId === formCustomerId)
+                          .map((v) => (
                           <CommandItem
                             key={v.id}
                             value={`${v.year} ${v.make} ${v.model} ${v.licensePlate || ""} ${v.customerName || ""}`}
                             onSelect={() => {
                               setFormVehicleId(v.id);
+                              // The vehicle's customer follows automatically
+                              if (v.customerId) {
+                                setFormCustomerId(v.customerId);
+                                setFormCustomer({ id: v.customerId, name: v.customerName || "", company: null });
+                              }
                               setVehicleOpen(false);
                             }}
                           >
@@ -406,6 +460,9 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
                   </Command>
                 </PopoverContent>
               </Popover>
+              {!formVehicleId && !formCustomerId && (
+                <p className="text-xs text-muted-foreground">{t("workshopHint")}</p>
+              )}
             </div>
 
             {/* Title */}
@@ -498,7 +555,7 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
               <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
                 {tc("cancel")}
               </Button>
-              <Button type="submit" disabled={formLoading || !formVehicleId}>
+              <Button type="submit" disabled={formLoading}>
                 {formLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {editingReminder ? tc("saveChanges") : tv("addTitle")}
               </Button>

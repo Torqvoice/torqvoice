@@ -8,5 +8,10 @@
   "searchVehicle": "Søk kjøretøy...",
   "noVehicle": "Ingen kjøretøy funnet.",
   "pickDate": "Velg en dato",
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "relatesTo": "Gjelder (valgfritt)",
+  "selectCustomer": "Kunde (valgfritt)",
+  "noneOption": "Ingen",
+  "workshopHint": "Ingen kunde eller kjøretøy valgt: dette er en generell verkstedpåminnelse.",
+  "workshopReminder": "Verksted"
 }

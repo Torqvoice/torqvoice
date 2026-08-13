@@ -1,7 +1,9 @@
 import { z } from "zod";
 
 export const createReminderSchema = z.object({
-  vehicleId: z.string(),
+  // A reminder relates to a vehicle, a customer, or just the workshop (both null)
+  vehicleId: z.string().nullable().optional(),
+  customerId: z.string().nullable().optional(),
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   dueDate: z.string().optional(),
