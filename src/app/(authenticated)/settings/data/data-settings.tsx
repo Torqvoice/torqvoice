@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { useGlassModal } from '@/components/glass-modal'
-import { AlertTriangle, ArrowRight, Download, FileArchive, Loader2, Trash2, Upload } from 'lucide-react'
+import { AlertTriangle, ArrowRight, Download, FileArchive, Loader2, ShieldCheck, Trash2, Upload } from 'lucide-react'
 import { ReadOnlyBanner, ReadOnlyWrapper } from '../read-only-guard'
 import { deleteContent } from '@/features/settings/Actions/deleteContent'
 import { toast } from 'sonner'
@@ -73,8 +73,15 @@ const ALL_TRUE: ExportOptions = {
   files: true,
 }
 
-export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }) {
+export function DataSettings({
+  contentCounts,
+  lastBackupAt = null,
+}: {
+  contentCounts: ContentCounts
+  lastBackupAt?: string | null
+}) {
   const t = useTranslations('settings')
+  const format = useFormatter()
   const router = useRouter()
   const modal = useGlassModal()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -312,6 +319,32 @@ export function DataSettings({ contentCounts }: { contentCounts: ContentCounts }
           {t('data.description')}
         </p>
       </div>
+
+      {lastBackupAt && (() => {
+        const ageHours = (Date.now() - new Date(lastBackupAt).getTime()) / 3_600_000
+        // Hourly schedule: green while fresh, amber once a couple of runs were
+        // missed, red when a whole day has passed.
+        const dot = ageHours < 3 ? 'bg-emerald-500' : ageHours < 26 ? 'bg-amber-500' : 'bg-red-500'
+        return (
+          <Card className="border-0 shadow-sm">
+            <CardContent className="flex items-center gap-3 py-4">
+              <ShieldCheck className="h-5 w-5 shrink-0 text-muted-foreground" />
+              <div className="min-w-0">
+                <p className="flex items-center gap-2 text-sm font-medium">
+                  <span className={`inline-block h-2 w-2 rounded-full ${dot}`} />
+                  {t('data.backupStatus.lastBackup')}{' '}
+                  <span suppressHydrationWarning>
+                    {format.relativeTime(new Date(lastBackupAt))}
+                  </span>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {t('data.backupStatus.description')}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )
+      })()}
 
       <ReadOnlyWrapper>
         <div className="grid gap-6 lg:grid-cols-12">

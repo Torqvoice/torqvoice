@@ -940,7 +940,11 @@
     "invoiceNinjaDocuments": "Belgeler & ekler",
     "invoiceNinjaPayments": "Ödemeler",
     "invoiceNinjaFileHint": "Bir Invoice Ninja zip dışa aktarma dosyası yükleyin. 200MB'a kadar dosyalar desteklenir.",
-    "invoiceNinjaImportComplete": "Invoice Ninja İçe Aktarma Tamamlandı"
+    "invoiceNinjaImportComplete": "Invoice Ninja İçe Aktarma Tamamlandı",
+    "backupStatus": {
+      "lastBackup": "Son yedekleme:",
+      "description": "Verileriniz her saat otomatik olarak yedeklenir ve ikinci bir konumda şifrelenmiş olarak saklanır."
+    }
   },
   "license": {
     "title": "Beyaz Etiket Lisansı",

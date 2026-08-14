@@ -87,6 +87,43 @@ jobs:
             exit 1
           fi
 
+      - name: Back up staging database
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+        run: |
+          set -euo pipefail
+
+          # Credentials come from the secret rather than being hardcoded, so this
+          # step can be copied to prod unchanged.
+          DB_USER=$(echo "$DATABASE_URL" | sed -E 's|^[^:]+://([^:]+):.*|\1|')
+          DB_NAME=$(echo "$DATABASE_URL" | sed -E 's|.*/([^/?]+)(\?.*)?$|\1|')
+
+          BACKUP_DIR="${{ secrets.DATA_PATH }}/db-backups/staging"
+          mkdir -p "$BACKUP_DIR"
+
+          # The Postgres data directory lives on this same filesystem, so filling
+          # it takes the database down rather than merely losing the backup.
+          # Refuse to dump unless there is comfortable headroom.
+          MIN_GB=2
+          AVAIL_KB=$(df -Pk "$BACKUP_DIR" | awk 'NR==2 {print $4}')
+          if [ "$AVAIL_KB" -lt $((MIN_GB * 1024 * 1024)) ]; then
+            echo "::error::Only $(awk "BEGIN {printf \"%.1f\", $AVAIL_KB/1024/1024}") GB free where the database lives. Refusing to write a dump."
+            exit 1
+          fi
+
+          DUMP="$BACKUP_DIR/${DB_NAME}-$(date +%Y%m%d-%H%M%S)-pre-${{ inputs.tag || 'latest' }}.dump"
+
+          echo "Dumping $DB_NAME to $DUMP"
+          docker exec torqvoice-db pg_dump -U "$DB_USER" -d "$DB_NAME" -Fc > "$DUMP"
+
+          # A dump nobody can read is worse than no dump, because you think you
+          # have one. Fail the deploy rather than proceed on a bad backup.
+          docker exec -i torqvoice-db pg_restore --list < "$DUMP" > /dev/null
+          echo "Verified $(du -h "$DUMP" | cut -f1) backup"
+
+          # Keep the 10 most recent.
+          ls -t "$BACKUP_DIR"/*.dump 2>/dev/null | tail -n +11 | xargs -r rm --
+
       - name: Deploy staging
         run: |
           cd $HOME/torqvoice-deploy/staging

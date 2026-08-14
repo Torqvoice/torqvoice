@@ -940,7 +940,11 @@
     "invoiceNinjaDocuments": "Dokumenter og vedlegg",
     "invoiceNinjaPayments": "Betalinger",
     "invoiceNinjaFileHint": "Last opp en Invoice Ninja zip-eksportfil. Filer opp til 200MB stottet.",
-    "invoiceNinjaImportComplete": "Invoice Ninja-import fullfort"
+    "invoiceNinjaImportComplete": "Invoice Ninja-import fullfort",
+    "backupStatus": {
+      "lastBackup": "Siste sikkerhetskopi:",
+      "description": "Dataene dine sikkerhetskopieres automatisk hver time og lagres kryptert på et annet sted."
+    }
   },
   "license": {
     "title": "White-label-lisens",

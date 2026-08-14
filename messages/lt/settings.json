@@ -940,7 +940,11 @@
     "invoiceNinjaDocuments": "Dokumentai ir priedai",
     "invoiceNinjaPayments": "Mokėjimai",
     "invoiceNinjaFileHint": "Įkelkite Invoice Ninja zip eksporto failą. Palaikomi failai iki 200MB.",
-    "invoiceNinjaImportComplete": "Invoice Ninja importas baigtas"
+    "invoiceNinjaImportComplete": "Invoice Ninja importas baigtas",
+    "backupStatus": {
+      "lastBackup": "Paskutinė atsarginė kopija:",
+      "description": "Jūsų duomenys automatiškai kopijuojami kas valandą ir šifruoti saugomi antroje vietoje."
+    }
   },
   "license": {
     "title": "\"White-Label\" licencija",

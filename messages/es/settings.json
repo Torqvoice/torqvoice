@@ -940,7 +940,11 @@
     "invoiceNinjaDocuments": "Documentos y adjuntos",
     "invoiceNinjaPayments": "Pagos",
     "invoiceNinjaFileHint": "Suba un archivo de exportacion zip de Invoice Ninja. Archivos hasta 200MB soportados.",
-    "invoiceNinjaImportComplete": "Importacion de Invoice Ninja completada"
+    "invoiceNinjaImportComplete": "Importacion de Invoice Ninja completada",
+    "backupStatus": {
+      "lastBackup": "Última copia de seguridad:",
+      "description": "Sus datos se respaldan automáticamente cada hora y se almacenan cifrados en una segunda ubicación."
+    }
   },
   "license": {
     "title": "Licencia marca blanca",

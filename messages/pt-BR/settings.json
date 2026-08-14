@@ -940,7 +940,11 @@
     "invoiceNinjaDocuments": "Documentos e anexos",
     "invoiceNinjaPayments": "Pagamentos",
     "invoiceNinjaFileHint": "Envie um arquivo de exportacao zip do Invoice Ninja. Arquivos ate 200MB suportados.",
-    "invoiceNinjaImportComplete": "Importacao do Invoice Ninja concluida"
+    "invoiceNinjaImportComplete": "Importacao do Invoice Ninja concluida",
+    "backupStatus": {
+      "lastBackup": "Último backup:",
+      "description": "Seus dados passam por backup automático a cada hora e são armazenados criptografados em um segundo local."
+    }
   },
   "license": {
     "title": "Licenca marca branca",

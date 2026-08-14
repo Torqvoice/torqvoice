@@ -940,7 +940,11 @@
     "invoiceNinjaDocuments": "Dokumenty i zalaczniki",
     "invoiceNinjaPayments": "Platnosci",
     "invoiceNinjaFileHint": "Przeslij plik eksportu zip Invoice Ninja. Obslugiwane pliki do 200MB.",
-    "invoiceNinjaImportComplete": "Import z Invoice Ninja zakonczony"
+    "invoiceNinjaImportComplete": "Import z Invoice Ninja zakonczony",
+    "backupStatus": {
+      "lastBackup": "Ostatnia kopia zapasowa:",
+      "description": "Twoje dane są automatycznie kopiowane co godzinę i przechowywane w zaszyfrowanej formie w drugiej lokalizacji."
+    }
   },
   "license": {
     "title": "Licencja white-label",
