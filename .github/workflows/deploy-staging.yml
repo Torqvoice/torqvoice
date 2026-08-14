@@ -101,7 +101,10 @@ jobs:
           DB_NAME=$(echo "$DATABASE_URL" | sed -E 's|.*/([^/?]+)(\?.*)?$|\1|')
 
           BACKUP_DIR="${{ secrets.DATA_PATH }}/db-backups/staging"
-          mkdir -p "$BACKUP_DIR"
+          # The volume is root-owned and the runner is not root. Binding the
+          # path into a container makes Docker create it, and the chown hands
+          # it to the runner so the dump redirect below can write there.
+          docker run --rm -v "$BACKUP_DIR":/b alpine chown "$(id -u):$(id -g)" /b
 
           # The Postgres data directory lives on this same filesystem, so filling
           # it takes the database down rather than merely losing the backup.
