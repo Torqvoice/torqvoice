@@ -63,6 +63,16 @@ jobs:
             echo "::error::restore_database is on but no dump filename was given."
             exit 1
           fi
+          # The dump must belong to the target database: refuse restoring some
+          # other environment's data (e.g. prod customer data into staging).
+          DB_NAME=$(echo "${{ secrets.STAGING_DATABASE_URL }}" | sed -E 's|.*/([^/?]+)(\?.*)?$|\1|')
+          case "${{ inputs.dump }}" in
+            "$DB_NAME"-[0-9]*) ;;
+            *)
+              echo "::error::Dump \"${{ inputs.dump }}\" is not a $DB_NAME dump. Refusing."
+              exit 1
+              ;;
+          esac
           DUMP="${{ secrets.DATA_PATH }}/db-backups/torqvoice-staging/${{ inputs.dump }}"
           if [ ! -f "$DUMP" ]; then
             echo "::error::Dump not found: $DUMP"
