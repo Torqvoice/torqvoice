@@ -942,8 +942,11 @@
     "invoiceNinjaFileHint": "Įkelkite Invoice Ninja zip eksporto failą. Palaikomi failai iki 200MB.",
     "invoiceNinjaImportComplete": "Invoice Ninja importas baigtas",
     "backupStatus": {
+      "title": "Duomenų apsauga",
+      "description": "Į jūsų duomenis žiūrime rimtai. Visi jūsų organizacijos duomenys, įskaitant klientus, transporto priemones, darbo užsakymus, sąskaitas ir įkeltus failus, automatiškai kopijuojami kas valandą. Atsarginės kopijos apsaugomos AES-256 šifravimu prieš palikdamos mūsų infrastruktūrą ir saugomos atskiroje, saugioje vietoje, todėl joks pašalinis asmuo negali jų perskaityti.",
       "lastBackup": "Paskutinė atsarginė kopija:",
-      "description": "Jūsų duomenys automatiškai kopijuojami kas valandą ir šifruoti saugomi antroje vietoje."
+      "supportPrompt": "Jei turite klausimų apie jūsų duomenų apsaugą,",
+      "supportAction": "susisiekite su mūsų pagalbos komanda."
     }
   },
   "license": {

@@ -942,8 +942,11 @@
     "invoiceNinjaFileHint": "Bir Invoice Ninja zip dışa aktarma dosyası yükleyin. 200MB'a kadar dosyalar desteklenir.",
     "invoiceNinjaImportComplete": "Invoice Ninja İçe Aktarma Tamamlandı",
     "backupStatus": {
+      "title": "Veri Koruması",
+      "description": "Verilerinizi ciddiye alıyoruz. Müşteriler, araçlar, iş emirleri, faturalar ve yüklenen dosyalar dahil kuruluşunuzun tüm verileri her saat otomatik olarak yedeklenir. Yedekler altyapımızdan ayrılmadan önce AES-256 şifrelemesiyle korunur ve ayrı, güvenli bir konumda saklanır; bu nedenle hiçbir dış taraf bunları okuyamaz.",
       "lastBackup": "Son yedekleme:",
-      "description": "Verileriniz her saat otomatik olarak yedeklenir ve ikinci bir konumda şifrelenmiş olarak saklanır."
+      "supportPrompt": "Verilerinizin nasıl korunduğuyla ilgili sorularınız varsa,",
+      "supportAction": "destek ekibimizle iletişime geçin."
     }
   },
   "license": {

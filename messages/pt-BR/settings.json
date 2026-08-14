@@ -942,8 +942,11 @@
     "invoiceNinjaFileHint": "Envie um arquivo de exportacao zip do Invoice Ninja. Arquivos ate 200MB suportados.",
     "invoiceNinjaImportComplete": "Importacao do Invoice Ninja concluida",
     "backupStatus": {
+      "title": "Proteção de dados",
+      "description": "Levamos seus dados a sério. Todos os dados da sua organização, incluindo clientes, veículos, ordens de serviço, faturas e arquivos enviados, passam por backup automático a cada hora. Os backups são protegidos com criptografia AES-256 antes de sair da nossa infraestrutura e armazenados em um local separado e seguro, de modo que nenhuma parte externa pode lê-los.",
       "lastBackup": "Último backup:",
-      "description": "Seus dados passam por backup automático a cada hora e são armazenados criptografados em um segundo local."
+      "supportPrompt": "Se tiver dúvidas sobre como seus dados são protegidos,",
+      "supportAction": "fale com nossa equipe de suporte."
     }
   },
   "license": {
