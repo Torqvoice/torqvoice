@@ -105,10 +105,62 @@ jobs:
             exit 1
           fi
 
+      - name: Back up production database
+        env:
+          DATABASE_URL: ${{ secrets.CLOUD_DATABASE_URL }}
+        run: |
+          set -euo pipefail
+
+          DB_USER=$(echo "$DATABASE_URL" | sed -E 's|^[^:]+://([^:]+):.*|\1|')
+          DB_NAME=$(echo "$DATABASE_URL" | sed -E 's|.*/([^/?]+)(\?.*)?$|\1|')
+
+          BACKUP_DIR="${{ secrets.DATA_PATH }}/db-backups/$DB_NAME"
+          # The volume is root-owned and the runner is not root. Binding the
+          # path into a container makes Docker create it, and the chown hands
+          # it to the runner so the dump redirect below can write there.
+          docker run --rm -v "$BACKUP_DIR":/b alpine chown "$(id -u):$(id -g)" /b
+
+          # The Postgres data directory lives on this filesystem: filling it
+          # takes the database down, not just the backup.
+          MIN_GB=2
+          AVAIL_KB=$(df -Pk "$BACKUP_DIR" | awk 'NR==2 {print $4}')
+          if [ "$AVAIL_KB" -lt $((MIN_GB * 1024 * 1024)) ]; then
+            echo "::error::Only $(awk "BEGIN {printf \"%.1f\", $AVAIL_KB/1024/1024}") GB free where the database lives. Refusing to dump."
+            exit 1
+          fi
+
+          DUMP="$BACKUP_DIR/${DB_NAME}-$(date +%Y%m%d-%H%M%S)-pre-${{ steps.tag.outputs.value }}.dump"
+          echo "Dumping $DB_NAME to $DUMP"
+          docker exec torqvoice-db pg_dump -U "$DB_USER" -d "$DB_NAME" -Fc > "$DUMP"
+
+          # A dump nobody can read is worse than no dump. No backup, no deploy.
+          docker exec -i torqvoice-db pg_restore --list < "$DUMP" > /dev/null
+          echo "Verified $(du -h "$DUMP" | cut -f1) backup"
+
+          # Keep the 10 most recent pre-deploy dumps; hourly dumps in the same
+          # folder belong to the backup cron and age out there.
+          ls -t "$BACKUP_DIR"/*-pre-*.dump 2>/dev/null | tail -n +11 | xargs -r rm --
+
       - name: Deploy
         run: |
           cd $HOME/torqvoice-deploy/prod
           APP_TAG=${{ steps.tag.outputs.value }} docker compose up -d --pull always
+
+      - name: Health check
+        run: |
+          echo "Waiting for prod container to be ready..."
+          for i in $(seq 1 12); do
+            STATUS=$(docker inspect --format='{{.State.Status}}' torqvoice-app 2>/dev/null || echo "not found")
+            if [ "$STATUS" = "running" ]; then
+              echo "Deployed ${{ steps.tag.outputs.value }}."
+              exit 0
+            fi
+            echo "Status: $STATUS, retrying in 5s..."
+            sleep 5
+          done
+          echo "::error::Container failed to start"
+          docker logs torqvoice-app --tail 50
+          exit 1
 
       - name: Prune old images and build cache
         run: docker image prune -f && docker builder prune -f

@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Show available dumps
-        run: ls -lht "${{ secrets.DATA_PATH }}/db-backups/staging" 2>/dev/null | head -20 || echo "No dumps yet."
+        run: ls -lht "${{ secrets.DATA_PATH }}/db-backups/torqvoice-staging" 2>/dev/null | head -20 || echo "No dumps yet."
 
       # Everything that can fail is checked before the app is stopped, so a bad
       # input leaves staging untouched and still running.
@@ -63,7 +63,7 @@ jobs:
             echo "::error::restore_database is on but no dump filename was given."
             exit 1
           fi
-          DUMP="${{ secrets.DATA_PATH }}/db-backups/staging/${{ inputs.dump }}"
+          DUMP="${{ secrets.DATA_PATH }}/db-backups/torqvoice-staging/${{ inputs.dump }}"
           if [ ! -f "$DUMP" ]; then
             echo "::error::Dump not found: $DUMP"
             exit 1
@@ -82,7 +82,7 @@ jobs:
           DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
         run: |
           set -euo pipefail
-          DUMP="${{ secrets.DATA_PATH }}/db-backups/staging/${{ inputs.dump }}"
+          DUMP="${{ secrets.DATA_PATH }}/db-backups/torqvoice-staging/${{ inputs.dump }}"
           DB_USER=$(echo "$DATABASE_URL" | sed -E 's|^[^:]+://([^:]+):.*|\1|')
           DB_NAME=$(echo "$DATABASE_URL" | sed -E 's|.*/([^/?]+)(\?.*)?$|\1|')
 

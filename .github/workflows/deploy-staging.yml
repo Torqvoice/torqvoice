@@ -100,7 +100,7 @@ jobs:
           DB_USER=$(echo "$DATABASE_URL" | sed -E 's|^[^:]+://([^:]+):.*|\1|')
           DB_NAME=$(echo "$DATABASE_URL" | sed -E 's|.*/([^/?]+)(\?.*)?$|\1|')
 
-          BACKUP_DIR="${{ secrets.DATA_PATH }}/db-backups/staging"
+          BACKUP_DIR="${{ secrets.DATA_PATH }}/db-backups/$DB_NAME"
           # The volume is root-owned and the runner is not root. Binding the
           # path into a container makes Docker create it, and the chown hands
           # it to the runner so the dump redirect below can write there.
@@ -126,8 +126,9 @@ jobs:
           docker exec -i torqvoice-db pg_restore --list < "$DUMP" > /dev/null
           echo "Verified $(du -h "$DUMP" | cut -f1) backup"
 
-          # Keep the 10 most recent.
-          ls -t "$BACKUP_DIR"/*.dump 2>/dev/null | tail -n +11 | xargs -r rm --
+          # Keep the 10 most recent pre-deploy dumps; hourly dumps in the same
+          # folder belong to the backup cron and age out there.
+          ls -t "$BACKUP_DIR"/*-pre-*.dump 2>/dev/null | tail -n +11 | xargs -r rm --
 
       - name: Deploy staging
         run: |
