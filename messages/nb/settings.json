@@ -940,7 +940,14 @@
     "invoiceNinjaDocuments": "Dokumenter og vedlegg",
     "invoiceNinjaPayments": "Betalinger",
     "invoiceNinjaFileHint": "Last opp en Invoice Ninja zip-eksportfil. Filer opp til 200MB stottet.",
-    "invoiceNinjaImportComplete": "Invoice Ninja-import fullfort"
+    "invoiceNinjaImportComplete": "Invoice Ninja-import fullfort",
+    "backupStatus": {
+      "title": "Databeskyttelse",
+      "description": "Vi tar dataene dine på alvor. Alle organisasjonens data, inkludert kunder, kjøretøy, arbeidsordrer, fakturaer og opplastede filer, sikkerhetskopieres automatisk hver time. Sikkerhetskopiene beskyttes med AES-256-kryptering før de forlater infrastrukturen vår og lagres på et separat, sikkert sted, slik at ingen utenforstående kan lese dem.",
+      "lastBackup": "Siste sikkerhetskopi:",
+      "supportPrompt": "Har du spørsmål om hvordan dataene dine beskyttes,",
+      "supportAction": "kontakt supportteamet vårt."
+    }
   },
   "license": {
     "title": "White-label-lisens",

@@ -1,7 +1,9 @@
 import { DataSettings } from "./data-settings";
 import { getContentCounts } from "@/features/settings/Actions/deleteContent";
+import { getBackupHeartbeat } from "@/lib/backup-heartbeat";
 
 export default async function DataSettingsPage() {
+  const heartbeat = await getBackupHeartbeat();
   const countsResult = await getContentCounts();
   const contentCounts = countsResult.success && countsResult.data
     ? countsResult.data
@@ -11,5 +13,5 @@ export default async function DataSettingsPage() {
         notifications: 0, smsMessages: 0, customFields: 0,
       };
 
-  return <DataSettings contentCounts={contentCounts} />;
+  return <DataSettings contentCounts={contentCounts} lastBackupAt={heartbeat?.at ?? null} />;
 }

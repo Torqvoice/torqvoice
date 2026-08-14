@@ -940,7 +940,14 @@
     "invoiceNinjaDocuments": "Dokumenty i zalaczniki",
     "invoiceNinjaPayments": "Platnosci",
     "invoiceNinjaFileHint": "Przeslij plik eksportu zip Invoice Ninja. Obslugiwane pliki do 200MB.",
-    "invoiceNinjaImportComplete": "Import z Invoice Ninja zakonczony"
+    "invoiceNinjaImportComplete": "Import z Invoice Ninja zakonczony",
+    "backupStatus": {
+      "title": "Ochrona danych",
+      "description": "Poważnie traktujemy Twoje dane. Wszystkie dane Twojej organizacji, w tym klienci, pojazdy, zlecenia, faktury i przesłane pliki, są automatycznie kopiowane co godzinę. Kopie zapasowe są chronione szyfrowaniem AES-256, zanim opuszczą naszą infrastrukturę, i przechowywane w oddzielnej, bezpiecznej lokalizacji, więc nikt z zewnątrz nie może ich odczytać.",
+      "lastBackup": "Ostatnia kopia zapasowa:",
+      "supportPrompt": "Jeśli masz pytania dotyczące ochrony Twoich danych,",
+      "supportAction": "skontaktuj się z naszym zespołem wsparcia."
+    }
   },
   "license": {
     "title": "Licencja white-label",

@@ -940,7 +940,14 @@
     "invoiceNinjaDocuments": "Documenten en bijlagen",
     "invoiceNinjaPayments": "Betalingen",
     "invoiceNinjaFileHint": "Upload een Invoice Ninja zip-exportbestand. Bestanden tot 200MB ondersteund.",
-    "invoiceNinjaImportComplete": "Invoice Ninja-import voltooid"
+    "invoiceNinjaImportComplete": "Invoice Ninja-import voltooid",
+    "backupStatus": {
+      "title": "Gegevensbescherming",
+      "description": "Wij nemen uw gegevens serieus. Alle gegevens van uw organisatie, waaronder klanten, voertuigen, werkorders, facturen en geüploade bestanden, worden elk uur automatisch geback-upt. Back-ups worden beschermd met AES-256-versleuteling voordat ze onze infrastructuur verlaten en opgeslagen op een aparte, veilige locatie, zodat geen enkele buitenstaander ze kan lezen.",
+      "lastBackup": "Laatste back-up:",
+      "supportPrompt": "Heeft u vragen over hoe uw gegevens worden beschermd,",
+      "supportAction": "neem contact op met ons supportteam."
+    }
   },
   "license": {
     "title": "White-label licentie",

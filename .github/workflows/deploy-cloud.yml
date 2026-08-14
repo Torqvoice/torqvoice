@@ -29,11 +29,12 @@ jobs:
           DATA_PATH: ${{ secrets.DATA_PATH }}
           POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
           POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          BACKUP_HEARTBEAT_TOKEN: ${{ secrets.BACKUP_HEARTBEAT_TOKEN }}
         run: |
           mkdir -p $HOME/torqvoice-deploy/prod
           cd $HOME/torqvoice-deploy/prod
 
-          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_|POSTHOG_)' > .env
+          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_|POSTHOG_|BACKUP_)' > .env
 
           cat > docker-compose.yml << 'COMPOSE'
           networks:
@@ -63,6 +64,7 @@ jobs:
                 STRIPE_ENTERPRISE_PRICE_ID: ${STRIPE_ENTERPRISE_PRICE_ID}
                 POSTHOG_HOST: ${POSTHOG_HOST}
                 POSTHOG_KEY: ${POSTHOG_KEY}
+                BACKUP_HEARTBEAT_TOKEN: ${BACKUP_HEARTBEAT_TOKEN}
               networks:
                 - proxy
           COMPOSE

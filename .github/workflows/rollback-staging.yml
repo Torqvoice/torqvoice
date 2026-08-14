@@ -1,0 +1,115 @@
+name: "Rollback: Staging"
+
+# Rolls staging back to an earlier image, and optionally restores the database
+# from a dump taken by the deploy workflow.
+#
+# Rolling the image back is the normal case and loses nothing. Restoring the
+# database is a last resort for when the new schema is incompatible with the
+# old code, and it discards everything written since the dump was taken.
+#
+# Reuses the compose file and .env that "Deploy: Staging" wrote, so staging
+# must have been deployed at least once before this can run.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to roll back to (e.g. v1.2.38, dev-abc1234)"
+        required: true
+      restore_database:
+        description: "DESTRUCTIVE. Also restore the database, discarding everything written since the dump. Leave off unless the old code cannot run against the new schema."
+        type: boolean
+        default: false
+      dump:
+        description: "Dump filename to restore from (e.g. torqvoice-staging-20260813-191500-pre-v1.2.39.dump). Only used when restore_database is on."
+        required: false
+        default: ""
+
+jobs:
+  rollback:
+    runs-on: [self-hosted, Linux, X64, hetzner]
+
+    steps:
+      - name: Show available dumps
+        run: ls -lht "${{ secrets.DATA_PATH }}/db-backups/staging" 2>/dev/null | head -20 || echo "No dumps yet."
+
+      # Everything that can fail is checked before the app is stopped, so a bad
+      # input leaves staging untouched and still running.
+      # The restore step drops a database whose name comes from a secret. If that
+      # secret is ever wrong, "rollback staging" silently becomes "destroy prod".
+      # Refuse to proceed unless the target is unmistakably staging.
+      - name: Refuse to run against a non-staging database
+        if: inputs.restore_database
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          DB_NAME=$(echo "$DATABASE_URL" | sed -E 's|.*/([^/?]+)(\?.*)?$|\1|')
+          case "$DB_NAME" in
+            *staging*)
+              echo "Target database: $DB_NAME"
+              ;;
+            *)
+              echo "::error::Refusing to drop \"$DB_NAME\": name does not contain 'staging'."
+              exit 1
+              ;;
+          esac
+
+      - name: Validate dump
+        if: inputs.restore_database
+        run: |
+          set -euo pipefail
+          if [ -z "${{ inputs.dump }}" ]; then
+            echo "::error::restore_database is on but no dump filename was given."
+            exit 1
+          fi
+          DUMP="${{ secrets.DATA_PATH }}/db-backups/staging/${{ inputs.dump }}"
+          if [ ! -f "$DUMP" ]; then
+            echo "::error::Dump not found: $DUMP"
+            exit 1
+          fi
+          docker exec -i torqvoice-db pg_restore --list < "$DUMP" > /dev/null
+          echo "Dump is readable: $DUMP"
+
+      - name: Stop staging app
+        run: |
+          cd $HOME/torqvoice-deploy/staging
+          docker compose stop torqvoice-app-staging
+
+      - name: Restore database
+        if: inputs.restore_database
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          DUMP="${{ secrets.DATA_PATH }}/db-backups/staging/${{ inputs.dump }}"
+          DB_USER=$(echo "$DATABASE_URL" | sed -E 's|^[^:]+://([^:]+):.*|\1|')
+          DB_NAME=$(echo "$DATABASE_URL" | sed -E 's|.*/([^/?]+)(\?.*)?$|\1|')
+
+          echo "Restoring $DB_NAME from $(basename "$DUMP")"
+          # Quoted because database names may contain hyphens.
+          docker exec -i torqvoice-db psql -U "$DB_USER" -d postgres -c "DROP DATABASE \"$DB_NAME\" WITH (FORCE);"
+          docker exec -i torqvoice-db psql -U "$DB_USER" -d postgres -c "CREATE DATABASE \"$DB_NAME\" OWNER \"$DB_USER\";"
+          docker exec -i torqvoice-db pg_restore -U "$DB_USER" -d "$DB_NAME" --no-owner < "$DUMP"
+          echo "Restore complete."
+
+      - name: Deploy previous tag
+        run: |
+          cd $HOME/torqvoice-deploy/staging
+          APP_TAG=${{ inputs.tag }} docker compose up -d --pull always
+
+      - name: Health check
+        run: |
+          echo "Waiting for staging container to be ready..."
+          for i in $(seq 1 12); do
+            STATUS=$(docker inspect --format='{{.State.Status}}' torqvoice-app-staging 2>/dev/null || echo "not found")
+            if [ "$STATUS" = "running" ]; then
+              echo "Rolled back to ${{ inputs.tag }}."
+              exit 0
+            fi
+            echo "Status: $STATUS, retrying in 5s..."
+            sleep 5
+          done
+          echo "::error::Container failed to start after rollback"
+          docker logs torqvoice-app-staging --tail 50
+          exit 1

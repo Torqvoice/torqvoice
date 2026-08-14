@@ -940,7 +940,14 @@
     "invoiceNinjaDocuments": "Documenti e allegati",
     "invoiceNinjaPayments": "Pagamenti",
     "invoiceNinjaFileHint": "Carica un file di esportazione zip di Invoice Ninja. File fino a 200MB supportati.",
-    "invoiceNinjaImportComplete": "Importazione Invoice Ninja completata"
+    "invoiceNinjaImportComplete": "Importazione Invoice Ninja completata",
+    "backupStatus": {
+      "title": "Protezione dei dati",
+      "description": "Prendiamo sul serio i tuoi dati. Tutti i dati della tua organizzazione, inclusi clienti, veicoli, ordini di lavoro, fatture e file caricati, vengono salvati automaticamente ogni ora. I backup sono protetti con crittografia AES-256 prima di lasciare la nostra infrastruttura e archiviati in una posizione separata e sicura, quindi nessuna parte esterna può leggerli.",
+      "lastBackup": "Ultimo backup:",
+      "supportPrompt": "Per qualsiasi domanda sulla protezione dei tuoi dati,",
+      "supportAction": "contatta il nostro team di supporto."
+    }
   },
   "license": {
     "title": "Licenza White-Label",
