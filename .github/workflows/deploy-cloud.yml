@@ -4,15 +4,33 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Image tag to deploy (e.g. latest, v1.3.0, dev-abc1234)"
+        description: "Version tag to deploy (e.g. v1.2.39). Leave blank to deploy the newest published release. 'latest' is refused."
         required: false
-        default: "latest"
+        default: ""
 
 jobs:
   deploy:
     runs-on: [self-hosted, Linux, X64, hetzner]
 
     steps:
+      - name: Resolve version tag
+        id: tag
+        run: |
+          TAG="${{ inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            # Newest published release (drafts are excluded, so publishing the
+            # release in GitHub is the gate that makes it deployable).
+            TAG=$(curl -fsSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/latest" \
+              | grep -m1 '"tag_name"' | cut -d'"' -f4)
+            echo "Resolved newest published release: $TAG"
+          fi
+          if [ -z "$TAG" ] || [ "$TAG" = "latest" ]; then
+            echo "::error::No deployable version tag ('latest' is refused; rollback needs a named target)."
+            exit 1
+          fi
+          echo "value=$TAG" >> "$GITHUB_OUTPUT"
+
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
@@ -90,7 +108,7 @@ jobs:
       - name: Deploy
         run: |
           cd $HOME/torqvoice-deploy/prod
-          APP_TAG=${{ inputs.tag }} docker compose up -d --pull always
+          APP_TAG=${{ steps.tag.outputs.value }} docker compose up -d --pull always
 
       - name: Prune old images and build cache
         run: docker image prune -f && docker builder prune -f
