@@ -50,19 +50,6 @@
     "openEvent": "Ouvrir ({count})",
     "hint": "Astuce : faites un clic droit sur un jour pour voir les actions"
   },
-  "reminderDialog": {
-    "title": "Nouveau rappel",
-    "titleLabel": "Titre",
-    "titlePlaceholder": "ex. Vidange à faire",
-    "vehicleLabel": "Véhicule",
-    "selectVehicle": "Sélectionner un véhicule",
-    "none": "Aucun",
-    "dueDateLabel": "Date d'échéance",
-    "descriptionLabel": "Notes",
-    "create": "Créer le rappel",
-    "created": "Rappel créé",
-    "createError": "Impossible de créer le rappel"
-  },
   "events": {
     "status": {
       "completed": "Terminé",

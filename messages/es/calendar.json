@@ -50,19 +50,6 @@
     "openEvent": "Abrir ({count})",
     "hint": "Consejo: haz clic derecho en un día para ver las acciones"
   },
-  "reminderDialog": {
-    "title": "Nuevo recordatorio",
-    "titleLabel": "Título",
-    "titlePlaceholder": "p. ej. Cambio de aceite pendiente",
-    "vehicleLabel": "Vehículo",
-    "selectVehicle": "Seleccionar vehículo",
-    "none": "Ninguno",
-    "dueDateLabel": "Fecha de vencimiento",
-    "descriptionLabel": "Notas",
-    "create": "Crear recordatorio",
-    "created": "Recordatorio creado",
-    "createError": "No se pudo crear el recordatorio"
-  },
   "events": {
     "status": {
       "completed": "Completado",

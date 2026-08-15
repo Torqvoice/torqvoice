@@ -50,19 +50,6 @@
     "openEvent": "Åpne ({count})",
     "hint": "Tips: høyreklikk en dag for handlinger"
   },
-  "reminderDialog": {
-    "title": "Ny påminnelse",
-    "titleLabel": "Tittel",
-    "titlePlaceholder": "f.eks. Oljeskift forfaller",
-    "vehicleLabel": "Kjøretøy",
-    "selectVehicle": "Velg kjøretøy",
-    "none": "Ingen",
-    "dueDateLabel": "Forfallsdato",
-    "descriptionLabel": "Notater",
-    "create": "Opprett påminnelse",
-    "created": "Påminnelse opprettet",
-    "createError": "Kunne ikke opprette påminnelsen"
-  },
   "events": {
     "status": {
       "completed": "Fullført",

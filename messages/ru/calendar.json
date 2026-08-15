@@ -50,19 +50,6 @@
     "openEvent": "Открыть ({count})",
     "hint": "Совет: щёлкните по дню правой кнопкой мыши, чтобы увидеть действия"
   },
-  "reminderDialog": {
-    "title": "Новое напоминание",
-    "titleLabel": "Название",
-    "titlePlaceholder": "напр. Замена масла",
-    "vehicleLabel": "Транспортное средство",
-    "selectVehicle": "Выберите транспортное средство",
-    "none": "Нет",
-    "dueDateLabel": "Срок",
-    "descriptionLabel": "Заметки",
-    "create": "Создать напоминание",
-    "created": "Напоминание создано",
-    "createError": "Не удалось создать напоминание"
-  },
   "events": {
     "status": {
       "completed": "Завершено",

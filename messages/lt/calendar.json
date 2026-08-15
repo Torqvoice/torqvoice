@@ -50,19 +50,6 @@
     "openEvent": "Atidaryti ({count})",
     "hint": "Patarimas: spustelėkite dieną dešiniuoju pelės mygtuku, kad pamatytumėte veiksmus"
   },
-  "reminderDialog": {
-    "title": "Naujas priminimas",
-    "titleLabel": "Pavadinimas",
-    "titlePlaceholder": "pvz. Laikas keisti alyvą",
-    "vehicleLabel": "Transporto priemonė",
-    "selectVehicle": "Pasirinkite transporto priemonę",
-    "none": "Nėra",
-    "dueDateLabel": "Termino data",
-    "descriptionLabel": "Pastabos",
-    "create": "Sukurti priminimą",
-    "created": "Priminimas sukurtas",
-    "createError": "Nepavyko sukurti priminimo"
-  },
   "events": {
     "status": {
       "completed": "Užbaigta",

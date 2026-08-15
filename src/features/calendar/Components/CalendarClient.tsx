@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { CalendarDayCell } from "./CalendarDayCell";
 import { CalendarEventList } from "./CalendarEventList";
-import { NewReminderDialog } from "./NewReminderDialog";
+import { ReminderFormDialog } from "@/features/vehicles/Components/ReminderFormDialog";
 import { NewQuoteDialog } from "@/features/quotes/Components/NewQuoteDialog";
 import { toLocalDateStr } from "./calendar-utils";
 import { getCalendarEvents } from "../Actions/calendarActions";
@@ -181,6 +181,28 @@ export default function CalendarClient({
     }
     setLoading(false);
   }, []);
+
+  // Noon parse, so the seeded day survives any timezone the workshop sits in.
+  // Memoised because the reminder dialog re-seeds whenever this value changes.
+  const menuDate = useMemo(
+    () => (menuDateStr ? new Date(`${menuDateStr}T12:00:00`) : undefined),
+    [menuDateStr]
+  );
+
+  // The reminder dialog picks vehicles from a flat list with the customer inlined
+  const reminderVehicles = useMemo(
+    () =>
+      vehicles.map((v) => ({
+        id: v.id,
+        make: v.make,
+        model: v.model,
+        year: v.year,
+        licensePlate: v.licensePlate,
+        customerName: v.customer?.name ?? null,
+        customerId: v.customer?.id ?? null,
+      })),
+    [vehicles]
+  );
 
   // Right-click actions carry their day explicitly, so no date-choice prompt
   const handleMenuWorkOrder = useCallback((dateStr: string) => {
@@ -426,11 +448,12 @@ export default function CalendarClient({
         </DialogContent>
       </Dialog>
 
-      <NewReminderDialog
+      <ReminderFormDialog
         open={showReminderDialog}
         onOpenChange={setShowReminderDialog}
-        defaultDueDate={menuDateStr}
-        onCreated={refreshMonth}
+        vehicles={reminderVehicles}
+        defaultDueDate={menuDate}
+        onSaved={refreshMonth}
       />
 
       <NewQuoteDialog

@@ -50,19 +50,6 @@
     "openEvent": "Openen ({count})",
     "hint": "Tip: klik met de rechtermuisknop op een dag voor acties"
   },
-  "reminderDialog": {
-    "title": "Nieuwe herinnering",
-    "titleLabel": "Titel",
-    "titlePlaceholder": "bijv. Olie verversen",
-    "vehicleLabel": "Voertuig",
-    "selectVehicle": "Voertuig selecteren",
-    "none": "Geen",
-    "dueDateLabel": "Vervaldatum",
-    "descriptionLabel": "Notities",
-    "create": "Herinnering aanmaken",
-    "created": "Herinnering aangemaakt",
-    "createError": "Kan de herinnering niet aanmaken"
-  },
   "events": {
     "status": {
       "completed": "Voltooid",

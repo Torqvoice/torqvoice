@@ -50,19 +50,6 @@
     "openEvent": "Aç ({count})",
     "hint": "İpucu: işlemler için bir güne sağ tıklayın"
   },
-  "reminderDialog": {
-    "title": "Yeni hatırlatıcı",
-    "titleLabel": "Başlık",
-    "titlePlaceholder": "örn. Yağ değişimi",
-    "vehicleLabel": "Araç",
-    "selectVehicle": "Araç seçin",
-    "none": "Yok",
-    "dueDateLabel": "Son tarih",
-    "descriptionLabel": "Notlar",
-    "create": "Hatırlatıcı oluştur",
-    "created": "Hatırlatıcı oluşturuldu",
-    "createError": "Hatırlatıcı oluşturulamadı"
-  },
   "events": {
     "status": {
       "completed": "Tamamlandı",

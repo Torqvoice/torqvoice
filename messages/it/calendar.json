@@ -50,19 +50,6 @@
     "openEvent": "Apri ({count})",
     "hint": "Suggerimento: fai clic con il tasto destro su un giorno per le azioni"
   },
-  "reminderDialog": {
-    "title": "Nuovo promemoria",
-    "titleLabel": "Titolo",
-    "titlePlaceholder": "es. Cambio olio in scadenza",
-    "vehicleLabel": "Veicolo",
-    "selectVehicle": "Seleziona veicolo",
-    "none": "Nessuno",
-    "dueDateLabel": "Data di scadenza",
-    "descriptionLabel": "Note",
-    "create": "Crea promemoria",
-    "created": "Promemoria creato",
-    "createError": "Impossibile creare il promemoria"
-  },
   "events": {
     "status": {
       "completed": "Completato",
