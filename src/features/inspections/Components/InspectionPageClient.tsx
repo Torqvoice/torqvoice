@@ -747,9 +747,19 @@ export function InspectionPageClient({
           </section>
 
           <section aria-labelledby="inspection-template" className="bg-card rounded-lg border p-4">
-            <h2 id="inspection-template" className="text-sm font-semibold">
-              Template
-            </h2>
+            <div className="flex items-baseline justify-between gap-2">
+              <h2 id="inspection-template" className="text-sm font-semibold">
+                Template
+              </h2>
+              <a
+                href="https://torqvoice.com/docs/features/inspections"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground focus-visible:ring-ring shrink-0 rounded text-[11px] transition-colors focus-visible:ring-2 focus-visible:outline-none"
+              >
+                Read more →
+              </a>
+            </div>
             <p className="mt-1 text-sm">{inspection.template.name}</p>
             <p className="text-muted-foreground mt-1 text-xs">
               {scale === "eu"
