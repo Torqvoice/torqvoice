@@ -43,6 +43,14 @@
     "useToday": "Naudoti šiandienos datą"
   },
   "more": "+ {count} daugiau",
+  "monthTotal": "{count} įvykių šį mėnesį",
+  "contextMenu": {
+    "newWorkOrder": "Naujas darbo užsakymas",
+    "newReminder": "Naujas priminimas",
+    "newQuote": "Naujas pasiūlymas",
+    "openEvent": "Atidaryti ({count})",
+    "hint": "Patarimas: spustelėkite dieną dešiniuoju pelės mygtuku, kad pamatytumėte veiksmus"
+  },
   "events": {
     "status": {
       "completed": "Užbaigta",

@@ -43,6 +43,14 @@
     "useToday": "Use today"
   },
   "more": "+ {count} altri",
+  "monthTotal": "{count} eventi questo mese",
+  "contextMenu": {
+    "newWorkOrder": "Nuovo ordine di lavoro",
+    "newReminder": "Nuovo promemoria",
+    "newQuote": "Nuovo preventivo",
+    "openEvent": "Apri ({count})",
+    "hint": "Suggerimento: fai clic con il tasto destro su un giorno per le azioni"
+  },
   "events": {
     "status": {
       "completed": "Completato",

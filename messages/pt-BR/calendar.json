@@ -43,6 +43,14 @@
     "useToday": "Use today"
   },
   "more": "+ {count} mais",
+  "monthTotal": "{count} eventos neste mês",
+  "contextMenu": {
+    "newWorkOrder": "Nova ordem de serviço",
+    "newReminder": "Novo lembrete",
+    "newQuote": "Novo orçamento",
+    "openEvent": "Abrir ({count})",
+    "hint": "Dica: clique com o botão direito em um dia para ver as ações"
+  },
   "events": {
     "status": {
       "completed": "Concluído",

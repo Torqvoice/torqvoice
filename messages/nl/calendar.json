@@ -43,6 +43,14 @@
     "useToday": "Use today"
   },
   "more": "+ {count} meer",
+  "monthTotal": "{count} items deze maand",
+  "contextMenu": {
+    "newWorkOrder": "Nieuwe werkorder",
+    "newReminder": "Nieuwe herinnering",
+    "newQuote": "Nieuwe offerte",
+    "openEvent": "Openen ({count})",
+    "hint": "Tip: klik met de rechtermuisknop op een dag voor acties"
+  },
   "events": {
     "status": {
       "completed": "Voltooid",

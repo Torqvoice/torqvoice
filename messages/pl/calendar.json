@@ -43,6 +43,14 @@
     "useToday": "Use today"
   },
   "more": "+ {count} więcej",
+  "monthTotal": "{count} wydarzeń w tym miesiącu",
+  "contextMenu": {
+    "newWorkOrder": "Nowe zlecenie",
+    "newReminder": "Nowe przypomnienie",
+    "newQuote": "Nowa wycena",
+    "openEvent": "Otwórz ({count})",
+    "hint": "Wskazówka: kliknij dzień prawym przyciskiem myszy, aby zobaczyć akcje"
+  },
   "events": {
     "status": {
       "completed": "Ukończono",

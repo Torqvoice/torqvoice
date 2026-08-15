@@ -6,6 +6,17 @@ export function toLocalDateStr(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+/** Where an event points: the quote itself, otherwise the vehicle it belongs to */
+export function getEventLink(event: {
+  id: string;
+  type: "service" | "reminder" | "quote";
+  vehicleId: string | null;
+}): string {
+  if (event.type === "quote") return `/quotes/${event.id}`;
+  if (!event.vehicleId) return event.type === "reminder" ? "/reminders" : `/sales/${event.id}`;
+  return `/vehicles/${event.vehicleId}`;
+}
+
 export function formatDateHeader(d: Date): string {
   return d.toLocaleDateString("en-US", {
     weekday: "long",

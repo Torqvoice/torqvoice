@@ -43,6 +43,14 @@
     "useToday": "Use today"
   },
   "more": "+ {count} daha",
+  "monthTotal": "bu ay {count} kayıt",
+  "contextMenu": {
+    "newWorkOrder": "Yeni iş emri",
+    "newReminder": "Yeni hatırlatıcı",
+    "newQuote": "Yeni teklif",
+    "openEvent": "Aç ({count})",
+    "hint": "İpucu: işlemler için bir güne sağ tıklayın"
+  },
   "events": {
     "status": {
       "completed": "Tamamlandı",

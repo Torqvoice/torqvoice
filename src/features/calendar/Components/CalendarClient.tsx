@@ -11,12 +11,12 @@ import {
   ChevronRight,
   Loader2,
   Plus,
-  Wrench,
-  FileText,
-  AlertTriangle,
+  MousePointerClick,
 } from "lucide-react";
 import { CalendarDayCell } from "./CalendarDayCell";
 import { CalendarEventList } from "./CalendarEventList";
+import { ReminderFormDialog } from "@/features/vehicles/Components/ReminderFormDialog";
+import { NewQuoteDialog } from "@/features/quotes/Components/NewQuoteDialog";
 import { toLocalDateStr } from "./calendar-utils";
 import { getCalendarEvents } from "../Actions/calendarActions";
 import type { CalendarEvent } from "../Actions/calendarActions";
@@ -117,6 +117,11 @@ export default function CalendarClient({
   const [showDateChoice, setShowDateChoice] = useState(false);
   const [workOrderDate, setWorkOrderDate] = useState<string | undefined>(undefined);
 
+  // Right-click menu targets: the day the menu was opened on
+  const [showReminderDialog, setShowReminderDialog] = useState(false);
+  const [showQuoteDialog, setShowQuoteDialog] = useState(false);
+  const [menuDateStr, setMenuDateStr] = useState<string | undefined>(undefined);
+
   const selectedDateStr = toLocalDateStr(selectedDate);
 
   const handleNewWorkOrder = useCallback(() => {
@@ -143,20 +148,16 @@ export default function CalendarClient({
     });
   }, [events, showServices, showReminders, showQuotes]);
 
-  // Month summary stats
-  const stats = useMemo(() => {
-    const serviceCount = events.filter((e) => e.type === "service").length;
-    const overdueReminders = events.filter(
-      (e) => e.type === "reminder" && e.status === "overdue"
-    ).length;
-    const pendingQuotes = events.filter(
-      (e) => e.type === "quote" && e.status !== "approved"
-    ).length;
-    const totalRevenue = events
-      .filter((e) => e.type === "service" && e.amount != null)
-      .reduce((sum, e) => sum + (e.amount ?? 0), 0);
-    return { serviceCount, overdueReminders, pendingQuotes, totalRevenue };
-  }, [events]);
+  // What the displayed month holds, counted before the filters hide anything
+  const counts = useMemo(
+    () => ({
+      services: events.filter((e) => e.type === "service").length,
+      reminders: events.filter((e) => e.type === "reminder").length,
+      quotes: events.filter((e) => e.type === "quote").length,
+      total: events.length,
+    }),
+    [events]
+  );
 
   const days = getMonthDays(year, month, weekStartDay);
 
@@ -173,6 +174,48 @@ export default function CalendarClient({
     }
     setLoading(false);
   }, []);
+
+  // Noon parse, so the seeded day survives any timezone the workshop sits in.
+  // Memoised because the reminder dialog re-seeds whenever this value changes.
+  const menuDate = useMemo(
+    () => (menuDateStr ? new Date(`${menuDateStr}T12:00:00`) : undefined),
+    [menuDateStr]
+  );
+
+  // The reminder dialog picks vehicles from a flat list with the customer inlined
+  const reminderVehicles = useMemo(
+    () =>
+      vehicles.map((v) => ({
+        id: v.id,
+        make: v.make,
+        model: v.model,
+        year: v.year,
+        licensePlate: v.licensePlate,
+        customerName: v.customer?.name ?? null,
+        customerId: v.customer?.id ?? null,
+      })),
+    [vehicles]
+  );
+
+  // Right-click actions carry their day explicitly, so no date-choice prompt
+  const handleMenuWorkOrder = useCallback((dateStr: string) => {
+    setWorkOrderDate(dateStr);
+    setShowPicker(true);
+  }, []);
+
+  const handleMenuReminder = useCallback((dateStr: string) => {
+    setMenuDateStr(dateStr);
+    setShowReminderDialog(true);
+  }, []);
+
+  const handleMenuQuote = useCallback((dateStr: string) => {
+    setMenuDateStr(dateStr);
+    setShowQuoteDialog(true);
+  }, []);
+
+  const refreshMonth = useCallback(() => {
+    fetchEvents(year, month);
+  }, [fetchEvents, year, month]);
 
   const goToPrev = () => {
     const newMonth = month === 0 ? 11 : month - 1;
@@ -205,61 +248,6 @@ export default function CalendarClient({
 
   return (
     <div className="space-y-4">
-      {/* Summary stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10">
-              <Wrench className="h-4 w-4 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold leading-none">{stats.serviceCount}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.services')}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500/10">
-              <AlertTriangle className="h-4 w-4 text-red-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold leading-none">{stats.overdueReminders}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.overdue')}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-500/10">
-              <FileText className="h-4 w-4 text-violet-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold leading-none">{stats.pendingQuotes}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.pendingQuotes')}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10">
-              <span className="text-sm font-bold text-emerald-600">$</span>
-            </div>
-            <div>
-              <p className="text-2xl font-bold leading-none tabular-nums">
-                {stats.totalRevenue > 0
-                  ? new Intl.NumberFormat(undefined, {
-                      notation: "compact",
-                      maximumFractionDigits: 1,
-                    }).format(stats.totalRevenue)
-                  : "0"}
-              </p>
-              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.revenue')}</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Calendar grid */}
         <div className="lg:col-span-2">
@@ -293,8 +281,8 @@ export default function CalendarClient({
                 </div>
               </div>
 
-              {/* Filters */}
-              <div className="flex items-center gap-4 mb-3 text-sm">
+              {/* Filters, each carrying what the month holds of that type */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-sm">
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <Checkbox
                     checked={showServices}
@@ -302,6 +290,7 @@ export default function CalendarClient({
                   />
                   <div className="h-2 w-2 rounded-full bg-blue-500" />
                   <span className="text-muted-foreground">{t('filters.services')}</span>
+                  <span className="font-medium tabular-nums">{counts.services}</span>
                 </label>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <Checkbox
@@ -310,6 +299,7 @@ export default function CalendarClient({
                   />
                   <div className="h-2 w-2 rounded-full bg-amber-500" />
                   <span className="text-muted-foreground">{t('filters.reminders')}</span>
+                  <span className="font-medium tabular-nums">{counts.reminders}</span>
                 </label>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <Checkbox
@@ -318,7 +308,11 @@ export default function CalendarClient({
                   />
                   <div className="h-2 w-2 rounded-full bg-violet-500" />
                   <span className="text-muted-foreground">{t('filters.quotes')}</span>
+                  <span className="font-medium tabular-nums">{counts.quotes}</span>
                 </label>
+                <span className="text-xs text-muted-foreground ml-auto">
+                  {t('monthTotal', { count: counts.total })}
+                </span>
               </div>
 
               {/* Weekday headers */}
@@ -343,9 +337,17 @@ export default function CalendarClient({
                       isToday={dateStr === todayStr}
                       isSelected={dateStr === selectedDateStr}
                       onClick={() => setSelectedDate(date)}
+                      onNewWorkOrder={() => handleMenuWorkOrder(dateStr)}
+                      onNewReminder={() => handleMenuReminder(dateStr)}
+                      onNewQuote={() => handleMenuQuote(dateStr)}
                     />
                   );
                 })}
+              </div>
+
+              <div className="hidden md:flex items-center gap-1.5 pt-3 text-xs text-muted-foreground">
+                <MousePointerClick className="h-3.5 w-3.5" />
+                {t('contextMenu.hint')}
               </div>
             </CardContent>
           </Card>
@@ -389,6 +391,20 @@ export default function CalendarClient({
           </div>
         </DialogContent>
       </Dialog>
+
+      <ReminderFormDialog
+        open={showReminderDialog}
+        onOpenChange={setShowReminderDialog}
+        vehicles={reminderVehicles}
+        defaultDueDate={menuDate}
+        onSaved={refreshMonth}
+      />
+
+      <NewQuoteDialog
+        open={showQuoteDialog}
+        onOpenChange={setShowQuoteDialog}
+        defaultValidUntil={menuDateStr}
+      />
 
       <VehiclePickerDialog
         open={showPicker}

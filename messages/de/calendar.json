@@ -43,6 +43,14 @@
     "useToday": "Use today"
   },
   "more": "+ {count} weitere",
+  "monthTotal": "{count} Termine in diesem Monat",
+  "contextMenu": {
+    "newWorkOrder": "Neuer Arbeitsauftrag",
+    "newReminder": "Neue Erinnerung",
+    "newQuote": "Neues Angebot",
+    "openEvent": "Öffnen ({count})",
+    "hint": "Tipp: Rechtsklick auf einen Tag zeigt Aktionen"
+  },
   "events": {
     "status": {
       "completed": "Abgeschlossen",

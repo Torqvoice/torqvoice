@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
-import { formatDateHeader } from "./calendar-utils";
+import { formatDateHeader, getEventLink } from "./calendar-utils";
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import type { CalendarEvent } from "../Actions/calendarActions";
 
@@ -55,12 +55,6 @@ function getTypeBadge(type: CalendarEvent["type"], t: (key: string) => string) {
     case "reminder": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-amber-500/10 text-amber-700 dark:text-amber-400">{t('events.type.reminder')}</Badge>;
     case "quote": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-violet-500/10 text-violet-700 dark:text-violet-400">{t('events.type.quote')}</Badge>;
   }
-}
-
-function getEventLink(event: CalendarEvent) {
-  if (event.type === "quote") return `/quotes/${event.id}`;
-  if (!event.vehicleId) return event.type === "reminder" ? "/reminders" : `/sales/${event.id}`;
-  return `/vehicles/${event.vehicleId}`;
 }
 
 interface CalendarEventListProps {

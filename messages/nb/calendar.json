@@ -43,6 +43,14 @@
     "useToday": "Use today"
   },
   "more": "+ {count} flere",
+  "monthTotal": "{count} hendelser denne måneden",
+  "contextMenu": {
+    "newWorkOrder": "Ny arbeidsordre",
+    "newReminder": "Ny påminnelse",
+    "newQuote": "Nytt tilbud",
+    "openEvent": "Åpne ({count})",
+    "hint": "Tips: høyreklikk en dag for handlinger"
+  },
   "events": {
     "status": {
       "completed": "Fullført",

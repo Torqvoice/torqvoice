@@ -43,6 +43,14 @@
     "useToday": "Сегодня"
   },
   "more": "+ ещё {count}",
+  "monthTotal": "{count} событий в этом месяце",
+  "contextMenu": {
+    "newWorkOrder": "Новый заказ-наряд",
+    "newReminder": "Новое напоминание",
+    "newQuote": "Новое предложение",
+    "openEvent": "Открыть ({count})",
+    "hint": "Совет: щёлкните по дню правой кнопкой мыши, чтобы увидеть действия"
+  },
   "events": {
     "status": {
       "completed": "Завершено",
