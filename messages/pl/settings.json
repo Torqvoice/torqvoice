@@ -290,7 +290,18 @@
       "save": "Zapisz",
       "confirmDeleteTitle": "Usuń Passkey",
       "confirmDelete": "Czy na pewno chcesz usunąć ten passkey? Nie będziesz mógł się nim logować."
-    }
+    },
+    "cancel": "Anuluj",
+    "deleteWorkshopTitle": "Usuń warsztat",
+    "deleteWorkshopDescription": "Trwale usuń ten warsztat i wszystkie jego dane: klientów, pojazdy, zlecenia, faktury, magazyn i przesłane pliki. Członkowie zespołu stracą dostęp. Tego nie można cofnąć.",
+    "deleteWorkshopButton": "Usuń warsztat",
+    "deleteWorkshopDialogTitle": "Usunąć ten warsztat?",
+    "deleteWorkshopDialogDescription": "To trwale usuwa warsztat i całą jego zawartość. Tej akcji nie można cofnąć.",
+    "deleteWorkshopConfirmPrompt": "Wpisz <bold>{name}</bold>, aby potwierdzić.",
+    "deleteWorkshopSuccess": "Warsztat usunięty",
+    "deleteWorkshopFailed": "Nie udało się usunąć warsztatu",
+    "deleteAccountMoved": "Chcesz usunąć swoje konto?",
+    "deleteAccountMovedLink": "Możesz to zrobić w ustawieniach danych."
   },
   "team": {
     "title": "Zespol",

@@ -290,7 +290,18 @@
       "save": "Speichern",
       "confirmDeleteTitle": "Passkey löschen",
       "confirmDelete": "Möchten Sie diesen Passkey wirklich löschen? Sie können sich damit nicht mehr anmelden."
-    }
+    },
+    "cancel": "Abbrechen",
+    "deleteWorkshopTitle": "Werkstatt löschen",
+    "deleteWorkshopDescription": "Diese Werkstatt und alle ihre Daten dauerhaft löschen: Kunden, Fahrzeuge, Arbeitsaufträge, Rechnungen, Lager und hochgeladene Dateien. Teammitglieder verlieren den Zugriff. Dies kann nicht rückgängig gemacht werden.",
+    "deleteWorkshopButton": "Werkstatt löschen",
+    "deleteWorkshopDialogTitle": "Diese Werkstatt löschen?",
+    "deleteWorkshopDialogDescription": "Dies löscht die Werkstatt und alles darin dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteWorkshopConfirmPrompt": "Geben Sie <bold>{name}</bold> ein, um zu bestätigen.",
+    "deleteWorkshopSuccess": "Werkstatt gelöscht",
+    "deleteWorkshopFailed": "Werkstatt konnte nicht gelöscht werden",
+    "deleteAccountMoved": "Möchten Sie Ihr Konto löschen?",
+    "deleteAccountMovedLink": "Das können Sie in den Dateneinstellungen tun."
   },
   "team": {
     "title": "Team",

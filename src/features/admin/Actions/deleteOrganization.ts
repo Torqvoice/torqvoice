@@ -1,7 +1,7 @@
 "use server";
 
 import { withSuperAdmin } from "@/lib/with-super-admin";
-import { db } from "@/lib/db";
+import { deleteOrganizationWithData } from "@/lib/delete-user-data";
 import { deleteOrganizationSchema } from "../Schema/adminSchema";
 import { demoGuard } from "@/lib/demo";
 
@@ -10,7 +10,9 @@ export async function deleteOrganization(input: { organizationId: string }) {
     demoGuard()
     const { organizationId } = deleteOrganizationSchema.parse(input);
 
-    await db.organization.delete({ where: { id: organizationId } });
+    // Also cancels the org's Stripe subscription and removes its uploaded
+    // files, which the previous bare `organization.delete` here leaked.
+    await deleteOrganizationWithData(organizationId);
 
     return { deleted: true };
   });

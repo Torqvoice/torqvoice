@@ -290,7 +290,18 @@
       "save": "Kaydet",
       "confirmDeleteTitle": "Passkey'i Sil",
       "confirmDelete": "Bu passkey'i silmek istediğinizden emin misiniz? Artık bununla giriş yapamayacaksınız."
-    }
+    },
+    "cancel": "İptal",
+    "deleteWorkshopTitle": "Atölyeyi Sil",
+    "deleteWorkshopDescription": "Bu atölyeyi ve tüm verilerini kalıcı olarak silin: müşteriler, araçlar, iş emirleri, faturalar, envanter ve yüklenen dosyalar. Ekip üyeleri erişimi kaybeder. Bu geri alınamaz.",
+    "deleteWorkshopButton": "Atölyeyi Sil",
+    "deleteWorkshopDialogTitle": "Bu atölye silinsin mi?",
+    "deleteWorkshopDialogDescription": "Bu, atölyeyi ve içindeki her şeyi kalıcı olarak siler. Bu işlem geri alınamaz.",
+    "deleteWorkshopConfirmPrompt": "Onaylamak için <bold>{name}</bold> yazın.",
+    "deleteWorkshopSuccess": "Atölye silindi",
+    "deleteWorkshopFailed": "Atölye silinemedi",
+    "deleteAccountMoved": "Hesabınızı silmek mi istiyorsunuz?",
+    "deleteAccountMovedLink": "Bunu veri ayarlarından yapabilirsiniz."
   },
   "team": {
     "title": "Ekip",

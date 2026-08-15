@@ -290,7 +290,18 @@
       "save": "Išsaugoti",
       "confirmDeleteTitle": "Ištrinti prieigos raktą",
       "confirmDelete": "Ar tikrai norite ištrinti šį prieigos raktą? Nebegalėsite su juo prisijungti."
-    }
+    },
+    "cancel": "Atšaukti",
+    "deleteWorkshopTitle": "Ištrinti dirbtuves",
+    "deleteWorkshopDescription": "Visam laikui ištrinti šias dirbtuves ir visus jų duomenis: klientus, transporto priemones, darbo užsakymus, sąskaitas, atsargas ir įkeltus failus. Komandos nariai praras prieigą. To atšaukti negalima.",
+    "deleteWorkshopButton": "Ištrinti dirbtuves",
+    "deleteWorkshopDialogTitle": "Ištrinti šias dirbtuves?",
+    "deleteWorkshopDialogDescription": "Tai visam laikui ištrina dirbtuves ir viską jose. Šio veiksmo atšaukti negalima.",
+    "deleteWorkshopConfirmPrompt": "Įveskite <bold>{name}</bold>, kad patvirtintumėte.",
+    "deleteWorkshopSuccess": "Dirbtuvės ištrintos",
+    "deleteWorkshopFailed": "Nepavyko ištrinti dirbtuvių",
+    "deleteAccountMoved": "Norite ištrinti savo paskyrą?",
+    "deleteAccountMovedLink": "Tai galite padaryti duomenų nustatymuose."
   },
   "team": {
     "title": "Komanda",

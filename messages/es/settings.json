@@ -290,7 +290,18 @@
       "save": "Guardar",
       "confirmDeleteTitle": "Eliminar Passkey",
       "confirmDelete": "¿Está seguro de que desea eliminar esta passkey? Ya no podrá iniciar sesión con ella."
-    }
+    },
+    "cancel": "Cancelar",
+    "deleteWorkshopTitle": "Eliminar taller",
+    "deleteWorkshopDescription": "Eliminar permanentemente este taller y todos sus datos: clientes, vehículos, órdenes de trabajo, facturas, inventario y archivos subidos. Los miembros del equipo perderán el acceso. Esto no se puede deshacer.",
+    "deleteWorkshopButton": "Eliminar taller",
+    "deleteWorkshopDialogTitle": "¿Eliminar este taller?",
+    "deleteWorkshopDialogDescription": "Esto elimina permanentemente el taller y todo su contenido. Esta acción no se puede deshacer.",
+    "deleteWorkshopConfirmPrompt": "Escriba <bold>{name}</bold> para confirmar.",
+    "deleteWorkshopSuccess": "Taller eliminado",
+    "deleteWorkshopFailed": "No se pudo eliminar el taller",
+    "deleteAccountMoved": "¿Quiere eliminar su cuenta?",
+    "deleteAccountMovedLink": "Puede hacerlo en la configuración de datos."
   },
   "team": {
     "title": "Equipo",
