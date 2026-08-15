@@ -23,6 +23,7 @@ import { TableCellLink } from "@/components/table-cell-link";
 import { ArrowDown, ArrowUp, ArrowUpDown, Car, ExternalLink, Loader2, Plus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { NewInspectionDialog } from "@/features/inspections/Components/NewInspectionDialog";
+import { CONDITION_TOKENS, countConditions } from "@/features/inspections/Lib/conditions";
 
 interface InspectionRecord {
   id: string;
@@ -61,37 +62,22 @@ const statusColors: Record<string, string> = {
   completed: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
 };
 
-const conditionColors: Record<string, string> = {
-  pass: "bg-emerald-500",
-  fail: "bg-red-500",
-  attention: "bg-amber-500",
-  not_inspected: "bg-gray-300 dark:bg-gray-600",
-};
-
 function InspectionProgress({ items }: { items: { condition: string }[] }) {
   if (items.length === 0) return null;
-  const counts = { pass: 0, fail: 0, attention: 0, not_inspected: 0 };
-  for (const item of items) {
-    const c = item.condition as keyof typeof counts;
-    if (c in counts) counts[c]++;
-  }
+  const counts = countConditions(items);
   return (
     <div className="flex items-center gap-1.5">
       <div className="flex h-2 w-20 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-        {(["pass", "fail", "attention", "not_inspected"] as const).map((c) => {
+        {(["pass", "attention", "fail", "dangerous"] as const).map((c) => {
           const pct = (counts[c] / items.length) * 100;
           if (pct === 0) return null;
           return (
-            <div
-              key={c}
-              className={conditionColors[c]}
-              style={{ width: `${pct}%` }}
-            />
+            <div key={c} className={CONDITION_TOKENS[c].bar} style={{ width: `${pct}%` }} />
           );
         })}
       </div>
       <span className="text-xs text-muted-foreground">
-        {items.length - counts.not_inspected}/{items.length}
+        {counts.inspected}/{counts.total}
       </span>
     </div>
   );

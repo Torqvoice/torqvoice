@@ -44,10 +44,13 @@ export async function GET(
           select: {
             make: true, model: true, year: true, vin: true,
             licensePlate: true, mileage: true,
-            customer: { select: { name: true, email: true, phone: true } },
+            // Data minimisation (GDPR Art. 5(1)(c)): this certificate is
+            // generated from a public link, so it carries only the name needed
+            // to identify whose vehicle was tested.
+            customer: { select: { name: true } },
           },
         },
-        template: { select: { name: true } },
+        template: { select: { name: true, severityScale: true, country: true } },
         items: { orderBy: { sortOrder: "asc" } },
       },
     });

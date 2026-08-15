@@ -5,29 +5,63 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { TableContextMenuHint } from "@/components/table-context-menu-hint";
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Loader2, MoreVertical, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  ClipboardCheck,
+  Copy,
+  Globe2,
+  LayoutTemplate,
+  ListChecks,
+  Loader2,
+  MoreVertical,
+  Pencil,
+  Plus,
+  Ruler,
+  ShieldCheck,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
-import { deleteTemplate } from "../Actions/templateActions";
-import { TemplateForm } from "./TemplateForm";
+import { deleteTemplate, duplicateTemplate } from "../Actions/templateActions";
+import { TemplateForm, type TemplateFormData } from "./TemplateForm";
+import { TemplatePresetPicker } from "./TemplatePresetPicker";
+import { TEMPLATE_COUNTRIES } from "../Lib/templatePresets";
 
 interface TemplateSection {
   id: string;
   name: string;
+  description?: string | null;
+  code?: string | null;
   sortOrder: number;
-  items: { id: string; name: string; sortOrder: number }[];
+  items: {
+    id: string;
+    name: string;
+    description?: string | null;
+    code?: string | null;
+    sortOrder: number;
+    inputType?: string | null;
+    unit?: string | null;
+    minValue?: number | null;
+    maxValue?: number | null;
+    choices?: string[];
+    required?: boolean;
+    photoRequired?: boolean;
+    defaultSeverity?: string | null;
+  }[];
 }
 
 interface Template {
@@ -35,14 +69,136 @@ interface Template {
   name: string;
   description: string | null;
   isDefault: boolean;
+  country?: string | null;
+  standard?: string | null;
+  severityScale?: string | null;
   sections: TemplateSection[];
+}
+
+function countryName(code?: string | null) {
+  if (!code) return null;
+  return TEMPLATE_COUNTRIES.find((c) => c.code === code)?.name ?? code;
+}
+
+function TemplateCard({
+  template,
+  onEdit,
+  onDuplicate,
+  onDelete,
+  isDuplicating,
+}: {
+  template: Template;
+  onEdit: () => void;
+  onDuplicate: () => void;
+  onDelete: () => void;
+  isDuplicating: boolean;
+}) {
+  const checkCount = template.sections.reduce((sum, s) => sum + s.items.length, 0);
+  const measurementCount = template.sections.reduce(
+    (sum, s) => sum + s.items.filter((i) => i.inputType === "measurement").length,
+    0
+  );
+  const isEu = template.severityScale === "eu";
+  const country = countryName(template.country);
+
+  return (
+    <article className="bg-card flex flex-col rounded-lg border p-4">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className="flex items-center gap-2 font-semibold">
+            <span className="truncate">{template.name}</span>
+            {template.isDefault && (
+              <Badge variant="secondary" className="shrink-0 text-[11px]">
+                Default
+              </Badge>
+            )}
+          </h3>
+          {template.description && (
+            <p className="text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed">
+              {template.description}
+            </p>
+          )}
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 shrink-0"
+              aria-label={`Actions for ${template.name}`}
+            >
+              {isDuplicating ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <MoreVertical className="h-4 w-4" aria-hidden="true" />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-44">
+            <DropdownMenuItem onClick={onEdit}>
+              <Pencil className="mr-2 h-4 w-4" aria-hidden="true" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onDuplicate}>
+              <Copy className="mr-2 h-4 w-4" aria-hidden="true" />
+              Duplicate
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-destructive" onClick={onDelete}>
+              <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <dl className="text-muted-foreground mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
+        <div className="flex items-center gap-1.5">
+          <LayoutTemplate className="h-3.5 w-3.5" aria-hidden="true" />
+          <dt className="sr-only">Sections</dt>
+          <dd>
+            {template.sections.length} section{template.sections.length === 1 ? "" : "s"}
+          </dd>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <ListChecks className="h-3.5 w-3.5" aria-hidden="true" />
+          <dt className="sr-only">Checks</dt>
+          <dd>
+            {checkCount} check{checkCount === 1 ? "" : "s"}
+          </dd>
+        </div>
+        {measurementCount > 0 && (
+          <div className="flex items-center gap-1.5">
+            <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
+            <dt className="sr-only">Measurements</dt>
+            <dd>{measurementCount} measured</dd>
+          </div>
+        )}
+      </dl>
+
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t pt-3">
+        {country && (
+          <Badge variant="outline" className="gap-1 text-[11px]">
+            <Globe2 className="h-3 w-3" aria-hidden="true" />
+            {country}
+          </Badge>
+        )}
+        <Badge variant="outline" className="gap-1 text-[11px]">
+          <ShieldCheck className="h-3 w-3" aria-hidden="true" />
+          {isEu ? "EU defect scale" : "Pass / attention / fail"}
+        </Badge>
+      </div>
+    </article>
+  );
 }
 
 export function TemplateListClient({ templates }: { templates: Template[] }) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState<Template | undefined>();
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [showPresets, setShowPresets] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<TemplateFormData | undefined>();
+  const [deleteTarget, setDeleteTarget] = useState<Template | null>(null);
+  const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
   const [isDeleting, startDeleteTransition] = useTransition();
 
   const handleDelete = (id: string) => {
@@ -50,7 +206,7 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
       const result = await deleteTemplate(id);
       if (result.success) {
         toast.success("Template deleted");
-        setDeleteId(null);
+        setDeleteTarget(null);
         router.refresh();
       } else {
         toast.error(result.error || "Failed to delete template");
@@ -58,8 +214,20 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
     });
   };
 
+  const handleDuplicate = async (id: string) => {
+    setDuplicatingId(id);
+    const result = await duplicateTemplate(id);
+    setDuplicatingId(null);
+    if (result.success) {
+      toast.success("Template duplicated");
+      router.refresh();
+    } else {
+      toast.error(result.error || "Failed to duplicate template");
+    }
+  };
+
   const handleEdit = (template: Template) => {
-    setEditingTemplate(template);
+    setEditingTemplate(template as TemplateFormData);
     setShowForm(true);
   };
 
@@ -68,107 +236,61 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
     setShowForm(true);
   };
 
-  const totalItems = (t: Template) => t.sections.reduce((sum, s) => sum + s.items.length, 0);
-
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold">Inspection Templates</h2>
-          <p className="text-sm text-muted-foreground">
-            Define multi-point inspection checklists for technicians
+          <h2 className="text-lg font-semibold">Inspection templates</h2>
+          <p className="text-muted-foreground text-sm">
+            The checklists your technicians work through. Build one per country, per vehicle type
+            or per service you sell.
           </p>
         </div>
-        <Button size="sm" onClick={handleCreate}>
-          <Plus className="mr-1 h-3.5 w-3.5" />
-          New Template
-        </Button>
+        <div className="flex shrink-0 gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowPresets(true)}>
+            <ShieldCheck className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+            Start from a template
+          </Button>
+          <Button size="sm" onClick={handleCreate}>
+            <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+            New template
+          </Button>
+        </div>
       </div>
 
-      <div className="rounded-lg border">
-        <TableContextMenuHint />
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead className="w-28">Sections</TableHead>
-              <TableHead className="w-28">Items</TableHead>
-              <TableHead className="w-28">Default</TableHead>
-              <TableHead className="w-12"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {templates.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                  No templates yet. Create your first inspection template.
-                </TableCell>
-              </TableRow>
-            ) : (
-              templates.map((t) => (
-                <ContextMenu key={t.id} modal={false}>
-                <ContextMenuTrigger asChild>
-                <TableRow>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium">{t.name}</p>
-                      {t.description && (
-                        <p className="text-xs text-muted-foreground truncate max-w-xs">
-                          {t.description}
-                        </p>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>{t.sections.length}</TableCell>
-                  <TableCell>{totalItems(t)}</TableCell>
-                  <TableCell>
-                    {t.isDefault && (
-                      <Badge variant="secondary" className="text-xs">Default</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="px-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Open menu">
-                          <MoreVertical className="h-3.5 w-3.5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(t)}>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive"
-                          onClick={() => setDeleteId(t.id)}
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-                </ContextMenuTrigger>
-                <ContextMenuContent className="min-w-52">
-                  <ContextMenuItem onClick={() => handleEdit(t)}>
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Edit
-                  </ContextMenuItem>
-                  <ContextMenuItem
-                    variant="destructive"
-                    onClick={() => setDeleteId(t.id)}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete
-                  </ContextMenuItem>
-                </ContextMenuContent>
-                </ContextMenu>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      {templates.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed px-6 py-16 text-center">
+          <ClipboardCheck className="text-muted-foreground/40 h-10 w-10" aria-hidden="true" />
+          <h3 className="mt-4 font-medium">No templates yet</h3>
+          <p className="text-muted-foreground mt-1 max-w-sm text-sm">
+            Start from a ready-made checklist — including the EU periodic technical inspection —
+            or build your own from scratch.
+          </p>
+          <div className="mt-5 flex gap-2">
+            <Button onClick={() => setShowPresets(true)}>
+              <ShieldCheck className="mr-1 h-4 w-4" aria-hidden="true" />
+              Start from a template
+            </Button>
+            <Button variant="outline" onClick={handleCreate}>
+              <Plus className="mr-1 h-4 w-4" aria-hidden="true" />
+              Build my own
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {templates.map((t) => (
+            <TemplateCard
+              key={t.id}
+              template={t}
+              isDuplicating={duplicatingId === t.id}
+              onEdit={() => handleEdit(t)}
+              onDuplicate={() => handleDuplicate(t.id)}
+              onDelete={() => setDeleteTarget(t)}
+            />
+          ))}
+        </div>
+      )}
 
       <TemplateForm
         open={showForm}
@@ -179,23 +301,28 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
         template={editingTemplate}
       />
 
-      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+      <TemplatePresetPicker open={showPresets} onOpenChange={setShowPresets} />
+
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete template?</AlertDialogTitle>
+            <AlertDialogTitle>Delete &ldquo;{deleteTarget?.name}&rdquo;?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this inspection template. Existing inspections
-              created from this template will not be affected.
+              This permanently deletes the template. Inspections already carried out with it keep
+              their own copy of the checklist and are not affected.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteId && handleDelete(deleteId)}
+              onClick={() => deleteTarget && handleDelete(deleteTarget.id)}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

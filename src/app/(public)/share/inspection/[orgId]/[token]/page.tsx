@@ -33,10 +33,14 @@ export default async function PublicInspectionPage({
           vin: true,
           licensePlate: true,
           mileage: true,
-          customer: { select: { name: true, email: true, phone: true } },
+          // Data minimisation (GDPR Art. 5(1)(c)): this page is reachable by
+          // anyone holding the link, so the customer's contact details are
+          // never loaded for it — the name is all the report needs to identify
+          // whose vehicle it is.
+          customer: { select: { name: true } },
         },
       },
-      template: { select: { name: true } },
+      template: { select: { name: true, severityScale: true, country: true } },
       items: { orderBy: { sortOrder: "asc" } },
       quotes: {
         where: { publicToken: { not: null } },

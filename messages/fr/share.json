@@ -149,7 +149,53 @@
     "downloadPdf": "Télécharger le PDF",
     "notes": "Notes",
     "quoteCancelled": "Demande de devis annulée",
-    "cancelFailed": "Échec de l'annulation de la demande"
+    "cancelFailed": "Échec de l'annulation de la demande",
+    "eu": {
+      "pass": "Aucune défaillance",
+      "attention": "Défaillance mineure",
+      "fail": "Défaillance majeure",
+      "dangerous": "Défaillance critique",
+      "not_inspected": "Non contrôlé"
+    },
+    "basic": {
+      "pass": "Conforme",
+      "attention": "Attention",
+      "fail": "Non conforme",
+      "dangerous": "Dangereux",
+      "not_inspected": "Non contrôlé"
+    },
+    "result": {
+      "pass": "Favorable",
+      "pass_minor": "Favorable avec défaillances mineures",
+      "fail": "Défavorable — défaillances majeures",
+      "fail_dangerous": "Défavorable — défaillances critiques",
+      "incomplete": "Non terminé"
+    },
+    "resultDetail": {
+      "pass": "Aucune défaillance n'a été constatée.",
+      "pass_minor": "Le véhicule est accepté. Réparez les défaillances mineures sans délai excessif.",
+      "fail": "Le véhicule est refusé. Les défaillances doivent être réparées et le véhicule doit repasser au contrôle.",
+      "fail_dangerous": "Le véhicule ne doit pas circuler sur la voie publique tant que les défaillances critiques ne sont pas réparées.",
+      "incomplete": "Ce contrôle est toujours en cours."
+    },
+    "testDetails": "Détails du contrôle",
+    "testDate": "Date du contrôle",
+    "certificateNumber": "Numéro de certificat",
+    "vehicleCategory": "Catégorie du véhicule",
+    "inspector": "Contrôleur",
+    "testLocation": "Lieu du contrôle",
+    "nextTestDue": "Prochain contrôle",
+    "vesselLabel": "Bateau",
+    "plateLabel": "Immatriculation",
+    "odometerLabel": "Compteur",
+    "engineHoursLabel": "Heures moteur",
+    "summary": "Synthèse",
+    "progressLabel": "{graded} points contrôlés",
+    "limit": "Limite",
+    "viewPhoto": "Voir la photo",
+    "deficienciesFound": "Défaillances constatées ({count})",
+    "allResults": "Tous les résultats",
+    "privacyNotice": "Ce rapport vous est communiqué par l'atelier qui a réalisé le contrôle. Toute personne disposant de ce lien peut le consulter : merci de ne pas le transmettre. Contactez l'atelier pour faire retirer le lien ou effacer vos données."
   },
   "terms": {
     "title": "Conditions de vente (Salgsvilkår)",

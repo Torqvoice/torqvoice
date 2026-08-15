@@ -149,7 +149,53 @@
     "downloadPdf": "Download PDF",
     "notes": "Notes",
     "quoteCancelled": "Quote request cancelled",
-    "cancelFailed": "Failed to cancel request"
+    "cancelFailed": "Failed to cancel request",
+    "eu": {
+      "pass": "No defect",
+      "attention": "Minor defect",
+      "fail": "Major defect",
+      "dangerous": "Dangerous defect",
+      "not_inspected": "Not inspected"
+    },
+    "basic": {
+      "pass": "Pass",
+      "attention": "Attention",
+      "fail": "Fail",
+      "dangerous": "Dangerous",
+      "not_inspected": "Not inspected"
+    },
+    "result": {
+      "pass": "Pass",
+      "pass_minor": "Pass with minor defects",
+      "fail": "Fail — major defects",
+      "fail_dangerous": "Fail — dangerous defects",
+      "incomplete": "Not completed"
+    },
+    "resultDetail": {
+      "pass": "No deficiencies were found.",
+      "pass_minor": "The vehicle passes. Repair the minor deficiencies without undue delay.",
+      "fail": "The vehicle fails. The deficiencies must be repaired and the vehicle retested.",
+      "fail_dangerous": "The vehicle must not be used on the public road until the dangerous deficiencies are repaired.",
+      "incomplete": "This inspection is still in progress."
+    },
+    "testDetails": "Test details",
+    "testDate": "Date of test",
+    "certificateNumber": "Certificate number",
+    "vehicleCategory": "Vehicle category",
+    "inspector": "Inspector",
+    "testLocation": "Place of test",
+    "nextTestDue": "Next test due",
+    "vesselLabel": "Vessel",
+    "plateLabel": "Registration",
+    "odometerLabel": "Odometer",
+    "engineHoursLabel": "Engine hours",
+    "summary": "Summary",
+    "progressLabel": "{graded} checks graded",
+    "limit": "Limit",
+    "viewPhoto": "View photo",
+    "deficienciesFound": "Deficiencies found ({count})",
+    "allResults": "All results",
+    "privacyNotice": "This report is shared with you by the workshop that carried out the inspection. It is available to anyone holding this link, so please do not forward it. Contact the workshop to have the link withdrawn or your data erased."
   },
   "terms": {
     "title": "Terms of Sale (Salgsvilkår)",

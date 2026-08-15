@@ -149,7 +149,53 @@
     "downloadPdf": "Atsisiųsti PDF",
     "notes": "Pastabos",
     "quoteCancelled": "Pasiūlymo užklausa atšaukta",
-    "cancelFailed": "Nepavyko atšaukti užklausos"
+    "cancelFailed": "Nepavyko atšaukti užklausos",
+    "eu": {
+      "pass": "Trūkumų nėra",
+      "attention": "Nedidelis trūkumas",
+      "fail": "Didelis trūkumas",
+      "dangerous": "Pavojingas trūkumas",
+      "not_inspected": "Netikrinta"
+    },
+    "basic": {
+      "pass": "Tinkama",
+      "attention": "Dėmesio",
+      "fail": "Netinkama",
+      "dangerous": "Pavojinga",
+      "not_inspected": "Netikrinta"
+    },
+    "result": {
+      "pass": "Teigiamas",
+      "pass_minor": "Teigiamas su nedideliais trūkumais",
+      "fail": "Neigiamas — dideli trūkumai",
+      "fail_dangerous": "Neigiamas — pavojingi trūkumai",
+      "incomplete": "Nebaigta"
+    },
+    "resultDetail": {
+      "pass": "Trūkumų nenustatyta.",
+      "pass_minor": "Transporto priemonė tinkama naudoti. Nedelsdami pašalinkite nedidelius trūkumus.",
+      "fail": "Transporto priemonė netinkama. Trūkumus reikia pašalinti ir atlikti pakartotinę apžiūrą.",
+      "fail_dangerous": "Transporto priemone draudžiama važiuoti viešaisiais keliais, kol nebus pašalinti pavojingi trūkumai.",
+      "incomplete": "Ši apžiūra dar vyksta."
+    },
+    "testDetails": "Apžiūros duomenys",
+    "testDate": "Apžiūros data",
+    "certificateNumber": "Pažymos numeris",
+    "vehicleCategory": "Transporto priemonės kategorija",
+    "inspector": "Kontrolierius",
+    "testLocation": "Apžiūros vieta",
+    "nextTestDue": "Kita apžiūra",
+    "vesselLabel": "Laivas",
+    "plateLabel": "Valstybinis numeris",
+    "odometerLabel": "Rida",
+    "engineHoursLabel": "Variklio valandos",
+    "summary": "Santrauka",
+    "progressLabel": "Įvertinta patikrų: {graded}",
+    "limit": "Ribinė vertė",
+    "viewPhoto": "Žiūrėti nuotrauką",
+    "deficienciesFound": "Nustatyti trūkumai ({count})",
+    "allResults": "Visi rezultatai",
+    "privacyNotice": "Šią ataskaitą jums pateikia dirbtuvės, atlikusios apžiūrą. Ją gali peržiūrėti kiekvienas, turintis šią nuorodą, todėl neperduokite jos kitiems. Kreipkitės į dirbtuves, jei norite, kad nuoroda būtų panaikinta arba jūsų duomenys ištrinti."
   },
   "terms": {
     "title": "Pardavimo sąlygos",

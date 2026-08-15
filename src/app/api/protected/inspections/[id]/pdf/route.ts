@@ -48,7 +48,7 @@ export async function GET(
               customer: { select: { name: true, email: true, phone: true } },
             },
           },
-          template: { select: { name: true } },
+          template: { select: { name: true, severityScale: true, country: true } },
           items: { orderBy: { sortOrder: "asc" } },
         },
       }),

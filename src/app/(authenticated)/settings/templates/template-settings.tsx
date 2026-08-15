@@ -427,11 +427,29 @@ function SmsTemplateTab({
   );
 }
 
+interface InspectionTemplateItem {
+  id: string;
+  name: string;
+  description?: string | null;
+  code?: string | null;
+  sortOrder: number;
+  inputType?: string | null;
+  unit?: string | null;
+  minValue?: number | null;
+  maxValue?: number | null;
+  choices?: string[];
+  required?: boolean;
+  photoRequired?: boolean;
+  defaultSeverity?: string | null;
+}
+
 interface InspectionTemplateSection {
   id: string;
   name: string;
+  description?: string | null;
+  code?: string | null;
   sortOrder: number;
-  items: { id: string; name: string; sortOrder: number }[];
+  items: InspectionTemplateItem[];
 }
 
 interface InspectionTemplate {
@@ -439,6 +457,9 @@ interface InspectionTemplate {
   name: string;
   description: string | null;
   isDefault: boolean;
+  country?: string | null;
+  standard?: string | null;
+  severityScale?: string | null;
   sections: InspectionTemplateSection[];
 }
 

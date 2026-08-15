@@ -149,7 +149,53 @@
     "downloadPdf": "PDF downloaden",
     "notes": "Notities",
     "quoteCancelled": "Offerteaanvraag geannuleerd",
-    "cancelFailed": "Annuleren van aanvraag mislukt"
+    "cancelFailed": "Annuleren van aanvraag mislukt",
+    "eu": {
+      "pass": "Geen gebrek",
+      "attention": "Klein gebrek",
+      "fail": "Groot gebrek",
+      "dangerous": "Gevaarlijk gebrek",
+      "not_inspected": "Niet gekeurd"
+    },
+    "basic": {
+      "pass": "Goedgekeurd",
+      "attention": "Aandacht",
+      "fail": "Afgekeurd",
+      "dangerous": "Gevaarlijk",
+      "not_inspected": "Niet gekeurd"
+    },
+    "result": {
+      "pass": "Goedgekeurd",
+      "pass_minor": "Goedgekeurd met kleine gebreken",
+      "fail": "Afgekeurd — grote gebreken",
+      "fail_dangerous": "Afgekeurd — gevaarlijke gebreken",
+      "incomplete": "Niet afgerond"
+    },
+    "resultDetail": {
+      "pass": "Er zijn geen gebreken vastgesteld.",
+      "pass_minor": "Het voertuig is goedgekeurd. Herstel de kleine gebreken zonder onnodig uitstel.",
+      "fail": "Het voertuig is afgekeurd. De gebreken moeten worden hersteld en het voertuig opnieuw gekeurd.",
+      "fail_dangerous": "Het voertuig mag niet op de openbare weg worden gebruikt totdat de gevaarlijke gebreken zijn hersteld.",
+      "incomplete": "Deze keuring loopt nog."
+    },
+    "testDetails": "Keuringsgegevens",
+    "testDate": "Keuringsdatum",
+    "certificateNumber": "Certificaatnummer",
+    "vehicleCategory": "Voertuigcategorie",
+    "inspector": "Keurmeester",
+    "testLocation": "Plaats van keuring",
+    "nextTestDue": "Volgende keuring",
+    "vesselLabel": "Vaartuig",
+    "plateLabel": "Kenteken",
+    "odometerLabel": "Kilometerstand",
+    "engineHoursLabel": "Draaiuren",
+    "summary": "Samenvatting",
+    "progressLabel": "{graded} punten beoordeeld",
+    "limit": "Grenswaarde",
+    "viewPhoto": "Foto bekijken",
+    "deficienciesFound": "Vastgestelde gebreken ({count})",
+    "allResults": "Alle resultaten",
+    "privacyNotice": "Dit rapport wordt u verstrekt door de werkplaats die de keuring heeft uitgevoerd. Iedereen met deze link kan het bekijken; stuur de link daarom niet door. Neem contact op met de werkplaats om de link in te trekken of uw gegevens te laten wissen."
   },
   "terms": {
     "title": "Verkoopvoorwaarden (Salgsvilkår)",

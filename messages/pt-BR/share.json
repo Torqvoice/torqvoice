@@ -149,7 +149,53 @@
     "downloadPdf": "Baixar PDF",
     "notes": "Observações",
     "quoteCancelled": "Solicitação de orçamento cancelada",
-    "cancelFailed": "Falha ao cancelar a solicitação"
+    "cancelFailed": "Falha ao cancelar a solicitação",
+    "eu": {
+      "pass": "Sem deficiência",
+      "attention": "Deficiência leve",
+      "fail": "Deficiência grave",
+      "dangerous": "Deficiência perigosa",
+      "not_inspected": "Não inspecionado"
+    },
+    "basic": {
+      "pass": "Aprovado",
+      "attention": "Atenção",
+      "fail": "Reprovado",
+      "dangerous": "Perigoso",
+      "not_inspected": "Não inspecionado"
+    },
+    "result": {
+      "pass": "Aprovado",
+      "pass_minor": "Aprovado com deficiências leves",
+      "fail": "Reprovado — deficiências graves",
+      "fail_dangerous": "Reprovado — deficiências perigosas",
+      "incomplete": "Não concluído"
+    },
+    "resultDetail": {
+      "pass": "Nenhuma deficiência foi encontrada.",
+      "pass_minor": "O veículo foi aprovado. Repare as deficiências leves sem demora indevida.",
+      "fail": "O veículo foi reprovado. As deficiências devem ser reparadas e o veículo reinspecionado.",
+      "fail_dangerous": "O veículo não deve circular em via pública até que as deficiências perigosas sejam reparadas.",
+      "incomplete": "Esta inspeção ainda está em andamento."
+    },
+    "testDetails": "Dados da inspeção",
+    "testDate": "Data da inspeção",
+    "certificateNumber": "Número do certificado",
+    "vehicleCategory": "Categoria do veículo",
+    "inspector": "Inspetor",
+    "testLocation": "Local da inspeção",
+    "nextTestDue": "Próxima inspeção",
+    "vesselLabel": "Embarcação",
+    "plateLabel": "Placa",
+    "odometerLabel": "Odômetro",
+    "engineHoursLabel": "Horas de motor",
+    "summary": "Resumo",
+    "progressLabel": "{graded} itens avaliados",
+    "limit": "Limite",
+    "viewPhoto": "Ver foto",
+    "deficienciesFound": "Deficiências encontradas ({count})",
+    "allResults": "Todos os resultados",
+    "privacyNotice": "Este relatório é compartilhado com você pela oficina que realizou a inspeção. Qualquer pessoa com este link pode acessá-lo, portanto não o encaminhe. Entre em contato com a oficina para revogar o link ou solicitar a exclusão dos seus dados."
   },
   "terms": {
     "title": "Termos de Venda (Salgsvilkår)",

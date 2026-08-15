@@ -2,7 +2,11 @@
 
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
-import { createInspectionSchema, updateInspectionItemSchema } from "../Schema/inspectionSchema";
+import {
+  createInspectionSchema,
+  updateInspectionDetailsSchema,
+  updateInspectionItemSchema,
+} from "../Schema/inspectionSchema";
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { notificationBus } from "@/lib/notification-bus";
@@ -99,7 +103,10 @@ export async function getInspection(id: string) {
             customer: { select: { id: true, name: true, email: true, phone: true } },
           },
         },
-        template: { select: { id: true, name: true } },
+        template: {
+          select: { id: true, name: true, severityScale: true, country: true, standard: true },
+        },
+        technician: { select: { id: true, name: true } },
         items: { orderBy: { sortOrder: "asc" } },
         quotes: {
           select: {
@@ -176,12 +183,25 @@ export async function createInspection(input: unknown) {
       });
 
       // Copy template items into inspection items with globally unique sortOrder
-      // so sections always appear in a stable order when sorted by sortOrder
+      // so sections always appear in a stable order when sorted by sortOrder.
+      // The whole check definition is copied, not just the name, so editing or
+      // deleting the template later cannot change what an issued inspection says.
       const items = template.sections.flatMap((section, sIdx) =>
         section.items.map((item) => ({
           name: item.name,
           section: section.name,
+          sectionCode: section.code,
+          description: item.description,
+          code: item.code,
           sortOrder: sIdx * 1000 + item.sortOrder,
+          inputType: item.inputType,
+          unit: item.unit,
+          minValue: item.minValue,
+          maxValue: item.maxValue,
+          choices: item.choices,
+          required: item.required,
+          photoRequired: item.photoRequired,
+          defaultSeverity: item.defaultSeverity,
           inspectionId: created.id,
         }))
       );
@@ -223,6 +243,8 @@ export async function updateInspectionItem(itemId: string, input: unknown) {
         condition: data.condition,
         notes: data.notes,
         imageUrls: data.imageUrls,
+        measuredValue: data.measuredValue,
+        textValue: data.textValue,
       },
     });
 
@@ -230,16 +252,61 @@ export async function updateInspectionItem(itemId: string, input: unknown) {
   }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INSPECTIONS }] });
 }
 
-export async function completeInspection(id: string) {
+/**
+ * Saves the certificate fields required by Directive 2014/45/EU Annex IV that
+ * are not derivable from the checks themselves.
+ */
+export async function updateInspectionDetails(id: string, input: unknown) {
   return withAuth(async ({ organizationId }) => {
+    const data = updateInspectionDetailsSchema.parse(input);
+
     const inspection = await db.inspection.findFirst({
       where: { id, organizationId },
+      select: { id: true },
     });
     if (!inspection) throw new Error("Inspection not found");
 
+    const updated = await db.inspection.update({
+      where: { id },
+      data: {
+        mileage: data.mileage,
+        vehicleCategory: data.vehicleCategory,
+        certificateNumber: data.certificateNumber,
+        inspectorName: data.inspectorName,
+        testLocation: data.testLocation,
+        nextTestDue: data.nextTestDue,
+        notes: data.notes,
+      },
+    });
+
+    revalidatePath(`/inspections/${id}`);
+    return updated;
+  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INSPECTIONS }] });
+}
+
+export async function completeInspection(id: string) {
+  return withAuth(async ({ userId, organizationId }) => {
+    const inspection = await db.inspection.findFirst({
+      where: { id, organizationId },
+      include: { technician: { select: { name: true } } },
+    });
+    if (!inspection) throw new Error("Inspection not found");
+
+    // Annex IV(i) wants the tester named on the certificate. Snapshot it now so
+    // the record stays accurate if the technician later leaves or is renamed.
+    let inspectorName = inspection.inspectorName ?? inspection.technician?.name ?? null;
+    if (!inspectorName) {
+      const user = await db.user.findUnique({ where: { id: userId }, select: { name: true } });
+      inspectorName = user?.name ?? null;
+    }
+
     await db.inspection.updateMany({
       where: { id, organizationId },
-      data: { status: "completed", completedAt: new Date() },
+      data: {
+        status: "completed",
+        completedAt: new Date(),
+        ...(inspection.inspectorName ? {} : { inspectorName }),
+      },
     });
 
     notificationBus.emit("workboard", {
