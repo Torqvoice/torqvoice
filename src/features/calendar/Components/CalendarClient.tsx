@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { useDateSettings } from "@/components/date-settings-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -54,10 +55,10 @@ interface CalendarClientProps {
   currencyCode: string;
 }
 
-function getMonthDays(year: number, month: number) {
+function getMonthDays(year: number, month: number, weekStartDay: number) {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-  const startPad = firstDay.getDay();
+  const startPad = (firstDay.getDay() - weekStartDay + 7) % 7;
 
   const days: Date[] = [];
 
@@ -93,7 +94,9 @@ export default function CalendarClient({
   currencyCode,
 }: CalendarClientProps) {
   const t = useTranslations('calendar');
-  const WEEKDAYS = [t('weekdays.sun'), t('weekdays.mon'), t('weekdays.tue'), t('weekdays.wed'), t('weekdays.thu'), t('weekdays.fri'), t('weekdays.sat')];
+  const { weekStartDay } = useDateSettings();
+  const WEEKDAY_LABELS = [t('weekdays.sun'), t('weekdays.mon'), t('weekdays.tue'), t('weekdays.wed'), t('weekdays.thu'), t('weekdays.fri'), t('weekdays.sat')];
+  const WEEKDAYS = Array.from({ length: 7 }, (_, i) => WEEKDAY_LABELS[(weekStartDay + i) % 7]);
   const MONTH_NAMES = [t('months.january'), t('months.february'), t('months.march'), t('months.april'), t('months.may'), t('months.june'), t('months.july'), t('months.august'), t('months.september'), t('months.october'), t('months.november'), t('months.december')];
 
   const [month, setMonth] = useState(initialMonth);
@@ -155,7 +158,7 @@ export default function CalendarClient({
     return { serviceCount, overdueReminders, pendingQuotes, totalRevenue };
   }, [events]);
 
-  const days = getMonthDays(year, month);
+  const days = getMonthDays(year, month, weekStartDay);
 
   const fetchEvents = useCallback(async (y: number, m: number) => {
     setLoading(true);

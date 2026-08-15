@@ -38,6 +38,7 @@
     "customer_create": "Müşteri oluşturuldu",
     "customer_update": "Müşteri güncellendi",
     "customer_delete": "Müşteri silindi",
+    "customer_backfillNumbers": "Müşteri numaraları dolduruldu",
     "inventory_create": "Envanter parçası oluşturuldu",
     "inventory_update": "Envanter parçası güncellendi",
     "inventory_delete": "Envanter parçası silindi",

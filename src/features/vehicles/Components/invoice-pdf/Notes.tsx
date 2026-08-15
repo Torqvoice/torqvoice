@@ -285,9 +285,11 @@ export function BankAccountSection({
             <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
               {labels.bankAccount || 'Bank Account'}
             </Text>
-            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
-              {invoiceSettings!.bankAccount}
-            </Text>
+            {invoiceSettings!.bankAccount!.split(/\r?\n/).filter((line) => line.trim()).map((line, i) => (
+              <Text key={i} style={{ fontSize: 10, fontFamily: fontBold }}>
+                {line}
+              </Text>
+            ))}
           </View>
         )}
         {hasOrgNumber && (

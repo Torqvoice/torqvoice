@@ -28,7 +28,7 @@ export interface TabCounts {
 }
 
 interface UnifiedServiceHeaderProps {
-  vehicleId: string
+  vehicleId: string | null
   vehicleName: string
   title: string
   status: string
@@ -81,7 +81,7 @@ export function UnifiedServiceHeader({
     <div className="shrink-0 border-b bg-background px-4 pt-2 pb-0">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <Link
-          href={`/vehicles/${vehicleId}`}
+          href={vehicleId ? `/vehicles/${vehicleId}` : '/work-orders'}
           className="flex min-w-0 items-center gap-3 text-foreground transition-colors hover:text-muted-foreground"
         >
           <ArrowLeft className="h-4 w-4 shrink-0" />

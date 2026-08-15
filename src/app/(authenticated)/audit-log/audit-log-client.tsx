@@ -27,10 +27,17 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
 import { useFormatDate } from "@/lib/use-format-date";
 import { cn } from "@/lib/utils";
-import { Search, Loader2 } from "lucide-react";
+import { ExternalLink, Search, Loader2 } from "lucide-react";
 
 type AuditLogData = {
   logs: {
@@ -176,6 +183,7 @@ export function AuditLogClient({
 
       {/* Table */}
       <div className="rounded-md border">
+        <TableContextMenuHint />
         <Table>
           <TableHeader>
             <TableRow>
@@ -195,7 +203,9 @@ export function AuditLogClient({
               </TableRow>
             ) : (
               data.logs.map((log) => (
-                <TableRow key={log.id} className="cursor-pointer" onClick={() => setSelectedLog(log)}>
+                <ContextMenu key={log.id} modal={false}>
+                <ContextMenuTrigger asChild>
+                <TableRow className="cursor-pointer" onClick={() => setSelectedLog(log)}>
                   <TableCell className="text-xs text-muted-foreground whitespace-nowrap" suppressHydrationWarning>
                     {formatDateTime(log.timestamp)}
                   </TableCell>
@@ -214,6 +224,14 @@ export function AuditLogClient({
                     {log.entityId?.substring(0, 8)}
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => setSelectedLog(log)}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {t("logDetails")}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+                </ContextMenu>
               ))
             )}
           </TableBody>

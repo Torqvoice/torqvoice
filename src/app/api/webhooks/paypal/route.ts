@@ -92,10 +92,10 @@ async function processPayPalPayment(
   // Verify service record exists and belongs to this org
   const record = await db.serviceRecord.findUnique({
     where: { id: serviceRecordId },
-    include: { vehicle: { select: { organizationId: true } } },
+    select: { id: true, organizationId: true },
   });
 
-  if (record && record.vehicle.organizationId === orgId) {
+  if (record && record.organizationId === orgId) {
     await db.payment.create({
       data: {
         amount: result.amount,

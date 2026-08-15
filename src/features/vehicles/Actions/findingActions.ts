@@ -24,6 +24,8 @@ export async function getObservationsPaginated(params: {
       const skip = (page - 1) * pageSize;
 
       const search = params.search?.trim();
+      // VehicleFinding has no organizationId of its own — findings are always
+      // vehicle-scoped, so the org check must go through the vehicle relation.
       const where = {
         vehicle: { organizationId },
         ...(params.status && params.status !== "all" ? { status: params.status } : {}),
@@ -136,14 +138,18 @@ export async function getVehicleFindings(
 ) {
   return withAuth(
     async ({ organizationId }) => {
-      const vehicle = await db.vehicle.findFirst({
-        where: { id: vehicleId, organizationId },
-      });
-      if (!vehicle) throw new Error("Vehicle not found");
-
       const page = params.page || 1;
       const pageSize = params.pageSize || 10;
       const skip = (page - 1) * pageSize;
+
+      const vehicle = await db.vehicle.findFirst({
+        where: { id: vehicleId, organizationId },
+      });
+      // Deleted or foreign-org vehicle: empty result instead of an error, since
+      // this runs during the post-delete re-render of the vehicle page.
+      if (!vehicle) {
+        return { records: [], total: 0, page, pageSize, totalPages: 0 };
+      }
 
       const [records, total] = await Promise.all([
         db.vehicleFinding.findMany({

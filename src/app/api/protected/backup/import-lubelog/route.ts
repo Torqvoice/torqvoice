@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
 import { isDemoMode } from "@/lib/demo";
-import { resolveInvoicePrefix } from "@/lib/invoice-utils";
+import { resolveInvoicePrefix, toSafeDate } from "@/lib/invoice-utils";
 import { mkdir, writeFile, stat, readdir, rm } from "fs/promises";
 import { readFileSync } from "fs";
 import path from "path";
 import os from "os";
 import { BSON } from "bson";
 import JSZip from "jszip";
+import { resolveWithinDir } from "@/lib/safe-path";
 
 // Allow up to 5 minutes for large imports
 export const maxDuration = 300;
@@ -178,7 +179,12 @@ async function extractZipToTempDir(zipBuffer: Buffer): Promise<string> {
   const zip = await JSZip.loadAsync(zipBuffer);
 
   for (const [relativePath, entry] of Object.entries(zip.files)) {
-    const targetPath = path.join(tmpDir, relativePath);
+    // Guard against zip-slip: skip any entry whose path escapes tmpDir.
+    const targetPath = resolveWithinDir(tmpDir, relativePath);
+    if (!targetPath) {
+      console.warn(`[import-lubelog] Skipping unsafe zip entry: ${relativePath}`);
+      continue;
+    }
     if (entry.dir) {
       await mkdir(targetPath, { recursive: true });
     } else {
@@ -252,12 +258,12 @@ export async function POST(request: NextRequest) {
       where: { organizationId, key: "workshop.invoicePrefix" },
     });
     const invoicePrefix = resolveInvoicePrefix(
-      prefixSetting?.value || "{year}-"
+      prefixSetting?.value ?? "{year}-"
     );
 
     // Get the current highest invoice number to continue the sequence
     const lastRecord = await db.serviceRecord.findFirst({
-      where: { vehicle: { organizationId } },
+      where: { organizationId },
       orderBy: { createdAt: "desc" },
       select: { invoiceNumber: true },
     });
@@ -297,7 +303,13 @@ export async function POST(request: NextRequest) {
 
       // Normalize source paths: strip leading /
       const normalizedSource = sourcePath.replace(/^\//, "");
-      const localPath = path.join(backupDir, normalizedSource);
+      // Guard against path traversal: the source comes from the backup's BSON
+      // (ImageLocation / file.Location) and must not escape the backup dir.
+      const localPath = resolveWithinDir(backupDir, normalizedSource);
+      if (!localPath) {
+        console.warn(`[import-lubelog] Skipping file with unsafe source path: ${sourcePath}`);
+        return null;
+      }
 
       let fileData: Buffer;
       try {
@@ -373,13 +385,14 @@ export async function POST(request: NextRequest) {
 
         const created = await tx.serviceRecord.create({
           data: {
+            organizationId,
             title: sr.Description,
             description: sr.Notes || null,
             type: "repair",
             status: "completed",
             cost,
             mileage: sr.Mileage || null,
-            serviceDate: new Date(sr.Date),
+            serviceDate: toSafeDate(sr.Date) ?? new Date(),
             invoiceNumber,
             subtotal: cost,
             totalAmount: cost,

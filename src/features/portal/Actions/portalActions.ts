@@ -1,8 +1,10 @@
 'use server'
 
+import { toSafeDate } from "@/lib/invoice-utils";
 import { db } from '@/lib/db'
 import { getCustomerSession, type CustomerSessionData } from '@/lib/customer-session'
 import { notify } from '@/lib/notify'
+import { sendServiceRequestAlert } from '@/features/portal/Lib/sendServiceRequestAlert'
 import { withAuth, type ActionResult } from '@/lib/with-auth'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -50,7 +52,8 @@ export async function getPortalDashboard() {
         // is still a work-order in progress and not really an invoice yet.
         db.serviceRecord.findMany({
           where: {
-            vehicle: { customerId, organizationId },
+            organizationId,
+            OR: [{ vehicle: { customerId } }, { customerId }],
             status: 'completed',
           },
           select: {
@@ -70,7 +73,8 @@ export async function getPortalDashboard() {
         // Active jobs: work currently being done on the customer's vehicles.
         db.serviceRecord.findMany({
           where: {
-            vehicle: { customerId, organizationId },
+            organizationId,
+            OR: [{ vehicle: { customerId } }, { customerId }],
             status: { in: ['pending', 'in-progress', 'waiting-parts'] },
           },
           select: {
@@ -116,7 +120,7 @@ export async function getPortalDashboard() {
     // Open invoices: completed records that the customer still owes money on.
     // Pre-completion records are not counted — they're not yet invoices.
     const completedInvoices = await db.serviceRecord.findMany({
-      where: { vehicle: { customerId, organizationId }, status: 'completed' },
+      where: { organizationId, OR: [{ vehicle: { customerId } }, { customerId }], status: 'completed' },
       select: {
         totalAmount: true,
         manuallyPaid: true,
@@ -241,7 +245,8 @@ export async function getPortalInvoices() {
     // change, customer can't act on them).
     const invoices = await db.serviceRecord.findMany({
       where: {
-        vehicle: { customerId, organizationId },
+        organizationId,
+        OR: [{ vehicle: { customerId } }, { customerId }],
         status: 'completed',
       },
       select: {
@@ -320,7 +325,7 @@ export async function createServiceRequest(input: {
     // Validate vehicle belongs to customer
     const vehicle = await db.vehicle.findFirst({
       where: { id: input.vehicleId, customerId, organizationId },
-      select: { id: true, make: true, model: true },
+      select: { id: true, make: true, model: true, licensePlate: true },
     })
 
     if (!vehicle) {
@@ -329,13 +334,13 @@ export async function createServiceRequest(input: {
 
     const customer = await db.customer.findUnique({
       where: { id: customerId },
-      select: { name: true },
+      select: { name: true, email: true, phone: true },
     })
 
     const serviceRequest = await db.serviceRequest.create({
       data: {
         description: input.description,
-        preferredDate: input.preferredDate ? new Date(input.preferredDate) : null,
+        preferredDate: toSafeDate(input.preferredDate) ?? null,
         customerId,
         vehicleId: input.vehicleId,
         organizationId,
@@ -345,6 +350,11 @@ export async function createServiceRequest(input: {
     // Notify staff
     const vehicleName = `${vehicle.make} ${vehicle.model}`
     const customerName = customer?.name ?? 'A customer'
+    // The plate is what the workshop actually looks a car up by, so it goes in
+    // the email even though the in-app message stays short.
+    const vehicleLabel = vehicle.licensePlate
+      ? `${vehicleName} (${vehicle.licensePlate})`
+      : vehicleName
 
     await notify({
       organizationId,
@@ -355,6 +365,26 @@ export async function createServiceRequest(input: {
       entityId: serviceRequest.id,
       entityUrl: `/customers/${customerId}?tab=requests`,
     })
+
+    // Email the workshop, if it asked to be emailed. Isolated on purpose: the
+    // request is committed and the bell has already rung, so a misconfigured
+    // mail provider must not surface to the customer as a failed submission.
+    // sendServiceRequestAlert swallows its own errors; this is the backstop for
+    // anything it cannot anticipate.
+    try {
+      await sendServiceRequestAlert({
+        organizationId,
+        customerId,
+        customerName,
+        customerEmail: customer?.email ?? null,
+        customerPhone: customer?.phone ?? null,
+        vehicleLabel,
+        description: input.description,
+        preferredDate: serviceRequest.preferredDate,
+      })
+    } catch (error) {
+      console.error('[createServiceRequest] alert email failed:', error)
+    }
 
     return serviceRequest
   })

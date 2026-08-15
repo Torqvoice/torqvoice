@@ -133,7 +133,7 @@ export async function globalSearch(query: string) {
       })(),
       db.serviceRecord.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           AND: words.map((word) => ({
             OR: [
               { title: { contains: word, mode } },
@@ -199,7 +199,7 @@ export async function globalSearch(query: string) {
       }),
       db.reminder.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           AND: words.map((word) => ({
             OR: [
               { title: { contains: word, mode } },
@@ -207,6 +207,7 @@ export async function globalSearch(query: string) {
               { vehicle: { make: { contains: word, mode } } },
               { vehicle: { model: { contains: word, mode } } },
               { vehicle: { licensePlate: { contains: word, mode } } },
+              { customer: { name: { contains: word, mode } } },
             ],
           })),
         },
@@ -215,6 +216,7 @@ export async function globalSearch(query: string) {
           title: true,
           dueDate: true,
           isCompleted: true,
+          customer: { select: { id: true, name: true } },
           vehicle: {
             select: {
               id: true,
@@ -229,7 +231,7 @@ export async function globalSearch(query: string) {
       }),
       db.inspection.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           AND: words.map((word) => ({
             OR: [
               { template: { name: { contains: word, mode } } },

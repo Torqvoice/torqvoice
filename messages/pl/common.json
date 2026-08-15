@@ -12,6 +12,14 @@
     "edit": "Edytuj",
     "add": "Dodaj"
   },
+  "contextMenu": {
+    "hint": "Wskazówka: kliknij wiersz prawym przyciskiem, aby zobaczyć akcje",
+    "open": "Otwórz",
+    "openVehicle": "Otwórz pojazd",
+    "openCustomer": "Otwórz klienta",
+    "edit": "Edytuj",
+    "delete": "Usuń"
+  },
   "form": {
     "email": "E-mail",
     "password": "Hasło",
@@ -39,5 +47,10 @@
     "title": "Nie znaleziono strony",
     "description": "Wygląda na to, że ta część jest jeszcze w warsztacie. Strona, której szukasz, nie istnieje lub została przeniesiona.",
     "backToDashboard": "Wróć do panelu"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice zaktualizowano do wersji {version}",
+    "whatsNew": "Zobacz nowości",
+    "dismiss": "Zamknij"
   }
 }

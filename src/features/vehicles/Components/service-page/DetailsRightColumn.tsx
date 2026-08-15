@@ -19,7 +19,7 @@ interface DetailsRightColumnProps {
   formState: ReturnType<typeof useServiceFormState>
   actions: ReturnType<typeof useServiceActions>
   record: ServiceDetail
-  vehicleId: string
+  vehicleId: string | null
   organizationId: string
   currencyCode: string
   taxEnabled: boolean
@@ -29,7 +29,7 @@ interface DetailsRightColumnProps {
     model: string
     year: number
     licensePlate: string | null
-  }
+  } | null
   boardTechnicians: BoardTechnicianOption[]
   orgMembers?: OrgMemberOption[]
   notificationHistory?: {
@@ -74,6 +74,7 @@ export function DetailsRightColumn({
       )}
       <InvoiceDetailsSection
         initialData={formState.initialData}
+        showType={!!record.vehicle}
         type={formState.type}
         setType={formState.dirtySetType}
         status={formState.status}
@@ -90,7 +91,7 @@ export function DetailsRightColumn({
         selectedVehicleId={formState.selectedVehicleId}
         setSelectedVehicleId={formState.dirtySetSelectedVehicleId}
         techName={formState.techName}
-        customer={record.vehicle.customer}
+        customer={record.customer ?? record.vehicle?.customer}
         initialVehicle={initialVehicle}
       />
       <ScheduleTimesSection
@@ -104,6 +105,7 @@ export function DetailsRightColumn({
       />
       <TotalsSection
         partsSubtotal={formState.partsSubtotal}
+        partsCostSubtotal={formState.partsCostSubtotal}
         laborSubtotal={formState.laborSubtotal}
         subtotal={formState.subtotal}
         discountType={formState.discountType}

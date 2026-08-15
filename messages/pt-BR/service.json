@@ -107,7 +107,8 @@
     "partNotFound": "Nenhuma peça encontrada para o código de barras \"{barcode}\"",
     "deleteRow": "Delete row",
     "outOfStock": "Fora de estoque",
-    "onBackorder": "Sob encomenda ({count})"
+    "onBackorder": "Sob encomenda ({count})",
+    "nameMissingHint": "Linhas sem nome da peça não são salvas."
   },
   "labor": {
     "title": "Mão de Obra",
@@ -146,7 +147,8 @@
     "tax": "Imposto",
     "taxIncluded": "Imposto (incl.)",
     "total": "Total",
-    "inclusiveModeHint": "Os preços das linhas são inseridos com imposto incluído. Os totais mostram a divisão líquido + imposto."
+    "inclusiveModeHint": "Os preços das linhas são inseridos com imposto incluído. Os totais mostram a divisão líquido + imposto.",
+    "partsCost": "Custo das peças (interno)"
   },
   "notes": {
     "title": "Notas",

@@ -12,6 +12,14 @@
     "edit": "Düzenle",
     "add": "Ekle"
   },
+  "contextMenu": {
+    "hint": "İpucu: işlemler için bir satıra sağ tıklayın",
+    "open": "Aç",
+    "openVehicle": "Aracı aç",
+    "openCustomer": "Müşteriyi aç",
+    "edit": "Düzenle",
+    "delete": "Sil"
+  },
   "form": {
     "email": "E-posta",
     "password": "Şifre",
@@ -39,5 +47,10 @@
     "title": "Sayfa Bulunamadı",
     "description": "Bu parça hâlâ atölyede gibi görünüyor. Aradığınız sayfa mevcut değil veya taşınmış olabilir.",
     "backToDashboard": "Panele Dön"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice {version} sürümüne güncellendi",
+    "whatsNew": "Yenilikleri gör",
+    "dismiss": "Kapat"
   }
 }

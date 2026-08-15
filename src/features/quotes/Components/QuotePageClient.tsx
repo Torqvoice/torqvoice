@@ -123,6 +123,8 @@ export function QuotePageClient({
           name: part.name,
           partNumber: part.partNumber || '',
           quantity: part.quantity,
+          unitCost: 0,
+          markupPercent: 0,
           unitPrice: part.unitPrice,
           total: lineTotal(part.quantity, part.unitPrice),
           excluded: false,

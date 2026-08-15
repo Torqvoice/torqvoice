@@ -10,7 +10,7 @@ import {
   type CreateRecurringInvoiceInput,
   type UpdateRecurringInvoiceInput,
 } from "../Schema/recurringInvoiceSchema";
-import { resolveInvoicePrefix } from "@/lib/invoice-utils";
+import { resolveInvoicePrefix, toSafeDate } from "@/lib/invoice-utils";
 import { calculateTotals } from "@/lib/tax";
 import { lineTotal } from "@/features/inventory/Lib/partPricing";
 
@@ -64,8 +64,8 @@ export async function createRecurringInvoice(input: CreateRecurringInvoiceInput)
         title: parsed.title,
         description: parsed.description,
         frequency: parsed.frequency,
-        nextRunDate: new Date(parsed.nextRunDate),
-        endDate: parsed.endDate ? new Date(parsed.endDate) : null,
+        nextRunDate: toSafeDate(parsed.nextRunDate) ?? new Date(),
+        endDate: toSafeDate(parsed.endDate) ?? null,
         vehicleId: parsed.vehicleId,
         type: parsed.type,
         cost: parsed.cost,
@@ -136,8 +136,8 @@ export async function updateRecurringInvoice(input: UpdateRecurringInvoiceInput)
           ...(parsed.title !== undefined && { title: parsed.title }),
           ...(parsed.description !== undefined && { description: parsed.description }),
           ...(parsed.frequency !== undefined && { frequency: parsed.frequency }),
-          ...(parsed.nextRunDate !== undefined && { nextRunDate: new Date(parsed.nextRunDate) }),
-          ...(parsed.endDate !== undefined && { endDate: parsed.endDate ? new Date(parsed.endDate) : null }),
+          ...(parsed.nextRunDate !== undefined && { nextRunDate: toSafeDate(parsed.nextRunDate) ?? new Date() }),
+          ...(parsed.endDate !== undefined && { endDate: toSafeDate(parsed.endDate) ?? null }),
           ...(parsed.vehicleId !== undefined && { vehicleId: parsed.vehicleId }),
           ...(parsed.type !== undefined && { type: parsed.type }),
           ...(parsed.cost !== undefined && { cost: parsed.cost }),
@@ -254,11 +254,11 @@ async function generateInvoiceNumber(organizationId: string): Promise<string> {
   const settingsMap: Record<string, string> = {};
   for (const s of settings) settingsMap[s.key] = s.value;
 
-  const prefix = resolveInvoicePrefix(settingsMap["workshop.invoicePrefix"] || "{year}-");
+  const prefix = resolveInvoicePrefix(settingsMap["workshop.invoicePrefix"] ?? "{year}-");
   const startNumber = parseInt(settingsMap["workshop.invoiceStartNumber"] || "0", 10);
 
   const lastRecord = await db.serviceRecord.findFirst({
-    where: { vehicle: { organizationId } },
+    where: { organizationId },
     orderBy: { createdAt: "desc" },
     select: { invoiceNumber: true },
   });
@@ -317,6 +317,7 @@ export async function processRecurringInvoices() {
       const serviceRecord = await db.$transaction(async (tx) => {
         const sr = await tx.serviceRecord.create({
           data: {
+            organizationId,
             title: ri.title,
             description: ri.description,
             type: ri.type,

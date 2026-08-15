@@ -34,7 +34,12 @@
       "total": "Total"
     },
     "emailSubject": "Actualización de Estado del Vehículo: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Abrir orden de trabajo",
+      "openVehicle": "Abrir vehículo",
+      "openCustomer": "Abrir cliente"
+    }
   },
   "vehiclePicker": {
     "title": "Seleccionar Vehículo para Orden de Trabajo",
@@ -61,7 +66,11 @@
     "customerNameRequired": "El nombre del cliente es requerido",
     "failedCreateCustomer": "Error al crear cliente",
     "failedCreateVehicle": "Error al crear vehículo",
-    "somethingWentWrong": "Algo salió mal"
+    "somethingWentWrong": "Algo salió mal",
+    "partsSale": "Venta solo de piezas",
+    "partsSaleDescription": "Crea una factura sin vehículo, para ventas de piezas en mostrador.",
+    "createSale": "Crear venta",
+    "none": "Ninguno"
   },
   "notify": {
     "title": "Notificar a {name}",

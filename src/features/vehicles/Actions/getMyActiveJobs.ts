@@ -8,13 +8,13 @@ export interface MyActiveJob {
   id: string;
   title: string;
   status: string;
-  vehicleId: string;
+  vehicleId: string | null;
   vehicle: {
     make: string;
     model: string;
     year: number;
     licensePlate: string | null;
-  };
+  } | null;
   customer: {
     id: string;
     name: string;
@@ -42,7 +42,7 @@ export async function getMyActiveJobs() {
 
       const records = await db.serviceRecord.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           status: { in: ["in-progress", "pending", "waiting-parts"] },
           technicianId: { in: techIds },
         },
@@ -51,6 +51,15 @@ export async function getMyActiveJobs() {
           title: true,
           status: true,
           vehicleId: true,
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true,
+              telegramChatId: true,
+            },
+          },
           vehicle: {
             select: {
               make: true,
@@ -86,8 +95,13 @@ export async function getMyActiveJobs() {
         title: r.title,
         status: r.status,
         vehicleId: r.vehicleId,
-        vehicle: r.vehicle,
-        customer: r.vehicle.customer,
+        vehicle: r.vehicle ? {
+          make: r.vehicle.make,
+          model: r.vehicle.model,
+          year: r.vehicle.year,
+          licensePlate: r.vehicle.licensePlate,
+        } : null,
+        customer: r.customer ?? r.vehicle?.customer ?? null,
         imageCount: r.attachments.filter((a) => a.category === "image").length,
         videoCount: r.attachments.filter((a) => a.category === "video").length,
         partCount: r._count.partItems,

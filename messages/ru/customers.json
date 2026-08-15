@@ -7,7 +7,8 @@
       "company": "Компания",
       "phone": "Телефон",
       "email": "Эл. почта",
-      "vehicles": "Транспортные средства"
+      "vehicles": "Транспортные средства",
+      "number": "№"
     },
     "emptySearch": "Нет клиентов, соответствующих поиску.",
     "empty": "Клиентов пока нет.",
@@ -65,7 +66,9 @@
     "notesPlaceholder": "Дополнительные заметки...",
     "customerUpdated": "Клиент обновлён",
     "customerCreated": "Клиент создан",
-    "saveError": "Не удалось сохранить клиента"
+    "saveError": "Не удалось сохранить клиента",
+    "customerNumber": "№ клиента",
+    "customerNumberAuto": "Авто"
   },
   "serviceRequests": {
     "statusNew": "Новая",

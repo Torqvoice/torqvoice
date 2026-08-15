@@ -12,10 +12,12 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
+import { backfillCustomerNumbers } from '@/features/customers/Actions/customerActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { FileText, Loader2, Save } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
+import { useConfirm } from '@/components/confirm-dialog'
 import { InvoiceLayoutEditor } from '@/features/settings/Components/InvoiceLayoutEditor'
 import { InvoiceLayoutPreview } from '@/features/settings/Components/InvoiceLayoutPreview'
 import {
@@ -44,6 +46,7 @@ interface FieldDef {
 
 interface InvoiceSettingsProps {
   settings: Record<string, string>
+  unnumberedCustomers?: number
   initialInvoiceLayout?: InvoiceLayoutConfig
   initialQuoteLayout?: InvoiceLayoutConfig
   customFields: FieldDef[]
@@ -53,6 +56,7 @@ interface InvoiceSettingsProps {
 
 export function InvoiceSettings({
   settings,
+  unnumberedCustomers = 0,
   initialInvoiceLayout,
   initialQuoteLayout,
   customFields,
@@ -81,10 +85,14 @@ export function InvoiceSettings({
 
   // General tab state
   const [invoicePrefix, setInvoicePrefix] = useState(
-    settings[SETTING_KEYS.INVOICE_PREFIX] || '{year}-'
+    settings[SETTING_KEYS.INVOICE_PREFIX] ?? '{year}-'
   )
   const [invoiceStartNumber, setInvoiceStartNumber] = useState(
     settings[SETTING_KEYS.INVOICE_START_NUMBER] || ''
+  )
+  const [quotePrefix, setQuotePrefix] = useState(settings[SETTING_KEYS.QUOTE_PREFIX] ?? 'QT-')
+  const [quoteValidDays, setQuoteValidDays] = useState(
+    settings[SETTING_KEYS.QUOTE_VALID_DAYS] ?? '30'
   )
   const [dueDays, setDueDays] = useState(settings[SETTING_KEYS.INVOICE_DUE_DAYS] || '14')
   const [footerNote, setFooterNote] = useState(settings[SETTING_KEYS.INVOICE_FOOTER_NOTE] || '')
@@ -125,6 +133,8 @@ export function InvoiceSettings({
     setSaving(true)
     await setSettings({
       [SETTING_KEYS.INVOICE_PREFIX]: invoicePrefix,
+      [SETTING_KEYS.QUOTE_PREFIX]: quotePrefix,
+      [SETTING_KEYS.QUOTE_VALID_DAYS]: quoteValidDays,
       [SETTING_KEYS.INVOICE_START_NUMBER]: invoiceStartNumber,
       [SETTING_KEYS.INVOICE_DUE_DAYS]: dueDays,
       [SETTING_KEYS.INVOICE_FOOTER_NOTE]: footerNote,
@@ -134,6 +144,28 @@ export function InvoiceSettings({
     setSaving(false)
     router.refresh()
     toast.success(t('invoice.saved'))
+  }
+
+  const confirm = useConfirm()
+  const [assigning, setAssigning] = useState(false)
+  const [unnumbered, setUnnumbered] = useState(unnumberedCustomers)
+  const handleAssignCustomerNumbers = async () => {
+    const ok = await confirm({
+      title: t('invoice.assignCustomerNumbersConfirmTitle'),
+      description: t('invoice.assignCustomerNumbersConfirmDescription', { count: unnumbered }),
+      confirmLabel: t('invoice.assignCustomerNumbers'),
+    })
+    if (!ok) return
+    setAssigning(true)
+    const result = await backfillCustomerNumbers()
+    setAssigning(false)
+    if (result.success && result.data) {
+      setUnnumbered(0)
+      toast.success(t('invoice.customerNumbersAssigned', { count: result.data.assigned }))
+      router.refresh()
+    } else {
+      toast.error(result.error || t('templates.failedSave'))
+    }
   }
 
   const handleSaveLayout = async () => {
@@ -215,7 +247,9 @@ export function InvoiceSettings({
               <CardTitle className="text-lg">{t('invoice.tabs.general')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold">{t('invoice.sectionInvoices')}</h3>
+                <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="invoicePrefix">{t('invoice.invoiceNumberFormat')}</Label>
                   <Input
@@ -265,20 +299,83 @@ export function InvoiceSettings({
                   />
                   <p className="text-xs text-muted-foreground">{t('invoice.dueDaysHint')}</p>
                 </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="footerNote">{t('invoice.customFooter')}</Label>
+                  <Textarea
+                    id="footerNote"
+                    placeholder={t('invoice.footerPlaceholder')}
+                    rows={2}
+                    value={footerNote}
+                    onChange={(e) => setFooterNote(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">{t('invoice.footerHint')}</p>
+                </div>
               </div>
 
               <Separator />
 
-              <div className="space-y-2">
-                <Label htmlFor="footerNote">{t('invoice.customFooter')}</Label>
-                <Textarea
-                  id="footerNote"
-                  placeholder={t('invoice.footerPlaceholder')}
-                  rows={2}
-                  value={footerNote}
-                  onChange={(e) => setFooterNote(e.target.value)}
-                />
-                <p className="text-xs text-muted-foreground">{t('invoice.footerHint')}</p>
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold">{t('invoice.sectionQuotes')}</h3>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="quotePrefix">{t('invoice.quoteNumberFormat')}</Label>
+                    <Input
+                      id="quotePrefix"
+                      placeholder="QT-"
+                      value={quotePrefix}
+                      onChange={(e) => setQuotePrefix(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {t.rich('invoice.quoteNumberFormatHint', {
+                        code: (chunks) => <code className="rounded bg-muted px-1">{chunks}</code>,
+                        bold: (chunks) => <span className="font-medium">{chunks}</span>,
+                        year: '{year}',
+                        preview:
+                          quotePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) + '1001',
+                      })}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="quoteValidDays">{t('invoice.quoteValidDays')}</Label>
+                    <Input
+                      id="quoteValidDays"
+                      type="number"
+                      min="0"
+                      placeholder="30"
+                      value={quoteValidDays}
+                      onChange={(e) => setQuoteValidDays(e.target.value)}
+                      className="w-32"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {t('invoice.quoteValidDaysHint')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold">{t('invoice.sectionCustomers')}</h3>
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-xs text-muted-foreground">
+                    {unnumbered > 0
+                      ? t('invoice.assignCustomerNumbersHint', { count: unnumbered })
+                      : t('invoice.allCustomersNumbered')}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={assigning || unnumbered === 0}
+                    onClick={handleAssignCustomerNumbers}
+                  >
+                    {assigning && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                    {t('invoice.assignCustomerNumbers')}
+                  </Button>
+                </div>
               </div>
 
               <Separator />

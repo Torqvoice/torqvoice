@@ -41,7 +41,7 @@ export async function applyTaxRateToExisting() {
       // --- Service records (work orders / invoices) ---
       const serviceRecords = await db.serviceRecord.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           taxRate: 0,
         },
         select: {
@@ -144,7 +144,7 @@ export async function getTaxBackfillCounts() {
     async ({ organizationId }) => {
       const [serviceRecords, quotes] = await Promise.all([
         db.serviceRecord.count({
-          where: { vehicle: { organizationId }, taxRate: 0 },
+          where: { organizationId, taxRate: 0 },
         }),
         db.quote.count({
           where: { organizationId, taxRate: 0 },
@@ -168,7 +168,7 @@ export async function getInclusiveBackfillCounts() {
     async ({ organizationId }) => {
       const [serviceRecords, quotes] = await Promise.all([
         db.serviceRecord.count({
-          where: { vehicle: { organizationId }, taxInclusive: false },
+          where: { organizationId, taxInclusive: false },
         }),
         db.quote.count({
           where: { organizationId, taxInclusive: false },
@@ -192,7 +192,7 @@ export async function getExclusiveBackfillCounts() {
     async ({ organizationId }) => {
       const [serviceRecords, quotes] = await Promise.all([
         db.serviceRecord.count({
-          where: { vehicle: { organizationId }, taxInclusive: true },
+          where: { organizationId, taxInclusive: true },
         }),
         db.quote.count({
           where: { organizationId, taxInclusive: true },
@@ -233,7 +233,7 @@ export async function convertRecordsToInclusive() {
       // --- Service records ---
       const serviceRecords = await db.serviceRecord.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           taxInclusive: false,
         },
         select: {
@@ -402,7 +402,7 @@ export async function convertRecordsToExclusive() {
     async ({ organizationId }) => {
       const serviceRecords = await db.serviceRecord.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           taxInclusive: true,
         },
         select: {

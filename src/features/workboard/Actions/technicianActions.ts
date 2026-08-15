@@ -186,7 +186,7 @@ export async function assignTechToUnassignedWorkOrders(technicianId: string) {
 
       const result = await db.serviceRecord.updateMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           technicianId: null,
         },
         data: {

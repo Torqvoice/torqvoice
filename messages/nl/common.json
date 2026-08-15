@@ -12,6 +12,14 @@
     "edit": "Bewerken",
     "add": "Toevoegen"
   },
+  "contextMenu": {
+    "hint": "Tip: rechtsklik op een rij voor acties",
+    "open": "Openen",
+    "openVehicle": "Voertuig openen",
+    "openCustomer": "Klant openen",
+    "edit": "Bewerken",
+    "delete": "Verwijderen"
+  },
   "form": {
     "email": "E-mail",
     "password": "Wachtwoord",
@@ -39,5 +47,10 @@
     "title": "Pagina niet gevonden",
     "description": "Het lijkt erop dat dit onderdeel nog in de werkplaats is. De pagina die je zoekt bestaat niet of is verplaatst.",
     "backToDashboard": "Terug naar dashboard"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice is bijgewerkt naar {version}",
+    "whatsNew": "Bekijk wat er nieuw is",
+    "dismiss": "Sluiten"
   }
 }

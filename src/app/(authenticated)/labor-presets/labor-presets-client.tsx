@@ -21,7 +21,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
 import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { LaborPresetForm } from "@/features/labor-presets/Components/LaborPresetForm";
@@ -167,6 +174,7 @@ export function LaborPresetsClient({
 
       {/* Table */}
       <div className="rounded-lg border">
+        <TableContextMenuHint />
         <Table>
           <TableHeader>
             <TableRow>
@@ -196,8 +204,9 @@ export function LaborPresetsClient({
               </TableRow>
             ) : (
               data.presets.map((preset) => (
+                <ContextMenu key={preset.id} modal={false}>
+                <ContextMenuTrigger asChild>
                 <TableRow
-                  key={preset.id}
                   className="cursor-pointer"
                   onClick={() => handleEdit(preset.id)}
                 >
@@ -251,6 +260,21 @@ export function LaborPresetsClient({
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => handleEdit(preset.id)}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    {t("actions.edit")}
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    variant="destructive"
+                    onClick={() => handleDelete(preset.id, preset.name)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t("actions.delete")}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+                </ContextMenu>
               ))
             )}
           </TableBody>

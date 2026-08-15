@@ -124,14 +124,14 @@ beforeEach(() => {
 // ---------------------------------------------------------------------------
 
 describe("getCustomer — cross-org isolation", () => {
-  it("returns 'Customer not found' error when requesting another org's customer", async () => {
+  it("returns null (no data) when requesting another org's customer", async () => {
     setupOrgAOwner();
     vi.mocked(db.customer.findFirst).mockResolvedValue(null);
 
     const result = await getCustomer(`${ORG_B}-customer-id`);
 
-    expect(result.success).toBe(false);
-    expect(result.error).toBe("Customer not found");
+    expect(result.success).toBe(true);
+    expect(result.data).toBeNull();
   });
 
   it("returns customer data when requesting the caller's own customer", async () => {

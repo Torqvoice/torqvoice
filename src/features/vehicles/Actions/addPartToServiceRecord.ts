@@ -21,7 +21,7 @@ export async function addPartToServiceRecord(input: {
   return withAuth(
     async ({ userId, organizationId }) => {
       const record = await db.serviceRecord.findFirst({
-        where: { id: input.serviceRecordId, vehicle: { organizationId } },
+        where: { id: input.serviceRecordId, organizationId },
         select: { id: true, vehicleId: true, subtotal: true, taxRate: true, taxInclusive: true, discountType: true, discountValue: true, title: true, invoiceNumber: true },
       });
       if (!record) throw new Error("Service record not found");
@@ -90,7 +90,11 @@ export async function addPartToServiceRecord(input: {
         return created;
       });
 
-      revalidatePath(`/vehicles/${record.vehicleId}/service/${record.id}`);
+      revalidatePath(
+        record.vehicleId
+          ? `/vehicles/${record.vehicleId}/service/${record.id}`
+          : `/sales/${record.id}`
+      );
       if (input.inventoryPartId) await onInventoryChanged(organizationId);
 
       return part;

@@ -23,7 +23,8 @@ vi.mock("@/lib/cached-session", () => ({
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
-vi.mock("@/lib/invoice-utils", () => ({
+vi.mock("@/lib/invoice-utils", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/invoice-utils")>()),
   resolveInvoicePrefix: vi.fn((p: string) => {
     const now = new Date();
     return p
@@ -199,6 +200,35 @@ describe("createServiceRecord — invoice number", () => {
       expect.objectContaining({
         data: expect.objectContaining({
           invoiceNumber: expect.stringContaining("INV-"),
+        }),
+      })
+    );
+  });
+
+  it("respects an explicitly empty prefix instead of falling back to the default", async () => {
+    setupAuth();
+    setupCommonMocks();
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: "workshop.invoicePrefix", value: "" } as any,
+    ]);
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: "sr-4" });
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        serviceRecord: { create: mockCreate },
+        servicePart: { createMany: vi.fn() },
+        serviceLabor: { createMany: vi.fn() },
+        serviceAttachment: { createMany: vi.fn() },
+        inventoryPart: { findFirst: vi.fn(), update: vi.fn() },
+      })
+    );
+
+    await createServiceRecord({ vehicleId: VEHICLE_ID, title: "Test" });
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          invoiceNumber: "1001",
         }),
       })
     );

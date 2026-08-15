@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DateInput } from "@/components/ui/date-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Camera, Loader2, Upload, Video, Send, X } from "lucide-react";
@@ -184,9 +185,7 @@ export function CreateStatusReportDialog({
 
       <div className="space-y-1.5">
         <Label htmlFor="sr-expires">{t("expiresLabel")}</Label>
-        <Input id="sr-expires" type="date" value={expiresAt}
-          onChange={(e) => setExpiresAt(e.target.value)}
-          min={new Date().toISOString().split("T")[0]} />
+        <DateInput id="sr-expires" value={expiresAt} onChange={setExpiresAt} />
       </div>
     </div>
   );

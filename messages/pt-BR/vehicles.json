@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "ex. 50000",
     "reminderUpdated": "Lembrete atualizado",
     "reminderCreated": "Lembrete criado",
-    "saveError": "Falha ao {action} lembrete"
+    "saveError": "Falha ao {action} lembrete",
+    "notifyLabel": "Notificar no vencimento",
+    "notifyInApp": "Notificação no app",
+    "notifyEmail": "E-mail"
   },
   "services": {
     "searchPlaceholder": "Buscar registros...",

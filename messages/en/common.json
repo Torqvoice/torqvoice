@@ -12,6 +12,14 @@
     "edit": "Edit",
     "add": "Add"
   },
+  "contextMenu": {
+    "hint": "Tip: right-click a row for actions",
+    "open": "Open",
+    "openVehicle": "Open vehicle",
+    "openCustomer": "Open customer",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
   "form": {
     "email": "Email",
     "password": "Password",
@@ -39,5 +47,10 @@
     "title": "Page Not Found",
     "description": "Looks like this part is still in the shop. The page you're looking for doesn't exist or has been moved.",
     "backToDashboard": "Back to Dashboard"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice has been updated to {version}",
+    "whatsNew": "See what is new",
+    "dismiss": "Dismiss"
   }
 }

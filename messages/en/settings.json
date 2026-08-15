@@ -381,6 +381,12 @@
     },
     "invoiceNumberFormat": "Invoice Number Format",
     "invoiceNumberFormatHint": "Use <code>{year}</code> for the current year. Preview: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Quote Number Format",
+    "quoteNumberFormatHint": "Use <code>{year}</code> for the current year. Preview: <bold>{preview}</bold>",
+    "quoteValidDays": "Quote Validity (Days)",
+    "quoteValidDaysHint": "New quotes get a valid until date this many days ahead. Set 0 to disable.",
+    "sectionInvoices": "Invoices",
+    "sectionQuotes": "Quotes",
     "nextInvoiceNumber": "Next Invoice Number",
     "nextInvoiceNumberPlaceholder": "e.g. 94",
     "nextInvoiceNumberHint": "Next invoice will use this number (e.g. {example})",
@@ -412,7 +418,14 @@
     "layoutDocInvoice": "Invoice",
     "layoutDocQuote": "Quote",
     "saveLayout": "Save Layout",
-    "resetLayout": "Reset to Default"
+    "resetLayout": "Reset to Default",
+    "sectionCustomers": "Customers",
+    "assignCustomerNumbers": "Assign customer numbers",
+    "assignCustomerNumbersHint": "{count} customers have no number yet. Assign sequential numbers to them (existing numbers are kept).",
+    "customerNumbersAssigned": "Assigned numbers to {count} customers",
+    "allCustomersNumbered": "All customers have a number.",
+    "assignCustomerNumbersConfirmTitle": "Assign customer numbers?",
+    "assignCustomerNumbersConfirmDescription": "This will give sequential numbers to the {count} customers that have no number yet, in the order they were created, continuing after your highest existing number. Customers that already have a number are not changed. Numbers can be edited afterwards."
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",
@@ -564,7 +577,7 @@
     "readMore": "Read More",
     "detailsTitle": "Payment Details",
     "detailsDescription": "Bank account and payment terms shown on invoices.",
-    "bankAccount": "Bank Account (IBAN / Til Konto)",
+    "bankAccount": "Bank Account (IBAN)",
     "bankAccountPlaceholder": "NO93 8601 1117 947",
     "bankAccountHint": "Your bank account number or IBAN for receiving payments",
     "paymentTerms": "Payment Terms",
@@ -927,7 +940,14 @@
     "invoiceNinjaDocuments": "Documents & attachments",
     "invoiceNinjaPayments": "Payments",
     "invoiceNinjaFileHint": "Upload an Invoice Ninja zip export file. Files up to 200MB supported.",
-    "invoiceNinjaImportComplete": "Invoice Ninja Import Complete"
+    "invoiceNinjaImportComplete": "Invoice Ninja Import Complete",
+    "backupStatus": {
+      "title": "Data Protection",
+      "description": "We take your data seriously. All of your organization's data, including customers, vehicles, work orders, invoices and uploaded files, is automatically backed up every hour. Backups are protected with AES-256 encryption before they leave our infrastructure and are stored at a separate, secure location, so no outside party can read them.",
+      "lastBackup": "Last backup:",
+      "supportPrompt": "If you have any questions about how your data is protected,",
+      "supportAction": "contact our support team."
+    }
   },
   "license": {
     "title": "White-Label License",
@@ -969,6 +989,8 @@
     "portalUrl": "Portal URL",
     "urlCopied": "Portal URL copied",
     "shareHint": "Share this link with your customers so they can log in to their portal.",
+    "serviceRequestAlertsHint": "Service requests from the portal always appear in your notification bell. You can also get them by email.",
+    "serviceRequestAlertsLink": "Alert settings →",
     "descriptionLabel": "About your workshop",
     "descriptionPlaceholder": "Tell customers a bit about your workshop, the services you offer, and what makes you unique.",
     "descriptionHint": "Shown to visitors at the top of your portal landing page.",
@@ -1351,6 +1373,19 @@
   "alerts": {
     "title": "Alerts",
     "description": "Choose which events you want to be told about, and how.",
+    "serviceRequest": {
+      "title": "Service request alerts",
+      "description": "Service requests submitted through the customer portal always show up in the notification bell. Turn this on to also get them by email.",
+      "email": "Email notification",
+      "emailHint": "Off by default. One email per request, sent as soon as a customer submits it.",
+      "recipients": "Send to",
+      "recipientsHint": "Leave empty to notify every owner and admin. Separate several addresses with commas.",
+      "invalidRecipients": "Not a valid address: {list}",
+      "emailSetupHint": "Alerts are sent with your configured mail provider.",
+      "emailSetupLink": "Email settings →",
+      "save": "Save alert settings",
+      "saved": "Service request alert settings saved"
+    },
     "lowStock": {
       "title": "Low stock alerts",
       "description": "Alerts when a part reaches its reorder point. A part is low when its quantity drops to or below its \"Min Qty\", or the default below if it has none. Each part is reported once per dip and stays quiet until it is restocked.",

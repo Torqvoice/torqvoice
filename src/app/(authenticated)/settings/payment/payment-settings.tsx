@@ -123,8 +123,9 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
 
           <div className="space-y-2">
             <Label htmlFor="bankAccount">{t('payment.bankAccount')}</Label>
-            <Input
+            <Textarea
               id="bankAccount"
+              rows={3}
               placeholder={t('payment.bankAccountPlaceholder')}
               value={bankAccount}
               onChange={(e) => setBankAccount(e.target.value)}

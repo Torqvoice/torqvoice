@@ -69,6 +69,7 @@ import {
   X,
 } from 'lucide-react'
 import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
+import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -106,6 +107,7 @@ interface PaginatedServices {
     mileage: number | null
     serviceDate: Date
     startDateTime: Date | null
+    invoiceDate: Date | null
     shopName: string | null
     techName: string | null
     totalAmount: number
@@ -290,6 +292,11 @@ export function VehicleDetailClient({
     ? (tabParam as string)
     : 'services'
 
+  // Where to return after leaving this page (e.g. arrived from a customer
+  // page). Restricted to internal paths; tab changes preserve the param.
+  const rawBack = searchParams.get('back')
+  const backHref = rawBack && rawBack.startsWith('/') && !rawBack.startsWith('//') ? rawBack : '/vehicles'
+
   const handleTabChange = useCallback(
     (value: string) => {
       const params = new URLSearchParams(searchParams.toString())
@@ -317,6 +324,7 @@ export function VehicleDetailClient({
   const [showImage, setShowImage] = useState(false)
   const [selectedNote, setSelectedNote] = useState<PaginatedNotes['records'][number] | null>(null)
   const [showArchiveDialog, setShowArchiveDialog] = useState(false)
+  const [showNewQuoteDialog, setShowNewQuoteDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showNewInspection, setShowNewInspection] = useState(false)
   const [isDismissPending, startDismissTransition] = useTransition()
@@ -498,7 +506,7 @@ export function VehicleDetailClient({
     const result = await deleteVehicle(vehicle.id)
     if (result.success) {
       toast.success(t('vehicleDeleted'))
-      router.push('/vehicles')
+      router.push(backHref)
     } else {
       modal.open('error', 'Error', result.error || t('vehicleDeleteError'))
     }
@@ -527,11 +535,11 @@ export function VehicleDetailClient({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <Link
-            href="/vehicles"
+            href={backHref}
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            {t('backToVehicles')}
+            {rawBack ? tc('back') : t('backToVehicles')}
           </Link>
           <div className="flex items-center gap-2">
             {!vehicle.isArchived && (
@@ -1139,13 +1147,29 @@ export function VehicleDetailClient({
         {/* Quotes Tab */}
         <TabsContent value="quotes" className="space-y-4">
           <div className="flex justify-end">
-            <Button size="sm" asChild>
-              <Link href="/quotes">
-                <Plus className="mr-1 h-3.5 w-3.5" />
-                {tq('newQuote')}
-              </Link>
+            <Button size="sm" onClick={() => setShowNewQuoteDialog(true)}>
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              {tq('newQuote')}
             </Button>
           </div>
+          <NewQuoteDialog
+            open={showNewQuoteDialog}
+            onOpenChange={setShowNewQuoteDialog}
+            defaultVehicle={{
+              id: vehicle.id,
+              make: vehicle.make,
+              model: vehicle.model,
+              year: vehicle.year,
+              licensePlate: vehicle.licensePlate,
+              customerId: vehicle.customerId,
+              customer: vehicle.customer ? { id: vehicle.customer.id, name: vehicle.customer.name } : null,
+            }}
+            defaultCustomer={
+              vehicle.customer
+                ? { id: vehicle.customer.id, name: vehicle.customer.name, company: vehicle.customer.company }
+                : null
+            }
+          />
 
           {quotes.length === 0 ? (
             <Card className="border-dashed">

@@ -1,5 +1,6 @@
 "use server";
 
+import { toSafeDate } from "@/lib/invoice-utils";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
@@ -63,7 +64,9 @@ export async function getVehicle(vehicleId: string) {
       },
     });
 
-    if (!vehicle) throw new Error("Vehicle not found");
+    // Missing or foreign-org vehicle yields null rather than an error: the
+    // page renders its not-found state, and this also runs during the
+    // post-delete re-render of the vehicle route.
     return vehicle;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
 }
@@ -73,6 +76,8 @@ export async function getVehiclesPaginated(params: {
   pageSize?: number;
   search?: string;
   archived?: boolean;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ organizationId }) => {
     const page = params.page || 1;
@@ -112,7 +117,19 @@ export async function getVehiclesPaginated(params: {
           customer: { select: { id: true, name: true, company: true } },
           _count: { select: { serviceRecords: true } },
         },
-        orderBy: { updatedAt: "desc" },
+        orderBy: (() => {
+          const dir = params.sortOrder || "desc";
+          switch (params.sortBy) {
+            case "plate": return { licensePlate: { sort: dir, nulls: "last" as const } };
+            // The column shows "year make model" as one value; sort by make,
+            // then model, then year so identical models group together
+            case "vehicle": return [{ make: dir }, { model: dir }, { year: dir }];
+            case "customer": return { customer: { name: dir } };
+            case "mileage": return { mileage: dir };
+            case "services": return { serviceRecords: { _count: dir } };
+            default: return { updatedAt: "desc" as const };
+          }
+        })(),
         skip,
         take: pageSize,
       }),
@@ -137,7 +154,7 @@ export async function createVehicle(input: unknown) {
     const vehicle = await db.vehicle.create({
       data: {
         ...data,
-        purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : null,
+        purchaseDate: toSafeDate(data.purchaseDate) ?? null,
         customerId: data.customerId || null,
         userId,
         organizationId,
@@ -195,7 +212,7 @@ export async function updateVehicle(input: unknown) {
         transmission: data.transmission !== undefined ? (data.transmission || null) : undefined,
         engineSize: data.engineSize !== undefined ? (data.engineSize || null) : undefined,
         engineCode: data.engineCode !== undefined ? (data.engineCode || null) : undefined,
-        purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : undefined,
+        purchaseDate: toSafeDate(data.purchaseDate),
         customerId: data.customerId !== undefined ? (data.customerId || null) : undefined,
       },
     });
@@ -272,10 +289,11 @@ export async function deleteVehicle(vehicleId: string) {
   });
 }
 
-export async function searchVehicles(search?: string, limit = 20, offset = 0) {
+export async function searchVehicles(search?: string, limit = 20, offset = 0, customerId?: string) {
   return withAuth(async ({ organizationId }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = { organizationId, isArchived: false };
+    if (customerId) where.customerId = customerId;
     if (search) {
       const words = search.trim().split(/\s+/).filter(Boolean);
       const fieldMatch = (word: string) => {

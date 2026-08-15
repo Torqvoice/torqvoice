@@ -7,7 +7,8 @@
       "company": "Bedrijf",
       "phone": "Telefoon",
       "email": "E-mail",
-      "vehicles": "Voertuigen"
+      "vehicles": "Voertuigen",
+      "number": "Nr."
     },
     "emptySearch": "Geen klanten gevonden voor uw zoekopdracht.",
     "empty": "Nog geen klanten.",
@@ -65,7 +66,9 @@
     "notesPlaceholder": "Aanvullende opmerkingen...",
     "customerUpdated": "Klant bijgewerkt",
     "customerCreated": "Klant aangemaakt",
-    "saveError": "Opslaan van klant mislukt"
+    "saveError": "Opslaan van klant mislukt",
+    "customerNumber": "Klantnr.",
+    "customerNumberAuto": "Auto"
   },
   "serviceRequests": {
     "statusNew": "Nieuw",

@@ -35,6 +35,7 @@ export default async function RemindersPage() {
         year: v.year,
         licensePlate: v.licensePlate,
         customerName: v.customer?.name ?? null,
+        customerId: v.customer?.id ?? null,
       }))
     : [];
 

@@ -5,17 +5,31 @@ import { withAuth } from "@/lib/with-auth";
 import { createQuoteSchema, updateQuoteSchema } from "../Schema/quoteSchema";
 import { revalidatePath } from "next/cache";
 import { onInventoryChanged } from "@/features/inventory/Lib/onInventoryChanged";
-import { resolveInvoicePrefix } from "@/lib/invoice-utils";
+import { resolveInvoicePrefix, toSafeDate } from "@/lib/invoice-utils";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { reconcileInventoryForParts } from "@/features/inventory/Lib/reconcileStock";
 import { copyFile, mkdir } from "fs/promises";
 import path from "path";
+
+/**
+ * Default valid-until for new quotes: today plus workshop.quoteValidDays
+ * (30 when unset). An explicit 0 or negative disables the prefill.
+ */
+function defaultValidUntil(validDaysSetting: string | undefined): Date | undefined {
+  const days = validDaysSetting === undefined ? 30 : Number.parseInt(validDaysSetting, 10);
+  if (!Number.isFinite(days) || days <= 0) return undefined;
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d;
+}
 
 export async function getQuotesPaginated(params: {
   page?: number;
   pageSize?: number;
   search?: string;
   status?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ userId, organizationId }) => {
     const page = params.page || 1;
@@ -44,7 +58,25 @@ export async function getQuotesPaginated(params: {
           customer: { select: { id: true, name: true } },
           vehicle: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: (() => {
+          const dir = params.sortOrder || "desc";
+          switch (params.sortBy) {
+            case "quoteNumber": return { quoteNumber: { sort: dir, nulls: "last" as const } };
+            case "title": return { title: dir };
+            case "customer": return { customer: { name: dir } };
+            // Column shows "year make model"; sort make, model, year so
+            // identical models group together
+            case "vehicle": return [
+              { vehicle: { make: dir } },
+              { vehicle: { model: dir } },
+              { vehicle: { year: dir } },
+            ];
+            case "status": return { status: dir };
+            case "totalAmount": return { totalAmount: dir };
+            case "createdAt": return { createdAt: dir };
+            default: return { createdAt: "desc" as const };
+          }
+        })(),
         skip,
         take: pageSize,
       }),
@@ -110,7 +142,9 @@ export async function getQuote(quoteId: string) {
         },
       },
     });
-    if (!quote) throw new Error("Quote not found");
+    // Missing or foreign-org quote yields null rather than an error: the page
+    // renders its not-found state, and this also runs during the post-delete
+    // re-render of the quote route.
     return quote;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] });
 }
@@ -126,6 +160,7 @@ export async function createQuote(input: unknown) {
         key: {
           in: [
             "workshop.quotePrefix",
+            "workshop.quoteValidDays",
             "workshop.defaultTaxRate",
             "workshop.taxEnabled",
             "workshop.taxInclusive",
@@ -135,7 +170,7 @@ export async function createQuote(input: unknown) {
     });
     const settingsMap: Record<string, string> = {};
     for (const s of settings) settingsMap[s.key] = s.value;
-    const prefix = settingsMap["workshop.quotePrefix"] || "QT-";
+    const prefix = resolveInvoicePrefix(settingsMap["workshop.quotePrefix"] ?? "QT-");
 
     // Apply default tax rate from settings when the caller hasn't set one.
     // All current call sites send taxRate: 0 at creation, so 0 means "unset".
@@ -181,7 +216,9 @@ export async function createQuote(input: unknown) {
           organizationId,
           taxRate: quoteData.taxRate > 0 ? quoteData.taxRate : defaultTaxRate,
           taxInclusive,
-          validUntil: quoteData.validUntil ? new Date(quoteData.validUntil) : undefined,
+          validUntil:
+            toSafeDate(quoteData.validUntil) ??
+            defaultValidUntil(settingsMap["workshop.quoteValidDays"]),
           discountType: quoteData.discountType === "none" ? null : quoteData.discountType,
         },
       });
@@ -230,7 +267,7 @@ export async function updateQuote(input: unknown) {
         where: { id },
         data: {
           ...quoteData,
-          validUntil: quoteData.validUntil ? new Date(quoteData.validUntil) : undefined,
+          validUntil: toSafeDate(quoteData.validUntil),
           discountType: quoteData.discountType === "none" ? null : quoteData.discountType,
         },
       });
@@ -345,10 +382,10 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
     ]);
     const settingsMap: Record<string, string> = {};
     for (const s of settings) settingsMap[s.key] = s.value;
-    const prefix = resolveInvoicePrefix(settingsMap["workshop.invoicePrefix"] || "{year}-");
+    const prefix = resolveInvoicePrefix(settingsMap["workshop.invoicePrefix"] ?? "{year}-");
 
     const lastRecord = await db.serviceRecord.findFirst({
-      where: { vehicle: { organizationId } },
+      where: { organizationId },
       orderBy: { createdAt: "desc" },
       select: { invoiceNumber: true },
     });
@@ -362,6 +399,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
     const record = await db.$transaction(async (tx) => {
       const created = await tx.serviceRecord.create({
         data: {
+          organizationId,
           title: quote.title,
           description: quote.description,
           type: "repair",
@@ -390,6 +428,8 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             partNumber: p.partNumber,
             name: p.name,
             quantity: p.quantity,
+            unitCost: p.unitCost,
+            markupPercent: p.markupPercent,
             unitPrice: p.unitPrice,
             total: p.total,
             // Preserve the stock link so the job — and any later edit or

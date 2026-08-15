@@ -21,8 +21,8 @@ function toLocalDateString(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-function getMonday(date: Date): string {
-  const d = new Date(date); const day = d.getDay(); d.setDate(d.getDate() - day + (day === 0 ? -6 : 1));
+function getWeekStart(date: Date, weekStartDay: number): string {
+  const d = new Date(date); const diff = (d.getDay() - weekStartDay + 7) % 7; d.setDate(d.getDate() - diff);
   return toLocalDateString(d)
 }
 
@@ -32,7 +32,7 @@ function getWeekDays(weekStart: string): string[] {
   return days
 }
 
-const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
+const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const
 
 function formatWeekRange(weekStart: string, locale?: string): string {
   const start = new Date(weekStart + 'T12:00:00'); const end = new Date(start); end.setDate(end.getDate() + 6);
@@ -65,8 +65,8 @@ function PresenterJobCard({ job }: { job: WorkBoardJob }) {
   )
 }
 
-export function WorkBoardPresenter({ initialTechnicians, initialAssignments, initialWeekStart, workDayStart = '07:00', workDayEnd = '15:00' }: {
-  initialTechnicians: Technician[]; initialAssignments: WorkBoardJob[]; initialWeekStart: string; workDayStart?: string; workDayEnd?: string
+export function WorkBoardPresenter({ initialTechnicians, initialAssignments, initialWeekStart, workDayStart = '07:00', workDayEnd = '15:00', weekStartDay = 1 }: {
+  initialTechnicians: Technician[]; initialAssignments: WorkBoardJob[]; initialWeekStart: string; workDayStart?: string; workDayEnd?: string; weekStartDay?: number
 }) {
   const store = useWorkBoardStore()
   const t = useTranslations('workBoard.presenter')
@@ -96,17 +96,17 @@ export function WorkBoardPresenter({ initialTechnicians, initialAssignments, ini
     if (techRes.success && techRes.data) store.setTechnicians(techRes.data as Technician[])
   }, [store])
 
-  const ensureWeekLoaded = useCallback((dateStr: string) => { const m = getMonday(new Date(dateStr + 'T12:00:00')); if (m !== weekStart) loadWeekData(m) }, [weekStart, loadWeekData])
+  const ensureWeekLoaded = useCallback((dateStr: string) => { const m = getWeekStart(new Date(dateStr + 'T12:00:00'), weekStartDay); if (m !== weekStart) loadWeekData(m) }, [weekStart, loadWeekData, weekStartDay])
   const handlePrev = () => { if (viewMode === 'week') { const d = new Date(weekStart + 'T12:00:00'); d.setDate(d.getDate() - 7); loadWeekData(toLocalDateString(d)) } else { const d = new Date(selectedDate + 'T12:00:00'); d.setDate(d.getDate() - 1); const nd = toLocalDateString(d); setSelectedDate(nd); ensureWeekLoaded(nd) } }
   const handleNext = () => { if (viewMode === 'week') { const d = new Date(weekStart + 'T12:00:00'); d.setDate(d.getDate() + 7); loadWeekData(toLocalDateString(d)) } else { const d = new Date(selectedDate + 'T12:00:00'); d.setDate(d.getDate() + 1); const nd = toLocalDateString(d); setSelectedDate(nd); ensureWeekLoaded(nd) } }
-  const handleToday = () => { setSelectedDate(toLocalDateString(new Date())); loadWeekData(getMonday(new Date())) }
+  const handleToday = () => { setSelectedDate(toLocalDateString(new Date())); loadWeekData(getWeekStart(new Date(), weekStartDay)) }
 
   useEffect(() => {
     function msUntilMidnight() { const now = new Date(); const m = new Date(now); m.setHours(24, 0, 0, 0); return m.getTime() - now.getTime() }
     let timeout: ReturnType<typeof setTimeout>
-    function schedule() { timeout = setTimeout(() => { const now = new Date(); setSelectedDate(toLocalDateString(now)); loadWeekData(getMonday(now)); schedule() }, msUntilMidnight() + 500) }
+    function schedule() { timeout = setTimeout(() => { const now = new Date(); setSelectedDate(toLocalDateString(now)); loadWeekData(getWeekStart(now, weekStartDay)); schedule() }, msUntilMidnight() + 500) }
     schedule(); return () => clearTimeout(timeout)
-  }, [loadWeekData, setSelectedDate])
+  }, [loadWeekData, setSelectedDate, weekStartDay])
 
   const dateLabel = viewMode === 'week' ? formatWeekRange(weekStart, locale) : formatDayDate(selectedDate, locale)
 
@@ -146,9 +146,9 @@ export function WorkBoardPresenter({ initialTechnicians, initialAssignments, ini
         <div className="flex-1 overflow-auto">
           <div className="grid h-full min-w-225" style={{ gridTemplateColumns: '160px repeat(7, 1fr)', gridTemplateRows: `auto ${store.technicians.length > 0 ? `repeat(${store.technicians.length}, 1fr)` : '1fr'}` }}>
             <div className="border-b p-2" />
-            {days.map((day, i) => {
+            {days.map((day) => {
               const isToday = day === today; const d = new Date(day + 'T12:00:00');
-              return <div key={day} className={`border-b border-l p-2 text-center text-sm font-semibold ${isToday ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}>{tb(`days.${DAY_KEYS[i]}`)} {d.getDate()}/{d.getMonth() + 1}</div>
+              return <div key={day} className={`border-b border-l p-2 text-center text-sm font-semibold ${isToday ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}>{tb(`days.${DAY_KEYS[d.getDay()]}`)} {d.getDate()}/{d.getMonth() + 1}</div>
             })}
             {store.technicians.map((tech) => {
               const techJobs = store.jobs.filter((a) => a.technicianId === tech.id)

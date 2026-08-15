@@ -121,6 +121,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    /* Reserve scrollbar space so its appearance never shifts layout width
+       (the dashboard grid measures its container on mount) */
+    scrollbar-gutter: stable;
+  }
   body {
     @apply bg-background text-foreground;
   }
@@ -340,4 +345,69 @@
   tr:last-child td {
     border-bottom: none;
   }
+}
+
+/* ─── Dashboard grid (react-grid-layout) ─────────────────────────────── */
+.dashboard-grid .react-grid-item {
+  transition: transform 200ms ease, width 200ms ease, height 200ms ease;
+}
+.dashboard-grid .react-grid-item.react-grid-placeholder {
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  border: 2px dashed color-mix(in oklab, var(--primary) 50%, transparent);
+  border-radius: var(--radius, 0.75rem);
+  opacity: 1;
+}
+.dashboard-grid .react-grid-item.react-draggable-dragging,
+.dashboard-grid .react-grid-item.resizing {
+  z-index: 30;
+  transition: none;
+  box-shadow: 0 12px 32px -8px rgb(0 0 0 / 0.25);
+}
+/* Replace the faint default resize arrow with a clear corner grip in the
+   theme color; only rendered in edit mode (when resizing is enabled) */
+.dashboard-grid .react-grid-item > .react-resizable-handle {
+  z-index: 20;
+  width: 28px;
+  height: 28px;
+  bottom: 0;
+  right: 0;
+  padding: 0;
+  background-image: none;
+  cursor: se-resize;
+}
+.dashboard-grid .react-grid-item > .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  width: 13px;
+  height: 13px;
+  border-right: 3px solid var(--primary);
+  border-bottom: 3px solid var(--primary);
+  border-bottom-right-radius: 5px;
+  opacity: 0.9;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+.dashboard-grid .react-grid-item > .react-resizable-handle:hover::after,
+.dashboard-grid .react-grid-item.resizing > .react-resizable-handle::after {
+  transform: scale(1.25);
+  opacity: 1;
+}
+.dashboard-grid-editing .react-grid-item {
+  user-select: none;
+}
+/* Cards fill their grid tile; the last section (CardContent) scrolls */
+.dashboard-card-wrap {
+  height: 100%;
+}
+.dashboard-card-wrap > *:first-child {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.dashboard-card-wrap > *:first-child > *:last-child {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }

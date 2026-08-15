@@ -12,6 +12,8 @@ import { PostHogProvider } from '@/components/posthog-provider'
 import { isCloudMode } from '@/lib/features'
 import { isDemoMode } from '@/lib/demo'
 import { DemoBanner } from '@/components/demo-banner'
+import 'react-grid-layout/css/styles.css'
+import 'react-resizable/css/styles.css'
 import './globals.css'
 
 const geistSans = Geist({

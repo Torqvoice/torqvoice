@@ -73,7 +73,10 @@
     "subtotal": "Parts Subtotal: {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "From stock"
+    "addFromInventory": "From stock",
+    "unitCost": "Cost",
+    "markupPercent": "Markup %",
+    "nameMissingHint": "Rows without a part name are not saved."
   },
   "labor": {
     "title": "Labor & Services",

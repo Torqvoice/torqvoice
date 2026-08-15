@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DateInput } from "@/components/ui/date-input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -54,6 +55,7 @@ export function PaymentsSection({
   const tc = useTranslations("common.buttons");
   const [showForm, setShowForm] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("other");
+  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split("T")[0]);
   const { formatDate } = useFormatDate();
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -133,9 +135,9 @@ export function PaymentsSection({
               </div>
               <div className="space-y-1">
                 <Label htmlFor="paymentDate" className="text-xs">{t("date")}</Label>
-                <Input
-                  id="paymentDate" name="paymentDate" type="date"
-                  defaultValue={new Date().toISOString().split("T")[0]}
+                <DateInput
+                  id="paymentDate" name="paymentDate"
+                  value={paymentDate} onChange={setPaymentDate}
                 />
               </div>
               <div className="space-y-1">

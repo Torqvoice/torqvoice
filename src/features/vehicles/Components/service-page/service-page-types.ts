@@ -29,7 +29,7 @@ export interface Attachment {
 
 export interface ServicePageClientProps {
   record: ServiceDetail
-  vehicleId: string
+  vehicleId: string | null
   organizationId: string
   currencyCode: string
   unitSystem: 'metric' | 'imperial'
@@ -38,7 +38,7 @@ export interface ServicePageClientProps {
   defaultLaborRate: number
   initialData: InitialData
   inventoryParts: InventoryPartOption[]
-  initialVehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null }
+  initialVehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null } | null
   boardTechnicians?: BoardTechnicianOption[]
   orgMembers?: OrgMemberOption[]
   currentUserName: string

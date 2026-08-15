@@ -63,12 +63,14 @@ export async function getPublicStatusReport(token: string) {
       description: report.serviceRecord.description,
       status: report.serviceRecord.status,
     },
-    vehicle: {
-      make: report.serviceRecord.vehicle.make,
-      model: report.serviceRecord.vehicle.model,
-      year: report.serviceRecord.vehicle.year,
-      licensePlate: report.serviceRecord.vehicle.licensePlate,
-    },
+    vehicle: report.serviceRecord.vehicle
+      ? {
+          make: report.serviceRecord.vehicle.make,
+          model: report.serviceRecord.vehicle.model,
+          year: report.serviceRecord.vehicle.year,
+          licensePlate: report.serviceRecord.vehicle.licensePlate,
+        }
+      : null,
     technician: report.technician ? { name: report.technician.name } : null,
     organization: { name: report.organization.name },
   };

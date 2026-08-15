@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "z.B. 50000",
     "reminderUpdated": "Erinnerung aktualisiert",
     "reminderCreated": "Erinnerung erstellt",
-    "saveError": "Fehler beim {action} der Erinnerung"
+    "saveError": "Fehler beim {action} der Erinnerung",
+    "notifyLabel": "Bei Fälligkeit benachrichtigen",
+    "notifyInApp": "In-App-Benachrichtigung",
+    "notifyEmail": "E-Mail"
   },
   "services": {
     "searchPlaceholder": "Einträge durchsuchen...",

@@ -9,7 +9,6 @@ import { useFormatDate } from '@/lib/use-format-date'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Table,
   TableBody,
@@ -18,14 +17,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
-import { Loader2, Plus, Search } from 'lucide-react'
+import { TableContextMenuHint } from '@/components/table-context-menu-hint'
+import { TableCellLink } from '@/components/table-cell-link'
+import { ArrowDown, ArrowUp, ArrowUpDown, Car, ExternalLink, Loader2, Plus, Search, User } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { toast } from 'sonner'
-import { createQuote } from '@/features/quotes/Actions/quoteActions'
-import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
-import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
+import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
 
 interface QuoteRecord {
   id: string
@@ -77,11 +80,15 @@ export function QuotesClient({
   currencyCode = 'USD',
   search,
   statusFilter,
+  sortBy = '',
+  sortOrder = 'desc',
 }: {
   data: PaginatedData
   currencyCode?: string
   search: string
   statusFilter: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
 }) {
   const formatCurrency = useFormatCurrency()
   const router = useRouter()
@@ -90,13 +97,10 @@ export function QuotesClient({
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const t = useTranslations('quotes')
+  const tcm = useTranslations('common.contextMenu')
 
   // New quote dialog state
   const [showNewDialog, setShowNewDialog] = useState(false)
-  const [newTitle, setNewTitle] = useState('')
-  const [newVehicleId, setNewVehicleId] = useState('')
-  const [newCustomerId, setNewCustomerId] = useState('')
-  const [creating, setCreating] = useState(false)
 
   useEffect(() => {
     if (searchParams.get('create') === 'true') {
@@ -134,39 +138,21 @@ export function QuotesClient({
     commitNow: handleSearch,
   } = useDebouncedSearch(search, (term) => navigate({ search: term }));
 
-  const openNewDialog = () => {
-    setNewTitle('')
-    setNewVehicleId('')
-    setNewCustomerId('')
-    setShowNewDialog(true)
-  }
+  const openNewDialog = () => setShowNewDialog(true)
 
-  const handleCreateQuote = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newTitle.trim()) return
-    setCreating(true)
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc'
+      navigate({ sortBy: column, sortOrder: newOrder })
+    },
+    [navigate, sortBy, sortOrder]
+  )
 
-    const result = await createQuote({
-      title: newTitle.trim(),
-      vehicleId: newVehicleId || undefined,
-      customerId: newCustomerId || undefined,
-      status: 'draft',
-      subtotal: 0,
-      taxRate: 0,
-      taxAmount: 0,
-      discountValue: 0,
-      discountAmount: 0,
-      totalAmount: 0,
-    })
-
-    if (result.success && result.data) {
-      toast.success(t('form.created'))
-      setShowNewDialog(false)
-      router.push(`/quotes/${result.data.id}`)
-    } else {
-      toast.error(result.error || t('form.failedCreate'))
-    }
-    setCreating(false)
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
+    return sortOrder === 'asc'
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />
   }
 
   return (
@@ -213,16 +199,45 @@ export function QuotesClient({
       </div>
 
       <div className="rounded-lg border">
-        <Table>
+        <TableContextMenuHint />
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-25">{t('list.columnQuoteNumber')}</TableHead>
-              <TableHead>{t('list.columnTitle')}</TableHead>
-              <TableHead className="hidden md:table-cell">{t('list.columnCustomer')}</TableHead>
-              <TableHead className="hidden lg:table-cell">{t('list.columnVehicle')}</TableHead>
-              <TableHead className="w-27.5">{t('list.columnStatus')}</TableHead>
-              <TableHead className="w-22.5">{t('list.columnDate')}</TableHead>
-              <TableHead className="w-22.5 text-right">{t('list.columnTotal')}</TableHead>
+              <TableHead className="w-25">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('quoteNumber')}>
+                  {t('list.columnQuoteNumber')}<SortIcon column="quoteNumber" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('title')}>
+                  {t('list.columnTitle')}<SortIcon column="title" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden w-[18%] md:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('customer')}>
+                  {t('list.columnCustomer')}<SortIcon column="customer" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden w-[18%] lg:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('vehicle')}>
+                  {t('list.columnVehicle')}<SortIcon column="vehicle" />
+                </button>
+              </TableHead>
+              <TableHead className="w-27.5">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('status')}>
+                  {t('list.columnStatus')}<SortIcon column="status" />
+                </button>
+              </TableHead>
+              <TableHead className="w-22.5">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('createdAt')}>
+                  {t('list.columnDate')}<SortIcon column="createdAt" />
+                </button>
+              </TableHead>
+              <TableHead className="w-22.5">
+                <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort('totalAmount')}>
+                  {t('list.columnTotal')}<SortIcon column="totalAmount" />
+                </button>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -234,20 +249,33 @@ export function QuotesClient({
               </TableRow>
             ) : (
               data.records.map((q) => (
+                <ContextMenu key={q.id} modal={false}>
+                <ContextMenuTrigger asChild>
                 <TableRow
-                  key={q.id}
                   className="cursor-pointer"
                   onClick={() => router.push(`/quotes/${q.id}`)}
                 >
                   <TableCell className="font-mono text-xs text-muted-foreground">
                     {q.quoteNumber || '-'}
                   </TableCell>
-                  <TableCell className="font-medium">{q.title}</TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground">
-                    {q.customer?.name || '-'}
+                  <TableCell className="truncate font-medium">{q.title}</TableCell>
+                  <TableCell className="hidden truncate md:table-cell text-muted-foreground">
+                    {q.customer ? (
+                      <TableCellLink href={`/customers/${q.customer.id}`}>
+                        {q.customer.name}
+                      </TableCellLink>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell text-muted-foreground">
-                    {q.vehicle ? `${q.vehicle.year} ${q.vehicle.make} ${q.vehicle.model}` : '-'}
+                  <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
+                    {q.vehicle ? (
+                      <TableCellLink href={`/vehicles/${q.vehicle.id}`}>
+                        {q.vehicle.year} {q.vehicle.make} {q.vehicle.model}
+                      </TableCellLink>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ''}`}>
@@ -261,6 +289,26 @@ export function QuotesClient({
                     {formatCurrency(q.totalAmount, currencyCode)}
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => router.push(`/quotes/${q.id}`)}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {tcm('open')}
+                  </ContextMenuItem>
+                  {q.vehicle && (
+                    <ContextMenuItem onClick={() => router.push(`/vehicles/${q.vehicle?.id}`)}>
+                      <Car className="mr-2 h-4 w-4" />
+                      {tcm('openVehicle')}
+                    </ContextMenuItem>
+                  )}
+                  {q.customer && (
+                    <ContextMenuItem onClick={() => router.push(`/customers/${q.customer?.id}`)}>
+                      <User className="mr-2 h-4 w-4" />
+                      {tcm('openCustomer')}
+                    </ContextMenuItem>
+                  )}
+                </ContextMenuContent>
+                </ContextMenu>
               ))
             )}
           </TableBody>
@@ -275,62 +323,7 @@ export function QuotesClient({
         onNavigate={navigate}
       />
 
-      {/* New Quote Dialog */}
-      <Dialog open={showNewDialog} onOpenChange={setShowNewDialog}>
-        <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
-          <DialogHeader>
-            <DialogTitle>{t('form.newQuote')}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleCreateQuote} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="new-quote-title">{t('details.titleLabel')}</Label>
-              <Input
-                id="new-quote-title"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                placeholder={t('details.titlePlaceholder')}
-                required
-                autoFocus
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('details.vehicle')}</Label>
-              <VehicleCombobox
-                value={newVehicleId}
-                placeholder={t('details.selectVehicle')}
-                noneLabel={t('details.none')}
-                onChange={(id, vehicle) => {
-                  setNewVehicleId(id)
-                  if (vehicle?.customerId) {
-                    setNewCustomerId(vehicle.customerId)
-                  }
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('details.customer')}</Label>
-              <CustomerCombobox
-                value={newCustomerId}
-                placeholder={t('details.selectCustomer')}
-                noneLabel={t('details.none')}
-                onChange={(id) => setNewCustomerId(id)}
-              />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setShowNewDialog(false)}>
-                {t('form.cancel')}
-              </Button>
-              <Button type="submit" disabled={creating || !newTitle.trim()}>
-                {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('form.createQuote')}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <NewQuoteDialog open={showNewDialog} onOpenChange={setShowNewDialog} />
     </div>
   )
 }

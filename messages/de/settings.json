@@ -381,6 +381,12 @@
     },
     "invoiceNumberFormat": "Rechnungsnummernformat",
     "invoiceNumberFormatHint": "Verwenden Sie <code>{year}</code> fur das aktuelle Jahr. Vorschau: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Angebotsnummernformat",
+    "quoteNumberFormatHint": "Verwenden Sie <code>{year}</code> fur das aktuelle Jahr. Vorschau: <bold>{preview}</bold>",
+    "quoteValidDays": "Angebotsgültigkeit (Tage)",
+    "quoteValidDaysHint": "Neue Angebote erhalten ein Gültig-bis-Datum so viele Tage im Voraus. 0 deaktiviert dies.",
+    "sectionInvoices": "Rechnungen",
+    "sectionQuotes": "Angebote",
     "nextInvoiceNumber": "Nachste Rechnungsnummer",
     "nextInvoiceNumberPlaceholder": "z.B. 94",
     "nextInvoiceNumberHint": "Die nachste Rechnung verwendet diese Nummer (z.B. {example})",
@@ -412,7 +418,14 @@
     "layoutDocInvoice": "Rechnung",
     "layoutDocQuote": "Angebot",
     "saveLayout": "Layout speichern",
-    "resetLayout": "Zurücksetzen"
+    "resetLayout": "Zurücksetzen",
+    "sectionCustomers": "Kunden",
+    "assignCustomerNumbers": "Kundennummern vergeben",
+    "assignCustomerNumbersHint": "{count} Kunden haben noch keine Nummer. Fortlaufende Nummern vergeben (bestehende bleiben erhalten).",
+    "customerNumbersAssigned": "{count} Kunden nummeriert",
+    "allCustomersNumbered": "Alle Kunden haben eine Nummer.",
+    "assignCustomerNumbersConfirmTitle": "Kundennummern vergeben?",
+    "assignCustomerNumbersConfirmDescription": "Die {count} Kunden ohne Nummer erhalten fortlaufende Nummern in der Reihenfolge ihrer Erstellung, beginnend nach der höchsten vorhandenen Nummer. Kunden mit Nummer bleiben unverändert. Nummern können danach bearbeitet werden."
   },
   "layoutEditor": {
     "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",
@@ -564,7 +577,7 @@
     "readMore": "Mehr erfahren",
     "detailsTitle": "Zahlungsdetails",
     "detailsDescription": "Bankkonto und Zahlungsbedingungen auf Rechnungen.",
-    "bankAccount": "Bankkonto (IBAN / Til Konto)",
+    "bankAccount": "Bankkonto (IBAN)",
     "bankAccountPlaceholder": "NO93 8601 1117 947",
     "bankAccountHint": "Ihre Bankkontonummer oder IBAN fur den Zahlungsempfang",
     "paymentTerms": "Zahlungsbedingungen",
@@ -927,7 +940,14 @@
     "invoiceNinjaDocuments": "Dokumente & Anhange",
     "invoiceNinjaPayments": "Zahlungen",
     "invoiceNinjaFileHint": "Laden Sie eine Invoice Ninja ZIP-Exportdatei hoch. Dateien bis 200MB unterstutzt.",
-    "invoiceNinjaImportComplete": "Invoice Ninja-Import abgeschlossen"
+    "invoiceNinjaImportComplete": "Invoice Ninja-Import abgeschlossen",
+    "backupStatus": {
+      "title": "Datenschutz & Sicherung",
+      "description": "Wir nehmen Ihre Daten ernst. Alle Daten Ihrer Organisation, einschließlich Kunden, Fahrzeugen, Arbeitsaufträgen, Rechnungen und hochgeladenen Dateien, werden automatisch stündlich gesichert. Backups werden mit AES-256 verschlüsselt, bevor sie unsere Infrastruktur verlassen, und an einem separaten, sicheren Ort gespeichert, sodass kein Außenstehender sie lesen kann.",
+      "lastBackup": "Letztes Backup:",
+      "supportPrompt": "Bei Fragen zum Schutz Ihrer Daten",
+      "supportAction": "kontaktieren Sie unser Support-Team."
+    }
   },
   "license": {
     "title": "White-Label-Lizenz",
@@ -969,6 +989,8 @@
     "portalUrl": "Portal-URL",
     "urlCopied": "Portal-URL kopiert",
     "shareHint": "Teilen Sie diesen Link mit Ihren Kunden, damit sie sich in ihr Portal einloggen konnen.",
+    "serviceRequestAlertsHint": "Serviceanfragen aus dem Portal erscheinen immer in Ihrer Benachrichtigungsglocke. Sie können sie zusätzlich per E-Mail erhalten.",
+    "serviceRequestAlertsLink": "Benachrichtigungseinstellungen →",
     "descriptionLabel": "Über Ihre Werkstatt",
     "descriptionPlaceholder": "Erzählen Sie Ihren Kunden etwas über Ihre Werkstatt, die angebotenen Leistungen und was Sie auszeichnet.",
     "descriptionHint": "Wird Besuchern oben auf Ihrer Portal-Startseite angezeigt.",
@@ -1351,6 +1373,19 @@
   "alerts": {
     "title": "Warnungen",
     "description": "Wählen Sie, über welche Ereignisse Sie wie informiert werden.",
+    "serviceRequest": {
+      "title": "Benachrichtigungen zu Serviceanfragen",
+      "description": "Serviceanfragen aus dem Kundenportal erscheinen immer in der Benachrichtigungsglocke. Aktivieren Sie diese Option, um sie zusätzlich per E-Mail zu erhalten.",
+      "email": "E-Mail-Benachrichtigung",
+      "emailHint": "Standardmäßig aus. Eine E-Mail pro Anfrage, versendet sobald ein Kunde sie absendet.",
+      "recipients": "Senden an",
+      "recipientsHint": "Leer lassen, um alle Inhaber und Administratoren zu benachrichtigen. Mehrere Adressen mit Komma trennen.",
+      "invalidRecipients": "Keine gültige Adresse: {list}",
+      "emailSetupHint": "Benachrichtigungen werden über Ihren eingerichteten E-Mail-Anbieter versendet.",
+      "emailSetupLink": "E-Mail-Einstellungen →",
+      "save": "Benachrichtigungseinstellungen speichern",
+      "saved": "Einstellungen für Serviceanfragen gespeichert"
+    },
     "lowStock": {
       "title": "Bestandswarnungen",
       "description": "Warnt, wenn ein Teil seinen Meldebestand erreicht. Ein Teil gilt als knapp, wenn der Bestand auf oder unter die \"Mindestmenge\" fällt — oder unter den Standardwert unten, falls keine gesetzt ist. Jedes Teil wird pro Unterschreitung einmal gemeldet und bleibt bis zum Auffüllen still.",

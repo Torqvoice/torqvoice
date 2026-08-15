@@ -381,6 +381,12 @@
     },
     "invoiceNumberFormat": "Formato de numero de factura",
     "invoiceNumberFormatHint": "Use <code>{year}</code> para el ano actual. Vista previa: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Formato de numero de presupuesto",
+    "quoteNumberFormatHint": "Use <code>{year}</code> para el ano actual. Vista previa: <bold>{preview}</bold>",
+    "quoteValidDays": "Validez del presupuesto (días)",
+    "quoteValidDaysHint": "Los nuevos presupuestos reciben una fecha de validez con esta cantidad de días. 0 lo desactiva.",
+    "sectionInvoices": "Facturas",
+    "sectionQuotes": "Presupuestos",
     "nextInvoiceNumber": "Siguiente numero de factura",
     "nextInvoiceNumberPlaceholder": "Ej. 94",
     "nextInvoiceNumberHint": "La siguiente factura usara este numero (ej. {example})",
@@ -412,7 +418,14 @@
     "layoutDocInvoice": "Factura",
     "layoutDocQuote": "Presupuesto",
     "saveLayout": "Guardar diseño",
-    "resetLayout": "Restablecer"
+    "resetLayout": "Restablecer",
+    "sectionCustomers": "Clientes",
+    "assignCustomerNumbers": "Asignar números de cliente",
+    "assignCustomerNumbersHint": "{count} clientes aún no tienen número. Asignarles números secuenciales (los existentes se conservan).",
+    "customerNumbersAssigned": "Números asignados a {count} clientes",
+    "allCustomersNumbered": "Todos los clientes tienen número.",
+    "assignCustomerNumbersConfirmTitle": "¿Asignar números de cliente?",
+    "assignCustomerNumbersConfirmDescription": "Los {count} clientes sin número recibirán números secuenciales en el orden en que se crearon, continuando después del número existente más alto. Los clientes que ya tienen número no cambian. Los números se pueden editar después."
   },
   "layoutEditor": {
     "helpText": "Arrastra para reordenar. Usa el selector de ancho para colocar secciones lado a lado. Las secciones consecutivas de medio ancho (I/D) se mostrarán en dos columnas.",
@@ -564,7 +577,7 @@
     "readMore": "Leer más",
     "detailsTitle": "Detalles de pago",
     "detailsDescription": "Cuenta bancaria y condiciones de pago en las facturas.",
-    "bankAccount": "Cuenta bancaria (IBAN / Til Konto)",
+    "bankAccount": "Cuenta bancaria (IBAN)",
     "bankAccountPlaceholder": "NO93 8601 1117 947",
     "bankAccountHint": "Su numero de cuenta bancaria o IBAN para recibir pagos",
     "paymentTerms": "Condiciones de pago",
@@ -927,7 +940,14 @@
     "invoiceNinjaDocuments": "Documentos y adjuntos",
     "invoiceNinjaPayments": "Pagos",
     "invoiceNinjaFileHint": "Suba un archivo de exportacion zip de Invoice Ninja. Archivos hasta 200MB soportados.",
-    "invoiceNinjaImportComplete": "Importacion de Invoice Ninja completada"
+    "invoiceNinjaImportComplete": "Importacion de Invoice Ninja completada",
+    "backupStatus": {
+      "title": "Protección de datos",
+      "description": "Nos tomamos sus datos en serio. Todos los datos de su organización, incluidos clientes, vehículos, órdenes de trabajo, facturas y archivos subidos, se respaldan automáticamente cada hora. Las copias de seguridad se protegen con cifrado AES-256 antes de salir de nuestra infraestructura y se almacenan en una ubicación separada y segura, de modo que ningún tercero puede leerlas.",
+      "lastBackup": "Última copia de seguridad:",
+      "supportPrompt": "Si tiene alguna pregunta sobre cómo se protegen sus datos,",
+      "supportAction": "contacte con nuestro equipo de soporte."
+    }
   },
   "license": {
     "title": "Licencia marca blanca",
@@ -969,6 +989,8 @@
     "portalUrl": "URL del portal",
     "urlCopied": "URL del portal copiada",
     "shareHint": "Comparta este enlace con sus clientes para que puedan iniciar sesion en su portal.",
+    "serviceRequestAlertsHint": "Las solicitudes de servicio del portal siempre aparecen en tu campana de notificaciones. También puedes recibirlas por correo.",
+    "serviceRequestAlertsLink": "Ajustes de avisos →",
     "descriptionLabel": "Sobre tu taller",
     "descriptionPlaceholder": "Cuenta a tus clientes algo sobre tu taller, los servicios que ofreces y lo que te hace único.",
     "descriptionHint": "Se muestra a los visitantes en la parte superior de la página de tu portal.",
@@ -1351,6 +1373,19 @@
   "alerts": {
     "title": "Alertas",
     "description": "Elija sobre qué eventos quiere recibir avisos y cómo.",
+    "serviceRequest": {
+      "title": "Avisos de solicitudes de servicio",
+      "description": "Las solicitudes de servicio enviadas desde el portal del cliente siempre aparecen en la campana de notificaciones. Activa esta opción para recibirlas también por correo.",
+      "email": "Notificación por correo",
+      "emailHint": "Desactivado por defecto. Un correo por solicitud, enviado en cuanto el cliente la envía.",
+      "recipients": "Enviar a",
+      "recipientsHint": "Déjalo vacío para avisar a todos los propietarios y administradores. Separa varias direcciones con comas.",
+      "invalidRecipients": "Dirección no válida: {list}",
+      "emailSetupHint": "Los avisos se envían con el proveedor de correo que tengas configurado.",
+      "emailSetupLink": "Ajustes de correo →",
+      "save": "Guardar ajustes de avisos",
+      "saved": "Ajustes de avisos de solicitudes guardados"
+    },
     "lowStock": {
       "title": "Alertas de stock bajo",
       "description": "Avisa cuando una pieza alcanza su punto de pedido. Una pieza está baja cuando su cantidad cae a o por debajo de su \"Cant. mínima\", o del valor predeterminado si no tiene. Cada pieza se informa una vez por caída y no vuelve a avisar hasta reponerla.",

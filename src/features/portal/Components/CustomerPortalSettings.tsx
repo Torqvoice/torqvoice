@@ -17,7 +17,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Copy, Check, Globe, Loader2, Image as ImageIcon, Trash2, Upload } from 'lucide-react'
+import Link from 'next/link'
+import { Bell, Copy, Check, Globe, Loader2, Image as ImageIcon, Trash2, Upload } from 'lucide-react'
 import { ReadOnlyBanner, ReadOnlyWrapper } from '@/app/(authenticated)/settings/read-only-guard'
 import { setSetting, setSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -264,6 +265,19 @@ export function CustomerPortalSettings({
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">{t('portal.shareHint')}</p>
+                </div>
+
+                {/* Requests are submitted here but the alert that announces them
+                    is configured on another page. Without a pointer, an operator
+                    turning the portal on has no reason to go looking for it. */}
+                <div className="flex items-start gap-2 rounded-md border bg-muted/40 p-3">
+                  <Bell className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                  <p className="text-xs text-muted-foreground">
+                    {t('portal.serviceRequestAlertsHint')}{' '}
+                    <Link href="/settings/alerts" className="text-primary hover:underline">
+                      {t('portal.serviceRequestAlertsLink')}
+                    </Link>
+                  </p>
                 </div>
               </>
             )}

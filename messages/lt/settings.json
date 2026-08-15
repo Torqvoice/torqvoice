@@ -381,6 +381,12 @@
     },
     "invoiceNumberFormat": "Sąskaitos numerio formatas",
     "invoiceNumberFormatHint": "Naudokite <code>{year}</code> einamiesiems metams. Peržiūra: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Pasiūlymo numerio formatas",
+    "quoteNumberFormatHint": "Naudokite <code>{year}</code> einamiesiems metams. Peržiūra: <bold>{preview}</bold>",
+    "quoteValidDays": "Pasiūlymo galiojimas (dienos)",
+    "quoteValidDaysHint": "Nauji pasiūlymai gauna galiojimo datą po tiek dienų. 0 išjungia.",
+    "sectionInvoices": "Sąskaitos faktūros",
+    "sectionQuotes": "Pasiūlymai",
     "nextInvoiceNumber": "Kitas sąskaitos numeris",
     "nextInvoiceNumberPlaceholder": "pvz., 94",
     "nextInvoiceNumberHint": "Kita sąskaita naudos šį numerį (pvz., {example})",
@@ -412,7 +418,14 @@
     "layoutDocInvoice": "Sąskaita",
     "layoutDocQuote": "Pasiūlymas",
     "saveLayout": "Išsaugoti išdėstymą",
-    "resetLayout": "Atstatyti numatytuosius"
+    "resetLayout": "Atstatyti numatytuosius",
+    "sectionCustomers": "Klientai",
+    "assignCustomerNumbers": "Priskirti klientų numerius",
+    "assignCustomerNumbersHint": "{count} klientai dar neturi numerio. Priskirti eilės numerius (esami išlieka).",
+    "customerNumbersAssigned": "Numeriai priskirti {count} klientams",
+    "allCustomersNumbered": "Visi klientai turi numerį.",
+    "assignCustomerNumbersConfirmTitle": "Priskirti klientų numerius?",
+    "assignCustomerNumbersConfirmDescription": "{count} klientams be numerio bus priskirti eilės numeriai sukūrimo tvarka, tęsiant nuo didžiausio esamo numerio. Klientai, jau turintys numerį, nekeičiami. Numerius galima redaguoti vėliau."
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",
@@ -927,7 +940,14 @@
     "invoiceNinjaDocuments": "Dokumentai ir priedai",
     "invoiceNinjaPayments": "Mokėjimai",
     "invoiceNinjaFileHint": "Įkelkite Invoice Ninja zip eksporto failą. Palaikomi failai iki 200MB.",
-    "invoiceNinjaImportComplete": "Invoice Ninja importas baigtas"
+    "invoiceNinjaImportComplete": "Invoice Ninja importas baigtas",
+    "backupStatus": {
+      "title": "Duomenų apsauga",
+      "description": "Į jūsų duomenis žiūrime rimtai. Visi jūsų organizacijos duomenys, įskaitant klientus, transporto priemones, darbo užsakymus, sąskaitas ir įkeltus failus, automatiškai kopijuojami kas valandą. Atsarginės kopijos apsaugomos AES-256 šifravimu prieš palikdamos mūsų infrastruktūrą ir saugomos atskiroje, saugioje vietoje, todėl joks pašalinis asmuo negali jų perskaityti.",
+      "lastBackup": "Paskutinė atsarginė kopija:",
+      "supportPrompt": "Jei turite klausimų apie jūsų duomenų apsaugą,",
+      "supportAction": "susisiekite su mūsų pagalbos komanda."
+    }
   },
   "license": {
     "title": "\"White-Label\" licencija",
@@ -969,6 +989,8 @@
     "portalUrl": "Portalo URL",
     "urlCopied": "Portalo URL nukopijuotas",
     "shareHint": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti prie savo portalo.",
+    "serviceRequestAlertsHint": "Serviso užklausos iš portalo visada rodomos pranešimų varpelyje. Jas taip pat galite gauti el. paštu.",
+    "serviceRequestAlertsLink": "Pranešimų nustatymai →",
     "descriptionLabel": "Apie jūsų dirbtuves",
     "descriptionPlaceholder": "Papasakokite klientams apie savo dirbtuves, siūlomas paslaugas ir kuo esate unikalūs.",
     "descriptionHint": "Rodoma lankytojams jūsų portalo pradžios puslapio viršuje.",
@@ -1351,6 +1373,19 @@
   "alerts": {
     "title": "Įspėjimai",
     "description": "Pasirinkite, apie kuriuos įvykius ir kaip norite gauti pranešimus.",
+    "serviceRequest": {
+      "title": "Pranešimai apie serviso užklausas",
+      "description": "Serviso užklausos, pateiktos per klientų portalą, visada rodomos pranešimų varpelyje. Įjunkite, kad jas gautumėte ir el. paštu.",
+      "email": "Pranešimas el. paštu",
+      "emailHint": "Pagal nutylėjimą išjungta. Vienas laiškas kiekvienai užklausai, siunčiamas iškart ją pateikus.",
+      "recipients": "Siųsti adresu",
+      "recipientsHint": "Palikite tuščią, kad būtų informuoti visi savininkai ir administratoriai. Kelis adresus atskirkite kableliais.",
+      "invalidRecipients": "Netinkamas adresas: {list}",
+      "emailSetupHint": "Pranešimai siunčiami per jūsų sukonfigūruotą pašto tiekėją.",
+      "emailSetupLink": "El. pašto nustatymai →",
+      "save": "Įrašyti pranešimų nustatymus",
+      "saved": "Serviso užklausų pranešimų nustatymai įrašyti"
+    },
     "lowStock": {
       "title": "Mažų atsargų įspėjimai",
       "description": "Įspėja, kai dalis pasiekia užsakymo ribą. Dalis laikoma mažėjančia, kai kiekis nukrenta iki arba žemiau \"Min. kiekis\", arba žemiau numatytosios ribos, jei jos nėra. Kiekviena dalis pranešama vieną kartą per kritimą ir tyli, kol bus papildyta.",

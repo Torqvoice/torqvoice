@@ -11,7 +11,7 @@ export type CalendarEvent = {
   time: string | null; // HH:MM or null
   type: "service" | "reminder" | "quote";
   status: string;
-  vehicleId: string;
+  vehicleId: string | null;
   vehicleLabel: string;
   customerName: string | null;
   invoiceNumber: string | null;
@@ -42,7 +42,7 @@ export async function getCalendarEvents(params: {
     const [services, reminders, quotes] = await Promise.all([
       db.serviceRecord.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           startDateTime: { gte: start, lte: end },
         },
         select: {
@@ -55,6 +55,7 @@ export async function getCalendarEvents(params: {
           totalAmount: true,
           cost: true,
           vehicleId: true,
+          customer: { select: { name: true } },
           vehicle: {
             select: {
               make: true,
@@ -68,7 +69,7 @@ export async function getCalendarEvents(params: {
       }),
       db.reminder.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           dueDate: { gte: start, lte: end },
         },
         select: {
@@ -77,6 +78,7 @@ export async function getCalendarEvents(params: {
           dueDate: true,
           isCompleted: true,
           vehicleId: true,
+          customer: { select: { name: true } },
           vehicle: {
             select: {
               make: true,
@@ -125,8 +127,8 @@ export async function getCalendarEvents(params: {
         type: "service" as const,
         status: s.status,
         vehicleId: s.vehicleId,
-        vehicleLabel: `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}`,
-        customerName: s.vehicle.customer?.name ?? null,
+        vehicleLabel: s.vehicle ? `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}` : "",
+        customerName: (s.customer ?? s.vehicle?.customer)?.name ?? null,
         invoiceNumber: s.invoiceNumber,
         amount: s.totalAmount > 0 ? s.totalAmount : s.cost > 0 ? s.cost : null,
       })),
@@ -140,8 +142,8 @@ export async function getCalendarEvents(params: {
           type: "reminder" as const,
           status: r.isCompleted ? "completed" : new Date(r.dueDate!) < new Date() ? "overdue" : "upcoming",
           vehicleId: r.vehicleId,
-          vehicleLabel: `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}`,
-          customerName: r.vehicle.customer?.name ?? null,
+          vehicleLabel: r.vehicle ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}` : "",
+          customerName: (r.customer ?? r.vehicle?.customer)?.name ?? null,
           invoiceNumber: null,
           amount: null,
         })),

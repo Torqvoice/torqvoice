@@ -45,7 +45,7 @@ export async function getVehiclePredictedMileage(vehicleId: string) {
     const records = await db.serviceRecord.findMany({
       where: {
         vehicleId,
-        vehicle: { organizationId },
+        organizationId,
         mileage: { not: null },
         status: "completed",
       },

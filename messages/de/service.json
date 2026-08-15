@@ -107,7 +107,8 @@
     "partNotFound": "Kein Teil für Barcode \"{barcode}\" gefunden",
     "deleteRow": "Delete row",
     "outOfStock": "Nicht auf Lager",
-    "onBackorder": "Im Rückstand ({count})"
+    "onBackorder": "Im Rückstand ({count})",
+    "nameMissingHint": "Zeilen ohne Teilenamen werden nicht gespeichert."
   },
   "labor": {
     "title": "Arbeit",
@@ -146,7 +147,8 @@
     "tax": "Steuern",
     "taxIncluded": "Steuer (inkl.)",
     "total": "Gesamt",
-    "inclusiveModeHint": "Zeilenpreise werden inklusive Steuer eingegeben. Die Summen zeigen die Aufteilung netto + Steuer."
+    "inclusiveModeHint": "Zeilenpreise werden inklusive Steuer eingegeben. Die Summen zeigen die Aufteilung netto + Steuer.",
+    "partsCost": "Teilekosten (intern)"
   },
   "notes": {
     "title": "Notizen",

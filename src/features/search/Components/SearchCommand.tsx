@@ -45,7 +45,7 @@ interface SearchResult {
       model: string;
       year: number;
       licensePlate: string | null;
-    };
+    } | null;
   }[];
   parts: {
     id: string;
@@ -64,13 +64,14 @@ interface SearchResult {
     title: string;
     dueDate: Date | null;
     isCompleted: boolean;
+    customer: { id: string; name: string } | null;
     vehicle: {
       id: string;
       make: string;
       model: string;
       year: number;
       licensePlate: string | null;
-    };
+    } | null;
   }[];
   inspections: {
     id: string;
@@ -312,8 +313,8 @@ export function SearchCommand() {
                 {results.services.map((s) => (
                   <CommandItem
                     key={s.id}
-                    value={`${s.title} ${s.invoiceNumber || ""} ${s.vehicle.make} ${s.vehicle.model}`}
-                    onSelect={() => handleSelect(`/vehicles/${s.vehicle.id}/service/${s.id}`)}
+                    value={`${s.title} ${s.invoiceNumber || ""} ${s.vehicle ? `${s.vehicle.make} ${s.vehicle.model}` : ""}`}
+                    onSelect={() => handleSelect(s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`)}
                   >
                     <Wrench className="mr-2 h-4 w-4 text-muted-foreground" />
                     <div className="flex flex-col">
@@ -321,8 +322,8 @@ export function SearchCommand() {
                       <span className="text-xs text-muted-foreground">
                         {[
                           s.invoiceNumber,
-                          `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}`,
-                          s.vehicle.licensePlate,
+                          s.vehicle ? `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}` : null,
+                          s.vehicle?.licensePlate,
                         ].filter(Boolean).join(" · ")}
                       </span>
                     </div>
@@ -373,15 +374,16 @@ export function SearchCommand() {
                 {results.reminders.map((r) => (
                   <CommandItem
                     key={r.id}
-                    value={`${r.title} ${r.vehicle.make} ${r.vehicle.model} ${r.vehicle.licensePlate || ""}`}
-                    onSelect={() => handleSelect(`/vehicles/${r.vehicle.id}?tab=reminders`)}
+                    value={`${r.title} ${r.vehicle ? `${r.vehicle.make} ${r.vehicle.model} ${r.vehicle.licensePlate || ""}` : r.customer?.name || ""}`}
+                    onSelect={() => handleSelect(r.vehicle ? `/vehicles/${r.vehicle.id}?tab=reminders` : "/reminders")}
                   >
                     <Bell className="mr-2 h-4 w-4 text-muted-foreground" />
                     <div className="flex flex-col">
                       <span>{r.title}{r.isCompleted && <span className="ml-1.5 text-muted-foreground line-through">(done)</span>}</span>
                       <span className="text-xs text-muted-foreground">
-                        {`${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}`}
-                        {r.vehicle.licensePlate && ` · ${r.vehicle.licensePlate}`}
+                        {r.vehicle
+                          ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}${r.vehicle.licensePlate ? ` · ${r.vehicle.licensePlate}` : ""}`
+                          : r.customer?.name || ""}
                       </span>
                     </div>
                   </CommandItem>

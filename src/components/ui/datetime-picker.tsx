@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DayPicker, type DayPickerProps } from "react-day-picker";
+import { useDateSettings } from "@/components/date-settings-context";
 
 // ---------- UTILITY FUNCTIONS ----------
 
@@ -229,6 +230,7 @@ function Calendar({
   yearRange = 50,
   ...props
 }: DayPickerProps & { yearRange?: number }) {
+  const { weekStartDay } = useDateSettings();
   const MONTHS = React.useMemo(() => {
     let locale: Pick<Locale, "options" | "localize" | "formatLong"> = enUS;
     const { options, localize, formatLong } = props.locale || {};
@@ -367,6 +369,7 @@ function Calendar({
         },
       }}
       {...props}
+      weekStartsOn={props.weekStartsOn ?? ((weekStartDay % 7) as 0 | 1 | 2 | 3 | 4 | 5 | 6)}
     />
   );
 }

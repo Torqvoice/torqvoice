@@ -381,6 +381,12 @@
     },
     "invoiceNumberFormat": "Fakturanummerformat",
     "invoiceNumberFormatHint": "Bruk <code>{year}</code> for innevarende ar. Forhandsvisning: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Tilbudsnummerformat",
+    "quoteNumberFormatHint": "Bruk <code>{year}</code> for innevarende ar. Forhandsvisning: <bold>{preview}</bold>",
+    "quoteValidDays": "Tilbudets gyldighet (dager)",
+    "quoteValidDaysHint": "Nye tilbud får en gyldig til-dato så mange dager frem. 0 deaktiverer dette.",
+    "sectionInvoices": "Fakturaer",
+    "sectionQuotes": "Tilbud",
     "nextInvoiceNumber": "Neste fakturanummer",
     "nextInvoiceNumberPlaceholder": "F.eks. 94",
     "nextInvoiceNumberHint": "Neste faktura bruker dette nummeret (f.eks. {example})",
@@ -412,7 +418,14 @@
     "layoutDocInvoice": "Faktura",
     "layoutDocQuote": "Tilbud",
     "saveLayout": "Lagre oppsett",
-    "resetLayout": "Tilbakestill"
+    "resetLayout": "Tilbakestill",
+    "sectionCustomers": "Kunder",
+    "assignCustomerNumbers": "Tildel kundenumre",
+    "assignCustomerNumbersHint": "{count} kunder mangler nummer. Tildel fortløpende numre (eksisterende beholdes).",
+    "customerNumbersAssigned": "Tildelte numre til {count} kunder",
+    "allCustomersNumbered": "Alle kunder har et nummer.",
+    "assignCustomerNumbersConfirmTitle": "Tildele kundenumre?",
+    "assignCustomerNumbersConfirmDescription": "De {count} kundene uten nummer får fortløpende numre i opprettelsesrekkefølge, fortsettende etter det høyeste eksisterende nummeret. Kunder som allerede har nummer endres ikke. Numrene kan redigeres etterpå."
   },
   "layoutEditor": {
     "helpText": "Dra for å sortere. Bruk bredde-veksler for å plassere seksjoner side om side. Påfølgende halvbredde-seksjoner (V/H) vises i to kolonner.",
@@ -927,7 +940,14 @@
     "invoiceNinjaDocuments": "Dokumenter og vedlegg",
     "invoiceNinjaPayments": "Betalinger",
     "invoiceNinjaFileHint": "Last opp en Invoice Ninja zip-eksportfil. Filer opp til 200MB stottet.",
-    "invoiceNinjaImportComplete": "Invoice Ninja-import fullfort"
+    "invoiceNinjaImportComplete": "Invoice Ninja-import fullfort",
+    "backupStatus": {
+      "title": "Databeskyttelse",
+      "description": "Vi tar dataene dine på alvor. Alle organisasjonens data, inkludert kunder, kjøretøy, arbeidsordrer, fakturaer og opplastede filer, sikkerhetskopieres automatisk hver time. Sikkerhetskopiene beskyttes med AES-256-kryptering før de forlater infrastrukturen vår og lagres på et separat, sikkert sted, slik at ingen utenforstående kan lese dem.",
+      "lastBackup": "Siste sikkerhetskopi:",
+      "supportPrompt": "Har du spørsmål om hvordan dataene dine beskyttes,",
+      "supportAction": "kontakt supportteamet vårt."
+    }
   },
   "license": {
     "title": "White-label-lisens",
@@ -969,6 +989,8 @@
     "portalUrl": "Portal-URL",
     "urlCopied": "Portal-URL kopiert",
     "shareHint": "Del denne lenken med kundene dine slik at de kan logge inn pa portalen sin.",
+    "serviceRequestAlertsHint": "Serviceforespørsler fra portalen dukker alltid opp i varselbjella. Du kan også få dem på e-post.",
+    "serviceRequestAlertsLink": "Varselinnstillinger →",
     "descriptionLabel": "Om verkstedet",
     "descriptionPlaceholder": "Fortell kundene litt om verkstedet, tjenestene dere tilbyr og hva som gjor dere unike.",
     "descriptionHint": "Vises til besokende overst pa portalsiden.",
@@ -1351,6 +1373,19 @@
   "alerts": {
     "title": "Varsler",
     "description": "Velg hvilke hendelser du vil varsles om, og hvordan.",
+    "serviceRequest": {
+      "title": "Varsler om serviceforespørsler",
+      "description": "Serviceforespørsler som sendes inn via kundeportalen dukker alltid opp i varselbjella. Slå på dette for også å få dem på e-post.",
+      "email": "E-postvarsel",
+      "emailHint": "Av som standard. Én e-post per forespørsel, sendt så snart en kunde sender den inn.",
+      "recipients": "Send til",
+      "recipientsHint": "La stå tomt for å varsle alle eiere og administratorer. Skill flere adresser med komma.",
+      "invalidRecipients": "Ikke en gyldig adresse: {list}",
+      "emailSetupHint": "Varsler sendes med e-postleverandøren du har satt opp.",
+      "emailSetupLink": "E-postinnstillinger →",
+      "save": "Lagre varselinnstillinger",
+      "saved": "Innstillinger for serviceforespørsler lagret"
+    },
     "lowStock": {
       "title": "Varsler om lavt lager",
       "description": "Varsler når en del når bestillingspunktet. En del er lav når antallet faller til eller under \"Min. antall\", eller standardverdien under hvis den mangler. Hver del rapporteres én gang per fall og er stille til den er fylt opp igjen.",

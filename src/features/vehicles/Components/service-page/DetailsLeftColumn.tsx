@@ -22,7 +22,7 @@ interface DetailsLeftColumnProps {
   onOpenPresets?: () => void
   onScanBarcode?: () => void
   aiEnabled?: boolean
-  vehicleId: string
+  vehicleId: string | null
   findings?: { id: string; description: string; severity: string; status: string; notes: string | null }[]
   onAddFinding?: () => void
   onEditFinding?: (finding: { id: string; description: string; severity: string; status: string; notes: string | null }) => void
@@ -84,13 +84,15 @@ export function DetailsLeftColumn({
         serviceRecordId={record.id}
         aiEnabled={aiEnabled}
       />
-      <ServiceFindingsSection
-        vehicleId={vehicleId}
-        serviceRecordId={record.id}
-        findings={findings}
-        onAddFinding={onAddFinding}
-        onEditFinding={onEditFinding}
-      />
+      {vehicleId && (
+        <ServiceFindingsSection
+          vehicleId={vehicleId}
+          serviceRecordId={record.id}
+          findings={findings}
+          onAddFinding={onAddFinding}
+          onEditFinding={onEditFinding}
+        />
+      )}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         <PaymentsSection
           payments={record.payments || []}

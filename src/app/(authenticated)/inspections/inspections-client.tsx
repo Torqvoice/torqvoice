@@ -11,8 +11,17 @@ import { Input } from "@/components/ui/input";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
-import { Loader2, Plus, Search } from "lucide-react";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import { TableCellLink } from "@/components/table-cell-link";
+import { ArrowDown, ArrowUp, ArrowUpDown, Car, ExternalLink, Loader2, Plus, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { NewInspectionDialog } from "@/features/inspections/Components/NewInspectionDialog";
 
 interface InspectionRecord {
@@ -93,11 +102,15 @@ export function InspectionsClient({
   templates,
   search,
   statusFilter,
+  sortBy = "",
+  sortOrder = "desc",
 }: {
   data: PaginatedData;
   templates: TemplateOption[];
   search: string;
   statusFilter: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -105,6 +118,7 @@ export function InspectionsClient({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [showNewDialog, setShowNewDialog] = useState(false);
+  const tcm = useTranslations("common.contextMenu");
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -131,6 +145,21 @@ export function InspectionsClient({
     setValue: setSearchInput,
     commitNow: handleSearch,
   } = useDebouncedSearch(search, (term) => navigate({ search: term }));
+
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
+      navigate({ sortBy: column, sortOrder: newOrder });
+    },
+    [navigate, sortBy, sortOrder]
+  );
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
+    return sortOrder === "asc"
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />;
+  };
 
   return (
     <div className="space-y-4">
@@ -176,14 +205,31 @@ export function InspectionsClient({
       </div>
 
       <div className="rounded-lg border">
-        <Table>
+        <TableContextMenuHint />
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead>Vehicle</TableHead>
-              <TableHead className="hidden md:table-cell">Template</TableHead>
+              <TableHead>
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("vehicle")}>
+                  Vehicle<SortIcon column="vehicle" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden w-[24%] md:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("template")}>
+                  Template<SortIcon column="template" />
+                </button>
+              </TableHead>
               <TableHead className="w-32">Progress</TableHead>
-              <TableHead className="w-28">Status</TableHead>
-              <TableHead className="w-24">Date</TableHead>
+              <TableHead className="w-28">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("status")}>
+                  Status<SortIcon column="status" />
+                </button>
+              </TableHead>
+              <TableHead className="w-24">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("createdAt")}>
+                  Date<SortIcon column="createdAt" />
+                </button>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -195,14 +241,15 @@ export function InspectionsClient({
               </TableRow>
             ) : (
               data.records.map((insp) => (
+                <ContextMenu key={insp.id} modal={false}>
+                <ContextMenuTrigger asChild>
                 <TableRow
-                  key={insp.id}
                   className="cursor-pointer"
                   onClick={() => router.push(`/inspections/${insp.id}`)}
                 >
                   <TableCell>
-                    <div>
-                      <p className="font-medium">
+                    <TableCellLink href={`/vehicles/${insp.vehicle.id}`} block>
+                      <p className="truncate font-medium">
                         {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
                       </p>
                       {insp.vehicle.licensePlate && (
@@ -210,9 +257,9 @@ export function InspectionsClient({
                           {insp.vehicle.licensePlate}
                         </p>
                       )}
-                    </div>
+                    </TableCellLink>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground">
+                  <TableCell className="hidden truncate md:table-cell text-muted-foreground">
                     {insp.template.name}
                   </TableCell>
                   <TableCell>
@@ -227,6 +274,18 @@ export function InspectionsClient({
                     {formatDate(new Date(insp.createdAt))}
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => router.push(`/inspections/${insp.id}`)}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {tcm("open")}
+                  </ContextMenuItem>
+                  <ContextMenuItem onClick={() => router.push(`/vehicles/${insp.vehicle.id}`)}>
+                    <Car className="mr-2 h-4 w-4" />
+                    {tcm("openVehicle")}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+                </ContextMenu>
               ))
             )}
           </TableBody>

@@ -381,6 +381,12 @@
     },
     "invoiceNumberFormat": "Format du numero de facture",
     "invoiceNumberFormatHint": "Utilisez <code>{year}</code> pour l'annee en cours. Apercu : <bold>{preview}</bold>",
+    "quoteNumberFormat": "Format du numero de devis",
+    "quoteNumberFormatHint": "Utilisez <code>{year}</code> pour l'annee en cours. Apercu : <bold>{preview}</bold>",
+    "quoteValidDays": "Validité du devis (jours)",
+    "quoteValidDaysHint": "Les nouveaux devis reçoivent une date de validité de ce nombre de jours. 0 désactive cette option.",
+    "sectionInvoices": "Factures",
+    "sectionQuotes": "Devis",
     "nextInvoiceNumber": "Prochain numero de facture",
     "nextInvoiceNumberPlaceholder": "Ex. 94",
     "nextInvoiceNumberHint": "La prochaine facture utilisera ce numero (ex. {example})",
@@ -412,7 +418,14 @@
     "layoutDocInvoice": "Facture",
     "layoutDocQuote": "Devis",
     "saveLayout": "Enregistrer la mise en page",
-    "resetLayout": "Réinitialiser"
+    "resetLayout": "Réinitialiser",
+    "sectionCustomers": "Clients",
+    "assignCustomerNumbers": "Attribuer des numéros clients",
+    "assignCustomerNumbersHint": "{count} clients n'ont pas encore de numéro. Leur attribuer des numéros séquentiels (les existants sont conservés).",
+    "customerNumbersAssigned": "Numéros attribués à {count} clients",
+    "allCustomersNumbered": "Tous les clients ont un numéro.",
+    "assignCustomerNumbersConfirmTitle": "Attribuer des numéros clients ?",
+    "assignCustomerNumbersConfirmDescription": "Les {count} clients sans numéro recevront des numéros séquentiels dans leur ordre de création, à la suite du numéro existant le plus élevé. Les clients ayant déjà un numéro ne sont pas modifiés. Les numéros restent modifiables ensuite."
   },
   "layoutEditor": {
     "helpText": "Glissez pour réorganiser. Utilisez le sélecteur de largeur pour placer les sections côte à côte. Les sections consécutives en demi-largeur (G/D) s'afficheront en deux colonnes.",
@@ -564,7 +577,7 @@
     "readMore": "En savoir plus",
     "detailsTitle": "Details de paiement",
     "detailsDescription": "Compte bancaire et conditions de paiement sur les factures.",
-    "bankAccount": "Compte bancaire (IBAN / Til Konto)",
+    "bankAccount": "Compte bancaire (IBAN)",
     "bankAccountPlaceholder": "NO93 8601 1117 947",
     "bankAccountHint": "Votre numero de compte bancaire ou IBAN pour recevoir les paiements",
     "paymentTerms": "Conditions de paiement",
@@ -927,7 +940,14 @@
     "invoiceNinjaDocuments": "Documents et pieces jointes",
     "invoiceNinjaPayments": "Paiements",
     "invoiceNinjaFileHint": "Telechargez un fichier d'export zip Invoice Ninja. Fichiers jusqu'a 200 Mo supportes.",
-    "invoiceNinjaImportComplete": "Importation Invoice Ninja terminee"
+    "invoiceNinjaImportComplete": "Importation Invoice Ninja terminee",
+    "backupStatus": {
+      "title": "Protection des données",
+      "description": "Nous prenons vos données au sérieux. Toutes les données de votre organisation, y compris les clients, les véhicules, les ordres de travail, les factures et les fichiers téléversés, sont sauvegardées automatiquement toutes les heures. Les sauvegardes sont protégées par un chiffrement AES-256 avant de quitter notre infrastructure et stockées dans un emplacement séparé et sécurisé, de sorte qu'aucun tiers ne peut les lire.",
+      "lastBackup": "Dernière sauvegarde :",
+      "supportPrompt": "Pour toute question sur la protection de vos données,",
+      "supportAction": "contactez notre équipe d'assistance."
+    }
   },
   "license": {
     "title": "Licence marque blanche",
@@ -969,6 +989,8 @@
     "portalUrl": "URL du portail",
     "urlCopied": "URL du portail copiee",
     "shareHint": "Partagez ce lien avec vos clients pour qu'ils puissent se connecter a leur portail.",
+    "serviceRequestAlertsHint": "Les demandes de service du portail apparaissent toujours dans votre cloche de notifications. Vous pouvez aussi les recevoir par e-mail.",
+    "serviceRequestAlertsLink": "Paramètres d'alerte →",
     "descriptionLabel": "À propos de votre garage",
     "descriptionPlaceholder": "Présentez votre garage à vos clients : vos services, votre équipe, ce qui vous rend unique.",
     "descriptionHint": "Affiché aux visiteurs en haut de la page d'accueil de votre portail.",
@@ -1351,6 +1373,19 @@
   "alerts": {
     "title": "Alertes",
     "description": "Choisissez les événements dont vous voulez être averti, et comment.",
+    "serviceRequest": {
+      "title": "Alertes de demandes de service",
+      "description": "Les demandes de service envoyées via le portail client apparaissent toujours dans la cloche de notifications. Activez cette option pour les recevoir aussi par e-mail.",
+      "email": "Notification par e-mail",
+      "emailHint": "Désactivé par défaut. Un e-mail par demande, envoyé dès qu'un client la soumet.",
+      "recipients": "Envoyer à",
+      "recipientsHint": "Laissez vide pour avertir tous les propriétaires et administrateurs. Séparez plusieurs adresses par des virgules.",
+      "invalidRecipients": "Adresse non valide : {list}",
+      "emailSetupHint": "Les alertes sont envoyées via le fournisseur de messagerie que vous avez configuré.",
+      "emailSetupLink": "Paramètres e-mail →",
+      "save": "Enregistrer les paramètres d'alerte",
+      "saved": "Paramètres d'alerte des demandes enregistrés"
+    },
     "lowStock": {
       "title": "Alertes de stock bas",
       "description": "Alerte quand une pièce atteint son seuil de réapprovisionnement. Une pièce est basse lorsque sa quantité descend à ou sous sa \"Qté min\", ou sous la valeur par défaut ci-dessous si elle n'en a pas. Chaque pièce est signalée une fois par baisse et reste silencieuse jusqu'au réassort.",

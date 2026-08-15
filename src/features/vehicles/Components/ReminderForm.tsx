@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DateInput } from "@/components/ui/date-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +26,8 @@ interface ReminderData {
   description: string | null;
   dueDate: Date | null;
   dueMileage: number | null;
+  notifyInApp?: boolean;
+  notifyEmail?: boolean;
 }
 
 interface ReminderFormProps {
@@ -43,6 +47,8 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [dueMileage, setDueMileage] = useState("");
+  const [notifyInApp, setNotifyInApp] = useState(true);
+  const [notifyEmail, setNotifyEmail] = useState(false);
 
   const isEdit = !!reminder;
 
@@ -52,11 +58,15 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
       setDescription(reminder.description || "");
       setDueDate(reminder.dueDate ? new Date(reminder.dueDate).toISOString().split("T")[0] : "");
       setDueMileage(reminder.dueMileage ? String(reminder.dueMileage) : "");
+      setNotifyInApp(reminder.notifyInApp ?? true);
+      setNotifyEmail(reminder.notifyEmail ?? false);
     } else if (open) {
       setTitle("");
       setDescription("");
       setDueDate("");
       setDueMileage("");
+      setNotifyInApp(true);
+      setNotifyEmail(false);
     }
   }, [open, reminder]);
 
@@ -70,6 +80,8 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
       description: description || undefined,
       dueDate: dueDate || undefined,
       dueMileage: dueMileage ? Number(dueMileage) : undefined,
+      notifyInApp,
+      notifyEmail,
     };
 
     const result = isEdit
@@ -120,11 +132,10 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="reminder-dueDate">{t("dueDateLabel")}</Label>
-              <Input
+              <DateInput
                 id="reminder-dueDate"
-                type="date"
                 value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+                onChange={setDueDate}
               />
             </div>
             <div className="space-y-2">
@@ -136,6 +147,26 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
                 onChange={(e) => setDueMileage(e.target.value)}
                 placeholder={t("dueMileagePlaceholder")}
               />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>{t("notifyLabel")}</Label>
+            <div className="flex gap-6">
+              <label className="flex items-center gap-2 text-sm font-normal">
+                <Checkbox
+                  checked={notifyInApp}
+                  onCheckedChange={(v) => setNotifyInApp(v === true)}
+                />
+                {t("notifyInApp")}
+              </label>
+              <label className="flex items-center gap-2 text-sm font-normal">
+                <Checkbox
+                  checked={notifyEmail}
+                  onCheckedChange={(v) => setNotifyEmail(v === true)}
+                />
+                {t("notifyEmail")}
+              </label>
             </div>
           </div>
 

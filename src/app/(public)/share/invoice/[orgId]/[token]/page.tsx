@@ -34,10 +34,31 @@ export default async function PublicInvoicePage({
   const record = await db.serviceRecord.findUnique({
     where: { publicToken: token },
     include: {
-      partItems: true,
+      // Explicit select: internal unitCost/markupPercent must never reach
+      // the public customer-facing payload
+      partItems: {
+        select: {
+          id: true,
+          partNumber: true,
+          name: true,
+          quantity: true,
+          unitPrice: true,
+          total: true,
+        },
+      },
       laborItems: true,
       attachments: true,
       payments: { orderBy: { date: "desc" } },
+      customer: {
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+          address: true,
+          company: true,
+          taxId: true,
+        },
+      },
       vehicle: {
         select: {
           make: true,
@@ -63,7 +84,7 @@ export default async function PublicInvoicePage({
     },
   });
 
-  if (!record || record.vehicle.organizationId !== orgId) {
+  if (!record || record.organizationId !== orgId) {
     notFound();
   }
 
@@ -71,7 +92,7 @@ export default async function PublicInvoicePage({
   const [settings, org, features] = await Promise.all([
     db.appSetting.findMany({
       where: {
-        organizationId: record.vehicle.organizationId,
+        organizationId: record.organizationId,
         key: {
           in: [
             "workshop.address",
@@ -106,9 +127,9 @@ export default async function PublicInvoicePage({
         },
       },
     }),
-    record.vehicle.organizationId
+    record.organizationId
       ? db.organization.findUnique({
-          where: { id: record.vehicle.organizationId },
+          where: { id: record.organizationId },
           select: { name: true, portalSlug: true },
         })
       : null,

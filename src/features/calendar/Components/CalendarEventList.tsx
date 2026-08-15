@@ -59,6 +59,7 @@ function getTypeBadge(type: CalendarEvent["type"], t: (key: string) => string) {
 
 function getEventLink(event: CalendarEvent) {
   if (event.type === "quote") return `/quotes/${event.id}`;
+  if (!event.vehicleId) return event.type === "reminder" ? "/reminders" : `/sales/${event.id}`;
   return `/vehicles/${event.vehicleId}`;
 }
 

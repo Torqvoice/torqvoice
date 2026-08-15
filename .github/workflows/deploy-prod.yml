@@ -1,0 +1,166 @@
+name: "[Prod] Deploy"
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version tag to deploy (e.g. v1.2.39). Leave blank to deploy the newest published release. 'latest' is refused."
+        required: false
+        default: ""
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, Linux, X64, hetzner]
+
+    steps:
+      - name: Resolve version tag
+        id: tag
+        run: |
+          TAG="${{ inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            # Newest published release (drafts are excluded, so publishing the
+            # release in GitHub is the gate that makes it deployable).
+            TAG=$(curl -fsSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/latest" \
+              | grep -m1 '"tag_name"' | cut -d'"' -f4)
+            echo "Resolved newest published release: $TAG"
+          fi
+          if [ -z "$TAG" ] || [ "$TAG" = "latest" ]; then
+            echo "::error::No deployable version tag ('latest' is refused; rollback needs a named target)."
+            exit 1
+          fi
+          echo "value=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Create deployment files
+        env:
+          VIRTUAL_HOST: ${{ secrets.CLOUD_VIRTUAL_HOST }}
+          DATABASE_URL: ${{ secrets.CLOUD_DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.CLOUD_BETTER_AUTH_SECRET }}
+          APP_URL: ${{ secrets.CLOUD_APP_URL }}
+          STRIPE_SECRET_KEY: ${{ secrets.CLOUD_STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.CLOUD_STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRO_PRICE_ID: ${{ secrets.CLOUD_STRIPE_PRO_PRICE_ID }}
+          STRIPE_ENTERPRISE_PRICE_ID: ${{ secrets.CLOUD_STRIPE_ENTERPRISE_PRICE_ID }}
+          DATA_PATH: ${{ secrets.DATA_PATH }}
+          POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
+          POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          BACKUP_HEARTBEAT_TOKEN: ${{ secrets.BACKUP_HEARTBEAT_TOKEN }}
+        run: |
+          mkdir -p $HOME/torqvoice-deploy/prod
+          cd $HOME/torqvoice-deploy/prod
+
+          env | grep -E '^(VIRTUAL_HOST|DATA_PATH|DATABASE_URL|BETTER_AUTH_SECRET|APP_URL|STRIPE_|POSTHOG_|BACKUP_)' > .env
+
+          cat > docker-compose.yml << 'COMPOSE'
+          networks:
+            proxy:
+              external: true
+              name: proxy
+          services:
+            torqvoice-app:
+              container_name: torqvoice-app
+              image: ghcr.io/torqvoice/torqvoice:${APP_TAG:-latest}
+              restart: unless-stopped
+              volumes:
+                - ${DATA_PATH}/torqvoice_data:/app/data
+              expose:
+                - "3000"
+              environment:
+                VIRTUAL_HOST: ${VIRTUAL_HOST}
+                VIRTUAL_PORT: "3000"
+                LETSENCRYPT_HOST: ${VIRTUAL_HOST}
+                DATABASE_URL: ${DATABASE_URL}
+                BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+                NEXT_PUBLIC_APP_URL: ${APP_URL}
+                TORQVOICE_MODE: cloud
+                STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+                STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+                STRIPE_PRO_PRICE_ID: ${STRIPE_PRO_PRICE_ID}
+                STRIPE_ENTERPRISE_PRICE_ID: ${STRIPE_ENTERPRISE_PRICE_ID}
+                POSTHOG_HOST: ${POSTHOG_HOST}
+                POSTHOG_KEY: ${POSTHOG_KEY}
+                BACKUP_HEARTBEAT_TOKEN: ${BACKUP_HEARTBEAT_TOKEN}
+              networks:
+                - proxy
+          COMPOSE
+
+      - name: Ensure data directory permissions
+        run: |
+          DATA_DIR="${{ secrets.DATA_PATH }}/torqvoice_data"
+          mkdir -p "$DATA_DIR"
+          docker run --rm -v "$DATA_DIR":/data alpine chown -R 1001:1001 /data
+
+      - name: Check free disk space
+        run: |
+          MIN_GB=5
+          DOCKER_ROOT=$(docker info --format '{{.DockerRootDir}}' 2>/dev/null || echo /var/lib/docker)
+          AVAIL_KB=$(df -Pk "$DOCKER_ROOT" | awk 'NR==2 {print $4}')
+          AVAIL_GB=$(awk "BEGIN {printf \"%.1f\", $AVAIL_KB/1024/1024}")
+          echo "Free space on $DOCKER_ROOT: ${AVAIL_GB} GB (minimum ${MIN_GB} GB)"
+          if [ "$AVAIL_KB" -lt $((MIN_GB * 1024 * 1024)) ]; then
+            echo "::error::Not enough disk space to pull image: ${AVAIL_GB} GB free, need ${MIN_GB} GB. Aborting deploy."
+            exit 1
+          fi
+
+      - name: Back up production database
+        env:
+          DATABASE_URL: ${{ secrets.CLOUD_DATABASE_URL }}
+        run: |
+          set -euo pipefail
+
+          DB_USER=$(echo "$DATABASE_URL" | sed -E 's|^[^:]+://([^:]+):.*|\1|')
+          DB_NAME=$(echo "$DATABASE_URL" | sed -E 's|.*/([^/?]+)(\?.*)?$|\1|')
+
+          BACKUP_DIR="${{ secrets.DATA_PATH }}/db-backups/$DB_NAME"
+          # The volume is root-owned and the runner is not root. Binding the
+          # path into a container makes Docker create it, and the chown hands
+          # it to the runner so the dump redirect below can write there.
+          docker run --rm -v "$BACKUP_DIR":/b alpine chown "$(id -u):$(id -g)" /b
+
+          # The Postgres data directory lives on this filesystem: filling it
+          # takes the database down, not just the backup.
+          MIN_GB=2
+          AVAIL_KB=$(df -Pk "$BACKUP_DIR" | awk 'NR==2 {print $4}')
+          if [ "$AVAIL_KB" -lt $((MIN_GB * 1024 * 1024)) ]; then
+            echo "::error::Only $(awk "BEGIN {printf \"%.1f\", $AVAIL_KB/1024/1024}") GB free where the database lives. Refusing to dump."
+            exit 1
+          fi
+
+          DUMP="$BACKUP_DIR/${DB_NAME}-$(date +%Y%m%d-%H%M%S)-pre-${{ steps.tag.outputs.value }}.dump"
+          echo "Dumping $DB_NAME to $DUMP"
+          docker exec torqvoice-db pg_dump -U "$DB_USER" -d "$DB_NAME" -Fc > "$DUMP"
+
+          # A dump nobody can read is worse than no dump. No backup, no deploy.
+          docker exec -i torqvoice-db pg_restore --list < "$DUMP" > /dev/null
+          echo "Verified $(du -h "$DUMP" | cut -f1) backup"
+
+          # Keep the 10 most recent pre-deploy dumps; hourly dumps in the same
+          # folder belong to the backup cron and age out there.
+          ls -t "$BACKUP_DIR"/*-pre-*.dump 2>/dev/null | tail -n +11 | xargs -r rm --
+
+      - name: Deploy
+        run: |
+          cd $HOME/torqvoice-deploy/prod
+          APP_TAG=${{ steps.tag.outputs.value }} docker compose up -d --pull always
+
+      - name: Health check
+        run: |
+          echo "Waiting for prod container to be ready..."
+          for i in $(seq 1 12); do
+            STATUS=$(docker inspect --format='{{.State.Status}}' torqvoice-app 2>/dev/null || echo "not found")
+            if [ "$STATUS" = "running" ]; then
+              echo "Deployed ${{ steps.tag.outputs.value }}."
+              exit 0
+            fi
+            echo "Status: $STATUS, retrying in 5s..."
+            sleep 5
+          done
+          echo "::error::Container failed to start"
+          docker logs torqvoice-app --tail 50
+          exit 1
+
+      - name: Prune old images and build cache
+        run: docker image prune -f && docker builder prune -f

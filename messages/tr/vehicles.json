@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "örn. 50000",
     "reminderUpdated": "Hatırlatıcı güncellendi",
     "reminderCreated": "Hatırlatıcı oluşturuldu",
-    "saveError": "Hatırlatıcı {action} başarısız oldu"
+    "saveError": "Hatırlatıcı {action} başarısız oldu",
+    "notifyLabel": "Vadesi geldiğinde bildir",
+    "notifyInApp": "Uygulama içi bildirim",
+    "notifyEmail": "E-posta"
   },
   "services": {
     "searchPlaceholder": "Kayıtlarda ara...",

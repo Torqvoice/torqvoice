@@ -8,5 +8,10 @@
   "searchVehicle": "Araç ara...",
   "noVehicle": "Araç bulunamadı.",
   "pickDate": "Tarih seçin",
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "relatesTo": "İlgili (isteğe bağlı)",
+  "selectCustomer": "Müşteri (isteğe bağlı)",
+  "noneOption": "Yok",
+  "workshopHint": "Müşteri veya araç seçilmedi: bu genel bir atölye hatırlatıcısıdır.",
+  "workshopReminder": "Atölye"
 }

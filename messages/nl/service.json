@@ -107,7 +107,8 @@
     "partNotFound": "Geen onderdeel gevonden voor barcode \"{barcode}\"",
     "deleteRow": "Delete row",
     "outOfStock": "Niet op voorraad",
-    "onBackorder": "In nabestelling ({count})"
+    "onBackorder": "In nabestelling ({count})",
+    "nameMissingHint": "Rijen zonder onderdeelnaam worden niet opgeslagen."
   },
   "labor": {
     "title": "Arbeidskosten",
@@ -146,7 +147,8 @@
     "tax": "Belasting",
     "taxIncluded": "Belasting (incl.)",
     "total": "Totaal",
-    "inclusiveModeHint": "Regelprijzen worden inclusief belasting ingevoerd. De totalen tonen de uitsplitsing netto + belasting."
+    "inclusiveModeHint": "Regelprijzen worden inclusief belasting ingevoerd. De totalen tonen de uitsplitsing netto + belasting.",
+    "partsCost": "Onderdelenkosten (intern)"
   },
   "notes": {
     "title": "Opmerkingen",

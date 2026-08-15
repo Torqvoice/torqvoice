@@ -12,6 +12,14 @@
     "edit": "Redaguoti",
     "add": "Pridėti"
   },
+  "contextMenu": {
+    "hint": "Patarimas: spustelėkite eilutę dešiniuoju mygtuku veiksmams",
+    "open": "Atidaryti",
+    "openVehicle": "Atidaryti transporto priemonę",
+    "openCustomer": "Atidaryti klientą",
+    "edit": "Redaguoti",
+    "delete": "Ištrinti"
+  },
   "form": {
     "email": "El. paštas",
     "password": "Slaptažodis",
@@ -39,5 +47,10 @@
     "title": "Puslapis nerastas",
     "description": "Atrodo, ši dalis vis dar servise. Puslapis, kurio ieškote, neegzistuoja arba buvo perkeltas.",
     "backToDashboard": "Grįžti į valdymo skydelį"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice atnaujinta į {version}",
+    "whatsNew": "Žiūrėti naujienas",
+    "dismiss": "Uždaryti"
   }
 }

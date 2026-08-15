@@ -24,15 +24,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { typeColors, statusColors } from "@/lib/table-utils";
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { getWarrantyStatus, type WarrantyStatus } from "@/lib/warranty";
+import { effectiveInvoiceDate } from "@/lib/invoice-utils";
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
   Download,
+  ExternalLink,
   Loader2,
   Paperclip,
   Plus,
@@ -67,6 +75,7 @@ interface ServiceRecordRow {
   mileage: number | null;
   serviceDate: Date;
   startDateTime: Date | null;
+  invoiceDate: Date | null;
   shopName: string | null;
   techName: string | null;
   totalAmount: number;
@@ -113,6 +122,7 @@ export function ServiceRecordsTable({
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const t = useTranslations("vehicles.services");
+  const tcm = useTranslations("common.contextMenu");
   const serviceType = useServiceType();
 
   const createUrl = useCallback(
@@ -267,8 +277,9 @@ export function ServiceRecordsTable({
               records.map((record) => {
                 const displayTotal = record.totalAmount > 0 ? record.totalAmount : record.cost;
                 return (
+                  <ContextMenu key={record.id} modal={false}>
+                  <ContextMenuTrigger asChild>
                   <TableRow
-                    key={record.id}
                     className={`cursor-pointer transition-opacity ${navigatingId === record.id ? "opacity-50" : ""}`}
                     onClick={() => {
                       setNavigatingId(record.id);
@@ -276,7 +287,7 @@ export function ServiceRecordsTable({
                     }}
                   >
                     <TableCell className="font-mono text-xs">
-                      {formatDate(new Date(record.serviceDate))}
+                      {formatDate(effectiveInvoiceDate(record))}
                     </TableCell>
                     <TableCell className="max-w-0">
                       <div className="truncate">
@@ -337,6 +348,19 @@ export function ServiceRecordsTable({
                       />
                     </TableCell>
                   </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="min-w-52">
+                    <ContextMenuItem
+                      onClick={() => {
+                        setNavigatingId(record.id);
+                        router.push(`/vehicles/${vehicleId}/service/${record.id}`);
+                      }}
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {tcm("open")}
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                  </ContextMenu>
                 );
               })
             )}

@@ -26,7 +26,7 @@ function serviceRecordToJob(sr: {
     model: string;
     year: number;
     licensePlate: string | null;
-  };
+  } | null;
 }): WorkBoardJob {
   return {
     id: sr.id,
@@ -89,7 +89,7 @@ export async function getBoardJobs(weekStart: string) {
       const [serviceRecords, inspections] = await Promise.all([
         db.serviceRecord.findMany({
           where: {
-            vehicle: { organizationId },
+            organizationId,
             technicianId: { not: null },
             OR: [
               { startDateTime: { gte: start, lt: end } },
@@ -157,7 +157,7 @@ export async function getUnassignedJobs() {
       const [serviceRecords, inspections] = await Promise.all([
         db.serviceRecord.findMany({
           where: {
-            vehicle: { organizationId },
+            organizationId,
             technicianId: null,
             status: { in: ["pending", "in-progress", "waiting-parts", "scheduled"] },
           },
@@ -215,7 +215,7 @@ export async function assignTechnician(input: unknown) {
 
       if (data.type === "serviceRecord") {
         const owned = await db.serviceRecord.findFirst({
-          where: { id: data.id, vehicle: { organizationId } },
+          where: { id: data.id, organizationId },
           select: { id: true },
         });
         if (!owned) throw new Error("Service record not found");
@@ -290,7 +290,7 @@ export async function moveJob(input: unknown) {
 
       if (data.type === "serviceRecord") {
         const owned = await db.serviceRecord.findFirst({
-          where: { id: data.id, vehicle: { organizationId } },
+          where: { id: data.id, organizationId },
           select: { id: true },
         });
         if (!owned) throw new Error("Service record not found");
@@ -365,7 +365,7 @@ export async function unassignJob(input: unknown) {
 
       if (data.type === "serviceRecord") {
         const sr = await db.serviceRecord.findFirst({
-          where: { id: data.id, vehicle: { organizationId } },
+          where: { id: data.id, organizationId },
         });
         if (!sr) throw new Error("Service record not found");
 
@@ -418,8 +418,11 @@ export async function getWorkBoardSettings() {
         map[s.key] = s.value;
       }
 
+      // Clamp so a corrupt stored value can never produce NaN week starts downstream
+      const parsedWeekStart = parseInt(map["workboard.weekStartDay"] || "1", 10);
+
       return {
-        weekStartDay: parseInt(map["workboard.weekStartDay"] || "1", 10),
+        weekStartDay: Number.isInteger(parsedWeekStart) && parsedWeekStart >= 0 && parsedWeekStart <= 6 ? parsedWeekStart : 1,
         workDayStart: map["workboard.workDayStart"] || "07:00",
         workDayEnd: map["workboard.workDayEnd"] || "15:00",
       } as WorkBoardSettings;

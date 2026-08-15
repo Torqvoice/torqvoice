@@ -36,7 +36,7 @@
     "paidInFull": "SALDATO",
     "amountDue": "Importo Dovuto",
     "notes": "Note",
-    "bankAccount": "Til Konto / Conto Bancario",
+    "bankAccount": "Conto Bancario",
     "paymentInformation": "Informazioni di pagamento",
     "orgNumberLabel": "N. org.",
     "paymentTermsLabel": "Condizioni di pagamento",

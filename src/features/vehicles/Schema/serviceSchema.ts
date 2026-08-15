@@ -30,7 +30,9 @@ export const serviceAttachmentSchema = z.object({
 });
 
 export const createServiceSchema = z.object({
-  vehicleId: z.string(),
+  // null = parts-only / counter sale (no vehicle); customerId is required then
+  vehicleId: z.string().nullable(),
+  customerId: z.string().nullable().optional(),
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   type: z.enum(["maintenance", "repair", "upgrade", "inspection"]).default("maintenance"),

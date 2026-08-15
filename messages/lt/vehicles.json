@@ -134,7 +134,10 @@
     "dueMileagePlaceholder": "pvz., 50000",
     "reminderUpdated": "Priminimas atnaujintas",
     "reminderCreated": "Priminimas sukurtas",
-    "saveError": "Nepavyko {action} priminimo"
+    "saveError": "Nepavyko {action} priminimo",
+    "notifyLabel": "Pranešti suėjus terminui",
+    "notifyInApp": "Pranešimas programoje",
+    "notifyEmail": "El. paštas"
   },
   "services": {
     "searchPlaceholder": "Ieškoti įrašų...",

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { cookies } from "next/headers";
 import { SearchCommand } from "@/features/search/Components/SearchCommand";
 import { NotificationInitializer } from "@/features/notifications/Components/NotificationInitializer";
 import { ConfirmProvider } from "@/components/confirm-dialog";
@@ -8,6 +9,7 @@ import { getLayoutData } from "@/lib/get-layout-data";
 import { getFeatures, isCloudMode } from "@/lib/features";
 import { WhiteLabelCtaProvider } from "@/components/white-label-cta-context";
 import { DateSettingsProvider } from "@/components/date-settings-context";
+import { UpdateBanner } from "@/components/update-banner";
 import { CurrencySettingsProvider } from "@/components/currency-settings-context";
 import { getCachedMembership } from "@/lib/cached-session";
 import { hasPermission, PermissionAction, PermissionSubject } from "@/lib/permissions";
@@ -27,6 +29,11 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const data = await getLayoutData();
+  // Render the sidebar in its saved state from the first paint: without this
+  // the server always renders it expanded, and collapsed-sidebar users get a
+  // ~300px layout shift after hydration (which also mismeasured the
+  // dashboard grid).
+  const sidebarOpen = (await cookies()).get("sidebar_state")?.value !== "false";
 
   if (data.status === "unauthenticated") redirect("/auth/sign-in");
   if (data.status === "no-organization") redirect("/onboarding");
@@ -110,7 +117,15 @@ export default async function DashboardLayout({
     <ServiceTypeProvider serviceType={data.serviceType}>
     <LicenseExpiryProvider daysUntilExpiry={daysUntilExpiry} dismissed={licenseExpiryDismissed}>
     <WhiteLabelCtaProvider show={showWhiteLabelCta}>
+    <UpdateBanner
+      currentVersion={process.env.APP_VERSION || "development"}
+      lastSeenVersion={data.lastSeenVersion}
+      releaseNotesUrl={
+        process.env.RELEASE_NOTES_URL || "https://github.com/Torqvoice/torqvoice/releases"
+      }
+    />
     <SidebarProvider
+      defaultOpen={sidebarOpen}
       style={
         {
           "--sidebar-width": "19rem",
@@ -121,6 +136,7 @@ export default async function DashboardLayout({
         dateFormat={data.dateFormat}
         timeFormat={data.timeFormat}
         timezone={data.timezone}
+        weekStartDay={data.weekStartDay}
       >
       <CurrencySettingsProvider
         currencyCode={data.currencyCode}

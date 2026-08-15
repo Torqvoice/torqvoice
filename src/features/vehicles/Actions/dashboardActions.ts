@@ -28,10 +28,10 @@ export async function getDashboardStats() {
       recentServices,
     ] = await Promise.all([
       db.serviceRecord.count({
-        where: { vehicle: { organizationId }, status: { not: "completed" } },
+        where: { organizationId, status: { not: "completed" } },
       }),
       db.serviceRecord.count({
-        where: { vehicle: { organizationId }, status: "pending" },
+        where: { organizationId, status: "pending" },
       }),
       db.inventoryPart.count({
         where: { organizationId, isArchived: false },
@@ -51,10 +51,11 @@ export async function getDashboardStats() {
       db.customer.count({ where: { organizationId } }),
       db.serviceRecord.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           status: { in: ["pending", "in-progress", "waiting-parts"] },
         },
         include: {
+          customer: { select: { id: true, name: true } },
           vehicle: {
             select: {
               id: true,
@@ -71,10 +72,11 @@ export async function getDashboardStats() {
       }),
       db.serviceRecord.findMany({
         where: {
-          vehicle: { organizationId },
+          organizationId,
           status: "completed",
         },
         include: {
+          customer: { select: { id: true, name: true } },
           vehicle: {
             select: {
               id: true,
@@ -109,7 +111,7 @@ export async function getUpcomingReminders() {
     return db.reminder.findMany({
       where: {
         isCompleted: false,
-        vehicle: { organizationId },
+        organizationId,
       },
       include: {
         vehicle: {
@@ -121,6 +123,7 @@ export async function getUpcomingReminders() {
             licensePlate: true,
           },
         },
+        customer: { select: { id: true, name: true } },
       },
       orderBy: { dueDate: "asc" },
       take: 10,

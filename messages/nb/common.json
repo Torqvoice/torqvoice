@@ -12,6 +12,14 @@
     "edit": "Rediger",
     "add": "Legg til"
   },
+  "contextMenu": {
+    "hint": "Tips: høyreklikk på en rad for handlinger",
+    "open": "Åpne",
+    "openVehicle": "Åpne kjøretøy",
+    "openCustomer": "Åpne kunde",
+    "edit": "Rediger",
+    "delete": "Slett"
+  },
   "form": {
     "email": "E-post",
     "password": "Passord",
@@ -39,5 +47,10 @@
     "title": "Siden ble ikke funnet",
     "description": "Det ser ut som denne delen fortsatt er på verkstedet. Siden du leter etter finnes ikke eller har blitt flyttet.",
     "backToDashboard": "Tilbake til dashbordet"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice er oppdatert til {version}",
+    "whatsNew": "Se hva som er nytt",
+    "dismiss": "Lukk"
   }
 }

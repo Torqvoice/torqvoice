@@ -22,7 +22,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
+import { TableContextMenuHint } from '@/components/table-context-menu-hint'
+import { TableCellLink } from '@/components/table-cell-link'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
@@ -33,6 +42,10 @@ import { toast } from 'sonner'
 import {
   Archive,
   ArchiveRestore,
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ExternalLink,
   Gauge,
   Grid3X3,
   LayoutGrid,
@@ -43,6 +56,7 @@ import {
   Plus,
   Search,
   Trash2,
+  Users,
   Wrench,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -88,6 +102,8 @@ export function VehiclesClient({
   data,
   customers,
   search,
+  sortBy = '',
+  sortOrder = 'desc',
   initialView = 'table',
   isArchived = false,
   archivedCount = 0,
@@ -95,6 +111,8 @@ export function VehiclesClient({
   data: PaginatedData
   customers: CustomerOption[]
   search: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
   initialView?: 'table' | 'grid' | 'grid6'
   isArchived?: boolean
   archivedCount?: number
@@ -106,7 +124,9 @@ export function VehiclesClient({
   const [isPending, startTransition] = useTransition()
   const t = useTranslations('vehicles.list')
   const tc = useTranslations('common.buttons')
+  const tcm = useTranslations('common.contextMenu')
   const [showForm, setShowForm] = useState(false)
+  const [createCustomerId, setCreateCustomerId] = useState<string | undefined>(undefined)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
   const [view, setView] = useState<'table' | 'grid' | 'grid6'>(initialView)
   const [archiveTarget, setArchiveTarget] = useState<{ id: string; name: string } | null>(null)
@@ -115,9 +135,11 @@ export function VehiclesClient({
 
   useEffect(() => {
     if (searchParams.get('create') === 'true') {
+      setCreateCustomerId(searchParams.get('customerId') || undefined)
       setShowForm(true)
       const params = new URLSearchParams(searchParams.toString())
       params.delete('create')
+      params.delete('customerId')
       const cleanUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname
       window.history.replaceState(null, '', cleanUrl)
     }
@@ -138,7 +160,7 @@ export function VehiclesClient({
           newParams.set(key, String(value))
         }
       }
-      if (!('page' in params) && 'search' in params) {
+      if (!('page' in params) && ('search' in params || 'sortBy' in params)) {
         newParams.delete('page')
       }
       startTransition(() => {
@@ -147,6 +169,21 @@ export function VehiclesClient({
     },
     [router, pathname, searchParams]
   )
+
+  const handleSort = useCallback(
+    (column: string) => {
+      const newOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc'
+      navigate({ sortBy: column, sortOrder: newOrder })
+    },
+    [navigate, sortBy, sortOrder]
+  )
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
+    return sortOrder === 'asc'
+      ? <ArrowUp className="ml-1 h-3 w-3" />
+      : <ArrowDown className="ml-1 h-3 w-3" />
+  }
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -282,32 +319,60 @@ export function VehiclesClient({
       ) : view === 'table' ? (
         /* Table view */
         <div className="rounded-lg border">
-          <Table>
+          <TableContextMenuHint />
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[120px]">{t('table.plate')}</TableHead>
-                <TableHead>{t('table.vehicle')}</TableHead>
-                <TableHead className="hidden sm:table-cell">{t('table.customer')}</TableHead>
-                <TableHead className="hidden md:table-cell w-[100px] text-right">{serviceType === 'marine' ? t('table.mileageMarine') : t('table.mileage')}</TableHead>
-                <TableHead className="w-[80px] text-center">{t('table.services')}</TableHead>
+                <TableHead className="w-[120px]">
+                  <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('plate')}>
+                    {t('table.plate')}<SortIcon column="plate" />
+                  </button>
+                </TableHead>
+                <TableHead>
+                  <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('vehicle')}>
+                    {t('table.vehicle')}<SortIcon column="vehicle" />
+                  </button>
+                </TableHead>
+                <TableHead className="hidden w-[24%] sm:table-cell">
+                  <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('customer')}>
+                    {t('table.customer')}<SortIcon column="customer" />
+                  </button>
+                </TableHead>
+                <TableHead className="hidden md:table-cell w-[100px]">
+                  <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort('mileage')}>
+                    {serviceType === 'marine' ? t('table.mileageMarine') : t('table.mileage')}<SortIcon column="mileage" />
+                  </button>
+                </TableHead>
+                <TableHead className="w-[80px]">
+                  <button type="button" className="mx-auto flex items-center hover:text-foreground" onClick={() => handleSort('services')}>
+                    {t('table.services')}<SortIcon column="services" />
+                  </button>
+                </TableHead>
                 <TableHead className="w-[50px]" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.vehicles.map((v) => (
+                <ContextMenu key={v.id} modal={false}>
+                <ContextMenuTrigger asChild>
                 <TableRow
-                  key={v.id}
                   className="cursor-pointer"
                   onClick={() => router.push(`/vehicles/${v.id}`)}
                 >
                   <TableCell className="font-mono text-sm">{v.licensePlate || '-'}</TableCell>
-                  <TableCell>
+                  <TableCell className="truncate">
                     <span className="font-medium">
                       {v.year} {v.make} {v.model}
                     </span>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell text-muted-foreground">
-                    {v.customer?.name || '-'}
+                  <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
+                    {v.customer ? (
+                      <TableCellLink href={`/customers/${v.customer.id}`}>
+                        {v.customer.name}
+                      </TableCellLink>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-right font-mono text-sm">
                     {new Intl.NumberFormat('en-US').format(v.mileage)}
@@ -368,6 +433,54 @@ export function VehiclesClient({
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="min-w-52">
+                  <ContextMenuItem onClick={() => router.push(`/vehicles/${v.id}`)}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {tcm('open')}
+                  </ContextMenuItem>
+                  {v.customer && (
+                    <ContextMenuItem onClick={() => router.push(`/customers/${v.customer?.id}`)}>
+                      <Users className="mr-2 h-4 w-4" />
+                      {tcm('openCustomer')}
+                    </ContextMenuItem>
+                  )}
+                  <ContextMenuSeparator />
+                  {!isArchived && (
+                    <ContextMenuItem
+                      onClick={() => {
+                        setEditVehicle(v)
+                        setShowForm(true)
+                      }}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {t('edit')}
+                    </ContextMenuItem>
+                  )}
+                  {isArchived ? (
+                    <ContextMenuItem
+                      onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
+                    >
+                      <ArchiveRestore className="mr-2 h-4 w-4" />
+                      {t('unarchive')}
+                    </ContextMenuItem>
+                  ) : (
+                    <ContextMenuItem
+                      onClick={() => setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })}
+                    >
+                      <Archive className="mr-2 h-4 w-4" />
+                      {t('archive')}
+                    </ContextMenuItem>
+                  )}
+                  <ContextMenuItem
+                    variant="destructive"
+                    onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t('delete')}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+                </ContextMenu>
               ))}
             </TableBody>
           </Table>
@@ -389,8 +502,9 @@ export function VehiclesClient({
         /* Grid view */
         <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}>
           {data.vehicles.map((v) => (
+            <ContextMenu key={v.id} modal={false}>
+            <ContextMenuTrigger asChild>
             <Card
-              key={v.id}
               className="group overflow-hidden border-0 py-0 gap-0 shadow-sm transition-all hover:shadow-lg hover:-translate-y-0.5"
             >
               <Link href={`/vehicles/${v.id}`}>
@@ -482,6 +596,54 @@ export function VehiclesClient({
                 </CardContent>
               </Link>
             </Card>
+            </ContextMenuTrigger>
+            <ContextMenuContent className="min-w-52">
+              <ContextMenuItem onClick={() => router.push(`/vehicles/${v.id}`)}>
+                <ExternalLink className="mr-2 h-4 w-4" />
+                {tcm('open')}
+              </ContextMenuItem>
+              {v.customer && (
+                <ContextMenuItem onClick={() => router.push(`/customers/${v.customer?.id}`)}>
+                  <Users className="mr-2 h-4 w-4" />
+                  {tcm('openCustomer')}
+                </ContextMenuItem>
+              )}
+              <ContextMenuSeparator />
+              {!isArchived && (
+                <ContextMenuItem
+                  onClick={() => {
+                    setEditVehicle(v)
+                    setShowForm(true)
+                  }}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  {t('edit')}
+                </ContextMenuItem>
+              )}
+              {isArchived ? (
+                <ContextMenuItem
+                  onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
+                >
+                  <ArchiveRestore className="mr-2 h-4 w-4" />
+                  {t('unarchive')}
+                </ContextMenuItem>
+              ) : (
+                <ContextMenuItem
+                  onClick={() => setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })}
+                >
+                  <Archive className="mr-2 h-4 w-4" />
+                  {t('archive')}
+                </ContextMenuItem>
+              )}
+              <ContextMenuItem
+                variant="destructive"
+                onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                {t('delete')}
+              </ContextMenuItem>
+            </ContextMenuContent>
+            </ContextMenu>
           ))}
         </div>
       )}
@@ -498,10 +660,14 @@ export function VehiclesClient({
         open={showForm}
         onOpenChange={(open) => {
           setShowForm(open)
-          if (!open) setEditVehicle(null)
+          if (!open) {
+            setEditVehicle(null)
+            setCreateCustomerId(undefined)
+          }
         }}
         vehicle={editVehicle ?? undefined}
         customers={customers}
+        defaultCustomerId={createCustomerId}
       />
 
       <ArchiveVehicleDialog

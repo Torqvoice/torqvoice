@@ -1,5 +1,6 @@
 "use server";
 
+import { toSafeDate } from "@/lib/invoice-utils";
 import { randomBytes } from "crypto";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
@@ -13,7 +14,7 @@ export async function createStatusReport(input: unknown) {
 
       // Verify the service record belongs to this org
       const serviceRecord = await db.serviceRecord.findFirst({
-        where: { id: data.serviceRecordId, vehicle: { organizationId } },
+        where: { id: data.serviceRecordId, organizationId },
         select: { id: true, technicianId: true },
       });
       if (!serviceRecord) throw new Error("Service record not found");
@@ -35,7 +36,7 @@ export async function createStatusReport(input: unknown) {
           organizationId,
           technicianId: technician?.id || serviceRecord.technicianId,
           status: data.videoUrl ? "published" : "draft",
-          expiresAt: data.expiresAt ? new Date(data.expiresAt) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+          expiresAt: toSafeDate(data.expiresAt) ?? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
         },
       });
 

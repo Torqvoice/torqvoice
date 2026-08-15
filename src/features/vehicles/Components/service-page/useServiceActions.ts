@@ -27,7 +27,7 @@ export function useServiceActions({
   formState,
 }: {
   record: ServiceDetail
-  vehicleId: string
+  vehicleId: string | null
   currencyCode: string
   formState: FormState
 }) {
@@ -151,7 +151,7 @@ export function useServiceActions({
     if (result.success) {
       setHasUnsavedChanges(false)
       flashSaved()
-      if (selectedVehicleId !== vehicleId) {
+      if (selectedVehicleId && selectedVehicleId !== vehicleId) {
         router.push(`/vehicles/${selectedVehicleId}/service/${initialData.id}`)
       } else {
         router.refresh()
@@ -172,11 +172,17 @@ export function useServiceActions({
       destructive: true,
     })
     if (!ok) return
+    // A pending autosave firing after the delete would hit a record that no
+    // longer exists, so cancel it and block further saves before deleting.
+    if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    isSavingRef.current = true
     const result = await deleteServiceRecord(record.id)
     if (result.success) {
-      router.push(`/vehicles/${vehicleId}`)
+      setHasUnsavedChanges(false)
+      router.push(vehicleId ? `/vehicles/${vehicleId}` : '/work-orders')
       router.refresh()
     } else {
+      isSavingRef.current = false
       modal.open('error', tc('errors.error'), result.error || t('page.failedDelete'))
     }
   }
@@ -232,7 +238,7 @@ export function useServiceActions({
       interpolateSmsTemplate(tpl, {
         amount,
         invoice_number: invoiceNum,
-        customer_name: record.vehicle.customer?.name || '',
+        customer_name: (record.customer ?? record.vehicle?.customer)?.name || '',
         company_name: tplData?.companyName || '',
         current_user: tplData?.currentUser || '',
       })
@@ -252,7 +258,7 @@ export function useServiceActions({
     if (result.success) {
       toast.success(t('payments.recorded'))
       router.refresh()
-      if (record.vehicle.customer) {
+      if (record.customer ?? record.vehicle?.customer) {
         await buildPaymentNotifyMessage(formatCurrency(data.amount, currencyCode))
       }
       return true
@@ -271,7 +277,7 @@ export function useServiceActions({
         result.data?.manuallyPaid ? t('payments.markedPaid') : t('payments.markedUnpaid')
       )
       router.refresh()
-      if (result.data?.manuallyPaid && record.vehicle.customer) {
+      if (result.data?.manuallyPaid && (record.customer ?? record.vehicle?.customer)) {
         await buildPaymentNotifyMessage('')
       }
     } else {

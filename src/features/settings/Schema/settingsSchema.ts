@@ -96,6 +96,13 @@ export const SETTING_KEYS = {
   PORTAL_ENABLED: 'portal.enabled',
   PORTAL_DESCRIPTION: 'portal.description',
   PORTAL_HOURS: 'portal.hours',
+  /// Off by default. Every service request already raises an in-app
+  /// notification; this adds email on top, and stays opt-in because a workshop
+  /// with no mail provider configured would otherwise generate failed sends.
+  SERVICE_REQUEST_ALERTS_EMAIL: 'portal.serviceRequestAlerts.email',
+  /// Optional free-text list of addresses. Empty means the alert goes to every
+  /// owner and admin in the organization.
+  SERVICE_REQUEST_ALERTS_RECIPIENTS: 'portal.serviceRequestAlerts.recipients',
   PORTAL_BACKGROUND_TYPE: 'portal.background.type',
   PORTAL_BACKGROUND_TEMPLATE: 'portal.background.template',
   PORTAL_BACKGROUND_IMAGE: 'portal.background.image',

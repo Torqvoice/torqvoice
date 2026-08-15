@@ -78,6 +78,16 @@ export async function buildInvoicePdfBuffer(
       // Linked technician (FK) is the source of truth for the tech name;
       // the legacy `techName` string is only a fallback for old records.
       technician: { select: { name: true } },
+      customer: {
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+          address: true,
+          company: true,
+          taxId: true,
+        },
+      },
       vehicle: {
         select: {
           make: true,
@@ -105,7 +115,7 @@ export async function buildInvoicePdfBuffer(
 
   if (!record) return null
 
-  const orgId = record.vehicle.organizationId
+  const orgId = record.organizationId
   if (!orgId) return null
 
   // Resolve locale + load PDF translations

@@ -73,7 +73,10 @@
     "subtotal": "Subtotale ricambi: {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "Dal magazzino"
+    "addFromInventory": "Dal magazzino",
+    "unitCost": "Costo",
+    "markupPercent": "Ricarico %",
+    "nameMissingHint": "Le righe senza nome del ricambio non vengono salvate."
   },
   "labor": {
     "title": "Manodopera",

@@ -39,6 +39,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { SmsConversation } from "@/features/sms/Components/SmsConversation";
 import { TelegramConversation } from "@/features/telegram/Components/TelegramConversation";
 import { CustomerForm } from "@/features/customers/Components/CustomerForm";
+import { VehicleForm } from "@/features/vehicles/Components/VehicleForm";
 import { updateServiceRequest, createWorkOrderFromRequest } from "@/features/customers/Actions/customerActions";
 import { SendSmsDialog } from "@/features/sms/Components/SendSmsDialog";
 import { TelegramQrCode } from "@/features/telegram/Components/TelegramQrCode";
@@ -57,6 +58,7 @@ interface ServiceRequestItem {
 
 interface CustomerDetail {
   id: string;
+  customerNumber: string | null;
   name: string;
   email: string | null;
   phone: string | null;
@@ -89,6 +91,7 @@ interface SmsMessage {
 
 export function CustomerDetailClient({
   customer,
+  customers = [],
   unitSystem = "imperial",
   smsEnabled = false,
   smsMessages = [],
@@ -100,6 +103,7 @@ export function CustomerDetailClient({
   telegramChatId = null,
 }: {
   customer: CustomerDetail;
+  customers?: { id: string; name: string; company: string | null }[];
   unitSystem?: "metric" | "imperial";
   smsEnabled?: boolean;
   smsMessages?: SmsMessage[];
@@ -111,10 +115,12 @@ export function CustomerDetailClient({
   telegramChatId?: string | null;
 }) {
   const t = useTranslations("customers.detail");
+  const tVehicles = useTranslations("vehicles.list");
   const serviceType = useServiceType();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showEditForm, setShowEditForm] = useState(false);
+  const [showVehicleForm, setShowVehicleForm] = useState(false);
 
   const tabParam = searchParams.get("tab");
   const activeTab =
@@ -158,7 +164,14 @@ export function CustomerDetailClient({
             <Users className="h-7 w-7 text-primary" />
           </div>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold">{customer.name}</h1>
+            <h1 className="flex items-baseline gap-2 text-2xl font-bold">
+              {customer.name}
+              {customer.customerNumber && (
+                <span className="font-mono text-sm font-normal text-muted-foreground">
+                  #{customer.customerNumber}
+                </span>
+              )}
+            </h1>
             {hasContactInfo && (
               <div className="mt-1.5 flex flex-wrap gap-x-5 gap-y-1.5 text-sm">
                 {customer.company && (
@@ -300,6 +313,18 @@ export function CustomerDetailClient({
 
         {activeTab === "vehicles" && (
           <>
+            <div className="mb-3 flex justify-end">
+              <Button size="sm" onClick={() => setShowVehicleForm(true)}>
+                <Plus className="mr-1 h-4 w-4" />
+                {tVehicles("addVehicle")}
+              </Button>
+            </div>
+            <VehicleForm
+              open={showVehicleForm}
+              onOpenChange={setShowVehicleForm}
+              customers={customers}
+              defaultCustomerId={customer.id}
+            />
             {customer.vehicles.length === 0 ? (
               <Card className="border-dashed">
                 <CardContent className="flex flex-col items-center py-12">
@@ -325,7 +350,7 @@ export function CustomerDetailClient({
                       <TableRow
                         key={v.id}
                         className="cursor-pointer"
-                        onClick={() => router.push(`/vehicles/${v.id}`)}
+                        onClick={() => router.push(`/vehicles/${v.id}?back=${encodeURIComponent(`/customers/${customer.id}`)}`)}
                       >
                         <TableCell className="font-mono text-sm">
                           {v.licensePlate || "-"}

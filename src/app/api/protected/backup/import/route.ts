@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
 import { isDemoMode } from "@/lib/demo";
+import { toSafeDate } from "@/lib/invoice-utils";
 import { Prisma } from "@/generated/prisma/client";
 import JSZip from "jszip";
 import { mkdir, rm, writeFile } from "fs/promises";
@@ -49,6 +50,147 @@ async function parseBackup(
   const text = new TextDecoder().decode(buffer);
   const backup = JSON.parse(text);
   return { backup, files: null };
+}
+
+/**
+ * Restores one service record with its nested parts/labor/attachments/payments.
+ * Used for both vehicle-linked records (nested under vehicles in the backup)
+ * and counter sales (top-level records without a vehicle).
+ */
+async function importServiceRecordTree(
+  tx: Prisma.TransactionClient,
+  sr: Record<string, unknown>,
+  opts: {
+    organizationId: string;
+    vehicleId: string | null;
+    customerId: string | null;
+    workDayStartTime: string;
+  }
+) {
+  // Derive startDateTime/endDateTime from backup or fall back to serviceDate + work day start
+  let startDT: Date | undefined;
+  let endDT: Date | undefined;
+  if (sr.startDateTime) {
+    startDT = toSafeDate(sr.startDateTime as string);
+  }
+  if (!startDT && sr.serviceDate) {
+    const sd = toSafeDate(sr.serviceDate as string);
+    if (sd) {
+      const [h, m] = opts.workDayStartTime.split(":").map(Number);
+      startDT = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate(), h, m, 0, 0);
+    }
+  }
+  if (sr.endDateTime) {
+    endDT = toSafeDate(sr.endDateTime as string);
+  }
+  if (!endDT && startDT) {
+    endDT = new Date(startDT.getTime() + 3600000);
+  }
+
+  await tx.serviceRecord.create({
+    data: {
+      id: sr.id as string,
+      organizationId: opts.organizationId,
+      title: sr.title as string,
+      description: (sr.description as string) || null,
+      type: (sr.type as string) || "maintenance",
+      status: (sr.status as string) || "completed",
+      cost: (sr.cost as number) || 0,
+      mileage: (sr.mileage as number) || null,
+      serviceDate: toSafeDate(sr.serviceDate as string),
+      startDateTime: startDT ?? undefined,
+      endDateTime: endDT ?? undefined,
+      shopName: (sr.shopName as string) || null,
+      techName: (sr.techName as string) || null,
+      parts: (sr.parts as string) || null,
+      laborHours: (sr.laborHours as number) || null,
+      diagnosticNotes: (sr.diagnosticNotes as string) || null,
+      invoiceNotes: (sr.invoiceNotes as string) || null,
+      subtotal: (sr.subtotal as number) || 0,
+      taxRate: (sr.taxRate as number) || 0,
+      taxAmount: (sr.taxAmount as number) || 0,
+      taxInclusive: (sr.taxInclusive as boolean) ?? false,
+      totalAmount: (sr.totalAmount as number) || 0,
+      invoiceNumber: (sr.invoiceNumber as string) || null,
+      discountType: (sr.discountType as string) || null,
+      discountValue: (sr.discountValue as number) || 0,
+      discountAmount: (sr.discountAmount as number) || 0,
+      publicToken: (sr.publicToken as string) || null,
+      technicianId: (sr.technicianId as string) || null,
+      sortOrder: (sr.sortOrder as number) || 0,
+      createdAt: toSafeDate(sr.createdAt as string),
+      updatedAt: toSafeDate(sr.updatedAt as string),
+      vehicleId: opts.vehicleId,
+      customerId: opts.customerId,
+    },
+  });
+
+  // Service parts
+  const partItems = sr.partItems as Record<string, unknown>[] | undefined;
+  if (partItems?.length) {
+    await tx.servicePart.createMany({
+      data: partItems.map((p) => ({
+        id: p.id as string,
+        partNumber: (p.partNumber as string) || null,
+        name: p.name as string,
+        quantity: (p.quantity as number) || 1,
+        unitPrice: (p.unitPrice as number) || 0,
+        total: (p.total as number) || 0,
+        serviceRecordId: sr.id as string,
+      })),
+    });
+  }
+
+  // Service labor
+  const laborItems = sr.laborItems as Record<string, unknown>[] | undefined;
+  if (laborItems?.length) {
+    await tx.serviceLabor.createMany({
+      data: laborItems.map((l) => ({
+        id: l.id as string,
+        description: l.description as string,
+        hours: (l.hours as number) || 0,
+        rate: (l.rate as number) || 0,
+        total: (l.total as number) || 0,
+        serviceRecordId: sr.id as string,
+      })),
+    });
+  }
+
+  // Service attachments
+  const attachments = sr.attachments as Record<string, unknown>[] | undefined;
+  if (attachments?.length) {
+    await tx.serviceAttachment.createMany({
+      data: attachments.map((a) => ({
+        id: a.id as string,
+        fileName: a.fileName as string,
+        fileUrl: rewriteFileUrl(a.fileUrl as string, opts.organizationId) || (a.fileUrl as string),
+        fileType: a.fileType as string,
+        fileSize: (a.fileSize as number) || 0,
+        category: (a.category as string) || "diagnostic",
+        description: (a.description as string) || null,
+        includeInInvoice: a.includeInInvoice !== false,
+        createdAt: toSafeDate(a.createdAt as string),
+        serviceRecordId: sr.id as string,
+      })),
+    });
+  }
+
+  // Payments
+  const payments = sr.payments as Record<string, unknown>[] | undefined;
+  if (payments?.length) {
+    await tx.payment.createMany({
+      data: payments.map((p) => ({
+        id: p.id as string,
+        amount: p.amount as number,
+        date: toSafeDate(p.date as string),
+        method: (p.method as string) || "other",
+        note: (p.note as string) || null,
+        createdAt: toSafeDate(p.createdAt as string),
+        updatedAt: toSafeDate(p.updatedAt as string),
+        serviceRecordId: sr.id as string,
+      })),
+    });
+  }
 }
 
 async function restoreFiles(zip: JSZip, organizationId: string) {
@@ -234,12 +376,8 @@ export async function POST(request: NextRequest) {
               address: (c.address as string) || null,
               company: (c.company as string) || null,
               notes: (c.notes as string) || null,
-              createdAt: c.createdAt
-                ? new Date(c.createdAt as string)
-                : undefined,
-              updatedAt: c.updatedAt
-                ? new Date(c.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(c.createdAt as string),
+              updatedAt: toSafeDate(c.updatedAt as string),
               userId: ctx.userId,
               organizationId: ctx.organizationId,
             })
@@ -259,12 +397,8 @@ export async function POST(request: NextRequest) {
               sortOrder: (t.sortOrder as number) || 0,
               dailyCapacity: (t.dailyCapacity as number) || 480,
               userId: (t.userId as string) || null, // memberId from old backups ignored — no FK to users
-              createdAt: t.createdAt
-                ? new Date(t.createdAt as string)
-                : undefined,
-              updatedAt: t.updatedAt
-                ? new Date(t.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(t.createdAt as string),
+              updatedAt: toSafeDate(t.updatedAt as string),
               organizationId: ctx.organizationId,
             })
           ),
@@ -288,12 +422,8 @@ export async function POST(request: NextRequest) {
               entityType: def.entityType as string,
               sortOrder: (def.sortOrder as number) || 0,
               isActive: def.isActive !== false,
-              createdAt: def.createdAt
-                ? new Date(def.createdAt as string)
-                : undefined,
-              updatedAt: def.updatedAt
-                ? new Date(def.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(def.createdAt as string),
+              updatedAt: toSafeDate(def.updatedAt as string),
               userId: ctx.userId,
               organizationId: ctx.organizationId,
             },
@@ -335,12 +465,8 @@ export async function POST(request: NextRequest) {
               imageUrl: rewriteFileUrl(p.imageUrl as string, ctx.organizationId),
               location: (p.location as string) || null,
               isArchived: (p.isArchived as boolean) || false,
-              createdAt: p.createdAt
-                ? new Date(p.createdAt as string)
-                : undefined,
-              updatedAt: p.updatedAt
-                ? new Date(p.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(p.createdAt as string),
+              updatedAt: toSafeDate(p.updatedAt as string),
               userId: ctx.userId,
               organizationId: ctx.organizationId,
             })
@@ -369,18 +495,12 @@ export async function POST(request: NextRequest) {
               fuelType: (v.fuelType as string) || null,
               transmission: (v.transmission as string) || null,
               engineSize: (v.engineSize as string) || null,
-              purchaseDate: v.purchaseDate
-                ? new Date(v.purchaseDate as string)
-                : null,
+              purchaseDate: toSafeDate(v.purchaseDate as string) ?? null,
               purchasePrice: (v.purchasePrice as number) || null,
               imageUrl: rewriteFileUrl(v.imageUrl as string, ctx.organizationId),
               isArchived: (v.isArchived as boolean) || false,
-              createdAt: v.createdAt
-                ? new Date(v.createdAt as string)
-                : undefined,
-              updatedAt: v.updatedAt
-                ? new Date(v.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(v.createdAt as string),
+              updatedAt: toSafeDate(v.updatedAt as string),
               userId: ctx.userId,
               organizationId: ctx.organizationId,
               customerId: (v.customerId as string) || null,
@@ -396,12 +516,8 @@ export async function POST(request: NextRequest) {
                 title: n.title as string,
                 content: n.content as string,
                 isPinned: (n.isPinned as boolean) || false,
-                createdAt: n.createdAt
-                  ? new Date(n.createdAt as string)
-                  : undefined,
-                updatedAt: n.updatedAt
-                  ? new Date(n.updatedAt as string)
-                  : undefined,
+                createdAt: toSafeDate(n.createdAt as string),
+                updatedAt: toSafeDate(n.updatedAt as string),
                 vehicleId: v.id as string,
               })),
             });
@@ -413,7 +529,7 @@ export async function POST(request: NextRequest) {
             await tx.fuelLog.createMany({
               data: fuelLogs.map((f) => ({
                 id: f.id as string,
-                date: f.date ? new Date(f.date as string) : undefined,
+                date: toSafeDate(f.date as string),
                 mileage: f.mileage as number,
                 gallons: f.gallons as number,
                 pricePerGallon: f.pricePerGallon as number,
@@ -421,12 +537,8 @@ export async function POST(request: NextRequest) {
                 isFillUp: f.isFillUp !== false,
                 station: (f.station as string) || null,
                 notes: (f.notes as string) || null,
-                createdAt: f.createdAt
-                  ? new Date(f.createdAt as string)
-                  : undefined,
-                updatedAt: f.updatedAt
-                  ? new Date(f.updatedAt as string)
-                  : undefined,
+                createdAt: toSafeDate(f.createdAt as string),
+                updatedAt: toSafeDate(f.updatedAt as string),
                 vehicleId: v.id as string,
               })),
             });
@@ -442,16 +554,16 @@ export async function POST(request: NextRequest) {
                 id: r.id as string,
                 title: r.title as string,
                 description: (r.description as string) || null,
-                dueDate: r.dueDate ? new Date(r.dueDate as string) : null,
+                dueDate: toSafeDate(r.dueDate as string) ?? null,
                 dueMileage: (r.dueMileage as number) || null,
                 isCompleted: (r.isCompleted as boolean) || false,
-                createdAt: r.createdAt
-                  ? new Date(r.createdAt as string)
-                  : undefined,
-                updatedAt: r.updatedAt
-                  ? new Date(r.updatedAt as string)
-                  : undefined,
+                notifyInApp: (r.notifyInApp as boolean) ?? true,
+                notifyEmail: (r.notifyEmail as boolean) ?? false,
+                createdAt: toSafeDate(r.createdAt as string),
+                updatedAt: toSafeDate(r.updatedAt as string),
                 vehicleId: v.id as string,
+                customerId: (r.customerId as string) || null,
+                organizationId: ctx.organizationId,
               })),
             });
           }
@@ -462,146 +574,49 @@ export async function POST(request: NextRequest) {
             | undefined;
           if (serviceRecords?.length) {
             for (const sr of serviceRecords) {
-              // Derive startDateTime/endDateTime from backup or fall back to serviceDate + work day start
-              let startDT: Date | undefined;
-              let endDT: Date | undefined;
-              if (sr.startDateTime) {
-                startDT = new Date(sr.startDateTime as string);
-              } else if (sr.serviceDate) {
-                const sd = new Date(sr.serviceDate as string);
-                const [h, m] = workDayStartTime.split(":").map(Number);
-                startDT = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate(), h, m, 0, 0);
-              }
-              if (sr.endDateTime) {
-                endDT = new Date(sr.endDateTime as string);
-              } else if (startDT) {
-                endDT = new Date(startDT.getTime() + 3600000);
-              }
-
-              await tx.serviceRecord.create({
-                data: {
-                  id: sr.id as string,
-                  title: sr.title as string,
-                  description: (sr.description as string) || null,
-                  type: (sr.type as string) || "maintenance",
-                  status: (sr.status as string) || "completed",
-                  cost: (sr.cost as number) || 0,
-                  mileage: (sr.mileage as number) || null,
-                  serviceDate: sr.serviceDate
-                    ? new Date(sr.serviceDate as string)
-                    : undefined,
-                  startDateTime: startDT ?? undefined,
-                  endDateTime: endDT ?? undefined,
-                  shopName: (sr.shopName as string) || null,
-                  techName: (sr.techName as string) || null,
-                  parts: (sr.parts as string) || null,
-                  laborHours: (sr.laborHours as number) || null,
-                  diagnosticNotes: (sr.diagnosticNotes as string) || null,
-                  invoiceNotes: (sr.invoiceNotes as string) || null,
-                  subtotal: (sr.subtotal as number) || 0,
-                  taxRate: (sr.taxRate as number) || 0,
-                  taxAmount: (sr.taxAmount as number) || 0,
-                  taxInclusive: (sr.taxInclusive as boolean) ?? false,
-                  totalAmount: (sr.totalAmount as number) || 0,
-                  invoiceNumber: (sr.invoiceNumber as string) || null,
-                  discountType: (sr.discountType as string) || null,
-                  discountValue: (sr.discountValue as number) || 0,
-                  discountAmount: (sr.discountAmount as number) || 0,
-                  publicToken: (sr.publicToken as string) || null,
-                  technicianId: (sr.technicianId as string) || null,
-                  sortOrder: (sr.sortOrder as number) || 0,
-                  createdAt: sr.createdAt
-                    ? new Date(sr.createdAt as string)
-                    : undefined,
-                  updatedAt: sr.updatedAt
-                    ? new Date(sr.updatedAt as string)
-                    : undefined,
-                  vehicleId: v.id as string,
-                },
+              await importServiceRecordTree(tx, sr, {
+                organizationId: ctx.organizationId,
+                vehicleId: v.id as string,
+                customerId: null,
+                workDayStartTime,
               });
-
-              // Service parts
-              const partItems = sr.partItems as
-                | Record<string, unknown>[]
-                | undefined;
-              if (partItems?.length) {
-                await tx.servicePart.createMany({
-                  data: partItems.map((p) => ({
-                    id: p.id as string,
-                    partNumber: (p.partNumber as string) || null,
-                    name: p.name as string,
-                    quantity: (p.quantity as number) || 1,
-                    unitPrice: (p.unitPrice as number) || 0,
-                    total: (p.total as number) || 0,
-                    serviceRecordId: sr.id as string,
-                  })),
-                });
-              }
-
-              // Service labor
-              const laborItems = sr.laborItems as
-                | Record<string, unknown>[]
-                | undefined;
-              if (laborItems?.length) {
-                await tx.serviceLabor.createMany({
-                  data: laborItems.map((l) => ({
-                    id: l.id as string,
-                    description: l.description as string,
-                    hours: (l.hours as number) || 0,
-                    rate: (l.rate as number) || 0,
-                    total: (l.total as number) || 0,
-                    serviceRecordId: sr.id as string,
-                  })),
-                });
-              }
-
-              // Service attachments
-              const attachments = sr.attachments as
-                | Record<string, unknown>[]
-                | undefined;
-              if (attachments?.length) {
-                await tx.serviceAttachment.createMany({
-                  data: attachments.map((a) => ({
-                    id: a.id as string,
-                    fileName: a.fileName as string,
-                    fileUrl: rewriteFileUrl(a.fileUrl as string, ctx.organizationId) || (a.fileUrl as string),
-                    fileType: a.fileType as string,
-                    fileSize: (a.fileSize as number) || 0,
-                    category: (a.category as string) || "diagnostic",
-                    description: (a.description as string) || null,
-                    includeInInvoice: a.includeInInvoice !== false,
-                    createdAt: a.createdAt
-                      ? new Date(a.createdAt as string)
-                      : undefined,
-                    serviceRecordId: sr.id as string,
-                  })),
-                });
-              }
-
-              // Payments
-              const payments = sr.payments as
-                | Record<string, unknown>[]
-                | undefined;
-              if (payments?.length) {
-                await tx.payment.createMany({
-                  data: payments.map((p) => ({
-                    id: p.id as string,
-                    amount: p.amount as number,
-                    date: p.date ? new Date(p.date as string) : undefined,
-                    method: (p.method as string) || "other",
-                    note: (p.note as string) || null,
-                    createdAt: p.createdAt
-                      ? new Date(p.createdAt as string)
-                      : undefined,
-                    updatedAt: p.updatedAt
-                      ? new Date(p.updatedAt as string)
-                      : undefined,
-                    serviceRecordId: sr.id as string,
-                  })),
-                });
-              }
             }
           }
+        }
+      }
+
+      // 6b. Customer/workshop reminders (no vehicle). Older backups don't
+      // have this key.
+      if (data.orgReminders?.length) {
+        await tx.reminder.createMany({
+          data: (data.orgReminders as Record<string, unknown>[]).map((r) => ({
+            id: r.id as string,
+            title: r.title as string,
+            description: (r.description as string) || null,
+            dueDate: toSafeDate(r.dueDate as string) ?? null,
+            dueMileage: (r.dueMileage as number) || null,
+            isCompleted: (r.isCompleted as boolean) || false,
+            notifyInApp: (r.notifyInApp as boolean) ?? true,
+            notifyEmail: (r.notifyEmail as boolean) ?? false,
+            createdAt: toSafeDate(r.createdAt as string),
+            updatedAt: toSafeDate(r.updatedAt as string),
+            vehicleId: null,
+            customerId: (r.customerId as string) || null,
+            organizationId: ctx.organizationId,
+          })),
+        });
+      }
+
+      // 6c. Counter sales (service records without a vehicle, linked directly
+      // to a customer). Older backups don't have this key.
+      if (data.counterSales?.length) {
+        for (const sr of data.counterSales as Record<string, unknown>[]) {
+          await importServiceRecordTree(tx, sr, {
+            organizationId: ctx.organizationId,
+            vehicleId: null,
+            customerId: (sr.customerId as string) || null,
+            workDayStartTime,
+          });
         }
       }
 
@@ -615,9 +630,7 @@ export async function POST(request: NextRequest) {
               title: q.title as string,
               description: (q.description as string) || null,
               status: (q.status as string) || "draft",
-              validUntil: q.validUntil
-                ? new Date(q.validUntil as string)
-                : null,
+              validUntil: toSafeDate(q.validUntil as string) ?? null,
               subtotal: (q.subtotal as number) || 0,
               taxRate: (q.taxRate as number) || 0,
               taxAmount: (q.taxAmount as number) || 0,
@@ -628,12 +641,8 @@ export async function POST(request: NextRequest) {
               totalAmount: (q.totalAmount as number) || 0,
               notes: (q.notes as string) || null,
               convertedToId: (q.convertedToId as string) || null,
-              createdAt: q.createdAt
-                ? new Date(q.createdAt as string)
-                : undefined,
-              updatedAt: q.updatedAt
-                ? new Date(q.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(q.createdAt as string),
+              updatedAt: toSafeDate(q.updatedAt as string),
               userId: ctx.userId,
               organizationId: ctx.organizationId,
               customerId: (q.customerId as string) || null,
@@ -687,12 +696,8 @@ export async function POST(request: NextRequest) {
               name: tmpl.name as string,
               description: (tmpl.description as string) || null,
               isDefault: (tmpl.isDefault as boolean) || false,
-              createdAt: tmpl.createdAt
-                ? new Date(tmpl.createdAt as string)
-                : undefined,
-              updatedAt: tmpl.updatedAt
-                ? new Date(tmpl.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(tmpl.createdAt as string),
+              updatedAt: toSafeDate(tmpl.updatedAt as string),
               organizationId: ctx.organizationId,
             },
           });
@@ -734,23 +739,13 @@ export async function POST(request: NextRequest) {
               status: (insp.status as string) || "in_progress",
               mileage: (insp.mileage as number) || null,
               notes: (insp.notes as string) || null,
-              startDateTime: insp.startDateTime
-                ? new Date(insp.startDateTime as string)
-                : null,
-              endDateTime: insp.endDateTime
-                ? new Date(insp.endDateTime as string)
-                : null,
+              startDateTime: toSafeDate(insp.startDateTime as string) ?? null,
+              endDateTime: toSafeDate(insp.endDateTime as string) ?? null,
               publicToken: (insp.publicToken as string) || null,
-              completedAt: insp.completedAt
-                ? new Date(insp.completedAt as string)
-                : null,
+              completedAt: toSafeDate(insp.completedAt as string) ?? null,
               sortOrder: (insp.sortOrder as number) || 0,
-              createdAt: insp.createdAt
-                ? new Date(insp.createdAt as string)
-                : undefined,
-              updatedAt: insp.updatedAt
-                ? new Date(insp.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(insp.createdAt as string),
+              updatedAt: toSafeDate(insp.updatedAt as string),
               vehicleId: insp.vehicleId as string,
               templateId: insp.templateId as string,
               technicianId: (insp.technicianId as string) || null,
@@ -782,9 +777,7 @@ export async function POST(request: NextRequest) {
                 status: (qr.status as string) || "pending",
                 message: (qr.message as string) || null,
                 selectedItemIds: (qr.selectedItemIds as string[]) || [],
-                createdAt: qr.createdAt
-                  ? new Date(qr.createdAt as string)
-                  : undefined,
+                createdAt: toSafeDate(qr.createdAt as string),
                 inspectionId: insp.id as string,
                 organizationId: ctx.organizationId,
               })),
@@ -799,9 +792,7 @@ export async function POST(request: NextRequest) {
           data: (data.auditLogs as Record<string, unknown>[]).map(
             (log: Record<string, unknown>) => ({
               id: log.id as string,
-              timestamp: log.timestamp
-                ? new Date(log.timestamp as string)
-                : undefined,
+              timestamp: toSafeDate(log.timestamp as string),
               action: log.action as string,
               entity: (log.entity as string) || null,
               entityId: (log.entityId as string) || null,
@@ -831,12 +822,8 @@ export async function POST(request: NextRequest) {
               errorMessage: (msg.errorMessage as string) || null,
               relatedEntityType: (msg.relatedEntityType as string) || null,
               relatedEntityId: (msg.relatedEntityId as string) || null,
-              createdAt: msg.createdAt
-                ? new Date(msg.createdAt as string)
-                : undefined,
-              updatedAt: msg.updatedAt
-                ? new Date(msg.updatedAt as string)
-                : undefined,
+              createdAt: toSafeDate(msg.createdAt as string),
+              updatedAt: toSafeDate(msg.updatedAt as string),
               organizationId: ctx.organizationId,
               customerId: (msg.customerId as string) || null,
             })
@@ -857,9 +844,7 @@ export async function POST(request: NextRequest) {
               entityId: n.entityId as string,
               entityUrl: n.entityUrl as string,
               read: (n.read as boolean) || false,
-              createdAt: n.createdAt
-                ? new Date(n.createdAt as string)
-                : undefined,
+              createdAt: toSafeDate(n.createdAt as string),
               organizationId: ctx.organizationId,
             })
           ),

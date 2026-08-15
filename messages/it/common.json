@@ -12,6 +12,14 @@
     "edit": "Modifica",
     "add": "Aggiungi"
   },
+  "contextMenu": {
+    "hint": "Suggerimento: clic destro su una riga per le azioni",
+    "open": "Apri",
+    "openVehicle": "Apri veicolo",
+    "openCustomer": "Apri cliente",
+    "edit": "Modifica",
+    "delete": "Elimina"
+  },
   "form": {
     "email": "Email",
     "password": "Password",
@@ -39,5 +47,10 @@
     "title": "Pagina non trovata",
     "description": "Sembra che questo pezzo sia ancora in officina. La pagina che stai cercando non esiste o è stata spostata.",
     "backToDashboard": "Torna alla dashboard"
+  },
+  "updateBanner": {
+    "updated": "Torqvoice è stato aggiornato alla versione {version}",
+    "whatsNew": "Scopri le novità",
+    "dismiss": "Chiudi"
   }
 }

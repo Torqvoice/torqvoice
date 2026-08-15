@@ -5,13 +5,14 @@ type UnassignedServiceRecord = {
   id: string;
   title: string;
   status: string;
+  // null for parts-only counter sales
   vehicle: {
     id: string;
     make: string;
     model: string;
     year: number;
     licensePlate: string | null;
-  };
+  } | null;
 };
 
 type UnassignedInspection = {

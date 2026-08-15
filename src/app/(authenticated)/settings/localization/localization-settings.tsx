@@ -110,6 +110,7 @@ const CURRENCIES = [
 const DATE_FORMAT_OPTIONS = [
   { value: 'MMM d, yyyy', label: 'MMM D, YYYY', example: 'Feb 15, 2026' },
   { value: 'dd/MM/yyyy', label: 'DD/MM/YYYY', example: '15/02/2026' },
+  { value: 'dd.MM.yyyy', label: 'DD.MM.YYYY', example: '15.02.2026' },
   { value: 'MM/dd/yyyy', label: 'MM/DD/YYYY', example: '02/15/2026' },
   { value: 'yyyy-MM-dd', label: 'YYYY-MM-DD', example: '2026-02-15' },
   { value: 'd. MMM yyyy', label: 'D. MMM YYYY', example: '15. Feb 2026' },
@@ -187,6 +188,9 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
   )
   const [timeFormat, setTimeFormat] = useState(settings[SETTING_KEYS.TIME_FORMAT] || '12h')
   const [timezone, setTimezone] = useState(settings[SETTING_KEYS.TIMEZONE] || '')
+  const [weekStartDay, setWeekStartDay] = useState(
+    settings[SETTING_KEYS.WORKBOARD_WEEK_START_DAY] || '1'
+  )
 
   const [forceCustomerLocale, setForceCustomerLocale] = useState(
     settings[SETTING_KEYS.FORCE_CUSTOMER_LOCALE] === 'true'
@@ -235,6 +239,7 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
       [SETTING_KEYS.DATE_FORMAT]: dateFormat,
       [SETTING_KEYS.TIME_FORMAT]: timeFormat,
       [SETTING_KEYS.TIMEZONE]: timezone,
+      [SETTING_KEYS.WORKBOARD_WEEK_START_DAY]: weekStartDay,
       [SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE]: normalizedCountryCode ?? '',
     })
     // Reflect the normalized form back in the input.
@@ -466,6 +471,22 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
                   <SelectContent>
                     <SelectItem value="12h">{t('appearance.time12h')}</SelectItem>
                     <SelectItem value="24h">{t('appearance.time24h')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t('workshop.weekStartDay')}</Label>
+                <Select value={weekStartDay} onValueChange={setWeekStartDay}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[0, 1, 2, 3, 4, 5, 6].map((d) => (
+                      <SelectItem key={d} value={String(d)}>
+                        {t(`workshop.weekDays.${d}`)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

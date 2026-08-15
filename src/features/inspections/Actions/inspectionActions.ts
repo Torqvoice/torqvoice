@@ -12,6 +12,8 @@ export async function getInspectionsPaginated(params: {
   pageSize?: number;
   search?: string;
   status?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ organizationId }) => {
     const page = params.page || 1;
@@ -42,7 +44,22 @@ export async function getInspectionsPaginated(params: {
           template: { select: { id: true, name: true } },
           items: { select: { id: true, condition: true } },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: (() => {
+          const dir = params.sortOrder || "desc";
+          switch (params.sortBy) {
+            // Column shows "year make model"; sort make, model, year so
+            // identical models group together
+            case "vehicle": return [
+              { vehicle: { make: dir } },
+              { vehicle: { model: dir } },
+              { vehicle: { year: dir } },
+            ];
+            case "template": return { template: { name: dir } };
+            case "status": return { status: dir };
+            case "createdAt": return { createdAt: dir };
+            default: return { createdAt: "desc" as const };
+          }
+        })(),
         skip,
         take: pageSize,
       }),
@@ -98,7 +115,9 @@ export async function getInspection(id: string) {
         },
       },
     });
-    if (!inspection) throw new Error("Inspection not found");
+    // Missing or foreign-org inspection yields null rather than an error: the
+    // page renders its not-found state, and this also runs during the
+    // post-delete re-render of the inspection route.
     return inspection;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INSPECTIONS }] });
 }

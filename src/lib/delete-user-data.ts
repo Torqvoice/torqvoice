@@ -13,7 +13,7 @@ async function deleteOrganization(organizationId: string, userId: string) {
   const filePaths: string[] = []
 
   const attachments = await db.serviceAttachment.findMany({
-    where: { serviceRecord: { vehicle: { organizationId } } },
+    where: { serviceRecord: { organizationId } },
     select: { fileUrl: true },
   })
   for (const att of attachments) {

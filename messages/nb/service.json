@@ -107,7 +107,8 @@
     "partNotFound": "Ingen del funnet for strekkode \"{barcode}\"",
     "deleteRow": "Delete row",
     "outOfStock": "Utsolgt",
-    "onBackorder": "På restordre ({count})"
+    "onBackorder": "På restordre ({count})",
+    "nameMissingHint": "Rader uten delenavn lagres ikke."
   },
   "labor": {
     "title": "Arbeid",
@@ -146,7 +147,8 @@
     "tax": "Skatt",
     "taxIncluded": "Avgift (inkl.)",
     "total": "Total",
-    "inclusiveModeHint": "Linjepriser legges inn med avgift inkludert. Totalene viser fordelingen netto + avgift."
+    "inclusiveModeHint": "Linjepriser legges inn med avgift inkludert. Totalene viser fordelingen netto + avgift.",
+    "partsCost": "Delekostnad (intern)"
   },
   "notes": {
     "title": "Notater",

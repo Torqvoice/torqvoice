@@ -27,7 +27,7 @@ export async function addServiceAttachment(input: unknown) {
       const record = await db.serviceRecord.findFirst({
         where: {
           id: data.serviceRecordId,
-          vehicle: { organizationId },
+          organizationId,
         },
         select: { id: true, vehicleId: true },
       });

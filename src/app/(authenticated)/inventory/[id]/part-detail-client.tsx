@@ -231,9 +231,9 @@ export function PartDetailClient({
                     </TableCell>
                     <TableCell className="font-medium">{m.quantityAfter}</TableCell>
                     <TableCell>
-                      {m.serviceRecordId && m.vehicleId ? (
+                      {m.serviceRecordId ? (
                         <Link
-                          href={`/vehicles/${m.vehicleId}/service/${m.serviceRecordId}`}
+                          href={m.vehicleId ? `/vehicles/${m.vehicleId}/service/${m.serviceRecordId}` : `/sales/${m.serviceRecordId}`}
                           className="inline-flex items-center gap-1 text-primary hover:underline"
                         >
                           {m.label}

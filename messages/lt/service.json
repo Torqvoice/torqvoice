@@ -107,7 +107,8 @@
     "partNotFound": "Dalis brūkšniniam kodui \"{barcode}\" nerasta",
     "deleteRow": "Delete row",
     "outOfStock": "Nėra sandėlyje",
-    "onBackorder": "Užsakoma ({count})"
+    "onBackorder": "Užsakoma ({count})",
+    "nameMissingHint": "Eilutės be dalies pavadinimo neišsaugomos."
   },
   "labor": {
     "title": "Darbai ir paslaugos",
@@ -146,7 +147,8 @@
     "tax": "Mokestis",
     "taxIncluded": "Mokestis (įsk.)",
     "total": "Iš viso",
-    "inclusiveModeHint": "Eilučių kainos įvedamos su mokesčiu. Sumos rodo paskirstymą be mokesčio + mokestis."
+    "inclusiveModeHint": "Eilučių kainos įvedamos su mokesčiu. Sumos rodo paskirstymą be mokesčio + mokestis.",
+    "partsCost": "Dalių savikaina (vidinė)"
   },
   "notes": {
     "title": "Pastabos",

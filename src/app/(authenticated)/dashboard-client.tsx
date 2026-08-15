@@ -16,6 +16,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { TableCellLink } from "@/components/table-cell-link";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -24,10 +31,12 @@ import {
   AlertTriangle,
   ArrowRight,
   Bell,
+  Car,
   Check,
   ClipboardCheck,
   ClipboardList,
   Clock,
+  ExternalLink,
   Eye,
   EyeOff,
   FileText,
@@ -36,6 +45,8 @@ import {
   BellRing,
   MessageSquare,
   Settings,
+  Plus,
+  RotateCcw,
   SlidersHorizontal,
   Undo2,
   Users,
@@ -47,7 +58,25 @@ import { updateQuoteRequestStatus } from "@/features/inspections/Actions/quoteRe
 import { acknowledgeQuoteResponse } from "@/features/quotes/Actions/quoteResponseActions";
 import { toast } from "sonner";
 import { convertQuoteToServiceRecord, createQuote } from "@/features/quotes/Actions/quoteActions";
-import { useDashboardVisibility, DASHBOARD_CARD_IDS } from "@/hooks/use-dashboard-visibility";
+import type { ReactNode } from "react";
+import { DashboardGrid } from "@/features/dashboard/Components/DashboardGrid";
+import {
+  saveDashboardLayout,
+  resetDashboardLayout,
+} from "@/features/dashboard/Actions/dashboardLayoutActions";
+import {
+  DASHBOARD_CARD_IDS,
+  DEFAULT_LAYOUT,
+  normalizeLayout,
+  placeAtBottom,
+  type DashboardCardId,
+  type DashboardLayout,
+} from "@/features/dashboard/dashboard-grid-config";
+import { CustomTableCard } from "@/features/dashboard/Components/CustomTableCard";
+import { CustomCardDialog } from "@/features/dashboard/Components/CustomCardDialog";
+import { deleteDashboardWidget } from "@/features/dashboard/Actions/customCardActions";
+import { customCardId, type CustomWidget } from "@/features/dashboard/custom-cards/registry";
+import { useConfirm } from "@/components/confirm-dialog";
 
 interface ServiceItem {
   id: string;
@@ -58,6 +87,7 @@ interface ServiceItem {
   cost: number;
   serviceDate: Date;
   startDateTime: Date | null;
+  customer: { id: string; name: string } | null;
   vehicle: {
     id: string;
     make: string;
@@ -65,7 +95,7 @@ interface ServiceItem {
     year: number;
     licensePlate: string | null;
     customer: { id: string; name: string } | null;
-  };
+  } | null;
 }
 
 interface DashboardStats {
@@ -86,13 +116,14 @@ interface ReminderItem {
   description: string | null;
   dueDate: Date | null;
   dueMileage: number | null;
+  customer: { id: string; name: string } | null;
   vehicle: {
     id: string;
     make: string;
     model: string;
     year: number;
     licensePlate: string | null;
-  };
+  } | null;
 }
 
 interface VehicleDueForService {
@@ -228,6 +259,8 @@ export function DashboardClient({
   notifications = [],
   recentAuditLogs = [],
   recentObservations = [],
+  initialLayout = null,
+  customWidgets = [],
 }: {
   stats: DashboardStats;
   currencyCode?: string;
@@ -254,9 +287,12 @@ export function DashboardClient({
     user: { id: string; name: string | null; email: string | null } | null;
   }[];
   recentObservations?: DashboardObservation[];
+  initialLayout?: unknown;
+  customWidgets?: CustomWidget[];
 }) {
   const formatCurrency = useFormatCurrency();
   const t = useTranslations("dashboard");
+  const tcm = useTranslations("common.contextMenu");
   const tAudit = useTranslations("audit");
   const distUnit = unitSystem === "metric" ? "km" : "mi";
   const router = useRouter();
@@ -266,7 +302,80 @@ export function DashboardClient({
   const [maintenanceTab, setMaintenanceTab] = useState<"active" | "dismissed">("active");
   const [restoringId, setRestoringId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
-  const { toggleCard, isVisible, visibleCount, totalCount } = useDashboardVisibility(smsEnabled ? "notifications" : "sms");
+  // Grid layout: per-user, server-persisted. sms and notifications are
+  // mutually exclusive cards, so one of them is never available.
+  const confirm = useConfirm();
+  const [widgets, setWidgets] = useState<CustomWidget[]>(customWidgets);
+  const [layout, setLayout] = useState<DashboardLayout>(() =>
+    normalizeLayout(initialLayout, customWidgets.map((w) => customCardId(w.id)))
+  );
+  const [editing, setEditing] = useState(false);
+  const [cardDialogOpen, setCardDialogOpen] = useState(false);
+  const [editingWidget, setEditingWidget] = useState<CustomWidget | null>(null);
+  const excludedCard: DashboardCardId = smsEnabled ? "notifications" : "sms";
+  const availableIds = DASHBOARD_CARD_IDS.filter((id) => id !== excludedCard);
+  const hiddenSet = new Set<string>(layout.hidden);
+  const visibleIds = [
+    ...availableIds,
+    ...widgets.map((w) => customCardId(w.id)),
+  ].filter((id) => !hiddenSet.has(id));
+
+  const persistLayout = (next: DashboardLayout) => {
+    setLayout(next);
+    void saveDashboardLayout(next);
+  };
+  const commitCards = (cards: DashboardLayout["cards"]) =>
+    persistLayout({ ...layout, cards });
+  const toggleCard = (id: string) =>
+    persistLayout({
+      ...layout,
+      hidden: hiddenSet.has(id)
+        ? layout.hidden.filter((h) => h !== id)
+        : [...layout.hidden, id],
+    });
+  const handleResetLayout = () => {
+    setLayout(normalizeLayout(DEFAULT_LAYOUT, widgets.map((w) => customCardId(w.id))));
+    void resetDashboardLayout();
+  };
+
+  const handleWidgetSaved = (w: CustomWidget) => {
+    setWidgets((prev) =>
+      prev.some((p) => p.id === w.id)
+        ? prev.map((p) => (p.id === w.id ? w : p))
+        : [...prev, w]
+    );
+    const cid = customCardId(w.id);
+    if (!layout.cards[cid]) {
+      persistLayout({
+        ...layout,
+        cards: { ...layout.cards, [cid]: placeAtBottom(layout.cards) },
+      });
+    }
+  };
+
+  const handleDeleteWidget = async (w: CustomWidget) => {
+    const ok = await confirm({
+      title: t("customCards.deleteConfirmTitle"),
+      description: t("customCards.deleteConfirmDescription", { name: w.name }),
+      confirmLabel: t("customCards.deleteCard"),
+      destructive: true,
+    });
+    if (!ok) return;
+    const result = await deleteDashboardWidget(w.id);
+    if (!result.success) {
+      toast.error(result.error || t("customCards.saveError"));
+      return;
+    }
+    setWidgets((prev) => prev.filter((p) => p.id !== w.id));
+    const cid = customCardId(w.id);
+    const cards = { ...layout.cards };
+    delete cards[cid];
+    persistLayout({
+      ...layout,
+      cards,
+      hidden: layout.hidden.filter((h) => h !== cid),
+    });
+  };
 
   const formatRelativeTime = (date: string | Date) => {
     const now = new Date();
@@ -349,36 +458,90 @@ export function DashboardClient({
       </div>
 
       {/* Customize Dashboard */}
-      <div className="flex justify-end">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
-              <SlidersHorizontal className="h-3.5 w-3.5" />
-              {t("customize")} ({visibleCount}/{totalCount})
+      <div className="flex items-center justify-end gap-2">
+        {editing ? (
+          <>
+            <p className="mr-auto hidden text-xs text-muted-foreground sm:block">
+              {t("editHint")}
+            </p>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
+                  <SlidersHorizontal className="h-3.5 w-3.5" />
+                  {t("showCards")} ({visibleIds.length}/{availableIds.length})
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-56 p-3">
+                <p className="text-sm font-medium mb-2">{t("showCards")}</p>
+                <div className="space-y-2">
+                  {availableIds.map((id) => (
+                    <label key={id} className="flex items-center justify-between gap-2 cursor-pointer">
+                      <span className="text-sm">{t(`cards.${id}`)}</span>
+                      <Switch
+                        size="sm"
+                        checked={!hiddenSet.has(id)}
+                        onCheckedChange={() => toggleCard(id)}
+                      />
+                    </label>
+                  ))}
+                  {widgets.map((w) => (
+                    <label key={w.id} className="flex items-center justify-between gap-2 cursor-pointer">
+                      <span className="truncate text-sm">{w.name}</span>
+                      <Switch
+                        size="sm"
+                        checked={!hiddenSet.has(customCardId(w.id))}
+                        onCheckedChange={() => toggleCard(customCardId(w.id))}
+                      />
+                    </label>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs gap-1.5"
+              onClick={() => {
+                setEditingWidget(null);
+                setCardDialogOpen(true);
+              }}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              {t("customCards.addCard")}
             </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-56 p-3">
-            <p className="text-sm font-medium mb-2">{t("showCards")}</p>
-            <div className="space-y-2">
-              {DASHBOARD_CARD_IDS.filter((id) => smsEnabled ? id !== "notifications" : id !== "sms").map((id) => (
-                <label key={id} className="flex items-center justify-between gap-2 cursor-pointer">
-                  <span className="text-sm">{t(`cards.${id}`)}</span>
-                  <Switch
-                    size="sm"
-                    checked={isVisible(id)}
-                    onCheckedChange={() => toggleCard(id)}
-                  />
-                </label>
-              ))}
-            </div>
-          </PopoverContent>
-        </Popover>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs gap-1.5"
+              onClick={handleResetLayout}
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              {t("resetLayout")}
+            </Button>
+            <Button size="sm" className="h-8 text-xs gap-1.5" onClick={() => setEditing(false)}>
+              <Check className="h-3.5 w-3.5" />
+              {t("doneEditing")}
+            </Button>
+          </>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs gap-1.5"
+            onClick={() => setEditing(true)}
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            {t("customize")}
+          </Button>
+        )}
       </div>
 
-      {/* Card grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Vehicles Due for Service */}
-        {isVisible("maintenance") && (
+      {/* Card grid: nodes keyed by card id, rendered by DashboardGrid in the
+          user's saved arrangement */}
+      {(() => {
+        const cardNodes: Partial<Record<string, ReactNode>> = {
+        // Vehicles Due for Service
+        maintenance: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-1">
               <div className="flex items-center justify-between">
@@ -540,10 +703,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Upcoming Reminders */}
-        {isVisible("reminders") && (
+        // Upcoming Reminders
+        reminders: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -578,7 +741,7 @@ export function DashboardClient({
                     <div
                       key={r.id}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(`/vehicles/${r.vehicle.id}?tab=reminders`)}
+                      onClick={() => router.push(r.vehicle ? `/vehicles/${r.vehicle.id}?tab=reminders` : "/reminders")}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
@@ -595,8 +758,9 @@ export function DashboardClient({
                         <div className="min-w-0">
                           <p className="font-medium text-sm truncate">{r.title}</p>
                           <p className="text-xs text-muted-foreground truncate">
-                            {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
-                            {r.vehicle.licensePlate && ` · ${r.vehicle.licensePlate}`}
+                            {r.vehicle
+                              ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}${r.vehicle.licensePlate ? ` · ${r.vehicle.licensePlate}` : ""}`
+                              : r.customer?.name ?? ""}
                           </p>
                         </div>
                       </div>
@@ -624,10 +788,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* SMS Messages */}
-        {isVisible("sms") && smsEnabled && (
+        // SMS Messages (only offered when SMS is enabled; see availableIds)
+        sms: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -678,10 +842,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Recent Notifications (shown when SMS is not configured) */}
-        {isVisible("notifications") && !smsEnabled && (
+        // Recent Notifications (only offered when SMS is not configured)
+        notifications: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -720,10 +884,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Inspections */}
-        {isVisible("inspections") && (
+        // Inspections
+        inspections: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -834,10 +998,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Quote Requests */}
-        {isVisible("quoteRequests") && (
+        // Quote Requests
+        quoteRequests: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -960,10 +1124,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Customer Quote Responses */}
-        {isVisible("quoteResponses") && (
+        // Customer Quote Responses
+        quoteResponses: (
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -1083,10 +1247,10 @@ export function DashboardClient({
               )}
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Recent Completed table */}
-        {isVisible("recentCompleted") && (
+        // Recent Completed table
+        recentCompleted: (
           <Card className="border-0 shadow-sm lg:col-span-2">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">{t("recentCompleted.title")}</CardTitle>
@@ -1112,30 +1276,43 @@ export function DashboardClient({
                   ) : (
                     stats.recentServices.map((s) => {
                       const displayTotal = s.totalAmount > 0 ? s.totalAmount : s.cost;
+                      const recordHref = s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`;
+                      const rowCustomer = s.customer ?? s.vehicle?.customer;
                       return (
+                        <ContextMenu key={s.id} modal={false}>
+                        <ContextMenuTrigger asChild>
                         <TableRow
-                          key={s.id}
                           className={`cursor-pointer transition-opacity ${navigatingId === s.id ? "opacity-50" : ""}`}
                           onClick={() => {
                             setNavigatingId(s.id);
-                            router.push(`/vehicles/${s.vehicle.id}/service/${s.id}`);
+                            router.push(recordHref);
                           }}
                         >
                           <TableCell className="font-mono text-xs">
                             {formatDate(new Date(s.startDateTime ?? s.serviceDate))}
                           </TableCell>
                           <TableCell>
-                            <div>
-                              {s.vehicle.licensePlate && (
-                                <span className="font-mono text-sm">{s.vehicle.licensePlate}</span>
-                              )}
-                              <p className="text-xs text-muted-foreground">
-                                {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
-                              </p>
-                            </div>
+                            {s.vehicle ? (
+                              <TableCellLink href={`/vehicles/${s.vehicle.id}`} block>
+                                {s.vehicle.licensePlate && (
+                                  <span className="font-mono text-sm">{s.vehicle.licensePlate}</span>
+                                )}
+                                <p className="text-xs text-muted-foreground">
+                                  {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                                </p>
+                              </TableCellLink>
+                            ) : (
+                              <p className="text-xs text-muted-foreground">-</p>
+                            )}
                           </TableCell>
                           <TableCell className="hidden sm:table-cell text-muted-foreground">
-                            {s.vehicle.customer?.name || "-"}
+                            {rowCustomer ? (
+                              <TableCellLink href={`/customers/${rowCustomer.id}`}>
+                                {rowCustomer.name}
+                              </TableCellLink>
+                            ) : (
+                              "-"
+                            )}
                           </TableCell>
                           <TableCell className="font-medium">{s.title}</TableCell>
                           {stats.isAdmin && (
@@ -1149,6 +1326,31 @@ export function DashboardClient({
                             </TableCell>
                           )}
                         </TableRow>
+                        </ContextMenuTrigger>
+                        <ContextMenuContent className="min-w-52">
+                          <ContextMenuItem
+                            onClick={() => {
+                              setNavigatingId(s.id);
+                              router.push(recordHref);
+                            }}
+                          >
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            {tcm("open")}
+                          </ContextMenuItem>
+                          {s.vehicle && (
+                            <ContextMenuItem onClick={() => router.push(`/vehicles/${s.vehicle?.id}`)}>
+                              <Car className="mr-2 h-4 w-4" />
+                              {tcm("openVehicle")}
+                            </ContextMenuItem>
+                          )}
+                          {rowCustomer && (
+                            <ContextMenuItem onClick={() => router.push(`/customers/${rowCustomer.id}`)}>
+                              <Users className="mr-2 h-4 w-4" />
+                              {tcm("openCustomer")}
+                            </ContextMenuItem>
+                          )}
+                        </ContextMenuContent>
+                        </ContextMenu>
                       );
                     })
                   )}
@@ -1156,10 +1358,10 @@ export function DashboardClient({
               </Table>
             </CardContent>
           </Card>
-        )}
+        ),
 
-        {/* Active Jobs table */}
-        {isVisible("activeJobs") && (
+        // Active Jobs table
+        activeJobs: (
           <Card className="border-0 shadow-sm lg:col-span-2">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">{t("activeJobsTable.title")}</CardTitle>
@@ -1183,27 +1385,41 @@ export function DashboardClient({
                       </TableCell>
                     </TableRow>
                   ) : (
-                    stats.todaysServices.map((s) => (
+                    stats.todaysServices.map((s) => {
+                      const recordHref = s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`;
+                      const rowCustomer = s.customer ?? s.vehicle?.customer;
+                      return (
+                      <ContextMenu key={s.id} modal={false}>
+                      <ContextMenuTrigger asChild>
                       <TableRow
-                        key={s.id}
                         className={`cursor-pointer transition-opacity ${navigatingId === s.id ? "opacity-50" : ""}`}
                         onClick={() => {
                           setNavigatingId(s.id);
-                          router.push(`/vehicles/${s.vehicle.id}/service/${s.id}`);
+                          router.push(recordHref);
                         }}
                       >
                         <TableCell>
-                          <div>
-                            {s.vehicle.licensePlate && (
-                              <span className="font-mono text-sm font-medium">{s.vehicle.licensePlate}</span>
-                            )}
-                            <p className="text-xs text-muted-foreground">
-                              {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
-                            </p>
-                          </div>
+                          {s.vehicle ? (
+                            <TableCellLink href={`/vehicles/${s.vehicle.id}`} block>
+                              {s.vehicle.licensePlate && (
+                                <span className="font-mono text-sm font-medium">{s.vehicle.licensePlate}</span>
+                              )}
+                              <p className="text-xs text-muted-foreground">
+                                {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                              </p>
+                            </TableCellLink>
+                          ) : (
+                            <p className="text-xs text-muted-foreground">-</p>
+                          )}
                         </TableCell>
                         <TableCell className="hidden sm:table-cell text-muted-foreground">
-                          {s.vehicle.customer?.name || "-"}
+                          {rowCustomer ? (
+                            <TableCellLink href={`/customers/${rowCustomer.id}`}>
+                              {rowCustomer.name}
+                            </TableCellLink>
+                          ) : (
+                            "-"
+                          )}
                         </TableCell>
                         <TableCell className="font-medium">{s.title}</TableCell>
                         <TableCell>
@@ -1220,14 +1436,41 @@ export function DashboardClient({
                           {s.techName || "-"}
                         </TableCell>
                       </TableRow>
-                    ))
+                      </ContextMenuTrigger>
+                      <ContextMenuContent className="min-w-52">
+                        <ContextMenuItem
+                          onClick={() => {
+                            setNavigatingId(s.id);
+                            router.push(recordHref);
+                          }}
+                        >
+                          <ExternalLink className="mr-2 h-4 w-4" />
+                          {tcm("open")}
+                        </ContextMenuItem>
+                        {s.vehicle && (
+                          <ContextMenuItem onClick={() => router.push(`/vehicles/${s.vehicle?.id}`)}>
+                            <Car className="mr-2 h-4 w-4" />
+                            {tcm("openVehicle")}
+                          </ContextMenuItem>
+                        )}
+                        {rowCustomer && (
+                          <ContextMenuItem onClick={() => router.push(`/customers/${rowCustomer.id}`)}>
+                            <Users className="mr-2 h-4 w-4" />
+                            {tcm("openCustomer")}
+                          </ContextMenuItem>
+                        )}
+                      </ContextMenuContent>
+                      </ContextMenu>
+                      );
+                    })
                   )}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
-        )}
-        {/* Recent Activity (Audit Logs) */}
+        ),
+        // Recent Activity (Audit Logs)
+        recentActivity: (
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-1">
             <div className="flex items-center justify-between">
@@ -1286,8 +1529,9 @@ export function DashboardClient({
             )}
           </CardContent>
         </Card>
-        {/* Recent Observations */}
-        {isVisible("recentObservations") && (
+        ),
+        // Recent Observations
+        recentObservations: (
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-1">
             <div className="flex items-center justify-between">
@@ -1324,8 +1568,9 @@ export function DashboardClient({
                     const vehicleLabel = obs.vehicle.licensePlate
                       ?? `${obs.vehicle.year} ${obs.vehicle.make}`;
                     return (
+                      <ContextMenu key={obs.id} modal={false}>
+                      <ContextMenuTrigger asChild>
                       <TableRow
-                        key={obs.id}
                         className="cursor-pointer"
                         onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
                       >
@@ -1338,7 +1583,9 @@ export function DashboardClient({
                           </Badge>
                         </TableCell>
                         <TableCell className="py-1.5 font-mono text-xs text-muted-foreground truncate">
-                          {vehicleLabel}
+                          <TableCellLink href={`/vehicles/${obs.vehicle.id}`}>
+                            {vehicleLabel}
+                          </TableCellLink>
                         </TableCell>
                         <TableCell className="py-1.5 text-xs font-medium truncate max-w-0">
                           {obs.description}
@@ -1347,6 +1594,20 @@ export function DashboardClient({
                           {formatRelativeTime(obs.createdAt)}
                         </TableCell>
                       </TableRow>
+                      </ContextMenuTrigger>
+                      <ContextMenuContent className="min-w-52">
+                        <ContextMenuItem
+                          onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
+                        >
+                          <ExternalLink className="mr-2 h-4 w-4" />
+                          {tcm("open")}
+                        </ContextMenuItem>
+                        <ContextMenuItem onClick={() => router.push(`/vehicles/${obs.vehicle.id}`)}>
+                          <Car className="mr-2 h-4 w-4" />
+                          {tcm("openVehicle")}
+                        </ContextMenuItem>
+                      </ContextMenuContent>
+                      </ContextMenu>
                     );
                   })}
                 </TableBody>
@@ -1354,8 +1615,37 @@ export function DashboardClient({
             )}
           </CardContent>
         </Card>
-        )}
-      </div>
+        ),
+        };
+        for (const w of widgets) {
+          cardNodes[customCardId(w.id)] = (
+            <CustomTableCard
+              widget={w}
+              editing={editing}
+              onEdit={() => {
+                setEditingWidget(w);
+                setCardDialogOpen(true);
+              }}
+              onDelete={() => handleDeleteWidget(w)}
+            />
+          );
+        }
+        return (
+          <DashboardGrid
+            cards={layout.cards}
+            visibleIds={visibleIds}
+            editing={editing}
+            onCardsCommit={commitCards}
+            cardNodes={cardNodes}
+          />
+        );
+      })()}
+      <CustomCardDialog
+        open={cardDialogOpen}
+        onOpenChange={setCardDialogOpen}
+        widget={editingWidget}
+        onSaved={handleWidgetSaved}
+      />
     </div>
     </TooltipProvider>
   );

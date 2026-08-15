@@ -18,22 +18,27 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { DataTablePagination } from "@/components/data-table-pagination";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
+import { TableCellLink } from "@/components/table-cell-link";
 import { statusColors } from "@/lib/table-utils";
 import { updateServiceStatus } from "@/features/vehicles/Actions/serviceActions";
 import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
-  ChevronDown,
+  Car,
+  ExternalLink,
   Loader2,
   Plus,
   Search,
+  User,
 } from "lucide-react";
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
@@ -54,6 +59,7 @@ interface WorkOrder {
   startDateTime: Date | null;
   techName: string | null;
   invoiceNumber: string | null;
+  customer: { id: string; name: string; email: string | null; phone: string | null } | null;
   vehicle: {
     id: string;
     make: string;
@@ -61,7 +67,7 @@ interface WorkOrder {
     year: number;
     licensePlate: string | null;
     customer: { id: string; name: string; email: string | null; phone: string | null } | null;
-  };
+  } | null;
 }
 
 interface VehicleOption {
@@ -208,18 +214,19 @@ export function WorkOrdersClient({
     router.refresh();
 
     const templateKey = statusTemplateKeys[newStatus];
-    if (workOrder.vehicle.customer && templateKey) {
+    const notifyTarget = workOrder.customer ?? workOrder.vehicle?.customer;
+    if (notifyTarget && templateKey) {
       const tplResult = await getSmsTemplates();
       const tplData = tplResult.success && tplResult.data ? tplResult.data : null;
       const tpl = tplData?.templates[templateKey] || SMS_TEMPLATE_DEFAULTS[templateKey] || "";
-      const vehicle = `${workOrder.vehicle.year} ${workOrder.vehicle.make} ${workOrder.vehicle.model}`;
+      const vehicle = workOrder.vehicle ? `${workOrder.vehicle.year} ${workOrder.vehicle.make} ${workOrder.vehicle.model}` : workOrder.title;
       const message = interpolateSmsTemplate(tpl, {
-        customer_name: workOrder.vehicle.customer.name,
+        customer_name: notifyTarget.name,
         vehicle,
         company_name: tplData?.companyName || "",
         current_user: tplData?.currentUser || "",
       });
-      setNotifyCustomer(workOrder.vehicle.customer);
+      setNotifyCustomer(notifyTarget);
       setNotifyMessage(message);
       setNotifyStatus(newStatus);
       setShowNotifyDialog(true);
@@ -275,7 +282,8 @@ export function WorkOrdersClient({
 
       {/* Table */}
       <div className="rounded-lg border">
-        <Table>
+        <TableContextMenuHint />
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
               <TableHead className="hidden sm:table-cell w-[100px]">
@@ -283,8 +291,16 @@ export function WorkOrdersClient({
                   {t("table.invoice")}<SortIcon column="invoiceNumber" />
                 </button>
               </TableHead>
-              <TableHead>{t("table.vehicle")}</TableHead>
-              <TableHead className="hidden md:table-cell">{t("table.customer")}</TableHead>
+              <TableHead className="w-[18%]">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("vehicle")}>
+                  {t("table.vehicle")}<SortIcon column="vehicle" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden w-[14%] md:table-cell">
+                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("customer")}>
+                  {t("table.customer")}<SortIcon column="customer" />
+                </button>
+              </TableHead>
               <TableHead>
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("title")}>
                   {t("table.title")}<SortIcon column="title" />
@@ -295,7 +311,7 @@ export function WorkOrdersClient({
                   {t("table.status")}<SortIcon column="status" />
                 </button>
               </TableHead>
-              <TableHead className="hidden lg:table-cell">
+              <TableHead className="hidden w-[12%] lg:table-cell">
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("techName")}>
                   {t("table.tech")}<SortIcon column="techName" />
                 </button>
@@ -310,13 +326,12 @@ export function WorkOrdersClient({
                   {t("table.total")}<SortIcon column="totalAmount" />
                 </button>
               </TableHead>
-              <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
                   {t("empty")}
                 </TableCell>
               </TableRow>
@@ -324,32 +339,47 @@ export function WorkOrdersClient({
               data.records.map((r) => {
                 const displayTotal = r.totalAmount > 0 ? r.totalAmount : r.cost;
                 const transitions = statusTransitions[r.status] || [];
+                const recordHref = r.vehicle ? `/vehicles/${r.vehicle.id}/service/${r.id}` : `/sales/${r.id}`;
+                const rowCustomer = r.customer ?? r.vehicle?.customer;
                 return (
+                  <ContextMenu key={r.id} modal={false}>
+                  <ContextMenuTrigger asChild>
                   <TableRow
-                    key={r.id}
                     className={`cursor-pointer transition-opacity ${navigatingId === r.id ? "opacity-50" : ""}`}
                     onClick={() => {
                       setNavigatingId(r.id);
-                      router.push(`/vehicles/${r.vehicle.id}/service/${r.id}`);
+                      router.push(recordHref);
                     }}
                   >
                     <TableCell className="hidden sm:table-cell font-mono text-xs text-muted-foreground">
                       {r.invoiceNumber || "-"}
                     </TableCell>
                     <TableCell>
-                      <div>
-                        {r.vehicle.licensePlate && (
-                          <span className="font-mono text-sm font-medium">{r.vehicle.licensePlate}</span>
-                        )}
-                        <p className="text-xs text-muted-foreground">
-                          {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
-                        </p>
-                      </div>
+                      {r.vehicle ? (
+                        <TableCellLink href={`/vehicles/${r.vehicle.id}`} block>
+                          {r.vehicle.licensePlate && (
+                            <span className="font-mono text-sm font-medium">{r.vehicle.licensePlate}</span>
+                          )}
+                          <p className="truncate text-xs text-muted-foreground">
+                            {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
+                          </p>
+                        </TableCellLink>
+                      ) : (
+                        <div className="min-w-0">
+                          <p className="truncate text-xs text-muted-foreground">-</p>
+                        </div>
+                      )}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-muted-foreground">
-                      {r.vehicle.customer?.name || "-"}
+                    <TableCell className="hidden truncate md:table-cell text-muted-foreground">
+                      {rowCustomer ? (
+                        <TableCellLink href={`/customers/${rowCustomer.id}`}>
+                          {rowCustomer.name}
+                        </TableCellLink>
+                      ) : (
+                        "-"
+                      )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="truncate">
                       <span className="font-medium">{r.title}</span>
                     </TableCell>
                     <TableCell>
@@ -364,35 +394,52 @@ export function WorkOrdersClient({
                       {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
                     </TableCell>
                     <TableCell className="text-right font-semibold">
-                      {formatCurrency(displayTotal, currencyCode)}
-                    </TableCell>
-                    <TableCell>
-                      {navigatingId === r.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                      ) : transitions.length > 0 ? (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("changeStatus")}>
-                              <ChevronDown className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {transitions.map((tr) => (
-                              <DropdownMenuItem
-                                key={tr.target}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleStatusChange(r, tr.target);
-                                }}
-                              >
-                                {t(`statusActions.${tr.actionKey}`)}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      ) : null}
+                      <span className="inline-flex items-center gap-2">
+                        {navigatingId === r.id && (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                        )}
+                        {formatCurrency(displayTotal, currencyCode)}
+                      </span>
                     </TableCell>
                   </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="min-w-52">
+                    <ContextMenuItem
+                      onClick={() => {
+                        setNavigatingId(r.id);
+                        router.push(recordHref);
+                      }}
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {t("contextMenu.open")}
+                    </ContextMenuItem>
+                    {r.vehicle && (
+                      <ContextMenuItem onClick={() => router.push(`/vehicles/${r.vehicle?.id}`)}>
+                        <Car className="mr-2 h-4 w-4" />
+                        {t("contextMenu.openVehicle")}
+                      </ContextMenuItem>
+                    )}
+                    {rowCustomer && (
+                      <ContextMenuItem onClick={() => router.push(`/customers/${rowCustomer.id}`)}>
+                        <User className="mr-2 h-4 w-4" />
+                        {t("contextMenu.openCustomer")}
+                      </ContextMenuItem>
+                    )}
+                    {transitions.length > 0 && (
+                      <>
+                        <ContextMenuSeparator />
+                        {transitions.map((tr) => (
+                          <ContextMenuItem
+                            key={tr.target}
+                            onClick={() => handleStatusChange(r, tr.target)}
+                          >
+                            {t(`statusActions.${tr.actionKey}`)}
+                          </ContextMenuItem>
+                        ))}
+                      </>
+                    )}
+                  </ContextMenuContent>
+                  </ContextMenu>
                 );
               })
             )}

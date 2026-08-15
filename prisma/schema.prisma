@@ -21,6 +21,12 @@ model User {
   termsAcceptedAt  DateTime?
   lastLogin        DateTime?
   lastSeen         DateTime?
+  /// App version this user last saw/dismissed the update banner for.
+  /// Null = never seeded (seeded silently on first load, no banner).
+  lastSeenVersion  String?
+  /// Per-user dashboard grid layout (card positions/sizes/hidden set).
+  /// Null = default layout. Shape validated in dashboardLayoutActions.
+  dashboardLayout  Json?
 
   sessions               Session[]
   accounts               Account[]
@@ -33,6 +39,7 @@ model User {
   twoFactor              TwoFactor?
   passkeys               Passkey[]
   organizationMembers    OrganizationMember[]
+  dashboardWidgets       DashboardWidget[]
   auditLogs              AuditLog[]
   technicians            Technician[]
   stockMovements         StockMovement[]
@@ -221,8 +228,21 @@ model ServiceRecord {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  vehicleId String
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  /// Null for parts-only / counter sales; such records use customerId
+  /// (or neither, for anonymous walk-in sales)
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  /// Direct customer for records without a vehicle. Vehicle-linked records
+  /// leave this null and resolve the customer through the vehicle, so
+  /// reassigning a vehicle keeps invoices following the vehicle's customer.
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  /// Denormalized from the vehicle historically; now the canonical scope so
+  /// records exist without a vehicle. Nullable to mirror Vehicle.organizationId.
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   technicianId String?
   technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
@@ -240,6 +260,8 @@ model ServiceRecord {
 
   @@index([vehicleId])
   @@index([technicianId])
+  @@index([organizationId])
+  @@index([customerId])
   @@map("service_records")
 }
 
@@ -285,13 +307,28 @@ model Reminder {
   dueDate     DateTime?
   dueMileage  Int?
   isCompleted Boolean   @default(false)
+  /// Per-reminder notification channels, chosen when creating the reminder
+  notifyInApp Boolean   @default(true)
+  notifyEmail Boolean   @default(false)
+  /// Set by the due-reminder cron once notified; cleared when dueDate changes
+  notifiedAt  DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  vehicleId String
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  /// A reminder relates to a vehicle, a customer, or just the workshop
+  /// (both null). organizationId is the canonical scope for all three.
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([vehicleId])
+  @@index([customerId])
+  @@index([organizationId])
   @@map("reminders")
 }
 
@@ -321,6 +358,10 @@ model VehicleFinding {
 
 model Customer {
   id             String   @id @default(cuid())
+  /// Human-facing customer number: auto-assigned sequentially on create,
+  /// editable afterwards. Unique per organization (nulls allowed for
+  /// legacy customers).
+  customerNumber String?
   name           String
   email          String?
   phone          String?
@@ -346,6 +387,10 @@ model Customer {
   customerSessions CustomerSession[]
   serviceRequests  ServiceRequest[]
 
+  serviceRecords ServiceRecord[]
+  reminders      Reminder[]
+
+  @@unique([organizationId, customerNumber])
   @@index([organizationId])
   @@map("customers")
 }
@@ -467,23 +512,23 @@ model LaborPresetPart {
 }
 
 model InventoryPart {
-  id            String   @id @default(cuid())
+  id            String  @id @default(cuid())
   partNumber    String?
   barcode       String?
   name          String
   description   String?
   category      String?
-  quantity      Int      @default(0)
-  minQuantity   Int      @default(0)
-  unitCost      Float    @default(0)
-  sellPrice     Float    @default(0)
+  quantity      Int     @default(0)
+  minQuantity   Int     @default(0)
+  unitCost      Float   @default(0)
+  sellPrice     Float   @default(0)
   supplier      String?
   supplierPhone String?
   supplierEmail String?
   supplierUrl   String?
   imageUrl      String?
   location      String?
-  isArchived    Boolean  @default(false)
+  isArchived    Boolean @default(false)
 
   /// Set when a low-stock alert has been sent for the current dip below
   /// `minQuantity`, and cleared once stock climbs back above it. This
@@ -491,8 +536,8 @@ model InventoryPart {
   /// every check — it alerts once per descent, not once per run.
   lowStockAlertedAt DateTime?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -518,12 +563,12 @@ model StockMovement {
   id String @id @default(cuid())
 
   /// Signed change in whole units. Negative = consumed, positive = restocked.
-  delta Int
+  delta         Int
   /// Part balance immediately after this movement was applied.
   quantityAfter Int
   /// Why the stock moved — see StockMovementReason in src/features/inventory/Lib/stockMovement.ts
-  reason String
-  note   String?
+  reason        String
+  note          String?
 
   inventoryPartId String
   inventoryPart   InventoryPart @relation(fields: [inventoryPartId], references: [id], onDelete: Cascade)
@@ -633,13 +678,17 @@ model QuoteAttachment {
 }
 
 model QuotePart {
-  id         String  @id @default(cuid())
-  partNumber String?
-  name       String
-  quantity   Float   @default(1)
-  unitPrice  Float   @default(0)
-  total      Float   @default(0)
-  excluded   Boolean @default(false)
+  id            String  @id @default(cuid())
+  partNumber    String?
+  name          String
+  quantity      Float   @default(1)
+  /// Internal purchase cost — never shown to customers (quote PDF/share
+  /// render unitPrice only)
+  unitCost      Float   @default(0)
+  markupPercent Float   @default(0)
+  unitPrice     Float   @default(0)
+  total         Float   @default(0)
+  excluded      Boolean @default(false)
 
   /// Optional link to the stocked part this line was picked from. Carried into
   /// ServicePart on conversion so the job deducts the right inventory item.
@@ -708,6 +757,23 @@ model CustomFieldValue {
   @@map("custom_field_values")
 }
 
+/// A user-defined dashboard card: a named, filtered table over one entity.
+/// The config shape (entity, filters, columns, limit) is validated against
+/// the field registry in customCardActions — nothing here reaches SQL raw.
+model DashboardWidget {
+  id             String   @id @default(cuid())
+  name           String
+  config         Json
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId, organizationId])
+  @@map("dashboard_widgets")
+}
+
 model Organization {
   id         String   @id @default(cuid())
   name       String
@@ -718,6 +784,8 @@ model Organization {
   members                OrganizationMember[]
   roles                  Role[]
   vehicles               Vehicle[]
+  serviceRecords         ServiceRecord[]
+  reminders              Reminder[]
   customers              Customer[]
   quotes                 Quote[]
   inventoryParts         InventoryPart[]

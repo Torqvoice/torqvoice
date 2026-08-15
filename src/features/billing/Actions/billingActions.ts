@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { Prisma } from "@/generated/prisma/client";
+import { effectiveDateSql } from "@/lib/date-sort";
 
 interface BillingSummary {
   totalRevenue: number;
@@ -40,8 +41,7 @@ async function getBillingSummary(organizationId: string): Promise<BillingSummary
           ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
         END AS paid
       FROM service_records sr
-      JOIN vehicles v ON v.id = sr."vehicleId"
-      WHERE v."organizationId" = ${organizationId}
+      WHERE sr."organizationId" = ${organizationId}
     ) sub
   `);
 
@@ -64,6 +64,8 @@ export async function getBillingHistory(params: {
   pageSize?: number;
   search?: string;
   status?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }) {
   return withAuth(async ({ organizationId }) => {
     const page = params.page || 1;
@@ -72,21 +74,10 @@ export async function getBillingHistory(params: {
 
     const summary = await getBillingSummary(organizationId);
 
-    // Build where clause
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: any = { vehicle: { organizationId } };
-
-    if (params.search) {
-      where.OR = [
-        { title: { contains: params.search, mode: "insensitive" } },
-        { invoiceNumber: { contains: params.search, mode: "insensitive" } },
-        { vehicle: { make: { contains: params.search, mode: "insensitive" } } },
-        { vehicle: { model: { contains: params.search, mode: "insensitive" } } },
-      ];
-    }
-
-    // When filtering by payment status, use raw SQL for efficiency
-    if (params.status === "paid" || params.status === "partial" || params.status === "unpaid") {
+    // Raw SQL for every path: payment status and effective total are computed
+    // values, and the displayed date is COALESCE(invoiceDate, startDateTime,
+    // serviceDate) — only SQL can filter and sort by them exactly.
+    {
       const searchCondition = params.search
         ? Prisma.sql`AND (
             sr.title ILIKE ${`%${params.search}%`}
@@ -101,8 +92,10 @@ export async function getBillingHistory(params: {
         statusCondition = Prisma.sql`AND (manually_paid = true OR (paid_amount >= effective_total AND effective_total > 0))`;
       } else if (params.status === "partial") {
         statusCondition = Prisma.sql`AND manually_paid = false AND paid_amount > 0 AND paid_amount < effective_total`;
-      } else {
+      } else if (params.status === "unpaid") {
         statusCondition = Prisma.sql`AND manually_paid = false AND paid_amount = 0`;
+      } else {
+        statusCondition = Prisma.empty;
       }
 
       const countRows = await db.$queryRaw<{ cnt: bigint }[]>(Prisma.sql`
@@ -116,8 +109,8 @@ export async function getBillingHistory(params: {
               ELSE COALESCE((SELECT SUM(p.amount) FROM payments p WHERE p."serviceRecordId" = sr.id), 0)
             END AS paid_amount
           FROM service_records sr
-          JOIN vehicles v ON v.id = sr."vehicleId"
-          WHERE v."organizationId" = ${organizationId}
+          LEFT JOIN vehicles v ON v.id = sr."vehicleId"
+          WHERE sr."organizationId" = ${organizationId}
           ${searchCondition}
         ) sub
         WHERE 1=1 ${statusCondition}
@@ -132,10 +125,11 @@ export async function getBillingHistory(params: {
           invoiceNumber: string | null;
           serviceDate: Date;
           startDateTime: Date | null;
+          invoiceDate: Date | null;
           effective_total: number;
           paid_amount: number;
           manually_paid: boolean;
-          vehicle_id: string;
+          vehicle_id: string | null;
           vehicle_make: string | null;
           vehicle_model: string | null;
           vehicle_year: number | null;
@@ -150,6 +144,7 @@ export async function getBillingHistory(params: {
           sub."invoiceNumber",
           sub."serviceDate",
           sub."startDateTime",
+          sub."invoiceDate",
           sub.effective_total,
           sub.paid_amount,
           sub.manually_paid,
@@ -167,6 +162,7 @@ export async function getBillingHistory(params: {
             sr."invoiceNumber",
             sr."serviceDate",
             sr."startDateTime",
+            sr."invoiceDate",
             sr."manuallyPaid" AS manually_paid,
             CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
             CASE WHEN sr."manuallyPaid" = true
@@ -181,13 +177,24 @@ export async function getBillingHistory(params: {
             c.id AS customer_id,
             c.name AS customer_name
           FROM service_records sr
-          JOIN vehicles v ON v.id = sr."vehicleId"
-          LEFT JOIN customers c ON c.id = v."customerId"
-          WHERE v."organizationId" = ${organizationId}
+          LEFT JOIN vehicles v ON v.id = sr."vehicleId"
+          LEFT JOIN customers c ON c.id = COALESCE(sr."customerId", v."customerId")
+          WHERE sr."organizationId" = ${organizationId}
           ${searchCondition}
         ) sub
         WHERE 1=1 ${statusCondition}
-        ORDER BY COALESCE(sub."startDateTime", sub."serviceDate") DESC
+        ORDER BY ${(() => {
+          const dir = params.sortOrder === "asc" ? Prisma.sql`ASC` : Prisma.sql`DESC`;
+          switch (params.sortBy) {
+            case "invoiceNumber": return Prisma.sql`sub."invoiceNumber" ${dir} NULLS LAST`;
+            case "title": return Prisma.sql`sub.title ${dir}`;
+            case "vehicle": return Prisma.sql`sub.vehicle_make ${dir}, sub.vehicle_model ${dir}, sub.vehicle_year ${dir}`;
+            case "customer": return Prisma.sql`sub.customer_name ${dir} NULLS LAST`;
+            case "total": return Prisma.sql`sub.effective_total ${dir}`;
+            case "date": return Prisma.sql`${effectiveDateSql("sub")} ${dir}`;
+            default: return Prisma.sql`${effectiveDateSql("sub")} DESC`;
+          }
+        })()}
         LIMIT ${pageSize} OFFSET ${skip}
       `);
 
@@ -206,18 +213,20 @@ export async function getBillingHistory(params: {
           title: r.title || "",
           invoiceNumber: r.invoiceNumber,
           startDateTime: r.startDateTime,
-          serviceDate: r.startDateTime ?? r.serviceDate,
+          serviceDate: r.invoiceDate ?? r.startDateTime ?? r.serviceDate,
           totalAmount: effectiveTotal,
           totalPaid: paidAmount,
           status: paymentStatus,
-          vehicle: {
-            id: r.vehicle_id,
-            make: r.vehicle_make || "",
-            model: r.vehicle_model || "",
-            year: r.vehicle_year || 0,
-            licensePlate: r.vehicle_license_plate,
-            customer: r.customer_id ? { id: r.customer_id, name: r.customer_name || "" } : null,
-          },
+          vehicle: r.vehicle_id
+            ? {
+                id: r.vehicle_id,
+                make: r.vehicle_make || "",
+                model: r.vehicle_model || "",
+                year: r.vehicle_year || 0,
+                licensePlate: r.vehicle_license_plate,
+              }
+            : null,
+          customer: r.customer_id ? { id: r.customer_id, name: r.customer_name || "" } : null,
         };
         }),
         total,
@@ -227,58 +236,5 @@ export async function getBillingHistory(params: {
         summary,
       };
     }
-
-    // No status filter — use Prisma for clean pagination
-    const [records, total] = await Promise.all([
-      db.serviceRecord.findMany({
-        where,
-        include: {
-          payments: { select: { amount: true } },
-          vehicle: {
-            select: {
-              id: true,
-              make: true,
-              model: true,
-              year: true,
-              licensePlate: true,
-              customer: { select: { id: true, name: true } },
-            },
-          },
-        },
-        orderBy: { startDateTime: "desc" },
-        skip,
-        take: pageSize,
-      }),
-      db.serviceRecord.count({ where }),
-    ]);
-
-    return {
-      records: records.map((r) => {
-        const effectiveTotal = r.totalAmount > 0 ? r.totalAmount : r.cost;
-        const paidFromPayments = r.payments.reduce((s, p) => s + p.amount, 0);
-        const totalPaid = r.manuallyPaid ? effectiveTotal : paidFromPayments;
-        const paymentStatus = r.manuallyPaid || (totalPaid >= effectiveTotal && effectiveTotal > 0)
-          ? "paid"
-          : totalPaid > 0
-            ? "partial"
-            : "unpaid";
-        return {
-          id: r.id,
-          title: r.title,
-          invoiceNumber: r.invoiceNumber,
-          startDateTime: r.startDateTime,
-          serviceDate: r.startDateTime ?? r.serviceDate,
-          totalAmount: effectiveTotal,
-          totalPaid,
-          status: paymentStatus,
-          vehicle: r.vehicle,
-        };
-      }),
-      total,
-      page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
-      summary,
-    };
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.BILLING }] });
 }

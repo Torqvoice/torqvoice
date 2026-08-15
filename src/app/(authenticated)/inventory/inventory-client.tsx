@@ -34,9 +34,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTablePagination } from "@/components/data-table-pagination";
+import { TableContextMenuHint } from "@/components/table-context-menu-hint";
 import { useGlassModal } from "@/components/glass-modal";
 import { useConfirm } from "@/components/confirm-dialog";
 import { InventoryPartForm } from "@/features/inventory/Components/InventoryPartForm";
@@ -389,6 +397,7 @@ export function InventoryClient({
 
       {/* Table */}
       <div className="rounded-lg border">
+        <TableContextMenuHint />
         <Table>
           <TableHeader>
             <TableRow>
@@ -482,8 +491,9 @@ export function InventoryClient({
               data.parts.map((part) => {
                 const isLow = isLowStock(part, lowStockDefault);
                 return (
+                  <ContextMenu key={part.id} modal={false}>
+                  <ContextMenuTrigger asChild>
                   <TableRow
-                    key={part.id}
                     className="cursor-pointer"
                     onClick={() => {
                       setEditPart(part);
@@ -618,6 +628,31 @@ export function InventoryClient({
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="min-w-52">
+                    <ContextMenuItem
+                      onClick={() => {
+                        setEditPart(part);
+                        setShowForm(true);
+                      }}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {t('actions.edit')}
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => router.push(`/inventory/${part.id}`)}>
+                      <History className="mr-2 h-4 w-4" />
+                      {t('actions.details')}
+                    </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem
+                      variant="destructive"
+                      onClick={() => handleDelete(part.id, part.name)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t('actions.delete')}
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                  </ContextMenu>
                 );
               })
             )}

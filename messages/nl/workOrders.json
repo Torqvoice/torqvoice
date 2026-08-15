@@ -34,7 +34,12 @@
       "total": "Totaal"
     },
     "emailSubject": "Voertuigstatus bijgewerkt: {status}",
-    "changeStatus": "Change status"
+    "changeStatus": "Change status",
+    "contextMenu": {
+      "open": "Werkorder openen",
+      "openVehicle": "Voertuig openen",
+      "openCustomer": "Klant openen"
+    }
   },
   "vehiclePicker": {
     "title": "Voertuig selecteren voor werkorder",
@@ -61,7 +66,11 @@
     "customerNameRequired": "Klantnaam is verplicht",
     "failedCreateCustomer": "Klant maken mislukt",
     "failedCreateVehicle": "Voertuig maken mislukt",
-    "somethingWentWrong": "Er is iets mis gegaan"
+    "somethingWentWrong": "Er is iets mis gegaan",
+    "partsSale": "Alleen onderdelenverkoop",
+    "partsSaleDescription": "Maak een factuur zonder voertuig, voor verkoop van onderdelen aan de balie.",
+    "createSale": "Verkoop aanmaken",
+    "none": "Geen"
   },
   "notify": {
     "title": "Stuur bericht naar {name}",

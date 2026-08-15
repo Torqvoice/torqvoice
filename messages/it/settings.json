@@ -381,6 +381,12 @@
     },
     "invoiceNumberFormat": "Formato numero fattura",
     "invoiceNumberFormatHint": "Usa <code>{year}</code> per l'anno corrente. Anteprima: <bold>{preview}</bold>",
+    "quoteNumberFormat": "Formato numero preventivo",
+    "quoteNumberFormatHint": "Usa <code>{year}</code> per l'anno corrente. Anteprima: <bold>{preview}</bold>",
+    "quoteValidDays": "Validità del preventivo (giorni)",
+    "quoteValidDaysHint": "I nuovi preventivi ricevono una data di validità di questo numero di giorni. 0 disattiva la funzione.",
+    "sectionInvoices": "Fatture",
+    "sectionQuotes": "Preventivi",
     "nextInvoiceNumber": "Prossimo numero fattura",
     "nextInvoiceNumberPlaceholder": "es. 94",
     "nextInvoiceNumberHint": "La prossima fattura usera questo numero (es. {example})",
@@ -412,7 +418,14 @@
     "layoutDocInvoice": "Fattura",
     "layoutDocQuote": "Preventivo",
     "saveLayout": "Salva layout",
-    "resetLayout": "Ripristina"
+    "resetLayout": "Ripristina",
+    "sectionCustomers": "Clienti",
+    "assignCustomerNumbers": "Assegna numeri cliente",
+    "assignCustomerNumbersHint": "{count} clienti non hanno ancora un numero. Assegna numeri sequenziali (quelli esistenti restano invariati).",
+    "customerNumbersAssigned": "Numeri assegnati a {count} clienti",
+    "allCustomersNumbered": "Tutti i clienti hanno un numero.",
+    "assignCustomerNumbersConfirmTitle": "Assegnare i numeri cliente?",
+    "assignCustomerNumbersConfirmDescription": "I {count} clienti senza numero riceveranno numeri sequenziali nell'ordine di creazione, proseguendo dal numero esistente più alto. I clienti che hanno già un numero non vengono modificati. I numeri restano modificabili."
   },
   "layoutEditor": {
     "helpText": "Trascina per riordinare. Usa il selettore di larghezza per posizionare le sezioni affiancate. Le sezioni consecutive a mezza larghezza (S/D) verranno visualizzate in due colonne.",
@@ -564,7 +577,7 @@
     "readMore": "Scopri di più",
     "detailsTitle": "Dettagli pagamento",
     "detailsDescription": "Conto bancario e termini di pagamento mostrati sulle fatture.",
-    "bankAccount": "Conto bancario (IBAN / Til Konto)",
+    "bankAccount": "Conto bancario (IBAN)",
     "bankAccountPlaceholder": "NO93 8601 1117 947",
     "bankAccountHint": "Il tuo numero di conto bancario o IBAN per ricevere pagamenti",
     "paymentTerms": "Termini di pagamento",
@@ -927,7 +940,14 @@
     "invoiceNinjaDocuments": "Documenti e allegati",
     "invoiceNinjaPayments": "Pagamenti",
     "invoiceNinjaFileHint": "Carica un file di esportazione zip di Invoice Ninja. File fino a 200MB supportati.",
-    "invoiceNinjaImportComplete": "Importazione Invoice Ninja completata"
+    "invoiceNinjaImportComplete": "Importazione Invoice Ninja completata",
+    "backupStatus": {
+      "title": "Protezione dei dati",
+      "description": "Prendiamo sul serio i tuoi dati. Tutti i dati della tua organizzazione, inclusi clienti, veicoli, ordini di lavoro, fatture e file caricati, vengono salvati automaticamente ogni ora. I backup sono protetti con crittografia AES-256 prima di lasciare la nostra infrastruttura e archiviati in una posizione separata e sicura, quindi nessuna parte esterna può leggerli.",
+      "lastBackup": "Ultimo backup:",
+      "supportPrompt": "Per qualsiasi domanda sulla protezione dei tuoi dati,",
+      "supportAction": "contatta il nostro team di supporto."
+    }
   },
   "license": {
     "title": "Licenza White-Label",
@@ -969,6 +989,8 @@
     "portalUrl": "URL del portale",
     "urlCopied": "URL del portale copiato",
     "shareHint": "Condividi questo link con i tuoi clienti per permettere loro di accedere al portale.",
+    "serviceRequestAlertsHint": "Le richieste di servizio dal portale compaiono sempre nella campanella delle notifiche. Puoi riceverle anche via e-mail.",
+    "serviceRequestAlertsLink": "Impostazioni avvisi →",
     "descriptionLabel": "La tua officina",
     "descriptionPlaceholder": "Racconta ai clienti qualcosa sulla tua officina, i servizi che offri e ciò che ti rende unico.",
     "descriptionHint": "Mostrato ai visitatori in cima alla pagina del portale.",
@@ -1351,6 +1373,19 @@
   "alerts": {
     "title": "Avvisi",
     "description": "Scegli di quali eventi vuoi essere avvisato e come.",
+    "serviceRequest": {
+      "title": "Avvisi per richieste di servizio",
+      "description": "Le richieste di servizio inviate dal portale clienti compaiono sempre nella campanella delle notifiche. Attiva questa opzione per riceverle anche via e-mail.",
+      "email": "Notifica e-mail",
+      "emailHint": "Disattivato per impostazione predefinita. Una e-mail per richiesta, inviata appena il cliente la invia.",
+      "recipients": "Invia a",
+      "recipientsHint": "Lascia vuoto per avvisare tutti i proprietari e gli amministratori. Separa più indirizzi con virgole.",
+      "invalidRecipients": "Indirizzo non valido: {list}",
+      "emailSetupHint": "Gli avvisi vengono inviati con il provider e-mail che hai configurato.",
+      "emailSetupLink": "Impostazioni e-mail →",
+      "save": "Salva impostazioni avvisi",
+      "saved": "Impostazioni avvisi richieste salvate"
+    },
     "lowStock": {
       "title": "Avvisi scorte basse",
       "description": "Avvisa quando un ricambio raggiunge il punto di riordino. Un ricambio è basso quando la quantità scende a o sotto la sua \"Qtà min\", o il valore predefinito se non ne ha. Ogni ricambio viene segnalato una volta per calo e resta silenzioso fino al riassortimento.",

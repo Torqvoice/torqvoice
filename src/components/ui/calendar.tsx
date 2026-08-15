@@ -14,6 +14,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { useDateSettings } from "@/components/date-settings-context"
 
 function Calendar({
   className,
@@ -28,6 +29,7 @@ function Calendar({
   buttonVariant?: React.ComponentProps<typeof Button>["variant"]
 }) {
   const defaultClassNames = getDefaultClassNames()
+  const { weekStartDay } = useDateSettings()
 
   return (
     <DayPicker
@@ -175,6 +177,7 @@ function Calendar({
         ...components,
       }}
       {...props}
+      weekStartsOn={props.weekStartsOn ?? ((weekStartDay % 7) as 0 | 1 | 2 | 3 | 4 | 5 | 6)}
     />
   )
 }

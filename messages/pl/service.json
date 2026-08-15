@@ -107,7 +107,8 @@
     "partNotFound": "Nie znaleziono części dla kodu kreskowego \"{barcode}\"",
     "deleteRow": "Delete row",
     "outOfStock": "Brak w magazynie",
-    "onBackorder": "W zamówieniu ({count})"
+    "onBackorder": "W zamówieniu ({count})",
+    "nameMissingHint": "Wiersze bez nazwy części nie są zapisywane."
   },
   "labor": {
     "title": "Praca",
@@ -146,7 +147,8 @@
     "tax": "Podatek",
     "taxIncluded": "Podatek (zaw.)",
     "total": "Razem",
-    "inclusiveModeHint": "Ceny pozycji są wprowadzane z podatkiem. Sumy pokazują podział netto + podatek."
+    "inclusiveModeHint": "Ceny pozycji są wprowadzane z podatkiem. Sumy pokazują podział netto + podatek.",
+    "partsCost": "Koszt części (wewnętrzny)"
   },
   "notes": {
     "title": "Notatki",

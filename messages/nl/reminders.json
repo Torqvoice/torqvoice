@@ -8,5 +8,10 @@
   "searchVehicle": "Voertuigen zoeken...",
   "noVehicle": "Geen voertuigen gevonden.",
   "pickDate": "Datum kiezen",
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "relatesTo": "Betreft (optioneel)",
+  "selectCustomer": "Klant (optioneel)",
+  "noneOption": "Geen",
+  "workshopHint": "Geen klant of voertuig gekozen: dit is een algemene werkplaatsherinnering.",
+  "workshopReminder": "Werkplaats"
 }

@@ -73,7 +73,10 @@
     "subtotal": "Subtotal de peças: {amount}",
     "deleteRow": "Delete row",
     "excludeFromTotal": "Exclude from total",
-    "addFromInventory": "Do estoque"
+    "addFromInventory": "Do estoque",
+    "unitCost": "Custo",
+    "markupPercent": "Margem %",
+    "nameMissingHint": "Linhas sem nome da peça não são salvas."
   },
   "labor": {
     "title": "Mão de obra",

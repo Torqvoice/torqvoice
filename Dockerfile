@@ -73,6 +73,13 @@ RUN rm -rf \
       /app/node_modules/.prisma \
     && npm install prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx
 
+# The npm install above re-resolves the dependency tree and replaces the
+# standalone build's PATCHED next package with a fresh unpatched copy from the
+# registry, which silently breaks all WebSocket routes (live updates, work
+# board sync). Re-apply the next-ws patch so the runtime server can accept
+# WebSocket upgrades. next-ws itself is already in the standalone bundle.
+RUN npx next-ws patch --yes
+
 # Copy init script
 COPY --chown=nextjs:nodejs init-db.sh ./init-db.sh
 RUN chmod +x ./init-db.sh

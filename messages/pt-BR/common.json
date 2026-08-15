@@ -12,6 +12,14 @@
     "edit": "Editar",
     "add": "Adicionar"
   },
+  "contextMenu": {
+    "hint": "Dica: clique com o botão direito em uma linha para ver ações",
+    "open": "Abrir",
+    "openVehicle": "Abrir veículo",
+    "openCustomer": "Abrir cliente",
+    "edit": "Editar",
+    "delete": "Excluir"
+  },
   "form": {
     "email": "E-mail",
     "password": "Senha",
@@ -39,5 +47,10 @@
     "title": "Página não encontrada",
     "description": "Parece que essa peça ainda está na oficina. A página que você procura não existe ou foi movida.",
     "backToDashboard": "Voltar ao painel"
+  },
+  "updateBanner": {
+    "updated": "O Torqvoice foi atualizado para {version}",
+    "whatsNew": "Ver novidades",
+    "dismiss": "Fechar"
   }
 }

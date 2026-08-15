@@ -8,7 +8,14 @@ import { PageHeader } from "@/components/page-header";
 export default async function VehiclesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; pageSize?: string; search?: string; archived?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    pageSize?: string;
+    search?: string;
+    archived?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }>;
 }) {
   const params = await searchParams;
   const isArchived = params.archived === "true";
@@ -21,6 +28,8 @@ export default async function VehiclesPage({
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       archived: isArchived,
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder as "asc" | "desc" | undefined,
     }),
     getCustomersList(),
   ]);
@@ -46,6 +55,8 @@ export default async function VehiclesPage({
           data={result.data}
           customers={customersResult.data ?? []}
           search={params.search || ""}
+          sortBy={params.sortBy || ""}
+          sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
           initialView={initialView}
           isArchived={isArchived}
           archivedCount={result.data.archivedCount}
