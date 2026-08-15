@@ -127,6 +127,13 @@ export const auth = betterAuth({
   },
   advanced: {
     useSecureCookies: isProduction,
+    ipAddress: {
+      // Client IP for per-user rate limiting. Cloud traffic arrives through
+      // Cloudflare (cf-connecting-ip); staging and self-hosted installs hit
+      // nginx directly, which sets x-real-ip. Without this, Better Auth falls
+      // back to one shared rate-limit bucket for the entire userbase.
+      ipAddressHeaders: ["cf-connecting-ip", "x-real-ip"],
+    },
   },
   databaseHooks: {
     session: {
