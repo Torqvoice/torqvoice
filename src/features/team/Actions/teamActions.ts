@@ -59,6 +59,9 @@ export async function getOrganization() {
 
 export async function createOrganization(input: unknown) {
   return withAuth(async ({ userId }) => {
+    // A visitor-created org survives the per-org demo reset and hijacks the
+    // shared demo user's active-org cookie for every later visitor.
+    demoGuard();
     const data = createOrganizationSchema.parse(input);
 
     if (isCloudMode()) {

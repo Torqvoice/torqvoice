@@ -4,11 +4,15 @@ import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { isCloudMode, getMaxOrganizations } from "@/lib/features";
+import { demoGuard } from "@/lib/demo";
 import { createOrganizationSchema } from "../Schema/teamSchema";
 import { revalidatePath } from "next/cache";
 
 export async function createNewOrganization(input: unknown) {
   return withAuth(async ({ userId }) => {
+    // A visitor-created org survives the per-org demo reset and hijacks the
+    // shared demo user's active-org cookie for every later visitor.
+    demoGuard();
     const data = createOrganizationSchema.parse(input);
 
     if (isCloudMode()) {

@@ -142,6 +142,17 @@ async function provisionDemoAccount() {
     update: { name: DEMO_ORG_NAME },
   });
 
+  // Belt and braces alongside the demoGuard on org creation: purge any
+  // foreign organizations so the reset always converges on a single org.
+  // Org-scoped rows go with them via ON DELETE CASCADE, and stale
+  // active-org cookies fall back to the demo org membership.
+  const foreignOrgs = await prisma.organization.deleteMany({
+    where: { id: { not: ORG_ID } },
+  });
+  if (foreignOrgs.count > 0) {
+    console.log(`  Removed ${foreignOrgs.count} visitor-created organization(s).`);
+  }
+
   // Owner membership
   await prisma.organizationMember.upsert({
     where: { userId_organizationId: { userId: USER_ID, organizationId: ORG_ID } },
