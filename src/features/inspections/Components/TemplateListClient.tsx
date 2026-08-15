@@ -40,7 +40,7 @@ import { toast } from "sonner";
 import {
   deleteTemplate,
   duplicateTemplate,
-  installMissingPresets,
+  restoreMissingPresets,
 } from "../Actions/templateActions";
 import { TemplateForm, type TemplateFormData } from "./TemplateForm";
 import { TemplatePresetPicker } from "./TemplatePresetPicker";
@@ -214,14 +214,14 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
     (p) => p.id !== "blank" && !installed.has(p.name.trim().toLowerCase())
   );
 
-  const handleInstallAll = () => {
+  const handleRestore = () => {
     startInstalling(async () => {
-      const result = await installMissingPresets();
+      const result = await restoreMissingPresets();
       if (result.success && result.data) {
         toast.success(
           result.data.added === 0
             ? "Every checklist is already here"
-            : `Added ${result.data.added} checklist${result.data.added === 1 ? "" : "s"}`
+            : `Restored ${result.data.added} checklist${result.data.added === 1 ? "" : "s"}`
         );
         router.refresh();
       } else {
@@ -292,20 +292,20 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
         <div className="bg-muted/40 flex flex-wrap items-center gap-3 rounded-lg border border-dashed p-3">
           <LibraryBig className="text-muted-foreground h-4 w-4 shrink-0" aria-hidden="true" />
           <p className="min-w-0 flex-1 text-sm">
-            {missing.length} ready-made checklist{missing.length === 1 ? "" : "s"} are not in your
-            list yet, including the EU periodic technical inspection.
+            {missing.length} ready-made checklist{missing.length === 1 ? " has" : "s have"} been
+            removed from your list. You can put {missing.length === 1 ? "it" : "them"} back.
           </p>
           <Button
             variant="outline"
             size="sm"
             className="shrink-0"
-            onClick={handleInstallAll}
+            onClick={handleRestore}
             disabled={isInstalling}
           >
             {isInstalling && (
               <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" aria-hidden="true" />
             )}
-            Add all
+            Restore
           </Button>
         </div>
       )}
@@ -315,17 +315,17 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
           <ClipboardCheck className="text-muted-foreground/40 h-10 w-10" aria-hidden="true" />
           <h3 className="mt-4 font-medium">No templates yet</h3>
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            Add the whole library of ready-made checklists — including the EU periodic technical
-            inspection — and delete the ones you do not run. Or build your own from scratch.
+            The ready-made checklists — including the EU periodic technical inspection — have all
+            been removed. Put them back, or build your own from scratch.
           </p>
           <div className="mt-5 flex gap-2">
-            <Button onClick={handleInstallAll} disabled={isInstalling}>
+            <Button onClick={handleRestore} disabled={isInstalling}>
               {isInstalling ? (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
               ) : (
                 <LibraryBig className="mr-1 h-4 w-4" aria-hidden="true" />
               )}
-              Add all checklists
+              Restore checklists
             </Button>
             <Button variant="outline" onClick={handleCreate}>
               <Plus className="mr-1 h-4 w-4" aria-hidden="true" />

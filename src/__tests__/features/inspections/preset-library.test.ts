@@ -5,6 +5,57 @@ import {
 } from "@/features/inspections/Lib/templatePresets";
 
 /**
+ * Mirrors syncPresetLibrary's decision, which is the part that would be
+ * infuriating if wrong: a checklist the workshop deleted must never come back
+ * on its own, while a checklist added to the library later must arrive without
+ * anyone going to fetch it.
+ */
+function pendingPresets(handled: string[], existingNames: string[]) {
+  const handledSet = new Set(handled);
+  const taken = new Set(existingNames.map((n) => n.trim().toLowerCase()));
+  const pending = TEMPLATE_PRESETS.filter((p) => p.id !== "blank" && !handledSet.has(p.id));
+  return {
+    created: pending.filter((p) => !taken.has(p.name.trim().toLowerCase())).map((p) => p.id),
+    marked: pending.map((p) => p.id),
+  };
+}
+
+describe("preset library sync", () => {
+  const libraryIds = TEMPLATE_PRESETS.filter((p) => p.id !== "blank").map((p) => p.id);
+
+  it("installs the whole library for an organization that has never seen it", () => {
+    const { created } = pendingPresets([], []);
+    expect(created).toEqual(libraryIds);
+  });
+
+  it("does nothing once every preset has been handled", () => {
+    const { created, marked } = pendingPresets(libraryIds, []);
+    expect(created).toEqual([]);
+    expect(marked).toEqual([]);
+  });
+
+  it("never brings back a checklist the workshop deleted", () => {
+    // Handled, but no longer in the list — the workshop removed it on purpose.
+    const { created } = pendingPresets(libraryIds, ["Standard multi-point inspection"]);
+    expect(created).toEqual([]);
+  });
+
+  it("delivers a checklist added to the library in a later release", () => {
+    const alreadyShipped = libraryIds.filter((id) => id !== "marine");
+    const { created } = pendingPresets(alreadyShipped, []);
+    expect(created).toEqual(["marine"]);
+  });
+
+  it("does not duplicate a checklist the workshop already built by that name", () => {
+    const { created, marked } = pendingPresets([], ["Marine vessel inspection"]);
+    expect(created).not.toContain("marine");
+    // Still marked handled, so it is not retried on the next page load.
+    expect(marked).toContain("marine");
+  });
+});
+
+
+/**
  * The whole library is installed for a workshop rather than picked one at a
  * time, so these guard the shape of what gets written: every preset has to be
  * uniquely named (installation skips by name), and none may be empty.

@@ -40,8 +40,11 @@ function buildSectionCreates(sections: TemplateSectionInput[]) {
 }
 
 export async function getTemplates() {
-  return withAuth(async ({ organizationId }) => {
-    let templates = await db.inspectionTemplate.findMany({
+  return withAuth(async ({ organizationId, userId }) => {
+    // Runs before the query, so anything new is in the list this request.
+    await syncPresetLibrary(organizationId, userId);
+
+    const templates = await db.inspectionTemplate.findMany({
       where: { organizationId },
       include: {
         sections: {
@@ -51,21 +54,6 @@ export async function getTemplates() {
       },
       orderBy: { createdAt: "desc" },
     });
-
-    // Auto-seed default template for new organizations
-    if (templates.length === 0) {
-      await installPresetsForOrg(organizationId);
-      templates = await db.inspectionTemplate.findMany({
-        where: { organizationId },
-        include: {
-          sections: {
-            include: { items: { orderBy: { sortOrder: "asc" } } },
-            orderBy: { sortOrder: "asc" },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-      });
-    }
 
     return templates;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INSPECTIONS }] });
@@ -364,54 +352,134 @@ function presetToCreate(preset: TemplatePreset, organizationId: string, isDefaul
 const LIBRARY_PRESETS = TEMPLATE_PRESETS.filter((p) => p.id !== "blank");
 
 /**
- * Installs the preset library, skipping anything the organization already has.
+ * Marks which presets an organization has already been offered.
  *
- * The whole library is stocked rather than left behind an "add one" dialog:
- * picking checklists out of a picker one at a time is work, whereas deleting
- * the three you do not run is a glance. Existing templates are matched by name,
- * so running this twice adds nothing.
+ * Without this, topping the library up on every page load would resurrect a
+ * checklist the workshop deliberately deleted, and it would be impossible to
+ * get rid of. The marker records that a preset has been handled — installed or
+ * consciously skipped — so deleting one is permanent, while a preset added to
+ * the library in a later release still arrives on its own.
  */
-async function installPresetsForOrg(organizationId: string) {
+const PRESETS_INSTALLED_KEY = "inspections.presetsInstalled";
+
+async function readHandledPresets(organizationId: string): Promise<Set<string>> {
+  const row = await db.appSetting.findFirst({
+    where: { organizationId, key: PRESETS_INSTALLED_KEY },
+    select: { value: true },
+  });
+  if (!row?.value) return new Set();
+  try {
+    const parsed = JSON.parse(row.value);
+    return new Set(Array.isArray(parsed) ? parsed.filter((v) => typeof v === "string") : []);
+  } catch {
+    return new Set();
+  }
+}
+
+/**
+ * Brings the organization's list up to the current library.
+ *
+ * Runs on read rather than behind a button, so a workshop that has been using
+ * Torqvoice for a year gets the new checklists without being told to go and
+ * fetch them. It writes nothing once every preset has been handled.
+ */
+async function syncPresetLibrary(organizationId: string, userId: string) {
+  const handled = await readHandledPresets(organizationId);
+  const pending = LIBRARY_PRESETS.filter((p) => !handled.has(p.id));
+  if (pending.length === 0) return 0;
+
   const existing = await db.inspectionTemplate.findMany({
     where: { organizationId },
     select: { name: true, isDefault: true },
   });
   const taken = new Set(existing.map((t) => t.name.trim().toLowerCase()));
-  const missing = LIBRARY_PRESETS.filter((p) => !taken.has(p.name.trim().toLowerCase()));
-  if (missing.length === 0) return 0;
+  // A workshop that already built its own copy keeps it; the preset is marked
+  // handled so it is never added alongside.
+  const toCreate = pending.filter((p) => !taken.has(p.name.trim().toLowerCase()));
 
-  // A shop opening the app for the first time should land on the general
-  // checklist, not on a national statutory test it may not be approved to run.
-  const hasDefault = existing.some((t) => t.isDefault);
-  await db.$transaction(
-    missing.map((preset) =>
-      db.inspectionTemplate.create({
-        data: presetToCreate(
-          preset,
-          organizationId,
-          !hasDefault && preset.id === "standard-multipoint"
-        ),
-      })
-    )
-  );
+  if (toCreate.length > 0) {
+    // A shop opening the app for the first time should land on the general
+    // checklist, not on a national statutory test it may not be approved to run.
+    const hasDefault = existing.some((t) => t.isDefault);
+    await db.$transaction(
+      toCreate.map((preset) =>
+        db.inspectionTemplate.create({
+          data: presetToCreate(
+            preset,
+            organizationId,
+            !hasDefault && preset.id === "standard-multipoint"
+          ),
+        })
+      )
+    );
+  }
 
-  return missing.length;
+  const next = new Set([...handled, ...pending.map((p) => p.id)]);
+  await db.appSetting.upsert({
+    where: { organizationId_key: { organizationId, key: PRESETS_INSTALLED_KEY } },
+    create: {
+      organizationId,
+      key: PRESETS_INSTALLED_KEY,
+      value: JSON.stringify([...next]),
+      userId,
+    },
+    update: { value: JSON.stringify([...next]) },
+  });
+
+  return toCreate.length;
 }
 
-/** Adds any preset the organization does not already have. */
-export async function installMissingPresets() {
-  return withAuth(async ({ organizationId }) => {
-    const added = await installPresetsForOrg(organizationId);
+/**
+ * Puts back any library checklist the workshop no longer has, ignoring the
+ * handled marker. This is the deliberate "I deleted that and want it back"
+ * path, which is why it is a button rather than something that happens on load.
+ */
+export async function restoreMissingPresets() {
+  return withAuth(async ({ organizationId, userId }) => {
+    const existing = await db.inspectionTemplate.findMany({
+      where: { organizationId },
+      select: { name: true, isDefault: true },
+    });
+    const taken = new Set(existing.map((t) => t.name.trim().toLowerCase()));
+    const missing = LIBRARY_PRESETS.filter((p) => !taken.has(p.name.trim().toLowerCase()));
+    if (missing.length === 0) return { added: 0 };
+
+    const hasDefault = existing.some((t) => t.isDefault);
+    await db.$transaction(
+      missing.map((preset) =>
+        db.inspectionTemplate.create({
+          data: presetToCreate(
+            preset,
+            organizationId,
+            !hasDefault && preset.id === "standard-multipoint"
+          ),
+        })
+      )
+    );
+
+    const handled = await readHandledPresets(organizationId);
+    const next = new Set([...handled, ...LIBRARY_PRESETS.map((p) => p.id)]);
+    await db.appSetting.upsert({
+      where: { organizationId_key: { organizationId, key: PRESETS_INSTALLED_KEY } },
+      create: {
+        organizationId,
+        key: PRESETS_INSTALLED_KEY,
+        value: JSON.stringify([...next]),
+        userId,
+      },
+      update: { value: JSON.stringify([...next]) },
+    });
+
     revalidatePath("/settings/templates");
-    return { added };
+    return { added: missing.length };
   }, {
     requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }],
   });
 }
 
 export async function seedDefaultTemplate() {
-  return withAuth(async ({ organizationId }) => {
-    const added = await installPresetsForOrg(organizationId);
+  return withAuth(async ({ organizationId, userId }) => {
+    const added = await syncPresetLibrary(organizationId, userId);
     revalidatePath("/settings/templates");
     return { added };
   }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }] });
