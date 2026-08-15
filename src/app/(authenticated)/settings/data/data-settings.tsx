@@ -33,6 +33,7 @@ interface ContentCounts {
   inspectionTemplates: number
   notifications: number
   smsMessages: number
+  scheduledMessages: number
   customFields: number
 }
 
@@ -47,6 +48,7 @@ interface ExportOptions {
   inspections: boolean
   auditLogs: boolean
   smsMessages: boolean
+  scheduledMessages: boolean
   notifications: boolean
   files: boolean
 }
@@ -61,6 +63,7 @@ const OPTION_META: { key: keyof ExportOptions; labelKey: string; descKey: string
   { key: 'inspections', labelKey: 'optInspections', descKey: 'optInspectionsDesc' },
   { key: 'auditLogs', labelKey: 'optAuditLogs', descKey: 'optAuditLogsDesc' },
   { key: 'smsMessages', labelKey: 'optSmsMessages', descKey: 'optSmsMessagesDesc' },
+  { key: 'scheduledMessages', labelKey: 'optScheduledMessages', descKey: 'optScheduledMessagesDesc' },
   { key: 'notifications', labelKey: 'optNotifications', descKey: 'optNotificationsDesc' },
   { key: 'customFields', labelKey: 'optCustomFields', descKey: 'optCustomFieldsDesc' },
   { key: 'files', labelKey: 'optFiles', descKey: 'optFilesDesc' },
@@ -77,6 +80,7 @@ const ALL_TRUE: ExportOptions = {
   inspections: true,
   auditLogs: true,
   smsMessages: true,
+  scheduledMessages: true,
   notifications: true,
   files: true,
 }
@@ -120,6 +124,7 @@ export function DataSettings({
         inspections: false,
         auditLogs: false,
         smsMessages: false,
+        scheduledMessages: false,
         notifications: false,
         files: false,
       })

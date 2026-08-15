@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Bell, ExternalLink, FileText, Wrench } from "lucide-react";
+import { Bell, ExternalLink, FileText, Send, Wrench } from "lucide-react";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -30,6 +30,13 @@ function getEventDotColor(event: CalendarEvent) {
   if (event.type === "quote") {
     return event.status === "sent" ? "bg-violet-500" : "bg-violet-300";
   }
+  if (event.type === "message") {
+    switch (event.status) {
+      case "sent": return "bg-teal-500";
+      case "failed": return "bg-red-500";
+      default: return "bg-sky-500";
+    }
+  }
   // reminder
   switch (event.status) {
     case "completed": return "bg-emerald-500";
@@ -51,6 +58,7 @@ interface CalendarDayCellProps {
   onNewWorkOrder: () => void;
   onNewReminder: () => void;
   onNewQuote: () => void;
+  onScheduleMessage: () => void;
 }
 
 export function CalendarDayCell({
@@ -63,6 +71,7 @@ export function CalendarDayCell({
   onNewWorkOrder,
   onNewReminder,
   onNewQuote,
+  onScheduleMessage,
 }: CalendarDayCellProps) {
   const t = useTranslations('calendar');
   const router = useRouter();
@@ -143,6 +152,10 @@ export function CalendarDayCell({
           <FileText className="mr-2 h-4 w-4" />
           {t('contextMenu.newQuote')}
         </ContextMenuItem>
+        <ContextMenuItem onClick={onScheduleMessage}>
+          <Send className="mr-2 h-4 w-4" />
+          {t('contextMenu.scheduleMessage')}
+        </ContextMenuItem>
         {dayEvents.length > 0 && (
           <>
             <ContextMenuSeparator />
@@ -186,6 +199,11 @@ function getEventBgColor(event: CalendarEvent) {
   }
   if (event.type === "quote") {
     return "bg-violet-500/10 text-violet-700 dark:text-violet-400";
+  }
+  if (event.type === "message") {
+    return event.status === "failed"
+      ? "bg-red-500/10 text-red-700 dark:text-red-400"
+      : "bg-sky-500/10 text-sky-700 dark:text-sky-400";
   }
   switch (event.status) {
     case "overdue": return "bg-red-500/10 text-red-700 dark:text-red-400";

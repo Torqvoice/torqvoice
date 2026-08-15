@@ -18,6 +18,7 @@ const deleteContentSchema = z.object({
   inspectionTemplates: z.boolean().default(false),
   notifications: z.boolean().default(false),
   smsMessages: z.boolean().default(false),
+  scheduledMessages: z.boolean().default(false),
   customFields: z.boolean().default(false),
 });
 
@@ -135,6 +136,12 @@ export async function deleteContent(input: unknown) {
       deleted.push("smsMessages");
     }
 
+    // --- Scheduled Messages ---
+    if (selections.scheduledMessages) {
+      await db.scheduledMessage.deleteMany({ where: { organizationId } });
+      deleted.push("scheduledMessages");
+    }
+
     // --- Custom Fields ---
     // Cascades: CustomFieldValue
     if (selections.customFields) {
@@ -178,14 +185,14 @@ export async function getContentCounts() {
       return {
         vehicles: 0, customers: 0, quotes: 0, inventory: 0,
         inspections: 0, technicians: 0, inspectionTemplates: 0,
-        notifications: 0, smsMessages: 0, customFields: 0,
+        notifications: 0, smsMessages: 0, scheduledMessages: 0, customFields: 0,
       };
     }
 
     const [
       vehicles, customers, quotes, inventory,
       inspections, technicians, inspectionTemplates,
-      notifications, smsMessages, customFields,
+      notifications, smsMessages, scheduledMessages, customFields,
     ] = await Promise.all([
       db.vehicle.count({ where: { organizationId } }),
       db.customer.count({ where: { organizationId } }),
@@ -196,13 +203,14 @@ export async function getContentCounts() {
       db.inspectionTemplate.count({ where: { organizationId } }),
       db.notification.count({ where: { organizationId } }),
       db.smsMessage.count({ where: { organizationId } }),
+      db.scheduledMessage.count({ where: { organizationId } }),
       db.customFieldDefinition.count({ where: { organizationId } }),
     ]);
 
     return {
       vehicles, customers, quotes, inventory,
       inspections, technicians, inspectionTemplates,
-      notifications, smsMessages, customFields,
+      notifications, smsMessages, scheduledMessages, customFields,
     };
   });
 }

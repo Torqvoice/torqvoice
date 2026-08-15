@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "Mensajería SMS",
-    "featureDescription": "Envíe y reciba mensajes SMS con sus clientes directamente desde Torqvoice."
+    "featureDescription": "Envíe y reciba mensajes SMS con sus clientes directamente desde Torqvoice.",
+    "tabs": {
+      "inbox": "Bandeja",
+      "scheduled": "Programados"
+    },
+    "smsNotConfiguredTitle": "SMS no está configurado",
+    "smsNotConfiguredHint": "Conecta un proveedor de SMS para enviar y recibir mensajes aquí. El correo programado funciona igual.",
+    "goToSmsSettings": "Ir a ajustes de SMS"
   },
   "notConfigured": {
     "title": "SMS no configurado",
@@ -20,7 +27,10 @@
     "deleted": "Conversación eliminada",
     "deleteError": "No se pudo eliminar la conversación",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Buscar conversaciones",
+    "noSearchResults": "Ninguna conversación coincide con la búsqueda",
+    "now": "ahora"
   },
   "conversation": {
     "noPhone": "No hay número de teléfono registrado para {name}. Agregue un número de teléfono para comenzar a enviar mensajes.",

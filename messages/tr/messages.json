@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "SMS Mesajları",
-    "featureDescription": "Müşterilerinizle doğrudan Torqvoice üzerinden SMS mesajları gönderin ve alın."
+    "featureDescription": "Müşterilerinizle doğrudan Torqvoice üzerinden SMS mesajları gönderin ve alın.",
+    "tabs": {
+      "inbox": "Gelen kutusu",
+      "scheduled": "Planlanmış"
+    },
+    "smsNotConfiguredTitle": "SMS kurulmadı",
+    "smsNotConfiguredHint": "Burada mesaj gönderip almak için bir SMS sağlayıcısı bağlayın. Planlanmış e-posta bunsuz da çalışır.",
+    "goToSmsSettings": "SMS ayarlarına git"
   },
   "notConfigured": {
     "title": "SMS yapılandırılmadı",
@@ -20,7 +27,10 @@
     "deleted": "Görüşme silindi",
     "deleteError": "Görüşme silinemedi",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Sohbetlerde ara",
+    "noSearchResults": "Aramayla eşleşen sohbet yok",
+    "now": "şimdi"
   },
   "conversation": {
     "noPhone": "{name} için kayıtlı telefon numarası yok. Mesaj göndermeye başlamak için bir telefon numarası ekleyin.",

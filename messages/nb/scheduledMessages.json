@@ -1,0 +1,76 @@
+{
+  "dialog": {
+    "title": "Planlegg en melding",
+    "editTitle": "Rediger planlagt melding",
+    "channelLabel": "Send med",
+    "channels": {
+      "email": "E-post",
+      "sms": "SMS",
+      "telegram": "Telegram",
+      "in_app": "Notat i appen"
+    },
+    "repeatLabel": "Gjenta",
+    "frequencies": {
+      "once": "Én gang",
+      "daily": "Daglig",
+      "weekly": "Ukentlig",
+      "biweekly": "Annenhver uke",
+      "monthly": "Månedlig",
+      "yearly": "Årlig"
+    },
+    "customerLabel": "Kunde",
+    "selectCustomer": "Velg kunde",
+    "none": "Ingen",
+    "recipientEmail": "E-postadresse",
+    "recipientPhone": "Telefonnummer",
+    "recipientChat": "Telegram chat-id",
+    "recipientOverride": "Send til en annen adresse",
+    "recipientHintCustomer": "La stå tom for å bruke det som er registrert.",
+    "recipientHintDirect": "Velg en kunde, eller skriv hvor den skal.",
+    "subjectLabel": "Emne",
+    "subjectPlaceholder": "f.eks. Bilen din er klar",
+    "messageLabel": "Melding",
+    "messagePlaceholder": "Hva skal vi si?",
+    "characters": "{count} / {max} tegn",
+    "dateLabel": "Dato",
+    "timeLabel": "Tid",
+    "endDateLabel": "Gjenta til",
+    "endDateHint": "La stå tom for å fortsette.",
+    "schedule": "Planlegg",
+    "scheduled": "Melding planlagt",
+    "updated": "Planlagt melding oppdatert",
+    "saveError": "Kunne ikke lagre meldingen"
+  },
+  "list": {
+    "scheduleMessage": "Planlegg melding",
+    "scheduleForCustomer": "Planlegg en melding",
+    "filters": {
+      "upcoming": "Kommende",
+      "sent": "Sendt",
+      "failed": "Mislyktes",
+      "cancelled": "Avbrutt",
+      "all": "Alle"
+    },
+    "status": {
+      "scheduled": "Planlagt",
+      "sent": "Sendt",
+      "failed": "Mislyktes",
+      "cancelled": "Avbrutt"
+    },
+    "empty": "Ingenting planlagt",
+    "emptyHint": "Høyreklikk en dag i kalenderen, eller bruk Planlegg melding.",
+    "noRecipient": "Ingen mottaker",
+    "sentCount": "sendt {count}x",
+    "rowMenu": "Meldingsmeny",
+    "sendNow": "Send nå",
+    "cancel": "Avbryt sending",
+    "sentNow": "Melding sendt",
+    "sendError": "Kunne ikke sende meldingen",
+    "cancelled": "Sending avbrutt",
+    "cancelError": "Kunne ikke avbryte meldingen",
+    "deleted": "Melding slettet",
+    "deleteError": "Kunne ikke slette meldingen",
+    "deleteTitle": "Slette denne meldingen?",
+    "deleteDescription": "Den planlagte meldingen fjernes for godt. Det som allerede er sendt blir liggende i samtalen."
+  }
+}

@@ -901,6 +901,8 @@
     "optAuditLogsDesc": "Veiklos ir pakeitimų istorija",
     "optSmsMessages": "SMS žinutės",
     "optSmsMessagesDesc": "Išsiųstos ir gautos SMS žinutės",
+    "optScheduledMessages": "Suplanuotos žinutės",
+    "optScheduledMessagesDesc": "Eilėje esančios ir pasikartojančios žinutės, laukiančios išsiuntimo",
     "optNotifications": "Pranešimai",
     "optNotificationsDesc": "Sistemos pranešimai",
     "optCustomFields": "Pasirinktiniai laukai",

@@ -33,7 +33,8 @@
   "filters": {
     "services": "Serviços",
     "reminders": "Lembretes",
-    "quotes": "Orçamentos"
+    "quotes": "Orçamentos",
+    "messages": "Mensagens"
   },
   "selectVehicle": "Selecionar veículo para ordem de serviço",
   "dateChoice": {
@@ -49,7 +50,8 @@
     "newReminder": "Novo lembrete",
     "newQuote": "Novo orçamento",
     "openEvent": "Abrir ({count})",
-    "hint": "Dica: clique com o botão direito em um dia para ver as ações"
+    "hint": "Dica: clique com o botão direito em um dia para ver as ações",
+    "scheduleMessage": "Agendar mensagem"
   },
   "events": {
     "status": {
@@ -62,12 +64,15 @@
       "draft": "Rascunho",
       "done": "Feito",
       "overdue": "Atrasado",
-      "upcoming": "Próximo"
+      "upcoming": "Próximo",
+      "failed": "Falhou",
+      "queued": "Na fila"
     },
     "type": {
       "service": "Serviço",
       "reminder": "Lembrete",
-      "quote": "Orçamento"
+      "quote": "Orçamento",
+      "message": "Mensagem"
     },
     "noEvents": "Sem eventos",
     "selectDay": "Selecione um dia com eventos ou crie uma nova ordem de serviço."

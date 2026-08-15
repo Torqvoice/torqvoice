@@ -33,7 +33,8 @@
   "filters": {
     "services": "Services",
     "reminders": "Reminders",
-    "quotes": "Quotes"
+    "quotes": "Quotes",
+    "messages": "Messages"
   },
   "selectVehicle": "Select Vehicle for Work Order",
   "dateChoice": {
@@ -49,7 +50,8 @@
     "newReminder": "New reminder",
     "newQuote": "New quote",
     "openEvent": "Open ({count})",
-    "hint": "Tip: right-click a day for actions"
+    "hint": "Tip: right-click a day for actions",
+    "scheduleMessage": "Schedule message"
   },
   "events": {
     "status": {
@@ -62,12 +64,15 @@
       "draft": "Draft",
       "done": "Done",
       "overdue": "Overdue",
-      "upcoming": "Upcoming"
+      "upcoming": "Upcoming",
+      "failed": "Failed",
+      "queued": "Queued"
     },
     "type": {
       "service": "Service",
       "reminder": "Reminder",
-      "quote": "Quote"
+      "quote": "Quote",
+      "message": "Message"
     },
     "noEvents": "No events",
     "selectDay": "Select a day with events or create a new work order."

@@ -4,6 +4,8 @@ import { getCustomersList } from "@/features/customers/Actions/customerActions";
 import { getSettings } from "@/features/settings/Actions/settingsActions";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { PageHeader } from "@/components/page-header";
+import { getAuthContext } from "@/lib/get-auth-context";
+import { getAvailableChannels } from "@/features/scheduled-messages/Lib/availableChannels";
 import CalendarClient from "@/features/calendar/Components/CalendarClient";
 
 function toLocalDateStr(d: Date): string {
@@ -17,6 +19,9 @@ export default async function CalendarPage() {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), 1);
   const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  const ctx = await getAuthContext();
+  const messageChannels = ctx ? await getAvailableChannels(ctx.organizationId) : [];
 
   const [eventsResult, settingsResult, vehiclesResult, customersResult] = await Promise.all([
     getCalendarEvents({
@@ -58,6 +63,7 @@ export default async function CalendarPage() {
           vehicles={vehicles}
           customers={customers}
           currencyCode={currencyCode}
+          messageChannels={messageChannels}
         />
       </div>
     </>

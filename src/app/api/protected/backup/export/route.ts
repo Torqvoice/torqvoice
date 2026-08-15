@@ -20,6 +20,7 @@ interface ExportOptions {
   inspections: boolean;
   auditLogs: boolean;
   smsMessages: boolean;
+  scheduledMessages: boolean;
   notifications: boolean;
 }
 
@@ -35,6 +36,7 @@ const DEFAULT_OPTIONS: ExportOptions = {
   inspections: true,
   auditLogs: true,
   smsMessages: true,
+  scheduledMessages: true,
   notifications: true,
 };
 
@@ -239,6 +241,16 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (options.scheduledMessages) {
+    queries.push(
+      db.scheduledMessage
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.scheduledMessages = result;
+        })
+    );
+  }
+
   if (options.notifications) {
     queries.push(
       db.notification
@@ -315,7 +327,7 @@ export async function GET() {
 
   const [
     settings, customers, customFieldDefinitions, inventoryParts, vehicles, orgReminders, counterSales, quotes,
-    technicians, inspectionTemplates, inspections, auditLogs, smsMessages, notifications,
+    technicians, inspectionTemplates, inspections, auditLogs, smsMessages, scheduledMessages, notifications,
   ] = await Promise.all([
       db.appSetting.findMany({ where: { organizationId: ctx.organizationId } }),
       db.customer.findMany({ where: { organizationId: ctx.organizationId } }),
@@ -370,6 +382,7 @@ export async function GET() {
       }),
       db.auditLog.findMany({ where: { organizationId: ctx.organizationId } }),
       db.smsMessage.findMany({ where: { organizationId: ctx.organizationId } }),
+      db.scheduledMessage.findMany({ where: { organizationId: ctx.organizationId } }),
       db.notification.findMany({ where: { organizationId: ctx.organizationId } }),
     ]);
 
@@ -390,6 +403,7 @@ export async function GET() {
       inspections,
       auditLogs,
       smsMessages,
+      scheduledMessages,
       notifications,
     },
   };

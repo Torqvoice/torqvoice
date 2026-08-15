@@ -901,6 +901,8 @@
     "optAuditLogsDesc": "Aktivitets- og endringshistorikk",
     "optSmsMessages": "SMS-meldinger",
     "optSmsMessagesDesc": "Sendte og mottatte SMS-meldinger",
+    "optScheduledMessages": "Planlagte meldinger",
+    "optScheduledMessagesDesc": "Meldinger i kø og gjentakende meldinger som venter på å bli sendt",
     "optNotifications": "Varsler",
     "optNotificationsDesc": "Systemvarsler",
     "optCustomFields": "Egendefinerte felter",

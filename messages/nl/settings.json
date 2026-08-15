@@ -901,6 +901,8 @@
     "optAuditLogsDesc": "Activiteiten- en wijzigingsgeschiedenis",
     "optSmsMessages": "SMS-berichten",
     "optSmsMessagesDesc": "Verzonden en ontvangen SMS-berichten",
+    "optScheduledMessages": "Geplande berichten",
+    "optScheduledMessagesDesc": "Berichten in de wachtrij en herhalende berichten die nog verstuurd worden",
     "optNotifications": "Meldingen",
     "optNotificationsDesc": "Systeemmeldingen",
     "optCustomFields": "Aangepaste velden",
