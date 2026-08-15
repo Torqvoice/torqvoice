@@ -117,13 +117,17 @@ export default async function DashboardLayout({
     <ServiceTypeProvider serviceType={data.serviceType}>
     <LicenseExpiryProvider daysUntilExpiry={daysUntilExpiry} dismissed={licenseExpiryDismissed}>
     <WhiteLabelCtaProvider show={showWhiteLabelCta}>
-    <UpdateBanner
-      currentVersion={process.env.APP_VERSION || "development"}
-      lastSeenVersion={data.lastSeenVersion}
-      releaseNotesUrl={
-        process.env.RELEASE_NOTES_URL || "https://github.com/Torqvoice/torqvoice/releases"
-      }
-    />
+    {/* The demo banner already occupies the header, and demo image tags
+        (demo-abc1234) are not versions a visitor should be notified about. */}
+    {!isDemoMode && (
+      <UpdateBanner
+        currentVersion={process.env.APP_VERSION || "development"}
+        lastSeenVersion={data.lastSeenVersion}
+        releaseNotesUrl={
+          process.env.RELEASE_NOTES_URL || "https://github.com/Torqvoice/torqvoice/releases"
+        }
+      />
+    )}
     <SidebarProvider
       defaultOpen={sidebarOpen}
       style={

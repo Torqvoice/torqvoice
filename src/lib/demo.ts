@@ -7,7 +7,7 @@
  *
  * Regular CRUD (customers, vehicles, service records, settings, ...) is
  * intentionally NOT blocked — demo visitors should be able to play with
- * the app. The hourly reset cron reverts their changes.
+ * the app. The reset cron (every 3 hours) reverts their changes.
  */
 
 export const isDemoMode = process.env.DEMO_MODE === "true";
