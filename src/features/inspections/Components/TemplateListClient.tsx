@@ -348,7 +348,12 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
         </div>
       )}
 
+      {/* Keyed on the template being edited so the editor remounts and reads
+          its state from the right one. Radix only reports its own close
+          actions through onOpenChange, so a form that resets there never sees
+          the parent opening it and would show whatever it mounted with. */}
       <TemplateForm
+        key={editingTemplate?.id ?? "new"}
         open={showForm}
         onOpenChange={(open) => {
           setShowForm(open);

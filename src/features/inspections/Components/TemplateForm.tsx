@@ -37,6 +37,7 @@ import {
 import {
   ChevronDown,
   Copy,
+  ListOrdered,
   GripVertical,
   Loader2,
   Plus,
@@ -59,7 +60,7 @@ const restrictToVerticalAxis: Modifier = ({ transform }) => ({ ...transform, x: 
 /* Editor state                                                               */
 /* -------------------------------------------------------------------------- */
 
-interface EditorItem {
+export interface EditorItem {
   /** Client-only key so drag-and-drop and React keys survive reordering. */
   key: string;
   name: string;
@@ -77,7 +78,7 @@ interface EditorItem {
   defectSuggestions: string;
 }
 
-interface EditorSection {
+export interface EditorSection {
   key: string;
   name: string;
   description: string;
@@ -120,6 +121,43 @@ export interface TemplateFormData {
 
 let keyCounter = 0;
 const nextKey = () => `k${++keyCounter}`;
+
+/**
+ * References are filled in as rows are added, so a checklist built from scratch
+ * numbers itself. Only blank codes are ever written: on a regulatory template
+ * these are Annex I references like "1.1.13", and renumbering them sequentially
+ * would destroy the link to the regulation.
+ */
+export function nextSectionCode(sections: EditorSection[]): string {
+  const highest = sections.reduce((max, section) => {
+    const leading = Number.parseInt(section.code.trim(), 10);
+    return Number.isNaN(leading) ? max : Math.max(max, leading);
+  }, 0);
+  return String(highest + 1);
+}
+
+export function nextItemCode(section: EditorSection, sectionIndex: number): string {
+  const prefix = section.code.trim() || String(sectionIndex + 1);
+  const highest = section.items.reduce((max, item) => {
+    const code = item.code.trim();
+    if (!code.startsWith(`${prefix}.`)) return max;
+    const tail = Number.parseInt(code.slice(prefix.length + 1), 10);
+    return Number.isNaN(tail) ? max : Math.max(max, tail);
+  }, 0);
+  return `${prefix}.${highest + 1}`;
+}
+
+/** Renumbers everything sequentially — 1, 1.1, 1.2, 2, 2.1 … */
+export function renumber(sections: EditorSection[]): EditorSection[] {
+  return sections.map((section, sIdx) => {
+    const code = String(sIdx + 1);
+    return {
+      ...section,
+      code,
+      items: section.items.map((item, iIdx) => ({ ...item, code: `${code}.${iIdx + 1}` })),
+    };
+  });
+}
 
 const NUMBER_FIELD = /^-?\d*\.?\d*$/;
 
@@ -622,20 +660,6 @@ export function TemplateForm({
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  const resetForm = () => {
-    setName(template?.name ?? "");
-    setDescription(template?.description ?? "");
-    setIsDefault(template?.isDefault ?? false);
-    setCountry(template?.country ?? "none");
-    setSeverityScale((template?.severityScale as SeverityScale) || "eu");
-    setSections(toEditorState(template));
-  };
-
-  const handleOpenChange = (next: boolean) => {
-    if (next) resetForm();
-    onOpenChange(next);
-  };
-
   const patchSection = (index: number, patch: Partial<EditorSection>) =>
     setSections((prev) => prev.map((s, i) => (i === index ? { ...s, ...patch } : s)));
 
@@ -659,6 +683,11 @@ export function TemplateForm({
   };
 
   const totalChecks = sections.reduce((sum, s) => sum + s.items.length, 0);
+  // A reference with more than one dot is an Annex I citation, not a position
+  // in the list, so warn before offering to overwrite it.
+  const hasRegulationCodes = sections.some((section) =>
+    section.items.some((item) => (item.code.match(/\./g)?.length ?? 0) >= 2)
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -718,7 +747,7 @@ export function TemplateForm({
   };
 
   return (
-    <Sheet open={open} onOpenChange={handleOpenChange}>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
         className="flex w-full flex-col gap-0 p-0 sm:max-w-5xl"
@@ -815,10 +844,32 @@ export function TemplateForm({
                 </div>
               </div>
 
-              <div className="text-muted-foreground flex items-center gap-2 border-t pt-4 text-xs">
-                <Settings2 className="h-3.5 w-3.5" aria-hidden="true" />
-                {sections.length} section{sections.length === 1 ? "" : "s"} &middot; {totalChecks}{" "}
-                check{totalChecks === 1 ? "" : "s"}
+              <div className="space-y-3 border-t pt-4">
+                <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                  <Settings2 className="h-3.5 w-3.5" aria-hidden="true" />
+                  {sections.length} section{sections.length === 1 ? "" : "s"} &middot;{" "}
+                  {totalChecks} check{totalChecks === 1 ? "" : "s"}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => setSections((prev) => renumber(prev))}
+                >
+                  <ListOrdered className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+                  Renumber references
+                </Button>
+                <p className="text-muted-foreground text-xs">
+                  Numbers every section and check in order — 1, 1.1, 1.2, 2. New rows are
+                  numbered as you add them, so you only need this after moving things about.
+                  {hasRegulationCodes && (
+                    <strong className="text-foreground block pt-1">
+                      This checklist uses regulation references such as 1.1.13. Renumbering
+                      replaces them.
+                    </strong>
+                  )}
+                </p>
               </div>
             </div>
 
@@ -846,12 +897,21 @@ export function TemplateForm({
                           setSections((prev) => prev.filter((_, i) => i !== index))
                         }
                         onAddItem={() =>
-                          patchSection(index, { items: [...section.items, blankItem()] })
+                          patchSection(index, {
+                            items: [
+                              ...section.items,
+                              { ...blankItem(), code: nextItemCode(section, index) },
+                            ],
+                          })
                         }
                         onItemChange={(itemIndex, patch) => patchItem(index, itemIndex, patch)}
                         onItemDuplicate={(itemIndex) => {
                           const source = section.items[itemIndex];
-                          const copy = { ...source, key: nextKey() };
+                          const copy = {
+                            ...source,
+                            key: nextKey(),
+                            code: nextItemCode(section, index),
+                          };
                           const items = [...section.items];
                           items.splice(itemIndex + 1, 0, copy);
                           patchSection(index, { items });
@@ -874,7 +934,12 @@ export function TemplateForm({
                 type="button"
                 variant="outline"
                 className="mt-4 w-full"
-                onClick={() => setSections((prev) => [...prev, blankSection()])}
+                onClick={() =>
+                  setSections((prev) => [
+                    ...prev,
+                    { ...blankSection(), code: nextSectionCode(prev) },
+                  ])
+                }
               >
                 <Plus className="mr-1 h-4 w-4" aria-hidden="true" />
                 Add section
