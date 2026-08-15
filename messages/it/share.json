@@ -149,7 +149,53 @@
     "downloadPdf": "Scarica PDF",
     "notes": "Note",
     "quoteCancelled": "Richiesta di preventivo annullata",
-    "cancelFailed": "Annullamento della richiesta non riuscito"
+    "cancelFailed": "Annullamento della richiesta non riuscito",
+    "eu": {
+      "pass": "Nessuna carenza",
+      "attention": "Carenza lieve",
+      "fail": "Carenza grave",
+      "dangerous": "Carenza pericolosa",
+      "not_inspected": "Non controllato"
+    },
+    "basic": {
+      "pass": "Superato",
+      "attention": "Attenzione",
+      "fail": "Non superato",
+      "dangerous": "Pericoloso",
+      "not_inspected": "Non controllato"
+    },
+    "result": {
+      "pass": "Esito favorevole",
+      "pass_minor": "Favorevole con carenze lievi",
+      "fail": "Non favorevole — carenze gravi",
+      "fail_dangerous": "Non favorevole — carenze pericolose",
+      "incomplete": "Non completato"
+    },
+    "resultDetail": {
+      "pass": "Non sono state riscontrate carenze.",
+      "pass_minor": "Il veicolo è idoneo. Riparare le carenze lievi senza indebito ritardo.",
+      "fail": "Il veicolo non è idoneo. Le carenze devono essere riparate e il veicolo deve essere ricontrollato.",
+      "fail_dangerous": "Il veicolo non deve circolare su strada pubblica finché le carenze pericolose non sono riparate.",
+      "incomplete": "Questo controllo è ancora in corso."
+    },
+    "testDetails": "Dati del controllo",
+    "testDate": "Data del controllo",
+    "certificateNumber": "Numero del certificato",
+    "vehicleCategory": "Categoria del veicolo",
+    "inspector": "Ispettore",
+    "testLocation": "Luogo del controllo",
+    "nextTestDue": "Prossima revisione",
+    "vesselLabel": "Imbarcazione",
+    "plateLabel": "Targa",
+    "odometerLabel": "Contachilometri",
+    "engineHoursLabel": "Ore motore",
+    "summary": "Riepilogo",
+    "progressLabel": "{graded} controlli valutati",
+    "limit": "Limite",
+    "viewPhoto": "Vedi foto",
+    "deficienciesFound": "Carenze riscontrate ({count})",
+    "allResults": "Tutti i risultati",
+    "privacyNotice": "Questo rapporto le viene fornito dall'officina che ha eseguito il controllo. È consultabile da chiunque disponga di questo link: la preghiamo di non inoltrarlo. Contatti l'officina per revocare il link o cancellare i suoi dati."
   },
   "terms": {
     "title": "Condizioni di Vendita (Salgsvilkår)",

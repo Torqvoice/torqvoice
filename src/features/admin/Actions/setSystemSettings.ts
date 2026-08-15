@@ -6,9 +6,11 @@ import {
   systemSettingsUpdateSchema,
   ALL_SYSTEM_KEYS,
 } from "../Schema/systemSettingsSchema";
+import { demoGuard } from "@/lib/demo";
 
 export async function setSystemSettings(input: Record<string, string>) {
   return withSuperAdmin(async () => {
+    demoGuard();
     const data = systemSettingsUpdateSchema.parse(input);
 
     // Only allow known keys, filter out license.* (readonly)

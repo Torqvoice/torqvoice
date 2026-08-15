@@ -149,7 +149,53 @@
     "downloadPdf": "Pobierz PDF",
     "notes": "Uwagi",
     "quoteCancelled": "Prośba o wycenę anulowana",
-    "cancelFailed": "Nie udało się anulować prośby"
+    "cancelFailed": "Nie udało się anulować prośby",
+    "eu": {
+      "pass": "Brak usterki",
+      "attention": "Usterka drobna",
+      "fail": "Usterka poważna",
+      "dangerous": "Usterka stwarzająca zagrożenie",
+      "not_inspected": "Nie sprawdzono"
+    },
+    "basic": {
+      "pass": "Pozytywny",
+      "attention": "Uwaga",
+      "fail": "Negatywny",
+      "dangerous": "Niebezpieczne",
+      "not_inspected": "Nie sprawdzono"
+    },
+    "result": {
+      "pass": "Wynik pozytywny",
+      "pass_minor": "Pozytywny z usterkami drobnymi",
+      "fail": "Negatywny — usterki poważne",
+      "fail_dangerous": "Negatywny — usterki stwarzające zagrożenie",
+      "incomplete": "Nieukończone"
+    },
+    "resultDetail": {
+      "pass": "Nie stwierdzono usterek.",
+      "pass_minor": "Pojazd uzyskał wynik pozytywny. Usuń usterki drobne bez zbędnej zwłoki.",
+      "fail": "Pojazd uzyskał wynik negatywny. Usterki należy usunąć, a pojazd poddać ponownemu badaniu.",
+      "fail_dangerous": "Pojazdem nie wolno poruszać się po drogach publicznych do czasu usunięcia usterek stwarzających zagrożenie.",
+      "incomplete": "To badanie jest wciąż w toku."
+    },
+    "testDetails": "Dane badania",
+    "testDate": "Data badania",
+    "certificateNumber": "Numer zaświadczenia",
+    "vehicleCategory": "Kategoria pojazdu",
+    "inspector": "Diagnosta",
+    "testLocation": "Miejsce badania",
+    "nextTestDue": "Następne badanie",
+    "vesselLabel": "Jednostka pływająca",
+    "plateLabel": "Numer rejestracyjny",
+    "odometerLabel": "Przebieg",
+    "engineHoursLabel": "Motogodziny",
+    "summary": "Podsumowanie",
+    "progressLabel": "Oceniono {graded} pozycji",
+    "limit": "Wartość graniczna",
+    "viewPhoto": "Zobacz zdjęcie",
+    "deficienciesFound": "Stwierdzone usterki ({count})",
+    "allResults": "Wszystkie wyniki",
+    "privacyNotice": "Ten raport udostępnia Ci warsztat, który wykonał badanie. Może go zobaczyć każdy, kto ma ten link — prosimy go nie przekazywać. Skontaktuj się z warsztatem, aby wycofać link lub usunąć swoje dane."
   },
   "terms": {
     "title": "Warunki sprzedaży (Salgsvilkår)",

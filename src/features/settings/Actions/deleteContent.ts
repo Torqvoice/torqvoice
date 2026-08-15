@@ -6,6 +6,7 @@ import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { unlink } from "fs/promises";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { demoGuard } from "@/lib/demo";
 
 const deleteContentSchema = z.object({
   vehicles: z.boolean().default(false),
@@ -22,6 +23,7 @@ const deleteContentSchema = z.object({
 
 export async function deleteContent(input: unknown) {
   return withAuth(async ({ organizationId }) => {
+    demoGuard()
     if (!organizationId) {
       throw new Error("No organization found");
     }

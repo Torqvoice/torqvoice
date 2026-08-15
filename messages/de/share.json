@@ -149,7 +149,53 @@
     "downloadPdf": "PDF herunterladen",
     "notes": "Hinweise",
     "quoteCancelled": "Angebotsanfrage storniert",
-    "cancelFailed": "Anfrage konnte nicht storniert werden"
+    "cancelFailed": "Anfrage konnte nicht storniert werden",
+    "eu": {
+      "pass": "Kein Mangel",
+      "attention": "Geringer Mangel",
+      "fail": "Erheblicher Mangel",
+      "dangerous": "Gefährlicher Mangel",
+      "not_inspected": "Nicht geprüft"
+    },
+    "basic": {
+      "pass": "Bestanden",
+      "attention": "Achtung",
+      "fail": "Durchgefallen",
+      "dangerous": "Gefährlich",
+      "not_inspected": "Nicht geprüft"
+    },
+    "result": {
+      "pass": "Bestanden",
+      "pass_minor": "Bestanden mit geringen Mängeln",
+      "fail": "Nicht bestanden — erhebliche Mängel",
+      "fail_dangerous": "Nicht bestanden — gefährliche Mängel",
+      "incomplete": "Nicht abgeschlossen"
+    },
+    "resultDetail": {
+      "pass": "Es wurden keine Mängel festgestellt.",
+      "pass_minor": "Das Fahrzeug hat bestanden. Beheben Sie die geringen Mängel ohne unnötige Verzögerung.",
+      "fail": "Das Fahrzeug hat nicht bestanden. Die Mängel müssen behoben und das Fahrzeug erneut geprüft werden.",
+      "fail_dangerous": "Das Fahrzeug darf bis zur Behebung der gefährlichen Mängel nicht im öffentlichen Straßenverkehr genutzt werden.",
+      "incomplete": "Diese Prüfung läuft noch."
+    },
+    "testDetails": "Prüfdaten",
+    "testDate": "Prüfdatum",
+    "certificateNumber": "Bescheinigungsnummer",
+    "vehicleCategory": "Fahrzeugklasse",
+    "inspector": "Prüfer",
+    "testLocation": "Prüfort",
+    "nextTestDue": "Nächste Prüfung fällig",
+    "vesselLabel": "Fahrzeug",
+    "plateLabel": "Kennzeichen",
+    "odometerLabel": "Kilometerstand",
+    "engineHoursLabel": "Betriebsstunden",
+    "summary": "Zusammenfassung",
+    "progressLabel": "{graded} Prüfpunkte bewertet",
+    "limit": "Grenzwert",
+    "viewPhoto": "Foto ansehen",
+    "deficienciesFound": "Festgestellte Mängel ({count})",
+    "allResults": "Alle Ergebnisse",
+    "privacyNotice": "Dieser Bericht wird Ihnen von der Werkstatt bereitgestellt, die die Prüfung durchgeführt hat. Er ist für jeden mit diesem Link abrufbar — bitte leiten Sie ihn nicht weiter. Wenden Sie sich an die Werkstatt, um den Link zurückzuziehen oder Ihre Daten löschen zu lassen."
   },
   "terms": {
     "title": "Verkaufsbedingungen (Salgsvilkår)",

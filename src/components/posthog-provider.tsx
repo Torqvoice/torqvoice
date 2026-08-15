@@ -1,4 +1,4 @@
-// PostHog analytics — only active in cloud mode (TORQVOICE_MODE=cloud).
+// PostHog analytics — active in cloud mode and on the public demo instance.
 // Self-hosted instances never load or initialize PostHog.
 'use client'
 
@@ -7,18 +7,18 @@ import { PostHogProvider as PHProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
 
 export function PostHogProvider({
-  isCloud,
+  enabled,
   posthogKey,
   posthogHost,
   children,
 }: {
-  isCloud: boolean
+  enabled: boolean
   posthogKey?: string
   posthogHost?: string
   children: React.ReactNode
 }) {
   useEffect(() => {
-    if (isCloud && posthogKey) {
+    if (enabled && posthogKey) {
       posthog.init(posthogKey, {
         api_host: posthogHost || 'https://us.i.posthog.com',
         person_profiles: 'identified_only',
@@ -26,9 +26,9 @@ export function PostHogProvider({
         capture_pageleave: true,
       })
     }
-  }, [isCloud, posthogKey, posthogHost])
+  }, [enabled, posthogKey, posthogHost])
 
-  if (!isCloud || !posthogKey) {
+  if (!enabled || !posthogKey) {
     return <>{children}</>
   }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
+import { isDemoMode } from "@/lib/demo";
 import { toSafeDate } from "@/lib/invoice-utils";
 import { Prisma } from "@/generated/prisma/client";
 import JSZip from "jszip";
@@ -264,6 +265,10 @@ function rewriteFileUrl(
 }
 
 export async function POST(request: NextRequest) {
+  if (isDemoMode) {
+    return NextResponse.json({ error: "Backup import is disabled on the demo." }, { status: 403 });
+  }
+
   const ctx = await getAuthContext();
 
   if (!ctx) {

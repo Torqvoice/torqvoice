@@ -239,6 +239,12 @@ model ServiceRecord {
   customerId String?
   customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
+  /// Set when the job came straight from an inspection, so the inspection can
+  /// show what was raised from it. SetNull: deleting the inspection must not
+  /// take the job — and its invoice — with it.
+  inspectionId String?
+  inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+
   /// Denormalized from the vehicle historically; now the canonical scope so
   /// records exist without a vehicle. Nullable to mirror Vehicle.organizationId.
   organizationId String?
@@ -262,6 +268,7 @@ model ServiceRecord {
   @@index([technicianId])
   @@index([organizationId])
   @@index([customerId])
+  @@index([inspectionId])
   @@map("service_records")
 }
 
@@ -987,6 +994,14 @@ model InspectionTemplate {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Regulatory profile. `country` is an ISO-3166 alpha-2 code (or null for a
+  // shop-specific checklist), `standard` names the regime the template follows
+  // (e.g. "eu-2014-45"), and `severityScale` picks which defect vocabulary the
+  // technician grades against — see Lib/conditions.ts.
+  country       String?
+  standard      String? @default("custom")
+  severityScale String  @default("eu")
+
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
@@ -998,9 +1013,13 @@ model InspectionTemplate {
 }
 
 model InspectionTemplateSection {
-  id        String @id @default(cuid())
-  name      String
-  sortOrder Int    @default(0)
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  // Regulation reference for the section, e.g. "1" for Braking equipment in
+  // Directive 2014/45/EU Annex I.
+  code        String?
+  sortOrder   Int     @default(0)
 
   templateId String
   template   InspectionTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
@@ -1012,9 +1031,29 @@ model InspectionTemplateSection {
 }
 
 model InspectionTemplateItem {
-  id        String @id @default(cuid())
-  name      String
-  sortOrder Int    @default(0)
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  // Regulation reference for the check, e.g. "1.1.13".
+  code        String?
+  sortOrder   Int     @default(0)
+
+  // How the technician records the result: "condition" (defect grading only),
+  // "measurement" (numeric value in `unit`, graded against min/max),
+  // "text" (free text) or "choice" (one of `choices`).
+  inputType String   @default("condition")
+  unit      String?
+  minValue  Float?
+  maxValue  Float?
+  choices   String[] @default([])
+
+  required          Boolean  @default(false)
+  photoRequired     Boolean  @default(false)
+  // Defect severity applied when a measurement falls outside min/max.
+  defaultSeverity   String?
+  // Phrases this workshop wants offered when a defect is recorded against the
+  // check, on top of the built-in catalogue. See Lib/defectCatalogue.ts.
+  defectSuggestions String[] @default([])
 
   sectionId String
   section   InspectionTemplateSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
@@ -1045,11 +1084,21 @@ model Inspection {
   technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
   sortOrder    Int         @default(0)
 
+  // Roadworthiness certificate fields required by Directive 2014/45/EU Annex IV.
+  // `inspectorName` and `certificateNumber` are snapshots taken at completion so
+  // the issued certificate stays stable even if staff or settings change later.
+  vehicleCategory   String?
+  nextTestDue       DateTime?
+  certificateNumber String?
+  inspectorName     String?
+  testLocation      String?
+
   organizationId String
 
-  items         InspectionItem[]
-  quoteRequests InspectionQuoteRequest[]
-  quotes        Quote[]
+  items          InspectionItem[]
+  quoteRequests  InspectionQuoteRequest[]
+  quotes         Quote[]
+  serviceRecords ServiceRecord[]
 
   @@index([vehicleId])
   @@index([organizationId])
@@ -1065,6 +1114,24 @@ model InspectionItem {
   condition String   @default("not_inspected")
   notes     String?
   imageUrls String[] @default([])
+
+  // Copied from the template at creation so an inspection stays readable even
+  // after its template is edited or deleted.
+  description       String?
+  code              String?
+  sectionCode       String?
+  inputType         String   @default("condition")
+  unit              String?
+  minValue          Float?
+  maxValue          Float?
+  choices           String[] @default([])
+  required          Boolean  @default(false)
+  photoRequired     Boolean  @default(false)
+  defaultSeverity   String?
+  defectSuggestions String[] @default([])
+
+  measuredValue Float?
+  textValue     String?
 
   inspectionId String
   inspection   Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)

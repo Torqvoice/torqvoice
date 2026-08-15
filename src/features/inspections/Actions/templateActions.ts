@@ -5,34 +5,55 @@ import { withAuth } from "@/lib/with-auth";
 import { createTemplateSchema, updateTemplateSchema } from "../Schema/templateSchema";
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import type { TemplateSectionInput } from "../Schema/templateSchema";
+import { TEMPLATE_PRESETS, type TemplatePreset } from "../Lib/templatePresets";
+
+/**
+ * Sections and their checks are always rewritten wholesale rather than diffed,
+ * so create and update share one builder. Positional index wins over any
+ * sortOrder the client sent, which keeps the order the user dragged into place.
+ */
+function buildSectionCreates(sections: TemplateSectionInput[]) {
+  return sections.map((section, sIdx) => ({
+    name: section.name,
+    description: section.description || null,
+    code: section.code || null,
+    sortOrder: sIdx,
+    items: {
+      create: section.items.map((item, iIdx) => ({
+        name: item.name,
+        description: item.description || null,
+        code: item.code || null,
+        sortOrder: iIdx,
+        inputType: item.inputType,
+        unit: item.unit || null,
+        minValue: item.minValue ?? null,
+        maxValue: item.maxValue ?? null,
+        choices: item.choices ?? [],
+        required: item.required,
+        photoRequired: item.photoRequired,
+        defaultSeverity: item.defaultSeverity ?? null,
+        defectSuggestions: item.defectSuggestions ?? [],
+      })),
+    },
+  }));
+}
 
 export async function getTemplates() {
-  return withAuth(async ({ organizationId }) => {
-    let templates = await db.inspectionTemplate.findMany({
+  return withAuth(async ({ organizationId, userId }) => {
+    // Runs before the query, so anything new is in the list this request.
+    await syncPresetLibrary(organizationId, userId);
+
+    const templates = await db.inspectionTemplate.findMany({
       where: { organizationId },
       include: {
         sections: {
-          include: { items: true },
+          include: { items: { orderBy: { sortOrder: "asc" } } },
           orderBy: { sortOrder: "asc" },
         },
       },
       orderBy: { createdAt: "desc" },
     });
-
-    // Auto-seed default template for new organizations
-    if (templates.length === 0) {
-      await seedDefaultTemplateForOrg(organizationId);
-      templates = await db.inspectionTemplate.findMany({
-        where: { organizationId },
-        include: {
-          sections: {
-            include: { items: true },
-            orderBy: { sortOrder: "asc" },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-      });
-    }
 
     return templates;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INSPECTIONS }] });
@@ -72,19 +93,11 @@ export async function createTemplate(input: unknown) {
           name: data.name,
           description: data.description,
           isDefault: data.isDefault,
+          country: data.country ?? null,
+          standard: data.standard ?? "custom",
+          severityScale: data.severityScale,
           organizationId,
-          sections: {
-            create: data.sections.map((section, sIdx) => ({
-              name: section.name,
-              sortOrder: section.sortOrder ?? sIdx,
-              items: {
-                create: section.items.map((item, iIdx) => ({
-                  name: item.name,
-                  sortOrder: item.sortOrder ?? iIdx,
-                })),
-              },
-            })),
-          },
+          sections: { create: buildSectionCreates(data.sections) },
         },
         include: {
           sections: { include: { items: true } },
@@ -137,18 +150,10 @@ export async function updateTemplate(input: unknown) {
           name: data.name,
           description: data.description,
           isDefault: data.isDefault,
-          sections: {
-            create: data.sections.map((section, sIdx) => ({
-              name: section.name,
-              sortOrder: section.sortOrder ?? sIdx,
-              items: {
-                create: section.items.map((item, iIdx) => ({
-                  name: item.name,
-                  sortOrder: item.sortOrder ?? iIdx,
-                })),
-              },
-            })),
-          },
+          country: data.country ?? null,
+          standard: data.standard ?? "custom",
+          severityScale: data.severityScale,
+          sections: { create: buildSectionCreates(data.sections) },
         },
         include: {
           sections: { include: { items: true } },
@@ -202,116 +207,280 @@ export async function deleteTemplate(id: string) {
   });
 }
 
-async function seedDefaultTemplateForOrg(organizationId: string) {
-  const count = await db.inspectionTemplate.count({ where: { organizationId } });
-  if (count > 0) return null;
 
-  const template = await db.inspectionTemplate.create({
-    data: {
-      name: "Standard Multi-Point Inspection",
-      description: "Comprehensive vehicle inspection covering all major systems",
-      isDefault: true,
-      organizationId,
-      sections: {
-        create: [
-          {
-            name: "Exterior",
-            sortOrder: 0,
-            items: {
-              create: [
-                { name: "Body condition", sortOrder: 0 },
-                { name: "Paint", sortOrder: 1 },
-                { name: "Lights", sortOrder: 2 },
-                { name: "Windshield", sortOrder: 3 },
-                { name: "Wipers", sortOrder: 4 },
-                { name: "Tires", sortOrder: 5 },
-                { name: "Wheels", sortOrder: 6 },
-              ],
-            },
-          },
-          {
-            name: "Under Hood",
-            sortOrder: 1,
-            items: {
-              create: [
-                { name: "Engine oil", sortOrder: 0 },
-                { name: "Coolant", sortOrder: 1 },
-                { name: "Brake fluid", sortOrder: 2 },
-                { name: "Power steering", sortOrder: 3 },
-                { name: "Battery", sortOrder: 4 },
-                { name: "Belts", sortOrder: 5 },
-                { name: "Hoses", sortOrder: 6 },
-                { name: "Air filter", sortOrder: 7 },
-              ],
-            },
-          },
-          {
-            name: "Under Vehicle",
-            sortOrder: 2,
-            items: {
-              create: [
-                { name: "Exhaust", sortOrder: 0 },
-                { name: "Suspension", sortOrder: 1 },
-                { name: "CV joints", sortOrder: 2 },
-                { name: "Brake lines", sortOrder: 3 },
-              ],
-            },
-          },
-          {
-            name: "Interior",
-            sortOrder: 3,
-            items: {
-              create: [
-                { name: "Dash lights", sortOrder: 0 },
-                { name: "Horn", sortOrder: 1 },
-                { name: "A/C", sortOrder: 2 },
-                { name: "Heater", sortOrder: 3 },
-                { name: "Seat belts", sortOrder: 4 },
-              ],
-            },
-          },
-          {
-            name: "Brakes",
-            sortOrder: 4,
-            items: {
-              create: [
-                { name: "Front pads", sortOrder: 0 },
-                { name: "Rear pads", sortOrder: 1 },
-                { name: "Rotors", sortOrder: 2 },
-                { name: "Brake lines", sortOrder: 3 },
-              ],
-            },
-          },
-          {
-            name: "Tires",
-            sortOrder: 5,
-            items: {
-              create: [
-                { name: "Tread depth (LF)", sortOrder: 0 },
-                { name: "Tread depth (RF)", sortOrder: 1 },
-                { name: "Tread depth (LR)", sortOrder: 2 },
-                { name: "Tread depth (RR)", sortOrder: 3 },
-                { name: "Tire pressure", sortOrder: 4 },
-                { name: "Spare tire", sortOrder: 5 },
-              ],
-            },
-          },
-        ],
+/**
+ * Copies a preset from Lib/templatePresets into an editable template owned by
+ * the organization. The copy is a plain template from that point on — nothing
+ * links back to the preset, so the workshop can rename sections, move checks
+ * and change every threshold to match its own country and equipment.
+ */
+export async function createTemplateFromPreset(presetId: string) {
+  return withAuth(async ({ organizationId }) => {
+    const preset = TEMPLATE_PRESETS.find((p) => p.id === presetId);
+    if (!preset) throw new Error("Preset not found");
+
+    const isFirst = (await db.inspectionTemplate.count({ where: { organizationId } })) === 0;
+
+    const template = await db.inspectionTemplate.create({
+      data: presetToCreate(preset, organizationId, isFirst),
+      include: { sections: { include: { items: true } } },
+    });
+
+    revalidatePath("/settings/templates");
+    return template;
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }],
+    audit: ({ result }) => ({
+      action: "inspectionTemplate.create",
+      entity: "InspectionTemplate",
+      entityId: result.id,
+      message: `Created inspection template "${result.name}" from a preset`,
+      metadata: { templateId: result.id, templateName: result.name },
+    }),
+  });
+}
+
+/**
+ * Duplicates an existing template. Useful for keeping one checklist per country
+ * or per vehicle category without rebuilding it from scratch.
+ */
+export async function duplicateTemplate(id: string) {
+  return withAuth(async ({ organizationId }) => {
+    const source = await db.inspectionTemplate.findFirst({
+      where: { id, organizationId },
+      include: {
+        sections: {
+          include: { items: { orderBy: { sortOrder: "asc" } } },
+          orderBy: { sortOrder: "asc" },
+        },
       },
+    });
+    if (!source) throw new Error("Template not found");
+
+    const template = await db.inspectionTemplate.create({
+      data: {
+        name: `${source.name} (copy)`,
+        description: source.description,
+        isDefault: false,
+        country: source.country,
+        standard: source.standard,
+        severityScale: source.severityScale,
+        organizationId,
+        sections: {
+          create: source.sections.map((section, sIdx) => ({
+            name: section.name,
+            description: section.description,
+            code: section.code,
+            sortOrder: sIdx,
+            items: {
+              create: section.items.map((item, iIdx) => ({
+                name: item.name,
+                description: item.description,
+                code: item.code,
+                sortOrder: iIdx,
+                inputType: item.inputType,
+                unit: item.unit,
+                minValue: item.minValue,
+                maxValue: item.maxValue,
+                choices: item.choices,
+                required: item.required,
+                photoRequired: item.photoRequired,
+                defaultSeverity: item.defaultSeverity,
+                defectSuggestions: item.defectSuggestions,
+              })),
+            },
+          })),
+        },
+      },
+      include: { sections: { include: { items: true } } },
+    });
+
+    revalidatePath("/settings/templates");
+    return template;
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }],
+    audit: ({ result }) => ({
+      action: "inspectionTemplate.create",
+      entity: "InspectionTemplate",
+      entityId: result.id,
+      message: `Duplicated inspection template into "${result.name}"`,
+      metadata: { templateId: result.id, templateName: result.name },
+    }),
+  });
+}
+
+/** Turns a preset into the nested create Prisma wants. */
+function presetToCreate(preset: TemplatePreset, organizationId: string, isDefault: boolean) {
+  return {
+    name: preset.name,
+    description: preset.description,
+    isDefault,
+    country: preset.country,
+    standard: preset.standard,
+    severityScale: preset.severityScale,
+    organizationId,
+    sections: {
+      create: preset.sections.map((section, sIdx) => ({
+        name: section.name,
+        description: section.description || null,
+        code: section.code || null,
+        sortOrder: sIdx,
+        items: {
+          create: section.items.map((item, iIdx) => ({
+            name: item.name,
+            description: item.description || null,
+            code: item.code || null,
+            sortOrder: iIdx,
+            inputType: item.inputType ?? "condition",
+            unit: item.unit || null,
+            minValue: item.minValue ?? null,
+            maxValue: item.maxValue ?? null,
+            choices: item.choices ?? [],
+            required: item.required ?? false,
+            photoRequired: item.photoRequired ?? false,
+            defaultSeverity: item.defaultSeverity ?? null,
+            defectSuggestions: [],
+          })),
+        },
+      })),
     },
-    include: {
-      sections: { include: { items: true } },
+  };
+}
+
+/** Every preset a workshop would actually run. "blank" is a starting point for
+ *  building one, not a checklist, so it stays out of the library. */
+const LIBRARY_PRESETS = TEMPLATE_PRESETS.filter((p) => p.id !== "blank");
+
+/**
+ * Marks which presets an organization has already been offered.
+ *
+ * Without this, topping the library up on every page load would resurrect a
+ * checklist the workshop deliberately deleted, and it would be impossible to
+ * get rid of. The marker records that a preset has been handled — installed or
+ * consciously skipped — so deleting one is permanent, while a preset added to
+ * the library in a later release still arrives on its own.
+ */
+const PRESETS_INSTALLED_KEY = "inspections.presetsInstalled";
+
+async function readHandledPresets(organizationId: string): Promise<Set<string>> {
+  const row = await db.appSetting.findFirst({
+    where: { organizationId, key: PRESETS_INSTALLED_KEY },
+    select: { value: true },
+  });
+  if (!row?.value) return new Set();
+  try {
+    const parsed = JSON.parse(row.value);
+    return new Set(Array.isArray(parsed) ? parsed.filter((v) => typeof v === "string") : []);
+  } catch {
+    return new Set();
+  }
+}
+
+/**
+ * Brings the organization's list up to the current library.
+ *
+ * Runs on read rather than behind a button, so a workshop that has been using
+ * Torqvoice for a year gets the new checklists without being told to go and
+ * fetch them. It writes nothing once every preset has been handled.
+ */
+async function syncPresetLibrary(organizationId: string, userId: string) {
+  const handled = await readHandledPresets(organizationId);
+  const pending = LIBRARY_PRESETS.filter((p) => !handled.has(p.id));
+  if (pending.length === 0) return 0;
+
+  const existing = await db.inspectionTemplate.findMany({
+    where: { organizationId },
+    select: { name: true, isDefault: true },
+  });
+  const taken = new Set(existing.map((t) => t.name.trim().toLowerCase()));
+  // A workshop that already built its own copy keeps it; the preset is marked
+  // handled so it is never added alongside.
+  const toCreate = pending.filter((p) => !taken.has(p.name.trim().toLowerCase()));
+
+  if (toCreate.length > 0) {
+    // A shop opening the app for the first time should land on the general
+    // checklist, not on a national statutory test it may not be approved to run.
+    const hasDefault = existing.some((t) => t.isDefault);
+    await db.$transaction(
+      toCreate.map((preset) =>
+        db.inspectionTemplate.create({
+          data: presetToCreate(
+            preset,
+            organizationId,
+            !hasDefault && preset.id === "standard-multipoint"
+          ),
+        })
+      )
+    );
+  }
+
+  const next = new Set([...handled, ...pending.map((p) => p.id)]);
+  await db.appSetting.upsert({
+    where: { organizationId_key: { organizationId, key: PRESETS_INSTALLED_KEY } },
+    create: {
+      organizationId,
+      key: PRESETS_INSTALLED_KEY,
+      value: JSON.stringify([...next]),
+      userId,
     },
+    update: { value: JSON.stringify([...next]) },
   });
 
-  return template;
+  return toCreate.length;
+}
+
+/**
+ * Puts back any library checklist the workshop no longer has, ignoring the
+ * handled marker. This is the deliberate "I deleted that and want it back"
+ * path, which is why it is a button rather than something that happens on load.
+ */
+export async function restoreMissingPresets() {
+  return withAuth(async ({ organizationId, userId }) => {
+    const existing = await db.inspectionTemplate.findMany({
+      where: { organizationId },
+      select: { name: true, isDefault: true },
+    });
+    const taken = new Set(existing.map((t) => t.name.trim().toLowerCase()));
+    const missing = LIBRARY_PRESETS.filter((p) => !taken.has(p.name.trim().toLowerCase()));
+    if (missing.length === 0) return { added: 0 };
+
+    const hasDefault = existing.some((t) => t.isDefault);
+    await db.$transaction(
+      missing.map((preset) =>
+        db.inspectionTemplate.create({
+          data: presetToCreate(
+            preset,
+            organizationId,
+            !hasDefault && preset.id === "standard-multipoint"
+          ),
+        })
+      )
+    );
+
+    const handled = await readHandledPresets(organizationId);
+    const next = new Set([...handled, ...LIBRARY_PRESETS.map((p) => p.id)]);
+    await db.appSetting.upsert({
+      where: { organizationId_key: { organizationId, key: PRESETS_INSTALLED_KEY } },
+      create: {
+        organizationId,
+        key: PRESETS_INSTALLED_KEY,
+        value: JSON.stringify([...next]),
+        userId,
+      },
+      update: { value: JSON.stringify([...next]) },
+    });
+
+    revalidatePath("/settings/templates");
+    return { added: missing.length };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }],
+  });
 }
 
 export async function seedDefaultTemplate() {
-  return withAuth(async ({ organizationId }) => {
-    const result = await seedDefaultTemplateForOrg(organizationId);
-    revalidatePath("/settings/inspections");
-    return result;
+  return withAuth(async ({ organizationId, userId }) => {
+    const added = await syncPresetLibrary(organizationId, userId);
+    revalidatePath("/settings/templates");
+    return { added };
   }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }] });
 }
-

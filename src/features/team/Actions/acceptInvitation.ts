@@ -4,8 +4,12 @@ import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { getCachedSession } from "@/lib/cached-session";
 import { acceptInvitationSchema } from "../Schema/teamSchema";
+import { isDemoMode } from "@/lib/demo";
 
 export async function acceptInvitation(input: unknown) {
+  if (isDemoMode) {
+    return { success: false, error: "This action is disabled on the demo." };
+  }
   try {
     const data = acceptInvitationSchema.parse(input);
 

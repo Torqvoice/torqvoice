@@ -14,7 +14,8 @@
     "check:fix": "biome check . --write",
     "prepare": "next-ws patch --yes",
     "test": "vitest run",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "seed:demo": "npx tsx prisma/seed_dummy_data.ts"
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.1045.0",

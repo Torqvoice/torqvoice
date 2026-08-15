@@ -148,6 +148,8 @@ describe("completeInspection — cross-org isolation", () => {
       id: "insp-a",
       vehicleId: "veh-a",
       organizationId: ORG_A,
+      // Completion checks the items for anything the template made mandatory.
+      items: [],
     } as any);
     vi.mocked(db.inspection.updateMany).mockResolvedValue({ count: 1 } as any);
 

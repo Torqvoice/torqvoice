@@ -149,7 +149,53 @@
     "downloadPdf": "PDF İndir",
     "notes": "Notlar",
     "quoteCancelled": "Teklif talebi iptal edildi",
-    "cancelFailed": "Talep iptal edilemedi"
+    "cancelFailed": "Talep iptal edilemedi",
+    "eu": {
+      "pass": "Kusur yok",
+      "attention": "Hafif kusur",
+      "fail": "Ağır kusur",
+      "dangerous": "Tehlikeli kusur",
+      "not_inspected": "Muayene edilmedi"
+    },
+    "basic": {
+      "pass": "Geçti",
+      "attention": "Dikkat",
+      "fail": "Kaldı",
+      "dangerous": "Tehlikeli",
+      "not_inspected": "Muayene edilmedi"
+    },
+    "result": {
+      "pass": "Geçti",
+      "pass_minor": "Hafif kusurlarla geçti",
+      "fail": "Kaldı — ağır kusurlar",
+      "fail_dangerous": "Kaldı — tehlikeli kusurlar",
+      "incomplete": "Tamamlanmadı"
+    },
+    "resultDetail": {
+      "pass": "Herhangi bir kusur bulunmadı.",
+      "pass_minor": "Araç geçti. Hafif kusurları gecikmeden giderin.",
+      "fail": "Araç kaldı. Kusurlar giderilmeli ve araç yeniden muayene edilmelidir.",
+      "fail_dangerous": "Tehlikeli kusurlar giderilene kadar araç karayolunda kullanılmamalıdır.",
+      "incomplete": "Bu muayene hâlâ devam ediyor."
+    },
+    "testDetails": "Muayene bilgileri",
+    "testDate": "Muayene tarihi",
+    "certificateNumber": "Belge numarası",
+    "vehicleCategory": "Araç sınıfı",
+    "inspector": "Muayene görevlisi",
+    "testLocation": "Muayene yeri",
+    "nextTestDue": "Sonraki muayene",
+    "vesselLabel": "Tekne",
+    "plateLabel": "Plaka",
+    "odometerLabel": "Kilometre",
+    "engineHoursLabel": "Motor saati",
+    "summary": "Özet",
+    "progressLabel": "{graded} kontrol değerlendirildi",
+    "limit": "Sınır değer",
+    "viewPhoto": "Fotoğrafı gör",
+    "deficienciesFound": "Tespit edilen kusurlar ({count})",
+    "allResults": "Tüm sonuçlar",
+    "privacyNotice": "Bu rapor, muayeneyi yapan servis tarafından sizinle paylaşılmıştır. Bu bağlantıya sahip herkes raporu görebilir, lütfen iletmeyin. Bağlantının geri çekilmesi veya verilerinizin silinmesi için servisle iletişime geçin."
   },
   "terms": {
     "title": "Satış Koşulları (Salgsvilkår)",

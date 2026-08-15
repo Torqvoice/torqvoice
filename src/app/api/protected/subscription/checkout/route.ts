@@ -3,9 +3,14 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { getStripeClient, getStripeConfig } from "@/lib/stripe-config";
+import { isDemoMode } from "@/lib/demo";
 
 export async function POST(request: Request) {
   try {
+    if (isDemoMode) {
+      return NextResponse.json({ error: "This action is disabled on the demo." }, { status: 403 });
+    }
+
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

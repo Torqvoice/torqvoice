@@ -16,10 +16,12 @@ export function LicenseSettings({
   initialKey,
   initialValid,
   initialCheckedAt,
+  demoMode = false,
 }: {
   initialKey: string
   initialValid: boolean
   initialCheckedAt: string
+  demoMode?: boolean
 }) {
   const router = useRouter()
   const t = useTranslations('settings')
@@ -60,7 +62,7 @@ export function LicenseSettings({
               {t('license.description')}
             </CardDescription>
           </div>
-          {!licenseValid && (
+          {!licenseValid && !demoMode && (
             <Button asChild variant="default" size="sm" className="shrink-0">
               <a
                 href={`${process.env.NEXT_PUBLIC_TORQVOICE_COM_URL || 'https://torqvoice.com'}/subscriptions/white-label`}

@@ -3,9 +3,11 @@
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { deleteUserOrganizations } from '@/lib/delete-user-data'
+import { demoGuard } from '@/lib/demo'
 
 export async function deleteAccount() {
   return withAuth(async ({ userId }) => {
+    demoGuard()
     // Get user email to clean up invitations
     const user = await db.user.findUnique({
       where: { id: userId },

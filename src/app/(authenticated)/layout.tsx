@@ -21,6 +21,7 @@ import { isSupportEnabled } from "@/lib/support";
 import { ServiceTypeProvider } from "@/components/service-type-context";
 import { LicenseExpiryProvider } from "@/components/license-expiry-context";
 import { db } from "@/lib/db";
+import { isDemoMode } from "@/lib/demo";
 
 export default async function DashboardLayout({
   children,
@@ -49,7 +50,7 @@ export default async function DashboardLayout({
   }
 
   const features = await getFeatures(data.organizationId);
-  const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved;
+  const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved && !isDemoMode;
   // Cloud only, and off until a platform admin turns it on. Resolved here so
   // the widget's code never reaches a self-hosted install's page.
   const supportEnabled = await isSupportEnabled();
@@ -116,13 +117,17 @@ export default async function DashboardLayout({
     <ServiceTypeProvider serviceType={data.serviceType}>
     <LicenseExpiryProvider daysUntilExpiry={daysUntilExpiry} dismissed={licenseExpiryDismissed}>
     <WhiteLabelCtaProvider show={showWhiteLabelCta}>
-    <UpdateBanner
-      currentVersion={process.env.APP_VERSION || "development"}
-      lastSeenVersion={data.lastSeenVersion}
-      releaseNotesUrl={
-        process.env.RELEASE_NOTES_URL || "https://github.com/Torqvoice/torqvoice/releases"
-      }
-    />
+    {/* The demo banner already occupies the header, and demo image tags
+        (demo-abc1234) are not versions a visitor should be notified about. */}
+    {!isDemoMode && (
+      <UpdateBanner
+        currentVersion={process.env.APP_VERSION || "development"}
+        lastSeenVersion={data.lastSeenVersion}
+        releaseNotesUrl={
+          process.env.RELEASE_NOTES_URL || "https://github.com/Torqvoice/torqvoice/releases"
+        }
+      />
+    )}
     <SidebarProvider
       defaultOpen={sidebarOpen}
       style={

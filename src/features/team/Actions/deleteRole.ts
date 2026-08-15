@@ -4,9 +4,11 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { demoGuard } from "@/lib/demo";
 
 export async function deleteRole(roleId: string) {
   return withAuth(async ({ organizationId, role, isSuperAdmin }) => {
+    demoGuard();
     if (!isSuperAdmin && role !== "owner" && role !== "admin") {
       throw new Error("Only owners and admins can delete roles");
     }

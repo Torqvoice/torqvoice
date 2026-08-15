@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/with-auth";
 import { sendTelegramMessage } from "@/lib/telegram";
 import { requireFeature } from "@/lib/features";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { demoGuard } from "@/lib/demo";
 
 export async function sendTelegramToCustomer(input: {
   customerId: string;
@@ -14,6 +15,7 @@ export async function sendTelegramToCustomer(input: {
 }) {
   return withAuth(
     async ({ organizationId }) => {
+      demoGuard();
       await requireFeature(organizationId, "telegram");
 
       const customer = await db.customer.findFirst({

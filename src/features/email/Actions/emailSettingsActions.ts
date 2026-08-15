@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { ALL_ORG_EMAIL_KEYS } from "../Schema/emailSettingsSchema";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { sendOrgMail, getOrgFromAddress } from "@/lib/email";
+import { demoGuard } from "@/lib/demo";
 
 export async function getEmailSettings() {
   return withAuth(
@@ -30,6 +31,7 @@ export async function getEmailSettings() {
 export async function setEmailSettings(entries: Record<string, string>) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      demoGuard();
       await db.$transaction(
         Object.entries(entries).map(([key, value]) =>
           db.appSetting.upsert({
@@ -56,6 +58,7 @@ export async function setEmailSettings(entries: Record<string, string>) {
 export async function testOrgEmailConnection() {
   return withAuth(
     async ({ userId, organizationId }) => {
+      demoGuard();
       const user = await db.user.findUnique({
         where: { id: userId },
         select: { email: true },

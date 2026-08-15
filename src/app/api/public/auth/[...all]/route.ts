@@ -1,4 +1,6 @@
+import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
+import { isDemoMode } from '@/lib/demo'
 import { rateLimit } from '@/lib/rate-limit'
 import { toNextJsHandler } from 'better-auth/next-js'
 import { db } from '@/lib/db'
@@ -24,6 +26,17 @@ const authAuditPrefixes = [
   '/api/public/auth/passkey',
 ]
 
+// better-auth's own endpoints bypass server actions, so demoGuard() never sees
+// them. Without this, a demo visitor can change the shared demo user's
+// password or enroll 2FA/passkeys on it, locking the demo for everyone until
+// the next reset.
+const demoBlockedPrefixes = [
+  '/api/public/auth/change-password',
+  '/api/public/auth/set-password',
+  '/api/public/auth/two-factor',
+  '/api/public/auth/passkey',
+]
+
 const defaultConfig = { limit: 30, windowMs: 60_000 }
 
 function getRequestIp(request: Request): string | null {
@@ -39,6 +52,14 @@ function getRequestIp(request: Request): string | null {
 
 async function POST(request: Request) {
   const { pathname } = new URL(request.url)
+
+  if (isDemoMode && demoBlockedPrefixes.some((p) => pathname.startsWith(p))) {
+    return NextResponse.json(
+      { error: 'This action is disabled on the demo. Install Torqvoice on your own server to use it.' },
+      { status: 403 },
+    )
+  }
+
   const config = strictPrefixes.find((p) => pathname.startsWith(p.prefix)) ?? defaultConfig
   const limited = rateLimit(request, config)
   if (limited) return limited

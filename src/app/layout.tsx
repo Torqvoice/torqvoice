@@ -10,6 +10,8 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { PWAServiceWorker } from '@/components/pwa-service-worker'
 import { PostHogProvider } from '@/components/posthog-provider'
 import { isCloudMode } from '@/lib/features'
+import { isDemoMode } from '@/lib/demo'
+import { DemoBanner } from '@/components/demo-banner'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import './globals.css'
@@ -99,7 +101,7 @@ export default async function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <PostHogProvider
-          isCloud={isCloudMode()}
+          enabled={isCloudMode() || isDemoMode}
           posthogKey={process.env.POSTHOG_KEY}
           posthogHost={process.env.POSTHOG_HOST}
         >
@@ -107,6 +109,7 @@ export default async function RootLayout({
             <ThemeProvider defaultTheme="dark">
               <QueryProvider>
                 <TooltipProvider>
+                  <DemoBanner />
                   {children}
                   <GlassModal />
                   <Toaster richColors position="bottom-right" />

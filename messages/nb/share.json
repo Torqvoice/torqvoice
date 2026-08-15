@@ -149,7 +149,53 @@
     "downloadPdf": "Last ned PDF",
     "notes": "Notater",
     "quoteCancelled": "Tilbudsforespørsel avbrutt",
-    "cancelFailed": "Kunne ikke avbryte forespørselen"
+    "cancelFailed": "Kunne ikke avbryte forespørselen",
+    "eu": {
+      "pass": "Ingen mangel",
+      "attention": "Mindre mangel",
+      "fail": "Vesentlig mangel",
+      "dangerous": "Farlig mangel",
+      "not_inspected": "Ikke kontrollert"
+    },
+    "basic": {
+      "pass": "Godkjent",
+      "attention": "Merknad",
+      "fail": "Ikke godkjent",
+      "dangerous": "Farlig",
+      "not_inspected": "Ikke kontrollert"
+    },
+    "result": {
+      "pass": "Godkjent",
+      "pass_minor": "Godkjent med mindre mangler",
+      "fail": "Ikke godkjent — vesentlige mangler",
+      "fail_dangerous": "Ikke godkjent — farlige mangler",
+      "incomplete": "Ikke fullført"
+    },
+    "resultDetail": {
+      "pass": "Det ble ikke funnet mangler.",
+      "pass_minor": "Kjøretøyet er godkjent. Utbedre de mindre manglene uten unødig opphold.",
+      "fail": "Kjøretøyet er ikke godkjent. Manglene må utbedres og kjøretøyet kontrolleres på nytt.",
+      "fail_dangerous": "Kjøretøyet må ikke brukes på offentlig vei før de farlige manglene er utbedret.",
+      "incomplete": "Denne kontrollen pågår fortsatt."
+    },
+    "testDetails": "Kontrollopplysninger",
+    "testDate": "Kontrolldato",
+    "certificateNumber": "Sertifikatnummer",
+    "vehicleCategory": "Kjøretøygruppe",
+    "inspector": "Kontrollør",
+    "testLocation": "Kontrollsted",
+    "nextTestDue": "Neste kontroll",
+    "vesselLabel": "Fartøy",
+    "plateLabel": "Kjennemerke",
+    "odometerLabel": "Kilometerstand",
+    "engineHoursLabel": "Motortimer",
+    "summary": "Sammendrag",
+    "progressLabel": "{graded} punkter vurdert",
+    "limit": "Grenseverdi",
+    "viewPhoto": "Se bilde",
+    "deficienciesFound": "Mangler funnet ({count})",
+    "allResults": "Alle resultater",
+    "privacyNotice": "Denne rapporten deles med deg av verkstedet som utførte kontrollen. Alle som har lenken kan se den, så ikke send den videre. Ta kontakt med verkstedet for å trekke tilbake lenken eller få slettet opplysningene dine."
   },
   "terms": {
     "title": "Salgsbetingelser (Salgsvilkår)",

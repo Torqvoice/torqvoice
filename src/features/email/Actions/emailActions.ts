@@ -15,6 +15,7 @@ import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { requireFeature } from "@/lib/features";
+import { demoGuard } from "@/lib/demo";
 
 async function getWorkshopSettings(organizationId: string) {
   const [settings, org] = await Promise.all([
@@ -77,6 +78,7 @@ export async function sendQuoteEmail(input: {
   message?: string;
 }) {
   return withAuth(async ({ organizationId }) => {
+    demoGuard();
     await requireFeature(organizationId, "smtp");
 
     const { quoteId, recipientEmail, message } = input;
@@ -179,6 +181,7 @@ export async function sendNotificationEmail(input: {
   body: string;
 }) {
   return withAuth(async ({ organizationId }) => {
+    demoGuard();
     await requireFeature(organizationId, "smtp");
 
     const settings = await getWorkshopSettings(organizationId);
@@ -214,6 +217,7 @@ export async function sendInvoiceEmail(input: {
   message?: string;
 }) {
   return withAuth(async ({ organizationId }) => {
+    demoGuard();
     await requireFeature(organizationId, "smtp");
 
     const { serviceRecordId, recipientEmail, message } = input;
@@ -317,6 +321,7 @@ export async function sendInspectionEmail(input: {
   message?: string;
 }) {
   return withAuth(async ({ organizationId }) => {
+    demoGuard();
     await requireFeature(organizationId, "smtp");
 
     const { inspectionId, recipientEmail, message } = input;

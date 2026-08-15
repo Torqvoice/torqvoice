@@ -4,9 +4,11 @@ import { withSuperAdmin } from '@/lib/with-super-admin'
 import { db } from '@/lib/db'
 import { deleteUserOrganizations } from '@/lib/delete-user-data'
 import { deleteUserSchema } from '../Schema/adminSchema'
+import { demoGuard } from '@/lib/demo'
 
 export async function deleteUser(input: { userId: string }) {
   return withSuperAdmin(async (ctx) => {
+    demoGuard()
     const { userId } = deleteUserSchema.parse(input)
 
     if (userId === ctx.userId) {
