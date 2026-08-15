@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "SMS-berichten",
-    "featureDescription": "Verzend en ontvang SMS-berichten met uw klanten rechtstreeks vanuit Torqvoice."
+    "featureDescription": "Verzend en ontvang SMS-berichten met uw klanten rechtstreeks vanuit Torqvoice.",
+    "tabs": {
+      "inbox": "Postvak in",
+      "scheduled": "Gepland"
+    },
+    "smsNotConfiguredTitle": "Sms is niet ingesteld",
+    "smsNotConfiguredHint": "Koppel een sms-provider om hier berichten te versturen en ontvangen. Geplande e-mail werkt ook zonder.",
+    "goToSmsSettings": "Naar sms-instellingen"
   },
   "notConfigured": {
     "title": "SMS niet geconfigureerd",
@@ -20,7 +27,10 @@
     "deleted": "Gesprek verwijderd",
     "deleteError": "Gesprek kon niet worden verwijderd",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Gesprekken zoeken",
+    "noSearchResults": "Geen gesprekken gevonden",
+    "now": "nu"
   },
   "conversation": {
     "noPhone": "Geen telefoonnummer geregistreerd voor {name}. Voeg een telefoonnummer toe om berichten te sturen.",

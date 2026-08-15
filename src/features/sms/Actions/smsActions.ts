@@ -106,6 +106,42 @@ export async function sendSmsToCustomer(input: {
   )
 }
 
+/**
+ * Customers who can actually receive a text, for the compose picker.
+ * A customer with no phone on file is left out rather than offered and
+ * rejected at send time.
+ */
+export async function searchSmsRecipients(search?: string, limit = 30) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const term = search?.trim()
+      return db.customer.findMany({
+        where: {
+          organizationId,
+          phone: { not: null },
+          ...(term
+            ? {
+                OR: [
+                  { name: { contains: term, mode: 'insensitive' as const } },
+                  { phone: { contains: term, mode: 'insensitive' as const } },
+                  { company: { contains: term, mode: 'insensitive' as const } },
+                ],
+              }
+            : {}),
+        },
+        select: { id: true, name: true, company: true, phone: true },
+        orderBy: { name: 'asc' },
+        take: limit,
+      })
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
 export async function getConversation(customerId: string, cursor?: string, limit: number = 50) {
   return withAuth(
     async ({ organizationId }) => {

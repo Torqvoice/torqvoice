@@ -17,6 +17,8 @@ import { CalendarDayCell } from "./CalendarDayCell";
 import { CalendarEventList } from "./CalendarEventList";
 import { ReminderFormDialog } from "@/features/vehicles/Components/ReminderFormDialog";
 import { NewQuoteDialog } from "@/features/quotes/Components/NewQuoteDialog";
+import { ScheduleMessageDialog } from "@/features/scheduled-messages/Components/ScheduleMessageDialog";
+import type { MessageChannel } from "@/features/scheduled-messages/Schema/scheduledMessageSchema";
 import { toLocalDateStr } from "./calendar-utils";
 import { getCalendarEvents } from "../Actions/calendarActions";
 import type { CalendarEvent } from "../Actions/calendarActions";
@@ -53,6 +55,8 @@ interface CalendarClientProps {
   vehicles: Vehicle[];
   customers: Customer[];
   currencyCode: string;
+  /** Channels the workshop can actually send on, resolved on the server */
+  messageChannels: MessageChannel[];
 }
 
 function getMonthDays(year: number, month: number, weekStartDay: number) {
@@ -92,6 +96,7 @@ export default function CalendarClient({
   vehicles,
   customers,
   currencyCode,
+  messageChannels,
 }: CalendarClientProps) {
   const t = useTranslations('calendar');
   const { weekStartDay } = useDateSettings();
@@ -111,6 +116,7 @@ export default function CalendarClient({
   const [showServices, setShowServices] = useState(true);
   const [showReminders, setShowReminders] = useState(true);
   const [showQuotes, setShowQuotes] = useState(true);
+  const [showMessages, setShowMessages] = useState(true);
 
   // Vehicle picker
   const [showPicker, setShowPicker] = useState(false);
@@ -120,6 +126,7 @@ export default function CalendarClient({
   // Right-click menu targets: the day the menu was opened on
   const [showReminderDialog, setShowReminderDialog] = useState(false);
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
   const [menuDateStr, setMenuDateStr] = useState<string | undefined>(undefined);
 
   const selectedDateStr = toLocalDateStr(selectedDate);
@@ -144,9 +151,10 @@ export default function CalendarClient({
       if (e.type === "service" && !showServices) return false;
       if (e.type === "reminder" && !showReminders) return false;
       if (e.type === "quote" && !showQuotes) return false;
+      if (e.type === "message" && !showMessages) return false;
       return true;
     });
-  }, [events, showServices, showReminders, showQuotes]);
+  }, [events, showServices, showReminders, showQuotes, showMessages]);
 
   // What the displayed month holds, counted before the filters hide anything
   const counts = useMemo(
@@ -154,6 +162,7 @@ export default function CalendarClient({
       services: events.filter((e) => e.type === "service").length,
       reminders: events.filter((e) => e.type === "reminder").length,
       quotes: events.filter((e) => e.type === "quote").length,
+      messages: events.filter((e) => e.type === "message").length,
       total: events.length,
     }),
     [events]
@@ -211,6 +220,11 @@ export default function CalendarClient({
   const handleMenuQuote = useCallback((dateStr: string) => {
     setMenuDateStr(dateStr);
     setShowQuoteDialog(true);
+  }, []);
+
+  const handleMenuMessage = useCallback((dateStr: string) => {
+    setMenuDateStr(dateStr);
+    setShowMessageDialog(true);
   }, []);
 
   const refreshMonth = useCallback(() => {
@@ -310,6 +324,15 @@ export default function CalendarClient({
                   <span className="text-muted-foreground">{t('filters.quotes')}</span>
                   <span className="font-medium tabular-nums">{counts.quotes}</span>
                 </label>
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <Checkbox
+                    checked={showMessages}
+                    onCheckedChange={(v) => setShowMessages(!!v)}
+                  />
+                  <div className="h-2 w-2 rounded-full bg-sky-500" />
+                  <span className="text-muted-foreground">{t('filters.messages')}</span>
+                  <span className="font-medium tabular-nums">{counts.messages}</span>
+                </label>
                 <span className="text-xs text-muted-foreground ml-auto">
                   {t('monthTotal', { count: counts.total })}
                 </span>
@@ -340,6 +363,7 @@ export default function CalendarClient({
                       onNewWorkOrder={() => handleMenuWorkOrder(dateStr)}
                       onNewReminder={() => handleMenuReminder(dateStr)}
                       onNewQuote={() => handleMenuQuote(dateStr)}
+                      onScheduleMessage={() => handleMenuMessage(dateStr)}
                     />
                   );
                 })}
@@ -404,6 +428,14 @@ export default function CalendarClient({
         open={showQuoteDialog}
         onOpenChange={setShowQuoteDialog}
         defaultValidUntil={menuDateStr}
+      />
+
+      <ScheduleMessageDialog
+        open={showMessageDialog}
+        onOpenChange={setShowMessageDialog}
+        availableChannels={messageChannels}
+        defaultDate={menuDateStr}
+        onSaved={refreshMonth}
       />
 
       <VehiclePickerDialog

@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "SMS Messaging",
-    "featureDescription": "Send and receive SMS messages with your customers directly from Torqvoice."
+    "featureDescription": "Send and receive SMS messages with your customers directly from Torqvoice.",
+    "tabs": {
+      "inbox": "Inbox",
+      "scheduled": "Scheduled"
+    },
+    "smsNotConfiguredTitle": "SMS is not set up",
+    "smsNotConfiguredHint": "Connect an SMS provider to send and receive texts here. Scheduled email still works without it.",
+    "goToSmsSettings": "Go to SMS settings"
   },
   "notConfigured": {
     "title": "SMS Not Configured",
@@ -20,7 +27,10 @@
     "deleted": "Conversation deleted",
     "deleteError": "Failed to delete conversation",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Search conversations",
+    "noSearchResults": "No conversations match your search",
+    "now": "now"
   },
   "conversation": {
     "noPhone": "No phone number on file for {name}. Add a phone number to start messaging.",

@@ -33,7 +33,8 @@
   "filters": {
     "services": "Services",
     "reminders": "Rappels",
-    "quotes": "Devis"
+    "quotes": "Devis",
+    "messages": "Messages"
   },
   "selectVehicle": "Sélectionner un véhicule pour l’ordre de travail",
   "dateChoice": {
@@ -49,7 +50,8 @@
     "newReminder": "Nouveau rappel",
     "newQuote": "Nouveau devis",
     "openEvent": "Ouvrir ({count})",
-    "hint": "Astuce : faites un clic droit sur un jour pour voir les actions"
+    "hint": "Astuce : faites un clic droit sur un jour pour voir les actions",
+    "scheduleMessage": "Programmer un message"
   },
   "events": {
     "status": {
@@ -62,12 +64,15 @@
       "draft": "Brouillon",
       "done": "Fait",
       "overdue": "En retard",
-      "upcoming": "À venir"
+      "upcoming": "À venir",
+      "failed": "Échec",
+      "queued": "En file"
     },
     "type": {
       "service": "Service",
       "reminder": "Rappel",
-      "quote": "Devis"
+      "quote": "Devis",
+      "message": "Message"
     },
     "noEvents": "Aucun événement",
     "selectDay": "Sélectionnez un jour avec des événements ou créez un nouvel ordre de travail."

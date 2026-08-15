@@ -19,6 +19,13 @@ function getStatusColor(event: CalendarEvent) {
   if (event.type === "quote") {
     return event.status === "sent" ? "bg-violet-500" : "bg-violet-300";
   }
+  if (event.type === "message") {
+    switch (event.status) {
+      case "sent": return "bg-teal-500";
+      case "failed": return "bg-red-500";
+      default: return "bg-sky-500";
+    }
+  }
   switch (event.status) {
     case "completed": return "bg-emerald-500";
     case "overdue": return "bg-red-500";
@@ -33,6 +40,13 @@ function getStatusBadge(event: CalendarEvent, t: (key: string) => string) {
       case "in_progress": case "in-progress": return <Badge variant="outline" className="text-blue-600 border-blue-300 text-[10px] px-1.5 py-0">{t('events.status.inProgress')}</Badge>;
       case "waiting-parts": return <Badge variant="outline" className="text-orange-600 border-orange-300 text-[10px] px-1.5 py-0">{t('events.status.waitingParts')}</Badge>;
       default: return <Badge variant="outline" className="text-amber-600 border-amber-300 text-[10px] px-1.5 py-0">{t('events.status.pending')}</Badge>;
+    }
+  }
+  if (event.type === "message") {
+    switch (event.status) {
+      case "sent": return <Badge variant="outline" className="text-teal-600 border-teal-300 text-[10px] px-1.5 py-0">{t('events.status.sent')}</Badge>;
+      case "failed": return <Badge variant="destructive" className="text-[10px] px-1.5 py-0">{t('events.status.failed')}</Badge>;
+      default: return <Badge variant="outline" className="text-sky-600 border-sky-300 text-[10px] px-1.5 py-0">{t('events.status.queued')}</Badge>;
     }
   }
   if (event.type === "quote") {
@@ -54,6 +68,7 @@ function getTypeBadge(type: CalendarEvent["type"], t: (key: string) => string) {
     case "service": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-blue-500/10 text-blue-700 dark:text-blue-400">{t('events.type.service')}</Badge>;
     case "reminder": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-amber-500/10 text-amber-700 dark:text-amber-400">{t('events.type.reminder')}</Badge>;
     case "quote": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-violet-500/10 text-violet-700 dark:text-violet-400">{t('events.type.quote')}</Badge>;
+    case "message": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-sky-500/10 text-sky-700 dark:text-sky-400">{t('events.type.message')}</Badge>;
   }
 }
 

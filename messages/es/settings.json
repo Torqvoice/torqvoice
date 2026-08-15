@@ -901,6 +901,8 @@
     "optAuditLogsDesc": "Historial de actividad y cambios",
     "optSmsMessages": "Mensajes SMS",
     "optSmsMessagesDesc": "Mensajes SMS enviados y recibidos",
+    "optScheduledMessages": "Mensajes programados",
+    "optScheduledMessagesDesc": "Mensajes en cola y recurrentes pendientes de envío",
     "optNotifications": "Notificaciones",
     "optNotificationsDesc": "Notificaciones del sistema",
     "optCustomFields": "Campos personalizados",

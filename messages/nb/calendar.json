@@ -33,7 +33,8 @@
   "filters": {
     "services": "Tjenester",
     "reminders": "Påminnelser",
-    "quotes": "Tilbud"
+    "quotes": "Tilbud",
+    "messages": "Meldinger"
   },
   "selectVehicle": "Velg kjøretøy for arbeidsordre",
   "dateChoice": {
@@ -49,7 +50,8 @@
     "newReminder": "Ny påminnelse",
     "newQuote": "Nytt tilbud",
     "openEvent": "Åpne ({count})",
-    "hint": "Tips: høyreklikk en dag for handlinger"
+    "hint": "Tips: høyreklikk en dag for handlinger",
+    "scheduleMessage": "Planlegg melding"
   },
   "events": {
     "status": {
@@ -62,12 +64,15 @@
       "draft": "Utkast",
       "done": "Ferdig",
       "overdue": "Forfalt",
-      "upcoming": "Kommende"
+      "upcoming": "Kommende",
+      "failed": "Mislyktes",
+      "queued": "I kø"
     },
     "type": {
       "service": "Tjeneste",
       "reminder": "Påminnelse",
-      "quote": "Tilbud"
+      "quote": "Tilbud",
+      "message": "Melding"
     },
     "noEvents": "Ingen hendelser",
     "selectDay": "Velg en dag med hendelser eller opprett en ny arbeidsordre."

@@ -901,6 +901,8 @@
     "optAuditLogsDesc": "Etkinlik ve değişiklik geçmişi",
     "optSmsMessages": "SMS Mesajları",
     "optSmsMessagesDesc": "Gönderilen ve alınan SMS mesajları",
+    "optScheduledMessages": "Planlanmış mesajlar",
+    "optScheduledMessagesDesc": "Sırada bekleyen ve tekrar eden, henüz gönderilmemiş mesajlar",
     "optNotifications": "Bildirimler",
     "optNotificationsDesc": "Sistem bildirimleri",
     "optCustomFields": "Özel Alanlar",

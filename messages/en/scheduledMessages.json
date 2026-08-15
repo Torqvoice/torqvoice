@@ -1,0 +1,76 @@
+{
+  "dialog": {
+    "title": "Schedule a message",
+    "editTitle": "Edit scheduled message",
+    "channelLabel": "Send by",
+    "channels": {
+      "email": "Email",
+      "sms": "SMS",
+      "telegram": "Telegram",
+      "in_app": "In-app note"
+    },
+    "repeatLabel": "Repeat",
+    "frequencies": {
+      "once": "Once",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "biweekly": "Every 2 weeks",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    },
+    "customerLabel": "Customer",
+    "selectCustomer": "Select customer",
+    "none": "None",
+    "recipientEmail": "Email address",
+    "recipientPhone": "Phone number",
+    "recipientChat": "Telegram chat id",
+    "recipientOverride": "Send to another address instead",
+    "recipientHintCustomer": "Leave empty to use the details on file.",
+    "recipientHintDirect": "Pick a customer, or type where this goes.",
+    "subjectLabel": "Subject",
+    "subjectPlaceholder": "e.g. Your car is ready",
+    "messageLabel": "Message",
+    "messagePlaceholder": "What should we say?",
+    "characters": "{count} / {max} characters",
+    "dateLabel": "Date",
+    "timeLabel": "Time",
+    "endDateLabel": "Repeat until",
+    "endDateHint": "Leave empty to keep repeating.",
+    "schedule": "Schedule",
+    "scheduled": "Message scheduled",
+    "updated": "Scheduled message updated",
+    "saveError": "Could not save the message"
+  },
+  "list": {
+    "scheduleMessage": "Schedule message",
+    "scheduleForCustomer": "Schedule a message",
+    "filters": {
+      "upcoming": "Upcoming",
+      "sent": "Sent",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "all": "All"
+    },
+    "status": {
+      "scheduled": "Scheduled",
+      "sent": "Sent",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "empty": "Nothing scheduled",
+    "emptyHint": "Right-click a day in the calendar, or use Schedule message.",
+    "noRecipient": "No recipient",
+    "sentCount": "sent {count}x",
+    "rowMenu": "Message menu",
+    "sendNow": "Send now",
+    "cancel": "Cancel sending",
+    "sentNow": "Message sent",
+    "sendError": "Could not send the message",
+    "cancelled": "Sending cancelled",
+    "cancelError": "Could not cancel the message",
+    "deleted": "Message deleted",
+    "deleteError": "Could not delete the message",
+    "deleteTitle": "Delete this message?",
+    "deleteDescription": "The scheduled message is removed for good. Anything already sent stays in the conversation."
+  }
+}

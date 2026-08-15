@@ -1,0 +1,76 @@
+{
+  "dialog": {
+    "title": "Programar un mensaje",
+    "editTitle": "Editar mensaje programado",
+    "channelLabel": "Enviar por",
+    "channels": {
+      "email": "Correo",
+      "sms": "SMS",
+      "telegram": "Telegram",
+      "in_app": "Nota en la app"
+    },
+    "repeatLabel": "Repetir",
+    "frequencies": {
+      "once": "Una vez",
+      "daily": "Diario",
+      "weekly": "Semanal",
+      "biweekly": "Cada 2 semanas",
+      "monthly": "Mensual",
+      "yearly": "Anual"
+    },
+    "customerLabel": "Cliente",
+    "selectCustomer": "Seleccionar cliente",
+    "none": "Ninguno",
+    "recipientEmail": "Dirección de correo",
+    "recipientPhone": "Número de teléfono",
+    "recipientChat": "ID de chat de Telegram",
+    "recipientOverride": "Enviar a otra dirección",
+    "recipientHintCustomer": "Déjalo vacío para usar los datos guardados.",
+    "recipientHintDirect": "Elige un cliente o escribe el destino.",
+    "subjectLabel": "Asunto",
+    "subjectPlaceholder": "p. ej. Su coche está listo",
+    "messageLabel": "Mensaje",
+    "messagePlaceholder": "¿Qué quieres decir?",
+    "characters": "{count} / {max} caracteres",
+    "dateLabel": "Fecha",
+    "timeLabel": "Hora",
+    "endDateLabel": "Repetir hasta",
+    "endDateHint": "Déjalo vacío para repetir siempre.",
+    "schedule": "Programar",
+    "scheduled": "Mensaje programado",
+    "updated": "Mensaje programado actualizado",
+    "saveError": "No se pudo guardar el mensaje"
+  },
+  "list": {
+    "scheduleMessage": "Programar mensaje",
+    "scheduleForCustomer": "Programar un mensaje",
+    "filters": {
+      "upcoming": "Próximos",
+      "sent": "Enviados",
+      "failed": "Fallidos",
+      "cancelled": "Cancelados",
+      "all": "Todos"
+    },
+    "status": {
+      "scheduled": "Programado",
+      "sent": "Enviado",
+      "failed": "Fallido",
+      "cancelled": "Cancelado"
+    },
+    "empty": "Nada programado",
+    "emptyHint": "Haz clic derecho en un día del calendario o usa Programar mensaje.",
+    "noRecipient": "Sin destinatario",
+    "sentCount": "enviado {count}x",
+    "rowMenu": "Menú del mensaje",
+    "sendNow": "Enviar ahora",
+    "cancel": "Cancelar envío",
+    "sentNow": "Mensaje enviado",
+    "sendError": "No se pudo enviar el mensaje",
+    "cancelled": "Envío cancelado",
+    "cancelError": "No se pudo cancelar el mensaje",
+    "deleted": "Mensaje eliminado",
+    "deleteError": "No se pudo eliminar el mensaje",
+    "deleteTitle": "¿Eliminar este mensaje?",
+    "deleteDescription": "El mensaje programado se elimina definitivamente. Lo ya enviado permanece en la conversación."
+  }
+}

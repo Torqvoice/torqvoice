@@ -1,0 +1,76 @@
+{
+  "dialog": {
+    "title": "Nachricht planen",
+    "editTitle": "Geplante Nachricht bearbeiten",
+    "channelLabel": "Senden per",
+    "channels": {
+      "email": "E-Mail",
+      "sms": "SMS",
+      "telegram": "Telegram",
+      "in_app": "Notiz in der App"
+    },
+    "repeatLabel": "Wiederholen",
+    "frequencies": {
+      "once": "Einmal",
+      "daily": "Täglich",
+      "weekly": "Wöchentlich",
+      "biweekly": "Alle 2 Wochen",
+      "monthly": "Monatlich",
+      "yearly": "Jährlich"
+    },
+    "customerLabel": "Kunde",
+    "selectCustomer": "Kunde auswählen",
+    "none": "Keiner",
+    "recipientEmail": "E-Mail-Adresse",
+    "recipientPhone": "Telefonnummer",
+    "recipientChat": "Telegram-Chat-ID",
+    "recipientOverride": "Stattdessen an eine andere Adresse",
+    "recipientHintCustomer": "Leer lassen, um die hinterlegten Daten zu nutzen.",
+    "recipientHintDirect": "Kunde wählen oder Ziel eintragen.",
+    "subjectLabel": "Betreff",
+    "subjectPlaceholder": "z. B. Ihr Auto ist fertig",
+    "messageLabel": "Nachricht",
+    "messagePlaceholder": "Was möchten Sie sagen?",
+    "characters": "{count} / {max} Zeichen",
+    "dateLabel": "Datum",
+    "timeLabel": "Uhrzeit",
+    "endDateLabel": "Wiederholen bis",
+    "endDateHint": "Leer lassen, um weiter zu wiederholen.",
+    "schedule": "Planen",
+    "scheduled": "Nachricht geplant",
+    "updated": "Geplante Nachricht aktualisiert",
+    "saveError": "Nachricht konnte nicht gespeichert werden"
+  },
+  "list": {
+    "scheduleMessage": "Nachricht planen",
+    "scheduleForCustomer": "Nachricht planen",
+    "filters": {
+      "upcoming": "Anstehend",
+      "sent": "Gesendet",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Abgebrochen",
+      "all": "Alle"
+    },
+    "status": {
+      "scheduled": "Geplant",
+      "sent": "Gesendet",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Abgebrochen"
+    },
+    "empty": "Nichts geplant",
+    "emptyHint": "Rechtsklick auf einen Tag im Kalender, oder Nachricht planen.",
+    "noRecipient": "Kein Empfänger",
+    "sentCount": "{count}x gesendet",
+    "rowMenu": "Nachrichtenmenü",
+    "sendNow": "Jetzt senden",
+    "cancel": "Senden abbrechen",
+    "sentNow": "Nachricht gesendet",
+    "sendError": "Nachricht konnte nicht gesendet werden",
+    "cancelled": "Senden abgebrochen",
+    "cancelError": "Nachricht konnte nicht abgebrochen werden",
+    "deleted": "Nachricht gelöscht",
+    "deleteError": "Nachricht konnte nicht gelöscht werden",
+    "deleteTitle": "Diese Nachricht löschen?",
+    "deleteDescription": "Die geplante Nachricht wird endgültig entfernt. Bereits Gesendetes bleibt in der Unterhaltung."
+  }
+}

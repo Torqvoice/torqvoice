@@ -1,0 +1,76 @@
+{
+  "dialog": {
+    "title": "Suplanuoti žinutę",
+    "editTitle": "Redaguoti suplanuotą žinutę",
+    "channelLabel": "Siųsti per",
+    "channels": {
+      "email": "El. paštas",
+      "sms": "SMS",
+      "telegram": "Telegram",
+      "in_app": "Pastaba programoje"
+    },
+    "repeatLabel": "Kartoti",
+    "frequencies": {
+      "once": "Vieną kartą",
+      "daily": "Kasdien",
+      "weekly": "Kas savaitę",
+      "biweekly": "Kas 2 savaites",
+      "monthly": "Kas mėnesį",
+      "yearly": "Kasmet"
+    },
+    "customerLabel": "Klientas",
+    "selectCustomer": "Pasirinkite klientą",
+    "none": "Nėra",
+    "recipientEmail": "El. pašto adresas",
+    "recipientPhone": "Telefono numeris",
+    "recipientChat": "Telegram pokalbio ID",
+    "recipientOverride": "Siųsti kitu adresu",
+    "recipientHintCustomer": "Palikite tuščią, kad būtų naudojami išsaugoti duomenys.",
+    "recipientHintDirect": "Pasirinkite klientą arba įrašykite gavėją.",
+    "subjectLabel": "Tema",
+    "subjectPlaceholder": "pvz. Jūsų automobilis paruoštas",
+    "messageLabel": "Žinutė",
+    "messagePlaceholder": "Ką norite pasakyti?",
+    "characters": "{count} / {max} simbolių",
+    "dateLabel": "Data",
+    "timeLabel": "Laikas",
+    "endDateLabel": "Kartoti iki",
+    "endDateHint": "Palikite tuščią, kad kartotųsi be pabaigos.",
+    "schedule": "Suplanuoti",
+    "scheduled": "Žinutė suplanuota",
+    "updated": "Suplanuota žinutė atnaujinta",
+    "saveError": "Nepavyko išsaugoti žinutės"
+  },
+  "list": {
+    "scheduleMessage": "Suplanuoti žinutę",
+    "scheduleForCustomer": "Suplanuoti žinutę",
+    "filters": {
+      "upcoming": "Būsimos",
+      "sent": "Išsiųstos",
+      "failed": "Nepavykusios",
+      "cancelled": "Atšauktos",
+      "all": "Visos"
+    },
+    "status": {
+      "scheduled": "Suplanuota",
+      "sent": "Išsiųsta",
+      "failed": "Nepavyko",
+      "cancelled": "Atšaukta"
+    },
+    "empty": "Nieko nesuplanuota",
+    "emptyHint": "Spustelėkite dieną kalendoriuje dešiniuoju mygtuku arba pasirinkite Suplanuoti žinutę.",
+    "noRecipient": "Nėra gavėjo",
+    "sentCount": "išsiųsta {count}x",
+    "rowMenu": "Žinutės meniu",
+    "sendNow": "Siųsti dabar",
+    "cancel": "Atšaukti siuntimą",
+    "sentNow": "Žinutė išsiųsta",
+    "sendError": "Nepavyko išsiųsti žinutės",
+    "cancelled": "Siuntimas atšauktas",
+    "cancelError": "Nepavyko atšaukti žinutės",
+    "deleted": "Žinutė ištrinta",
+    "deleteError": "Nepavyko ištrinti žinutės",
+    "deleteTitle": "Ištrinti šią žinutę?",
+    "deleteDescription": "Suplanuota žinutė pašalinama visam laikui. Kas jau išsiųsta, lieka pokalbyje."
+  }
+}

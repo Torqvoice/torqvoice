@@ -1,0 +1,76 @@
+{
+  "dialog": {
+    "title": "Programmer un message",
+    "editTitle": "Modifier le message programmé",
+    "channelLabel": "Envoyer par",
+    "channels": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "telegram": "Telegram",
+      "in_app": "Note dans l'app"
+    },
+    "repeatLabel": "Répéter",
+    "frequencies": {
+      "once": "Une fois",
+      "daily": "Chaque jour",
+      "weekly": "Chaque semaine",
+      "biweekly": "Toutes les 2 semaines",
+      "monthly": "Chaque mois",
+      "yearly": "Chaque année"
+    },
+    "customerLabel": "Client",
+    "selectCustomer": "Sélectionner un client",
+    "none": "Aucun",
+    "recipientEmail": "Adresse e-mail",
+    "recipientPhone": "Numéro de téléphone",
+    "recipientChat": "Identifiant de chat Telegram",
+    "recipientOverride": "Envoyer à une autre adresse",
+    "recipientHintCustomer": "Laissez vide pour utiliser les coordonnées enregistrées.",
+    "recipientHintDirect": "Choisissez un client ou saisissez la destination.",
+    "subjectLabel": "Objet",
+    "subjectPlaceholder": "ex. Votre voiture est prête",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Que voulez-vous dire ?",
+    "characters": "{count} / {max} caractères",
+    "dateLabel": "Date",
+    "timeLabel": "Heure",
+    "endDateLabel": "Répéter jusqu'au",
+    "endDateHint": "Laissez vide pour répéter sans fin.",
+    "schedule": "Programmer",
+    "scheduled": "Message programmé",
+    "updated": "Message programmé mis à jour",
+    "saveError": "Impossible d'enregistrer le message"
+  },
+  "list": {
+    "scheduleMessage": "Programmer un message",
+    "scheduleForCustomer": "Programmer un message",
+    "filters": {
+      "upcoming": "À venir",
+      "sent": "Envoyés",
+      "failed": "Échecs",
+      "cancelled": "Annulés",
+      "all": "Tous"
+    },
+    "status": {
+      "scheduled": "Programmé",
+      "sent": "Envoyé",
+      "failed": "Échec",
+      "cancelled": "Annulé"
+    },
+    "empty": "Rien de programmé",
+    "emptyHint": "Faites un clic droit sur un jour du calendrier, ou utilisez Programmer un message.",
+    "noRecipient": "Aucun destinataire",
+    "sentCount": "envoyé {count}x",
+    "rowMenu": "Menu du message",
+    "sendNow": "Envoyer maintenant",
+    "cancel": "Annuler l'envoi",
+    "sentNow": "Message envoyé",
+    "sendError": "Impossible d'envoyer le message",
+    "cancelled": "Envoi annulé",
+    "cancelError": "Impossible d'annuler le message",
+    "deleted": "Message supprimé",
+    "deleteError": "Impossible de supprimer le message",
+    "deleteTitle": "Supprimer ce message ?",
+    "deleteDescription": "Le message programmé est supprimé définitivement. Ce qui a déjà été envoyé reste dans la conversation."
+  }
+}

@@ -33,7 +33,8 @@
   "filters": {
     "services": "Aufträge",
     "reminders": "Erinnerungen",
-    "quotes": "Angebote"
+    "quotes": "Angebote",
+    "messages": "Nachrichten"
   },
   "selectVehicle": "Fahrzeug für Arbeitsauftrag auswählen",
   "dateChoice": {
@@ -49,7 +50,8 @@
     "newReminder": "Neue Erinnerung",
     "newQuote": "Neues Angebot",
     "openEvent": "Öffnen ({count})",
-    "hint": "Tipp: Rechtsklick auf einen Tag zeigt Aktionen"
+    "hint": "Tipp: Rechtsklick auf einen Tag zeigt Aktionen",
+    "scheduleMessage": "Nachricht planen"
   },
   "events": {
     "status": {
@@ -62,12 +64,15 @@
       "draft": "Entwurf",
       "done": "Erledigt",
       "overdue": "Überfällig",
-      "upcoming": "Bevorstehend"
+      "upcoming": "Bevorstehend",
+      "failed": "Fehlgeschlagen",
+      "queued": "In Warteschlange"
     },
     "type": {
       "service": "Service",
       "reminder": "Erinnerung",
-      "quote": "Angebot"
+      "quote": "Angebot",
+      "message": "Nachricht"
     },
     "noEvents": "Keine Ereignisse",
     "selectDay": "Wählen Sie einen Tag mit Ereignissen oder erstellen Sie einen neuen Arbeitsauftrag."

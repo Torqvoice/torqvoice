@@ -1,0 +1,76 @@
+{
+  "dialog": {
+    "title": "Запланировать сообщение",
+    "editTitle": "Изменить запланированное сообщение",
+    "channelLabel": "Отправить через",
+    "channels": {
+      "email": "Эл. почта",
+      "sms": "SMS",
+      "telegram": "Telegram",
+      "in_app": "Заметка в приложении"
+    },
+    "repeatLabel": "Повтор",
+    "frequencies": {
+      "once": "Один раз",
+      "daily": "Ежедневно",
+      "weekly": "Еженедельно",
+      "biweekly": "Раз в 2 недели",
+      "monthly": "Ежемесячно",
+      "yearly": "Ежегодно"
+    },
+    "customerLabel": "Клиент",
+    "selectCustomer": "Выберите клиента",
+    "none": "Нет",
+    "recipientEmail": "Адрес эл. почты",
+    "recipientPhone": "Номер телефона",
+    "recipientChat": "ID чата Telegram",
+    "recipientOverride": "Отправить на другой адрес",
+    "recipientHintCustomer": "Оставьте пустым, чтобы использовать сохранённые данные.",
+    "recipientHintDirect": "Выберите клиента или укажите получателя.",
+    "subjectLabel": "Тема",
+    "subjectPlaceholder": "напр. Ваш автомобиль готов",
+    "messageLabel": "Сообщение",
+    "messagePlaceholder": "Что нужно сказать?",
+    "characters": "{count} / {max} символов",
+    "dateLabel": "Дата",
+    "timeLabel": "Время",
+    "endDateLabel": "Повторять до",
+    "endDateHint": "Оставьте пустым, чтобы повторять без конца.",
+    "schedule": "Запланировать",
+    "scheduled": "Сообщение запланировано",
+    "updated": "Запланированное сообщение обновлено",
+    "saveError": "Не удалось сохранить сообщение"
+  },
+  "list": {
+    "scheduleMessage": "Запланировать сообщение",
+    "scheduleForCustomer": "Запланировать сообщение",
+    "filters": {
+      "upcoming": "Предстоящие",
+      "sent": "Отправленные",
+      "failed": "С ошибкой",
+      "cancelled": "Отменённые",
+      "all": "Все"
+    },
+    "status": {
+      "scheduled": "Запланировано",
+      "sent": "Отправлено",
+      "failed": "Ошибка",
+      "cancelled": "Отменено"
+    },
+    "empty": "Ничего не запланировано",
+    "emptyHint": "Щёлкните день в календаре правой кнопкой мыши или нажмите Запланировать сообщение.",
+    "noRecipient": "Нет получателя",
+    "sentCount": "отправлено {count}x",
+    "rowMenu": "Меню сообщения",
+    "sendNow": "Отправить сейчас",
+    "cancel": "Отменить отправку",
+    "sentNow": "Сообщение отправлено",
+    "sendError": "Не удалось отправить сообщение",
+    "cancelled": "Отправка отменена",
+    "cancelError": "Не удалось отменить сообщение",
+    "deleted": "Сообщение удалено",
+    "deleteError": "Не удалось удалить сообщение",
+    "deleteTitle": "Удалить это сообщение?",
+    "deleteDescription": "Запланированное сообщение удаляется навсегда. Уже отправленное остаётся в переписке."
+  }
+}

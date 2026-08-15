@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "Wiadomości SMS",
-    "featureDescription": "Wysyłaj i odbieraj wiadomości SMS z klientami bezpośrednio z Torqvoice."
+    "featureDescription": "Wysyłaj i odbieraj wiadomości SMS z klientami bezpośrednio z Torqvoice.",
+    "tabs": {
+      "inbox": "Odebrane",
+      "scheduled": "Zaplanowane"
+    },
+    "smsNotConfiguredTitle": "SMS nie jest skonfigurowany",
+    "smsNotConfiguredHint": "Podłącz dostawcę SMS, aby wysyłać i odbierać wiadomości tutaj. Zaplanowana poczta działa bez tego.",
+    "goToSmsSettings": "Przejdź do ustawień SMS"
   },
   "notConfigured": {
     "title": "SMS nie skonfigurowany",
@@ -20,7 +27,10 @@
     "deleted": "Rozmowa usunięta",
     "deleteError": "Nie udało się usunąć rozmowy",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Szukaj rozmów",
+    "noSearchResults": "Brak rozmów pasujących do wyszukiwania",
+    "now": "teraz"
   },
   "conversation": {
     "noPhone": "Brak numeru telefonu dla {name}. Dodaj numer telefonu, aby rozpocząć wysyłanie wiadomości.",

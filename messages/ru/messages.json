@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "SMS-сообщения",
-    "featureDescription": "Отправляйте и получайте SMS-сообщения с клиентами прямо из Torqvoice."
+    "featureDescription": "Отправляйте и получайте SMS-сообщения с клиентами прямо из Torqvoice.",
+    "tabs": {
+      "inbox": "Входящие",
+      "scheduled": "Запланированные"
+    },
+    "smsNotConfiguredTitle": "SMS не настроен",
+    "smsNotConfiguredHint": "Подключите SMS-провайдера, чтобы отправлять и получать сообщения здесь. Запланированная почта работает и без этого.",
+    "goToSmsSettings": "Перейти к настройкам SMS"
   },
   "notConfigured": {
     "title": "SMS не настроены",
@@ -20,7 +27,10 @@
     "deleted": "Беседа удалена",
     "deleteError": "Не удалось удалить беседу",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Поиск по перепискам",
+    "noSearchResults": "Нет переписок по запросу",
+    "now": "сейчас"
   },
   "conversation": {
     "noPhone": "У {name} не указан номер телефона. Добавьте номер для начала переписки.",

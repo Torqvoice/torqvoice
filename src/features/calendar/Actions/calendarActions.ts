@@ -9,8 +9,10 @@ export type CalendarEvent = {
   title: string;
   date: string; // YYYY-MM-DD local date
   time: string | null; // HH:MM or null
-  type: "service" | "reminder" | "quote";
+  type: "service" | "reminder" | "quote" | "message";
   status: string;
+  /** Only on scheduled-message events: email | sms | telegram | in_app */
+  channel?: string;
   vehicleId: string | null;
   vehicleLabel: string;
   customerName: string | null;
@@ -39,7 +41,7 @@ export async function getCalendarEvents(params: {
     const end = new Date(params.end);
     end.setHours(23, 59, 59, 999);
 
-    const [services, reminders, quotes] = await Promise.all([
+    const [services, reminders, quotes, scheduledMessages] = await Promise.all([
       db.serviceRecord.findMany({
         where: {
           organizationId,
@@ -116,6 +118,26 @@ export async function getCalendarEvents(params: {
         },
         orderBy: { validUntil: "asc" },
       }),
+      db.scheduledMessage.findMany({
+        where: {
+          organizationId,
+          status: { not: "cancelled" },
+          sendAt: { gte: start, lte: end },
+        },
+        select: {
+          id: true,
+          channel: true,
+          subject: true,
+          body: true,
+          recipient: true,
+          status: true,
+          sendAt: true,
+          vehicleId: true,
+          customer: { select: { name: true } },
+          vehicle: { select: { make: true, model: true, year: true } },
+        },
+        orderBy: { sendAt: "asc" },
+      }),
     ]);
 
     const events: CalendarEvent[] = [
@@ -162,6 +184,22 @@ export async function getCalendarEvents(params: {
           invoiceNumber: q.quoteNumber,
           amount: q.totalAmount > 0 ? q.totalAmount : null,
         })),
+      ...scheduledMessages.map((m) => ({
+        id: m.id,
+        // A subject reads better in a day cell than the first line of the body
+        title: m.subject?.trim() || m.body.slice(0, 60),
+        date: toLocalDateStr(m.sendAt),
+        time: toTimeStr(m.sendAt),
+        type: "message" as const,
+        // "scheduled" | "sent" | "failed", carrying the channel for the icon
+        status: m.status,
+        channel: m.channel,
+        vehicleId: m.vehicleId,
+        vehicleLabel: m.vehicle ? `${m.vehicle.year} ${m.vehicle.make} ${m.vehicle.model}` : "",
+        customerName: m.customer?.name ?? m.recipient ?? null,
+        invoiceNumber: null,
+        amount: null,
+      })),
     ];
 
     return events;

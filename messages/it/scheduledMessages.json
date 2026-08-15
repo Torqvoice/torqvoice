@@ -1,0 +1,76 @@
+{
+  "dialog": {
+    "title": "Pianifica un messaggio",
+    "editTitle": "Modifica messaggio pianificato",
+    "channelLabel": "Invia tramite",
+    "channels": {
+      "email": "Email",
+      "sms": "SMS",
+      "telegram": "Telegram",
+      "in_app": "Nota nell'app"
+    },
+    "repeatLabel": "Ripeti",
+    "frequencies": {
+      "once": "Una volta",
+      "daily": "Ogni giorno",
+      "weekly": "Ogni settimana",
+      "biweekly": "Ogni 2 settimane",
+      "monthly": "Ogni mese",
+      "yearly": "Ogni anno"
+    },
+    "customerLabel": "Cliente",
+    "selectCustomer": "Seleziona cliente",
+    "none": "Nessuno",
+    "recipientEmail": "Indirizzo email",
+    "recipientPhone": "Numero di telefono",
+    "recipientChat": "ID chat Telegram",
+    "recipientOverride": "Invia a un altro indirizzo",
+    "recipientHintCustomer": "Lascia vuoto per usare i dati salvati.",
+    "recipientHintDirect": "Scegli un cliente o scrivi la destinazione.",
+    "subjectLabel": "Oggetto",
+    "subjectPlaceholder": "es. La tua auto è pronta",
+    "messageLabel": "Messaggio",
+    "messagePlaceholder": "Cosa vuoi dire?",
+    "characters": "{count} / {max} caratteri",
+    "dateLabel": "Data",
+    "timeLabel": "Ora",
+    "endDateLabel": "Ripeti fino al",
+    "endDateHint": "Lascia vuoto per ripetere sempre.",
+    "schedule": "Pianifica",
+    "scheduled": "Messaggio pianificato",
+    "updated": "Messaggio pianificato aggiornato",
+    "saveError": "Impossibile salvare il messaggio"
+  },
+  "list": {
+    "scheduleMessage": "Pianifica messaggio",
+    "scheduleForCustomer": "Pianifica un messaggio",
+    "filters": {
+      "upcoming": "In arrivo",
+      "sent": "Inviati",
+      "failed": "Non riusciti",
+      "cancelled": "Annullati",
+      "all": "Tutti"
+    },
+    "status": {
+      "scheduled": "Pianificato",
+      "sent": "Inviato",
+      "failed": "Non riuscito",
+      "cancelled": "Annullato"
+    },
+    "empty": "Niente in programma",
+    "emptyHint": "Fai clic destro su un giorno del calendario, o usa Pianifica messaggio.",
+    "noRecipient": "Nessun destinatario",
+    "sentCount": "inviato {count}x",
+    "rowMenu": "Menu messaggio",
+    "sendNow": "Invia ora",
+    "cancel": "Annulla invio",
+    "sentNow": "Messaggio inviato",
+    "sendError": "Impossibile inviare il messaggio",
+    "cancelled": "Invio annullato",
+    "cancelError": "Impossibile annullare il messaggio",
+    "deleted": "Messaggio eliminato",
+    "deleteError": "Impossibile eliminare il messaggio",
+    "deleteTitle": "Eliminare questo messaggio?",
+    "deleteDescription": "Il messaggio pianificato viene rimosso definitivamente. Quanto già inviato resta nella conversazione."
+  }
+}
