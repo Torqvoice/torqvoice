@@ -43,6 +43,26 @@
     "useToday": "Use today"
   },
   "more": "+ {count} more",
+  "contextMenu": {
+    "newWorkOrder": "New work order",
+    "newReminder": "New reminder",
+    "newQuote": "New quote",
+    "openEvent": "Open ({count})",
+    "hint": "Tip: right-click a day for actions"
+  },
+  "reminderDialog": {
+    "title": "New reminder",
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g. Oil change due",
+    "vehicleLabel": "Vehicle",
+    "selectVehicle": "Select vehicle",
+    "none": "None",
+    "dueDateLabel": "Due date",
+    "descriptionLabel": "Notes",
+    "create": "Create reminder",
+    "created": "Reminder created",
+    "createError": "Could not create the reminder"
+  },
   "events": {
     "status": {
       "completed": "Completed",

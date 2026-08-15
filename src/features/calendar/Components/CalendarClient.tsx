@@ -14,9 +14,12 @@ import {
   Wrench,
   FileText,
   AlertTriangle,
+  MousePointerClick,
 } from "lucide-react";
 import { CalendarDayCell } from "./CalendarDayCell";
 import { CalendarEventList } from "./CalendarEventList";
+import { NewReminderDialog } from "./NewReminderDialog";
+import { NewQuoteDialog } from "@/features/quotes/Components/NewQuoteDialog";
 import { toLocalDateStr } from "./calendar-utils";
 import { getCalendarEvents } from "../Actions/calendarActions";
 import type { CalendarEvent } from "../Actions/calendarActions";
@@ -117,6 +120,11 @@ export default function CalendarClient({
   const [showDateChoice, setShowDateChoice] = useState(false);
   const [workOrderDate, setWorkOrderDate] = useState<string | undefined>(undefined);
 
+  // Right-click menu targets: the day the menu was opened on
+  const [showReminderDialog, setShowReminderDialog] = useState(false);
+  const [showQuoteDialog, setShowQuoteDialog] = useState(false);
+  const [menuDateStr, setMenuDateStr] = useState<string | undefined>(undefined);
+
   const selectedDateStr = toLocalDateStr(selectedDate);
 
   const handleNewWorkOrder = useCallback(() => {
@@ -173,6 +181,26 @@ export default function CalendarClient({
     }
     setLoading(false);
   }, []);
+
+  // Right-click actions carry their day explicitly, so no date-choice prompt
+  const handleMenuWorkOrder = useCallback((dateStr: string) => {
+    setWorkOrderDate(dateStr);
+    setShowPicker(true);
+  }, []);
+
+  const handleMenuReminder = useCallback((dateStr: string) => {
+    setMenuDateStr(dateStr);
+    setShowReminderDialog(true);
+  }, []);
+
+  const handleMenuQuote = useCallback((dateStr: string) => {
+    setMenuDateStr(dateStr);
+    setShowQuoteDialog(true);
+  }, []);
+
+  const refreshMonth = useCallback(() => {
+    fetchEvents(year, month);
+  }, [fetchEvents, year, month]);
 
   const goToPrev = () => {
     const newMonth = month === 0 ? 11 : month - 1;
@@ -343,9 +371,17 @@ export default function CalendarClient({
                       isToday={dateStr === todayStr}
                       isSelected={dateStr === selectedDateStr}
                       onClick={() => setSelectedDate(date)}
+                      onNewWorkOrder={() => handleMenuWorkOrder(dateStr)}
+                      onNewReminder={() => handleMenuReminder(dateStr)}
+                      onNewQuote={() => handleMenuQuote(dateStr)}
                     />
                   );
                 })}
+              </div>
+
+              <div className="hidden md:flex items-center gap-1.5 pt-3 text-xs text-muted-foreground">
+                <MousePointerClick className="h-3.5 w-3.5" />
+                {t('contextMenu.hint')}
               </div>
             </CardContent>
           </Card>
@@ -389,6 +425,19 @@ export default function CalendarClient({
           </div>
         </DialogContent>
       </Dialog>
+
+      <NewReminderDialog
+        open={showReminderDialog}
+        onOpenChange={setShowReminderDialog}
+        defaultDueDate={menuDateStr}
+        onCreated={refreshMonth}
+      />
+
+      <NewQuoteDialog
+        open={showQuoteDialog}
+        onOpenChange={setShowQuoteDialog}
+        defaultValidUntil={menuDateStr}
+      />
 
       <VehiclePickerDialog
         open={showPicker}

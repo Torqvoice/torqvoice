@@ -43,6 +43,26 @@
     "useToday": "Use today"
   },
   "more": "+ {count} weitere",
+  "contextMenu": {
+    "newWorkOrder": "Neuer Arbeitsauftrag",
+    "newReminder": "Neue Erinnerung",
+    "newQuote": "Neues Angebot",
+    "openEvent": "Öffnen ({count})",
+    "hint": "Tipp: Rechtsklick auf einen Tag zeigt Aktionen"
+  },
+  "reminderDialog": {
+    "title": "Neue Erinnerung",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "z. B. Ölwechsel fällig",
+    "vehicleLabel": "Fahrzeug",
+    "selectVehicle": "Fahrzeug auswählen",
+    "none": "Keins",
+    "dueDateLabel": "Fälligkeitsdatum",
+    "descriptionLabel": "Notizen",
+    "create": "Erinnerung erstellen",
+    "created": "Erinnerung erstellt",
+    "createError": "Erinnerung konnte nicht erstellt werden"
+  },
   "events": {
     "status": {
       "completed": "Abgeschlossen",

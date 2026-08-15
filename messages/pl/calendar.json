@@ -43,6 +43,26 @@
     "useToday": "Use today"
   },
   "more": "+ {count} więcej",
+  "contextMenu": {
+    "newWorkOrder": "Nowe zlecenie",
+    "newReminder": "Nowe przypomnienie",
+    "newQuote": "Nowa wycena",
+    "openEvent": "Otwórz ({count})",
+    "hint": "Wskazówka: kliknij dzień prawym przyciskiem myszy, aby zobaczyć akcje"
+  },
+  "reminderDialog": {
+    "title": "Nowe przypomnienie",
+    "titleLabel": "Tytuł",
+    "titlePlaceholder": "np. Wymiana oleju",
+    "vehicleLabel": "Pojazd",
+    "selectVehicle": "Wybierz pojazd",
+    "none": "Brak",
+    "dueDateLabel": "Termin",
+    "descriptionLabel": "Notatki",
+    "create": "Utwórz przypomnienie",
+    "created": "Przypomnienie utworzone",
+    "createError": "Nie udało się utworzyć przypomnienia"
+  },
   "events": {
     "status": {
       "completed": "Ukończono",

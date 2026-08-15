@@ -4,31 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useFormatDate } from "@/lib/use-format-date";
-import { format } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { CustomerCombobox } from "@/features/quotes/Components/CustomerCombobox";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,11 +25,8 @@ import { TableCellLink } from "@/components/table-cell-link";
 import {
   AlertTriangle,
   Bell,
-  CalendarIcon,
   Car,
-  Check,
   CheckCircle2,
-  ChevronsUpDown,
   Clock,
   MoreVertical,
   Pencil,
@@ -60,15 +35,8 @@ import {
   User,
 } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { useGlassModal } from "@/components/glass-modal";
-import { Loader2 } from "lucide-react";
-import {
-  toggleReminder,
-  deleteReminder,
-  createReminder,
-  updateReminder,
-} from "../Actions/reminderActions";
+import { toggleReminder, deleteReminder } from "../Actions/reminderActions";
+import { ReminderFormDialog } from "./ReminderFormDialog";
 
 interface Reminder {
   id: string;
@@ -127,27 +95,12 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
   const tc = useTranslations("common.buttons");
   const tcm = useTranslations("common.contextMenu");
   const router = useRouter();
-  const modal = useGlassModal();
   const { formatDate } = useFormatDate();
   const distUnit = unitSystem === "metric" ? "km" : "mi";
 
   const [filter, setFilter] = useState<FilterType>("active");
   const [showForm, setShowForm] = useState(false);
   const [editingReminder, setEditingReminder] = useState<Reminder | undefined>();
-
-  // Form state
-  const [formVehicleId, setFormVehicleId] = useState("");
-  const [formTitle, setFormTitle] = useState("");
-  const [formDescription, setFormDescription] = useState("");
-  const [formDueDate, setFormDueDate] = useState<Date | undefined>();
-  const [formDueMileage, setFormDueMileage] = useState("");
-  const [formNotifyInApp, setFormNotifyInApp] = useState(true);
-  const [formNotifyEmail, setFormNotifyEmail] = useState(false);
-  const [formCustomerId, setFormCustomerId] = useState("");
-  const [formCustomer, setFormCustomer] = useState<{ id: string; name: string; company: string | null } | null>(null);
-  const [formLoading, setFormLoading] = useState(false);
-  const [vehicleOpen, setVehicleOpen] = useState(false);
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const filtered = reminders.filter((r) => {
     if (filter === "active") return !r.isCompleted;
@@ -174,62 +127,13 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
 
   const openAddForm = () => {
     setEditingReminder(undefined);
-    setFormVehicleId("");
-    setFormTitle("");
-    setFormDescription("");
-    setFormDueDate(undefined);
-    setFormDueMileage("");
-    setFormNotifyInApp(true);
-    setFormNotifyEmail(false);
-    setFormCustomerId("");
-    setFormCustomer(null);
     setShowForm(true);
   };
 
   const openEditForm = (r: Reminder) => {
     setEditingReminder(r);
-    setFormVehicleId(r.vehicle?.id ?? "");
-    setFormTitle(r.title);
-    setFormDescription(r.description || "");
-    setFormDueDate(r.dueDate ? new Date(r.dueDate) : undefined);
-    setFormDueMileage(r.dueMileage ? String(r.dueMileage) : "");
-    setFormNotifyInApp(r.notifyInApp ?? true);
-    setFormNotifyEmail(r.notifyEmail ?? false);
-    setFormCustomerId(r.customer?.id ?? "");
-    setFormCustomer(r.customer ? { ...r.customer, company: null } : null);
     setShowForm(true);
   };
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormLoading(true);
-
-    const payload = {
-      vehicleId: formVehicleId || null,
-      customerId: formCustomerId || null,
-      title: formTitle,
-      description: formDescription || undefined,
-      dueDate: formDueDate ? formDueDate.toISOString().split("T")[0] : undefined,
-      dueMileage: formDueMileage ? Number(formDueMileage) : undefined,
-      notifyInApp: formNotifyInApp,
-      notifyEmail: formNotifyEmail,
-    };
-
-    const result = editingReminder
-      ? await updateReminder({ ...payload, id: editingReminder.id })
-      : await createReminder(payload);
-
-    if (result.success) {
-      toast.success(editingReminder ? tv("reminderUpdated") : tv("reminderCreated"));
-      setShowForm(false);
-      router.refresh();
-    } else {
-      modal.open("error", "Error", result.error || tv("saveError", { action: editingReminder ? "update" : "create" }));
-    }
-    setFormLoading(false);
-  };
-
-  const selectedVehicle = vehicles.find((v) => v.id === formVehicleId);
 
   return (
     <>
@@ -404,203 +308,13 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
         </Card>
       )}
 
-      {/* Add/Edit Reminder Dialog */}
-      <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{editingReminder ? tv("editTitle") : tv("addTitle")}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleFormSubmit} className="space-y-4">
-            {/* Target: workshop (nothing), customer, or vehicle */}
-            <div className="space-y-2">
-              <Label>{t("relatesTo")}</Label>
-              <CustomerCombobox
-                value={formCustomerId}
-                initialCustomer={formCustomer}
-                placeholder={t("selectCustomer")}
-                noneLabel={t("noneOption")}
-                onChange={(id) => {
-                  setFormCustomerId(id);
-                  // A vehicle belonging to another customer no longer fits
-                  const current = vehicles.find((v) => v.id === formVehicleId);
-                  if (id && current && current.customerId !== id) {
-                    setFormVehicleId("");
-                  }
-                }}
-              />
-              <Popover open={vehicleOpen} onOpenChange={setVehicleOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={vehicleOpen}
-                    className="w-full justify-between font-normal"
-                  >
-                    {selectedVehicle
-                      ? `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}${selectedVehicle.licensePlate ? ` · ${selectedVehicle.licensePlate}` : ""}`
-                      : t("selectVehicle")}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                  <Command>
-                    <CommandInput placeholder={t("searchVehicle")} />
-                    <CommandList>
-                      <CommandEmpty>{t("noVehicle")}</CommandEmpty>
-                      <CommandGroup>
-                        <CommandItem
-                          value="__none__"
-                          onSelect={() => {
-                            setFormVehicleId("");
-                            setVehicleOpen(false);
-                          }}
-                        >
-                          <Check
-                            className={cn("mr-2 h-4 w-4", !formVehicleId ? "opacity-100" : "opacity-0")}
-                          />
-                          {t("noneOption")}
-                        </CommandItem>
-                        {vehicles
-                          .filter((v) => !formCustomerId || v.customerId === formCustomerId)
-                          .map((v) => (
-                          <CommandItem
-                            key={v.id}
-                            value={`${v.year} ${v.make} ${v.model} ${v.licensePlate || ""} ${v.customerName || ""}`}
-                            onSelect={() => {
-                              setFormVehicleId(v.id);
-                              // The vehicle's customer follows automatically
-                              if (v.customerId) {
-                                setFormCustomerId(v.customerId);
-                                setFormCustomer({ id: v.customerId, name: v.customerName || "", company: null });
-                              }
-                              setVehicleOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                formVehicleId === v.id ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                            <div>
-                              <p className="text-sm">
-                                {v.year} {v.make} {v.model}
-                                {v.licensePlate && <span className="ml-1.5 text-muted-foreground">· {v.licensePlate}</span>}
-                              </p>
-                              {v.customerName && (
-                                <p className="text-xs text-muted-foreground">{v.customerName}</p>
-                              )}
-                            </div>
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              {!formVehicleId && !formCustomerId && (
-                <p className="text-xs text-muted-foreground">{t("workshopHint")}</p>
-              )}
-            </div>
-
-            {/* Title */}
-            <div className="space-y-2">
-              <Label htmlFor="reminder-title">{tv("titleLabel")}</Label>
-              <Input
-                id="reminder-title"
-                value={formTitle}
-                onChange={(e) => setFormTitle(e.target.value)}
-                placeholder={tv("titlePlaceholder")}
-                required
-              />
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="reminder-desc">{tv("descriptionLabel")}</Label>
-              <Textarea
-                id="reminder-desc"
-                value={formDescription}
-                onChange={(e) => setFormDescription(e.target.value)}
-                placeholder={tv("descriptionPlaceholder")}
-                rows={2}
-              />
-            </div>
-
-            {/* Due date + mileage */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>{tv("dueDateLabel")}</Label>
-                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formDueDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formDueDate ? format(formDueDate, "PPP") : t("pickDate")}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={formDueDate}
-                      onSelect={(date) => {
-                        setFormDueDate(date);
-                        setCalendarOpen(false);
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="reminder-mileage">{tv("dueMileageLabel")}</Label>
-                <Input
-                  id="reminder-mileage"
-                  type="number"
-                  value={formDueMileage}
-                  onChange={(e) => setFormDueMileage(e.target.value)}
-                  placeholder={tv("dueMileagePlaceholder")}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{tv("notifyLabel")}</Label>
-              <div className="flex gap-6">
-                <label className="flex items-center gap-2 text-sm font-normal">
-                  <Checkbox
-                    checked={formNotifyInApp}
-                    onCheckedChange={(v) => setFormNotifyInApp(v === true)}
-                  />
-                  {tv("notifyInApp")}
-                </label>
-                <label className="flex items-center gap-2 text-sm font-normal">
-                  <Checkbox
-                    checked={formNotifyEmail}
-                    onCheckedChange={(v) => setFormNotifyEmail(v === true)}
-                  />
-                  {tv("notifyEmail")}
-                </label>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                {tc("cancel")}
-              </Button>
-              <Button type="submit" disabled={formLoading}>
-                {formLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {editingReminder ? tc("saveChanges") : tv("addTitle")}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <ReminderFormDialog
+        open={showForm}
+        onOpenChange={setShowForm}
+        vehicles={vehicles}
+        reminder={editingReminder}
+        onSaved={() => router.refresh()}
+      />
     </>
   );
 }

@@ -43,6 +43,26 @@
     "useToday": "Use today"
   },
   "more": "+ {count} mais",
+  "contextMenu": {
+    "newWorkOrder": "Nova ordem de serviço",
+    "newReminder": "Novo lembrete",
+    "newQuote": "Novo orçamento",
+    "openEvent": "Abrir ({count})",
+    "hint": "Dica: clique com o botão direito em um dia para ver as ações"
+  },
+  "reminderDialog": {
+    "title": "Novo lembrete",
+    "titleLabel": "Título",
+    "titlePlaceholder": "ex. Troca de óleo",
+    "vehicleLabel": "Veículo",
+    "selectVehicle": "Selecionar veículo",
+    "none": "Nenhum",
+    "dueDateLabel": "Data de vencimento",
+    "descriptionLabel": "Notas",
+    "create": "Criar lembrete",
+    "created": "Lembrete criado",
+    "createError": "Não foi possível criar o lembrete"
+  },
   "events": {
     "status": {
       "completed": "Concluído",

@@ -34,12 +34,16 @@ export function NewQuoteDialog({
   onOpenChange,
   defaultVehicle = null,
   defaultCustomer = null,
+  defaultValidUntil,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   /** Preselects the vehicle (and its label) when opening, e.g. from a vehicle page */
   defaultVehicle?: VehicleOption | null
   defaultCustomer?: CustomerOption | null
+  /** YYYY-MM-DD the quote expires on, e.g. the calendar day it was created from.
+   *  Left unset, the quote falls back to the workshop's default validity period. */
+  defaultValidUntil?: string
 }) {
   const router = useRouter()
   const t = useTranslations('quotes')
@@ -68,6 +72,9 @@ export function NewQuoteDialog({
       title: title.trim(),
       vehicleId: vehicleId || undefined,
       customerId: customerId || undefined,
+      // Midday keeps the quote on the day that was picked no matter which side
+      // of UTC the workshop sits on
+      validUntil: defaultValidUntil ? `${defaultValidUntil}T12:00:00` : undefined,
       status: 'draft',
       subtotal: 0,
       taxRate: 0,
