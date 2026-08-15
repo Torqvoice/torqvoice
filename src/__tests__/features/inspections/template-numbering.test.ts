@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  blankSection,
   nextItemCode,
   nextSectionCode,
   renumber,
@@ -17,6 +18,26 @@ const section = (code: string, itemCodes: string[]): EditorSection =>
     code,
     items: itemCodes.map(item),
   }) as EditorSection;
+
+describe("new sections", () => {
+  it("numbers the section and the check it starts with", () => {
+    const created = blankSection("3");
+    expect(created.code).toBe("3");
+    // The first check used to come out blank because it was built before the
+    // section knew its own number.
+    expect(created.items).toHaveLength(1);
+    expect(created.items[0].code).toBe("3.1");
+  });
+
+  it("leaves the first check unnumbered when the section is", () => {
+    expect(blankSection().items[0].code).toBe("");
+  });
+
+  it("continues correctly from a section created this way", () => {
+    const created = blankSection("3");
+    expect(nextItemCode(created, 2)).toBe("3.2");
+  });
+});
 
 describe("template reference numbering", () => {
   it("numbers the first section 1", () => {

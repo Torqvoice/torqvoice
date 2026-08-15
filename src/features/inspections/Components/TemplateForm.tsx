@@ -179,12 +179,20 @@ function blankItem(name = ""): EditorItem {
   };
 }
 
-function blankSection(name = ""): EditorSection {
-  return { key: nextKey(), name, description: "", code: "", items: [blankItem()] };
+export function blankSection(code = ""): EditorSection {
+  return {
+    key: nextKey(),
+    name: "",
+    description: "",
+    code,
+    // A section always starts with one check, and it belongs to the section's
+    // numbering just as much as any check added afterwards.
+    items: [{ ...blankItem(), code: code ? `${code}.1` : "" }],
+  };
 }
 
 function toEditorState(template?: TemplateFormData): EditorSection[] {
-  if (!template) return [blankSection()];
+  if (!template) return [blankSection("1")];
   return template.sections.map((s) => ({
     key: nextKey(),
     name: s.name,
@@ -937,7 +945,7 @@ export function TemplateForm({
                 onClick={() =>
                   setSections((prev) => [
                     ...prev,
-                    { ...blankSection(), code: nextSectionCode(prev) },
+                    blankSection(nextSectionCode(prev)),
                   ])
                 }
               >
