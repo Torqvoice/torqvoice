@@ -290,7 +290,18 @@
       "save": "Opslaan",
       "confirmDeleteTitle": "Passkey verwijderen",
       "confirmDelete": "Weet u zeker dat u deze passkey wilt verwijderen? U kunt er niet meer mee inloggen."
-    }
+    },
+    "cancel": "Annuleren",
+    "deleteWorkshopTitle": "Werkplaats verwijderen",
+    "deleteWorkshopDescription": "Deze werkplaats en al haar gegevens permanent verwijderen: klanten, voertuigen, werkorders, facturen, voorraad en geüploade bestanden. Teamleden verliezen toegang. Dit kan niet ongedaan worden gemaakt.",
+    "deleteWorkshopButton": "Werkplaats verwijderen",
+    "deleteWorkshopDialogTitle": "Deze werkplaats verwijderen?",
+    "deleteWorkshopDialogDescription": "Dit verwijdert de werkplaats en alles erin permanent. Deze actie kan niet ongedaan worden gemaakt.",
+    "deleteWorkshopConfirmPrompt": "Typ <bold>{name}</bold> om te bevestigen.",
+    "deleteWorkshopSuccess": "Werkplaats verwijderd",
+    "deleteWorkshopFailed": "Kan de werkplaats niet verwijderen",
+    "deleteAccountMoved": "Wilt u uw account verwijderen?",
+    "deleteAccountMovedLink": "Dat kan in de gegevensinstellingen."
   },
   "team": {
     "title": "Team",

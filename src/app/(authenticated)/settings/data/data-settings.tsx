@@ -17,6 +17,9 @@ import {
   setSupportBubbleHidden,
 } from '@/features/support/Lib/supportVisibility'
 import { deleteContent } from '@/features/settings/Actions/deleteContent'
+import { deleteWorkshop } from '@/features/team/Actions/deleteWorkshop'
+import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
+import { signOut } from '@/lib/auth-client'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
@@ -81,9 +84,13 @@ const ALL_TRUE: ExportOptions = {
 export function DataSettings({
   contentCounts,
   lastBackupAt = null,
+  workshopName = '',
+  isOwner = false,
 }: {
   contentCounts: ContentCounts
   lastBackupAt?: string | null
+  workshopName?: string
+  isOwner?: boolean
 }) {
   const t = useTranslations('settings')
   const format = useFormatter()
@@ -200,6 +207,51 @@ export function DataSettings({
   const [lubelogOpen, setLubelogOpen] = useState(false)
   const [lubelogFile, setLubelogFile] = useState<File | null>(null)
   const [importingLubelog, setImportingLubelog] = useState(false)
+
+  // Danger zone: delete workshop / delete account
+  const [workshopDialogOpen, setWorkshopDialogOpen] = useState(false)
+  const [workshopConfirmText, setWorkshopConfirmText] = useState('')
+  const [deletingWorkshop, setDeletingWorkshop] = useState(false)
+  const [accountDialogOpen, setAccountDialogOpen] = useState(false)
+  const [accountConfirmText, setAccountConfirmText] = useState('')
+  const [deletingAccount, setDeletingAccount] = useState(false)
+
+  const handleDeleteWorkshop = async () => {
+    if (workshopConfirmText !== workshopName) return
+    setDeletingWorkshop(true)
+    try {
+      const result = await deleteWorkshop({ confirmName: workshopConfirmText })
+      if (result.success) {
+        toast.success(t('account.deleteWorkshopSuccess'))
+        // The layout resolves the next membership, or onboarding if none left.
+        window.location.href = '/'
+      } else {
+        toast.error(result.error || t('account.deleteWorkshopFailed'))
+        setDeletingWorkshop(false)
+      }
+    } catch {
+      toast.error(t('account.deleteWorkshopFailed'))
+      setDeletingWorkshop(false)
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    if (accountConfirmText !== 'delete me') return
+    setDeletingAccount(true)
+    try {
+      const result = await deleteAccount()
+      if (result.success) {
+        await signOut()
+        router.push('/auth/sign-in')
+      } else {
+        toast.error(result.error || t('account.failedDeleteAccount'))
+        setDeletingAccount(false)
+      }
+    } catch {
+      toast.error(t('account.failedDeleteAccount'))
+      setDeletingAccount(false)
+    }
+  }
 
   const handleLubeLogImport = async () => {
     if (!lubelogFile) return
@@ -630,8 +682,133 @@ export function DataSettings({
               {t('account.deleteContentButton')}
             </Button>
           </div>
+
+          {isOwner && (
+            <>
+              <div className="my-4 border-t border-destructive/20" />
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-medium">{t('account.deleteWorkshopTitle')}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t('account.deleteWorkshopDescription')}
+                  </p>
+                </div>
+                <Button
+                  variant="destructive"
+                  onClick={() => { setWorkshopConfirmText(''); setWorkshopDialogOpen(true) }}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {t('account.deleteWorkshopButton')}
+                </Button>
+              </div>
+            </>
+          )}
+
+          <div className="my-4 border-t border-destructive/20" />
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="font-medium">{t('account.deleteAccountTitle')}</p>
+              <p className="text-sm text-muted-foreground">
+                {t('account.deleteAccountDescription')}
+              </p>
+            </div>
+            <Button
+              variant="destructive"
+              onClick={() => { setAccountConfirmText(''); setAccountDialogOpen(true) }}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {t('account.deleteAccountButton')}
+            </Button>
+          </div>
         </CardContent>
       </Card>
+
+      {/* Delete Workshop Confirmation Dialog */}
+      <Dialog open={workshopDialogOpen} onOpenChange={setWorkshopDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">{t('account.deleteWorkshopDialogTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('account.deleteWorkshopDialogDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+              <p className="text-sm font-medium text-destructive">
+                {t.rich('account.deleteWorkshopConfirmPrompt', {
+                  name: workshopName,
+                  bold: (chunks) => <span className="font-mono font-bold">{chunks}</span>,
+                })}
+              </p>
+            </div>
+            <Input
+              value={workshopConfirmText}
+              onChange={(e) => setWorkshopConfirmText(e.target.value)}
+              placeholder={workshopName}
+              autoComplete="off"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setWorkshopDialogOpen(false)} disabled={deletingWorkshop}>
+              {t('account.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteWorkshop}
+              disabled={workshopConfirmText !== workshopName || deletingWorkshop}
+            >
+              {deletingWorkshop ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              {deletingWorkshop ? t('account.deleting') : t('account.deleteWorkshopButton')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Account Confirmation Dialog */}
+      <Dialog open={accountDialogOpen} onOpenChange={setAccountDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">{t('account.deleteAccountDialogTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('account.deleteAccountDialogDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+              <p className="text-sm font-medium text-destructive">
+                {t.rich('account.deleteAccountConfirmPrompt', { bold: (chunks) => <span className="font-mono font-bold">{chunks}</span> })}
+              </p>
+            </div>
+            <Input
+              value={accountConfirmText}
+              onChange={(e) => setAccountConfirmText(e.target.value)}
+              placeholder={t('account.deleteAccountConfirmPhrase')}
+              autoComplete="off"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAccountDialogOpen(false)} disabled={deletingAccount}>
+              {t('account.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteAccount}
+              disabled={accountConfirmText !== 'delete me' || deletingAccount}
+            >
+              {deletingAccount ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              {deletingAccount ? t('account.deleting') : t('account.permanentlyDelete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Content Confirmation Dialog */}
       <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>

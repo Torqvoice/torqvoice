@@ -290,7 +290,18 @@
       "save": "Salvar",
       "confirmDeleteTitle": "Excluir Passkey",
       "confirmDelete": "Tem certeza de que deseja excluir esta passkey? Você não poderá mais entrar com ela."
-    }
+    },
+    "cancel": "Cancelar",
+    "deleteWorkshopTitle": "Excluir oficina",
+    "deleteWorkshopDescription": "Excluir permanentemente esta oficina e todos os seus dados: clientes, veículos, ordens de serviço, faturas, estoque e arquivos enviados. Os membros da equipe perderão o acesso. Isso não pode ser desfeito.",
+    "deleteWorkshopButton": "Excluir oficina",
+    "deleteWorkshopDialogTitle": "Excluir esta oficina?",
+    "deleteWorkshopDialogDescription": "Isso exclui permanentemente a oficina e tudo o que há nela. Esta ação não pode ser desfeita.",
+    "deleteWorkshopConfirmPrompt": "Digite <bold>{name}</bold> para confirmar.",
+    "deleteWorkshopSuccess": "Oficina excluída",
+    "deleteWorkshopFailed": "Falha ao excluir a oficina",
+    "deleteAccountMoved": "Quer excluir sua conta?",
+    "deleteAccountMovedLink": "Você pode fazer isso nas configurações de dados."
   },
   "team": {
     "title": "Equipe",

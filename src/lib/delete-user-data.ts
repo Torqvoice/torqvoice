@@ -5,10 +5,17 @@ import path from 'path'
 import { getStripeClient } from '@/lib/stripe-config'
 
 /**
- * Clean up a single organization where the user is the last member.
- * Cancels Stripe subscription, deletes org (cascades all data), and removes upload files.
+ * Delete an organization completely: cancels its Stripe subscription, deletes
+ * the org row (cascading all data), and removes its upload files from disk.
+ * The single implementation behind admin deletion, account deletion and the
+ * owner's "delete workshop" — org deletion has ordering constraints (see the
+ * inspections note below), so new deletion paths must call this rather than
+ * `db.organization.delete` directly.
+ *
+ * Pass `userId` when the caller is removing that user entirely, so their
+ * membership row (which does not cascade from user deletion) goes too.
  */
-async function deleteOrganization(organizationId: string, userId: string) {
+export async function deleteOrganizationWithData(organizationId: string, userId?: string) {
   // Collect file paths to clean up from disk
   const filePaths: string[] = []
 
@@ -51,16 +58,22 @@ async function deleteOrganization(organizationId: string, userId: string) {
     }
   }
 
-  // Delete membership first (not auto-cascaded from user deletion)
-  await db.organizationMember.deleteMany({
-    where: { userId },
-  })
+  // Delete the caller's membership first (not auto-cascaded from user deletion)
+  if (userId) {
+    await db.organizationMember.deleteMany({
+      where: { userId, organizationId },
+    })
+  }
 
   // Delete the organization — cascades all org data (vehicles, customers,
-  // quotes, inventory, custom fields, settings, roles, invitations, subscription)
-  await db.organization.delete({
-    where: { id: organizationId },
-  })
+  // quotes, inventory, custom fields, settings, roles, invitations,
+  // subscription). Inspections must go first: their templateId FK is
+  // ON DELETE RESTRICT, which blocks the cascade from resolving templates
+  // and inspections in one statement.
+  await db.$transaction([
+    db.inspection.deleteMany({ where: { organizationId } }),
+    db.organization.delete({ where: { id: organizationId } }),
+  ])
 
   // Clean up files from disk (best effort)
   for (const filePath of filePaths) {
@@ -143,7 +156,7 @@ export async function deleteUserOrganizations(userId: string) {
     })
 
     if (memberCount <= 1) {
-      await deleteOrganization(organizationId, userId)
+      await deleteOrganizationWithData(organizationId, userId)
     } else {
       await reassignOrgData(organizationId, userId)
     }

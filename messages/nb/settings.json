@@ -290,7 +290,18 @@
       "save": "Lagre",
       "confirmDeleteTitle": "Slett Passkey",
       "confirmDelete": "Er du sikker på at du vil slette denne passkeyen? Du kan ikke logge inn med den lenger."
-    }
+    },
+    "cancel": "Avbryt",
+    "deleteWorkshopTitle": "Slett verksted",
+    "deleteWorkshopDescription": "Slett dette verkstedet og alle dataene permanent: kunder, kjøretøy, arbeidsordrer, fakturaer, lager og opplastede filer. Teammedlemmer mister tilgang. Dette kan ikke angres.",
+    "deleteWorkshopButton": "Slett verksted",
+    "deleteWorkshopDialogTitle": "Slette dette verkstedet?",
+    "deleteWorkshopDialogDescription": "Dette sletter verkstedet og alt innholdet permanent. Denne handlingen kan ikke angres.",
+    "deleteWorkshopConfirmPrompt": "Skriv <bold>{name}</bold> for å bekrefte.",
+    "deleteWorkshopSuccess": "Verksted slettet",
+    "deleteWorkshopFailed": "Kunne ikke slette verkstedet",
+    "deleteAccountMoved": "Vil du slette kontoen din?",
+    "deleteAccountMovedLink": "Det kan du gjøre i datainnstillingene."
   },
   "team": {
     "title": "Team",

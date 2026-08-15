@@ -290,7 +290,18 @@
       "save": "Save",
       "confirmDeleteTitle": "Delete Passkey",
       "confirmDelete": "Are you sure you want to delete this passkey? You won't be able to sign in with it anymore."
-    }
+    },
+    "cancel": "Cancel",
+    "deleteWorkshopTitle": "Delete Workshop",
+    "deleteWorkshopDescription": "Permanently delete this workshop and all of its data: customers, vehicles, work orders, invoices, inventory and uploaded files. Team members lose access. This cannot be undone.",
+    "deleteWorkshopButton": "Delete Workshop",
+    "deleteWorkshopDialogTitle": "Delete this workshop?",
+    "deleteWorkshopDialogDescription": "This permanently deletes the workshop and everything in it. This action cannot be undone.",
+    "deleteWorkshopConfirmPrompt": "Type <bold>{name}</bold> to confirm.",
+    "deleteWorkshopSuccess": "Workshop deleted",
+    "deleteWorkshopFailed": "Failed to delete the workshop",
+    "deleteAccountMoved": "Want to delete your account?",
+    "deleteAccountMovedLink": "You can do that in Data settings."
   },
   "team": {
     "title": "Team",
