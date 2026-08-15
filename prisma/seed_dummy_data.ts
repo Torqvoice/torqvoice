@@ -199,6 +199,12 @@ async function cleanup() {
   await prisma.reportSchedule.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.teamInvitation.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.laborPreset.deleteMany({ where: { organizationId: ORG_ID } });
+  // Inspection.template is a required relation with no onDelete, so Postgres
+  // restricts the template delete while any inspection still points at it.
+  // Vehicle deletion further down would cascade these away, but that runs too
+  // late — drop them here first. InspectionItem and InspectionQuoteRequest
+  // cascade from Inspection, and Quote.inspectionId is SetNull.
+  await prisma.inspection.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.inspectionTemplate.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.customFieldDefinition.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.subscription.deleteMany({ where: { organizationId: ORG_ID } });
@@ -222,8 +228,8 @@ async function cleanup() {
   // Custom roles; OrganizationMember.roleId is onDelete: SetNull, so safe.
   await prisma.role.deleteMany({ where: { organizationId: ORG_ID } });
 
-  // Core CRUD data. Inspection, ServiceRequest, CustomerSession, StatusReport
-  // and InspectionQuoteRequest cascade from Vehicle/Customer/ServiceRecord.
+  // Core CRUD data. ServiceRequest, CustomerSession and StatusReport cascade
+  // from Vehicle/Customer/ServiceRecord. Inspections are already gone above.
   await prisma.technician.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.smsMessage.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.quote.deleteMany({ where: { organizationId: ORG_ID } });
