@@ -33,12 +33,14 @@ import {
   MoreVertical,
   RotateCcw,
   Settings2,
+  Wrench,
   Share2,
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
   completeInspection,
+  createWorkOrderFromInspection,
   deleteInspection,
   reopenInspection,
 } from "../Actions/inspectionActions";
@@ -109,6 +111,13 @@ export interface InspectionData {
     id: string;
     message: string | null;
     selectedItemIds: string[];
+    createdAt: Date;
+  }[];
+  serviceRecords: {
+    id: string;
+    title: string;
+    status: string;
+    invoiceNumber: string | null;
     createdAt: Date;
   }[];
 }
@@ -188,6 +197,7 @@ export function InspectionPageClient({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [isCreatingQuote, setIsCreatingQuote] = useState(false);
+  const [isCreatingWorkOrder, setIsCreatingWorkOrder] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   // Grades are mirrored here so the summary, the section nav and the complete
@@ -243,6 +253,7 @@ export function InspectionPageClient({
 
   const defectItems = inspection.items.filter((i) => isDefect(grades[i.id] ?? i.condition));
   const pendingQuoteRequest = inspection.quoteRequests?.[0] ?? null;
+  const workOrder = inspection.serviceRecords?.[0] ?? null;
   const notInspected = counts.total - counts.inspected;
 
   const openImage = (url: string) => {
@@ -276,6 +287,22 @@ export function InspectionPageClient({
     } else {
       toast.error(created.error || "Failed to create quote");
       setIsCreatingQuote(false);
+    }
+  };
+
+  /**
+   * Straight to a job, no quote. Plenty of customers just say "fix it", and
+   * making them wait for an estimate they have already approved out loud is
+   * the slowest possible way to start work.
+   */
+  const handleCreateWorkOrder = async () => {
+    setIsCreatingWorkOrder(true);
+    const created = await createWorkOrderFromInspection(inspection.id);
+    if (created.success && created.data) {
+      router.push(`/vehicles/${created.data.vehicleId}/service/${created.data.id}`);
+    } else {
+      toast.error(created.error || "Failed to create work order");
+      setIsCreatingWorkOrder(false);
     }
   };
 
@@ -364,6 +391,32 @@ export function InspectionPageClient({
                 Complete
               </Button>
             )}
+            {workOrder ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  router.push(`/vehicles/${inspection.vehicle.id}/service/${workOrder.id}`)
+                }
+              >
+                <Wrench className="mr-1 h-4 w-4" aria-hidden="true" />
+                View work order
+              </Button>
+            ) : defectItems.length > 0 ? (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isCreatingWorkOrder}
+                onClick={handleCreateWorkOrder}
+              >
+                {isCreatingWorkOrder ? (
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Wrench className="mr-1 h-4 w-4" aria-hidden="true" />
+                )}
+                Create work order
+              </Button>
+            ) : null}
             {inspection.quotes.length > 0 ? (
               <Button
                 variant="outline"
@@ -445,6 +498,29 @@ export function InspectionPageClient({
               </p>
             )}
           </section>
+
+          {workOrder && (
+            <div className="flex items-center gap-3 rounded-lg border border-blue-500/30 bg-blue-50 p-3 dark:bg-blue-950/30">
+              <Wrench
+                className="h-5 w-5 shrink-0 text-blue-700 dark:text-blue-300"
+                aria-hidden="true"
+              />
+              <p className="min-w-0 flex-1 text-sm text-blue-900 dark:text-blue-100">
+                Work order {workOrder.invoiceNumber ?? ""} raised from this inspection on{" "}
+                {formatDate(new Date(workOrder.createdAt))}
+              </p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="shrink-0"
+                onClick={() =>
+                  router.push(`/vehicles/${inspection.vehicle.id}/service/${workOrder.id}`)
+                }
+              >
+                Open
+              </Button>
+            </div>
+          )}
 
           {/* Quote status */}
           {inspection.quotes.length > 0 ? (

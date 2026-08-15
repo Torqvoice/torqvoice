@@ -239,6 +239,12 @@ model ServiceRecord {
   customerId String?
   customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
+  /// Set when the job came straight from an inspection, so the inspection can
+  /// show what was raised from it. SetNull: deleting the inspection must not
+  /// take the job — and its invoice — with it.
+  inspectionId String?
+  inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+
   /// Denormalized from the vehicle historically; now the canonical scope so
   /// records exist without a vehicle. Nullable to mirror Vehicle.organizationId.
   organizationId String?
@@ -1034,16 +1040,16 @@ model InspectionTemplateItem {
   // How the technician records the result: "condition" (defect grading only),
   // "measurement" (numeric value in `unit`, graded against min/max),
   // "text" (free text) or "choice" (one of `choices`).
-  inputType String @default("condition")
+  inputType String   @default("condition")
   unit      String?
   minValue  Float?
   maxValue  Float?
   choices   String[] @default([])
 
-  required      Boolean @default(false)
-  photoRequired Boolean @default(false)
+  required          Boolean  @default(false)
+  photoRequired     Boolean  @default(false)
   // Defect severity applied when a measurement falls outside min/max.
-  defaultSeverity String?
+  defaultSeverity   String?
   // Phrases this workshop wants offered when a defect is recorded against the
   // check, on top of the built-in catalogue. See Lib/defectCatalogue.ts.
   defectSuggestions String[] @default([])
@@ -1088,9 +1094,10 @@ model Inspection {
 
   organizationId String
 
-  items         InspectionItem[]
-  quoteRequests InspectionQuoteRequest[]
-  quotes        Quote[]
+  items          InspectionItem[]
+  quoteRequests  InspectionQuoteRequest[]
+  quotes         Quote[]
+  serviceRecords ServiceRecord[]
 
   @@index([vehicleId])
   @@index([organizationId])
@@ -1109,14 +1116,14 @@ model InspectionItem {
 
   // Copied from the template at creation so an inspection stays readable even
   // after its template is edited or deleted.
-  description   String?
-  code          String?
-  sectionCode   String?
-  inputType     String   @default("condition")
-  unit          String?
-  minValue      Float?
-  maxValue      Float?
-  choices       String[] @default([])
+  description       String?
+  code              String?
+  sectionCode       String?
+  inputType         String   @default("condition")
+  unit              String?
+  minValue          Float?
+  maxValue          Float?
+  choices           String[] @default([])
   required          Boolean  @default(false)
   photoRequired     Boolean  @default(false)
   defaultSeverity   String?

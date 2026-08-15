@@ -10,6 +10,7 @@ import {
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { notificationBus } from "@/lib/notification-bus";
+import { isDefect } from "../Lib/conditions";
 
 export async function getInspectionsPaginated(params: {
   page?: number;
@@ -113,6 +114,10 @@ export async function getInspection(id: string) {
             id: true, quoteNumber: true, status: true, createdAt: true,
             user: { select: { name: true } },
           },
+        },
+        serviceRecords: {
+          select: { id: true, title: true, status: true, invoiceNumber: true, createdAt: true },
+          orderBy: { createdAt: "desc" as const },
         },
         quoteRequests: {
           where: { status: "pending" },
@@ -502,4 +507,140 @@ export async function getInspectionTechnicians() {
       select: { id: true, name: true, color: true },
     });
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INSPECTIONS }] });
+}
+
+/**
+ * Raises a work order straight from an inspection, skipping the quote.
+ *
+ * Plenty of customers just say "fix it". Forcing a quote in between means
+ * building an estimate nobody asked for and waiting for an approval that has
+ * already been given out loud, so the defects become labour lines on a pending
+ * job directly. Each line carries the check that found it and the note the
+ * technician wrote, which is what the person doing the repair needs to read.
+ *
+ * Dangerous defects lead, then major, then minor — the order the work should
+ * be done in.
+ */
+export async function createWorkOrderFromInspection(id: string) {
+  return withAuth(async ({ organizationId }) => {
+    const inspection = await db.inspection.findFirst({
+      where: { id, organizationId },
+      include: {
+        vehicle: { select: { id: true, make: true, model: true, year: true } },
+        items: { orderBy: { sortOrder: "asc" } },
+        technician: { select: { id: true, name: true } },
+      },
+    });
+    if (!inspection) throw new Error("Inspection not found");
+
+    const severityOrder: Record<string, number> = { dangerous: 0, fail: 1, attention: 2 };
+    const defects = inspection.items
+      .filter((item) => isDefect(item.condition))
+      .sort(
+        (a, b) =>
+          (severityOrder[a.condition] ?? 9) - (severityOrder[b.condition] ?? 9) ||
+          a.sortOrder - b.sortOrder
+      );
+    if (defects.length === 0) {
+      throw new Error("This inspection has no defects to work on");
+    }
+
+    const [settings, org] = await Promise.all([
+      db.appSetting.findMany({
+        where: {
+          organizationId,
+          key: {
+            in: [
+              "workshop.invoicePrefix",
+              "workshop.defaultLaborRate",
+              "workshop.defaultTaxRate",
+              "workshop.taxEnabled",
+              "workshop.taxInclusive",
+            ],
+          },
+        },
+      }),
+      db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
+    ]);
+    const settingsMap: Record<string, string> = {};
+    for (const s of settings) settingsMap[s.key] = s.value;
+
+    const rawPrefix = settingsMap["workshop.invoicePrefix"] ?? "{year}-";
+    const now = new Date();
+    const prefix = rawPrefix
+      .replace("{year}", now.getFullYear().toString())
+      .replace("{month}", String(now.getMonth() + 1).padStart(2, "0"));
+
+    const lastRecord = await db.serviceRecord.findFirst({
+      where: { organizationId },
+      orderBy: { createdAt: "desc" },
+      select: { invoiceNumber: true },
+    });
+    let nextNum = 1001;
+    if (lastRecord?.invoiceNumber) {
+      const match = lastRecord.invoiceNumber.match(/(\d+)$/);
+      if (match) nextNum = parseInt(match[1], 10) + 1;
+    }
+
+    const taxEnabled = settingsMap["workshop.taxEnabled"] !== "false";
+    const laborRate = Number(settingsMap["workshop.defaultLaborRate"]) || 0;
+    const vehicleName = `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model}`;
+
+    const record = await db.$transaction(async (tx) => {
+      const created = await tx.serviceRecord.create({
+        data: {
+          organizationId,
+          title: `${vehicleName} — inspection repairs`,
+          description: `Raised from the inspection carried out on ${inspection.createdAt.toISOString().slice(0, 10)}.`,
+          type: "repair",
+          status: "pending",
+          vehicleId: inspection.vehicle.id,
+          inspectionId: inspection.id,
+          technicianId: inspection.technicianId,
+          techName: inspection.technician?.name,
+          shopName: org?.name || undefined,
+          invoiceNumber: `${prefix}${nextNum}`,
+          mileage: inspection.mileage,
+          // Hours and totals stay at zero: the point is to get the job on the
+          // board immediately, and the workshop prices it as it works.
+          taxRate: taxEnabled ? Number(settingsMap["workshop.defaultTaxRate"]) || 0 : 0,
+          taxInclusive: settingsMap["workshop.taxInclusive"] === "true",
+          serviceDate: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+          startDateTime: now,
+        },
+      });
+
+      await tx.serviceLabor.createMany({
+        data: defects.map((item) => ({
+          description: [
+            item.code ? `${item.code} ${item.name}` : item.name,
+            item.notes,
+          ]
+            .filter(Boolean)
+            .join(" — "),
+          hours: 0,
+          rate: laborRate,
+          total: 0,
+          serviceRecordId: created.id,
+        })),
+      });
+
+      return created;
+    });
+
+    revalidatePath("/work-orders");
+    revalidatePath("/work-board");
+    revalidatePath(`/inspections/${id}`);
+    revalidatePath(`/vehicles/${inspection.vehicle.id}`);
+    return { id: record.id, vehicleId: inspection.vehicle.id, defectCount: defects.length };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES }],
+    audit: ({ result }) => ({
+      action: "service.create",
+      entity: "ServiceRecord",
+      entityId: result.id,
+      message: `Created work order ${result.id} from an inspection`,
+      metadata: { serviceRecordId: result.id, vehicleId: result.vehicleId },
+    }),
+  });
 }
