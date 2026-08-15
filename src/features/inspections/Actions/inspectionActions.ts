@@ -11,6 +11,7 @@ import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { notificationBus } from "@/lib/notification-bus";
 import { isDefect } from "../Lib/conditions";
+import { findCompletionBlockers, summariseBlockers } from "../Lib/completion";
 
 export async function getInspectionsPaginated(params: {
   page?: number;
@@ -312,9 +313,42 @@ export async function completeInspection(id: string) {
   return withAuth(async ({ userId, organizationId }) => {
     const inspection = await db.inspection.findFirst({
       where: { id, organizationId },
-      include: { technician: { select: { name: true } } },
+      include: {
+        technician: { select: { name: true } },
+        items: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            condition: true,
+            required: true,
+            photoRequired: true,
+            imageUrls: true,
+          },
+          orderBy: { sortOrder: "asc" },
+        },
+      },
     });
     if (!inspection) throw new Error("Inspection not found");
+
+    // Enforced here, not only in the form: a template marking a check
+    // mandatory, or requiring a photo of a defect, is a promise the report
+    // makes to whoever reads it. A client-side warning alone would let a
+    // report be issued that quietly breaks it.
+    const blockers = findCompletionBlockers(
+      inspection.items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        code: item.code,
+        condition: item.condition,
+        required: item.required,
+        photoRequired: item.photoRequired,
+        photoCount: item.imageUrls.length,
+      }))
+    );
+    if (blockers.length > 0) {
+      throw new Error(summariseBlockers(blockers));
+    }
 
     // Annex IV(i) wants the tester named on the certificate. Snapshot it now so
     // the record stays accurate if the technician later leaves or is renamed.

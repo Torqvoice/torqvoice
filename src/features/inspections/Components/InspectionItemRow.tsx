@@ -189,6 +189,7 @@ export function InspectionItemRow({
   history,
   onOpenImage,
   onChanged,
+  onSaveState,
 }: {
   item: InspectionItemData;
   scale: SeverityScale;
@@ -199,7 +200,9 @@ export function InspectionItemRow({
   /** Opens the shared lightbox on the given URL. */
   onOpenImage: (url: string) => void;
   /** Lets the page recompute the summary without a server round-trip. */
-  onChanged: (itemId: string, condition: Condition) => void;
+  onChanged: (itemId: string, change: { condition: Condition; photoCount: number }) => void;
+  /** Reports the autosave lifecycle so the page can show whether work is safe. */
+  onSaveState?: (itemId: string, state: "saving" | "saved" | "error") => void;
 }) {
   const fieldId = useId();
   const nameId = `${fieldId}-name`;
@@ -240,6 +243,7 @@ export function InspectionItemRow({
         patch.measuredValue !== undefined ? patch.measuredValue : parseReading(measured),
       textValue: patch.textValue !== undefined ? patch.textValue : textValue || null,
     };
+    onSaveState?.(item.id, "saving");
     startSaving(async () => {
       const result = await updateInspectionItem(item.id, {
         condition: next.condition,
@@ -249,8 +253,13 @@ export function InspectionItemRow({
         textValue: next.textValue,
       });
       if (result.success) {
-        onChanged(item.id, next.condition);
+        onChanged(item.id, {
+          condition: next.condition,
+          photoCount: next.imageUrls.length,
+        });
+        onSaveState?.(item.id, "saved");
       } else {
+        onSaveState?.(item.id, "error");
         toast.error(result.error || "Could not save this check");
       }
     });
@@ -318,7 +327,6 @@ export function InspectionItemRow({
       setCondition(severity);
       if (isDefect(severity)) setShowNotes(true);
       save({ measuredValue: value, condition: severity });
-      onChanged(item.id, severity);
       return;
     }
     save({ measuredValue: value });
@@ -377,7 +385,6 @@ export function InspectionItemRow({
     if (suggestion.severity !== condition) {
       setCondition(suggestion.severity);
       save({ condition: suggestion.severity, notes: nextNotes });
-      onChanged(item.id, suggestion.severity);
       return;
     }
     save({ notes: nextNotes });
@@ -585,7 +592,8 @@ export function InspectionItemRow({
 
       {needsPhoto && (
         <p id={`${fieldId}-photo-error`} className="text-destructive mt-2 text-xs">
-          This check needs a photo when a defect is recorded.
+          A photo of the defect is required here. The inspection cannot be completed until one
+          is attached.
         </p>
       )}
 

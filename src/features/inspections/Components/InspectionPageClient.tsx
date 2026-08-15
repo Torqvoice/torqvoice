@@ -32,6 +32,7 @@ import {
   MessageSquareText,
   MoreVertical,
   RotateCcw,
+  Save,
   Settings2,
   Wrench,
   Share2,
@@ -65,6 +66,7 @@ import {
   type Condition,
   type SeverityScale,
 } from "../Lib/conditions";
+import { describeBlocker, findCompletionBlockers } from "../Lib/completion";
 
 export interface InspectionData {
   id: string;
@@ -200,10 +202,22 @@ export function InspectionPageClient({
   const [isCreatingWorkOrder, setIsCreatingWorkOrder] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  // Grades are mirrored here so the summary, the section nav and the complete
-  // dialog react the moment a check is saved, instead of waiting for a refresh.
+  // The checklist saves each check as it is graded, which is only reassuring if
+  // the page says so. Without this the technician has no way to tell a saved
+  // inspection from one that silently failed halfway down a long Annex I sheet.
+  const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [saveFailed, setSaveFailed] = useState(false);
+
+  // Grades and photo counts are mirrored here so the summary, the section nav
+  // and the complete dialog react the moment a check is saved, instead of
+  // waiting for a refresh. Photo counts matter as much as grades: a check that
+  // requires evidence blocks completion until it has some.
   const [grades, setGrades] = useState<Record<string, Condition>>(() =>
     Object.fromEntries(inspection.items.map((i) => [i.id, i.condition as Condition]))
+  );
+  const [photoCounts, setPhotoCounts] = useState<Record<string, number>>(() =>
+    Object.fromEntries(inspection.items.map((i) => [i.id, (i.imageUrls ?? []).length]))
   );
 
   const isCompleted = inspection.status === "completed";
@@ -252,9 +266,51 @@ export function InspectionPageClient({
   }, [inspection.items]);
 
   const defectItems = inspection.items.filter((i) => isDefect(grades[i.id] ?? i.condition));
+  const blockers = useMemo(
+    () =>
+      findCompletionBlockers(
+        inspection.items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          code: item.code,
+          condition: grades[item.id] ?? item.condition,
+          required: item.required,
+          photoRequired: item.photoRequired,
+          photoCount: photoCounts[item.id] ?? (item.imageUrls ?? []).length,
+        }))
+      ),
+    [inspection.items, grades, photoCounts]
+  );
   const pendingQuoteRequest = inspection.quoteRequests?.[0] ?? null;
   const workOrder = inspection.serviceRecords?.[0] ?? null;
   const notInspected = counts.total - counts.inspected;
+
+  const handleSaveState = (itemId: string, state: "saving" | "saved" | "error") => {
+    setSavingIds((prev) => {
+      const next = new Set(prev);
+      if (state === "saving") next.add(itemId);
+      else next.delete(itemId);
+      return next;
+    });
+    if (state === "saved") {
+      setLastSavedAt(new Date());
+      setSaveFailed(false);
+    }
+    if (state === "error") setSaveFailed(true);
+  };
+
+  /**
+   * Fields commit on blur, so a note still being typed has not reached the
+   * server yet. Taking focus off it is what actually saves; the button exists
+   * because "it saves as you go" is not something a technician should have to
+   * take on trust.
+   */
+  const handleSaveNow = () => {
+    (document.activeElement as HTMLElement | null)?.blur();
+    if (savingIds.size === 0 && !saveFailed) {
+      toast.success("All changes are saved");
+    }
+  };
 
   const openImage = (url: string) => {
     const index = images.findIndex((img) => img.url === url);
@@ -380,6 +436,35 @@ export function InspectionPageClient({
             >
               {isCompleted ? "Completed" : "In progress"}
             </Badge>
+            {!isCompleted && (
+              <div className="mr-1 flex items-center gap-2">
+                <p className="text-muted-foreground hidden text-xs sm:block" role="status">
+                  {savingIds.size > 0
+                    ? "Saving…"
+                    : saveFailed
+                      ? "Some changes did not save"
+                      : lastSavedAt
+                        ? `Saved ${lastSavedAt.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}`
+                        : "Saves as you go"}
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSaveNow}
+                  disabled={savingIds.size > 0}
+                >
+                  {savingIds.size > 0 ? (
+                    <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <Save className="mr-1 h-4 w-4" aria-hidden="true" />
+                  )}
+                  Save
+                </Button>
+              </div>
+            )}
             {isCompleted ? (
               <Button variant="outline" size="sm" onClick={() => setShowReopenDialog(true)}>
                 <RotateCcw className="mr-1 h-4 w-4" aria-hidden="true" />
@@ -391,6 +476,9 @@ export function InspectionPageClient({
                 Complete
               </Button>
             )}
+            {/* Rendered whether or not there is anything to raise yet, and
+                disabled when there is not. Showing and hiding them as the
+                first defect is graded shifts everything else in the bar. */}
             {workOrder ? (
               <Button
                 variant="outline"
@@ -402,11 +490,16 @@ export function InspectionPageClient({
                 <Wrench className="mr-1 h-4 w-4" aria-hidden="true" />
                 View work order
               </Button>
-            ) : defectItems.length > 0 ? (
+            ) : (
               <Button
                 variant="outline"
                 size="sm"
-                disabled={isCreatingWorkOrder}
+                disabled={isCreatingWorkOrder || defectItems.length === 0}
+                title={
+                  defectItems.length === 0
+                    ? "Available once a defect has been recorded"
+                    : undefined
+                }
                 onClick={handleCreateWorkOrder}
               >
                 {isCreatingWorkOrder ? (
@@ -416,7 +509,7 @@ export function InspectionPageClient({
                 )}
                 Create work order
               </Button>
-            ) : null}
+            )}
             {inspection.quotes.length > 0 ? (
               <Button
                 variant="outline"
@@ -426,11 +519,16 @@ export function InspectionPageClient({
                 <FileText className="mr-1 h-4 w-4" aria-hidden="true" />
                 View quote
               </Button>
-            ) : defectItems.length > 0 ? (
+            ) : (
               <Button
                 variant="outline"
                 size="sm"
-                disabled={isCreatingQuote}
+                disabled={isCreatingQuote || defectItems.length === 0}
+                title={
+                  defectItems.length === 0
+                    ? "Available once a defect has been recorded"
+                    : undefined
+                }
                 onClick={handleCreateQuoteFromInspection}
               >
                 {isCreatingQuote ? (
@@ -440,7 +538,7 @@ export function InspectionPageClient({
                 )}
                 Create quote
               </Button>
-            ) : null}
+            )}
             <Button variant="outline" size="sm" onClick={() => setShowShareDialog(true)}>
               <Share2 className="mr-1 h-4 w-4" aria-hidden="true" />
               Share
@@ -633,9 +731,11 @@ export function InspectionPageClient({
                       isCompleted={isCompleted}
                       history={defectHistory[item.name]}
                       onOpenImage={openImage}
-                      onChanged={(itemId, condition) =>
-                        setGrades((prev) => ({ ...prev, [itemId]: condition }))
-                      }
+                      onSaveState={handleSaveState}
+                      onChanged={(itemId, change) => {
+                        setGrades((prev) => ({ ...prev, [itemId]: change.condition }));
+                        setPhotoCounts((prev) => ({ ...prev, [itemId]: change.photoCount }));
+                      }}
                     />
                   ))}
                 </ul>
@@ -785,6 +885,22 @@ export function InspectionPageClient({
             <AlertDialogTitle>Complete this inspection?</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-2">
+                {blockers.length > 0 ? (
+                  <>
+                    <p className="text-destructive font-medium">
+                      {blockers.length} check{blockers.length === 1 ? "" : "s"} the template marks
+                      as mandatory {blockers.length === 1 ? "is" : "are"} outstanding.
+                    </p>
+                    <ul className="list-disc space-y-0.5 pl-5">
+                      {blockers.slice(0, 8).map((blocker) => (
+                        <li key={blocker.id}>
+                          {blocker.label} — {describeBlocker(blocker.reason)}
+                        </li>
+                      ))}
+                    </ul>
+                    {blockers.length > 8 && <p>and {blockers.length - 8} more.</p>}
+                  </>
+                ) : null}
                 <p>
                   The checks are locked once the inspection is completed, and the result becomes
                   &ldquo;{TEST_RESULT_TOKENS[deriveTestResult(gradedItems)].label}&rdquo;.
@@ -806,7 +922,10 @@ export function InspectionPageClient({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleComplete} disabled={isPending}>
+            <AlertDialogAction
+              onClick={handleComplete}
+              disabled={isPending || blockers.length > 0}
+            >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
               Complete
             </AlertDialogAction>
