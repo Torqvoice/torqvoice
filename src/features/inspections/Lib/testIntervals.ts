@@ -10,12 +10,12 @@ import { addMonths, addYears } from 'date-fns'
  */
 export const DEFAULT_INTERVAL_MONTHS = 24
 
-export const TEST_INTERVALS: { months: number; label: string }[] = [
-  { months: 6, label: '6 months' },
-  { months: 12, label: '1 year' },
-  { months: 24, label: '2 years' },
-  { months: 36, label: '3 years' },
-  { months: 48, label: '4 years' },
+export const TEST_INTERVALS: { months: number; label: string; key: string }[] = [
+  { months: 6, label: '6 months', key: 'months6' },
+  { months: 12, label: '1 year', key: 'years1' },
+  { months: 24, label: '2 years', key: 'years2' },
+  { months: 36, label: '3 years', key: 'years3' },
+  { months: 48, label: '4 years', key: 'years4' },
 ]
 
 /** Local-time ISO date (yyyy-mm-dd), which is what the date input speaks. */

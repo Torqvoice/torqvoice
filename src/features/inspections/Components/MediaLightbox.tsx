@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export interface LightboxImage {
   url: string;
@@ -30,6 +31,7 @@ export function MediaLightbox({
   onClose: () => void;
   onNavigate: (index: number) => void;
 }) {
+  const t = useTranslations("inspections.media");
   const containerRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
   const touchStartX = useRef<number | null>(null);
@@ -121,7 +123,7 @@ export function MediaLightbox({
       ref={containerRef}
       role="dialog"
       aria-modal="true"
-      aria-label={`Image ${index + 1} of ${images.length}: ${image.caption}`}
+      aria-label={t("viewer", { index: index + 1, total: images.length, caption: image.caption })}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -129,7 +131,7 @@ export function MediaLightbox({
       <button
         type="button"
         onClick={onClose}
-        aria-label="Close image viewer"
+        aria-label={t("close")}
         className="absolute top-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none sm:top-4 sm:right-4"
       >
         <X className="h-5 w-5" aria-hidden="true" />
@@ -145,7 +147,7 @@ export function MediaLightbox({
         <button
           type="button"
           onClick={goPrev}
-          aria-label="Previous image"
+          aria-label={t("previous")}
           className="absolute left-2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none sm:left-4"
         >
           <ChevronLeft className="h-6 w-6" aria-hidden="true" />
@@ -156,7 +158,7 @@ export function MediaLightbox({
         <button
           type="button"
           onClick={goNext}
-          aria-label="Next image"
+          aria-label={t("next")}
           className="absolute right-2 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none sm:right-4"
         >
           <ChevronRight className="h-6 w-6" aria-hidden="true" />

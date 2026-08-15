@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Check, Globe2, Loader2, Search, ShieldCheck, Wrench, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { createTemplateFromPreset } from "../Actions/templateActions";
 import {
@@ -39,6 +40,7 @@ function PresetCard({
   alreadyAdded: boolean;
   onSelect: () => void;
 }) {
+  const t = useTranslations("inspections.presets");
   const itemCount = countPresetItems(preset);
   return (
     <button
@@ -57,7 +59,7 @@ function PresetCard({
       <div className="flex items-start justify-between gap-2">
         <span className="text-sm font-semibold">{preset.name}</span>
         {alreadyAdded ? (
-          <span className="text-muted-foreground shrink-0 text-[11px]">In your list</span>
+          <span className="text-muted-foreground shrink-0 text-[11px]">{t("inYourList")}</span>
         ) : (
           selected && <Check className="text-primary h-4 w-4 shrink-0" aria-hidden="true" />
         )}
@@ -76,10 +78,10 @@ function PresetCard({
           {preset.standardLabel}
         </Badge>
         <Badge variant="outline" className="text-[11px]">
-          {preset.severityScale === "eu" ? "EU defect scale" : "Pass / attention / fail"}
+          {preset.severityScale === "eu" ? t("euScale") : t("basicScale")}
         </Badge>
         <span className="text-muted-foreground ml-auto text-[11px]">
-          {preset.sections.length} sections &middot; {itemCount} checks
+          {t("counts", { sections: preset.sections.length, checks: itemCount })}
         </span>
       </div>
     </button>
@@ -96,6 +98,7 @@ export function TemplatePresetPicker({
   /** Names already in the workshop's list, so the same checklist is not offered twice. */
   installedNames?: string[];
 }) {
+  const t = useTranslations("inspections.presets");
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -122,13 +125,13 @@ export function TemplatePresetPicker({
     startTransition(async () => {
       const result = await createTemplateFromPreset(selectedId);
       if (result.success) {
-        toast.success("Template added. Adjust it to match your workshop.");
+        toast.success(t("added"));
         onOpenChange(false);
         setSelectedId(null);
         setQuery("");
         router.refresh();
       } else {
-        toast.error(result.error || "Failed to add template");
+        toast.error(result.error || t("addFailed"));
       }
     });
   };
@@ -137,10 +140,9 @@ export function TemplatePresetPicker({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[85vh] flex-col gap-0 p-0 sm:max-w-3xl">
         <DialogHeader className="border-b px-6 py-4">
-          <DialogTitle>Start from a template</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>
-            Every preset is copied into your workshop as a normal template. Rename sections, move
-            checks and change any limit to match your country and your equipment.
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -153,9 +155,9 @@ export function TemplatePresetPicker({
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name, country or standard"
+              placeholder={t("search")}
               className="pl-9"
-              aria-label="Search templates"
+              aria-label={t("searchLabel")}
             />
           </div>
         </div>
@@ -170,10 +172,10 @@ export function TemplatePresetPicker({
                 <div className="flex items-center gap-2">
                   <Icon className="text-muted-foreground h-4 w-4" aria-hidden="true" />
                   <h3 id={`preset-group-${group.key}`} className="text-sm font-semibold">
-                    {group.label}
+                    {t(`group.${group.key}`)}
                   </h3>
                 </div>
-                <p className="text-muted-foreground mt-0.5 text-xs">{group.description}</p>
+                <p className="text-muted-foreground mt-0.5 text-xs">{t(`groupDescription.${group.key}`)}</p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   {presets.map((preset) => (
                     <PresetCard
@@ -191,23 +193,22 @@ export function TemplatePresetPicker({
 
           {filtered.length === 0 && (
             <p className="text-muted-foreground py-10 text-center text-sm">
-              No template matches &ldquo;{query}&rdquo;.
+              {t("noMatch", { query })}
             </p>
           )}
         </div>
 
         <div className="flex items-center justify-between gap-3 border-t px-6 py-4">
           <p className="text-muted-foreground text-xs">
-            Regulatory presets carry the common EU limits. Check them against your national rules
-            before you issue a certificate.
+            {t("warning")}
           </p>
           <div className="flex shrink-0 gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button type="button" onClick={handleUse} disabled={!selectedId || isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              Add template
+              {t("add")}
             </Button>
           </div>
         </div>

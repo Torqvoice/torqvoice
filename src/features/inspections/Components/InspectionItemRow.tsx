@@ -31,6 +31,7 @@ import {
   X,
   XCircle,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { updateInspectionItem } from "../Actions/inspectionActions";
 import { DefectSuggestions } from "./DefectSuggestions";
@@ -39,13 +40,13 @@ import {
   CONDITION_TOKENS,
   SCALE_STEPS,
   conditionGrade,
-  gradedConditionLabel,
   formatRange,
   gradeMeasurement,
   isDefect,
   type Condition,
   type SeverityScale,
 } from "../Lib/conditions";
+import { useConditionLabels } from "../Lib/useConditionLabels";
 
 export interface InspectionItemData {
   id: string;
@@ -113,6 +114,7 @@ function GradeControl({
   disabled?: boolean;
   onChange: (next: Condition, options?: { focusNotes?: boolean }) => void;
 }) {
+  const { graded, hint, short } = useConditionLabels(scale, country);
   const steps: Condition[] = [...SCALE_STEPS[scale], "not_inspected"];
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -150,7 +152,7 @@ function GradeControl({
         const Icon = CONDITION_ICONS[step];
         const checked = value === step;
         const grade = conditionGrade(step, scale, country);
-        const text = step === "not_inspected" ? "N/A" : token.short;
+        const text = short(step);
         return (
           <button
             key={step}
@@ -160,7 +162,7 @@ function GradeControl({
             type="button"
             role="radio"
             aria-checked={checked}
-            aria-label={`${gradedConditionLabel(step, scale, country)}. ${token.hint}`}
+            aria-label={`${graded(step)}. ${hint(step)}`}
             tabIndex={index === activeIndex ? 0 : -1}
             disabled={disabled}
             onClick={() => onChange(step)}
@@ -204,6 +206,7 @@ export function InspectionItemRow({
   /** Reports the autosave lifecycle so the page can show whether work is safe. */
   onSaveState?: (itemId: string, state: "saving" | "saved" | "error") => void;
 }) {
+  const t = useTranslations("inspections.item");
   const fieldId = useId();
   const nameId = `${fieldId}-name`;
 
@@ -260,7 +263,7 @@ export function InspectionItemRow({
         onSaveState?.(item.id, "saved");
       } else {
         onSaveState?.(item.id, "error");
-        toast.error(result.error || "Could not save this check");
+        toast.error(result.error || t("saveFailed"));
       }
     });
   };
@@ -348,7 +351,7 @@ export function InspectionItemRow({
         });
         const data = await res.json();
         if (data.url) uploaded.push(data.url);
-        else toast.error(data.error || `Could not upload ${file.name}`);
+        else toast.error(data.error || t("uploadFailedFor", { name: file.name }));
       }
       if (uploaded.length > 0) {
         const next = [...imageUrls, ...uploaded];
@@ -356,7 +359,7 @@ export function InspectionItemRow({
         save({ imageUrls: next });
       }
     } catch {
-      toast.error("Upload failed");
+      toast.error(t("uploadFailed"));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -412,12 +415,12 @@ export function InspectionItemRow({
             )}
             <span>{item.name}</span>
             {item.required && (
-              <span className="text-muted-foreground text-xs font-normal">(required)</span>
+              <span className="text-muted-foreground text-xs font-normal">{t("required")}</span>
             )}
             {isSaving && (
               <>
                 <Loader2 className="text-muted-foreground h-3 w-3 animate-spin" aria-hidden="true" />
-                <span className="sr-only">Saving</span>
+                <span className="sr-only">{t("saving")}</span>
               </>
             )}
           </p>
@@ -446,7 +449,7 @@ export function InspectionItemRow({
               aria-expanded={showNotes}
               onClick={() => setShowNotes((v) => !v)}
             >
-              {showNotes ? "Hide note" : "Add note"}
+              {showNotes ? t("hideNote") : t("addNote")}
             </Button>
             <Button
               type="button"
@@ -455,7 +458,7 @@ export function InspectionItemRow({
               className="h-9 w-9"
               disabled={isCompleted || isUploading}
               onClick={() => fileInputRef.current?.click()}
-              aria-label={`Add a photo or video to ${item.name}`}
+              aria-label={t("addPhoto", { name: item.name })}
             >
               {isUploading ? (
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -476,12 +479,12 @@ export function InspectionItemRow({
         </div>
       </div>
 
-      {/* Recorded value */}
+      {/* {t("recordedValue")} */}
       {inputType === "measurement" && (
         <div className="mt-3 flex flex-wrap items-end gap-2">
           <div className="space-y-1">
             <label htmlFor={`${fieldId}-value`} className="text-muted-foreground text-xs">
-              Reading{item.unit ? ` (${item.unit})` : ""}
+              {item.unit ? t("readingUnit", { unit: item.unit }) : t("reading")}
             </label>
             <Input
               id={`${fieldId}-value`}
@@ -496,7 +499,7 @@ export function InspectionItemRow({
           </div>
           {range && (
             <p className="text-muted-foreground pb-3 text-xs">
-              Limit: <span className="font-medium">{range}</span>
+              <span className="font-medium">{t("limit", { range })}</span>
             </p>
           )}
         </div>
@@ -505,7 +508,7 @@ export function InspectionItemRow({
       {inputType === "text" && (
         <div className="mt-3 space-y-1">
           <label htmlFor={`${fieldId}-text`} className="text-muted-foreground text-xs">
-            Recorded value
+            {t("recordedValue")}
           </label>
           <Input
             id={`${fieldId}-text`}
@@ -521,7 +524,7 @@ export function InspectionItemRow({
       {inputType === "choice" && (item.choices?.length ?? 0) > 0 && (
         <div className="mt-3 space-y-1">
           <label htmlFor={`${fieldId}-choice`} className="text-muted-foreground text-xs">
-            Answer
+            {t("answer")}
           </label>
           <Select
             value={textValue || undefined}
@@ -532,7 +535,7 @@ export function InspectionItemRow({
             }}
           >
             <SelectTrigger id={`${fieldId}-choice`} className="h-11 w-full sm:w-64">
-              <SelectValue placeholder="Select an answer" />
+              <SelectValue placeholder={t("selectAnswer")} />
             </SelectTrigger>
             <SelectContent>
               {item.choices?.map((choice) => (
@@ -548,7 +551,7 @@ export function InspectionItemRow({
       {showNotes && (
         <div className="mt-3 space-y-1">
           <label htmlFor={`${fieldId}-notes`} className="sr-only">
-            Notes for {item.name}
+            {t("notesFor", { name: item.name })}
           </label>
           <Textarea
             id={`${fieldId}-notes`}
@@ -559,18 +562,14 @@ export function InspectionItemRow({
             disabled={isCompleted}
             aria-invalid={notesRequired}
             aria-describedby={describedBy || undefined}
-            placeholder={
-              notesRequired
-                ? "Describe the defect — this appears on the report"
-                : "Add a note (optional)"
-            }
+            placeholder={notesRequired ? t("describeDefect") : t("optionalNote")}
             className={`min-h-[68px] text-sm ${
               notesRequired ? "border-destructive focus-visible:ring-destructive" : ""
             }`}
           />
           {notesRequired && (
             <p id={`${fieldId}-notes-error`} className="text-destructive text-xs">
-              Describe the defect before this grade is saved.
+              {t("notesRequired")}
             </p>
           )}
           {!isCompleted && (
@@ -592,8 +591,7 @@ export function InspectionItemRow({
 
       {needsPhoto && (
         <p id={`${fieldId}-photo-error`} className="text-destructive mt-2 text-xs">
-          A photo of the defect is required here. The inspection cannot be completed until one
-          is attached.
+          {t("photoRequired")}
         </p>
       )}
 
@@ -609,12 +607,12 @@ export function InspectionItemRow({
                   type="button"
                   onClick={() => onOpenImage(url)}
                   className="focus-visible:ring-ring block overflow-hidden rounded-lg border focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-                  aria-label={`View photo ${index + 1} of ${item.name} full size`}
+                  aria-label={t("viewPhoto", { index: index + 1, name: item.name })}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
-                    alt={`${item.name}, photo ${index + 1}`}
+                    alt={t("photoAlt", { name: item.name, index: index + 1 })}
                     className="h-20 w-20 object-cover"
                   />
                 </button>
@@ -626,7 +624,7 @@ export function InspectionItemRow({
                   size="icon"
                   className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
                   onClick={() => handleRemoveFile(index)}
-                  aria-label={`Remove photo ${index + 1} from ${item.name}`}
+                  aria-label={t("removePhoto", { index: index + 1, name: item.name })}
                 >
                   <X className="h-3 w-3" aria-hidden="true" />
                 </Button>
@@ -639,14 +637,13 @@ export function InspectionItemRow({
       <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Clear this grade?</AlertDialogTitle>
+            <AlertDialogTitle>{t("clearTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              The note recorded against &ldquo;{item.name}&rdquo; will be removed and the check
-              goes back to not inspected.
+              {t("clearBody", { name: item.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => {
@@ -658,7 +655,7 @@ export function InspectionItemRow({
                 save({ condition: "not_inspected", notes: "" });
               }}
             >
-              Clear
+              {t("clear")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

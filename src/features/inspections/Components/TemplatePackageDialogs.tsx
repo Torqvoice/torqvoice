@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Download, FileJson, Loader2, TriangleAlert, Upload } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { exportTemplatePackage, importTemplatePackage } from "../Actions/packageActions";
 import { packageFileName, parsePackage, PackageFormatError } from "@/lib/packages/format";
@@ -46,6 +47,7 @@ export function TemplateExportDialog({
   template: { id: string; name: string } | null;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("inspections.packages");
   const [includeWording, setIncludeWording] = useState(false);
   const [author, setAuthor] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -65,7 +67,7 @@ export function TemplateExportDialog({
         author,
       });
       if (!result.success || !result.data) {
-        toast.error(result.error || "Could not export this template");
+        toast.error(result.error || t("exportFailed"));
         return;
       }
 
@@ -79,7 +81,7 @@ export function TemplateExportDialog({
       link.click();
       URL.revokeObjectURL(url);
 
-      toast.success("Template exported");
+      toast.success(t("exported"));
       onOpenChange(false);
     });
   };
@@ -88,10 +90,9 @@ export function TemplateExportDialog({
     <Dialog open={!!template} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Export &ldquo;{template?.name}&rdquo;</DialogTitle>
+          <DialogTitle>{t("exportTitle", { name: template?.name ?? "" })}</DialogTitle>
           <DialogDescription>
-            Downloads the whole checklist as a file — sections, checks, units and limits. Anyone
-            running Torqvoice can import it.
+            {t("exportDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -104,34 +105,31 @@ export function TemplateExportDialog({
               className="mt-0.5"
             />
             <div>
-              <Label htmlFor="include-wording">Include your own defect wording</Label>
+              <Label htmlFor="include-wording">{t("includeWording")}</Label>
               <p className="text-muted-foreground mt-0.5 text-xs">
-                The phrases your workshop added to checks. Useful to whoever receives this, but
-                they are free text typed at a bench and can name a customer, a colleague or a
-                local arrangement. Off unless you have read them.
+                {t("includeWordingHelp")}
               </p>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="package-author">Attribute it to (optional)</Label>
+            <Label htmlFor="package-author">{t("attributeTo")}</Label>
             <Input
               id="package-author"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              placeholder="e.g. Egeland Auto"
+              placeholder={t("attributePlaceholder")}
               maxLength={120}
             />
             <p className="text-muted-foreground text-xs">
-              Written into the file so whoever installs it can see where it came from. Nothing is
-              taken from your account.
+              {t("attributeHelp")}
             </p>
           </div>
         </div>
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t("cancel")}
           </Button>
           <Button type="button" onClick={handleExport} disabled={isPending}>
             {isPending ? (
@@ -139,7 +137,7 @@ export function TemplateExportDialog({
             ) : (
               <Download className="mr-2 h-4 w-4" aria-hidden="true" />
             )}
-            Download
+            {t("download")}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -165,6 +163,7 @@ export function TemplateImportDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("inspections.packages");
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<Preview | null>(null);
@@ -198,7 +197,7 @@ export function TemplateImportDialog({
       setError(
         err instanceof PackageFormatError
           ? err.message
-          : "That file could not be read. A Torqvoice package is a .json file exported from a template."
+          : t("unreadable")
       );
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -211,14 +210,12 @@ export function TemplateImportDialog({
       const result = await importTemplatePackage(preview.raw);
       if (result.success && result.data) {
         toast.success(
-          `Imported ${result.data.templates.length} template${
-            result.data.templates.length === 1 ? "" : "s"
-          }`
+          t("imported", { count: result.data.templates.length })
         );
         onOpenChange(false);
         router.refresh();
       } else {
-        toast.error(result.error || "Could not import this package");
+        toast.error(result.error || t("importFailed"));
       }
     });
   };
@@ -227,10 +224,9 @@ export function TemplateImportDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Import a checklist</DialogTitle>
+          <DialogTitle>{t("importTitle")}</DialogTitle>
           <DialogDescription>
-            Adds a checklist from a Torqvoice package file. It arrives as a normal template you
-            can edit, and never replaces one you already have.
+            {t("importDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -250,7 +246,7 @@ export function TemplateImportDialog({
             onClick={() => fileInputRef.current?.click()}
           >
             <Upload className="h-5 w-5" aria-hidden="true" />
-            <span>{preview ? "Choose a different file" : "Choose a package file"}</span>
+            <span>{preview ? t("chooseAnother") : t("chooseFile")}</span>
             <span className="text-muted-foreground text-xs font-normal">.json</span>
           </Button>
 
@@ -268,7 +264,7 @@ export function TemplateImportDialog({
                 <div className="min-w-0">
                   <p className="font-medium">{preview.name}</p>
                   {preview.author && (
-                    <p className="text-muted-foreground text-xs">From {preview.author}</p>
+                    <p className="text-muted-foreground text-xs">{t("from", { author: preview.author })}</p>
                   )}
                 </div>
               </div>
@@ -276,8 +272,7 @@ export function TemplateImportDialog({
                 <DetailList key={content.type} details={content.details} />
               ))}
               <p className="text-muted-foreground border-t pt-3 text-xs">
-                Limits in a shared checklist are whatever its author set. Check them against your
-                national rules before issuing anything from it.
+                {t("limitsWarning")}
               </p>
             </div>
           )}
@@ -285,11 +280,11 @@ export function TemplateImportDialog({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t("cancel")}
           </Button>
           <Button type="button" onClick={handleImport} disabled={!preview || isPending}>
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-            Import
+            {t("import")}
           </Button>
         </DialogFooter>
       </DialogContent>
