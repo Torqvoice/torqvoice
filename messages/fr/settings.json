@@ -290,7 +290,18 @@
       "save": "Enregistrer",
       "confirmDeleteTitle": "Supprimer la Passkey",
       "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette passkey ? Vous ne pourrez plus vous connecter avec."
-    }
+    },
+    "cancel": "Annuler",
+    "deleteWorkshopTitle": "Supprimer l'atelier",
+    "deleteWorkshopDescription": "Supprimer définitivement cet atelier et toutes ses données : clients, véhicules, ordres de travail, factures, stock et fichiers téléversés. Les membres de l'équipe perdront l'accès. Cette action est irréversible.",
+    "deleteWorkshopButton": "Supprimer l'atelier",
+    "deleteWorkshopDialogTitle": "Supprimer cet atelier ?",
+    "deleteWorkshopDialogDescription": "Cela supprime définitivement l'atelier et tout son contenu. Cette action est irréversible.",
+    "deleteWorkshopConfirmPrompt": "Saisissez <bold>{name}</bold> pour confirmer.",
+    "deleteWorkshopSuccess": "Atelier supprimé",
+    "deleteWorkshopFailed": "Échec de la suppression de l'atelier",
+    "deleteAccountMoved": "Vous souhaitez supprimer votre compte ?",
+    "deleteAccountMovedLink": "Vous pouvez le faire dans les paramètres des données."
   },
   "team": {
     "title": "Equipe",

@@ -290,7 +290,18 @@
       "save": "Salva",
       "confirmDeleteTitle": "Elimina Passkey",
       "confirmDelete": "Sei sicuro di voler eliminare questa passkey? Non potrai più accedere con essa."
-    }
+    },
+    "cancel": "Annulla",
+    "deleteWorkshopTitle": "Elimina officina",
+    "deleteWorkshopDescription": "Elimina definitivamente questa officina e tutti i suoi dati: clienti, veicoli, ordini di lavoro, fatture, magazzino e file caricati. I membri del team perderanno l'accesso. Questa operazione non può essere annullata.",
+    "deleteWorkshopButton": "Elimina officina",
+    "deleteWorkshopDialogTitle": "Eliminare questa officina?",
+    "deleteWorkshopDialogDescription": "Questo elimina definitivamente l'officina e tutto il suo contenuto. Questa azione non può essere annullata.",
+    "deleteWorkshopConfirmPrompt": "Digita <bold>{name}</bold> per confermare.",
+    "deleteWorkshopSuccess": "Officina eliminata",
+    "deleteWorkshopFailed": "Impossibile eliminare l'officina",
+    "deleteAccountMoved": "Vuoi eliminare il tuo account?",
+    "deleteAccountMovedLink": "Puoi farlo nelle impostazioni dei dati."
   },
   "team": {
     "title": "Team",

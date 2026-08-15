@@ -17,13 +17,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { AlertTriangle, BadgeCheck, Check, Copy, KeyRound, Loader2, Mail, Save, Shield, ShieldOff, Trash2, User } from 'lucide-react'
+import Link from 'next/link'
+import { BadgeCheck, Check, Copy, KeyRound, Loader2, Mail, Save, Shield, ShieldOff, User } from 'lucide-react'
 import { PasskeySettings } from '@/features/settings/Components/passkey-settings'
 import { QRCodeSVG } from 'qrcode.react'
 import { updateEmail, requestEmailChange } from '@/features/settings/Actions/accountActions'
 import { useCooldown } from '@/hooks/use-cooldown'
-import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
-import { signOut } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 
@@ -71,28 +70,6 @@ export function AccountSettings({
   const [copiedBackup, setCopiedBackup] = useState(false)
 
   // Delete account state
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [deleteConfirmText, setDeleteConfirmText] = useState('')
-  const [deleting, setDeleting] = useState(false)
-
-  const handleDeleteAccount = async () => {
-    if (deleteConfirmText !== 'delete me') return
-    setDeleting(true)
-    try {
-      const result = await deleteAccount()
-      if (result.success) {
-        await signOut()
-        router.push('/auth/sign-in')
-      } else {
-        toast.error(result.error || t('account.failedDeleteAccount'))
-        setDeleting(false)
-      }
-    } catch {
-      toast.error(t('account.failedDeleteAccount'))
-      setDeleting(false)
-    }
-  }
-
   const handleEnable2FA = async () => {
     if (!twoFactorPassword) {
       toast.error(t('account.enterPasswordError'))
@@ -616,72 +593,14 @@ export function AccountSettings({
       {/* Passkeys */}
       <PasskeySettings />
 
-      {/* Danger Zone */}
-      <Card className="border-destructive/30 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <AlertTriangle className="h-5 w-5 text-destructive" />
-          <CardTitle className="text-lg text-destructive">{t('account.dangerZone')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="font-medium">{t('account.deleteAccountTitle')}</p>
-              <p className="text-sm text-muted-foreground">
-                {t('account.deleteAccountDescription')}
-              </p>
-            </div>
-            <Button
-              variant="destructive"
-              onClick={() => { setDeleteConfirmText(''); setDeleteDialogOpen(true) }}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              {t('account.deleteAccountButton')}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Delete Account Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-destructive">{t('account.deleteAccountDialogTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('account.deleteAccountDialogDescription')}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3 py-2">
-            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
-              <p className="text-sm font-medium text-destructive">
-                {t.rich('account.deleteAccountConfirmPrompt', { bold: (chunks) => <span className="font-mono font-bold">{chunks}</span> })}
-              </p>
-            </div>
-            <Input
-              value={deleteConfirmText}
-              onChange={(e) => setDeleteConfirmText(e.target.value)}
-              placeholder={t('account.deleteAccountConfirmPhrase')}
-              autoComplete="off"
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleting}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteAccount}
-              disabled={deleteConfirmText !== 'delete me' || deleting}
-            >
-              {deleting ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Trash2 className="mr-2 h-4 w-4" />
-              )}
-              {deleting ? t('account.deleting') : t('account.permanentlyDelete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Account deletion moved to Settings -> Data, where all destructive
+          data operations live together. */}
+      <p className="text-sm text-muted-foreground">
+        {t('account.deleteAccountMoved')}{' '}
+        <Link href="/settings/data" className="underline underline-offset-2 hover:text-foreground">
+          {t('account.deleteAccountMovedLink')}
+        </Link>
+      </p>
 
     </div>
   )

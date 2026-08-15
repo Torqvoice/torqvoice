@@ -290,7 +290,18 @@
       "save": "Сохранить",
       "confirmDeleteTitle": "Удалить ключ доступа",
       "confirmDelete": "Вы уверены, что хотите удалить этот ключ доступа? Вы больше не сможете входить с его помощью."
-    }
+    },
+    "cancel": "Отмена",
+    "deleteWorkshopTitle": "Удалить мастерскую",
+    "deleteWorkshopDescription": "Безвозвратно удалить эту мастерскую и все её данные: клиентов, автомобили, заказ-наряды, счета, склад и загруженные файлы. Участники команды потеряют доступ. Это нельзя отменить.",
+    "deleteWorkshopButton": "Удалить мастерскую",
+    "deleteWorkshopDialogTitle": "Удалить эту мастерскую?",
+    "deleteWorkshopDialogDescription": "Это безвозвратно удалит мастерскую и всё её содержимое. Это действие нельзя отменить.",
+    "deleteWorkshopConfirmPrompt": "Введите <bold>{name}</bold> для подтверждения.",
+    "deleteWorkshopSuccess": "Мастерская удалена",
+    "deleteWorkshopFailed": "Не удалось удалить мастерскую",
+    "deleteAccountMoved": "Хотите удалить свою учётную запись?",
+    "deleteAccountMovedLink": "Это можно сделать в настройках данных."
   },
   "team": {
     "title": "Команда",
