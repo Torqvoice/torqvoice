@@ -30,16 +30,21 @@ import {
   Loader2,
   MoreVertical,
   Pencil,
+  LibraryBig,
   Plus,
   Ruler,
   ShieldCheck,
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { deleteTemplate, duplicateTemplate } from "../Actions/templateActions";
+import {
+  deleteTemplate,
+  duplicateTemplate,
+  installMissingPresets,
+} from "../Actions/templateActions";
 import { TemplateForm, type TemplateFormData } from "./TemplateForm";
 import { TemplatePresetPicker } from "./TemplatePresetPicker";
-import { TEMPLATE_COUNTRIES } from "../Lib/templatePresets";
+import { TEMPLATE_COUNTRIES, TEMPLATE_PRESETS } from "../Lib/templatePresets";
 
 interface TemplateSection {
   id: string;
@@ -200,6 +205,30 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
   const [editingTemplate, setEditingTemplate] = useState<TemplateFormData | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<Template | null>(null);
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
+  const [isInstalling, startInstalling] = useTransition();
+
+  // Presets a workshop would actually run; "blank" is a way to start building
+  // one, not a checklist, so it is not part of the library.
+  const installed = new Set(templates.map((t) => t.name.trim().toLowerCase()));
+  const missing = TEMPLATE_PRESETS.filter(
+    (p) => p.id !== "blank" && !installed.has(p.name.trim().toLowerCase())
+  );
+
+  const handleInstallAll = () => {
+    startInstalling(async () => {
+      const result = await installMissingPresets();
+      if (result.success && result.data) {
+        toast.success(
+          result.data.added === 0
+            ? "Every checklist is already here"
+            : `Added ${result.data.added} checklist${result.data.added === 1 ? "" : "s"}`
+        );
+        router.refresh();
+      } else {
+        toast.error(result.error || "Failed to add the checklists");
+      }
+    });
+  };
   const [isDeleting, startDeleteTransition] = useTransition();
 
   const handleDelete = (id: string) => {
@@ -250,7 +279,7 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
         <div className="flex shrink-0 gap-2">
           <Button variant="outline" size="sm" onClick={() => setShowPresets(true)}>
             <ShieldCheck className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-            Start from a template
+            Browse checklists
           </Button>
           <Button size="sm" onClick={handleCreate}>
             <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
@@ -259,18 +288,44 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
         </div>
       </div>
 
+      {templates.length > 0 && missing.length > 0 && (
+        <div className="bg-muted/40 flex flex-wrap items-center gap-3 rounded-lg border border-dashed p-3">
+          <LibraryBig className="text-muted-foreground h-4 w-4 shrink-0" aria-hidden="true" />
+          <p className="min-w-0 flex-1 text-sm">
+            {missing.length} ready-made checklist{missing.length === 1 ? "" : "s"} are not in your
+            list yet, including the EU periodic technical inspection.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="shrink-0"
+            onClick={handleInstallAll}
+            disabled={isInstalling}
+          >
+            {isInstalling && (
+              <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+            )}
+            Add all
+          </Button>
+        </div>
+      )}
+
       {templates.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed px-6 py-16 text-center">
           <ClipboardCheck className="text-muted-foreground/40 h-10 w-10" aria-hidden="true" />
           <h3 className="mt-4 font-medium">No templates yet</h3>
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            Start from a ready-made checklist — including the EU periodic technical inspection —
-            or build your own from scratch.
+            Add the whole library of ready-made checklists — including the EU periodic technical
+            inspection — and delete the ones you do not run. Or build your own from scratch.
           </p>
           <div className="mt-5 flex gap-2">
-            <Button onClick={() => setShowPresets(true)}>
-              <ShieldCheck className="mr-1 h-4 w-4" aria-hidden="true" />
-              Start from a template
+            <Button onClick={handleInstallAll} disabled={isInstalling}>
+              {isInstalling ? (
+                <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <LibraryBig className="mr-1 h-4 w-4" aria-hidden="true" />
+              )}
+              Add all checklists
             </Button>
             <Button variant="outline" onClick={handleCreate}>
               <Plus className="mr-1 h-4 w-4" aria-hidden="true" />
@@ -302,7 +357,11 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
         template={editingTemplate}
       />
 
-      <TemplatePresetPicker open={showPresets} onOpenChange={setShowPresets} />
+      <TemplatePresetPicker
+        open={showPresets}
+        onOpenChange={setShowPresets}
+        installedNames={templates.map((t) => t.name)}
+      />
 
       <AlertDialog
         open={!!deleteTarget}

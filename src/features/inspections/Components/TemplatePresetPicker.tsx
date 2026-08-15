@@ -31,10 +31,12 @@ const GROUP_ICONS = {
 function PresetCard({
   preset,
   selected,
+  alreadyAdded,
   onSelect,
 }: {
   preset: TemplatePreset;
   selected: boolean;
+  alreadyAdded: boolean;
   onSelect: () => void;
 }) {
   const itemCount = countPresetItems(preset);
@@ -42,16 +44,23 @@ function PresetCard({
     <button
       type="button"
       onClick={onSelect}
+      disabled={alreadyAdded}
       aria-pressed={selected}
-      className={`flex h-full flex-col rounded-lg border p-4 text-left transition-colors focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${
-        selected
-          ? "border-primary bg-primary/5 ring-primary/30 ring-1"
-          : "hover:border-muted-foreground/40 hover:bg-muted/40"
+      className={`focus-visible:ring-ring flex h-full flex-col rounded-lg border p-4 text-left transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${
+        alreadyAdded
+          ? "cursor-default opacity-55"
+          : selected
+            ? "border-primary bg-primary/5 ring-primary/30 ring-1"
+            : "hover:border-muted-foreground/40 hover:bg-muted/40"
       }`}
     >
       <div className="flex items-start justify-between gap-2">
         <span className="text-sm font-semibold">{preset.name}</span>
-        {selected && <Check className="text-primary h-4 w-4 shrink-0" aria-hidden="true" />}
+        {alreadyAdded ? (
+          <span className="text-muted-foreground shrink-0 text-[11px]">In your list</span>
+        ) : (
+          selected && <Check className="text-primary h-4 w-4 shrink-0" aria-hidden="true" />
+        )}
       </div>
       <p className="text-muted-foreground mt-1.5 flex-1 text-xs leading-relaxed">
         {preset.description}
@@ -80,14 +89,22 @@ function PresetCard({
 export function TemplatePresetPicker({
   open,
   onOpenChange,
+  installedNames = [],
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Names already in the workshop's list, so the same checklist is not offered twice. */
+  installedNames?: string[];
 }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const installed = useMemo(
+    () => new Set(installedNames.map((name) => name.trim().toLowerCase())),
+    [installedNames]
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -163,6 +180,7 @@ export function TemplatePresetPicker({
                       key={preset.id}
                       preset={preset}
                       selected={selectedId === preset.id}
+                      alreadyAdded={installed.has(preset.name.trim().toLowerCase())}
                       onSelect={() => setSelectedId(preset.id)}
                     />
                   ))}

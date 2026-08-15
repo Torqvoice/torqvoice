@@ -6,7 +6,7 @@ import { createTemplateSchema, updateTemplateSchema } from "../Schema/templateSc
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import type { TemplateSectionInput } from "../Schema/templateSchema";
-import { TEMPLATE_PRESETS } from "../Lib/templatePresets";
+import { TEMPLATE_PRESETS, type TemplatePreset } from "../Lib/templatePresets";
 
 /**
  * Sections and their checks are always rewritten wholesale rather than diffed,
@@ -54,7 +54,7 @@ export async function getTemplates() {
 
     // Auto-seed default template for new organizations
     if (templates.length === 0) {
-      await seedDefaultTemplateForOrg(organizationId);
+      await installPresetsForOrg(organizationId);
       templates = await db.inspectionTemplate.findMany({
         where: { organizationId },
         include: {
@@ -234,40 +234,7 @@ export async function createTemplateFromPreset(presetId: string) {
     const isFirst = (await db.inspectionTemplate.count({ where: { organizationId } })) === 0;
 
     const template = await db.inspectionTemplate.create({
-      data: {
-        name: preset.name,
-        description: preset.description,
-        isDefault: isFirst,
-        country: preset.country,
-        standard: preset.standard,
-        severityScale: preset.severityScale,
-        organizationId,
-        sections: {
-          create: preset.sections.map((section, sIdx) => ({
-            name: section.name,
-            description: section.description || null,
-            code: section.code || null,
-            sortOrder: sIdx,
-            items: {
-              create: section.items.map((item, iIdx) => ({
-                name: item.name,
-                description: item.description || null,
-                code: item.code || null,
-                sortOrder: iIdx,
-                inputType: item.inputType ?? "condition",
-                unit: item.unit || null,
-                minValue: item.minValue ?? null,
-                maxValue: item.maxValue ?? null,
-                choices: item.choices ?? [],
-                required: item.required ?? false,
-                photoRequired: item.photoRequired ?? false,
-                defaultSeverity: item.defaultSeverity ?? null,
-                defectSuggestions: [],
-              })),
-            },
-          })),
-        },
-      },
+      data: presetToCreate(preset, organizationId, isFirst),
       include: { sections: { include: { items: true } } },
     });
 
@@ -354,62 +321,98 @@ export async function duplicateTemplate(id: string) {
   });
 }
 
-/**
- * New organizations start with the generic workshop checklist rather than a
- * regulatory one: a shop that needs the EU periodic test picks the preset for
- * its own country, where the thresholds can be checked against the national
- * rules before anything is issued to a customer.
- */
-async function seedDefaultTemplateForOrg(organizationId: string) {
-  const count = await db.inspectionTemplate.count({ where: { organizationId } });
-  if (count > 0) return null;
-
-  const preset = TEMPLATE_PRESETS.find((p) => p.id === "standard-multipoint");
-  if (!preset) return null;
-
-  return db.inspectionTemplate.create({
-    data: {
-      name: preset.name,
-      description: preset.description,
-      isDefault: true,
-      country: preset.country,
-      standard: preset.standard,
-      severityScale: preset.severityScale,
-      organizationId,
-      sections: {
-        create: preset.sections.map((section, sIdx) => ({
-          name: section.name,
-          description: section.description || null,
-          code: section.code || null,
-          sortOrder: sIdx,
-          items: {
-            create: section.items.map((item, iIdx) => ({
-              name: item.name,
-              description: item.description || null,
-              code: item.code || null,
-              sortOrder: iIdx,
-              inputType: item.inputType ?? "condition",
-              unit: item.unit || null,
-              minValue: item.minValue ?? null,
-              maxValue: item.maxValue ?? null,
-              choices: item.choices ?? [],
-              required: item.required ?? false,
-              photoRequired: item.photoRequired ?? false,
-              defaultSeverity: item.defaultSeverity ?? null,
-              defectSuggestions: [],
-            })),
-          },
-        })),
-      },
+/** Turns a preset into the nested create Prisma wants. */
+function presetToCreate(preset: TemplatePreset, organizationId: string, isDefault: boolean) {
+  return {
+    name: preset.name,
+    description: preset.description,
+    isDefault,
+    country: preset.country,
+    standard: preset.standard,
+    severityScale: preset.severityScale,
+    organizationId,
+    sections: {
+      create: preset.sections.map((section, sIdx) => ({
+        name: section.name,
+        description: section.description || null,
+        code: section.code || null,
+        sortOrder: sIdx,
+        items: {
+          create: section.items.map((item, iIdx) => ({
+            name: item.name,
+            description: item.description || null,
+            code: item.code || null,
+            sortOrder: iIdx,
+            inputType: item.inputType ?? "condition",
+            unit: item.unit || null,
+            minValue: item.minValue ?? null,
+            maxValue: item.maxValue ?? null,
+            choices: item.choices ?? [],
+            required: item.required ?? false,
+            photoRequired: item.photoRequired ?? false,
+            defaultSeverity: item.defaultSeverity ?? null,
+            defectSuggestions: [],
+          })),
+        },
+      })),
     },
-    include: { sections: { include: { items: true } } },
+  };
+}
+
+/** Every preset a workshop would actually run. "blank" is a starting point for
+ *  building one, not a checklist, so it stays out of the library. */
+const LIBRARY_PRESETS = TEMPLATE_PRESETS.filter((p) => p.id !== "blank");
+
+/**
+ * Installs the preset library, skipping anything the organization already has.
+ *
+ * The whole library is stocked rather than left behind an "add one" dialog:
+ * picking checklists out of a picker one at a time is work, whereas deleting
+ * the three you do not run is a glance. Existing templates are matched by name,
+ * so running this twice adds nothing.
+ */
+async function installPresetsForOrg(organizationId: string) {
+  const existing = await db.inspectionTemplate.findMany({
+    where: { organizationId },
+    select: { name: true, isDefault: true },
+  });
+  const taken = new Set(existing.map((t) => t.name.trim().toLowerCase()));
+  const missing = LIBRARY_PRESETS.filter((p) => !taken.has(p.name.trim().toLowerCase()));
+  if (missing.length === 0) return 0;
+
+  // A shop opening the app for the first time should land on the general
+  // checklist, not on a national statutory test it may not be approved to run.
+  const hasDefault = existing.some((t) => t.isDefault);
+  await db.$transaction(
+    missing.map((preset) =>
+      db.inspectionTemplate.create({
+        data: presetToCreate(
+          preset,
+          organizationId,
+          !hasDefault && preset.id === "standard-multipoint"
+        ),
+      })
+    )
+  );
+
+  return missing.length;
+}
+
+/** Adds any preset the organization does not already have. */
+export async function installMissingPresets() {
+  return withAuth(async ({ organizationId }) => {
+    const added = await installPresetsForOrg(organizationId);
+    revalidatePath("/settings/templates");
+    return { added };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }],
   });
 }
 
 export async function seedDefaultTemplate() {
   return withAuth(async ({ organizationId }) => {
-    const result = await seedDefaultTemplateForOrg(organizationId);
+    const added = await installPresetsForOrg(organizationId);
     revalidatePath("/settings/templates");
-    return result;
+    return { added };
   }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.INSPECTIONS }] });
 }
