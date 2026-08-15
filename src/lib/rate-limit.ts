@@ -25,8 +25,16 @@ export function rateLimit(
   request: Request,
   { limit = 30, windowMs = 60_000 }: { limit?: number; windowMs?: number } = {},
 ): NextResponse | null {
+  // cf-connecting-ip is set by Cloudflare and not client-forgeable on proxied
+  // traffic; x-real-ip is set by nginx for direct/staging traffic. The first
+  // entry of x-forwarded-for is client-controlled (proxies append, not
+  // replace), so it is only a last resort.
   const forwarded = request.headers.get("x-forwarded-for");
-  const ip = forwarded?.split(",")[0]?.trim() || "unknown";
+  const ip =
+    request.headers.get("cf-connecting-ip") ||
+    request.headers.get("x-real-ip") ||
+    forwarded?.split(",")[0]?.trim() ||
+    "unknown";
   const url = new URL(request.url);
   const key = `${ip}:${url.pathname}`;
 

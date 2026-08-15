@@ -27,9 +27,12 @@ const authAuditPrefixes = [
 const defaultConfig = { limit: 30, windowMs: 60_000 }
 
 function getRequestIp(request: Request): string | null {
+  // Same precedence as lib/rate-limit.ts: Cloudflare's header cannot be forged
+  // by clients on proxied traffic; the first x-forwarded-for entry can.
   return (
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('cf-connecting-ip') ||
     request.headers.get('x-real-ip') ||
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     null
   )
 }
