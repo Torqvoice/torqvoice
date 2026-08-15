@@ -146,6 +146,13 @@ async function provisionDemoAccount() {
   // foreign organizations so the reset always converges on a single org.
   // Org-scoped rows go with them via ON DELETE CASCADE, and stale
   // active-org cookies fall back to the demo org membership.
+  // inspections.templateId is ON DELETE RESTRICT, so the cascade cannot
+  // resolve templates and inspections in one statement; clear inspections
+  // first. (The only other RESTRICT in the schema, subscriptions.planId,
+  // guards global plans the purge never deletes.)
+  await prisma.inspection.deleteMany({
+    where: { organizationId: { not: ORG_ID } },
+  });
   const foreignOrgs = await prisma.organization.deleteMany({
     where: { id: { not: ORG_ID } },
   });
