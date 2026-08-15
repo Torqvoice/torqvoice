@@ -65,6 +65,8 @@ interface ScheduleMessageDialogProps {
   /** YYYY-MM-DD the message goes out on, e.g. the calendar day that was right-clicked */
   defaultDate?: string;
   defaultCustomer?: { id: string; name: string; company: string | null } | null;
+  /** Pre-filled text, e.g. a draft handed over from the compose dialog */
+  defaultBody?: string;
   onSaved?: () => void;
 }
 
@@ -86,6 +88,7 @@ export function ScheduleMessageDialog({
   message,
   defaultDate,
   defaultCustomer = null,
+  defaultBody,
   onSaved,
 }: ScheduleMessageDialogProps) {
   const t = useTranslations("scheduledMessages.dialog");
@@ -117,17 +120,20 @@ export function ScheduleMessageDialog({
       setFrequency(message.frequency as MessageFrequency);
       setEndDate(message.endDate ? toLocalDateStr(message.endDate) : "");
     } else {
-      setChannel(availableChannels[0] ?? "email");
+      // A draft handed over from the SMS composer stays an SMS when possible
+      setChannel(
+        defaultBody && availableChannels.includes("sms") ? "sms" : availableChannels[0] ?? "email",
+      );
       setCustomerId(defaultCustomer?.id ?? "");
       setRecipient("");
       setSubject("");
-      setBody("");
+      setBody(defaultBody ?? "");
       setDate(defaultDate ?? toLocalDateStr(new Date()));
       setTime("09:00");
       setFrequency("once");
       setEndDate("");
     }
-  }, [open, message, defaultDate, defaultCustomer?.id, availableChannels]);
+  }, [open, message, defaultDate, defaultBody, defaultCustomer?.id, availableChannels]);
 
   const needsRecipient = channel !== "in_app" && !customerId;
   const recipientLabel = useMemo(() => {

@@ -54,5 +54,22 @@
     "smsSent": "SMS sendt",
     "sentTo": "{label} har blitt sendt til {name} ({phone})",
     "sendError": "Kunne ikke sende SMS"
+  },
+  "compose": {
+    "newMessage": "Ny melding",
+    "title": "Ny melding",
+    "searchPlaceholder": "Søk kunder på navn eller nummer",
+    "noMatches": "Ingen kunder treffer søket",
+    "noRecipients": "Ingen kunder med telefonnummer",
+    "noRecipientsHint": "Legg til et telefonnummer på kunden for å sende SMS.",
+    "changeRecipient": "Velg en annen",
+    "messageLabel": "Melding",
+    "messagePlaceholder": "Melding til {name} ...",
+    "segments": "{chars} tegn · {segments} SMS",
+    "send": "Send",
+    "scheduleInstead": "Planlegg i stedet",
+    "sent": "Sendt til {name}",
+    "sendError": "Kunne ikke sende meldingen",
+    "templates": "Maler"
   }
 }
