@@ -1,4 +1,4 @@
-name: "Deploy: app.torqvoice.com"
+name: "[Prod] Deploy"
 
 on:
   workflow_dispatch:

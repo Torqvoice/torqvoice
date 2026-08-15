@@ -1,4 +1,4 @@
-name: "Rollback: app.torqvoice.com"
+name: "[Prod] Rollback"
 
 # Rolls production back to an earlier image, and optionally restores the
 # database from a dump taken by the deploy workflow.
