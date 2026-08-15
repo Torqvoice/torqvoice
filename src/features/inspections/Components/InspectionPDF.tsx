@@ -20,6 +20,7 @@ function fillTemplate(template: string, values: Record<string, string>): string 
 }
 
 interface InspectionItem {
+  id: string
   name: string
   section: string
   condition: string
@@ -98,6 +99,8 @@ const FALLBACK: Record<string, string> = {
   reading: 'Reading',
   limit: 'Limit',
   noDeficiencies: 'No deficiencies were recorded.',
+  photos: 'Photos',
+  photosOmitted: '{count} further photo(s) not included to keep this file a sensible size.',
 }
 
 export function InspectionPDF({
@@ -110,6 +113,8 @@ export function InspectionPDF({
   template,
   portalUrl,
   labels = {},
+  photos = {},
+  photosOmitted = 0,
 }: {
   data: InspectionData
   workshop?: WorkshopInfo
@@ -120,6 +125,10 @@ export function InspectionPDF({
   template?: TemplateConfig
   portalUrl?: string
   labels?: Record<string, string>
+  /** Embedded photos keyed by inspection item id; see Lib/inspectionPhotos. */
+  photos?: Record<string, { dataUri: string }[]>
+  /** Photos left out because of the size budget, so the page can say so. */
+  photosOmitted?: number
 }) {
   const primaryColor = template?.primaryColor || '#d97706'
   const fontFamily = template?.fontFamily || 'Helvetica'
@@ -173,6 +182,32 @@ export function InspectionPDF({
     incomplete: 'resultDetailIncomplete',
   }[result]
   const deficiencies = gradedItems.filter((i) => isDefect(i.condition))
+
+  /**
+   * Photos sit on their own full-width line rather than inside a narrow table
+   * cell, so a defect photo is actually large enough to show the defect.
+   */
+  const renderPhotos = (item: InspectionItem, size: 'large' | 'small' = 'large') => {
+    const itemPhotos = photos[item.id]
+    if (!itemPhotos?.length) return null
+    const width = size === 'large' ? 158 : 112
+    return (
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+        {itemPhotos.map((photo, i) => (
+          <Image
+            key={i}
+            src={photo.dataUri}
+            style={{
+              width,
+              height: Math.round(width * 0.75),
+              borderRadius: 3,
+              objectFit: 'cover',
+            }}
+          />
+        ))}
+      </View>
+    )
+  }
 
   /** "2.4 mm · Limit: min 3 mm" — the recorded value next to its allowed range. */
   const valueText = (item: InspectionItem): string | null => {
@@ -442,7 +477,6 @@ export function InspectionPDF({
                 {row.label}: {row.value}
               </Text>
             ))}
-            <Text style={{ ...styles.infoTextSmall, marginTop: 4 }}>{data.template.name}</Text>
           </View>
         </View>
 
@@ -494,52 +528,60 @@ export function InspectionPDF({
           {deficiencies.length === 0 ? (
             <Text style={{ fontSize: 9, color: gray }}>{label('noDeficiencies')}</Text>
           ) : (
-            <View style={styles.table}>
-              <View style={styles.tableHeader}>
-                <Text style={{ ...styles.tableHeaderCell, width: '12%' }}>#</Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '33%' }}>{labels.item || 'Item'}</Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '20%' }}>
-                  {labels.statusColumn || 'Status'}
-                </Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>
-                  {labels.notesColumn || 'Notes'}
-                </Text>
-              </View>
-              {deficiencies.map((item, i) => {
-                const token = CONDITION_TOKENS[item.condition as Condition]
-                const value = valueText(item)
-                return (
-                  <View key={i} style={styles.tableRow}>
-                    <Text style={{ ...styles.tableCell, width: '12%', color: gray }}>
-                      {item.code || '—'}
+            deficiencies.map((item, i) => {
+              const token = CONDITION_TOKENS[item.condition as Condition]
+              const value = valueText(item)
+              return (
+                <View
+                  key={i}
+                  wrap={false}
+                  style={{
+                    borderWidth: 0.5,
+                    borderColor: '#e5e7eb',
+                    borderLeftWidth: 3,
+                    borderLeftColor: token.pdf.text,
+                    borderRadius: 3,
+                    padding: 8,
+                    marginBottom: 6,
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      // Without this the badge stretches to the height of the
+                      // whole block once a photo is present.
+                      alignItems: 'flex-start',
+                      gap: 8,
+                    }}
+                  >
+                    <Text style={{ fontSize: 10, fontFamily: fontBold, flex: 1 }}>
+                      {item.code ? `${item.code}  ` : ''}
+                      {item.name}
                     </Text>
-                    <View style={{ width: '33%' }}>
-                      <Text style={styles.tableCell}>{item.name}</Text>
-                      {value && (
-                        <Text style={{ fontSize: 7, color: gray, marginTop: 1 }}>{value}</Text>
-                      )}
+                    <View
+                      style={{
+                        backgroundColor: token.pdf.bg,
+                        paddingHorizontal: 6,
+                        paddingVertical: 3,
+                        borderRadius: 3,
+                      }}
+                    >
+                      <Text style={{ fontSize: 7, color: token.pdf.text, fontFamily: fontBold }}>
+                        {conditionText(item.condition as Condition)}
+                      </Text>
                     </View>
-                    <View style={{ width: '20%', flexDirection: 'row' }}>
-                      <View
-                        style={{
-                          backgroundColor: token.pdf.bg,
-                          paddingHorizontal: 5,
-                          paddingVertical: 2,
-                          borderRadius: 3,
-                        }}
-                      >
-                        <Text style={{ fontSize: 6.5, color: token.pdf.text, fontFamily: fontBold }}>
-                          {conditionText(item.condition as Condition)}
-                        </Text>
-                      </View>
-                    </View>
-                    <Text style={{ ...styles.tableCell, width: '35%', color: gray }}>
-                      {item.notes || ''}
-                    </Text>
                   </View>
-                )
-              })}
-            </View>
+                  {item.notes && (
+                    <Text style={{ fontSize: 9, marginTop: 3 }}>{item.notes}</Text>
+                  )}
+                  {value && (
+                    <Text style={{ fontSize: 8, color: gray, marginTop: 2 }}>{value}</Text>
+                  )}
+                  {renderPhotos(item)}
+                </View>
+              )
+            })
           )}
         </View>
 
@@ -565,44 +607,56 @@ export function InspectionPDF({
               {sections[sectionName].map((item, i) => {
                 const token = CONDITION_TOKENS[item.condition as Condition]
                 const value = valueText(item)
+                // Defects already carry their photos in the section above;
+                // embedding them twice would double the size of the file.
+                const rowPhotos = isDefect(item.condition) ? null : renderPhotos(item, 'small')
                 return (
-                  <View key={i} style={styles.tableRow}>
-                    <Text style={{ ...styles.tableCell, width: '10%', color: gray }}>
-                      {item.code || ''}
-                    </Text>
-                    <Text style={{ ...styles.tableCell, width: '35%' }}>{item.name}</Text>
-                    <View style={{ width: '20%', flexDirection: 'row' }}>
-                      {token ? (
-                        <View
-                          style={{
-                            backgroundColor: token.pdf.bg,
-                            paddingHorizontal: 5,
-                            paddingVertical: 2,
-                            borderRadius: 3,
-                          }}
-                        >
-                          <Text
-                            style={{ fontSize: 6.5, color: token.pdf.text, fontFamily: fontBold }}
+                  <View key={i} style={{ ...styles.tableRow, flexDirection: 'column' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+                      <Text style={{ ...styles.tableCell, width: '10%', color: gray }}>
+                        {item.code || ''}
+                      </Text>
+                      <Text style={{ ...styles.tableCell, width: '35%' }}>{item.name}</Text>
+                      <View style={{ width: '20%', flexDirection: 'row' }}>
+                        {token ? (
+                          <View
+                            style={{
+                              backgroundColor: token.pdf.bg,
+                              paddingHorizontal: 5,
+                              paddingVertical: 2,
+                              borderRadius: 3,
+                            }}
                           >
-                            {conditionText(item.condition as Condition)}
-                          </Text>
-                        </View>
-                      ) : (
-                        <Text style={{ fontSize: 9, color: gray }}>—</Text>
-                      )}
+                            <Text
+                              style={{ fontSize: 6.5, color: token.pdf.text, fontFamily: fontBold }}
+                            >
+                              {conditionText(item.condition as Condition)}
+                            </Text>
+                          </View>
+                        ) : (
+                          <Text style={{ fontSize: 9, color: gray }}>—</Text>
+                        )}
+                      </View>
+                      <View style={{ width: '35%' }}>
+                        {value && <Text style={{ fontSize: 8 }}>{value}</Text>}
+                        {item.notes && (
+                          <Text style={{ ...styles.tableCell, color: gray }}>{item.notes}</Text>
+                        )}
+                      </View>
                     </View>
-                    <View style={{ width: '35%' }}>
-                      {value && <Text style={{ fontSize: 8 }}>{value}</Text>}
-                      {item.notes && (
-                        <Text style={{ ...styles.tableCell, color: gray }}>{item.notes}</Text>
-                      )}
-                    </View>
+                    {rowPhotos}
                   </View>
                 )
               })}
             </View>
           </View>
         ))}
+
+        {photosOmitted > 0 && (
+          <Text style={{ fontSize: 7, color: gray, marginTop: 4 }}>
+            {fillTemplate(label('photosOmitted'), { count: String(photosOmitted) })}
+          </Text>
+        )}
 
         {portalUrl && (
           <View style={{ marginTop: 8 }}>

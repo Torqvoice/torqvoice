@@ -7,6 +7,7 @@ import { InspectionPDF } from "@/features/inspections/Components/InspectionPDF";
 import React from "react";
 import { readFile } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
+import { loadInspectionPhotos } from "@/features/inspections/Lib/inspectionPhotos";
 import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
 import { resolvePortalOrg } from "@/lib/portal-slug";
@@ -124,6 +125,8 @@ export async function GET(
       ? `${appUrl}/portal/${portalSlug || orgId}`
       : undefined;
 
+    const { photos, omitted: photosOmitted } = await loadInspectionPhotos(inspection.items);
+
     const element = React.createElement(InspectionPDF, {
       data: inspection,
       workshop: {
@@ -139,6 +142,8 @@ export async function GET(
       template,
       portalUrl,
       labels,
+      photos,
+      photosOmitted,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const buffer = await renderToBuffer(element);
