@@ -1,7 +1,7 @@
 {
   "brandName": "Torqvoice",
   "buttons": {
-    "signIn": "Iniciar sesion",
+    "signIn": "Iniciar sesión",
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
@@ -21,8 +21,8 @@
     "delete": "Eliminar"
   },
   "form": {
-    "email": "Correo electronico",
-    "password": "Contrasena",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
     "emailPlaceholder": "you@example.com",
     "name": "Nombre",
     "phone": "Teléfono",
@@ -31,11 +31,11 @@
     "notes": "Notas"
   },
   "errors": {
-    "unexpected": "Ha ocurrido un error inesperado. Por favor, intentelo de nuevo.",
+    "unexpected": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
     "error": "Error"
   },
   "terms": {
-    "termsOfService": "Terminos de servicio"
+    "termsOfService": "Términos de servicio"
   },
   "errorPage": {
     "title": "Algo salió mal",
