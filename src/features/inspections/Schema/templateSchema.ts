@@ -19,6 +19,7 @@ export const templateItemSchema = z.object({
   required: z.boolean().default(false),
   photoRequired: z.boolean().default(false),
   defaultSeverity: z.enum(["attention", "fail", "dangerous"]).nullable().optional(),
+  defectSuggestions: z.array(z.string()).default([]),
 });
 
 export const templateSectionSchema = z.object({

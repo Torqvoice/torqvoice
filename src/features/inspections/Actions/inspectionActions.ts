@@ -202,6 +202,7 @@ export async function createInspection(input: unknown) {
           required: item.required,
           photoRequired: item.photoRequired,
           defaultSeverity: item.defaultSeverity,
+          defectSuggestions: item.defectSuggestions,
           inspectionId: created.id,
         }))
       );
@@ -353,4 +354,70 @@ export async function deleteInspection(id: string) {
       metadata: { inspectionId: result.inspectionId },
     }),
   });
+}
+
+/**
+ * The defect notes this organization has written most often against each check
+ * on a given inspection, so a shop's own phrasing is offered back to it.
+ *
+ * Deliberately one grouped query for the whole page rather than one per check:
+ * an Annex I checklist runs to ninety-odd items, and a per-item lookup would
+ * mean ninety round-trips to render a form.
+ */
+export async function getCommonDefectNotes(inspectionId: string) {
+  return withAuth(async ({ organizationId }) => {
+    const items = await db.inspectionItem.findMany({
+      where: { inspectionId, inspection: { organizationId } },
+      select: { name: true },
+      distinct: ["name"],
+    });
+    if (items.length === 0) return {} as Record<string, { text: string; severity: string }[]>;
+
+    const names = items.map((i) => i.name);
+
+    const grouped = await db.inspectionItem.groupBy({
+      by: ["name", "notes", "condition"],
+      where: {
+        inspection: { organizationId },
+        // Exclude this inspection so a note just typed does not immediately
+        // reappear as a suggestion under the field it was typed into.
+        inspectionId: { not: inspectionId },
+        name: { in: names },
+        condition: { in: ["attention", "fail", "dangerous"] },
+        notes: { not: null },
+      },
+      _count: { _all: true },
+      orderBy: { _count: { name: "desc" } },
+      take: 400,
+    });
+
+    const byName: Record<string, { text: string; severity: string; count: number }[]> = {};
+    for (const row of grouped) {
+      const text = row.notes?.trim();
+      if (!text || text.length > 200) continue;
+      const bucket = (byName[row.name] ??= []);
+      // The same wording can have been graded differently on different
+      // vehicles; keep the grade it carried most often.
+      const existing = bucket.find(
+        (b) => b.text.toLowerCase() === text.toLowerCase()
+      );
+      if (existing) {
+        if (row._count._all > existing.count) {
+          existing.severity = row.condition;
+          existing.count = row._count._all;
+        }
+        continue;
+      }
+      bucket.push({ text, severity: row.condition, count: row._count._all });
+    }
+
+    const result: Record<string, { text: string; severity: string }[]> = {};
+    for (const [name, list] of Object.entries(byName)) {
+      result[name] = list
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 4)
+        .map(({ text, severity }) => ({ text, severity }));
+    }
+    return result;
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INSPECTIONS }] });
 }

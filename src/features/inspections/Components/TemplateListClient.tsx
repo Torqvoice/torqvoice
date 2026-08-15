@@ -61,6 +61,7 @@ interface TemplateSection {
     required?: boolean;
     photoRequired?: boolean;
     defaultSeverity?: string | null;
+    defectSuggestions?: string[];
   }[];
 }
 

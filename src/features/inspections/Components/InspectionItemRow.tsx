@@ -33,6 +33,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { updateInspectionItem } from "../Actions/inspectionActions";
+import { DefectSuggestions } from "./DefectSuggestions";
+import type { DefectSuggestion } from "../Lib/defectCatalogue";
 import {
   CONDITION_TOKENS,
   SCALE_STEPS,
@@ -63,6 +65,7 @@ export interface InspectionItemData {
   required?: boolean;
   photoRequired?: boolean;
   defaultSeverity?: string | null;
+  defectSuggestions?: string[] | null;
   measuredValue?: number | null;
   textValue?: string | null;
 }
@@ -176,12 +179,15 @@ export function InspectionItemRow({
   item,
   scale,
   isCompleted,
+  history,
   onOpenImage,
   onChanged,
 }: {
   item: InspectionItemData;
   scale: SeverityScale;
   isCompleted: boolean;
+  /** Wording this workshop has used before on a check of this name. */
+  history?: { text: string; severity: string }[];
   /** Opens the shared lightbox on the given URL. */
   onOpenImage: (url: string) => void;
   /** Lets the page recompute the summary without a server round-trip. */
@@ -346,6 +352,27 @@ export function InspectionItemRow({
     const next = imageUrls.filter((_, i) => i !== index);
     setImageUrls(next);
     save({ imageUrls: next });
+  };
+
+  /**
+   * Applies a ready-made phrase. The note is appended rather than replaced so a
+   * check with several faults can carry all of them, and the grade follows the
+   * phrase because the Directive assigns the category, not the technician.
+   */
+  const applySuggestion = (suggestion: DefectSuggestion) => {
+    if (isCompleted) return;
+    const existing = notes.trim();
+    const nextNotes = existing ? `${existing}\n${suggestion.text}` : suggestion.text;
+    setNotes(nextNotes);
+    setNotesRequired(false);
+    setShowNotes(true);
+    if (suggestion.severity !== condition) {
+      setCondition(suggestion.severity);
+      save({ condition: suggestion.severity, notes: nextNotes });
+      onChanged(item.id, suggestion.severity);
+      return;
+    }
+    save({ notes: nextNotes });
   };
 
   const describedBy = [
@@ -529,6 +556,20 @@ export function InspectionItemRow({
             <p id={`${fieldId}-notes-error`} className="text-destructive text-xs">
               Describe the defect before this grade is saved.
             </p>
+          )}
+          {!isCompleted && (
+            <DefectSuggestions
+              check={{
+                name: item.name,
+                code: item.code,
+                sectionCode: item.sectionCode,
+                defectSuggestions: item.defectSuggestions,
+              }}
+              scale={scale}
+              currentCondition={condition}
+              history={history}
+              onPick={applySuggestion}
+            />
           )}
         </div>
       )}

@@ -1,4 +1,7 @@
-import { getInspection } from "@/features/inspections/Actions/inspectionActions";
+import {
+  getCommonDefectNotes,
+  getInspection,
+} from "@/features/inspections/Actions/inspectionActions";
 import { InspectionPageClient, type InspectionData } from "@/features/inspections/Components/InspectionPageClient";
 import { PageHeader } from "@/components/page-header";
 import { getAuthContext } from "@/lib/get-auth-context";
@@ -21,9 +24,10 @@ export default async function InspectionDetailPage({
     redirect("/inspections");
   }
 
-  const features = authContext?.organizationId
-    ? await getFeatures(authContext.organizationId)
-    : null;
+  const [features, defectHistory] = await Promise.all([
+    authContext?.organizationId ? getFeatures(authContext.organizationId) : null,
+    getCommonDefectNotes(id),
+  ]);
 
   return (
     <>
@@ -33,6 +37,7 @@ export default async function InspectionDetailPage({
           inspection={result.data as InspectionData}
           smsEnabled={features?.sms ?? false}
           emailEnabled={features?.smtp ?? false}
+          defectHistory={defectHistory.success ? defectHistory.data : {}}
         />
       </div>
     </>

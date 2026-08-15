@@ -157,10 +157,13 @@ export function InspectionPageClient({
   inspection,
   smsEnabled = false,
   emailEnabled = false,
+  defectHistory = {},
 }: {
   inspection: InspectionData;
   smsEnabled?: boolean;
   emailEnabled?: boolean;
+  /** Wording this workshop has used before, keyed by check name. */
+  defectHistory?: Record<string, { text: string; severity: string }[]>;
 }) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
@@ -515,6 +518,7 @@ export function InspectionPageClient({
                       item={item}
                       scale={scale}
                       isCompleted={isCompleted}
+                      history={defectHistory[item.name]}
                       onOpenImage={openImage}
                       onChanged={(itemId, condition) =>
                         setGrades((prev) => ({ ...prev, [itemId]: condition }))

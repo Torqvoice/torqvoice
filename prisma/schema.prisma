@@ -1044,6 +1044,9 @@ model InspectionTemplateItem {
   photoRequired Boolean @default(false)
   // Defect severity applied when a measurement falls outside min/max.
   defaultSeverity String?
+  // Phrases this workshop wants offered when a defect is recorded against the
+  // check, on top of the built-in catalogue. See Lib/defectCatalogue.ts.
+  defectSuggestions String[] @default([])
 
   sectionId String
   section   InspectionTemplateSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
@@ -1114,9 +1117,10 @@ model InspectionItem {
   minValue      Float?
   maxValue      Float?
   choices       String[] @default([])
-  required        Boolean @default(false)
-  photoRequired   Boolean @default(false)
-  defaultSeverity String?
+  required          Boolean  @default(false)
+  photoRequired     Boolean  @default(false)
+  defaultSeverity   String?
+  defectSuggestions String[] @default([])
 
   measuredValue Float?
   textValue     String?

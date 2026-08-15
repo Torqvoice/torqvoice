@@ -73,6 +73,8 @@ interface EditorItem {
   required: boolean;
   photoRequired: boolean;
   defaultSeverity: "" | "attention" | "fail" | "dangerous";
+  /** One phrase per line, which is how it is edited and stored. */
+  defectSuggestions: string;
 }
 
 interface EditorSection {
@@ -111,6 +113,7 @@ export interface TemplateFormData {
       required?: boolean;
       photoRequired?: boolean;
       defaultSeverity?: string | null;
+      defectSuggestions?: string[];
     }[];
   }[];
 }
@@ -134,6 +137,7 @@ function blankItem(name = ""): EditorItem {
     required: false,
     photoRequired: false,
     defaultSeverity: "",
+    defectSuggestions: "",
   };
 }
 
@@ -161,6 +165,7 @@ function toEditorState(template?: TemplateFormData): EditorSection[] {
       required: i.required ?? false,
       photoRequired: i.photoRequired ?? false,
       defaultSeverity: (i.defaultSeverity as EditorItem["defaultSeverity"]) || "",
+      defectSuggestions: (i.defectSuggestions ?? []).join("\n"),
     })),
   }));
 }
@@ -414,6 +419,22 @@ function CheckRow({
               <p className="text-muted-foreground text-xs">Separate the answers with commas.</p>
             </div>
           )}
+
+          <div className="space-y-1.5">
+            <Label htmlFor={`${fieldId}-suggestions`}>Common defect wording</Label>
+            <Textarea
+              id={`${fieldId}-suggestions`}
+              value={item.defectSuggestions}
+              onChange={(e) => onChange({ defectSuggestions: e.target.value })}
+              placeholder={"Worn below minimum\nContaminated with oil\nSeized"}
+              className="min-h-[76px] text-sm"
+            />
+            <p className="text-muted-foreground text-xs">
+              One phrase per line. These are offered first when a technician records a defect
+              here, ahead of the built-in wording, so your shop can settle on how it describes a
+              fault.
+            </p>
+          </div>
 
           <div className="flex flex-wrap gap-6">
             <div className="flex items-center gap-2">
@@ -676,6 +697,10 @@ export function TemplateForm({
           photoRequired: i.photoRequired,
           defaultSeverity:
             i.inputType === "measurement" ? i.defaultSeverity || "fail" : null,
+          defectSuggestions: i.defectSuggestions
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean),
         })),
       })),
     };

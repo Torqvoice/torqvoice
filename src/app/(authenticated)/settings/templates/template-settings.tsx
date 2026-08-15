@@ -441,6 +441,7 @@ interface InspectionTemplateItem {
   required?: boolean;
   photoRequired?: boolean;
   defaultSeverity?: string | null;
+  defectSuggestions?: string[];
 }
 
 interface InspectionTemplateSection {
