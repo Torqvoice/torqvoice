@@ -54,5 +54,22 @@
     "smsSent": "SMS gesendet",
     "sentTo": "{label} wurde an {name} ({phone}) gesendet",
     "sendError": "SMS konnte nicht gesendet werden"
+  },
+  "compose": {
+    "newMessage": "Neue Nachricht",
+    "title": "Neue Nachricht",
+    "searchPlaceholder": "Kunden nach Name oder Nummer suchen",
+    "noMatches": "Keine Kunden passen zur Suche",
+    "noRecipients": "Keine Kunden mit Telefonnummer",
+    "noRecipientsHint": "Hinterlegen Sie eine Telefonnummer, um zu schreiben.",
+    "changeRecipient": "Andere Person wählen",
+    "messageLabel": "Nachricht",
+    "messagePlaceholder": "Nachricht an {name} ...",
+    "segments": "{chars} Zeichen · {segments} SMS",
+    "send": "Senden",
+    "scheduleInstead": "Stattdessen planen",
+    "sent": "An {name} gesendet",
+    "sendError": "Nachricht konnte nicht gesendet werden",
+    "templates": "Vorlagen"
   }
 }

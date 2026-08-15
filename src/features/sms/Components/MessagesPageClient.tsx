@@ -42,6 +42,7 @@ import {
 import { toast } from "sonner";
 import { getConversation, getRecentSmsThreads, deleteConversation } from "../Actions/smsActions";
 import { SmsConversation } from "./SmsConversation";
+import { NewSmsDialog } from "./NewSmsDialog";
 import { useNotificationStore } from "@/features/notifications/store/notificationStore";
 import { ScheduledMessageList } from "@/features/scheduled-messages/Components/ScheduledMessageList";
 import { ScheduleMessageDialog } from "@/features/scheduled-messages/Components/ScheduleMessageDialog";
@@ -118,6 +119,7 @@ export function MessagesPageClient({
   const t = useTranslations("messages.threads");
   const tp = useTranslations("messages.page");
   const ts = useTranslations("scheduledMessages.list");
+  const tcomp = useTranslations("messages.compose");
   const tc = useTranslations("common.buttons");
 
   const tabParam = searchParams.get("tab");
@@ -141,6 +143,12 @@ export function MessagesPageClient({
   const [deleteThreadTarget, setDeleteThreadTarget] = useState<SmsThread | null>(null);
   const [isDeletingThread, setIsDeletingThread] = useState(false);
   const [showScheduleDialog, setShowScheduleDialog] = useState(false);
+  const [showComposeDialog, setShowComposeDialog] = useState(false);
+  // Carried over when a draft is handed from compose to scheduling
+  const [scheduleSeed, setScheduleSeed] = useState<{
+    customer: { id: string; name: string; company: string | null } | null;
+    body: string;
+  } | null>(null);
 
   /** Tabs live in the URL, so a conversation or the queue can be linked to directly. */
   const setTab = useCallback(
@@ -338,10 +346,25 @@ export function MessagesPageClient({
           </Button>
         </div>
 
-        <Button size="sm" onClick={() => setShowScheduleDialog(true)}>
-          <Plus className="mr-1 h-3.5 w-3.5" />
-          {ts("scheduleMessage")}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              setScheduleSeed(null);
+              setShowScheduleDialog(true);
+            }}
+          >
+            <CalendarClock className="mr-1 h-3.5 w-3.5" />
+            {ts("scheduleMessage")}
+          </Button>
+          {smsConfigured && (
+            <Button size="sm" onClick={() => setShowComposeDialog(true)}>
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              {tcomp("newMessage")}
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="flex h-[calc(100vh-11rem)] overflow-hidden rounded-lg border bg-background">
@@ -398,6 +421,17 @@ export function MessagesPageClient({
                     <p className="text-center text-sm text-muted-foreground">
                       {search ? t("noSearchResults") : t("empty")}
                     </p>
+                    {!search && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-3"
+                        onClick={() => setShowComposeDialog(true)}
+                      >
+                        <Plus className="mr-1 h-3.5 w-3.5" />
+                        {tcomp("newMessage")}
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <>
@@ -556,6 +590,15 @@ export function MessagesPageClient({
                 <div className="flex flex-1 flex-col items-center justify-center text-muted-foreground">
                   <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground/40" />
                   <p className="text-sm">{t("selectConversation")}</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="mt-3"
+                    onClick={() => setShowComposeDialog(true)}
+                  >
+                    <Plus className="mr-1 h-3.5 w-3.5" />
+                    {tcomp("newMessage")}
+                  </Button>
                 </div>
               )}
             </div>
@@ -563,16 +606,37 @@ export function MessagesPageClient({
         )}
       </div>
 
+      <NewSmsDialog
+        open={showComposeDialog}
+        onOpenChange={setShowComposeDialog}
+        onSent={async (customerId) => {
+          await refreshThreads();
+          handleSelectThread(customerId);
+        }}
+        onSchedule={(recipient, body) => {
+          setScheduleSeed({
+            customer: recipient
+              ? { id: recipient.id, name: recipient.name, company: recipient.company }
+              : null,
+            body,
+          });
+          setShowScheduleDialog(true);
+        }}
+      />
+
       <ScheduleMessageDialog
         open={showScheduleDialog}
         onOpenChange={setShowScheduleDialog}
         availableChannels={availableChannels}
         defaultCustomer={
-          selectedCustomerId && conversation
+          scheduleSeed?.customer ??
+          (selectedCustomerId && conversation
             ? { id: selectedCustomerId, name: conversation.customerName, company: null }
-            : null
+            : null)
         }
+        defaultBody={scheduleSeed?.body}
         onSaved={() => {
+          setScheduleSeed(null);
           refreshScheduled();
           setTab("scheduled");
         }}

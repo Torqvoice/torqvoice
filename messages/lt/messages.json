@@ -54,5 +54,22 @@
     "smsSent": "SMS išsiųsta",
     "sentTo": "{label} išsiųsta {name} ({phone})",
     "sendError": "Nepavyko išsiųsti SMS"
+  },
+  "compose": {
+    "newMessage": "Nauja žinutė",
+    "title": "Nauja žinutė",
+    "searchPlaceholder": "Ieškoti klientų pagal vardą ar numerį",
+    "noMatches": "Nėra klientų pagal paiešką",
+    "noRecipients": "Nėra klientų su telefono numeriu",
+    "noRecipientsHint": "Pridėkite klientui telefono numerį, kad galėtumėte rašyti.",
+    "changeRecipient": "Pasirinkti kitą",
+    "messageLabel": "Žinutė",
+    "messagePlaceholder": "Žinutė {name}...",
+    "segments": "{chars} simbolių · {segments} SMS",
+    "send": "Siųsti",
+    "scheduleInstead": "Geriau suplanuoti",
+    "sent": "Išsiųsta {name}",
+    "sendError": "Nepavyko išsiųsti žinutės",
+    "templates": "Šablonai"
   }
 }

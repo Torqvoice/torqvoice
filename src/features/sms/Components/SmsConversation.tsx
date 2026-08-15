@@ -4,6 +4,7 @@ import { useState, useTransition, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { SmsTemplateMenu } from "./SmsTemplateMenu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -295,6 +296,17 @@ export function SmsConversation({
 
       {/* Input area — pinned to bottom */}
       <div className="shrink-0 border-t bg-background p-4">
+        <div className="mb-1.5 flex items-center justify-between">
+          <SmsTemplateMenu
+            className="h-7 px-2 text-xs text-muted-foreground"
+            onPick={(body) => setNewMessage((current) => (current ? `${current}\n${body}` : body))}
+          />
+          {newMessage.length > 0 && (
+            <span className="text-[10px] text-muted-foreground tabular-nums">
+              {newMessage.length}
+            </span>
+          )}
+        </div>
         <div className="flex items-end gap-2">
           <Textarea
             placeholder={t("placeholder", { name: customerName })}
