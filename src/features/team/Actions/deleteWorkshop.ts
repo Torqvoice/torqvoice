@@ -4,6 +4,7 @@ import { z } from "zod";
 import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
+import { demoGuard } from "@/lib/demo";
 import { deleteOrganizationWithData } from "@/lib/delete-user-data";
 
 const deleteWorkshopSchema = z.object({ confirmName: z.string() });
@@ -18,8 +19,9 @@ const deleteWorkshopSchema = z.object({ confirmName: z.string() });
  */
 export async function deleteWorkshop(input: unknown) {
   return withAuth(async ({ userId, organizationId }) => {
-    // DEMO BRANCH: add demoGuard() here when merging - the shared demo user
-    // owns the demo org, so without it any visitor can delete the demo.
+    // The shared demo user owns the demo org, so without this guard any
+    // visitor could delete the demo.
+    demoGuard();
 
     const membership = await db.organizationMember.findFirst({
       where: { userId, organizationId },
