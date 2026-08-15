@@ -30,11 +30,13 @@ import {
   Loader2,
   MoreVertical,
   Pencil,
+  Download,
   LibraryBig,
   Plus,
   Ruler,
   ShieldCheck,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -44,6 +46,7 @@ import {
 } from "../Actions/templateActions";
 import { TemplateForm, type TemplateFormData } from "./TemplateForm";
 import { TemplatePresetPicker } from "./TemplatePresetPicker";
+import { TemplateExportDialog, TemplateImportDialog } from "./TemplatePackageDialogs";
 import { TEMPLATE_COUNTRIES, TEMPLATE_PRESETS } from "../Lib/templatePresets";
 
 interface TemplateSection {
@@ -90,12 +93,14 @@ function TemplateCard({
   template,
   onEdit,
   onDuplicate,
+  onExport,
   onDelete,
   isDuplicating,
 }: {
   template: Template;
   onEdit: () => void;
   onDuplicate: () => void;
+  onExport: () => void;
   onDelete: () => void;
   isDuplicating: boolean;
 }) {
@@ -148,6 +153,10 @@ function TemplateCard({
             <DropdownMenuItem onClick={onDuplicate}>
               <Copy className="mr-2 h-4 w-4" aria-hidden="true" />
               Duplicate
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onExport}>
+              <Download className="mr-2 h-4 w-4" aria-hidden="true" />
+              Export…
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-destructive" onClick={onDelete}>
@@ -202,6 +211,8 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
   const [showPresets, setShowPresets] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+  const [exportTarget, setExportTarget] = useState<{ id: string; name: string } | null>(null);
   const [editingTemplate, setEditingTemplate] = useState<TemplateFormData | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<Template | null>(null);
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
@@ -277,6 +288,10 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
           </p>
         </div>
         <div className="flex shrink-0 gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowImport(true)}>
+            <Upload className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+            Import
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setShowPresets(true)}>
             <ShieldCheck className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
             Browse checklists
@@ -342,6 +357,7 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
               isDuplicating={duplicatingId === t.id}
               onEdit={() => handleEdit(t)}
               onDuplicate={() => handleDuplicate(t.id)}
+              onExport={() => setExportTarget({ id: t.id, name: t.name })}
               onDelete={() => setDeleteTarget(t)}
             />
           ))}
@@ -361,6 +377,13 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
         }}
         template={editingTemplate}
       />
+
+      <TemplateExportDialog
+        template={exportTarget}
+        onOpenChange={(open) => !open && setExportTarget(null)}
+      />
+
+      <TemplateImportDialog open={showImport} onOpenChange={setShowImport} />
 
       <TemplatePresetPicker
         open={showPresets}
