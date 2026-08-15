@@ -26,6 +26,7 @@ import {
   TEST_RESULT_TOKENS,
   countConditions,
   deriveTestResult,
+  gradedConditionLabel,
   formatRange,
   isDefect,
   type Condition,
@@ -126,6 +127,11 @@ export function InspectionView({
   const scale: SeverityScale = inspection.template.severityScale === "basic" ? "basic" : "eu";
   const conditionText = (condition: Condition) =>
     scale === "basic" ? t(`basic.${condition}`) : t(`eu.${condition}`);
+  // Several member states record defects by grade number rather than by name,
+  // so the number leads and the wording follows.
+  const country = inspection.template.country ?? null;
+  const gradedText = (condition: Condition) =>
+    gradedConditionLabel(condition, scale, country, conditionText(condition));
 
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
   const [quoteRequested, setQuoteRequested] = useState(hasExistingQuoteRequest);
@@ -491,7 +497,7 @@ export function InspectionView({
                     </p>
                     <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold">
                       <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                      {conditionText(item.condition as Condition)}
+                      {gradedText(item.condition as Condition)}
                     </span>
                   </div>
                   {item.notes && <p className="mt-1 text-sm">{item.notes}</p>}
@@ -538,7 +544,7 @@ export function InspectionView({
                         className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium ${token.soft}`}
                       >
                         <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                        {conditionText(condition)}
+                        {gradedText(condition)}
                       </span>
                     </div>
                     {item.notes && <p className="mt-1 text-sm text-gray-500">{item.notes}</p>}

@@ -319,13 +319,21 @@ export function InspectionCertificateCard({
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor={`${fieldId}-certificate`}>Certificate number</Label>
+          <Label htmlFor={`${fieldId}-certificate`}>Report reference</Label>
           <Input
             id={`${fieldId}-certificate`}
             value={certificateNumber}
             onChange={(e) => setCertificateNumber(e.target.value)}
+            placeholder="Optional"
             disabled={isCompleted}
           />
+          {!isCompleted && (
+            <p className="text-muted-foreground text-xs">
+              Your own reference for this report. If you are an approved test centre issuing a
+              national control slip, put its number here so the two match. Otherwise leave it
+              empty.
+            </p>
+          )}
         </div>
 
         <div className="space-y-1.5 sm:col-span-2">

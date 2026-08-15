@@ -38,7 +38,8 @@ import type { DefectSuggestion } from "../Lib/defectCatalogue";
 import {
   CONDITION_TOKENS,
   SCALE_STEPS,
-  conditionLabel,
+  conditionGrade,
+  gradedConditionLabel,
   formatRange,
   gradeMeasurement,
   isDefect,
@@ -99,12 +100,15 @@ function parseReading(raw: string): number | null {
 function GradeControl({
   value,
   scale,
+  country,
   labelledBy,
   disabled,
   onChange,
 }: {
   value: Condition;
   scale: SeverityScale;
+  /** Drives the national defect code shown on each grade, if any. */
+  country: string | null;
   labelledBy: string;
   disabled?: boolean;
   onChange: (next: Condition, options?: { focusNotes?: boolean }) => void;
@@ -145,6 +149,7 @@ function GradeControl({
         const token = CONDITION_TOKENS[step];
         const Icon = CONDITION_ICONS[step];
         const checked = value === step;
+        const grade = conditionGrade(step, scale, country);
         const text = step === "not_inspected" ? "N/A" : token.short;
         return (
           <button
@@ -155,7 +160,7 @@ function GradeControl({
             type="button"
             role="radio"
             aria-checked={checked}
-            aria-label={`${conditionLabel(step, scale)}. ${token.hint}`}
+            aria-label={`${gradedConditionLabel(step, scale, country)}. ${token.hint}`}
             tabIndex={index === activeIndex ? 0 : -1}
             disabled={disabled}
             onClick={() => onChange(step)}
@@ -167,6 +172,7 @@ function GradeControl({
             }`}
           >
             <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {grade !== null && <span className="font-semibold tabular-nums">{grade}</span>}
             {text}
           </button>
         );
@@ -178,6 +184,7 @@ function GradeControl({
 export function InspectionItemRow({
   item,
   scale,
+  country = null,
   isCompleted,
   history,
   onOpenImage,
@@ -185,6 +192,7 @@ export function InspectionItemRow({
 }: {
   item: InspectionItemData;
   scale: SeverityScale;
+  country?: string | null;
   isCompleted: boolean;
   /** Wording this workshop has used before on a check of this name. */
   history?: { text: string; severity: string }[];
@@ -417,6 +425,7 @@ export function InspectionItemRow({
           <GradeControl
             value={condition}
             scale={scale}
+            country={country}
             labelledBy={nameId}
             disabled={isCompleted}
             onChange={applyCondition}

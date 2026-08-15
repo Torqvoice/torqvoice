@@ -162,6 +162,58 @@ export function conditionLabel(condition: string, scale: SeverityScale = 'eu'): 
 }
 
 /* -------------------------------------------------------------------------- */
+/* National grade numbering                                                   */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Numeric defect codes, by country.
+ *
+ * Directive 2014/45/EU names its categories but does not number them, so there
+ * is no EU-wide numbering to fall back on. Member states that do number them
+ * are listed here individually, and a country that is not listed simply shows
+ * the wording — which is correct, rather than inventing a scheme.
+ *
+ * Norway's EU-kontroll numbers every check on the kontrollseddel:
+ *   0  ingen mangel — godkjent
+ *   1  mindre mangel — godkjent med merknad, ingen etterkontroll
+ *   2  vesentlig mangel — ikke godkjent, må rettes og etterkontrolleres
+ *   3  farlig mangel — bruksforbud
+ *   4  ikke kontrollert
+ *
+ * Do not add a country here without checking its own regulator: Germany's
+ * Hauptuntersuchung, for one, categorises defects without numbering them this
+ * way, so guessing would put a wrong code on a legal document.
+ */
+export const GRADE_SCHEMES: Record<string, Partial<Record<Condition, number>>> = {
+  NO: { pass: 0, attention: 1, fail: 2, dangerous: 3, not_inspected: 4 },
+}
+
+/** The national defect code, or null where the country does not number them. */
+export function conditionGrade(
+  condition: string,
+  scale: SeverityScale = 'eu',
+  country?: string | null
+): number | null {
+  if (scale === 'basic' || !country) return null
+  const scheme = GRADE_SCHEMES[country]
+  if (!scheme) return null
+  const grade = scheme[condition as Condition]
+  return grade === undefined ? null : grade
+}
+
+/** "2 — Vesentlig mangel", or just the wording where there is no numbering. */
+export function gradedConditionLabel(
+  condition: string,
+  scale: SeverityScale = 'eu',
+  country?: string | null,
+  label?: string
+): string {
+  const text = label ?? conditionLabel(condition, scale)
+  const grade = conditionGrade(condition, scale, country)
+  return grade === null ? text : `${grade} — ${text}`
+}
+
+/* -------------------------------------------------------------------------- */
 /* Overall test result                                                        */
 /* -------------------------------------------------------------------------- */
 

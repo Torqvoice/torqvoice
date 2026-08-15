@@ -1,5 +1,43 @@
 import { describe, it, expect } from "vitest";
 import { rankSuggestions } from "@/features/inspections/Lib/defectCatalogue";
+import {
+  conditionGrade,
+  gradedConditionLabel,
+} from "@/features/inspections/Lib/conditions";
+
+describe("national defect codes", () => {
+  // Verified against Statens vegvesen and Norwegian workshop guidance:
+  // 0 ingen mangel, 1 mindre mangel (godkjent med merknad), 2 vesentlig
+  // mangel (etterkontroll), 3 farlig mangel (bruksforbud), 4 ikke kontrollert.
+  it("numbers the Norwegian EU-kontroll grades", () => {
+    expect(conditionGrade("pass", "eu", "NO")).toBe(0);
+    expect(conditionGrade("attention", "eu", "NO")).toBe(1);
+    expect(conditionGrade("fail", "eu", "NO")).toBe(2);
+    expect(conditionGrade("dangerous", "eu", "NO")).toBe(3);
+    expect(conditionGrade("not_inspected", "eu", "NO")).toBe(4);
+  });
+
+  it("shows no number for a country with no scheme on record", () => {
+    // The Directive names its categories but does not number them, so
+    // inventing a code for an unresearched country would be a wrong code on
+    // a legal document.
+    expect(conditionGrade("fail", "eu", "DE")).toBeNull();
+    expect(conditionGrade("fail", "eu", null)).toBeNull();
+    expect(gradedConditionLabel("fail", "eu", "DE")).toBe("Major defect");
+  });
+
+  it("never numbers the plain three-step scale", () => {
+    expect(conditionGrade("fail", "basic", "NO")).toBeNull();
+  });
+
+  it("puts the code before the wording", () => {
+    expect(gradedConditionLabel("fail", "eu", "NO")).toBe("2 — Major defect");
+    expect(gradedConditionLabel("attention", "eu", "NO", "Mindre mangel")).toBe(
+      "1 — Mindre mangel"
+    );
+  });
+});
+
 
 const BRAKE_PADS = {
   name: "Brake linings and pads",

@@ -56,6 +56,7 @@ import {
   TEST_RESULT_TOKENS,
   conditionLabel,
   countConditions,
+  gradedConditionLabel,
   deriveTestResult,
   isDefect,
   worstCondition,
@@ -197,6 +198,7 @@ export function InspectionPageClient({
 
   const isCompleted = inspection.status === "completed";
   const scale: SeverityScale = inspection.template.severityScale === "basic" ? "basic" : "eu";
+  const country = inspection.template.country ?? null;
   const mileageLabel = serviceType === "marine" ? "Engine hours" : "Odometer";
 
   const sections = useMemo(() => {
@@ -537,7 +539,7 @@ export function InspectionPageClient({
                   <div className="flex items-center gap-3">
                     {isDefect(worst) && (
                       <Badge variant="outline" className={CONDITION_TOKENS[worst].soft}>
-                        {conditionLabel(worst, scale)}
+                        {gradedConditionLabel(worst, scale, country)}
                       </Badge>
                     )}
                     <span className="text-muted-foreground text-xs">
@@ -551,6 +553,7 @@ export function InspectionPageClient({
                       key={item.id}
                       item={item}
                       scale={scale}
+                      country={country}
                       isCompleted={isCompleted}
                       history={defectHistory[item.name]}
                       onOpenImage={openImage}

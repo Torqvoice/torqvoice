@@ -5,6 +5,7 @@ import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/
 import {
   CONDITION_TOKENS,
   TEST_RESULT_TOKENS,
+  gradedConditionLabel,
   countConditions,
   deriveTestResult,
   formatRange,
@@ -149,6 +150,15 @@ export function InspectionPDF({
     const suffix = condition.charAt(0).toUpperCase() + condition.slice(1)
     return label(`${isBasic ? 'basic' : 'eu'}${suffix}`)
   }
+  // Several member states record defects by grade number rather than by name,
+  // so the number leads and the wording follows.
+  const gradedText = (condition: Condition) =>
+    gradedConditionLabel(
+      condition,
+      isBasic ? 'basic' : 'eu',
+      data.template.country,
+      conditionText(condition)
+    )
 
   const gradedItems = data.items
     .filter((i) => i.condition !== 'not_inspected')
@@ -568,7 +578,7 @@ export function InspectionPDF({
                       }}
                     >
                       <Text style={{ fontSize: 7, color: token.pdf.text, fontFamily: fontBold }}>
-                        {conditionText(item.condition as Condition)}
+                        {gradedText(item.condition as Condition)}
                       </Text>
                     </View>
                   </View>
@@ -630,7 +640,7 @@ export function InspectionPDF({
                             <Text
                               style={{ fontSize: 6.5, color: token.pdf.text, fontFamily: fontBold }}
                             >
-                              {conditionText(item.condition as Condition)}
+                              {gradedText(item.condition as Condition)}
                             </Text>
                           </View>
                         ) : (
