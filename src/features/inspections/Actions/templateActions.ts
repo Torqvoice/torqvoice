@@ -6,7 +6,12 @@ import { createTemplateSchema, updateTemplateSchema } from "../Schema/templateSc
 import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import type { TemplateSectionInput } from "../Schema/templateSchema";
-import { TEMPLATE_PRESETS, type TemplatePreset } from "../Lib/templatePresets";
+import {
+  PRESET_VERSION,
+  TEMPLATE_PRESETS,
+  presetPackageId,
+  type TemplatePreset,
+} from "../Lib/templatePresets";
 
 /**
  * Sections and their checks are always rewritten wholesale rather than diffed,
@@ -318,6 +323,9 @@ function presetToCreate(preset: TemplatePreset, organizationId: string, isDefaul
     country: preset.country,
     standard: preset.standard,
     severityScale: preset.severityScale,
+    packageId: presetPackageId(preset),
+    packageVersion: PRESET_VERSION,
+    packageSource: "builtin",
     organizationId,
     sections: {
       create: preset.sections.map((section, sIdx) => ({
@@ -390,12 +398,17 @@ async function syncPresetLibrary(organizationId: string, userId: string) {
 
   const existing = await db.inspectionTemplate.findMany({
     where: { organizationId },
-    select: { name: true, isDefault: true },
+    select: { name: true, isDefault: true, packageId: true },
   });
-  const taken = new Set(existing.map((t) => t.name.trim().toLowerCase()));
-  // A workshop that already built its own copy keeps it; the preset is marked
-  // handled so it is never added alongside.
-  const toCreate = pending.filter((p) => !taken.has(p.name.trim().toLowerCase()));
+  // Identity is the package id, so a workshop that renamed its copy still has
+  // it recognised. Names are only consulted for templates predating provenance
+  // and for one a workshop wrote itself under the same name.
+  const installedIds = new Set(existing.map((t) => t.packageId).filter(Boolean));
+  const takenNames = new Set(existing.map((t) => t.name.trim().toLowerCase()));
+  const toCreate = pending.filter(
+    (p) =>
+      !installedIds.has(presetPackageId(p)) && !takenNames.has(p.name.trim().toLowerCase())
+  );
 
   if (toCreate.length > 0) {
     // A shop opening the app for the first time should land on the general
@@ -438,10 +451,14 @@ export async function restoreMissingPresets() {
   return withAuth(async ({ organizationId, userId }) => {
     const existing = await db.inspectionTemplate.findMany({
       where: { organizationId },
-      select: { name: true, isDefault: true },
+      select: { name: true, isDefault: true, packageId: true },
     });
-    const taken = new Set(existing.map((t) => t.name.trim().toLowerCase()));
-    const missing = LIBRARY_PRESETS.filter((p) => !taken.has(p.name.trim().toLowerCase()));
+    const installedIds = new Set(existing.map((t) => t.packageId).filter(Boolean));
+    const takenNames = new Set(existing.map((t) => t.name.trim().toLowerCase()));
+    const missing = LIBRARY_PRESETS.filter(
+      (p) =>
+        !installedIds.has(presetPackageId(p)) && !takenNames.has(p.name.trim().toLowerCase())
+    );
     if (missing.length === 0) return { added: 0 };
 
     const hasDefault = existing.some((t) => t.isDefault);

@@ -729,6 +729,21 @@ export function getPreset(id: string): TemplatePreset | undefined {
   return TEMPLATE_PRESETS.find((p) => p.id === id)
 }
 
+/**
+ * The namespaced, stable identity a preset carries once installed.
+ *
+ * Recorded on the template so the library recognises its own checklists after a
+ * workshop renames them, and so an update can be told from a duplicate.
+ */
+export const PRESET_NAMESPACE = 'torqvoice'
+
+export function presetPackageId(preset: TemplatePreset | string): string {
+  return `${PRESET_NAMESPACE}/${typeof preset === 'string' ? preset : preset.id}`
+}
+
+/** Bumped when a preset's contents change enough to offer as an update. */
+export const PRESET_VERSION = '1.0.0'
+
 export function countPresetItems(preset: TemplatePreset): number {
   return preset.sections.reduce((sum, s) => sum + s.items.length, 0)
 }

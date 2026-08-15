@@ -1002,6 +1002,15 @@ model InspectionTemplate {
   standard      String? @default("custom")
   severityScale String  @default("eu")
 
+  /// Provenance, for templates that came from a package rather than being
+  /// written here. `packageId` is namespaced and stable across renames
+  /// ("torqvoice/eu-roadworthiness"), which is what lets the library tell an
+  /// update from a duplicate. Null on a template the workshop wrote itself.
+  packageId      String?
+  packageVersion String?
+  /// Where it came from: "builtin", "file" or "catalogue".
+  packageSource  String?
+
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
@@ -1009,6 +1018,7 @@ model InspectionTemplate {
   inspections Inspection[]
 
   @@index([organizationId])
+  @@index([organizationId, packageId])
   @@map("inspection_templates")
 }
 
