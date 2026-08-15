@@ -43,6 +43,7 @@
     "useToday": "Use today"
   },
   "more": "+ {count} flere",
+  "monthTotal": "{count} hendelser denne måneden",
   "contextMenu": {
     "newWorkOrder": "Ny arbeidsordre",
     "newReminder": "Ny påminnelse",

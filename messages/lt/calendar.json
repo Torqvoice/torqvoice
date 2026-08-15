@@ -43,6 +43,7 @@
     "useToday": "Naudoti šiandienos datą"
   },
   "more": "+ {count} daugiau",
+  "monthTotal": "{count} įvykių šį mėnesį",
   "contextMenu": {
     "newWorkOrder": "Naujas darbo užsakymas",
     "newReminder": "Naujas priminimas",

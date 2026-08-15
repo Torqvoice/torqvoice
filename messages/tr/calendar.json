@@ -43,6 +43,7 @@
     "useToday": "Use today"
   },
   "more": "+ {count} daha",
+  "monthTotal": "bu ay {count} kayıt",
   "contextMenu": {
     "newWorkOrder": "Yeni iş emri",
     "newReminder": "Yeni hatırlatıcı",

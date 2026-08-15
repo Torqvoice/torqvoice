@@ -43,6 +43,7 @@
     "useToday": "Use today"
   },
   "more": "+ {count} altri",
+  "monthTotal": "{count} eventi questo mese",
   "contextMenu": {
     "newWorkOrder": "Nuovo ordine di lavoro",
     "newReminder": "Nuovo promemoria",

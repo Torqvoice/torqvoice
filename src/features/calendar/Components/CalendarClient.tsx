@@ -11,9 +11,6 @@ import {
   ChevronRight,
   Loader2,
   Plus,
-  Wrench,
-  FileText,
-  AlertTriangle,
   MousePointerClick,
 } from "lucide-react";
 import { CalendarDayCell } from "./CalendarDayCell";
@@ -151,20 +148,16 @@ export default function CalendarClient({
     });
   }, [events, showServices, showReminders, showQuotes]);
 
-  // Month summary stats
-  const stats = useMemo(() => {
-    const serviceCount = events.filter((e) => e.type === "service").length;
-    const overdueReminders = events.filter(
-      (e) => e.type === "reminder" && e.status === "overdue"
-    ).length;
-    const pendingQuotes = events.filter(
-      (e) => e.type === "quote" && e.status !== "approved"
-    ).length;
-    const totalRevenue = events
-      .filter((e) => e.type === "service" && e.amount != null)
-      .reduce((sum, e) => sum + (e.amount ?? 0), 0);
-    return { serviceCount, overdueReminders, pendingQuotes, totalRevenue };
-  }, [events]);
+  // What the displayed month holds, counted before the filters hide anything
+  const counts = useMemo(
+    () => ({
+      services: events.filter((e) => e.type === "service").length,
+      reminders: events.filter((e) => e.type === "reminder").length,
+      quotes: events.filter((e) => e.type === "quote").length,
+      total: events.length,
+    }),
+    [events]
+  );
 
   const days = getMonthDays(year, month, weekStartDay);
 
@@ -255,61 +248,6 @@ export default function CalendarClient({
 
   return (
     <div className="space-y-4">
-      {/* Summary stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10">
-              <Wrench className="h-4 w-4 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold leading-none">{stats.serviceCount}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.services')}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500/10">
-              <AlertTriangle className="h-4 w-4 text-red-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold leading-none">{stats.overdueReminders}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.overdue')}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-500/10">
-              <FileText className="h-4 w-4 text-violet-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold leading-none">{stats.pendingQuotes}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.pendingQuotes')}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10">
-              <span className="text-sm font-bold text-emerald-600">$</span>
-            </div>
-            <div>
-              <p className="text-2xl font-bold leading-none tabular-nums">
-                {stats.totalRevenue > 0
-                  ? new Intl.NumberFormat(undefined, {
-                      notation: "compact",
-                      maximumFractionDigits: 1,
-                    }).format(stats.totalRevenue)
-                  : "0"}
-              </p>
-              <p className="text-xs text-muted-foreground mt-0.5">{t('stats.revenue')}</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Calendar grid */}
         <div className="lg:col-span-2">
@@ -343,8 +281,8 @@ export default function CalendarClient({
                 </div>
               </div>
 
-              {/* Filters */}
-              <div className="flex items-center gap-4 mb-3 text-sm">
+              {/* Filters, each carrying what the month holds of that type */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-sm">
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <Checkbox
                     checked={showServices}
@@ -352,6 +290,7 @@ export default function CalendarClient({
                   />
                   <div className="h-2 w-2 rounded-full bg-blue-500" />
                   <span className="text-muted-foreground">{t('filters.services')}</span>
+                  <span className="font-medium tabular-nums">{counts.services}</span>
                 </label>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <Checkbox
@@ -360,6 +299,7 @@ export default function CalendarClient({
                   />
                   <div className="h-2 w-2 rounded-full bg-amber-500" />
                   <span className="text-muted-foreground">{t('filters.reminders')}</span>
+                  <span className="font-medium tabular-nums">{counts.reminders}</span>
                 </label>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <Checkbox
@@ -368,7 +308,11 @@ export default function CalendarClient({
                   />
                   <div className="h-2 w-2 rounded-full bg-violet-500" />
                   <span className="text-muted-foreground">{t('filters.quotes')}</span>
+                  <span className="font-medium tabular-nums">{counts.quotes}</span>
                 </label>
+                <span className="text-xs text-muted-foreground ml-auto">
+                  {t('monthTotal', { count: counts.total })}
+                </span>
               </div>
 
               {/* Weekday headers */}

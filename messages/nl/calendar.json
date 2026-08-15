@@ -43,6 +43,7 @@
     "useToday": "Use today"
   },
   "more": "+ {count} meer",
+  "monthTotal": "{count} items deze maand",
   "contextMenu": {
     "newWorkOrder": "Nieuwe werkorder",
     "newReminder": "Nieuwe herinnering",

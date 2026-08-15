@@ -43,6 +43,7 @@
     "useToday": "Сегодня"
   },
   "more": "+ ещё {count}",
+  "monthTotal": "{count} событий в этом месяце",
   "contextMenu": {
     "newWorkOrder": "Новый заказ-наряд",
     "newReminder": "Новое напоминание",
