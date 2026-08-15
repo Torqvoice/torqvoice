@@ -54,5 +54,22 @@
     "smsSent": "SMS отправлено",
     "sentTo": "{label} отправлено {name} ({phone})",
     "sendError": "Не удалось отправить SMS"
+  },
+  "compose": {
+    "newMessage": "Новое сообщение",
+    "title": "Новое сообщение",
+    "searchPlaceholder": "Поиск клиентов по имени или номеру",
+    "noMatches": "Нет клиентов по запросу",
+    "noRecipients": "Нет клиентов с номером телефона",
+    "noRecipientsHint": "Добавьте клиенту номер телефона, чтобы писать ему.",
+    "changeRecipient": "Выбрать другого",
+    "messageLabel": "Сообщение",
+    "messagePlaceholder": "Сообщение для {name}...",
+    "segments": "{chars} символов · {segments} SMS",
+    "send": "Отправить",
+    "scheduleInstead": "Лучше запланировать",
+    "sent": "Отправлено {name}",
+    "sendError": "Не удалось отправить сообщение",
+    "templates": "Шаблоны"
   }
 }

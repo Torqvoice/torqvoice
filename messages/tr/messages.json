@@ -54,5 +54,22 @@
     "smsSent": "SMS gönderildi",
     "sentTo": "{label}, {name} ({phone}) kişisine gönderildi",
     "sendError": "SMS gönderilemedi"
+  },
+  "compose": {
+    "newMessage": "Yeni mesaj",
+    "title": "Yeni mesaj",
+    "searchPlaceholder": "Müşterileri ada veya numaraya göre ara",
+    "noMatches": "Aramayla eşleşen müşteri yok",
+    "noRecipients": "Telefon numarası olan müşteri yok",
+    "noRecipientsHint": "Mesaj gönderebilmek için müşteriye telefon numarası ekleyin.",
+    "changeRecipient": "Başkasını seç",
+    "messageLabel": "Mesaj",
+    "messagePlaceholder": "{name} kişisine mesaj...",
+    "segments": "{chars} karakter · {segments} SMS",
+    "send": "Gönder",
+    "scheduleInstead": "Bunun yerine planla",
+    "sent": "{name} kişisine gönderildi",
+    "sendError": "Mesaj gönderilemedi",
+    "templates": "Şablonlar"
   }
 }

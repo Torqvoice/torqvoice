@@ -54,5 +54,22 @@
     "smsSent": "SMS Sent",
     "sentTo": "{label} has been sent to {name} ({phone})",
     "sendError": "Failed to send SMS"
+  },
+  "compose": {
+    "newMessage": "New message",
+    "title": "New message",
+    "searchPlaceholder": "Search customers by name or number",
+    "noMatches": "No customers match your search",
+    "noRecipients": "No customers with a phone number",
+    "noRecipientsHint": "Add a phone number to a customer to text them.",
+    "changeRecipient": "Pick someone else",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Message {name}...",
+    "segments": "{chars} characters · {segments} SMS",
+    "send": "Send",
+    "scheduleInstead": "Schedule instead",
+    "sent": "Sent to {name}",
+    "sendError": "Could not send the message",
+    "templates": "Templates"
   }
 }

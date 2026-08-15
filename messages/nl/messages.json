@@ -54,5 +54,22 @@
     "smsSent": "SMS verzonden",
     "sentTo": "{label} is verzonden naar {name} ({phone})",
     "sendError": "SMS kon niet worden verzonden"
+  },
+  "compose": {
+    "newMessage": "Nieuw bericht",
+    "title": "Nieuw bericht",
+    "searchPlaceholder": "Klanten zoeken op naam of nummer",
+    "noMatches": "Geen klanten gevonden",
+    "noRecipients": "Geen klanten met een telefoonnummer",
+    "noRecipientsHint": "Voeg een telefoonnummer toe om te kunnen sms'en.",
+    "changeRecipient": "Iemand anders kiezen",
+    "messageLabel": "Bericht",
+    "messagePlaceholder": "Bericht aan {name}...",
+    "segments": "{chars} tekens · {segments} sms",
+    "send": "Versturen",
+    "scheduleInstead": "Liever plannen",
+    "sent": "Verzonden naar {name}",
+    "sendError": "Kan het bericht niet versturen",
+    "templates": "Sjablonen"
   }
 }

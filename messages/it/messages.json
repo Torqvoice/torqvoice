@@ -54,5 +54,22 @@
     "smsSent": "SMS inviato",
     "sentTo": "{label} è stato inviato a {name} ({phone})",
     "sendError": "Impossibile inviare l'SMS"
+  },
+  "compose": {
+    "newMessage": "Nuovo messaggio",
+    "title": "Nuovo messaggio",
+    "searchPlaceholder": "Cerca clienti per nome o numero",
+    "noMatches": "Nessun cliente corrisponde alla ricerca",
+    "noRecipients": "Nessun cliente con numero di telefono",
+    "noRecipientsHint": "Aggiungi un numero al cliente per scrivergli.",
+    "changeRecipient": "Scegli un'altra persona",
+    "messageLabel": "Messaggio",
+    "messagePlaceholder": "Messaggio a {name}...",
+    "segments": "{chars} caratteri · {segments} SMS",
+    "send": "Invia",
+    "scheduleInstead": "Pianifica invece",
+    "sent": "Inviato a {name}",
+    "sendError": "Impossibile inviare il messaggio",
+    "templates": "Modelli"
   }
 }
