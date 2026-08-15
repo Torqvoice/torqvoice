@@ -1,7 +1,10 @@
 import {
   getCommonDefectNotes,
   getInspection,
+  getInspectionTechnicians,
 } from "@/features/inspections/Actions/inspectionActions";
+import { getSettings } from "@/features/settings/Actions/settingsActions";
+import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { InspectionPageClient, type InspectionData } from "@/features/inspections/Components/InspectionPageClient";
 import { PageHeader } from "@/components/page-header";
 import { getAuthContext } from "@/lib/get-auth-context";
@@ -24,9 +27,11 @@ export default async function InspectionDetailPage({
     redirect("/inspections");
   }
 
-  const [features, defectHistory] = await Promise.all([
+  const [features, defectHistory, technicians, settings] = await Promise.all([
     authContext?.organizationId ? getFeatures(authContext.organizationId) : null,
     getCommonDefectNotes(id),
+    getInspectionTechnicians(),
+    getSettings([SETTING_KEYS.WORKSHOP_ADDRESS]),
   ]);
 
   return (
@@ -38,6 +43,10 @@ export default async function InspectionDetailPage({
           smsEnabled={features?.sms ?? false}
           emailEnabled={features?.smtp ?? false}
           defectHistory={defectHistory.success ? defectHistory.data : {}}
+          technicians={technicians.success ? technicians.data : []}
+          workshopAddress={
+            (settings.success && settings.data?.[SETTING_KEYS.WORKSHOP_ADDRESS]) || ""
+          }
         />
       </div>
     </>

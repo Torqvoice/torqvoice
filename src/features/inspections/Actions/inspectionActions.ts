@@ -267,13 +267,31 @@ export async function updateInspectionDetails(id: string, input: unknown) {
     });
     if (!inspection) throw new Error("Inspection not found");
 
+    // The inspector is chosen from the roster, so the name on the certificate
+    // is snapshotted from the technician record rather than trusted from the
+    // client — Annex IV(i) has to name someone who actually works here.
+    let inspectorName: string | null | undefined;
+    if (data.technicianId !== undefined) {
+      if (data.technicianId === null) {
+        inspectorName = null;
+      } else {
+        const technician = await db.technician.findFirst({
+          where: { id: data.technicianId, organizationId },
+          select: { name: true },
+        });
+        if (!technician) throw new Error("Technician not found");
+        inspectorName = technician.name;
+      }
+    }
+
     const updated = await db.inspection.update({
       where: { id },
       data: {
         mileage: data.mileage,
         vehicleCategory: data.vehicleCategory,
         certificateNumber: data.certificateNumber,
-        inspectorName: data.inspectorName,
+        technicianId: data.technicianId,
+        inspectorName,
         testLocation: data.testLocation,
         nextTestDue: data.nextTestDue,
         notes: data.notes,
@@ -328,6 +346,53 @@ export async function completeInspection(id: string) {
       entity: "Inspection",
       entityId: result.inspectionId,
       message: `Completed inspection ${result.inspectionId}`,
+      metadata: { inspectionId: result.inspectionId },
+    }),
+  });
+}
+
+/**
+ * Puts a completed inspection back into progress so its checks can be edited.
+ *
+ * The certificate snapshot is left alone: the inspector, certificate number and
+ * next-test date stay as recorded, since reopening is usually a correction
+ * rather than a fresh test. `completedAt` is cleared, so the result reverts to
+ * in-progress until it is completed again.
+ */
+export async function reopenInspection(id: string) {
+  return withAuth(async ({ organizationId }) => {
+    const inspection = await db.inspection.findFirst({
+      where: { id, organizationId },
+      select: { id: true, status: true, vehicleId: true },
+    });
+    if (!inspection) throw new Error("Inspection not found");
+    if (inspection.status !== "completed") {
+      throw new Error("This inspection is already in progress");
+    }
+
+    await db.inspection.updateMany({
+      where: { id, organizationId },
+      data: { status: "in_progress", completedAt: null },
+    });
+
+    notificationBus.emit("workboard", {
+      type: "job_status_changed",
+      organizationId,
+      inspectionId: id,
+      status: "in_progress",
+    });
+
+    revalidatePath("/inspections");
+    revalidatePath(`/inspections/${id}`);
+    revalidatePath(`/vehicles/${inspection.vehicleId}`);
+    return { success: true, inspectionId: id };
+  }, {
+    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.INSPECTIONS }],
+    audit: ({ result }) => ({
+      action: "inspection.reopen",
+      entity: "Inspection",
+      entityId: result.inspectionId,
+      message: `Reopened inspection ${result.inspectionId}`,
       metadata: { inspectionId: result.inspectionId },
     }),
   });
@@ -419,5 +484,22 @@ export async function getCommonDefectNotes(inspectionId: string) {
         .map(({ text, severity }) => ({ text, severity }));
     }
     return result;
+  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INSPECTIONS }] });
+}
+
+/**
+ * The workshop's active technicians, for choosing who carried out a test.
+ *
+ * Scoped to inspection rights rather than work-board rights: a tester who can
+ * open an inspection has to be able to say who ran it, and this returns
+ * nothing but a roster of names.
+ */
+export async function getInspectionTechnicians() {
+  return withAuth(async ({ organizationId }) => {
+    return db.technician.findMany({
+      where: { organizationId, isActive: true },
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      select: { id: true, name: true, color: true },
+    });
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.INSPECTIONS }] });
 }

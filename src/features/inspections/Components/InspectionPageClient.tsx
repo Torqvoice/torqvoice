@@ -31,15 +31,23 @@ import {
   Loader2,
   MessageSquareText,
   MoreVertical,
+  RotateCcw,
   Settings2,
   Share2,
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { completeInspection, deleteInspection } from "../Actions/inspectionActions";
+import {
+  completeInspection,
+  deleteInspection,
+  reopenInspection,
+} from "../Actions/inspectionActions";
 import { createQuote } from "@/features/quotes/Actions/quoteActions";
 import { InspectionShareDialog } from "./InspectionShareDialog";
-import { InspectionCertificateCard } from "./InspectionCertificateCard";
+import {
+  InspectionCertificateCard,
+  type TechnicianOption,
+} from "./InspectionCertificateCard";
 import { InspectionItemRow, type InspectionItemData } from "./InspectionItemRow";
 import { MediaLightbox, type LightboxImage } from "./MediaLightbox";
 import { useServiceType } from "@/components/service-type-context";
@@ -67,6 +75,7 @@ export interface InspectionData {
   vehicleCategory: string | null;
   nextTestDue: Date | null;
   certificateNumber: string | null;
+  technicianId: string | null;
   inspectorName: string | null;
   testLocation: string | null;
   vehicle: {
@@ -158,18 +167,23 @@ export function InspectionPageClient({
   smsEnabled = false,
   emailEnabled = false,
   defectHistory = {},
+  technicians = [],
+  workshopAddress = "",
 }: {
   inspection: InspectionData;
   smsEnabled?: boolean;
   emailEnabled?: boolean;
   /** Wording this workshop has used before, keyed by check name. */
   defectHistory?: Record<string, { text: string; severity: string }[]>;
+  technicians?: TechnicianOption[];
+  workshopAddress?: string;
 }) {
   const router = useRouter();
   const { formatDate } = useFormatDate();
   const serviceType = useServiceType();
   const [isPending, startTransition] = useTransition();
   const [showCompleteDialog, setShowCompleteDialog] = useState(false);
+  const [showReopenDialog, setShowReopenDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [isCreatingQuote, setIsCreatingQuote] = useState(false);
@@ -277,6 +291,19 @@ export function InspectionPageClient({
     });
   };
 
+  const handleReopen = () => {
+    startTransition(async () => {
+      const reopened = await reopenInspection(inspection.id);
+      if (reopened.success) {
+        toast.success("Inspection reopened");
+        setShowReopenDialog(false);
+        router.refresh();
+      } else {
+        toast.error(reopened.error || "Failed to reopen inspection");
+      }
+    });
+  };
+
   const handleDelete = () => {
     startTransition(async () => {
       const removed = await deleteInspection(inspection.id);
@@ -324,7 +351,12 @@ export function InspectionPageClient({
             >
               {isCompleted ? "Completed" : "In progress"}
             </Badge>
-            {!isCompleted && (
+            {isCompleted ? (
+              <Button variant="outline" size="sm" onClick={() => setShowReopenDialog(true)}>
+                <RotateCcw className="mr-1 h-4 w-4" aria-hidden="true" />
+                Reopen
+              </Button>
+            ) : (
               <Button size="sm" onClick={() => setShowCompleteDialog(true)}>
                 <CheckCircle2 className="mr-1 h-4 w-4" aria-hidden="true" />
                 Complete
@@ -469,6 +501,8 @@ export function InspectionPageClient({
 
           <InspectionCertificateCard
             inspection={inspection}
+            technicians={technicians}
+            workshopAddress={workshopAddress}
             mileageLabel={mileageLabel}
             isCompleted={isCompleted}
           />
@@ -686,6 +720,36 @@ export function InspectionPageClient({
             <AlertDialogAction onClick={handleComplete} disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
               Complete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Reopen confirmation */}
+      <AlertDialog open={showReopenDialog} onOpenChange={setShowReopenDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reopen this inspection?</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2">
+                <p>
+                  The checks become editable again and the result goes back to in progress. The
+                  inspector, certificate number and next test date are kept.
+                </p>
+                {inspection.publicToken && (
+                  <p>
+                    The customer&apos;s link stays live and will show the result changing as you
+                    edit. Any certificate already downloaded keeps the old result.
+                  </p>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleReopen} disabled={isPending}>
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+              Reopen
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

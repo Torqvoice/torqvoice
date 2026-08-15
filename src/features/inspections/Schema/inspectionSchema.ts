@@ -23,7 +23,9 @@ export const updateInspectionDetailsSchema = z.object({
   mileage: z.coerce.number().int().min(0).nullable().optional(),
   vehicleCategory: z.string().max(10).nullable().optional(),
   certificateNumber: z.string().max(64).nullable().optional(),
-  inspectorName: z.string().max(120).nullable().optional(),
+  // The inspector is picked from the workshop's technicians; the name is
+  // snapshotted from the chosen record rather than sent by the client.
+  technicianId: z.string().nullable().optional(),
   testLocation: z.string().max(200).nullable().optional(),
   nextTestDue: z.coerce.date().nullable().optional(),
   notes: z.string().max(5000).nullable().optional(),
