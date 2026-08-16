@@ -1,0 +1,76 @@
+{
+  "dialog": {
+    "title": "Mesaj planla",
+    "editTitle": "Planlanmış mesajı düzenle",
+    "channelLabel": "Gönderim yolu",
+    "channels": {
+      "email": "E-posta",
+      "sms": "SMS",
+      "telegram": "Telegram",
+      "in_app": "Uygulama içi not"
+    },
+    "repeatLabel": "Tekrar",
+    "frequencies": {
+      "once": "Bir kez",
+      "daily": "Her gün",
+      "weekly": "Her hafta",
+      "biweekly": "2 haftada bir",
+      "monthly": "Her ay",
+      "yearly": "Her yıl"
+    },
+    "customerLabel": "Müşteri",
+    "selectCustomer": "Müşteri seçin",
+    "none": "Yok",
+    "recipientEmail": "E-posta adresi",
+    "recipientPhone": "Telefon numarası",
+    "recipientChat": "Telegram sohbet kimliği",
+    "recipientOverride": "Bunun yerine başka adrese gönder",
+    "recipientHintCustomer": "Kayıtlı bilgileri kullanmak için boş bırakın.",
+    "recipientHintDirect": "Bir müşteri seçin veya alıcıyı yazın.",
+    "subjectLabel": "Konu",
+    "subjectPlaceholder": "örn. Aracınız hazır",
+    "messageLabel": "Mesaj",
+    "messagePlaceholder": "Ne söylemek istiyorsunuz?",
+    "characters": "{count} / {max} karakter",
+    "dateLabel": "Tarih",
+    "timeLabel": "Saat",
+    "endDateLabel": "Şu tarihe kadar tekrarla",
+    "endDateHint": "Sürekli tekrar için boş bırakın.",
+    "schedule": "Planla",
+    "scheduled": "Mesaj planlandı",
+    "updated": "Planlanmış mesaj güncellendi",
+    "saveError": "Mesaj kaydedilemedi"
+  },
+  "list": {
+    "scheduleMessage": "Mesaj planla",
+    "scheduleForCustomer": "Mesaj planla",
+    "filters": {
+      "upcoming": "Yaklaşan",
+      "sent": "Gönderilen",
+      "failed": "Başarısız",
+      "cancelled": "İptal edilen",
+      "all": "Tümü"
+    },
+    "status": {
+      "scheduled": "Planlandı",
+      "sent": "Gönderildi",
+      "failed": "Başarısız",
+      "cancelled": "İptal edildi"
+    },
+    "empty": "Planlanmış bir şey yok",
+    "emptyHint": "Takvimde bir güne sağ tıklayın veya Mesaj planla'yı kullanın.",
+    "noRecipient": "Alıcı yok",
+    "sentCount": "{count}x gönderildi",
+    "rowMenu": "Mesaj menüsü",
+    "sendNow": "Şimdi gönder",
+    "cancel": "Göndermeyi iptal et",
+    "sentNow": "Mesaj gönderildi",
+    "sendError": "Mesaj gönderilemedi",
+    "cancelled": "Gönderim iptal edildi",
+    "cancelError": "Mesaj iptal edilemedi",
+    "deleted": "Mesaj silindi",
+    "deleteError": "Mesaj silinemedi",
+    "deleteTitle": "Bu mesaj silinsin mi?",
+    "deleteDescription": "Planlanmış mesaj kalıcı olarak kaldırılır. Zaten gönderilenler sohbette kalır."
+  }
+}

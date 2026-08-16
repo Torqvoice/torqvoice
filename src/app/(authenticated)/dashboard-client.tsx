@@ -1499,13 +1499,15 @@ export function DashboardClient({
                   const meta = (log as unknown as { metadata?: Record<string, unknown> }).metadata || {};
                   const vehicleDisplay = typeof meta["vehicleDisplay"] === "string" ? (meta["vehicleDisplay"] as string) : undefined;
                   const quoteNumber = typeof meta["quoteNumber"] === "string" ? (meta["quoteNumber"] as string) : undefined;
-                  const actionKey = log.action.replace(".", "_");
-                  let friendlyAction: string;
-                  try {
-                    friendlyAction = tAudit(`actions.${actionKey}`);
-                  } catch {
-                    friendlyAction = log.action;
-                  }
+                  // replaceAll, not replace: an action like
+                  // "scheduled_message.send_now" has more than one separator.
+                  const actionKey = `actions.${log.action.replaceAll(".", "_")}`;
+                  // has(), not try/catch: next-intl reports a missing message
+                  // and returns a placeholder rather than throwing, so a catch
+                  // never runs and the raw key reaches the screen.
+                  const friendlyAction = tAudit.has(actionKey)
+                    ? tAudit(actionKey)
+                    : log.action;
                   const entityLabel = vehicleDisplay ?? quoteNumber ?? log.entityId?.substring(0, 8);
                   return (
                     <div key={log.id} className="px-5 py-3 text-sm flex items-center justify-between">

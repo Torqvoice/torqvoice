@@ -33,7 +33,8 @@
   "filters": {
     "services": "Servicios",
     "reminders": "Recordatorios",
-    "quotes": "Presupuestos"
+    "quotes": "Presupuestos",
+    "messages": "Mensajes"
   },
   "selectVehicle": "Seleccionar vehículo para orden de trabajo",
   "dateChoice": {
@@ -43,6 +44,15 @@
     "useToday": "Use today"
   },
   "more": "+ {count} más",
+  "monthTotal": "{count} eventos este mes",
+  "contextMenu": {
+    "newWorkOrder": "Nueva orden de trabajo",
+    "newReminder": "Nuevo recordatorio",
+    "newQuote": "Nuevo presupuesto",
+    "openEvent": "Abrir ({count})",
+    "hint": "Consejo: haz clic derecho en un día para ver las acciones",
+    "scheduleMessage": "Programar mensaje"
+  },
   "events": {
     "status": {
       "completed": "Completado",
@@ -54,12 +64,15 @@
       "draft": "Borrador",
       "done": "Hecho",
       "overdue": "Vencido",
-      "upcoming": "Próximo"
+      "upcoming": "Próximo",
+      "failed": "Fallido",
+      "queued": "En cola"
     },
     "type": {
       "service": "Servicio",
       "reminder": "Recordatorio",
-      "quote": "Presupuesto"
+      "quote": "Presupuesto",
+      "message": "Mensaje"
     },
     "noEvents": "Sin eventos",
     "selectDay": "Seleccione un día con eventos o cree una nueva orden de trabajo."

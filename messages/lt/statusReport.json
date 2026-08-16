@@ -55,6 +55,7 @@
   },
   "list": {
     "title": "Būsenos ataskaitos",
+    "readMore": "Skaityti daugiau",
     "newReport": "Nauja būsenos ataskaita",
     "empty": "Būsenos ataskaitų dar nėra",
     "emptyDescription": "Sukurkite būsenos ataskaitą, kad informuotumėte klientą apie transporto priemonės būseną.",

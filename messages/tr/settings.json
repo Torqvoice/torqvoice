@@ -499,7 +499,7 @@
       "quotation": "Teklif",
       "inspections": "Muayeneler",
       "sms": "SMS",
-      "layout": "Duzen"
+      "layout": "Düzen"
     },
     "presets": "Şablon Hazır Ayarları",
     "primaryColor": "Ana Renk",
@@ -578,9 +578,9 @@
       "rose": "Gül",
       "indigo": "İndigo"
     },
-    "layoutTitle": "Fatura Duzeni",
-    "layoutDescription": "Fatura ve tekliflerinizdeki bolumlerin sirasini ve gorunurlugunu ozellestirin.",
-    "layoutSaved": "Duzen basariyla kaydedildi",
+    "layoutTitle": "Fatura Düzeni",
+    "layoutDescription": "Fatura ve tekliflerinizdeki bölümlerin sırasını ve görünürlüğünü özelleştirin.",
+    "layoutSaved": "Düzen başarıyla kaydedildi",
     "layoutDocInvoice": "Fatura",
     "layoutDocQuote": "Teklif"
   },
@@ -856,8 +856,18 @@
   "appearance": {
     "title": "Görünüm",
     "description": "Torqvoice'un görünümünü ve hissini özelleştirin.",
-    "darkMode": "Karanlık Mod",
-    "darkModeHint": "Açık ve koyu temalar arasında geçiş yapın",
+    "themeLabel": "Tema",
+    "themeHint": "Uygulamanın renk şemasını seçin. Seçim bu cihazda kaydedilir.",
+    "themes": {
+      "light": "Açık",
+      "dark": "Koyu",
+      "graphite": "Grafit",
+      "ocean": "Okyanus",
+      "forest": "Orman",
+      "midnight": "Gece Yarısı",
+      "carbon": "Karbon",
+      "system": "Sistem"
+    },
     "dateTimeTitle": "Tarih & Saat",
     "dateTimeDescription": "Uygulama genelinde tarihlerin ve saatlerin nasıl görüntüleneceğini yapılandırın.",
     "dateFormat": "Tarih Formatı",
@@ -901,6 +911,8 @@
     "optAuditLogsDesc": "Etkinlik ve değişiklik geçmişi",
     "optSmsMessages": "SMS Mesajları",
     "optSmsMessagesDesc": "Gönderilen ve alınan SMS mesajları",
+    "optScheduledMessages": "Planlanmış mesajlar",
+    "optScheduledMessagesDesc": "Sırada bekleyen ve tekrar eden, henüz gönderilmemiş mesajlar",
     "optNotifications": "Bildirimler",
     "optNotificationsDesc": "Sistem bildirimleri",
     "optCustomFields": "Özel Alanlar",
@@ -1179,7 +1191,7 @@
   },
   "ai": {
     "title": "Yapay Zeka Asistani",
-    "readMore": "Read More",
+    "readMore": "Daha fazla bilgi",
     "description": "Servis notlarini otomatik olusturmak ve arac gecmisini ozetlemek icin yapay zekayi yapilandirin.",
     "enableLabel": "Yapay zekayi etkinlestir",
     "enableHint": "Uygulama genelinde yapay zeka destekli ozellikleri kullanin",

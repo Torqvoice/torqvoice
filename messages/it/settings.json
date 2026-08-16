@@ -856,8 +856,18 @@
   "appearance": {
     "title": "Aspetto",
     "description": "Personalizza l'aspetto di Torqvoice.",
-    "darkMode": "Modalita scura",
-    "darkModeHint": "Passa tra tema chiaro e scuro",
+    "themeLabel": "Tema",
+    "themeHint": "Scegli la combinazione di colori dell'app. La scelta viene salvata su questo dispositivo.",
+    "themes": {
+      "light": "Chiaro",
+      "dark": "Scuro",
+      "graphite": "Grafite",
+      "ocean": "Oceano",
+      "forest": "Foresta",
+      "midnight": "Mezzanotte",
+      "carbon": "Carbonio",
+      "system": "Sistema"
+    },
     "dateTimeTitle": "Data e ora",
     "dateTimeDescription": "Configura come date e orari vengono visualizzati nell'applicazione.",
     "dateFormat": "Formato data",
@@ -901,6 +911,8 @@
     "optAuditLogsDesc": "Cronologia delle attività e delle modifiche",
     "optSmsMessages": "Messaggi SMS",
     "optSmsMessagesDesc": "Messaggi SMS inviati e ricevuti",
+    "optScheduledMessages": "Messaggi pianificati",
+    "optScheduledMessagesDesc": "Messaggi in coda e ricorrenti in attesa di essere inviati",
     "optNotifications": "Notifiche",
     "optNotificationsDesc": "Notifiche di sistema",
     "optCustomFields": "Campi personalizzati",
@@ -1179,7 +1191,7 @@
   },
   "ai": {
     "title": "Assistente IA",
-    "readMore": "Read More",
+    "readMore": "Scopri di più",
     "description": "Configura l'IA per generare automaticamente note di servizio e riassumere la cronologia del veicolo.",
     "enableLabel": "Abilita IA",
     "enableHint": "Usa le funzionalita basate sull'IA in tutta l'applicazione",

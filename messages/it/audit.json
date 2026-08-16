@@ -98,6 +98,16 @@
     "webhook_create": "Webhook creato",
     "webhook_update": "Webhook aggiornato",
     "webhook_delete": "Webhook eliminato",
-    "webhook_rotateSecret": "Segreto webhook ruotato"
+    "webhook_rotateSecret": "Segreto webhook ruotato",
+    "inspection_reopen": "Ispezione riaperta",
+    "inspectionTemplate_import": "Modello di ispezione importato",
+    "scheduled_message_create": "Messaggio pianificato creato",
+    "scheduled_message_update": "Messaggio pianificato aggiornato",
+    "scheduled_message_delete": "Messaggio pianificato eliminato",
+    "scheduled_message_cancel": "Messaggio pianificato annullato",
+    "scheduled_message_send_now": "Messaggio pianificato inviato",
+    "settings_applyTaxRate": "Aliquota applicata",
+    "settings_convertToExclusive": "Prezzi convertiti in imponibile",
+    "settings_convertToInclusive": "Prezzi convertiti in ivato"
   }
 }

@@ -856,8 +856,18 @@
   "appearance": {
     "title": "Внешний вид",
     "description": "Настройте внешний вид Torqvoice.",
-    "darkMode": "Тёмная тема",
-    "darkModeHint": "Переключение между светлой и тёмной темами",
+    "themeLabel": "Тема",
+    "themeHint": "Выберите цветовую схему приложения. Выбор сохраняется на этом устройстве.",
+    "themes": {
+      "light": "Светлая",
+      "dark": "Тёмная",
+      "graphite": "Графит",
+      "ocean": "Океан",
+      "forest": "Лес",
+      "midnight": "Полночь",
+      "carbon": "Карбон",
+      "system": "Системная"
+    },
     "dateTimeTitle": "Дата и время",
     "dateTimeDescription": "Настройте отображение даты и времени в приложении.",
     "dateFormat": "Формат даты",
@@ -901,6 +911,8 @@
     "optAuditLogsDesc": "История активности и изменений",
     "optSmsMessages": "SMS-сообщения",
     "optSmsMessagesDesc": "Отправленные и полученные SMS-сообщения",
+    "optScheduledMessages": "Запланированные сообщения",
+    "optScheduledMessagesDesc": "Сообщения в очереди и повторяющиеся, ожидающие отправки",
     "optNotifications": "Уведомления",
     "optNotificationsDesc": "Системные уведомления",
     "optCustomFields": "Пользовательские поля",
@@ -1179,7 +1191,7 @@
   },
   "ai": {
     "title": "ИИ-ассистент",
-    "readMore": "Read More",
+    "readMore": "Подробнее",
     "description": "Настройте ИИ для автоматического создания описаний обслуживания и обобщения истории транспортных средств.",
     "enableLabel": "Включить ИИ",
     "enableHint": "Используйте функции ИИ по всему приложению",

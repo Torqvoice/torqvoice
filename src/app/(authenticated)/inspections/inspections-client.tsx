@@ -23,6 +23,7 @@ import { TableCellLink } from "@/components/table-cell-link";
 import { ArrowDown, ArrowUp, ArrowUpDown, Car, ExternalLink, Loader2, Plus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { NewInspectionDialog } from "@/features/inspections/Components/NewInspectionDialog";
+import { CONDITION_TOKENS, countConditions } from "@/features/inspections/Lib/conditions";
 
 interface InspectionRecord {
   id: string;
@@ -51,47 +52,32 @@ interface TemplateOption {
 }
 
 const statusTabs = [
-  { key: "all", label: "All" },
-  { key: "in_progress", label: "In Progress" },
-  { key: "completed", label: "Completed" },
-];
+  { key: "all", labelKey: "tabAll" },
+  { key: "in_progress", labelKey: "tabInProgress" },
+  { key: "completed", labelKey: "tabCompleted" },
+] as const;
 
 const statusColors: Record<string, string> = {
   in_progress: "bg-blue-500/10 text-blue-500 border-blue-500/20",
   completed: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
 };
 
-const conditionColors: Record<string, string> = {
-  pass: "bg-emerald-500",
-  fail: "bg-red-500",
-  attention: "bg-amber-500",
-  not_inspected: "bg-gray-300 dark:bg-gray-600",
-};
-
 function InspectionProgress({ items }: { items: { condition: string }[] }) {
   if (items.length === 0) return null;
-  const counts = { pass: 0, fail: 0, attention: 0, not_inspected: 0 };
-  for (const item of items) {
-    const c = item.condition as keyof typeof counts;
-    if (c in counts) counts[c]++;
-  }
+  const counts = countConditions(items);
   return (
     <div className="flex items-center gap-1.5">
       <div className="flex h-2 w-20 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-        {(["pass", "fail", "attention", "not_inspected"] as const).map((c) => {
+        {(["pass", "attention", "fail", "dangerous"] as const).map((c) => {
           const pct = (counts[c] / items.length) * 100;
           if (pct === 0) return null;
           return (
-            <div
-              key={c}
-              className={conditionColors[c]}
-              style={{ width: `${pct}%` }}
-            />
+            <div key={c} className={CONDITION_TOKENS[c].bar} style={{ width: `${pct}%` }} />
           );
         })}
       </div>
       <span className="text-xs text-muted-foreground">
-        {items.length - counts.not_inspected}/{items.length}
+        {counts.inspected}/{counts.total}
       </span>
     </div>
   );
@@ -119,6 +105,7 @@ export function InspectionsClient({
   const [isPending, startTransition] = useTransition();
   const [showNewDialog, setShowNewDialog] = useState(false);
   const tcm = useTranslations("common.contextMenu");
+  const t = useTranslations("inspections.list");
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -174,7 +161,7 @@ export function InspectionsClient({
               size="sm"
               onClick={() => navigate({ status: tab.key === "all" ? undefined : tab.key })}
             >
-              {tab.label}
+              {t(tab.labelKey)}
               {count !== undefined && (
                 <Badge variant="secondary" className="ml-1.5 h-5 min-w-5 px-1 text-xs">
                   {count}
@@ -190,7 +177,7 @@ export function InspectionsClient({
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search inspections..."
+              placeholder={t("search")}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="pl-9"
@@ -200,7 +187,7 @@ export function InspectionsClient({
         </div>
         <Button size="sm" onClick={() => setShowNewDialog(true)}>
           <Plus className="mr-1 h-3.5 w-3.5" />
-          New Inspection
+          {t("new")}
         </Button>
       </div>
 
@@ -211,23 +198,23 @@ export function InspectionsClient({
             <TableRow>
               <TableHead>
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("vehicle")}>
-                  Vehicle<SortIcon column="vehicle" />
+                  {t("vehicle")}<SortIcon column="vehicle" />
                 </button>
               </TableHead>
               <TableHead className="hidden w-[24%] md:table-cell">
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("template")}>
-                  Template<SortIcon column="template" />
+                  {t("template")}<SortIcon column="template" />
                 </button>
               </TableHead>
-              <TableHead className="w-32">Progress</TableHead>
+              <TableHead className="w-32">{t("progress")}</TableHead>
               <TableHead className="w-28">
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("status")}>
-                  Status<SortIcon column="status" />
+                  {t("status")}<SortIcon column="status" />
                 </button>
               </TableHead>
               <TableHead className="w-24">
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("createdAt")}>
-                  Date<SortIcon column="createdAt" />
+                  {t("date")}<SortIcon column="createdAt" />
                 </button>
               </TableHead>
             </TableRow>
@@ -236,7 +223,7 @@ export function InspectionsClient({
             {data.records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                  No inspections found.
+                  {t("empty")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -267,7 +254,7 @@ export function InspectionsClient({
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`text-xs ${statusColors[insp.status] || ""}`}>
-                      {insp.status === "in_progress" ? "In Progress" : "Completed"}
+                      {insp.status === "in_progress" ? t("statusInProgress") : t("statusCompleted")}
                     </Badge>
                   </TableCell>
                   <TableCell className="font-mono text-xs">

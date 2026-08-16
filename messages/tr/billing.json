@@ -79,9 +79,9 @@
     "failedDelete": "Silme başarısız",
     "processed": "{count} fatura işlendi",
     "failedProcess": "İşleme başarısız",
-    "pause": "Pause",
-    "resume": "Resume",
-    "delete": "Delete",
-    "removeRow": "Remove row"
+    "pause": "Duraklat",
+    "resume": "Devam Et",
+    "delete": "Sil",
+    "removeRow": "Satırı kaldır"
   }
 }

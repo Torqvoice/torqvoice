@@ -52,5 +52,29 @@
     "updated": "Torqvoice is bijgewerkt naar {version}",
     "whatsNew": "Bekijk wat er nieuw is",
     "dismiss": "Sluiten"
+  },
+  "pagination": {
+    "showing": "{start}–{end} van {total} weergegeven",
+    "perPage": "per pagina",
+    "pageOf": "Pagina {page} van {pages}",
+    "first": "Eerste pagina",
+    "previous": "Vorige pagina",
+    "next": "Volgende pagina",
+    "last": "Laatste pagina"
+  },
+  "shared": {
+    "close": "Sluiten",
+    "viewPlans": "Abonnementen bekijken",
+    "manageLicense": "Licentie beheren",
+    "installOwn": "Installeer je eigen",
+    "install": "Installeren",
+    "installApp": "App installeren",
+    "installTorqvoice": "Torqvoice installeren",
+    "dismiss": "Sluiten",
+    "useCamera": "Camera gebruiken",
+    "enterManually": "Handmatig invoeren",
+    "enterBarcode": "Barcode invoeren…",
+    "scanHint": "Richt uw camera op een barcode of voer hem handmatig in",
+    "iosInstallHint": "Tik op Deel > Zet op beginscherm"
   }
 }

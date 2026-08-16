@@ -55,6 +55,7 @@
   },
   "list": {
     "title": "Raporty statusu",
+    "readMore": "Dowiedz się więcej",
     "newReport": "Nowy raport",
     "empty": "Brak raportów statusu",
     "emptyDescription": "Utwórz raport statusu, aby poinformować klienta o stanie pojazdu.",
@@ -76,17 +77,17 @@
     "deleteTitle": "Usuń raport statusu",
     "deleteFailed": "Nie udało się usunąć raportu statusu",
     "cancel": "Anuluj",
-  "feedback": "Komentarz",
-  "hasComment": "Otrzymano",
-  "noFeedback": "Brak komentarzy",
-  "sentAt": "Wysłano",
-  "sentVia": "Wysłano przez",
-  "messageLabel": "Wiadomość",
-  "videoLabel": "Wideo"
+    "feedback": "Komentarz",
+    "hasComment": "Otrzymano",
+    "noFeedback": "Brak komentarzy",
+    "sentAt": "Wysłano",
+    "sentVia": "Wysłano przez",
+    "messageLabel": "Wiadomość",
+    "videoLabel": "Wideo"
   },
   "notify": {
     "defaultMessage": "Witaj {name}, mamy aktualizację statusu Twojego {vehicle}. Zobacz tutaj: {url}",
     "emailSubject": "Aktualizacja statusu pojazdu - {vehicle}",
-  "viewReport": "Zobacz raport tutaj: {url}"
+    "viewReport": "Zobacz raport tutaj: {url}"
   }
 }

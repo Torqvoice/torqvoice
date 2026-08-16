@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "SMS Mesajları",
-    "featureDescription": "Müşterilerinizle doğrudan Torqvoice üzerinden SMS mesajları gönderin ve alın."
+    "featureDescription": "Müşterilerinizle doğrudan Torqvoice üzerinden SMS mesajları gönderin ve alın.",
+    "tabs": {
+      "inbox": "Gelen kutusu",
+      "scheduled": "Planlanmış"
+    },
+    "smsNotConfiguredTitle": "SMS kurulmadı",
+    "smsNotConfiguredHint": "Burada mesaj gönderip almak için bir SMS sağlayıcısı bağlayın. Planlanmış e-posta bunsuz da çalışır.",
+    "goToSmsSettings": "SMS ayarlarına git"
   },
   "notConfigured": {
     "title": "SMS yapılandırılmadı",
@@ -20,7 +27,10 @@
     "deleted": "Görüşme silindi",
     "deleteError": "Görüşme silinemedi",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Sohbetlerde ara",
+    "noSearchResults": "Aramayla eşleşen sohbet yok",
+    "now": "şimdi"
   },
   "conversation": {
     "noPhone": "{name} için kayıtlı telefon numarası yok. Mesaj göndermeye başlamak için bir telefon numarası ekleyin.",
@@ -44,5 +54,22 @@
     "smsSent": "SMS gönderildi",
     "sentTo": "{label}, {name} ({phone}) kişisine gönderildi",
     "sendError": "SMS gönderilemedi"
+  },
+  "compose": {
+    "newMessage": "Yeni mesaj",
+    "title": "Yeni mesaj",
+    "searchPlaceholder": "Müşterileri ada veya numaraya göre ara",
+    "noMatches": "Aramayla eşleşen müşteri yok",
+    "noRecipients": "Telefon numarası olan müşteri yok",
+    "noRecipientsHint": "Mesaj gönderebilmek için müşteriye telefon numarası ekleyin.",
+    "changeRecipient": "Başkasını seç",
+    "messageLabel": "Mesaj",
+    "messagePlaceholder": "{name} kişisine mesaj...",
+    "segments": "{chars} karakter · {segments} SMS",
+    "send": "Gönder",
+    "scheduleInstead": "Bunun yerine planla",
+    "sent": "{name} kişisine gönderildi",
+    "sendError": "Mesaj gönderilemedi",
+    "templates": "Şablonlar"
   }
 }

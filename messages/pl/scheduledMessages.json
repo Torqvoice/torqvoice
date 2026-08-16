@@ -1,0 +1,76 @@
+{
+  "dialog": {
+    "title": "Zaplanuj wiadomość",
+    "editTitle": "Edytuj zaplanowaną wiadomość",
+    "channelLabel": "Wyślij przez",
+    "channels": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "telegram": "Telegram",
+      "in_app": "Notatka w aplikacji"
+    },
+    "repeatLabel": "Powtarzaj",
+    "frequencies": {
+      "once": "Raz",
+      "daily": "Codziennie",
+      "weekly": "Co tydzień",
+      "biweekly": "Co 2 tygodnie",
+      "monthly": "Co miesiąc",
+      "yearly": "Co rok"
+    },
+    "customerLabel": "Klient",
+    "selectCustomer": "Wybierz klienta",
+    "none": "Brak",
+    "recipientEmail": "Adres e-mail",
+    "recipientPhone": "Numer telefonu",
+    "recipientChat": "Identyfikator czatu Telegram",
+    "recipientOverride": "Wyślij na inny adres",
+    "recipientHintCustomer": "Zostaw puste, aby użyć zapisanych danych.",
+    "recipientHintDirect": "Wybierz klienta lub wpisz odbiorcę.",
+    "subjectLabel": "Temat",
+    "subjectPlaceholder": "np. Samochód jest gotowy",
+    "messageLabel": "Wiadomość",
+    "messagePlaceholder": "Co chcesz napisać?",
+    "characters": "{count} / {max} znaków",
+    "dateLabel": "Data",
+    "timeLabel": "Godzina",
+    "endDateLabel": "Powtarzaj do",
+    "endDateHint": "Zostaw puste, aby powtarzać bez końca.",
+    "schedule": "Zaplanuj",
+    "scheduled": "Wiadomość zaplanowana",
+    "updated": "Zaplanowana wiadomość zaktualizowana",
+    "saveError": "Nie udało się zapisać wiadomości"
+  },
+  "list": {
+    "scheduleMessage": "Zaplanuj wiadomość",
+    "scheduleForCustomer": "Zaplanuj wiadomość",
+    "filters": {
+      "upcoming": "Nadchodzące",
+      "sent": "Wysłane",
+      "failed": "Nieudane",
+      "cancelled": "Anulowane",
+      "all": "Wszystkie"
+    },
+    "status": {
+      "scheduled": "Zaplanowana",
+      "sent": "Wysłana",
+      "failed": "Nieudana",
+      "cancelled": "Anulowana"
+    },
+    "empty": "Nic nie zaplanowano",
+    "emptyHint": "Kliknij dzień w kalendarzu prawym przyciskiem myszy lub użyj Zaplanuj wiadomość.",
+    "noRecipient": "Brak odbiorcy",
+    "sentCount": "wysłano {count}x",
+    "rowMenu": "Menu wiadomości",
+    "sendNow": "Wyślij teraz",
+    "cancel": "Anuluj wysyłkę",
+    "sentNow": "Wiadomość wysłana",
+    "sendError": "Nie udało się wysłać wiadomości",
+    "cancelled": "Wysyłka anulowana",
+    "cancelError": "Nie udało się anulować wiadomości",
+    "deleted": "Wiadomość usunięta",
+    "deleteError": "Nie udało się usunąć wiadomości",
+    "deleteTitle": "Usunąć tę wiadomość?",
+    "deleteDescription": "Zaplanowana wiadomość zostanie trwale usunięta. To, co już wysłano, zostaje w rozmowie."
+  }
+}

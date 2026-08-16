@@ -149,7 +149,53 @@
     "downloadPdf": "Descargar PDF",
     "notes": "Notas",
     "quoteCancelled": "Solicitud de presupuesto cancelada",
-    "cancelFailed": "Error al cancelar la solicitud"
+    "cancelFailed": "Error al cancelar la solicitud",
+    "eu": {
+      "pass": "Sin deficiencia",
+      "attention": "Deficiencia leve",
+      "fail": "Deficiencia grave",
+      "dangerous": "Deficiencia peligrosa",
+      "not_inspected": "No inspeccionado"
+    },
+    "basic": {
+      "pass": "Apto",
+      "attention": "Atención",
+      "fail": "No apto",
+      "dangerous": "Peligroso",
+      "not_inspected": "No inspeccionado"
+    },
+    "result": {
+      "pass": "Favorable",
+      "pass_minor": "Favorable con deficiencias leves",
+      "fail": "Desfavorable — deficiencias graves",
+      "fail_dangerous": "Negativo — deficiencias peligrosas",
+      "incomplete": "Sin finalizar"
+    },
+    "resultDetail": {
+      "pass": "No se detectaron deficiencias.",
+      "pass_minor": "El vehículo es apto. Repare las deficiencias leves sin demora indebida.",
+      "fail": "El vehículo no es apto. Las deficiencias deben repararse y el vehículo volver a inspeccionarse.",
+      "fail_dangerous": "El vehículo no debe circular por la vía pública hasta que se reparen las deficiencias peligrosas.",
+      "incomplete": "Esta inspección sigue en curso."
+    },
+    "testDetails": "Datos de la inspección",
+    "testDate": "Fecha de la inspección",
+    "certificateNumber": "Número de certificado",
+    "vehicleCategory": "Categoría del vehículo",
+    "inspector": "Inspector",
+    "testLocation": "Lugar de la inspección",
+    "nextTestDue": "Próxima inspección",
+    "vesselLabel": "Embarcación",
+    "plateLabel": "Matrícula",
+    "odometerLabel": "Cuentakilómetros",
+    "engineHoursLabel": "Horas de motor",
+    "summary": "Resumen",
+    "progressLabel": "{graded} puntos evaluados",
+    "limit": "Límite",
+    "viewPhoto": "Ver foto",
+    "deficienciesFound": "Deficiencias detectadas ({count})",
+    "allResults": "Todos los resultados",
+    "privacyNotice": "Este informe se lo facilita el taller que realizó la inspección. Cualquier persona con este enlace puede consultarlo, así que le rogamos que no lo reenvíe. Contacte con el taller para retirar el enlace o solicitar la supresión de sus datos."
   },
   "terms": {
     "title": "Términos de venta (Salgsvilkår)",

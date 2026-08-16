@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "SMS-meldinger",
-    "featureDescription": "Send og motta SMS-meldinger med kundene dine direkte fra Torqvoice."
+    "featureDescription": "Send og motta SMS-meldinger med kundene dine direkte fra Torqvoice.",
+    "tabs": {
+      "inbox": "Innboks",
+      "scheduled": "Planlagt"
+    },
+    "smsNotConfiguredTitle": "SMS er ikke satt opp",
+    "smsNotConfiguredHint": "Koble til en SMS-leverandør for å sende og motta meldinger her. Planlagt e-post fungerer uansett.",
+    "goToSmsSettings": "Gå til SMS-innstillinger"
   },
   "notConfigured": {
     "title": "SMS ikke konfigurert",
@@ -20,7 +27,10 @@
     "deleted": "Samtale slettet",
     "deleteError": "Kunne ikke slette samtalen",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Søk i samtaler",
+    "noSearchResults": "Ingen samtaler treffer søket",
+    "now": "nå"
   },
   "conversation": {
     "noPhone": "Ingen telefonnummer registrert for {name}. Legg til et telefonnummer for å starte meldinger.",
@@ -44,5 +54,22 @@
     "smsSent": "SMS sendt",
     "sentTo": "{label} har blitt sendt til {name} ({phone})",
     "sendError": "Kunne ikke sende SMS"
+  },
+  "compose": {
+    "newMessage": "Ny melding",
+    "title": "Ny melding",
+    "searchPlaceholder": "Søk kunder på navn eller nummer",
+    "noMatches": "Ingen kunder treffer søket",
+    "noRecipients": "Ingen kunder med telefonnummer",
+    "noRecipientsHint": "Legg til et telefonnummer på kunden for å sende SMS.",
+    "changeRecipient": "Velg en annen",
+    "messageLabel": "Melding",
+    "messagePlaceholder": "Melding til {name} ...",
+    "segments": "{chars} tegn · {segments} SMS",
+    "send": "Send",
+    "scheduleInstead": "Planlegg i stedet",
+    "sent": "Sendt til {name}",
+    "sendError": "Kunne ikke sende meldingen",
+    "templates": "Maler"
   }
 }

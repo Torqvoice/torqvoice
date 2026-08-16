@@ -7,15 +7,22 @@ import {
   OctagonXIcon,
   TriangleAlertIcon,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
+import { useEffect, useState } from "react"
+import { useTheme } from "@/components/theme-provider"
+import { DEFAULT_THEME, getThemeMode } from "@/lib/themes"
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  // Presets resolve to a light or dark mode; sonner only understands those.
+  const { mode } = useTheme()
+
+  // The stored theme is client-only, so keep the server default until mount.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme={mounted ? mode : getThemeMode(DEFAULT_THEME)}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,

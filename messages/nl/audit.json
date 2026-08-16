@@ -98,6 +98,16 @@
     "webhook_create": "Webhook aangemaakt",
     "webhook_update": "Webhook bijgewerkt",
     "webhook_delete": "Webhook verwijderd",
-    "webhook_rotateSecret": "Webhook-geheim geroteerd"
+    "webhook_rotateSecret": "Webhook-geheim geroteerd",
+    "inspection_reopen": "Inspectie heropend",
+    "inspectionTemplate_import": "Inspectiesjabloon geïmporteerd",
+    "scheduled_message_create": "Gepland bericht aangemaakt",
+    "scheduled_message_update": "Gepland bericht bijgewerkt",
+    "scheduled_message_delete": "Gepland bericht verwijderd",
+    "scheduled_message_cancel": "Gepland bericht geannuleerd",
+    "scheduled_message_send_now": "Gepland bericht verzonden",
+    "settings_applyTaxRate": "Btw-tarief toegepast",
+    "settings_convertToExclusive": "Prijzen omgezet naar exclusief btw",
+    "settings_convertToInclusive": "Prijzen omgezet naar inclusief btw"
   }
 }

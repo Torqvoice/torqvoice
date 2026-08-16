@@ -98,6 +98,16 @@
     "webhook_create": "Sukurtas webhook’as",
     "webhook_update": "Atnaujintas webhook’as",
     "webhook_delete": "Ištrintas webhook’as",
-    "webhook_rotateSecret": "Atnaujintas webhook’o slaptasis raktas"
+    "webhook_rotateSecret": "Atnaujintas webhook’o slaptasis raktas",
+    "inspection_reopen": "Apžiūra atverta iš naujo",
+    "inspectionTemplate_import": "Importuotas apžiūros šablonas",
+    "scheduled_message_create": "Sukurta suplanuota žinutė",
+    "scheduled_message_update": "Atnaujinta suplanuota žinutė",
+    "scheduled_message_delete": "Ištrinta suplanuota žinutė",
+    "scheduled_message_cancel": "Atšaukta suplanuota žinutė",
+    "scheduled_message_send_now": "Išsiųsta suplanuota žinutė",
+    "settings_applyTaxRate": "Pritaikytas mokesčio tarifas",
+    "settings_convertToExclusive": "Kainos konvertuotos be mokesčio",
+    "settings_convertToInclusive": "Kainos konvertuotos su mokesčiu"
   }
 }

@@ -33,7 +33,8 @@
   "filters": {
     "services": "Servisler",
     "reminders": "Hatırlatıcılar",
-    "quotes": "Teklifler"
+    "quotes": "Teklifler",
+    "messages": "Mesajlar"
   },
   "selectVehicle": "İş emri için araç seçin",
   "dateChoice": {
@@ -43,6 +44,15 @@
     "useToday": "Use today"
   },
   "more": "+ {count} daha",
+  "monthTotal": "bu ay {count} kayıt",
+  "contextMenu": {
+    "newWorkOrder": "Yeni iş emri",
+    "newReminder": "Yeni hatırlatıcı",
+    "newQuote": "Yeni teklif",
+    "openEvent": "Aç ({count})",
+    "hint": "İpucu: işlemler için bir güne sağ tıklayın",
+    "scheduleMessage": "Mesaj planla"
+  },
   "events": {
     "status": {
       "completed": "Tamamlandı",
@@ -54,12 +64,15 @@
       "draft": "Taslak",
       "done": "Bitti",
       "overdue": "Gecikmiş",
-      "upcoming": "Yaklaşan"
+      "upcoming": "Yaklaşan",
+      "failed": "Başarısız",
+      "queued": "Sırada"
     },
     "type": {
       "service": "Servis",
       "reminder": "Hatırlatıcı",
-      "quote": "Teklif"
+      "quote": "Teklif",
+      "message": "Mesaj"
     },
     "noEvents": "Etkinlik yok",
     "selectDay": "Etkinliği olan bir gün seçin veya yeni bir iş emri oluşturun."

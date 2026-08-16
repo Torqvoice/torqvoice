@@ -80,8 +80,8 @@
     "processed": "{count} Rechnung(en) verarbeitet",
     "failedProcess": "Verarbeitung fehlgeschlagen",
     "pause": "Pause",
-    "resume": "Resume",
-    "delete": "Delete",
-    "removeRow": "Remove row"
+    "resume": "Fortsetzen",
+    "delete": "Löschen",
+    "removeRow": "Zeile entfernen"
   }
 }

@@ -52,5 +52,29 @@
     "updated": "Torqvoice обновлён до версии {version}",
     "whatsNew": "Что нового",
     "dismiss": "Закрыть"
+  },
+  "pagination": {
+    "showing": "Показано {start}–{end} из {total}",
+    "perPage": "на странице",
+    "pageOf": "Страница {page} из {pages}",
+    "first": "Первая страница",
+    "previous": "Предыдущая страница",
+    "next": "Следующая страница",
+    "last": "Последняя страница"
+  },
+  "shared": {
+    "close": "Закрыть",
+    "viewPlans": "Посмотреть тарифы",
+    "manageLicense": "Управление лицензией",
+    "installOwn": "Установить свой",
+    "install": "Установить",
+    "installApp": "Установить приложение",
+    "installTorqvoice": "Установить Torqvoice",
+    "dismiss": "Закрыть",
+    "useCamera": "Использовать камеру",
+    "enterManually": "Ввести вручную",
+    "enterBarcode": "Введите штрихкод…",
+    "scanHint": "Наведите камеру на штрихкод или введите его вручную",
+    "iosInstallHint": "Нажмите «Поделиться» > «На экран «Домой»»"
   }
 }

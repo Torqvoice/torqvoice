@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Check, Copy, Link2, Loader2, Mail, MessageSquare, Unlink } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   generateInspectionPublicLink,
@@ -46,6 +47,7 @@ export function InspectionShareDialog({
   smsEnabled = false,
   emailEnabled = false,
 }: InspectionShareDialogProps) {
+  const t = useTranslations("inspections.shareDialog");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
@@ -66,7 +68,7 @@ export function InspectionShareDialog({
       const result = await generateInspectionPublicLink(inspectionId);
       if (result.success && result.data) {
         setToken(result.data.token);
-        toast.success("Share link generated");
+        toast.success(t("generated"));
         router.refresh();
       } else {
         toast.error(result.error || "Failed to generate link");
@@ -79,7 +81,7 @@ export function InspectionShareDialog({
       const result = await revokeInspectionPublicLink(inspectionId);
       if (result.success) {
         setToken(null);
-        toast.success("Share link revoked");
+        toast.success(t("revoked"));
         router.refresh();
       } else {
         toast.error(result.error || "Failed to revoke link");
@@ -91,7 +93,7 @@ export function InspectionShareDialog({
     if (!shareUrl) return;
     await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
-    toast.success("Link copied to clipboard");
+    toast.success(t("copied"));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -146,9 +148,9 @@ export function InspectionShareDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Share Inspection</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>
-            Share a read-only view of this inspection with your customer.
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -157,7 +159,7 @@ export function InspectionShareDialog({
             <>
               <div className="flex items-center gap-2">
                 <Input value={shareUrl} readOnly className="font-mono text-xs" />
-                <Button size="icon" variant="outline" onClick={handleCopy} aria-label="Copy link">
+                <Button size="icon" variant="outline" onClick={handleCopy} aria-label={t("copyLink")}>
                   {copied ? (
                     <Check className="h-4 w-4 text-emerald-500" />
                   ) : (

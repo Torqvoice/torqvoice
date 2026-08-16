@@ -856,8 +856,18 @@
   "appearance": {
     "title": "Weergave",
     "description": "Pas aan hoe Torqvoice eruitziet.",
-    "darkMode": "Donkere modus",
-    "darkModeHint": "Schakelen tussen licht en donker thema",
+    "themeLabel": "Thema",
+    "themeHint": "Kies het kleurenschema van de app. De keuze wordt op dit apparaat opgeslagen.",
+    "themes": {
+      "light": "Licht",
+      "dark": "Donker",
+      "graphite": "Grafiet",
+      "ocean": "Oceaan",
+      "forest": "Bos",
+      "midnight": "Middernacht",
+      "carbon": "Carbon",
+      "system": "Systeem"
+    },
     "dateTimeTitle": "Datum en tijd",
     "dateTimeDescription": "Configureer hoe datums en tijden worden weergegeven in de applicatie.",
     "dateFormat": "Datumformaat",
@@ -901,6 +911,8 @@
     "optAuditLogsDesc": "Activiteiten- en wijzigingsgeschiedenis",
     "optSmsMessages": "SMS-berichten",
     "optSmsMessagesDesc": "Verzonden en ontvangen SMS-berichten",
+    "optScheduledMessages": "Geplande berichten",
+    "optScheduledMessagesDesc": "Berichten in de wachtrij en herhalende berichten die nog verstuurd worden",
     "optNotifications": "Meldingen",
     "optNotificationsDesc": "Systeemmeldingen",
     "optCustomFields": "Aangepaste velden",
@@ -1179,7 +1191,7 @@
   },
   "ai": {
     "title": "AI-assistent",
-    "readMore": "Read More",
+    "readMore": "Meer lezen",
     "description": "Configureer AI om automatisch servicenotities te genereren en voertuiggeschiedenis samen te vatten.",
     "enableLabel": "AI inschakelen",
     "enableHint": "Gebruik AI-functies in de hele applicatie",

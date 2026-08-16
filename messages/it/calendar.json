@@ -33,7 +33,8 @@
   "filters": {
     "services": "Servizi",
     "reminders": "Promemoria",
-    "quotes": "Preventivi"
+    "quotes": "Preventivi",
+    "messages": "Messaggi"
   },
   "selectVehicle": "Seleziona veicolo per ordine di lavoro",
   "dateChoice": {
@@ -43,6 +44,15 @@
     "useToday": "Use today"
   },
   "more": "+ {count} altri",
+  "monthTotal": "{count} eventi questo mese",
+  "contextMenu": {
+    "newWorkOrder": "Nuovo ordine di lavoro",
+    "newReminder": "Nuovo promemoria",
+    "newQuote": "Nuovo preventivo",
+    "openEvent": "Apri ({count})",
+    "hint": "Suggerimento: fai clic con il tasto destro su un giorno per le azioni",
+    "scheduleMessage": "Pianifica messaggio"
+  },
   "events": {
     "status": {
       "completed": "Completato",
@@ -54,12 +64,15 @@
       "draft": "Bozza",
       "done": "Fatto",
       "overdue": "Scaduto",
-      "upcoming": "In arrivo"
+      "upcoming": "In arrivo",
+      "failed": "Non riuscito",
+      "queued": "In coda"
     },
     "type": {
       "service": "Servizio",
       "reminder": "Promemoria",
-      "quote": "Preventivo"
+      "quote": "Preventivo",
+      "message": "Messaggio"
     },
     "noEvents": "Nessun evento",
     "selectDay": "Seleziona un giorno con eventi o crea un nuovo ordine di lavoro."

@@ -52,5 +52,29 @@
     "updated": "Torqvoice wurde auf {version} aktualisiert",
     "whatsNew": "Neuigkeiten ansehen",
     "dismiss": "Schließen"
+  },
+  "pagination": {
+    "showing": "{start}–{end} von {total}",
+    "perPage": "pro Seite",
+    "pageOf": "Seite {page} von {pages}",
+    "first": "Erste Seite",
+    "previous": "Vorherige Seite",
+    "next": "Nächste Seite",
+    "last": "Letzte Seite"
+  },
+  "shared": {
+    "close": "Schließen",
+    "viewPlans": "Tarife ansehen",
+    "manageLicense": "Lizenz verwalten",
+    "installOwn": "Eigene Instanz installieren",
+    "install": "Installieren",
+    "installApp": "App installieren",
+    "installTorqvoice": "Torqvoice installieren",
+    "dismiss": "Schließen",
+    "useCamera": "Kamera verwenden",
+    "enterManually": "Manuell eingeben",
+    "enterBarcode": "Barcode eingeben…",
+    "scanHint": "Richten Sie die Kamera auf einen Barcode oder geben Sie ihn manuell ein",
+    "iosInstallHint": "Auf Teilen > Zum Home-Bildschirm tippen"
   }
 }

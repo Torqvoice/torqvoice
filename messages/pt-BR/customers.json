@@ -54,7 +54,7 @@
     "editTitle": "Editar Cliente",
     "nameRequired": "Nome *",
     "namePlaceholder": "João Silva",
-    "emailPlaceholder": "joao@exemplo.com.br",
+    "emailPlaceholder": "joão@exemplo.com.br",
     "phonePlaceholder": "(11) 91234-5678",
     "companyPlaceholder": "Nome da empresa",
     "addressPlaceholder": "Rua Principal 123, São Paulo, SP",

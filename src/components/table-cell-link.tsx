@@ -11,7 +11,9 @@ import { cn } from "@/lib/utils";
  * open-in-new-tab and keyboard focus.
  *
  * Pass `block` for cells whose content is a stacked block rather than a
- * single run of text.
+ * single run of text. The box still hugs its content: a cell is usually wider
+ * than the text in it, and stretching the anchor across the rest of the cell
+ * would send clicks aimed at the row to this target instead.
  */
 export function TableCellLink({
   href,
@@ -30,7 +32,9 @@ export function TableCellLink({
       onClick={(e) => e.stopPropagation()}
       className={cn(
         "hover:underline underline-offset-2 focus-visible:underline focus-visible:outline-none",
-        block ? "block min-w-0" : "inline",
+        // max-w-full keeps the shrink-to-fit box inside the cell, which is what
+        // lets a `truncate` child still find a width to truncate against.
+        block ? "inline-block w-fit max-w-full min-w-0 align-top" : "inline",
         className
       )}
     >

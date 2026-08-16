@@ -33,7 +33,8 @@
   "filters": {
     "services": "Paslaugos",
     "reminders": "Priminimai",
-    "quotes": "Pasiūlymai"
+    "quotes": "Pasiūlymai",
+    "messages": "Žinutės"
   },
   "selectVehicle": "Pasirinkite transporto priemonę darbo užsakymui",
   "dateChoice": {
@@ -43,6 +44,15 @@
     "useToday": "Naudoti šiandienos datą"
   },
   "more": "+ {count} daugiau",
+  "monthTotal": "{count} įvykių šį mėnesį",
+  "contextMenu": {
+    "newWorkOrder": "Naujas darbo užsakymas",
+    "newReminder": "Naujas priminimas",
+    "newQuote": "Naujas pasiūlymas",
+    "openEvent": "Atidaryti ({count})",
+    "hint": "Patarimas: spustelėkite dieną dešiniuoju pelės mygtuku, kad pamatytumėte veiksmus",
+    "scheduleMessage": "Suplanuoti žinutę"
+  },
   "events": {
     "status": {
       "completed": "Užbaigta",
@@ -54,12 +64,15 @@
       "draft": "Juodraštis",
       "done": "Atlikta",
       "overdue": "Vėluoja",
-      "upcoming": "Artėja"
+      "upcoming": "Artėja",
+      "failed": "Nepavyko",
+      "queued": "Eilėje"
     },
     "type": {
       "service": "Paslauga",
       "reminder": "Priminimas",
-      "quote": "Pasiūlymas"
+      "quote": "Pasiūlymas",
+      "message": "Žinutė"
     },
     "noEvents": "Įvykių nėra",
     "selectDay": "Pasirinkite dieną su įvykiais arba sukurkite naują darbo užsakymą."

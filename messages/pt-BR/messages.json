@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "Mensagens SMS",
-    "featureDescription": "Envie e receba mensagens SMS com seus clientes diretamente pelo Torqvoice."
+    "featureDescription": "Envie e receba mensagens SMS com seus clientes diretamente pelo Torqvoice.",
+    "tabs": {
+      "inbox": "Caixa de entrada",
+      "scheduled": "Agendadas"
+    },
+    "smsNotConfiguredTitle": "O SMS não está configurado",
+    "smsNotConfiguredHint": "Conecte um provedor de SMS para enviar e receber mensagens aqui. E-mails agendados funcionam sem isso.",
+    "goToSmsSettings": "Ir para configurações de SMS"
   },
   "notConfigured": {
     "title": "SMS não configurado",
@@ -20,7 +27,10 @@
     "deleted": "Conversa excluída",
     "deleteError": "Falha ao excluir a conversa",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Buscar conversas",
+    "noSearchResults": "Nenhuma conversa corresponde à busca",
+    "now": "agora"
   },
   "conversation": {
     "noPhone": "Nenhum número de telefone registrado para {name}. Adicione um número de telefone para começar a enviar mensagens.",
@@ -44,5 +54,22 @@
     "smsSent": "SMS enviado",
     "sentTo": "{label} foi enviado para {name} ({phone})",
     "sendError": "Falha ao enviar o SMS"
+  },
+  "compose": {
+    "newMessage": "Nova mensagem",
+    "title": "Nova mensagem",
+    "searchPlaceholder": "Buscar clientes por nome ou número",
+    "noMatches": "Nenhum cliente corresponde à busca",
+    "noRecipients": "Nenhum cliente com telefone",
+    "noRecipientsHint": "Adicione um telefone ao cliente para enviar SMS.",
+    "changeRecipient": "Escolher outra pessoa",
+    "messageLabel": "Mensagem",
+    "messagePlaceholder": "Mensagem para {name}...",
+    "segments": "{chars} caracteres · {segments} SMS",
+    "send": "Enviar",
+    "scheduleInstead": "Agendar em vez disso",
+    "sent": "Enviada para {name}",
+    "sendError": "Não foi possível enviar a mensagem",
+    "templates": "Modelos"
   }
 }

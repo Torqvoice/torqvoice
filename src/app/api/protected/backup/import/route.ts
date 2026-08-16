@@ -850,6 +850,40 @@ export async function POST(request: NextRequest) {
           ),
         });
       }
+
+      // 14. Insert scheduled messages. Last, because they point at customers
+      // and vehicles, which are already in by this stage.
+      if (data.scheduledMessages?.length) {
+        await tx.scheduledMessage.createMany({
+          // A message with no readable send time has nothing to act on, so it
+          // is dropped rather than restored to an invented moment
+          data: (data.scheduledMessages as Record<string, unknown>[])
+            .filter((msg: Record<string, unknown>) => !!toSafeDate(msg.sendAt as string))
+            .map((msg: Record<string, unknown>) => ({
+              id: msg.id as string,
+              channel: msg.channel as string,
+              subject: (msg.subject as string) || null,
+              body: msg.body as string,
+              recipient: (msg.recipient as string) || null,
+              status: (msg.status as string) || "scheduled",
+              sendAt: toSafeDate(msg.sendAt as string)!,
+              frequency: (msg.frequency as string) || "once",
+              endDate: msg.endDate ? toSafeDate(msg.endDate as string) : null,
+              lastRunAt: msg.lastRunAt ? toSafeDate(msg.lastRunAt as string) : null,
+              sentAt: msg.sentAt ? toSafeDate(msg.sentAt as string) : null,
+              runCount: (msg.runCount as number) || 0,
+              errorMessage: (msg.errorMessage as string) || null,
+              createdAt: toSafeDate(msg.createdAt as string),
+              updatedAt: toSafeDate(msg.updatedAt as string),
+              organizationId: ctx.organizationId,
+              customerId: (msg.customerId as string) || null,
+              vehicleId: (msg.vehicleId as string) || null,
+              // The author of the backup may not exist here; the importing
+              // user owns the restored rows, as everywhere else in this file
+              createdById: ctx.userId,
+            })),
+        });
+      }
     });
 
     // Restore files after successful DB transaction

@@ -1,19 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-vi.mock("lucide-react", () => ({
-  AlertTriangle: () => <span data-testid="icon-alert" />,
-  Check: () => <span data-testid="icon-check" />,
-  CheckCircle2: () => <span data-testid="icon-check-circle" />,
-  ChevronLeft: () => <span data-testid="icon-left" />,
-  ChevronRight: () => <span data-testid="icon-right" />,
-  ClipboardCheck: () => <span data-testid="icon-clipboard" />,
-  Download: () => <span data-testid="icon-download" />,
-  FileText: () => <span data-testid="icon-file-text" />,
-  Loader2: () => <span data-testid="icon-loader" />,
-  X: () => <span data-testid="icon-x" />,
-}));
+// Stub every icon rather than listing them: the view pulls a different set as
+// the report gains defect categories, and an exhaustive mock only breaks again.
+vi.mock("lucide-react", async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  const Icon = () => <span data-testid="icon" />;
+  return new Proxy(
+    { ...actual },
+    {
+      get: (target, prop: string) =>
+        prop === "__esModule" ? true : prop in target ? Icon : undefined,
+    }
+  );
+});
 
 vi.mock("sonner", () => ({
   toast: {
@@ -134,7 +135,7 @@ describe("InspectionView", () => {
     it("renders vehicle information", () => {
       render(<InspectionView {...DEFAULT_PROPS} />);
       expect(screen.getByText("2021 Ford F-150")).toBeInTheDocument();
-      expect(screen.getByText("VIN: FORD123")).toBeInTheDocument();
+      expect(screen.getByText("FORD123")).toBeInTheDocument();
     });
 
     it("renders customer information", () => {
@@ -151,25 +152,42 @@ describe("InspectionView", () => {
   describe("summary bar", () => {
     it("shows total inspected item count", () => {
       render(<InspectionView {...DEFAULT_PROPS} />);
-      // The summary renders: <span class="font-semibold text-gray-900">3</span> inspected
-      // getByText can't match compound nodes, so check the count span directly.
-      const countSpan = document.querySelector("span.font-semibold.text-gray-900");
-      expect(countSpan?.textContent).toBe("3");
+      expect(screen.getByText("inspected").parentElement?.textContent).toContain("3");
     });
+
+    // Counts render as a number next to its EU defect category, in their own
+    // elements, and the same category names also appear on the item badges —
+    // so scope the lookup to the summary region and read the pair together.
+    const countFor = (label: string) =>
+      within(screen.getByRole("region", { name: "Summary" }))
+        .getByText(label)
+        .parentElement?.textContent;
 
     it("shows correct pass count", () => {
       render(<InspectionView {...DEFAULT_PROPS} />);
-      expect(screen.getByText("1 Pass")).toBeInTheDocument();
+      expect(countFor("No defect")).toBe("1No defect");
     });
 
-    it("shows correct fail count", () => {
+    it("shows correct major defect count", () => {
       render(<InspectionView {...DEFAULT_PROPS} />);
-      expect(screen.getByText("1 Fail")).toBeInTheDocument();
+      expect(countFor("Major defect")).toBe("1Major defect");
     });
 
-    it("shows correct attention count", () => {
+    it("shows correct minor defect count", () => {
       render(<InspectionView {...DEFAULT_PROPS} />);
-      expect(screen.getByText("1 Attention")).toBeInTheDocument();
+      expect(countFor("Minor defect")).toBe("1Minor defect");
+    });
+
+    it("shows a dangerous defect count on the EU scale", () => {
+      const props = {
+        ...DEFAULT_PROPS,
+        inspection: {
+          ...BASE_INSPECTION,
+          items: [PASS_ITEM, { ...FAIL_ITEM, condition: "dangerous" }],
+        },
+      };
+      render(<InspectionView {...props} />);
+      expect(countFor("Dangerous defect")).toBe("1Dangerous defect");
     });
 
     it("excludes not_inspected items from the summary", () => {
@@ -184,8 +202,8 @@ describe("InspectionView", () => {
         },
       };
       render(<InspectionView {...props} />);
-      expect(screen.getByText("1 Pass")).toBeInTheDocument();
-      expect(screen.getByText("0 Fail")).toBeInTheDocument();
+      expect(countFor("No defect")).toBe("1No defect");
+      expect(countFor("Major defect")).toBe("0Major defect");
     });
   });
 
@@ -197,24 +215,38 @@ describe("InspectionView", () => {
       expect(screen.getByText("Tires")).toBeInTheDocument();
     });
 
-    it("shows Pass badge on passing item", () => {
+    it("labels a passing item with the EU no-defect grade", () => {
       render(<InspectionView {...DEFAULT_PROPS} />);
-      expect(screen.getByText("Pass")).toBeInTheDocument();
+      expect(screen.getAllByText("No defect").length).toBeGreaterThan(0);
     });
 
-    it("shows Fail badge on failing item", () => {
+    it("labels a failing item as a major defect", () => {
       render(<InspectionView {...DEFAULT_PROPS} />);
-      expect(screen.getByText("Fail")).toBeInTheDocument();
+      expect(screen.getAllByText("Major defect").length).toBeGreaterThan(0);
     });
 
-    it("shows Attention badge on attention item", () => {
+    it("labels an attention item as a minor defect", () => {
       render(<InspectionView {...DEFAULT_PROPS} />);
-      expect(screen.getByText("Attention")).toBeInTheDocument();
+      expect(screen.getAllByText("Minor defect").length).toBeGreaterThan(0);
+    });
+
+    it("uses the plain scale when the template asks for it", () => {
+      const props = {
+        ...DEFAULT_PROPS,
+        inspection: {
+          ...BASE_INSPECTION,
+          template: { name: "Full Inspection", severityScale: "basic" },
+        },
+      };
+      render(<InspectionView {...props} />);
+      expect(screen.getAllByText("Attention").length).toBeGreaterThan(0);
+      expect(screen.queryByText("Minor defect")).not.toBeInTheDocument();
     });
 
     it("renders item notes when present", () => {
       render(<InspectionView {...DEFAULT_PROPS} />);
-      expect(screen.getByText("Worn down to 2mm")).toBeInTheDocument();
+      // Once in the deficiencies summary and once in the full results.
+      expect(screen.getAllByText("Worn down to 2mm").length).toBeGreaterThan(0);
     });
 
     it("does not render not_inspected items", () => {
@@ -388,8 +420,7 @@ describe("InspectionView", () => {
       render(<InspectionView {...props} />);
       const thumbnail = screen.getByAltText("Oil Level 1").closest("button")!;
       await userEvent.click(thumbnail);
-      // Carousel modal appears — only one X icon because PASS uses Check icon
-      expect(screen.getByTestId("icon-x").closest("button")).toBeInTheDocument();
+      expect(screen.getByRole("dialog")).toHaveAttribute("aria-modal", "true");
     });
 
     it("closes carousel when X button is clicked", async () => {
@@ -399,9 +430,19 @@ describe("InspectionView", () => {
       };
       render(<InspectionView {...props} />);
       await userEvent.click(screen.getByAltText("Oil Level 1").closest("button")!);
-      await userEvent.click(screen.getByTestId("icon-x").closest("button")!);
-      // After close, the carousel X button is gone
-      expect(screen.queryByTestId("icon-x")).not.toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: "Close image viewer" }));
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
+    it("closes the viewer on Escape", async () => {
+      const props = {
+        ...DEFAULT_PROPS,
+        inspection: { ...BASE_INSPECTION, items: [IMG_ITEM] },
+      };
+      render(<InspectionView {...props} />);
+      await userEvent.click(screen.getByAltText("Oil Level 1").closest("button")!);
+      await userEvent.keyboard("{Escape}");
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
   });
 });

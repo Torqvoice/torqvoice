@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "SMS žinutės",
-    "featureDescription": "Siųskite ir gaukite SMS žinutes su klientais tiesiogiai iš Torqvoice."
+    "featureDescription": "Siųskite ir gaukite SMS žinutes su klientais tiesiogiai iš Torqvoice.",
+    "tabs": {
+      "inbox": "Gauta",
+      "scheduled": "Suplanuota"
+    },
+    "smsNotConfiguredTitle": "SMS nesukonfigūruotas",
+    "smsNotConfiguredHint": "Prijunkite SMS tiekėją, kad galėtumėte siųsti ir gauti žinutes čia. Suplanuoti el. laiškai veikia ir be to.",
+    "goToSmsSettings": "Eiti į SMS nustatymus"
   },
   "notConfigured": {
     "title": "SMS nesukonfigūruotas",
@@ -20,7 +27,10 @@
     "deleted": "Pokalbis ištrintas",
     "deleteError": "Nepavyko ištrinti pokalbio",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Ieškoti pokalbių",
+    "noSearchResults": "Nėra pokalbių pagal paiešką",
+    "now": "dabar"
   },
   "conversation": {
     "noPhone": "{name} neturi telefono numerio. Pridėkite telefono numerį, kad pradėtumėte susirašinėti.",
@@ -44,5 +54,22 @@
     "smsSent": "SMS išsiųsta",
     "sentTo": "{label} išsiųsta {name} ({phone})",
     "sendError": "Nepavyko išsiųsti SMS"
+  },
+  "compose": {
+    "newMessage": "Nauja žinutė",
+    "title": "Nauja žinutė",
+    "searchPlaceholder": "Ieškoti klientų pagal vardą ar numerį",
+    "noMatches": "Nėra klientų pagal paiešką",
+    "noRecipients": "Nėra klientų su telefono numeriu",
+    "noRecipientsHint": "Pridėkite klientui telefono numerį, kad galėtumėte rašyti.",
+    "changeRecipient": "Pasirinkti kitą",
+    "messageLabel": "Žinutė",
+    "messagePlaceholder": "Žinutė {name}...",
+    "segments": "{chars} simbolių · {segments} SMS",
+    "send": "Siųsti",
+    "scheduleInstead": "Geriau suplanuoti",
+    "sent": "Išsiųsta {name}",
+    "sendError": "Nepavyko išsiųsti žinutės",
+    "templates": "Šablonai"
   }
 }

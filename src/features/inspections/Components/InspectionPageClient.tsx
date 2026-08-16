@@ -1,41 +1,72 @@
 "use client";
 
-import { useState, useTransition, useRef } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useFormatDate } from "@/lib/use-format-date";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  ArrowLeft, Camera, Check, CheckCircle2, ClipboardCheck, Download, FileText, Loader2,
-  MessageSquareText, MoreVertical, Share2, Trash2, X,
+  ArrowLeft,
+  CheckCircle2,
+  Download,
+  FileText,
+  Loader2,
+  MessageSquareText,
+  MoreVertical,
+  RotateCcw,
+  Save,
+  Settings2,
+  Wrench,
+  Share2,
+  Trash2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { updateInspectionItem, completeInspection, deleteInspection } from "../Actions/inspectionActions";
+import {
+  completeInspection,
+  createWorkOrderFromInspection,
+  deleteInspection,
+  reopenInspection,
+} from "../Actions/inspectionActions";
 import { createQuote } from "@/features/quotes/Actions/quoteActions";
 import { InspectionShareDialog } from "./InspectionShareDialog";
+import {
+  InspectionCertificateCard,
+  type TechnicianOption,
+} from "./InspectionCertificateCard";
+import { InspectionItemRow, type InspectionItemData } from "./InspectionItemRow";
+import { MediaLightbox, type LightboxImage } from "./MediaLightbox";
 import { useServiceType } from "@/components/service-type-context";
-
-type Condition = "pass" | "fail" | "attention" | "not_inspected";
-
-interface InspectionItem {
-  id: string;
-  name: string;
-  section: string;
-  sortOrder: number;
-  condition: string;
-  notes: string | null;
-  imageUrls: string[];
-}
+import {
+  CONDITION_TOKENS,
+  TEST_RESULT_TOKENS,
+  countConditions,
+  deriveTestResult,
+  isDefect,
+  worstCondition,
+  type Condition,
+  type SeverityScale,
+} from "../Lib/conditions";
+import { useConditionLabels } from "../Lib/useConditionLabels";
+import { describeBlocker, findCompletionBlockers } from "../Lib/completion";
 
 export interface InspectionData {
   id: string;
@@ -46,6 +77,14 @@ export interface InspectionData {
   completedAt: Date | null;
   createdAt: Date;
   organizationId: string;
+  severityScale: string | null;
+  country: string | null;
+  vehicleCategory: string | null;
+  nextTestDue: Date | null;
+  certificateNumber: string | null;
+  technicianId: string | null;
+  inspectorName: string | null;
+  testLocation: string | null;
   vehicle: {
     id: string;
     make: string;
@@ -56,357 +95,85 @@ export interface InspectionData {
     mileage: number;
     customer: { id: string; name: string; email: string | null; phone: string | null } | null;
   };
-  template: { id: string; name: string };
-  items: InspectionItem[];
-  quotes: { id: string; quoteNumber: string | null; status: string; createdAt: Date; user: { name: string } }[];
-  quoteRequests: { id: string; message: string | null; selectedItemIds: string[]; createdAt: Date }[];
+  template: {
+    id: string;
+    name: string;
+    severityScale?: string | null;
+    country?: string | null;
+    standard?: string | null;
+  };
+  technician?: { id: string; name: string } | null;
+  items: InspectionItemData[];
+  quotes: {
+    id: string;
+    quoteNumber: string | null;
+    status: string;
+    createdAt: Date;
+    user: { name: string };
+  }[];
+  quoteRequests: {
+    id: string;
+    message: string | null;
+    selectedItemIds: string[];
+    createdAt: Date;
+  }[];
+  serviceRecords: {
+    id: string;
+    title: string;
+    status: string;
+    invoiceNumber: string | null;
+    createdAt: Date;
+  }[];
 }
 
-const conditionConfig: Record<Condition, { label: string; color: string; bgColor: string; icon: React.ReactNode }> = {
-  pass: {
-    label: "Pass",
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-500 hover:bg-emerald-600",
-    icon: <Check className="h-3.5 w-3.5" />,
-  },
-  fail: {
-    label: "Fail",
-    color: "text-red-600",
-    bgColor: "bg-red-500 hover:bg-red-600",
-    icon: <X className="h-3.5 w-3.5" />,
-  },
-  attention: {
-    label: "Attention",
-    color: "text-amber-600",
-    bgColor: "bg-amber-500 hover:bg-amber-600",
-    icon: <span className="text-xs font-bold">!</span>,
-  },
-  not_inspected: {
-    label: "N/A",
-    color: "text-gray-400",
-    bgColor: "bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500",
-    icon: null,
-  },
-};
+const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url);
 
-function ConditionButton({
-  condition,
-  active,
-  onClick,
-  disabled,
+/** Segmented bar showing how the checks are distributed across the grades. */
+function ProgressRail({
+  counts,
+  label,
 }: {
-  condition: Condition;
-  active: boolean;
-  onClick: () => void;
-  disabled?: boolean;
+  counts: ReturnType<typeof countConditions>;
+  label: string;
 }) {
-  const config = conditionConfig[condition];
+  const segments = (["pass", "attention", "fail", "dangerous"] as const)
+    .map((key) => ({ key, value: counts[key] }))
+    .filter((s) => s.value > 0);
+
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`flex h-8 w-8 items-center justify-center rounded-full text-white transition-all ${
-        active
-          ? `${config.bgColor} ring-2 ring-offset-2 ring-offset-background`
-          : "bg-gray-200 dark:bg-gray-700 text-gray-500 hover:opacity-80"
-      } ${active ? `ring-${condition === "pass" ? "emerald" : condition === "fail" ? "red" : condition === "attention" ? "amber" : "gray"}-500/50` : ""} disabled:opacity-50`}
-      title={config.label}
+    <div
+      className="bg-muted flex h-2.5 w-full overflow-hidden rounded-full"
+      role="img"
+      aria-label={label}
     >
-      {config.icon}
-    </button>
+      {segments.map((segment) => (
+        <div
+          key={segment.key}
+          className={CONDITION_TOKENS[segment.key].bar}
+          style={{ width: `${(segment.value / Math.max(counts.total, 1)) * 100}%` }}
+        />
+      ))}
+    </div>
   );
 }
 
-function InspectionItemRow({
-  item,
-  isCompleted,
+function CountChip({
+  condition,
+  value,
+  label,
 }: {
-  item: InspectionItem;
-  isCompleted: boolean;
+  condition: Condition;
+  value: number;
+  label: string;
 }) {
-  const [condition, setCondition] = useState(item.condition as Condition);
-  const [notes, setNotes] = useState(item.notes || "");
-  const [imageUrls, setImageUrls] = useState<string[]>(item.imageUrls || []);
-  const [showNotes, setShowNotes] = useState(!!item.notes);
-  const [notesRequired, setNotesRequired] = useState(false);
-  const [showClearNotesDialog, setShowClearNotesDialog] = useState(false);
-  const [isSaving, startSaving] = useTransition();
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const notesRef = useRef<HTMLTextAreaElement>(null);
-
-  const saveItem = (cond: Condition, n: string) => {
-    startSaving(async () => {
-      const result = await updateInspectionItem(item.id, {
-        condition: cond,
-        notes: n || undefined,
-        imageUrls,
-      });
-      if (!result.success) {
-        toast.error("Failed to update item");
-      } else {
-        toast.success("Saved");
-      }
-    });
-  };
-
-  const handleConditionChange = (newCondition: Condition) => {
-    if (isCompleted) return;
-
-    // Toggle off: clicking the same condition resets to not_inspected
-    if (condition === newCondition) {
-      if ((newCondition === "attention" || newCondition === "fail") && notes.trim()) {
-        setShowClearNotesDialog(true);
-        return;
-      }
-      setCondition("not_inspected");
-      setNotesRequired(false);
-      setShowNotes(false);
-      setNotes("");
-      saveItem("not_inspected", "");
-      return;
-    }
-
-    setCondition(newCondition);
-
-    // Attention/fail require notes — show notes field and wait for input
-    if (newCondition === "attention" || newCondition === "fail") {
-      setShowNotes(true);
-      setNotesRequired(true);
-      if (notes.trim()) {
-        // Notes already exist, save immediately
-        setNotesRequired(false);
-        saveItem(newCondition, notes);
-      } else {
-        // Focus the notes field so the tech can type right away
-        setTimeout(() => notesRef.current?.focus(), 50);
-      }
-      return;
-    }
-
-    // Pass: save immediately, no notes required
-    setNotesRequired(false);
-    saveItem(newCondition, notes);
-  };
-
-  const handleNotesBlur = () => {
-    if (isCompleted) return;
-
-    // If notes were required (attention/fail selected without notes)
-    if (notesRequired) {
-      if (notes.trim()) {
-        setNotesRequired(false);
-        saveItem(condition, notes);
-      } else {
-        toast.error("Notes are required for this status");
-      }
-      return;
-    }
-
-    // Normal notes update
-    if (notes === (item.notes || "")) return;
-    startSaving(async () => {
-      const result = await updateInspectionItem(item.id, {
-        condition,
-        notes: notes || undefined,
-        imageUrls,
-      });
-      if (result.success) {
-        toast.success("Notes saved");
-      } else {
-        toast.error("Failed to save notes");
-      }
-    });
-  };
-
-  const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0 || isCompleted) return;
-
-    setIsUploading(true);
-    const newUrls: string[] = [];
-
-    try {
-      for (const file of Array.from(files)) {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const res = await fetch("/api/protected/upload/service-files", {
-          method: "POST",
-          body: formData,
-        });
-        const data = await res.json();
-        if (data.url) {
-          newUrls.push(data.url);
-        } else {
-          toast.error(data.error || `Upload failed for ${file.name}`);
-        }
-      }
-
-      if (newUrls.length > 0) {
-        const updated = [...imageUrls, ...newUrls];
-        setImageUrls(updated);
-        await updateInspectionItem(item.id, {
-          condition,
-          notes: notes || undefined,
-          imageUrls: updated,
-        });
-        toast.success(`${newUrls.length} file${newUrls.length > 1 ? "s" : ""} uploaded`);
-      }
-    } catch {
-      toast.error("Upload failed");
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
-  const handleRemoveFile = (index: number) => {
-    if (isCompleted) return;
-    const updated = imageUrls.filter((_, i) => i !== index);
-    setImageUrls(updated);
-    startSaving(async () => {
-      const result = await updateInspectionItem(item.id, {
-        condition,
-        notes: notes || undefined,
-        imageUrls: updated,
-      });
-      if (result.success) {
-        toast.success("File removed");
-      } else {
-        toast.error("Failed to remove file");
-      }
-    });
-  };
-
-  const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url);
-
-  const conditionBadgeColor = conditionConfig[condition]?.color || "text-gray-400";
-
+  const token = CONDITION_TOKENS[condition];
   return (
-    <div className="space-y-2 rounded-lg border p-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className={`text-sm font-medium ${conditionBadgeColor}`}>
-            {item.name}
-          </span>
-          {isSaving && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          {(["pass", "attention", "fail"] as Condition[]).map((c) => (
-            <ConditionButton
-              key={c}
-              condition={c}
-              active={condition === c}
-              onClick={() => handleConditionChange(c)}
-              disabled={isCompleted}
-            />
-          ))}
-          <button
-            type="button"
-            onClick={() => setShowNotes(!showNotes)}
-            className="ml-1 text-xs text-muted-foreground hover:text-foreground"
-          >
-            {showNotes ? "Hide" : "Notes"}
-          </button>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isCompleted || isUploading}
-            className="ml-1 text-muted-foreground hover:text-foreground disabled:opacity-50"
-          >
-            {isUploading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Camera className="h-4 w-4" />
-            )}
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,video/mp4,video/webm,video/quicktime"
-            multiple
-            className="hidden"
-            onChange={handleMediaUpload}
-          />
-        </div>
-      </div>
-
-      {showNotes && (
-        <div className="space-y-1">
-          <Textarea
-            ref={notesRef}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            onBlur={handleNotesBlur}
-            placeholder={notesRequired ? "Notes required for this status..." : "Add notes..."}
-            className={`text-sm min-h-[60px] ${notesRequired ? "border-red-400 focus-visible:ring-red-400" : ""}`}
-            disabled={isCompleted}
-          />
-          {notesRequired && (
-            <p className="text-xs text-red-500">Notes are required for attention/fail items</p>
-          )}
-        </div>
-      )}
-
-      {imageUrls.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {imageUrls.map((url, idx) => (
-            <div key={idx} className="relative group">
-              {isVideo(url) ? (
-                <video
-                  src={url}
-                  controls
-                  className="h-32 max-w-xs rounded-lg border"
-                />
-              ) : (
-                <img
-                  src={url}
-                  alt={`${item.name} ${idx + 1}`}
-                  className="h-20 w-20 rounded-lg object-cover border"
-                />
-              )}
-              {!isCompleted && (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveFile(idx)}
-                  className="absolute -right-1.5 -top-1.5 hidden group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      <AlertDialog open={showClearNotesDialog} onOpenChange={setShowClearNotesDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove status?</AlertDialogTitle>
-            <AlertDialogDescription>
-              The notes for this item will be removed. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => {
-                setCondition("not_inspected");
-                setNotesRequired(false);
-                setShowNotes(false);
-                setNotes("");
-                setShowClearNotesDialog(false);
-                saveItem("not_inspected", "");
-              }}
-            >
-              Remove
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+    <div className="flex items-center gap-1.5">
+      <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${token.bar}`} aria-hidden="true" />
+      <span className="text-xs">
+        <span className="font-semibold">{value}</span>{" "}
+        <span className="text-muted-foreground">{label}</span>
+      </span>
     </div>
   );
 }
@@ -415,54 +182,159 @@ export function InspectionPageClient({
   inspection,
   smsEnabled = false,
   emailEnabled = false,
+  defectHistory = {},
+  technicians = [],
+  workshopAddress = "",
 }: {
   inspection: InspectionData;
   smsEnabled?: boolean;
   emailEnabled?: boolean;
+  /** Wording this workshop has used before, keyed by check name. */
+  defectHistory?: Record<string, { text: string; severity: string }[]>;
+  technicians?: TechnicianOption[];
+  workshopAddress?: string;
 }) {
+  const t = useTranslations("inspections.page");
   const router = useRouter();
   const { formatDate } = useFormatDate();
   const serviceType = useServiceType();
   const [isPending, startTransition] = useTransition();
   const [showCompleteDialog, setShowCompleteDialog] = useState(false);
+  const [showReopenDialog, setShowReopenDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [isCreatingQuote, setIsCreatingQuote] = useState(false);
+  const [isCreatingWorkOrder, setIsCreatingWorkOrder] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // The checklist saves each check as it is graded, which is only reassuring if
+  // the page says so. Without this the technician has no way to tell a saved
+  // inspection from one that silently failed halfway down a long Annex I sheet.
+  const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [saveFailed, setSaveFailed] = useState(false);
+
+  // Grades and photo counts are mirrored here so the summary, the section nav
+  // and the complete dialog react the moment a check is saved, instead of
+  // waiting for a refresh. Photo counts matter as much as grades: a check that
+  // requires evidence blocks completion until it has some.
+  const [grades, setGrades] = useState<Record<string, Condition>>(() =>
+    Object.fromEntries(inspection.items.map((i) => [i.id, i.condition as Condition]))
+  );
+  const [photoCounts, setPhotoCounts] = useState<Record<string, number>>(() =>
+    Object.fromEntries(inspection.items.map((i) => [i.id, (i.imageUrls ?? []).length]))
+  );
 
   const isCompleted = inspection.status === "completed";
+  // The snapshot wins; the template is the fallback for inspections that
+  // predate it, and the migration pinned those templates to their old scale.
+  const storedScale = inspection.severityScale ?? inspection.template.severityScale;
+  const scale: SeverityScale = storedScale === "basic" ? "basic" : "eu";
+  const country = inspection.country ?? inspection.template.country ?? null;
+  const { label: gradeLabel, graded, result: resultLabel, resultDetail } = useConditionLabels(scale, country);
+  const mileageLabel = serviceType === "marine" ? t("engineHours") : t("odometer");
 
-  // Sort items by sortOrder first, then group by section preserving order
-  const sortedItems = [...inspection.items].sort((a, b) => a.sortOrder - b.sortOrder);
-  const sectionOrder: string[] = [];
-  const sections: Record<string, InspectionItem[]> = {};
-  for (const item of sortedItems) {
-    if (!sections[item.section]) {
-      sections[item.section] = [];
-      sectionOrder.push(item.section);
+  const sections = useMemo(() => {
+    const sorted = [...inspection.items].sort((a, b) => a.sortOrder - b.sortOrder);
+    const order: string[] = [];
+    const grouped: Record<string, InspectionItemData[]> = {};
+    for (const item of sorted) {
+      if (!grouped[item.section]) {
+        grouped[item.section] = [];
+        order.push(item.section);
+      }
+      grouped[item.section].push(item);
     }
-    sections[item.section].push(item);
-  }
+    return order.map((name) => ({
+      name,
+      code: grouped[name][0]?.sectionCode ?? null,
+      items: grouped[name],
+    }));
+  }, [inspection.items]);
 
-  const totalItems = inspection.items.length;
-  const inspectedItems = inspection.items.filter((i) => i.condition !== "not_inspected").length;
-  const passCount = inspection.items.filter((i) => i.condition === "pass").length;
-  const failCount = inspection.items.filter((i) => i.condition === "fail").length;
-  const attentionCount = inspection.items.filter((i) => i.condition === "attention").length;
-  const hasIssueItems = failCount > 0 || attentionCount > 0;
-  const issueItems = inspection.items.filter(
-    (i) => i.condition === "fail" || i.condition === "attention"
+  const gradedItems = useMemo(
+    () => inspection.items.map((i) => ({ condition: grades[i.id] ?? i.condition })),
+    [inspection.items, grades]
+  );
+
+  const counts = useMemo(() => countConditions(gradedItems), [gradedItems]);
+  const result = useMemo(
+    () => deriveTestResult(gradedItems, { requireAllInspected: !isCompleted }),
+    [gradedItems, isCompleted]
+  );
+  const resultToken = TEST_RESULT_TOKENS[result];
+
+  const images = useMemo<LightboxImage[]>(() => {
+    const list: LightboxImage[] = [];
+    for (const item of inspection.items) {
+      for (const url of item.imageUrls ?? []) {
+        if (!isVideo(url)) list.push({ url, caption: item.name });
+      }
+    }
+    return list;
+  }, [inspection.items]);
+
+  const defectItems = inspection.items.filter((i) => isDefect(grades[i.id] ?? i.condition));
+  const blockers = useMemo(
+    () =>
+      findCompletionBlockers(
+        inspection.items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          code: item.code,
+          condition: grades[item.id] ?? item.condition,
+          required: item.required,
+          photoRequired: item.photoRequired,
+          photoCount: photoCounts[item.id] ?? (item.imageUrls ?? []).length,
+        }))
+      ),
+    [inspection.items, grades, photoCounts]
   );
   const pendingQuoteRequest = inspection.quoteRequests?.[0] ?? null;
+  const workOrder = inspection.serviceRecords?.[0] ?? null;
+  const notInspected = counts.total - counts.inspected;
+
+  const handleSaveState = (itemId: string, state: "saving" | "saved" | "error") => {
+    setSavingIds((prev) => {
+      const next = new Set(prev);
+      if (state === "saving") next.add(itemId);
+      else next.delete(itemId);
+      return next;
+    });
+    if (state === "saved") {
+      setLastSavedAt(new Date());
+      setSaveFailed(false);
+    }
+    if (state === "error") setSaveFailed(true);
+  };
+
+  /**
+   * Fields commit on blur, so a note still being typed has not reached the
+   * server yet. Taking focus off it is what actually saves; the button exists
+   * because "it saves as you go" is not something a technician should have to
+   * take on trust.
+   */
+  const handleSaveNow = () => {
+    (document.activeElement as HTMLElement | null)?.blur();
+    if (savingIds.size === 0 && !saveFailed) {
+      toast.success(t("allSaved"));
+    }
+  };
+
+  const openImage = (url: string) => {
+    const index = images.findIndex((img) => img.url === url);
+    setLightboxIndex(index >= 0 ? index : null);
+  };
 
   const handleCreateQuoteFromInspection = async () => {
     setIsCreatingQuote(true);
-    const result = await createQuote({
+    const created = await createQuote({
       title: `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model} - Inspection Quote`,
       vehicleId: inspection.vehicle.id,
       customerId: inspection.vehicle.customer?.id || undefined,
       inspectionId: inspection.id,
       status: "draft",
-      laborItems: issueItems.map((item) => ({
+      laborItems: defectItems.map((item) => ({
         description: `${item.name}${item.notes ? ` - ${item.notes}` : ""}`,
         hours: 0,
         rate: 0,
@@ -475,57 +347,176 @@ export function InspectionPageClient({
       discountAmount: 0,
       totalAmount: 0,
     });
-    if (result.success && result.data) {
-      router.push(`/quotes/${result.data.id}`);
+    if (created.success && created.data) {
+      router.push(`/quotes/${created.data.id}`);
     } else {
-      toast.error(result.error || "Failed to create quote");
+      toast.error(created.error || t("quoteFailed"));
       setIsCreatingQuote(false);
+    }
+  };
+
+  /**
+   * Straight to a job, no quote. Plenty of customers just say "fix it", and
+   * making them wait for an estimate they have already approved out loud is
+   * the slowest possible way to start work.
+   */
+  const handleCreateWorkOrder = async () => {
+    setIsCreatingWorkOrder(true);
+    const created = await createWorkOrderFromInspection(inspection.id);
+    if (created.success && created.data) {
+      router.push(`/vehicles/${created.data.vehicleId}/service/${created.data.id}`);
+    } else {
+      toast.error(created.error || t("workOrderFailed"));
+      setIsCreatingWorkOrder(false);
     }
   };
 
   const handleComplete = () => {
     startTransition(async () => {
-      const result = await completeInspection(inspection.id);
-      if (result.success) {
-        toast.success("Inspection completed");
+      const done = await completeInspection(inspection.id);
+      if (done.success) {
+        toast.success(t("completed"));
         setShowCompleteDialog(false);
         setShowShareDialog(true);
         router.refresh();
       } else {
-        toast.error(result.error || "Failed to complete inspection");
+        toast.error(done.error || t("completeFailed"));
+      }
+    });
+  };
+
+  const handleReopen = () => {
+    startTransition(async () => {
+      const reopened = await reopenInspection(inspection.id);
+      if (reopened.success) {
+        toast.success(t("reopened"));
+        setShowReopenDialog(false);
+        router.refresh();
+      } else {
+        toast.error(reopened.error || t("reopenFailed"));
       }
     });
   };
 
   const handleDelete = () => {
     startTransition(async () => {
-      const result = await deleteInspection(inspection.id);
-      if (result.success) {
-        toast.success("Inspection deleted");
+      const removed = await deleteInspection(inspection.id);
+      if (removed.success) {
+        toast.success(t("deleted"));
         router.push("/inspections");
       } else {
-        toast.error(result.error || "Failed to delete inspection");
+        toast.error(removed.error || t("deleteFailed"));
       }
     });
   };
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <Link
-            href="/inspections"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to inspections
-          </Link>
+    <div className="space-y-5">
+      {/* Action bar */}
+      <div className="bg-background/95 supports-[backdrop-filter]:bg-background/80 sticky top-16 z-20 -mx-4 border-b px-4 py-3 backdrop-blur">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <Link
+              href="/inspections"
+              className="text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex h-9 items-center gap-1.5 rounded-md text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline">{t("back")}</span>
+            </Link>
+            <div className="bg-border h-5 w-px" aria-hidden="true" />
+            <div className="min-w-0">
+              <h1 className="truncate text-base leading-tight font-semibold">
+                {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
+              </h1>
+              <p className="text-muted-foreground truncate text-xs">
+                {inspection.template.name} &middot; {formatDate(new Date(inspection.createdAt))}
+              </p>
+            </div>
+          </div>
+
           <div className="flex items-center gap-2">
+            <Badge
+              variant="outline"
+              className={
+                isCompleted
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                  : "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300"
+              }
+            >
+              {isCompleted ? t("statusCompleted") : t("statusInProgress")}
+            </Badge>
             {!isCompleted && (
+              <div className="mr-1 flex items-center gap-2">
+                <p className="text-muted-foreground hidden text-xs sm:block" role="status">
+                  {savingIds.size > 0
+                    ? t("saving")
+                    : saveFailed
+                      ? t("saveFailed")
+                      : lastSavedAt
+                        ? `Saved ${lastSavedAt.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}`
+                        : t("savesAsYouGo")}
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSaveNow}
+                  disabled={savingIds.size > 0}
+                >
+                  {savingIds.size > 0 ? (
+                    <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <Save className="mr-1 h-4 w-4" aria-hidden="true" />
+                  )}
+                  {t("save")}
+                </Button>
+              </div>
+            )}
+            {isCompleted ? (
+              <Button variant="outline" size="sm" onClick={() => setShowReopenDialog(true)}>
+                <RotateCcw className="mr-1 h-4 w-4" aria-hidden="true" />
+                {t("reopen")}
+              </Button>
+            ) : (
               <Button size="sm" onClick={() => setShowCompleteDialog(true)}>
-                <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
-                Complete Inspection
+                <CheckCircle2 className="mr-1 h-4 w-4" aria-hidden="true" />
+                {t("complete")}
+              </Button>
+            )}
+            {/* Rendered whether or not there is anything to raise yet, and
+                disabled when there is not. Showing and hiding them as the
+                first defect is graded shifts everything else in the bar. */}
+            {workOrder ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  router.push(`/vehicles/${inspection.vehicle.id}/service/${workOrder.id}`)
+                }
+              >
+                <Wrench className="mr-1 h-4 w-4" aria-hidden="true" />
+                {t("viewWorkOrder")}
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isCreatingWorkOrder || defectItems.length === 0}
+                title={
+                  defectItems.length === 0
+                    ? t("needsDefect")
+                    : undefined
+                }
+                onClick={handleCreateWorkOrder}
+              >
+                {isCreatingWorkOrder ? (
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Wrench className="mr-1 h-4 w-4" aria-hidden="true" />
+                )}
+                {t("createWorkOrder")}
               </Button>
             )}
             {inspection.quotes.length > 0 ? (
@@ -534,248 +525,476 @@ export function InspectionPageClient({
                 size="sm"
                 onClick={() => router.push(`/quotes/${inspection.quotes[0].id}`)}
               >
-                <FileText className="mr-1 h-3.5 w-3.5" />
-                View Quote
+                <FileText className="mr-1 h-4 w-4" aria-hidden="true" />
+                {t("viewQuote")}
               </Button>
-            ) : hasIssueItems ? (
+            ) : (
               <Button
                 variant="outline"
                 size="sm"
-                disabled={isCreatingQuote}
+                disabled={isCreatingQuote || defectItems.length === 0}
+                title={
+                  defectItems.length === 0
+                    ? t("needsDefect")
+                    : undefined
+                }
                 onClick={handleCreateQuoteFromInspection}
               >
-                {isCreatingQuote ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <FileText className="mr-1 h-3.5 w-3.5" />}
-                Create Quote
+                {isCreatingQuote ? (
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <FileText className="mr-1 h-4 w-4" aria-hidden="true" />
+                )}
+                {t("createQuote")}
               </Button>
-            ) : null}
+            )}
             <Button variant="outline" size="sm" onClick={() => setShowShareDialog(true)}>
-              <Share2 className="mr-1 h-3.5 w-3.5" />
-              Share
+              <Share2 className="mr-1 h-4 w-4" aria-hidden="true" />
+              {t("share")}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Open menu">
-                  <MoreVertical className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-9 w-9" aria-label={t("moreActions")}>
+                  <MoreVertical className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="min-w-52">
                 <DropdownMenuItem
-                  onClick={() => window.open(`/api/protected/inspections/${inspection.id}/pdf`, "_blank")}
+                  onClick={() =>
+                    window.open(`/api/protected/inspections/${inspection.id}/pdf`, "_blank")
+                  }
                 >
-                  <Download className="mr-2 h-4 w-4" />
-                  Download PDF
+                  <Download className="mr-2 h-4 w-4" aria-hidden="true" />
+                  {t("downloadCertificate")}
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings/templates?tab=inspections">
+                    <Settings2 className="mr-2 h-4 w-4" aria-hidden="true" />
+                    {t("manageTemplates")}
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="text-destructive"
                   onClick={() => setShowDeleteDialog(true)}
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />
+                  {t("delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
-            <ClipboardCheck className="h-5 w-5 text-primary" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-baseline gap-2">
-              <h1 className="text-lg font-bold leading-tight">
-                {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
-              </h1>
-              <Badge
-                variant="outline"
-                className={`text-xs ${isCompleted ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-blue-500/10 text-blue-500 border-blue-500/20"}`}
-              >
-                {isCompleted ? "Completed" : "In Progress"}
-              </Badge>
-            </div>
-            <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              <span>{inspection.template.name}</span>
-              <span>&middot;</span>
-              <span>{formatDate(new Date(inspection.createdAt))}</span>
-              {inspection.mileage && (
-                <>
-                  <span>&middot;</span>
-                  <span>{inspection.mileage.toLocaleString()} {serviceType === 'marine' ? 'hrs' : 'mi'}</span>
-                </>
-              )}
-              {inspection.vehicle.licensePlate && (
-                <>
-                  <span>&middot;</span>
-                  <span className="font-mono">{inspection.vehicle.licensePlate}</span>
-                </>
-              )}
-              {inspection.vehicle.customer && (
-                <>
-                  <span>&middot;</span>
-                  <Link href={`/customers/${inspection.vehicle.customer.id}`} className="hover:underline">
-                    {inspection.vehicle.customer.name}
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Summary stats */}
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <span className="font-semibold text-foreground">{inspectedItems}/{totalItems}</span>
-            <span className="text-xs">inspected</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded-full bg-emerald-500" />
-            <span className="text-xs font-medium">{passCount} pass</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded-full bg-red-500" />
-            <span className="text-xs font-medium">{failCount} fail</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-3 rounded-full bg-amber-500" />
-            <span className="text-xs font-medium">{attentionCount} attention</span>
-          </div>
-        </div>
       </div>
 
-      {/* Quote created banner */}
-      {inspection.quotes.length > 0 ? (
-        <Card className="border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/20">
-          <CardContent className="flex items-center gap-3 py-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/15">
-              <FileText className="h-4 w-4 text-emerald-600" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
-                Quote created by {inspection.quotes[0].user.name} on {formatDate(new Date(inspection.quotes[0].createdAt))}
+      <div className="grid gap-5 lg:grid-cols-[1fr_19rem] lg:items-start">
+        {/* Main column */}
+        <main className="min-w-0 space-y-5">
+          {/* Overall result */}
+          <section
+            aria-labelledby="inspection-result"
+            className={`rounded-lg border p-4 ${resultToken.soft}`}
+          >
+            <h2 id="inspection-result" className="text-base font-semibold">
+              {resultLabel(result)}
+            </h2>
+            <p className="mt-1 text-sm">{resultDetail(result)}</p>
+            {result === "incomplete" && notInspected > 0 && (
+              <p className="mt-1 text-sm">
+                {t("stillToGrade", { count: notInspected, total: counts.total })}
               </p>
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              className="shrink-0 border-emerald-500/30 text-emerald-900 hover:bg-emerald-100 dark:text-emerald-200 dark:hover:bg-emerald-900/30"
-              onClick={() => router.push(`/quotes/${inspection.quotes[0].id}`)}
-            >
-              View Quote
-            </Button>
-          </CardContent>
-        </Card>
-      ) : pendingQuoteRequest ? (
-        <Card className="border-amber-500/30 bg-amber-50 dark:bg-amber-950/20">
-          <CardContent className="flex items-start gap-3 py-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-500/15">
-              <MessageSquareText className="h-4 w-4 text-amber-600" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
-                Customer requested a quote for {pendingQuoteRequest.selectedItemIds.length} item(s)
+            )}
+          </section>
+
+          {workOrder && (
+            <div className="flex items-center gap-3 rounded-lg border border-blue-500/30 bg-blue-50 p-3 dark:bg-blue-950/30">
+              <Wrench
+                className="h-5 w-5 shrink-0 text-blue-700 dark:text-blue-300"
+                aria-hidden="true"
+              />
+              <p className="min-w-0 flex-1 text-sm text-blue-900 dark:text-blue-100">
+                {t("workOrderRaised", { number: workOrder.invoiceNumber ?? "", date: formatDate(new Date(workOrder.createdAt)) })}
               </p>
-              {pendingQuoteRequest.message && (
-                <p className="mt-0.5 text-sm text-amber-800/80 dark:text-amber-300/70">
-                  &ldquo;{pendingQuoteRequest.message}&rdquo;
+              <Button
+                size="sm"
+                variant="outline"
+                className="shrink-0"
+                onClick={() =>
+                  router.push(`/vehicles/${inspection.vehicle.id}/service/${workOrder.id}`)
+                }
+              >
+                {t("open")}
+              </Button>
+            </div>
+          )}
+
+          {/* Quote status */}
+          {inspection.quotes.length > 0 ? (
+            <div className="flex items-center gap-3 rounded-lg border border-emerald-500/30 bg-emerald-50 p-3 dark:bg-emerald-950/30">
+              <FileText
+                className="h-5 w-5 shrink-0 text-emerald-700 dark:text-emerald-300"
+                aria-hidden="true"
+              />
+              <p className="min-w-0 flex-1 text-sm text-emerald-900 dark:text-emerald-100">
+                {t("quoteCreated", { name: inspection.quotes[0].user.name, date: formatDate(new Date(inspection.quotes[0].createdAt)) })}
+              </p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="shrink-0"
+                onClick={() => router.push(`/quotes/${inspection.quotes[0].id}`)}
+              >
+                {t("viewQuote")}
+              </Button>
+            </div>
+          ) : pendingQuoteRequest ? (
+            <div className="flex items-start gap-3 rounded-lg border border-amber-500/40 bg-amber-50 p-3 dark:bg-amber-950/30">
+              <MessageSquareText
+                className="mt-0.5 h-5 w-5 shrink-0 text-amber-800 dark:text-amber-300"
+                aria-hidden="true"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                  {t("quoteRequested", { count: pendingQuoteRequest.selectedItemIds.length })}
                 </p>
-              )}
-              <div className="mt-2">
+                {pendingQuoteRequest.message && (
+                  <p className="mt-0.5 text-sm text-amber-900/80 dark:text-amber-200/80">
+                    &ldquo;{pendingQuoteRequest.message}&rdquo;
+                  </p>
+                )}
                 <Button
                   size="sm"
                   variant="outline"
-                  className="border-amber-500/30 text-amber-900 hover:bg-amber-100 dark:text-amber-200 dark:hover:bg-amber-900/30"
+                  className="mt-2"
                   disabled={isCreatingQuote}
                   onClick={handleCreateQuoteFromInspection}
                 >
-                  {isCreatingQuote ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <FileText className="mr-1 h-3.5 w-3.5" />}
-                  Create Quote
+                  {isCreatingQuote ? (
+                    <Loader2 className="mr-1 h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <FileText className="mr-1 h-4 w-4" aria-hidden="true" />
+                  )}
+                  {t("createQuote")}
                 </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      ) : null}
+          ) : null}
 
-      {/* Inspection sections */}
-      <div className="space-y-4">
-        {sectionOrder.map((sectionName) => {
-          const items = sections[sectionName];
-          const sectionPass = items.filter((i) => i.condition === "pass").length;
-          const sectionTotal = items.length;
-          return (
-            <Card key={sectionName}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">{sectionName}</CardTitle>
-                  <span className="text-xs text-muted-foreground">
-                    {sectionPass}/{sectionTotal} pass
-                  </span>
+          <InspectionCertificateCard
+            inspection={inspection}
+            technicians={technicians}
+            workshopAddress={workshopAddress}
+            mileageLabel={mileageLabel}
+            isCompleted={isCompleted}
+          />
+
+          {/* Checks */}
+          {sections.map((section, index) => {
+            const sectionCounts = countConditions(
+              section.items.map((i) => ({ condition: grades[i.id] ?? i.condition }))
+            );
+            const worst = worstCondition(
+              section.items.map((i) => grades[i.id] ?? i.condition)
+            );
+            return (
+              <section
+                key={section.name}
+                id={`section-${index}`}
+                aria-labelledby={`section-${index}-heading`}
+                className="bg-card scroll-mt-36 rounded-lg border"
+              >
+                <header className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3">
+                  <h2
+                    id={`section-${index}-heading`}
+                    className="flex items-baseline gap-2 text-sm font-semibold"
+                  >
+                    {section.code && (
+                      <span className="text-muted-foreground font-mono text-xs">
+                        {section.code}
+                      </span>
+                    )}
+                    {section.name}
+                  </h2>
+                  <div className="flex items-center gap-3">
+                    {isDefect(worst) && (
+                      <Badge variant="outline" className={CONDITION_TOKENS[worst].soft}>
+                        {graded(worst)}
+                      </Badge>
+                    )}
+                    <span className="text-muted-foreground text-xs">
+                      {t("graded", { graded: sectionCounts.inspected, total: sectionCounts.total })}
+                    </span>
+                  </div>
+                </header>
+                <ul className="space-y-2 p-3">
+                  {section.items.map((item) => (
+                    <InspectionItemRow
+                      key={item.id}
+                      item={item}
+                      scale={scale}
+                      country={country}
+                      isCompleted={isCompleted}
+                      history={defectHistory[item.name]}
+                      onOpenImage={openImage}
+                      onSaveState={handleSaveState}
+                      onChanged={(itemId, change) => {
+                        setGrades((prev) => ({ ...prev, [itemId]: change.condition }));
+                        setPhotoCounts((prev) => ({ ...prev, [itemId]: change.photoCount }));
+                      }}
+                    />
+                  ))}
+                </ul>
+              </section>
+            );
+          })}
+        </main>
+
+        {/* Sidebar */}
+        <aside className="space-y-4 lg:sticky lg:top-36">
+          <section aria-labelledby="inspection-progress" className="bg-card rounded-lg border p-4">
+            <h2 id="inspection-progress" className="text-sm font-semibold">
+              {t("progress")}
+            </h2>
+            <p className="mt-1 text-2xl font-semibold tabular-nums">
+              {counts.inspected}
+              <span className="text-muted-foreground text-base font-normal">/{counts.total}</span>
+            </p>
+            <p className="text-muted-foreground text-xs">{t("checksGraded")}</p>
+            <div className="mt-3">
+              <ProgressRail
+                counts={counts}
+                label={t("progressLabel", {
+                  graded: counts.inspected,
+                  total: counts.total,
+                  pass: counts.pass,
+                  attention: counts.attention,
+                  fail: counts.fail,
+                  dangerous: counts.dangerous,
+                })}
+              />
+            </div>
+            <div className="mt-3 grid gap-1.5">
+              <CountChip condition="pass" value={counts.pass} label={gradeLabel("pass")} />
+              <CountChip condition="attention" value={counts.attention} label={gradeLabel("attention")} />
+              <CountChip condition="fail" value={counts.fail} label={gradeLabel("fail")} />
+              {scale === "eu" && (
+                <CountChip condition="dangerous" value={counts.dangerous} label={gradeLabel("dangerous")} />
+              )}
+            </div>
+          </section>
+
+          <nav aria-labelledby="inspection-sections" className="bg-card rounded-lg border p-4">
+            <h2 id="inspection-sections" className="text-sm font-semibold">
+              {t("sections")}
+            </h2>
+            <ul className="mt-2 space-y-0.5">
+              {sections.map((section, index) => {
+                const sectionCounts = countConditions(
+                  section.items.map((i) => ({ condition: grades[i.id] ?? i.condition }))
+                );
+                const worst = worstCondition(
+                  section.items.map((i) => grades[i.id] ?? i.condition)
+                );
+                return (
+                  <li key={section.name}>
+                    <a
+                      href={`#section-${index}`}
+                      className="hover:bg-muted focus-visible:ring-ring flex items-center gap-2 rounded-md px-2 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
+                    >
+                      <span
+                        className={`h-2 w-2 shrink-0 rounded-full ${CONDITION_TOKENS[worst].bar}`}
+                        aria-hidden="true"
+                      />
+                      <span className="min-w-0 flex-1 truncate">{section.name}</span>
+                      <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
+                        {sectionCounts.inspected}/{sectionCounts.total}
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          <section aria-labelledby="inspection-vehicle" className="bg-card rounded-lg border p-4">
+            <h2 id="inspection-vehicle" className="text-sm font-semibold">
+              {t("vehicle")}
+            </h2>
+            <dl className="mt-2 space-y-2 text-sm">
+              <div>
+                <dt className="text-muted-foreground text-xs">
+                  {serviceType === "marine" ? t("vessel") : t("vehicle")}
+                </dt>
+                <dd>
+                  {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
+                </dd>
+              </div>
+              {inspection.vehicle.vin && (
+                <div>
+                  <dt className="text-muted-foreground text-xs">
+                    {serviceType === "marine" ? "HIN" : "VIN"}
+                  </dt>
+                  <dd className="font-mono text-xs break-all">{inspection.vehicle.vin}</dd>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {items.map((item) => (
-                  <InspectionItemRow
-                    key={item.id}
-                    item={item}
-                    isCompleted={isCompleted}
-                  />
-                ))}
-              </CardContent>
-            </Card>
-          );
-        })}
+              )}
+              {inspection.vehicle.licensePlate && (
+                <div>
+                  <dt className="text-muted-foreground text-xs">
+                    {serviceType === "marine" ? t("registration") : t("plate")}
+                  </dt>
+                  <dd className="font-mono">{inspection.vehicle.licensePlate}</dd>
+                </div>
+              )}
+              {inspection.vehicle.customer && (
+                <div>
+                  <dt className="text-muted-foreground text-xs">{t("customer")}</dt>
+                  <dd>
+                    <Link
+                      href={`/customers/${inspection.vehicle.customer.id}`}
+                      className="hover:underline"
+                    >
+                      {inspection.vehicle.customer.name}
+                    </Link>
+                  </dd>
+                </div>
+              )}
+            </dl>
+          </section>
+
+          <section aria-labelledby="inspection-template" className="bg-card rounded-lg border p-4">
+            <div className="flex items-baseline justify-between gap-2">
+              <h2 id="inspection-template" className="text-sm font-semibold">
+                {t("template")}
+              </h2>
+              <a
+                href="https://torqvoice.com/docs/features/inspections"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground focus-visible:ring-ring shrink-0 rounded text-[11px] transition-colors focus-visible:ring-2 focus-visible:outline-none"
+              >
+                {t("readMore")} →
+              </a>
+            </div>
+            <p className="mt-1 text-sm">{inspection.template.name}</p>
+            <p className="text-muted-foreground mt-1 text-xs">
+              {scale === "eu"
+                ? t("scaleEu")
+                : t("scaleBasic")}
+              {country ? ` ${t("country", { code: country })}` : ""}
+            </p>
+            <Link
+              href="/settings/templates?tab=inspections"
+              className="text-primary focus-visible:ring-ring mt-3 inline-flex items-center gap-1.5 rounded-md text-sm hover:underline focus-visible:ring-2 focus-visible:outline-none"
+            >
+              <Settings2 className="h-3.5 w-3.5" aria-hidden="true" />
+              {t("manageInspectionTemplates")}
+            </Link>
+          </section>
+        </aside>
       </div>
 
-      {/* Complete confirmation dialog */}
+      {/* Complete confirmation */}
       <AlertDialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Complete inspection?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will mark the inspection as completed. You won&apos;t be able to modify
-              items after completing.
-              {totalItems - inspectedItems > 0 && (
-                <span className="block mt-2 font-medium text-amber-600">
-                  {totalItems - inspectedItems} item(s) have not been inspected yet.
-                </span>
-              )}
+            <AlertDialogTitle>{t("completeTitle")}</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2">
+                {blockers.length > 0 ? (
+                  <>
+                    <p className="text-destructive font-medium">
+                      {t("completeBlocked", { count: blockers.length })}
+                    </p>
+                    <ul className="list-disc space-y-0.5 pl-5">
+                      {blockers.slice(0, 8).map((blocker) => (
+                        <li key={blocker.id}>
+                          {blocker.label} — {describeBlocker(blocker.reason)}
+                        </li>
+                      ))}
+                    </ul>
+                    {blockers.length > 8 && <p>and {blockers.length - 8} more.</p>}
+                  </>
+                ) : null}
+                <p>
+                  {t("completeBody", { result: resultLabel(deriveTestResult(gradedItems)) })}
+                </p>
+                {notInspected > 0 && (
+                  <p className="font-medium text-amber-700 dark:text-amber-400">
+                    {t("completeUngraded", { count: notInspected })}
+                  </p>
+                )}
+                {counts.dangerous > 0 && (
+                  <p className="text-destructive font-medium">
+                    {t("completeDangerous", { count: counts.dangerous })}
+                  </p>
+                )}
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleComplete} disabled={isPending}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Complete
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleComplete}
+              disabled={isPending || blockers.length > 0}
+            >
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+              {t("complete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Delete confirmation dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      {/* Reopen confirmation */}
+      <AlertDialog open={showReopenDialog} onOpenChange={setShowReopenDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete inspection?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete this inspection and all its data. This action cannot be undone.
+            <AlertDialogTitle>{t("reopenTitle")}</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2">
+                <p>
+                  {t("reopenBody")}
+                </p>
+                {inspection.publicToken && (
+                  <p>
+                    {t("reopenShared")}
+                  </p>
+                )}
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleReopen} disabled={isPending}>
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+              {t("reopen")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("deleteBody")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Delete
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+              {t("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Share dialog */}
       <InspectionShareDialog
         open={showShareDialog}
         onOpenChange={setShowShareDialog}
@@ -785,6 +1004,13 @@ export function InspectionPageClient({
         customer={inspection.vehicle.customer}
         smsEnabled={smsEnabled}
         emailEnabled={emailEnabled}
+      />
+
+      <MediaLightbox
+        images={images}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onNavigate={setLightboxIndex}
       />
     </div>
   );

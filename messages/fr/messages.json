@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "Messagerie SMS",
-    "featureDescription": "Envoyez et recevez des SMS avec vos clients directement depuis Torqvoice."
+    "featureDescription": "Envoyez et recevez des SMS avec vos clients directement depuis Torqvoice.",
+    "tabs": {
+      "inbox": "Boîte de réception",
+      "scheduled": "Programmés"
+    },
+    "smsNotConfiguredTitle": "Le SMS n'est pas configuré",
+    "smsNotConfiguredHint": "Connectez un fournisseur SMS pour envoyer et recevoir des messages ici. Les e-mails programmés fonctionnent sans cela.",
+    "goToSmsSettings": "Aller aux réglages SMS"
   },
   "notConfigured": {
     "title": "SMS non configuré",
@@ -20,7 +27,10 @@
     "deleted": "Conversation supprimée",
     "deleteError": "Impossible de supprimer la conversation",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Rechercher des conversations",
+    "noSearchResults": "Aucune conversation ne correspond à la recherche",
+    "now": "maintenant"
   },
   "conversation": {
     "noPhone": "Aucun numéro de téléphone enregistré pour {name}. Ajoutez un numéro de téléphone pour commencer à envoyer des messages.",
@@ -44,5 +54,22 @@
     "smsSent": "SMS envoyé",
     "sentTo": "{label} a été envoyé à {name} ({phone})",
     "sendError": "Impossible d'envoyer le SMS"
+  },
+  "compose": {
+    "newMessage": "Nouveau message",
+    "title": "Nouveau message",
+    "searchPlaceholder": "Rechercher un client par nom ou numéro",
+    "noMatches": "Aucun client ne correspond à la recherche",
+    "noRecipients": "Aucun client avec un numéro de téléphone",
+    "noRecipientsHint": "Ajoutez un numéro au client pour lui écrire.",
+    "changeRecipient": "Choisir quelqu'un d'autre",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Message à {name}...",
+    "segments": "{chars} caractères · {segments} SMS",
+    "send": "Envoyer",
+    "scheduleInstead": "Programmer plutôt",
+    "sent": "Envoyé à {name}",
+    "sendError": "Impossible d'envoyer le message",
+    "templates": "Modèles"
   }
 }

@@ -55,6 +55,7 @@
   },
   "list": {
     "title": "Status Reports",
+    "readMore": "Read more",
     "newReport": "New Status Report",
     "empty": "No status reports yet",
     "emptyDescription": "Create a status report to update your customer on the vehicle status.",
@@ -76,13 +77,13 @@
     "deleteTitle": "Delete Status Report",
     "deleteFailed": "Failed to delete status report",
     "cancel": "Cancel",
-  "feedback": "Feedback",
-  "hasComment": "Received",
-  "noFeedback": "No feedback yet",
-  "sentAt": "Sent",
-  "sentVia": "Sent via",
-  "messageLabel": "Message",
-  "videoLabel": "Video"
+    "feedback": "Feedback",
+    "hasComment": "Received",
+    "noFeedback": "No feedback yet",
+    "sentAt": "Sent",
+    "sentVia": "Sent via",
+    "messageLabel": "Message",
+    "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Hi {name}, we have a status update on your {vehicle}. View it here: {url}",

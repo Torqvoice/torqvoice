@@ -3,19 +3,10 @@
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
+import { IconActionButton } from '@/components/icon-action-button'
 import { cn } from '@/lib/utils'
-import {
-  ArrowLeft,
-  Download,
-  Globe,
-  Loader2,
-  Mail,
-  MessageSquare,
-  Save,
-  Trash2,
-} from 'lucide-react'
+import { ArrowLeft, Download, Globe, Mail, MessageSquare, Save, Trash2 } from 'lucide-react'
 import { statusColors, paymentStatusColors, paymentStatusLabels } from '../service-detail/types'
 
 export type ServiceTab = 'details' | 'images' | 'video' | 'documents' | 'statusReports'
@@ -113,48 +104,39 @@ export function UnifiedServiceHeader({
               {showSaved && !hasUnsavedChanges && (
                 <span className="text-xs font-medium text-green-600 dark:text-green-400">{t('saved')}</span>
               )}
-              <Button type="submit" form="service-record-form" size="sm" disabled={saving} variant={hasUnsavedChanges ? "default" : "outline"} className={hasUnsavedChanges ? "animate-pulse" : ""}>
-                {saving ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin sm:mr-1" />
-                ) : (
-                  <Save className="h-3.5 w-3.5 sm:mr-1" />
-                )}
-                <span className="hidden sm:inline">{t('save')}</span>
-              </Button>
+              <IconActionButton
+                type="submit"
+                form="service-record-form"
+                label={t('save')}
+                icon={Save}
+                loading={saving}
+                variant={hasUnsavedChanges ? 'default' : 'outline'}
+                className={hasUnsavedChanges ? 'animate-pulse' : ''}
+              />
             </>
           )}
           <ButtonGroup>
-            <Button variant="outline" size="sm" onClick={onDownloadPDF} disabled={downloading}>
-              {downloading ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin sm:mr-1" />
-              ) : (
-                <Download className="h-3.5 w-3.5 sm:mr-1" />
-              )}
-              <span className="hidden sm:inline">{t('pdf')}</span>
-            </Button>
-            <Button variant="outline" size="sm" onClick={onShowEmail}>
-              <Mail className="h-3.5 w-3.5 sm:mr-1" />
-              <span className="hidden sm:inline">{t('email')}</span>
-            </Button>
-            <Button variant="outline" size="sm" onClick={onShowShare}>
-              <Globe className="h-3.5 w-3.5 sm:mr-1" />
-              <span className="hidden sm:inline">{t('share')}</span>
-            </Button>
+            <IconActionButton
+              label={t('pdf')}
+              icon={Download}
+              loading={downloading}
+              onClick={onDownloadPDF}
+            />
+            <IconActionButton label={t('email')} icon={Mail} onClick={onShowEmail} />
+            <IconActionButton label={t('share')} icon={Globe} onClick={onShowShare} />
             {hasCustomer && onNotifyCustomer && (
-              <Button variant="outline" size="sm" onClick={onNotifyCustomer}>
-                <MessageSquare className="h-3.5 w-3.5 sm:mr-1" />
-                <span className="hidden sm:inline">{t('notify')}</span>
-              </Button>
+              <IconActionButton
+                label={t('notify')}
+                icon={MessageSquare}
+                onClick={onNotifyCustomer}
+              />
             )}
-            <Button
-              variant="outline"
-              size="sm"
+            <IconActionButton
+              label={t('delete')}
+              icon={Trash2}
               className="text-destructive hover:bg-destructive/10"
               onClick={onDelete}
-            >
-              <Trash2 className="h-3.5 w-3.5 sm:mr-1" />
-              <span className="hidden sm:inline">{t('delete')}</span>
-            </Button>
+            />
           </ButtonGroup>
         </div>
       </div>

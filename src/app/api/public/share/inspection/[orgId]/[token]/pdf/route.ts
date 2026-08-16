@@ -7,6 +7,7 @@ import { InspectionPDF } from "@/features/inspections/Components/InspectionPDF";
 import React from "react";
 import { readFile } from "fs/promises";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
+import { loadInspectionPhotos } from "@/features/inspections/Lib/inspectionPhotos";
 import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
 import { resolvePortalOrg } from "@/lib/portal-slug";
@@ -44,10 +45,13 @@ export async function GET(
           select: {
             make: true, model: true, year: true, vin: true,
             licensePlate: true, mileage: true,
-            customer: { select: { name: true, email: true, phone: true } },
+            // Data minimisation (GDPR Art. 5(1)(c)): this certificate is
+            // generated from a public link, so it carries only the name needed
+            // to identify whose vehicle was tested.
+            customer: { select: { name: true } },
           },
         },
-        template: { select: { name: true } },
+        template: { select: { name: true, severityScale: true, country: true } },
         items: { orderBy: { sortOrder: "asc" } },
       },
     });
@@ -121,6 +125,16 @@ export async function GET(
       ? `${appUrl}/portal/${portalSlug || orgId}`
       : undefined;
 
+    // Photos are an enhancement; the certificate is the document. See the
+    // protected route for why this is not allowed to fail the download.
+    let photos: Awaited<ReturnType<typeof loadInspectionPhotos>>["photos"] = {};
+    let photosOmitted = 0;
+    try {
+      ({ photos, omitted: photosOmitted } = await loadInspectionPhotos(inspection.items));
+    } catch (error) {
+      console.error("[Public Inspection PDF] Photo embedding failed, rendering without photos:", error);
+    }
+
     const element = React.createElement(InspectionPDF, {
       data: inspection,
       workshop: {
@@ -136,6 +150,8 @@ export async function GET(
       template,
       portalUrl,
       labels,
+      photos,
+      photosOmitted,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any;
     const buffer = await renderToBuffer(element);

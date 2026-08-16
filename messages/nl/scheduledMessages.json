@@ -1,0 +1,76 @@
+{
+  "dialog": {
+    "title": "Bericht plannen",
+    "editTitle": "Gepland bericht bewerken",
+    "channelLabel": "Versturen via",
+    "channels": {
+      "email": "E-mail",
+      "sms": "Sms",
+      "telegram": "Telegram",
+      "in_app": "Notitie in de app"
+    },
+    "repeatLabel": "Herhalen",
+    "frequencies": {
+      "once": "Eenmalig",
+      "daily": "Dagelijks",
+      "weekly": "Wekelijks",
+      "biweekly": "Elke 2 weken",
+      "monthly": "Maandelijks",
+      "yearly": "Jaarlijks"
+    },
+    "customerLabel": "Klant",
+    "selectCustomer": "Klant selecteren",
+    "none": "Geen",
+    "recipientEmail": "E-mailadres",
+    "recipientPhone": "Telefoonnummer",
+    "recipientChat": "Telegram chat-id",
+    "recipientOverride": "Naar een ander adres sturen",
+    "recipientHintCustomer": "Leeg laten om de opgeslagen gegevens te gebruiken.",
+    "recipientHintDirect": "Kies een klant of typ waar dit heen gaat.",
+    "subjectLabel": "Onderwerp",
+    "subjectPlaceholder": "bijv. Uw auto staat klaar",
+    "messageLabel": "Bericht",
+    "messagePlaceholder": "Wat wilt u zeggen?",
+    "characters": "{count} / {max} tekens",
+    "dateLabel": "Datum",
+    "timeLabel": "Tijd",
+    "endDateLabel": "Herhalen tot",
+    "endDateHint": "Leeg laten om te blijven herhalen.",
+    "schedule": "Plannen",
+    "scheduled": "Bericht gepland",
+    "updated": "Gepland bericht bijgewerkt",
+    "saveError": "Kan het bericht niet opslaan"
+  },
+  "list": {
+    "scheduleMessage": "Bericht plannen",
+    "scheduleForCustomer": "Bericht plannen",
+    "filters": {
+      "upcoming": "Komend",
+      "sent": "Verzonden",
+      "failed": "Mislukt",
+      "cancelled": "Geannuleerd",
+      "all": "Alle"
+    },
+    "status": {
+      "scheduled": "Gepland",
+      "sent": "Verzonden",
+      "failed": "Mislukt",
+      "cancelled": "Geannuleerd"
+    },
+    "empty": "Niets gepland",
+    "emptyHint": "Klik met de rechtermuisknop op een dag in de agenda, of gebruik Bericht plannen.",
+    "noRecipient": "Geen ontvanger",
+    "sentCount": "{count}x verzonden",
+    "rowMenu": "Berichtmenu",
+    "sendNow": "Nu versturen",
+    "cancel": "Verzenden annuleren",
+    "sentNow": "Bericht verzonden",
+    "sendError": "Kan het bericht niet versturen",
+    "cancelled": "Verzenden geannuleerd",
+    "cancelError": "Kan het bericht niet annuleren",
+    "deleted": "Bericht verwijderd",
+    "deleteError": "Kan het bericht niet verwijderen",
+    "deleteTitle": "Dit bericht verwijderen?",
+    "deleteDescription": "Het geplande bericht wordt definitief verwijderd. Wat al verzonden is blijft in het gesprek staan."
+  }
+}

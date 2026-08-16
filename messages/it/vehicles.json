@@ -134,7 +134,7 @@
     "dueMileagePlaceholder": "es. 50000",
     "reminderUpdated": "Promemoria aggiornato",
     "reminderCreated": "Promemoria creato",
-    "saveError": "Impossibile {action} il promemoria",
+    "saveError": "Impossibile salvare il promemoria",
     "notifyLabel": "Avvisami alla scadenza",
     "notifyInApp": "Notifica in app",
     "notifyEmail": "E-mail"
@@ -201,7 +201,7 @@
     "noteUpdated": "Nota aggiornata",
     "noteCreated": "Nota creata",
     "titleRequired": "Titolo e contenuto sono obbligatori",
-    "saveError": "Impossibile {action} la nota",
+    "saveError": "Impossibile salvare la nota",
     "openMenu": "Open menu",
     "firstPage": "First page",
     "previousPage": "Previous page",

@@ -1,7 +1,7 @@
 {
   "brandName": "Torqvoice",
   "buttons": {
-    "signIn": "Iniciar sesion",
+    "signIn": "Iniciar sesión",
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
@@ -21,8 +21,8 @@
     "delete": "Eliminar"
   },
   "form": {
-    "email": "Correo electronico",
-    "password": "Contrasena",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
     "emailPlaceholder": "you@example.com",
     "name": "Nombre",
     "phone": "Teléfono",
@@ -31,11 +31,11 @@
     "notes": "Notas"
   },
   "errors": {
-    "unexpected": "Ha ocurrido un error inesperado. Por favor, intentelo de nuevo.",
+    "unexpected": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
     "error": "Error"
   },
   "terms": {
-    "termsOfService": "Terminos de servicio"
+    "termsOfService": "Términos de servicio"
   },
   "errorPage": {
     "title": "Algo salió mal",
@@ -52,5 +52,29 @@
     "updated": "Torqvoice se ha actualizado a {version}",
     "whatsNew": "Ver novedades",
     "dismiss": "Cerrar"
+  },
+  "pagination": {
+    "showing": "Mostrando {start}–{end} de {total}",
+    "perPage": "por página",
+    "pageOf": "Página {page} de {pages}",
+    "first": "Primera página",
+    "previous": "Página anterior",
+    "next": "Página siguiente",
+    "last": "Última página"
+  },
+  "shared": {
+    "close": "Cerrar",
+    "viewPlans": "Ver planes",
+    "manageLicense": "Gestionar licencia",
+    "installOwn": "Instale el suyo",
+    "install": "Instalar",
+    "installApp": "Instalar aplicación",
+    "installTorqvoice": "Instalar Torqvoice",
+    "dismiss": "Descartar",
+    "useCamera": "Usar la cámara",
+    "enterManually": "Introducir manualmente",
+    "enterBarcode": "Introducir código de barras…",
+    "scanHint": "Apunte la cámara a un código de barras o introdúzcalo manualmente",
+    "iosInstallHint": "Toque Compartir > Añadir a inicio"
   }
 }

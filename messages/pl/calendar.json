@@ -33,7 +33,8 @@
   "filters": {
     "services": "Usługi",
     "reminders": "Przypomnienia",
-    "quotes": "Wyceny"
+    "quotes": "Wyceny",
+    "messages": "Wiadomości"
   },
   "selectVehicle": "Wybierz pojazd do zlecenia",
   "dateChoice": {
@@ -43,6 +44,15 @@
     "useToday": "Use today"
   },
   "more": "+ {count} więcej",
+  "monthTotal": "{count} wydarzeń w tym miesiącu",
+  "contextMenu": {
+    "newWorkOrder": "Nowe zlecenie",
+    "newReminder": "Nowe przypomnienie",
+    "newQuote": "Nowa wycena",
+    "openEvent": "Otwórz ({count})",
+    "hint": "Wskazówka: kliknij dzień prawym przyciskiem myszy, aby zobaczyć akcje",
+    "scheduleMessage": "Zaplanuj wiadomość"
+  },
   "events": {
     "status": {
       "completed": "Ukończono",
@@ -54,12 +64,15 @@
       "draft": "Szkic",
       "done": "Gotowe",
       "overdue": "Zaległe",
-      "upcoming": "Nadchodzące"
+      "upcoming": "Nadchodzące",
+      "failed": "Nieudane",
+      "queued": "W kolejce"
     },
     "type": {
       "service": "Usługa",
       "reminder": "Przypomnienie",
-      "quote": "Wycena"
+      "quote": "Wycena",
+      "message": "Wiadomość"
     },
     "noEvents": "Brak wydarzeń",
     "selectDay": "Wybierz dzień z wydarzeniami lub utwórz nowe zlecenie."

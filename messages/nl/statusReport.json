@@ -55,6 +55,7 @@
   },
   "list": {
     "title": "Statusrapporten",
+    "readMore": "Meer lezen",
     "newReport": "Nieuw rapport",
     "empty": "Nog geen statusrapporten",
     "emptyDescription": "Maak een statusrapport om uw klant te informeren over de voertuigstatus.",
@@ -76,17 +77,17 @@
     "deleteTitle": "Statusrapport verwijderen",
     "deleteFailed": "Kan statusrapport niet verwijderen",
     "cancel": "Annuleren",
-  "feedback": "Feedback",
-  "hasComment": "Ontvangen",
-  "noFeedback": "Nog geen feedback",
-  "sentAt": "Verzonden",
-  "sentVia": "Verzonden via",
-  "messageLabel": "Bericht",
-  "videoLabel": "Video"
+    "feedback": "Feedback",
+    "hasComment": "Ontvangen",
+    "noFeedback": "Nog geen feedback",
+    "sentAt": "Verzonden",
+    "sentVia": "Verzonden via",
+    "messageLabel": "Bericht",
+    "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Hallo {name}, we hebben een statusupdate over uw {vehicle}. Bekijk het hier: {url}",
     "emailSubject": "Voertuig statusupdate - {vehicle}",
-  "viewReport": "Bekijk het rapport hier: {url}"
+    "viewReport": "Bekijk het rapport hier: {url}"
   }
 }

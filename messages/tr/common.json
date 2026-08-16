@@ -52,5 +52,29 @@
     "updated": "Torqvoice {version} sürümüne güncellendi",
     "whatsNew": "Yenilikleri gör",
     "dismiss": "Kapat"
+  },
+  "pagination": {
+    "showing": "{total} kayıttan {start}–{end} gösteriliyor",
+    "perPage": "sayfa başına",
+    "pageOf": "Sayfa {page}/{pages}",
+    "first": "İlk sayfa",
+    "previous": "Önceki sayfa",
+    "next": "Sonraki sayfa",
+    "last": "Son sayfa"
+  },
+  "shared": {
+    "close": "Kapat",
+    "viewPlans": "Planlara bak",
+    "manageLicense": "Lisansı yönet",
+    "installOwn": "Kendinizinkini kurun",
+    "install": "Kur",
+    "installApp": "Uygulamayı kur",
+    "installTorqvoice": "Torqvoice'i kur",
+    "dismiss": "Kapat",
+    "useCamera": "Kamerayı kullan",
+    "enterManually": "Elle gir",
+    "enterBarcode": "Barkod girin…",
+    "scanHint": "Kamerayı bir barkoda doğrultun ya da elle girin",
+    "iosInstallHint": "Paylaş > Ana Ekrana Ekle'ye dokunun"
   }
 }

@@ -52,5 +52,29 @@
     "updated": "Torqvoice er oppdatert til {version}",
     "whatsNew": "Se hva som er nytt",
     "dismiss": "Lukk"
+  },
+  "pagination": {
+    "showing": "Viser {start}–{end} av {total}",
+    "perPage": "per side",
+    "pageOf": "Side {page} av {pages}",
+    "first": "Første side",
+    "previous": "Forrige side",
+    "next": "Neste side",
+    "last": "Siste side"
+  },
+  "shared": {
+    "close": "Lukk",
+    "viewPlans": "Se abonnementer",
+    "manageLicense": "Administrer lisens",
+    "installOwn": "Installer din egen",
+    "install": "Installer",
+    "installApp": "Installer app",
+    "installTorqvoice": "Installer Torqvoice",
+    "dismiss": "Lukk",
+    "useCamera": "Bruk kamera",
+    "enterManually": "Skriv inn manuelt",
+    "enterBarcode": "Skriv inn strekkode…",
+    "scanHint": "Rett kameraet mot en strekkode, eller skriv den inn manuelt",
+    "iosInstallHint": "Trykk Del > Legg til på Hjem-skjerm"
   }
 }

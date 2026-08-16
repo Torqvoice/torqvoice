@@ -98,6 +98,16 @@
     "webhook_create": "Opprettet webhook",
     "webhook_update": "Oppdatert webhook",
     "webhook_delete": "Slettet webhook",
-    "webhook_rotateSecret": "Roterte webhook-hemmelighet"
+    "webhook_rotateSecret": "Roterte webhook-hemmelighet",
+    "inspection_reopen": "Gjenåpnet inspeksjon",
+    "inspectionTemplate_import": "Importerte inspeksjonsmal",
+    "scheduled_message_create": "Opprettet planlagt melding",
+    "scheduled_message_update": "Oppdaterte planlagt melding",
+    "scheduled_message_delete": "Slettet planlagt melding",
+    "scheduled_message_cancel": "Avbrøt planlagt melding",
+    "scheduled_message_send_now": "Sendte planlagt melding",
+    "settings_applyTaxRate": "Brukte avgiftssats",
+    "settings_convertToExclusive": "Konverterte priser til eks. avgift",
+    "settings_convertToInclusive": "Konverterte priser til inkl. avgift"
   }
 }

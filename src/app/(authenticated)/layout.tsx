@@ -56,15 +56,7 @@ export default async function DashboardLayout({
   const supportEnabled = await isSupportEnabled();
 
   // Check user-level messaging enabled settings
-  let smsEnabled = false;
   let telegramEnabled = false;
-  if (features.sms) {
-    const smsSetting = await db.appSetting.findUnique({
-      where: { organizationId_key: { organizationId: data.organizationId, key: "sms.provider" } },
-      select: { value: true },
-    });
-    smsEnabled = !!smsSetting?.value;
-  }
   if (features.telegram) {
     const tgSetting = await db.appSetting.findUnique({
       where: { organizationId_key: { organizationId: data.organizationId, key: "telegram.enabled" } },
@@ -153,7 +145,6 @@ export default async function DashboardLayout({
           activeOrgId={data.organizationId}
           isSuperAdmin={data.isSuperAdmin}
           features={features}
-          smsEnabled={smsEnabled}
           telegramEnabled={telegramEnabled}
           visibleSubjects={visibleSubjects}
           isAdminOrOwner={isOwnerOrAdmin}

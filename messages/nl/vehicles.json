@@ -134,7 +134,7 @@
     "dueMileagePlaceholder": "bijv. 50000",
     "reminderUpdated": "Herinnering bijgewerkt",
     "reminderCreated": "Herinnering aangemaakt",
-    "saveError": "{action} van herinnering mislukt",
+    "saveError": "Kan herinnering niet opslaan",
     "notifyLabel": "Waarschuw mij bij vervaldatum",
     "notifyInApp": "In-app melding",
     "notifyEmail": "E-mail"
@@ -201,7 +201,7 @@
     "noteUpdated": "Notitie bijgewerkt",
     "noteCreated": "Notitie aangemaakt",
     "titleRequired": "Titel en inhoud zijn verplicht",
-    "saveError": "{action} van notitie mislukt",
+    "saveError": "Kan notitie niet opslaan",
     "openMenu": "Open menu",
     "firstPage": "First page",
     "previousPage": "Previous page",

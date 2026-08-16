@@ -93,7 +93,7 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
       onOpenChange(false);
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || t("saveError", { action: isEdit ? "update" : "create" }));
+      modal.open("error", "Error", result.error || t("saveError"));
     }
 
     setLoading(false);

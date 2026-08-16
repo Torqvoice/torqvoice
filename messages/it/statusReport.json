@@ -55,6 +55,7 @@
   },
   "list": {
     "title": "Rapporti di stato",
+    "readMore": "Scopri di più",
     "newReport": "Nuovo rapporto",
     "empty": "Nessun rapporto di stato",
     "emptyDescription": "Crea un rapporto di stato per aggiornare il cliente sullo stato del veicolo.",
@@ -76,17 +77,17 @@
     "deleteTitle": "Elimina rapporto di stato",
     "deleteFailed": "Impossibile eliminare il rapporto di stato",
     "cancel": "Annulla",
-  "feedback": "Commento",
-  "hasComment": "Ricevuto",
-  "noFeedback": "Nessun commento",
-  "sentAt": "Inviato",
-  "sentVia": "Inviato tramite",
-  "messageLabel": "Messaggio",
-  "videoLabel": "Video"
+    "feedback": "Commento",
+    "hasComment": "Ricevuto",
+    "noFeedback": "Nessun commento",
+    "sentAt": "Inviato",
+    "sentVia": "Inviato tramite",
+    "messageLabel": "Messaggio",
+    "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Ciao {name}, abbiamo un aggiornamento sullo stato del suo {vehicle}. Visualizzalo qui: {url}",
     "emailSubject": "Aggiornamento stato veicolo - {vehicle}",
-  "viewReport": "Visualizza il rapporto qui: {url}"
+    "viewReport": "Visualizza il rapporto qui: {url}"
   }
 }

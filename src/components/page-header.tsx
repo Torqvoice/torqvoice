@@ -41,6 +41,40 @@ function SearchTrigger() {
 
 type BreadcrumbSegment = { key: string; href?: string }
 
+/**
+ * Pages that have a documentation page of their own, so the header can offer a
+ * "Read more" link straight to it. The docs site resolves the reader's language
+ * itself, so these stay locale-free.
+ */
+const docsMap: Record<string, string> = {
+  '/work-orders': '/docs/features/work-orders',
+  '/inventory': '/docs/features/inventory',
+  '/messages': '/docs/features/messages',
+  '/reminders': '/docs/features/reminders',
+  // No anchor: heading slugs are translated, so an English one would not match
+  // on a localized page.
+  '/observations': '/docs/features/work-orders',
+  '/billing/recurring': '/docs/features/recurring-invoices',
+  '/settings/templates': '/docs/configuration/templates',
+  '/calendar': '/docs/features/calendar',
+  '/customers': '/docs/features/customers',
+  '/vehicles': '/docs/features/vehicles',
+  '/quotes': '/docs/features/quotes',
+  '/billing': '/docs/features/invoices',
+  '/inspections': '/docs/features/inspections',
+  '/reports': '/docs/features/reports',
+  '/work-board': '/docs/configuration/work-orders/work-board',
+  '/labor-presets': '/docs/configuration/work-orders/labor-presets',
+  '/audit-log': '/docs/security/audit-logging',
+  '/settings/team': '/docs/configuration/team',
+  '/settings/customer-portal': '/docs/features/portal',
+  '/settings/email': '/docs/integrations/email',
+  '/settings/sms': '/docs/integrations/sms',
+  '/settings/webhooks': '/docs/integrations/webhooks',
+  '/settings/subscription': '/docs/configuration/subscription',
+  '/settings/license': '/docs/licensing/white-label',
+}
+
 const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/': [{ key: 'dashboard' }],
   '/vehicles': [{ key: 'vehicles', href: '/vehicles' }, { key: 'allVehicles' }],
@@ -87,6 +121,8 @@ export function PageHeader() {
   const { daysUntilExpiry, dismissed, dismiss } = useLicenseExpiry()
   const t = useTranslations('navigation.breadcrumbs')
   const tn = useTranslations('navigation')
+
+  const docsHref = docsMap[pathname]
 
   // Match exact route first
   let segments = breadcrumbMap[pathname]
@@ -162,6 +198,16 @@ export function PageHeader() {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="ml-auto flex items-center gap-2">
+        {docsHref && (
+          <a
+            href={`https://torqvoice.com${docsHref}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden shrink-0 rounded text-[11px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:inline"
+          >
+            {tn('readMore')} →
+          </a>
+        )}
         <SearchTrigger />
         <QuickCreateMenu />
         {showWhiteLabelCta && (

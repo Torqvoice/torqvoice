@@ -1,7 +1,14 @@
 {
   "page": {
     "featureName": "SMS-Nachrichten",
-    "featureDescription": "Senden und empfangen Sie SMS-Nachrichten mit Ihren Kunden direkt über Torqvoice."
+    "featureDescription": "Senden und empfangen Sie SMS-Nachrichten mit Ihren Kunden direkt über Torqvoice.",
+    "tabs": {
+      "inbox": "Posteingang",
+      "scheduled": "Geplant"
+    },
+    "smsNotConfiguredTitle": "SMS ist nicht eingerichtet",
+    "smsNotConfiguredHint": "Verbinden Sie einen SMS-Anbieter, um hier Nachrichten zu senden und zu empfangen. Geplante E-Mails funktionieren auch ohne.",
+    "goToSmsSettings": "Zu den SMS-Einstellungen"
   },
   "notConfigured": {
     "title": "SMS nicht konfiguriert",
@@ -20,7 +27,10 @@
     "deleted": "Unterhaltung gelöscht",
     "deleteError": "Unterhaltung konnte nicht gelöscht werden",
     "back": "Back",
-    "conversationMenu": "Conversation menu"
+    "conversationMenu": "Conversation menu",
+    "searchPlaceholder": "Unterhaltungen durchsuchen",
+    "noSearchResults": "Keine Unterhaltung passt zur Suche",
+    "now": "jetzt"
   },
   "conversation": {
     "noPhone": "Keine Telefonnummer für {name} hinterlegt. Fügen Sie eine Telefonnummer hinzu, um Nachrichten zu senden.",
@@ -44,5 +54,22 @@
     "smsSent": "SMS gesendet",
     "sentTo": "{label} wurde an {name} ({phone}) gesendet",
     "sendError": "SMS konnte nicht gesendet werden"
+  },
+  "compose": {
+    "newMessage": "Neue Nachricht",
+    "title": "Neue Nachricht",
+    "searchPlaceholder": "Kunden nach Name oder Nummer suchen",
+    "noMatches": "Keine Kunden passen zur Suche",
+    "noRecipients": "Keine Kunden mit Telefonnummer",
+    "noRecipientsHint": "Hinterlegen Sie eine Telefonnummer, um zu schreiben.",
+    "changeRecipient": "Andere Person wählen",
+    "messageLabel": "Nachricht",
+    "messagePlaceholder": "Nachricht an {name} ...",
+    "segments": "{chars} Zeichen · {segments} SMS",
+    "send": "Senden",
+    "scheduleInstead": "Stattdessen planen",
+    "sent": "An {name} gesendet",
+    "sendError": "Nachricht konnte nicht gesendet werden",
+    "templates": "Vorlagen"
   }
 }

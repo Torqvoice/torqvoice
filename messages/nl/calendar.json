@@ -33,7 +33,8 @@
   "filters": {
     "services": "Diensten",
     "reminders": "Herinneringen",
-    "quotes": "Offertes"
+    "quotes": "Offertes",
+    "messages": "Berichten"
   },
   "selectVehicle": "Selecteer voertuig voor werkorder",
   "dateChoice": {
@@ -43,6 +44,15 @@
     "useToday": "Use today"
   },
   "more": "+ {count} meer",
+  "monthTotal": "{count} items deze maand",
+  "contextMenu": {
+    "newWorkOrder": "Nieuwe werkorder",
+    "newReminder": "Nieuwe herinnering",
+    "newQuote": "Nieuwe offerte",
+    "openEvent": "Openen ({count})",
+    "hint": "Tip: klik met de rechtermuisknop op een dag voor acties",
+    "scheduleMessage": "Bericht plannen"
+  },
   "events": {
     "status": {
       "completed": "Voltooid",
@@ -54,12 +64,15 @@
       "draft": "Concept",
       "done": "Klaar",
       "overdue": "Achterstallig",
-      "upcoming": "Aanstaand"
+      "upcoming": "Aanstaand",
+      "failed": "Mislukt",
+      "queued": "In wachtrij"
     },
     "type": {
       "service": "Dienst",
       "reminder": "Herinnering",
-      "quote": "Offerte"
+      "quote": "Offerte",
+      "message": "Bericht"
     },
     "noEvents": "Geen evenementen",
     "selectDay": "Selecteer een dag met evenementen of maak een nieuwe werkorder aan."

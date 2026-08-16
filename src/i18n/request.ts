@@ -44,6 +44,7 @@ export default getRequestConfig(async () => {
   const pdf = (await import(`../../messages/${locale}/pdf.json`)).default
   const portal = (await import(`../../messages/${locale}/portal.json`)).default
   const calendar = (await import(`../../messages/${locale}/calendar.json`)).default
+  const scheduledMessages = (await import(`../../messages/${locale}/scheduledMessages.json`)).default
   const inventory = (await import(`../../messages/${locale}/inventory.json`)).default
   const reports = (await import(`../../messages/${locale}/reports.json`)).default
   const settings = (await import(`../../messages/${locale}/settings.json`)).default
@@ -59,6 +60,7 @@ export default getRequestConfig(async () => {
   const telegramMessages = (await import(`../../messages/${locale}/telegramMessages.json`)).default
   const statusReport = (await import(`../../messages/${locale}/statusReport.json`)).default
   const support = (await import(`../../messages/${locale}/support.json`)).default
+  const inspections = (await import(`../../messages/${locale}/inspections.json`)).default
 
   return {
     locale,
@@ -77,6 +79,7 @@ export default getRequestConfig(async () => {
       pdf,
       portal,
       calendar,
+      scheduledMessages,
       inventory,
       reports,
       settings,
@@ -92,6 +95,7 @@ export default getRequestConfig(async () => {
       telegramMessages,
       statusReport,
       support,
+      inspections,
     },
   }
 })

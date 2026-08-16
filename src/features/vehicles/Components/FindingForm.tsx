@@ -96,7 +96,7 @@ export function FindingForm({
       modal.open(
         "error",
         "Error",
-        result.error || t("saveError", { action: isEdit ? "update" : "create" })
+        result.error || t("saveError")
       );
     }
 

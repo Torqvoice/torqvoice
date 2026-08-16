@@ -56,14 +56,14 @@ import {
   LayoutDashboard,
   Loader2,
   LogOut,
-  Moon,
+  Monitor,
   Package,
+  Palette,
   Plus,
   Receipt,
   Settings,
   Ship,
   ShieldCheck,
-  Sun,
   Users,
 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
@@ -73,6 +73,7 @@ import { locales, localeNames } from '@/i18n/config'
 import { createNewOrganization } from '@/features/team/Actions/createNewOrganization'
 import type { PlanFeatures } from '@/lib/features'
 import { useTheme } from '@/components/theme-provider'
+import { THEMES, type ThemePreference } from '@/lib/themes'
 import { useServiceType } from '@/components/service-type-context'
 import { NotificationBell, NotificationPanel } from '@/features/notifications/Components/NotificationPanel'
 import { SidebarInstallButton } from '@/components/pwa-install-prompt'
@@ -85,7 +86,6 @@ export function AppSidebar({
   activeOrgId,
   isSuperAdmin,
   features,
-  smsEnabled = false,
   telegramEnabled = false,
   isAdminOrOwner = false,
   visibleSubjects,
@@ -96,7 +96,6 @@ export function AppSidebar({
   activeOrgId?: string
   isSuperAdmin?: boolean
   features?: PlanFeatures
-  smsEnabled?: boolean
   telegramEnabled?: boolean
   isAdminOrOwner?: boolean
   visibleSubjects?: string[]
@@ -108,6 +107,7 @@ export function AppSidebar({
   const { setOpenMobile, isMobile } = useSidebar()
   const currentLocale = useLocale()
   const t = useTranslations('navigation')
+  const tSettings = useTranslations('settings')
   const [showCreateOrg, setShowCreateOrg] = React.useState(false)
   const [newOrgName, setNewOrgName] = React.useState('')
   const [creatingOrg, setCreatingOrg] = React.useState(false)
@@ -119,7 +119,7 @@ export function AppSidebar({
 
   const clientItems = [
     { titleKey: 'sidebar.customers' as const, url: '/customers', icon: Users, subject: 'customers' },
-    ...(smsEnabled ? [{ titleKey: 'sidebar.smsMessages' as const, url: '/messages', icon: MessageSquare, subject: 'customers' }] : []),
+    { titleKey: 'sidebar.messages' as const, url: '/messages', icon: MessageSquare, subject: 'customers' },
     ...(telegramEnabled ? [{ titleKey: 'sidebar.telegram' as const, url: '/telegram', icon: Send, subject: 'customers' }] : []),
   ].filter((item) => canAccess(item.subject))
 
@@ -374,14 +374,37 @@ export function AppSidebar({
                     </Link>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-                  {theme === 'dark' ? (
-                    <Sun className="mr-2 size-4" />
-                  ) : (
-                    <Moon className="mr-2 size-4" />
-                  )}
-                  {theme === 'dark' ? t('sidebar.lightMode') : t('sidebar.darkMode')}
-                </DropdownMenuItem>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <Palette className="mr-2 size-4" />
+                    {t('sidebar.theme')}
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuRadioGroup
+                      value={theme}
+                      onValueChange={(value) => setTheme(value as ThemePreference)}
+                    >
+                      {THEMES.map((definition) => (
+                        <DropdownMenuRadioItem key={definition.id} value={definition.id}>
+                          {/* Split dot: the theme's own background on one half,
+                              its primary on the other, so light and dark
+                              variants of the same hue stay tellable apart */}
+                          <span
+                            className="mr-2 size-3.5 shrink-0 rounded-full border"
+                            style={{
+                              background: `linear-gradient(135deg, ${definition.swatch[0]} 0 50%, ${definition.swatch[2]} 50% 100%)`,
+                            }}
+                          />
+                          {tSettings(`appearance.themes.${definition.id}`)}
+                        </DropdownMenuRadioItem>
+                      ))}
+                      <DropdownMenuRadioItem value="system">
+                        <Monitor className="mr-2 size-3.5 shrink-0" />
+                        {tSettings('appearance.themes.system')}
+                      </DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <Globe className="mr-2 size-4" />
