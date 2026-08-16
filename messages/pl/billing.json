@@ -79,9 +79,9 @@
     "failedDelete": "Nie udało się usunąć",
     "processed": "Przetworzono {count} faktur(ę/y)",
     "failedProcess": "Nie udało się przetworzyć",
-    "pause": "Pause",
-    "resume": "Resume",
-    "delete": "Delete",
-    "removeRow": "Remove row"
+    "pause": "Wstrzymaj",
+    "resume": "Wznów",
+    "delete": "Usuń",
+    "removeRow": "Usuń wiersz"
   }
 }

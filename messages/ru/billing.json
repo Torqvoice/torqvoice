@@ -79,9 +79,9 @@
     "failedDelete": "Не удалось удалить",
     "processed": "Обработано счетов: {count}",
     "failedProcess": "Не удалось обработать",
-    "pause": "Pause",
-    "resume": "Resume",
-    "delete": "Delete",
-    "removeRow": "Remove row"
+    "pause": "Пауза",
+    "resume": "Возобновить",
+    "delete": "Удалить",
+    "removeRow": "Удалить строку"
   }
 }

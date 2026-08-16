@@ -134,7 +134,7 @@
     "dueMileagePlaceholder": "örn. 50000",
     "reminderUpdated": "Hatırlatıcı güncellendi",
     "reminderCreated": "Hatırlatıcı oluşturuldu",
-    "saveError": "Hatırlatıcı {action} başarısız oldu",
+    "saveError": "Hatırlatıcı kaydedilemedi",
     "notifyLabel": "Vadesi geldiğinde bildir",
     "notifyInApp": "Uygulama içi bildirim",
     "notifyEmail": "E-posta"
@@ -201,7 +201,7 @@
     "noteUpdated": "Not güncellendi",
     "noteCreated": "Not oluşturuldu",
     "titleRequired": "Başlık ve içerik gereklidir",
-    "saveError": "Not {action} başarısız oldu",
+    "saveError": "Not kaydedilemedi",
     "openMenu": "Open menu",
     "firstPage": "First page",
     "previousPage": "Previous page",

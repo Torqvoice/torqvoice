@@ -55,6 +55,7 @@
   },
   "list": {
     "title": "Relatórios de status",
+    "readMore": "Saiba mais",
     "newReport": "Novo relatório",
     "empty": "Nenhum relatório de status",
     "emptyDescription": "Crie um relatório de status para atualizar seu cliente sobre o estado do veículo.",
@@ -76,17 +77,17 @@
     "deleteTitle": "Excluir relatório de status",
     "deleteFailed": "Falha ao excluir relatório de status",
     "cancel": "Cancelar",
-  "feedback": "Comentário",
-  "hasComment": "Recebido",
-  "noFeedback": "Sem comentários ainda",
-  "sentAt": "Enviado",
-  "sentVia": "Enviado por",
-  "messageLabel": "Mensagem",
-  "videoLabel": "Vídeo"
+    "feedback": "Comentário",
+    "hasComment": "Recebido",
+    "noFeedback": "Sem comentários ainda",
+    "sentAt": "Enviado",
+    "sentVia": "Enviado por",
+    "messageLabel": "Mensagem",
+    "videoLabel": "Vídeo"
   },
   "notify": {
     "defaultMessage": "Olá {name}, temos uma atualização de status do seu {vehicle}. Veja aqui: {url}",
     "emailSubject": "Atualização de status do veículo - {vehicle}",
-  "viewReport": "Veja o relatório aqui: {url}"
+    "viewReport": "Veja o relatório aqui: {url}"
   }
 }

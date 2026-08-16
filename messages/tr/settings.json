@@ -499,7 +499,7 @@
       "quotation": "Teklif",
       "inspections": "Muayeneler",
       "sms": "SMS",
-      "layout": "Duzen"
+      "layout": "Düzen"
     },
     "presets": "Şablon Hazır Ayarları",
     "primaryColor": "Ana Renk",
@@ -578,9 +578,9 @@
       "rose": "Gül",
       "indigo": "İndigo"
     },
-    "layoutTitle": "Fatura Duzeni",
-    "layoutDescription": "Fatura ve tekliflerinizdeki bolumlerin sirasini ve gorunurlugunu ozellestirin.",
-    "layoutSaved": "Duzen basariyla kaydedildi",
+    "layoutTitle": "Fatura Düzeni",
+    "layoutDescription": "Fatura ve tekliflerinizdeki bölümlerin sırasını ve görünürlüğünü özelleştirin.",
+    "layoutSaved": "Düzen başarıyla kaydedildi",
     "layoutDocInvoice": "Fatura",
     "layoutDocQuote": "Teklif"
   },
@@ -1191,7 +1191,7 @@
   },
   "ai": {
     "title": "Yapay Zeka Asistani",
-    "readMore": "Read More",
+    "readMore": "Daha fazla bilgi",
     "description": "Servis notlarini otomatik olusturmak ve arac gecmisini ozetlemek icin yapay zekayi yapilandirin.",
     "enableLabel": "Yapay zekayi etkinlestir",
     "enableHint": "Uygulama genelinde yapay zeka destekli ozellikleri kullanin",

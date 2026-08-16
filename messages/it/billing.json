@@ -79,9 +79,9 @@
     "failedDelete": "Eliminazione fallita",
     "processed": "{count} fattura/e elaborata/e",
     "failedProcess": "Elaborazione fallita",
-    "pause": "Pause",
-    "resume": "Resume",
-    "delete": "Delete",
-    "removeRow": "Remove row"
+    "pause": "Pausa",
+    "resume": "Riprendi",
+    "delete": "Elimina",
+    "removeRow": "Rimuovi riga"
   }
 }

@@ -79,9 +79,9 @@
     "failedDelete": "Verwijderen mislukt",
     "processed": "{count} factuur/facturen verwerkt",
     "failedProcess": "Verwerking mislukt",
-    "pause": "Pause",
-    "resume": "Resume",
-    "delete": "Delete",
-    "removeRow": "Remove row"
+    "pause": "Pauzeren",
+    "resume": "Hervatten",
+    "delete": "Verwijderen",
+    "removeRow": "Rij verwijderen"
   }
 }

@@ -80,8 +80,8 @@
     "processed": "{count} facture(s) traitée(s)",
     "failedProcess": "Échec du traitement",
     "pause": "Pause",
-    "resume": "Resume",
-    "delete": "Delete",
-    "removeRow": "Remove row"
+    "resume": "Reprendre",
+    "delete": "Supprimer",
+    "removeRow": "Supprimer la ligne"
   }
 }

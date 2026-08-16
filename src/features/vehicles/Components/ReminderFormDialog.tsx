@@ -154,7 +154,7 @@ export function ReminderFormDialog({
       onOpenChange(false);
       onSaved?.();
     } else {
-      modal.open("error", "Error", result.error || tv("saveError", { action: isEdit ? "update" : "create" }));
+      modal.open("error", "Error", result.error || tv("saveError"));
     }
     setFormLoading(false);
   };

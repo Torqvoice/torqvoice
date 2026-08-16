@@ -134,7 +134,7 @@
     "dueMileagePlaceholder": "напр. 50000",
     "reminderUpdated": "Напоминание обновлено",
     "reminderCreated": "Напоминание создано",
-    "saveError": "Не удалось {action} напоминание",
+    "saveError": "Не удалось сохранить напоминание",
     "notifyLabel": "Уведомить при наступлении срока",
     "notifyInApp": "Уведомление в приложении",
     "notifyEmail": "Эл. почта"
@@ -201,7 +201,7 @@
     "noteUpdated": "Заметка обновлена",
     "noteCreated": "Заметка создана",
     "titleRequired": "Название и содержание обязательны",
-    "saveError": "Не удалось {action} заметку",
+    "saveError": "Не удалось сохранить заметку",
     "openMenu": "Open menu",
     "firstPage": "First page",
     "previousPage": "Previous page",
