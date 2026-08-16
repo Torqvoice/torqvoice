@@ -184,6 +184,10 @@ export async function createInspection(input: unknown) {
           templateId: data.templateId,
           mileage: data.mileage,
           technicianId: technician?.id ?? null,
+          // Snapshotted so editing the template later cannot relabel a
+          // certificate that has already been issued from this inspection.
+          severityScale: template.severityScale,
+          country: template.country,
           organizationId,
         },
       });

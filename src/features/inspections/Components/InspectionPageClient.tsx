@@ -77,6 +77,8 @@ export interface InspectionData {
   completedAt: Date | null;
   createdAt: Date;
   organizationId: string;
+  severityScale: string | null;
+  country: string | null;
   vehicleCategory: string | null;
   nextTestDue: Date | null;
   certificateNumber: string | null;
@@ -224,8 +226,11 @@ export function InspectionPageClient({
   );
 
   const isCompleted = inspection.status === "completed";
-  const scale: SeverityScale = inspection.template.severityScale === "basic" ? "basic" : "eu";
-  const country = inspection.template.country ?? null;
+  // The snapshot wins; the template is the fallback for inspections that
+  // predate it, and the migration pinned those templates to their old scale.
+  const storedScale = inspection.severityScale ?? inspection.template.severityScale;
+  const scale: SeverityScale = storedScale === "basic" ? "basic" : "eu";
+  const country = inspection.country ?? inspection.template.country ?? null;
   const { label: gradeLabel, graded, result: resultLabel, resultDetail } = useConditionLabels(scale, country);
   const mileageLabel = serviceType === "marine" ? t("engineHours") : t("odometer");
 

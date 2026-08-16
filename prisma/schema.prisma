@@ -1100,6 +1100,14 @@ model Inspection {
   // Roadworthiness certificate fields required by Directive 2014/45/EU Annex IV.
   // `inspectorName` and `certificateNumber` are snapshots taken at completion so
   // the issued certificate stays stable even if staff or settings change later.
+  /// Snapshot of how this inspection was graded, taken when it was created.
+  /// Read in preference to the template's current setting: a workshop that
+  /// later switches a template to the EU scale must not relabel a certificate
+  /// it already issued. Null on inspections that predate the snapshot; those
+  /// fall back to the template, which the migration pinned to its old scale.
+  severityScale String?
+  country       String?
+
   vehicleCategory   String?
   nextTestDue       DateTime?
   certificateNumber String?
