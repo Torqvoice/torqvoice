@@ -28,5 +28,16 @@ if ! npx prisma migrate deploy 2>/dev/null; then
 fi
 echo "Migrations applied successfully!"
 
+# Photo embedding is the one thing here that depends on a native module, and
+# sharp's prebuilt binaries need an x86-64-v2 CPU. Some virtualised hosts do not
+# advertise one — Proxmox's default kvm64 processor model, for instance, reports
+# a baseline x86-64 even on modern hardware. Report it at boot rather than
+# leaving it to be found when a certificate comes out without its photos.
+# Never fatal: everything else in the app works without it.
+if ! sharp_error=$(node -e "require('sharp')" 2>&1); then
+  echo "WARNING: sharp could not be loaded. Inspection certificates will render without photos."
+  echo "$sharp_error" | sed 's/^/  /'
+fi
+
 echo "Starting application..."
 exec $cmd

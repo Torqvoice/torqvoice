@@ -125,7 +125,15 @@ export async function GET(
       ? `${appUrl}/portal/${portalSlug || orgId}`
       : undefined;
 
-    const { photos, omitted: photosOmitted } = await loadInspectionPhotos(inspection.items);
+    // Photos are an enhancement; the certificate is the document. See the
+    // protected route for why this is not allowed to fail the download.
+    let photos: Awaited<ReturnType<typeof loadInspectionPhotos>>["photos"] = {};
+    let photosOmitted = 0;
+    try {
+      ({ photos, omitted: photosOmitted } = await loadInspectionPhotos(inspection.items));
+    } catch (error) {
+      console.error("[Public Inspection PDF] Photo embedding failed, rendering without photos:", error);
+    }
 
     const element = React.createElement(InspectionPDF, {
       data: inspection,
