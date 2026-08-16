@@ -5,10 +5,9 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
-import { useTheme } from '@/components/theme-provider'
-import { Calendar, Clock, Loader2, Moon, Palette, Save, Sun } from 'lucide-react'
+import { ThemePicker } from '@/components/theme-picker'
+import { Calendar, Clock, Loader2, Palette, Save } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -82,7 +81,6 @@ const TIMEZONE_OPTIONS = [
 
 export function AppearanceSettings({ settings }: { settings: Record<string, string> }) {
   const t = useTranslations('settings')
-  const { theme, setTheme } = useTheme()
   const router = useRouter()
   const [saving, setSaving] = useState(false)
 
@@ -109,28 +107,14 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
           <Palette className="h-5 w-5 text-muted-foreground" />
           <CardTitle className="text-lg">{t('appearance.title')}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">{t('appearance.description')}</p>
 
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="flex items-center gap-3">
-              {theme === 'dark' ? (
-                <Moon className="h-5 w-5 text-muted-foreground" />
-              ) : (
-                <Sun className="h-5 w-5 text-muted-foreground" />
-              )}
-              <div>
-                <Label className="text-sm font-medium">{t('appearance.darkMode')}</Label>
-                <p className="text-xs text-muted-foreground">
-                  {t('appearance.darkModeHint')}
-                </p>
-              </div>
-            </div>
-            <Switch
-              checked={theme === 'dark'}
-              onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-            />
+          <div>
+            <Label className="text-sm font-medium">{t('appearance.themeLabel')}</Label>
+            <p className="text-xs text-muted-foreground">{t('appearance.themeHint')}</p>
           </div>
+          <ThemePicker />
         </CardContent>
       </Card>
 

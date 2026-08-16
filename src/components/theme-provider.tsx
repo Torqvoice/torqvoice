@@ -1,55 +1,86 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-
-type Theme = 'dark' | 'light' | 'system'
+import {
+  DEFAULT_THEME,
+  THEME_STORAGE_KEY,
+  type ThemeId,
+  type ThemePreference,
+  applyTheme,
+  getThemeMode,
+  isThemePreference,
+} from '@/lib/themes'
 
 interface ThemeContextType {
-  theme: Theme
-  setTheme: (theme: Theme) => void
+  /** What the user picked, which may be 'system'. */
+  theme: ThemePreference
+  /** The theme actually on screen ('system' already resolved). */
+  resolvedTheme: ThemeId
+  /** Whether the active theme is a light or a dark one. */
+  mode: 'light' | 'dark'
+  setTheme: (theme: ThemePreference) => void
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'dark',
+  theme: DEFAULT_THEME,
+  resolvedTheme: DEFAULT_THEME,
+  mode: getThemeMode(DEFAULT_THEME),
   setTheme: () => {
     // Default empty implementation
   },
 })
 
+function resolvePreference(theme: ThemePreference): ThemeId {
+  if (theme !== 'system') return theme
+  if (typeof window === 'undefined') return DEFAULT_THEME
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 export function ThemeProvider({
   children,
-  defaultTheme = 'dark',
+  defaultTheme = DEFAULT_THEME,
 }: {
   children: React.ReactNode
-  defaultTheme?: Theme
+  defaultTheme?: ThemePreference
 }) {
-  const [theme, setTheme] = useState<Theme>(() => {
+  const [theme, setTheme] = useState<ThemePreference>(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('torqvoice-theme') as Theme | null
-      if (stored) return stored
+      const stored = localStorage.getItem(THEME_STORAGE_KEY)
+      if (isThemePreference(stored)) return stored
     }
     return defaultTheme
   })
 
+  const [resolvedTheme, setResolvedTheme] = useState<ThemeId>(() => resolvePreference(theme))
+
   useEffect(() => {
     const root = window.document.documentElement
 
-    // A child layout can set data-force-theme to override the user preference
-    if (root.hasAttribute('data-force-theme')) return
+    const paint = () => {
+      const active = resolvePreference(theme)
+      setResolvedTheme(active)
 
-    root.classList.remove('light', 'dark')
-
-    if (theme === 'system') {
-      const sys = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-      root.classList.add(sys)
-    } else {
-      root.classList.add(theme)
+      // A child layout can set data-force-theme to override the user preference
+      if (root.hasAttribute('data-force-theme')) return
+      applyTheme(root, active)
     }
 
-    localStorage.setItem('torqvoice-theme', theme)
+    paint()
+    localStorage.setItem(THEME_STORAGE_KEY, theme)
+
+    if (theme !== 'system') return
+    const media = window.matchMedia('(prefers-color-scheme: dark)')
+    media.addEventListener('change', paint)
+    return () => media.removeEventListener('change', paint)
   }, [theme])
 
-  return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>
+  return (
+    <ThemeContext.Provider
+      value={{ theme, resolvedTheme, mode: getThemeMode(resolvedTheme), setTheme }}
+    >
+      {children}
+    </ThemeContext.Provider>
+  )
 }
 
 export const useTheme = () => useContext(ThemeContext)

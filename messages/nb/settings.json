@@ -856,8 +856,18 @@
   "appearance": {
     "title": "Utseende",
     "description": "Tilpass hvordan Torqvoice ser ut og foler seg.",
-    "darkMode": "Mork modus",
-    "darkModeHint": "Bytt mellom lyse og morke temaer",
+    "themeLabel": "Tema",
+    "themeHint": "Velg fargetema for appen. Valget lagres på denne enheten.",
+    "themes": {
+      "light": "Lys",
+      "dark": "Mørk",
+      "graphite": "Grafitt",
+      "ocean": "Hav",
+      "forest": "Skog",
+      "midnight": "Midnatt",
+      "carbon": "Karbon",
+      "system": "System"
+    },
     "dateTimeTitle": "Dato og tid",
     "dateTimeDescription": "Konfigurer hvordan datoer og tidspunkter vises i applikasjonen.",
     "dateFormat": "Datoformat",

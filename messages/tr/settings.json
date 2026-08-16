@@ -856,8 +856,18 @@
   "appearance": {
     "title": "Görünüm",
     "description": "Torqvoice'un görünümünü ve hissini özelleştirin.",
-    "darkMode": "Karanlık Mod",
-    "darkModeHint": "Açık ve koyu temalar arasında geçiş yapın",
+    "themeLabel": "Tema",
+    "themeHint": "Uygulamanın renk şemasını seçin. Seçim bu cihazda kaydedilir.",
+    "themes": {
+      "light": "Açık",
+      "dark": "Koyu",
+      "graphite": "Grafit",
+      "ocean": "Okyanus",
+      "forest": "Orman",
+      "midnight": "Gece Yarısı",
+      "carbon": "Karbon",
+      "system": "Sistem"
+    },
     "dateTimeTitle": "Tarih & Saat",
     "dateTimeDescription": "Uygulama genelinde tarihlerin ve saatlerin nasıl görüntüleneceğini yapılandırın.",
     "dateFormat": "Tarih Formatı",

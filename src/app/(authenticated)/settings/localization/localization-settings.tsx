@@ -37,14 +37,12 @@ import {
   Coins,
   Globe,
   Loader2,
-  Moon,
   Palette,
   Save,
-  Sun,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatCurrency, formatDate, formatDateTime, DEFAULT_DATE_FORMAT } from '@/lib/format'
-import { useTheme } from '@/components/theme-provider'
+import { ThemePicker } from '@/components/theme-picker'
 import { setLocale } from '@/i18n/actions'
 import { locales, localeNames } from '@/i18n/config'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
@@ -170,7 +168,6 @@ const TIMEZONE_OPTIONS = [
 export function LocalizationSettings({ settings }: { settings: Record<string, string> }) {
   const router = useRouter()
   const t = useTranslations('settings')
-  const { theme, setTheme } = useTheme()
   const currentLocale = useLocale()
   const [saving, setSaving] = useState(false)
   const [currencyOpen, setCurrencyOpen] = useState(false)
@@ -590,24 +587,12 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
           <Palette className="h-5 w-5 text-muted-foreground" />
           <CardTitle className="text-lg">{t('appearance.title')}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="flex items-center gap-3">
-              {mounted && theme === 'dark' ? (
-                <Moon className="h-5 w-5 text-muted-foreground" />
-              ) : (
-                <Sun className="h-5 w-5 text-muted-foreground" />
-              )}
-              <div>
-                <Label className="text-sm font-medium">{t('appearance.darkMode')}</Label>
-                <p className="text-xs text-muted-foreground">{t('appearance.darkModeHint')}</p>
-              </div>
-            </div>
-            <Switch
-              checked={mounted && theme === 'dark'}
-              onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-            />
+        <CardContent className="space-y-4">
+          <div>
+            <Label className="text-sm font-medium">{t('appearance.themeLabel')}</Label>
+            <p className="text-xs text-muted-foreground">{t('appearance.themeHint')}</p>
           </div>
+          <ThemePicker />
         </CardContent>
       </Card>
 
