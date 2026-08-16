@@ -1,5 +1,11 @@
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import {
+  TEMPLATE_PRESETS,
+  PRESET_VERSION,
+  presetPackageId,
+  type TemplatePreset,
+} from "../src/features/inspections/Lib/templatePresets";
 import { randomBytes, scryptSync } from "node:crypto";
 import * as fs from "fs";
 import * as path from "path";
@@ -19,6 +25,49 @@ function hashPassword(password: string): string {
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
 });
+
+// ── Clock ────────────────────────────────────────────────────────────────
+// Every date below is derived from the moment the seed runs, so a reset always
+// produces a workshop that is busy *today*: jobs on the board this week, quotes
+// about to expire, reminders coming due. Nothing is pinned to a calendar date,
+// which is what lets demo.torqvoice.com reset on a schedule and still look live.
+const NOW = new Date();
+const TODAY = (() => { const d = new Date(NOW); d.setHours(0, 0, 0, 0); return d; })();
+
+/** Midnight, `n` days from today. Negative is the past. */
+function days(n: number): Date {
+  const d = new Date(TODAY);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+/** `n` days from today at a wall-clock time. */
+function at(n: number, hour: number, minute = 0): Date {
+  const d = days(n);
+  d.setHours(hour, minute, 0, 0);
+  return d;
+}
+/** Offsets from the current instant - for message and chat timelines. */
+function hoursAgo(n: number): Date { return new Date(NOW.getTime() - n * 3600_000); }
+function minutesAgo(n: number): Date { return new Date(NOW.getTime() - n * 60_000); }
+/** Same day-of-month, `n` months out. Used for recurring schedules. */
+function months(n: number): Date {
+  const d = new Date(TODAY);
+  d.setMonth(d.getMonth() + n);
+  return d;
+}
+/**
+ * Monday of the week the work board showcases. On a weekday that is this
+ * week's Monday, so the board's day view lands on a busy day. Run over a
+ * weekend it rolls to the coming Monday rather than showing a spent week.
+ */
+function weekMonday(): Date {
+  const dow = NOW.getDay(); // 0 = Sunday
+  const toMonday = dow === 0 ? 1 : dow === 6 ? 2 : 1 - dow;
+  return days(toMonday);
+}
+/** Day offset from today to the board's Monday - for spreading other data. */
+const MONDAY_OFFSET = Math.round((weekMonday().getTime() - TODAY.getTime()) / 86_400_000);
+const YEAR = TODAY.getFullYear();
 
 const USER_ID = "IqcAL6GKoedJNO8Xi6UJkCM5YZqgS9uU";
 const ORG_ID = "cmmh0vczm0000oiyan37vuyqf";
@@ -138,8 +187,8 @@ async function provisionDemoAccount() {
   // Organization
   await prisma.organization.upsert({
     where: { id: ORG_ID },
-    create: { id: ORG_ID, name: DEMO_ORG_NAME },
-    update: { name: DEMO_ORG_NAME },
+    create: { id: ORG_ID, name: DEMO_ORG_NAME, portalSlug: "demo-workshop" },
+    update: { name: DEMO_ORG_NAME, portalSlug: "demo-workshop" },
   });
 
   // Belt and braces alongside the demoGuard on org creation: purge any
@@ -215,6 +264,12 @@ async function cleanup() {
   // custom presets. Deleting a Webhook cascades its WebhookDelivery rows.
   await prisma.webhook.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.reportSchedule.deleteMany({ where: { organizationId: ORG_ID } });
+  // Customer and vehicle are both SetNull here, so these outlive the core
+  // wipe below and have to go explicitly.
+  await prisma.scheduledMessage.deleteMany({ where: { organizationId: ORG_ID } });
+  // organizationId is a plain column on these two, so no cascade reaches them.
+  await prisma.dashboardWidget.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.serviceRequest.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.teamInvitation.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.laborPreset.deleteMany({ where: { organizationId: ORG_ID } });
   // Inspection.template is a required relation with no onDelete, so Postgres
@@ -253,7 +308,13 @@ async function cleanup() {
   await prisma.quote.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.serviceRecord.deleteMany({ where: { vehicle: { organizationId: ORG_ID } } });
   await prisma.fuelLog.deleteMany({ where: { vehicle: { organizationId: ORG_ID } } });
-  await prisma.reminder.deleteMany({ where: { vehicle: { organizationId: ORG_ID } } });
+  // A reminder can hang off a vehicle, a customer or nothing at all, so the
+  // vehicle cascade alone would leave workshop-level ones behind to pile up
+  // on every reset. organizationId covers all three; the vehicle clause stays
+  // for any older row that predates it.
+  await prisma.reminder.deleteMany({
+    where: { OR: [{ organizationId: ORG_ID }, { vehicle: { organizationId: ORG_ID } }] },
+  });
   await prisma.note.deleteMany({ where: { vehicle: { organizationId: ORG_ID } } });
   await prisma.vehicle.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.customer.deleteMany({ where: { organizationId: ORG_ID } });
@@ -285,29 +346,86 @@ async function seed() {
     catch { console.warn(`  [fail] ${file}`); }
   }
 
+  // -- Workshop settings --
+  // cleanup() wipes every AppSetting, so without this the demo would run with
+  // no address, no currency and no invoice numbering - the settings pages and
+  // every invoice PDF would render blank.
+  console.log("\nApplying workshop settings...");
+  const settings: Record<string, string> = {
+    "workshop.address": "1450 Foundry Road, Denver, CO 80216",
+    "workshop.phone": "+1 (555) 123-4567",
+    "workshop.email": "service@egelandauto.com",
+    "workshop.serviceType": "automotive",
+    "workshop.unitSystem": "imperial",
+    "workshop.defaultLaborRate": "110",
+    "workshop.defaultTechnician": "Jake Wilson",
+    "workshop.taxEnabled": "true",
+    "workshop.taxInclusive": "false",
+    "workshop.taxLabel": "Sales Tax",
+    "workshop.defaultTaxRate": "8",
+    "workshop.currencyCode": "USD",
+    "workshop.currencySymbol": "$",
+    "workshop.currencyFormat": "symbol",
+    "workshop.invoicePrefix": "{year}-",
+    "workshop.invoiceStartNumber": "1001",
+    "workshop.quotePrefix": "Q-{year}-",
+    "workshop.quoteValidDays": "30",
+    "workshop.dateFormat": "MM/dd/yyyy",
+    "workshop.timeFormat": "12h",
+    "invoice.dueDays": "14",
+    "invoice.paymentTerms": "Net 14 days from invoice date.",
+    "invoice.footerNote": "Thank you for your business. All work carries a 12-month parts and labor warranty.",
+    "invoice.orgNumber": "US-84-2210997",
+    "invoice.bankAccount": "Front Range Bank · 1120 4455 8890",
+    "invoice.showOrgNumber": "true",
+    "invoice.showBankAccount": "true",
+    "email.fromName": "Egeland Auto",
+    "defaultWarrantyMonths": "12",
+    "defaultWarrantyMileage": "12000",
+    "workboard.weekStartDay": "1",
+    "workboard.workDayStart": "07:00",
+    "workboard.workDayEnd": "17:00",
+    "inventory.lowStockAlerts.enabled": "true",
+    "inventory.lowStockAlerts.inApp": "true",
+    "parts.defaultMarkupPercent": "35",
+    "portal.enabled": "true",
+    "portal.description": "Book a service, follow your repair and read your invoices online.",
+    "portal.hours": "Mon-Fri 07:00-17:00 · Sat 09:00-13:00 · Closed Sunday",
+  };
+  await Promise.all(
+    Object.entries(settings).map(([key, value]) =>
+      prisma.appSetting.upsert({
+        where: { organizationId_key: { organizationId: ORG_ID, key } },
+        create: { organizationId: ORG_ID, key, value, userId: USER_ID },
+        update: { value },
+      }),
+    ),
+  );
+  console.log(`  Applied ${Object.keys(settings).length} settings`);
+
   // -- Customers (20) --
   console.log("\nCreating customers...");
   const customers = await Promise.all([
-    /* 0  */ prisma.customer.create({ data: { name: "Summit Construction Inc.", email: "fleet@summitconstruction.com", phone: "+1 (555) 100-2000", address: "742 Industrial Pkwy, Denver, CO 80216", company: "Summit Construction Inc.", notes: "Major fleet customer. 15 vehicles + heavy machinery. Net-30 terms.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 1  */ prisma.customer.create({ data: { name: "James Mitchell", email: "james.mitchell@gmail.com", phone: "+1 (555) 201-3344", address: "1824 Maple Ave, Austin, TX 78701", notes: "Personal vehicles. Prefers synthetic oil.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 2  */ prisma.customer.create({ data: { name: "Pacific Freight Lines", email: "service@pacificfreight.com", phone: "+1 (555) 302-5566", address: "9100 Logistics Blvd, Portland, OR 97201", company: "Pacific Freight Lines LLC", notes: "Long-haul trucking company. 8 semi-trucks. Priority service.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 3  */ prisma.customer.create({ data: { name: "Sarah Coleman", email: "sarah.coleman@outlook.com", phone: "+1 (555) 403-7788", address: "567 Oak Street, Nashville, TN 37203", notes: "BMW and Porsche owner. Always requests OEM parts.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 4  */ prisma.customer.create({ data: { name: "Metro City Services", email: "fleet@metrocityservices.gov", phone: "+1 (555) 504-9900", address: "100 City Hall Plaza, Boston, MA 02108", company: "Metro City Services", notes: "Municipal fleet contract. Quarterly invoicing. Purchase order required.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 5  */ prisma.customer.create({ data: { name: "Ryan Parker", email: "ryan.parker@icloud.com", phone: "+1 (555) 605-1122", address: "2250 Cedar Lane, Seattle, WA 98101", notes: "Tesla and Subaru owner. Tech-savvy.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 6  */ prisma.customer.create({ data: { name: "Ironclad Equipment Co.", email: "parts@ironcladequip.com", phone: "+1 (555) 706-3344", address: "4500 Heavy Machinery Rd, Houston, TX 77001", company: "Ironclad Equipment Co.", notes: "Heavy equipment dealer. Sends us overflow work. Good referral source.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 7  */ prisma.customer.create({ data: { name: "David Chen", email: "david.chen@gmail.com", phone: "+1 (555) 807-5566", address: "890 Pine Street, San Francisco, CA 94102", notes: "Audi and VW owner. Referred by James Mitchell.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 8  */ prisma.customer.create({ data: { name: "Ridgeline Excavation LLC", email: "ops@ridgelineexcavation.com", phone: "+1 (555) 908-7788", address: "1200 Quarry Rd, Salt Lake City, UT 84101", company: "Ridgeline Excavation LLC", notes: "5 excavators, 2 wheel loaders, 3 dump trucks. Monthly maintenance contract.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 9  */ prisma.customer.create({ data: { name: "Amanda Foster", email: "amanda.foster@hotmail.com", phone: "+1 (555) 109-9900", address: "334 Birch Drive, Charlotte, NC 28202", notes: "Honda Civic owner. Budget-conscious, prefers aftermarket.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 10 */ prisma.customer.create({ data: { name: "Prairie Farms Co-op", email: "maintenance@prairiefarms.com", phone: "+1 (555) 210-1122", address: "Route 66 Farm Road, Omaha, NE 68101", company: "Prairie Farms Co-op", notes: "Agricultural equipment. Tractors, harvesters. Seasonal peaks spring/fall.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 11 */ prisma.customer.create({ data: { name: "Mike Thompson", email: "mike.thompson@yahoo.com", phone: "+1 (555) 311-3344", address: "445 Elm Court, Minneapolis, MN 55401", notes: "Ford F-150 and Jeep owner. Off-road enthusiast.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 12 */ prisma.customer.create({ data: { name: "Apex Contractors Group", email: "service@apexcontractors.com", phone: "+1 (555) 412-5566", address: "2800 Builder's Row, Atlanta, GA 30301", company: "Apex Contractors Group", notes: "Small contractor. 2 excavators, 1 dump truck, 2 vans.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 13 */ prisma.customer.create({ data: { name: "Jessica Rivera", email: "jessica.r@protonmail.com", phone: "+1 (555) 513-7788", address: "1100 Sunset Blvd, Miami, FL 33101", notes: "Tesla Model Y owner. Referred by Ryan Parker.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 14 */ prisma.customer.create({ data: { name: "Titan Building Corp.", email: "projects@titanbuildingcorp.com", phone: "+1 (555) 614-9900", address: "5000 Commerce Dr, Dallas, TX 75201", company: "Titan Building Corp.", notes: "Large construction firm. 20+ pieces of equipment. Net-45 terms.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 15 */ prisma.customer.create({ data: { name: "Kevin O'Brien", email: "kevin.obrien@gmail.com", phone: "+1 (555) 715-1122", address: "678 Market Street, Philadelphia, PA 19101", notes: "Mercedes Sprinter van for his catering business.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 16 */ prisma.customer.create({ data: { name: "Greenfield Waste Management", email: "dispatch@greenfieldwaste.com", phone: "+1 (555) 816-3344", address: "7700 Recycling Way, Phoenix, AZ 85001", company: "Greenfield Waste Management", notes: "Waste management fleet. 12 trucks. Quarterly PM schedule.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 17 */ prisma.customer.create({ data: { name: "Robert Hughes", email: "robert.hughes@outlook.com", phone: "+1 (555) 917-5566", address: "2100 Lakeview Ave, Detroit, MI 48201", notes: "Ram truck and VW Golf owner. Weekend car guy.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 17 */ prisma.customer.create({ data: { name: "Heartland Grain Co.", email: "ops@heartlandgrain.com", phone: "+1 (555) 018-7788", address: "4400 Harvest Rd, Des Moines, IA 50301", company: "Heartland Grain Co.", notes: "Large-scale farming. 6 tractors, 2 combines. Seasonal rush spring and fall.", userId: USER_ID, organizationId: ORG_ID } }),
-    /* 19 */ prisma.customer.create({ data: { name: "Lisa Martinez", email: "lisa.martinez@icloud.com", phone: "+1 (555) 119-9900", address: "425 Ranch Road, San Antonio, TX 78201", notes: "Chevy Silverado and Toyota Tacoma. Ranch use.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 0  */ prisma.customer.create({ data: { customerNumber: "1001", name: "Summit Construction Inc.", email: "fleet@summitconstruction.com", phone: "+1 (555) 100-2000", address: "742 Industrial Pkwy, Denver, CO 80216", company: "Summit Construction Inc.", notes: "Major fleet customer. 15 vehicles + heavy machinery. Net-30 terms.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 1  */ prisma.customer.create({ data: { customerNumber: "1002", name: "James Mitchell", email: "james.mitchell@gmail.com", phone: "+1 (555) 201-3344", address: "1824 Maple Ave, Austin, TX 78701", notes: "Personal vehicles. Prefers synthetic oil.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 2  */ prisma.customer.create({ data: { customerNumber: "1003", name: "Pacific Freight Lines", email: "service@pacificfreight.com", phone: "+1 (555) 302-5566", address: "9100 Logistics Blvd, Portland, OR 97201", company: "Pacific Freight Lines LLC", notes: "Long-haul trucking company. 8 semi-trucks. Priority service.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 3  */ prisma.customer.create({ data: { customerNumber: "1004", name: "Sarah Coleman", email: "sarah.coleman@outlook.com", phone: "+1 (555) 403-7788", address: "567 Oak Street, Nashville, TN 37203", notes: "BMW and Porsche owner. Always requests OEM parts.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 4  */ prisma.customer.create({ data: { customerNumber: "1005", name: "Metro City Services", email: "fleet@metrocityservices.gov", phone: "+1 (555) 504-9900", address: "100 City Hall Plaza, Boston, MA 02108", company: "Metro City Services", notes: "Municipal fleet contract. Quarterly invoicing. Purchase order required.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 5  */ prisma.customer.create({ data: { customerNumber: "1006", name: "Ryan Parker", email: "ryan.parker@icloud.com", phone: "+1 (555) 605-1122", address: "2250 Cedar Lane, Seattle, WA 98101", notes: "Tesla and Subaru owner. Tech-savvy.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 6  */ prisma.customer.create({ data: { customerNumber: "1007", name: "Ironclad Equipment Co.", email: "parts@ironcladequip.com", phone: "+1 (555) 706-3344", address: "4500 Heavy Machinery Rd, Houston, TX 77001", company: "Ironclad Equipment Co.", notes: "Heavy equipment dealer. Sends us overflow work. Good referral source.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 7  */ prisma.customer.create({ data: { customerNumber: "1008", name: "David Chen", email: "david.chen@gmail.com", phone: "+1 (555) 807-5566", address: "890 Pine Street, San Francisco, CA 94102", notes: "Audi and VW owner. Referred by James Mitchell.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 8  */ prisma.customer.create({ data: { customerNumber: "1009", name: "Ridgeline Excavation LLC", email: "ops@ridgelineexcavation.com", phone: "+1 (555) 908-7788", address: "1200 Quarry Rd, Salt Lake City, UT 84101", company: "Ridgeline Excavation LLC", notes: "5 excavators, 2 wheel loaders, 3 dump trucks. Monthly maintenance contract.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 9  */ prisma.customer.create({ data: { customerNumber: "1010", name: "Amanda Foster", email: "amanda.foster@hotmail.com", phone: "+1 (555) 109-9900", address: "334 Birch Drive, Charlotte, NC 28202", notes: "Honda Civic owner. Budget-conscious, prefers aftermarket.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 10 */ prisma.customer.create({ data: { customerNumber: "1011", name: "Prairie Farms Co-op", email: "maintenance@prairiefarms.com", phone: "+1 (555) 210-1122", address: "Route 66 Farm Road, Omaha, NE 68101", company: "Prairie Farms Co-op", notes: "Agricultural equipment. Tractors, harvesters. Seasonal peaks spring/fall.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 11 */ prisma.customer.create({ data: { customerNumber: "1012", name: "Mike Thompson", email: "mike.thompson@yahoo.com", phone: "+1 (555) 311-3344", address: "445 Elm Court, Minneapolis, MN 55401", notes: "Ford F-150 and Jeep owner. Off-road enthusiast.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 12 */ prisma.customer.create({ data: { customerNumber: "1013", name: "Apex Contractors Group", email: "service@apexcontractors.com", phone: "+1 (555) 412-5566", address: "2800 Builder's Row, Atlanta, GA 30301", company: "Apex Contractors Group", notes: "Small contractor. 2 excavators, 1 dump truck, 2 vans.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 13 */ prisma.customer.create({ data: { customerNumber: "1014", name: "Jessica Rivera", email: "jessica.r@protonmail.com", phone: "+1 (555) 513-7788", address: "1100 Sunset Blvd, Miami, FL 33101", notes: "Tesla Model Y owner. Referred by Ryan Parker.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 14 */ prisma.customer.create({ data: { customerNumber: "1015", name: "Titan Building Corp.", email: "projects@titanbuildingcorp.com", phone: "+1 (555) 614-9900", address: "5000 Commerce Dr, Dallas, TX 75201", company: "Titan Building Corp.", notes: "Large construction firm. 20+ pieces of equipment. Net-45 terms.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 15 */ prisma.customer.create({ data: { customerNumber: "1016", name: "Kevin O'Brien", email: "kevin.obrien@gmail.com", phone: "+1 (555) 715-1122", address: "678 Market Street, Philadelphia, PA 19101", notes: "Mercedes Sprinter van for his catering business.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 16 */ prisma.customer.create({ data: { customerNumber: "1017", name: "Greenfield Waste Management", email: "dispatch@greenfieldwaste.com", phone: "+1 (555) 816-3344", address: "7700 Recycling Way, Phoenix, AZ 85001", company: "Greenfield Waste Management", notes: "Waste management fleet. 12 trucks. Quarterly PM schedule.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 17 */ prisma.customer.create({ data: { customerNumber: "1018", name: "Robert Hughes", email: "robert.hughes@outlook.com", phone: "+1 (555) 917-5566", address: "2100 Lakeview Ave, Detroit, MI 48201", notes: "Ram truck and VW Golf owner. Weekend car guy.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 17 */ prisma.customer.create({ data: { customerNumber: "1019", name: "Heartland Grain Co.", email: "ops@heartlandgrain.com", phone: "+1 (555) 018-7788", address: "4400 Harvest Rd, Des Moines, IA 50301", company: "Heartland Grain Co.", notes: "Large-scale farming. 6 tractors, 2 combines. Seasonal rush spring and fall.", userId: USER_ID, organizationId: ORG_ID } }),
+    /* 19 */ prisma.customer.create({ data: { customerNumber: "1020", name: "Lisa Martinez", email: "lisa.martinez@icloud.com", phone: "+1 (555) 119-9900", address: "425 Ranch Road, San Antonio, TX 78201", notes: "Chevy Silverado and Toyota Tacoma. Ranch use.", userId: USER_ID, organizationId: ORG_ID } }),
   ]);
   console.log(`  Created ${customers.length} customers`);
 
@@ -371,95 +489,95 @@ async function seed() {
   // -- Service Records (20) --
   console.log("\nCreating service records...");
   const svcData = [
-    { vehicleId: vehicles[0].id, title: "Oil Change & Tire Rotation", description: "Regular 10,000 mi service. Synthetic 0W-20 oil. Rotated tires front to back.", type: "maintenance", status: "completed", serviceDate: new Date("2025-11-15"), mileage: 15000, techName: "Jake Wilson", shopName: "Egeland Auto",
+    { vehicleId: vehicles[0].id, title: "Oil Change & Tire Rotation", description: "Regular 10,000 mi service. Synthetic 0W-20 oil. Rotated tires front to back.", type: "maintenance", status: "completed", serviceDate: days(-114), mileage: 15000, techName: "Jake Wilson", shopName: "Egeland Auto",
       partItems: [{ name: "Synthetic Oil 0W-20 (5qt)", partNumber: "TOY-0W20-5Q", quantity: 1, unitPrice: 42, total: 42 }, { name: "Oil Filter", partNumber: "TOY-OF-2023", quantity: 1, unitPrice: 12, total: 12 }],
       laborItems: [{ description: "Oil change and filter replacement", hours: 0.5, rate: 95, total: 47.50 }, { description: "Tire rotation and pressure check", hours: 0.3, rate: 95, total: 28.50 }],
       subtotal: 130, taxRate: 8, taxAmount: 10.40, totalAmount: 140.40 },
-    { vehicleId: vehicles[4].id, title: "50,000 Mile Major Service", description: "Major service interval. Replaced brake pads, rotors, spark plugs. Full inspection.", type: "maintenance", status: "completed", serviceDate: new Date("2025-10-20"), mileage: 50000, techName: "Chris Taylor", shopName: "Egeland Auto",
+    { vehicleId: vehicles[4].id, title: "50,000 Mile Major Service", description: "Major service interval. Replaced brake pads, rotors, spark plugs. Full inspection.", type: "maintenance", status: "completed", serviceDate: days(-140), mileage: 50000, techName: "Chris Taylor", shopName: "Egeland Auto",
       partItems: [{ name: "Front Brake Pad Set", partNumber: "BMW-BP-F34", quantity: 1, unitPrice: 185, total: 185 }, { name: "Front Brake Rotors (pair)", partNumber: "BMW-BR-F34", quantity: 1, unitPrice: 320, total: 320 }, { name: "Spark Plugs (set of 4)", partNumber: "BMW-SP-N20", quantity: 1, unitPrice: 68, total: 68 }, { name: "Engine Oil 5W-30 (7qt)", partNumber: "BMW-5W30-7Q", quantity: 1, unitPrice: 89, total: 89 }],
       laborItems: [{ description: "Front brake pad and rotor replacement", hours: 2.0, rate: 110, total: 220 }, { description: "Spark plug replacement", hours: 1.0, rate: 110, total: 110 }, { description: "Oil change and multi-point inspection", hours: 1.0, rate: 110, total: 110 }],
       subtotal: 1102, taxRate: 8, taxAmount: 88.16, totalAmount: 1190.16 },
-    { vehicleId: vehicles[6].id, title: "Tire Replacement - All Four", description: "Replaced all four tires. Michelin Pilot Sport 4S. Alignment check passed.", type: "repair", status: "completed", serviceDate: new Date("2026-01-08"), mileage: 7800, techName: "Jake Wilson", shopName: "Egeland Auto",
+    { vehicleId: vehicles[6].id, title: "Tire Replacement - All Four", description: "Replaced all four tires. Michelin Pilot Sport 4S. Alignment check passed.", type: "repair", status: "completed", serviceDate: days(-60), mileage: 7800, techName: "Jake Wilson", shopName: "Egeland Auto",
       partItems: [{ name: "Michelin Pilot Sport 4S 235/40R19", partNumber: "MICH-PS4S-2354019", quantity: 4, unitPrice: 310, total: 1240 }],
       laborItems: [{ description: "Mount and balance 4 tires", hours: 1.5, rate: 95, total: 142.50 }, { description: "Wheel alignment check", hours: 0.5, rate: 95, total: 47.50 }],
       subtotal: 1430, taxRate: 8, taxAmount: 114.40, totalAmount: 1544.40 },
-    { vehicleId: vehicles[13].id, title: "Porsche 911 - Annual Service", description: "Annual service. Oil change, brake fluid flush, cabin filter. Full inspection.", type: "maintenance", status: "completed", serviceDate: new Date("2026-01-15"), mileage: 12500, techName: "Chris Taylor", shopName: "Egeland Auto",
+    { vehicleId: vehicles[13].id, title: "Porsche 911 - Annual Service", description: "Annual service. Oil change, brake fluid flush, cabin filter. Full inspection.", type: "maintenance", status: "completed", serviceDate: days(-53), mileage: 12500, techName: "Chris Taylor", shopName: "Egeland Auto",
       partItems: [{ name: "Porsche Approved Oil 0W-40 (9qt)", partNumber: "POR-0W40-9Q", quantity: 1, unitPrice: 165, total: 165 }, { name: "Oil Filter", partNumber: "POR-OF-992", quantity: 1, unitPrice: 28, total: 28 }, { name: "Brake Fluid DOT4 (1L)", partNumber: "POR-BF-DOT4", quantity: 2, unitPrice: 35, total: 70 }],
       laborItems: [{ description: "Oil and filter change", hours: 1.0, rate: 145, total: 145 }, { description: "Brake fluid flush all 4 corners", hours: 1.5, rate: 145, total: 217.50 }, { description: "Multi-point inspection", hours: 1.0, rate: 145, total: 145 }],
       subtotal: 770.50, taxRate: 8, taxAmount: 61.64, totalAmount: 832.14 },
-    { vehicleId: vehicles[17].id, title: "150K Mile Engine Service - Kenworth", description: "Major engine service. Replaced fuel filters, air filters, coolant flush. DPF regen.", type: "maintenance", status: "completed", serviceDate: new Date("2025-12-05"), mileage: 180000, techName: "Marcus Reed", shopName: "Egeland Auto",
+    { vehicleId: vehicles[17].id, title: "150K Mile Engine Service - Kenworth", description: "Major engine service. Replaced fuel filters, air filters, coolant flush. DPF regen.", type: "maintenance", status: "completed", serviceDate: days(-94), mileage: 180000, techName: "Marcus Reed", shopName: "Egeland Auto",
       partItems: [{ name: "PACCAR MX-13 Fuel Filter Kit", partNumber: "PAC-FF-MX13", quantity: 1, unitPrice: 125, total: 125 }, { name: "Air Filter Element", partNumber: "PAC-AF-MX13", quantity: 1, unitPrice: 85, total: 85 }, { name: "Coolant (5gal)", partNumber: "PAC-COOL-5G", quantity: 2, unitPrice: 65, total: 130 }, { name: "Engine Oil 15W-40 (10gal)", partNumber: "PAC-15W40-10G", quantity: 1, unitPrice: 280, total: 280 }],
       laborItems: [{ description: "Engine oil and filter change", hours: 2.0, rate: 125, total: 250 }, { description: "Fuel filter replacement", hours: 1.0, rate: 125, total: 125 }, { description: "Coolant flush and refill", hours: 1.5, rate: 125, total: 187.50 }, { description: "DPF regeneration and diagnostic", hours: 1.5, rate: 125, total: 187.50 }],
       subtotal: 1370, taxRate: 8, taxAmount: 109.60, totalAmount: 1479.60 },
-    { vehicleId: vehicles[18].id, title: "Volvo FH 640 - DOT Inspection", description: "Full annual inspection per DOT regulations. Brake test, emissions, lights, safety.", type: "inspection", status: "in_progress", serviceDate: new Date("2026-02-18"), mileage: 92000, techName: "Marcus Reed", shopName: "Egeland Auto",
+    { vehicleId: vehicles[18].id, title: "Volvo FH 640 - DOT Inspection", description: "Full annual inspection per DOT regulations. Brake test, emissions, lights, safety.", type: "inspection", status: "in_progress", serviceDate: days(-19), mileage: 92000, techName: "Marcus Reed", shopName: "Egeland Auto",
       partItems: [{ name: "Marker Light Bulbs (pack of 10)", partNumber: "VOL-MLB-10", quantity: 1, unitPrice: 35, total: 35 }, { name: "Wiper Blades (pair)", partNumber: "VOL-WB-FH", quantity: 1, unitPrice: 52, total: 52 }],
       laborItems: [{ description: "Full DOT inspection and documentation", hours: 4.0, rate: 125, total: 500 }, { description: "Minor repairs and adjustments", hours: 2.0, rate: 125, total: 250 }],
       subtotal: 837, taxRate: 8, taxAmount: 66.96, totalAmount: 903.96 },
-    { vehicleId: vehicles[22].id, title: "John Deere 6R 250 - 500hr Service", description: "Scheduled 500-hour service. Engine oil, all filters, hydraulic fluid sample, PTO check.", type: "maintenance", status: "completed", serviceDate: new Date("2026-01-20"), mileage: 2500, techName: "Marcus Reed", shopName: "Egeland Auto",
+    { vehicleId: vehicles[22].id, title: "John Deere 6R 250 - 500hr Service", description: "Scheduled 500-hour service. Engine oil, all filters, hydraulic fluid sample, PTO check.", type: "maintenance", status: "completed", serviceDate: days(-48), mileage: 2500, techName: "Marcus Reed", shopName: "Egeland Auto",
       partItems: [{ name: "Engine Oil 15W-40 (5gal)", partNumber: "JD-15W40-5G", quantity: 1, unitPrice: 185, total: 185 }, { name: "Oil Filter", partNumber: "JD-OF-6R", quantity: 1, unitPrice: 32, total: 32 }, { name: "Fuel Filter Kit", partNumber: "JD-FFK-6R", quantity: 1, unitPrice: 68, total: 68 }, { name: "Hydraulic Filter", partNumber: "JD-HF-6R", quantity: 1, unitPrice: 55, total: 55 }, { name: "Air Filter Inner+Outer", partNumber: "JD-AF-6R", quantity: 1, unitPrice: 78, total: 78 }],
       laborItems: [{ description: "Engine oil and all filter replacement", hours: 2.0, rate: 140, total: 280 }, { description: "Hydraulic fluid sampling and analysis", hours: 0.5, rate: 140, total: 70 }, { description: "PTO and 3-point hitch inspection", hours: 1.0, rate: 140, total: 140 }, { description: "Grease all fittings (32 points)", hours: 1.5, rate: 140, total: 210 }],
       subtotal: 1118, taxRate: 8, taxAmount: 89.44, totalAmount: 1207.44 },
-    { vehicleId: vehicles[23].id, title: "Fendt 942 - CVT Transmission Service", description: "CVT transmission fluid and filter change. Vario calibration and function test.", type: "maintenance", status: "completed", serviceDate: new Date("2025-11-10"), mileage: 1100, techName: "Chris Taylor", shopName: "Egeland Auto",
+    { vehicleId: vehicles[23].id, title: "Fendt 942 - CVT Transmission Service", description: "CVT transmission fluid and filter change. Vario calibration and function test.", type: "maintenance", status: "completed", serviceDate: days(-119), mileage: 1100, techName: "Chris Taylor", shopName: "Egeland Auto",
       partItems: [{ name: "Vario CVT Fluid (10gal)", partNumber: "FENDT-CVT-10G", quantity: 1, unitPrice: 420, total: 420 }, { name: "CVT Filter Kit", partNumber: "FENDT-CVTF-942", quantity: 1, unitPrice: 165, total: 165 }],
       laborItems: [{ description: "CVT transmission fluid drain and refill", hours: 3.0, rate: 150, total: 450 }, { description: "CVT filter replacement", hours: 1.5, rate: 150, total: 225 }, { description: "Vario transmission calibration", hours: 2.0, rate: 150, total: 300 }],
       subtotal: 1560, taxRate: 8, taxAmount: 124.80, totalAmount: 1684.80 },
-    { vehicleId: vehicles[29].id, title: "CAT D6 - Hydraulic System Overhaul", description: "Complete hydraulic system service. Replaced main pump seals, flushed system, new filters.", type: "repair", status: "completed", serviceDate: new Date("2025-09-18"), mileage: 4000, techName: "Marcus Reed", shopName: "Egeland Auto",
+    { vehicleId: vehicles[29].id, title: "CAT D6 - Hydraulic System Overhaul", description: "Complete hydraulic system service. Replaced main pump seals, flushed system, new filters.", type: "repair", status: "completed", serviceDate: days(-172), mileage: 4000, techName: "Marcus Reed", shopName: "Egeland Auto",
       partItems: [{ name: "Hydraulic Pump Seal Kit", partNumber: "CAT-HPS-D6", quantity: 1, unitPrice: 450, total: 450 }, { name: "Hydraulic Oil (55gal drum)", partNumber: "CAT-HO-55G", quantity: 1, unitPrice: 850, total: 850 }, { name: "Hydraulic Filter Set", partNumber: "CAT-HF-D6", quantity: 2, unitPrice: 120, total: 240 }],
       laborItems: [{ description: "Hydraulic pump disassembly and seal replacement", hours: 6.0, rate: 140, total: 840 }, { description: "System flush and refill", hours: 3.0, rate: 140, total: 420 }, { description: "Pressure testing and calibration", hours: 2.0, rate: 140, total: 280 }],
       subtotal: 3080, taxRate: 8, taxAmount: 246.40, totalAmount: 3326.40 },
-    { vehicleId: vehicles[31].id, title: "Komatsu PC210 - Track Chain Replacement", description: "Replaced both track chains and sprockets. Undercarriage inspection completed.", type: "repair", status: "completed", serviceDate: new Date("2026-01-22"), mileage: 3000, techName: "Chris Taylor", shopName: "Egeland Auto",
+    { vehicleId: vehicles[31].id, title: "Komatsu PC210 - Track Chain Replacement", description: "Replaced both track chains and sprockets. Undercarriage inspection completed.", type: "repair", status: "completed", serviceDate: days(-46), mileage: 3000, techName: "Chris Taylor", shopName: "Egeland Auto",
       partItems: [{ name: "Track Chain Assembly (left)", partNumber: "KOM-TC-PC210L", quantity: 1, unitPrice: 2800, total: 2800 }, { name: "Track Chain Assembly (right)", partNumber: "KOM-TC-PC210R", quantity: 1, unitPrice: 2800, total: 2800 }, { name: "Track Sprocket (pair)", partNumber: "KOM-TS-PC210", quantity: 1, unitPrice: 1200, total: 1200 }],
       laborItems: [{ description: "Track chain removal and installation (both sides)", hours: 8.0, rate: 140, total: 1120 }, { description: "Sprocket replacement", hours: 3.0, rate: 140, total: 420 }, { description: "Undercarriage inspection", hours: 2.0, rate: 140, total: 280 }],
       subtotal: 8620, taxRate: 8, taxAmount: 689.60, totalAmount: 9309.60 },
-    { vehicleId: vehicles[33].id, title: "Volvo EC220E - 1000hr Full Service", description: "All fluids, filters, track tension, swing bearing inspection.", type: "maintenance", status: "in_progress", serviceDate: new Date("2026-02-25"), mileage: 1500, techName: "Chris Taylor", shopName: "Egeland Auto",
+    { vehicleId: vehicles[33].id, title: "Volvo EC220E - 1000hr Full Service", description: "All fluids, filters, track tension, swing bearing inspection.", type: "maintenance", status: "in_progress", serviceDate: days(-12), mileage: 1500, techName: "Chris Taylor", shopName: "Egeland Auto",
       partItems: [{ name: "Engine Oil 15W-40 (5gal)", partNumber: "VOL-15W40-5G", quantity: 1, unitPrice: 185, total: 185 }, { name: "Hydraulic Filter Set", partNumber: "VOL-HFS-EC220", quantity: 1, unitPrice: 120, total: 120 }, { name: "Fuel Filter Kit", partNumber: "VOL-FFK-EC220", quantity: 1, unitPrice: 58, total: 58 }],
       laborItems: [{ description: "Engine oil and all filter replacement", hours: 2.5, rate: 140, total: 350 }, { description: "Track tension adjustment", hours: 1.0, rate: 140, total: 140 }, { description: "Full grease service (48 points)", hours: 2.0, rate: 140, total: 280 }],
       subtotal: 1133, taxRate: 8, taxAmount: 90.64, totalAmount: 1223.64 },
-    { vehicleId: vehicles[11].id, title: "Jeep Wrangler - Lift Kit Install", description: "2.5\" suspension lift, new shocks, extended brake lines. Alignment after.", type: "repair", status: "completed", serviceDate: new Date("2026-02-10"), mileage: 28000, techName: "Jake Wilson", shopName: "Egeland Auto",
+    { vehicleId: vehicles[11].id, title: "Jeep Wrangler - Lift Kit Install", description: "2.5\" suspension lift, new shocks, extended brake lines. Alignment after.", type: "repair", status: "completed", serviceDate: days(-27), mileage: 28000, techName: "Jake Wilson", shopName: "Egeland Auto",
       partItems: [{ name: "Mopar 2.5\" Lift Kit", partNumber: "JEEP-LK-25", quantity: 1, unitPrice: 1200, total: 1200 }, { name: "Bilstein 5100 Shocks (set of 4)", partNumber: "BIL-5100-JL4", quantity: 1, unitPrice: 680, total: 680 }, { name: "Extended Brake Lines", partNumber: "JEEP-EBL-JL", quantity: 1, unitPrice: 120, total: 120 }],
       laborItems: [{ description: "Suspension lift installation", hours: 6.0, rate: 110, total: 660 }, { description: "Brake line routing and bleed", hours: 1.0, rate: 110, total: 110 }, { description: "4-wheel alignment", hours: 1.5, rate: 110, total: 165 }],
       subtotal: 2935, taxRate: 8, taxAmount: 234.80, totalAmount: 3169.80 },
-    { vehicleId: vehicles[9].id, title: "Sprinter - Turbocharger Replacement", description: "Turbo shaft play detected. Black smoke under boost. Replaced turbo assembly.", type: "repair", status: "in_progress", serviceDate: new Date("2026-02-19"), mileage: 35400, techName: "Chris Taylor", shopName: "Egeland Auto",
+    { vehicleId: vehicles[9].id, title: "Sprinter - Turbocharger Replacement", description: "Turbo shaft play detected. Black smoke under boost. Replaced turbo assembly.", type: "repair", status: "in_progress", serviceDate: days(-18), mileage: 35400, techName: "Chris Taylor", shopName: "Egeland Auto",
       partItems: [{ name: "Turbocharger Assembly - OM651", partNumber: "MB-TURBO-OM651", quantity: 1, unitPrice: 1280, total: 1280 }, { name: "Turbo Oil Feed Line", partNumber: "MB-TOFL-OM651", quantity: 1, unitPrice: 68, total: 68 }, { name: "Turbo Gasket Kit", partNumber: "MB-TGK-OM651", quantity: 1, unitPrice: 42, total: 42 }],
       laborItems: [{ description: "Turbocharger removal", hours: 3.0, rate: 125, total: 375 }, { description: "New turbo installation and oil line", hours: 2.5, rate: 125, total: 312.50 }],
       subtotal: 2077.50, taxRate: 8, taxAmount: 166.20, totalAmount: 2243.70 },
-    { vehicleId: vehicles[24].id, title: "Massey Ferguson 8S - Hydraulic Pump", description: "Low hydraulic pressure. Replaced main pump and flushed system.", type: "repair", status: "completed", serviceDate: new Date("2026-02-05"), mileage: 3500, techName: "Marcus Reed", shopName: "Egeland Auto",
+    { vehicleId: vehicles[24].id, title: "Massey Ferguson 8S - Hydraulic Pump", description: "Low hydraulic pressure. Replaced main pump and flushed system.", type: "repair", status: "completed", serviceDate: days(-32), mileage: 3500, techName: "Marcus Reed", shopName: "Egeland Auto",
       partItems: [{ name: "Main Hydraulic Pump Assembly", partNumber: "MF-HPA-8S", quantity: 1, unitPrice: 1650, total: 1650 }, { name: "Hydraulic Oil (15gal)", partNumber: "HYD-ISO46-15G", quantity: 1, unitPrice: 280, total: 280 }, { name: "Hydraulic Filter Set", partNumber: "MF-HFS-8S", quantity: 1, unitPrice: 95, total: 95 }],
       laborItems: [{ description: "Hydraulic pump removal", hours: 4.0, rate: 140, total: 560 }, { description: "New pump installation", hours: 3.0, rate: 140, total: 420 }, { description: "System flush and pressure test", hours: 2.0, rate: 140, total: 280 }],
       subtotal: 3285, taxRate: 8, taxAmount: 262.80, totalAmount: 3547.80 },
-    { vehicleId: vehicles[15].id, title: "Ram 1500 - Brake Service", description: "Front and rear brake pad replacement. Rotor resurface. Fluid flush.", type: "maintenance", status: "completed", serviceDate: new Date("2026-01-28"), mileage: 19500, techName: "Jake Wilson", shopName: "Egeland Auto",
+    { vehicleId: vehicles[15].id, title: "Ram 1500 - Brake Service", description: "Front and rear brake pad replacement. Rotor resurface. Fluid flush.", type: "maintenance", status: "completed", serviceDate: days(-40), mileage: 19500, techName: "Jake Wilson", shopName: "Egeland Auto",
       partItems: [{ name: "Front Brake Pad Set", partNumber: "RAM-BP-F-DS", quantity: 1, unitPrice: 145, total: 145 }, { name: "Rear Brake Pad Set", partNumber: "RAM-BP-R-DS", quantity: 1, unitPrice: 125, total: 125 }, { name: "Brake Fluid DOT4 (1L)", partNumber: "BF-DOT4-1L", quantity: 2, unitPrice: 18, total: 36 }],
       laborItems: [{ description: "Front brake pad replacement", hours: 1.5, rate: 110, total: 165 }, { description: "Rear brake pad replacement", hours: 1.0, rate: 110, total: 110 }, { description: "Rotor resurface (all 4)", hours: 1.0, rate: 110, total: 110 }, { description: "Brake fluid flush", hours: 0.5, rate: 110, total: 55 }],
       subtotal: 746, taxRate: 8, taxAmount: 59.68, totalAmount: 805.68 },
-    { vehicleId: vehicles[14].id, title: "VW Golf GTI - DSG Service + Oil", description: "DSG transmission fluid/filter. Engine oil change. Cabin filter.", type: "maintenance", status: "completed", serviceDate: new Date("2025-12-20"), mileage: 38000, techName: "Jake Wilson", shopName: "Egeland Auto",
+    { vehicleId: vehicles[14].id, title: "VW Golf GTI - DSG Service + Oil", description: "DSG transmission fluid/filter. Engine oil change. Cabin filter.", type: "maintenance", status: "completed", serviceDate: days(-79), mileage: 38000, techName: "Jake Wilson", shopName: "Egeland Auto",
       partItems: [{ name: "DSG Fluid (7qt)", partNumber: "VW-DSG-7Q", quantity: 1, unitPrice: 145, total: 145 }, { name: "DSG Filter", partNumber: "VW-DSGF", quantity: 1, unitPrice: 52, total: 52 }, { name: "Engine Oil 5W-40 (5qt)", partNumber: "VW-5W40-5Q", quantity: 1, unitPrice: 58, total: 58 }],
       laborItems: [{ description: "DSG fluid and filter change", hours: 1.5, rate: 110, total: 165 }, { description: "Engine oil and filter change", hours: 0.5, rate: 110, total: 55 }],
       subtotal: 475, taxRate: 8, taxAmount: 38, totalAmount: 513 },
-    { vehicleId: vehicles[19].id, title: "Mack Granite - PTO Pump Replacement", description: "PTO pump failed. No hydraulic pressure for dump body. Replaced and tested.", type: "repair", status: "completed", serviceDate: new Date("2025-12-28"), mileage: 154000, techName: "Marcus Reed", shopName: "Egeland Auto",
+    { vehicleId: vehicles[19].id, title: "Mack Granite - PTO Pump Replacement", description: "PTO pump failed. No hydraulic pressure for dump body. Replaced and tested.", type: "repair", status: "completed", serviceDate: days(-71), mileage: 154000, techName: "Marcus Reed", shopName: "Egeland Auto",
       partItems: [{ name: "PTO Hydraulic Pump", partNumber: "MACK-PTO-GR64", quantity: 1, unitPrice: 1450, total: 1450 }, { name: "PTO Mounting Gasket Kit", partNumber: "MACK-PTO-GK", quantity: 1, unitPrice: 85, total: 85 }, { name: "Hydraulic Oil (10gal)", partNumber: "HYD-ISO46-10G", quantity: 1, unitPrice: 180, total: 180 }],
       laborItems: [{ description: "PTO pump removal", hours: 3.0, rate: 140, total: 420 }, { description: "New pump installation", hours: 2.5, rate: 140, total: 350 }, { description: "System prime and dump cycle test", hours: 1.5, rate: 140, total: 210 }],
       subtotal: 2695, taxRate: 8, taxAmount: 215.60, totalAmount: 2910.60 },
-    { vehicleId: vehicles[35].id, title: "Case 621G - Bucket Cylinder Reseal", description: "Bucket cylinder leaking. Resealed both cylinders. Tested under load.", type: "repair", status: "completed", serviceDate: new Date("2025-11-28"), mileage: 1700, techName: "Chris Taylor", shopName: "Egeland Auto",
+    { vehicleId: vehicles[35].id, title: "Case 621G - Bucket Cylinder Reseal", description: "Bucket cylinder leaking. Resealed both cylinders. Tested under load.", type: "repair", status: "completed", serviceDate: days(-101), mileage: 1700, techName: "Chris Taylor", shopName: "Egeland Auto",
       partItems: [{ name: "Bucket Cylinder Seal Kit (pair)", partNumber: "CASE-BCSK-621G", quantity: 1, unitPrice: 380, total: 380 }, { name: "Hydraulic Oil (5gal)", partNumber: "HYD-ISO46-5G", quantity: 2, unitPrice: 95, total: 190 }],
       laborItems: [{ description: "Cylinder removal and disassembly", hours: 3.0, rate: 140, total: 420 }, { description: "Reseal and reassembly", hours: 2.5, rate: 140, total: 350 }, { description: "System bleed and pressure test", hours: 1.5, rate: 140, total: 210 }],
       subtotal: 1550, taxRate: 8, taxAmount: 124, totalAmount: 1674 },
-    { vehicleId: vehicles[1].id, title: "F-150 Transmission Fluid Flush", description: "Customer reported rough shifting. Flushed transmission fluid, replaced filter.", type: "repair", status: "completed", serviceDate: new Date("2026-02-01"), mileage: 41500, techName: "Jake Wilson", shopName: "Egeland Auto",
+    { vehicleId: vehicles[1].id, title: "F-150 Transmission Fluid Flush", description: "Customer reported rough shifting. Flushed transmission fluid, replaced filter.", type: "repair", status: "completed", serviceDate: days(-36), mileage: 41500, techName: "Jake Wilson", shopName: "Egeland Auto",
       partItems: [{ name: "Mercon ULV ATF (12qt)", partNumber: "FORD-ATF-ULV", quantity: 1, unitPrice: 185, total: 185 }, { name: "Transmission Filter Kit", partNumber: "FORD-TFK-10R80", quantity: 1, unitPrice: 68, total: 68 }],
       laborItems: [{ description: "Transmission fluid flush", hours: 2.0, rate: 110, total: 220 }, { description: "Filter and gasket replacement", hours: 1.5, rate: 110, total: 165 }],
       subtotal: 638, taxRate: 8, taxAmount: 51.04, totalAmount: 689.04 },
-    { vehicleId: vehicles[38].id, title: "Corvette C8 - First Annual Service", description: "Annual oil change with performance inspection. Checked brake wear, tire depth, and suspension.", type: "maintenance", status: "completed", serviceDate: new Date("2026-01-22"), mileage: 5800, techName: "Chris Taylor", shopName: "Egeland Auto",
+    { vehicleId: vehicles[38].id, title: "Corvette C8 - First Annual Service", description: "Annual oil change with performance inspection. Checked brake wear, tire depth, and suspension.", type: "maintenance", status: "completed", serviceDate: days(-46), mileage: 5800, techName: "Chris Taylor", shopName: "Egeland Auto",
       partItems: [{ name: "Mobil 1 0W-40 Full Synthetic (8qt)", partNumber: "CHV-0W40-8Q", quantity: 1, unitPrice: 95, total: 95 }, { name: "Oil Filter (OEM)", partNumber: "CHV-OF-LT2", quantity: 1, unitPrice: 18, total: 18 }, { name: "Cabin Air Filter", partNumber: "CHV-CAF-C8", quantity: 1, unitPrice: 28, total: 28 }],
       laborItems: [{ description: "Oil and filter change (dry sump)", hours: 1.0, rate: 130, total: 130 }, { description: "Performance multi-point inspection", hours: 1.0, rate: 130, total: 130 }],
       subtotal: 401, taxRate: 8, taxAmount: 32.08, totalAmount: 433.08 },
-    { vehicleId: vehicles[39].id, title: "Defender 110 - 30K Service + Off-Road Inspection", description: "30K mile service. Oil change, all filters, diff fluids. Extra inspection for off-road wear.", type: "maintenance", status: "completed", serviceDate: new Date("2025-12-10"), mileage: 27000, techName: "Erik Haugen", shopName: "Egeland Auto",
+    { vehicleId: vehicles[39].id, title: "Defender 110 - 30K Service + Off-Road Inspection", description: "30K mile service. Oil change, all filters, diff fluids. Extra inspection for off-road wear.", type: "maintenance", status: "completed", serviceDate: days(-89), mileage: 27000, techName: "Erik Haugen", shopName: "Egeland Auto",
       partItems: [{ name: "Engine Oil 0W-20 (7qt)", partNumber: "LR-0W20-7Q", quantity: 1, unitPrice: 78, total: 78 }, { name: "Oil Filter", partNumber: "LR-OF-DEF", quantity: 1, unitPrice: 22, total: 22 }, { name: "Air Filter", partNumber: "LR-AF-DEF", quantity: 1, unitPrice: 45, total: 45 }, { name: "Front Diff Fluid (2qt)", partNumber: "LR-FDF-2Q", quantity: 1, unitPrice: 42, total: 42 }, { name: "Rear Diff Fluid (2.5qt)", partNumber: "LR-RDF-25Q", quantity: 1, unitPrice: 48, total: 48 }],
       laborItems: [{ description: "Oil and filter change", hours: 0.5, rate: 110, total: 55 }, { description: "Air filter replacement", hours: 0.3, rate: 110, total: 33 }, { description: "Front and rear differential fluid change", hours: 1.5, rate: 110, total: 165 }, { description: "Off-road undercarriage inspection", hours: 1.0, rate: 110, total: 110 }],
       subtotal: 598, taxRate: 8, taxAmount: 47.84, totalAmount: 645.84 },
-    { vehicleId: vehicles[40].id, title: "Charger R/T - Brake Rotor Replacement", description: "Front rotors warped from aggressive driving. Replace rotors and pads.", type: "repair", status: "completed", serviceDate: new Date("2026-02-05"), mileage: 33500, techName: "Jake Wilson", shopName: "Egeland Auto",
+    { vehicleId: vehicles[40].id, title: "Charger R/T - Brake Rotor Replacement", description: "Front rotors warped from aggressive driving. Replace rotors and pads.", type: "repair", status: "completed", serviceDate: days(-32), mileage: 33500, techName: "Jake Wilson", shopName: "Egeland Auto",
       partItems: [{ name: "Front Brake Rotors (pair)", partNumber: "DOD-BR-CHG-F", quantity: 1, unitPrice: 280, total: 280 }, { name: "Front Brake Pad Set (performance)", partNumber: "DOD-BP-CHG-F", quantity: 1, unitPrice: 145, total: 145 }],
       laborItems: [{ description: "Front brake rotor and pad replacement", hours: 2.0, rate: 110, total: 220 }, { description: "Brake system bleed and road test", hours: 0.5, rate: 110, total: 55 }],
       subtotal: 700, taxRate: 8, taxAmount: 56, totalAmount: 756 },
-    { vehicleId: vehicles[41].id, title: "WRX - Turbo Boost Leak Repair", description: "Customer reported loss of power under boost. Found cracked intercooler pipe.", type: "repair", status: "completed", serviceDate: new Date("2026-01-30"), mileage: 11800, techName: "Chris Taylor", shopName: "Egeland Auto",
+    { vehicleId: vehicles[41].id, title: "WRX - Turbo Boost Leak Repair", description: "Customer reported loss of power under boost. Found cracked intercooler pipe.", type: "repair", status: "completed", serviceDate: days(-38), mileage: 11800, techName: "Chris Taylor", shopName: "Egeland Auto",
       partItems: [{ name: "Intercooler Pipe + Couplers", partNumber: "SUB-ICP-WRX", quantity: 1, unitPrice: 165, total: 165 }, { name: "T-Bolt Clamps (set of 4)", partNumber: "SUB-TBC-4", quantity: 1, unitPrice: 28, total: 28 }],
       laborItems: [{ description: "Boost leak diagnosis and smoke test", hours: 1.0, rate: 120, total: 120 }, { description: "Intercooler pipe replacement", hours: 1.5, rate: 120, total: 180 }],
       subtotal: 493, taxRate: 8, taxAmount: 39.44, totalAmount: 532.44 },
@@ -468,7 +586,7 @@ async function seed() {
   const serviceRecords = [];
   for (const sr of svcData) {
     const { partItems, laborItems, ...data } = sr;
-    const record = await prisma.serviceRecord.create({ data: { ...data, cost: data.totalAmount, partItems: { create: partItems }, laborItems: { create: laborItems } } });
+    const record = await prisma.serviceRecord.create({ data: { ...data, organizationId: ORG_ID, cost: data.totalAmount, partItems: { create: partItems }, laborItems: { create: laborItems } } });
     serviceRecords.push(record);
   }
   console.log(`  Created ${serviceRecords.length} service records`);
@@ -476,59 +594,59 @@ async function seed() {
   // -- Quotes (15) --
   console.log("\nCreating quotes...");
   const qData = [
-    { quoteNumber: "Q-2026-001", title: "Full Brake Overhaul - BMW 330i", status: "sent", validUntil: new Date("2026-03-15"), customerId: customers[3].id, vehicleId: vehicles[4].id,
+    { quoteNumber: `Q-${YEAR}-001`, title: "Full Brake Overhaul - BMW 330i", status: "sent", validUntil: days(6), customerId: customers[3].id, vehicleId: vehicles[4].id,
       partItems: [{ name: "Front Brake Rotor Set (OEM)", partNumber: "BMW-BR-F34-OEM", quantity: 1, unitPrice: 480, total: 480 }, { name: "Rear Brake Rotor Set (OEM)", partNumber: "BMW-BR-R34-OEM", quantity: 1, unitPrice: 390, total: 390 }, { name: "Front Brake Pad Set (OEM)", partNumber: "BMW-BP-F34-OEM", quantity: 1, unitPrice: 220, total: 220 }],
       laborItems: [{ description: "Front brake rotor and pad replacement", hours: 2.5, rate: 110, total: 275 }, { description: "Rear brake rotor replacement", hours: 2.0, rate: 110, total: 220 }],
       subtotal: 1585, taxRate: 8, taxAmount: 126.80, totalAmount: 1711.80 },
-    { quoteNumber: "Q-2026-002", title: "200K Engine Service - Kenworth T680", status: "accepted", validUntil: new Date("2026-03-01"), customerId: customers[2].id, vehicleId: vehicles[17].id,
+    { quoteNumber: `Q-${YEAR}-002`, title: "200K Engine Service - Kenworth T680", status: "accepted", validUntil: days(-8), customerId: customers[2].id, vehicleId: vehicles[17].id,
       partItems: [{ name: "PACCAR MX-13 Overhaul Kit", partNumber: "PAC-OHK-MX13", quantity: 1, unitPrice: 850, total: 850 }, { name: "Injector Set (6)", partNumber: "PAC-INJ-MX13-6", quantity: 1, unitPrice: 1420, total: 1420 }],
       laborItems: [{ description: "Injector replacement (6 cylinders)", hours: 8.0, rate: 140, total: 1120 }, { description: "Valve adjustment", hours: 4.0, rate: 140, total: 560 }],
       subtotal: 3950, taxRate: 8, taxAmount: 316, totalAmount: 4266 },
-    { quoteNumber: "Q-2026-003", title: "CAT D6 Undercarriage Rebuild", status: "sent", validUntil: new Date("2026-03-30"), customerId: customers[0].id, vehicleId: vehicles[29].id,
+    { quoteNumber: `Q-${YEAR}-003`, title: "CAT D6 Undercarriage Rebuild", status: "sent", validUntil: days(21), customerId: customers[0].id, vehicleId: vehicles[29].id,
       partItems: [{ name: "Track Chain Assembly (pair)", partNumber: "CAT-TCA-D6", quantity: 1, unitPrice: 6500, total: 6500 }, { name: "Track Roller Set (14 pcs)", partNumber: "CAT-TR-D6-14", quantity: 1, unitPrice: 4200, total: 4200 }, { name: "Sprocket Set (pair)", partNumber: "CAT-SS-D6", quantity: 1, unitPrice: 1500, total: 1500 }],
       laborItems: [{ description: "Complete undercarriage disassembly", hours: 12.0, rate: 140, total: 1680 }, { description: "Component installation", hours: 16.0, rate: 140, total: 2240 }],
       subtotal: 16120, taxRate: 8, taxAmount: 1289.60, totalAmount: 17409.60 },
-    { quoteNumber: "Q-2026-004", title: "John Deere 6R - Front Axle Overhaul", status: "sent", validUntil: new Date("2026-04-15"), customerId: customers[10].id, vehicleId: vehicles[22].id,
+    { quoteNumber: `Q-${YEAR}-004`, title: "John Deere 6R - Front Axle Overhaul", status: "sent", validUntil: days(37), customerId: customers[10].id, vehicleId: vehicles[22].id,
       partItems: [{ name: "Front Axle Bearing Kit", partNumber: "JD-FABK-6R", quantity: 1, unitPrice: 520, total: 520 }, { name: "CV Joint Assembly (pair)", partNumber: "JD-CVJ-6R", quantity: 1, unitPrice: 850, total: 850 }],
       laborItems: [{ description: "Front axle removal", hours: 5.0, rate: 140, total: 700 }, { description: "Bearing and CV replacement", hours: 4.0, rate: 140, total: 560 }],
       subtotal: 2630, taxRate: 8, taxAmount: 210.40, totalAmount: 2840.40 },
-    { quoteNumber: "Q-2026-005", title: "Honda Civic - Clutch Replacement", status: "accepted", validUntil: new Date("2026-03-10"), customerId: customers[9].id, vehicleId: vehicles[5].id,
+    { quoteNumber: `Q-${YEAR}-005`, title: "Honda Civic - Clutch Replacement", status: "accepted", validUntil: days(1), customerId: customers[9].id, vehicleId: vehicles[5].id,
       partItems: [{ name: "Clutch Kit (disc, plate, bearing)", partNumber: "HON-CLK-FK7", quantity: 1, unitPrice: 380, total: 380 }],
       laborItems: [{ description: "Transmission removal and clutch replacement", hours: 5.0, rate: 110, total: 550 }, { description: "Reinstallation and test drive", hours: 2.0, rate: 110, total: 220 }],
       subtotal: 1150, taxRate: 8, taxAmount: 92, totalAmount: 1242 },
-    { quoteNumber: "Q-2026-006", title: "Volvo FH 640 - Air Suspension Repair", status: "accepted", validUntil: new Date("2026-03-10"), customerId: customers[2].id, vehicleId: vehicles[18].id,
+    { quoteNumber: `Q-${YEAR}-006`, title: "Volvo FH 640 - Air Suspension Repair", status: "accepted", validUntil: days(1), customerId: customers[2].id, vehicleId: vehicles[18].id,
       partItems: [{ name: "Rear Air Spring (pair)", partNumber: "VOL-RAS-FH", quantity: 1, unitPrice: 560, total: 560 }, { name: "Height Sensor", partNumber: "VOL-HS-FH", quantity: 1, unitPrice: 240, total: 240 }],
       laborItems: [{ description: "Air bag replacement (both sides)", hours: 3.0, rate: 140, total: 420 }, { description: "Sensor replacement and calibration", hours: 1.5, rate: 140, total: 210 }],
       subtotal: 1430, taxRate: 8, taxAmount: 114.40, totalAmount: 1544.40 },
-    { quoteNumber: "Q-2026-007", title: "Fendt 942 - A/C Compressor Repair", status: "draft", validUntil: new Date("2026-04-10"), customerId: customers[18].id, vehicleId: vehicles[23].id,
+    { quoteNumber: `Q-${YEAR}-007`, title: "Fendt 942 - A/C Compressor Repair", status: "draft", validUntil: days(32), customerId: customers[18].id, vehicleId: vehicles[23].id,
       partItems: [{ name: "A/C Compressor - Fendt 942", partNumber: "FENDT-ACC-942", quantity: 1, unitPrice: 890, total: 890 }, { name: "Condenser Assembly", partNumber: "FENDT-COND-942", quantity: 1, unitPrice: 450, total: 450 }],
       laborItems: [{ description: "Cab disassembly for A/C access", hours: 3.0, rate: 150, total: 450 }, { description: "Compressor and condenser replacement", hours: 4.0, rate: 150, total: 600 }],
       subtotal: 2390, taxRate: 8, taxAmount: 191.20, totalAmount: 2581.20 },
-    { quoteNumber: "Q-2026-008", title: "Komatsu PC210 - Boom Cylinder Reseal", status: "sent", validUntil: new Date("2026-03-25"), customerId: customers[8].id, vehicleId: vehicles[31].id,
+    { quoteNumber: `Q-${YEAR}-008`, title: "Komatsu PC210 - Boom Cylinder Reseal", status: "sent", validUntil: days(16), customerId: customers[8].id, vehicleId: vehicles[31].id,
       partItems: [{ name: "Boom Cylinder Seal Kit (pair)", partNumber: "KOM-BCSK-PC210", quantity: 1, unitPrice: 520, total: 520 }, { name: "Hydraulic Oil (10gal)", partNumber: "HYD-ISO46-10G", quantity: 1, unitPrice: 180, total: 180 }],
       laborItems: [{ description: "Boom cylinder removal", hours: 4.0, rate: 140, total: 560 }, { description: "Disassembly and reseal", hours: 3.0, rate: 140, total: 420 }],
       subtotal: 1680, taxRate: 8, taxAmount: 134.40, totalAmount: 1814.40 },
-    { quoteNumber: "Q-2026-009", title: "Liebherr Crane - Annual Certification", status: "sent", validUntil: new Date("2026-05-01"), customerId: customers[14].id, vehicleId: vehicles[36].id,
+    { quoteNumber: `Q-${YEAR}-009`, title: "Liebherr Crane - Annual Certification", status: "sent", validUntil: days(53), customerId: customers[14].id, vehicleId: vehicles[36].id,
       partItems: [{ name: "Wire Rope Inspection Kit", partNumber: "LBH-WRIK", quantity: 1, unitPrice: 250, total: 250 }, { name: "Hydraulic Hose Set (safety critical)", partNumber: "LBH-HHS-SC", quantity: 1, unitPrice: 850, total: 850 }],
       laborItems: [{ description: "Full crane inspection per OSHA", hours: 8.0, rate: 160, total: 1280 }, { description: "Hydraulic hose replacement", hours: 4.0, rate: 160, total: 640 }, { description: "Load test and certification", hours: 4.0, rate: 160, total: 640 }],
       subtotal: 3660, taxRate: 8, taxAmount: 292.80, totalAmount: 3952.80 },
-    { quoteNumber: "Q-2026-010", title: "Porsche 911 - Suspension Refresh", status: "draft", validUntil: new Date("2026-04-01"), customerId: customers[3].id, vehicleId: vehicles[13].id,
+    { quoteNumber: `Q-${YEAR}-010`, title: "Porsche 911 - Suspension Refresh", status: "draft", validUntil: days(23), customerId: customers[3].id, vehicleId: vehicles[13].id,
       partItems: [{ name: "Bilstein B8 Dampers (set of 4)", partNumber: "POR-BIL-B8-4", quantity: 1, unitPrice: 1800, total: 1800 }, { name: "H&R Sport Springs", partNumber: "POR-HR-SS-992", quantity: 1, unitPrice: 650, total: 650 }],
       laborItems: [{ description: "Suspension removal and install", hours: 5.0, rate: 145, total: 725 }, { description: "4-corner alignment", hours: 1.5, rate: 145, total: 217.50 }],
       subtotal: 3392.50, taxRate: 8, taxAmount: 271.40, totalAmount: 3663.90 },
-    { quoteNumber: "Q-2026-011", title: "Jeep Wrangler - Winch Install", status: "accepted", validUntil: new Date("2026-03-20"), customerId: customers[11].id, vehicleId: vehicles[11].id,
+    { quoteNumber: `Q-${YEAR}-011`, title: "Jeep Wrangler - Winch Install", status: "accepted", validUntil: days(11), customerId: customers[11].id, vehicleId: vehicles[11].id,
       partItems: [{ name: "Warn VR EVO 10-S Winch", partNumber: "WARN-VR10S", quantity: 1, unitPrice: 850, total: 850 }, { name: "Winch Mounting Plate", partNumber: "JEEP-WMP-JL", quantity: 1, unitPrice: 220, total: 220 }],
       laborItems: [{ description: "Winch and plate installation", hours: 3.0, rate: 110, total: 330 }, { description: "Wiring and relay setup", hours: 1.5, rate: 110, total: 165 }],
       subtotal: 1565, taxRate: 8, taxAmount: 125.20, totalAmount: 1690.20 },
-    { quoteNumber: "Q-2026-012", title: "Fleet Oil Change Package - 10 Trucks", status: "sent", validUntil: new Date("2026-03-15"), customerId: customers[16].id, notes: "Bulk fleet pricing. Drop off in batches of 3-4.",
+    { quoteNumber: `Q-${YEAR}-012`, title: "Fleet Oil Change Package - 10 Trucks", status: "sent", validUntil: days(6), customerId: customers[16].id, notes: "Bulk fleet pricing. Drop off in batches of 3-4.",
       partItems: [{ name: "Synthetic Oil 5W-30 (5qt) x10", partNumber: "OIL-5W30-BULK", quantity: 10, unitPrice: 38, total: 380 }, { name: "Oil Filter Assorted x10", partNumber: "OF-ASSORTED-10", quantity: 10, unitPrice: 9.50, total: 95 }],
       laborItems: [{ description: "Oil change service x10 vehicles", hours: 5.0, rate: 85, total: 425 }],
       subtotal: 900, taxRate: 8, taxAmount: 72, totalAmount: 972 },
-    { quoteNumber: "Q-2026-013", title: "S780 Combine - Pre-Season Check", status: "accepted", validUntil: new Date("2026-04-15"), customerId: customers[18].id, vehicleId: vehicles[27].id,
+    { quoteNumber: `Q-${YEAR}-013`, title: "S780 Combine - Pre-Season Check", status: "accepted", validUntil: days(37), customerId: customers[18].id, vehicleId: vehicles[27].id,
       partItems: [{ name: "Combine Service Kit (all filters)", partNumber: "JD-CSK-S780", quantity: 1, unitPrice: 420, total: 420 }, { name: "Sickle Blade Set", partNumber: "JD-SBS-S780", quantity: 1, unitPrice: 380, total: 380 }, { name: "Feeder Chain", partNumber: "JD-FC-S780", quantity: 1, unitPrice: 650, total: 650 }],
       laborItems: [{ description: "Full filter service and oil change", hours: 3.0, rate: 140, total: 420 }, { description: "Sickle replacement and header setup", hours: 4.0, rate: 140, total: 560 }, { description: "Feeder chain replacement", hours: 3.0, rate: 140, total: 420 }],
       subtotal: 2850, taxRate: 8, taxAmount: 228, totalAmount: 3078 },
-    { quoteNumber: "Q-2026-015", title: "Toyota Tacoma - Suspension Upgrade", status: "sent", validUntil: new Date("2026-04-01"), customerId: customers[19].id, vehicleId: vehicles[16].id,
+    { quoteNumber: `Q-${YEAR}-015`, title: "Toyota Tacoma - Suspension Upgrade", status: "sent", validUntil: days(23), customerId: customers[19].id, vehicleId: vehicles[16].id,
       partItems: [{ name: "Bilstein 5100 Front (pair)", partNumber: "BIL-5100-TAC-F", quantity: 1, unitPrice: 340, total: 340 }, { name: "Bilstein 5100 Rear (pair)", partNumber: "BIL-5100-TAC-R", quantity: 1, unitPrice: 280, total: 280 }, { name: "OME Leaf Springs", partNumber: "OME-LS-TAC", quantity: 1, unitPrice: 450, total: 450 }],
       laborItems: [{ description: "Front strut replacement", hours: 2.5, rate: 110, total: 275 }, { description: "Rear shock and leaf spring install", hours: 3.0, rate: 110, total: 330 }, { description: "Alignment", hours: 1.0, rate: 110, total: 110 }],
       subtotal: 1785, taxRate: 8, taxAmount: 142.80, totalAmount: 1927.80 },
@@ -577,30 +695,67 @@ async function seed() {
   // -- Fuel Logs --
   console.log("\nCreating fuel logs...");
   await Promise.all([
-    prisma.fuelLog.create({ data: { vehicleId: vehicles[1].id, date: new Date("2026-01-05"), mileage: 40200, gallons: 26, pricePerGallon: 3.45, totalCost: 89.70, station: "Shell - I-25 & Hampden" } }),
-    prisma.fuelLog.create({ data: { vehicleId: vehicles[1].id, date: new Date("2026-02-02"), mileage: 41500, gallons: 24, pricePerGallon: 3.48, totalCost: 83.52, station: "Costco Gas - Arvada" } }),
-    prisma.fuelLog.create({ data: { vehicleId: vehicles[17].id, date: new Date("2026-01-10"), mileage: 182000, gallons: 120, pricePerGallon: 3.85, totalCost: 462.00, station: "Pilot Travel Center - Portland" } }),
-    prisma.fuelLog.create({ data: { vehicleId: vehicles[8].id, date: new Date("2026-02-10"), mileage: 98000, gallons: 28, pricePerGallon: 3.65, totalCost: 102.20, station: "Buc-ee's - San Antonio" } }),
-    prisma.fuelLog.create({ data: { vehicleId: vehicles[22].id, date: new Date("2026-02-15"), mileage: 2700, gallons: 35, pricePerGallon: 3.78, totalCost: 132.30, station: "Co-op Fuel - Omaha" } }),
-    prisma.fuelLog.create({ data: { vehicleId: vehicles[23].id, date: new Date("2026-01-28"), mileage: 1180, gallons: 80, pricePerGallon: 3.82, totalCost: 305.60, station: "Farm Bureau Fuel - Des Moines" } }),
-    prisma.fuelLog.create({ data: { vehicleId: vehicles[15].id, date: new Date("2026-02-20"), mileage: 19500, gallons: 22, pricePerGallon: 3.55, totalCost: 78.10, station: "Speedway - Detroit" } }),
-    prisma.fuelLog.create({ data: { vehicleId: vehicles[11].id, date: new Date("2026-01-22"), mileage: 28200, gallons: 18, pricePerGallon: 3.62, totalCost: 65.16, station: "Shell - I-70 & Morrison" } }),
+    prisma.fuelLog.create({ data: { vehicleId: vehicles[1].id, date: days(-63), mileage: 40200, gallons: 26, pricePerGallon: 3.45, totalCost: 89.70, station: "Shell - I-25 & Hampden" } }),
+    prisma.fuelLog.create({ data: { vehicleId: vehicles[1].id, date: days(-35), mileage: 41500, gallons: 24, pricePerGallon: 3.48, totalCost: 83.52, station: "Costco Gas - Arvada" } }),
+    prisma.fuelLog.create({ data: { vehicleId: vehicles[17].id, date: days(-58), mileage: 182000, gallons: 120, pricePerGallon: 3.85, totalCost: 462.00, station: "Pilot Travel Center - Portland" } }),
+    prisma.fuelLog.create({ data: { vehicleId: vehicles[8].id, date: days(-27), mileage: 98000, gallons: 28, pricePerGallon: 3.65, totalCost: 102.20, station: "Buc-ee's - San Antonio" } }),
+    prisma.fuelLog.create({ data: { vehicleId: vehicles[22].id, date: days(-22), mileage: 2700, gallons: 35, pricePerGallon: 3.78, totalCost: 132.30, station: "Co-op Fuel - Omaha" } }),
+    prisma.fuelLog.create({ data: { vehicleId: vehicles[23].id, date: days(-40), mileage: 1180, gallons: 80, pricePerGallon: 3.82, totalCost: 305.60, station: "Farm Bureau Fuel - Des Moines" } }),
+    prisma.fuelLog.create({ data: { vehicleId: vehicles[15].id, date: days(-17), mileage: 19500, gallons: 22, pricePerGallon: 3.55, totalCost: 78.10, station: "Speedway - Detroit" } }),
+    prisma.fuelLog.create({ data: { vehicleId: vehicles[11].id, date: days(-46), mileage: 28200, gallons: 18, pricePerGallon: 3.62, totalCost: 65.16, station: "Shell - I-70 & Morrison" } }),
   ]);
   console.log("  Created 8 fuel logs");
 
   // -- Reminders --
+  // Spread deliberately around today: a few overdue, several due today and this
+  // week, then a tail running out a few months. That is what makes the reminders
+  // page, the dashboard counters and the calendar all look alive at once.
+  // organizationId is required - getReminders() and the calendar both scope by
+  // it, so a reminder without one is invisible in the app.
   console.log("\nCreating reminders...");
-  await Promise.all([
-    prisma.reminder.create({ data: { vehicleId: vehicles[0].id, title: "Next Oil Change", description: "Due at 25,000 mi or March 2026", dueDate: new Date("2026-03-15"), dueMileage: 25000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[4].id, title: "Brake Fluid Flush", description: "BMW recommends every 2 years", dueDate: new Date("2026-06-01") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[17].id, title: "Annual DOT Inspection", description: "Kenworth T680 - annual inspection", dueDate: new Date("2026-02-28") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[29].id, title: "Track Tension Check", description: "CAT D6 - check after 100 hours", dueMileage: 4500 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[22].id, title: "1000hr Service", description: "John Deere 6R 250 - scheduled service", dueMileage: 3500 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[23].id, title: "Spring Planting Prep", description: "Fendt 942 - full check before spring", dueDate: new Date("2026-04-01") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[18].id, title: "Volvo FH 640 - Brake Inspection", description: "Check brakes before next long-haul", dueDate: new Date("2026-03-10") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[13].id, title: "Porsche 911 - Track Day Prep", description: "Brake pads, fluid, tire pressure check before April track day", dueDate: new Date("2026-04-10") } }),
+  const coreReminders = await Promise.all([
+    // Overdue - the cron has already notified on the older ones
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[17].id, title: "Annual DOT Inspection", description: "Kenworth T680 - annual inspection is past due, Pacific Freight notified twice", dueDate: days(-12), notifyInApp: true, notifyEmail: true, notifiedAt: days(-12) } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[5].id, title: "CV boot replacement", description: "Torn boot found at last service. Customer has not booked yet.", dueDate: days(-8), notifyInApp: true, notifiedAt: days(-8) } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, customerId: customers[16].id, title: "Chase fleet PM schedule", description: "Greenfield Waste has not confirmed the quarterly PM slots for 12 trucks.", dueDate: days(-5), notifyInApp: true, notifiedAt: days(-5) } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[8].id, title: "Battery replacement", description: "Load test showed 78% capacity. Replace before winter.", dueDate: days(-3), notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, title: "Order brake pad stock", description: "Heavy duty truck pads down to 6 sets. Reorder from FleetPride.", dueDate: days(-1), notifyInApp: true } }),
+
+    // Due today
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[18].id, title: "Volvo FH 640 - brake inspection", description: "Check brakes before the next long-haul run to Chicago.", dueDate: days(0), notifyInApp: true, notifyEmail: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[9].id, title: "Call Kevin about the Sprinter", description: "Turbo job finished - confirm pickup time before his catering event.", dueDate: days(0), notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, title: "Weekly parts order cut-off", description: "Submit the NAPA order before 15:00 or it ships Monday.", dueDate: days(0), notifyInApp: true } }),
+
+    // This week
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[0].id, title: "Next oil change", description: "Due at 25,000 mi. Customer wants Mobil 1 0W-20.", dueDate: days(1), dueMileage: 25000, notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[31].id, title: "Order boom cylinder seal kit", description: "Komatsu PC210 reseal cannot start until the kit lands.", dueDate: days(2), notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, customerId: customers[0].id, title: "Summit Construction - Net-30 invoices", description: "Three invoices approaching terms. Send a statement.", dueDate: days(3), notifyInApp: true, notifyEmail: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[36].id, title: "Book crane load test", description: "Liebherr LTM 1100 annual certification needs an external inspector.", dueDate: days(4), notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, title: "Calibrate brake tester", description: "Roller brake tester calibration certificate expires this month.", dueDate: days(5), notifyInApp: true, notifyEmail: true } }),
+
+    // Next two weeks
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[13].id, title: "Porsche 911 - track day prep", description: "Brake pads, fluid and tire pressure before the customer's HPDE weekend.", dueDate: days(9), notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[24].id, title: "Massey Ferguson - radiator deep clean", description: "Chaff blockage caused overheating. Pull the radiator when the tractor is back.", dueDate: days(11), notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, customerId: customers[10].id, title: "Prairie Farms - pre-planting check-in", description: "Book both tractors before the seasonal rush fills the board.", dueDate: days(13), notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[19].id, title: "Dump body weld repair", description: "Stress cracks near the rear hinge. Do not let it run past 10,000 more miles.", dueDate: days(16), notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, title: "Shop lift annual inspection", description: "Both two-post lifts are due for their yearly certification.", dueDate: days(18), notifyInApp: true, notifyEmail: true } }),
+
+    // Later
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[23].id, title: "Fendt 942 - season prep", description: "Full check before the field season starts.", dueDate: days(26), notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[4].id, title: "Brake fluid flush", description: "BMW recommends every 2 years.", dueDate: days(48), notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[27].id, title: "S780 combine - pre-harvest inspection", description: "Critical unit. Everything must be done before harvest starts.", dueDate: days(72), notifyInApp: true, notifyEmail: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, customerId: customers[14].id, title: "Titan Building - contract renewal", description: "Annual maintenance agreement for 20+ machines comes up for renewal.", dueDate: days(95), notifyInApp: true } }),
+
+    // Mileage/hour based, no date
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[29].id, title: "Track tension check", description: "CAT D6 - check after 100 hours.", dueMileage: 4500, notifyInApp: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[22].id, title: "1000hr service", description: "John Deere 6R 250 - scheduled interval service.", dueMileage: 3500, notifyInApp: true } }),
+
+    // Already handled
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[11].id, title: "Post-lift alignment check", description: "Done at the same visit as the lift kit install.", dueDate: days(-20), isCompleted: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[15].id, title: "Brake service follow-up", description: "Customer confirmed no more noise after the pad replacement.", dueDate: days(-14), isCompleted: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, customerId: customers[3].id, title: "Send Sarah the BMW brake quote", description: "Quote sent and accepted.", dueDate: days(-6), isCompleted: true } }),
   ]);
-  console.log("  Created 8 reminders");
+  console.log(`  Created ${coreReminders.length} reminders`);
 
   // -- Vehicle Notes --
   console.log("\nCreating vehicle notes...");
@@ -657,26 +812,26 @@ async function seed() {
   // -- Additional reminders --
   console.log("\nCreating additional reminders...");
   const additionalReminders = await Promise.all([
-    prisma.reminder.create({ data: { vehicleId: vehicles[1].id, title: "Timing belt replacement", description: "Interval-based - EcoBoost timing chain inspection due", dueMileage: 60000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[2].id, title: "Annual inspection", description: "Minnesota state safety inspection", dueDate: new Date("2026-05-15") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[5].id, title: "Brake fluid flush", description: "Honda recommends every 3 years", dueMileage: 72000, dueDate: new Date("2026-06-01") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[8].id, title: "Registration renewal", description: "Texas registration expires June 2026", dueDate: new Date("2026-06-30") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[9].id, title: "Next oil change", description: "Sprinter service B interval", dueMileage: 40000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[10].id, title: "Haldex service", description: "Quattro rear diff fluid change - 40K interval", dueMileage: 40000, isCompleted: true } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[11].id, title: "Front diff fluid", description: "After lift kit, recommend fluid change at 35K", dueMileage: 35000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[12].id, title: "Annual inspection", description: "Georgia annual safety inspection", dueDate: new Date("2026-08-22") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[14].id, title: "DSG service interval", description: "Next DSG fluid/filter at 78K", dueMileage: 78000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[17].id, title: "CVT fluid check", description: "Subaru CVT recommended drain/fill", dueMileage: 30000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[20].id, title: "Mixer drum inspection", description: "Annual drum wear/bolt check", dueDate: new Date("2026-07-01") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[25].id, title: "250hr service", description: "John Deere 8R scheduled interval", dueMileage: 1000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[28].id, title: "Pre-harvest prep", description: "X9 1100 combine full inspection before harvest", dueDate: new Date("2026-08-15") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[30].id, title: "Blade edge replacement", description: "Check wear on cutting edge", dueMileage: 6500, isCompleted: true } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[32].id, title: "Undercarriage inspection", description: "2000hr interval for track chain inspection", dueMileage: 2000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[36].id, title: "OSHA crane certification", description: "Annual load test and certification due", dueDate: new Date("2026-05-01") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[38].id, title: "Corvette annual service", description: "GM recommended annual service with performance inspection", dueDate: new Date("2027-01-22") } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[39].id, title: "Transfer case fluid", description: "Land Rover recommends 40K interval for transfer case fluid", dueMileage: 40000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[40].id, title: "Transmission fluid change", description: "8-speed auto - ZF recommends fluid change at 50K", dueMileage: 50000 } }),
-    prisma.reminder.create({ data: { vehicleId: vehicles[41].id, title: "Timing belt inspection", description: "FA24 engine - inspect timing chain tensioner at 60K", dueMileage: 60000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[1].id, title: "Timing belt replacement", description: "Interval-based - EcoBoost timing chain inspection due", dueMileage: 60000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[2].id, title: "Annual inspection", description: "Minnesota state safety inspection", dueDate: days(67) } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[5].id, title: "Brake fluid flush", description: "Honda recommends every 3 years", dueMileage: 72000, dueDate: days(84) } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[8].id, title: "Registration renewal", description: "Texas registration expires June 2026", dueDate: days(113) } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[9].id, title: "Next oil change", description: "Sprinter service B interval", dueMileage: 40000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[10].id, title: "Haldex service", description: "Quattro rear diff fluid change - 40K interval", dueMileage: 40000, isCompleted: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[11].id, title: "Front diff fluid", description: "After lift kit, recommend fluid change at 35K", dueMileage: 35000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[12].id, title: "Annual inspection", description: "Georgia annual safety inspection", dueDate: days(166) } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[14].id, title: "DSG service interval", description: "Next DSG fluid/filter at 78K", dueMileage: 78000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[17].id, title: "CVT fluid check", description: "Subaru CVT recommended drain/fill", dueMileage: 30000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[20].id, title: "Mixer drum inspection", description: "Annual drum wear/bolt check", dueDate: days(114) } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[25].id, title: "250hr service", description: "John Deere 8R scheduled interval", dueMileage: 1000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[28].id, title: "Pre-harvest prep", description: "X9 1100 combine full inspection before harvest", dueDate: days(159) } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[30].id, title: "Blade edge replacement", description: "Check wear on cutting edge", dueMileage: 6500, isCompleted: true } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[32].id, title: "Undercarriage inspection", description: "2000hr interval for track chain inspection", dueMileage: 2000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[36].id, title: "OSHA crane certification", description: "Annual load test and certification due", dueDate: days(53) } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[38].id, title: "Corvette annual service", description: "GM recommended annual service with performance inspection", dueDate: days(319) } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[39].id, title: "Transfer case fluid", description: "Land Rover recommends 40K interval for transfer case fluid", dueMileage: 40000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[40].id, title: "Transmission fluid change", description: "8-speed auto - ZF recommends fluid change at 50K", dueMileage: 50000 } }),
+    prisma.reminder.create({ data: { organizationId: ORG_ID, vehicleId: vehicles[41].id, title: "Timing belt inspection", description: "FA24 engine - inspect timing chain tensioner at 60K", dueMileage: 60000 } }),
   ]);
   console.log(`  Created ${additionalReminders.length} additional reminders`);
 
@@ -769,7 +924,7 @@ async function seed() {
     },
   ];
 
-  const today = new Date("2026-04-05");
+  const today = TODAY;
   const predMaintRecords = [];
   for (const hist of predMaintHistory) {
     for (const entry of hist.entries) {
@@ -778,6 +933,7 @@ async function seed() {
       const rec = await prisma.serviceRecord.create({
         data: {
           vehicleId: hist.vehicleId,
+          organizationId: ORG_ID,
           title: entry.title,
           description: entry.desc,
           type: entry.type,
@@ -873,8 +1029,8 @@ async function seed() {
 
   // Board assignments - spread across the current week
   console.log("\nCreating board assignments...");
-  // Anchor to 2026-03-09 (Monday) so the work board day view looks great
-  const monday = new Date("2026-03-09T00:00:00");
+  // Monday of the week the board showcases - see weekMonday().
+  const monday = weekMonday();
   const day = (offset: number) => {
     const d = new Date(monday);
     d.setDate(d.getDate() + offset);
@@ -892,7 +1048,7 @@ async function seed() {
   const sr = (base: Record<string, unknown>, parts: { name: string; partNumber: string; quantity: number; unitPrice: number; total: number }[], labor: { description: string; hours: number; rate: number; total: number }[], notes?: string) => {
     const subtotal = parts.reduce((s, p) => s + p.total, 0) + labor.reduce((s, l) => s + l.total, 0);
     const taxAmount = Math.round(subtotal * 0.08 * 100) / 100;
-    return prisma.serviceRecord.create({ data: { ...base, subtotal, taxRate: 8, taxAmount, totalAmount: subtotal + taxAmount, cost: subtotal + taxAmount, diagnosticNotes: notes || null, partItems: { create: parts }, laborItems: { create: labor } } as never });
+    return prisma.serviceRecord.create({ data: { ...base, organizationId: ORG_ID, subtotal, taxRate: 8, taxAmount, totalAmount: subtotal + taxAmount, cost: subtotal + taxAmount, diagnosticNotes: notes || null, partItems: { create: parts }, laborItems: { create: labor } } as never });
   };
 
   // Create service records for the board (assigned ones)
@@ -1240,22 +1396,576 @@ async function seed() {
   ]);
   console.log(`  Assigned ${demoOwnerJobs.length} active jobs to ${demoOwnerTech.name}`);
 
+  // -- Jobs either side of the board week --
+  // The showcase week is dense on purpose, but the calendar's month view, the
+  // revenue chart and every "this month" counter need work before and after it
+  // too. `wd` keeps each job on a weekday by counting from the board's Monday.
+  console.log("\nCreating jobs across the surrounding weeks...");
+  const wd = (weekOffset: number, dayIdx: number) => MONDAY_OFFSET + weekOffset * 7 + dayIdx;
+  type SpreadJob = { w: number; d: number; v: number; tech: number; title: string; desc: string; type: string; hour: number; hours: number; mileage: number; rate: number; parts: { name: string; partNumber: string; quantity: number; unitPrice: number; total: number }[] };
+  const spreadJobs: SpreadJob[] = [
+    // ── Three weeks back ──
+    { w: -3, d: 0, v: 0,  tech: 0, title: "Toyota Camry - Wheel Alignment", desc: "Pulling left after kerb strike. Four-wheel alignment.", type: "maintenance", hour: 8,  hours: 1.0, mileage: 17800, rate: 95, parts: [] },
+    { w: -3, d: 1, v: 12, tech: 4, title: "Jeep Wrangler - Soft Top Swap", desc: "Seasonal swap from hard top to soft top. Inspect seals.", type: "maintenance", hour: 9,  hours: 1.5, mileage: 14800, rate: 95, parts: [{ name: "Top Seal Kit", partNumber: "JEEP-TSK-JL", quantity: 1, unitPrice: 65, total: 65 }] },
+    { w: -3, d: 2, v: 21, tech: 2, title: "Dump Truck - Annual DOT Inspection", desc: "Full DOT annual. Brakes, lights, suspension, documentation.", type: "inspection", hour: 7,  hours: 5.0, mileage: 80500, rate: 140, parts: [{ name: "Marker Light Bulbs (pack of 10)", partNumber: "DMP-MLB-10", quantity: 1, unitPrice: 35, total: 35 }] },
+    { w: -3, d: 3, v: 6,  tech: 3, title: "Tesla Model 3 - Cabin Filter", desc: "HEPA cabin filter replacement and A/C system check.", type: "maintenance", hour: 10, hours: 1.0, mileage: 7900, rate: 110, parts: [{ name: "HEPA Cabin Filter", partNumber: "TES-CF-M3", quantity: 1, unitPrice: 78, total: 78 }] },
+    { w: -3, d: 4, v: 30, tech: 2, title: "CAT D8T - Final Drive Oil Change", desc: "Both final drives drained, flushed and refilled.", type: "maintenance", hour: 7,  hours: 4.0, mileage: 5700, rate: 150, parts: [{ name: "Final Drive Oil (15gal)", partNumber: "CAT-FDO-15G", quantity: 1, unitPrice: 420, total: 420 }] },
+    // ── Two weeks back ──
+    { w: -2, d: 0, v: 5,  tech: 0, title: "Honda Civic - Cabin Filter + A/C Clean", desc: "Musty smell reported. Evaporator clean and new cabin filter.", type: "maintenance", hour: 8,  hours: 1.5, mileage: 67200, rate: 95, parts: [{ name: "Cabin Filter", partNumber: "HON-CF-CIV", quantity: 1, unitPrice: 24, total: 24 }, { name: "Evaporator Cleaner", partNumber: "AC-EVAP-CLN", quantity: 1, unitPrice: 32, total: 32 }] },
+    { w: -2, d: 1, v: 26, tech: 8, title: "New Holland T7 - 500hr Service", desc: "Scheduled interval. Engine oil, filters, hydraulic sample.", type: "maintenance", hour: 8,  hours: 3.5, mileage: 2050, rate: 140, parts: [{ name: "Filter Kit T7", partNumber: "NH-FK-T7", quantity: 1, unitPrice: 240, total: 240 }, { name: "Engine Oil 15W-40 (5gal)", partNumber: "NH-15W40-5G", quantity: 1, unitPrice: 185, total: 185 }] },
+    { w: -2, d: 2, v: 10, tech: 1, title: "Audi A4 - Haldex Service", desc: "Quattro rear differential fluid and filter at 40K interval.", type: "maintenance", hour: 9,  hours: 1.5, mileage: 21600, rate: 120, parts: [{ name: "Haldex Fluid + Filter", partNumber: "AUD-HLD-KIT", quantity: 1, unitPrice: 145, total: 145 }] },
+    { w: -2, d: 3, v: 33, tech: 2, title: "Volvo EC220E - Swing Bearing Grease", desc: "Swing bearing and slew ring service, play measured.", type: "maintenance", hour: 7,  hours: 2.5, mileage: 1450, rate: 140, parts: [{ name: "Grease Cartridges (box of 10)", partNumber: "GRZ-EP2-10", quantity: 2, unitPrice: 42, total: 84 }] },
+    { w: -2, d: 4, v: 1,  tech: 0, title: "F-150 - Tire Rotation + Balance", desc: "Rotation, balance and pressure set on all four.", type: "maintenance", hour: 13, hours: 1.0, mileage: 42100, rate: 95, parts: [] },
+    // ── Last week ──
+    { w: -1, d: 0, v: 39, tech: 4, title: "Defender 110 - Diff Fluid Service", desc: "Front and rear differential fluid after heavy off-road use.", type: "maintenance", hour: 8,  hours: 2.0, mileage: 28300, rate: 120, parts: [{ name: "Diff Fluid 75W-90 (4qt)", partNumber: "LR-DF-7590", quantity: 1, unitPrice: 96, total: 96 }] },
+    { w: -1, d: 1, v: 20, tech: 7, title: "Concrete Mixer - Water Pump Repair", desc: "Water system pump leaking at the seal. Rebuilt and tested.", type: "repair", hour: 7,  hours: 3.0, mileage: 67500, rate: 140, parts: [{ name: "Water Pump Rebuild Kit", partNumber: "MIX-WPK", quantity: 1, unitPrice: 185, total: 185 }] },
+    { w: -1, d: 2, v: 3,  tech: 6, title: "F-150 Platinum - Brake Fluid Flush", desc: "Two-year brake fluid service for the municipal fleet.", type: "maintenance", hour: 9,  hours: 1.5, mileage: 11800, rate: 110, parts: [{ name: "Brake Fluid DOT4 (1L)", partNumber: "BF-DOT4-1L", quantity: 2, unitPrice: 22, total: 44 }] },
+    { w: -1, d: 3, v: 37, tech: 5, title: "Forklift - Battery Watering + Load Test", desc: "Traction battery watered, cells load tested and logged.", type: "maintenance", hour: 8,  hours: 2.0, mileage: 4150, rate: 120, parts: [{ name: "Distilled Water (5gal)", partNumber: "FRK-DW-5G", quantity: 1, unitPrice: 18, total: 18 }] },
+    { w: -1, d: 4, v: 16, tech: 3, title: "Tacoma - Front Brake Service", desc: "Front pads and rotors replaced, calipers cleaned.", type: "repair", hour: 10, hours: 2.0, mileage: 31000, rate: 110, parts: [{ name: "Front Pads + Rotors", partNumber: "TOY-BPR-TAC", quantity: 1, unitPrice: 285, total: 285 }] },
+    // ── Next week ──
+    { w: 1, d: 0, v: 7,  tech: 3, title: "Tesla Model Y - Brake Fluid Test", desc: "Two-year brake fluid moisture test and flush if needed.", type: "maintenance", hour: 8,  hours: 1.5, mileage: 3400, rate: 110, parts: [{ name: "Brake Fluid DOT4 (1L)", partNumber: "BF-DOT4-1L", quantity: 1, unitPrice: 22, total: 22 }] },
+    { w: 1, d: 1, v: 29, tech: 2, title: "CAT D6 - Undercarriage Measurement", desc: "Wear measurement on chains, rollers and idlers ahead of the rebuild quote.", type: "inspection", hour: 7,  hours: 3.0, mileage: 4300, rate: 150, parts: [] },
+    { w: 1, d: 2, v: 14, tech: 6, title: "VW Golf GTI - Haldex + Oil Service", desc: "Oil change and rear diff service ahead of a road trip.", type: "maintenance", hour: 9,  hours: 2.0, mileage: 38900, rate: 120, parts: [{ name: "Engine Oil 5W-40 (6qt)", partNumber: "VW-5W40-6Q", quantity: 1, unitPrice: 72, total: 72 }] },
+    { w: 1, d: 3, v: 2,  tech: 0, title: "F-150 XLT - State Safety Inspection", desc: "Minnesota annual safety inspection with documentation.", type: "inspection", hour: 8,  hours: 1.5, mileage: 55400, rate: 95, parts: [] },
+    { w: 1, d: 4, v: 27, tech: 2, title: "S780 Combine - Header Inspection", desc: "Pre-season header check: knives, auger, feeder chain.", type: "inspection", hour: 7,  hours: 4.0, mileage: 640, rate: 140, parts: [] },
+    // ── The week after ──
+    { w: 2, d: 0, v: 4,  tech: 1, title: "BMW 330i - Front Brake Overhaul", desc: "Accepted quote: OEM pads, rotors and wear sensors.", type: "repair", hour: 8,  hours: 3.0, mileage: 56400, rate: 120, parts: [{ name: "OEM Pads + Rotors (front)", partNumber: "BMW-BPR-F34", quantity: 1, unitPrice: 505, total: 505 }] },
+    { w: 2, d: 1, v: 18, tech: 9, title: "Volvo FH 640 - Air Suspension Repair", desc: "Accepted quote: replace failed air bag and levelling valve.", type: "repair", hour: 7,  hours: 4.0, mileage: 93800, rate: 140, parts: [{ name: "Air Bag + Levelling Valve", partNumber: "VOL-ASK-FH", quantity: 1, unitPrice: 690, total: 690 }] },
+    { w: 2, d: 2, v: 11, tech: 9, title: "Jeep Wrangler - Winch Install", desc: "Accepted quote: bumper-mounted winch with isolator and wiring.", type: "repair", hour: 8,  hours: 4.0, mileage: 29200, rate: 110, parts: [{ name: "12,000 lb Winch + Wiring Kit", partNumber: "JEEP-WIN-12K", quantity: 1, unitPrice: 880, total: 880 }] },
+    { w: 2, d: 3, v: 5,  tech: 0, title: "Honda Civic - Clutch Replacement", desc: "Accepted quote: clutch kit, flywheel resurface, hydraulic bleed.", type: "repair", hour: 7,  hours: 5.5, mileage: 68200, rate: 95, parts: [{ name: "Clutch Kit", partNumber: "HON-CK-CIV", quantity: 1, unitPrice: 420, total: 420 }] },
+    { w: 2, d: 4, v: 34, tech: 8, title: "Kubota KX040 - Hose Reroute", desc: "Reroute the chafing hydraulic hose and fit a protective sleeve.", type: "repair", hour: 9,  hours: 2.0, mileage: 950, rate: 130, parts: [{ name: "Hydraulic Hose + Sleeve", partNumber: "KUB-HHS-040", quantity: 1, unitPrice: 145, total: 145 }] },
+  ];
+
+  const spreadRecords = [];
+  for (const job of spreadJobs) {
+    const offset = wd(job.w, job.d);
+    const past = offset < 0;
+    const labor = [{ description: job.title.split(" - ")[1] || "Workshop labor", hours: job.hours, rate: job.rate, total: Math.round(job.hours * job.rate * 100) / 100 }];
+    const endMinutes = job.hour * 60 + Math.round(job.hours * 60);
+    const rec = await sr(
+      {
+        vehicleId: vehicles[job.v].id,
+        title: job.title,
+        description: job.desc,
+        type: job.type,
+        status: past ? "completed" : "scheduled",
+        serviceDate: days(offset),
+        startDateTime: at(offset, job.hour),
+        endDateTime: at(offset, Math.floor(endMinutes / 60), endMinutes % 60),
+        mileage: job.mileage,
+        technicianId: technicians[job.tech].id,
+        techName: technicians[job.tech].name,
+        shopName: "Egeland Auto",
+      },
+      job.parts,
+      labor,
+    );
+    spreadRecords.push(rec);
+  }
+  console.log(`  Created ${spreadRecords.length} jobs across ${new Set(spreadJobs.map(j => j.w)).size} weeks`);
+
+  // -- Invoices & payments --
+  // Every completed job gets a number from the same sequence the app would use
+  // (workshop.invoiceStartNumber = 1001, prefix "{year}-"), then most of them
+  // get paid. Without this the sales page, the revenue report and the past-due
+  // list all read zero.
+  console.log("\nNumbering invoices and recording payments...");
+  const completed = await prisma.serviceRecord.findMany({
+    where: { organizationId: ORG_ID, status: "completed" },
+    orderBy: { serviceDate: "asc" },
+    select: { id: true, serviceDate: true, totalAmount: true, mileage: true },
+  });
+  const methods = ["card", "transfer", "cash", "card", "transfer"];
+  let invoiceSeq = 1001;
+  let paidFull = 0, paidPartial = 0, outstanding = 0;
+  for (const [i, rec] of completed.entries()) {
+    const invoiceDate = rec.serviceDate;
+    const dueDate = new Date(invoiceDate);
+    dueDate.setDate(dueDate.getDate() + 14);
+    const warrantyExpires = new Date(invoiceDate);
+    warrantyExpires.setMonth(warrantyExpires.getMonth() + 12);
+    await prisma.serviceRecord.update({
+      where: { id: rec.id },
+      data: {
+        invoiceNumber: `${YEAR}-${invoiceSeq++}`,
+        invoiceDate,
+        invoiceDueDate: dueDate,
+        warrantyMonths: 12,
+        warrantyMileage: 12000,
+        warrantyExpiresAt: warrantyExpires,
+      },
+    });
+
+    // 7 in 10 settled, 1 part-paid, 2 still open - enough of a spread that the
+    // past-due list and the outstanding total are both non-empty.
+    const bucket = i % 10;
+    if (bucket < 7) {
+      const paidOn = new Date(invoiceDate);
+      paidOn.setDate(paidOn.getDate() + (i % 9));
+      await prisma.payment.create({ data: { serviceRecordId: rec.id, amount: rec.totalAmount, date: paidOn > NOW ? NOW : paidOn, method: methods[i % methods.length], note: "Paid in full" } });
+      paidFull++;
+    } else if (bucket === 7) {
+      const paidOn = new Date(invoiceDate);
+      paidOn.setDate(paidOn.getDate() + 2);
+      await prisma.payment.create({ data: { serviceRecordId: rec.id, amount: Math.round(rec.totalAmount * 0.5 * 100) / 100, date: paidOn > NOW ? NOW : paidOn, method: "transfer", note: "Deposit - balance on collection" } });
+      paidPartial++;
+    } else {
+      outstanding++;
+    }
+  }
+  console.log(`  ${completed.length} invoices numbered - ${paidFull} paid, ${paidPartial} part-paid, ${outstanding} outstanding`);
+
+  // -- Stock movements --
+  // Inventory quantities without a history read as if they were typed in once.
+  // These are the consumption and restock entries behind the current counts.
+  console.log("\nCreating stock movements...");
+  const movementPlan: { part: number; entries: { delta: number; reason: string; day: number; note?: string }[] }[] = [
+    { part: 0,  entries: [{ delta: 24, reason: "manual_adjustment", day: -46, note: "Pallet delivery from AutoZone Commercial" }, { delta: -4, reason: "service_record", day: -21 }, { delta: -2, reason: "service_record", day: -12 }, { delta: -3, reason: "service_record", day: -4 }] },
+    { part: 1,  entries: [{ delta: 20, reason: "manual_adjustment", day: -40, note: "Restock" }, { delta: -2, reason: "service_record", day: -18 }, { delta: -1, reason: "service_record", day: -6 }] },
+    { part: 4,  entries: [{ delta: 18, reason: "manual_adjustment", day: -52, note: "Quarterly brake stock order" }, { delta: -2, reason: "service_record", day: -25 }, { delta: -1, reason: "quote_conversion", day: -9 }, { delta: -1, reason: "service_record", day: -2 }] },
+    { part: 6,  entries: [{ delta: 36, reason: "manual_adjustment", day: -60, note: "Bulk filter order" }, { delta: -3, reason: "service_record", day: -30 }, { delta: -2, reason: "service_record", day: -11 }, { delta: -1, reason: "service_record", day: -1 }] },
+    { part: 10, entries: [{ delta: 8, reason: "manual_adjustment", day: -35, note: "Interstate Batteries delivery" }, { delta: -1, reason: "service_record", day: -16 }, { delta: -1, reason: "service_record", day: -3 }] },
+    { part: 21, entries: [{ delta: 4, reason: "manual_adjustment", day: -50, note: "Bosch order" }, { delta: -2, reason: "service_record", day: -28 }, { delta: -1, reason: "service_record", day: -7, note: "Kenworth DPF fault" }] },
+    { part: 15, entries: [{ delta: 12, reason: "manual_adjustment", day: -44 }, { delta: -1, reason: "service_record", day: -20 }, { delta: -1, reason: "service_record", day: -5 }] },
+    { part: 24, entries: [{ delta: 16, reason: "manual_adjustment", day: -38 }, { delta: -2, reason: "service_record", day: -19 }, { delta: -2, reason: "bulk_markup", day: -8, note: "Counter sale" }] },
+  ];
+  let movementCount = 0;
+  for (const plan of movementPlan) {
+    const part = inventoryParts[plan.part];
+    // Walk backwards from today's quantity so the running balance ends on it.
+    const total = plan.entries.reduce((sum, e) => sum + e.delta, 0);
+    let balance = part.quantity - total;
+    for (const entry of plan.entries) {
+      balance += entry.delta;
+      await prisma.stockMovement.create({
+        data: {
+          inventoryPartId: part.id,
+          delta: entry.delta,
+          quantityAfter: balance,
+          reason: entry.reason,
+          note: entry.note ?? null,
+          serviceRecordLabel: entry.reason === "service_record" ? "Workshop job" : null,
+          userId: USER_ID,
+          organizationId: ORG_ID,
+          createdAt: at(entry.day, 9, 30),
+        },
+      });
+      movementCount++;
+    }
+  }
+  console.log(`  Created ${movementCount} stock movements across ${movementPlan.length} parts`);
+
+  // -- Inspection templates & inspections --
+  // The templates page syncs the built-in presets on first load, but nothing
+  // creates inspections, so the feature reads as unused. These build the same
+  // templates the library would install, then run vehicles through them.
+  console.log("\nCreating inspection templates...");
+  const presetToTemplate = (preset: TemplatePreset, isDefault: boolean) => ({
+    name: preset.name,
+    description: preset.description,
+    isDefault,
+    country: preset.country,
+    standard: preset.standard,
+    severityScale: preset.severityScale,
+    packageId: presetPackageId(preset),
+    packageVersion: PRESET_VERSION,
+    packageSource: "builtin",
+    organizationId: ORG_ID,
+    sections: {
+      create: preset.sections.map((section, sIdx) => ({
+        name: section.name,
+        description: section.description || null,
+        code: section.code || null,
+        sortOrder: sIdx,
+        items: {
+          create: section.items.map((item, iIdx) => ({
+            name: item.name,
+            description: item.description || null,
+            code: item.code || null,
+            sortOrder: iIdx,
+            inputType: item.inputType ?? "condition",
+            unit: item.unit || null,
+            minValue: item.minValue ?? null,
+            maxValue: item.maxValue ?? null,
+            choices: item.choices ?? [],
+            required: item.required ?? false,
+            photoRequired: item.photoRequired ?? false,
+            defaultSeverity: item.defaultSeverity ?? null,
+            defectSuggestions: [],
+          })),
+        },
+      })),
+    },
+  });
+
+  const templateIds = ["standard-multipoint", "eu-roadworthiness", "pre-purchase", "ev-hybrid"];
+  const templates = [];
+  for (const [i, id] of templateIds.entries()) {
+    const preset = TEMPLATE_PRESETS.find((p) => p.id === id);
+    if (!preset) { console.warn(`  [skip] preset ${id} no longer exists`); continue; }
+    const template = await prisma.inspectionTemplate.create({
+      data: presetToTemplate(preset, i === 0),
+      include: { sections: { include: { items: { orderBy: { sortOrder: "asc" } } }, orderBy: { sortOrder: "asc" } } },
+    });
+    templates.push(template);
+  }
+  console.log(`  Created ${templates.length} templates`);
+
+  console.log("\nCreating inspections...");
+  type TemplateWithSections = (typeof templates)[number];
+  type Defect = { at: number; condition: string; notes: string };
+  /**
+   * Copies a template's checks onto an inspection. Everything grades `pass`
+   * unless it is listed in `defects`, and an in-progress inspection leaves the
+   * checks past `graded` untouched - which is what the completion blockers and
+   * the progress bar in the UI read.
+   */
+  const buildInspection = async (opts: {
+    template: TemplateWithSections;
+    vehicleIdx: number;
+    techIdx: number;
+    dayOffset: number;
+    hour: number;
+    mileage: number;
+    status: "in_progress" | "completed";
+    defects?: Defect[];
+    graded?: number;
+    category?: string;
+    certificate?: string;
+    notes?: string;
+    nextTestMonths?: number;
+  }) => {
+    const flat = opts.template.sections.flatMap((s) => s.items.map((item) => ({ item, section: s })));
+    const defects = new Map((opts.defects ?? []).map((d) => [d.at % flat.length, d]));
+    const graded = opts.graded ?? flat.length;
+    const completedAt = opts.status === "completed" ? at(opts.dayOffset, opts.hour + 2) : null;
+    const nextTest = opts.nextTestMonths ? months(opts.nextTestMonths) : null;
+
+    return prisma.inspection.create({
+      data: {
+        status: opts.status,
+        mileage: opts.mileage,
+        notes: opts.notes ?? null,
+        startDateTime: at(opts.dayOffset, opts.hour),
+        endDateTime: completedAt,
+        completedAt,
+        createdAt: at(opts.dayOffset, opts.hour),
+        publicToken: randomBytes(16).toString("hex"),
+        vehicleId: vehicles[opts.vehicleIdx].id,
+        templateId: opts.template.id,
+        technicianId: technicians[opts.techIdx].id,
+        organizationId: ORG_ID,
+        severityScale: opts.template.severityScale,
+        country: opts.template.country,
+        vehicleCategory: opts.category ?? null,
+        nextTestDue: nextTest,
+        certificateNumber: opts.certificate ?? null,
+        inspectorName: opts.status === "completed" ? technicians[opts.techIdx].name : null,
+        testLocation: opts.status === "completed" ? "Egeland Auto, Denver CO" : null,
+        items: {
+          create: flat.map(({ item, section }, idx) => {
+            const defect = defects.get(idx);
+            const inspected = idx < graded;
+            const condition = defect ? defect.condition : inspected ? "pass" : "not_inspected";
+            const measured =
+              item.inputType === "measurement" && inspected
+                ? defect
+                  ? (item.minValue ?? 0) * 0.6
+                  : item.minValue != null && item.maxValue != null
+                    ? Math.round(((item.minValue + item.maxValue) / 2) * 10) / 10
+                    : (item.minValue ?? item.maxValue ?? 0)
+                : null;
+            return {
+              name: item.name,
+              section: section.name,
+              sortOrder: idx,
+              condition,
+              notes: defect?.notes ?? null,
+              description: item.description,
+              code: item.code,
+              sectionCode: section.code,
+              inputType: item.inputType,
+              unit: item.unit,
+              minValue: item.minValue,
+              maxValue: item.maxValue,
+              choices: item.choices,
+              required: item.required,
+              photoRequired: item.photoRequired,
+              defaultSeverity: item.defaultSeverity,
+              measuredValue: measured,
+              textValue: item.inputType === "text" && inspected ? "No remarks" : null,
+            };
+          }),
+        },
+      },
+    });
+  };
+
+  const multipoint = templates[0];
+  const roadworthiness = templates.find((t) => t.standard === "eu-2014-45") ?? multipoint;
+  const prePurchase = templates[2] ?? multipoint;
+
+  const inspections = [
+    // Completed, clean
+    await buildInspection({ template: multipoint, vehicleIdx: 0, techIdx: 0, dayOffset: wd(-2, 1), hour: 9, mileage: 17900, status: "completed", category: "M1", notes: "Everything within spec. Customer wants a call before the next service." }),
+    await buildInspection({ template: multipoint, vehicleIdx: 6, techIdx: 3, dayOffset: wd(-1, 2), hour: 11, mileage: 8100, status: "completed", category: "M1" }),
+    // Completed with defects
+    await buildInspection({ template: multipoint, vehicleIdx: 5, techIdx: 0, dayOffset: wd(-1, 0), hour: 8, mileage: 67500, status: "completed", category: "M1", notes: "Two items need booking in. Quote requested by the customer.", defects: [{ at: 3, condition: "fail", notes: "CV boot torn, grease thrown onto the suspension arm." }, { at: 7, condition: "attention", notes: "Front pads at 3mm - plan replacement within 5,000 miles." }] }),
+    await buildInspection({ template: multipoint, vehicleIdx: 8, techIdx: 2, dayOffset: wd(-1, 3), hour: 13, mileage: 98200, status: "completed", category: "N2", defects: [{ at: 5, condition: "attention", notes: "Battery load tests at 78% of rated CCA." }] }),
+    // Roadworthiness tests with certificates
+    await buildInspection({ template: roadworthiness, vehicleIdx: 18, techIdx: 2, dayOffset: wd(-2, 3), hour: 7, mileage: 92400, status: "completed", category: "N3", certificate: `PTI-${YEAR}-0418`, nextTestMonths: 12, notes: "Passed after the marker lights and wipers were replaced during the test.", defects: [{ at: 11, condition: "attention", notes: "Nearside marker lens cracked - replaced during the test." }] }),
+    await buildInspection({ template: roadworthiness, vehicleIdx: 4, techIdx: 1, dayOffset: wd(-1, 4), hour: 9, mileage: 56100, status: "completed", category: "M1", certificate: `PTI-${YEAR}-0431`, nextTestMonths: 24 }),
+    await buildInspection({ template: roadworthiness, vehicleIdx: 9, techIdx: 1, dayOffset: wd(0, 1), hour: 8, mileage: 35700, status: "completed", category: "N1", certificate: `PTI-${YEAR}-0447`, nextTestMonths: 12, notes: "Retest after the turbo replacement. Passed.", defects: [{ at: 2, condition: "attention", notes: "Slight play in the offside track rod end - monitor." }] }),
+    // Failed test - dangerous defect, vehicle held
+    await buildInspection({ template: roadworthiness, vehicleIdx: 19, techIdx: 2, dayOffset: wd(0, 0), hour: 10, mileage: 156200, status: "completed", category: "N3", certificate: `PTI-${YEAR}-0452`, notes: "Fails on the dump body cracking. Vehicle not to be loaded until welded.", defects: [{ at: 4, condition: "dangerous", notes: "Structural cracks in the dump body floor near the rear hinge." }, { at: 9, condition: "fail", notes: "Offside rear brake lining below the minimum thickness." }] }),
+    // In progress on the board right now
+    await buildInspection({ template: multipoint, vehicleIdx: 13, techIdx: 10, dayOffset: 0, hour: 9, mileage: 13000, status: "in_progress", graded: 6, category: "M1", notes: "Pre-track inspection for the customer's HPDE weekend." }),
+    await buildInspection({ template: roadworthiness, vehicleIdx: 2, techIdx: 6, dayOffset: 0, hour: 13, mileage: 55300, status: "in_progress", graded: 14, category: "N1" }),
+    await buildInspection({ template: prePurchase, vehicleIdx: 40, techIdx: 0, dayOffset: wd(0, 2), hour: 10, mileage: 34900, status: "in_progress", graded: 4, category: "M1", notes: "Buyer is paying for the inspection. Report goes to them, not the seller." }),
+  ];
+  console.log(`  Created ${inspections.length} inspections`);
+
+  // A customer asking for a quote off the back of a failed check.
+  await prisma.inspectionQuoteRequest.create({
+    data: {
+      inspectionId: inspections[2].id,
+      organizationId: ORG_ID,
+      status: "pending",
+      message: "Please quote both items. I can leave the car with you next week.",
+      selectedItemIds: [],
+      createdAt: hoursAgo(30),
+    },
+  });
+  await prisma.inspectionQuoteRequest.create({
+    data: {
+      inspectionId: inspections[7].id,
+      organizationId: ORG_ID,
+      status: "quoted",
+      message: "Send the weld repair cost to ops@ridgelineexcavation.com.",
+      selectedItemIds: [],
+      createdAt: hoursAgo(52),
+    },
+  });
+
+  // -- Scheduled messages --
+  // The messages page and the calendar's message events both read these. The
+  // mix is deliberate: sent history behind us, a queue in front, a couple of
+  // recurring ones that keep rescheduling, plus one failure and one cancelled
+  // so the status filters have something in every bucket.
+  console.log("\nCreating scheduled messages...");
+  const scheduledMessages = await Promise.all([
+    // Already sent
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "sms", body: "Hi James, your Toyota Camry is booked in for Thursday at 08:00. Reply STOP to opt out.", customerId: customers[1].id, vehicleId: vehicles[0].id, status: "sent", sendAt: at(-9, 9), sentAt: at(-9, 9), lastRunAt: at(-9, 9), runCount: 1 } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "email", subject: "Your invoice from Egeland Auto", body: "Hi Sarah,\n\nThe annual service on your Porsche 911 is complete and the invoice is attached. All OEM parts as always.\n\nEgeland Auto", customerId: customers[3].id, vehicleId: vehicles[13].id, status: "sent", sendAt: at(-6, 16), sentAt: at(-6, 16), lastRunAt: at(-6, 16), runCount: 1 } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "sms", body: "Ridgeline: the Komatsu PC210 is ready for transport. Track chains and sprockets both replaced.", customerId: customers[8].id, vehicleId: vehicles[31].id, status: "sent", sendAt: at(-3, 15, 30), sentAt: at(-3, 15, 30), lastRunAt: at(-3, 15, 30), runCount: 1 } }),
+
+    // Queued for today and this week
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "sms", body: "Kevin, the Sprinter is finished and ready for collection any time before 17:00 today.", customerId: customers[15].id, vehicleId: vehicles[9].id, status: "scheduled", sendAt: at(0, 15) } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "in_app", body: "Chase Metro City Services for the purchase order before starting the F-150 exhaust job.", status: "scheduled", sendAt: at(0, 16, 30) } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "email", subject: `Quote Q-${YEAR}-003 - CAT D6 undercarriage`, body: "Hi,\n\nA reminder that the undercarriage rebuild quote for the CAT D6 expires in three weeks. Happy to walk through the wear measurements if that helps.\n\nEgeland Auto", customerId: customers[0].id, vehicleId: vehicles[29].id, status: "scheduled", sendAt: at(1, 9) } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "sms", body: "Reminder: your Volvo FH 640 brake inspection is booked for tomorrow at 07:30.", customerId: customers[2].id, vehicleId: vehicles[18].id, status: "scheduled", sendAt: at(2, 8) } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "email", subject: "Pre-planting service slots", body: "Hi,\n\nWe are holding two slots for the John Deere 6R and the Massey Ferguson ahead of planting. Let us know which week suits.\n\nEgeland Auto", customerId: customers[10].id, status: "scheduled", sendAt: at(3, 10) } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "telegram", body: "Your Tesla Model Y is booked for a brake fluid test on Monday at 08:00.", customerId: customers[13].id, vehicleId: vehicles[7].id, status: "scheduled", sendAt: at(4, 9) } }),
+
+    // Further out
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "email", subject: "Track day prep - Porsche 911", body: "Hi Sarah,\n\nBooking your 911 in for brake pads, fluid and tire pressures the week before the track day. Reply with a day that suits.\n\nEgeland Auto", customerId: customers[3].id, vehicleId: vehicles[13].id, status: "scheduled", sendAt: at(9, 11) } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "sms", body: "Titan Building: the Liebherr crane certification is due. Shall we book the external inspector?", customerId: customers[14].id, vehicleId: vehicles[36].id, status: "scheduled", sendAt: at(12, 10) } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "email", subject: "Pre-harvest booking", body: "Hi,\n\nHarvest is close enough that the combine slots are filling. Reply to hold a week for the S780 and the X9.\n\nEgeland Auto", customerId: customers[18].id, status: "scheduled", sendAt: at(21, 9) } }),
+
+    // Recurring
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "email", subject: "Monthly fleet maintenance statement", body: "Attached is this month's statement across all Summit Construction units.\n\nEgeland Auto", customerId: customers[0].id, status: "scheduled", frequency: "monthly", sendAt: at(6, 8), endDate: months(12), lastRunAt: at(-24, 8), runCount: 4 } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "sms", body: "Greenfield: quarterly PM window opens next week. Reply with the trucks you want in first.", customerId: customers[16].id, status: "scheduled", frequency: "monthly", sendAt: at(8, 9), lastRunAt: at(-22, 9), runCount: 2 } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "in_app", body: "Weekly check: any job on the board still waiting on parts?", status: "scheduled", frequency: "weekly", sendAt: at(MONDAY_OFFSET + 4, 15), lastRunAt: at(MONDAY_OFFSET - 3, 15), runCount: 9 } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "email", subject: "Annual roadworthiness test due", body: "Hi,\n\nYour vehicle's periodic technical inspection is due within the month. Reply to book a slot.\n\nEgeland Auto", customerId: customers[2].id, vehicleId: vehicles[17].id, status: "scheduled", frequency: "yearly", sendAt: at(30, 9), runCount: 1, lastRunAt: at(-335, 9) } }),
+
+    // The unhappy paths
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "sms", body: "Amanda, your Civic clutch quote is ready to view.", customerId: customers[9].id, vehicleId: vehicles[5].id, status: "failed", sendAt: at(-2, 11), lastRunAt: at(-2, 11), runCount: 1, errorMessage: "Carrier rejected the message: unknown destination number" } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "email", subject: "Winter tire changeover", body: "Booking opens next week for the winter changeover.", customerId: customers[11].id, status: "cancelled", sendAt: at(5, 9) } }),
+  ]);
+  console.log(`  Created ${scheduledMessages.length} scheduled messages`);
+
+  // -- Telegram --
+  console.log("\nCreating Telegram messages...");
+  await prisma.customer.update({ where: { id: customers[13].id }, data: { telegramChatId: "784512996" } });
+  await prisma.customer.update({ where: { id: customers[5].id }, data: { telegramChatId: "612447803" } });
+  const telegram = await Promise.all([
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[13].id, direction: "outbound", chatId: "784512996", body: "Hi Jessica, your Tesla Model Y is booked for a brake fluid test on Monday at 08:00.", status: "delivered", createdAt: hoursAgo(72) } }),
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[13].id, direction: "inbound", chatId: "784512996", body: "Perfect. Can you check the tire wear at the same time?", status: "received", createdAt: hoursAgo(71) } }),
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[13].id, direction: "outbound", chatId: "784512996", body: "Will do - we'll measure all four and send the numbers with the report.", status: "delivered", createdAt: hoursAgo(70) } }),
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[5].id, direction: "outbound", chatId: "612447803", body: "Ryan, the 12V auxiliary battery for the Model 3 is in stock. Want it done this week?", status: "delivered", createdAt: hoursAgo(26) } }),
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[5].id, direction: "inbound", chatId: "612447803", body: "Yes please. Thursday afternoon if you have it.", status: "received", createdAt: hoursAgo(25) } }),
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[5].id, direction: "outbound", chatId: "612447803", body: "Thursday 13:00 booked. It's a 30 minute job, you can wait if you like.", status: "delivered", createdAt: hoursAgo(24) } }),
+  ]);
+  console.log(`  Created ${telegram.length} Telegram messages`);
+
+  // -- Notifications --
+  // The bell is empty on a fresh reset, which makes the app look idle.
+  console.log("\nCreating notifications...");
+  const notifications = await Promise.all([
+    prisma.notification.create({ data: { organizationId: ORG_ID, type: "sms_inbound", title: "New SMS from Summit Construction", message: "Thanks! We'll send someone before 4pm. Can you look at the D6 bulldozer next week?", entityType: "customer", entityId: customers[0].id, entityUrl: `/customers/${customers[0].id}`, read: false, createdAt: minutesAgo(58) } }),
+    prisma.notification.create({ data: { organizationId: ORG_ID, type: "inspection_quote_request", title: "Quote requested from an inspection", message: "Amanda Foster asked for a quote on two items from the Honda Civic inspection.", entityType: "inspection", entityId: inspections[2].id, entityUrl: `/inspections/${inspections[2].id}`, read: false, createdAt: hoursAgo(3) } }),
+    prisma.notification.create({ data: { organizationId: ORG_ID, type: "inventory.lowStock", title: "Low stock: DPF Pressure Sensor", message: "1 in stock, reorder point is 3.", entityType: "inventory", entityId: inventoryParts[21].id, entityUrl: `/inventory`, read: false, createdAt: hoursAgo(6) } }),
+    prisma.notification.create({ data: { organizationId: ORG_ID, type: "reminder.due", title: "Reminder due today", message: "Volvo FH 640 - brake inspection before the next long-haul run.", entityType: "reminder", entityId: coreReminders[5].id, entityUrl: `/reminders`, read: false, createdAt: at(0, 7) } }),
+    prisma.notification.create({ data: { organizationId: ORG_ID, type: "service_request", title: "New service request", message: "Mike Thompson asked for a booking for the Jeep Wrangler Rubicon.", entityType: "service_request", entityId: vehicles[11].id, entityUrl: `/work-orders`, read: false, createdAt: hoursAgo(19) } }),
+    prisma.notification.create({ data: { organizationId: ORG_ID, type: "quote_response", title: "Quote accepted", message: `Jeep Wrangler - Winch Install (Q-${YEAR}-011) was accepted by Mike Thompson.`, entityType: "quote", entityId: quotes[10].id, entityUrl: `/quotes/${quotes[10].id}`, read: true, createdAt: hoursAgo(30) } }),
+    prisma.notification.create({ data: { organizationId: ORG_ID, type: "invoice_payment", title: "Payment received", message: "Pacific Freight Lines settled the Kenworth T680 engine service invoice.", entityType: "invoice", entityId: serviceRecords[4].id, entityUrl: `/work-orders/${serviceRecords[4].id}`, read: true, createdAt: hoursAgo(50) } }),
+    prisma.notification.create({ data: { organizationId: ORG_ID, type: "telegram_inbound", title: "New Telegram message", message: "Jessica Rivera: Can you check the tire wear at the same time?", entityType: "customer", entityId: customers[13].id, entityUrl: `/customers/${customers[13].id}`, read: true, createdAt: hoursAgo(71) } }),
+    prisma.notification.create({ data: { organizationId: ORG_ID, type: "status_report_feedback", title: "Customer replied to a status report", message: "Lisa Martinez: \"Thanks for the video, that makes sense. Go ahead.\"", entityType: "service_record", entityId: serviceRecords[0].id, entityUrl: `/work-orders/${serviceRecords[0].id}`, read: true, createdAt: hoursAgo(96) } }),
+  ]);
+  console.log(`  Created ${notifications.length} notifications`);
+
+  // -- Labor presets --
+  // cleanup() drops these on every reset, so the page is otherwise empty.
+  console.log("\nCreating labor presets...");
+  const laborPresets = await Promise.all([
+    prisma.laborPreset.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "Oil service - light vehicle", description: "Standard oil and filter change with a multi-point check.",
+      items: { create: [{ description: "Oil and filter change", hours: 0.5, rate: 110, sortOrder: 0 }, { description: "Multi-point inspection", hours: 0.5, rate: 110, sortOrder: 1 }] },
+      parts: { create: [{ name: "Synthetic Engine Oil 5W-30 (5qt)", partNumber: "OIL-5W30-5Q", quantity: 1, unitPrice: 45, sortOrder: 0, inventoryPartId: inventoryParts[0].id }, { name: "Oil Filter - European Vehicles", partNumber: "OF-EUR-01", quantity: 1, unitPrice: 15.5, sortOrder: 1, inventoryPartId: inventoryParts[6].id }] } } }),
+    prisma.laborPreset.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "Front brake service", description: "Pads and rotors front axle, including road test.",
+      items: { create: [{ description: "Front pad and rotor replacement", hours: 2, rate: 110, sortOrder: 0 }, { description: "Brake road test", hours: 0.3, rate: 110, sortOrder: 1 }] },
+      parts: { create: [{ name: "Brake Pad Set - Universal Light Vehicle", partNumber: "BP-UNI-LV", quantity: 1, unitPrice: 68, sortOrder: 0, inventoryPartId: inventoryParts[4].id }] } } }),
+    prisma.laborPreset.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "Heavy truck PM service", description: "Full preventive maintenance for a class 8 tractor unit.",
+      items: { create: [{ description: "Engine oil and all filters", hours: 2.5, rate: 140, sortOrder: 0 }, { description: "Grease service, all points", hours: 1, rate: 140, sortOrder: 1 }, { description: "Brake adjustment and lining measurement", hours: 1.5, rate: 140, sortOrder: 2 }] },
+      parts: { create: [{ name: "Heavy Duty Engine Oil 15W-40 (5gal)", partNumber: "OIL-15W40-5G", quantity: 2, unitPrice: 185, sortOrder: 0, inventoryPartId: inventoryParts[2].id }, { name: "Fuel Filter - Diesel Universal", partNumber: "FF-DSL-UNI", quantity: 2, unitPrice: 29, sortOrder: 1, inventoryPartId: inventoryParts[18].id }] } } }),
+    prisma.laborPreset.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "Excavator 1000hr service", description: "Fluids, filters, undercarriage and pin play check.",
+      items: { create: [{ description: "All fluids and filters", hours: 3, rate: 140, sortOrder: 0 }, { description: "Undercarriage and pin play inspection", hours: 1.5, rate: 140, sortOrder: 1 }] },
+      parts: { create: [{ name: "Hydraulic Filter - CAT/Komatsu", partNumber: "HF-CAT-KOM", quantity: 2, unitPrice: 120, sortOrder: 0, inventoryPartId: inventoryParts[8].id }, { name: "Air Filter - Heavy Equipment", partNumber: "AF-HE-UNI", quantity: 1, unitPrice: 85, sortOrder: 1, inventoryPartId: inventoryParts[19].id }] } } }),
+    prisma.laborPreset.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "Seasonal tire changeover", description: "Wheel swap, balance and pressure set, four wheels.",
+      items: { create: [{ description: "Wheel swap and balance (4)", hours: 1, rate: 95, sortOrder: 0 }, { description: "Pressure set and torque check", hours: 0.2, rate: 95, sortOrder: 1 }] },
+      parts: { create: [] } } }),
+  ]);
+  console.log(`  Created ${laborPresets.length} labor presets`);
+
+  // -- Report schedules --
+  console.log("\nCreating report schedules...");
+  const reportSchedules = await Promise.all([
+    prisma.reportSchedule.create({ data: { organizationId: ORG_ID, createdById: USER_ID, name: "Monday morning summary", frequency: "weekly", dateRange: "last7d", sections: JSON.stringify(["revenue", "services", "technicians", "pastDue"]), recipients: JSON.stringify([USER_ID]), nextRunDate: at(MONDAY_OFFSET + 7, 7), lastRunAt: at(MONDAY_OFFSET, 7), runCount: 12, isActive: true } }),
+    prisma.reportSchedule.create({ data: { organizationId: ORG_ID, createdById: USER_ID, name: "Month-end financials", frequency: "monthly", dateRange: "last30d", sections: JSON.stringify(["revenue", "tax", "parts", "inventory"]), recipients: JSON.stringify([USER_ID]), nextRunDate: months(1), lastRunAt: months(-1), runCount: 5, isActive: true } }),
+    prisma.reportSchedule.create({ data: { organizationId: ORG_ID, createdById: USER_ID, name: "Quarterly customer retention", frequency: "quarterly", dateRange: "last90d", sections: JSON.stringify(["customers", "retention", "jobAnalytics"]), recipients: JSON.stringify([USER_ID]), nextRunDate: months(2), runCount: 0, isActive: false } }),
+  ]);
+  console.log(`  Created ${reportSchedules.length} report schedules`);
+
+  // -- Recurring invoices --
+  console.log("\nCreating recurring invoices...");
+  const recurring = await Promise.all([
+    prisma.recurringInvoice.create({ data: { vehicleId: vehicles[17].id, title: "Kenworth T680 - monthly PM", description: "Contracted monthly preventive maintenance for Pacific Freight unit #3.", frequency: "monthly", type: "maintenance", taxRate: 8, nextRunDate: days(11), lastRunAt: days(-19), runCount: 7, invoiceNotes: "Fleet contract rate. Net-30.",
+      templateParts: { create: [{ name: "Heavy Duty Engine Oil 15W-40 (5gal)", partNumber: "OIL-15W40-5G", quantity: 2, unitPrice: 185 }, { name: "Fuel Filter - Diesel Universal", partNumber: "FF-DSL-UNI", quantity: 2, unitPrice: 29 }] },
+      templateLabor: { create: [{ description: "Full PM service", hours: 4, rate: 140 }] } } }),
+    prisma.recurringInvoice.create({ data: { vehicleId: vehicles[3].id, title: "Metro City F-150 - quarterly service", description: "Municipal contract. PO number required on every invoice.", frequency: "quarterly", type: "maintenance", taxRate: 8, nextRunDate: days(34), lastRunAt: days(-57), runCount: 3, invoiceNotes: "Quote the city asset tag on the invoice.",
+      templateParts: { create: [{ name: "Synthetic Engine Oil 5W-30 (5qt)", partNumber: "OIL-5W30-5Q", quantity: 2, unitPrice: 45 }] },
+      templateLabor: { create: [{ description: "Quarterly service and inspection", hours: 2, rate: 110 }] } } }),
+    prisma.recurringInvoice.create({ data: { vehicleId: vehicles[36].id, title: "Liebherr crane - annual certification", description: "Annual load test and certification for Titan Building.", frequency: "yearly", type: "inspection", taxRate: 8, nextRunDate: days(53), runCount: 1, lastRunAt: days(-312),
+      templateParts: { create: [] },
+      templateLabor: { create: [{ description: "Load test, certification and paperwork", hours: 8, rate: 150 }] } } }),
+  ]);
+  console.log(`  Created ${recurring.length} recurring invoices`);
+
+  // -- Custom fields --
+  console.log("\nCreating custom fields...");
+  const customFields = await Promise.all([
+    prisma.customFieldDefinition.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "purchase_order", label: "Purchase order number", fieldType: "text", entityType: "service_record", sortOrder: 0, required: false } }),
+    prisma.customFieldDefinition.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "bay", label: "Workshop bay", fieldType: "select", options: JSON.stringify(["Bay 1", "Bay 2", "Bay 3", "Heavy bay", "Outside"]), entityType: "service_record", sortOrder: 1, required: false } }),
+    prisma.customFieldDefinition.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "courtesy_vehicle", label: "Courtesy vehicle issued", fieldType: "checkbox", entityType: "service_record", sortOrder: 2, required: false } }),
+    prisma.customFieldDefinition.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "site_contact", label: "Site contact", fieldType: "text", entityType: "quote", sortOrder: 0, required: false } }),
+  ]);
+  await Promise.all([
+    prisma.customFieldValue.create({ data: { fieldId: customFields[0].id, entityId: serviceRecords[5].id, entityType: "service_record", value: "PO-44821" } }),
+    prisma.customFieldValue.create({ data: { fieldId: customFields[1].id, entityId: serviceRecords[5].id, entityType: "service_record", value: "Heavy bay" } }),
+    prisma.customFieldValue.create({ data: { fieldId: customFields[1].id, entityId: serviceRecords[0].id, entityType: "service_record", value: "Bay 2" } }),
+    prisma.customFieldValue.create({ data: { fieldId: customFields[2].id, entityId: serviceRecords[12].id, entityType: "service_record", value: "true" } }),
+    prisma.customFieldValue.create({ data: { fieldId: customFields[3].id, entityId: quotes[2].id, entityType: "quote", value: "Dave Ruiz, site foreman - (555) 100-2044" } }),
+  ]);
+  console.log(`  Created ${customFields.length} custom fields`);
+
+  // -- Service requests from the customer portal --
+  console.log("\nCreating portal service requests...");
+  const serviceRequests = await Promise.all([
+    prisma.serviceRequest.create({ data: { organizationId: ORG_ID, customerId: customers[11].id, vehicleId: vehicles[11].id, description: "Steering feels loose above 55 mph and there's a shimmy over expansion joints. Can you look before the weekend?", preferredDate: days(2), status: "pending", createdAt: hoursAgo(19) } }),
+    prisma.serviceRequest.create({ data: { organizationId: ORG_ID, customerId: customers[9].id, vehicleId: vehicles[5].id, description: "Clutch is slipping in third and fourth. I'd like the quote you mentioned turned into a booking.", preferredDate: days(6), status: "pending", createdAt: hoursAgo(41) } }),
+    prisma.serviceRequest.create({ data: { organizationId: ORG_ID, customerId: customers[19].id, vehicleId: vehicles[8].id, description: "Due for an oil change and the trailer plug is intermittent. Ranch use, so any weekday works.", preferredDate: days(9), status: "scheduled", adminNotes: "Booked for Tuesday 09:00 with Jake.", createdAt: hoursAgo(70) } }),
+    prisma.serviceRequest.create({ data: { organizationId: ORG_ID, customerId: customers[5].id, vehicleId: vehicles[6].id, description: "Low voltage warning on the Model 3 again. I think it's the 12V battery.", status: "completed", adminNotes: "12V battery replaced, tested good.", createdAt: hoursAgo(150) } }),
+  ]);
+  console.log(`  Created ${serviceRequests.length} service requests`);
+
+  // -- Status reports --
+  console.log("\nCreating status reports...");
+  const statusReports = await Promise.all([
+    prisma.statusReport.create({ data: { organizationId: ORG_ID, serviceRecordId: serviceRecords[12].id, technicianId: technicians[1].id, title: "Sprinter turbo - what we found", message: "Shaft play was well past spec and the compressor wheel had contacted the housing. Replacement turbo is fitted and the oil feed line was flushed. Road tested, no smoke under boost.", status: "viewed", sentVia: "sms", publicToken: randomBytes(16).toString("hex"), sentAt: hoursAgo(52), viewedAt: hoursAgo(50), expiresAt: days(60) } }),
+    prisma.statusReport.create({ data: { organizationId: ORG_ID, serviceRecordId: serviceRecords[1].id, technicianId: technicians[1].id, title: "BMW 330i - 50,000 mile service", message: "Everything on the schedule is done: pads, rotors, plugs and a full inspection. Front tires have about 8,000 miles left in them.", status: "viewed", sentVia: "email", publicToken: randomBytes(16).toString("hex"), sentAt: hoursAgo(120), viewedAt: hoursAgo(117), customerFeedback: "Thanks, that's clear. Book me in when the tires get close.", feedbackAt: hoursAgo(116), expiresAt: days(45) } }),
+    prisma.statusReport.create({ data: { organizationId: ORG_ID, serviceRecordId: serviceRecords[0].id, technicianId: technicians[0].id, title: "Camry - oil service done", message: "Oil and filter changed, tires rotated. Nothing else to report.", status: "sent", sentVia: "sms,email", publicToken: randomBytes(16).toString("hex"), sentAt: hoursAgo(96), expiresAt: days(30) } }),
+    prisma.statusReport.create({ data: { organizationId: ORG_ID, serviceRecordId: unassignedRecords[11].id, technicianId: technicians[10].id, title: "Kenworth sleeper A/C - parts on order", message: "The compressor has seized and put debris through the condenser, so both need replacing. Parts land Wednesday and we'll have it back to you Thursday.", status: "draft", publicToken: randomBytes(16).toString("hex") } }),
+  ]);
+  console.log(`  Created ${statusReports.length} status reports`);
+
+  // -- Audit log --
+  // Written by the app in normal use; seeded here so the page is not blank.
+  console.log("\nCreating audit log entries...");
+  const auditEntries: { action: string; entity: string; entityId: string; message: string; day: number; hour: number }[] = [
+    { action: "serviceRecord.create", entity: "serviceRecord", entityId: boardServiceRecords[0].id, message: "Created work order \"Honda Civic - AC Compressor\"", day: MONDAY_OFFSET, hour: 7 },
+    { action: "serviceRecord.update", entity: "serviceRecord", entityId: boardServiceRecords[6].id, message: "Moved \"CAT 745 - Transmission Rebuild\" to in progress", day: MONDAY_OFFSET, hour: 8 },
+    { action: "quote.send", entity: "quote", entityId: quotes[0].id, message: "Sent quote to Sarah Coleman", day: -6, hour: 14 },
+    { action: "quote.accept", entity: "quote", entityId: quotes[10].id, message: "Quote accepted by Mike Thompson", day: -2, hour: 11 },
+    { action: "payment.create", entity: "serviceRecord", entityId: serviceRecords[4].id, message: "Recorded a payment against the Kenworth engine service", day: -3, hour: 16 },
+    { action: "inventoryPart.update", entity: "inventoryPart", entityId: inventoryParts[21].id, message: "Adjusted stock for DPF Pressure Sensor", day: -7, hour: 10 },
+    { action: "inspection.complete", entity: "inspection", entityId: inspections[4].id, message: "Completed a periodic technical inspection on the Volvo FH 640", day: wd(-2, 3), hour: 11 },
+    { action: "inspection.complete", entity: "inspection", entityId: inspections[7].id, message: "Recorded a dangerous defect on the Mack Granite", day: wd(0, 0), hour: 12 },
+    { action: "customer.create", entity: "customer", entityId: customers[19].id, message: "Added customer Lisa Martinez", day: -34, hour: 9 },
+    { action: "vehicle.create", entity: "vehicle", entityId: vehicles[41].id, message: "Added vehicle Subaru WRX Premium", day: -34, hour: 9 },
+    { action: "reminder.create", entity: "reminder", entityId: coreReminders[0].id, message: "Created reminder \"Annual DOT Inspection\"", day: -30, hour: 15 },
+    { action: "scheduledMessage.create", entity: "scheduledMessage", entityId: scheduledMessages[12].id, message: "Scheduled a monthly fleet statement for Summit Construction", day: -24, hour: 8 },
+    { action: "settings.update", entity: "appSetting", entityId: ORG_ID, message: "Updated invoice layout settings", day: -12, hour: 13 },
+    { action: "laborPreset.create", entity: "laborPreset", entityId: laborPresets[2].id, message: "Created labor preset \"Heavy truck PM service\"", day: -18, hour: 10 },
+    { action: "technician.create", entity: "technician", entityId: technicians[9].id, message: "Added technician Daniel Eriksen", day: -60, hour: 9 },
+    { action: "user.login", entity: "user", entityId: USER_ID, message: "Signed in", day: 0, hour: 7 },
+  ];
+  await Promise.all(
+    auditEntries.map((e) =>
+      prisma.auditLog.create({
+        data: {
+          organizationId: ORG_ID,
+          userId: USER_ID,
+          action: e.action,
+          entity: e.entity,
+          entityId: e.entityId,
+          message: e.message,
+          timestamp: at(e.day, e.hour),
+          ip: "203.0.113.42",
+          userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/140.0 Safari/537.36",
+        },
+      }),
+    ),
+  );
+  console.log(`  Created ${auditEntries.length} audit log entries`);
+
   // -- Summary --
   console.log("\n" + "=".repeat(50));
   console.log("Seed completed!");
   console.log("=".repeat(50));
-  console.log(`  Customers:       ${customers.length}`);
-  console.log(`  Vehicles:        ${vehicles.length}`);
-  console.log(`  Service Records: ${serviceRecords.length + boardServiceRecords.length + unassignedRecords.length + predMaintRecords.length}`);
-  console.log(`  Quotes:          ${quotes.length}`);
-  console.log(`  Inventory Parts: ${inventoryParts.length}`);
-  console.log(`  Technicians:     ${technicians.length}`);
-  console.log(`  Board Assignments: (removed - technicianId set directly on service records)`);
-  console.log(`  Unassigned Jobs: ${unassignedRecords.length}`);
-  console.log(`  Notes:           ${9 + additionalNotes.length}`);
-  console.log(`  Reminders:       ${8 + additionalReminders.length}`);
-  console.log(`  Findings:        ${findings.length}`);
-  console.log(`  SMS Messages:    22`);
+  console.log(`  Seed date:          ${TODAY.toDateString()} (board week starts ${weekMonday().toDateString()})`);
+  console.log(`  Customers:          ${customers.length}`);
+  console.log(`  Vehicles:           ${vehicles.length}`);
+  console.log(`  Service Records:    ${serviceRecords.length + boardServiceRecords.length + unassignedRecords.length + predMaintRecords.length + spreadRecords.length}`);
+  console.log(`  Invoices / paid:    ${completed.length} / ${paidFull + paidPartial}`);
+  console.log(`  Quotes:             ${quotes.length}`);
+  console.log(`  Inventory Parts:    ${inventoryParts.length}`);
+  console.log(`  Stock Movements:    ${movementCount}`);
+  console.log(`  Technicians:        ${technicians.length}`);
+  console.log(`  Unassigned Jobs:    ${unassignedRecords.length}`);
+  console.log(`  Notes:              ${9 + additionalNotes.length}`);
+  console.log(`  Reminders:          ${coreReminders.length + additionalReminders.length}`);
+  console.log(`  Findings:           ${findings.length}`);
+  console.log(`  Inspections:        ${inspections.length} (${templates.length} templates)`);
+  console.log(`  SMS Messages:       22`);
+  console.log(`  Telegram Messages:  ${telegram.length}`);
+  console.log(`  Scheduled Messages: ${scheduledMessages.length}`);
+  console.log(`  Notifications:      ${notifications.length}`);
+  console.log(`  Labor Presets:      ${laborPresets.length}`);
+  console.log(`  Report Schedules:   ${reportSchedules.length}`);
+  console.log(`  Recurring Invoices: ${recurring.length}`);
+  console.log(`  Custom Fields:      ${customFields.length}`);
+  console.log(`  Service Requests:   ${serviceRequests.length}`);
+  console.log(`  Status Reports:     ${statusReports.length}`);
+  console.log(`  Audit Entries:      ${auditEntries.length}`);
   console.log("=".repeat(50));
 }
 
