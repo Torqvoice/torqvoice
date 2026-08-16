@@ -366,6 +366,7 @@
     "vehicle": "Fahrzeug",
     "template": "Vorlage",
     "progress": "Fortschritt",
+    "progressTooltip": "{graded} von {total} Prüfpunkten bewertet",
     "status": "Status",
     "date": "Datum",
     "statusInProgress": "Läuft",

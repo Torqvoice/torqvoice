@@ -366,6 +366,7 @@
     "vehicle": "Транспортное средство",
     "template": "Шаблон",
     "progress": "Ход выполнения",
+    "progressTooltip": "Оценено {graded} из {total} пунктов",
     "status": "Статус",
     "date": "Дата",
     "statusInProgress": "В работе",

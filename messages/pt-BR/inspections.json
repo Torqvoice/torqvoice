@@ -366,6 +366,7 @@
     "vehicle": "Veículo",
     "template": "Modelo",
     "progress": "Progresso",
+    "progressTooltip": "{graded} de {total} itens classificados",
     "status": "Status",
     "date": "Data",
     "statusInProgress": "Em andamento",

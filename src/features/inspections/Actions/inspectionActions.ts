@@ -47,7 +47,7 @@ export async function getInspectionsPaginated(params: {
         where,
         include: {
           vehicle: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
-          template: { select: { id: true, name: true } },
+          template: { select: { id: true, name: true, severityScale: true } },
           items: { select: { id: true, condition: true } },
         },
         orderBy: (() => {
