@@ -98,6 +98,16 @@
     "webhook_create": "Webhook oluşturuldu",
     "webhook_update": "Webhook güncellendi",
     "webhook_delete": "Webhook silindi",
-    "webhook_rotateSecret": "Webhook gizli anahtarı yenilendi"
+    "webhook_rotateSecret": "Webhook gizli anahtarı yenilendi",
+    "inspection_reopen": "Muayene yeniden açıldı",
+    "inspectionTemplate_import": "Muayene şablonu içe aktarıldı",
+    "scheduled_message_create": "Zamanlanmış mesaj oluşturuldu",
+    "scheduled_message_update": "Zamanlanmış mesaj güncellendi",
+    "scheduled_message_delete": "Zamanlanmış mesaj silindi",
+    "scheduled_message_cancel": "Zamanlanmış mesaj iptal edildi",
+    "scheduled_message_send_now": "Zamanlanmış mesaj gönderildi",
+    "settings_applyTaxRate": "Vergi oranı uygulandı",
+    "settings_convertToExclusive": "Fiyatlar vergi hariç yapıldı",
+    "settings_convertToInclusive": "Fiyatlar vergi dahil yapıldı"
   }
 }

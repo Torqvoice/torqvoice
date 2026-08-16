@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -55,6 +56,7 @@ export function NewInspectionDialog({
   templates: TemplateOption[]
   preselectedVehicleId?: string
 }) {
+  const t = useTranslations("inspections.new");
   const router = useRouter()
   const serviceType = useServiceType()
   const [isPending, startTransition] = useTransition()
@@ -118,15 +120,15 @@ export function NewInspectionDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>New Inspection</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>Vehicle</Label>
+            <Label>{t("vehicle")}</Label>
             {loadingVehicles ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Loading vehicles...
+                {t("loadingVehicles")}
               </div>
             ) : (
               <Popover open={vehiclePopoverOpen} onOpenChange={setVehiclePopoverOpen}>
@@ -150,9 +152,9 @@ export function NewInspectionDialog({
                 </PopoverTrigger>
                 <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
                   <Command>
-                    <CommandInput placeholder="Search vehicles..." />
+                    <CommandInput placeholder={t("searchVehicles")} />
                     <CommandList>
-                      <CommandEmpty>No vehicles found.</CommandEmpty>
+                      <CommandEmpty>{t("noVehicles")}</CommandEmpty>
                       <CommandGroup>
                         {vehicles.map((v) => {
                           const label = `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
@@ -185,19 +187,19 @@ export function NewInspectionDialog({
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Template</Label>
+              <Label>{t("template")}</Label>
               <Link
                 href="/settings/templates?tab=inspections"
                 className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
                 onClick={() => onOpenChange(false)}
               >
                 <Settings className="h-3 w-3" />
-                Manage templates
+                {t("manageTemplates")}
               </Link>
             </div>
             <Select value={templateId} onValueChange={setTemplateId} required>
               <SelectTrigger>
-                <SelectValue placeholder="Select template" />
+                <SelectValue placeholder={t("selectTemplate")} />
               </SelectTrigger>
               <SelectContent>
                 {templates.map((t) => (
@@ -223,7 +225,7 @@ export function NewInspectionDialog({
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={isPending || !vehicleId || !templateId}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

@@ -229,7 +229,10 @@
     "deleteFailed": "Şablon silinemedi",
     "duplicated": "Şablon çoğaltıldı",
     "duplicateFailed": "Şablon çoğaltılamadı",
-    "cancel": "İptal"
+    "cancel": "İptal",
+    "srSections": "Gruplar",
+    "srChecks": "Maddeler",
+    "srMeasurements": "Ölçümler"
   },
   "presets": {
     "title": "Bir şablonla başla",
@@ -327,7 +330,8 @@
     "saveFailed": "Şablon kaydedilemedi",
     "severityAttention": "Hafif kusur",
     "severityFail": "Ağır kusur",
-    "severityDangerous": "Tehlikeli kusur"
+    "severityDangerous": "Tehlikeli kusur",
+    "answersPlaceholder": "Tam, Kısmi, Yok"
   },
   "packages": {
     "exportTitle": "“{name}” dışa aktar",
@@ -351,5 +355,42 @@
     "imported": "{count} şablon içe aktarıldı",
     "importFailed": "Bu paket içe aktarılamadı",
     "cancel": "İptal"
+  },
+  "list": {
+    "tabAll": "Tümü",
+    "tabInProgress": "Sürüyor",
+    "tabCompleted": "Tamamlandı",
+    "search": "Muayene ara…",
+    "new": "Yeni muayene",
+    "empty": "Muayene bulunamadı.",
+    "vehicle": "Araç",
+    "template": "Şablon",
+    "progress": "İlerleme",
+    "status": "Durum",
+    "date": "Tarih",
+    "statusInProgress": "Sürüyor",
+    "statusCompleted": "Tamamlandı"
+  },
+  "new": {
+    "title": "Yeni muayene",
+    "vehicle": "Araç",
+    "searchVehicles": "Araç ara…",
+    "loadingVehicles": "Araçlar yükleniyor…",
+    "noVehicles": "Araç bulunamadı.",
+    "template": "Şablon",
+    "selectTemplate": "Şablon seçin",
+    "manageTemplates": "Şablonları yönet",
+    "cancel": "İptal",
+    "create": "Muayene oluştur",
+    "created": "Muayene oluşturuldu",
+    "createFailed": "Muayene oluşturulamadı"
+  },
+  "shareDialog": {
+    "title": "Muayeneyi paylaş",
+    "description": "Bu muayenenin salt okunur görünümünü müşterinizle paylaşın.",
+    "copyLink": "Bağlantıyı kopyala",
+    "copied": "Bağlantı panoya kopyalandı",
+    "generated": "Paylaşım bağlantısı oluşturuldu",
+    "revoked": "Paylaşım bağlantısı geri alındı"
   }
 }

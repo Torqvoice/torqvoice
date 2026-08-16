@@ -463,7 +463,7 @@ function CheckRow({
                 id={`${fieldId}-choices`}
                 value={item.choices}
                 onChange={(e) => onChange({ choices: e.target.value })}
-                placeholder="Full, Partial, None"
+                placeholder={t("answersPlaceholder")}
               />
               <p className="text-muted-foreground text-xs">{t("answersHelp")}</p>
             </div>

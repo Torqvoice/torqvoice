@@ -229,7 +229,10 @@
     "deleteFailed": "Impossibile eliminare il modello",
     "duplicated": "Modello duplicato",
     "duplicateFailed": "Impossibile duplicare il modello",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "srSections": "Gruppi",
+    "srChecks": "Punti",
+    "srMeasurements": "Misure"
   },
   "presets": {
     "title": "Partire da un modello",
@@ -327,7 +330,8 @@
     "saveFailed": "Impossibile salvare il modello",
     "severityAttention": "Carenza lieve",
     "severityFail": "Carenza grave",
-    "severityDangerous": "Carenza pericolosa"
+    "severityDangerous": "Carenza pericolosa",
+    "answersPlaceholder": "Completo, Parziale, Nessuno"
   },
   "packages": {
     "exportTitle": "Esporta «{name}»",
@@ -351,5 +355,42 @@
     "imported": "{count} modello/i importato/i",
     "importFailed": "Impossibile importare questo pacchetto",
     "cancel": "Annulla"
+  },
+  "list": {
+    "tabAll": "Tutte",
+    "tabInProgress": "In corso",
+    "tabCompleted": "Chiuse",
+    "search": "Cerca ispezioni…",
+    "new": "Nuova ispezione",
+    "empty": "Nessuna ispezione trovata.",
+    "vehicle": "Veicolo",
+    "template": "Modello",
+    "progress": "Avanzamento",
+    "status": "Stato",
+    "date": "Data",
+    "statusInProgress": "In corso",
+    "statusCompleted": "Chiusa"
+  },
+  "new": {
+    "title": "Nuova ispezione",
+    "vehicle": "Veicolo",
+    "searchVehicles": "Cerca veicoli…",
+    "loadingVehicles": "Caricamento veicoli…",
+    "noVehicles": "Nessun veicolo trovato.",
+    "template": "Modello",
+    "selectTemplate": "Scegli un modello",
+    "manageTemplates": "Gestisci modelli",
+    "cancel": "Annulla",
+    "create": "Crea ispezione",
+    "created": "Ispezione creata",
+    "createFailed": "Impossibile creare l'ispezione"
+  },
+  "shareDialog": {
+    "title": "Condividi ispezione",
+    "description": "Condividi con il cliente una vista in sola lettura di questa ispezione.",
+    "copyLink": "Copia link",
+    "copied": "Link copiato negli appunti",
+    "generated": "Link di condivisione creato",
+    "revoked": "Link di condivisione revocato"
   }
 }

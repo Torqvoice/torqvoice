@@ -98,6 +98,16 @@
     "webhook_create": "Создан вебхук",
     "webhook_update": "Обновлён вебхук",
     "webhook_delete": "Удалён вебхук",
-    "webhook_rotateSecret": "Обновлён секрет вебхука"
+    "webhook_rotateSecret": "Обновлён секрет вебхука",
+    "inspection_reopen": "Осмотр открыт заново",
+    "inspectionTemplate_import": "Импортирован шаблон осмотра",
+    "scheduled_message_create": "Создано запланированное сообщение",
+    "scheduled_message_update": "Обновлено запланированное сообщение",
+    "scheduled_message_delete": "Удалено запланированное сообщение",
+    "scheduled_message_cancel": "Отменено запланированное сообщение",
+    "scheduled_message_send_now": "Отправлено запланированное сообщение",
+    "settings_applyTaxRate": "Применена налоговая ставка",
+    "settings_convertToExclusive": "Цены переведены в без налога",
+    "settings_convertToInclusive": "Цены переведены во с налогом"
   }
 }

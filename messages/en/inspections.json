@@ -229,7 +229,10 @@
     "deleteFailed": "Failed to delete template",
     "duplicated": "Template duplicated",
     "duplicateFailed": "Failed to duplicate template",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "srSections": "Sections",
+    "srChecks": "Checks",
+    "srMeasurements": "Measurements"
   },
   "presets": {
     "title": "Start from a template",
@@ -327,7 +330,8 @@
     "saveFailed": "Failed to save template",
     "severityAttention": "Minor defect",
     "severityFail": "Major defect",
-    "severityDangerous": "Dangerous defect"
+    "severityDangerous": "Dangerous defect",
+    "answersPlaceholder": "Full, Partial, None"
   },
   "packages": {
     "exportTitle": "Export \"{name}\"",
@@ -351,5 +355,42 @@
     "imported": "Imported {count} template(s)",
     "importFailed": "Could not import this package",
     "cancel": "Cancel"
+  },
+  "list": {
+    "tabAll": "All",
+    "tabInProgress": "In Progress",
+    "tabCompleted": "Completed",
+    "search": "Search inspections...",
+    "new": "New Inspection",
+    "empty": "No inspections found.",
+    "vehicle": "Vehicle",
+    "template": "Template",
+    "progress": "Progress",
+    "status": "Status",
+    "date": "Date",
+    "statusInProgress": "In Progress",
+    "statusCompleted": "Completed"
+  },
+  "new": {
+    "title": "New Inspection",
+    "vehicle": "Vehicle",
+    "searchVehicles": "Search vehicles...",
+    "loadingVehicles": "Loading vehicles...",
+    "noVehicles": "No vehicles found.",
+    "template": "Template",
+    "selectTemplate": "Select template",
+    "manageTemplates": "Manage templates",
+    "cancel": "Cancel",
+    "create": "Create Inspection",
+    "created": "Inspection created",
+    "createFailed": "Failed to create inspection"
+  },
+  "shareDialog": {
+    "title": "Share Inspection",
+    "description": "Share a read-only view of this inspection with your customer.",
+    "copyLink": "Copy link",
+    "copied": "Link copied to clipboard",
+    "generated": "Share link generated",
+    "revoked": "Share link revoked"
   }
 }

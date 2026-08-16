@@ -52,10 +52,10 @@ interface TemplateOption {
 }
 
 const statusTabs = [
-  { key: "all", label: "All" },
-  { key: "in_progress", label: "In Progress" },
-  { key: "completed", label: "Completed" },
-];
+  { key: "all", labelKey: "tabAll" },
+  { key: "in_progress", labelKey: "tabInProgress" },
+  { key: "completed", labelKey: "tabCompleted" },
+] as const;
 
 const statusColors: Record<string, string> = {
   in_progress: "bg-blue-500/10 text-blue-500 border-blue-500/20",
@@ -105,6 +105,7 @@ export function InspectionsClient({
   const [isPending, startTransition] = useTransition();
   const [showNewDialog, setShowNewDialog] = useState(false);
   const tcm = useTranslations("common.contextMenu");
+  const t = useTranslations("inspections.list");
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -160,7 +161,7 @@ export function InspectionsClient({
               size="sm"
               onClick={() => navigate({ status: tab.key === "all" ? undefined : tab.key })}
             >
-              {tab.label}
+              {t(tab.labelKey)}
               {count !== undefined && (
                 <Badge variant="secondary" className="ml-1.5 h-5 min-w-5 px-1 text-xs">
                   {count}
@@ -176,7 +177,7 @@ export function InspectionsClient({
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search inspections..."
+              placeholder={t("search")}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="pl-9"
@@ -186,7 +187,7 @@ export function InspectionsClient({
         </div>
         <Button size="sm" onClick={() => setShowNewDialog(true)}>
           <Plus className="mr-1 h-3.5 w-3.5" />
-          New Inspection
+          {t("new")}
         </Button>
       </div>
 
@@ -197,23 +198,23 @@ export function InspectionsClient({
             <TableRow>
               <TableHead>
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("vehicle")}>
-                  Vehicle<SortIcon column="vehicle" />
+                  {t("vehicle")}<SortIcon column="vehicle" />
                 </button>
               </TableHead>
               <TableHead className="hidden w-[24%] md:table-cell">
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("template")}>
-                  Template<SortIcon column="template" />
+                  {t("template")}<SortIcon column="template" />
                 </button>
               </TableHead>
-              <TableHead className="w-32">Progress</TableHead>
+              <TableHead className="w-32">{t("progress")}</TableHead>
               <TableHead className="w-28">
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("status")}>
-                  Status<SortIcon column="status" />
+                  {t("status")}<SortIcon column="status" />
                 </button>
               </TableHead>
               <TableHead className="w-24">
                 <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("createdAt")}>
-                  Date<SortIcon column="createdAt" />
+                  {t("date")}<SortIcon column="createdAt" />
                 </button>
               </TableHead>
             </TableRow>
@@ -222,7 +223,7 @@ export function InspectionsClient({
             {data.records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                  No inspections found.
+                  {t("empty")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -253,7 +254,7 @@ export function InspectionsClient({
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`text-xs ${statusColors[insp.status] || ""}`}>
-                      {insp.status === "in_progress" ? "In Progress" : "Completed"}
+                      {insp.status === "in_progress" ? t("statusInProgress") : t("statusCompleted")}
                     </Badge>
                   </TableCell>
                   <TableCell className="font-mono text-xs">

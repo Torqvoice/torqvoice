@@ -229,7 +229,10 @@
     "deleteFailed": "Nie udało się usunąć szablonu",
     "duplicated": "Szablon zduplikowany",
     "duplicateFailed": "Nie udało się zduplikować szablonu",
-    "cancel": "Anuluj"
+    "cancel": "Anuluj",
+    "srSections": "Grupy",
+    "srChecks": "Pozycje",
+    "srMeasurements": "Pomiary"
   },
   "presets": {
     "title": "Zacznij od szablonu",
@@ -327,7 +330,8 @@
     "saveFailed": "Nie udało się zapisać szablonu",
     "severityAttention": "Usterka drobna",
     "severityFail": "Usterka poważna",
-    "severityDangerous": "Usterka stwarzająca zagrożenie"
+    "severityDangerous": "Usterka stwarzająca zagrożenie",
+    "answersPlaceholder": "Pełna, Częściowa, Brak"
   },
   "packages": {
     "exportTitle": "Eksportuj „{name}”",
@@ -351,5 +355,42 @@
     "imported": "Zaimportowano {count} szablon(y)",
     "importFailed": "Nie udało się zaimportować tego pakietu",
     "cancel": "Anuluj"
+  },
+  "list": {
+    "tabAll": "Wszystkie",
+    "tabInProgress": "W toku",
+    "tabCompleted": "Zakończone",
+    "search": "Szukaj inspekcji…",
+    "new": "Nowa inspekcja",
+    "empty": "Nie znaleziono inspekcji.",
+    "vehicle": "Pojazd",
+    "template": "Szablon",
+    "progress": "Postęp",
+    "status": "Status",
+    "date": "Data",
+    "statusInProgress": "W toku",
+    "statusCompleted": "Zakończona"
+  },
+  "new": {
+    "title": "Nowa inspekcja",
+    "vehicle": "Pojazd",
+    "searchVehicles": "Szukaj pojazdów…",
+    "loadingVehicles": "Wczytywanie pojazdów…",
+    "noVehicles": "Nie znaleziono pojazdów.",
+    "template": "Szablon",
+    "selectTemplate": "Wybierz szablon",
+    "manageTemplates": "Zarządzaj szablonami",
+    "cancel": "Anuluj",
+    "create": "Utwórz inspekcję",
+    "created": "Inspekcja utworzona",
+    "createFailed": "Nie udało się utworzyć inspekcji"
+  },
+  "shareDialog": {
+    "title": "Udostępnij inspekcję",
+    "description": "Udostępnij klientowi widok tej inspekcji tylko do odczytu.",
+    "copyLink": "Kopiuj link",
+    "copied": "Link skopiowany do schowka",
+    "generated": "Link do udostępniania utworzony",
+    "revoked": "Link do udostępniania wycofany"
   }
 }

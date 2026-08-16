@@ -229,7 +229,10 @@
     "deleteFailed": "Nepavyko pašalinti šablono",
     "duplicated": "Šablonas dubliuotas",
     "duplicateFailed": "Nepavyko dubliuoti šablono",
-    "cancel": "Atšaukti"
+    "cancel": "Atšaukti",
+    "srSections": "Grupės",
+    "srChecks": "Punktai",
+    "srMeasurements": "Matavimai"
   },
   "presets": {
     "title": "Pradėti nuo šablono",
@@ -327,7 +330,8 @@
     "saveFailed": "Nepavyko įrašyti šablono",
     "severityAttention": "Nedidelis trūkumas",
     "severityFail": "Didelis trūkumas",
-    "severityDangerous": "Pavojingas trūkumas"
+    "severityDangerous": "Pavojingas trūkumas",
+    "answersPlaceholder": "Pilna, Dalinė, Nėra"
   },
   "packages": {
     "exportTitle": "Eksportuoti „{name}“",
@@ -351,5 +355,42 @@
     "imported": "Importuota šablonų: {count}",
     "importFailed": "Nepavyko importuoti šio paketo",
     "cancel": "Atšaukti"
+  },
+  "list": {
+    "tabAll": "Visos",
+    "tabInProgress": "Vyksta",
+    "tabCompleted": "Baigtos",
+    "search": "Ieškoti apžiūrų…",
+    "new": "Nauja apžiūra",
+    "empty": "Apžiūrų nerasta.",
+    "vehicle": "Transporto priemonė",
+    "template": "Šablonas",
+    "progress": "Eiga",
+    "status": "Būsena",
+    "date": "Data",
+    "statusInProgress": "Vyksta",
+    "statusCompleted": "Baigta"
+  },
+  "new": {
+    "title": "Nauja apžiūra",
+    "vehicle": "Transporto priemonė",
+    "searchVehicles": "Ieškoti transporto priemonių…",
+    "loadingVehicles": "Įkeliamos transporto priemonės…",
+    "noVehicles": "Transporto priemonių nerasta.",
+    "template": "Šablonas",
+    "selectTemplate": "Pasirinkite šabloną",
+    "manageTemplates": "Tvarkyti šablonus",
+    "cancel": "Atšaukti",
+    "create": "Sukurti apžiūrą",
+    "created": "Apžiūra sukurta",
+    "createFailed": "Nepavyko sukurti apžiūros"
+  },
+  "shareDialog": {
+    "title": "Bendrinti apžiūrą",
+    "description": "Bendrinkite su klientu tik skaitymui skirtą šios apžiūros rodinį.",
+    "copyLink": "Kopijuoti nuorodą",
+    "copied": "Nuoroda nukopijuota į iškarpinę",
+    "generated": "Bendrinimo nuoroda sukurta",
+    "revoked": "Bendrinimo nuoroda atšaukta"
   }
 }

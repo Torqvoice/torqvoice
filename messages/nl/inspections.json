@@ -229,7 +229,10 @@
     "deleteFailed": "Sjabloon kon niet worden verwijderd",
     "duplicated": "Sjabloon gedupliceerd",
     "duplicateFailed": "Sjabloon kon niet worden gedupliceerd",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+    "srSections": "Groepen",
+    "srChecks": "Punten",
+    "srMeasurements": "Metingen"
   },
   "presets": {
     "title": "Beginnen met een sjabloon",
@@ -327,7 +330,8 @@
     "saveFailed": "Sjabloon kon niet worden opgeslagen",
     "severityAttention": "Klein gebrek",
     "severityFail": "Groot gebrek",
-    "severityDangerous": "Gevaarlijk gebrek"
+    "severityDangerous": "Gevaarlijk gebrek",
+    "answersPlaceholder": "Volledig, Gedeeltelijk, Geen"
   },
   "packages": {
     "exportTitle": "“{name}” exporteren",
@@ -351,5 +355,42 @@
     "imported": "{count} sjabloon/sjablonen geïmporteerd",
     "importFailed": "Dit pakket kon niet worden geïmporteerd",
     "cancel": "Annuleren"
+  },
+  "list": {
+    "tabAll": "Alle",
+    "tabInProgress": "Loopt",
+    "tabCompleted": "Afgerond",
+    "search": "Inspecties zoeken…",
+    "new": "Nieuwe inspectie",
+    "empty": "Geen inspecties gevonden.",
+    "vehicle": "Voertuig",
+    "template": "Sjabloon",
+    "progress": "Voortgang",
+    "status": "Status",
+    "date": "Datum",
+    "statusInProgress": "Loopt",
+    "statusCompleted": "Afgerond"
+  },
+  "new": {
+    "title": "Nieuwe inspectie",
+    "vehicle": "Voertuig",
+    "searchVehicles": "Voertuigen zoeken…",
+    "loadingVehicles": "Voertuigen laden…",
+    "noVehicles": "Geen voertuigen gevonden.",
+    "template": "Sjabloon",
+    "selectTemplate": "Kies een sjabloon",
+    "manageTemplates": "Sjablonen beheren",
+    "cancel": "Annuleren",
+    "create": "Inspectie aanmaken",
+    "created": "Inspectie aangemaakt",
+    "createFailed": "Inspectie kon niet worden aangemaakt"
+  },
+  "shareDialog": {
+    "title": "Inspectie delen",
+    "description": "Deel een alleen-lezen weergave van deze inspectie met uw klant.",
+    "copyLink": "Link kopiëren",
+    "copied": "Link gekopieerd naar klembord",
+    "generated": "Deellink aangemaakt",
+    "revoked": "Deellink ingetrokken"
   }
 }

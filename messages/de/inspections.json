@@ -229,7 +229,10 @@
     "deleteFailed": "Vorlage konnte nicht gelöscht werden",
     "duplicated": "Vorlage dupliziert",
     "duplicateFailed": "Vorlage konnte nicht dupliziert werden",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "srSections": "Gruppen",
+    "srChecks": "Prüfpunkte",
+    "srMeasurements": "Messwerte"
   },
   "presets": {
     "title": "Mit einer Vorlage beginnen",
@@ -327,7 +330,8 @@
     "saveFailed": "Vorlage konnte nicht gespeichert werden",
     "severityAttention": "Geringer Mangel",
     "severityFail": "Erheblicher Mangel",
-    "severityDangerous": "Gefährlicher Mangel"
+    "severityDangerous": "Gefährlicher Mangel",
+    "answersPlaceholder": "Vollständig, Teilweise, Keine"
   },
   "packages": {
     "exportTitle": "„{name}“ exportieren",
@@ -351,5 +355,42 @@
     "imported": "{count} Vorlage(n) importiert",
     "importFailed": "Dieses Paket konnte nicht importiert werden",
     "cancel": "Abbrechen"
+  },
+  "list": {
+    "tabAll": "Alle",
+    "tabInProgress": "Läuft",
+    "tabCompleted": "Abgeschlossen",
+    "search": "Inspektionen suchen…",
+    "new": "Neue Inspektion",
+    "empty": "Keine Inspektionen gefunden.",
+    "vehicle": "Fahrzeug",
+    "template": "Vorlage",
+    "progress": "Fortschritt",
+    "status": "Status",
+    "date": "Datum",
+    "statusInProgress": "Läuft",
+    "statusCompleted": "Abgeschlossen"
+  },
+  "new": {
+    "title": "Neue Inspektion",
+    "vehicle": "Fahrzeug",
+    "searchVehicles": "Fahrzeuge suchen…",
+    "loadingVehicles": "Fahrzeuge werden geladen…",
+    "noVehicles": "Keine Fahrzeuge gefunden.",
+    "template": "Vorlage",
+    "selectTemplate": "Vorlage wählen",
+    "manageTemplates": "Vorlagen verwalten",
+    "cancel": "Abbrechen",
+    "create": "Inspektion anlegen",
+    "created": "Inspektion angelegt",
+    "createFailed": "Inspektion konnte nicht angelegt werden"
+  },
+  "shareDialog": {
+    "title": "Inspektion teilen",
+    "description": "Teilen Sie eine schreibgeschützte Ansicht dieser Inspektion mit Ihrem Kunden.",
+    "copyLink": "Link kopieren",
+    "copied": "Link in die Zwischenablage kopiert",
+    "generated": "Freigabelink erstellt",
+    "revoked": "Freigabelink zurückgezogen"
   }
 }

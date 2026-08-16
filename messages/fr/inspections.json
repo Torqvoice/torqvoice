@@ -229,7 +229,10 @@
     "deleteFailed": "Impossible de supprimer le modèle",
     "duplicated": "Modèle dupliqué",
     "duplicateFailed": "Impossible de dupliquer le modèle",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "srSections": "Groupes",
+    "srChecks": "Points",
+    "srMeasurements": "Mesures"
   },
   "presets": {
     "title": "Partir d'un modèle",
@@ -327,7 +330,8 @@
     "saveFailed": "Impossible d'enregistrer le modèle",
     "severityAttention": "Défaillance mineure",
     "severityFail": "Défaillance majeure",
-    "severityDangerous": "Défaillance critique"
+    "severityDangerous": "Défaillance critique",
+    "answersPlaceholder": "Complet, Partiel, Aucun"
   },
   "packages": {
     "exportTitle": "Exporter « {name} »",
@@ -351,5 +355,42 @@
     "imported": "{count} modèle(s) importé(s)",
     "importFailed": "Impossible d'importer ce paquet",
     "cancel": "Annuler"
+  },
+  "list": {
+    "tabAll": "Toutes",
+    "tabInProgress": "En cours",
+    "tabCompleted": "Terminées",
+    "search": "Rechercher des inspections…",
+    "new": "Nouvelle inspection",
+    "empty": "Aucune inspection trouvée.",
+    "vehicle": "Véhicule",
+    "template": "Modèle",
+    "progress": "Avancement",
+    "status": "Statut",
+    "date": "Date",
+    "statusInProgress": "En cours",
+    "statusCompleted": "Terminée"
+  },
+  "new": {
+    "title": "Nouvelle inspection",
+    "vehicle": "Véhicule",
+    "searchVehicles": "Rechercher des véhicules…",
+    "loadingVehicles": "Chargement des véhicules…",
+    "noVehicles": "Aucun véhicule trouvé.",
+    "template": "Modèle",
+    "selectTemplate": "Choisir un modèle",
+    "manageTemplates": "Gérer les modèles",
+    "cancel": "Annuler",
+    "create": "Créer l'inspection",
+    "created": "Inspection créée",
+    "createFailed": "Impossible de créer l'inspection"
+  },
+  "shareDialog": {
+    "title": "Partager l'inspection",
+    "description": "Partagez une vue en lecture seule de cette inspection avec votre client.",
+    "copyLink": "Copier le lien",
+    "copied": "Lien copié dans le presse-papiers",
+    "generated": "Lien de partage créé",
+    "revoked": "Lien de partage révoqué"
   }
 }

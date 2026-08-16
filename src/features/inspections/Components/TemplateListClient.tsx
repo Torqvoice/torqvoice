@@ -172,18 +172,18 @@ function TemplateCard({
       <dl className="text-muted-foreground mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
         <div className="flex items-center gap-1.5">
           <LayoutTemplate className="h-3.5 w-3.5" aria-hidden="true" />
-          <dt className="sr-only">Sections</dt>
+          <dt className="sr-only">{t("srSections")}</dt>
           <dd>{t("sections", { count: template.sections.length })}</dd>
         </div>
         <div className="flex items-center gap-1.5">
           <ListChecks className="h-3.5 w-3.5" aria-hidden="true" />
-          <dt className="sr-only">Checks</dt>
+          <dt className="sr-only">{t("srChecks")}</dt>
           <dd>{t("checks", { count: checkCount })}</dd>
         </div>
         {measurementCount > 0 && (
           <div className="flex items-center gap-1.5">
             <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
-            <dt className="sr-only">Measurements</dt>
+            <dt className="sr-only">{t("srMeasurements")}</dt>
             <dd>{t("measured", { count: measurementCount })}</dd>
           </div>
         )}

@@ -229,7 +229,10 @@
     "deleteFailed": "Kunne ikke slette malen",
     "duplicated": "Malen er duplisert",
     "duplicateFailed": "Kunne ikke duplisere malen",
-    "cancel": "Avbryt"
+    "cancel": "Avbryt",
+    "srSections": "Grupper",
+    "srChecks": "Punkter",
+    "srMeasurements": "Målinger"
   },
   "presets": {
     "title": "Start fra en mal",
@@ -327,7 +330,8 @@
     "saveFailed": "Kunne ikke lagre malen",
     "severityAttention": "Mindre mangel",
     "severityFail": "Vesentlig mangel",
-    "severityDangerous": "Farlig mangel"
+    "severityDangerous": "Farlig mangel",
+    "answersPlaceholder": "Full, Delvis, Ingen"
   },
   "packages": {
     "exportTitle": "Eksporter «{name}»",
@@ -351,5 +355,42 @@
     "imported": "Importerte {count} mal(er)",
     "importFailed": "Kunne ikke importere denne pakken",
     "cancel": "Avbryt"
+  },
+  "list": {
+    "tabAll": "Alle",
+    "tabInProgress": "Pågår",
+    "tabCompleted": "Fullført",
+    "search": "Søk i inspeksjoner…",
+    "new": "Ny inspeksjon",
+    "empty": "Ingen inspeksjoner funnet.",
+    "vehicle": "Kjøretøy",
+    "template": "Mal",
+    "progress": "Fremdrift",
+    "status": "Status",
+    "date": "Dato",
+    "statusInProgress": "Pågår",
+    "statusCompleted": "Fullført"
+  },
+  "new": {
+    "title": "Ny inspeksjon",
+    "vehicle": "Kjøretøy",
+    "searchVehicles": "Søk i kjøretøy…",
+    "loadingVehicles": "Laster kjøretøy…",
+    "noVehicles": "Ingen kjøretøy funnet.",
+    "template": "Mal",
+    "selectTemplate": "Velg mal",
+    "manageTemplates": "Administrer maler",
+    "cancel": "Avbryt",
+    "create": "Opprett inspeksjon",
+    "created": "Inspeksjonen er opprettet",
+    "createFailed": "Kunne ikke opprette inspeksjonen"
+  },
+  "shareDialog": {
+    "title": "Del inspeksjon",
+    "description": "Del en skrivebeskyttet visning av denne inspeksjonen med kunden.",
+    "copyLink": "Kopier lenke",
+    "copied": "Lenken er kopiert",
+    "generated": "Delingslenke opprettet",
+    "revoked": "Delingslenke trukket tilbake"
   }
 }

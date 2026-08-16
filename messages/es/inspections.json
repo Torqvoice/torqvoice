@@ -229,7 +229,10 @@
     "deleteFailed": "No se pudo eliminar la plantilla",
     "duplicated": "Plantilla duplicada",
     "duplicateFailed": "No se pudo duplicar la plantilla",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "srSections": "Grupos",
+    "srChecks": "Puntos",
+    "srMeasurements": "Mediciones"
   },
   "presets": {
     "title": "Partir de una plantilla",
@@ -327,7 +330,8 @@
     "saveFailed": "No se pudo guardar la plantilla",
     "severityAttention": "Deficiencia leve",
     "severityFail": "Deficiencia grave",
-    "severityDangerous": "Deficiencia peligrosa"
+    "severityDangerous": "Deficiencia peligrosa",
+    "answersPlaceholder": "Completo, Parcial, Ninguno"
   },
   "packages": {
     "exportTitle": "Exportar «{name}»",
@@ -351,5 +355,42 @@
     "imported": "{count} plantilla(s) importada(s)",
     "importFailed": "No se pudo importar este paquete",
     "cancel": "Cancelar"
+  },
+  "list": {
+    "tabAll": "Todas",
+    "tabInProgress": "En curso",
+    "tabCompleted": "Cerradas",
+    "search": "Buscar inspecciones…",
+    "new": "Nueva inspección",
+    "empty": "No se encontraron inspecciones.",
+    "vehicle": "Vehículo",
+    "template": "Plantilla",
+    "progress": "Avance",
+    "status": "Estado",
+    "date": "Fecha",
+    "statusInProgress": "En curso",
+    "statusCompleted": "Cerrada"
+  },
+  "new": {
+    "title": "Nueva inspección",
+    "vehicle": "Vehículo",
+    "searchVehicles": "Buscar vehículos…",
+    "loadingVehicles": "Cargando vehículos…",
+    "noVehicles": "No se encontraron vehículos.",
+    "template": "Plantilla",
+    "selectTemplate": "Elegir plantilla",
+    "manageTemplates": "Gestionar plantillas",
+    "cancel": "Cancelar",
+    "create": "Crear inspección",
+    "created": "Inspección creada",
+    "createFailed": "No se pudo crear la inspección"
+  },
+  "shareDialog": {
+    "title": "Compartir inspección",
+    "description": "Comparta con su cliente una vista de solo lectura de esta inspección.",
+    "copyLink": "Copiar enlace",
+    "copied": "Enlace copiado al portapapeles",
+    "generated": "Enlace de compartición creado",
+    "revoked": "Enlace de compartición revocado"
   }
 }
