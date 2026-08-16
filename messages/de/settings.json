@@ -856,8 +856,18 @@
   "appearance": {
     "title": "Darstellung",
     "description": "Passen Sie das Erscheinungsbild von Torqvoice an.",
-    "darkMode": "Dunkler Modus",
-    "darkModeHint": "Zwischen hellem und dunklem Design wechseln",
+    "themeLabel": "Design",
+    "themeHint": "Wählen Sie das Farbschema der App. Die Auswahl wird auf diesem Gerät gespeichert.",
+    "themes": {
+      "light": "Hell",
+      "dark": "Dunkel",
+      "graphite": "Graphit",
+      "ocean": "Ozean",
+      "forest": "Wald",
+      "midnight": "Mitternacht",
+      "carbon": "Karbon",
+      "system": "System"
+    },
     "dateTimeTitle": "Datum & Uhrzeit",
     "dateTimeDescription": "Konfigurieren Sie, wie Datum und Uhrzeit in der Anwendung angezeigt werden.",
     "dateFormat": "Datumsformat",

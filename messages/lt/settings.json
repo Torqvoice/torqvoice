@@ -856,8 +856,18 @@
   "appearance": {
     "title": "Išvaizda",
     "description": "Pritaikykite, kaip atrodo ir jaučiasi Torqvoice.",
-    "darkMode": "Tamsus režimas",
-    "darkModeHint": "Perjungti tarp šviesios ir tamsios temos",
+    "themeLabel": "Tema",
+    "themeHint": "Pasirinkite programos spalvų schemą. Pasirinkimas išsaugomas šiame įrenginyje.",
+    "themes": {
+      "light": "Šviesi",
+      "dark": "Tamsi",
+      "graphite": "Grafitas",
+      "ocean": "Vandenynas",
+      "forest": "Miškas",
+      "midnight": "Vidurnaktis",
+      "carbon": "Karbonas",
+      "system": "Sistemos"
+    },
     "dateTimeTitle": "Data ir laikas",
     "dateTimeDescription": "Konfigūruokite, kaip datos ir laikai rodomi visoje programoje.",
     "dateFormat": "Datos formatas",

@@ -856,8 +856,18 @@
   "appearance": {
     "title": "Weergave",
     "description": "Pas aan hoe Torqvoice eruitziet.",
-    "darkMode": "Donkere modus",
-    "darkModeHint": "Schakelen tussen licht en donker thema",
+    "themeLabel": "Thema",
+    "themeHint": "Kies het kleurenschema van de app. De keuze wordt op dit apparaat opgeslagen.",
+    "themes": {
+      "light": "Licht",
+      "dark": "Donker",
+      "graphite": "Grafiet",
+      "ocean": "Oceaan",
+      "forest": "Bos",
+      "midnight": "Middernacht",
+      "carbon": "Carbon",
+      "system": "Systeem"
+    },
     "dateTimeTitle": "Datum en tijd",
     "dateTimeDescription": "Configureer hoe datums en tijden worden weergegeven in de applicatie.",
     "dateFormat": "Datumformaat",
