@@ -107,7 +107,16 @@ export async function GET(
       headerStyle: settingsMap["invoice.headerStyle"] || "standard",
     };
 
-    const { photos, omitted: photosOmitted } = await loadInspectionPhotos(inspection.items);
+    // Photos are an enhancement; the certificate is the document. Anything that
+    // goes wrong embedding them is logged and dropped rather than allowed to
+    // fail a download of a report the workshop has already issued.
+    let photos: Awaited<ReturnType<typeof loadInspectionPhotos>>["photos"] = {};
+    let photosOmitted = 0;
+    try {
+      ({ photos, omitted: photosOmitted } = await loadInspectionPhotos(inspection.items));
+    } catch (error) {
+      console.error("[Inspection PDF] Photo embedding failed, rendering without photos:", error);
+    }
 
     const element = React.createElement(InspectionPDF, {
       data: inspection,

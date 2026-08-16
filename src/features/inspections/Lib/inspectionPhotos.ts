@@ -1,7 +1,6 @@
 import "server-only";
 
 import { readFile } from "fs/promises";
-import sharp from "sharp";
 import { resolveUploadPath } from "@/lib/resolve-upload-path";
 import { isDefect } from "./conditions";
 
@@ -28,6 +27,38 @@ export interface InspectionPhoto {
   dataUri: string;
 }
 
+/**
+ * sharp is a native module, so it is the one dependency here that can fail on
+ * the machine rather than on the data — a musl/glibc mismatch or a partially
+ * copied node_modules after a deploy. Imported lazily and behind a catch so
+ * that failure costs the photos rather than the certificate: a report a
+ * workshop issued years ago must still download on an install where the image
+ * pipeline is broken. A static import would throw while the route module is
+ * being evaluated, before any handler's try/catch exists, which the client
+ * sees as an empty 500 with nothing in it to explain itself.
+ */
+type SharpFactory = (typeof import("sharp"))["default"];
+let cachedSharp: SharpFactory | null | undefined;
+
+async function getSharp(): Promise<SharpFactory | null> {
+  if (cachedSharp !== undefined) return cachedSharp;
+  try {
+    const loaded = (await import("sharp")).default;
+    // libvips defaults to one thread per core and holds a cache per thread,
+    // which on a small box is a lot of memory for something that runs a few
+    // times a day.
+    loaded.concurrency(1);
+    cachedSharp = loaded;
+  } catch (error) {
+    console.error(
+      "[Inspection photos] sharp is unavailable; certificates will render without photos:",
+      error
+    );
+    cachedSharp = null;
+  }
+  return cachedSharp;
+}
+
 interface PhotoSourceItem {
   id: string;
   condition: string;
@@ -36,9 +67,11 @@ interface PhotoSourceItem {
 }
 
 async function loadPhoto(url: string): Promise<InspectionPhoto | null> {
+  const sharp = await getSharp();
+  if (!sharp) return null;
   try {
     const buffer = await readFile(resolveUploadPath(url));
-    const resized = await sharp(buffer)
+    const resized = await sharp(buffer, { sequentialRead: true })
       .rotate() // honour the EXIF orientation before it is stripped
       .resize({ width: MAX_WIDTH, withoutEnlargement: true })
       .jpeg({ quality: JPEG_QUALITY })
@@ -86,9 +119,15 @@ export async function loadInspectionPhotos(
     omitted += wanted.length - affordable.length;
     if (affordable.length === 0) continue;
 
-    const loaded = (await Promise.all(affordable.map(loadPhoto))).filter(
-      (photo): photo is InspectionPhoto => photo !== null
-    );
+    // One at a time: decoding is where the memory goes, and a phone photo
+    // expands to tens of megabytes uncompressed. A certificate is worth a
+    // second of extra wall clock; it is not worth an out-of-memory kill on a
+    // box that is also serving the rest of the workshop.
+    const loaded: InspectionPhoto[] = [];
+    for (const url of affordable) {
+      const photo = await loadPhoto(url);
+      if (photo) loaded.push(photo);
+    }
     if (loaded.length > 0) {
       photos[item.id] = loaded;
       budget -= loaded.length;
