@@ -55,6 +55,7 @@
   },
   "list": {
     "title": "Durum Raporları",
+    "readMore": "Daha fazla bilgi",
     "newReport": "Yeni Rapor",
     "empty": "Henüz durum raporu yok",
     "emptyDescription": "Müşterinizi araç durumu hakkında bilgilendirmek için bir durum raporu oluşturun.",
@@ -76,17 +77,17 @@
     "deleteTitle": "Durum raporunu sil",
     "deleteFailed": "Durum raporu silinemedi",
     "cancel": "İptal",
-  "feedback": "Geri Bildirim",
-  "hasComment": "Alındı",
-  "noFeedback": "Henüz geri bildirim yok",
-  "sentAt": "Gönderildi",
-  "sentVia": "Gönderim yolu",
-  "messageLabel": "Mesaj",
-  "videoLabel": "Video"
+    "feedback": "Geri Bildirim",
+    "hasComment": "Alındı",
+    "noFeedback": "Henüz geri bildirim yok",
+    "sentAt": "Gönderildi",
+    "sentVia": "Gönderim yolu",
+    "messageLabel": "Mesaj",
+    "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Merhaba {name}, {vehicle} aracınız hakkında bir durum güncellemesi var. Buradan görüntüleyin: {url}",
     "emailSubject": "Araç Durum Güncellemesi - {vehicle}",
-  "viewReport": "Raporu buradan görüntüleyin: {url}"
+    "viewReport": "Raporu buradan görüntüleyin: {url}"
   }
 }

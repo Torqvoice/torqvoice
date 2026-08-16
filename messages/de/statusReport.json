@@ -55,6 +55,7 @@
   },
   "list": {
     "title": "Statusberichte",
+    "readMore": "Mehr erfahren",
     "newReport": "Neuer Statusbericht",
     "empty": "Noch keine Statusberichte",
     "emptyDescription": "Erstellen Sie einen Statusbericht, um Ihren Kunden über den Fahrzeugstatus zu informieren.",
@@ -76,17 +77,17 @@
     "deleteTitle": "Statusbericht löschen",
     "deleteFailed": "Statusbericht konnte nicht gelöscht werden",
     "cancel": "Abbrechen",
-  "feedback": "Feedback",
-  "hasComment": "Erhalten",
-  "noFeedback": "Noch kein Feedback",
-  "sentAt": "Gesendet",
-  "sentVia": "Gesendet über",
-  "messageLabel": "Nachricht",
-  "videoLabel": "Video"
+    "feedback": "Feedback",
+    "hasComment": "Erhalten",
+    "noFeedback": "Noch kein Feedback",
+    "sentAt": "Gesendet",
+    "sentVia": "Gesendet über",
+    "messageLabel": "Nachricht",
+    "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Hallo {name}, wir haben ein Status-Update zu Ihrem {vehicle}. Hier ansehen: {url}",
     "emailSubject": "Fahrzeug-Statusbericht - {vehicle}",
-  "viewReport": "Bericht hier ansehen: {url}"
+    "viewReport": "Bericht hier ansehen: {url}"
   }
 }

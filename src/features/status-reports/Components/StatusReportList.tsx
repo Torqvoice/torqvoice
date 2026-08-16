@@ -140,7 +140,17 @@ export function StatusReportList({
     <>
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium">{t("title")}</h3>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-sm font-medium">{t("title")}</h3>
+            <a
+              href="https://torqvoice.com/docs/features/status-reports"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 rounded text-[11px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {t("readMore")} →
+            </a>
+          </div>
           <Button size="sm" onClick={() => setShowCreate(true)}>
             <Plus className="mr-1.5 h-4 w-4" />
             {t("newReport")}

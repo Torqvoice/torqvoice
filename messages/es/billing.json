@@ -79,9 +79,9 @@
     "failedDelete": "Error al eliminar",
     "processed": "{count} factura(s) procesada(s)",
     "failedProcess": "Error al procesar",
-    "pause": "Pause",
-    "resume": "Resume",
-    "delete": "Delete",
-    "removeRow": "Remove row"
+    "pause": "Pausar",
+    "resume": "Reanudar",
+    "delete": "Eliminar",
+    "removeRow": "Quitar fila"
   }
 }

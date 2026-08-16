@@ -134,7 +134,7 @@
     "dueMileagePlaceholder": "z.B. 50000",
     "reminderUpdated": "Erinnerung aktualisiert",
     "reminderCreated": "Erinnerung erstellt",
-    "saveError": "Fehler beim {action} der Erinnerung",
+    "saveError": "Erinnerung konnte nicht gespeichert werden",
     "notifyLabel": "Bei Fälligkeit benachrichtigen",
     "notifyInApp": "In-App-Benachrichtigung",
     "notifyEmail": "E-Mail"
@@ -201,7 +201,7 @@
     "noteUpdated": "Notiz aktualisiert",
     "noteCreated": "Notiz erstellt",
     "titleRequired": "Titel und Inhalt sind erforderlich",
-    "saveError": "Fehler beim {action} der Notiz",
+    "saveError": "Notiz konnte nicht gespeichert werden",
     "openMenu": "Open menu",
     "firstPage": "First page",
     "previousPage": "Previous page",

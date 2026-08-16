@@ -1191,7 +1191,7 @@
   },
   "ai": {
     "title": "AI-assistent",
-    "readMore": "Read More",
+    "readMore": "Meer lezen",
     "description": "Configureer AI om automatisch servicenotities te genereren en voertuiggeschiedenis samen te vatten.",
     "enableLabel": "AI inschakelen",
     "enableHint": "Gebruik AI-functies in de hele applicatie",

@@ -502,9 +502,9 @@
       "layout": "Layout"
     },
     "presets": "Presets de modelo",
-    "primaryColor": "Cor primaria",
+    "primaryColor": "Cor primária",
     "fontAndLayout": "Fonte e layout",
-    "fontFamily": "Familia de fontes",
+    "fontFamily": "Família de fontes",
     "helveticaDefault": "Helvetica (Padrão)",
     "timesRoman": "Times Roman",
     "courier": "Courier",
@@ -538,7 +538,7 @@
     "quotationTemplateSaved": "Configurações do modelo de orçamento salvas",
     "failedSave": "Falha ao salvar configurações",
     "smsTemplates": "Modelos de mensagens SMS",
-    "smsTemplatesDescription": "Personalize as mensagens de texto enviadas aos clientes. Use variaveis como <code>'{companyName}'</code> para inserir valores dinamicos.",
+    "smsTemplatesDescription": "Personalize as mensagens de texto enviadas aos clientes. Use variáveis como <code>'{companyName}'</code> para inserir valores dinâmicos.",
     "reset": "Redefinir",
     "invoiceReady": "Fatura pronta",
     "invoiceReadyDescription": "Enviada ao compartilhar uma fatura com um cliente.",
@@ -555,7 +555,7 @@
     "statusCompleted": "Status: Concluído",
     "statusCompletedDescription": "Enviada quando o status muda para Concluído.",
     "paymentReceived": "Pagamento recebido",
-    "paymentReceivedDescription": "Enviada quando um pagamento e registrado para uma fatura.",
+    "paymentReceivedDescription": "Enviada quando um pagamento é registrado para uma fatura.",
     "saveSmsTemplates": "Salvar modelos SMS",
     "smsTemplateSaved": "Configurações dos modelos SMS salvas",
     "smsDefaults": {
@@ -569,14 +569,14 @@
       "paymentReceived": "Pagamento de {amount} recebido para a fatura {invoice_number}. Obrigado!"
     },
     "colorPresets": {
-      "amber": "Ambar",
+      "amber": "Âmbar",
       "blue": "Azul",
       "emerald": "Esmeralda",
       "red": "Vermelho",
       "purple": "Roxo",
       "slate": "Ardósia",
       "rose": "Rosa",
-      "indigo": "Indigo"
+      "indigo": "Índigo"
     },
     "layoutTitle": "Layout da fatura",
     "layoutDescription": "Personalize a ordem e visibilidade das seções nas suas faturas e orçamentos.",
@@ -1191,7 +1191,7 @@
   },
   "ai": {
     "title": "Assistente de IA",
-    "readMore": "Read More",
+    "readMore": "Saiba mais",
     "description": "Configure a IA para gerar automaticamente notas de serviço e resumir o histórico do veículo.",
     "enableLabel": "Ativar IA",
     "enableHint": "Usar recursos de IA em toda a aplicacao",

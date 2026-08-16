@@ -1191,7 +1191,7 @@
   },
   "ai": {
     "title": "Assistente IA",
-    "readMore": "Read More",
+    "readMore": "Scopri di più",
     "description": "Configura l'IA per generare automaticamente note di servizio e riassumere la cronologia del veicolo.",
     "enableLabel": "Abilita IA",
     "enableHint": "Usa le funzionalita basate sull'IA in tutta l'applicazione",

@@ -55,6 +55,7 @@
   },
   "list": {
     "title": "Statusrapporter",
+    "readMore": "Les mer",
     "newReport": "Ny statusrapport",
     "empty": "Ingen statusrapporter ennå",
     "emptyDescription": "Opprett en statusrapport for å oppdatere kunden om kjøretøyets tilstand.",
@@ -76,17 +77,17 @@
     "deleteTitle": "Slett statusrapport",
     "deleteFailed": "Kunne ikke slette statusrapport",
     "cancel": "Avbryt",
-  "feedback": "Tilbakemelding",
-  "hasComment": "Mottatt",
-  "noFeedback": "Ingen tilbakemelding ennå",
-  "sentAt": "Sendt",
-  "sentVia": "Sendt via",
-  "messageLabel": "Melding",
-  "videoLabel": "Video"
+    "feedback": "Tilbakemelding",
+    "hasComment": "Mottatt",
+    "noFeedback": "Ingen tilbakemelding ennå",
+    "sentAt": "Sendt",
+    "sentVia": "Sendt via",
+    "messageLabel": "Melding",
+    "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Hei {name}, vi har en statusoppdatering på din {vehicle}. Se den her: {url}",
     "emailSubject": "Statusoppdatering for kjøretøy - {vehicle}",
-  "viewReport": "Se rapporten her: {url}"
+    "viewReport": "Se rapporten her: {url}"
   }
 }

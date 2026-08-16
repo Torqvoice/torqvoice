@@ -55,6 +55,7 @@
   },
   "list": {
     "title": "Informes de estado",
+    "readMore": "Más información",
     "newReport": "Nuevo informe",
     "empty": "Sin informes de estado",
     "emptyDescription": "Crea un informe de estado para actualizar a tu cliente sobre el estado del vehículo.",
@@ -76,17 +77,17 @@
     "deleteTitle": "Eliminar informe de estado",
     "deleteFailed": "No se pudo eliminar el informe de estado",
     "cancel": "Cancelar",
-  "feedback": "Comentario",
-  "hasComment": "Recibido",
-  "noFeedback": "Sin comentarios aún",
-  "sentAt": "Enviado",
-  "sentVia": "Enviado por",
-  "messageLabel": "Mensaje",
-  "videoLabel": "Video"
+    "feedback": "Comentario",
+    "hasComment": "Recibido",
+    "noFeedback": "Sin comentarios aún",
+    "sentAt": "Enviado",
+    "sentVia": "Enviado por",
+    "messageLabel": "Mensaje",
+    "videoLabel": "Video"
   },
   "notify": {
     "defaultMessage": "Hola {name}, tenemos una actualización de estado de su {vehicle}. Véala aquí: {url}",
     "emailSubject": "Actualización de estado del vehículo - {vehicle}",
-  "viewReport": "Ver el informe aquí: {url}"
+    "viewReport": "Ver el informe aquí: {url}"
   }
 }

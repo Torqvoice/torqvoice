@@ -134,7 +134,7 @@
     "dueMileagePlaceholder": "np. 50000",
     "reminderUpdated": "Przypomnienie zaktualizowane",
     "reminderCreated": "Przypomnienie utworzone",
-    "saveError": "Nie udało się {action} przypomnienia",
+    "saveError": "Nie udało się zapisać przypomnienia",
     "notifyLabel": "Powiadom mnie w terminie",
     "notifyInApp": "Powiadomienie w aplikacji",
     "notifyEmail": "E-mail"
@@ -201,7 +201,7 @@
     "noteUpdated": "Notatka zaktualizowana",
     "noteCreated": "Notatka utworzona",
     "titleRequired": "Tytuł i treść są wymagane",
-    "saveError": "Nie udało się {action} notatki",
+    "saveError": "Nie udało się zapisać notatki",
     "openMenu": "Open menu",
     "firstPage": "First page",
     "previousPage": "Previous page",

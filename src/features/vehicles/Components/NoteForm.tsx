@@ -66,7 +66,7 @@ export function NoteForm({ vehicleId, open, onOpenChange, note }: NoteFormProps)
       onOpenChange(false);
       router.refresh();
     } else {
-      modal.open("error", "Error", result.error || t("saveError", { action: isEditing ? "update" : "create" }));
+      modal.open("error", "Error", result.error || t("saveError"));
     }
 
     setLoading(false);
