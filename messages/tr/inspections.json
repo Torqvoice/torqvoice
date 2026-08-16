@@ -366,6 +366,7 @@
     "vehicle": "Araç",
     "template": "Şablon",
     "progress": "İlerleme",
+    "progressTooltip": "{total} maddeden {graded} tanesi değerlendirildi",
     "status": "Durum",
     "date": "Tarih",
     "statusInProgress": "Sürüyor",

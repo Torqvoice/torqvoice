@@ -366,6 +366,7 @@
     "vehicle": "Pojazd",
     "template": "Szablon",
     "progress": "Postęp",
+    "progressTooltip": "Oceniono {graded} z {total} pozycji",
     "status": "Status",
     "date": "Data",
     "statusInProgress": "W toku",

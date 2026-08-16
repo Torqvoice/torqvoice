@@ -366,6 +366,7 @@
     "vehicle": "Veicolo",
     "template": "Modello",
     "progress": "Avanzamento",
+    "progressTooltip": "{graded} punti su {total} valutati",
     "status": "Stato",
     "date": "Data",
     "statusInProgress": "In corso",

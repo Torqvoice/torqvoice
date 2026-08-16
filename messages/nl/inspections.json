@@ -366,6 +366,7 @@
     "vehicle": "Voertuig",
     "template": "Sjabloon",
     "progress": "Voortgang",
+    "progressTooltip": "{graded} van {total} punten beoordeeld",
     "status": "Status",
     "date": "Datum",
     "statusInProgress": "Loopt",

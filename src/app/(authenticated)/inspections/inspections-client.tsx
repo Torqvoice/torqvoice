@@ -23,7 +23,14 @@ import { TableCellLink } from "@/components/table-cell-link";
 import { ArrowDown, ArrowUp, ArrowUpDown, Car, ExternalLink, Loader2, Plus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { NewInspectionDialog } from "@/features/inspections/Components/NewInspectionDialog";
-import { CONDITION_TOKENS, countConditions } from "@/features/inspections/Lib/conditions";
+import {
+  CONDITION_TOKENS,
+  countConditions,
+  type Condition,
+  type SeverityScale,
+} from "@/features/inspections/Lib/conditions";
+import { useConditionLabels } from "@/features/inspections/Lib/useConditionLabels";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface InspectionRecord {
   id: string;
@@ -31,8 +38,9 @@ interface InspectionRecord {
   mileage: number | null;
   createdAt: Date;
   completedAt: Date | null;
+  severityScale: string | null;
   vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null };
-  template: { id: string; name: string };
+  template: { id: string; name: string; severityScale: string | null };
   items: { id: string; condition: string }[];
 }
 
@@ -62,24 +70,70 @@ const statusColors: Record<string, string> = {
   completed: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
 };
 
-function InspectionProgress({ items }: { items: { condition: string }[] }) {
-  if (items.length === 0) return null;
+/**
+ * The rail is a breakdown of the grades given, not a completion meter: a full
+ * rail with an amber run means every check was graded and some came back as
+ * minor defects. Read cold that is easy to mistake for "half done", so the
+ * hover spells out what each colour stands for and how many checks it covers.
+ */
+function InspectionProgress({
+  items,
+  scale,
+}: {
+  items: { condition: string }[];
+  scale: SeverityScale;
+}) {
+  const t = useTranslations("inspections.list");
+  const { label: gradeLabel } = useConditionLabels(scale);
   const counts = countConditions(items);
+  if (items.length === 0) return null;
+
+  const summary = t("progressTooltip", { graded: counts.inspected, total: counts.total });
+  const legend = ([
+    ["pass", counts.pass],
+    ["attention", counts.attention],
+    ["fail", counts.fail],
+    ["dangerous", counts.dangerous],
+    ["not_inspected", counts.notInspected],
+  ] as const).filter(([, value]) => value > 0);
+
   return (
-    <div className="flex items-center gap-1.5">
-      <div className="flex h-2 w-20 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-        {(["pass", "attention", "fail", "dangerous"] as const).map((c) => {
-          const pct = (counts[c] / items.length) * 100;
-          if (pct === 0) return null;
-          return (
-            <div key={c} className={CONDITION_TOKENS[c].bar} style={{ width: `${pct}%` }} />
-          );
-        })}
-      </div>
-      <span className="text-xs text-muted-foreground">
-        {counts.inspected}/{counts.total}
-      </span>
-    </div>
+    <Tooltip>
+      <TooltipTrigger
+        className="group flex cursor-help items-center gap-1.5 rounded-sm focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
+        aria-label={summary}
+      >
+        <div className="ring-offset-background group-hover:ring-foreground/25 flex h-2 w-20 overflow-hidden rounded-full bg-gray-200 ring-offset-1 transition-shadow group-hover:ring-2 dark:bg-gray-700">
+          {(["pass", "attention", "fail", "dangerous"] as const).map((c) => {
+            const pct = (counts[c] / items.length) * 100;
+            if (pct === 0) return null;
+            return (
+              <div key={c} className={CONDITION_TOKENS[c].bar} style={{ width: `${pct}%` }} />
+            );
+          })}
+        </div>
+        <span className="text-muted-foreground group-hover:text-foreground text-xs">
+          {counts.inspected}/{counts.total}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="px-3 py-2">
+        <p className="font-medium">{summary}</p>
+        <ul className="mt-1.5 space-y-1">
+          {legend.map(([condition, value]) => (
+            <li key={condition} className="flex items-center gap-2">
+              <span
+                className={`h-2 w-2 shrink-0 rounded-full ${
+                  condition === "not_inspected" ? "bg-background/40" : CONDITION_TOKENS[condition].bar
+                }`}
+                aria-hidden="true"
+              />
+              <span className="flex-1">{gradeLabel(condition as Condition)}</span>
+              <span className="tabular-nums">{value}</span>
+            </li>
+          ))}
+        </ul>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -250,7 +304,14 @@ export function InspectionsClient({
                     {insp.template.name}
                   </TableCell>
                   <TableCell>
-                    <InspectionProgress items={insp.items} />
+                    <InspectionProgress
+                      items={insp.items}
+                      scale={
+                        (insp.severityScale ?? insp.template.severityScale) === "basic"
+                          ? "basic"
+                          : "eu"
+                      }
+                    />
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`text-xs ${statusColors[insp.status] || ""}`}>

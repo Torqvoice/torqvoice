@@ -366,6 +366,7 @@
     "vehicle": "Vehículo",
     "template": "Plantilla",
     "progress": "Avance",
+    "progressTooltip": "{graded} de {total} puntos calificados",
     "status": "Estado",
     "date": "Fecha",
     "statusInProgress": "En curso",
