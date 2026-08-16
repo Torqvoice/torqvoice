@@ -11,6 +11,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 
+import { useTranslations } from 'next-intl'
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
@@ -93,6 +94,7 @@ function useInstallPrompt() {
 }
 
 export function InstallBanner() {
+  const t = useTranslations('common.shared')
   const { canShow, isIOS, install, hide } = useInstallPrompt()
 
   if (!canShow) return null
@@ -109,7 +111,7 @@ export function InstallBanner() {
             className="shrink-0 rounded-lg"
           />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">Install TorqVoice</p>
+            <p className="text-sm font-medium">{t("installTorqvoice")}</p>
             <p className="truncate text-xs text-muted-foreground">
               {isIOS
                 ? 'Tap Share then "Add to Home Screen"'
@@ -118,13 +120,13 @@ export function InstallBanner() {
           </div>
           {!isIOS && (
             <Button size="sm" onClick={install}>
-              Install
+              {t("install")}
             </Button>
           )}
           <button
             onClick={hide}
             className="shrink-0 rounded-full p-1 text-muted-foreground hover:text-foreground"
-            aria-label="Dismiss"
+            aria-label={t("dismiss")}
           >
             <X className="size-4" />
           </button>
@@ -135,6 +137,7 @@ export function InstallBanner() {
 }
 
 export function SidebarInstallButton() {
+  const t = useTranslations('common.shared')
   const { canShow, isIOS, install, hide } = useInstallPrompt()
 
   if (!canShow) return null
@@ -145,10 +148,10 @@ export function SidebarInstallButton() {
         <SidebarMenuItem>
           <SidebarMenuButton
             onClick={isIOS ? hide : install}
-            tooltip={isIOS ? 'Tap Share > Add to Home Screen' : 'Install App'}
+            tooltip={isIOS ? t("iosInstallHint") : t("installApp")}
           >
             <Download className="size-4" />
-            <span className="font-medium">Install App</span>
+            <span className="font-medium">{t("installApp")}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

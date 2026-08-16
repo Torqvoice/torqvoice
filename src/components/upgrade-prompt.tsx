@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function UpgradePrompt({
   feature,
@@ -19,6 +20,7 @@ export function UpgradePrompt({
   title?: string;
   description?: string;
 }) {
+  const t = useTranslations("common.shared");
   const cloud = isCloudMode();
 
   return (
@@ -37,11 +39,11 @@ export function UpgradePrompt({
         <CardContent>
           {cloud ? (
             <Button asChild>
-              <Link href="/settings/subscription">View Plans</Link>
+              <Link href="/settings/subscription">{t("viewPlans")}</Link>
             </Button>
           ) : (
             <Button asChild>
-              <Link href="/settings/license">Manage License</Link>
+              <Link href="/settings/license">{t("manageLicense")}</Link>
             </Button>
           )}
         </CardContent>
