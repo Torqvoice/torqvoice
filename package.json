@@ -58,7 +58,7 @@
     "nodemailer": "^9.0.1",
     "openai": "^6.27.0",
     "pdf-lib": "^1.17.1",
-    "posthog-js": "^1.390.2",
+    "posthog-js": "^1.417.1",
     "postmark": "^4.0.7",
     "prisma": "^7.9.1",
     "qrcode": "^1.5.4",
@@ -85,7 +85,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.15",
-    "@tailwindcss/postcss": "^4.3.0",
+    "@tailwindcss/postcss": "^4.3.3",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
