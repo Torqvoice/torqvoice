@@ -60,6 +60,8 @@ interface InspectionRecord {
   notes: string | null;
   completedAt: Date | null;
   createdAt: Date;
+  severityScale?: string | null;
+  country?: string | null;
   vehicleCategory?: string | null;
   nextTestDue?: Date | null;
   certificateNumber?: string | null;
@@ -124,12 +126,13 @@ export function InspectionView({
   const tz = timezone || "America/New_York";
   const formatDate = (d: Date | string) => fmtDate(new Date(d), fmt, tz);
 
-  const scale: SeverityScale = inspection.template.severityScale === "basic" ? "basic" : "eu";
+  const storedScale = inspection.severityScale ?? inspection.template.severityScale;
+  const scale: SeverityScale = storedScale === "basic" ? "basic" : "eu";
   const conditionText = (condition: Condition) =>
     scale === "basic" ? t(`basic.${condition}`) : t(`eu.${condition}`);
   // Several member states record defects by grade number rather than by name,
   // so the number leads and the wording follows.
-  const country = inspection.template.country ?? null;
+  const country = inspection.country ?? inspection.template.country ?? null;
   const gradedText = (condition: Condition) =>
     gradedConditionLabel(condition, scale, country, conditionText(condition));
 

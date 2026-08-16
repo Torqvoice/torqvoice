@@ -44,6 +44,8 @@ interface InspectionData {
   notes: string | null
   createdAt: Date
   completedAt: Date | null
+  severityScale?: string | null
+  country?: string | null
   vehicleCategory?: string | null
   nextTestDue?: Date | null
   certificateNumber?: string | null
@@ -145,7 +147,7 @@ export function InspectionPDF({
   const shopName = workshop?.name || 'Torqvoice'
 
   const label = (key: string) => labels[key] || FALLBACK[key] || key
-  const isBasic = data.template.severityScale === 'basic'
+  const isBasic = (data.severityScale ?? data.template.severityScale) === 'basic'
   const conditionText = (condition: Condition) => {
     const suffix = condition.charAt(0).toUpperCase() + condition.slice(1)
     return label(`${isBasic ? 'basic' : 'eu'}${suffix}`)
@@ -156,7 +158,7 @@ export function InspectionPDF({
     gradedConditionLabel(
       condition,
       isBasic ? 'basic' : 'eu',
-      data.template.country,
+      data.country ?? data.template.country,
       conditionText(condition)
     )
 
