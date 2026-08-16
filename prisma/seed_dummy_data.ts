@@ -1,11 +1,5 @@
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import {
-  TEMPLATE_PRESETS,
-  PRESET_VERSION,
-  presetPackageId,
-  type TemplatePreset,
-} from "../src/features/inspections/Lib/templatePresets";
 import { randomBytes, scryptSync } from "node:crypto";
 import * as fs from "fs";
 import * as path from "path";
@@ -138,6 +132,288 @@ const vehicleImages: Record<string, string> = {
   "dodge-charger.jpg": "https://images.unsplash.com/photo-1674520669939-1a8dbcdc2f6b?w=800&q=80",
   "subaru-wrx.jpg": "https://images.unsplash.com/photo-1747000586906-c451da789b62?w=800&q=80",
 };
+
+// ── Inspection templates ─────────────────────────────────────────────────
+// Deliberately duplicated rather than imported from
+// src/features/inspections/Lib/templatePresets: the production image ships only
+// prisma/ and src/generated (see Dockerfile), so anything the seed imports from
+// src/features breaks the deploy job with MODULE_NOT_FOUND.
+//
+// The periodic-inspection checklist below is a subset of that preset, codes and
+// limit values included — they are the common Union figures from Annex I of
+// Directive 2014/45/EU. Do not invent codes or thresholds here; copy them from
+// the preset, which is where they are maintained.
+type SeedItem = {
+  name: string;
+  code?: string;
+  description?: string;
+  inputType?: string;
+  unit?: string;
+  minValue?: number;
+  maxValue?: number;
+  choices?: string[];
+  required?: boolean;
+  photoRequired?: boolean;
+  defaultSeverity?: string;
+};
+type SeedSection = { name: string; code?: string; description?: string; items: SeedItem[] };
+type SeedTemplate = {
+  name: string;
+  description: string;
+  standard: string;
+  country: string | null;
+  severityScale: string;
+  sections: SeedSection[];
+};
+
+const SEED_TEMPLATES: SeedTemplate[] = [
+  {
+    name: "Standard multi-point inspection",
+    description: "The general service check every vehicle gets on the ramp, graded pass / attention / fail.",
+    standard: "custom",
+    country: null,
+    severityScale: "basic",
+    sections: [
+      {
+        name: "Under the hood",
+        items: [
+          { name: "Engine oil level and condition", required: true },
+          { name: "Coolant level and strength" },
+          { name: "Brake fluid level and moisture content" },
+          { name: "Power steering and transmission fluid" },
+          { name: "Drive belts and hoses" },
+          { name: "Air filter" },
+          { name: "Battery condition", description: "Terminals, mounting and load test result." },
+          { name: "Battery load test", inputType: "measurement", unit: "%", minValue: 70, defaultSeverity: "attention" },
+        ],
+      },
+      {
+        name: "Brakes",
+        items: [
+          { name: "Front pad thickness", inputType: "measurement", unit: "mm", minValue: 3, required: true, defaultSeverity: "fail" },
+          { name: "Rear pad thickness", inputType: "measurement", unit: "mm", minValue: 3, required: true, defaultSeverity: "fail" },
+          { name: "Discs and drums" },
+          { name: "Calipers, slides and hardware" },
+          { name: "Brake lines and hoses" },
+          { name: "Parking brake operation" },
+        ],
+      },
+      {
+        name: "Tires and wheels",
+        items: [
+          { name: "Tread depth - front left", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
+          { name: "Tread depth - front right", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
+          { name: "Tread depth - rear left", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
+          { name: "Tread depth - rear right", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
+          { name: "Tire condition and age", description: "Sidewall damage, uneven wear, load and speed rating." },
+          { name: "Wheel and hub condition" },
+          { name: "Tire pressures set to placard" },
+        ],
+      },
+      {
+        name: "Steering and suspension",
+        items: [
+          { name: "Shock absorbers and struts" },
+          { name: "Springs and mounts" },
+          { name: "Ball joints and track rod ends" },
+          { name: "Wheel bearings" },
+          { name: "CV boots and driveshafts" },
+          { name: "Steering rack and linkage" },
+        ],
+      },
+      {
+        name: "Lights and electrical",
+        items: [
+          { name: "Headlights, main and dipped" },
+          { name: "Brake lights and indicators" },
+          { name: "Reverse and fog lights" },
+          { name: "Interior lights and dash warnings" },
+          { name: "Wipers and washers" },
+          { name: "Horn" },
+        ],
+      },
+      {
+        name: "Under the vehicle",
+        items: [
+          { name: "Oil and fluid leaks", photoRequired: true },
+          { name: "Exhaust system and mountings" },
+          { name: "Fuel lines and tank" },
+          { name: "Subframe and underbody corrosion" },
+          { name: "Transmission and differential" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "Periodic technical inspection",
+    description:
+      "Subset of the Annex I checklist from Directive 2014/45/EU, graded on the minor / major / dangerous defect scale. Thresholds are the common Union figures - adjust them to your national test.",
+    standard: "eu-2014-45",
+    country: null,
+    severityScale: "eu",
+    sections: [
+      {
+        name: "Identification of the vehicle",
+        code: "0",
+        description: "Annex I, item 0. Confirms the vehicle presented matches its papers.",
+        items: [
+          { name: "Registration plates", code: "0.1", required: true },
+          { name: "Vehicle identification / chassis number", code: "0.2", description: "VIN present, legible and matching the registration document.", required: true },
+        ],
+      },
+      {
+        name: "Braking equipment",
+        code: "1",
+        description: "Annex I, item 1. Mechanical condition, then measured performance.",
+        items: [
+          { name: "Service brake pedal / hand lever pivot", code: "1.1.1" },
+          { name: "Pedal / lever condition and travel", code: "1.1.2" },
+          { name: "Brake servo unit and master cylinder", code: "1.1.10" },
+          { name: "Rigid brake pipes", code: "1.1.11" },
+          { name: "Flexible brake hoses", code: "1.1.12" },
+          { name: "Brake linings and pads", code: "1.1.13", description: "Remaining friction material at the thinnest point.", inputType: "measurement", unit: "mm", minValue: 3, defaultSeverity: "fail" },
+          { name: "Brake drums and discs", code: "1.1.14" },
+          { name: "Complete braking system", code: "1.1.21" },
+          { name: "Service brake efficiency", code: "1.2.2", description: "Braking rate as a percentage of the maximum authorised mass.", inputType: "measurement", unit: "%", minValue: 50, required: true, defaultSeverity: "fail" },
+          { name: "Service brake imbalance across an axle", code: "1.2.1", inputType: "measurement", unit: "%", maxValue: 30, defaultSeverity: "fail" },
+          { name: "Parking brake efficiency", code: "1.4.2", inputType: "measurement", unit: "%", minValue: 16, required: true, defaultSeverity: "fail" },
+          { name: "Anti-lock braking system (ABS)", code: "1.6" },
+          { name: "Brake fluid", code: "1.8", description: "Contamination and boiling point." },
+        ],
+      },
+      {
+        name: "Steering",
+        code: "2",
+        description: "Annex I, item 2.",
+        items: [
+          { name: "Mechanical condition of the steering", code: "2.1" },
+          { name: "Steering wheel, column and handlebars", code: "2.2" },
+          { name: "Steering play", code: "2.3", description: "Free movement at the rim before the road wheels respond.", inputType: "measurement", unit: "mm", maxValue: 120, defaultSeverity: "fail" },
+          { name: "Wheel alignment", code: "2.4" },
+          { name: "Power steering", code: "2.6" },
+        ],
+      },
+      {
+        name: "Visibility",
+        code: "3",
+        description: "Annex I, item 3.",
+        items: [
+          { name: "Field of vision", code: "3.1" },
+          { name: "Condition of the glass", code: "3.2", description: "Chips and cracks in the swept area of the windscreen." },
+          { name: "Rear-view mirrors or devices", code: "3.3" },
+          { name: "Windscreen wipers", code: "3.4" },
+          { name: "Windscreen washers", code: "3.5" },
+        ],
+      },
+      {
+        name: "Lamps, reflectors and electrical equipment",
+        code: "4",
+        description: "Annex I, item 4.",
+        items: [
+          { name: "Headlamps - condition and operation", code: "4.1.1" },
+          { name: "Headlamp aim", code: "4.1.2", description: "Downward inclination of the dipped beam.", inputType: "measurement", unit: "%", minValue: -2.5, maxValue: -0.5, defaultSeverity: "attention" },
+          { name: "Position, side marker and daytime running lamps", code: "4.2" },
+          { name: "Stop lamps", code: "4.3", required: true },
+          { name: "Direction indicator and hazard warning lamps", code: "4.4" },
+          { name: "Rear registration plate lamp", code: "4.7" },
+          { name: "Electrical wiring", code: "4.11" },
+          { name: "Battery", code: "4.13" },
+        ],
+      },
+      {
+        name: "Axles, wheels, tires and suspension",
+        code: "5",
+        description: "Annex I, item 5. Tread depth is recorded per wheel.",
+        items: [
+          { name: "Axles", code: "5.1.1" },
+          { name: "Stub axles and wheel bearings", code: "5.1.3" },
+          { name: "Wheels", code: "5.2.1" },
+          { name: "Tire condition - sidewalls, load and speed rating", code: "5.2.3" },
+          { name: "Tread depth - front left", code: "5.2.3", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
+          { name: "Tread depth - front right", code: "5.2.3", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
+          { name: "Tread depth - rear left", code: "5.2.3", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
+          { name: "Tread depth - rear right", code: "5.2.3", inputType: "measurement", unit: "mm", minValue: 1.6, required: true, defaultSeverity: "fail" },
+          { name: "Springs and stabiliser", code: "5.3.1" },
+          { name: "Shock absorbers", code: "5.3.2" },
+          { name: "Suspension arms, rods and joints", code: "5.3.4" },
+        ],
+      },
+      {
+        name: "Chassis and chassis attachments",
+        code: "6",
+        description: "Annex I, item 6.",
+        items: [
+          { name: "Chassis or frame and attachments", code: "6.1.1" },
+          { name: "Exhaust pipes and silencer", code: "6.1.2" },
+          { name: "Fuel tank and pipes", code: "6.1.3" },
+          { name: "Coupling device and towing equipment", code: "6.1.7" },
+          { name: "Cab and bodywork condition", code: "6.2.1" },
+          { name: "Doors and door catches", code: "6.2.3" },
+          { name: "Driver seat and seats", code: "6.2.5" },
+          { name: "Mudguards and spray suppression", code: "6.2.11" },
+        ],
+      },
+      {
+        name: "Other equipment",
+        code: "7",
+        description: "Annex I, item 7. Some checks apply only to certain vehicle categories.",
+        items: [
+          { name: "Safety belts, buckles and restraint systems", code: "7.1", required: true },
+          { name: "Locks and anti-theft device", code: "7.3" },
+          { name: "Audible warning device", code: "7.7" },
+          { name: "Speedometer", code: "7.8" },
+          { name: "Odometer reading", code: "7.11", description: "Reading at the time of the test. Annex IV requires this on the certificate.", inputType: "measurement", unit: "km", required: true },
+        ],
+      },
+    ],
+  },
+  {
+    name: "Pre-purchase inspection",
+    description: "What a buyer wants to know before the money moves: condition, history and anything about to need spending on.",
+    standard: "custom",
+    country: null,
+    severityScale: "basic",
+    sections: [
+      {
+        name: "Paperwork and identity",
+        items: [
+          { name: "VIN matches the documents", required: true },
+          { name: "Service history present and consistent" },
+          { name: "Odometer reading plausible against wear", inputType: "measurement", unit: "mi", required: true },
+          { name: "Outstanding recalls" },
+        ],
+      },
+      {
+        name: "Body and paint",
+        items: [
+          { name: "Panel gaps and alignment", photoRequired: true },
+          { name: "Paint depth and repair evidence" },
+          { name: "Corrosion, sills and arches" },
+          { name: "Glass, lamps and trim" },
+        ],
+      },
+      {
+        name: "Mechanical",
+        items: [
+          { name: "Cold start and idle quality" },
+          { name: "Oil condition and leaks" },
+          { name: "Cooling system and head gasket check" },
+          { name: "Transmission and clutch under load" },
+          { name: "Diagnostic scan - stored and pending codes" },
+        ],
+      },
+      {
+        name: "Road test",
+        items: [
+          { name: "Braking under load" },
+          { name: "Steering and tracking" },
+          { name: "Suspension noise over bumps" },
+          { name: "Driver assistance systems" },
+        ],
+      },
+    ],
+  },
+];
 
 function downloadFile(url: string, dest: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -1560,16 +1836,16 @@ async function seed() {
   // creates inspections, so the feature reads as unused. These build the same
   // templates the library would install, then run vehicles through them.
   console.log("\nCreating inspection templates...");
-  const presetToTemplate = (preset: TemplatePreset, isDefault: boolean) => ({
+  // Written as the workshop's own checklists (no packageId), so the built-in
+  // preset library still installs its copies when the templates page first
+  // loads rather than treating these as an already-installed package.
+  const toTemplateCreate = (preset: SeedTemplate, isDefault: boolean) => ({
     name: preset.name,
     description: preset.description,
     isDefault,
     country: preset.country,
     standard: preset.standard,
     severityScale: preset.severityScale,
-    packageId: presetPackageId(preset),
-    packageVersion: PRESET_VERSION,
-    packageSource: "builtin",
     organizationId: ORG_ID,
     sections: {
       create: preset.sections.map((section, sIdx) => ({
@@ -1598,13 +1874,10 @@ async function seed() {
     },
   });
 
-  const templateIds = ["standard-multipoint", "eu-roadworthiness", "pre-purchase", "ev-hybrid"];
   const templates = [];
-  for (const [i, id] of templateIds.entries()) {
-    const preset = TEMPLATE_PRESETS.find((p) => p.id === id);
-    if (!preset) { console.warn(`  [skip] preset ${id} no longer exists`); continue; }
+  for (const [i, preset] of SEED_TEMPLATES.entries()) {
     const template = await prisma.inspectionTemplate.create({
-      data: presetToTemplate(preset, i === 0),
+      data: toTemplateCreate(preset, i === 0),
       include: { sections: { include: { items: { orderBy: { sortOrder: "asc" } } }, orderBy: { sortOrder: "asc" } } },
     });
     templates.push(template);
