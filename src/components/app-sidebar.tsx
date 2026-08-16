@@ -386,9 +386,14 @@ export function AppSidebar({
                     >
                       {THEMES.map((definition) => (
                         <DropdownMenuRadioItem key={definition.id} value={definition.id}>
+                          {/* Split dot: the theme's own background on one half,
+                              its primary on the other, so light and dark
+                              variants of the same hue stay tellable apart */}
                           <span
-                            className="mr-2 size-3 shrink-0 rounded-full border"
-                            style={{ background: definition.swatch[2] }}
+                            className="mr-2 size-3.5 shrink-0 rounded-full border"
+                            style={{
+                              background: `linear-gradient(135deg, ${definition.swatch[0]} 0 50%, ${definition.swatch[2]} 50% 100%)`,
+                            }}
                           />
                           {tSettings(`appearance.themes.${definition.id}`)}
                         </DropdownMenuRadioItem>
