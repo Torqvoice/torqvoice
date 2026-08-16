@@ -1,4 +1,5 @@
 import { db } from "./db";
+import { assertOutboundAllowed } from "./demo";
 import { ORG_TELEGRAM_KEYS } from "@/features/telegram/Schema/telegramSettingsSchema";
 
 const TELEGRAM_API_BASE = "https://api.telegram.org/bot";
@@ -78,6 +79,7 @@ export async function sendTelegramMessage(
   organizationId: string,
   options: SendTelegramMessageOptions,
 ): Promise<SendTelegramMessageResult> {
+  assertOutboundAllowed("telegram");
   const botToken = await getOrgTelegramBotToken(organizationId);
   if (!botToken) {
     throw new Error("Telegram bot is not configured. Set up a bot token in Settings.");

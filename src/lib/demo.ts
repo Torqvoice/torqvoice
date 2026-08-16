@@ -28,6 +28,24 @@ export function demoGuard(): void {
 }
 
 /**
+ * Hard stop on anything that would leave the box: email, SMS, Telegram.
+ *
+ * `demoGuard()` only covers server actions, so the background crons —
+ * scheduled messages, reminder alerts, report schedules, low-stock digests —
+ * went straight past it and out through the platform sender. This sits in the
+ * transports themselves, which is the one place every one of those paths has
+ * to go through. Seed data carries customer-looking addresses, so a demo reset
+ * is enough to queue mail at real inboxes without it.
+ */
+export function assertOutboundAllowed(channel: "email" | "sms" | "telegram"): void {
+  if (isDemoMode) {
+    throw new Error(
+      `Outbound ${channel} is disabled on the demo. Install Torqvoice on your own server to send for real.`,
+    );
+  }
+}
+
+/**
  * Setting keys that store provider credentials / secrets. Demo visitors
  * shouldn't be able to paste real API keys into a shared demo DB.
  */

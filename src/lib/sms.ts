@@ -1,4 +1,5 @@
 import { db } from './db'
+import { assertOutboundAllowed } from './demo'
 import { ORG_SMS_KEYS } from '@/features/sms/Schema/smsSettingsSchema'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { normalizePortalPhone } from './portal-phone'
@@ -228,6 +229,7 @@ export async function sendOrgSms(
   organizationId: string,
   options: SendSmsOptions
 ): Promise<SendSmsResult> {
+  assertOutboundAllowed('sms')
   const provider = await getOrgSmsProvider(organizationId)
   if (!provider) {
     throw new Error('SMS is not configured. Set up an SMS provider in Settings.')

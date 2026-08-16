@@ -1,4 +1,5 @@
 import { CronJob } from "cron";
+import { isDemoMode } from "@/lib/demo";
 import { db } from "@/lib/db";
 import { renderToBuffer } from "@react-pdf/renderer";
 import "@/features/vehicles/Components/invoice-pdf/fonts";
@@ -354,6 +355,9 @@ export async function processOneSchedule(schedule: {
   organizationId: string;
   endDate: Date | null;
 }) {
+  // Scheduled reports are emailed as attachments. Nothing leaves the demo.
+  if (isDemoMode) return;
+
   const now = new Date();
   const sections: string[] = JSON.parse(schedule.sections);
   const recipientIds: string[] = JSON.parse(schedule.recipients);

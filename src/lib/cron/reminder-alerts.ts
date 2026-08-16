@@ -1,5 +1,6 @@
 import { CronJob } from "cron";
 import { db } from "@/lib/db";
+import { isDemoMode } from "@/lib/demo";
 import { notify } from "@/lib/notify";
 import { sendOrgMail, getOrgFromAddress } from "@/lib/email";
 
@@ -51,6 +52,10 @@ async function getRecipients(organizationId: string) {
 }
 
 async function sendReminderEmail(organizationId: string, reminders: DueReminder[]) {
+  // The bell notification above is the whole of the demo's reminder alerting.
+  // sendOrgMail would refuse anyway; returning here keeps the hourly run quiet.
+  if (isDemoMode) return;
+
   const recipients = await getRecipients(organizationId);
   if (recipients.length === 0) return;
 

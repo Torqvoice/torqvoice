@@ -1,5 +1,6 @@
 import { CronJob } from "cron";
 import { db } from "@/lib/db";
+import { isDemoMode } from "@/lib/demo";
 import {
   dispatchScheduledMessage,
   nextSendAt,
@@ -18,6 +19,11 @@ const MAX_LATENESS_MS = 24 * 60 * 60 * 1000;
  * send worked or not, so a single failure doesn't stop the series.
  */
 export async function processDueMessages(now = new Date()): Promise<number> {
+  // The demo's seeded queue is scenery, not a work list. The transports refuse
+  // to send in demo mode anyway; stopping here keeps the queue looking alive
+  // instead of turning every seeded message red a minute after each reset.
+  if (isDemoMode) return 0;
+
   const due = await db.scheduledMessage.findMany({
     where: { status: "scheduled", sendAt: { lte: now } },
     select: {

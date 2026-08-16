@@ -6,6 +6,7 @@ import FormData from "form-data";
 import sgMail, { type MailDataRequired } from "@sendgrid/mail";
 import { SESClient, SendRawEmailCommand } from "@aws-sdk/client-ses";
 import { db } from "./db";
+import { assertOutboundAllowed } from "./demo";
 import { SYSTEM_SETTING_KEYS } from "@/features/admin/Schema/systemSettingsSchema";
 import { ORG_EMAIL_KEYS } from "@/features/email/Schema/emailSettingsSchema";
 
@@ -527,6 +528,7 @@ function sendWithProvider(
 // ─── System-level router (unchanged behavior) ──────────────────────────────
 
 export async function sendMail(options: SendMailOptions) {
+  assertOutboundAllowed("email");
   const provider = await getEmailProvider();
   await sendWithProvider(provider, options, new Map(), "system");
 }
@@ -610,6 +612,7 @@ export async function sendOrgMail(
   organizationId: string,
   options: SendMailOptions,
 ) {
+  assertOutboundAllowed("email");
   const provider = await getOrgEmailProvider(organizationId);
 
   if (!provider) {

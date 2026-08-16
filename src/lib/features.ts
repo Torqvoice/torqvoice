@@ -1,5 +1,6 @@
 import { cache } from 'react'
 import { db } from './db'
+import { isDemoMode } from './demo'
 
 export type Plan = 'free' | 'pro' | 'enterprise' | 'white-label'
 
@@ -122,6 +123,15 @@ export function isCloudMode(): boolean {
 const SUBSCRIPTION_GRACE_MS = 3 * 24 * 60 * 60 * 1000
 
 export const getFeatures = cache(async (organizationId: string): Promise<PlanFeatures> => {
+  // The demo exists to show the product, so nothing is plan-gated there — the
+  // messages, Telegram, portal and custom-field pages all need their feature
+  // flag on to render at all. Sending stays impossible regardless: the demo
+  // guard blocks the send actions and the transports refuse outright
+  // (assertOutboundAllowed in lib/email, lib/sms, lib/telegram).
+  if (isDemoMode) {
+    return { ...PLAN_FEATURES['white-label'], brandingRemoved: false, customPlatformName: false }
+  }
+
   if (isCloudMode()) {
     const subscription = await db.subscription.findUnique({
       where: { organizationId },

@@ -1,4 +1,5 @@
 import { CronJob } from 'cron'
+import { isDemoMode } from '@/lib/demo'
 import { db } from '@/lib/db'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { notify } from '@/lib/notify'
@@ -75,6 +76,8 @@ export async function revalidateOrganizationLicense(organizationId: string, lice
 }
 
 export async function sendExpiryWarning(organizationId: string, daysLeft: number) {
+  if (isDemoMode) return
+
   // Check if we already warned today
   const lastWarning = await db.appSetting.findUnique({
     where: { organizationId_key: { organizationId, key: 'license.lastExpiryWarning' } },
