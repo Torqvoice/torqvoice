@@ -274,16 +274,19 @@ export function WorkOrdersClient({
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <Button size="sm" onClick={() => setShowPicker(true)}>
-          <Plus className="mr-1 h-3.5 w-3.5" />
-          {t("newWorkOrder")}
+        <Button size="sm" className="shrink-0" onClick={() => setShowPicker(true)}>
+          <Plus className="h-3.5 w-3.5 sm:mr-1" />
+          <span className="hidden sm:inline">{t("newWorkOrder")}</span>
         </Button>
       </div>
 
       {/* Table */}
       <div className="rounded-lg border">
         <TableContextMenuHint />
-        <Table className="table-fixed">
+        {/* Low-priority columns drop out at sm/md/lg; the min-width stops what
+            is left from being squeezed to a few characters, scrolling the
+            table sideways instead (the Table wrapper handles the overflow) */}
+        <Table className="min-w-[36rem] table-fixed">
           <TableHeader>
             <TableRow>
               <TableHead className="hidden sm:table-cell w-[100px]">

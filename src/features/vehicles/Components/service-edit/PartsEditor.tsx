@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { GripVertical, Package, Percent, Plus, ScanBarcode, Trash2 } from 'lucide-react'
+import { IconActionButton } from '@/components/icon-action-button'
+import { FieldRow } from '@/components/line-item-field'
+import { cn } from '@/lib/utils'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useTranslations } from 'next-intl'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -96,11 +99,21 @@ function SortablePartRow({
     transition,
   } : undefined
 
+  const nameMissing =
+    !part.name.trim() &&
+    !!(part.partNumber || Number(part.unitCost) > 0 || Number(part.unitPrice) > 0)
+
   return (
     <div
       ref={dragEnabled ? setNodeRef : undefined}
       style={style}
-      className={`grid grid-cols-[auto_1fr] gap-2 sm:grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] ${isDragging && dragEnabled ? 'z-10 opacity-75' : ''}`}
+      className={cn(
+        // Stacked card while the editor is narrow, one table row once its
+        // container is wide enough to hold every column at a usable size
+        'grid grid-cols-[auto_1fr] gap-2 rounded-lg border p-2',
+        '@2xl:grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] @2xl:rounded-none @2xl:border-0 @2xl:p-0',
+        isDragging && dragEnabled && 'z-10 opacity-75',
+      )}
     >
       <button
         type="button"
@@ -109,80 +122,102 @@ function SortablePartRow({
       >
         <GripVertical className="h-4 w-4" />
       </button>
-      <div className="grid grid-cols-2 gap-2 sm:contents">
-        <Input
-          placeholder={t('partNumber')}
-          value={part.partNumber ?? ''}
-          onChange={(e) => updatePart(index, 'partNumber', e.target.value)}
-        />
-        <div className="relative">
-          <Textarea
-            placeholder={t('namePlaceholder')}
-            value={part.name}
-            onChange={(e) => updatePart(index, 'name', e.target.value)}
-            rows={1}
-            aria-invalid={!part.name.trim() && !!(part.partNumber || Number(part.unitCost) > 0 || Number(part.unitPrice) > 0)}
-            className={`min-h-9 w-full resize-none ${!part.name.trim() && (part.partNumber || Number(part.unitCost) > 0 || Number(part.unitPrice) > 0) ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+      <div className="flex min-w-0 flex-col gap-2 @2xl:contents">
+        <FieldRow label={t('partNumber')}>
+          <Input
+            placeholder={t('partNumber')}
+            value={part.partNumber ?? ''}
+            onChange={(e) => updatePart(index, 'partNumber', e.target.value)}
           />
-          <PartNameSuggestions
-            query={part.name}
-            parts={inventoryParts}
-            disabled={!!part.inventoryPartId}
-            currencyCode={currencyCode}
-            defaultMarkupPercent={defaultMarkupPercent}
-            markupAppliesToInventory={markupAppliesToInventory}
-            onSelect={(picked) => onSelectSuggestion(index, picked)}
-          />
-        </div>
-        <Input
-          type="number"
-          min="0"
-          step="0.1"
-          value={part.quantity}
-          onChange={(e) => updatePart(index, 'quantity', e.target.value)}
-        />
-        <Input
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder={t('unitCost')}
-          title={t('unitCostHint')}
-          value={part.unitCost ?? 0}
-          onChange={(e) => updatePart(index, 'unitCost', e.target.value)}
-        />
-        <div className="relative">
+        </FieldRow>
+        {/* The name identifies the row, so it leads the stacked card even
+            though the part number comes first in the desktop grid */}
+        <FieldRow label={t('name')} className="order-first @2xl:order-none">
+          <div className="relative w-full">
+            <Textarea
+              placeholder={t('namePlaceholder')}
+              value={part.name}
+              onChange={(e) => updatePart(index, 'name', e.target.value)}
+              rows={1}
+              aria-invalid={nameMissing}
+              className={cn(
+                'min-h-9 w-full resize-none',
+                nameMissing && 'border-destructive focus-visible:ring-destructive',
+              )}
+            />
+            <PartNameSuggestions
+              query={part.name}
+              parts={inventoryParts}
+              disabled={!!part.inventoryPartId}
+              currencyCode={currencyCode}
+              defaultMarkupPercent={defaultMarkupPercent}
+              markupAppliesToInventory={markupAppliesToInventory}
+              onSelect={(picked) => onSelectSuggestion(index, picked)}
+            />
+          </div>
+        </FieldRow>
+        <FieldRow label={t('qty')}>
           <Input
             type="number"
             min="0"
             step="0.1"
-            placeholder={t('markupPercent')}
-            title={t('markupPercentHint')}
-            value={part.markupPercent ?? 0}
-            onChange={(e) => updatePart(index, 'markupPercent', e.target.value)}
-            className="pr-6"
+            value={part.quantity}
+            onChange={(e) => updatePart(index, 'quantity', e.target.value)}
           />
-          <Percent className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+        </FieldRow>
+        <FieldRow label={t('unitCost')} hint={t('unitCostHint')}>
+          <Input
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder={t('unitCost')}
+            title={t('unitCostHint')}
+            value={part.unitCost ?? 0}
+            onChange={(e) => updatePart(index, 'unitCost', e.target.value)}
+          />
+        </FieldRow>
+        <FieldRow label={t('markupPercent')} hint={t('markupPercentHint')}>
+          <div className="relative w-full">
+            <Input
+              type="number"
+              min="0"
+              step="0.1"
+              placeholder={t('markupPercent')}
+              title={t('markupPercentHint')}
+              value={part.markupPercent ?? 0}
+              onChange={(e) => updatePart(index, 'markupPercent', e.target.value)}
+              className="pr-6"
+            />
+            <Percent className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+          </div>
+        </FieldRow>
+        <FieldRow label={t('unitPrice')}>
+          <Input
+            type="number"
+            min="0"
+            step="0.01"
+            value={part.unitPrice}
+            onChange={(e) => updatePart(index, 'unitPrice', e.target.value)}
+          />
+        </FieldRow>
+        <div className="flex items-center gap-2 @2xl:contents">
+          <span className="w-24 shrink-0 text-xs text-muted-foreground @2xl:hidden">
+            {t('total')}
+          </span>
+          <div className="flex h-9 flex-1 items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
+            {formatCurrency(part.total, currencyCode)}
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 shrink-0 text-muted-foreground hover:text-destructive"
+            onClick={onDelete}
+            aria-label={t('deleteRow')}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
-        <Input
-          type="number"
-          min="0"
-          step="0.01"
-          value={part.unitPrice}
-          onChange={(e) => updatePart(index, 'unitPrice', e.target.value)}
-        />
-        <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
-          {formatCurrency(part.total, currencyCode)}
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 text-muted-foreground hover:text-destructive"
-          onClick={onDelete}
-          aria-label={t('deleteRow')}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
       </div>
     </div>
   )
@@ -306,51 +341,41 @@ export function PartsEditor({
   }, [setPartItems, defaultMarkupPercent, markupAppliesToInventory])
 
   return (
-    <div className="rounded-lg border p-3 space-y-2">
-      <div className="flex items-center justify-between">
+    // The details view splits into two resizable columns, so this editor can
+    // be narrower on a wide screen than it is on a phone. It sizes itself off
+    // its own container rather than the viewport.
+    <div className="@container space-y-2 rounded-lg border p-3">
+      <div className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-semibold">{t('title')}</h3>
         <div className="flex gap-1.5">
           {defaultMarkupPercent > 0 && partItems.length > 0 && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
+            <IconActionButton
+              label={t('applyMarkup', { percent: defaultMarkupPercent })}
+              icon={Percent}
               onClick={applyMarkupToAll}
-              title={t('applyMarkupHint', { percent: defaultMarkupPercent })}
-            >
-              <Percent className="h-3.5 w-3.5 sm:mr-1" />
-              <span className="hidden sm:inline">
-                {t('applyMarkup', { percent: defaultMarkupPercent })}
-              </span>
-            </Button>
+            />
           )}
           {hasInventory && (
-            <Button type="button" variant="outline" size="sm" onClick={onOpenInventory}>
-              <Package className="h-3.5 w-3.5 sm:mr-1" />
-              <span className="hidden sm:inline">{t('fromInventory')}</span>
-            </Button>
+            <IconActionButton
+              label={t('fromInventory')}
+              icon={Package}
+              onClick={onOpenInventory}
+            />
           )}
           {onScanBarcode && (
-            <Button type="button" variant="outline" size="sm" onClick={onScanBarcode}>
-              <ScanBarcode className="h-3.5 w-3.5 sm:mr-1" />
-              <span className="hidden sm:inline">{t('scanBarcode')}</span>
-            </Button>
+            <IconActionButton
+              label={t('scanBarcode')}
+              icon={ScanBarcode}
+              onClick={onScanBarcode}
+            />
           )}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={addPartAtStart}
-          >
-            <Plus className="h-3.5 w-3.5 sm:mr-1" />
-            <span className="hidden sm:inline">{t('addPart')}</span>
-          </Button>
+          <IconActionButton label={t('addPart')} icon={Plus} onClick={addPartAtStart} />
         </div>
       </div>
 
       {partItems.length > 0 && (
         <>
-          <div className="hidden grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
+          <div className="hidden grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] gap-2 text-xs font-medium text-muted-foreground @2xl:grid">
             <span className="w-6" />
             <span>{t('partNumber')}</span>
             <span>{t('name')}</span>

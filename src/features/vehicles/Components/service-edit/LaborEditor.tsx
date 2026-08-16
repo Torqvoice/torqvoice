@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { AlertTriangle, Eye, GripVertical, Layers, Plus, Trash2, Wrench } from 'lucide-react'
+import { IconActionButton } from '@/components/icon-action-button'
+import { FieldRow } from '@/components/line-item-field'
+import { cn } from '@/lib/utils'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,6 +58,7 @@ function SortableLaborRow({
   updateLabor,
   onDelete,
   currencyCode,
+  rateLabel,
   t,
   dragEnabled,
 }: {
@@ -64,6 +68,8 @@ function SortableLaborRow({
   updateLabor: (index: number, field: keyof ServiceLaborInput, value: string | number) => void
   onDelete: () => void
   currencyCode: string
+  /** Pre-formatted "Rate (kr/hr)" header, which needs the currency symbol. */
+  rateLabel: string
   t: (key: string) => string
   dragEnabled: boolean
 }) {
@@ -88,7 +94,13 @@ function SortableLaborRow({
     <div
       ref={dragEnabled ? setNodeRef : undefined}
       style={style}
-      className={`grid grid-cols-[auto_1fr] gap-2 sm:grid-cols-[auto_2fr_1fr_1fr_1fr_auto] ${isDragging && dragEnabled ? 'z-10 opacity-75' : ''}`}
+      className={cn(
+        // Stacked card while the editor is narrow, one table row once its
+        // container is wide enough to hold every column at a usable size
+        'grid grid-cols-[auto_1fr] gap-2 rounded-lg border p-2',
+        '@2xl:grid-cols-[auto_2fr_1fr_1fr_1fr_auto] @2xl:rounded-none @2xl:border-0 @2xl:p-0',
+        isDragging && dragEnabled && 'z-10 opacity-75',
+      )}
     >
       <button
         type="button"
@@ -97,8 +109,8 @@ function SortableLaborRow({
       >
         <GripVertical className="h-4 w-4" />
       </button>
-      <div className="grid grid-cols-2 gap-2 sm:contents">
-        <div className="col-span-2 flex gap-2 sm:col-span-1">
+      <div className="flex min-w-0 flex-col gap-2 @2xl:contents">
+        <div className="flex gap-2">
           <Textarea
             placeholder={t('descriptionPlaceholder')}
             value={labor.description}
@@ -119,34 +131,43 @@ function SortableLaborRow({
             {isService ? t('serviceTag') : t('hourlyTag')}
           </button>
         </div>
-        <Input
-          type="number"
-          min="0"
-          step={isService ? '1' : 'any'}
-          placeholder={isService ? t('qty') : t('hours')}
-          value={labor.hours}
-          onChange={(e) => updateLabor(index, 'hours', e.target.value)}
-        />
-        <Input
-          type="number"
-          min="0"
-          step="0.01"
-          value={labor.rate}
-          onChange={(e) => updateLabor(index, 'rate', e.target.value)}
-        />
-        <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
-          {formatCurrency(labor.total, currencyCode)}
+        <FieldRow label={isService ? t('qty') : t('hours')}>
+          <Input
+            type="number"
+            min="0"
+            step={isService ? '1' : 'any'}
+            placeholder={isService ? t('qty') : t('hours')}
+            value={labor.hours}
+            onChange={(e) => updateLabor(index, 'hours', e.target.value)}
+          />
+        </FieldRow>
+        <FieldRow label={rateLabel}>
+          <Input
+            type="number"
+            min="0"
+            step="0.01"
+            value={labor.rate}
+            onChange={(e) => updateLabor(index, 'rate', e.target.value)}
+          />
+        </FieldRow>
+        <div className="flex items-center gap-2 @2xl:contents">
+          <span className="w-24 shrink-0 text-xs text-muted-foreground @2xl:hidden">
+            {t('total')}
+          </span>
+          <div className="flex h-9 flex-1 items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
+            {formatCurrency(labor.total, currencyCode)}
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 shrink-0 text-muted-foreground hover:text-destructive"
+            onClick={onDelete}
+            aria-label={t('deleteRow')}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 text-muted-foreground hover:text-destructive"
-          onClick={onDelete}
-          aria-label={t('deleteRow')}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
       </div>
     </div>
   )
@@ -227,41 +248,41 @@ export function LaborEditor({
   }, [setLaborItems])
 
   return (
-    <div className="rounded-lg border p-3 space-y-2">
+    // Sizes itself off its own container: the details view splits into two
+    // resizable columns, so this editor can be narrower on a wide screen than
+    // it is on a phone.
+    <div className="@container space-y-2 rounded-lg border p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-sm font-semibold">{t('title')}</h3>
         <div className="flex flex-wrap gap-1.5">
           {hasPresets && onOpenPresets && (
-            <Button type="button" variant="outline" size="sm" onClick={onOpenPresets}>
-              <Layers className="mr-1 h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{t('fromPresets')}</span>
-            </Button>
+            <IconActionButton
+              label={t('fromPresets')}
+              icon={Layers}
+              onClick={onOpenPresets}
+            />
           )}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={addLaborAtStart}
-          >
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{t('addLabor')}</span>
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
+          <IconActionButton label={t('addLabor')} icon={Plus} onClick={addLaborAtStart} />
+          <IconActionButton
+            label={t('addService')}
+            icon={Wrench}
             onClick={addServiceAtStart}
-          >
-            <Wrench className="mr-1 h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{t('addService')}</span>
-          </Button>
+          />
           {onAddFinding && openObservationsCount > 0 && onShowExistingObservations ? (
             <DropdownMenu>
+              {/* Plain button with a native tooltip: a Radix dropdown trigger
+                  cannot wrap a Tooltip root, only the button inside it */}
               <DropdownMenuTrigger asChild>
-                <Button type="button" variant="outline" size="sm">
-                  <AlertTriangle className="mr-1 h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">{t('addFinding')}</span>
-                  <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-medium text-white">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-sm"
+                  className="relative"
+                  aria-label={t('addFinding')}
+                  title={t('addFinding')}
+                >
+                  <AlertTriangle className="size-4" />
+                  <span className="absolute -right-1.5 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-medium text-white">
                     {openObservationsCount}
                   </span>
                 </Button>
@@ -282,22 +303,18 @@ export function LaborEditor({
               </DropdownMenuContent>
             </DropdownMenu>
           ) : onAddFinding ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
+            <IconActionButton
+              label={t('addFinding')}
+              icon={AlertTriangle}
               onClick={onAddFinding}
-            >
-              <AlertTriangle className="mr-1 h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{t('addFinding')}</span>
-            </Button>
+            />
           ) : null}
         </div>
       </div>
 
       {laborItems.length > 0 && (
         <>
-          <div className="hidden grid-cols-[auto_2fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
+          <div className="hidden grid-cols-[auto_2fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground @2xl:grid">
             <span className="w-6" />
             <span>{t('description')}</span>
             <span>{t('qtyOrHours')}</span>
@@ -317,6 +334,7 @@ export function LaborEditor({
                     updateLabor={updateLabor}
                     onDelete={() => deleteLabor(i)}
                     currencyCode={currencyCode}
+                    rateLabel={t('rate', { currency: cs })}
                     t={t}
                     dragEnabled
                   />
@@ -333,6 +351,7 @@ export function LaborEditor({
                 updateLabor={updateLabor}
                 onDelete={() => deleteLabor(i)}
                 currencyCode={currencyCode}
+                rateLabel={t('rate', { currency: cs })}
                 t={t}
                 dragEnabled={false}
               />
