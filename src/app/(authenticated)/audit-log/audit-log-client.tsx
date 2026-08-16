@@ -93,11 +93,11 @@ export function AuditLogClient({
   const t = useTranslations("audit");
 
   const getActionLabel = (action: string) => {
-    try {
-      return t(`actions.${action.replace(".", "_")}`);
-    } catch {
-      return action;
-    }
+    // next-intl returns a placeholder for a missing message rather than
+    // throwing, so this asks first instead of catching something that never
+    // happens. replaceAll because an action can carry more than one separator.
+    const key = `actions.${action.replaceAll(".", "_")}`;
+    return t.has(key) ? t(key) : action;
   };
 
   const navigate = useCallback(

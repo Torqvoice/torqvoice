@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, CheckCircle2, Info, XCircle } from "lucide-react";
 import { create } from "zustand";
+import { useTranslations } from "next-intl";
 
 type ModalType = "error" | "success" | "info" | "warning";
 
@@ -40,6 +41,7 @@ const icons: Record<ModalType, React.ReactNode> = {
 };
 
 export function GlassModal() {
+  const t = useTranslations("common.shared");
   const { isOpen, type, title, message, close } = useGlassModal();
 
   return (
@@ -56,7 +58,7 @@ export function GlassModal() {
         </DialogHeader>
         <DialogFooter>
           <Button onClick={close} variant="outline" className="w-full sm:w-auto">
-            Close
+            {t("close")}
           </Button>
         </DialogFooter>
       </DialogContent>

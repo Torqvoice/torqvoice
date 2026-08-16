@@ -12,23 +12,18 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   rankSuggestions,
   type DefectSeverity,
   type DefectSuggestion,
   type SuggestionCheck,
 } from "../Lib/defectCatalogue";
-import { CONDITION_TOKENS, conditionLabel, type Condition, type SeverityScale } from "../Lib/conditions";
+import { CONDITION_TOKENS, type Condition, type SeverityScale } from "../Lib/conditions";
+import { useConditionLabels } from "../Lib/useConditionLabels";
 
 /** How many phrases sit inline before the rest move into the search popover. */
 const INLINE_LIMIT = 5;
-
-const SOURCE_LABEL: Record<DefectSuggestion["source"], string> = {
-  workshop: "Your workshop",
-  history: "Used before",
-  regulation: "Directive 2014/45/EU",
-  general: "General",
-};
 
 function SeverityDot({ severity }: { severity: DefectSeverity }) {
   return (
@@ -62,6 +57,9 @@ export function DefectSuggestions({
   disabled?: boolean;
   onPick: (suggestion: DefectSuggestion) => void;
 }) {
+  const t = useTranslations("inspections.suggestions");
+  const sourceLabel = (source: DefectSuggestion["source"]) => t(`source.${source}`);
+  const { label: gradeLabel } = useConditionLabels(scale);
   const [open, setOpen] = useState(false);
 
   const suggestions = useMemo(
@@ -91,7 +89,7 @@ export function DefectSuggestions({
   return (
     <div className="mt-2">
       <p className="text-muted-foreground text-xs" id={`${check.name}-suggestions-label`}>
-        Common defects
+        {t("title")}
       </p>
       <div
         role="group"
@@ -104,11 +102,8 @@ export function DefectSuggestions({
             type="button"
             disabled={disabled}
             onClick={() => pick(suggestion)}
-            aria-label={`Add "${suggestion.text}" and grade as ${conditionLabel(
-              suggestion.severity,
-              scale
-            )}`}
-            title={SOURCE_LABEL[suggestion.source]}
+            aria-label={t("add", { text: suggestion.text, grade: gradeLabel(suggestion.severity) })}
+            title={sourceLabel(suggestion.source)}
             className="bg-background hover:bg-muted focus-visible:ring-ring inline-flex max-w-full items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:opacity-50"
           >
             <SeverityDot severity={suggestion.severity} />
@@ -127,19 +122,19 @@ export function DefectSuggestions({
                 className="h-[30px] rounded-full px-2.5 text-xs"
               >
                 <Plus className="mr-1 h-3 w-3" aria-hidden="true" />
-                More ({suggestions.length - inline.length})
+                {t("more", { count: suggestions.length - inline.length })}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[min(28rem,90vw)] p-0" align="start">
               <Command>
-                <CommandInput placeholder="Search defect wording" />
+                <CommandInput placeholder={t("search")} />
                 <CommandList>
-                  <CommandEmpty>No matching phrase.</CommandEmpty>
+                  <CommandEmpty>{t("empty")}</CommandEmpty>
                   {(["workshop", "history", "regulation", "general"] as const).map((source) => {
                     const group = suggestions.filter((s) => s.source === source);
                     if (group.length === 0) return null;
                     return (
-                      <CommandGroup key={source} heading={SOURCE_LABEL[source]}>
+                      <CommandGroup key={source} heading={sourceLabel(source)}>
                         {group.map((suggestion) => (
                           <CommandItem
                             key={`${source}-${suggestion.text}`}
@@ -150,7 +145,7 @@ export function DefectSuggestions({
                             <SeverityDot severity={suggestion.severity} />
                             <span className="flex-1">{suggestion.text}</span>
                             <span className="text-muted-foreground shrink-0 text-xs">
-                              {conditionLabel(suggestion.severity, scale)}
+                              {gradeLabel(suggestion.severity)}
                             </span>
                           </CommandItem>
                         ))}

@@ -52,5 +52,29 @@
     "updated": "Torqvoice atnaujinta į {version}",
     "whatsNew": "Žiūrėti naujienas",
     "dismiss": "Uždaryti"
+  },
+  "pagination": {
+    "showing": "Rodoma {start}–{end} iš {total}",
+    "perPage": "puslapyje",
+    "pageOf": "Puslapis {page} iš {pages}",
+    "first": "Pirmas puslapis",
+    "previous": "Ankstesnis puslapis",
+    "next": "Kitas puslapis",
+    "last": "Paskutinis puslapis"
+  },
+  "shared": {
+    "close": "Uždaryti",
+    "viewPlans": "Peržiūrėti planus",
+    "manageLicense": "Tvarkyti licenciją",
+    "installOwn": "Įdiekite savo",
+    "install": "Įdiegti",
+    "installApp": "Įdiegti programą",
+    "installTorqvoice": "Įdiegti Torqvoice",
+    "dismiss": "Atmesti",
+    "useCamera": "Naudoti kamerą",
+    "enterManually": "Įvesti ranka",
+    "enterBarcode": "Įveskite brūkšninį kodą…",
+    "scanHint": "Nukreipkite kamerą į brūkšninį kodą arba įveskite jį ranka",
+    "iosInstallHint": "Palieskite Bendrinti > Įtraukti į pradžios ekraną"
   }
 }

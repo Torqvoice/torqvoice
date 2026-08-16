@@ -38,6 +38,7 @@ import {
   Share2,
   Trash2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   completeInspection,
@@ -57,15 +58,14 @@ import { useServiceType } from "@/components/service-type-context";
 import {
   CONDITION_TOKENS,
   TEST_RESULT_TOKENS,
-  conditionLabel,
   countConditions,
-  gradedConditionLabel,
   deriveTestResult,
   isDefect,
   worstCondition,
   type Condition,
   type SeverityScale,
 } from "../Lib/conditions";
+import { useConditionLabels } from "../Lib/useConditionLabels";
 import { describeBlocker, findCompletionBlockers } from "../Lib/completion";
 
 export interface InspectionData {
@@ -129,8 +129,10 @@ const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url);
 /** Segmented bar showing how the checks are distributed across the grades. */
 function ProgressRail({
   counts,
+  label,
 }: {
   counts: ReturnType<typeof countConditions>;
+  label: string;
 }) {
   const segments = (["pass", "attention", "fail", "dangerous"] as const)
     .map((key) => ({ key, value: counts[key] }))
@@ -140,7 +142,7 @@ function ProgressRail({
     <div
       className="bg-muted flex h-2.5 w-full overflow-hidden rounded-full"
       role="img"
-      aria-label={`${counts.inspected} of ${counts.total} checks graded: ${counts.pass} no defect, ${counts.attention} minor, ${counts.fail} major, ${counts.dangerous} dangerous.`}
+      aria-label={label}
     >
       {segments.map((segment) => (
         <div
@@ -156,11 +158,11 @@ function ProgressRail({
 function CountChip({
   condition,
   value,
-  scale,
+  label,
 }: {
   condition: Condition;
   value: number;
-  scale: SeverityScale;
+  label: string;
 }) {
   const token = CONDITION_TOKENS[condition];
   return (
@@ -168,7 +170,7 @@ function CountChip({
       <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${token.bar}`} aria-hidden="true" />
       <span className="text-xs">
         <span className="font-semibold">{value}</span>{" "}
-        <span className="text-muted-foreground">{conditionLabel(condition, scale)}</span>
+        <span className="text-muted-foreground">{label}</span>
       </span>
     </div>
   );
@@ -190,6 +192,7 @@ export function InspectionPageClient({
   technicians?: TechnicianOption[];
   workshopAddress?: string;
 }) {
+  const t = useTranslations("inspections.page");
   const router = useRouter();
   const { formatDate } = useFormatDate();
   const serviceType = useServiceType();
@@ -223,7 +226,8 @@ export function InspectionPageClient({
   const isCompleted = inspection.status === "completed";
   const scale: SeverityScale = inspection.template.severityScale === "basic" ? "basic" : "eu";
   const country = inspection.template.country ?? null;
-  const mileageLabel = serviceType === "marine" ? "Engine hours" : "Odometer";
+  const { label: gradeLabel, graded, result: resultLabel, resultDetail } = useConditionLabels(scale, country);
+  const mileageLabel = serviceType === "marine" ? t("engineHours") : t("odometer");
 
   const sections = useMemo(() => {
     const sorted = [...inspection.items].sort((a, b) => a.sortOrder - b.sortOrder);
@@ -308,7 +312,7 @@ export function InspectionPageClient({
   const handleSaveNow = () => {
     (document.activeElement as HTMLElement | null)?.blur();
     if (savingIds.size === 0 && !saveFailed) {
-      toast.success("All changes are saved");
+      toast.success(t("allSaved"));
     }
   };
 
@@ -341,7 +345,7 @@ export function InspectionPageClient({
     if (created.success && created.data) {
       router.push(`/quotes/${created.data.id}`);
     } else {
-      toast.error(created.error || "Failed to create quote");
+      toast.error(created.error || t("quoteFailed"));
       setIsCreatingQuote(false);
     }
   };
@@ -357,7 +361,7 @@ export function InspectionPageClient({
     if (created.success && created.data) {
       router.push(`/vehicles/${created.data.vehicleId}/service/${created.data.id}`);
     } else {
-      toast.error(created.error || "Failed to create work order");
+      toast.error(created.error || t("workOrderFailed"));
       setIsCreatingWorkOrder(false);
     }
   };
@@ -366,12 +370,12 @@ export function InspectionPageClient({
     startTransition(async () => {
       const done = await completeInspection(inspection.id);
       if (done.success) {
-        toast.success("Inspection completed");
+        toast.success(t("completed"));
         setShowCompleteDialog(false);
         setShowShareDialog(true);
         router.refresh();
       } else {
-        toast.error(done.error || "Failed to complete inspection");
+        toast.error(done.error || t("completeFailed"));
       }
     });
   };
@@ -380,11 +384,11 @@ export function InspectionPageClient({
     startTransition(async () => {
       const reopened = await reopenInspection(inspection.id);
       if (reopened.success) {
-        toast.success("Inspection reopened");
+        toast.success(t("reopened"));
         setShowReopenDialog(false);
         router.refresh();
       } else {
-        toast.error(reopened.error || "Failed to reopen inspection");
+        toast.error(reopened.error || t("reopenFailed"));
       }
     });
   };
@@ -393,10 +397,10 @@ export function InspectionPageClient({
     startTransition(async () => {
       const removed = await deleteInspection(inspection.id);
       if (removed.success) {
-        toast.success("Inspection deleted");
+        toast.success(t("deleted"));
         router.push("/inspections");
       } else {
-        toast.error(removed.error || "Failed to delete inspection");
+        toast.error(removed.error || t("deleteFailed"));
       }
     });
   };
@@ -412,7 +416,7 @@ export function InspectionPageClient({
               className="text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex h-9 items-center gap-1.5 rounded-md text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              <span className="hidden sm:inline">Inspections</span>
+              <span className="hidden sm:inline">{t("back")}</span>
             </Link>
             <div className="bg-border h-5 w-px" aria-hidden="true" />
             <div className="min-w-0">
@@ -434,21 +438,21 @@ export function InspectionPageClient({
                   : "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300"
               }
             >
-              {isCompleted ? "Completed" : "In progress"}
+              {isCompleted ? t("statusCompleted") : t("statusInProgress")}
             </Badge>
             {!isCompleted && (
               <div className="mr-1 flex items-center gap-2">
                 <p className="text-muted-foreground hidden text-xs sm:block" role="status">
                   {savingIds.size > 0
-                    ? "Saving…"
+                    ? t("saving")
                     : saveFailed
-                      ? "Some changes did not save"
+                      ? t("saveFailed")
                       : lastSavedAt
                         ? `Saved ${lastSavedAt.toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}`
-                        : "Saves as you go"}
+                        : t("savesAsYouGo")}
                 </p>
                 <Button
                   variant="outline"
@@ -461,19 +465,19 @@ export function InspectionPageClient({
                   ) : (
                     <Save className="mr-1 h-4 w-4" aria-hidden="true" />
                   )}
-                  Save
+                  {t("save")}
                 </Button>
               </div>
             )}
             {isCompleted ? (
               <Button variant="outline" size="sm" onClick={() => setShowReopenDialog(true)}>
                 <RotateCcw className="mr-1 h-4 w-4" aria-hidden="true" />
-                Reopen
+                {t("reopen")}
               </Button>
             ) : (
               <Button size="sm" onClick={() => setShowCompleteDialog(true)}>
                 <CheckCircle2 className="mr-1 h-4 w-4" aria-hidden="true" />
-                Complete
+                {t("complete")}
               </Button>
             )}
             {/* Rendered whether or not there is anything to raise yet, and
@@ -488,7 +492,7 @@ export function InspectionPageClient({
                 }
               >
                 <Wrench className="mr-1 h-4 w-4" aria-hidden="true" />
-                View work order
+                {t("viewWorkOrder")}
               </Button>
             ) : (
               <Button
@@ -497,7 +501,7 @@ export function InspectionPageClient({
                 disabled={isCreatingWorkOrder || defectItems.length === 0}
                 title={
                   defectItems.length === 0
-                    ? "Available once a defect has been recorded"
+                    ? t("needsDefect")
                     : undefined
                 }
                 onClick={handleCreateWorkOrder}
@@ -507,7 +511,7 @@ export function InspectionPageClient({
                 ) : (
                   <Wrench className="mr-1 h-4 w-4" aria-hidden="true" />
                 )}
-                Create work order
+                {t("createWorkOrder")}
               </Button>
             )}
             {inspection.quotes.length > 0 ? (
@@ -517,7 +521,7 @@ export function InspectionPageClient({
                 onClick={() => router.push(`/quotes/${inspection.quotes[0].id}`)}
               >
                 <FileText className="mr-1 h-4 w-4" aria-hidden="true" />
-                View quote
+                {t("viewQuote")}
               </Button>
             ) : (
               <Button
@@ -526,7 +530,7 @@ export function InspectionPageClient({
                 disabled={isCreatingQuote || defectItems.length === 0}
                 title={
                   defectItems.length === 0
-                    ? "Available once a defect has been recorded"
+                    ? t("needsDefect")
                     : undefined
                 }
                 onClick={handleCreateQuoteFromInspection}
@@ -536,16 +540,16 @@ export function InspectionPageClient({
                 ) : (
                   <FileText className="mr-1 h-4 w-4" aria-hidden="true" />
                 )}
-                Create quote
+                {t("createQuote")}
               </Button>
             )}
             <Button variant="outline" size="sm" onClick={() => setShowShareDialog(true)}>
               <Share2 className="mr-1 h-4 w-4" aria-hidden="true" />
-              Share
+              {t("share")}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9" aria-label="More actions">
+                <Button variant="ghost" size="icon" className="h-9 w-9" aria-label={t("moreActions")}>
                   <MoreVertical className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
@@ -556,12 +560,12 @@ export function InspectionPageClient({
                   }
                 >
                   <Download className="mr-2 h-4 w-4" aria-hidden="true" />
-                  Download certificate
+                  {t("downloadCertificate")}
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/settings/templates?tab=inspections">
                     <Settings2 className="mr-2 h-4 w-4" aria-hidden="true" />
-                    Manage templates
+                    {t("manageTemplates")}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -570,7 +574,7 @@ export function InspectionPageClient({
                   onClick={() => setShowDeleteDialog(true)}
                 >
                   <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />
-                  Delete
+                  {t("delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -587,12 +591,12 @@ export function InspectionPageClient({
             className={`rounded-lg border p-4 ${resultToken.soft}`}
           >
             <h2 id="inspection-result" className="text-base font-semibold">
-              {resultToken.label}
+              {resultLabel(result)}
             </h2>
-            <p className="mt-1 text-sm">{resultToken.detail}</p>
+            <p className="mt-1 text-sm">{resultDetail(result)}</p>
             {result === "incomplete" && notInspected > 0 && (
               <p className="mt-1 text-sm">
-                {notInspected} of {counts.total} checks still to grade.
+                {t("stillToGrade", { count: notInspected, total: counts.total })}
               </p>
             )}
           </section>
@@ -604,8 +608,7 @@ export function InspectionPageClient({
                 aria-hidden="true"
               />
               <p className="min-w-0 flex-1 text-sm text-blue-900 dark:text-blue-100">
-                Work order {workOrder.invoiceNumber ?? ""} raised from this inspection on{" "}
-                {formatDate(new Date(workOrder.createdAt))}
+                {t("workOrderRaised", { number: workOrder.invoiceNumber ?? "", date: formatDate(new Date(workOrder.createdAt)) })}
               </p>
               <Button
                 size="sm"
@@ -615,7 +618,7 @@ export function InspectionPageClient({
                   router.push(`/vehicles/${inspection.vehicle.id}/service/${workOrder.id}`)
                 }
               >
-                Open
+                {t("open")}
               </Button>
             </div>
           )}
@@ -628,8 +631,7 @@ export function InspectionPageClient({
                 aria-hidden="true"
               />
               <p className="min-w-0 flex-1 text-sm text-emerald-900 dark:text-emerald-100">
-                Quote created by {inspection.quotes[0].user.name} on{" "}
-                {formatDate(new Date(inspection.quotes[0].createdAt))}
+                {t("quoteCreated", { name: inspection.quotes[0].user.name, date: formatDate(new Date(inspection.quotes[0].createdAt)) })}
               </p>
               <Button
                 size="sm"
@@ -637,7 +639,7 @@ export function InspectionPageClient({
                 className="shrink-0"
                 onClick={() => router.push(`/quotes/${inspection.quotes[0].id}`)}
               >
-                View quote
+                {t("viewQuote")}
               </Button>
             </div>
           ) : pendingQuoteRequest ? (
@@ -648,9 +650,7 @@ export function InspectionPageClient({
               />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
-                  The customer asked for a quote on{" "}
-                  {pendingQuoteRequest.selectedItemIds.length} item
-                  {pendingQuoteRequest.selectedItemIds.length === 1 ? "" : "s"}
+                  {t("quoteRequested", { count: pendingQuoteRequest.selectedItemIds.length })}
                 </p>
                 {pendingQuoteRequest.message && (
                   <p className="mt-0.5 text-sm text-amber-900/80 dark:text-amber-200/80">
@@ -669,7 +669,7 @@ export function InspectionPageClient({
                   ) : (
                     <FileText className="mr-1 h-4 w-4" aria-hidden="true" />
                   )}
-                  Create quote
+                  {t("createQuote")}
                 </Button>
               </div>
             </div>
@@ -713,11 +713,11 @@ export function InspectionPageClient({
                   <div className="flex items-center gap-3">
                     {isDefect(worst) && (
                       <Badge variant="outline" className={CONDITION_TOKENS[worst].soft}>
-                        {gradedConditionLabel(worst, scale, country)}
+                        {graded(worst)}
                       </Badge>
                     )}
                     <span className="text-muted-foreground text-xs">
-                      {sectionCounts.inspected}/{sectionCounts.total} graded
+                      {t("graded", { graded: sectionCounts.inspected, total: sectionCounts.total })}
                     </span>
                   </div>
                 </header>
@@ -748,29 +748,39 @@ export function InspectionPageClient({
         <aside className="space-y-4 lg:sticky lg:top-36">
           <section aria-labelledby="inspection-progress" className="bg-card rounded-lg border p-4">
             <h2 id="inspection-progress" className="text-sm font-semibold">
-              Progress
+              {t("progress")}
             </h2>
             <p className="mt-1 text-2xl font-semibold tabular-nums">
               {counts.inspected}
               <span className="text-muted-foreground text-base font-normal">/{counts.total}</span>
             </p>
-            <p className="text-muted-foreground text-xs">checks graded</p>
+            <p className="text-muted-foreground text-xs">{t("checksGraded")}</p>
             <div className="mt-3">
-              <ProgressRail counts={counts} />
+              <ProgressRail
+                counts={counts}
+                label={t("progressLabel", {
+                  graded: counts.inspected,
+                  total: counts.total,
+                  pass: counts.pass,
+                  attention: counts.attention,
+                  fail: counts.fail,
+                  dangerous: counts.dangerous,
+                })}
+              />
             </div>
             <div className="mt-3 grid gap-1.5">
-              <CountChip condition="pass" value={counts.pass} scale={scale} />
-              <CountChip condition="attention" value={counts.attention} scale={scale} />
-              <CountChip condition="fail" value={counts.fail} scale={scale} />
+              <CountChip condition="pass" value={counts.pass} label={gradeLabel("pass")} />
+              <CountChip condition="attention" value={counts.attention} label={gradeLabel("attention")} />
+              <CountChip condition="fail" value={counts.fail} label={gradeLabel("fail")} />
               {scale === "eu" && (
-                <CountChip condition="dangerous" value={counts.dangerous} scale={scale} />
+                <CountChip condition="dangerous" value={counts.dangerous} label={gradeLabel("dangerous")} />
               )}
             </div>
           </section>
 
           <nav aria-labelledby="inspection-sections" className="bg-card rounded-lg border p-4">
             <h2 id="inspection-sections" className="text-sm font-semibold">
-              Sections
+              {t("sections")}
             </h2>
             <ul className="mt-2 space-y-0.5">
               {sections.map((section, index) => {
@@ -803,12 +813,12 @@ export function InspectionPageClient({
 
           <section aria-labelledby="inspection-vehicle" className="bg-card rounded-lg border p-4">
             <h2 id="inspection-vehicle" className="text-sm font-semibold">
-              Vehicle
+              {t("vehicle")}
             </h2>
             <dl className="mt-2 space-y-2 text-sm">
               <div>
                 <dt className="text-muted-foreground text-xs">
-                  {serviceType === "marine" ? "Vessel" : "Vehicle"}
+                  {serviceType === "marine" ? t("vessel") : t("vehicle")}
                 </dt>
                 <dd>
                   {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
@@ -825,14 +835,14 @@ export function InspectionPageClient({
               {inspection.vehicle.licensePlate && (
                 <div>
                   <dt className="text-muted-foreground text-xs">
-                    {serviceType === "marine" ? "Registration" : "Plate"}
+                    {serviceType === "marine" ? t("registration") : t("plate")}
                   </dt>
                   <dd className="font-mono">{inspection.vehicle.licensePlate}</dd>
                 </div>
               )}
               {inspection.vehicle.customer && (
                 <div>
-                  <dt className="text-muted-foreground text-xs">Customer</dt>
+                  <dt className="text-muted-foreground text-xs">{t("customer")}</dt>
                   <dd>
                     <Link
                       href={`/customers/${inspection.vehicle.customer.id}`}
@@ -849,7 +859,7 @@ export function InspectionPageClient({
           <section aria-labelledby="inspection-template" className="bg-card rounded-lg border p-4">
             <div className="flex items-baseline justify-between gap-2">
               <h2 id="inspection-template" className="text-sm font-semibold">
-                Template
+                {t("template")}
               </h2>
               <a
                 href="https://torqvoice.com/docs/features/inspections"
@@ -857,22 +867,22 @@ export function InspectionPageClient({
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground focus-visible:ring-ring shrink-0 rounded text-[11px] transition-colors focus-visible:ring-2 focus-visible:outline-none"
               >
-                Read more →
+                {t("readMore")} →
               </a>
             </div>
             <p className="mt-1 text-sm">{inspection.template.name}</p>
             <p className="text-muted-foreground mt-1 text-xs">
               {scale === "eu"
-                ? "Graded on the EU defect scale from Directive 2014/45/EU."
-                : "Graded pass / attention / fail."}
-              {inspection.template.country ? ` Country: ${inspection.template.country}.` : ""}
+                ? t("scaleEu")
+                : t("scaleBasic")}
+              {country ? ` ${t("country", { code: country })}` : ""}
             </p>
             <Link
               href="/settings/templates?tab=inspections"
               className="text-primary focus-visible:ring-ring mt-3 inline-flex items-center gap-1.5 rounded-md text-sm hover:underline focus-visible:ring-2 focus-visible:outline-none"
             >
               <Settings2 className="h-3.5 w-3.5" aria-hidden="true" />
-              Manage inspection templates
+              {t("manageInspectionTemplates")}
             </Link>
           </section>
         </aside>
@@ -882,14 +892,13 @@ export function InspectionPageClient({
       <AlertDialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Complete this inspection?</AlertDialogTitle>
+            <AlertDialogTitle>{t("completeTitle")}</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-2">
                 {blockers.length > 0 ? (
                   <>
                     <p className="text-destructive font-medium">
-                      {blockers.length} check{blockers.length === 1 ? "" : "s"} the template marks
-                      as mandatory {blockers.length === 1 ? "is" : "are"} outstanding.
+                      {t("completeBlocked", { count: blockers.length })}
                     </p>
                     <ul className="list-disc space-y-0.5 pl-5">
                       {blockers.slice(0, 8).map((blocker) => (
@@ -902,32 +911,29 @@ export function InspectionPageClient({
                   </>
                 ) : null}
                 <p>
-                  The checks are locked once the inspection is completed, and the result becomes
-                  &ldquo;{TEST_RESULT_TOKENS[deriveTestResult(gradedItems)].label}&rdquo;.
+                  {t("completeBody", { result: resultLabel(deriveTestResult(gradedItems)) })}
                 </p>
                 {notInspected > 0 && (
                   <p className="font-medium text-amber-700 dark:text-amber-400">
-                    {notInspected} check{notInspected === 1 ? " has" : "s have"} not been graded.
+                    {t("completeUngraded", { count: notInspected })}
                   </p>
                 )}
                 {counts.dangerous > 0 && (
                   <p className="text-destructive font-medium">
-                    {counts.dangerous} dangerous defect
-                    {counts.dangerous === 1 ? "" : "s"} recorded. The vehicle must not be used on
-                    the public road.
+                    {t("completeDangerous", { count: counts.dangerous })}
                   </p>
                 )}
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleComplete}
               disabled={isPending || blockers.length > 0}
             >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              Complete
+              {t("complete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -937,27 +943,25 @@ export function InspectionPageClient({
       <AlertDialog open={showReopenDialog} onOpenChange={setShowReopenDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Reopen this inspection?</AlertDialogTitle>
+            <AlertDialogTitle>{t("reopenTitle")}</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-2">
                 <p>
-                  The checks become editable again and the result goes back to in progress. The
-                  inspector, certificate number and next test date are kept.
+                  {t("reopenBody")}
                 </p>
                 {inspection.publicToken && (
                   <p>
-                    The customer&apos;s link stays live and will show the result changing as you
-                    edit. Any certificate already downloaded keeps the old result.
+                    {t("reopenShared")}
                   </p>
                 )}
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleReopen} disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              Reopen
+              {t("reopen")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -967,21 +971,20 @@ export function InspectionPageClient({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this inspection?</AlertDialogTitle>
+            <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This permanently deletes the inspection, its grades, notes and photos. It cannot be
-              undone.
+              {t("deleteBody")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              Delete
+              {t("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

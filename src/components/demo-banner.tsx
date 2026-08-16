@@ -1,6 +1,8 @@
 import { isDemoMode } from "@/lib/demo";
+import { useTranslations } from "next-intl";
 
 export function DemoBanner() {
+  const t = useTranslations("common.shared");
   if (!isDemoMode) return null;
 
   return (
@@ -10,7 +12,7 @@ export function DemoBanner() {
         href="https://torqvoice.com/docs/installation"
         className="underline underline-offset-2 hover:text-amber-900"
       >
-        Install your own →
+        {t("installOwn")} →
       </a>
     </div>
   );

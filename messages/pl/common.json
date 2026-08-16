@@ -52,5 +52,29 @@
     "updated": "Torqvoice zaktualizowano do wersji {version}",
     "whatsNew": "Zobacz nowości",
     "dismiss": "Zamknij"
+  },
+  "pagination": {
+    "showing": "Wyświetlane {start}–{end} z {total}",
+    "perPage": "na stronę",
+    "pageOf": "Strona {page} z {pages}",
+    "first": "Pierwsza strona",
+    "previous": "Poprzednia strona",
+    "next": "Następna strona",
+    "last": "Ostatnia strona"
+  },
+  "shared": {
+    "close": "Zamknij",
+    "viewPlans": "Zobacz plany",
+    "manageLicense": "Zarządzaj licencją",
+    "installOwn": "Zainstaluj własną",
+    "install": "Zainstaluj",
+    "installApp": "Zainstaluj aplikację",
+    "installTorqvoice": "Zainstaluj Torqvoice",
+    "dismiss": "Zamknij",
+    "useCamera": "Użyj aparatu",
+    "enterManually": "Wprowadź ręcznie",
+    "enterBarcode": "Wprowadź kod kreskowy…",
+    "scanHint": "Skieruj aparat na kod kreskowy albo wprowadź go ręcznie",
+    "iosInstallHint": "Dotknij Udostępnij > Do ekranu początkowego"
   }
 }

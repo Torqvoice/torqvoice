@@ -44,6 +44,7 @@ import {
   Settings2,
   Trash2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { createTemplate, updateTemplate } from "../Actions/templateActions";
 import { COMMON_UNITS, INPUT_TYPES, type InputType, type SeverityScale } from "../Lib/conditions";
@@ -269,6 +270,7 @@ function CheckRow({
   onDuplicate: () => void;
   onDelete: () => void;
 }) {
+  const t = useTranslations("inspections.builder");
   const [expanded, setExpanded] = useState(false);
   const fieldId = useId();
   const { setNodeRef, style, isDragging, handleProps } = useSortableRow(item.key);
@@ -276,7 +278,7 @@ function CheckRow({
 
   const isMeasurement = item.inputType === "measurement";
   const isChoice = item.inputType === "choice";
-  const typeLabel = INPUT_TYPES.find((t) => t.value === item.inputType)?.label ?? "Defect grading";
+  const typeLabel = t(`inputType.${item.inputType}`);
 
   return (
     <li
@@ -286,20 +288,20 @@ function CheckRow({
     >
       <div className="flex items-center gap-1.5 p-1.5">
         <DragHandle
-          label={`Reorder check ${item.name || index + 1}`}
+          label={t("reorderCheck", { name: item.name || String(index + 1) })}
           {...handleProps}
         />
         <Input
           value={item.code}
           onChange={(e) => onChange({ code: e.target.value })}
-          placeholder="Ref."
+          placeholder={t("ref")}
           aria-label={`Regulation reference for check ${index + 1}`}
           className="h-9 w-20 shrink-0 font-mono text-xs"
         />
         <Input
           value={item.name}
           onChange={(e) => onChange({ name: e.target.value })}
-          placeholder="Check name, e.g. Brake linings and pads"
+          placeholder={t("checkName")}
           aria-label={`Name of check ${index + 1} in section ${sectionIndex + 1}`}
           className="h-9"
           required
@@ -321,7 +323,9 @@ function CheckRow({
             aria-hidden="true"
           />
           <span className="sr-only">
-            {expanded ? "Hide settings for" : "Configure"} {item.name || `check ${index + 1}`}
+            {expanded
+              ? t("hideSettings", { name: item.name || String(index + 1) })
+              : t("configure", { name: item.name || String(index + 1) })}
           </span>
         </Button>
         <Button
@@ -330,7 +334,7 @@ function CheckRow({
           size="icon"
           className="h-9 w-9 shrink-0"
           onClick={onDuplicate}
-          aria-label={`Duplicate check ${item.name || index + 1}`}
+          aria-label={t("duplicateCheck", { name: item.name || String(index + 1) })}
         >
           <Copy className="h-3.5 w-3.5" aria-hidden="true" />
         </Button>
@@ -341,7 +345,7 @@ function CheckRow({
           className="text-muted-foreground hover:text-destructive h-9 w-9 shrink-0"
           onClick={onDelete}
           disabled={!canDelete}
-          aria-label={`Remove check ${item.name || index + 1}`}
+          aria-label={t("removeCheck", { name: item.name || String(index + 1) })}
         >
           <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
         </Button>
@@ -351,7 +355,7 @@ function CheckRow({
         <div id={panelId} className="bg-muted/30 space-y-4 border-t px-3 py-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor={`${fieldId}-type`}>How is it recorded?</Label>
+              <Label htmlFor={`${fieldId}-type`}>{t("howRecorded")}</Label>
               <Select
                 value={item.inputType}
                 onValueChange={(v) => onChange({ inputType: v as InputType })}
@@ -360,25 +364,25 @@ function CheckRow({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {INPUT_TYPES.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>
-                      {t.label}
+                  {INPUT_TYPES.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {t(`inputType.${type.value}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <p className="text-muted-foreground text-xs">
-                {INPUT_TYPES.find((t) => t.value === item.inputType)?.hint}
+                {t(`inputHint.${item.inputType}`)}
               </p>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor={`${fieldId}-desc`}>Guidance for the technician</Label>
+              <Label htmlFor={`${fieldId}-desc`}>{t("guidance")}</Label>
               <Textarea
                 id={`${fieldId}-desc`}
                 value={item.description}
                 onChange={(e) => onChange({ description: e.target.value })}
-                placeholder="Shown under the check name on the inspection form."
+                placeholder={t("guidancePlaceholder")}
                 className="min-h-[64px] text-sm"
               />
             </div>
@@ -386,10 +390,10 @@ function CheckRow({
 
           {isMeasurement && (
             <fieldset className="space-y-3">
-              <legend className="text-sm font-medium">Measurement</legend>
+              <legend className="text-sm font-medium">{t("measurement")}</legend>
               <div className="grid gap-3 sm:grid-cols-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor={`${fieldId}-unit`}>Unit</Label>
+                  <Label htmlFor={`${fieldId}-unit`}>{t("unit")}</Label>
                   <Input
                     id={`${fieldId}-unit`}
                     value={item.unit}
@@ -404,7 +408,7 @@ function CheckRow({
                   </datalist>
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor={`${fieldId}-min`}>Minimum</Label>
+                  <Label htmlFor={`${fieldId}-min`}>{t("minimum")}</Label>
                   <Input
                     id={`${fieldId}-min`}
                     inputMode="decimal"
@@ -416,7 +420,7 @@ function CheckRow({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor={`${fieldId}-max`}>Maximum</Label>
+                  <Label htmlFor={`${fieldId}-max`}>{t("maximum")}</Label>
                   <Input
                     id={`${fieldId}-max`}
                     inputMode="decimal"
@@ -428,7 +432,7 @@ function CheckRow({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor={`${fieldId}-sev`}>Defect if out of range</Label>
+                  <Label htmlFor={`${fieldId}-sev`}>{t("outOfRange")}</Label>
                   <Select
                     value={item.defaultSeverity || "fail"}
                     onValueChange={(v) =>
@@ -439,35 +443,34 @@ function CheckRow({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="attention">Minor defect</SelectItem>
-                      <SelectItem value="fail">Major defect</SelectItem>
-                      <SelectItem value="dangerous">Dangerous defect</SelectItem>
+                      <SelectItem value="attention">{t("severityAttention")}</SelectItem>
+                      <SelectItem value="fail">{t("severityFail")}</SelectItem>
+                      <SelectItem value="dangerous">{t("severityDangerous")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               <p className="text-muted-foreground text-xs">
-                Leave a bound empty for a one-sided limit, e.g. a minimum of 1.6 mm with no maximum.
-                Readings outside the range are graded automatically.
+                {t("rangeHelp")}
               </p>
             </fieldset>
           )}
 
           {isChoice && (
             <div className="space-y-1.5">
-              <Label htmlFor={`${fieldId}-choices`}>Answers</Label>
+              <Label htmlFor={`${fieldId}-choices`}>{t("answers")}</Label>
               <Input
                 id={`${fieldId}-choices`}
                 value={item.choices}
                 onChange={(e) => onChange({ choices: e.target.value })}
-                placeholder="Full, Partial, None"
+                placeholder={t("answersPlaceholder")}
               />
-              <p className="text-muted-foreground text-xs">Separate the answers with commas.</p>
+              <p className="text-muted-foreground text-xs">{t("answersHelp")}</p>
             </div>
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor={`${fieldId}-suggestions`}>Common defect wording</Label>
+            <Label htmlFor={`${fieldId}-suggestions`}>{t("commonWording")}</Label>
             <Textarea
               id={`${fieldId}-suggestions`}
               value={item.defectSuggestions}
@@ -476,9 +479,7 @@ function CheckRow({
               className="min-h-[76px] text-sm"
             />
             <p className="text-muted-foreground text-xs">
-              One phrase per line. These are offered first when a technician records a defect
-              here, ahead of the built-in wording, so your shop can settle on how it describes a
-              fault.
+              {t("commonWordingHelp")}
             </p>
           </div>
 
@@ -490,7 +491,7 @@ function CheckRow({
                 onCheckedChange={(v) => onChange({ required: v })}
               />
               <Label htmlFor={`${fieldId}-required`} className="font-normal">
-                Must be completed
+                {t("mustComplete")}
               </Label>
             </div>
             <div className="flex items-center gap-2">
@@ -500,7 +501,7 @@ function CheckRow({
                 onCheckedChange={(v) => onChange({ photoRequired: v })}
               />
               <Label htmlFor={`${fieldId}-photo`} className="font-normal">
-                Photo required when a defect is recorded
+                {t("photoRequired")}
               </Label>
             </div>
           </div>
@@ -537,6 +538,7 @@ function SectionCard({
   onItemDelete: (itemIndex: number) => void;
   onItemsReorder: (from: number, to: number) => void;
 }) {
+  const t = useTranslations("inspections.builder");
   const fieldId = useId();
   const { setNodeRef, style, isDragging, handleProps } = useSortableRow(section.key);
 
@@ -561,12 +563,12 @@ function SectionCard({
       className={`bg-card rounded-lg border ${isDragging ? "ring-primary/40 shadow-lg ring-2" : ""}`}
     >
       <header className="flex items-start gap-1.5 border-b p-3">
-        <DragHandle label={`Reorder section ${section.name || index + 1}`} {...handleProps} />
+        <DragHandle label={t("reorderSection", { name: section.name || String(index + 1) })} {...handleProps} />
         <div className="grid flex-1 gap-2 sm:grid-cols-[5rem_1fr]">
           <Input
             value={section.code}
             onChange={(e) => onChange({ code: e.target.value })}
-            placeholder="Ref."
+            placeholder={t("ref")}
             aria-label={`Regulation reference for section ${index + 1}`}
             className="font-mono text-xs"
           />
@@ -574,7 +576,7 @@ function SectionCard({
             id={`${fieldId}-name`}
             value={section.name}
             onChange={(e) => onChange({ name: e.target.value })}
-            placeholder="Section name, e.g. Braking equipment"
+            placeholder={t("sectionName")}
             aria-label={`Name of section ${index + 1}`}
             className="font-medium"
             required
@@ -582,7 +584,7 @@ function SectionCard({
           <Input
             value={section.description}
             onChange={(e) => onChange({ description: e.target.value })}
-            placeholder="Optional note shown above the checks in this section"
+            placeholder={t("sectionNote")}
             aria-label={`Description of section ${index + 1}`}
             className="text-sm sm:col-span-2"
           />
@@ -594,7 +596,7 @@ function SectionCard({
           className="text-muted-foreground hover:text-destructive h-9 w-9 shrink-0"
           onClick={onDelete}
           disabled={!canDelete}
-          aria-label={`Remove section ${section.name || index + 1}`}
+          aria-label={t("removeSection", { name: section.name || String(index + 1) })}
         >
           <Trash2 className="h-4 w-4" aria-hidden="true" />
         </Button>
@@ -630,7 +632,7 @@ function SectionCard({
 
         <Button type="button" variant="ghost" size="sm" className="mt-2" onClick={onAddItem}>
           <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-          Add check
+          {t("addCheck")}
         </Button>
       </div>
     </section>
@@ -650,6 +652,7 @@ export function TemplateForm({
   onOpenChange: (open: boolean) => void;
   template?: TemplateFormData;
 }) {
+  const t = useTranslations("inspections.builder");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const isEdit = !!template;
@@ -745,11 +748,11 @@ export function TemplateForm({
     startTransition(async () => {
       const result = isEdit ? await updateTemplate(payload) : await createTemplate(payload);
       if (result.success) {
-        toast.success(isEdit ? "Template updated" : "Template created");
+        toast.success(isEdit ? t("updated") : t("created"));
         onOpenChange(false);
         router.refresh();
       } else {
-        toast.error(result.error || "Failed to save template");
+        toast.error(result.error || t("saveFailed"));
       }
     });
   };
@@ -762,10 +765,9 @@ export function TemplateForm({
         aria-describedby="template-builder-description"
       >
         <SheetHeader className="border-b px-6 py-4">
-          <SheetTitle>{isEdit ? "Edit template" : "New template"}</SheetTitle>
+          <SheetTitle>{isEdit ? t("editTitle") : t("newTitle")}</SheetTitle>
           <SheetDescription id="template-builder-description">
-            Build the checklist your workshop actually uses. Drag to reorder, and configure each
-            check to record a grade, a measurement, a written note or a fixed answer.
+            {t("description")}
           </SheetDescription>
         </SheetHeader>
 
@@ -774,35 +776,35 @@ export function TemplateForm({
             {/* Settings */}
             <div className="space-y-5 overflow-y-auto border-b p-6 lg:border-r lg:border-b-0">
               <div className="space-y-2">
-                <Label htmlFor="template-name">Name</Label>
+                <Label htmlFor="template-name">{t("name")}</Label>
                 <Input
                   id="template-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Periodic technical inspection"
+                  placeholder={t("namePlaceholder")}
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="template-desc">Description</Label>
+                <Label htmlFor="template-desc">{t("templateDescription")}</Label>
                 <Textarea
                   id="template-desc"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="What this checklist is for and when to use it."
+                  placeholder={t("descriptionPlaceholder")}
                   className="min-h-[72px]"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="template-country">Country</Label>
+                <Label htmlFor="template-country">{t("country")}</Label>
                 <Select value={country} onValueChange={setCountry}>
                   <SelectTrigger id="template-country">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">Not country-specific</SelectItem>
+                    <SelectItem value="none">{t("notCountrySpecific")}</SelectItem>
                     {TEMPLATE_COUNTRIES.map((c) => (
                       <SelectItem key={c.code} value={c.code}>
                         {c.name}
@@ -811,29 +813,28 @@ export function TemplateForm({
                   </SelectContent>
                 </Select>
                 <p className="text-muted-foreground text-xs">
-                  Recorded on the report so a shop working across borders can tell its checklists
-                  apart.
+                  {t("countryHelp")}
                 </p>
               </div>
 
               <fieldset className="space-y-2">
-                <legend className="text-sm font-medium">Defect scale</legend>
+                <legend className="text-sm font-medium">{t("defectScale")}</legend>
                 <Select
                   value={severityScale}
                   onValueChange={(v) => setSeverityScale(v as SeverityScale)}
                 >
-                  <SelectTrigger aria-label="Defect scale">
+                  <SelectTrigger aria-label={t("defectScale")}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="eu">Minor / major / dangerous (EU)</SelectItem>
-                    <SelectItem value="basic">Pass / attention / fail</SelectItem>
+                    <SelectItem value="eu">{t("scaleEu")}</SelectItem>
+                    <SelectItem value="basic">{t("scaleBasic")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-muted-foreground text-xs">
                   {severityScale === "eu"
-                    ? "The categories in Article 7(2) of Directive 2014/45/EU. A vehicle with only minor defects still passes."
-                    : "A plain three-step scale for service checklists that are not a statutory test."}
+                    ? t("scaleEuHelp")
+                    : t("scaleBasicHelp")}
                 </p>
               </fieldset>
 
@@ -845,9 +846,9 @@ export function TemplateForm({
                   className="mt-0.5"
                 />
                 <div>
-                  <Label htmlFor="template-default">Default template</Label>
+                  <Label htmlFor="template-default">{t("defaultTemplate")}</Label>
                   <p className="text-muted-foreground text-xs">
-                    Pre-selected when a technician starts a new inspection.
+                    {t("defaultHelp")}
                   </p>
                 </div>
               </div>
@@ -855,8 +856,7 @@ export function TemplateForm({
               <div className="space-y-3 border-t pt-4">
                 <div className="text-muted-foreground flex items-center gap-2 text-xs">
                   <Settings2 className="h-3.5 w-3.5" aria-hidden="true" />
-                  {sections.length} section{sections.length === 1 ? "" : "s"} &middot;{" "}
-                  {totalChecks} check{totalChecks === 1 ? "" : "s"}
+                  {t("summary", { sections: sections.length, checks: totalChecks })}
                 </div>
                 <Button
                   type="button"
@@ -866,15 +866,13 @@ export function TemplateForm({
                   onClick={() => setSections((prev) => renumber(prev))}
                 >
                   <ListOrdered className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-                  Renumber references
+                  {t("renumber")}
                 </Button>
                 <p className="text-muted-foreground text-xs">
-                  Numbers every section and check in order — 1, 1.1, 1.2, 2. New rows are
-                  numbered as you add them, so you only need this after moving things about.
+                  {t("renumberHelp")}
                   {hasRegulationCodes && (
                     <strong className="text-foreground block pt-1">
-                      This checklist uses regulation references such as 1.1.13. Renumbering
-                      replaces them.
+                      {t("renumberWarning")}
                     </strong>
                   )}
                 </p>
@@ -950,18 +948,18 @@ export function TemplateForm({
                 }
               >
                 <Plus className="mr-1 h-4 w-4" aria-hidden="true" />
-                Add section
+                {t("addSection")}
               </Button>
             </div>
           </div>
 
           <div className="flex items-center justify-end gap-2 border-t px-6 py-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              {isEdit ? "Save changes" : "Create template"}
+              {isEdit ? t("saveChanges") : t("create")}
             </Button>
           </div>
         </form>

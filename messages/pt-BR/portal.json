@@ -26,7 +26,7 @@
     "signInTitle": "Acesso do cliente",
     "signInSubtitle": "Entre para ver suas faturas, orçamentos e histórico de serviço.",
     "emailLabel": "Endereço de e-mail",
-    "emailPlaceholder": "voce@exemplo.com",
+    "emailPlaceholder": "você@exemplo.com",
     "sendLink": "Enviar link de acesso",
     "checkEmail": "Verifique seu e-mail",
     "checkEmailDescription": "Se uma conta existir para esse e-mail, enviamos um link de acesso. O link expira em 15 minutos.",

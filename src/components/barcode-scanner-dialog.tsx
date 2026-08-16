@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Camera, Keyboard } from 'lucide-react'
+import { useTranslations } from "next-intl";
 
 interface BarcodeScannerDialogProps {
   open: boolean
@@ -25,6 +26,7 @@ export function BarcodeScannerDialog({
   onScan,
   title = 'Scan Barcode',
 }: BarcodeScannerDialogProps) {
+  const t = useTranslations("common.shared");
   const scannerRef = useRef<HTMLDivElement>(null)
   const html5QrRef = useRef<any>(null)
   const [error, setError] = useState<string | null>(null)
@@ -178,7 +180,7 @@ export function BarcodeScannerDialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription className="sr-only">
-            Point your camera at a barcode or enter it manually
+            {t("scanHint")}
           </DialogDescription>
         </DialogHeader>
 
@@ -196,7 +198,7 @@ export function BarcodeScannerDialog({
               onClick={() => setShowManual(true)}
             >
               <Keyboard className="mr-2 h-4 w-4" />
-              Enter manually
+              {t("enterManually")}
             </Button>
           </div>
         ) : (
@@ -206,7 +208,7 @@ export function BarcodeScannerDialog({
             )}
             <form onSubmit={handleManualSubmit} className="flex gap-2">
               <Input
-                placeholder="Enter barcode..."
+                placeholder={t("enterBarcode")}
                 value={manualValue}
                 onChange={(e) => setManualValue(e.target.value)}
                 autoFocus
@@ -224,7 +226,7 @@ export function BarcodeScannerDialog({
                 onClick={() => setShowManual(false)}
               >
                 <Camera className="mr-2 h-4 w-4" />
-                Use camera
+                {t("useCamera")}
               </Button>
             )}
           </div>

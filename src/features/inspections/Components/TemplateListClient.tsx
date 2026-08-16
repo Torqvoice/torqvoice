@@ -38,6 +38,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   deleteTemplate,
@@ -104,6 +105,7 @@ function TemplateCard({
   onDelete: () => void;
   isDuplicating: boolean;
 }) {
+  const t = useTranslations("inspections.templates");
   const checkCount = template.sections.reduce((sum, s) => sum + s.items.length, 0);
   const measurementCount = template.sections.reduce(
     (sum, s) => sum + s.items.filter((i) => i.inputType === "measurement").length,
@@ -120,7 +122,7 @@ function TemplateCard({
             <span className="truncate">{template.name}</span>
             {template.isDefault && (
               <Badge variant="secondary" className="shrink-0 text-[11px]">
-                Default
+                {t("default")}
               </Badge>
             )}
           </h3>
@@ -136,7 +138,7 @@ function TemplateCard({
               variant="ghost"
               size="icon"
               className="h-9 w-9 shrink-0"
-              aria-label={`Actions for ${template.name}`}
+              aria-label={t("actionsFor", { name: template.name })}
             >
               {isDuplicating ? (
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -148,20 +150,20 @@ function TemplateCard({
           <DropdownMenuContent align="end" className="min-w-44">
             <DropdownMenuItem onClick={onEdit}>
               <Pencil className="mr-2 h-4 w-4" aria-hidden="true" />
-              Edit
+              {t("edit")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onDuplicate}>
               <Copy className="mr-2 h-4 w-4" aria-hidden="true" />
-              Duplicate
+              {t("duplicate")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onExport}>
               <Download className="mr-2 h-4 w-4" aria-hidden="true" />
-              Export…
+              {t("export")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-destructive" onClick={onDelete}>
               <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />
-              Delete
+              {t("delete")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -170,23 +172,19 @@ function TemplateCard({
       <dl className="text-muted-foreground mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
         <div className="flex items-center gap-1.5">
           <LayoutTemplate className="h-3.5 w-3.5" aria-hidden="true" />
-          <dt className="sr-only">Sections</dt>
-          <dd>
-            {template.sections.length} section{template.sections.length === 1 ? "" : "s"}
-          </dd>
+          <dt className="sr-only">{t("srSections")}</dt>
+          <dd>{t("sections", { count: template.sections.length })}</dd>
         </div>
         <div className="flex items-center gap-1.5">
           <ListChecks className="h-3.5 w-3.5" aria-hidden="true" />
-          <dt className="sr-only">Checks</dt>
-          <dd>
-            {checkCount} check{checkCount === 1 ? "" : "s"}
-          </dd>
+          <dt className="sr-only">{t("srChecks")}</dt>
+          <dd>{t("checks", { count: checkCount })}</dd>
         </div>
         {measurementCount > 0 && (
           <div className="flex items-center gap-1.5">
             <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
-            <dt className="sr-only">Measurements</dt>
-            <dd>{measurementCount} measured</dd>
+            <dt className="sr-only">{t("srMeasurements")}</dt>
+            <dd>{t("measured", { count: measurementCount })}</dd>
           </div>
         )}
       </dl>
@@ -200,7 +198,7 @@ function TemplateCard({
         )}
         <Badge variant="outline" className="gap-1 text-[11px]">
           <ShieldCheck className="h-3 w-3" aria-hidden="true" />
-          {isEu ? "EU defect scale" : "Pass / attention / fail"}
+          {isEu ? t("euScale") : t("basicScale")}
         </Badge>
       </div>
     </article>
@@ -208,6 +206,7 @@ function TemplateCard({
 }
 
 export function TemplateListClient({ templates }: { templates: Template[] }) {
+  const t = useTranslations("inspections.templates");
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
   const [showPresets, setShowPresets] = useState(false);
@@ -231,12 +230,12 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
       if (result.success && result.data) {
         toast.success(
           result.data.added === 0
-            ? "Every checklist is already here"
-            : `Restored ${result.data.added} checklist${result.data.added === 1 ? "" : "s"}`
+            ? t("allPresent")
+            : t("restored", { count: result.data.added })
         );
         router.refresh();
       } else {
-        toast.error(result.error || "Failed to add the checklists");
+        toast.error(result.error || t("restoreFailed"));
       }
     });
   };
@@ -246,11 +245,11 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
     startDeleteTransition(async () => {
       const result = await deleteTemplate(id);
       if (result.success) {
-        toast.success("Template deleted");
+        toast.success(t("deleted"));
         setDeleteTarget(null);
         router.refresh();
       } else {
-        toast.error(result.error || "Failed to delete template");
+        toast.error(result.error || t("deleteFailed"));
       }
     });
   };
@@ -260,10 +259,10 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
     const result = await duplicateTemplate(id);
     setDuplicatingId(null);
     if (result.success) {
-      toast.success("Template duplicated");
+      toast.success(t("duplicated"));
       router.refresh();
     } else {
-      toast.error(result.error || "Failed to duplicate template");
+      toast.error(result.error || t("duplicateFailed"));
     }
   };
 
@@ -281,24 +280,23 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
     <div className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold">Inspection templates</h2>
+          <h2 className="text-lg font-semibold">{t("title")}</h2>
           <p className="text-muted-foreground text-sm">
-            The checklists your technicians work through. Build one per country, per vehicle type
-            or per service you sell.
+            {t("description")}
           </p>
         </div>
         <div className="flex shrink-0 gap-2">
           <Button variant="outline" size="sm" onClick={() => setShowImport(true)}>
             <Upload className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-            Import
+            {t("import")}
           </Button>
           <Button variant="outline" size="sm" onClick={() => setShowPresets(true)}>
             <ShieldCheck className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-            Browse checklists
+            {t("browse")}
           </Button>
           <Button size="sm" onClick={handleCreate}>
             <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-            New template
+            {t("new")}
           </Button>
         </div>
       </div>
@@ -307,8 +305,7 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
         <div className="bg-muted/40 flex flex-wrap items-center gap-3 rounded-lg border border-dashed p-3">
           <LibraryBig className="text-muted-foreground h-4 w-4 shrink-0" aria-hidden="true" />
           <p className="min-w-0 flex-1 text-sm">
-            {missing.length} ready-made checklist{missing.length === 1 ? " has" : "s have"} been
-            removed from your list. You can put {missing.length === 1 ? "it" : "them"} back.
+            {t("restoreBanner", { count: missing.length })}
           </p>
           <Button
             variant="outline"
@@ -320,7 +317,7 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
             {isInstalling && (
               <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" aria-hidden="true" />
             )}
-            Restore
+            {t("restore")}
           </Button>
         </div>
       )}
@@ -328,10 +325,9 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
       {templates.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed px-6 py-16 text-center">
           <ClipboardCheck className="text-muted-foreground/40 h-10 w-10" aria-hidden="true" />
-          <h3 className="mt-4 font-medium">No templates yet</h3>
+          <h3 className="mt-4 font-medium">{t("emptyTitle")}</h3>
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            The ready-made checklists — including the EU periodic technical inspection — have all
-            been removed. Put them back, or build your own from scratch.
+            {t("emptyBody")}
           </p>
           <div className="mt-5 flex gap-2">
             <Button onClick={handleRestore} disabled={isInstalling}>
@@ -340,11 +336,11 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
               ) : (
                 <LibraryBig className="mr-1 h-4 w-4" aria-hidden="true" />
               )}
-              Restore checklists
+              {t("restoreChecklists")}
             </Button>
             <Button variant="outline" onClick={handleCreate}>
               <Plus className="mr-1 h-4 w-4" aria-hidden="true" />
-              Build my own
+              {t("buildMyOwn")}
             </Button>
           </div>
         </div>
@@ -397,21 +393,20 @@ export function TemplateListClient({ templates }: { templates: Template[] }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete &ldquo;{deleteTarget?.name}&rdquo;?</AlertDialogTitle>
+            <AlertDialogTitle>{t("deleteTitle", { name: deleteTarget?.name ?? "" })}</AlertDialogTitle>
             <AlertDialogDescription>
-              This permanently deletes the template. Inspections already carried out with it keep
-              their own copy of the checklist and are not affected.
+              {t("deleteBody")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteTarget && handleDelete(deleteTarget.id)}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              Delete
+              {t("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

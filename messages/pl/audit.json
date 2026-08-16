@@ -98,6 +98,16 @@
     "webhook_create": "Utworzono webhook",
     "webhook_update": "Zaktualizowano webhook",
     "webhook_delete": "Usunięto webhook",
-    "webhook_rotateSecret": "Zrotowano sekret webhooka"
+    "webhook_rotateSecret": "Zrotowano sekret webhooka",
+    "inspection_reopen": "Otwarto inspekcję ponownie",
+    "inspectionTemplate_import": "Zaimportowano szablon inspekcji",
+    "scheduled_message_create": "Utworzono zaplanowaną wiadomość",
+    "scheduled_message_update": "Zaktualizowano zaplanowaną wiadomość",
+    "scheduled_message_delete": "Usunięto zaplanowaną wiadomość",
+    "scheduled_message_cancel": "Anulowano zaplanowaną wiadomość",
+    "scheduled_message_send_now": "Wysłano zaplanowaną wiadomość",
+    "settings_applyTaxRate": "Zastosowano stawkę podatku",
+    "settings_convertToExclusive": "Przeliczono ceny na netto",
+    "settings_convertToInclusive": "Przeliczono ceny na brutto"
   }
 }

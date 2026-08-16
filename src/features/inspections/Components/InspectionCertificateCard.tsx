@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FileCheck2, Loader2, RotateCcw, UserPlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { updateInspectionDetails } from "../Actions/inspectionActions";
 import { createTechnician } from "@/features/workboard/Actions/technicianActions";
@@ -55,6 +56,7 @@ function AddTechnicianDialog({
   onOpenChange: (open: boolean) => void;
   onCreated: (technician: TechnicianOption) => void;
 }) {
+  const t = useTranslations("inspections.certificate");
   const [name, setName] = useState("");
   const [isPending, startTransition] = useTransition();
   const fieldId = useId();
@@ -67,11 +69,11 @@ function AddTechnicianDialog({
       const result = await createTechnician({ name: trimmed, color: "#3b82f6" });
       if (result.success && result.data) {
         onCreated({ id: result.data.id, name: result.data.name, color: result.data.color });
-        toast.success(`${result.data.name} added and selected`);
+        toast.success(t("technicianAdded", { name: result.data.name }));
         setName("");
         onOpenChange(false);
       } else {
-        toast.error(result.error || "Could not add the technician");
+        toast.error(result.error || t("technicianFailed"));
       }
     });
   };
@@ -80,31 +82,31 @@ function AddTechnicianDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Add technician</DialogTitle>
+          <DialogTitle>{t("addTechnicianTitle")}</DialogTitle>
           <DialogDescription>
-            They join the workshop roster and can be assigned work as well as inspections.
+            {t("addTechnicianBody")}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor={`${fieldId}-name`}>Name</Label>
+            <Label htmlFor={`${fieldId}-name`}>{t("technicianName")}</Label>
             {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
             <Input
               id={`${fieldId}-name`}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Anna Berg"
+              placeholder={t("technicianPlaceholder")}
               autoFocus
               required
             />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={isPending || !name.trim()}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              Add and select
+              {t("addAndSelect")}
             </Button>
           </DialogFooter>
         </form>
@@ -147,6 +149,7 @@ export function InspectionCertificateCard({
   mileageLabel: string;
   isCompleted: boolean;
 }) {
+  const t = useTranslations("inspections.certificate");
   const router = useRouter();
   const fieldId = useId();
   const [isPending, startTransition] = useTransition();
@@ -217,10 +220,10 @@ export function InspectionCertificateCard({
         nextTestDue: nextTestDue ? new Date(`${nextTestDue}T00:00:00`) : null,
       });
       if (result.success) {
-        toast.success("Certificate details saved");
+        toast.success(t("saved"));
         router.refresh();
       } else {
-        toast.error(result.error || "Could not save the certificate details");
+        toast.error(result.error || t("saveFailed"));
       }
     });
   };
@@ -231,27 +234,27 @@ export function InspectionCertificateCard({
         <FileCheck2 className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
         <div>
           <h2 id={`${fieldId}-heading`} className="text-sm font-semibold">
-            Certificate details
+            {t("title")}
           </h2>
           <p className="text-muted-foreground text-xs">
-            Required on a roadworthiness certificate under Directive 2014/45/EU, Annex IV.
+            {t("description")}
           </p>
         </div>
       </header>
 
       <div className="grid gap-4 p-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor={`${fieldId}-inspector`}>Inspector</Label>
+          <Label htmlFor={`${fieldId}-inspector`}>{t("inspector")}</Label>
           <Select
             value={technicianId}
             onValueChange={handleTechnicianChange}
             disabled={isCompleted}
           >
             <SelectTrigger id={`${fieldId}-inspector`}>
-              <SelectValue placeholder="Not recorded" />
+              <SelectValue placeholder={t("notRecorded")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={NO_TECHNICIAN}>Not recorded</SelectItem>
+              <SelectItem value={NO_TECHNICIAN}>{t("notRecorded")}</SelectItem>
               {roster.map((tech) => (
                 <SelectItem key={tech.id} value={tech.id}>
                   <span className="flex items-center gap-2">
@@ -270,7 +273,7 @@ export function InspectionCertificateCard({
                   <SelectItem value={ADD_TECHNICIAN}>
                     <span className="flex items-center gap-2">
                       <UserPlus className="h-3.5 w-3.5" aria-hidden="true" />
-                      Add technician…
+                      {t("addTechnician")}
                     </span>
                   </SelectItem>
                 </>
@@ -281,23 +284,23 @@ export function InspectionCertificateCard({
               name on it; say so rather than showing an empty field. */}
           {technicianId === NO_TECHNICIAN && inspection.inspectorName && (
             <p className="text-muted-foreground text-xs">
-              Recorded as {inspection.inspectorName}
+              {t("recordedAs", { name: inspection.inspectorName })}
             </p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor={`${fieldId}-category`}>Vehicle category</Label>
+          <Label htmlFor={`${fieldId}-category`}>{t("vehicleCategory")}</Label>
           <Select
             value={vehicleCategory}
             onValueChange={setVehicleCategory}
             disabled={isCompleted}
           >
             <SelectTrigger id={`${fieldId}-category`}>
-              <SelectValue placeholder="Not recorded" />
+              <SelectValue placeholder={t("notRecorded")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={NO_TECHNICIAN}>Not recorded</SelectItem>
+              <SelectItem value={NO_TECHNICIAN}>{t("notRecorded")}</SelectItem>
               {VEHICLE_CATEGORIES.map((c) => (
                 <SelectItem key={c.value} value={c.value}>
                   {c.label}
@@ -308,7 +311,7 @@ export function InspectionCertificateCard({
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor={`${fieldId}-mileage`}>{mileageLabel} at time of test</Label>
+          <Label htmlFor={`${fieldId}-mileage`}>{t("mileageAtTest", { label: mileageLabel })}</Label>
           <Input
             id={`${fieldId}-mileage`}
             inputMode="numeric"
@@ -319,58 +322,56 @@ export function InspectionCertificateCard({
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor={`${fieldId}-certificate`}>Report reference</Label>
+          <Label htmlFor={`${fieldId}-certificate`}>{t("reportReference")}</Label>
           <Input
             id={`${fieldId}-certificate`}
             value={certificateNumber}
             onChange={(e) => setCertificateNumber(e.target.value)}
-            placeholder="Optional"
+            placeholder={t("optional")}
             disabled={isCompleted}
           />
           {!isCompleted && (
             <p className="text-muted-foreground text-xs">
-              Your own reference for this report. If you are an approved test centre issuing a
-              national control slip, put its number here so the two match. Otherwise leave it
-              empty.
+              {t("reportReferenceHelp")}
             </p>
           )}
         </div>
 
         <div className="space-y-1.5 sm:col-span-2">
-          <Label htmlFor={`${fieldId}-location`}>Place of test</Label>
+          <Label htmlFor={`${fieldId}-location`}>{t("placeOfTest")}</Label>
           <Input
             id={`${fieldId}-location`}
             value={testLocation}
             onChange={(e) => setTestLocation(e.target.value)}
-            placeholder={workshopAddress || "Test centre or workshop address"}
+            placeholder={workshopAddress || t("placeholderAddress")}
             disabled={isCompleted}
           />
           {!isCompleted && (
             <p className="text-muted-foreground flex flex-wrap items-center gap-x-2 text-xs">
               {locationOverridden ? (
                 <>
-                  <span>Differs from your workshop address.</span>
+                  <span>{t("differsFromWorkshop")}</span>
                   <button
                     type="button"
                     onClick={() => setTestLocation(workshopAddress)}
                     className="text-primary inline-flex items-center gap-1 hover:underline"
                   >
                     <RotateCcw className="h-3 w-3" aria-hidden="true" />
-                    Use workshop address
+                    {t("useWorkshopAddress")}
                   </button>
                 </>
               ) : workshopAddress ? (
                 <>
-                  <span>From your workshop settings.</span>
+                  <span>{t("fromSettings")}</span>
                   <Link href="/settings/workshop" className="text-primary hover:underline">
-                    Change
+                    {t("change")}
                   </Link>
                 </>
               ) : (
                 <>
-                  <span>No workshop address is set.</span>
+                  <span>{t("noWorkshopAddress")}</span>
                   <Link href="/settings/workshop" className="text-primary hover:underline">
-                    Add one
+                    {t("addOne")}
                   </Link>
                 </>
               )}
@@ -379,20 +380,20 @@ export function InspectionCertificateCard({
         </div>
 
         <div className="space-y-1.5 sm:col-span-2">
-          <Label htmlFor={`${fieldId}-next`}>Next test due</Label>
+          <Label htmlFor={`${fieldId}-next`}>{t("nextTestDue")}</Label>
           <div className="flex flex-wrap items-center gap-2">
             <div className="min-w-[12rem] flex-1">
               <DateInput
                 id={`${fieldId}-next`}
                 value={nextTestDue}
                 onChange={setNextTestDue}
-                placeholder="Not set"
+                placeholder={t("notSet")}
               />
             </div>
             {!isCompleted && (
               <div
                 role="group"
-                aria-label="Set the next test date from the date of this test"
+                aria-label={t("intervalGroup")}
                 className="flex flex-wrap gap-1"
               >
                 {TEST_INTERVALS.map((interval) => {
@@ -409,7 +410,7 @@ export function InspectionCertificateCard({
                           : "bg-background hover:bg-muted"
                       }`}
                     >
-                      {interval.label}
+                      {t(interval.key)}
                     </button>
                   );
                 })}
@@ -418,8 +419,7 @@ export function InspectionCertificateCard({
           </div>
           {!isCompleted && (
             <p className="text-muted-foreground text-xs">
-              Counted from the date of this test. Two years is the Union baseline for cars and
-              light goods vehicles; check the interval your country applies.
+              {t("intervalHelp")}
             </p>
           )}
         </div>
@@ -429,12 +429,12 @@ export function InspectionCertificateCard({
         <div className="flex items-center justify-end gap-3 border-t px-4 py-3">
           {isDirty && (
             <p className="text-muted-foreground text-xs" role="status">
-              Unsaved changes
+              {t("unsaved")}
             </p>
           )}
           <Button type="button" size="sm" onClick={handleSave} disabled={isPending || !isDirty}>
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-            Save details
+            {t("saveDetails")}
           </Button>
         </div>
       )}
