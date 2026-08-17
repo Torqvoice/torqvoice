@@ -1,5 +1,6 @@
 "use client";
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 import { interactiveRow } from "@/lib/interactive-row";
 import { useState, useTransition } from "react";
 import Link from "next/link";
@@ -122,6 +123,7 @@ export function CustomerDetailClient({
   const searchParams = useSearchParams();
   const [showEditForm, setShowEditForm] = useState(false);
   const [showVehicleForm, setShowVehicleForm] = useState(false);
+  const tableNav = useTableKeyboardNav();
 
   const tabParam = searchParams.get("tab");
   const activeTab =
@@ -381,7 +383,7 @@ export function CustomerDetailClient({
               </div>
 
               {/* Table (md and up) */}
-              <div className="hidden rounded-lg border md:block">
+              <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
                 <Table>
                   <TableHeader>
                     <TableRow>

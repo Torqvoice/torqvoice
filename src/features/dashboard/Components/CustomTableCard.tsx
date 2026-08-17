@@ -1,5 +1,6 @@
 "use client";
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 import { interactiveRow } from "@/lib/interactive-row";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -41,6 +42,7 @@ export function CustomTableCard({
   const { formatDate } = useFormatDate();
   const [rows, setRows] = useState<CardRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const tableNav = useTableKeyboardNav();
 
   const configKey = JSON.stringify(widget.config);
   useEffect(() => {
@@ -137,7 +139,7 @@ export function CustomTableCard({
             ))}
           </div>
 
-          <div className="hidden md:block">
+          <div className="hidden md:block" {...tableNav.containerProps}>
           <Table>
             <TableHeader>
               <TableRow>

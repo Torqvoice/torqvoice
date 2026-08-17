@@ -1,5 +1,6 @@
 "use client";
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
@@ -119,6 +120,7 @@ export function ServiceRecordsTable({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const tableNav = useTableKeyboardNav();
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const t = useTranslations("vehicles.services");
@@ -198,6 +200,7 @@ export function ServiceRecordsTable({
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="h-9 pl-9"
+            {...tableNav.searchInputProps}
           />
         </form>
         <div className="flex items-center gap-2 sm:flex-1">
@@ -340,7 +343,7 @@ export function ServiceRecordsTable({
       </div>
 
       {/* Table (md and up) */}
-      <div className="hidden rounded-lg border md:block">
+      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
         <Table>
           <TableHeader>
             <TableRow>

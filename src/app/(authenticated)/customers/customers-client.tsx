@@ -1,6 +1,7 @@
 "use client";
 
 import { interactiveRow } from '@/lib/interactive-row';
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
 import { useState, useCallback, useTransition, useEffect } from "react";
@@ -94,6 +95,7 @@ export function CustomersClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const tableNav = useTableKeyboardNav();
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
@@ -242,6 +244,7 @@ export function CustomersClient({
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="h-9 pl-9"
+                  {...tableNav.searchInputProps}
                 />
               </form>
               {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -349,7 +352,7 @@ export function CustomersClient({
       </div>
 
       {/* Table (md and up) - only this scrolls */}
-      <div className="hidden rounded-lg border md:block">
+      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
         <TableContextMenuHint />
         <div className="overflow-auto max-h-[calc(100vh-220px)]">
         <Table className="table-fixed">

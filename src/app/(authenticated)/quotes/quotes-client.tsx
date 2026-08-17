@@ -1,6 +1,7 @@
 'use client'
 
 import { interactiveRow } from '@/lib/interactive-row';
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
 import { useState, useCallback, useTransition, useEffect } from 'react'
@@ -97,6 +98,7 @@ export function QuotesClient({
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
+  const tableNav = useTableKeyboardNav()
   const t = useTranslations('quotes')
   const tcm = useTranslations('common.contextMenu')
 
@@ -191,6 +193,7 @@ export function QuotesClient({
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="h-9 pl-9"
+              {...tableNav.searchInputProps}
             />
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -257,7 +260,7 @@ export function QuotesClient({
       </div>
 
       {/* Table (md and up) */}
-      <div className="hidden rounded-lg border md:block">
+      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
         <TableContextMenuHint />
         <Table className="table-fixed">
           <TableHeader>

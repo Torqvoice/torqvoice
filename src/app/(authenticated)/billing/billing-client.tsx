@@ -1,6 +1,7 @@
 "use client";
 
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import { useCallback, useTransition } from "react";
@@ -104,6 +105,7 @@ export default function BillingClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const tableNav = useTableKeyboardNav();
 
   const createQueryString = useCallback(
     (params: Record<string, string>) => {
@@ -311,6 +313,7 @@ export default function BillingClient({
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               className="h-9 w-full pl-9 sm:w-[250px]"
+              {...tableNav.searchInputProps}
             />
           </div>
           <Button
@@ -383,7 +386,7 @@ export default function BillingClient({
       </div>
 
       {/* Table (md and up) */}
-      <div className="hidden rounded-md border md:block">
+      <div className="hidden rounded-md border md:block" {...tableNav.containerProps}>
         <Table className="table-fixed">
           <TableHeader>
             <TableRow>
