@@ -41,6 +41,7 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  Car,
   ExternalLink,
   Loader2,
   MoreVertical,
@@ -239,27 +240,115 @@ export function CustomersClient({
                   placeholder={t("searchPlaceholder")}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="pl-9"
+                  className="h-9 pl-9"
                 />
               </form>
               {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
             </div>
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={() => setShowImport(true)}>
-                <Upload className="mr-1 h-3.5 w-3.5" />
-                {t("importCustomers")}
+            <div className="flex shrink-0 items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowImport(true)}
+                aria-label={t("importCustomers")}
+                title={t("importCustomers")}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Upload className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{t("importCustomers")}</span>
               </Button>
-              <Button size="sm" onClick={() => setShowForm(true)}>
-                <Plus className="mr-1 h-3.5 w-3.5" />
-                {t("addCustomer")}
+              <Button
+                size="sm"
+                onClick={() => setShowForm(true)}
+                aria-label={t("addCustomer")}
+                title={t("addCustomer")}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{t("addCustomer")}</span>
               </Button>
             </div>
           </>
         )}
       </div>
 
-      {/* Table - only this scrolls */}
-      <div className="rounded-lg border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {data.customers.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {search ? t("emptySearch") : t("empty")}
+          </div>
+        ) : (
+          data.customers.map((c) => (
+            <div
+              key={c.id}
+              className={`flex items-start gap-3 rounded-lg border bg-card p-3 ${
+                selected.has(c.id) ? "bg-muted/50" : ""
+              }`}
+            >
+              <Checkbox
+                className="mt-1 shrink-0"
+                checked={selected.has(c.id)}
+                onCheckedChange={() => toggleSelect(c.id)}
+              />
+              <button
+                type="button"
+                className="min-w-0 flex-1 text-left"
+                onClick={() => router.push(`/customers/${c.id}`)}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 flex-1 truncate font-medium">{c.name}</span>
+                  <span className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+                    <Car className="h-3 w-3" />
+                    {c._count.vehicles}
+                  </span>
+                </div>
+                {c.company && (
+                  <p className="truncate text-xs text-muted-foreground">{c.company}</p>
+                )}
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  {c.customerNumber && <span className="font-mono">{c.customerNumber}</span>}
+                  {c.phone && <span>{c.phone}</span>}
+                  {c.email && <span className="truncate">{c.email}</span>}
+                </div>
+              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="-mr-1 h-9 w-9 shrink-0"
+                    aria-label={t("openMenu")}
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setEditCustomer(c);
+                      setShowForm(true);
+                    }}
+                  >
+                    <Pencil className="mr-2 h-4 w-4" />
+                    {tc("buttons.edit")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-destructive"
+                    onClick={() => handleDelete(c.id, c.name)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {tc("buttons.delete")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Table (md and up) - only this scrolls */}
+      <div className="hidden rounded-lg border md:block">
         <TableContextMenuHint />
         <div className="overflow-auto max-h-[calc(100vh-220px)]">
         <Table className="table-fixed">

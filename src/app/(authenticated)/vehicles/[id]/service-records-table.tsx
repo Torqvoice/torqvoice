@@ -30,21 +30,20 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { DataTablePagination } from "@/components/data-table-pagination";
 import { typeColors, statusColors } from "@/lib/table-utils";
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { getWarrantyStatus, type WarrantyStatus } from "@/lib/warranty";
 import { effectiveInvoiceDate } from "@/lib/invoice-utils";
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
   Download,
   ExternalLink,
+  Gauge,
   Loader2,
   Paperclip,
   Plus,
   Search,
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -163,12 +162,6 @@ export function ServiceRecordsTable({
     commitNow: handleSearch,
   } = useDebouncedSearch(search, (term) => navigate({ search: term }));
 
-  const handlePageSizeChange = useCallback(
-    (newSize: string) => {
-      navigate({ pageSize: newSize, page: 1 });
-    },
-    [navigate]
-  );
 
   const handleExportPdf = useCallback(async () => {
     setIsExporting(true);
@@ -191,28 +184,27 @@ export function ServiceRecordsTable({
     }
   }, [vehicleId]);
 
-  const startItem = (page - 1) * pageSize + 1;
-  const endItem = Math.min(page * pageSize, total);
 
   return (
     <div className="space-y-4">
-      {/* Toolbar: Search + Filters + Add */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 items-center gap-2">
-          <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
-            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder={t("searchPlaceholder")}
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-9"
-            />
-          </form>
+      {/* Toolbar: Search + Filters + Add. Below md the actions collapse to
+          icon-only buttons so the row never wraps or clips on a phone. */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <form onSubmit={handleSearch} className="relative w-full sm:max-w-sm">
+          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder={t("searchPlaceholder")}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="h-9 pl-9"
+          />
+        </form>
+        <div className="flex items-center gap-2 sm:flex-1">
           <Select
             value={type || "all"}
             onValueChange={(v) => navigate({ type: v === "all" ? undefined : v })}
           >
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="h-9 w-[130px] shrink-0 sm:w-[140px]">
               <SelectValue placeholder="All types" />
             </SelectTrigger>
             <SelectContent>
@@ -223,33 +215,131 @@ export function ServiceRecordsTable({
               <SelectItem value="inspection">{t("inspection")}</SelectItem>
             </SelectContent>
           </Select>
-          {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-        </div>
-        <div className="flex items-center gap-2">
+          {isPending && (
+            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
+          )}
           <Button
             size="sm"
             variant="outline"
             onClick={handleExportPdf}
             disabled={isExporting || total === 0}
+            aria-label={t("exportServiceHistory")}
+            title={t("exportServiceHistory")}
+            className="ml-auto h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
           >
             {isExporting ? (
-              <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin md:mr-1 md:h-3.5 md:w-3.5" />
             ) : (
-              <Download className="mr-1 h-3.5 w-3.5" />
+              <Download className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
             )}
-            {t("exportServiceHistory")}
+            <span className="hidden md:inline">{t("exportServiceHistory")}</span>
           </Button>
-          <Button size="sm" asChild>
-            <Link href={`/vehicles/${vehicleId}/service/new`}>
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              {t("newWorkOrder")}
+          <Button asChild size="sm" className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3">
+            <Link
+              href={`/vehicles/${vehicleId}/service/new`}
+              aria-label={t("newWorkOrder")}
+              title={t("newWorkOrder")}
+            >
+              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{t("newWorkOrder")}</span>
             </Link>
           </Button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg border">
+
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {records.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {search || type !== "all" ? t("emptyFiltered") : t("empty")}
+          </div>
+        ) : (
+          records.map((record) => {
+            const displayTotal = record.totalAmount > 0 ? record.totalAmount : record.cost;
+            const warranty = getWarrantyStatus(
+              record.warrantyExpiresAt,
+              record.warrantyMileage,
+              record.mileage,
+              vehicleMileage,
+            );
+            return (
+              <button
+                key={record.id}
+                type="button"
+                onClick={() => {
+                  setNavigatingId(record.id);
+                  router.push(`/vehicles/${vehicleId}/service/${record.id}`);
+                }}
+                className={`w-full rounded-lg border bg-card p-3 text-left transition-opacity active:bg-muted/50 ${
+                  navigatingId === record.id ? "opacity-50" : ""
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{record.title}</p>
+                    {record.invoiceNumber && (
+                      <p className="font-mono text-xs text-muted-foreground">
+                        {record.invoiceNumber}
+                      </p>
+                    )}
+                  </div>
+                  <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold">
+                    {navigatingId === record.id && (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                    )}
+                    {formatCurrency(displayTotal, currencyCode)}
+                  </span>
+                </div>
+
+                {record.laborItems?.[0]?.description && (
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                    {record.laborItems[0].description.slice(0, 100)}
+                  </p>
+                )}
+
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  <Badge variant="outline" className={`text-xs ${typeColors[record.type] || ""}`}>
+                    {record.type}
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className={`text-xs ${statusColors[record.status] || ""}`}
+                  >
+                    {record.status}
+                  </Badge>
+                  {warranty !== "none" && <WarrantyBadge status={warranty} t={t} />}
+                </div>
+
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  <span className="font-mono">{formatDate(effectiveInvoiceDate(record))}</span>
+                  {record.mileage ? (
+                    <span className="inline-flex items-center gap-1">
+                      <Gauge className="h-3 w-3" />
+                      {record.mileage.toLocaleString()}
+                    </span>
+                  ) : null}
+                  {record.techName && (
+                    <span className="inline-flex min-w-0 items-center gap-1">
+                      <User className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{record.techName}</span>
+                    </span>
+                  )}
+                  {record._count.attachments > 0 && (
+                    <span className="inline-flex items-center gap-1">
+                      <Paperclip className="h-3 w-3" />
+                      {record._count.attachments}
+                    </span>
+                  )}
+                </div>
+              </button>
+            );
+          })
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-lg border md:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -369,72 +459,16 @@ export function ServiceRecordsTable({
       </div>
 
       {/* Pagination */}
-      {total > 0 && (
-        <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>
-              {t("showing", { start: startItem, end: endItem, total })}
-            </span>
-            <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
-            <span>{t("perPage")}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page <= 1}
-              onClick={() => navigate({ page: 1 })}
-              aria-label={t("firstPage")}
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page <= 1}
-              onClick={() => navigate({ page: page - 1 })}
-              aria-label={t("previousPage")}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="px-3 text-sm">
-              {t("page", { page, totalPages })}
-            </span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page >= totalPages}
-              onClick={() => navigate({ page: page + 1 })}
-              aria-label={t("nextPage")}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page >= totalPages}
-              onClick={() => navigate({ page: totalPages })}
-              aria-label={t("lastPage")}
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <DataTablePagination
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        totalPages={totalPages}
+        pageParam="page"
+        pageSizeParam="pageSize"
+        pageSizes={["5", "10", "20", "50"]}
+        onNavigate={navigate}
+      />
     </div>
   );
 }

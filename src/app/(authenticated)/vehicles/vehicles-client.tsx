@@ -268,7 +268,7 @@ export function VehiclesClient({
               placeholder={t('searchPlaceholder')}
               defaultValue={search}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-9"
+              className="h-9 pl-9"
             />
           </div>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -278,7 +278,7 @@ export function VehiclesClient({
             <Button
               variant={view === 'table' ? 'secondary' : 'ghost'}
               size="icon"
-              className="h-8 w-8 rounded-r-none"
+              className="h-9 w-9 rounded-r-none md:h-8 md:w-8"
               onClick={() => toggleView('table')}
               aria-label={t('viewTable')}
             >
@@ -287,7 +287,7 @@ export function VehiclesClient({
             <Button
               variant={view === 'grid' ? 'secondary' : 'ghost'}
               size="icon"
-              className="h-8 w-8 rounded-l-none lg:rounded-none border-l lg:border-x"
+              className="h-9 w-9 rounded-l-none border-l md:h-8 md:w-8 lg:rounded-none lg:border-x"
               onClick={() => toggleView('grid')}
               aria-label={t('viewGrid')}
             >
@@ -296,7 +296,7 @@ export function VehiclesClient({
             <Button
               variant={view === 'grid6' ? 'secondary' : 'ghost'}
               size="icon"
-              className="h-8 w-8 rounded-l-none hidden lg:inline-flex"
+              className="hidden h-9 w-9 rounded-l-none md:h-8 md:w-8 lg:inline-flex"
               onClick={() => toggleView('grid6')}
               aria-label={t('viewLargeGrid')}
             >
@@ -304,9 +304,15 @@ export function VehiclesClient({
             </Button>
           </div>
           {!isArchived && (
-            <Button size="sm" className="ml-auto" onClick={() => setShowForm(true)}>
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              {t('addVehicle')}
+            <Button
+              size="sm"
+              onClick={() => setShowForm(true)}
+              aria-label={t('addVehicle')}
+              title={t('addVehicle')}
+              className="ml-auto h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+            >
+              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{t('addVehicle')}</span>
             </Button>
           )}
         </div>
@@ -317,8 +323,89 @@ export function VehiclesClient({
           {search ? t('emptySearch') : isArchived ? t('emptyArchived') : t('empty')}
         </div>
       ) : view === 'table' ? (
-        /* Table view */
-        <div className="rounded-lg border">
+        <>
+        {/* Card list (phones + small tablets) */}
+        <div className="space-y-2 md:hidden">
+          {data.vehicles.map((v) => (
+            <div key={v.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
+              <button
+                type="button"
+                className="min-w-0 flex-1 text-left"
+                onClick={() => router.push(`/vehicles/${v.id}`)}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 flex-1 truncate font-medium">
+                    {v.year} {v.make} {v.model}
+                  </span>
+                  {v.licensePlate && (
+                    <span className="shrink-0 font-mono text-sm">{v.licensePlate}</span>
+                  )}
+                </div>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  {v.customer && <span className="truncate">{v.customer.name}</span>}
+                  <span className="font-mono">
+                    {new Intl.NumberFormat('en-US').format(v.mileage)}
+                  </span>
+                  <span>
+                    {t('table.services')}: {v._count.serviceRecords}
+                  </span>
+                </div>
+              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="-mr-1 h-9 w-9 shrink-0"
+                    aria-label={t('openMenu')}
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {!isArchived && (
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setEditVehicle(v)
+                        setShowForm(true)
+                      }}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {t('edit')}
+                    </DropdownMenuItem>
+                  )}
+                  {isArchived ? (
+                    <DropdownMenuItem
+                      onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
+                    >
+                      <ArchiveRestore className="mr-2 h-4 w-4" />
+                      {t('unarchive')}
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem
+                      onClick={() =>
+                        setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
+                      }
+                    >
+                      <Archive className="mr-2 h-4 w-4" />
+                      {t('archive')}
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem
+                    className="text-destructive"
+                    onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t('delete')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ))}
+        </div>
+
+        {/* Table (md and up) */}
+        <div className="hidden rounded-lg border md:block">
           <TableContextMenuHint />
           <Table className="table-fixed">
             <TableHeader>
@@ -485,6 +572,7 @@ export function VehiclesClient({
             </TableBody>
           </Table>
         </div>
+        </>
       ) : isPending ? (
         /* Grid skeleton */
         <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}>

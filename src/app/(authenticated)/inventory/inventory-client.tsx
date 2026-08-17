@@ -312,6 +312,30 @@ export function InventoryClient({
     }
   };
 
+  // An empty Low view is ambiguous on its own: it means either "nothing is
+  // running out" (good) or "nothing is being watched" (needs setup). Say which,
+  // and link to the fix. Shared by the card list and the table.
+  const emptyMessage = lowStockOnly ? (
+    hasAnyReorderPoint ? (
+      t('empty.noLowStock')
+    ) : (
+      <div className="space-y-2">
+        <p>{t('empty.noReorderPoints')}</p>
+        <Link
+          href="/settings/alerts"
+          className="inline-flex items-center gap-1 text-primary hover:underline"
+        >
+          {t('empty.configureReorderPoints')}
+          <ExternalLink className="h-3 w-3" />
+        </Link>
+      </div>
+    )
+  ) : search || category ? (
+    t('empty.noMatch')
+  ) : (
+    t('empty.noParts')
+  );
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
@@ -334,14 +358,14 @@ export function InventoryClient({
                 placeholder={t('searchPlaceholder')}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-9"
+                className="h-9 pl-9"
               />
             </form>
             <Select
               value={category || "all"}
               onValueChange={(v) => navigate({ category: v === "all" ? undefined : v })}
             >
-              <SelectTrigger className="w-[120px] sm:w-[150px]">
+              <SelectTrigger className="h-9 w-[120px] shrink-0 sm:w-[150px]">
                 <SelectValue placeholder={t('categoryPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
@@ -361,31 +385,60 @@ export function InventoryClient({
               variant={lowStockOnly ? "default" : "outline"}
               onClick={() => navigate({ lowStock: lowStockOnly ? undefined : "1" })}
               aria-pressed={lowStockOnly}
+              aria-label={t('table.low')}
+              title={t('table.low')}
+              className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
             >
-              <AlertTriangle className="mr-1 h-3.5 w-3.5" />
-              {t('table.low')}
+              <AlertTriangle className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{t('table.low')}</span>
             </Button>
             {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </div>
         )}
         <div className="flex items-center justify-between gap-2">
           {selected.size > 0 ? (
-            <Button size="sm" variant="destructive" onClick={handleBulkDelete} disabled={isBulkDeleting}>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={handleBulkDelete}
+              disabled={isBulkDeleting}
+              className="h-9 md:h-8"
+            >
               {isBulkDeleting ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Trash2 className="mr-1 h-3.5 w-3.5" />}
               {t('bulkDelete.deleteSelected', { count: selected.size })}
             </Button>
           ) : (
             <>
-              <Button size="sm" variant="outline" onClick={() => setShowScanner(true)}>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowScanner(true)}
+                aria-label={t('scanBarcode')}
+                title={t('scanBarcode')}
+                className="h-9 w-9 shrink-0 p-0 sm:w-auto sm:px-3 md:h-8"
+              >
                 <ScanBarcode className="h-3.5 w-3.5 sm:mr-1" />
                 <span className="hidden sm:inline">{t('scanBarcode')}</span>
               </Button>
               <div className="flex items-center gap-2">
-                <Button size="sm" variant="outline" onClick={() => setShowMarkup(true)}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowMarkup(true)}
+                  aria-label={t('applyMarkup')}
+                  title={t('applyMarkup')}
+                  className="h-9 w-9 shrink-0 p-0 sm:w-auto sm:px-3 md:h-8"
+                >
                   <Percent className="h-3.5 w-3.5 sm:mr-1" />
                   <span className="hidden sm:inline">{t('applyMarkup')}</span>
                 </Button>
-                <Button size="sm" onClick={() => setShowForm(true)}>
+                <Button
+                  size="sm"
+                  onClick={() => setShowForm(true)}
+                  aria-label={t('addPart')}
+                  title={t('addPart')}
+                  className="h-9 w-9 shrink-0 p-0 sm:w-auto sm:px-3 md:h-8"
+                >
                   <Plus className="h-3.5 w-3.5 sm:mr-1" />
                   <span className="hidden sm:inline">{t('addPart')}</span>
                 </Button>
@@ -395,8 +448,108 @@ export function InventoryClient({
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {data.parts.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {emptyMessage}
+          </div>
+        ) : (
+          data.parts.map((part) => {
+            const isLow = isLowStock(part, lowStockDefault);
+            const effective = part.sellPrice > 0 ? part.sellPrice : part.unitCost;
+            const thumb = part.gallery[0]?.url || part.imageUrl;
+            return (
+              <div key={part.id} className="flex items-start gap-3 rounded-lg border bg-card p-3">
+                <Checkbox
+                  className="mt-1 shrink-0"
+                  checked={selected.has(part.id)}
+                  onCheckedChange={() => toggleSelect(part.id)}
+                />
+                <button
+                  type="button"
+                  className="flex min-w-0 flex-1 items-start gap-3 text-left"
+                  onClick={() => {
+                    setEditPart(part);
+                    setShowForm(true);
+                  }}
+                >
+                  {thumb && (
+                    <img
+                      src={thumb}
+                      alt={part.name}
+                      className="h-10 w-10 shrink-0 rounded object-cover"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 flex-1 truncate font-medium">{part.name}</span>
+                      <span className="shrink-0 font-semibold">
+                        {formatCurrency(effective, currencyCode)}
+                      </span>
+                    </div>
+                    {part.partNumber && (
+                      <p className="font-mono text-xs text-muted-foreground">{part.partNumber}</p>
+                    )}
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                      <span className="inline-flex items-center gap-1.5">
+                        {t('table.inStock')}: <span className="font-medium text-foreground">{part.quantity}</span>
+                        {isLow && (
+                          <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
+                            {t('table.low')}
+                          </Badge>
+                        )}
+                      </span>
+                      {part.category && <span className="truncate">{part.category}</span>}
+                      {part.location && <span className="truncate">{part.location}</span>}
+                      {part.supplier && <span className="truncate">{part.supplier}</span>}
+                    </div>
+                  </div>
+                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="-mr-1 h-9 w-9 shrink-0"
+                      aria-label={t('openMenu')}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setEditPart(part);
+                        setShowForm(true);
+                      }}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {t('actions.edit')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/inventory/${part.id}`}>
+                        <History className="mr-2 h-4 w-4" />
+                        {t('actions.details')}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => handleDelete(part.id, part.name)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t('actions.delete')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-lg border md:block">
         <TableContextMenuHint />
         <Table>
           <TableHeader>
@@ -462,29 +615,7 @@ export function InventoryClient({
             {data.parts.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={11} className="h-32 text-center text-muted-foreground">
-                  {lowStockOnly ? (
-                    // An empty Low view is ambiguous on its own: it means either
-                    // "nothing is running out" (good) or "nothing is being
-                    // watched" (needs setup). Say which, and link to the fix.
-                    hasAnyReorderPoint ? (
-                      t('empty.noLowStock')
-                    ) : (
-                      <div className="space-y-2">
-                        <p>{t('empty.noReorderPoints')}</p>
-                        <Link
-                          href="/settings/alerts"
-                          className="inline-flex items-center gap-1 text-primary hover:underline"
-                        >
-                          {t('empty.configureReorderPoints')}
-                          <ExternalLink className="h-3 w-3" />
-                        </Link>
-                      </div>
-                    )
-                  ) : search || category ? (
-                    t('empty.noMatch')
-                  ) : (
-                    t('empty.noParts')
-                  )}
+                  {emptyMessage}
                 </TableCell>
               </TableRow>
             ) : (

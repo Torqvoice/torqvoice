@@ -4,13 +4,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useTransition } from "react";
 import { useFormatDate } from "@/lib/use-format-date";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { DataTablePagination } from "@/components/data-table-pagination";
 import {
   Table,
   TableBody,
@@ -32,10 +26,6 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
   Loader2,
   MoreVertical,
   Pin,
@@ -114,15 +104,7 @@ export function NotesTable({
     [router, createUrl]
   );
 
-  const handlePageSizeChange = useCallback(
-    (newSize: string) => {
-      navigate({ notesPageSize: newSize, notesPage: 1 });
-    },
-    [navigate]
-  );
 
-  const startItem = (page - 1) * pageSize + 1;
-  const endItem = Math.min(page * pageSize, total);
 
   return (
     <div className="space-y-4">
@@ -130,15 +112,80 @@ export function NotesTable({
       <div className="flex items-center justify-between">
         {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         <div className="ml-auto">
-          <Button size="sm" onClick={onAddNote}>
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            {t("addNote")}
+          <Button
+            size="sm"
+            onClick={onAddNote}
+            aria-label={t("addNote")}
+            title={t("addNote")}
+            className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+          >
+            <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+            <span className="hidden md:inline">{t("addNote")}</span>
           </Button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {records.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {t("empty")}
+          </div>
+        ) : (
+          records.map((n) => (
+            <div key={n.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
+              <button
+                type="button"
+                className="min-w-0 flex-1 text-left"
+                onClick={() => onSelectNote(n)}
+              >
+                <div className="flex items-center gap-1.5">
+                  {n.isPinned && <Pin className="h-3.5 w-3.5 shrink-0 text-primary" />}
+                  <span className="truncate font-medium">{n.title}</span>
+                </div>
+                <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                  {n.content.replace(/<[^>]*>/g, "")}
+                </p>
+                <p className="mt-1 font-mono text-xs text-muted-foreground">
+                  {formatDate(new Date(n.createdAt))}
+                </p>
+              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="-mr-1 h-9 w-9 shrink-0"
+                    aria-label={t("openMenu")}
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => onTogglePin(n.id)}>
+                    {n.isPinned ? (
+                      <PinOff className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Pin className="mr-2 h-4 w-4" />
+                    )}
+                    {n.isPinned ? t("unpin") : t("pin")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-destructive"
+                    onClick={() => onDeleteNote(n.id)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t("delete")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-lg border md:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -226,72 +273,16 @@ export function NotesTable({
       </div>
 
       {/* Pagination */}
-      {total > 0 && (
-        <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>
-              {t("showing", { start: startItem, end: endItem, total })}
-            </span>
-            <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
-            <span>{t("perPage")}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page <= 1}
-              onClick={() => navigate({ notesPage: 1 })}
-              aria-label={t("firstPage")}
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page <= 1}
-              onClick={() => navigate({ notesPage: page - 1 })}
-              aria-label={t("previousPage")}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="px-3 text-sm">
-              {t("page", { page, totalPages })}
-            </span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page >= totalPages}
-              onClick={() => navigate({ notesPage: page + 1 })}
-              aria-label={t("nextPage")}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page >= totalPages}
-              onClick={() => navigate({ notesPage: totalPages })}
-              aria-label={t("lastPage")}
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <DataTablePagination
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        totalPages={totalPages}
+        pageParam="notesPage"
+        pageSizeParam="notesPageSize"
+        pageSizes={["5", "10", "20", "50"]}
+        onNavigate={navigate}
+      />
     </div>
   );
 }
