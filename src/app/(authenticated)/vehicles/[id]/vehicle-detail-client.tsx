@@ -1,5 +1,6 @@
 'use client'
 
+import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useTransition, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -1280,7 +1281,7 @@ export function VehicleDetailClient({
                     <TableRow
                       key={q.id}
                       className="cursor-pointer"
-                      onClick={() => router.push(`/quotes/${q.id}`)}
+                      {...interactiveRow(() => router.push(`/quotes/${q.id}`))}
                     >
                       <TableCell className="font-mono text-xs text-muted-foreground">
                         {q.quoteNumber || '-'}
@@ -1384,7 +1385,7 @@ export function VehicleDetailClient({
                     <TableRow
                       key={insp.id}
                       className="cursor-pointer"
-                      onClick={() => router.push(`/inspections/${insp.id}`)}
+                      {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
                     >
                       <TableCell className="font-medium">{insp.template.name}</TableCell>
                       <TableCell>

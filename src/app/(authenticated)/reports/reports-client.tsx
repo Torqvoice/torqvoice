@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -1975,7 +1976,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                             <TableRow
                               key={row.id}
                               className="cursor-pointer hover:bg-muted/50"
-                              onClick={() => router.push(`/vehicles/${vehicleData.vehicleInfo.id}/service/${row.id}`)}
+                              {...interactiveRow(() => router.push(`/vehicles/${vehicleData.vehicleInfo.id}/service/${row.id}`))}
                             >
                               <TableCell className="text-sm text-muted-foreground">{row.date}</TableCell>
                               <TableCell className="text-sm font-medium">{row.title}</TableCell>

@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from "@/lib/interactive-row";
 import { useState, useRef, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -205,7 +206,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers, defaultCus
           <div className="space-y-2">
             <Label>{t("photo")}</Label>
             <div
-              onClick={() => fileRef.current?.click()}
+              {...interactiveRow(() => fileRef.current?.click())}
               className="group relative flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-border bg-muted/30 transition-colors hover:border-primary/50 hover:bg-muted/50"
             >
               {preview ? (

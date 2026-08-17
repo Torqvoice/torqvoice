@@ -1,5 +1,6 @@
 'use client'
 
+import { interactiveRow } from '@/lib/interactive-row'
 import { useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -324,7 +325,7 @@ export function MyActiveJobs({
                   <div className="flex items-center justify-between">
                     <div
                       className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
-                      onClick={() => router.push(job.vehicleId ? `/vehicles/${job.vehicleId}/service/${job.id}` : `/sales/${job.id}`)}
+                      {...interactiveRow(() => router.push(job.vehicleId ? `/vehicles/${job.vehicleId}/service/${job.id}` : `/sales/${job.id}`))}
                     >
                       <div
                         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${statusColor}`}

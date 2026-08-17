@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from "@/lib/interactive-row";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -152,7 +153,7 @@ export function CustomTableCard({
                 <TableRow
                   key={row.id}
                   className="cursor-pointer"
-                  onClick={() => router.push(row.href)}
+                  {...interactiveRow(() => router.push(row.href))}
                 >
                   {columns.map((col) => (
                     <TableCell key={col} className="truncate text-sm">

@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from "@/lib/interactive-row";
 import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -251,7 +252,7 @@ export function ServiceDocumentsManager({
                   handleUpload(e.dataTransfer.files, "diagnostic");
               }}
               onDragOver={(e) => e.preventDefault()}
-              onClick={() => reportInputRef.current?.click()}
+              {...interactiveRow(() => reportInputRef.current?.click())}
               className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
             >
               <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />
@@ -311,7 +312,7 @@ export function ServiceDocumentsManager({
                   handleUpload(e.dataTransfer.files, "document");
               }}
               onDragOver={(e) => e.preventDefault()}
-              onClick={() => documentInputRef.current?.click()}
+              {...interactiveRow(() => documentInputRef.current?.click())}
               className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
             >
               <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />

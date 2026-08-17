@@ -328,6 +328,16 @@
   }
 }
 
+/* Keyboard-focusable rows (see src/lib/interactive-row.ts). Inset outline so
+   the ring survives overflow-hidden card and table corners. */
+[data-row-interactive] {
+  cursor: pointer;
+}
+[data-row-interactive]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
 /* Hide scrollbar utility */
 .scrollbar-none {
   scrollbar-width: none;

@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -592,7 +593,7 @@ export function DashboardClient({
                     <div
                       key={v.vehicleId}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(`/vehicles/${v.vehicleId}`)}
+                      {...interactiveRow(() => router.push(`/vehicles/${v.vehicleId}`))}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
@@ -661,7 +662,7 @@ export function DashboardClient({
                     <div
                       key={v.vehicleId}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(`/vehicles/${v.vehicleId}`)}
+                      {...interactiveRow(() => router.push(`/vehicles/${v.vehicleId}`))}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
@@ -734,7 +735,7 @@ export function DashboardClient({
                     <div
                       key={r.id}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(r.vehicle ? `/vehicles/${r.vehicle.id}?tab=reminders` : "/reminders")}
+                      {...interactiveRow(() => router.push(r.vehicle ? `/vehicles/${r.vehicle.id}?tab=reminders` : "/reminders"))}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
@@ -808,7 +809,7 @@ export function DashboardClient({
                   <div
                     key={thread.customerId}
                     className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => router.push(`/messages?customerId=${thread.customerId}`)}
+                    {...interactiveRow(() => router.push(`/messages?customerId=${thread.customerId}`))}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -848,7 +849,7 @@ export function DashboardClient({
                   <div
                     key={n.id}
                     className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => router.push(n.entityUrl)}
+                    {...interactiveRow(() => router.push(n.entityUrl))}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${n.read ? "bg-muted" : "bg-primary/10"}`}>
@@ -901,7 +902,7 @@ export function DashboardClient({
                     <div
                       key={insp.id}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(`/inspections/${insp.id}`)}
+                      {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/10">
@@ -942,7 +943,7 @@ export function DashboardClient({
                     <div
                       key={insp.id}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(`/inspections/${insp.id}`)}
+                      {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10">
@@ -1012,7 +1013,7 @@ export function DashboardClient({
                     >
                       <div
                         className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
-                        onClick={() => router.push(`/inspections/${req.inspection.id}`)}
+                        {...interactiveRow(() => router.push(`/inspections/${req.inspection.id}`))}
                       >
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                           <FileText className="h-4 w-4 text-primary" />
@@ -1128,7 +1129,7 @@ export function DashboardClient({
                   >
                     <div
                       className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
-                      onClick={() => router.push(`/quotes/${resp.id}`)}
+                      {...interactiveRow(() => router.push(`/quotes/${resp.id}`))}
                     >
                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
                         resp.status === "accepted" ? "bg-emerald-500/10" : "bg-orange-500/10"
@@ -1312,10 +1313,10 @@ export function DashboardClient({
                         <ContextMenuTrigger asChild>
                         <TableRow
                           className={`cursor-pointer transition-opacity ${navigatingId === s.id ? "opacity-50" : ""}`}
-                          onClick={() => {
+                          {...interactiveRow(() => {
                             setNavigatingId(s.id);
                             router.push(recordHref);
-                          }}
+                          })}
                         >
                           <TableCell className="font-mono text-xs">
                             {formatDate(new Date(s.startDateTime ?? s.serviceDate))}
@@ -1484,10 +1485,10 @@ export function DashboardClient({
                       <ContextMenuTrigger asChild>
                       <TableRow
                         className={`cursor-pointer transition-opacity ${navigatingId === s.id ? "opacity-50" : ""}`}
-                        onClick={() => {
+                        {...interactiveRow(() => {
                           setNavigatingId(s.id);
                           router.push(recordHref);
-                        }}
+                        })}
                       >
                         <TableCell>
                           {s.vehicle ? (
@@ -1687,7 +1688,7 @@ export function DashboardClient({
                       <ContextMenuTrigger asChild>
                       <TableRow
                         className="cursor-pointer"
-                        onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
+                        {...interactiveRow(() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`))}
                       >
                         <TableCell className="py-1.5">
                           <Badge

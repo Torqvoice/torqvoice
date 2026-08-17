@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
 import { useState, useCallback, useTransition } from "react";
@@ -417,10 +418,10 @@ export function WorkOrdersClient({
                   <ContextMenuTrigger asChild>
                   <TableRow
                     className={`cursor-pointer transition-opacity ${navigatingId === r.id ? "opacity-50" : ""}`}
-                    onClick={() => {
+                    {...interactiveRow(() => {
                       setNavigatingId(r.id);
                       router.push(recordHref);
-                    }}
+                    })}
                   >
                     <TableCell className="hidden sm:table-cell font-mono text-xs text-muted-foreground">
                       {r.invoiceNumber || "-"}

@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
 import { useState, useCallback, useTransition } from "react";
@@ -286,7 +287,7 @@ export function LaborPresetsClient({
                 <ContextMenuTrigger asChild>
                 <TableRow
                   className="cursor-pointer"
-                  onClick={() => handleEdit(preset.id)}
+                  {...interactiveRow(() => handleEdit(preset.id))}
                 >
                   <TableCell className="font-medium">{preset.name}</TableCell>
                   <TableCell className="hidden sm:table-cell text-muted-foreground">

@@ -1,5 +1,6 @@
 'use client'
 
+import { interactiveRow } from '@/lib/interactive-row'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -221,7 +222,7 @@ export function CustomFieldsManager({
               <div
                 key={field.id}
                 className="flex items-center gap-3 px-3 py-2 hover:bg-muted/50 transition-colors cursor-pointer"
-                onClick={() => openEdit(field)}
+                {...interactiveRow(() => openEdit(field))}
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">

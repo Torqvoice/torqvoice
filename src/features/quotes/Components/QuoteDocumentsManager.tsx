@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from "@/lib/interactive-row";
 import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -191,7 +192,7 @@ export function QuoteDocumentsManager({
                 handleUpload(e.dataTransfer.files);
             }}
             onDragOver={(e) => e.preventDefault()}
-            onClick={() => inputRef.current?.click()}
+            {...interactiveRow(() => inputRef.current?.click())}
             className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
           >
             <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />

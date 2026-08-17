@@ -1,6 +1,7 @@
 "use client";
 
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import { useCallback, useTransition } from "react";
 import Link from "next/link";
@@ -434,7 +435,7 @@ export default function BillingClient({
                   <TableRow
                     key={record.id}
                     className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleRowClick(record)}
+                    {...interactiveRow(() => handleRowClick(record))}
                   >
                     <TableCell className="truncate font-medium">
                       {record.invoiceNumber || "\u2014"}
