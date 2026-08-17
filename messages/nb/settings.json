@@ -103,6 +103,10 @@
         "title": "Data",
         "description": "Eksporter og importer sikkerhetskopi"
       },
+      "install": {
+        "title": "Installer app",
+        "description": "Legg Torqvoice til på denne enheten"
+      },
       "license": {
         "title": "Lisens",
         "description": "White-label-lisens"
@@ -1441,5 +1445,14 @@
     "contactTitle": "Kontakt support",
     "contactHint": "Åpne supportskjemaet med en gang.",
     "contactAction": "Åpne skjema"
+  },
+  "install": {
+    "title": "Installer Torqvoice",
+    "description": "Installer Torqvoice på denne enheten for å åpne den fra hjem-skjermen, i fullskjerm og uten nettleserlinjen. Det er samme app og samme data.",
+    "installed": "Torqvoice er installert på denne enheten.",
+    "iosHint": "I Safari, trykk Del-knappen og velg «Legg til på Hjem-skjerm».",
+    "unavailable": "Denne nettleseren har ikke tilbudt installasjon. Åpne nettlesermenyen og se etter «Installer app» eller «Legg til på Hjem-skjerm».",
+    "bannerHidden": "Installasjonsbanneret er skjult på denne enheten.",
+    "showBanner": "Vis banner igjen"
   }
 }

@@ -103,6 +103,10 @@
         "title": "Daten",
         "description": "Export & Import-Backup"
       },
+      "install": {
+        "title": "App installieren",
+        "description": "Torqvoice auf diesem Gerät hinzufügen"
+      },
       "license": {
         "title": "Lizenz",
         "description": "White-Label-Lizenz"
@@ -1441,5 +1445,14 @@
     "contactTitle": "Support kontaktieren",
     "contactHint": "Öffnet das Supportformular direkt.",
     "contactAction": "Formular öffnen"
+  },
+  "install": {
+    "title": "Torqvoice installieren",
+    "description": "Installieren Sie Torqvoice auf diesem Gerät, um es im Vollbild vom Home-Bildschirm aus zu öffnen, ohne Browserleiste. Es bleibt dieselbe App mit denselben Daten.",
+    "installed": "Torqvoice ist auf diesem Gerät installiert.",
+    "iosHint": "Tippen Sie in Safari auf Teilen und dann auf „Zum Home-Bildschirm“.",
+    "unavailable": "Dieser Browser hat keine Installation angeboten. Öffnen Sie das Browsermenü und suchen Sie nach „App installieren“ oder „Zum Home-Bildschirm“.",
+    "bannerHidden": "Das Installations-Banner ist auf diesem Gerät ausgeblendet.",
+    "showBanner": "Banner wieder anzeigen"
   }
 }

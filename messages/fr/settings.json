@@ -103,6 +103,10 @@
         "title": "Données",
         "description": "Exporter et importer une sauvegarde"
       },
+      "install": {
+        "title": "Installer l'application",
+        "description": "Ajoutez Torqvoice à cet appareil"
+      },
       "license": {
         "title": "Licence",
         "description": "Licence marque blanche"
@@ -1441,5 +1445,14 @@
     "contactTitle": "Contacter l'assistance",
     "contactHint": "Ouvrir directement le formulaire d'assistance.",
     "contactAction": "Ouvrir le formulaire"
+  },
+  "install": {
+    "title": "Installer Torqvoice",
+    "description": "Installez Torqvoice sur cet appareil pour l'ouvrir depuis l'écran d'accueil, en plein écran et sans la barre du navigateur. C'est la même application et les mêmes données.",
+    "installed": "Torqvoice est installée sur cet appareil.",
+    "iosHint": "Dans Safari, touchez le bouton Partager, puis « Sur l'écran d'accueil ».",
+    "unavailable": "Ce navigateur n'a pas proposé d'installation. Ouvrez le menu du navigateur et cherchez « Installer l'application » ou « Sur l'écran d'accueil ».",
+    "bannerHidden": "La bannière d'installation est masquée sur cet appareil.",
+    "showBanner": "Afficher à nouveau la bannière"
   }
 }

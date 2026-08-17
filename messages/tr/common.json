@@ -75,6 +75,7 @@
     "enterManually": "Elle gir",
     "enterBarcode": "Barkod girin…",
     "scanHint": "Kamerayı bir barkoda doğrultun ya da elle girin",
-    "iosInstallHint": "Paylaş > Ana Ekrana Ekle'ye dokunun"
+    "iosInstallHint": "Paylaş > Ana Ekrana Ekle'ye dokunun",
+    "installDescription": "Hızlı erişim için ana ekranınıza ekleyin"
   }
 }
