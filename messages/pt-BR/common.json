@@ -75,6 +75,7 @@
     "enterManually": "Digitar manualmente",
     "enterBarcode": "Digitar código de barras…",
     "scanHint": "Aponte a câmera para um código de barras ou digite-o manualmente",
-    "iosInstallHint": "Toque em Compartilhar > Adicionar à Tela de Início"
+    "iosInstallHint": "Toque em Compartilhar > Adicionar à Tela de Início",
+    "installDescription": "Adicione à tela de início para acesso rápido"
   }
 }

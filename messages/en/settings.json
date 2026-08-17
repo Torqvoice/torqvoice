@@ -103,6 +103,10 @@
         "title": "Data",
         "description": "Export & import backup"
       },
+      "install": {
+        "title": "Install app",
+        "description": "Add Torqvoice to this device"
+      },
       "license": {
         "title": "License",
         "description": "White-label license"
@@ -1441,5 +1445,14 @@
     "contactTitle": "Contact support",
     "contactHint": "Open the support form straight away.",
     "contactAction": "Open form"
+  },
+  "install": {
+    "title": "Install Torqvoice",
+    "description": "Install Torqvoice on this device to open it from the home screen, full screen and without the browser bar. It stays the same app and the same data.",
+    "installed": "Torqvoice is installed on this device.",
+    "iosHint": "In Safari, tap the Share button, then \"Add to Home Screen\".",
+    "unavailable": "This browser has not offered an install prompt. Open the browser menu and look for \"Install app\" or \"Add to Home Screen\".",
+    "bannerHidden": "The install banner is hidden on this device.",
+    "showBanner": "Show banner again"
   }
 }

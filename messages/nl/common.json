@@ -75,6 +75,7 @@
     "enterManually": "Handmatig invoeren",
     "enterBarcode": "Barcode invoeren…",
     "scanHint": "Richt uw camera op een barcode of voer hem handmatig in",
-    "iosInstallHint": "Tik op Deel > Zet op beginscherm"
+    "iosInstallHint": "Tik op Deel > Zet op beginscherm",
+    "installDescription": "Zet de app op je beginscherm voor snelle toegang"
   }
 }

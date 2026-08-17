@@ -103,6 +103,10 @@
         "title": "Veri",
         "description": "Dışa & içe aktarma yedeği"
       },
+      "install": {
+        "title": "Uygulamayı yükle",
+        "description": "Torqvoice'i bu cihaza ekleyin"
+      },
       "license": {
         "title": "Lisans",
         "description": "Beyaz etiket lisansı"
@@ -1441,5 +1445,14 @@
     "contactTitle": "Destekle iletişime geç",
     "contactHint": "Destek formunu hemen açın.",
     "contactAction": "Formu aç"
+  },
+  "install": {
+    "title": "Torqvoice'i yükle",
+    "description": "Torqvoice'i bu cihaza yükleyin; ana ekrandan, tam ekran ve tarayıcı çubuğu olmadan açılsın. Aynı uygulama ve aynı veriler kalır.",
+    "installed": "Torqvoice bu cihaza yüklü.",
+    "iosHint": "Safari'de Paylaş düğmesine, ardından \"Ana Ekrana Ekle\" seçeneğine dokunun.",
+    "unavailable": "Bu tarayıcı yükleme önermedi. Tarayıcı menüsünü açın ve \"Uygulamayı yükle\" ya da \"Ana Ekrana Ekle\" seçeneğini arayın.",
+    "bannerHidden": "Yükleme başlığı bu cihazda gizli.",
+    "showBanner": "Başlığı tekrar göster"
   }
 }

@@ -103,6 +103,10 @@
         "title": "Dane",
         "description": "Eksport i import kopii zapasowej"
       },
+      "install": {
+        "title": "Zainstaluj aplikację",
+        "description": "Dodaj Torqvoice na tym urządzeniu"
+      },
       "license": {
         "title": "Licencja",
         "description": "Licencja white-label"
@@ -1441,5 +1445,14 @@
     "contactTitle": "Skontaktuj się z pomocą",
     "contactHint": "Otwórz formularz pomocy od razu.",
     "contactAction": "Otwórz formularz"
+  },
+  "install": {
+    "title": "Zainstaluj Torqvoice",
+    "description": "Zainstaluj Torqvoice na tym urządzeniu, aby otwierać ją z ekranu głównego, na pełnym ekranie i bez paska przeglądarki. To ta sama aplikacja i te same dane.",
+    "installed": "Torqvoice jest zainstalowana na tym urządzeniu.",
+    "iosHint": "W Safari dotknij przycisku Udostępnij, a następnie „Do ekranu początkowego”.",
+    "unavailable": "Ta przeglądarka nie zaproponowała instalacji. Otwórz menu przeglądarki i poszukaj „Zainstaluj aplikację” lub „Dodaj do ekranu głównego”.",
+    "bannerHidden": "Baner instalacji jest ukryty na tym urządzeniu.",
+    "showBanner": "Pokaż baner ponownie"
   }
 }

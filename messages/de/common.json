@@ -75,6 +75,7 @@
     "enterManually": "Manuell eingeben",
     "enterBarcode": "Barcode eingeben…",
     "scanHint": "Richten Sie die Kamera auf einen Barcode oder geben Sie ihn manuell ein",
-    "iosInstallHint": "Auf Teilen > Zum Home-Bildschirm tippen"
+    "iosInstallHint": "Auf Teilen > Zum Home-Bildschirm tippen",
+    "installDescription": "Zum Home-Bildschirm hinzufügen für schnellen Zugriff"
   }
 }

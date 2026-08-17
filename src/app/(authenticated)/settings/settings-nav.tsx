@@ -18,6 +18,7 @@ import {
   CalendarClock,
   CreditCard,
   Database,
+  Download,
   FileText,
   Gauge,
   Globe,
@@ -111,6 +112,7 @@ const settingsCategories: SettingsCategory[] = [
     key: 'system',
     items: [
       { key: 'data', href: '/settings/data', icon: Database },
+      { key: 'install', href: '/settings/install', icon: Download },
       { key: 'license', href: '/settings/license', icon: Key, selfHostedOnly: true },
       { key: 'about', href: '/settings/about', icon: Info },
     ],

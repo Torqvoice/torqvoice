@@ -103,6 +103,10 @@
         "title": "Gegevens",
         "description": "Exporteer en importeer back-up"
       },
+      "install": {
+        "title": "App installeren",
+        "description": "Voeg Torqvoice toe aan dit apparaat"
+      },
       "license": {
         "title": "Licentie",
         "description": "White-label licentie"
@@ -1441,5 +1445,14 @@
     "contactTitle": "Contact met support",
     "contactHint": "Open het supportformulier meteen.",
     "contactAction": "Formulier openen"
+  },
+  "install": {
+    "title": "Torqvoice installeren",
+    "description": "Installeer Torqvoice op dit apparaat om de app vanaf het beginscherm te openen, schermvullend en zonder browserbalk. Het blijft dezelfde app met dezelfde gegevens.",
+    "installed": "Torqvoice is op dit apparaat geïnstalleerd.",
+    "iosHint": "Tik in Safari op Deel en daarna op 'Zet op beginscherm'.",
+    "unavailable": "Deze browser heeft geen installatie aangeboden. Open het browsermenu en zoek naar 'App installeren' of 'Zet op beginscherm'.",
+    "bannerHidden": "De installatiebanner is verborgen op dit apparaat.",
+    "showBanner": "Banner weer tonen"
   }
 }

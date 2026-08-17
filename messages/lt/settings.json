@@ -103,6 +103,10 @@
         "title": "Duomenys",
         "description": "Eksportas ir importas atsarginei kopijai"
       },
+      "install": {
+        "title": "Įdiegti programą",
+        "description": "Pridėkite „Torqvoice“ į šį įrenginį"
+      },
       "license": {
         "title": "Licencija",
         "description": "\"White-label\" licencija"
@@ -1441,5 +1445,14 @@
     "contactTitle": "Susisiekti su pagalba",
     "contactHint": "Iš karto atidaryti pagalbos formą.",
     "contactAction": "Atidaryti formą"
+  },
+  "install": {
+    "title": "Įdiegti „Torqvoice“",
+    "description": "Įdiekite „Torqvoice“ šiame įrenginyje, kad atidarytumėte ją iš pradžios ekrano visame ekrane ir be naršyklės juostos. Tai ta pati programa ir tie patys duomenys.",
+    "installed": "„Torqvoice“ įdiegta šiame įrenginyje.",
+    "iosHint": "„Safari“ palieskite bendrinimo mygtuką, tada „Į pradžios ekraną“.",
+    "unavailable": "Ši naršyklė nepasiūlė įdiegimo. Atidarykite naršyklės meniu ir ieškokite „Įdiegti programą“ arba „Į pradžios ekraną“.",
+    "bannerHidden": "Įdiegimo juosta šiame įrenginyje paslėpta.",
+    "showBanner": "Vėl rodyti juostą"
   }
 }

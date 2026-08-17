@@ -103,6 +103,10 @@
         "title": "Datos",
         "description": "Exportar e importar respaldo"
       },
+      "install": {
+        "title": "Instalar app",
+        "description": "Añade Torqvoice a este dispositivo"
+      },
       "license": {
         "title": "Licencia",
         "description": "Licencia marca blanca"
@@ -1441,5 +1445,14 @@
     "contactTitle": "Contactar con soporte",
     "contactHint": "Abrir el formulario de soporte directamente.",
     "contactAction": "Abrir formulario"
+  },
+  "install": {
+    "title": "Instalar Torqvoice",
+    "description": "Instala Torqvoice en este dispositivo para abrirlo desde la pantalla de inicio, a pantalla completa y sin la barra del navegador. Es la misma app y los mismos datos.",
+    "installed": "Torqvoice está instalada en este dispositivo.",
+    "iosHint": "En Safari, toca el botón Compartir y luego «Añadir a pantalla de inicio».",
+    "unavailable": "Este navegador no ha ofrecido la instalación. Abre el menú del navegador y busca «Instalar app» o «Añadir a pantalla de inicio».",
+    "bannerHidden": "El aviso de instalación está oculto en este dispositivo.",
+    "showBanner": "Mostrar el aviso de nuevo"
   }
 }

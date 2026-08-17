@@ -75,6 +75,7 @@
     "enterManually": "Įvesti ranka",
     "enterBarcode": "Įveskite brūkšninį kodą…",
     "scanHint": "Nukreipkite kamerą į brūkšninį kodą arba įveskite jį ranka",
-    "iosInstallHint": "Palieskite Bendrinti > Įtraukti į pradžios ekraną"
+    "iosInstallHint": "Palieskite Bendrinti > Įtraukti į pradžios ekraną",
+    "installDescription": "Įtraukite į pradžios ekraną, kad pasiektumėte greičiau"
   }
 }
