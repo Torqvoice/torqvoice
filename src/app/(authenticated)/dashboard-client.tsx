@@ -411,14 +411,14 @@ export function DashboardClient({
     <div className="space-y-4">
       {/* Quick stats row */}
       <div className={`grid grid-cols-2 gap-2 ${stats.isAdmin ? (stats.lowStockParts > 0 ? "sm:grid-cols-5" : "sm:grid-cols-4") : "sm:grid-cols-2"}`}>
-        <Link href="/work-orders?status=active" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+        <Link href="/work-orders?status=active" className="rounded-lg border shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
           <div className="flex items-center justify-between">
             <span className="text-[11px] text-muted-foreground">{t("stats.activeJobs")}</span>
             <ClipboardList className="h-3.5 w-3.5 text-muted-foreground/50" />
           </div>
           <p className="text-lg font-bold">{stats.activeJobs}</p>
         </Link>
-        <Link href="/work-orders?status=pending" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+        <Link href="/work-orders?status=pending" className="rounded-lg border shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
           <div className="flex items-center justify-between">
             <span className="text-[11px] text-muted-foreground">{t("stats.pending")}</span>
             <Clock className="h-3.5 w-3.5 text-muted-foreground/50" />
@@ -426,7 +426,7 @@ export function DashboardClient({
           <p className="text-lg font-bold">{stats.pendingJobs}</p>
         </Link>
         {stats.isAdmin && (
-          <Link href="/inventory" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+          <Link href="/inventory" className="rounded-lg border shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-muted-foreground">{t("stats.totalParts")}</span>
               <Settings className="h-3.5 w-3.5 text-muted-foreground/50" />
@@ -437,7 +437,7 @@ export function DashboardClient({
         {stats.isAdmin && stats.lowStockParts > 0 && (
           <Link
             href="/inventory?lowStock=1"
-            className="rounded-lg border-0 bg-amber-50 px-3 py-2 shadow-sm transition-colors hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/60"
+            className="rounded-lg border border-amber-500/30 bg-amber-50 px-3 py-2 shadow-sm transition-colors hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/60"
           >
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-amber-700 dark:text-amber-500">{t("stats.lowStock")}</span>
@@ -447,7 +447,7 @@ export function DashboardClient({
           </Link>
         )}
         {stats.isAdmin && (
-          <Link href="/customers" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+          <Link href="/customers" className="rounded-lg border shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-muted-foreground">{t("stats.totalCustomers")}</span>
               <Users className="h-3.5 w-3.5 text-muted-foreground/50" />
@@ -542,7 +542,7 @@ export function DashboardClient({
         const cardNodes: Partial<Record<string, ReactNode>> = {
         // Vehicles Due for Service
         maintenance: (
-          <Card className="border-0 shadow-sm">
+          <Card className="shadow-sm">
             <CardHeader className="pb-1">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-base">
@@ -707,7 +707,7 @@ export function DashboardClient({
 
         // Upcoming Reminders
         reminders: (
-          <Card className="border-0 shadow-sm">
+          <Card className="shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-base">
@@ -792,7 +792,7 @@ export function DashboardClient({
 
         // SMS Messages (only offered when SMS is enabled; see availableIds)
         sms: (
-          <Card className="border-0 shadow-sm">
+          <Card className="shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-base">
@@ -846,7 +846,7 @@ export function DashboardClient({
 
         // Recent Notifications (only offered when SMS is not configured)
         notifications: (
-          <Card className="border-0 shadow-sm">
+          <Card className="shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-base">
@@ -888,7 +888,7 @@ export function DashboardClient({
 
         // Inspections
         inspections: (
-          <Card className="border-0 shadow-sm">
+          <Card className="shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-base">
@@ -1002,7 +1002,7 @@ export function DashboardClient({
 
         // Quote Requests
         quoteRequests: (
-          <Card className="border-0 shadow-sm">
+          <Card className="shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-base">
@@ -1128,7 +1128,7 @@ export function DashboardClient({
 
         // Customer Quote Responses
         quoteResponses: (
-          <Card className="border-0 shadow-sm">
+          <Card className="shadow-sm">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-base">
@@ -1251,7 +1251,7 @@ export function DashboardClient({
 
         // Recent Completed table
         recentCompleted: (
-          <Card className="border-0 shadow-sm lg:col-span-2">
+          <Card className="shadow-sm lg:col-span-2">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">{t("recentCompleted.title")}</CardTitle>
             </CardHeader>
@@ -1415,7 +1415,7 @@ export function DashboardClient({
 
         // Active Jobs table
         activeJobs: (
-          <Card className="border-0 shadow-sm lg:col-span-2">
+          <Card className="shadow-sm lg:col-span-2">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">{t("activeJobsTable.title")}</CardTitle>
             </CardHeader>
@@ -1575,7 +1575,7 @@ export function DashboardClient({
         ),
         // Recent Activity (Audit Logs)
         recentActivity: (
-        <Card className="border-0 shadow-sm">
+        <Card className="shadow-sm">
           <CardHeader className="pb-1">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-base">
@@ -1638,7 +1638,7 @@ export function DashboardClient({
         ),
         // Recent Observations
         recentObservations: (
-        <Card className="border-0 shadow-sm">
+        <Card className="shadow-sm">
           <CardHeader className="pb-1">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-base">
