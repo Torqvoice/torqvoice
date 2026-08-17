@@ -1,11 +1,12 @@
 "use client";
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useFormatDate } from "@/lib/use-format-date";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -411,14 +412,14 @@ export function DashboardClient({
     <div className="space-y-4">
       {/* Quick stats row */}
       <div className={`grid grid-cols-2 gap-2 ${stats.isAdmin ? (stats.lowStockParts > 0 ? "sm:grid-cols-5" : "sm:grid-cols-4") : "sm:grid-cols-2"}`}>
-        <Link href="/work-orders?status=active" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+        <Link href="/work-orders?status=active" className="rounded-lg border border-card-edge shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
           <div className="flex items-center justify-between">
             <span className="text-[11px] text-muted-foreground">{t("stats.activeJobs")}</span>
             <ClipboardList className="h-3.5 w-3.5 text-muted-foreground/50" />
           </div>
           <p className="text-lg font-bold">{stats.activeJobs}</p>
         </Link>
-        <Link href="/work-orders?status=pending" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+        <Link href="/work-orders?status=pending" className="rounded-lg border border-card-edge shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
           <div className="flex items-center justify-between">
             <span className="text-[11px] text-muted-foreground">{t("stats.pending")}</span>
             <Clock className="h-3.5 w-3.5 text-muted-foreground/50" />
@@ -426,7 +427,7 @@ export function DashboardClient({
           <p className="text-lg font-bold">{stats.pendingJobs}</p>
         </Link>
         {stats.isAdmin && (
-          <Link href="/inventory" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+          <Link href="/inventory" className="rounded-lg border border-card-edge shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-muted-foreground">{t("stats.totalParts")}</span>
               <Settings className="h-3.5 w-3.5 text-muted-foreground/50" />
@@ -437,7 +438,7 @@ export function DashboardClient({
         {stats.isAdmin && stats.lowStockParts > 0 && (
           <Link
             href="/inventory?lowStock=1"
-            className="rounded-lg border-0 bg-amber-50 px-3 py-2 shadow-sm transition-colors hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/60"
+            className="rounded-lg border border-amber-500/30 bg-amber-50 px-3 py-2 shadow-sm transition-colors hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/60"
           >
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-amber-700 dark:text-amber-500">{t("stats.lowStock")}</span>
@@ -447,7 +448,7 @@ export function DashboardClient({
           </Link>
         )}
         {stats.isAdmin && (
-          <Link href="/customers" className="rounded-lg border border-0 shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
+          <Link href="/customers" className="rounded-lg border border-card-edge shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50">
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-muted-foreground">{t("stats.totalCustomers")}</span>
               <Users className="h-3.5 w-3.5 text-muted-foreground/50" />
@@ -542,51 +543,48 @@ export function DashboardClient({
         const cardNodes: Partial<Record<string, ReactNode>> = {
         // Vehicles Due for Service
         maintenance: (
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-1">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Gauge className="h-4 w-4" />
-                  {t("maintenance.title")}
-                </CardTitle>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                      onClick={() => router.push("/settings/maintenance")}
-                      aria-label={t("maintenance.settingsAriaLabel")}
-                    >
-                      <Settings className="h-3.5 w-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>{t("maintenance.settingsAriaLabel")}</TooltipContent>
-                </Tooltip>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t("maintenance.description")}
-              </p>
-              <div className="flex gap-1 pt-1">
+          <AppCard
+            icon={Gauge}
+            title={t("maintenance.title")}
+            description={t("maintenance.description")}
+            action={
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <Button
-                    variant={maintenanceTab === "active" ? "default" : "ghost"}
-                    size="sm"
-                    className="h-7 text-xs"
-                    onClick={() => setMaintenanceTab("active")}
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                    onClick={() => router.push("/settings/maintenance")}
+                    aria-label={t("maintenance.settingsAriaLabel")}
                   >
-                    {t("maintenance.active")} ({vehiclesDueForService.length})
+                    <Settings className="h-3.5 w-3.5" />
                   </Button>
-                  <Button
-                    variant={maintenanceTab === "dismissed" ? "default" : "ghost"}
-                    size="sm"
-                    className="h-7 text-xs"
-                    onClick={() => setMaintenanceTab("dismissed")}
-                  >
-                    {t("maintenance.dismissedTab")} ({dismissedMaintenanceVehicles.length})
-                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t("maintenance.settingsAriaLabel")}</TooltipContent>
+              </Tooltip>
+            }
+            subheader={
+              <div className="flex gap-1">
+                <Button
+                  variant={maintenanceTab === "active" ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => setMaintenanceTab("active")}
+                >
+                  {t("maintenance.active")} ({vehiclesDueForService.length})
+                </Button>
+                <Button
+                  variant={maintenanceTab === "dismissed" ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => setMaintenanceTab("dismissed")}
+                >
+                  {t("maintenance.dismissedTab")} ({dismissedMaintenanceVehicles.length})
+                </Button>
               </div>
-            </CardHeader>
-            <CardContent className="p-0">
+            }
+            contentClassName="p-0"
+          >
               {maintenanceTab === "active" && (
                 <div className="divide-y">
                   {vehiclesDueForService.length === 0 ? (
@@ -595,7 +593,7 @@ export function DashboardClient({
                     <div
                       key={v.vehicleId}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(`/vehicles/${v.vehicleId}`)}
+                      {...interactiveRow(() => router.push(`/vehicles/${v.vehicleId}`))}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
@@ -664,7 +662,7 @@ export function DashboardClient({
                     <div
                       key={v.vehicleId}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(`/vehicles/${v.vehicleId}`)}
+                      {...interactiveRow(() => router.push(`/vehicles/${v.vehicleId}`))}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
@@ -701,31 +699,27 @@ export function DashboardClient({
                   ))}
                 </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Upcoming Reminders
         reminders: (
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Bell className="h-4 w-4" />
-                  {t("reminders.title")}
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => router.push("/reminders")}
-                >
-                  {t("viewAll")}
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={Bell}
+            title={t("reminders.title")}
+            badge={upcomingReminders.length || undefined}
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/reminders")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {upcomingReminders.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("reminders.noData")}</p>
               ) : (
@@ -741,7 +735,7 @@ export function DashboardClient({
                     <div
                       key={r.id}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(r.vehicle ? `/vehicles/${r.vehicle.id}?tab=reminders` : "/reminders")}
+                      {...interactiveRow(() => router.push(r.vehicle ? `/vehicles/${r.vehicle.id}?tab=reminders` : "/reminders"))}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
@@ -786,31 +780,27 @@ export function DashboardClient({
                 })}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // SMS Messages (only offered when SMS is enabled; see availableIds)
         sms: (
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <MessageSquare className="h-4 w-4" />
-                  {t("messages.title")}
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => router.push("/messages")}
-                >
-                  {t("messages.viewAll")}
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={MessageSquare}
+            title={t("messages.title")}
+            badge={smsThreads.length || undefined}
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/messages")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("messages.viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {smsThreads.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("messages.noData")}</p>
               ) : (
@@ -819,7 +809,7 @@ export function DashboardClient({
                   <div
                     key={thread.customerId}
                     className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => router.push(`/messages?customerId=${thread.customerId}`)}
+                    {...interactiveRow(() => router.push(`/messages?customerId=${thread.customerId}`))}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -840,22 +830,17 @@ export function DashboardClient({
                 ))}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Recent Notifications (only offered when SMS is not configured)
         notifications: (
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <BellRing className="h-4 w-4" />
-                  {t("notifications.title")}
-                </CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={BellRing}
+            title={t("notifications.title")}
+            badge={notifications.length || undefined}
+            contentClassName="p-0"
+          >
               {notifications.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("notifications.noData")}</p>
               ) : (
@@ -864,7 +849,7 @@ export function DashboardClient({
                   <div
                     key={n.id}
                     className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => router.push(n.entityUrl)}
+                    {...interactiveRow(() => router.push(n.entityUrl))}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${n.read ? "bg-muted" : "bg-primary/10"}`}>
@@ -882,31 +867,26 @@ export function DashboardClient({
                 ))}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Inspections
         inspections: (
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <ClipboardCheck className="h-4 w-4" />
-                  {t("inspections.title")}
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => router.push("/inspections")}
-                >
-                  {t("viewAll")}
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={ClipboardCheck}
+            title={t("inspections.title")}
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/inspections")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {inProgressInspections.length === 0 && completedInspections.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("inspections.noData")}</p>
               ) : (
@@ -922,7 +902,7 @@ export function DashboardClient({
                     <div
                       key={insp.id}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(`/inspections/${insp.id}`)}
+                      {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/10">
@@ -963,7 +943,7 @@ export function DashboardClient({
                     <div
                       key={insp.id}
                       className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => router.push(`/inspections/${insp.id}`)}
+                      {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10">
@@ -996,34 +976,28 @@ export function DashboardClient({
                 })}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Quote Requests
         quoteRequests: (
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="h-4 w-4" />
-                  {t("quoteRequests.title")}
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => router.push("/inspections")}
-                >
-                  {t("viewAll")}
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t("quoteRequests.description")}
-              </p>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={FileText}
+            title={t("quoteRequests.title")}
+            badge={quoteRequests.length || undefined}
+            description={t("quoteRequests.description")}
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/inspections")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {quoteRequests.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("quoteRequests.noData")}</p>
               ) : (
@@ -1039,7 +1013,7 @@ export function DashboardClient({
                     >
                       <div
                         className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
-                        onClick={() => router.push(`/inspections/${req.inspection.id}`)}
+                        {...interactiveRow(() => router.push(`/inspections/${req.inspection.id}`))}
                       >
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                           <FileText className="h-4 w-4 text-primary" />
@@ -1122,34 +1096,28 @@ export function DashboardClient({
                 })}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Customer Quote Responses
         quoteResponses: (
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="h-4 w-4" />
-                  {t("quoteResponses.title")}
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => router.push("/quotes")}
-                >
-                  {t("viewAll")}
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t("quoteResponses.description")}
-              </p>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={FileText}
+            title={t("quoteResponses.title")}
+            badge={quoteResponses.length || undefined}
+            description={t("quoteResponses.description")}
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/quotes")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {quoteResponses.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("quoteResponses.noData")}</p>
               ) : (
@@ -1161,7 +1129,7 @@ export function DashboardClient({
                   >
                     <div
                       className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
-                      onClick={() => router.push(`/quotes/${resp.id}`)}
+                      {...interactiveRow(() => router.push(`/quotes/${resp.id}`))}
                     >
                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
                         resp.status === "accepted" ? "bg-emerald-500/10" : "bg-orange-500/10"
@@ -1245,17 +1213,27 @@ export function DashboardClient({
                 ))}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Recent Completed table
         recentCompleted: (
-          <Card className="border-0 shadow-sm lg:col-span-2">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">{t("recentCompleted.title")}</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={Check}
+            title={t("recentCompleted.title")}
+            className="lg:col-span-2"
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/work-orders?status=completed")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {/* Card list (phones + small tablets) */}
               <div className="space-y-2 px-3 pb-3 md:hidden">
                 {stats.recentServices.length === 0 ? (
@@ -1335,10 +1313,10 @@ export function DashboardClient({
                         <ContextMenuTrigger asChild>
                         <TableRow
                           className={`cursor-pointer transition-opacity ${navigatingId === s.id ? "opacity-50" : ""}`}
-                          onClick={() => {
+                          {...interactiveRow(() => {
                             setNavigatingId(s.id);
                             router.push(recordHref);
-                          }}
+                          })}
                         >
                           <TableCell className="font-mono text-xs">
                             {formatDate(new Date(s.startDateTime ?? s.serviceDate))}
@@ -1409,17 +1387,28 @@ export function DashboardClient({
                 </TableBody>
               </Table>
               </div>
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Active Jobs table
         activeJobs: (
-          <Card className="border-0 shadow-sm lg:col-span-2">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">{t("activeJobsTable.title")}</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={Clock}
+            title={t("activeJobsTable.title")}
+            badge={stats.todaysServices.length || undefined}
+            className="lg:col-span-2"
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/work-orders?status=active")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {/* Card list (phones + small tablets) */}
               <div className="space-y-2 px-3 pb-3 md:hidden">
                 {stats.todaysServices.length === 0 ? (
@@ -1496,10 +1485,10 @@ export function DashboardClient({
                       <ContextMenuTrigger asChild>
                       <TableRow
                         className={`cursor-pointer transition-opacity ${navigatingId === s.id ? "opacity-50" : ""}`}
-                        onClick={() => {
+                        {...interactiveRow(() => {
                           setNavigatingId(s.id);
                           router.push(recordHref);
-                        }}
+                        })}
                       >
                         <TableCell>
                           {s.vehicle ? (
@@ -1570,30 +1559,25 @@ export function DashboardClient({
                 </TableBody>
               </Table>
               </div>
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
         // Recent Activity (Audit Logs)
         recentActivity: (
-        <Card className="border-0 shadow-sm">
-          <CardHeader className="pb-1">
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <ClipboardList className="h-4 w-4" />
-                {t("recentActivity")}
-              </CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs gap-1"
+        <AppCard
+          icon={ClipboardList}
+          title={t("recentActivity")}
+          contentClassName="p-0"
+          footer={
+              <button
+                type="button"
                 onClick={() => router.push("/audit-log")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
               >
                 {t("viewAll")}
                 <ArrowRight className="h-3 w-3" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
+              </button>
+            }
+        >
             {recentAuditLogs.length === 0 ? (
               <p className="px-5 py-4 text-xs text-muted-foreground">{t("noRecentActivity")}</p>
             ) : (
@@ -1633,30 +1617,26 @@ export function DashboardClient({
                 })}
               </div>
             )}
-          </CardContent>
-        </Card>
+        </AppCard>
         ),
         // Recent Observations
         recentObservations: (
-        <Card className="border-0 shadow-sm">
-          <CardHeader className="pb-1">
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Eye className="h-4 w-4" />
-                {t("recentObservations")}
-              </CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs gap-1"
+        <AppCard
+          icon={Eye}
+          title={t("recentObservations")}
+          badge={recentObservations.length || undefined}
+          contentClassName="p-0"
+          footer={
+              <button
+                type="button"
                 onClick={() => router.push("/observations")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
               >
                 {t("viewAll")}
                 <ArrowRight className="h-3 w-3" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
+              </button>
+            }
+        >
             {recentObservations.length === 0 ? (
               <p className="px-5 py-4 text-xs text-muted-foreground">{t("noRecentObservations")}</p>
             ) : (
@@ -1708,7 +1688,7 @@ export function DashboardClient({
                       <ContextMenuTrigger asChild>
                       <TableRow
                         className="cursor-pointer"
-                        onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
+                        {...interactiveRow(() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`))}
                       >
                         <TableCell className="py-1.5">
                           <Badge
@@ -1751,8 +1731,7 @@ export function DashboardClient({
               </div>
               </>
             )}
-          </CardContent>
-        </Card>
+        </AppCard>
         ),
         };
         for (const w of widgets) {

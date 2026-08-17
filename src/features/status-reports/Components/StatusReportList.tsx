@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from "@/lib/interactive-row";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -273,7 +274,7 @@ export function StatusReportList({
                   <ContextMenuTrigger asChild>
                   <TableRow
                     className="cursor-pointer"
-                    onClick={() => setDetailReport(report)}
+                    {...interactiveRow(() => setDetailReport(report))}
                   >
                     <TableCell className="py-2">
                       <div className="flex items-center gap-1.5 min-w-0">

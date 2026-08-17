@@ -21,6 +21,7 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+  --color-card-edge: var(--card-edge);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
@@ -303,6 +304,16 @@
   --sidebar-ring: oklch(0.72 0.15 165);
 }
 
+/* Card edges. --border sits about one shade off the card fill, which reads as
+   no edge at all once a shadow is over it. This mixes the theme's own
+   foreground into the edge instead, so it stays visible in every theme —
+   dark ones included — without hardcoding a colour per theme. Declared on the
+   same element the theme classes land on (documentElement), so `var(--foreground)`
+   resolves to whichever theme is active. */
+:root {
+  --card-edge: color-mix(in oklab, var(--foreground) 20%, transparent);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -315,6 +326,16 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Keyboard-focusable rows (see src/lib/interactive-row.ts). Inset outline so
+   the ring survives overflow-hidden card and table corners. */
+[data-row-interactive] {
+  cursor: pointer;
+}
+[data-row-interactive]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
 }
 
 /* Hide scrollbar utility */
@@ -586,7 +607,16 @@
   flex-direction: column;
   overflow: hidden;
 }
-.dashboard-card-wrap > *:first-child > *:last-child {
+/* Legacy Card markup: whatever comes last is the content, so it scrolls.
+   Guarded so an AppCard footer (which is also a last child) never becomes
+   the scroll area. */
+.dashboard-card-wrap > *:first-child > *:last-child:not([data-slot="app-card-footer"]) {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+/* AppCard names its content region, so target it directly. */
+.dashboard-card-wrap > *:first-child > [data-slot="app-card-content"] {
   flex: 1;
   min-height: 0;
   overflow-y: auto;

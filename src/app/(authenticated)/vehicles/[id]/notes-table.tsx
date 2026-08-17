@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from "@/lib/interactive-row";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useTransition } from "react";
 import { useFormatDate } from "@/lib/use-format-date";
@@ -207,7 +208,7 @@ export function NotesTable({
               records.map((n) => (
                 <ContextMenu key={n.id} modal={false}>
                 <ContextMenuTrigger asChild>
-                <TableRow className="cursor-pointer" onClick={() => onSelectNote(n)}>
+                <TableRow className="cursor-pointer" {...interactiveRow(() => onSelectNote(n))}>
                   <TableCell className="w-[30px] px-2">
                     {n.isPinned && <Pin className="h-3.5 w-3.5 text-primary" />}
                   </TableCell>

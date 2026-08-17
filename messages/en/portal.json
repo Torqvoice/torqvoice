@@ -152,7 +152,13 @@
     "good": "{count} good",
     "fair": "{count} fair",
     "poor": "{count} poor",
-    "view": "View"
+    "view": "View",
+    "serviceHistoryTitle": "Service history",
+    "inspectionsTitle": "Inspections",
+    "columnVehicle": "Vehicle",
+    "columnPlate": "Plate",
+    "columnServices": "Services",
+    "columnInspections": "Inspections"
   },
   "requestService": {
     "title": "Request Service",
@@ -174,6 +180,15 @@
     "yourRequests": "Your Service Requests",
     "failedToLoad": "Failed to load data.",
     "staffNotes": "Staff notes: {notes}",
-    "preferred": "Preferred: {date}"
+    "preferred": "Preferred: {date}",
+    "notListedOption": "My vehicle isn't listed",
+    "newVehicleHint": "Tell us about the vehicle and we'll add it to your profile.",
+    "fillVehicleDetails": "Please enter the vehicle's make and model",
+    "makeLabel": "Make",
+    "makePlaceholder": "e.g. Ford",
+    "modelLabel": "Model",
+    "modelPlaceholder": "e.g. Kuga",
+    "yearLabel": "Year",
+    "plateLabel": "License plate"
   }
 }

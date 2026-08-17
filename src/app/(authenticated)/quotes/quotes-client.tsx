@@ -1,5 +1,6 @@
 'use client'
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
 import { useState, useCallback, useTransition, useEffect } from 'react'
@@ -311,7 +312,7 @@ export function QuotesClient({
                 <ContextMenuTrigger asChild>
                 <TableRow
                   className="cursor-pointer"
-                  onClick={() => router.push(`/quotes/${q.id}`)}
+                  {...interactiveRow(() => router.push(`/quotes/${q.id}`))}
                 >
                   <TableCell className="font-mono text-xs text-muted-foreground">
                     {q.quoteNumber || '-'}

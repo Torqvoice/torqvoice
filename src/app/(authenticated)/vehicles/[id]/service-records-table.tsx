@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -371,10 +372,10 @@ export function ServiceRecordsTable({
                   <ContextMenuTrigger asChild>
                   <TableRow
                     className={`cursor-pointer transition-opacity ${navigatingId === record.id ? "opacity-50" : ""}`}
-                    onClick={() => {
+                    {...interactiveRow(() => {
                       setNavigatingId(record.id);
                       router.push(`/vehicles/${vehicleId}/service/${record.id}`);
-                    }}
+                    })}
                   >
                     <TableCell className="font-mono text-xs">
                       {formatDate(effectiveInvoiceDate(record))}

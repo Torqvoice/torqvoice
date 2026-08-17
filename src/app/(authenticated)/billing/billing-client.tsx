@@ -1,6 +1,7 @@
 "use client";
 
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import { useCallback, useTransition } from "react";
 import Link from "next/link";
@@ -227,7 +228,7 @@ export default function BillingClient({
       {/* Summary Cards — hidden below md so the invoice list is what a phone
           or portrait tablet opens on. */}
       <div className="hidden gap-3 md:grid md:grid-cols-3">
-        <Card className="border-0 shadow-sm">
+        <Card>
           <CardContent className="flex items-center gap-3 px-4 py-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/10">
               <DollarSign className="h-4 w-4 text-blue-600" />
@@ -241,7 +242,7 @@ export default function BillingClient({
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-sm">
+        <Card>
           <CardContent className="flex items-center gap-3 px-4 py-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
               <TrendingUp className="h-4 w-4 text-emerald-600" />
@@ -255,7 +256,7 @@ export default function BillingClient({
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-sm">
+        <Card>
           <CardContent className="flex items-center gap-3 px-4 py-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500/10">
               <AlertCircle className="h-4 w-4 text-red-600" />
@@ -434,7 +435,7 @@ export default function BillingClient({
                   <TableRow
                     key={record.id}
                     className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleRowClick(record)}
+                    {...interactiveRow(() => handleRowClick(record))}
                   >
                     <TableCell className="truncate font-medium">
                       {record.invoiceNumber || "\u2014"}

@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from "@/lib/interactive-row";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -395,7 +396,7 @@ export function CustomerDetailClient({
                       <TableRow
                         key={v.id}
                         className="cursor-pointer"
-                        onClick={() => router.push(`/vehicles/${v.id}?back=${encodeURIComponent(`/customers/${customer.id}`)}`)}
+                        {...interactiveRow(() => router.push(`/vehicles/${v.id}?back=${encodeURIComponent(`/customers/${customer.id}`)}`))}
                       >
                         <TableCell className="font-mono text-sm">
                           {v.licensePlate || "-"}

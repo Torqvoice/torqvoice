@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
 import { useState, useCallback, useTransition } from "react";
@@ -344,7 +345,7 @@ export function InspectionsClient({
                 <ContextMenuTrigger asChild>
                 <TableRow
                   className="cursor-pointer"
-                  onClick={() => router.push(`/inspections/${insp.id}`)}
+                  {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
                 >
                   <TableCell>
                     <TableCellLink href={`/vehicles/${insp.vehicle.id}`} block>

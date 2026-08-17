@@ -1,11 +1,12 @@
 "use client";
 
+import { interactiveRow } from "@/lib/interactive-row";
 import { useState, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { toast } from "sonner";
 import { Camera, Image as ImageIcon, Loader2, X } from "lucide-react";
 import { compressImage } from "@/lib/compress-image";
@@ -189,19 +190,12 @@ export function QuoteImagesManager({
   );
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Camera className="h-4 w-4" />
-          {t("images.title")}
-          {maxImages !== undefined && (
-            <span className="ml-auto text-xs font-normal text-muted-foreground">
-              {images.length} / {maxImages}
-            </span>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <AppCard
+      icon={Camera}
+      title={t("images.title")}
+      badge={maxImages !== undefined ? `${images.length} / ${maxImages}` : undefined}
+      contentClassName="space-y-4"
+    >
         {atLimit ? (
           <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
             <p className="text-sm font-medium text-muted-foreground">
@@ -215,7 +209,7 @@ export function QuoteImagesManager({
           <div
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
-            onClick={() => inputRef.current?.click()}
+            {...interactiveRow(() => inputRef.current?.click())}
             className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
           >
             <ImageIcon className="mb-2 h-8 w-8 text-muted-foreground/50" />
@@ -296,7 +290,6 @@ export function QuoteImagesManager({
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </AppCard>
   );
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { AppCard } from '@/components/app-card'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -8,7 +9,6 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2, Send } from 'lucide-react'
 import { SYSTEM_SETTING_KEYS } from '../Schema/systemSettingsSchema'
 import type { SystemSettingsMap } from '../Schema/systemSettingsSchema'
@@ -205,12 +205,11 @@ export function AdminSettings({
   return (
     <div className="space-y-6">
       {/* Platform Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('adminSettings.platformTitle')}</CardTitle>
-          <CardDescription>{t('adminSettings.platformDescription')}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <AppCard
+        title={t('adminSettings.platformTitle')}
+        description={t('adminSettings.platformDescription')}
+        contentClassName="space-y-6"
+      >
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="registration-toggle">{t('adminSettings.disableRegistration')}</Label>
@@ -237,18 +236,14 @@ export function AdminSettings({
               onCheckedChange={setEmailVerificationRequired}
             />
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* Email Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('adminSettings.emailTitle')}</CardTitle>
-          <CardDescription>
-            {t('adminSettings.emailDescription')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <AppCard
+        title={t('adminSettings.emailTitle')}
+        description={t('adminSettings.emailDescription')}
+        contentClassName="space-y-6"
+      >
           <div className="flex flex-wrap gap-2">
             <Button
               type="button"
@@ -678,8 +673,7 @@ export function AdminSettings({
               {t('adminSettings.testEmailHint')}
             </p>
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* Save Button */}
       <div className="flex justify-end">

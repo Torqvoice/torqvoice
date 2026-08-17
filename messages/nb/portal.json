@@ -152,7 +152,13 @@
     "good": "{count} bra",
     "fair": "{count} middels",
     "poor": "{count} dårlig",
-    "view": "Se"
+    "view": "Se",
+    "serviceHistoryTitle": "Servicehistorikk",
+    "inspectionsTitle": "Inspeksjoner",
+    "columnVehicle": "Kjøretøy",
+    "columnPlate": "Reg.nr.",
+    "columnServices": "Tjenester",
+    "columnInspections": "Kontroller"
   },
   "requestService": {
     "title": "Be om service",
@@ -174,6 +180,15 @@
     "yourRequests": "Dine serviceforespørsler",
     "failedToLoad": "Kunne ikke laste inn data.",
     "staffNotes": "Personalnotater: {notes}",
-    "preferred": "Ønsket: {date}"
+    "preferred": "Ønsket: {date}",
+    "notListedOption": "Kjøretøyet mitt står ikke i listen",
+    "newVehicleHint": "Fortell oss om kjøretøyet, så legger vi det til i din profil.",
+    "fillVehicleDetails": "Fyll inn kjøretøyets merke og modell",
+    "makeLabel": "Merke",
+    "makePlaceholder": "f.eks. Ford",
+    "modelLabel": "Modell",
+    "modelPlaceholder": "f.eks. Kuga",
+    "yearLabel": "Årsmodell",
+    "plateLabel": "Registreringsnummer"
   }
 }

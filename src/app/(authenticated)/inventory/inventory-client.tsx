@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import { isLow as isLowStock } from '@/features/inventory/Lib/lowStockAlerts';
 
@@ -626,10 +627,10 @@ export function InventoryClient({
                   <ContextMenuTrigger asChild>
                   <TableRow
                     className="cursor-pointer"
-                    onClick={() => {
+                    {...interactiveRow(() => {
                       setEditPart(part);
                       setShowForm(true);
-                    }}
+                    })}
                   >
                     <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
                       <Checkbox

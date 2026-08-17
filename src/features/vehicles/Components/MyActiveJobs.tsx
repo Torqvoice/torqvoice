@@ -1,5 +1,6 @@
 'use client'
 
+import { interactiveRow } from '@/lib/interactive-row'
 import { useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -18,7 +19,7 @@ import {
   Package,
 } from 'lucide-react'
 import { FindingForm } from '@/features/vehicles/Components/FindingForm'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { AppCard } from '@/components/app-card'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Badge } from '@/components/ui/badge'
@@ -301,15 +302,13 @@ export function MyActiveJobs({
 
   return (
     <TooltipProvider>
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="px-4 pb-1 pt-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Wrench className="h-4 w-4" />
-            {t('title')}
-          </CardTitle>
-          <p className="text-xs text-muted-foreground">{t('description')}</p>
-        </CardHeader>
-        <CardContent className="p-0">
+      <AppCard
+        icon={Wrench}
+        title={t('title')}
+        description={t('description')}
+        badge={jobs.length || undefined}
+        contentClassName="p-0"
+      >
           <div className="divide-y">
             {jobs.map((job) => {
               const StatusIcon = STATUS_ICON[job.status] || Wrench
@@ -326,7 +325,7 @@ export function MyActiveJobs({
                   <div className="flex items-center justify-between">
                     <div
                       className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
-                      onClick={() => router.push(job.vehicleId ? `/vehicles/${job.vehicleId}/service/${job.id}` : `/sales/${job.id}`)}
+                      {...interactiveRow(() => router.push(job.vehicleId ? `/vehicles/${job.vehicleId}/service/${job.id}` : `/sales/${job.id}`))}
                     >
                       <div
                         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${statusColor}`}
@@ -567,8 +566,7 @@ export function MyActiveJobs({
               )
             })}
           </div>
-        </CardContent>
-      </Card>
+      </AppCard>
 
       <BarcodeScannerDialog
         open={scannerOpen}

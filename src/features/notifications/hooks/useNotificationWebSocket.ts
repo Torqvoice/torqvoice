@@ -9,14 +9,18 @@ import { getActiveSmsCustomerId } from "@/features/sms/activeSmsView";
 export function useNotificationWebSocket() {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const mountedRef = useRef(true);
 
   useEffect(() => {
-    mountedRef.current = true;
+    // Liveness is a per-effect-run closure, not a shared ref: with a ref, a
+    // remount (StrictMode does this on every mount in dev) let the *old*
+    // socket's async onclose observe the *new* run's "mounted" state and
+    // schedule a reconnect — leaving two live sockets delivering every
+    // notification twice.
+    let alive = true;
 
     // Fetch initial notifications
     getNotifications().then((result) => {
-      if (!mountedRef.current) return;
+      if (!alive) return;
       if (result.success && result.data) {
         useNotificationStore.getState().setNotifications(
           result.data.notifications,
@@ -26,7 +30,7 @@ export function useNotificationWebSocket() {
     });
 
     function connect() {
-      if (!mountedRef.current) return;
+      if (!alive) return;
 
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const url = `${protocol}//${window.location.host}/api/protected/ws`;
@@ -82,7 +86,7 @@ export function useNotificationWebSocket() {
       ws.onclose = () => {
         useNotificationStore.getState().setConnected(false);
         wsRef.current = null;
-        if (mountedRef.current) {
+        if (alive) {
           reconnectTimer.current = setTimeout(connect, 3000);
         }
       };
@@ -95,7 +99,7 @@ export function useNotificationWebSocket() {
     connect();
 
     return () => {
-      mountedRef.current = false;
+      alive = false;
       clearTimeout(reconnectTimer.current);
       wsRef.current?.close();
     };

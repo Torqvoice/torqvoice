@@ -1,5 +1,6 @@
 'use client'
 
+import { AppCard } from '@/components/app-card'
 import { useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -9,14 +10,6 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import Link from 'next/link'
 import { Bell, Copy, Check, Globe, Loader2, Image as ImageIcon, Trash2, Upload } from 'lucide-react'
 import { ReadOnlyBanner, ReadOnlyWrapper } from '@/app/(authenticated)/settings/read-only-guard'
@@ -196,15 +189,22 @@ export function CustomerPortalSettings({
     <div className="space-y-6">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Globe className="h-5 w-5" />
-              {t('portal.title')}
-            </CardTitle>
-            <CardDescription>{t('portal.description')}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
+        <AppCard
+          icon={Globe}
+          title={t('portal.title')}
+          description={t('portal.description')}
+          contentClassName="space-y-6"
+          footer={
+            enabled ? (
+              <div className="flex justify-end">
+                <Button type="button" size="sm" onClick={handleSave} disabled={saving || !dirty}>
+                  {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  {t('portal.save')}
+                </Button>
+              </div>
+            ) : undefined
+          }
+        >
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="portal-enabled">{t('portal.enablePortal')}</Label>
@@ -281,27 +281,15 @@ export function CustomerPortalSettings({
                 </div>
               </>
             )}
-          </CardContent>
-          {enabled && (
-            <CardFooter className="justify-end border-t pt-6">
-              <Button type="button" onClick={handleSave} disabled={saving || !dirty}>
-                {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                {t('portal.save')}
-              </Button>
-            </CardFooter>
-          )}
-        </Card>
+        </AppCard>
 
         {enabled && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ImageIcon className="h-5 w-5" />
-                {t('portal.background.title')}
-              </CardTitle>
-              <CardDescription>{t('portal.background.description')}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+          <AppCard
+            icon={ImageIcon}
+            title={t('portal.background.title')}
+            description={t('portal.background.description')}
+            contentClassName="space-y-6"
+          >
               {/* Type selector */}
               <div className="grid grid-cols-3 gap-2">
                 {(
@@ -429,8 +417,7 @@ export function CustomerPortalSettings({
                   </p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </AppCard>
         )}
       </ReadOnlyWrapper>
     </div>

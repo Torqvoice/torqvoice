@@ -152,7 +152,13 @@
     "good": "{count} bom",
     "fair": "{count} regular",
     "poor": "{count} ruim",
-    "view": "Ver"
+    "view": "Ver",
+    "serviceHistoryTitle": "Histórico de serviços",
+    "inspectionsTitle": "Inspeções",
+    "columnVehicle": "Veículo",
+    "columnPlate": "Placa",
+    "columnServices": "Serviços",
+    "columnInspections": "Inspeções"
   },
   "requestService": {
     "title": "Solicitar Serviço",
@@ -174,6 +180,15 @@
     "yourRequests": "Suas Solicitações de Serviço",
     "failedToLoad": "Falha ao carregar os dados.",
     "staffNotes": "Notas da equipe: {notes}",
-    "preferred": "Preferido: {date}"
+    "preferred": "Preferido: {date}",
+    "notListedOption": "Meu veículo não está na lista",
+    "newVehicleHint": "Conte-nos sobre o veículo e o adicionaremos ao seu perfil.",
+    "fillVehicleDetails": "Informe a marca e o modelo do veículo",
+    "makeLabel": "Marca",
+    "makePlaceholder": "ex.: Ford",
+    "modelLabel": "Modelo",
+    "modelPlaceholder": "ex.: Kuga",
+    "yearLabel": "Ano",
+    "plateLabel": "Placa"
   }
 }

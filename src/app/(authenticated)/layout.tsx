@@ -109,6 +109,13 @@ export default async function DashboardLayout({
     <ServiceTypeProvider serviceType={data.serviceType}>
     <LicenseExpiryProvider daysUntilExpiry={daysUntilExpiry} dismissed={licenseExpiryDismissed}>
     <WhiteLabelCtaProvider show={showWhiteLabelCta}>
+    {/* Accent line along the very top of the viewport — the card hairline at
+        page scale: primary on the left, gone by the far edge. Marks where the
+        app begins against the browser chrome. */}
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-x-0 top-0 z-50 h-px bg-linear-to-r from-primary via-primary/35 to-transparent"
+    />
     {/* The demo banner already occupies the header, and demo image tags
         (demo-abc1234) are not versions a visitor should be notified about. */}
     {!isDemoMode && (

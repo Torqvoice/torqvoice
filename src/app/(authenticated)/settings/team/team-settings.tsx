@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -318,13 +318,11 @@ export function TeamSettings({
           </p>
         </div>
 
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Users className="h-4 w-4" /> {t('team.createOrg')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <AppCard
+          icon={Users}
+          title={t('team.createOrg')}
+          contentClassName="space-y-4"
+        >
             <p className="text-sm text-muted-foreground">
               {t('team.createOrgDescription')}
             </p>
@@ -342,8 +340,7 @@ export function TeamSettings({
                 {t('team.create')}
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </AppCard>
       </div>
     );
   }
@@ -358,16 +355,11 @@ export function TeamSettings({
       </div>
 
       {/* Members Card */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Users className="h-4 w-4" /> {organization.name}
-            <Badge variant="outline" className="ml-2 text-xs">
-              {organization.members.length !== 1 ? t('team.memberCountPlural', { count: organization.members.length }) : t('team.memberCount', { count: organization.members.length })}
-            </Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        icon={Users}
+        title={<>{organization.name} <Badge variant="outline" className="ml-2 text-xs"> {organization.members.length !== 1 ? t('team.memberCountPlural', { count: organization.members.length }) : t('team.memberCount', { count: organization.members.length })} </Badge></>}
+        contentClassName="space-y-4"
+      >
           <div className="space-y-2">
             {organization.members.map((member) => (
               <div
@@ -476,21 +468,14 @@ export function TeamSettings({
               </Button>
             </form>
           )}
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* Pending Invitations Card */}
       {isAdmin && pendingInvitations.length > 0 && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-4 w-4" /> {t('team.pendingInvitations')}
-              <Badge variant="outline" className="ml-2 text-xs">
-                {pendingInvitations.length}
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <AppCard
+          icon={Mail}
+          title={<>{t('team.pendingInvitations')} <Badge variant="outline" className="ml-2 text-xs"> {pendingInvitations.length} </Badge></>}
+        >
             <div className="space-y-2">
               {pendingInvitations.map((invitation) => (
                 <div
@@ -537,27 +522,24 @@ export function TeamSettings({
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </AppCard>
       )}
 
       {/* Custom Roles Card */}
       {isAdmin && (
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <ShieldCheck className="h-4 w-4" /> {t('team.customRoles')}
-              </CardTitle>
-              {!showRoleForm && (
-                <Button size="sm" variant="outline" onClick={() => openRoleForm()}>
-                  <Plus className="mr-1 h-4 w-4" />
-                  {t('team.newRole')}
-                </Button>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <AppCard
+          icon={ShieldCheck}
+          title={t('team.customRoles')}
+          action={
+            !showRoleForm && (
+              <Button size="sm" variant="outline" onClick={() => openRoleForm()}>
+                <Plus className="mr-1 h-4 w-4" />
+                {t('team.newRole')}
+              </Button>
+            )
+          }
+          contentClassName="space-y-4"
+        >
             {showRoleForm && (
               <div className="space-y-4 rounded-lg border p-4">
                 <div className="space-y-2">
@@ -741,16 +723,13 @@ export function TeamSettings({
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+        </AppCard>
       )}
 
       {/* Role Descriptions */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base">{t('team.builtInRoles')}</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <AppCard
+        title={t('team.builtInRoles')}
+      >
           <div className="space-y-3 text-sm">
             <div className="flex items-center gap-3">
               <Badge variant="outline" className={`${roleColors.owner}`}>
@@ -771,8 +750,7 @@ export function TeamSettings({
               <span className="text-muted-foreground">{t('team.memberDescription')}</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
     </div>
   );
 }

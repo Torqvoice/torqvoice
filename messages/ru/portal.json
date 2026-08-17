@@ -152,7 +152,13 @@
     "good": "{count} норма",
     "fair": "{count} удовл.",
     "poor": "{count} плохо",
-    "view": "Просмотр"
+    "view": "Просмотр",
+    "serviceHistoryTitle": "История обслуживания",
+    "inspectionsTitle": "Осмотры",
+    "columnVehicle": "Автомобиль",
+    "columnPlate": "Госномер",
+    "columnServices": "Обслуживания",
+    "columnInspections": "Осмотры"
   },
   "requestService": {
     "title": "Заявка на обслуживание",
@@ -174,6 +180,15 @@
     "yourRequests": "Ваши заявки на обслуживание",
     "failedToLoad": "Не удалось загрузить данные.",
     "staffNotes": "Заметки персонала: {notes}",
-    "preferred": "Предпочтительно: {date}"
+    "preferred": "Предпочтительно: {date}",
+    "notListedOption": "Моего автомобиля нет в списке",
+    "newVehicleHint": "Расскажите об автомобиле — мы добавим его в ваш профиль.",
+    "fillVehicleDetails": "Укажите марку и модель автомобиля",
+    "makeLabel": "Марка",
+    "makePlaceholder": "напр., Ford",
+    "modelLabel": "Модель",
+    "modelPlaceholder": "напр., Kuga",
+    "yearLabel": "Год выпуска",
+    "plateLabel": "Госномер"
   }
 }

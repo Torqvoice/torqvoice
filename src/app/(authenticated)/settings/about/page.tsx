@@ -1,6 +1,6 @@
+import { AppCard } from '@/components/app-card'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { ExternalLink, Info } from 'lucide-react'
 
@@ -18,12 +18,11 @@ export default async function AboutSettingsPage() {
 
   return (
     <div className="space-y-6">
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Info className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('about.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        icon={Info}
+        title={t('about.title')}
+        contentClassName="space-y-4"
+      >
           <p className="text-sm text-muted-foreground">
             {t('about.description')}
           </p>
@@ -48,8 +47,7 @@ export default async function AboutSettingsPage() {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
     </div>
   )
 }

@@ -339,13 +339,13 @@ export default function RecurringInvoicesClient({
 
       {/* Table */}
       {invoices.length === 0 ? (
-        <Card className="border-0 shadow-sm">
+        <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <p className="text-muted-foreground">{t("recurring.noInvoices")}</p>
           </CardContent>
         </Card>
       ) : (
-        <Card className="border-0 shadow-sm">
+        <Card>
           <CardContent className="p-0">
             {/* Card list (phones + small tablets) */}
             <div className="space-y-2 p-3 md:hidden">

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -77,14 +77,7 @@ function ServiceRequestAlertCard({ settings }: { settings: Record<string, string
   };
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between pb-4">
-        <div className="flex items-center gap-3">
-          <Wrench className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t("alerts.serviceRequest.title")}</CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <AppCard icon={Wrench} title={t("alerts.serviceRequest.title")} contentClassName="space-y-6">
         <p className="text-sm text-muted-foreground">
           {t("alerts.serviceRequest.description")}
         </p>
@@ -147,8 +140,7 @@ function ServiceRequestAlertCard({ settings }: { settings: Record<string, string
             {t("alerts.serviceRequest.save")}
           </Button>
         </SaveButton>
-      </CardContent>
-    </Card>
+    </AppCard>
   );
 }
 
@@ -217,22 +209,21 @@ function LowStockAlertCard({ settings }: { settings: Record<string, string> }) {
   };
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between pb-4">
-        <div className="flex items-center gap-3">
-          <PackageSearch className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t("alerts.lowStock.title")}</CardTitle>
-        </div>
+    <AppCard
+      icon={PackageSearch}
+      title={t("alerts.lowStock.title")}
+      action={
         <a
           href="https://torqvoice.com/docs/features/low-stock-alerts"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+          className="text-[11px] text-muted-foreground transition-colors hover:text-foreground"
         >
           {t("alerts.lowStock.readMore")} →
         </a>
-      </CardHeader>
-      <CardContent className="space-y-6">
+      }
+      contentClassName="space-y-6"
+    >
         <p className="text-sm text-muted-foreground">
           {t("alerts.lowStock.description")}
         </p>
@@ -344,7 +335,6 @@ function LowStockAlertCard({ settings }: { settings: Record<string, string> }) {
           )}
           </div>
         </SaveButton>
-      </CardContent>
-    </Card>
+    </AppCard>
   );
 }

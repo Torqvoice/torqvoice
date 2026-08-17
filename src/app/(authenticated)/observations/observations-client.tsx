@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from "@/lib/interactive-row";
 import { useCallback, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -225,7 +226,7 @@ export function ObservationsClient({
                   <ContextMenuTrigger asChild>
                   <TableRow
                     className="cursor-pointer"
-                    onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
+                    {...interactiveRow(() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`))}
                   >
                     <TableCell>
                       <Badge variant="outline" className={`text-xs ${severityColors[obs.severity] || ""}`}>

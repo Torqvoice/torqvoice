@@ -1,10 +1,11 @@
 "use client";
 
+import { interactiveRow } from "@/lib/interactive-row";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AppCard } from "@/components/app-card";
 import {
   Table,
   TableBody,
@@ -72,51 +73,43 @@ export function CustomTableCard({
   };
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Table2 className="h-4 w-4" />
-            {widget.name}
-          </CardTitle>
-          {editing && (
-            <div className="dashboard-no-drag relative z-20 flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                onClick={onEdit}
-              >
-                <Pencil className="h-3.5 w-3.5" />
-                <span className="sr-only">{t("editCard")}</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                onClick={onDelete}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                <span className="sr-only">{t("deleteCard")}</span>
-              </Button>
-            </div>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0">
+    <AppCard
+      icon={Table2}
+      title={widget.name}
+      action={
+        editing ? (
+          <div className="dashboard-no-drag relative z-20 flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onEdit}>
+              <Pencil className="h-3.5 w-3.5" />
+              <span className="sr-only">{t("editCard")}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-muted-foreground hover:text-destructive"
+              onClick={onDelete}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              <span className="sr-only">{t("deleteCard")}</span>
+            </Button>
+          </div>
+        ) : undefined
+      }
+      contentClassName="p-0"
+    >
         {error ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">{error}</p>
+          <p className="px-5 py-6 text-center text-sm text-muted-foreground">{error}</p>
         ) : rows === null ? (
           <div className="flex justify-center py-6">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : rows.length === 0 ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">{t("noResults")}</p>
+          <p className="px-5 py-6 text-center text-sm text-muted-foreground">{t("noResults")}</p>
         ) : (
           <>
           {/* Card list (phones + small tablets): the first column heads each
               row, the rest become label/value pairs. */}
-          <div className="space-y-2 md:hidden">
+          <div className="space-y-2 p-3 md:hidden">
             {rows.map((row) => (
               <button
                 key={row.id}
@@ -160,7 +153,7 @@ export function CustomTableCard({
                 <TableRow
                   key={row.id}
                   className="cursor-pointer"
-                  onClick={() => router.push(row.href)}
+                  {...interactiveRow(() => router.push(row.href))}
                 >
                   {columns.map((col) => (
                     <TableCell key={col} className="truncate text-sm">
@@ -174,7 +167,6 @@ export function CustomTableCard({
           </div>
           </>
         )}
-      </CardContent>
-    </Card>
+    </AppCard>
   );
 }

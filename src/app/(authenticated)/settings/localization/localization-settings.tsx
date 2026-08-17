@@ -1,9 +1,9 @@
 'use client'
 
+import { AppCard } from '@/components/app-card'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -267,12 +267,11 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
       <ReadOnlyBanner />
 
       {/* Language */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Globe className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('localization.languageTitle')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        icon={Globe}
+        title={t('localization.languageTitle')}
+        contentClassName="space-y-4"
+      >
           <p className="text-sm text-muted-foreground">{t('localization.languageDescription')}</p>
           <div className="space-y-2">
             <Label>{t('localization.language')}</Label>
@@ -334,16 +333,14 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
               )}
             </div>
           </ReadOnlyWrapper>
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* Currency */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Coins className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('currency.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <AppCard
+        icon={Coins}
+        title={t('currency.title')}
+        contentClassName="space-y-6"
+      >
           <p className="text-sm text-muted-foreground">{t('currency.description')}</p>
 
           <ReadOnlyWrapper>
@@ -429,16 +426,14 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
               </div>
             </div>
           </ReadOnlyWrapper>
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* Date & Time */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Calendar className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('appearance.dateTimeTitle')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <AppCard
+        icon={Calendar}
+        title={t('appearance.dateTimeTitle')}
+        contentClassName="space-y-6"
+      >
           <p className="text-sm text-muted-foreground">{t('appearance.dateTimeDescription')}</p>
 
           <ReadOnlyWrapper>
@@ -578,23 +573,20 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
               </div>
             </div>
           </ReadOnlyWrapper>
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* Theme */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Palette className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('appearance.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        icon={Palette}
+        title={t('appearance.title')}
+        contentClassName="space-y-4"
+      >
           <div>
             <Label className="text-sm font-medium">{t('appearance.themeLabel')}</Label>
             <p className="text-xs text-muted-foreground">{t('appearance.themeHint')}</p>
           </div>
           <ThemePicker />
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* Save */}
       <SaveButton>

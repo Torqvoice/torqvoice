@@ -1,5 +1,6 @@
 'use client'
 
+import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useCallback, useTransition, useRef, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -444,7 +445,7 @@ export function VehiclesClient({
                 <ContextMenuTrigger asChild>
                 <TableRow
                   className="cursor-pointer"
-                  onClick={() => router.push(`/vehicles/${v.id}`)}
+                  {...interactiveRow(() => router.push(`/vehicles/${v.id}`))}
                 >
                   <TableCell className="font-mono text-sm">{v.licensePlate || '-'}</TableCell>
                   <TableCell className="truncate">

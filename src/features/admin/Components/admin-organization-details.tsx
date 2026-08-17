@@ -1,8 +1,9 @@
 'use client'
 
+import { AppCard } from '@/components/app-card'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
   ArrowLeft,
@@ -104,14 +105,11 @@ export function AdminOrganizationDetails({ org }: { org: OrgDetails }) {
         {t('orgDetails.back')}
       </Link>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-muted-foreground" />
-            {org.name}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-3 text-sm sm:grid-cols-2">
+      <AppCard
+        icon={Building2}
+        title={org.name}
+        contentClassName="grid gap-3 text-sm sm:grid-cols-2"
+      >
           <div>
             <p className="text-muted-foreground">{t('users.created')}</p>
             <p className="font-medium">{formatDate(org.createdAt)}</p>
@@ -150,8 +148,7 @@ export function AdminOrganizationDetails({ org }: { org: OrgDetails }) {
               </p>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
 
       <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
         {statCards.map((s) => (

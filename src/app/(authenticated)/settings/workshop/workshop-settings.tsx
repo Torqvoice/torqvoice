@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -149,12 +149,11 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
       <ServiceTypeSelector serviceType={serviceType} onServiceTypeChange={setServiceType} />
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Wrench className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('workshop.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <AppCard
+        icon={Wrench}
+        title={t('workshop.title')}
+        contentClassName="space-y-6"
+      >
           <p className="text-sm text-muted-foreground">
             {t('workshop.description')}
           </p>
@@ -361,8 +360,7 @@ export function WorkshopSettings({ settings, technicians: initialTechnicians = [
               </Button>
             </div>
           </SaveButton>
-        </CardContent>
-      </Card>
+        </AppCard>
       </ReadOnlyWrapper>
 
       <AlertDialog open={showAssignDialog} onOpenChange={(open) => {

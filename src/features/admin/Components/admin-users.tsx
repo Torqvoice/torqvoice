@@ -1,5 +1,6 @@
 'use client'
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
 import { useCallback, useTransition } from 'react'
@@ -365,7 +366,7 @@ export function AdminUsers({
                 <TableRow
                   key={user.id}
                   className="cursor-pointer"
-                  onClick={() => router.push(`/admin/users/${user.id}`)}
+                  {...interactiveRow(() => router.push(`/admin/users/${user.id}`))}
                 >
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>

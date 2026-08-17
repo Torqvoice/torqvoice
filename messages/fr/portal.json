@@ -152,7 +152,13 @@
     "good": "{count} bon(s)",
     "fair": "{count} passable(s)",
     "poor": "{count} mauvais",
-    "view": "Voir"
+    "view": "Voir",
+    "serviceHistoryTitle": "Historique d'entretien",
+    "inspectionsTitle": "Inspections",
+    "columnVehicle": "Véhicule",
+    "columnPlate": "Plaque",
+    "columnServices": "Services",
+    "columnInspections": "Inspections"
   },
   "requestService": {
     "title": "Demander un service",
@@ -174,6 +180,15 @@
     "yourRequests": "Vos demandes de service",
     "failedToLoad": "Échec du chargement des données.",
     "staffNotes": "Notes du personnel : {notes}",
-    "preferred": "Souhaité : {date}"
+    "preferred": "Souhaité : {date}",
+    "notListedOption": "Mon véhicule n'est pas dans la liste",
+    "newVehicleHint": "Décrivez le véhicule et nous l'ajouterons à votre profil.",
+    "fillVehicleDetails": "Veuillez saisir la marque et le modèle du véhicule",
+    "makeLabel": "Marque",
+    "makePlaceholder": "p. ex. Ford",
+    "modelLabel": "Modèle",
+    "modelPlaceholder": "p. ex. Kuga",
+    "yearLabel": "Année",
+    "plateLabel": "Plaque d'immatriculation"
   }
 }

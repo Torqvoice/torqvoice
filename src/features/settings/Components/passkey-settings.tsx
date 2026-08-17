@@ -1,9 +1,9 @@
 'use client'
 
+import { AppCard } from '@/components/app-card'
 import { useState, useEffect } from 'react'
 import { authClient } from '@/lib/auth-client'
 import { toast } from 'sonner'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -119,12 +119,11 @@ export function PasskeySettings() {
 
   return (
     <>
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Fingerprint className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('account.passkey.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        icon={Fingerprint}
+        title={t('account.passkey.title')}
+        contentClassName="space-y-4"
+      >
           <p className="text-sm text-muted-foreground">
             {t('account.passkey.description')}
           </p>
@@ -201,8 +200,7 @@ export function PasskeySettings() {
             )}
             {registering ? t('account.passkey.registering') : t('account.passkey.register')}
           </Button>
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* Rename Dialog */}
       <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>

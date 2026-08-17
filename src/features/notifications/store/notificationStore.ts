@@ -34,10 +34,17 @@ export const useNotificationStore = create<NotificationState>((set) => ({
   isPanelOpen: false,
   setNotifications: (notifications, unreadCount) => set({ notifications, unreadCount }),
   addNotification: (notification) =>
-    set((state) => ({
-      notifications: [notification, ...state.notifications].slice(0, 50),
-      unreadCount: state.unreadCount + 1,
-    })),
+    set((state) => {
+      // Dedupe by id: a reconnect race or a double-delivered broadcast must
+      // never show (or count) the same notification twice.
+      if (state.notifications.some((n) => n.id === notification.id)) {
+        return state;
+      }
+      return {
+        notifications: [notification, ...state.notifications].slice(0, 50),
+        unreadCount: state.unreadCount + 1,
+      };
+    }),
   markRead: (id) =>
     set((state) => ({
       notifications: state.notifications.map((n) =>

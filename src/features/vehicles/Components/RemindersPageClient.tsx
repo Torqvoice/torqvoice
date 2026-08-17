@@ -185,7 +185,7 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
           </CardContent>
         </Card>
       ) : (
-        <Card className="border-0 shadow-sm">
+        <Card>
           <CardContent className="p-0">
             <TableContextMenuHint />
             <div className="divide-y">

@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from "@/lib/interactive-row";
 import { useCallback, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -242,7 +243,7 @@ export function AuditLogClient({
               data.logs.map((log) => (
                 <ContextMenu key={log.id} modal={false}>
                 <ContextMenuTrigger asChild>
-                <TableRow className="cursor-pointer" onClick={() => setSelectedLog(log)}>
+                <TableRow className="cursor-pointer" {...interactiveRow(() => setSelectedLog(log))}>
                   <TableCell className="text-xs text-muted-foreground whitespace-nowrap" suppressHydrationWarning>
                     {formatDateTime(log.timestamp)}
                   </TableCell>

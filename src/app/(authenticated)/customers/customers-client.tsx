@@ -1,5 +1,6 @@
 "use client";
 
+import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
 import { useState, useCallback, useTransition, useEffect } from "react";
@@ -413,7 +414,7 @@ export function CustomersClient({
                 <ContextMenuTrigger asChild>
                 <TableRow
                   className={`cursor-pointer ${selected.has(c.id) ? "bg-muted/50" : ""}`}
-                  onClick={() => router.push(`/customers/${c.id}`)}
+                  {...interactiveRow(() => router.push(`/customers/${c.id}`))}
                 >
                   <TableCell className="w-[40px]">
                     <Checkbox
