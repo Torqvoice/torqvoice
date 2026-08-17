@@ -597,7 +597,16 @@
   flex-direction: column;
   overflow: hidden;
 }
-.dashboard-card-wrap > *:first-child > *:last-child {
+/* Legacy Card markup: whatever comes last is the content, so it scrolls.
+   Guarded so an AppCard footer (which is also a last child) never becomes
+   the scroll area. */
+.dashboard-card-wrap > *:first-child > *:last-child:not([data-slot="app-card-footer"]) {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+/* AppCard names its content region, so target it directly. */
+.dashboard-card-wrap > *:first-child > [data-slot="app-card-content"] {
   flex: 1;
   min-height: 0;
   overflow-y: auto;

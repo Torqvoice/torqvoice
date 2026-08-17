@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useFormatDate } from "@/lib/use-format-date";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -542,51 +542,48 @@ export function DashboardClient({
         const cardNodes: Partial<Record<string, ReactNode>> = {
         // Vehicles Due for Service
         maintenance: (
-          <Card className="border-card-edge shadow-sm">
-            <CardHeader className="pb-1">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Gauge className="h-4 w-4" />
-                  {t("maintenance.title")}
-                </CardTitle>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                      onClick={() => router.push("/settings/maintenance")}
-                      aria-label={t("maintenance.settingsAriaLabel")}
-                    >
-                      <Settings className="h-3.5 w-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>{t("maintenance.settingsAriaLabel")}</TooltipContent>
-                </Tooltip>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t("maintenance.description")}
-              </p>
-              <div className="flex gap-1 pt-1">
+          <AppCard
+            icon={Gauge}
+            title={t("maintenance.title")}
+            description={t("maintenance.description")}
+            action={
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <Button
-                    variant={maintenanceTab === "active" ? "default" : "ghost"}
-                    size="sm"
-                    className="h-7 text-xs"
-                    onClick={() => setMaintenanceTab("active")}
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                    onClick={() => router.push("/settings/maintenance")}
+                    aria-label={t("maintenance.settingsAriaLabel")}
                   >
-                    {t("maintenance.active")} ({vehiclesDueForService.length})
+                    <Settings className="h-3.5 w-3.5" />
                   </Button>
-                  <Button
-                    variant={maintenanceTab === "dismissed" ? "default" : "ghost"}
-                    size="sm"
-                    className="h-7 text-xs"
-                    onClick={() => setMaintenanceTab("dismissed")}
-                  >
-                    {t("maintenance.dismissedTab")} ({dismissedMaintenanceVehicles.length})
-                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t("maintenance.settingsAriaLabel")}</TooltipContent>
+              </Tooltip>
+            }
+            subheader={
+              <div className="flex gap-1">
+                <Button
+                  variant={maintenanceTab === "active" ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => setMaintenanceTab("active")}
+                >
+                  {t("maintenance.active")} ({vehiclesDueForService.length})
+                </Button>
+                <Button
+                  variant={maintenanceTab === "dismissed" ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => setMaintenanceTab("dismissed")}
+                >
+                  {t("maintenance.dismissedTab")} ({dismissedMaintenanceVehicles.length})
+                </Button>
               </div>
-            </CardHeader>
-            <CardContent className="p-0">
+            }
+            contentClassName="p-0"
+          >
               {maintenanceTab === "active" && (
                 <div className="divide-y">
                   {vehiclesDueForService.length === 0 ? (
@@ -701,31 +698,26 @@ export function DashboardClient({
                   ))}
                 </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Upcoming Reminders
         reminders: (
-          <Card className="border-card-edge shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Bell className="h-4 w-4" />
-                  {t("reminders.title")}
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => router.push("/reminders")}
-                >
-                  {t("viewAll")}
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={Bell}
+            title={t("reminders.title")}
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/reminders")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {upcomingReminders.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("reminders.noData")}</p>
               ) : (
@@ -786,31 +778,26 @@ export function DashboardClient({
                 })}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // SMS Messages (only offered when SMS is enabled; see availableIds)
         sms: (
-          <Card className="border-card-edge shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <MessageSquare className="h-4 w-4" />
-                  {t("messages.title")}
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => router.push("/messages")}
-                >
-                  {t("messages.viewAll")}
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={MessageSquare}
+            title={t("messages.title")}
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/messages")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("messages.viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {smsThreads.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("messages.noData")}</p>
               ) : (
@@ -840,22 +827,16 @@ export function DashboardClient({
                 ))}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Recent Notifications (only offered when SMS is not configured)
         notifications: (
-          <Card className="border-card-edge shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <BellRing className="h-4 w-4" />
-                  {t("notifications.title")}
-                </CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={BellRing}
+            title={t("notifications.title")}
+            contentClassName="p-0"
+          >
               {notifications.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("notifications.noData")}</p>
               ) : (
@@ -882,31 +863,26 @@ export function DashboardClient({
                 ))}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Inspections
         inspections: (
-          <Card className="border-card-edge shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <ClipboardCheck className="h-4 w-4" />
-                  {t("inspections.title")}
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => router.push("/inspections")}
-                >
-                  {t("viewAll")}
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={ClipboardCheck}
+            title={t("inspections.title")}
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/inspections")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {inProgressInspections.length === 0 && completedInspections.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("inspections.noData")}</p>
               ) : (
@@ -996,34 +972,27 @@ export function DashboardClient({
                 })}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Quote Requests
         quoteRequests: (
-          <Card className="border-card-edge shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="h-4 w-4" />
-                  {t("quoteRequests.title")}
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => router.push("/inspections")}
-                >
-                  {t("viewAll")}
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t("quoteRequests.description")}
-              </p>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={FileText}
+            title={t("quoteRequests.title")}
+            description={t("quoteRequests.description")}
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/inspections")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {quoteRequests.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("quoteRequests.noData")}</p>
               ) : (
@@ -1122,34 +1091,27 @@ export function DashboardClient({
                 })}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Customer Quote Responses
         quoteResponses: (
-          <Card className="border-card-edge shadow-sm">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="h-4 w-4" />
-                  {t("quoteResponses.title")}
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => router.push("/quotes")}
-                >
-                  {t("viewAll")}
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t("quoteResponses.description")}
-              </p>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={FileText}
+            title={t("quoteResponses.title")}
+            description={t("quoteResponses.description")}
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/quotes")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {quoteResponses.length === 0 ? (
                 <p className="px-5 py-4 text-xs text-muted-foreground">{t("quoteResponses.noData")}</p>
               ) : (
@@ -1245,17 +1207,27 @@ export function DashboardClient({
                 ))}
               </div>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Recent Completed table
         recentCompleted: (
-          <Card className="border-card-edge shadow-sm lg:col-span-2">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">{t("recentCompleted.title")}</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={Check}
+            title={t("recentCompleted.title")}
+            className="lg:col-span-2"
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/work-orders?status=completed")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {/* Card list (phones + small tablets) */}
               <div className="space-y-2 px-3 pb-3 md:hidden">
                 {stats.recentServices.length === 0 ? (
@@ -1409,17 +1381,27 @@ export function DashboardClient({
                 </TableBody>
               </Table>
               </div>
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
 
         // Active Jobs table
         activeJobs: (
-          <Card className="border-card-edge shadow-sm lg:col-span-2">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">{t("activeJobsTable.title")}</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
+          <AppCard
+            icon={Clock}
+            title={t("activeJobsTable.title")}
+            className="lg:col-span-2"
+            contentClassName="p-0"
+            footer={
+              <button
+                type="button"
+                onClick={() => router.push("/work-orders?status=active")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+              >
+                {t("viewAll")}
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
               {/* Card list (phones + small tablets) */}
               <div className="space-y-2 px-3 pb-3 md:hidden">
                 {stats.todaysServices.length === 0 ? (
@@ -1570,30 +1552,25 @@ export function DashboardClient({
                 </TableBody>
               </Table>
               </div>
-            </CardContent>
-          </Card>
+          </AppCard>
         ),
         // Recent Activity (Audit Logs)
         recentActivity: (
-        <Card className="border-card-edge shadow-sm">
-          <CardHeader className="pb-1">
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <ClipboardList className="h-4 w-4" />
-                {t("recentActivity")}
-              </CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs gap-1"
+        <AppCard
+          icon={ClipboardList}
+          title={t("recentActivity")}
+          contentClassName="p-0"
+          footer={
+              <button
+                type="button"
                 onClick={() => router.push("/audit-log")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
               >
                 {t("viewAll")}
                 <ArrowRight className="h-3 w-3" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
+              </button>
+            }
+        >
             {recentAuditLogs.length === 0 ? (
               <p className="px-5 py-4 text-xs text-muted-foreground">{t("noRecentActivity")}</p>
             ) : (
@@ -1633,30 +1610,25 @@ export function DashboardClient({
                 })}
               </div>
             )}
-          </CardContent>
-        </Card>
+        </AppCard>
         ),
         // Recent Observations
         recentObservations: (
-        <Card className="border-card-edge shadow-sm">
-          <CardHeader className="pb-1">
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Eye className="h-4 w-4" />
-                {t("recentObservations")}
-              </CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs gap-1"
+        <AppCard
+          icon={Eye}
+          title={t("recentObservations")}
+          contentClassName="p-0"
+          footer={
+              <button
+                type="button"
                 onClick={() => router.push("/observations")}
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
               >
                 {t("viewAll")}
                 <ArrowRight className="h-3 w-3" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
+              </button>
+            }
+        >
             {recentObservations.length === 0 ? (
               <p className="px-5 py-4 text-xs text-muted-foreground">{t("noRecentObservations")}</p>
             ) : (
@@ -1751,8 +1723,7 @@ export function DashboardClient({
               </div>
               </>
             )}
-          </CardContent>
-        </Card>
+        </AppCard>
         ),
         };
         for (const w of widgets) {
