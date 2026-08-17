@@ -72,7 +72,7 @@ export function CustomTableCard({
   };
 
   return (
-    <Card className="shadow-sm">
+    <Card className="border-card-edge shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-base">

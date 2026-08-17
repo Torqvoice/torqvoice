@@ -21,6 +21,7 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+  --color-card-edge: var(--card-edge);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
@@ -301,6 +302,16 @@
   --sidebar-accent-foreground: oklch(0.94 0 0);
   --sidebar-border: oklch(0.27 0 0);
   --sidebar-ring: oklch(0.72 0.15 165);
+}
+
+/* Card edges. --border sits about one shade off the card fill, which reads as
+   no edge at all once a shadow is over it. This mixes the theme's own
+   foreground into the edge instead, so it stays visible in every theme —
+   dark ones included — without hardcoding a colour per theme. Declared on the
+   same element the theme classes land on (documentElement), so `var(--foreground)`
+   resolves to whichever theme is active. */
+:root {
+  --card-edge: color-mix(in oklab, var(--foreground) 20%, transparent);
 }
 
 @layer base {
