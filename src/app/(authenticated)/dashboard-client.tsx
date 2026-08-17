@@ -1256,6 +1256,58 @@ export function DashboardClient({
               <CardTitle className="text-base">{t("recentCompleted.title")}</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
+              {/* Card list (phones + small tablets) */}
+              <div className="space-y-2 px-3 pb-3 md:hidden">
+                {stats.recentServices.length === 0 ? (
+                  <p className="py-4 text-center text-sm text-muted-foreground">
+                    {t("recentCompleted.empty")}
+                  </p>
+                ) : (
+                  stats.recentServices.map((s) => {
+                    const displayTotal = s.totalAmount > 0 ? s.totalAmount : s.cost;
+                    const recordHref = s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`;
+                    const rowCustomer = s.customer ?? s.vehicle?.customer;
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => {
+                          setNavigatingId(s.id);
+                          router.push(recordHref);
+                        }}
+                        className={`w-full rounded-lg border p-2.5 text-left transition-opacity active:bg-muted/50 ${
+                          navigatingId === s.id ? "opacity-50" : ""
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="min-w-0 flex-1 truncate font-medium">{s.title}</span>
+                          {stats.isAdmin && (
+                            <span className="shrink-0 font-semibold">
+                              {formatCurrency(displayTotal, currencyCode)}
+                            </span>
+                          )}
+                        </div>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {s.vehicle && (
+                            <>
+                              {s.vehicle.licensePlate && (
+                                <span className="font-mono">{s.vehicle.licensePlate} · </span>
+                              )}
+                              {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                            </>
+                          )}
+                          {rowCustomer && ` · ${rowCustomer.name}`}
+                        </p>
+                        <p className="mt-1 font-mono text-xs text-muted-foreground">
+                          {formatDate(new Date(s.startDateTime ?? s.serviceDate))}
+                        </p>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+
+              <div className="hidden md:block">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -1356,6 +1408,7 @@ export function DashboardClient({
                   )}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
         ),
@@ -1367,6 +1420,56 @@ export function DashboardClient({
               <CardTitle className="text-base">{t("activeJobsTable.title")}</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
+              {/* Card list (phones + small tablets) */}
+              <div className="space-y-2 px-3 pb-3 md:hidden">
+                {stats.todaysServices.length === 0 ? (
+                  <p className="py-4 text-center text-sm text-muted-foreground">
+                    {t("activeJobsTable.empty")}
+                  </p>
+                ) : (
+                  stats.todaysServices.map((s) => {
+                    const recordHref = s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`;
+                    const rowCustomer = s.customer ?? s.vehicle?.customer;
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => {
+                          setNavigatingId(s.id);
+                          router.push(recordHref);
+                        }}
+                        className={`w-full rounded-lg border p-2.5 text-left transition-opacity active:bg-muted/50 ${
+                          navigatingId === s.id ? "opacity-50" : ""
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="min-w-0 flex-1 truncate font-medium">{s.title}</span>
+                          <Badge
+                            variant="outline"
+                            className={`shrink-0 text-xs ${statusColors[s.status] || ""}`}
+                          >
+                            {s.status}
+                          </Badge>
+                        </div>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {s.vehicle && (
+                            <>
+                              {s.vehicle.licensePlate && (
+                                <span className="font-mono">{s.vehicle.licensePlate} · </span>
+                              )}
+                              {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                            </>
+                          )}
+                          {rowCustomer && ` · ${rowCustomer.name}`}
+                          {s.techName && ` · ${s.techName}`}
+                        </p>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+
+              <div className="hidden md:block">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -1466,6 +1569,7 @@ export function DashboardClient({
                   )}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
         ),
@@ -1556,6 +1660,36 @@ export function DashboardClient({
             {recentObservations.length === 0 ? (
               <p className="px-5 py-4 text-xs text-muted-foreground">{t("noRecentObservations")}</p>
             ) : (
+              <>
+              {/* Card list (phones + small tablets) */}
+              <div className="space-y-2 px-3 pb-3 md:hidden">
+                {recentObservations.map((obs) => (
+                  <button
+                    key={obs.id}
+                    type="button"
+                    onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
+                    className="w-full rounded-lg border p-2.5 text-left active:bg-muted/50"
+                  >
+                    <p className="text-xs font-medium">{obs.description}</p>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <Badge
+                        variant="outline"
+                        className={`px-1.5 py-0 text-[10px] ${observationSeverityColors[obs.severity] || ""}`}
+                      >
+                        {obs.severity}
+                      </Badge>
+                      <span className="font-mono text-[11px] text-muted-foreground">
+                        {obs.vehicle.licensePlate ?? `${obs.vehicle.year} ${obs.vehicle.make}`}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">
+                        {formatRelativeTime(obs.createdAt)}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="hidden md:block">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -1614,6 +1748,8 @@ export function DashboardClient({
                   })}
                 </TableBody>
               </Table>
+              </div>
+              </>
             )}
           </CardContent>
         </Card>

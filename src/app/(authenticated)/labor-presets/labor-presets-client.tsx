@@ -161,19 +161,97 @@ export function LaborPresetsClient({
               placeholder={t("searchPlaceholder")}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-9"
+              className="h-9 pl-9"
             />
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <Button size="sm" onClick={() => setShowForm(true)}>
-          <Plus className="mr-1 h-3.5 w-3.5" />
-          {t("addPackage")}
+        <Button
+          size="sm"
+          onClick={() => setShowForm(true)}
+          aria-label={t("addPackage")}
+          title={t("addPackage")}
+          className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
+        >
+          <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+          <span className="hidden md:inline">{t("addPackage")}</span>
         </Button>
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {data.presets.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {search ? t("empty.noMatch") : t("empty.noPresets")}
+          </div>
+        ) : (
+          data.presets.map((preset) => {
+            const hourlyItems = preset.items.filter((i) => i.pricingType !== "service");
+            const serviceItems = preset.items.filter((i) => i.pricingType === "service");
+            const totalHours = hourlyItems.reduce((sum, i) => sum + i.hours, 0);
+            const totalUnits = serviceItems.reduce((sum, i) => sum + i.hours, 0);
+            return (
+              <div key={preset.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
+                <button
+                  type="button"
+                  className="min-w-0 flex-1 text-left"
+                  onClick={() => handleEdit(preset.id)}
+                >
+                  <p className="truncate font-medium">{preset.name}</p>
+                  {preset.description && (
+                    <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                      {preset.description}
+                    </p>
+                  )}
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                    <span>
+                      {t("table.itemCount")}: {preset._count.items}
+                    </span>
+                    {totalHours > 0 && (
+                      <span className="inline-flex items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-600">
+                        {totalHours} {t("table.hrs")}
+                      </span>
+                    )}
+                    {totalUnits > 0 && (
+                      <span className="inline-flex items-center rounded-md border border-blue-500/30 bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium text-blue-600">
+                        {totalUnits} {t("table.units")}
+                      </span>
+                    )}
+                  </div>
+                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="-mr-1 h-9 w-9 shrink-0"
+                      aria-label={t("actions.openMenu")}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleEdit(preset.id)}>
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {t("actions.edit")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => handleDelete(preset.id, preset.name)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t("actions.delete")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-lg border md:block">
         <TableContextMenuHint />
         <Table>
           <TableHeader>

@@ -113,6 +113,38 @@ export function CustomTableCard({
         ) : rows.length === 0 ? (
           <p className="py-6 text-center text-sm text-muted-foreground">{t("noResults")}</p>
         ) : (
+          <>
+          {/* Card list (phones + small tablets): the first column heads each
+              row, the rest become label/value pairs. */}
+          <div className="space-y-2 md:hidden">
+            {rows.map((row) => (
+              <button
+                key={row.id}
+                type="button"
+                onClick={() => router.push(row.href)}
+                className="w-full rounded-lg border p-2.5 text-left active:bg-muted/50"
+              >
+                {columns.map((col, i) =>
+                  i === 0 ? (
+                    <p key={col} className="truncate text-sm font-medium">
+                      {renderCell(col, row.cells[col] ?? null)}
+                    </p>
+                  ) : (
+                    <p key={col} className="flex justify-between gap-3 text-xs">
+                      <span className="text-muted-foreground">
+                        {t(`fields.${getField(entity, col)?.labelKey ?? col}`)}
+                      </span>
+                      <span className="truncate">
+                        {renderCell(col, row.cells[col] ?? null)}
+                      </span>
+                    </p>
+                  )
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="hidden md:block">
           <Table>
             <TableHeader>
               <TableRow>
@@ -139,6 +171,8 @@ export function CustomTableCard({
               ))}
             </TableBody>
           </Table>
+          </div>
+          </>
         )}
       </CardContent>
     </Card>

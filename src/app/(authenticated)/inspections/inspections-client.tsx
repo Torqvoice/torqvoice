@@ -204,7 +204,8 @@ export function InspectionsClient({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+      {/* Status filters: one scrollable row on phones, wrapped above sm. */}
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {statusTabs.map((tab) => {
           const isActive = statusFilter === tab.key;
           const count = tab.key === "all" ? undefined : data.statusCounts[tab.key] || 0;
@@ -213,6 +214,7 @@ export function InspectionsClient({
               key={tab.key}
               variant={isActive ? "default" : "outline"}
               size="sm"
+              className="h-9 shrink-0 sm:h-8"
               onClick={() => navigate({ status: tab.key === "all" ? undefined : tab.key })}
             >
               {t(tab.labelKey)}
@@ -234,18 +236,74 @@ export function InspectionsClient({
               placeholder={t("search")}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-9"
+              className="h-9 pl-9"
             />
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <Button size="sm" onClick={() => setShowNewDialog(true)}>
-          <Plus className="mr-1 h-3.5 w-3.5" />
-          {t("new")}
+        <Button
+          size="sm"
+          onClick={() => setShowNewDialog(true)}
+          aria-label={t("new")}
+          title={t("new")}
+          className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
+        >
+          <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+          <span className="hidden md:inline">{t("new")}</span>
         </Button>
       </div>
 
-      <div className="rounded-lg border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {data.records.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {t("empty")}
+          </div>
+        ) : (
+          data.records.map((insp) => (
+            <button
+              key={insp.id}
+              type="button"
+              onClick={() => router.push(`/inspections/${insp.id}`)}
+              className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span className="min-w-0 flex-1 truncate font-medium">
+                  {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
+                </span>
+                <Badge
+                  variant="outline"
+                  className={`shrink-0 text-xs ${statusColors[insp.status] || ""}`}
+                >
+                  {insp.status === "in_progress" ? t("statusInProgress") : t("statusCompleted")}
+                </Badge>
+              </div>
+              <p className="truncate text-xs text-muted-foreground">
+                {insp.vehicle.licensePlate && (
+                  <span className="font-mono">{insp.vehicle.licensePlate} · </span>
+                )}
+                {insp.template.name}
+              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                <InspectionProgress
+                  items={insp.items}
+                  scale={
+                    (insp.severityScale ?? insp.template.severityScale) === "basic"
+                      ? "basic"
+                      : "eu"
+                  }
+                />
+                <span className="font-mono text-xs text-muted-foreground">
+                  {formatDate(new Date(insp.createdAt))}
+                </span>
+              </div>
+            </button>
+          ))
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-lg border md:block">
         <TableContextMenuHint />
         <Table className="table-fixed">
           <TableHeader>

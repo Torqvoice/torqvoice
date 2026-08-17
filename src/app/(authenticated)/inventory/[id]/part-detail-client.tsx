@@ -133,9 +133,14 @@ export function PartDetailClient({
               .join(" · ") || "—"}
           </p>
         </div>
-        <Button onClick={() => setShowForm(true)}>
-          <Pencil className="mr-2 h-4 w-4" />
-          {t("actions.edit")}
+        <Button
+          onClick={() => setShowForm(true)}
+          aria-label={t("actions.edit")}
+          title={t("actions.edit")}
+          className="h-9 w-9 shrink-0 p-0 md:w-auto md:px-4"
+        >
+          <Pencil className="h-4 w-4 md:mr-2" />
+          <span className="hidden md:inline">{t("actions.edit")}</span>
         </Button>
       </div>
 
@@ -178,7 +183,7 @@ export function PartDetailClient({
             value={reason || "all"}
             onValueChange={(v) => navigate({ reason: v === "all" ? undefined : v })}
           >
-            <SelectTrigger className="w-[220px]">
+            <SelectTrigger className="h-9 w-full sm:w-[220px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -192,7 +197,59 @@ export function PartDetailClient({
           </Select>
         </div>
 
-        <div className="rounded-lg border">
+        {/* Card list (phones + small tablets) */}
+        <div className="space-y-2 md:hidden">
+          {movements.length === 0 ? (
+            <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+              {t("history.empty")}
+            </div>
+          ) : (
+            movements.map((m) => (
+              <div key={m.id} className="rounded-lg border bg-card p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    {m.serviceRecordId ? (
+                      <Link
+                        href={m.vehicleId ? `/vehicles/${m.vehicleId}/service/${m.serviceRecordId}` : `/sales/${m.serviceRecordId}`}
+                        className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+                      >
+                        {m.label}
+                        <ArrowUpRight className="h-3 w-3" />
+                      </Link>
+                    ) : (
+                      <p className="font-medium">{m.label ?? "—"}</p>
+                    )}
+                    {m.vehicle && (
+                      <p className="truncate text-xs text-muted-foreground">{m.vehicle}</p>
+                    )}
+                    {m.note && <p className="text-xs text-muted-foreground">{m.note}</p>}
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className={
+                        m.delta < 0
+                          ? "border-destructive/40 text-destructive"
+                          : "border-green-500/40 text-green-600"
+                      }
+                    >
+                      {m.delta > 0 ? `+${m.delta}` : m.delta}
+                    </Badge>
+                    <span className="font-medium">{m.quantityAfter}</span>
+                  </div>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  <span>{m.createdAtLabel}</span>
+                  <span>{reasonLabel(m.reason)}</span>
+                  {m.userName && <span>{m.userName}</span>}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Table (md and up) */}
+        <div className="hidden rounded-lg border md:block">
           <Table>
             <TableHeader>
               <TableRow>

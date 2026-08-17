@@ -8,13 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -34,11 +27,8 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { DataTablePagination } from "@/components/data-table-pagination";
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
   Loader2,
   MoreVertical,
   Pencil,
@@ -148,15 +138,7 @@ export function FindingsTable({
     [router, createUrl]
   );
 
-  const handlePageSizeChange = useCallback(
-    (newSize: string) => {
-      navigate({ findingsPageSize: newSize, findingsPage: 1 });
-    },
-    [navigate]
-  );
 
-  const startItem = (page - 1) * pageSize + 1;
-  const endItem = Math.min(page * pageSize, total);
 
   return (
     <div className="space-y-4">
@@ -169,6 +151,7 @@ export function FindingsTable({
           {selected.size > 0 && (
             <Button
               size="sm"
+              className="h-9 md:h-8"
               onClick={() => onCreateWorkOrder(Array.from(selected))}
               disabled={isCreatingWorkOrder}
             >
@@ -181,14 +164,92 @@ export function FindingsTable({
             </Button>
           )}
         </div>
-        <Button size="sm" onClick={onAddFinding}>
-          <Plus className="mr-1 h-3.5 w-3.5" />
-          {t("addFinding")}
+        <Button
+          size="sm"
+          onClick={onAddFinding}
+          aria-label={t("addFinding")}
+          title={t("addFinding")}
+          className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+        >
+          <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+          <span className="hidden md:inline">{t("addFinding")}</span>
         </Button>
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {records.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {t("empty")}
+          </div>
+        ) : (
+          records.map((f) => (
+            <div key={f.id} className="rounded-lg border bg-card p-3">
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  className="mt-0.5"
+                  checked={selected.has(f.id)}
+                  onCheckedChange={() => toggleSelect(f.id)}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium">{f.description}</p>
+                  {f.notes && (
+                    <p className="mt-0.5 text-xs text-muted-foreground">{f.notes}</p>
+                  )}
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <Badge
+                      variant="outline"
+                      className={`text-xs ${severityColors[f.severity] || ""}`}
+                    >
+                      {t(`severity.${f.severity}` as "severity.urgent" | "severity.needs_work" | "severity.monitor")}
+                    </Badge>
+                    <span className="font-mono text-xs text-muted-foreground">
+                      {formatDate(new Date(f.createdAt))}
+                    </span>
+                  </div>
+                  {f.serviceRecord && (
+                    <Link
+                      href={`/vehicles/${vehicleId}/service/${f.serviceRecord.id}`}
+                      className="mt-1.5 inline-flex items-center gap-1 text-xs text-blue-600 underline decoration-blue-600/30 dark:text-blue-400 dark:decoration-blue-400/30"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      {t("discoveredIn")}: {f.serviceRecord.title}
+                    </Link>
+                  )}
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="-mr-1 h-9 w-9 shrink-0"
+                      aria-label={t("openMenu")}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onEditFinding(f)}>
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {t("edit")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => onDeleteFinding(f.id)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t("delete")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-lg border md:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -322,75 +383,16 @@ export function FindingsTable({
       </div>
 
       {/* Pagination */}
-      {total > 0 && (
-        <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>
-              {t("showing", { start: startItem, end: endItem, total })}
-            </span>
-            <Select
-              value={String(pageSize)}
-              onValueChange={handlePageSizeChange}
-            >
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
-            <span>{t("perPage")}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page <= 1}
-              onClick={() => navigate({ findingsPage: 1 })}
-              aria-label={t("firstPage")}
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page <= 1}
-              onClick={() => navigate({ findingsPage: page - 1 })}
-              aria-label={t("previousPage")}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="px-3 text-sm">
-              {t("page", { page, totalPages })}
-            </span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page >= totalPages}
-              onClick={() => navigate({ findingsPage: page + 1 })}
-              aria-label={t("nextPage")}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              disabled={page >= totalPages}
-              onClick={() => navigate({ findingsPage: totalPages })}
-              aria-label={t("lastPage")}
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <DataTablePagination
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        totalPages={totalPages}
+        pageParam="findingsPage"
+        pageSizeParam="findingsPageSize"
+        pageSizes={["5", "10", "20", "50"]}
+        onNavigate={navigate}
+      />
     </div>
   );
 }
