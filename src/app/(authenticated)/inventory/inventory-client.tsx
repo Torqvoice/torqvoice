@@ -1,5 +1,6 @@
 "use client";
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import { isLow as isLowStock } from '@/features/inventory/Lib/lowStockAlerts';
@@ -144,6 +145,7 @@ export function InventoryClient({
   const searchParams = useSearchParams();
   const t = useTranslations('inventory');
   const [isPending, startTransition] = useTransition();
+  const tableNav = useTableKeyboardNav();
   const [showForm, setShowForm] = useState(false);
   const [editPart, setEditPart] = useState<InventoryPart | null>(null);
   const [showMarkup, setShowMarkup] = useState(false);
@@ -360,6 +362,7 @@ export function InventoryClient({
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="h-9 pl-9"
+                {...tableNav.searchInputProps}
               />
             </form>
             <Select
@@ -550,7 +553,7 @@ export function InventoryClient({
       </div>
 
       {/* Table (md and up) */}
-      <div className="hidden rounded-lg border md:block">
+      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
         <TableContextMenuHint />
         <Table>
           <TableHeader>

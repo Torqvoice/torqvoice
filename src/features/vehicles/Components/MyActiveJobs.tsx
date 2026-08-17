@@ -1,5 +1,6 @@
 'use client'
 
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -77,6 +78,7 @@ export function MyActiveJobs({
   const [uploading, setUploading] = useState<{ jobId: string; type: 'photo' | 'video' } | null>(
     null
   )
+  const tableNav = useTableKeyboardNav()
   const [imageCounts, setImageCounts] = useState<Record<string, number>>(() =>
     Object.fromEntries(jobs.map((j) => [j.id, j.imageCount]))
   )
@@ -309,7 +311,7 @@ export function MyActiveJobs({
         badge={jobs.length || undefined}
         contentClassName="p-0"
       >
-          <div className="divide-y">
+          <div className="divide-y" {...tableNav.containerProps}>
             {jobs.map((job) => {
               const StatusIcon = STATUS_ICON[job.status] || Wrench
               const statusColor = STATUS_COLOR[job.status] || 'bg-muted text-muted-foreground'

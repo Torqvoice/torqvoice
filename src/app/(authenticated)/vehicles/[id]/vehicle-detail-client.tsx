@@ -1,5 +1,6 @@
 'use client'
 
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useTransition, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -345,6 +346,8 @@ export function VehicleDetailClient({
     [searchParams, router, vehicle.id]
   )
   const modal = useGlassModal()
+  const quotesNav = useTableKeyboardNav()
+  const inspectionsNav = useTableKeyboardNav()
   const [showEditForm, setShowEditForm] = useState(false)
   const [showNoteForm, setShowNoteForm] = useState(false)
   const [editingNote, setEditingNote] = useState<PaginatedNotes['records'][number] | undefined>()
@@ -1265,7 +1268,7 @@ export function VehicleDetailClient({
             </div>
 
             {/* Table (md and up) */}
-            <div className="hidden rounded-lg border md:block">
+            <div className="hidden rounded-lg border md:block" {...quotesNav.containerProps}>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -1370,7 +1373,7 @@ export function VehicleDetailClient({
             </div>
 
             {/* Table (md and up) */}
-            <div className="hidden rounded-lg border md:block">
+            <div className="hidden rounded-lg border md:block" {...inspectionsNav.containerProps}>
               <Table>
                 <TableHeader>
                   <TableRow>

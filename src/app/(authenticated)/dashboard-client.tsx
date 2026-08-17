@@ -1,5 +1,6 @@
 "use client";
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 import { interactiveRow } from '@/lib/interactive-row';
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -299,6 +300,9 @@ export function DashboardClient({
   const router = useRouter();
   const { formatDate } = useFormatDate();
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
+  const recentNav = useTableKeyboardNav();
+  const activeNav = useTableKeyboardNav();
+  const obsNav = useTableKeyboardNav();
   const [dismissingId, setDismissingId] = useState<string | null>(null);
   const [maintenanceTab, setMaintenanceTab] = useState<"active" | "dismissed">("active");
   const [restoringId, setRestoringId] = useState<string | null>(null);
@@ -1285,7 +1289,7 @@ export function DashboardClient({
                 )}
               </div>
 
-              <div className="hidden md:block">
+              <div className="hidden md:block" {...recentNav.containerProps}>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -1458,7 +1462,7 @@ export function DashboardClient({
                 )}
               </div>
 
-              <div className="hidden md:block">
+              <div className="hidden md:block" {...activeNav.containerProps}>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -1669,7 +1673,7 @@ export function DashboardClient({
                 ))}
               </div>
 
-              <div className="hidden md:block">
+              <div className="hidden md:block" {...obsNav.containerProps}>
               <Table>
                 <TableHeader>
                   <TableRow>

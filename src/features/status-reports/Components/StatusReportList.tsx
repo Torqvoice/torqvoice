@@ -1,5 +1,6 @@
 "use client";
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 import { interactiveRow } from "@/lib/interactive-row";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -97,6 +98,7 @@ export function StatusReportList({
   const t = useTranslations("statusReport.list");
   const router = useRouter();
   const [showCreate, setShowCreate] = useState(false);
+  const tableNav = useTableKeyboardNav();
   const [sendReportId, setSendReportId] = useState<string | null>(null);
   const [deleteReportId, setDeleteReportId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -256,7 +258,7 @@ export function StatusReportList({
           </div>
 
           {/* Table (md and up) */}
-          <div className="hidden rounded-md border md:block">
+          <div className="hidden rounded-md border md:block" {...tableNav.containerProps}>
             <TableContextMenuHint />
             <Table>
               <TableHeader>

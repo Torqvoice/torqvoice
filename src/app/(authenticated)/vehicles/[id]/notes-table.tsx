@@ -1,5 +1,6 @@
 "use client";
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 import { interactiveRow } from "@/lib/interactive-row";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useTransition } from "react";
@@ -74,6 +75,7 @@ export function NotesTable({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const tableNav = useTableKeyboardNav();
   const t = useTranslations("vehicles.notes");
 
   const createUrl = useCallback(
@@ -186,7 +188,7 @@ export function NotesTable({
       </div>
 
       {/* Table (md and up) */}
-      <div className="hidden rounded-lg border md:block">
+      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
         <Table>
           <TableHeader>
             <TableRow>

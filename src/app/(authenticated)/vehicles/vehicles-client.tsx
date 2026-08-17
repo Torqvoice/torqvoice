@@ -1,6 +1,7 @@
 'use client'
 
 import { interactiveRow } from '@/lib/interactive-row'
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useState, useCallback, useTransition, useRef, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -131,6 +132,7 @@ export function VehiclesClient({
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
   const [view, setView] = useState<'table' | 'grid' | 'grid6'>(initialView)
   const [archiveTarget, setArchiveTarget] = useState<{ id: string; name: string } | null>(null)
+  const tableNav = useTableKeyboardNav()
   const modal = useGlassModal()
   const confirm = useConfirm()
 
@@ -270,6 +272,7 @@ export function VehiclesClient({
               defaultValue={search}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="h-9 pl-9"
+              {...tableNav.searchInputProps}
             />
           </div>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -406,7 +409,7 @@ export function VehiclesClient({
         </div>
 
         {/* Table (md and up) */}
-        <div className="hidden rounded-lg border md:block">
+        <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
           <TableContextMenuHint />
           <Table className="table-fixed">
             <TableHeader>

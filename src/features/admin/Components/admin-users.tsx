@@ -1,5 +1,6 @@
 'use client'
 
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav';
 import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
@@ -91,6 +92,7 @@ export function AdminUsers({
   const confirm = useConfirm()
   const { formatDate, formatDateTime } = useFormatDate()
   const [isPending, startTransition] = useTransition()
+  const tableNav = useTableKeyboardNav();
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -197,6 +199,7 @@ export function AdminUsers({
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="h-9 pl-9"
+            {...tableNav.searchInputProps}
           />
         </form>
         {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -296,7 +299,7 @@ export function AdminUsers({
       </div>
 
       {/* Table (md and up) */}
-      <div className="hidden rounded-lg border md:block">
+      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
         <Table>
           <TableHeader>
             <TableRow>

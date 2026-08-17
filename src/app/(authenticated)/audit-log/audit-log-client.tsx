@@ -1,5 +1,6 @@
 "use client";
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
 import { interactiveRow } from "@/lib/interactive-row";
 import { useCallback, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -89,6 +90,7 @@ export function AuditLogClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const tableNav = useTableKeyboardNav();
   const [selectedLog, setSelectedLog] = useState<AuditLogData["logs"][number] | null>(null);
   const { formatDateTime } = useFormatDate();
   const t = useTranslations("audit");
@@ -136,6 +138,7 @@ export function AuditLogClient({
               navigate({ search: value || undefined });
             }}
             className="h-9 pl-9 pr-9"
+            {...tableNav.searchInputProps}
           />
           {isPending && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />}
         </div>
@@ -220,7 +223,7 @@ export function AuditLogClient({
       </div>
 
       {/* Table (md and up) */}
-      <div className="hidden rounded-md border md:block">
+      <div className="hidden rounded-md border md:block" {...tableNav.containerProps}>
         <TableContextMenuHint />
         <Table>
           <TableHeader>
