@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react'
 import { useSession } from '@/lib/auth-client'
 import { authClient } from '@/lib/auth-client'
 import { toast } from 'sonner'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
