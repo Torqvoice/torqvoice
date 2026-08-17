@@ -299,7 +299,7 @@ export default function RecurringInvoicesClient({
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-3">
           <Link href="/billing">
             <Button variant="outline" size="sm">{t("recurring.billingHistory")}</Button>
@@ -312,13 +312,27 @@ export default function RecurringInvoicesClient({
             variant="outline"
             onClick={handleProcessNow}
             disabled={isPending}
+            aria-label={t("recurring.processNow")}
+            title={t("recurring.processNow")}
+            className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
           >
-            {isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <Zap className="h-4 w-4 mr-1.5" />}
-            {t("recurring.processNow")}
+            {isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin md:mr-1.5" />
+            ) : (
+              <Zap className="h-4 w-4 md:mr-1.5" />
+            )}
+            <span className="hidden md:inline">{t("recurring.processNow")}</span>
           </Button>
-          <Button size="sm" onClick={() => setShowCreate(true)} disabled={isPending}>
-            <Plus className="h-4 w-4 mr-1.5" />
-            {t("recurring.newRecurring")}
+          <Button
+            size="sm"
+            onClick={() => setShowCreate(true)}
+            disabled={isPending}
+            aria-label={t("recurring.newRecurring")}
+            title={t("recurring.newRecurring")}
+            className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+          >
+            <Plus className="h-4 w-4 md:mr-1.5" />
+            <span className="hidden md:inline">{t("recurring.newRecurring")}</span>
           </Button>
         </div>
       </div>
@@ -333,6 +347,67 @@ export default function RecurringInvoicesClient({
       ) : (
         <Card className="border-0 shadow-sm">
           <CardContent className="p-0">
+            {/* Card list (phones + small tablets) */}
+            <div className="space-y-2 p-3 md:hidden">
+              {invoices.map((inv) => {
+                const partsTotal = inv.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0);
+                const laborTotal = inv.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0);
+                const subtotal = inv.cost + partsTotal + laborTotal;
+                const { totalAmount: total } = calculateTotals({
+                  subtotal,
+                  discountAmount: 0,
+                  taxRate: inv.taxRate,
+                  taxInclusive: inv.taxInclusive,
+                });
+                return (
+                  <div key={inv.id} className="rounded-lg border bg-card p-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 flex-1 truncate font-medium">{inv.title}</span>
+                      <span className="shrink-0 font-semibold">{fmt(total)}</span>
+                    </div>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {inv.vehicle.year} {inv.vehicle.make} {inv.vehicle.model}
+                      {inv.vehicle.customer && ` · ${inv.vehicle.customer.name}`}
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                      <Badge variant={inv.isActive ? "default" : "secondary"}>
+                        {inv.isActive ? t("recurring.statusActive") : t("recurring.statusPaused")}
+                      </Badge>
+                      <span>{t(frequencyKey[inv.frequency] ?? inv.frequency)}</span>
+                      <span className="font-mono">{formatDate(new Date(inv.nextRunDate))}</span>
+                      <span>
+                        {t("recurring.columnRuns")}: {inv.runCount}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-end gap-1">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-9 w-9"
+                        onClick={() => handleToggle(inv.id)}
+                        disabled={isPending}
+                        aria-label={inv.isActive ? t("recurring.pause") : t("recurring.resume")}
+                      >
+                        {inv.isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-9 w-9 text-destructive"
+                        onClick={() => handleDelete(inv.id)}
+                        disabled={isPending}
+                        aria-label={t("recurring.delete")}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Table (md and up) */}
+            <div className="hidden md:block">
             <TableContextMenuHint />
             <Table>
               <TableHeader>
@@ -452,6 +527,7 @@ export default function RecurringInvoicesClient({
                 })}
               </TableBody>
             </Table>
+            </div>
           </CardContent>
         </Card>
       )}

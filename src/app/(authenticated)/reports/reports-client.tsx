@@ -59,6 +59,7 @@ import {
   Car,
   ChevronLeft,
   ChevronRight,
+  RefreshCw,
 } from "lucide-react";
 import {
   getRevenueReport,
@@ -588,7 +589,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
     <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
       {/* Tab bar */}
       <div className="space-y-3">
-        <TabsList className="flex-wrap h-auto">
+        <TabsList className="h-auto max-w-full justify-start overflow-x-auto md:flex-wrap">
           <TabsTrigger value="financial" className="gap-1.5">
             <Landmark className="h-4 w-4" />
             {t("tabs.financial")}
@@ -639,7 +640,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   variant="outline"
                   size="sm"
                   className={cn(
-                    "justify-start text-left font-normal",
+                    "h-9 justify-start text-left text-xs font-normal md:h-8 md:text-sm",
                     !dateRange.from && "text-muted-foreground",
                   )}
                 >
@@ -727,22 +728,52 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               </PopoverContent>
             </Popover>
           )}
-          <Button size="sm" variant="outline" onClick={handleRefresh} disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("actions.refresh")}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleRefresh}
+            disabled={loading}
+            aria-label={t("actions.refresh")}
+            title={t("actions.refresh")}
+            className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+          >
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4 md:hidden" />
+                <span className="hidden md:inline">{t("actions.refresh")}</span>
+              </>
+            )}
           </Button>
           {hasData && (
             <>
-              <Button size="sm" variant="outline" onClick={handleExport}>
-                <Download className="mr-1.5 h-3.5 w-3.5" />
-                {t("actions.csv")}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleExport}
+                aria-label={t("actions.csv")}
+                title={t("actions.csv")}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Download className="h-4 w-4 md:mr-1.5 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{t("actions.csv")}</span>
               </Button>
-              <Button size="sm" variant="outline" onClick={handlePdfExport} disabled={pdfLoading}>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handlePdfExport}
+                disabled={pdfLoading}
+                aria-label={t("actions.pdf")}
+                title={t("actions.pdf")}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
                 {pdfLoading ? (
-                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin md:mr-1.5 md:h-3.5 md:w-3.5" />
                 ) : (
-                  <FileText className="mr-1.5 h-3.5 w-3.5" />
+                  <FileText className="h-4 w-4 md:mr-1.5 md:h-3.5 md:w-3.5" />
                 )}
-                {t("actions.pdf")}
+                <span className="hidden md:inline">{t("actions.pdf")}</span>
               </Button>
             </>
           )}

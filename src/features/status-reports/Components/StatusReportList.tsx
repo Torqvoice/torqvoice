@@ -151,9 +151,15 @@ export function StatusReportList({
               {t("readMore")} →
             </a>
           </div>
-          <Button size="sm" onClick={() => setShowCreate(true)}>
-            <Plus className="mr-1.5 h-4 w-4" />
-            {t("newReport")}
+          <Button
+            size="sm"
+            onClick={() => setShowCreate(true)}
+            aria-label={t("newReport")}
+            title={t("newReport")}
+            className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
+          >
+            <Plus className="h-4 w-4 md:mr-1.5" />
+            <span className="hidden md:inline">{t("newReport")}</span>
           </Button>
         </div>
 
@@ -166,7 +172,90 @@ export function StatusReportList({
             </CardContent>
           </Card>
         ) : (
-          <div className="rounded-md border">
+          <>
+          {/* Card list (phones + small tablets) */}
+          <div className="space-y-2 md:hidden">
+            {initialReports.map((report) => (
+              <div key={report.id} className="rounded-lg border bg-card p-3">
+                <button
+                  type="button"
+                  className="w-full text-left"
+                  onClick={() => setDetailReport(report)}
+                >
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    {report.videoUrl && (
+                      <Video className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                    )}
+                    <span className="truncate text-sm font-medium">
+                      {report.title || t("title")}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] ${STATUS_VARIANT[report.status] || ""}`}
+                    >
+                      {t(report.status as "draft" | "published" | "sent" | "viewed")}
+                    </Badge>
+                    {report.customerFeedback && (
+                      <Badge variant="outline" className="bg-green-500/10 text-[10px] text-green-600">
+                        <MessageCircle className="mr-1 h-3 w-3" />
+                        {t("hasComment")}
+                      </Badge>
+                    )}
+                    <span className="text-xs text-muted-foreground" suppressHydrationWarning>
+                      {new Date(report.createdAt).toLocaleDateString(undefined, {
+                        month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                </button>
+                <div className="mt-2 flex items-center justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9"
+                    onClick={() => copyLink(report.publicToken)}
+                    aria-label={t("copyLink")}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                  {customer && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9"
+                      onClick={() => setSendReportId(report.id)}
+                      aria-label={t("send")}
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9"
+                    onClick={() => openReport(report.publicToken)}
+                    aria-label={t("view")}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 text-destructive hover:text-destructive"
+                    onClick={() => setDeleteReportId(report.id)}
+                    aria-label={t("delete")}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Table (md and up) */}
+          <div className="hidden rounded-md border md:block">
             <TableContextMenuHint />
             <Table>
               <TableHeader>
@@ -270,6 +359,7 @@ export function StatusReportList({
               </TableBody>
             </Table>
           </div>
+          </>
         )}
       </div>
 

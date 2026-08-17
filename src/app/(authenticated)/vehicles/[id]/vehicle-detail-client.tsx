@@ -225,6 +225,39 @@ const quoteStatusColors: Record<string, string> = {
   converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
 }
 
+/** Pass/fail/other split of an inspection's items, shared by the card and table views. */
+function InspectionProgress({
+  total,
+  inspected,
+  passCount,
+  failCount,
+}: {
+  total: number
+  inspected: number
+  passCount: number
+  failCount: number
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="flex h-2 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+        {total > 0 && (
+          <>
+            <div className="bg-emerald-500" style={{ width: `${(passCount / total) * 100}%` }} />
+            <div className="bg-red-500" style={{ width: `${(failCount / total) * 100}%` }} />
+            <div
+              className="bg-amber-500"
+              style={{ width: `${((inspected - passCount - failCount) / total) * 100}%` }}
+            />
+          </>
+        )}
+      </div>
+      <span className="text-xs text-muted-foreground">
+        {inspected}/{total}
+      </span>
+    </div>
+  )
+}
+
 export function VehicleDetailClient({
   vehicle,
   customers,
@@ -367,6 +400,14 @@ export function VehicleDetailClient({
     if (reminderFilter === 'completed') return r.isCompleted
     return true
   })
+
+  const inspectionRows = (inspections ?? []).map((insp) => ({
+    insp,
+    total: insp.items.length,
+    inspected: insp.items.filter((i) => i.condition !== 'not_inspected').length,
+    passCount: insp.items.filter((i) => i.condition === 'pass').length,
+    failCount: insp.items.filter((i) => i.condition === 'fail').length,
+  }))
 
   const totalServiceCost = vehicle.serviceRecords.reduce(
     (sum, s) => sum + (s.totalAmount > 0 ? s.totalAmount : s.cost),
@@ -516,8 +557,8 @@ export function VehicleDetailClient({
     <div className="space-y-4">
       {/* Archived banner */}
       {vehicle.isArchived && (
-        <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
-          <div className="flex items-center gap-2 text-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm">
             <Archive className="h-4 w-4 text-amber-600" />
             <span className="font-medium text-amber-600">{t('vehicleArchived')}</span>
             {vehicle.archiveReason && (
@@ -543,9 +584,16 @@ export function VehicleDetailClient({
           </Link>
           <div className="flex items-center gap-2">
             {!vehicle.isArchived && (
-              <Button variant="outline" size="sm" onClick={() => setShowEditForm(true)}>
-                <Pencil className="mr-1 h-3.5 w-3.5" />
-                {t('editVehicle')}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowEditForm(true)}
+                aria-label={t('editVehicle')}
+                title={t('editVehicle')}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Pencil className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{t('editVehicle')}</span>
               </Button>
             )}
             <DropdownMenu>
@@ -593,11 +641,11 @@ export function VehicleDetailClient({
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <div className="flex items-baseline gap-2">
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
               <h1 className="text-lg font-bold leading-tight">
                 {vehicle.year} {vehicle.make} {vehicle.model}
               </h1>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
                 {vehicle.licensePlate && <span className="font-mono">{vehicle.licensePlate}</span>}
                 {vehicle.vin && (
                   <>
@@ -1147,9 +1195,15 @@ export function VehicleDetailClient({
         {/* Quotes Tab */}
         <TabsContent value="quotes" className="space-y-4">
           <div className="flex justify-end">
-            <Button size="sm" onClick={() => setShowNewQuoteDialog(true)}>
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              {tq('newQuote')}
+            <Button
+              size="sm"
+              onClick={() => setShowNewQuoteDialog(true)}
+              aria-label={tq('newQuote')}
+              title={tq('newQuote')}
+              className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+            >
+              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{tq('newQuote')}</span>
             </Button>
           </div>
           <NewQuoteDialog
@@ -1179,7 +1233,38 @@ export function VehicleDetailClient({
               </CardContent>
             </Card>
           ) : (
-            <div className="rounded-lg border">
+            <>
+            {/* Card list (phones + small tablets) */}
+            <div className="space-y-2 md:hidden">
+              {quotes.map((q) => (
+                <button
+                  key={q.id}
+                  type="button"
+                  onClick={() => router.push(`/quotes/${q.id}`)}
+                  className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 flex-1 truncate font-medium">{q.title}</span>
+                    <span className="shrink-0 font-semibold">
+                      {formatCurrency(q.totalAmount, currencyCode)}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                    <Badge
+                      variant="outline"
+                      className={`text-xs ${quoteStatusColors[q.status] || ''}`}
+                    >
+                      {q.status}
+                    </Badge>
+                    {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
+                    <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Table (md and up) */}
+            <div className="hidden rounded-lg border md:block">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -1220,15 +1305,22 @@ export function VehicleDetailClient({
                 </TableBody>
               </Table>
             </div>
+            </>
           )}
         </TabsContent>
 
         {/* Inspections Tab */}
         <TabsContent value="inspections" className="space-y-4">
           <div className="flex justify-end">
-            <Button size="sm" onClick={() => setShowNewInspection(true)}>
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              {ti('newInspection')}
+            <Button
+              size="sm"
+              onClick={() => setShowNewInspection(true)}
+              aria-label={ti('newInspection')}
+              title={ti('newInspection')}
+              className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+            >
+              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{ti('newInspection')}</span>
             </Button>
           </div>
 
@@ -1240,7 +1332,44 @@ export function VehicleDetailClient({
               </CardContent>
             </Card>
           ) : (
-            <div className="rounded-lg border">
+            <>
+            {/* Card list (phones + small tablets) */}
+            <div className="space-y-2 md:hidden">
+              {inspectionRows.map(({ insp, total, inspected, passCount, failCount }) => (
+                <button
+                  key={insp.id}
+                  type="button"
+                  onClick={() => router.push(`/inspections/${insp.id}`)}
+                  className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 flex-1 truncate font-medium">
+                      {insp.template.name}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className={`shrink-0 text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
+                    >
+                      {insp.status === 'completed' ? ti('completed') : ti('inProgress')}
+                    </Badge>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <InspectionProgress
+                      total={total}
+                      inspected={inspected}
+                      passCount={passCount}
+                      failCount={failCount}
+                    />
+                    <span className="font-mono text-xs text-muted-foreground">
+                      {formatDate(new Date(insp.createdAt))}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Table (md and up) */}
+            <div className="hidden rounded-lg border md:block">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -1251,64 +1380,38 @@ export function VehicleDetailClient({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {inspections.map((insp) => {
-                    const total = insp.items.length
-                    const inspected = insp.items.filter(
-                      (i) => i.condition !== 'not_inspected'
-                    ).length
-                    const passCount = insp.items.filter((i) => i.condition === 'pass').length
-                    const failCount = insp.items.filter((i) => i.condition === 'fail').length
-                    return (
-                      <TableRow
-                        key={insp.id}
-                        className="cursor-pointer"
-                        onClick={() => router.push(`/inspections/${insp.id}`)}
-                      >
-                        <TableCell className="font-medium">{insp.template.name}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1.5">
-                            <div className="flex h-2 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                              {total > 0 && (
-                                <>
-                                  <div
-                                    className="bg-emerald-500"
-                                    style={{ width: `${(passCount / total) * 100}%` }}
-                                  />
-                                  <div
-                                    className="bg-red-500"
-                                    style={{ width: `${(failCount / total) * 100}%` }}
-                                  />
-                                  <div
-                                    className="bg-amber-500"
-                                    style={{
-                                      width: `${((inspected - passCount - failCount) / total) * 100}%`,
-                                    }}
-                                  />
-                                </>
-                              )}
-                            </div>
-                            <span className="text-xs text-muted-foreground">
-                              {inspected}/{total}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
-                          >
-                            {insp.status === 'completed' ? ti('completed') : ti('inProgress')}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="font-mono text-xs text-muted-foreground">
-                          {formatDate(new Date(insp.createdAt))}
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
+                  {inspectionRows.map(({ insp, total, inspected, passCount, failCount }) => (
+                    <TableRow
+                      key={insp.id}
+                      className="cursor-pointer"
+                      onClick={() => router.push(`/inspections/${insp.id}`)}
+                    >
+                      <TableCell className="font-medium">{insp.template.name}</TableCell>
+                      <TableCell>
+                        <InspectionProgress
+                          total={total}
+                          inspected={inspected}
+                          passCount={passCount}
+                          failCount={failCount}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
+                        >
+                          {insp.status === 'completed' ? ti('completed') : ti('inProgress')}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-mono text-xs text-muted-foreground">
+                        {formatDate(new Date(insp.createdAt))}
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </div>
+            </>
           )}
         </TabsContent>
 
@@ -1378,9 +1481,12 @@ export function VehicleDetailClient({
                 setEditingReminder(undefined)
                 setShowReminderForm(true)
               }}
+              aria-label={tr('addReminder')}
+              title={tr('addReminder')}
+              className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
             >
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              {tr('addReminder')}
+              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{tr('addReminder')}</span>
             </Button>
           </div>
 
@@ -1412,20 +1518,21 @@ export function VehicleDetailClient({
                           : ''
                     }`}
                   >
-                    <CardContent className="flex items-center justify-between p-4">
-                      <div className="flex items-center gap-3">
+                    <CardContent className="flex items-start justify-between gap-2 p-4">
+                      <div className="flex min-w-0 flex-1 items-start gap-3">
                         <button
                           onClick={() => handleToggleReminder(r.id)}
-                          className={`flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors ${
+                          className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
                             r.isCompleted
                               ? 'border-primary bg-primary/10'
                               : 'border-primary/50 hover:bg-primary/10'
                           }`}
+                          aria-label={r.title}
                         >
                           {r.isCompleted && <CheckCircle2 className="h-5 w-5 text-primary" />}
                         </button>
-                        <div>
-                          <div className="flex items-center gap-2">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
                             <p
                               className={`font-medium ${r.isCompleted ? 'line-through text-muted-foreground' : ''}`}
                             >
@@ -1456,8 +1563,13 @@ export function VehicleDetailClient({
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={t('openMenu')}>
-                            <MoreVertical className="h-3.5 w-3.5" />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-9 w-9 shrink-0 md:h-7 md:w-7"
+                            aria-label={t('openMenu')}
+                          >
+                            <MoreVertical className="h-4 w-4 md:h-3.5 md:w-3.5" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">

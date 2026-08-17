@@ -235,8 +235,8 @@ export function WorkOrdersClient({
 
   return (
     <div className="space-y-4">
-      {/* Status tabs */}
-      <div className="flex flex-wrap gap-2">
+      {/* Status tabs: one scrollable row on phones, wrapped above sm. */}
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {statusTabKeys.map((key) => {
           const isActive = statusFilter === key;
           const count = key === "all" || key === "active"
@@ -247,6 +247,7 @@ export function WorkOrdersClient({
               key={key}
               variant={isActive ? "default" : "outline"}
               size="sm"
+              className="h-9 shrink-0 sm:h-8"
               onClick={() => navigate({ status: key || undefined })}
             >
               {t(`statusTabs.${statusTabI18nMap[key]}`)}
@@ -269,19 +270,86 @@ export function WorkOrdersClient({
               placeholder={t("searchPlaceholder")}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-9"
+              className="h-9 pl-9"
             />
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <Button size="sm" className="shrink-0" onClick={() => setShowPicker(true)}>
-          <Plus className="h-3.5 w-3.5 sm:mr-1" />
+        <Button
+          size="sm"
+          onClick={() => setShowPicker(true)}
+          aria-label={t("newWorkOrder")}
+          title={t("newWorkOrder")}
+          className="h-9 w-9 shrink-0 p-0 sm:w-auto sm:px-3 md:h-8"
+        >
+          <Plus className="h-4 w-4 sm:mr-1 sm:h-3.5 sm:w-3.5" />
           <span className="hidden sm:inline">{t("newWorkOrder")}</span>
         </Button>
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {data.records.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {t("empty")}
+          </div>
+        ) : (
+          data.records.map((r) => {
+            const displayTotal = r.totalAmount > 0 ? r.totalAmount : r.cost;
+            const recordHref = r.vehicle ? `/vehicles/${r.vehicle.id}/service/${r.id}` : `/sales/${r.id}`;
+            const rowCustomer = r.customer ?? r.vehicle?.customer;
+            return (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => {
+                  setNavigatingId(r.id);
+                  router.push(recordHref);
+                }}
+                className={`w-full rounded-lg border bg-card p-3 text-left transition-opacity active:bg-muted/50 ${
+                  navigatingId === r.id ? "opacity-50" : ""
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 flex-1 truncate font-medium">{r.title}</span>
+                  <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold">
+                    {navigatingId === r.id && (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                    )}
+                    {formatCurrency(displayTotal, currencyCode)}
+                  </span>
+                </div>
+                {r.vehicle && (
+                  <p className="mt-1 truncate text-xs text-muted-foreground">
+                    {r.vehicle.licensePlate && (
+                      <span className="font-mono font-medium text-foreground">
+                        {r.vehicle.licensePlate}{" "}
+                      </span>
+                    )}
+                    {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
+                  </p>
+                )}
+                {rowCustomer && (
+                  <p className="truncate text-xs text-muted-foreground">{rowCustomer.name}</p>
+                )}
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                  <Badge variant="outline" className={`text-xs ${statusColors[r.status] || ""}`}>
+                    {r.status}
+                  </Badge>
+                  <span className="font-mono">
+                    {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
+                  </span>
+                  {r.invoiceNumber && <span className="font-mono">{r.invoiceNumber}</span>}
+                  {r.techName && <span className="truncate">{r.techName}</span>}
+                </div>
+              </button>
+            );
+          })
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-lg border md:block">
         <TableContextMenuHint />
         {/* Low-priority columns drop out at sm/md/lg; the min-width stops what
             is left from being squeezed to a few characters, scrolling the

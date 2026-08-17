@@ -224,8 +224,9 @@ export default function BillingClient({
         </Link>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid gap-3 md:grid-cols-3">
+      {/* Summary Cards — hidden below md so the invoice list is what a phone
+          or portrait tablet opens on. */}
+      <div className="hidden gap-3 md:grid md:grid-cols-3">
         <Card className="border-0 shadow-sm">
           <CardContent className="flex items-center gap-3 px-4 py-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/10">
@@ -270,8 +271,9 @@ export default function BillingClient({
       </div>
 
       {/* Status Tabs and Search */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex gap-2">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {/* A single scrollable row on phones, so four filters never wrap. */}
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:px-0 sm:pb-0">
           {STATUS_TABS.map((tab) => (
             <Button
               key={tab.value}
@@ -282,6 +284,7 @@ export default function BillingClient({
                   : "outline"
               }
               size="sm"
+              className="h-9 shrink-0 sm:h-8"
               onClick={() => handleStatusChange(tab.value)}
               disabled={isPending}
             >
@@ -300,27 +303,86 @@ export default function BillingClient({
         </div>
 
         <form onSubmit={handleSearch} className="flex gap-2">
-          <div className="relative">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t("history.searchPlaceholder")}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="pl-9 w-[250px]"
+              className="h-9 w-full pl-9 sm:w-[250px]"
             />
           </div>
-          <Button type="submit" size="sm" disabled={isPending}>
+          <Button
+            type="submit"
+            size="sm"
+            disabled={isPending}
+            aria-label={t("history.search")}
+            title={t("history.search")}
+            className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
+          >
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              t("history.search")
+              <>
+                <Search className="h-4 w-4 md:hidden" />
+                <span className="hidden md:inline">{t("history.search")}</span>
+              </>
             )}
           </Button>
         </form>
       </div>
 
-      {/* Billing Table */}
-      <div className="rounded-md border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {data.records.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {t("history.noRecords")}
+          </div>
+        ) : (
+          data.records.map((record) => {
+            const balance = record.totalAmount - record.totalPaid;
+            return (
+              <button
+                key={record.id}
+                type="button"
+                onClick={() => handleRowClick(record)}
+                className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 flex-1 truncate font-medium">{record.title}</span>
+                  <span className="shrink-0 font-semibold">{fmt(record.totalAmount)}</span>
+                </div>
+                <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+                  {record.vehicle && (
+                    <p className="truncate">
+                      {record.vehicle.year} {record.vehicle.make} {record.vehicle.model}
+                      {record.vehicle.licensePlate && ` · ${record.vehicle.licensePlate}`}
+                    </p>
+                  )}
+                  {record.customer && <p className="truncate">{record.customer.name}</p>}
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
+                  {getStatusBadge(record.status)}
+                  <span className={cn("font-medium", getBalanceColor(record.status))}>
+                    {t("history.columnBalance")}: {fmt(balance)}
+                  </span>
+                  <span className="font-mono text-muted-foreground">
+                    {formatDate(new Date(record.serviceDate))}
+                  </span>
+                  {record.invoiceNumber && (
+                    <span className="font-mono text-muted-foreground">
+                      {record.invoiceNumber}
+                    </span>
+                  )}
+                </div>
+              </button>
+            );
+          })
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-md border md:block">
         <Table className="table-fixed">
           <TableHeader>
             <TableRow>
