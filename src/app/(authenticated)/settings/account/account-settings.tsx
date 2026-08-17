@@ -1,10 +1,11 @@
 'use client'
 
+import { AppCard } from '@/components/app-card'
 import { useState, useEffect } from 'react'
 import { useSession } from '@/lib/auth-client'
 import { authClient } from '@/lib/auth-client'
 import { toast } from 'sonner'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -247,7 +248,7 @@ export function AccountSettings({
   return (
     <div className="space-y-6">
       {/* Profile Overview */}
-      {/* <Card className="border-0 shadow-sm">
+      {/* <Card>
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
@@ -264,12 +265,11 @@ export function AccountSettings({
       </Card> */}
 
       {/* Update Name */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <User className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('account.profileTitle')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        icon={User}
+        title={t('account.profileTitle')}
+        contentClassName="space-y-4"
+      >
           <p className="text-sm text-muted-foreground">
             {t('account.profileDescription')}
           </p>
@@ -344,16 +344,14 @@ export function AccountSettings({
               {t('account.saveProfile')}
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* Change Password */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <KeyRound className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('account.changePasswordTitle')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        icon={KeyRound}
+        title={t('account.changePasswordTitle')}
+        contentClassName="space-y-4"
+      >
           <p className="text-sm text-muted-foreground">
             {t('account.changePasswordDescription')}
           </p>
@@ -397,15 +395,13 @@ export function AccountSettings({
               {t('account.changePassword')}
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
       {/* Two-Factor Authentication */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Shield className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('account.twoFactorTitle')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        icon={Shield}
+        title={t('account.twoFactorTitle')}
+        contentClassName="space-y-4"
+      >
           {twoFactorEnabled ? (
             <>
               <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-3">
@@ -453,8 +449,7 @@ export function AccountSettings({
               </Button>
             </>
           )}
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* 2FA Setup Dialog */}
       <Dialog open={dialogOpen} onOpenChange={(open) => {

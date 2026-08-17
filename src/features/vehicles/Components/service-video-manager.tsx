@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { toast } from "sonner";
 import { Film, Loader2, Upload, X } from "lucide-react";
 import { addServiceAttachment } from "@/features/vehicles/Actions/addServiceAttachment";
@@ -135,14 +135,11 @@ export function ServiceVideoManager({
 
   return (
     <div className="space-y-6">
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Film className="h-4 w-4" />
-            {t("videos.title")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        icon={Film}
+        title={t("videos.title")}
+        contentClassName="space-y-4"
+      >
           <div
             onDrop={(e) => {
               e.preventDefault();
@@ -231,8 +228,7 @@ export function ServiceVideoManager({
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </AppCard>
     </div>
   );
 }

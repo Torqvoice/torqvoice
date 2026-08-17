@@ -706,6 +706,7 @@ export function DashboardClient({
           <AppCard
             icon={Bell}
             title={t("reminders.title")}
+            badge={upcomingReminders.length || undefined}
             contentClassName="p-0"
             footer={
               <button
@@ -786,6 +787,7 @@ export function DashboardClient({
           <AppCard
             icon={MessageSquare}
             title={t("messages.title")}
+            badge={smsThreads.length || undefined}
             contentClassName="p-0"
             footer={
               <button
@@ -835,6 +837,7 @@ export function DashboardClient({
           <AppCard
             icon={BellRing}
             title={t("notifications.title")}
+            badge={notifications.length || undefined}
             contentClassName="p-0"
           >
               {notifications.length === 0 ? (
@@ -980,6 +983,7 @@ export function DashboardClient({
           <AppCard
             icon={FileText}
             title={t("quoteRequests.title")}
+            badge={quoteRequests.length || undefined}
             description={t("quoteRequests.description")}
             contentClassName="p-0"
             footer={
@@ -1099,6 +1103,7 @@ export function DashboardClient({
           <AppCard
             icon={FileText}
             title={t("quoteResponses.title")}
+            badge={quoteResponses.length || undefined}
             description={t("quoteResponses.description")}
             contentClassName="p-0"
             footer={
@@ -1389,6 +1394,7 @@ export function DashboardClient({
           <AppCard
             icon={Clock}
             title={t("activeJobsTable.title")}
+            badge={stats.todaysServices.length || undefined}
             className="lg:col-span-2"
             contentClassName="p-0"
             footer={
@@ -1617,6 +1623,7 @@ export function DashboardClient({
         <AppCard
           icon={Eye}
           title={t("recentObservations")}
+          badge={recentObservations.length || undefined}
           contentClassName="p-0"
           footer={
               <button

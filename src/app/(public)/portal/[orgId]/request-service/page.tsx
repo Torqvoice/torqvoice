@@ -5,12 +5,8 @@ import {
   getPortalServiceRequests,
 } from "@/features/portal/Actions/portalActions";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
+import { Card, CardContent } from "@/components/ui/card";
 import { getTranslations } from "next-intl/server";
 
 export default async function PortalRequestServicePage({
@@ -77,13 +73,9 @@ export default async function PortalRequestServicePage({
         )}
 
         {requests.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">
-                {t('yourRequests')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+          <AppCard
+            title={t('yourRequests')}
+          >
               <div className="space-y-3">
                 {requests.map((req) => (
                   <div
@@ -114,8 +106,7 @@ export default async function PortalRequestServicePage({
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </AppCard>
         )}
       </div>
     </PortalShell>

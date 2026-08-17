@@ -7,13 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -272,15 +266,15 @@ export function SubscriptionSettings({
   return (
     <div className="space-y-6">
       {/* Card 1: Current Plan */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {planIcon}
-            {t("subscription.title")}
-          </CardTitle>
-          <CardDescription>{t("subscription.description")}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        title={
+          <span className="flex items-center gap-2">
+            {planIcon} {t("subscription.title")}
+          </span>
+        }
+        description={t("subscription.description")}
+        contentClassName="space-y-4"
+      >
           <div className="flex items-center gap-3">
             <Label>{t("subscription.currentPlan")}:</Label>
             {planBadge}
@@ -345,16 +339,13 @@ export function SubscriptionSettings({
               </p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* Card 2: Plan Features */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("subscription.featuresTitle")}</CardTitle>
-          <CardDescription>{t("subscription.featuresDescription")}</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <AppCard
+        title={t("subscription.featuresTitle")}
+        description={t("subscription.featuresDescription")}
+      >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {featureRows.map((row) => (
               <div
@@ -378,16 +369,14 @@ export function SubscriptionSettings({
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
 
       {/* Card 3: Manage Subscription — demos have no Stripe billing to manage */}
       {isPaid && !isDemo && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("subscription.manageTitle")}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-3">
+        <AppCard
+          title={t("subscription.manageTitle")}
+          contentClassName="flex flex-wrap gap-3"
+        >
             {hasStripeCustomer && (
               <Button
                 variant="outline"
@@ -444,18 +433,15 @@ export function SubscriptionSettings({
                 </AlertDialog>
               )
             )}
-          </CardContent>
-        </Card>
+          </AppCard>
       )}
 
       {/* Upgrade Section — free users and demo users subscribe via Stripe Checkout */}
       {(plan === "free" || isDemo) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("subscription.upgradeTitle")}</CardTitle>
-            <CardDescription>{t("subscription.upgradeToProDescription")}</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <AppCard
+          title={t("subscription.upgradeTitle")}
+          description={t("subscription.upgradeToProDescription")}
+        >
             <div className="flex gap-2">
               <Button
                 variant="default"
@@ -484,17 +470,14 @@ export function SubscriptionSettings({
                 {t("subscription.upgradeToEnterprise")}
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </AppCard>
       )}
 
       {plan === "pro" && !isDemo && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("subscription.upgradeTitle")}</CardTitle>
-            <CardDescription>{t("subscription.upgradeToEnterpriseDescription")}</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <AppCard
+          title={t("subscription.upgradeTitle")}
+          description={t("subscription.upgradeToEnterpriseDescription")}
+        >
             <AlertDialog onOpenChange={handleUpgradeDialogOpen}>
               <AlertDialogTrigger asChild>
                 <Button
@@ -545,8 +528,7 @@ export function SubscriptionSettings({
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          </CardContent>
-        </Card>
+          </AppCard>
       )}
     </div>
   );

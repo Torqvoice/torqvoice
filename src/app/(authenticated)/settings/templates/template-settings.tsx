@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import {
   Select,
   SelectContent,
@@ -90,11 +90,9 @@ function TemplateTab({
   return (
     <>
       {/* Template Gallery */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base">{t('templates.presets')}</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <AppCard
+        title={t('templates.presets')}
+      >
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {templatePresets.map((preset) => {
               const isSelected = currentPresetId === preset.id;
@@ -170,18 +168,15 @@ function TemplateTab({
               );
             })}
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Color Settings */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Palette className="h-4 w-4" /> {t('templates.primaryColor')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <AppCard
+          icon={Palette}
+          title={t('templates.primaryColor')}
+          contentClassName="space-y-4"
+        >
             <div className="flex items-center gap-3">
               <Input
                 type="color"
@@ -212,15 +207,12 @@ function TemplateTab({
                 </button>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </AppCard>
 
         {/* Font & Layout Settings */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base">{t('templates.fontAndLayout')}</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <AppCard
+          title={t('templates.fontAndLayout')}
+        >
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -270,24 +262,20 @@ function TemplateTab({
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </AppCard>
       </div>
 
       {/* Preview */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base">{t('templates.preview', { name: documentLabel })}</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <AppCard
+        title={t('templates.preview', { name: documentLabel })}
+      >
           <InvoiceLayoutPreview
             config={invoiceLayoutConfig ?? getDefaultInvoiceLayout()}
             documentType={documentType}
             template={values}
             logoUrl={logoUrl}
           />
-        </CardContent>
-      </Card>
+        </AppCard>
     </>
   );
 }
@@ -367,13 +355,10 @@ function SmsTemplateTab({
 
   return (
     <div className="space-y-4">
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <MessageSquare className="h-4 w-4" /> {t('templates.smsTemplates')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <AppCard
+        icon={MessageSquare}
+        title={t('templates.smsTemplates')}
+      >
           <p className="mb-4 text-sm text-muted-foreground">
             {t.rich('templates.smsTemplatesDescription', {
               code: (chunks) => <code className="rounded bg-muted px-1 py-0.5 text-xs">{chunks}</code>,
@@ -421,8 +406,7 @@ function SmsTemplateTab({
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
     </div>
   );
 }

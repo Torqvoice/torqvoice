@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { AppCard } from '@/components/app-card'
 import { ExternalLink, Key, Loader2 } from 'lucide-react'
 import { validateLicense } from '../Actions/validateLicense'
 
@@ -51,18 +51,12 @@ export function LicenseSettings({
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader className="flex flex-row items-start justify-between gap-4">
-          <div className="space-y-1.5">
-            <CardTitle className="flex items-center gap-2">
-              <Key className="h-5 w-5" />
-              {t('license.title')}
-            </CardTitle>
-            <CardDescription>
-              {t('license.description')}
-            </CardDescription>
-          </div>
-          {!licenseValid && !demoMode && (
+      <AppCard
+        icon={Key}
+        title={t('license.title')}
+        description={t('license.description')}
+        action={
+          !licenseValid && !demoMode ? (
             <Button asChild variant="default" size="sm" className="shrink-0">
               <a
                 href={`${process.env.NEXT_PUBLIC_TORQVOICE_COM_URL || 'https://torqvoice.com'}/subscriptions/white-label`}
@@ -73,9 +67,10 @@ export function LicenseSettings({
                 <ExternalLink className="ml-2 h-3 w-3" />
               </a>
             </Button>
-          )}
-        </CardHeader>
-        <CardContent className="space-y-4">
+          ) : undefined
+        }
+        contentClassName="space-y-4"
+      >
           <div className="flex items-center gap-2">
             <Label>{t('license.status')}</Label>
             {licenseValid ? (
@@ -112,8 +107,7 @@ export function LicenseSettings({
           <p className="text-xs text-muted-foreground">
             {t('license.keyHint')}
           </p>
-        </CardContent>
-      </Card>
+      </AppCard>
     </div>
   )
 }

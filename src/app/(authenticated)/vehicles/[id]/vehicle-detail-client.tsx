@@ -1510,7 +1510,7 @@ export function VehicleDetailClient({
                 return (
                   <Card
                     key={r.id}
-                    className={`border-0 shadow-sm ${
+                    className={`${
                       urgency === 'overdue'
                         ? 'ring-1 ring-red-500/30'
                         : urgency === 'due-soon'

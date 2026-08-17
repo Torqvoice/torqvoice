@@ -1,10 +1,11 @@
 'use client'
 
+import { AppCard } from '@/components/app-card'
 import { useRef, useState } from 'react'
 import { useFormatter, useNow, useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -390,13 +391,12 @@ export function DataSettings({
         // missed, red when a whole day has passed.
         const dot = ageHours < 3 ? 'bg-emerald-500' : ageHours < 26 ? 'bg-amber-500' : 'bg-red-500'
         return (
-          <Card className="gap-2 border border-primary/30 shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <ShieldCheck className="h-4 w-4" /> {t('data.backupStatus.title')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
+          <AppCard
+            icon={ShieldCheck}
+            title={t('data.backupStatus.title')}
+            className="gap-2 border border-primary/30 shadow-sm"
+            contentClassName="space-y-2"
+          >
               <p className="text-sm text-muted-foreground">
                 {t('data.backupStatus.description')}
               </p>
@@ -424,21 +424,19 @@ export function DataSettings({
                   {t('data.backupStatus.supportAction')}
                 </button>
               </p>
-            </CardContent>
-          </Card>
+            </AppCard>
         )
       })()}
 
       <ReadOnlyWrapper>
         <div className="grid gap-6 lg:grid-cols-12">
           {/* Export Card */}
-          <Card className="border-0 shadow-sm lg:col-span-7">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Download className="h-4 w-4" /> {t('data.exportTitle')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <AppCard
+            icon={Download}
+            title={t('data.exportTitle')}
+            className="lg:col-span-7"
+            contentClassName="space-y-4"
+          >
               <p className="text-sm text-muted-foreground">
                 {t('data.exportDescription')}
               </p>
@@ -486,17 +484,15 @@ export function DataSettings({
                 {exporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('data.downloadBackup')}
               </Button>
-            </CardContent>
-          </Card>
+            </AppCard>
 
           {/* Import Card */}
-          <Card className="border-0 shadow-sm lg:col-span-5">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Upload className="h-4 w-4" /> {t('data.importTitle')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <AppCard
+            icon={Upload}
+            title={t('data.importTitle')}
+            className="lg:col-span-5"
+            contentClassName="space-y-4"
+          >
               <div className="flex items-start gap-2 rounded-md bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>
@@ -523,18 +519,15 @@ export function DataSettings({
                   {t('data.uploadRestore')}
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </AppCard>
         </div>
 
         {/* Import from Other Services */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <ArrowRight className="h-4 w-4" /> {t('data.importFromOther')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <AppCard
+          icon={ArrowRight}
+          title={t('data.importFromOther')}
+          contentClassName="space-y-4"
+        >
             <p className="text-sm text-muted-foreground">
               {t('data.importFromOtherDescription')}
             </p>
@@ -571,8 +564,7 @@ export function DataSettings({
                 />
               </button>
             </div>
-          </CardContent>
-        </Card>
+          </AppCard>
       </ReadOnlyWrapper>
 
       {/* LubeLog Import Dialog */}

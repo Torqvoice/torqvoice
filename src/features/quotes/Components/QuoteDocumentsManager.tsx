@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { toast } from "sonner";
 import {
   FileText,
@@ -168,19 +168,12 @@ export function QuoteDocumentsManager({
   );
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Paperclip className="h-4 w-4" />
-          {t("documents.title")}
-          {maxDocuments !== undefined && (
-            <span className="ml-auto text-xs font-normal text-muted-foreground">
-              {files.length} / {maxDocuments}
-            </span>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <AppCard
+      icon={Paperclip}
+      title={t("documents.title")}
+      badge={maxDocuments !== undefined ? `${files.length} / ${maxDocuments}` : undefined}
+      contentClassName="space-y-4"
+    >
         {atLimit ? (
           <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
             <p className="text-sm font-medium text-muted-foreground">
@@ -271,7 +264,6 @@ export function QuoteDocumentsManager({
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </AppCard>
   );
 }

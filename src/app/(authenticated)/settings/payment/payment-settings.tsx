@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -101,22 +101,21 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
     <div className="space-y-6">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between pb-4">
-          <div className="flex items-center gap-3">
-            <Banknote className="h-5 w-5 text-muted-foreground" />
-            <CardTitle className="text-lg">{t('payment.detailsTitle')}</CardTitle>
-          </div>
+      <AppCard
+        icon={Banknote}
+        title={t('payment.detailsTitle')}
+        action={
           <a
             href="https://torqvoice.com/docs/configuration/payment-providers"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+            className="text-[11px] text-muted-foreground transition-colors hover:text-foreground"
           >
             {t('payment.readMore')} →
           </a>
-        </CardHeader>
-        <CardContent className="space-y-6">
+        }
+        contentClassName="space-y-6"
+      >
           <p className="text-sm text-muted-foreground">
             {t('payment.detailsDescription')}
           </p>
@@ -147,15 +146,13 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
               {t('payment.paymentTermsHint')}
             </p>
           </div>
-        </CardContent>
-      </Card>
+      </AppCard>
 
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <CreditCard className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('payment.onlinePayments')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <AppCard
+        icon={CreditCard}
+        title={t('payment.onlinePayments')}
+        contentClassName="space-y-6"
+      >
           <p className="text-sm text-muted-foreground">
             {t('payment.onlinePaymentsDescription')}
           </p>
@@ -436,8 +433,7 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
               </Button>
             </div>
           </SaveButton>
-        </CardContent>
-      </Card>
+        </AppCard>
       </ReadOnlyWrapper>
     </div>
   );

@@ -1,10 +1,10 @@
 'use client'
 
+import { AppCard } from '@/components/app-card'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { CheckCircle2, Download, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useInstallPrompt } from '@/components/pwa-install-prompt'
 
@@ -15,12 +15,11 @@ export function InstallSettingsClient() {
 
   return (
     <div className="space-y-6">
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Download className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        icon={Download}
+        title={t('title')}
+        contentClassName="space-y-4"
+      >
           <div className="flex items-start gap-3">
             <Image
               src="/icons/icon-192.png"
@@ -68,8 +67,7 @@ export function InstallSettingsClient() {
               </div>
             </>
           )}
-        </CardContent>
-      </Card>
+        </AppCard>
     </div>
   )
 }

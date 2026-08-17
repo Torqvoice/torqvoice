@@ -13,12 +13,8 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -820,19 +816,19 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               <div className="space-y-4">
                 {/* Top-line metrics */}
                 <div className="grid gap-2 grid-cols-3">
-                  <Card className="border-0 shadow-sm">
+                  <Card>
                     <CardContent className="px-3 py-1.5">
                       <p className="text-[11px] text-muted-foreground">{t("revenue.revenue")}</p>
                       <p className="text-base font-semibold truncate">{fmtCurrency(revenueData.summary.totalRevenue)}</p>
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-sm">
+                  <Card>
                     <CardContent className="px-3 py-1.5">
                       <p className="text-[11px] text-muted-foreground">{t("revenue.collected")}</p>
                       <p className="text-base font-semibold truncate">{fmtCurrency(revenueData.summary.totalCollected)}</p>
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-sm">
+                  <Card>
                     <CardContent className="px-3 py-1.5">
                       <p className="text-[11px] text-muted-foreground">{t("revenue.outstanding")}</p>
                       <p className="text-base font-semibold truncate">{fmtCurrency(revenueData.summary.outstanding)}</p>
@@ -841,11 +837,9 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 </div>
 
                 {/* Net Profit breakdown */}
-                <Card className="border-0 shadow-sm">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">{t("revenue.netProfit")}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                <AppCard
+                  title={t("revenue.netProfit")}
+                >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -866,38 +860,31 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         <span className="text-base font-semibold tabular-nums">{fmtCurrency(revenueData.summary.netProfit)}</span>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </AppCard>
 
                 <div className="grid gap-4 lg:grid-cols-5">
-                  <Card className="border-0 shadow-sm lg:col-span-3">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">{t("revenue.monthlyRevenue")}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                  <AppCard
+                    title={t("revenue.monthlyRevenue")}
+                    className="lg:col-span-3"
+                  >
                       <RevenueBarChart
                         data={revenueData.monthly}
                         formatCurrency={fmtCurrency}
                         labels={{ revenue: t("charts.revenue"), collected: t("charts.collected"), netProfit: t("revenue.netProfit") }}
                       />
-                    </CardContent>
-                  </Card>
-                  <Card className="border-0 shadow-sm lg:col-span-2">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">{t("revenue.revenueByType")}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                    </AppCard>
+                  <AppCard
+                    title={t("revenue.revenueByType")}
+                    className="lg:col-span-2"
+                  >
                       <RevenueTypeDonut data={revenueData.byType} formatCurrency={fmtCurrency} />
-                    </CardContent>
-                  </Card>
+                    </AppCard>
                 </div>
 
                 {revenueData.monthly.length > 0 && (
-                  <Card className="border-0 shadow-sm">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">{t("revenue.monthlyBreakdown")}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                  <AppCard
+                    title={t("revenue.monthlyBreakdown")}
+                  >
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -938,8 +925,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                           ))}
                         </TableBody>
                       </Table>
-                    </CardContent>
-                  </Card>
+                    </AppCard>
                 )}
               </div>
             )}
@@ -952,7 +938,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               <div className="space-y-4">
                 {/* Summary cards */}
                 <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
-                  <Card className="border-0 shadow-sm">
+                  <Card>
                     <CardContent className="flex items-center gap-3 p-4">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-red-500/10">
                         <AlertTriangle className="h-4 w-4 text-red-500" />
@@ -964,7 +950,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-sm">
+                  <Card>
                     <CardContent className="flex items-center gap-3 p-4">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
                         <DollarSign className="h-4 w-4 text-amber-500" />
@@ -976,7 +962,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-sm">
+                  <Card>
                     <CardContent className="flex items-center gap-3 p-4">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-orange-500/10">
                         <Clock className="h-4 w-4 text-orange-500" />
@@ -987,7 +973,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-sm">
+                  <Card>
                     <CardContent className="flex items-center gap-3 p-4">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-red-500/10">
                         <Clock className="h-4 w-4 text-red-500" />
@@ -998,7 +984,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-sm">
+                  <Card>
                     <CardContent className="flex items-center gap-3 p-4">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-red-600/10">
                         <Clock className="h-4 w-4 text-red-600" />
@@ -1012,7 +998,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 </div>
 
                 {/* Filter and table */}
-                <Card className="border-0 shadow-sm">
+                <Card>
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-sm font-medium">{t("pastDueInvoices.pastDueInvoicesList")}</CardTitle>
@@ -1114,7 +1100,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
             {!loading && taxData && (
               <div className="space-y-4">
                 <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
-                  <Card className="border-0 shadow-sm">
+                  <Card>
                     <CardContent className="flex items-center gap-3 p-4">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
                         <Receipt className="h-4 w-4 text-amber-500" />
@@ -1127,7 +1113,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-sm">
+                  <Card>
                     <CardContent className="flex items-center gap-3 p-4">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
                         <DollarSign className="h-4 w-4 text-blue-500" />
@@ -1140,7 +1126,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-sm">
+                  <Card>
                     <CardContent className="flex items-center gap-3 p-4">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
                         <BarChart3 className="h-4 w-4 text-violet-500" />
@@ -1154,26 +1140,21 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 </div>
 
                 {taxData.monthly.length > 0 && (
-                  <Card className="border-0 shadow-sm">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">{t("tax.monthlyTaxCollected")}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                  <AppCard
+                    title={t("tax.monthlyTaxCollected")}
+                  >
                       <TaxBarChart
                         data={taxData.monthly}
                         formatCurrency={fmtCurrency}
                         labels={{ taxCollected: t("charts.taxCollected") }}
                       />
-                    </CardContent>
-                  </Card>
+                    </AppCard>
                 )}
 
                 {taxData.byRate.length > 0 && (
-                  <Card className="border-0 shadow-sm">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">{t("tax.taxByRate")}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                  <AppCard
+                    title={t("tax.taxByRate")}
+                  >
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -1194,16 +1175,13 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                           ))}
                         </TableBody>
                       </Table>
-                    </CardContent>
-                  </Card>
+                    </AppCard>
                 )}
 
                 {taxData.monthly.length > 0 && (
-                  <Card className="border-0 shadow-sm">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">{t("tax.monthlyBreakdown")}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                  <AppCard
+                    title={t("tax.monthlyBreakdown")}
+                  >
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -1228,8 +1206,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                           ))}
                         </TableBody>
                       </Table>
-                    </CardContent>
-                  </Card>
+                    </AppCard>
                 )}
               </div>
             )}
@@ -1243,7 +1220,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         {!loading && serviceData && (
           <div className="space-y-4">
             <div className="grid gap-3 grid-cols-1 max-w-xs">
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
                     <BarChart3 className="h-4 w-4 text-blue-500" />
@@ -1257,24 +1234,18 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
               {serviceData.byStatus.length > 0 && (
-                <Card className="border-0 shadow-sm">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">{t("services.byStatus")}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                <AppCard
+                  title={t("services.byStatus")}
+                >
                     <ServiceStatusChart data={serviceData.byStatus} labels={{ count: t("charts.count") }} />
-                  </CardContent>
-                </Card>
+                  </AppCard>
               )}
               {serviceData.byType.length > 0 && (
-                <Card className="border-0 shadow-sm">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">{t("services.byType")}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                <AppCard
+                  title={t("services.byType")}
+                >
                     <ServiceTypeDonut data={serviceData.byType} />
-                  </CardContent>
-                </Card>
+                  </AppCard>
               )}
             </div>
           </div>
@@ -1287,7 +1258,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         {!loading && customerData && (
           <div className="space-y-4">
             <div className="grid gap-3 grid-cols-2 max-w-lg">
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
                     <Users className="h-4 w-4 text-blue-500" />
@@ -1298,7 +1269,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
                     <Users className="h-4 w-4 text-emerald-500" />
@@ -1311,25 +1282,20 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               </Card>
             </div>
             {customerData.topCustomers.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("customers.topCustomersBySpend")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("customers.topCustomersBySpend")}
+              >
                   <TopCustomersChart
                     data={customerData.topCustomers}
                     formatCurrency={fmtCurrency}
                     labels={{ totalSpent: t("charts.totalSpent") }}
                   />
-                </CardContent>
-              </Card>
+                </AppCard>
             )}
             {customerData.topCustomers.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("customers.topCustomers")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("customers.topCustomers")}
+              >
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1352,8 +1318,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       ))}
                     </TableBody>
                   </Table>
-                </CardContent>
-              </Card>
+                </AppCard>
             )}
           </div>
         )}
@@ -1365,7 +1330,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         {!loading && inventoryData && (
           <div className="space-y-4">
             <div className="grid gap-3 grid-cols-2 lg:grid-cols-5">
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
                     <Package className="h-4 w-4 text-blue-500" />
@@ -1376,7 +1341,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
                     <Package className="h-4 w-4 text-emerald-500" />
@@ -1387,7 +1352,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
                     <DollarSign className="h-4 w-4 text-amber-500" />
@@ -1400,7 +1365,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
                     <DollarSign className="h-4 w-4 text-violet-500" />
@@ -1413,7 +1378,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
                     <TrendingUp className="h-4 w-4 text-emerald-500" />
@@ -1428,11 +1393,9 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               </Card>
             </div>
             {inventoryData.lowStock.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("inventory.lowStock")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("inventory.lowStock")}
+              >
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1465,8 +1428,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       ))}
                     </TableBody>
                   </Table>
-                </CardContent>
-              </Card>
+                </AppCard>
             )}
           </div>
         )}
@@ -1478,7 +1440,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         {!loading && technicianData && (
           <div className="space-y-4">
             <div className="grid gap-3 grid-cols-2 max-w-lg">
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
                     <Wrench className="h-4 w-4 text-violet-500" />
@@ -1489,7 +1451,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
                     <DollarSign className="h-4 w-4 text-emerald-500" />
@@ -1504,25 +1466,20 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               </Card>
             </div>
             {technicianData.technicians.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("technicians.revenueByTechnician")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("technicians.revenueByTechnician")}
+              >
                   <TechnicianBarChart
                     data={technicianData.technicians}
                     formatCurrency={fmtCurrency}
                     labels={{ revenue: t("charts.revenue") }}
                   />
-                </CardContent>
-              </Card>
+                </AppCard>
             )}
             {technicianData.technicians.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("technicians.technicianBreakdown")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("technicians.technicianBreakdown")}
+              >
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1547,8 +1504,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       ))}
                     </TableBody>
                   </Table>
-                </CardContent>
-              </Card>
+                </AppCard>
             )}
           </div>
         )}
@@ -1560,7 +1516,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         {!loading && partsData && (
           <div className="space-y-4">
             <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
                     <Cog className="h-4 w-4 text-blue-500" />
@@ -1571,7 +1527,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
                     <DollarSign className="h-4 w-4 text-emerald-500" />
@@ -1584,7 +1540,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-orange-500/10">
                     <Package className="h-4 w-4 text-orange-500" />
@@ -1597,7 +1553,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-green-500/10">
                     <TrendingUp className="h-4 w-4 text-green-500" />
@@ -1612,21 +1568,16 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               </Card>
             </div>
             {partsData.parts.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("parts.topPartsByUsage")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("parts.topPartsByUsage")}
+              >
                   <PartsDonut data={partsData.parts} />
-                </CardContent>
-              </Card>
+                </AppCard>
             )}
             {partsData.parts.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("parts.partsUsage")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("parts.partsUsage")}
+              >
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1653,8 +1604,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       ))}
                     </TableBody>
                   </Table>
-                </CardContent>
-              </Card>
+                </AppCard>
             )}
           </div>
         )}
@@ -1666,7 +1616,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         {!loading && jobAnalyticsData && (
           <div className="space-y-4">
             <div className="grid gap-3 grid-cols-2 max-w-lg">
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
                     <BarChart3 className="h-4 w-4 text-blue-500" />
@@ -1677,7 +1627,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
                     <DollarSign className="h-4 w-4 text-emerald-500" />
@@ -1692,45 +1642,34 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               </Card>
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("jobAnalytics.jobsByDayOfWeek")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("jobAnalytics.jobsByDayOfWeek")}
+              >
                   <DayOfWeekChart data={jobAnalyticsData.dayOfWeek} labels={{ jobs: t("charts.jobs") }} />
-                </CardContent>
-              </Card>
+                </AppCard>
               {jobAnalyticsData.topServiceTypes.length > 0 && (
-                <Card className="border-0 shadow-sm">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">{t("jobAnalytics.serviceTypes")}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                <AppCard
+                  title={t("jobAnalytics.serviceTypes")}
+                >
                     <ServiceTypeAnalyticsDonut data={jobAnalyticsData.topServiceTypes} />
-                  </CardContent>
-                </Card>
+                  </AppCard>
               )}
             </div>
             {jobAnalyticsData.monthlyTrend.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("jobAnalytics.monthlyTrend")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("jobAnalytics.monthlyTrend")}
+              >
                   <MonthlyTrendChart
                     data={jobAnalyticsData.monthlyTrend}
                     formatCurrency={fmtCurrency}
                     labels={{ jobs: t("charts.jobs"), revenue: t("charts.revenue") }}
                   />
-                </CardContent>
-              </Card>
+                </AppCard>
             )}
             {jobAnalyticsData.topServiceTypes.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("jobAnalytics.serviceTypeBreakdown")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("jobAnalytics.serviceTypeBreakdown")}
+              >
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1751,8 +1690,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       ))}
                     </TableBody>
                   </Table>
-                </CardContent>
-              </Card>
+                </AppCard>
             )}
           </div>
         )}
@@ -1764,7 +1702,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         {!loading && retentionData && (
           <div className="space-y-4">
             <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
                     <UserCheck className="h-4 w-4 text-emerald-500" />
@@ -1775,7 +1713,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
                     <Users className="h-4 w-4 text-blue-500" />
@@ -1786,7 +1724,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
                     <Users className="h-4 w-4 text-violet-500" />
@@ -1797,7 +1735,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-sm">
+              <Card>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
                     <CalendarDays className="h-4 w-4 text-amber-500" />
@@ -1812,25 +1750,20 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               </Card>
             </div>
             {retentionData.topReturning.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("retention.topReturningCustomers")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("retention.topReturningCustomers")}
+              >
                   <RetentionBarChart
                     data={retentionData.topReturning}
                     formatCurrency={fmtCurrency}
                     labels={{ visits: t("charts.visits"), totalSpent: t("charts.totalSpent") }}
                   />
-                </CardContent>
-              </Card>
+                </AppCard>
             )}
             {retentionData.topReturning.length > 0 && (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("retention.returningCustomers")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("retention.returningCustomers")}
+              >
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1853,8 +1786,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       ))}
                     </TableBody>
                   </Table>
-                </CardContent>
-              </Card>
+                </AppCard>
             )}
           </div>
         )}
@@ -1895,7 +1827,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         {!loading && vehicleData && (
           <div className="space-y-4">
             {/* Vehicle header with inline stats */}
-            <Card className="border-0 shadow-sm">
+            <Card>
               <CardContent className="p-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3 min-w-0">
@@ -1923,23 +1855,20 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
 
             {/* Charts row */}
             <div className="grid gap-4 lg:grid-cols-5">
-              <Card className="border-0 shadow-sm lg:col-span-3">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("vehicles.monthlyCosts")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <AppCard
+                title={t("vehicles.monthlyCosts")}
+                className="lg:col-span-3"
+              >
                   <VehicleCostBarChart
                     data={vehicleData.monthlyCosts}
                     formatCurrency={fmtCurrency}
                     labels={{ partsCost: t("charts.partsCost"), laborCost: t("charts.laborCost") }}
                   />
-                </CardContent>
-              </Card>
-              <Card className="border-0 shadow-sm lg:col-span-2">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">{t("vehicles.serviceTypeBreakdown")}</CardTitle>
-                </CardHeader>
-                <CardContent>
+                </AppCard>
+              <AppCard
+                title={t("vehicles.serviceTypeBreakdown")}
+                className="lg:col-span-2"
+              >
                   <div className="space-y-3">
                     {vehicleData.serviceTypeBreakdown.map((item) => {
                       const pct = vehicleData.summary.totalCost > 0
@@ -1972,18 +1901,16 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       </div>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+                </AppCard>
             </div>
 
             {/* Top Parts + Service History side by side on large screens */}
             <div className="grid gap-4 lg:grid-cols-5">
               {vehicleData.topParts.length > 0 && (
-                <Card className="border-0 shadow-sm lg:col-span-2">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">{t("vehicles.topParts")}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                <AppCard
+                  title={t("vehicles.topParts")}
+                  className="lg:col-span-2"
+                >
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -2005,8 +1932,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         ))}
                       </TableBody>
                     </Table>
-                  </CardContent>
-                </Card>
+                  </AppCard>
               )}
 
               {vehicleData.serviceHistory.length > 0 && (() => {
@@ -2015,7 +1941,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 const page = Math.min(historyPage, totalPages - 1);
                 const paged = vehicleData.serviceHistory.slice(page * pageSize, (page + 1) * pageSize);
                 return (
-                  <Card className={cn("border-0 shadow-sm", vehicleData.topParts.length > 0 ? "lg:col-span-3" : "lg:col-span-5")}>
+                  <Card className={cn("", vehicleData.topParts.length > 0 ? "lg:col-span-3" : "lg:col-span-5")}>
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-sm font-medium">{t("vehicles.serviceHistory")}</CardTitle>
@@ -2083,7 +2009,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <Card className="border-0 shadow-sm">
+    <Card>
       <CardContent className="flex flex-col items-center justify-center py-12">
         <BarChart3 className="h-12 w-12 text-muted-foreground mb-4" />
         <p className="text-muted-foreground">

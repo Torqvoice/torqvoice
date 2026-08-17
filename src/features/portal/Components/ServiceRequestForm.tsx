@@ -8,13 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import {
   Select,
   SelectContent,
@@ -80,14 +74,10 @@ export function ServiceRequestForm({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("newServiceRequest")}</CardTitle>
-        <CardDescription>
-          {t("formDescription")}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <AppCard
+      title={t("newServiceRequest")}
+      description={t("formDescription")}
+    >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="vehicle">{t("vehicleLabel")}</Label>
@@ -141,7 +131,6 @@ export function ServiceRequestForm({
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </AppCard>
   );
 }

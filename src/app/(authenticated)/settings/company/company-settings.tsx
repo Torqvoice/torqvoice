@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -98,13 +98,10 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
     <div className="space-y-4">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-            <ImageIcon className="h-4 w-4" /> {t('company.logoTitle')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <AppCard
+        icon={ImageIcon}
+        title={t('company.logoTitle')}
+      >
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted/50">
               {logoUrl ? (
@@ -128,15 +125,12 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
             </div>
             <input ref={logoInputRef} type="file" accept=".jpg,.jpeg,.png,.webp,.svg" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleLogoUpload(file); e.target.value = ""; }} />
           </div>
-        </CardContent>
-      </Card>
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Building2 className="h-4 w-4" /> {t('company.detailsTitle')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        </AppCard>
+      <AppCard
+        icon={Building2}
+        title={t('company.detailsTitle')}
+        contentClassName="space-y-4"
+      >
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
               <Label htmlFor="workshopName" className="text-xs">{t('company.shopName')}</Label>
@@ -159,8 +153,7 @@ export function CompanySettings({ settings, organizationName }: { settings: Reco
             <Label htmlFor="workshopAddress" className="text-xs">{t('company.address')}</Label>
             <Textarea id="workshopAddress" placeholder={t('company.addressPlaceholder')} rows={2} value={workshopAddress} onChange={(e) => setWorkshopAddress(e.target.value)} />
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
       <SaveButton>
         <div className="flex items-center justify-between">
           <Button size="sm" onClick={handleSave} disabled={saving}>

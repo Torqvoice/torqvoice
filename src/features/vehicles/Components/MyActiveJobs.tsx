@@ -18,7 +18,7 @@ import {
   Package,
 } from 'lucide-react'
 import { FindingForm } from '@/features/vehicles/Components/FindingForm'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { AppCard } from '@/components/app-card'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Badge } from '@/components/ui/badge'
@@ -301,15 +301,13 @@ export function MyActiveJobs({
 
   return (
     <TooltipProvider>
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="px-4 pb-1 pt-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Wrench className="h-4 w-4" />
-            {t('title')}
-          </CardTitle>
-          <p className="text-xs text-muted-foreground">{t('description')}</p>
-        </CardHeader>
-        <CardContent className="p-0">
+      <AppCard
+        icon={Wrench}
+        title={t('title')}
+        description={t('description')}
+        badge={jobs.length || undefined}
+        contentClassName="p-0"
+      >
           <div className="divide-y">
             {jobs.map((job) => {
               const StatusIcon = STATUS_ICON[job.status] || Wrench
@@ -567,8 +565,7 @@ export function MyActiveJobs({
               )
             })}
           </div>
-        </CardContent>
-      </Card>
+      </AppCard>
 
       <BarcodeScannerDialog
         open={scannerOpen}
