@@ -6,7 +6,6 @@ import {
 } from "@/features/portal/Actions/portalActions";
 import { Badge } from "@/components/ui/badge";
 import { AppCard } from "@/components/app-card";
-import { Card, CardContent } from "@/components/ui/card";
 import { getTranslations } from "next-intl/server";
 
 export default async function PortalRequestServicePage({
@@ -60,17 +59,9 @@ export default async function PortalRequestServicePage({
           </p>
         </div>
 
-        {vehicles.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center">
-              <p className="text-muted-foreground">
-                {t('noVehicles')}
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <ServiceRequestForm orgId={orgId} vehicles={vehicles} />
-        )}
+        {/* The form handles the no-vehicles case itself: it opens in
+            "describe your vehicle" mode, so new customers can still ask. */}
+        <ServiceRequestForm orgId={orgId} vehicles={vehicles} />
 
         {requests.length > 0 && (
           <AppCard

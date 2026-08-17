@@ -152,7 +152,13 @@
     "good": "{count} goed",
     "fair": "{count} redelijk",
     "poor": "{count} slecht",
-    "view": "Bekijken"
+    "view": "Bekijken",
+    "serviceHistoryTitle": "Servicegeschiedenis",
+    "inspectionsTitle": "Inspecties",
+    "columnVehicle": "Voertuig",
+    "columnPlate": "Kenteken",
+    "columnServices": "Services",
+    "columnInspections": "Inspecties"
   },
   "requestService": {
     "title": "Service aanvragen",
@@ -174,6 +180,15 @@
     "yourRequests": "Uw serviceaanvragen",
     "failedToLoad": "Gegevens laden mislukt.",
     "staffNotes": "Medewerkernotities: {notes}",
-    "preferred": "Gewenst: {date}"
+    "preferred": "Gewenst: {date}",
+    "notListedOption": "Mijn voertuig staat er niet bij",
+    "newVehicleHint": "Vertel ons over het voertuig, dan voegen we het toe aan je profiel.",
+    "fillVehicleDetails": "Vul het merk en model van het voertuig in",
+    "makeLabel": "Merk",
+    "makePlaceholder": "bijv. Ford",
+    "modelLabel": "Model",
+    "modelPlaceholder": "bijv. Kuga",
+    "yearLabel": "Bouwjaar",
+    "plateLabel": "Kenteken"
   }
 }

@@ -39,7 +39,7 @@ export function BoardJobCard({
       ref={setNodeRef}
       style={style}
       className="group flex cursor-pointer items-start gap-1 rounded-md border bg-card p-1.5 text-xs shadow-sm transition-shadow hover:shadow-md"
-      {...interactiveRow(onClick)}
+      {...(onClick ? interactiveRow(onClick) : {})}
     >
       <button
         {...listeners}

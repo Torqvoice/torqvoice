@@ -81,6 +81,11 @@ export async function PortalShell({
 
   return (
     <div className="min-h-svh bg-muted/20">
+      {/* Same top hairline as the app: primary fading out to the right. */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 top-0 z-50 h-px bg-linear-to-r from-primary via-primary/35 to-transparent"
+      />
       <PortalHeader
         orgId={orgParam}
         orgName={org.name}

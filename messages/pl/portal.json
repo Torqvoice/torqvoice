@@ -152,7 +152,13 @@
     "good": "{count} dobry",
     "fair": "{count} dostateczny",
     "poor": "{count} zły",
-    "view": "Zobacz"
+    "view": "Zobacz",
+    "serviceHistoryTitle": "Historia serwisowa",
+    "inspectionsTitle": "Przeglądy",
+    "columnVehicle": "Pojazd",
+    "columnPlate": "Rejestracja",
+    "columnServices": "Usługi",
+    "columnInspections": "Przeglądy"
   },
   "requestService": {
     "title": "Zamów serwis",
@@ -174,6 +180,15 @@
     "yourRequests": "Twoje zlecenia serwisowe",
     "failedToLoad": "Nie udało się załadować danych.",
     "staffNotes": "Uwagi personelu: {notes}",
-    "preferred": "Preferowana: {date}"
+    "preferred": "Preferowana: {date}",
+    "notListedOption": "Mojego pojazdu nie ma na liście",
+    "newVehicleHint": "Opisz pojazd, a dodamy go do Twojego profilu.",
+    "fillVehicleDetails": "Podaj markę i model pojazdu",
+    "makeLabel": "Marka",
+    "makePlaceholder": "np. Ford",
+    "modelLabel": "Model",
+    "modelPlaceholder": "np. Kuga",
+    "yearLabel": "Rocznik",
+    "plateLabel": "Numer rejestracyjny"
   }
 }

@@ -1,7 +1,14 @@
 import { PortalShell } from "@/features/portal/Components/PortalShell";
 import { getPortalVehicles } from "@/features/portal/Actions/portalActions";
-import { Card, CardContent } from "@/components/ui/card";
-import { Car } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Car, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
@@ -40,48 +47,78 @@ export default async function PortalVehiclesPage({
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <>
+          {/* Card list (phones + small tablets) */}
+          <div className="space-y-2 md:hidden">
             {vehicles.map((v) => (
-              <Link key={v.id} href={`/portal/${orgId}/vehicles/${v.id}`}>
-                <Card className="transition-colors hover:bg-muted/50">
-                  <CardContent className="pt-6">
-                    <div className="flex items-start gap-4">
-                      {v.imageUrl ? (
-                        <img
-                          src={v.imageUrl}
-                          alt={`${v.make} ${v.model}`}
-                          className="h-16 w-16 rounded object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-16 w-16 items-center justify-center rounded bg-muted">
-                          <Car className="h-8 w-8 text-muted-foreground/50" />
-                        </div>
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-semibold">
-                          {v.year} {v.make} {v.model}
-                        </p>
-                        {v.licensePlate && (
-                          <p className="text-sm text-muted-foreground">
-                            {v.licensePlate}
-                          </p>
-                        )}
-                        {v.color && (
-                          <p className="text-xs text-muted-foreground">
-                            {v.color}
-                          </p>
-                        )}
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {t('serviceCount', { count: v._count.serviceRecords })} &middot;{" "}
-                          {t('inspectionCount', { count: v._count.inspections })}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              <Link
+                key={v.id}
+                href={`/portal/${orgId}/vehicles/${v.id}`}
+                className="flex items-center justify-between gap-3 rounded-lg border bg-card p-3 active:bg-muted/50"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 flex-1 truncate font-medium">
+                      {v.year} {v.make} {v.model}
+                    </span>
+                    {v.licensePlate && (
+                      <span className="shrink-0 font-mono text-sm">{v.licensePlate}</span>
+                    )}
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t('serviceCount', { count: v._count.serviceRecords })} &middot;{" "}
+                    {t('inspectionCount', { count: v._count.inspections })}
+                  </p>
+                </div>
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
               </Link>
             ))}
           </div>
+
+          {/* Table (md and up). Server-rendered, so the row's link — a real
+              anchor on the vehicle name — carries the navigation. */}
+          <div className="hidden rounded-lg border md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('columnVehicle')}</TableHead>
+                  <TableHead className="w-[140px]">{t('columnPlate')}</TableHead>
+                  <TableHead className="w-[130px]">{t('columnServices')}</TableHead>
+                  <TableHead className="w-[130px]">{t('columnInspections')}</TableHead>
+                  <TableHead className="w-10" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {vehicles.map((v) => (
+                  <TableRow key={v.id} className="group relative">
+                    <TableCell className="font-medium">
+                      {/* after:inset-0 stretches the click target across the
+                          whole row while staying one real, focusable link. */}
+                      <Link
+                        href={`/portal/${orgId}/vehicles/${v.id}`}
+                        className="after:absolute after:inset-0 focus-visible:outline-none group-hover:underline"
+                      >
+                        {v.year} {v.make} {v.model}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="font-mono text-sm text-muted-foreground">
+                      {v.licensePlate || "-"}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {t('serviceCount', { count: v._count.serviceRecords })}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {t('inspectionCount', { count: v._count.inspections })}
+                    </TableCell>
+                    <TableCell>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          </>
         )}
       </div>
     </PortalShell>

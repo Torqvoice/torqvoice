@@ -152,7 +152,13 @@
     "good": "{count} gerai",
     "fair": "{count} vidutiniškai",
     "poor": "{count} blogai",
-    "view": "Peržiūrėti"
+    "view": "Peržiūrėti",
+    "serviceHistoryTitle": "Aptarnavimo istorija",
+    "inspectionsTitle": "Apžiūros",
+    "columnVehicle": "Transporto priemonė",
+    "columnPlate": "Valst. nr.",
+    "columnServices": "Aptarnavimai",
+    "columnInspections": "Apžiūros"
   },
   "requestService": {
     "title": "Užsakyti paslaugą",
@@ -174,6 +180,15 @@
     "yourRequests": "Jūsų paslaugų užklausos",
     "failedToLoad": "Nepavyko įkelti duomenų.",
     "staffNotes": "Personalo pastabos: {notes}",
-    "preferred": "Pageidaujama: {date}"
+    "preferred": "Pageidaujama: {date}",
+    "notListedOption": "Mano transporto priemonės sąraše nėra",
+    "newVehicleHint": "Papasakokite apie transporto priemonę – pridėsime ją prie jūsų profilio.",
+    "fillVehicleDetails": "Įveskite transporto priemonės markę ir modelį",
+    "makeLabel": "Markė",
+    "makePlaceholder": "pvz., Ford",
+    "modelLabel": "Modelis",
+    "modelPlaceholder": "pvz., Kuga",
+    "yearLabel": "Metai",
+    "plateLabel": "Valstybinis numeris"
   }
 }

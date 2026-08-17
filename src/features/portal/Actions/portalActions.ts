@@ -164,7 +164,7 @@ export async function getPortalVehicles() {
         year: true,
         licensePlate: true,
         color: true,
-        imageUrl: true,
+        // The workshop's vehicle photo is internal — never sent to customers.
         _count: {
           select: {
             serviceRecords: true,
@@ -193,7 +193,6 @@ export async function getPortalVehicleDetail(vehicleId: string) {
         mileage: true,
         fuelType: true,
         transmission: true,
-        imageUrl: true,
         serviceRecords: {
           select: {
             id: true,
@@ -317,16 +316,73 @@ export async function getPortalInspections() {
 // ─── Service Requests ─────────────────────────────────────────────────────
 
 export async function createServiceRequest(input: {
-  vehicleId: string
+  vehicleId?: string
+  /**
+   * A vehicle the workshop doesn't know yet. It is created on the customer's
+   * profile so the request — and everything downstream (work orders, history)
+   * — hangs off a real vehicle record from day one.
+   */
+  newVehicle?: {
+    make: string
+    model: string
+    year?: number
+    licensePlate?: string
+  }
   description: string
   preferredDate?: string
 }) {
   return withPortalAuth(async ({ customerId, organizationId }) => {
-    // Validate vehicle belongs to customer
-    const vehicle = await db.vehicle.findFirst({
-      where: { id: input.vehicleId, customerId, organizationId },
-      select: { id: true, make: true, model: true, licensePlate: true },
-    })
+    let vehicle: { id: string; make: string; model: string; licensePlate: string | null } | null =
+      null
+
+    if (input.vehicleId) {
+      // Validate vehicle belongs to customer
+      vehicle = await db.vehicle.findFirst({
+        where: { id: input.vehicleId, customerId, organizationId },
+        select: { id: true, make: true, model: true, licensePlate: true },
+      })
+    } else if (input.newVehicle) {
+      const make = input.newVehicle.make?.trim().slice(0, 60)
+      const model = input.newVehicle.model?.trim().slice(0, 60)
+      const licensePlate = input.newVehicle.licensePlate?.trim().slice(0, 20) || null
+      const currentYear = new Date().getFullYear()
+      const year =
+        Number.isInteger(input.newVehicle.year) &&
+        (input.newVehicle.year as number) >= 1900 &&
+        (input.newVehicle.year as number) <= currentYear + 1
+          ? (input.newVehicle.year as number)
+          : currentYear
+      if (!make || !model) {
+        throw new Error('Vehicle make and model are required')
+      }
+      // Vehicles carry an owning app user; portal customers are not users, so
+      // the record is filed under the organization's owner.
+      const ownerMember = await db.organizationMember.findFirst({
+        where: { organizationId, role: 'owner' },
+        select: { userId: true },
+      })
+      const anyMember =
+        ownerMember ??
+        (await db.organizationMember.findFirst({
+          where: { organizationId },
+          select: { userId: true },
+        }))
+      if (!anyMember) {
+        throw new Error('Organization has no members')
+      }
+      vehicle = await db.vehicle.create({
+        data: {
+          make,
+          model,
+          year,
+          licensePlate,
+          userId: anyMember.userId,
+          organizationId,
+          customerId,
+        },
+        select: { id: true, make: true, model: true, licensePlate: true },
+      })
+    }
 
     if (!vehicle) {
       throw new Error('Vehicle not found')
@@ -342,7 +398,7 @@ export async function createServiceRequest(input: {
         description: input.description,
         preferredDate: toSafeDate(input.preferredDate) ?? null,
         customerId,
-        vehicleId: input.vehicleId,
+        vehicleId: vehicle.id,
         organizationId,
       },
     })
