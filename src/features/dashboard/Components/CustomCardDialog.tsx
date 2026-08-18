@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DocsLink } from "@/components/docs-link";
 import {
   Select,
   SelectContent,
@@ -188,6 +189,7 @@ export function CustomCardDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{widget ? t("editCard") : t("addCard")}</DialogTitle>
+          <DocsLink href="/docs/features/dashboard" variant="hint" className="self-start" />
         </DialogHeader>
 
         <div className="space-y-5">

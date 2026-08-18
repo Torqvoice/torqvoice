@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DocsLink } from "@/components/docs-link";
 import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 import { searchSmsRecipients, sendSmsToCustomer } from "../Actions/smsActions";
 import { SmsTemplateMenu } from "./SmsTemplateMenu";
@@ -108,6 +109,7 @@ export function NewSmsDialog({
       <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
+          <DocsLink href="/docs/integrations/sms" variant="hint" className="self-start" />
         </DialogHeader>
 
         {!recipient ? (

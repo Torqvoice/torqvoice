@@ -34,6 +34,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DocsLink } from "@/components/docs-link";
 import { toast } from "sonner";
 import { useGlassModal } from "@/components/glass-modal";
 import { createVehicle, updateVehicle } from "../Actions/vehicleActions";
@@ -196,6 +197,7 @@ export function VehicleForm({ open, onOpenChange, vehicle, customers, defaultCus
           <DialogTitle>
             {vehicle ? t("editTitle") : t("addTitle")}
           </DialogTitle>
+          <DocsLink href="/docs/features/vehicles" variant="hint" className="self-start" />
           <DialogDescription className="sr-only">
             {vehicle ? t("editTitle") : t("addTitle")}
           </DialogDescription>

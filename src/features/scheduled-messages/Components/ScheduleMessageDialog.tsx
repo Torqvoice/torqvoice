@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DocsLink } from "@/components/docs-link";
 import { CustomerCombobox } from "@/features/quotes/Components/CustomerCombobox";
 import {
   createScheduledMessage,
@@ -184,6 +185,7 @@ export function ScheduleMessageDialog({
       <DialogContent className="sm:max-w-lg" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{isEdit ? t("editTitle") : t("title")}</DialogTitle>
+          <DocsLink href="/docs/features/messages" variant="hint" className="self-start" />
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
