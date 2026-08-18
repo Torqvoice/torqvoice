@@ -15,7 +15,8 @@ import { setSettings } from "@/features/settings/Actions/settingsActions";
 import { runLowStockCheck } from "@/features/inventory/Actions/runLowStockCheck";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { parseInvalidRecipients } from "@/features/portal/Lib/serviceRequestAlert";
-import { Loader2, PackageSearch, PlayCircle, Save, Wrench } from "lucide-react";
+import { interpolateSmsTemplate } from "@/lib/sms-templates";
+import { BellRing, Loader2, PackageSearch, PlayCircle, Save, Wrench } from "lucide-react";
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
 
 /**
@@ -25,7 +26,17 @@ import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard"
  * adding another (overdue invoices, expiring warranties, upcoming reminders)
  * means dropping in a sibling card rather than reworking this page.
  */
-export function AlertsSettings({ settings }: { settings: Record<string, string> }) {
+export function AlertsSettings({
+  settings,
+  smsFeature = false,
+  smsConfigured = false,
+  companyName = "",
+}: {
+  settings: Record<string, string>;
+  smsFeature?: boolean;
+  smsConfigured?: boolean;
+  companyName?: string;
+}) {
   const t = useTranslations("settings");
 
   return (
@@ -37,11 +48,256 @@ export function AlertsSettings({ settings }: { settings: Record<string, string> 
       </div>
       <ReadOnlyWrapper>
         <div className="space-y-6">
+          <CustomerRemindersCard
+            settings={settings}
+            smsFeature={smsFeature}
+            smsConfigured={smsConfigured}
+            companyName={companyName}
+          />
           <ServiceRequestAlertCard settings={settings} />
           <LowStockAlertCard settings={settings} />
         </div>
       </ReadOnlyWrapper>
     </div>
+  );
+}
+
+/**
+ * Automated customer reminders: inspection due and service due. Everything is
+ * off by default; enabling either type is an explicit action, because these
+ * messages go to customers, not to staff.
+ */
+function CustomerRemindersCard({
+  settings,
+  smsFeature,
+  smsConfigured,
+  companyName,
+}: {
+  settings: Record<string, string>;
+  smsFeature: boolean;
+  smsConfigured: boolean;
+  companyName: string;
+}) {
+  const router = useRouter();
+  const t = useTranslations("settings");
+  const [saving, setSaving] = useState(false);
+
+  const [inspectionEnabled, setInspectionEnabled] = useState(
+    settings[SETTING_KEYS.CUSTOMER_REMINDERS_INSPECTION_ENABLED] === "true",
+  );
+  const [leadDays, setLeadDays] = useState(
+    settings[SETTING_KEYS.CUSTOMER_REMINDERS_INSPECTION_LEAD_DAYS] || "30",
+  );
+  const [serviceEnabled, setServiceEnabled] = useState(
+    settings[SETTING_KEYS.CUSTOMER_REMINDERS_SERVICE_ENABLED] === "true",
+  );
+  const [emailChannel, setEmailChannel] = useState(
+    settings[SETTING_KEYS.CUSTOMER_REMINDERS_CHANNEL_EMAIL] !== "false",
+  );
+  const [smsChannel, setSmsChannel] = useState(
+    settings[SETTING_KEYS.CUSTOMER_REMINDERS_CHANNEL_SMS] === "true",
+  );
+
+  const anyEnabled = inspectionEnabled || serviceEnabled;
+  const smsAvailable = smsFeature && smsConfigured;
+
+  // Preview with sample data, using the org's customized template when one is
+  // saved and the localized default otherwise, exactly like the cron does.
+  const previewVars = {
+    customer_name: t("alerts.customerReminders.sampleCustomer"),
+    vehicle: "2019 Volvo V70 (AB 12345)",
+    license_plate: "AB 12345",
+    due_date: new Date(
+      Date.now() + (Number(leadDays) || 30) * 24 * 60 * 60 * 1000,
+    ).toLocaleDateString(),
+    company_name: companyName || t("alerts.customerReminders.sampleCompany"),
+  };
+  const inspectionPreview = interpolateSmsTemplate(
+    settings[SETTING_KEYS.SMS_TEMPLATE_INSPECTION_DUE] ||
+      t.raw("templates.smsDefaults.inspectionDue"),
+    previewVars,
+  );
+  const servicePreview = interpolateSmsTemplate(
+    settings[SETTING_KEYS.SMS_TEMPLATE_SERVICE_DUE] ||
+      t.raw("templates.smsDefaults.serviceDue"),
+    previewVars,
+  );
+
+  const handleSave = async () => {
+    setSaving(true);
+    await setSettings({
+      [SETTING_KEYS.CUSTOMER_REMINDERS_INSPECTION_ENABLED]: inspectionEnabled
+        ? "true"
+        : "false",
+      [SETTING_KEYS.CUSTOMER_REMINDERS_INSPECTION_LEAD_DAYS]: String(
+        Math.min(365, Math.max(1, Number(leadDays) || 30)),
+      ),
+      [SETTING_KEYS.CUSTOMER_REMINDERS_SERVICE_ENABLED]: serviceEnabled
+        ? "true"
+        : "false",
+      [SETTING_KEYS.CUSTOMER_REMINDERS_CHANNEL_EMAIL]: emailChannel ? "true" : "false",
+      [SETTING_KEYS.CUSTOMER_REMINDERS_CHANNEL_SMS]: smsChannel ? "true" : "false",
+    });
+    setSaving(false);
+    router.refresh();
+    toast.success(t("alerts.customerReminders.saved"));
+  };
+
+  return (
+    <AppCard
+      icon={BellRing}
+      title={t("alerts.customerReminders.title")}
+      contentClassName="space-y-6"
+    >
+      <p className="text-sm text-muted-foreground">
+        {t("alerts.customerReminders.description")}
+      </p>
+
+      <div className="flex items-center justify-between">
+        <div className="space-y-0.5 pr-4">
+          <Label htmlFor="crInspectionEnabled">
+            {t("alerts.customerReminders.enableInspection")}
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            {t("alerts.customerReminders.enableInspectionHint")}
+          </p>
+        </div>
+        <Switch
+          id="crInspectionEnabled"
+          checked={inspectionEnabled}
+          onCheckedChange={setInspectionEnabled}
+        />
+      </div>
+
+      {inspectionEnabled && (
+        <div className="space-y-2">
+          <Label htmlFor="crLeadDays">{t("alerts.customerReminders.leadDays")}</Label>
+          <Input
+            id="crLeadDays"
+            type="number"
+            min="1"
+            max="365"
+            value={leadDays}
+            onChange={(e) => setLeadDays(e.target.value)}
+            className="max-w-[160px]"
+          />
+          <p className="text-xs text-muted-foreground">
+            {t("alerts.customerReminders.leadDaysHint")}
+          </p>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between">
+        <div className="space-y-0.5 pr-4">
+          <Label htmlFor="crServiceEnabled">
+            {t("alerts.customerReminders.enableService")}
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            {t("alerts.customerReminders.enableServiceHint")}{" "}
+            <Link href="/settings/maintenance" className="text-primary hover:underline">
+              {t("alerts.customerReminders.maintenanceSettingsLink")}
+            </Link>
+          </p>
+        </div>
+        <Switch
+          id="crServiceEnabled"
+          checked={serviceEnabled}
+          onCheckedChange={setServiceEnabled}
+        />
+      </div>
+
+      {anyEnabled && (
+        <>
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5 pr-4">
+              <Label htmlFor="crEmailChannel">
+                {t("alerts.customerReminders.channelEmail")}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {t("alerts.customerReminders.channelEmailHint")}
+              </p>
+            </div>
+            <Switch
+              id="crEmailChannel"
+              checked={emailChannel}
+              onCheckedChange={setEmailChannel}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5 pr-4">
+              <Label htmlFor="crSmsChannel">
+                {t("alerts.customerReminders.channelSms")}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {!smsFeature
+                  ? t("alerts.customerReminders.smsRequiresPro")
+                  : !smsConfigured
+                    ? t("alerts.customerReminders.smsNotConfigured")
+                    : t("alerts.customerReminders.channelSmsHint")}{" "}
+                {smsFeature && !smsConfigured && (
+                  <Link href="/settings/sms" className="text-primary hover:underline">
+                    {t("alerts.customerReminders.smsSetupLink")}
+                  </Link>
+                )}
+              </p>
+            </div>
+            <Switch
+              id="crSmsChannel"
+              checked={smsChannel && smsAvailable}
+              onCheckedChange={setSmsChannel}
+              disabled={!smsAvailable}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3">
+            <Label>{t("alerts.customerReminders.preview")}</Label>
+            {inspectionEnabled && (
+              <div className="rounded-md border bg-muted/50 p-3 text-sm">
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
+                  {t("alerts.customerReminders.previewInspection")}
+                </p>
+                {inspectionPreview}
+              </div>
+            )}
+            {serviceEnabled && (
+              <div className="rounded-md border bg-muted/50 p-3 text-sm">
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
+                  {t("alerts.customerReminders.previewService")}
+                </p>
+                {servicePreview}
+              </div>
+            )}
+            {smsFeature && (
+              <p className="text-xs text-muted-foreground">
+                {t("alerts.customerReminders.customizeHint")}{" "}
+                <Link
+                  href="/settings/templates?tab=sms"
+                  className="text-primary hover:underline"
+                >
+                  {t("alerts.customerReminders.customizeLink")}
+                </Link>
+              </p>
+            )}
+          </div>
+        </>
+      )}
+
+      <SaveButton>
+        <Button onClick={handleSave} disabled={saving}>
+          {saving ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="mr-2 h-4 w-4" />
+          )}
+          {t("alerts.customerReminders.save")}
+        </Button>
+      </SaveButton>
+    </AppCard>
   );
 }
 

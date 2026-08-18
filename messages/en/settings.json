@@ -575,7 +575,9 @@
       "statusWaitingParts": "Your vehicle is waiting for parts. We'll notify you when work resumes.",
       "statusReady": "Your vehicle is ready for pickup!",
       "statusCompleted": "Your service is complete. Thank you for your business!",
-      "paymentReceived": "Payment of {amount} received for invoice {invoice_number}. Thank you!"
+      "paymentReceived": "Payment of {amount} received for invoice {invoice_number}. Thank you!",
+      "inspectionDue": "Hi {customer_name}, your {vehicle} is due for its periodic inspection on {due_date}. Contact {company_name} to book an appointment.",
+      "serviceDue": "Hi {customer_name}, your {vehicle} is due for a service. Contact {company_name} to book an appointment."
     },
     "colorPresets": {
       "amber": "Amber",
@@ -586,6 +588,16 @@
       "slate": "Slate",
       "rose": "Rose",
       "indigo": "Indigo"
+    },
+    "inspectionDue": "Inspection Due Reminder",
+    "inspectionDueDescription": "Sent automatically when a vehicle's periodic inspection is coming up.",
+    "serviceDue": "Service Due Reminder",
+    "serviceDueDescription": "Sent automatically when a vehicle is predicted to be due for service.",
+    "customerReminderEmail": {
+      "inspectionDueSubject": "Inspection due for your {vehicle}",
+      "serviceDueSubject": "Service due for your {vehicle}",
+      "greeting": "Hi {customer_name},",
+      "signoff": "Best regards,"
     }
   },
   "payment": {
@@ -1435,6 +1447,33 @@
       "checkFailed": "Check failed",
       "configurePerPart": "Set a part's own Min Qty on the inventory page →",
       "readMore": "Read More"
+    },
+    "customerReminders": {
+      "title": "Customer reminders",
+      "description": "Automatic messages that bring the car back to the shop: your customers are reminded when an inspection is due and when a service is coming up. Off by default; nothing is sent until you enable it.",
+      "enableInspection": "Inspection due reminders",
+      "enableInspectionHint": "Reminds the customer before the next periodic inspection recorded on their latest inspection certificate.",
+      "leadDays": "Days of notice",
+      "leadDaysHint": "How many days before the inspection due date the reminder is sent.",
+      "enableService": "Service due reminders",
+      "enableServiceHint": "Uses predicted maintenance to remind customers whose vehicle is due or nearly due for service, at most once per month.",
+      "maintenanceSettingsLink": "Maintenance settings",
+      "channelEmail": "Email",
+      "channelEmailHint": "Sent to the customer's email address.",
+      "channelSms": "SMS",
+      "channelSmsHint": "Sent to the customer's phone number.",
+      "smsRequiresPro": "SMS requires the Pro plan.",
+      "smsNotConfigured": "Set up an SMS provider first.",
+      "smsSetupLink": "SMS settings",
+      "preview": "Message preview",
+      "previewInspection": "Inspection due",
+      "previewService": "Service due",
+      "customizeHint": "You can customize the message text in",
+      "customizeLink": "Templates",
+      "sampleCustomer": "Anna",
+      "sampleCompany": "Your Workshop",
+      "saved": "Customer reminder settings saved",
+      "save": "Save customer reminders"
     }
   },
   "support": {

@@ -9,3 +9,4 @@ export { processWebhookDeliveries, cleanupWebhookDeliveries } from './lib/cron/w
 export { checkLowStock } from './lib/cron/low-stock-alerts'
 export { checkDueReminders } from './lib/cron/reminder-alerts'
 export { processScheduledMessages } from './lib/cron/scheduled-messages'
+export { checkCustomerReminders } from './lib/cron/customer-reminders'

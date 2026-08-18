@@ -86,6 +86,17 @@ export const SETTING_KEYS = {
   SMS_TEMPLATE_STATUS_READY: 'sms.template.statusReady',
   SMS_TEMPLATE_STATUS_COMPLETED: 'sms.template.statusCompleted',
   SMS_TEMPLATE_PAYMENT_RECEIVED: 'sms.template.paymentReceived',
+  SMS_TEMPLATE_INSPECTION_DUE: 'sms.template.inspectionDue',
+  SMS_TEMPLATE_SERVICE_DUE: 'sms.template.serviceDue',
+  /// Customer reminders: automated "your inspection/service is due" messages
+  /// sent to customers by the customer-reminders cron. Everything defaults to
+  /// off so existing organizations never message customers without an
+  /// explicit opt-in.
+  CUSTOMER_REMINDERS_INSPECTION_ENABLED: 'customerReminders.inspectionDue.enabled',
+  CUSTOMER_REMINDERS_INSPECTION_LEAD_DAYS: 'customerReminders.inspectionDue.leadDays',
+  CUSTOMER_REMINDERS_SERVICE_ENABLED: 'customerReminders.serviceDue.enabled',
+  CUSTOMER_REMINDERS_CHANNEL_EMAIL: 'customerReminders.channels.email',
+  CUSTOMER_REMINDERS_CHANNEL_SMS: 'customerReminders.channels.sms',
   // Telegram templates
   TELEGRAM_TEMPLATE_INVOICE_READY: 'telegram.template.invoiceReady',
   TELEGRAM_TEMPLATE_QUOTE_READY: 'telegram.template.quoteReady',

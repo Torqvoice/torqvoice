@@ -575,7 +575,9 @@
       "statusWaitingParts": "Kjøretøyet ditt venter på deler. Vi gir beskjed når arbeidet fortsetter.",
       "statusReady": "Kjøretøyet ditt er klart for henting!",
       "statusCompleted": "Servicen er fullført. Takk for at du valgte oss!",
-      "paymentReceived": "Betaling på {amount} mottatt for faktura {invoice_number}. Takk!"
+      "paymentReceived": "Betaling på {amount} mottatt for faktura {invoice_number}. Takk!",
+      "inspectionDue": "Hei {customer_name}, din {vehicle} skal på EU-kontroll innen {due_date}. Kontakt {company_name} for å bestille time.",
+      "serviceDue": "Hei {customer_name}, din {vehicle} bør snart på service. Kontakt {company_name} for å bestille time."
     },
     "colorPresets": {
       "amber": "Rav",
@@ -586,6 +588,16 @@
       "slate": "Skifer",
       "rose": "Rosa",
       "indigo": "Indigo"
+    },
+    "inspectionDue": "Påminnelse om EU-kontroll",
+    "inspectionDueDescription": "Sendes automatisk når kjøretøyets periodiske kontroll nærmer seg.",
+    "serviceDue": "Påminnelse om service",
+    "serviceDueDescription": "Sendes automatisk når et kjøretøy snart trenger service.",
+    "customerReminderEmail": {
+      "inspectionDueSubject": "EU-kontroll nærmer seg for din {vehicle}",
+      "serviceDueSubject": "Service nærmer seg for din {vehicle}",
+      "greeting": "Hei {customer_name},",
+      "signoff": "Med vennlig hilsen"
     }
   },
   "payment": {
@@ -1435,6 +1447,33 @@
       "checkFailed": "Sjekken mislyktes",
       "configurePerPart": "Sett delens min. antall på lagersiden →",
       "readMore": "Les mer"
+    },
+    "customerReminders": {
+      "title": "Kundepåminnelser",
+      "description": "Automatiske meldinger som får bilen tilbake til verkstedet: kundene dine blir minnet på EU-kontroll og kommende service. Av som standard; ingenting sendes før du slår det på.",
+      "enableInspection": "Påminnelse om EU-kontroll",
+      "enableInspectionHint": "Minner kunden på neste kontroll som er registrert på siste kontrollseddel.",
+      "leadDays": "Dager i forveien",
+      "leadDaysHint": "Så mange dager før kontrollfristen sendes påminnelsen.",
+      "enableService": "Påminnelse om service",
+      "enableServiceHint": "Bruker vedlikeholdsprognosen til å minne kunder med kjøretøy som trenger service, maks én gang i måneden.",
+      "maintenanceSettingsLink": "Vedlikeholdsinnstillinger",
+      "channelEmail": "E-post",
+      "channelEmailHint": "Sendes til kundens e-postadresse.",
+      "channelSms": "SMS",
+      "channelSmsHint": "Sendes til kundens telefonnummer.",
+      "smsRequiresPro": "SMS krever Pro-abonnement.",
+      "smsNotConfigured": "Sett opp en SMS-leverandør først.",
+      "smsSetupLink": "SMS-innstillinger",
+      "preview": "Forhåndsvisning av melding",
+      "previewInspection": "EU-kontroll",
+      "previewService": "Service",
+      "customizeHint": "Du kan tilpasse meldingsteksten under",
+      "customizeLink": "Maler",
+      "sampleCustomer": "Kari",
+      "sampleCompany": "Ditt verksted",
+      "saved": "Innstillinger for kundepåminnelser lagret",
+      "save": "Lagre kundepåminnelser"
     }
   },
   "support": {

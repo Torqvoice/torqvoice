@@ -181,6 +181,7 @@ model Vehicle {
   serviceRequests   ServiceRequest[]
   findings          VehicleFinding[]
   scheduledMessages ScheduledMessage[]
+  customerReminderLogs CustomerReminderLog[]
 
   @@index([organizationId])
   @@map("vehicles")
@@ -396,8 +397,9 @@ model Customer {
   scheduledMessages ScheduledMessage[]
   serviceRequests   ServiceRequest[]
 
-  serviceRecords ServiceRecord[]
-  reminders      Reminder[]
+  serviceRecords       ServiceRecord[]
+  reminders            Reminder[]
+  customerReminderLogs CustomerReminderLog[]
 
   @@unique([organizationId, customerNumber])
   @@index([organizationId])
@@ -813,6 +815,7 @@ model Organization {
   scheduledMessages      ScheduledMessage[]
   webhooks               Webhook[]
   stockMovements         StockMovement[]
+  customerReminderLogs   CustomerReminderLog[]
 
   @@map("organizations")
 }
@@ -1193,6 +1196,40 @@ model Notification {
   @@index([organizationId, createdAt(sort: Desc)])
   @@index([organizationId, read])
   @@map("notifications")
+}
+
+/// One row per customer reminder occurrence (inspection due, service due).
+/// The unique constraint is the dedupe ledger: a vehicle is reminded at most
+/// once per reminder type per due occurrence (`dueKey`), no matter how many
+/// times the cron runs or how many channels the org has enabled.
+model CustomerReminderLog {
+  id      String  @id @default(cuid())
+  /// "inspection_due" | "service_due"
+  type    String
+  /// Identifies the due occurrence: the ISO due date (yyyy-mm-dd) for
+  /// inspections, the prediction month (yyyy-mm) for service reminders.
+  dueKey  String
+  /// The underlying due date, when one exists (inspection reminders).
+  dueDate DateTime?
+  /// Channels the reminder actually went out on, comma separated ("email,sms").
+  channel String
+  /// "sent" | "failed" — failed rows still dedupe, so a broken provider
+  /// cannot turn into repeated messages to the same customer.
+  status  String    @default("sent")
+  sentAt  DateTime  @default(now())
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([vehicleId, type, dueKey])
+  @@index([organizationId, sentAt(sort: Desc)])
+  @@map("customer_reminder_logs")
 }
 
 model SmsMessage {

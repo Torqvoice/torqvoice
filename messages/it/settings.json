@@ -570,7 +570,9 @@
       "statusWaitingParts": "Il tuo veicolo è in attesa di ricambi. Ti avviseremo quando i lavori riprenderanno.",
       "statusReady": "Il tuo veicolo è pronto per il ritiro!",
       "statusCompleted": "Il tuo servizio è completato. Grazie per la fiducia!",
-      "paymentReceived": "Pagamento di {amount} ricevuto per la fattura {invoice_number}. Grazie!"
+      "paymentReceived": "Pagamento di {amount} ricevuto per la fattura {invoice_number}. Grazie!",
+      "inspectionDue": "Ciao {customer_name}, la tua {vehicle} deve passare la revisione entro il {due_date}. Contatta {company_name} per prenotare un appuntamento.",
+      "serviceDue": "Ciao {customer_name}, la tua {vehicle} è quasi da tagliando. Contatta {company_name} per prenotare un appuntamento."
     },
     "colorPresets": {
       "amber": "Ambra",
@@ -586,7 +588,17 @@
     "layoutDescription": "Personalizza l'ordine e la visibilita delle sezioni nelle fatture e nei preventivi.",
     "layoutSaved": "Layout salvato con successo",
     "layoutDocInvoice": "Fattura",
-    "layoutDocQuote": "Preventivo"
+    "layoutDocQuote": "Preventivo",
+    "inspectionDue": "Promemoria revisione",
+    "inspectionDueDescription": "Inviato automaticamente quando si avvicina la revisione periodica di un veicolo.",
+    "serviceDue": "Promemoria tagliando",
+    "serviceDueDescription": "Inviato automaticamente quando si prevede che un veicolo debba fare il tagliando.",
+    "customerReminderEmail": {
+      "inspectionDueSubject": "Revisione in scadenza per la tua {vehicle}",
+      "serviceDueSubject": "Tagliando in arrivo per la tua {vehicle}",
+      "greeting": "Ciao {customer_name},",
+      "signoff": "Cordiali saluti,"
+    }
   },
   "payment": {
     "readMore": "Scopri di più",
@@ -1435,6 +1447,33 @@
       "checkFailed": "Controllo non riuscito",
       "configurePerPart": "Imposta la Qtà min di un ricambio nella pagina magazzino →",
       "readMore": "Scopri di più"
+    },
+    "customerReminders": {
+      "title": "Promemoria clienti",
+      "description": "Messaggi automatici che riportano l'auto in officina: i tuoi clienti ricevono un avviso quando si avvicinano revisione o tagliando. Disattivato per impostazione predefinita; non viene inviato nulla finché non lo attivi.",
+      "enableInspection": "Promemoria revisione",
+      "enableInspectionHint": "Avvisa il cliente prima della prossima revisione registrata sull'ultimo certificato.",
+      "leadDays": "Giorni di preavviso",
+      "leadDaysHint": "Quanti giorni prima della scadenza della revisione viene inviato il promemoria.",
+      "enableService": "Promemoria tagliando",
+      "enableServiceHint": "Usa la manutenzione predittiva per avvisare i clienti il cui veicolo è quasi da tagliando, al massimo una volta al mese.",
+      "maintenanceSettingsLink": "Impostazioni manutenzione",
+      "channelEmail": "Email",
+      "channelEmailHint": "Inviata all'indirizzo email del cliente.",
+      "channelSms": "SMS",
+      "channelSmsHint": "Inviato al numero di telefono del cliente.",
+      "smsRequiresPro": "Gli SMS richiedono il piano Pro.",
+      "smsNotConfigured": "Configura prima un provider SMS.",
+      "smsSetupLink": "Impostazioni SMS",
+      "preview": "Anteprima del messaggio",
+      "previewInspection": "Revisione",
+      "previewService": "Tagliando",
+      "customizeHint": "Puoi personalizzare il testo del messaggio in",
+      "customizeLink": "Modelli",
+      "sampleCustomer": "Anna",
+      "sampleCompany": "La tua officina",
+      "saved": "Impostazioni promemoria clienti salvate",
+      "save": "Salva promemoria clienti"
     }
   },
   "support": {

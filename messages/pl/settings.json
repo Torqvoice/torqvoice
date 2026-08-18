@@ -570,7 +570,9 @@
       "statusWaitingParts": "Twój pojazd czeka na części. Powiadomimy Cię, gdy prace zostaną wznowione.",
       "statusReady": "Twój pojazd jest gotowy do odbioru!",
       "statusCompleted": "Serwis został zakończony. Dziękujemy za zaufanie!",
-      "paymentReceived": "Otrzymano płatność {amount} za fakturę {invoice_number}. Dziękujemy!"
+      "paymentReceived": "Otrzymano płatność {amount} za fakturę {invoice_number}. Dziękujemy!",
+      "inspectionDue": "Dzień dobry {customer_name}, Twój pojazd {vehicle} ma termin przeglądu {due_date}. Skontaktuj się z {company_name}, aby umówić wizytę.",
+      "serviceDue": "Dzień dobry {customer_name}, Twój pojazd {vehicle} wymaga wkrótce serwisu. Skontaktuj się z {company_name}, aby umówić wizytę."
     },
     "colorPresets": {
       "amber": "Bursztynowy",
@@ -586,7 +588,17 @@
     "layoutDescription": "Dostosuj kolejność i widoczność sekcji w fakturach i wycenach.",
     "layoutSaved": "Układ zapisany pomyślnie",
     "layoutDocInvoice": "Faktura",
-    "layoutDocQuote": "Wycena"
+    "layoutDocQuote": "Wycena",
+    "inspectionDue": "Przypomnienie o przeglądzie",
+    "inspectionDueDescription": "Wysyłane automatycznie, gdy zbliża się okresowy przegląd pojazdu.",
+    "serviceDue": "Przypomnienie o serwisie",
+    "serviceDueDescription": "Wysyłane automatycznie, gdy pojazd według prognozy wymaga serwisu.",
+    "customerReminderEmail": {
+      "inspectionDueSubject": "Zbliża się przegląd Twojego pojazdu {vehicle}",
+      "serviceDueSubject": "Zbliża się serwis Twojego pojazdu {vehicle}",
+      "greeting": "Dzień dobry {customer_name},",
+      "signoff": "Z poważaniem,"
+    }
   },
   "payment": {
     "readMore": "Czytaj więcej",
@@ -1435,6 +1447,33 @@
       "checkFailed": "Sprawdzenie nie powiodło się",
       "configurePerPart": "Ustaw min. ilość części na stronie magazynu →",
       "readMore": "Czytaj więcej"
+    },
+    "customerReminders": {
+      "title": "Przypomnienia dla klientów",
+      "description": "Automatyczne wiadomości, które sprowadzają auto z powrotem do warsztatu: klienci dostają przypomnienie o zbliżającym się przeglądzie lub serwisie. Domyślnie wyłączone; nic nie zostanie wysłane, dopóki tego nie włączysz.",
+      "enableInspection": "Przypomnienia o przeglądzie",
+      "enableInspectionHint": "Przypomina klientowi przed kolejnym przeglądem zapisanym na ostatnim zaświadczeniu.",
+      "leadDays": "Dni wyprzedzenia",
+      "leadDaysHint": "Tyle dni przed terminem przeglądu wysyłane jest przypomnienie.",
+      "enableService": "Przypomnienia o serwisie",
+      "enableServiceHint": "Wykorzystuje prognozę przebiegu, aby przypominać klientom, których pojazd wymaga serwisu, najwyżej raz w miesiącu.",
+      "maintenanceSettingsLink": "Ustawienia konserwacji",
+      "channelEmail": "E-mail",
+      "channelEmailHint": "Wysyłany na adres e-mail klienta.",
+      "channelSms": "SMS",
+      "channelSmsHint": "Wysyłany na numer telefonu klienta.",
+      "smsRequiresPro": "SMS wymaga planu Pro.",
+      "smsNotConfigured": "Najpierw skonfiguruj dostawcę SMS.",
+      "smsSetupLink": "Ustawienia SMS",
+      "preview": "Podgląd wiadomości",
+      "previewInspection": "Przegląd",
+      "previewService": "Serwis",
+      "customizeHint": "Treść wiadomości możesz dostosować w sekcji",
+      "customizeLink": "Szablony",
+      "sampleCustomer": "Anna",
+      "sampleCompany": "Twój warsztat",
+      "saved": "Zapisano ustawienia przypomnień dla klientów",
+      "save": "Zapisz przypomnienia dla klientów"
     }
   },
   "support": {

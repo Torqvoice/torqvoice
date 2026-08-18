@@ -570,7 +570,9 @@
       "statusWaitingParts": "Seu veículo está aguardando peças. Avisaremos quando o trabalho for retomado.",
       "statusReady": "Seu veículo está pronto para retirada!",
       "statusCompleted": "Seu serviço está concluído. Obrigado pela preferência!",
-      "paymentReceived": "Pagamento de {amount} recebido para a fatura {invoice_number}. Obrigado!"
+      "paymentReceived": "Pagamento de {amount} recebido para a fatura {invoice_number}. Obrigado!",
+      "inspectionDue": "Olá {customer_name}, a inspeção do seu {vehicle} vence em {due_date}. Entre em contato com {company_name} para agendar um horário.",
+      "serviceDue": "Olá {customer_name}, seu {vehicle} está precisando de revisão. Entre em contato com {company_name} para agendar um horário."
     },
     "colorPresets": {
       "amber": "Âmbar",
@@ -586,7 +588,17 @@
     "layoutDescription": "Personalize a ordem e visibilidade das seções nas suas faturas e orçamentos.",
     "layoutSaved": "Layout salvo com sucesso",
     "layoutDocInvoice": "Fatura",
-    "layoutDocQuote": "Orçamento"
+    "layoutDocQuote": "Orçamento",
+    "inspectionDue": "Lembrete de inspeção",
+    "inspectionDueDescription": "Enviado automaticamente quando a inspeção periódica de um veículo está próxima.",
+    "serviceDue": "Lembrete de revisão",
+    "serviceDueDescription": "Enviado automaticamente quando a previsão indica que um veículo precisa de revisão.",
+    "customerReminderEmail": {
+      "inspectionDueSubject": "A inspeção do seu {vehicle} está chegando",
+      "serviceDueSubject": "A revisão do seu {vehicle} está chegando",
+      "greeting": "Olá {customer_name},",
+      "signoff": "Atenciosamente,"
+    }
   },
   "payment": {
     "readMore": "Saiba mais",
@@ -1435,6 +1447,33 @@
       "checkFailed": "Falha na verificação",
       "configurePerPart": "Defina a Qtd. mín. de uma peça na página de estoque →",
       "readMore": "Saiba mais"
+    },
+    "customerReminders": {
+      "title": "Lembretes para clientes",
+      "description": "Mensagens automáticas que trazem o carro de volta à oficina: seus clientes são avisados quando uma inspeção ou revisão está próxima. Desativado por padrão; nada é enviado até você ativar.",
+      "enableInspection": "Lembretes de inspeção",
+      "enableInspectionHint": "Avisa o cliente antes da próxima inspeção registrada no último certificado.",
+      "leadDays": "Dias de antecedência",
+      "leadDaysHint": "Quantos dias antes do vencimento da inspeção o lembrete é enviado.",
+      "enableService": "Lembretes de revisão",
+      "enableServiceHint": "Usa a manutenção preditiva para avisar clientes cujo veículo precisa de revisão, no máximo uma vez por mês.",
+      "maintenanceSettingsLink": "Configurações de manutenção",
+      "channelEmail": "E-mail",
+      "channelEmailHint": "Enviado para o e-mail do cliente.",
+      "channelSms": "SMS",
+      "channelSmsHint": "Enviado para o telefone do cliente.",
+      "smsRequiresPro": "SMS exige o plano Pro.",
+      "smsNotConfigured": "Configure primeiro um provedor de SMS.",
+      "smsSetupLink": "Configurações de SMS",
+      "preview": "Prévia da mensagem",
+      "previewInspection": "Inspeção",
+      "previewService": "Revisão",
+      "customizeHint": "Você pode personalizar o texto da mensagem em",
+      "customizeLink": "Modelos",
+      "sampleCustomer": "Ana",
+      "sampleCompany": "Sua oficina",
+      "saved": "Configurações de lembretes salvas",
+      "save": "Salvar lembretes"
     }
   },
   "support": {

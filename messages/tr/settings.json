@@ -570,7 +570,9 @@
       "statusWaitingParts": "Aracınız parça bekliyor. Çalışma devam ettiğinde sizi bilgilendireceğiz.",
       "statusReady": "Aracınız teslim almaya hazır!",
       "statusCompleted": "Servisiniz tamamlandı. Bizi tercih ettiğiniz için teşekkürler!",
-      "paymentReceived": "Fatura {invoice_number} için {amount} ödeme alındı. Teşekkürler!"
+      "paymentReceived": "Fatura {invoice_number} için {amount} ödeme alındı. Teşekkürler!",
+      "inspectionDue": "Merhaba {customer_name}, {vehicle} aracınızın muayene tarihi {due_date}. Randevu için {company_name} ile iletişime geçin.",
+      "serviceDue": "Merhaba {customer_name}, {vehicle} aracınızın bakım zamanı geldi. Randevu için {company_name} ile iletişime geçin."
     },
     "colorPresets": {
       "amber": "Kehribar",
@@ -586,7 +588,17 @@
     "layoutDescription": "Fatura ve tekliflerinizdeki bölümlerin sırasını ve görünürlüğünü özelleştirin.",
     "layoutSaved": "Düzen başarıyla kaydedildi",
     "layoutDocInvoice": "Fatura",
-    "layoutDocQuote": "Teklif"
+    "layoutDocQuote": "Teklif",
+    "inspectionDue": "Muayene hatırlatması",
+    "inspectionDueDescription": "Bir aracın periyodik muayenesi yaklaştığında otomatik gönderilir.",
+    "serviceDue": "Bakım hatırlatması",
+    "serviceDueDescription": "Bir aracın bakım zamanının geldiği öngörüldüğünde otomatik gönderilir.",
+    "customerReminderEmail": {
+      "inspectionDueSubject": "{vehicle} aracınızın muayenesi yaklaşıyor",
+      "serviceDueSubject": "{vehicle} aracınızın bakımı yaklaşıyor",
+      "greeting": "Merhaba {customer_name},",
+      "signoff": "Saygılarımızla,"
+    }
   },
   "payment": {
     "readMore": "Devamını oku",
@@ -1435,6 +1447,33 @@
       "checkFailed": "Kontrol başarısız",
       "configurePerPart": "Bir parçanın min. miktarını stok sayfasında ayarlayın →",
       "readMore": "Devamını oku"
+    },
+    "customerReminders": {
+      "title": "Müşteri hatırlatmaları",
+      "description": "Aracı servise geri getiren otomatik mesajlar: muayene veya bakım yaklaştığında müşterileriniz bilgilendirilir. Varsayılan olarak kapalıdır; siz açana kadar hiçbir şey gönderilmez.",
+      "enableInspection": "Muayene hatırlatmaları",
+      "enableInspectionHint": "Son muayene belgesinde kayıtlı bir sonraki muayeneden önce müşteriyi bilgilendirir.",
+      "leadDays": "Kaç gün önce",
+      "leadDaysHint": "Hatırlatma, muayene tarihinden bu kadar gün önce gönderilir.",
+      "enableService": "Bakım hatırlatmaları",
+      "enableServiceHint": "Tahmini bakım verilerini kullanarak bakımı gelen araç sahiplerini ayda en fazla bir kez bilgilendirir.",
+      "maintenanceSettingsLink": "Bakım ayarları",
+      "channelEmail": "E-posta",
+      "channelEmailHint": "Müşterinin e-posta adresine gönderilir.",
+      "channelSms": "SMS",
+      "channelSmsHint": "Müşterinin telefon numarasına gönderilir.",
+      "smsRequiresPro": "SMS için Pro plan gerekir.",
+      "smsNotConfigured": "Önce bir SMS sağlayıcısı kurun.",
+      "smsSetupLink": "SMS ayarları",
+      "preview": "Mesaj önizlemesi",
+      "previewInspection": "Muayene",
+      "previewService": "Bakım",
+      "customizeHint": "Mesaj metnini şuradan özelleştirebilirsiniz:",
+      "customizeLink": "Şablonlar",
+      "sampleCustomer": "Ayşe",
+      "sampleCompany": "Servisiniz",
+      "saved": "Müşteri hatırlatma ayarları kaydedildi",
+      "save": "Müşteri hatırlatmalarını kaydet"
     }
   },
   "support": {

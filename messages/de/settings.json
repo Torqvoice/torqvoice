@@ -570,7 +570,9 @@
       "statusWaitingParts": "Ihr Fahrzeug wartet auf Teile. Wir benachrichtigen Sie, wenn die Arbeit fortgesetzt wird.",
       "statusReady": "Ihr Fahrzeug ist zur Abholung bereit!",
       "statusCompleted": "Ihr Service ist abgeschlossen. Vielen Dank für Ihren Auftrag!",
-      "paymentReceived": "Zahlung von {amount} für Rechnung {invoice_number} erhalten. Vielen Dank!"
+      "paymentReceived": "Zahlung von {amount} für Rechnung {invoice_number} erhalten. Vielen Dank!",
+      "inspectionDue": "Hallo {customer_name}, für Ihr Fahrzeug {vehicle} steht am {due_date} die Hauptuntersuchung an. Kontaktieren Sie {company_name}, um einen Termin zu vereinbaren.",
+      "serviceDue": "Hallo {customer_name}, für Ihr Fahrzeug {vehicle} steht ein Service an. Kontaktieren Sie {company_name}, um einen Termin zu vereinbaren."
     },
     "colorPresets": {
       "amber": "Bernstein",
@@ -586,7 +588,17 @@
     "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
     "layoutSaved": "Layout erfolgreich gespeichert",
     "layoutDocInvoice": "Rechnung",
-    "layoutDocQuote": "Angebot"
+    "layoutDocQuote": "Angebot",
+    "inspectionDue": "Erinnerung: Prüfung fällig",
+    "inspectionDueDescription": "Wird automatisch gesendet, wenn die Hauptuntersuchung eines Fahrzeugs bevorsteht.",
+    "serviceDue": "Erinnerung: Service fällig",
+    "serviceDueDescription": "Wird automatisch gesendet, wenn für ein Fahrzeug ein Service fällig wird.",
+    "customerReminderEmail": {
+      "inspectionDueSubject": "Hauptuntersuchung fällig für Ihr Fahrzeug {vehicle}",
+      "serviceDueSubject": "Service fällig für Ihr Fahrzeug {vehicle}",
+      "greeting": "Hallo {customer_name},",
+      "signoff": "Mit freundlichen Grüßen"
+    }
   },
   "payment": {
     "readMore": "Mehr erfahren",
@@ -1435,6 +1447,33 @@
       "checkFailed": "Prüfung fehlgeschlagen",
       "configurePerPart": "Mindestmenge eines Teils auf der Lagerseite festlegen →",
       "readMore": "Mehr erfahren"
+    },
+    "customerReminders": {
+      "title": "Kundenerinnerungen",
+      "description": "Automatische Nachrichten, die das Fahrzeug zurück in die Werkstatt bringen: Ihre Kunden werden erinnert, wenn eine Prüfung oder ein Service ansteht. Standardmäßig aus; es wird nichts gesendet, bis Sie die Funktion aktivieren.",
+      "enableInspection": "Erinnerung an fällige Prüfung",
+      "enableInspectionHint": "Erinnert den Kunden vor der nächsten Prüfung, die auf dem letzten Prüfbericht vermerkt ist.",
+      "leadDays": "Tage Vorlauf",
+      "leadDaysHint": "So viele Tage vor dem Prüftermin wird die Erinnerung gesendet.",
+      "enableService": "Erinnerung an fälligen Service",
+      "enableServiceHint": "Nutzt die Wartungsprognose, um Kunden zu erinnern, deren Fahrzeug einen Service benötigt, höchstens einmal pro Monat.",
+      "maintenanceSettingsLink": "Wartungseinstellungen",
+      "channelEmail": "E-Mail",
+      "channelEmailHint": "Wird an die E-Mail-Adresse des Kunden gesendet.",
+      "channelSms": "SMS",
+      "channelSmsHint": "Wird an die Telefonnummer des Kunden gesendet.",
+      "smsRequiresPro": "SMS erfordert den Pro-Tarif.",
+      "smsNotConfigured": "Richten Sie zuerst einen SMS-Anbieter ein.",
+      "smsSetupLink": "SMS-Einstellungen",
+      "preview": "Nachrichtenvorschau",
+      "previewInspection": "Prüfung fällig",
+      "previewService": "Service fällig",
+      "customizeHint": "Den Nachrichtentext können Sie anpassen unter",
+      "customizeLink": "Vorlagen",
+      "sampleCustomer": "Anna",
+      "sampleCompany": "Ihre Werkstatt",
+      "saved": "Einstellungen für Kundenerinnerungen gespeichert",
+      "save": "Kundenerinnerungen speichern"
     }
   },
   "support": {

@@ -575,7 +575,9 @@
       "statusWaitingParts": "Jūsų transporto priemonė laukia dalių. Pranešime, kai darbas bus tęsiamas.",
       "statusReady": "Jūsų transporto priemonė paruošta atsiimti!",
       "statusCompleted": "Jūsų paslauga baigta. Dėkojame už pasitikėjimą!",
-      "paymentReceived": "Mokėjimas {amount} gautas už sąskaitą {invoice_number}. Dėkojame!"
+      "paymentReceived": "Mokėjimas {amount} gautas už sąskaitą {invoice_number}. Dėkojame!",
+      "inspectionDue": "Sveiki, {customer_name}! Jūsų {vehicle} techninė apžiūra turi būti atlikta iki {due_date}. Susisiekite su {company_name} ir užsiregistruokite.",
+      "serviceDue": "Sveiki, {customer_name}! Jūsų {vehicle} metas atlikti aptarnavimą. Susisiekite su {company_name} ir užsiregistruokite."
     },
     "colorPresets": {
       "amber": "Gintarinė",
@@ -586,6 +588,16 @@
       "slate": "Šiferinė",
       "rose": "Rožinė",
       "indigo": "Indigo"
+    },
+    "inspectionDue": "Priminimas apie techninę apžiūrą",
+    "inspectionDueDescription": "Siunčiamas automatiškai, kai artėja periodinė transporto priemonės apžiūra.",
+    "serviceDue": "Priminimas apie aptarnavimą",
+    "serviceDueDescription": "Siunčiamas automatiškai, kai prognozuojama, kad transporto priemonei reikia aptarnavimo.",
+    "customerReminderEmail": {
+      "inspectionDueSubject": "Artėja jūsų {vehicle} techninė apžiūra",
+      "serviceDueSubject": "Artėja jūsų {vehicle} aptarnavimas",
+      "greeting": "Sveiki, {customer_name}!",
+      "signoff": "Pagarbiai,"
     }
   },
   "payment": {
@@ -1435,6 +1447,33 @@
       "checkFailed": "Patikra nepavyko",
       "configurePerPart": "Nustatykite dalies min. kiekį sandėlio puslapyje →",
       "readMore": "Skaityti daugiau"
+    },
+    "customerReminders": {
+      "title": "Priminimai klientams",
+      "description": "Automatinės žinutės, sugrąžinančios automobilį į servisą: klientams primenama apie artėjančią techninę apžiūrą ar aptarnavimą. Pagal numatytuosius nustatymus išjungta; niekas nesiunčiama, kol neįjungsite.",
+      "enableInspection": "Techninės apžiūros priminimai",
+      "enableInspectionHint": "Primena klientui prieš kitą apžiūrą, įrašytą paskutiniame apžiūros dokumente.",
+      "leadDays": "Dienos iki termino",
+      "leadDaysHint": "Prieš tiek dienų iki apžiūros termino išsiunčiamas priminimas.",
+      "enableService": "Aptarnavimo priminimai",
+      "enableServiceHint": "Naudoja ridos prognozę, kad primintų klientams, kurių automobiliui reikia aptarnavimo, ne dažniau kaip kartą per mėnesį.",
+      "maintenanceSettingsLink": "Priežiūros nustatymai",
+      "channelEmail": "El. paštas",
+      "channelEmailHint": "Siunčiama kliento el. pašto adresu.",
+      "channelSms": "SMS",
+      "channelSmsHint": "Siunčiama kliento telefono numeriu.",
+      "smsRequiresPro": "SMS reikalauja Pro plano.",
+      "smsNotConfigured": "Pirmiausia nustatykite SMS teikėją.",
+      "smsSetupLink": "SMS nustatymai",
+      "preview": "Žinutės peržiūra",
+      "previewInspection": "Techninė apžiūra",
+      "previewService": "Aptarnavimas",
+      "customizeHint": "Žinutės tekstą galite keisti skiltyje",
+      "customizeLink": "Šablonai",
+      "sampleCustomer": "Ona",
+      "sampleCompany": "Jūsų servisas",
+      "saved": "Klientų priminimų nustatymai išsaugoti",
+      "save": "Išsaugoti klientų priminimus"
     }
   },
   "support": {

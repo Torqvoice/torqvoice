@@ -570,7 +570,9 @@
       "statusWaitingParts": "Su vehículo está esperando repuestos. Le notificaremos cuando se reanude el trabajo.",
       "statusReady": "¡Su vehículo está listo para recoger!",
       "statusCompleted": "¡Su servicio está completo. Gracias por su confianza!",
-      "paymentReceived": "Pago de {amount} recibido para la factura {invoice_number}. ¡Gracias!"
+      "paymentReceived": "Pago de {amount} recibido para la factura {invoice_number}. ¡Gracias!",
+      "inspectionDue": "Hola {customer_name}, su {vehicle} debe pasar la inspección periódica el {due_date}. Contacte con {company_name} para reservar una cita.",
+      "serviceDue": "Hola {customer_name}, su {vehicle} necesita un mantenimiento. Contacte con {company_name} para reservar una cita."
     },
     "colorPresets": {
       "amber": "Ámbar",
@@ -586,7 +588,17 @@
     "layoutDescription": "Personaliza el orden y la visibilidad de las secciones en tus facturas y presupuestos.",
     "layoutSaved": "Disposición guardada correctamente",
     "layoutDocInvoice": "Factura",
-    "layoutDocQuote": "Presupuesto"
+    "layoutDocQuote": "Presupuesto",
+    "inspectionDue": "Recordatorio de inspección",
+    "inspectionDueDescription": "Se envía automáticamente cuando se acerca la inspección periódica de un vehículo.",
+    "serviceDue": "Recordatorio de mantenimiento",
+    "serviceDueDescription": "Se envía automáticamente cuando se prevé que un vehículo necesita mantenimiento.",
+    "customerReminderEmail": {
+      "inspectionDueSubject": "Inspección pendiente para su {vehicle}",
+      "serviceDueSubject": "Mantenimiento pendiente para su {vehicle}",
+      "greeting": "Hola {customer_name}:",
+      "signoff": "Un cordial saludo,"
+    }
   },
   "payment": {
     "readMore": "Leer más",
@@ -1435,6 +1447,33 @@
       "checkFailed": "Error al comprobar",
       "configurePerPart": "Defina la cantidad mínima de una pieza en la página de inventario →",
       "readMore": "Leer más"
+    },
+    "customerReminders": {
+      "title": "Recordatorios para clientes",
+      "description": "Mensajes automáticos que hacen volver el coche al taller: sus clientes reciben un aviso cuando se acerca una inspección o un mantenimiento. Desactivado por defecto; no se envía nada hasta que lo active.",
+      "enableInspection": "Recordatorios de inspección",
+      "enableInspectionHint": "Avisa al cliente antes de la próxima inspección registrada en su último certificado.",
+      "leadDays": "Días de antelación",
+      "leadDaysHint": "Cuántos días antes de la fecha de inspección se envía el recordatorio.",
+      "enableService": "Recordatorios de mantenimiento",
+      "enableServiceHint": "Usa el mantenimiento predictivo para avisar a los clientes cuyo vehículo necesita servicio, como máximo una vez al mes.",
+      "maintenanceSettingsLink": "Ajustes de mantenimiento",
+      "channelEmail": "Correo electrónico",
+      "channelEmailHint": "Se envía a la dirección de correo del cliente.",
+      "channelSms": "SMS",
+      "channelSmsHint": "Se envía al número de teléfono del cliente.",
+      "smsRequiresPro": "Los SMS requieren el plan Pro.",
+      "smsNotConfigured": "Configure primero un proveedor de SMS.",
+      "smsSetupLink": "Ajustes de SMS",
+      "preview": "Vista previa del mensaje",
+      "previewInspection": "Inspección pendiente",
+      "previewService": "Mantenimiento pendiente",
+      "customizeHint": "Puede personalizar el texto del mensaje en",
+      "customizeLink": "Plantillas",
+      "sampleCustomer": "Ana",
+      "sampleCompany": "Su taller",
+      "saved": "Ajustes de recordatorios guardados",
+      "save": "Guardar recordatorios"
     }
   },
   "support": {

@@ -570,7 +570,9 @@
       "statusWaitingParts": "Votre véhicule est en attente de pièces. Nous vous informerons quand les travaux reprendront.",
       "statusReady": "Votre véhicule est prêt à être récupéré !",
       "statusCompleted": "Votre service est terminé. Merci pour votre confiance !",
-      "paymentReceived": "Paiement de {amount} reçu pour la facture {invoice_number}. Merci !"
+      "paymentReceived": "Paiement de {amount} reçu pour la facture {invoice_number}. Merci !",
+      "inspectionDue": "Bonjour {customer_name}, votre {vehicle} doit passer le contrôle technique le {due_date}. Contactez {company_name} pour prendre rendez-vous.",
+      "serviceDue": "Bonjour {customer_name}, votre {vehicle} doit bientôt passer en entretien. Contactez {company_name} pour prendre rendez-vous."
     },
     "colorPresets": {
       "amber": "Ambre",
@@ -586,7 +588,17 @@
     "layoutDescription": "Personnalisez l'ordre et la visibilité des sections dans vos factures et devis.",
     "layoutSaved": "Mise en page enregistrée",
     "layoutDocInvoice": "Facture",
-    "layoutDocQuote": "Devis"
+    "layoutDocQuote": "Devis",
+    "inspectionDue": "Rappel de contrôle technique",
+    "inspectionDueDescription": "Envoyé automatiquement à l'approche du contrôle technique d'un véhicule.",
+    "serviceDue": "Rappel d'entretien",
+    "serviceDueDescription": "Envoyé automatiquement lorsqu'un véhicule doit bientôt passer en entretien.",
+    "customerReminderEmail": {
+      "inspectionDueSubject": "Contrôle technique à prévoir pour votre {vehicle}",
+      "serviceDueSubject": "Entretien à prévoir pour votre {vehicle}",
+      "greeting": "Bonjour {customer_name},",
+      "signoff": "Cordialement,"
+    }
   },
   "payment": {
     "readMore": "En savoir plus",
@@ -1435,6 +1447,33 @@
       "checkFailed": "Échec de la vérification",
       "configurePerPart": "Définir la Qté min d'une pièce sur la page inventaire →",
       "readMore": "En savoir plus"
+    },
+    "customerReminders": {
+      "title": "Rappels clients",
+      "description": "Des messages automatiques qui ramènent la voiture à l'atelier : vos clients sont prévenus quand un contrôle technique ou un entretien approche. Désactivé par défaut ; rien n'est envoyé tant que vous ne l'activez pas.",
+      "enableInspection": "Rappels de contrôle technique",
+      "enableInspectionHint": "Prévient le client avant le prochain contrôle inscrit sur son dernier certificat.",
+      "leadDays": "Jours de préavis",
+      "leadDaysHint": "Nombre de jours avant l'échéance du contrôle où le rappel est envoyé.",
+      "enableService": "Rappels d'entretien",
+      "enableServiceHint": "Utilise la maintenance prédictive pour prévenir les clients dont le véhicule doit passer en entretien, au plus une fois par mois.",
+      "maintenanceSettingsLink": "Réglages de maintenance",
+      "channelEmail": "E-mail",
+      "channelEmailHint": "Envoyé à l'adresse e-mail du client.",
+      "channelSms": "SMS",
+      "channelSmsHint": "Envoyé au numéro de téléphone du client.",
+      "smsRequiresPro": "Les SMS nécessitent l'offre Pro.",
+      "smsNotConfigured": "Configurez d'abord un fournisseur de SMS.",
+      "smsSetupLink": "Réglages SMS",
+      "preview": "Aperçu du message",
+      "previewInspection": "Contrôle technique",
+      "previewService": "Entretien",
+      "customizeHint": "Vous pouvez personnaliser le texte du message dans",
+      "customizeLink": "Modèles",
+      "sampleCustomer": "Anna",
+      "sampleCompany": "Votre atelier",
+      "saved": "Réglages des rappels clients enregistrés",
+      "save": "Enregistrer les rappels clients"
     }
   },
   "support": {

@@ -337,6 +337,20 @@ const smsTemplateFields = [
     defaultKey: "paymentReceived",
     variables: ["{amount}", "{invoice_number}", "{company_name}", "{customer_name}", "{current_user}"],
   },
+  {
+    key: SETTING_KEYS.SMS_TEMPLATE_INSPECTION_DUE,
+    labelKey: "inspectionDue",
+    descriptionKey: "inspectionDueDescription",
+    defaultKey: "inspectionDue",
+    variables: ["{customer_name}", "{vehicle}", "{license_plate}", "{due_date}", "{company_name}"],
+  },
+  {
+    key: SETTING_KEYS.SMS_TEMPLATE_SERVICE_DUE,
+    labelKey: "serviceDue",
+    descriptionKey: "serviceDueDescription",
+    defaultKey: "serviceDue",
+    variables: ["{customer_name}", "{vehicle}", "{license_plate}", "{company_name}"],
+  },
 ];
 
 function SmsTemplateTab({

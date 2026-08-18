@@ -570,7 +570,9 @@
       "statusWaitingParts": "Uw voertuig wacht op onderdelen. We laten u weten wanneer het werk wordt hervat.",
       "statusReady": "Uw voertuig is klaar om op te halen!",
       "statusCompleted": "Uw service is voltooid. Bedankt voor uw vertrouwen!",
-      "paymentReceived": "Betaling van {amount} ontvangen voor factuur {invoice_number}. Bedankt!"
+      "paymentReceived": "Betaling van {amount} ontvangen voor factuur {invoice_number}. Bedankt!",
+      "inspectionDue": "Hallo {customer_name}, uw {vehicle} moet op {due_date} gekeurd worden. Neem contact op met {company_name} om een afspraak te maken.",
+      "serviceDue": "Hallo {customer_name}, uw {vehicle} is toe aan een onderhoudsbeurt. Neem contact op met {company_name} om een afspraak te maken."
     },
     "colorPresets": {
       "amber": "Amber",
@@ -586,7 +588,17 @@
     "layoutDescription": "Pas de volgorde en zichtbaarheid van secties in uw facturen en offertes aan.",
     "layoutSaved": "Indeling succesvol opgeslagen",
     "layoutDocInvoice": "Factuur",
-    "layoutDocQuote": "Offerte"
+    "layoutDocQuote": "Offerte",
+    "inspectionDue": "Herinnering keuring",
+    "inspectionDueDescription": "Wordt automatisch verzonden wanneer de periodieke keuring van een voertuig nadert.",
+    "serviceDue": "Herinnering onderhoudsbeurt",
+    "serviceDueDescription": "Wordt automatisch verzonden wanneer een voertuig naar verwachting een onderhoudsbeurt nodig heeft.",
+    "customerReminderEmail": {
+      "inspectionDueSubject": "Keuring nadert voor uw {vehicle}",
+      "serviceDueSubject": "Onderhoudsbeurt nadert voor uw {vehicle}",
+      "greeting": "Hallo {customer_name},",
+      "signoff": "Met vriendelijke groet,"
+    }
   },
   "payment": {
     "readMore": "Lees meer",
@@ -1435,6 +1447,33 @@
       "checkFailed": "Controle mislukt",
       "configurePerPart": "Stel het min. aantal van een onderdeel in op de voorraadpagina →",
       "readMore": "Lees meer"
+    },
+    "customerReminders": {
+      "title": "Klantherinneringen",
+      "description": "Automatische berichten die de auto terug naar de werkplaats brengen: uw klanten krijgen bericht wanneer een keuring of onderhoudsbeurt eraan komt. Standaard uit; er wordt niets verzonden totdat u het inschakelt.",
+      "enableInspection": "Herinneringen voor keuringen",
+      "enableInspectionHint": "Herinnert de klant vóór de volgende keuring die op het laatste keuringsrapport staat.",
+      "leadDays": "Dagen van tevoren",
+      "leadDaysHint": "Zoveel dagen vóór de keuringsdatum wordt de herinnering verzonden.",
+      "enableService": "Herinneringen voor onderhoud",
+      "enableServiceHint": "Gebruikt voorspeld onderhoud om klanten te herinneren van wie het voertuig aan een beurt toe is, hooguit één keer per maand.",
+      "maintenanceSettingsLink": "Onderhoudsinstellingen",
+      "channelEmail": "E-mail",
+      "channelEmailHint": "Verzonden naar het e-mailadres van de klant.",
+      "channelSms": "Sms",
+      "channelSmsHint": "Verzonden naar het telefoonnummer van de klant.",
+      "smsRequiresPro": "Sms vereist het Pro-abonnement.",
+      "smsNotConfigured": "Stel eerst een sms-provider in.",
+      "smsSetupLink": "Sms-instellingen",
+      "preview": "Berichtvoorbeeld",
+      "previewInspection": "Keuring",
+      "previewService": "Onderhoudsbeurt",
+      "customizeHint": "U kunt de berichttekst aanpassen bij",
+      "customizeLink": "Sjablonen",
+      "sampleCustomer": "Anna",
+      "sampleCompany": "Uw werkplaats",
+      "saved": "Instellingen voor klantherinneringen opgeslagen",
+      "save": "Klantherinneringen opslaan"
     }
   },
   "support": {

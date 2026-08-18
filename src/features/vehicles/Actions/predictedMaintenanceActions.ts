@@ -4,6 +4,14 @@ import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
 import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import {
+  DEFAULT_APPROACHING_THRESHOLD,
+  DEFAULT_SERVICE_INTERVAL,
+  calculateConfidencePercent,
+  evaluateServiceDue,
+  predictMileageFromRecords,
+  type ServiceDueStatus,
+} from "@/features/vehicles/Lib/predictedMaintenance";
 
 export type PredictedMileage = {
   predictedMileage: number;
@@ -24,15 +32,9 @@ export type VehicleDueForService = {
   lastServiceMileage: number;
   mileageSinceLastService: number;
   serviceInterval: number;
-  status: "overdue" | "approaching";
+  status: ServiceDueStatus;
   confidencePercent: number;
 };
-
-function calculateConfidencePercent(dataPoints: number, totalDays: number): number {
-  const pointScore = Math.min(50, 15 * Math.log2(dataPoints));
-  const timeScore = Math.min(30, (totalDays / 365) * 30);
-  return Math.min(95, Math.round(15 + pointScore + timeScore));
-}
 
 export async function getVehiclePredictedMileage(vehicleId: string) {
   return withAuth(async ({ organizationId }) => {
@@ -53,43 +55,20 @@ export async function getVehiclePredictedMileage(vehicleId: string) {
       select: { serviceDate: true, startDateTime: true, mileage: true },
     });
 
-    if (records.length < 2) return null;
-
-    const dataPoints = records.map((r) => ({
-      date: new Date(r.startDateTime ?? r.serviceDate),
-      mileage: r.mileage!,
-    }));
-
-    const earliest = dataPoints[0];
-    const latest = dataPoints[dataPoints.length - 1];
-
-    // Linear regression: calculate average distance per day across all data points
-    const totalDays =
-      (latest.date.getTime() - earliest.date.getTime()) / (1000 * 60 * 60 * 24);
-
-    if (totalDays <= 0) return null;
-
-    const totalMileage = latest.mileage - earliest.mileage;
-    const avgPerDay = totalMileage / totalDays;
-
-    if (avgPerDay <= 0) return null;
-
-    // Project from latest known data point to today
-    const daysSinceLatest =
-      (Date.now() - latest.date.getTime()) / (1000 * 60 * 60 * 24);
-    // Never predict less than the vehicle's actual recorded mileage
-    const predictedMileage = Math.max(
-      vehicle.mileage,
-      Math.round(latest.mileage + daysSinceLatest * avgPerDay)
-    );
+    const prediction = predictMileageFromRecords(records);
+    if (!prediction) return null;
 
     return {
-      predictedMileage,
-      avgPerDay: Math.round(avgPerDay * 10) / 10,
-      lastServiceDate: latest.date,
-      lastServiceMileage: latest.mileage,
-      confidence: dataPoints.length,
-      confidencePercent: calculateConfidencePercent(dataPoints.length, totalDays),
+      // Never predict less than the vehicle's actual recorded mileage
+      predictedMileage: Math.max(vehicle.mileage, prediction.predictedMileage),
+      avgPerDay: Math.round(prediction.avgPerDay * 10) / 10,
+      lastServiceDate: prediction.lastServiceDate,
+      lastServiceMileage: prediction.lastServiceMileage,
+      confidence: prediction.dataPoints,
+      confidencePercent: calculateConfidencePercent(
+        prediction.dataPoints,
+        prediction.totalDays,
+      ),
     } satisfies PredictedMileage;
   }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
 }
@@ -120,11 +99,13 @@ export async function getVehiclesDueForService() {
     }
 
     const serviceInterval = parseInt(
-      settingsMap[SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL] || "15000",
+      settingsMap[SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL] ||
+        String(DEFAULT_SERVICE_INTERVAL),
       10
     );
     const approachingThreshold = parseInt(
-      settingsMap[SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD] || "1000",
+      settingsMap[SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD] ||
+        String(DEFAULT_APPROACHING_THRESHOLD),
       10
     );
 
@@ -148,60 +129,25 @@ export async function getVehiclesDueForService() {
     const results: VehicleDueForService[] = [];
 
     for (const vehicle of vehicles) {
-      const records = vehicle.serviceRecords;
-      if (records.length < 2) continue;
+      const evaluation = evaluateServiceDue(vehicle.serviceRecords, {
+        serviceInterval,
+        approachingThreshold,
+      });
+      if (!evaluation) continue;
 
-      const earliest = records[0];
-      const latest = records[records.length - 1];
-
-      const totalDays =
-        (new Date(latest.startDateTime ?? latest.serviceDate).getTime() -
-          new Date(earliest.startDateTime ?? earliest.serviceDate).getTime()) /
-        (1000 * 60 * 60 * 24);
-
-      if (totalDays <= 0) continue;
-
-      const totalMileage = latest.mileage! - earliest.mileage!;
-      const avgPerDay = totalMileage / totalDays;
-
-      if (avgPerDay <= 0) continue;
-
-      const daysSinceLatest =
-        (Date.now() - new Date(latest.startDateTime ?? latest.serviceDate).getTime()) /
-        (1000 * 60 * 60 * 24);
-      const predictedMileage = Math.round(
-        latest.mileage! + daysSinceLatest * avgPerDay
-      );
-
-      const lastServiceMileage = latest.mileage!;
-      const mileageSinceLastService = predictedMileage - lastServiceMileage;
-
-      let status: "overdue" | "approaching" | null = null;
-
-      if (mileageSinceLastService >= serviceInterval) {
-        status = "overdue";
-      } else if (
-        mileageSinceLastService >=
-        serviceInterval - approachingThreshold
-      ) {
-        status = "approaching";
-      }
-
-      if (status) {
-        results.push({
-          vehicleId: vehicle.id,
-          make: vehicle.make,
-          model: vehicle.model,
-          year: vehicle.year,
-          licensePlate: vehicle.licensePlate,
-          predictedMileage,
-          lastServiceMileage,
-          mileageSinceLastService,
-          serviceInterval,
-          status,
-          confidencePercent: calculateConfidencePercent(records.length, totalDays),
-        });
-      }
+      results.push({
+        vehicleId: vehicle.id,
+        make: vehicle.make,
+        model: vehicle.model,
+        year: vehicle.year,
+        licensePlate: vehicle.licensePlate,
+        predictedMileage: evaluation.predictedMileage,
+        lastServiceMileage: evaluation.lastServiceMileage,
+        mileageSinceLastService: evaluation.mileageSinceLastService,
+        serviceInterval,
+        status: evaluation.status,
+        confidencePercent: evaluation.confidencePercent,
+      });
     }
 
     // Sort: overdue first, then by mileage since last service descending

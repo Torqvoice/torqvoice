@@ -45,6 +45,8 @@ export default async function TemplatePage() {
       SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
       SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
       SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
+      SETTING_KEYS.SMS_TEMPLATE_INSPECTION_DUE,
+      SETTING_KEYS.SMS_TEMPLATE_SERVICE_DUE,
     ]),
     getTemplates(),
     getInvoiceLayoutConfig(),
@@ -66,6 +68,8 @@ export default async function TemplatePage() {
     [SETTING_KEYS.SMS_TEMPLATE_STATUS_READY]: t.raw('templates.smsDefaults.statusReady'),
     [SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED]: t.raw('templates.smsDefaults.statusCompleted'),
     [SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED]: t.raw('templates.smsDefaults.paymentReceived'),
+    [SETTING_KEYS.SMS_TEMPLATE_INSPECTION_DUE]: t.raw('templates.smsDefaults.inspectionDue'),
+    [SETTING_KEYS.SMS_TEMPLATE_SERVICE_DUE]: t.raw('templates.smsDefaults.serviceDue'),
   };
 
   const smsTemplates: Record<string, string> = {};

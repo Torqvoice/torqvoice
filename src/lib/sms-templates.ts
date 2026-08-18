@@ -17,6 +17,10 @@ export const SMS_TEMPLATE_DEFAULTS: Record<string, string> = {
     "Your service is complete. Thank you for your business!",
   [SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED]:
     "Payment of {amount} received for invoice {invoice_number}. Thank you!",
+  [SETTING_KEYS.SMS_TEMPLATE_INSPECTION_DUE]:
+    "Hi {customer_name}, your {vehicle} is due for its periodic inspection on {due_date}. Contact {company_name} to book an appointment.",
+  [SETTING_KEYS.SMS_TEMPLATE_SERVICE_DUE]:
+    "Hi {customer_name}, your {vehicle} is due for a service. Contact {company_name} to book an appointment.",
 };
 
 /**
